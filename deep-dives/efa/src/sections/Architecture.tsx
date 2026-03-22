@@ -14,17 +14,25 @@ export function Architecture() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="How EFA achieves OS-bypass networking">
+          <Header variant="h1" description="Why can distributed training at scale only work with OS-bypass networking?">
             Architecture & SRD Protocol
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            EFA&apos;s architecture has two key innovations: <strong>OS-bypass</strong> for the
-            data path and <strong>SRD (Scalable Reliable Datagram)</strong> as the transport
-            protocol. Together, they eliminate the two main bottlenecks of cloud networking:
-            kernel overhead and congestion-induced tail latency.
+            <strong>The problem:</strong> At 64+ nodes of distributed training, network
+            communication becomes 30-60% of total step time. Collective operations (allreduce,
+            allgather) execute millions of times per training run. If each message adds
+            ~100μs of kernel overhead (TCP path), training time doubles. The architecture
+            question is: how do you move data between nodes fast enough that the network
+            doesn&apos;t bottleneck the GPUs?
+          </Box>
+          <Box variant="p">
+            <strong>The answer:</strong> OS-bypass for the data path (skip the kernel entirely)
+            and SRD (Scalable Reliable Datagram) as the transport protocol. Together, they
+            reduce per-message latency to ~15μs and eliminate congestion-induced tail latency
+            through 64-path packet spraying.
           </Box>
         </SpaceBetween>
       </Container>
@@ -39,7 +47,9 @@ export function Architecture() {
           <Alert type="info">
             OS-bypass only applies to the <strong>data path</strong>. Control operations
             (creating queue pairs, registering memory regions) still go through the kernel.
-            This is the same model as RDMA — but EFA does NOT use RDMA protocols.
+            This is the same model as RDMA. Note: EFA does support RDMA read operations
+            (Nitro v4+) and RDMA write (Nitro v6) over SRD — but it does NOT use
+            traditional RoCE or InfiniBand protocols.
           </Alert>
         </SpaceBetween>
       </Container>

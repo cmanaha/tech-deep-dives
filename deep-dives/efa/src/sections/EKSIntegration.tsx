@@ -12,7 +12,7 @@ export function EKSIntegration() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="Running EFA workloads on Amazon EKS">
+          <Header variant="h1" description="I'm already on EKS — what do I change to get EFA benefits?">
             EKS & Container Integration
           </Header>
         }

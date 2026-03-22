@@ -69,12 +69,13 @@ export function AIMLTraining() {
               sends different amounts of data to different nodes based on routing decisions.
             </Box>
             <Box variant="p">
-              This creates asymmetric, unpredictable traffic patterns — exactly where
-              SRD&apos;s multi-path routing excels. Traditional TCP would create hotspots;
-              SRD distributes load across all paths.
+              SRD&apos;s multi-path routing handles asymmetric traffic well.
+              However, <strong>EFA falls slightly short of InfiniBand ConnectX-7</strong> on
+              the specific message sizes used in MoE dispatch-and-combine patterns.
+              EFA also does not support GPUDirect Async, which some MoE optimizations rely on.
             </Box>
-            <StatusIndicator type="success">
-              EFA highly beneficial — SRD handles asymmetric traffic well
+            <StatusIndicator type="info">
+              EFA beneficial but with known MoE dispatch gap vs InfiniBand
             </StatusIndicator>
           </div>
           <div>
@@ -139,20 +140,50 @@ export function AIMLTraining() {
           <ExpandableSection headerText="Key NCCL environment variables for EFA">
             <Box variant="code">
 {`# Essential for EFA
-FI_PROVIDER=efa              # Tell libfabric to use EFA
-FI_EFA_USE_DEVICE_RDMA=1     # Enable GPU Direct RDMA (P4d+)
-NCCL_PROTO=Simple            # Use simple protocol (best for EFA)
-NCCL_ALGO=Ring               # Ring algorithm (or Tree for large clusters)
+FI_PROVIDER=efa                    # Tell libfabric to use EFA
+FI_EFA_USE_DEVICE_RDMA=1           # GPUDirect RDMA (required on P4d, default on P5+)
+
+# NCCL Tuner Plugin (auto-selects optimal algorithm + protocol per topology)
+NCCL_TUNER_PLUGIN=/opt/amazon/ofi-nccl/lib/x86_64-linux-gnu/libnccl-ofi-tuner.so
+
+# Manual overrides (only if tuner is NOT used)
+# NCCL_PROTO=Simple               # Simple protocol (good for EFA)
+# NCCL_ALGO=Ring                  # Ring algorithm (or Tree for large clusters)
 
 # Performance tuning
-NCCL_BUFFSIZE=8388608        # 8MB buffer (default 4MB)
-NCCL_MIN_NCHANNELS=4         # Minimum NCCL channels
-NCCL_P2P_NET_CHUNKSIZE=524288 # 512KB chunks for P2P
+NCCL_BUFFSIZE=8388608              # 8MB buffer (default 4MB)
+NCCL_MIN_NCHANNELS=4               # Minimum NCCL channels
 
 # Debugging
-NCCL_DEBUG=INFO              # Enable NCCL debug logging
-FI_LOG_LEVEL=info            # Enable libfabric logging`}
+NCCL_DEBUG=INFO                    # Enable NCCL debug logging
+# Verify EFA is active: look for "NET/OFI Selected Provider is efa*"
+FI_LOG_LEVEL=info                  # Enable libfabric logging`}
             </Box>
+          </ExpandableSection>
+          <ExpandableSection headerText="Prerequisites often missed">
+            <SpaceBetween size="s">
+              <Alert type="error">
+                <strong>GDRCopy required:</strong> GPUDirect RDMA (GDRCopy v2.4+) must be
+                installed before running NCCL with EFA on any P-series instance. Without it,
+                GPU-to-NIC transfers fall back to staged copies through host memory.
+              </Alert>
+              <Alert type="error">
+                <strong>NVIDIA Fabric Manager required on P4d/P5:</strong> The{' '}
+                <code>nvidia-fabricmanager</code> systemd service must be running to manage
+                NVSwitch. Its version must <strong>exactly match</strong> the NVIDIA kernel
+                module version — a mismatch renders all 8 GPUs non-functional for
+                inter-GPU operations.
+              </Alert>
+              <Alert type="warning">
+                <strong>Disk space:</strong> CUDA toolkit requires 10-20 GiB beyond base AMI.
+                Allocate at minimum 30 GiB root volume or the EFA installer will fail silently.
+              </Alert>
+              <Alert type="info">
+                <strong>nouveau driver:</strong> Must be blacklisted before installing NVIDIA
+                proprietary drivers. Add <code>blacklist nouveau</code> to
+                <code>/etc/modprobe.d/</code> and regenerate initramfs.
+              </Alert>
+            </SpaceBetween>
           </ExpandableSection>
         </SpaceBetween>
       </Container>
@@ -176,12 +207,31 @@ FI_LOG_LEVEL=info            # Enable libfabric logging`}
             <div>
               <Box variant="h3">Trn2</Box>
               <Box variant="p">
-                Next-generation: 16 Trainium v2 chips, 32 EFA interfaces, 3,200 Gbps.
-                Matches P5 bandwidth. Designed for training models at the frontier scale
-                with Neuron SDK&apos;s native parallelism support.
+                16 Trainium v2 chips, 16 EFA interfaces at 200 Gbps each = 3,200 Gbps (EFAv3).
+                NeuronLink 2D torus at 1 TB/s intra-node. 30-40% better price-performance
+                than P5e. Trn2 UltraServers connect 4 nodes = 64 chips, 12.8 Tbps EFA.
               </Box>
             </div>
           </ColumnLayout>
+
+          <ExpandableSection headerText="Neuron architecture advantage: dedicated CC Engine">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                Each Trainium chip includes a dedicated <strong>Collective Compute (CC)
+                Engine</strong> that orchestrates collectives (AllReduce, AllGather,
+                ReduceScatter, All-to-All) independently from the NeuronCores. The CC cores
+                control data movement engines, enabling communication to execute
+                <strong> in parallel</strong> with compute — providing 10-15% additional
+                acceleration that CUDA/NCCL architectures cannot match.
+              </Box>
+              <Box variant="p">
+                <strong>Hierarchical communication:</strong> Neuron automatically applies
+                local reductions within a node first (NeuronLink), then inter-node
+                coordination among designated processes over EFA, then broadcasts results.
+                This minimizes expensive EFA traffic.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 

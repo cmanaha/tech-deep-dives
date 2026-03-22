@@ -1,5 +1,5 @@
 {
-  "name": "@tech-deep-dives/efa",
+  "name": "@tech-deep-dives/TOPIC",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -17,13 +17,10 @@
     "@cloudscape-design/global-styles": "^1.0.0",
     "@tech-deep-dives/shared": "workspace:*",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "@xyflow/react": "^12.0.0",
-    "d3": "^7.9.0"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@testing-library/react": "^16.1.0",
-    "@types/d3": "^7.4.3",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",

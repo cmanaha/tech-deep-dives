@@ -52,8 +52,8 @@ const efaNodes: Node[] = [
 
 // Labels
 const labelNodes: Node[] = [
-  { id: 'label-tcp', position: { x: 55, y: 0 }, data: { label: 'Traditional Path (~25-50μs)' }, style: { background: 'transparent', border: 'none', fontSize: '12px', fontWeight: 700, color: '#ec7211', width: '180px' }, draggable: false },
-  { id: 'label-efa', position: { x: 385, y: 0 }, data: { label: 'EFA Path (~2-5μs)' }, style: { background: 'transparent', border: 'none', fontSize: '12px', fontWeight: 700, color: '#037f0c', width: '180px' }, draggable: false },
+  { id: 'label-tcp', position: { x: 55, y: 0 }, data: { label: 'Traditional Path (~100μs+ (kernel overhead))' }, style: { background: 'transparent', border: 'none', fontSize: '12px', fontWeight: 700, color: '#ec7211', width: '180px' }, draggable: false },
+  { id: 'label-efa', position: { x: 385, y: 0 }, data: { label: 'EFA Path (~15μs (MPI ping-pong))' }, style: { background: 'transparent', border: 'none', fontSize: '12px', fontWeight: 700, color: '#037f0c', width: '180px' }, draggable: false },
   { id: 'label-kernel', position: { x: -60, y: 160 }, data: { label: 'KERNEL\nSPACE' }, style: { background: '#fdf3ec', border: '1px dashed #ec7211', borderRadius: '4px', fontSize: '10px', fontWeight: 700, color: '#ec7211', padding: '4px 8px', width: '60px', textAlign: 'center' as const }, draggable: false },
   { id: 'label-user', position: { x: -60, y: 50 }, data: { label: 'USER\nSPACE' }, style: { background: '#f2f8fd', border: '1px dashed #0972d3', borderRadius: '4px', fontSize: '10px', fontWeight: 700, color: '#0972d3', padding: '4px 8px', width: '60px', textAlign: 'center' as const }, draggable: false },
 ];

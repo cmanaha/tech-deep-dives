@@ -11,7 +11,7 @@ export function HPC() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="The original use case — tightly-coupled parallel simulations">
+          <Header variant="h1" description="Can my tightly-coupled MPI simulation run in the cloud without performance degradation?">
             EFA for Traditional HPC
           </Header>
         }
@@ -44,6 +44,38 @@ export function HPC() {
               <li><strong>Genomics pipelines:</strong> BWA, GATK — mostly I/O bound, not network bound</li>
               <li><strong>Rendering:</strong> Frame-independent, scatter-gather at boundaries</li>
             </ul>
+          </div>
+        </ColumnLayout>
+      </Container>
+
+      <Container header={<Header variant="h2">Measured Performance (EFA vs ENA)</Header>}>
+        <ColumnLayout columns={3} variant="text-grid">
+          <div>
+            <Box variant="h3">CFD (OpenFOAM)</Box>
+            <Box variant="p">
+              97-million-cell external aerodynamics on c5n.18xlarge:
+              <strong> 98.4% parallel efficiency</strong> at 1,008 cores (28 instances).
+              <strong> 4x improvement</strong> in scaling over ENA for standard CFD.
+              Applications scale extra-linearly to over 200 cores.
+            </Box>
+          </div>
+          <div>
+            <Box variant="h3">Weather (WRF)</Box>
+            <Box variant="p">
+              CONUS 2.5km benchmark on hpc7a: enabling multi-rail EFA
+              (<code>I_MPI_MULTIRAIL=1</code>) delivered <strong>10% speedup at 32
+              instances</strong> and <strong>30%+ improvement at 192 instances</strong>.
+              Multi-rail is critical for instances with 2+ EFA interfaces.
+            </Box>
+          </div>
+          <div>
+            <Box variant="h3">Molecular Dynamics</Box>
+            <Box variant="p">
+              AMBER, GROMACS, NAMD, LAMMPS: up to <strong>2.05x speedup</strong> at
+              2 instances and 1.2x at 768 cores versus ENA networking. EFA&apos;s
+              low-latency benefits are most pronounced at moderate scale where
+              communication-to-compute ratio is highest.
+            </Box>
           </div>
         </ColumnLayout>
       </Container>
@@ -119,7 +151,11 @@ export function HPC() {
             </div>
             <div>
               <Box variant="h3">Hpc6id (Intel)</Box>
-              <Box variant="p">32 cores, 200 Gbps EFA + 15.2TB NVMe. For HPC with local storage needs.</Box>
+              <Box variant="p">64 vCPUs, 200 Gbps EFA + 15.2TB NVMe. For HPC with local storage needs.</Box>
+            </div>
+            <div>
+              <Box variant="h3">Hpc8a (AMD, newest)</Box>
+              <Box variant="p">96 cores (EPYC 9005), 300 Gbps EFA, Nitro v6. 40% higher performance and 42% greater memory bandwidth than hpc7a.</Box>
             </div>
           </ColumnLayout>
         </SpaceBetween>

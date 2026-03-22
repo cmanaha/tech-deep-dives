@@ -71,7 +71,7 @@ export function InstanceSupport() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="Which instances support EFA and what bandwidth do they provide?">
+          <Header variant="h1" description="I need to pick an instance for my workload — which ones have EFA and how much bandwidth?">
             Instance Support Matrix
           </Header>
         }

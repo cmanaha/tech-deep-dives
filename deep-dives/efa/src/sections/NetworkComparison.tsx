@@ -46,9 +46,9 @@ const comparisonData: ComparisonRow[] = [
   },
   {
     feature: 'Latency',
-    efa: '~2-5 μs',
-    tcp: '~25-50 μs',
-    rdma: '~1-2 μs',
+    efa: '~15.5 μs (MPI ping-pong)',
+    tcp: '~100+ μs (kernel path)',
+    rdma: '~1-2 μs (InfiniBand)',
     nvlink: '~0.5 μs',
   },
   {
@@ -76,14 +76,35 @@ const comparisonData: ComparisonRow[] = [
     feature: 'AWS availability',
     efa: 'Supported instances',
     tcp: 'All instances',
-    rdma: 'Not available on AWS',
-    nvlink: 'P4d, P5, P5e (intra-node)',
+    rdma: 'Not as RoCE/IB fabric; EFA supports RDMA read (Nitro v4+) and write (v6)',
+    nvlink: 'P4d, P5, P5e, P6 (intra-node)',
+  },
+  {
+    feature: 'Max single-flow BW',
+    efa: '~25 Gbps (SRD)',
+    tcp: '~5 Gbps',
+    rdma: '~25 Gbps (NDR)',
+    nvlink: 'N/A',
+  },
+  {
+    feature: 'P99.9 tail latency',
+    efa: '85% reduction vs TCP',
+    tcp: 'Baseline',
+    rdma: 'Best (sub-μs)',
+    nvlink: 'N/A',
+  },
+  {
+    feature: 'Encryption in transit',
+    efa: 'Yes (Nitro HW, zero penalty)',
+    tcp: 'TLS (CPU overhead)',
+    rdma: 'Varies',
+    nvlink: 'N/A (internal)',
   },
   {
     feature: 'Cost',
     efa: 'Free (instance pricing only)',
     tcp: 'Free',
-    rdma: 'N/A on AWS',
+    rdma: 'N/A as standalone on AWS',
     nvlink: 'Included in instance',
   },
 ];
@@ -93,15 +114,18 @@ export function NetworkComparison() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="How EFA compares to TCP, RDMA, and NVLink">
+          <Header variant="h1" description="Given my workload, which networking approach minimizes cost and maximizes throughput?">
             EFA vs Alternatives
           </Header>
         }
       >
         <Box variant="p">
-          Understanding where EFA fits requires comparing it to the alternatives.
-          The key insight: <strong>EFA is not RDMA</strong>. It uses a fundamentally different
-          protocol (SRD) designed for cloud networks, not the lossless fabrics that RDMA requires.
+          <strong>The question isn&apos;t &quot;which protocol is fastest&quot;</strong> —
+          it&apos;s &quot;given my workload&apos;s communication pattern, node count, and
+          budget, which networking approach gives the best outcome?&quot; NVLink wins
+          intra-node. EFA wins inter-node on AWS. RDMA/InfiniBand wins on-prem for
+          MoE and latency-critical workloads. TCP is fine when networking isn&apos;t
+          the bottleneck.
         </Box>
       </Container>
 

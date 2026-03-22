@@ -27,10 +27,16 @@ export function Overview() {
             directly to the network hardware, skipping the kernel network stack entirely.
           </Box>
           <Box variant="p">
-            The key insight: traditional TCP/IP adds microseconds of kernel overhead per message.
+            The key insight: traditional TCP/IP adds ~100+ microseconds of kernel overhead per message.
             For workloads exchanging millions of small messages per second (gradient
             synchronization in distributed training, MPI collectives in HPC), this overhead
-            dominates. EFA eliminates it.
+            dominates. EFA reduces it to ~15 microseconds (MPI ping-pong measured).
+          </Box>
+          <Box variant="p">
+            All EFA traffic is <strong>encrypted in transit</strong> by the Nitro hardware
+            with zero performance penalty — no TLS overhead, no CPU cycles spent on crypto.
+            EFA is also <strong>free</strong>: no per-interface charge, no data transfer fee.
+            The only cost is the EC2 instance itself.
           </Box>
         </SpaceBetween>
       </Container>

@@ -7,8 +7,9 @@
   "scripts": {
     "dev": "pnpm --filter './deep-dives/*' run dev",
     "build": "pnpm --filter './deep-dives/*' run build",
-    "lint": "pnpm --filter './deep-dives/*' run lint",
-    "typecheck": "pnpm --filter './deep-dives/*' run typecheck"
+    "lint": "pnpm --filter './deep-dives/*' run lint && pnpm --filter @tech-deep-dives/shared run lint",
+    "typecheck": "pnpm --filter './deep-dives/*' run typecheck && pnpm --filter @tech-deep-dives/shared run typecheck",
+    "test": "pnpm --filter './deep-dives/*' run test"
   },
   "engines": {
     "node": ">=20"
