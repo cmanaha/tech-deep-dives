@@ -93,6 +93,13 @@ spec:
 
       <Container header={<Header variant="h2">Version Requirements</Header>}>
         <SpaceBetween size="s">
+          <Alert type="warning">
+            <strong>EFA-only interfaces require a custom Launch Template:</strong> eksctl does not
+            support configuring EFA-only interfaces directly. You must create a custom EC2 Launch
+            Template with the EFA-only network interface configuration and reference it in your
+            managed node group. This applies to secondary interfaces where you want OS-bypass
+            without IP networking overhead.
+          </Alert>
           <Box variant="p">
             <strong>VPC CNI:</strong> v1.7.10+ for multi-EFA (P4d, P5). v1.18.5+ for EFA-only interfaces.
           </Box>

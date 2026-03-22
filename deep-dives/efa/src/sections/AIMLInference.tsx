@@ -49,6 +49,17 @@ export function AIMLInference() {
             </Box>
             <StatusIndicator type="info">EFA beneficial</StatusIndicator>
           </div>
+          <div>
+            <Box variant="h3">NIXL (NVIDIA Inference Xfer Library)</Box>
+            <Box variant="p">
+              New in 2025 — purpose-built for multi-node inference transfer patterns including
+              KV-cache migration, disaggregated prefill/decode, and speculative decoding across
+              nodes. NIXL uses libfabric over EFA and is designed for the bursty, latency-sensitive
+              transfer patterns that inference generates (unlike training&apos;s steady-state
+              collectives). Requires libfabric 1.21.0+.
+            </Box>
+            <StatusIndicator type="success">EFA critical for NIXL</StatusIndicator>
+          </div>
         </ColumnLayout>
       </Container>
 

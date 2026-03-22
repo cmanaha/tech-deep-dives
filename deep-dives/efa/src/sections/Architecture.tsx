@@ -117,12 +117,20 @@ export function Architecture() {
           <ExpandableSection headerText="SRD Design Principles (deep dive)">
             <SpaceBetween size="s">
               <Box variant="p">
+                <strong>Origin:</strong> SRD is described in the IEEE Micro 2020 paper by
+                Shalev et al. (Annapurna Labs) — not NSDI as sometimes cited. The paper
+                details a transport protocol designed for lossy datacenter fabrics without
+                requiring PFC or lossless infrastructure.
+              </Box>
+              <Box variant="p">
                 <strong>Multi-path routing (64 parallel paths):</strong> SRD sprays packets
                 across up to 64 paths chosen from hundreds available in AWS datacenters.
                 Unlike ECMP with TCP (which pins flows to paths via 5-tuple hash), SRD
                 does packet-level spraying by manipulating UDP source ports in the
                 encapsulation header. Continuously monitors RTT on each path at
                 sub-millisecond resolution and dynamically avoids congested routes.
+                Retransmitted packets go on <strong>different paths</strong> than the
+                original — avoiding the congested route that caused the drop.
               </Box>
               <Box variant="p">
                 <strong>Out-of-order delivery:</strong> SRD deliberately decouples
@@ -134,8 +142,10 @@ export function Architecture() {
                 <strong>Proactive congestion management:</strong> SRD estimates available
                 bandwidth and RTT continuously, reducing send rate <em>before</em> congestion
                 occurs. This prevents queue buildup in switches — the root cause of
-                tail latency in datacenter networks. Compare to TCP&apos;s reactive approach
-                (detect loss, then back off).
+                tail latency in datacenter networks. The congestion control algorithm is
+                closest to TIMELY/Swift (RTT-based, proactive) — not loss-based like TCP
+                CUBIC. Compare to Google&apos;s Falcon protocol, which occupies the same
+                design space.
               </Box>
               <Box variant="p">
                 <strong>Hardware-based reliability:</strong> Reliability is implemented in
@@ -143,10 +153,97 @@ export function Architecture() {
                 RFC 6298 minimum of 200ms. This keeps the CPU free for application work.
               </Box>
               <Box variant="p">
+                <strong>Send-only in hardware:</strong> SRD hardware only implements Send
+                operations. RDMA Read and Write are <strong>emulated in software</strong> by
+                the libfabric EFA provider — the provider issues a Send to the remote side,
+                which performs the memory operation and sends a response. This is a deliberate
+                simplification: keep hardware simple, handle complexity in software.
+                (Source: <code>rxr_pkt_post_ctrl</code> in ofiwg/libfabric EFA provider)
+              </Box>
+              <Box variant="p">
+                <strong>No message segmentation in hardware:</strong> Large messages are not
+                segmented by the NIC. Libfabric handles segmentation and reassembly entirely
+                in software, choosing eager (inline), rendezvous (RTS/CTS), or long-read
+                protocols based on message size thresholds.
+              </Box>
+              <Box variant="p">
+                <strong>QP scalability:</strong> SRD uses unconnected (datagram) QPs. A cluster
+                of N nodes with p processes each needs only N×p QPs total — compared to
+                N×p² for RC (connected) QPs. At 1,000+ nodes this is the difference between
+                feasible and impossible memory overhead.
+              </Box>
+              <Box variant="p">
+                <strong>SRD beyond EFA:</strong> SRD has expanded well beyond EFA. All
+                EBS io2 volumes use SRD for storage traffic. ENA (standard networking) also
+                supports SRD via the <code>EnaSrdSpecification</code> API — enabling
+                multi-path benefits for non-EFA workloads.
+              </Box>
+              <Box variant="p">
                 <strong>P99.9 tail latency:</strong> SRD achieves P99.9 latency of tens
                 of microseconds — an 85% reduction versus TCP. This matters enormously
                 for collective operations where the slowest participant determines
                 overall completion time.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+
+          <ExpandableSection headerText="OS-Bypass: What Actually Happens (from kernel source)">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                The kernel driver (<code>efa_verbs.c</code> in amzn/amzn-drivers) sets up
+                three BAR (Base Address Register) regions that get mapped into user-space:
+              </Box>
+              <ColumnLayout columns={3} variant="text-grid">
+                <div>
+                  <Box variant="h3">db_bar (doorbells)</Box>
+                  <Box variant="p">
+                    Write-combined mapping. User-space writes a doorbell to notify the NIC
+                    that new work has been posted. One write = one notification, no syscall.
+                    Each process gets its own doorbell range via UARNs (User Access Region
+                    Numbers) — hardware-enforced per-process scoping.
+                  </Box>
+                </div>
+                <div>
+                  <Box variant="h3">mem_bar (LLQ descriptors)</Box>
+                  <Box variant="p">
+                    Write-combined mapping for Low-Latency Queue descriptors. The first
+                    N bytes of each WQE (Work Queue Entry) are written directly to the NIC
+                    via MMIO — skipping the DMA read the NIC would otherwise need. This is
+                    the &quot;low-latency&quot; path for small messages.
+                  </Box>
+                </div>
+                <div>
+                  <Box variant="h3">DMA coherent (RQ buffers)</Box>
+                  <Box variant="p">
+                    Receive Queue completion buffers allocated via <code>dma_alloc_coherent</code>.
+                    The NIC writes completion entries here; user-space reads them directly
+                    without any kernel involvement.
+                  </Box>
+                </div>
+              </ColumnLayout>
+              <Alert type="info">
+                <strong>Proof of true OS bypass:</strong> The kernel driver <code>efa_verbs.c</code>{' '}
+                intentionally does NOT implement <code>post_send</code>, <code>post_recv</code>,
+                or <code>poll_cq</code> — these are the hot-path data operations. They
+                exist only in the user-space library (<code>libefa</code>). The kernel handles
+                only control-path operations: creating QPs, registering memory, allocating
+                protection domains. (Source: <code>efa_verbs.c</code> in amzn/amzn-drivers —
+                search for the verb table and note the NULL entries.)
+              </Alert>
+              <Box variant="p">
+                <strong>Phase-bit lockless CQ polling:</strong> Completion Queue entries use a
+                phase bit toggled by hardware. User-space polls by reading the phase bit — if
+                it matches the expected phase, a new completion is ready. No locks, no syscalls,
+                no atomic operations. This is how <code>poll_cq</code> achieves sub-microsecond
+                latency in user-space.
+              </Box>
+              <Box variant="p">
+                <strong>Security model:</strong> Hardware enforces isolation via two mechanisms:
+                (1) <strong>Protection Domains</strong> with hardware-validated lkey/rkey on
+                every memory access — a process cannot access another process&apos;s registered
+                memory regions; (2) <strong>UARNs</strong> (User Access Region Numbers) that
+                scope doorbells to individual processes — a process can only ring its own
+                doorbells. Both are enforced by the NIC hardware, not software checks.
               </Box>
             </SpaceBetween>
           </ExpandableSection>

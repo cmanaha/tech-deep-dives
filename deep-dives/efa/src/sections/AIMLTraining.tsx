@@ -160,6 +160,61 @@ NCCL_DEBUG=INFO                    # Enable NCCL debug logging
 FI_LOG_LEVEL=info                  # Enable libfabric logging`}
             </Box>
           </ExpandableSection>
+          <ExpandableSection headerText="Under the Hood: NCCL → libfabric → Hardware">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                <strong>RDM vs DGRAM endpoints:</strong> NCCL uses RDM (Reliable Datagram Message)
+                endpoints, not raw DGRAM. RDM adds software-layer reliability, message tagging,
+                and RMA (Remote Memory Access) emulation on top of EFA&apos;s unreliable datagram
+                hardware. Raw MPI can use DGRAM endpoints directly. The choice matters: RDM
+                endpoints carry overhead but provide the semantics NCCL expects.
+                (Source: <code>efa_rdm_ep.c</code> in ofiwg/libfabric)
+              </Box>
+              <Box variant="p">
+                <strong>GPU memory gets different transfer protocols:</strong> When the source
+                or destination is GPU memory (detected via <code>cuda_is_addr_cuda_accessible</code>),
+                libfabric restricts to only eager and runt-read protocols — the medium-message
+                rendezvous protocol is skipped entirely. This is because GPU memory cannot be
+                used as an inline source for the medium protocol&apos;s copy semantics.
+                (Source: <code>efa_rdm_ep_use_p2p</code> in ofiwg/libfabric)
+              </Box>
+              <Box variant="p">
+                <strong>NCCL operation mapping to libfabric verbs:</strong>
+              </Box>
+              <ul>
+                <li><code>fi_send</code> — eager sends for small messages (below rendezvous threshold)</li>
+                <li><code>fi_write</code> with immediate data — RDMA write path; immediate data
+                  bit-packs <code>comm_id + seq_num + segment_count</code> into a single 64-bit value
+                  for zero-copy completion signaling</li>
+                <li><code>fi_read</code> — runt-read protocol for large GPU transfers</li>
+              </ul>
+              <Box variant="p">
+                <strong>Multi-rail implementation</strong> (Source: <code>nccl_ofi_rdma.c</code> in
+                aws/aws-ofi-nccl): Each rail gets a separate <code>fi_endpoint</code> +
+                Address Vector (<code>fi_av</code>) + Completion Queue (<code>fi_cq</code>).
+                Rail selection uses a three-phase software handshake: (1) sender picks a
+                rail, (2) sends connection request with rail metadata, (3) receiver
+                confirms and binds the rail for that communicator. This is entirely in
+                software — the hardware has no concept of rails.
+              </Box>
+              <Box variant="p">
+                <strong>P2P GPU RDMA is runtime-probed:</strong> The plugin calls
+                <code>cuPointerGetAttribute</code> at runtime to check if GPU memory is
+                directly accessible from the NIC. If not (older drivers, unsupported topology),
+                it silently falls back to <code>cudaMemcpy</code> staging through host memory.
+                This means P2P RDMA is never guaranteed — always verify with{' '}
+                <code>NCCL_DEBUG=INFO</code> logs showing &quot;GPU Direct RDMA Enabled&quot;.
+              </Box>
+              <Box variant="p">
+                <strong>Lazy QP creation:</strong> Queue Pairs are not created at{' '}
+                <code>fi_endpoint</code> allocation time. The actual hardware QP is created
+                at <code>fi_enable</code> — allowing the application to set all QP parameters
+                before committing hardware resources. This matters for large clusters where
+                thousands of endpoints are allocated but only a subset are used.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+
           <ExpandableSection headerText="Prerequisites often missed">
             <SpaceBetween size="s">
               <Alert type="error">

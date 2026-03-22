@@ -146,6 +146,13 @@ const containerNodes: Node[] = [
     style: { background: 'transparent', border: '2px dashed #ec7211', borderRadius: '8px', fontSize: '11px', color: '#ec7211', fontWeight: 700, padding: '4px 12px', width: '280px', textAlign: 'center' as const },
     draggable: false,
   },
+  {
+    id: 'simplification-label',
+    position: { x: 230, y: 370 },
+    data: { label: '(4 of 32 EFA shown — simplified)' },
+    style: { background: 'transparent', border: 'none', fontSize: '10px', color: '#687078', fontStyle: 'italic', fontWeight: 400, width: '260px', textAlign: 'center' as const },
+    draggable: false,
+  },
 ];
 
 const nodes: Node[] = [

@@ -97,7 +97,8 @@ export function HPC() {
             <div>
               <Box variant="h3">Intel MPI</Box>
               <Box variant="p">
-                Set <code>FI_PROVIDER=efa</code> and <code>I_MPI_OFI_LIBRARY_INTERNAL=0</code>.
+                Set <code>FI_PROVIDER=efa</code>, <code>I_MPI_OFI_LIBRARY_INTERNAL=0</code>,
+                and <code>I_MPI_MULTIRAIL=1</code> (for instances with 2+ EFA interfaces).
                 Intel MPI has its own libfabric — point it to the system libfabric with EFA support.
               </Box>
             </div>
