@@ -25,6 +25,12 @@ Each deep dive directory contains:
 - `research/` — Raw research notes, experiment logs
 - `iac/` — IaC templates (CDK/CloudFormation) for any cloud experiments
 
+## Fact-Checking & Sources Standard
+- Every quantitative claim (bandwidth numbers, latency figures, percentages, pricing) must have an inline citation linking to the Sources appendix
+- Every deep dive app includes a Sources appendix section as the last navigation item
+- Sources are graded by authority: Tier 1 (official AWS docs, API reference, source code), Tier 2 (AWS blog posts, re:Invent talks), Tier 3 (third-party technical analysis, academic papers), Tier 4 (blog posts, tutorials — inspiration only, never cited as fact)
+- Numbers without citations are unverified claims — flag them visually
+
 ## Quality Rules
 - **Authoritative sources only** — AWS docs, official repos, peer-reviewed papers. Blog posts for inspiration only, never as source of truth.
 - **Every claim citable** — If it can't be traced to a source, it doesn't go in the app.

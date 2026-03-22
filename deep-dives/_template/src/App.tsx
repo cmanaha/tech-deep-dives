@@ -8,6 +8,7 @@ const sections = [
   { id: 'tradeoffs', title: 'Trade-offs' },
   { id: 'pricing', title: 'Pricing' },
   { id: 'decision', title: 'Decision Guide' },
+  { id: 'sources', title: 'Sources' },
 ];
 
 function Overview() {
@@ -30,12 +31,17 @@ function DecisionGuide() {
   return <div>Decision guide — flowchart or criteria for choosing this technology.</div>;
 }
 
+function Sources() {
+  return <div>Sources appendix — all authoritative sources with tier classifications and fact-check register.</div>;
+}
+
 const sectionComponents: Record<string, React.FC> = {
   overview: Overview,
   architecture: Architecture,
   tradeoffs: Tradeoffs,
   pricing: Pricing,
   decision: DecisionGuide,
+  sources: Sources,
 };
 
 export function App() {

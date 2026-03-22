@@ -12,6 +12,7 @@ const NetworkComparison = React.lazy(() => import('./sections/NetworkComparison'
 const EKSIntegration = React.lazy(() => import('./sections/EKSIntegration').then(m => ({ default: m.EKSIntegration })));
 const Pricing = React.lazy(() => import('./sections/Pricing').then(m => ({ default: m.Pricing })));
 const DecisionGuide = React.lazy(() => import('./sections/DecisionGuide').then(m => ({ default: m.DecisionGuide })));
+const Sources = React.lazy(() => import('./sections/Sources').then(m => ({ default: m.Sources })));
 
 const sections = [
   { id: 'overview', title: 'What is EFA?' },
@@ -24,6 +25,7 @@ const sections = [
   { id: 'eks', title: 'EKS & Containers' },
   { id: 'pricing', title: 'Pricing Analysis' },
   { id: 'decision', title: 'Decision Guide' },
+  { id: 'sources', title: 'Sources' },
 ];
 
 const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
@@ -37,6 +39,7 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   eks: EKSIntegration,
   pricing: Pricing,
   decision: DecisionGuide,
+  sources: Sources,
 };
 
 export function App() {

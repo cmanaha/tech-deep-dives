@@ -95,6 +95,7 @@ Import from `@tech-deep-dives/shared`:
 - **Visual-first:** Prefer diagrams, animations, and interactive elements over walls of text.
 - **Comparative:** Always show alternatives and trade-offs, not just the happy path.
 - **Right complexity level:** Technical lead audience — skip basics, focus on architecture decisions, trade-offs, pricing implications, and when-to-use guidance.
+- **Fact-checking & sources:** Every quantitative claim (bandwidth numbers, latency figures, percentages, pricing) must have an inline citation linking to the Sources appendix. Every deep dive app includes a Sources appendix section as the last navigation item. Sources are graded by authority: Tier 1 (official AWS docs, API reference, source code), Tier 2 (AWS blog posts, re:Invent talks), Tier 3 (third-party technical analysis, academic papers), Tier 4 (blog posts, tutorials — inspiration only, never cited as fact). Numbers without citations are unverified claims — flag them visually.
 
 ## Settled Decisions (Do Not Re-Debate)
 
