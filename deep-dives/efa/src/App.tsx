@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { DeepDiveLayout } from '@tech-deep-dives/shared';
-import { Overview } from './sections/Overview';
-import { Architecture } from './sections/Architecture';
-import { InstanceSupport } from './sections/InstanceSupport';
-import { AIMLTraining } from './sections/AIMLTraining';
-import { AIMLInference } from './sections/AIMLInference';
-import { HPC } from './sections/HPC';
-import { NetworkComparison } from './sections/NetworkComparison';
-import { EKSIntegration } from './sections/EKSIntegration';
-import { Pricing } from './sections/Pricing';
-import { DecisionGuide } from './sections/DecisionGuide';
+import Spinner from '@cloudscape-design/components/spinner';
+
+const Overview = React.lazy(() => import('./sections/Overview').then(m => ({ default: m.Overview })));
+const Architecture = React.lazy(() => import('./sections/Architecture').then(m => ({ default: m.Architecture })));
+const InstanceSupport = React.lazy(() => import('./sections/InstanceSupport').then(m => ({ default: m.InstanceSupport })));
+const AIMLTraining = React.lazy(() => import('./sections/AIMLTraining').then(m => ({ default: m.AIMLTraining })));
+const AIMLInference = React.lazy(() => import('./sections/AIMLInference').then(m => ({ default: m.AIMLInference })));
+const HPC = React.lazy(() => import('./sections/HPC').then(m => ({ default: m.HPC })));
+const NetworkComparison = React.lazy(() => import('./sections/NetworkComparison').then(m => ({ default: m.NetworkComparison })));
+const EKSIntegration = React.lazy(() => import('./sections/EKSIntegration').then(m => ({ default: m.EKSIntegration })));
+const Pricing = React.lazy(() => import('./sections/Pricing').then(m => ({ default: m.Pricing })));
+const DecisionGuide = React.lazy(() => import('./sections/DecisionGuide').then(m => ({ default: m.DecisionGuide })));
 
 const sections = [
   { id: 'overview', title: 'What is EFA?' },
@@ -24,7 +26,7 @@ const sections = [
   { id: 'decision', title: 'Decision Guide' },
 ];
 
-const sectionComponents: Record<string, React.FC> = {
+const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   overview: Overview,
   architecture: Architecture,
   instances: InstanceSupport,
@@ -49,7 +51,9 @@ export function App() {
       activeSection={activeSection}
       onSectionChange={setActiveSection}
     >
-      <SectionComponent />
+      <Suspense fallback={<Spinner size="large" />}>
+        <SectionComponent />
+      </Suspense>
     </DeepDiveLayout>
   );
 }
