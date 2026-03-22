@@ -164,6 +164,17 @@ export function DecisionGuide() {
             of <code>NCCL_ALGO</code> and <code>NCCL_PROTO</code>. Always prefer the tuner
             over manual env vars.
           </Box>
+          <Box variant="p">
+            <strong>Three independent layers:</strong> (1) <strong>NCCL topology graph</strong> —
+            intra-node, from XML or sysfs auto-detect. (2) <strong>aws-ofi-nccl platform
+            detection</strong> — instance-type matching, NIC reordering. (3) <strong>EC2{' '}
+            <code>DescribeInstanceTopology</code></strong> — inter-node physical hierarchy
+            (3-4 layers of hashed network node IDs). These layers don&apos;t communicate with
+            each other. The optimization opportunity is assembling them: use{' '}
+            <code>DescribeInstanceTopology</code> to group instances by physical proximity,
+            assign NCCL ranks so that communicating pairs are on the same network node, and
+            let the tuner handle algorithm selection.
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -225,6 +236,36 @@ export function DecisionGuide() {
             group, query the Spot Placement Score to estimate likelihood of getting and
             keeping your desired instance count. Low scores = high interruption risk.
           </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container header={<Header variant="h2">Capacity Planning: Blocks vs ODCRs</Header>}>
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>Capacity Blocks</strong> are the ONLY guaranteed capacity path for P5/P5e/Trn2
+            at cluster scale. Auto-placed into UltraClusters (no manual placement group needed).
+            Up to 64 instances (512 GPUs). Fixed upfront pricing, no cancellation, end times
+            fixed at 11:30 AM UTC.
+          </Box>
+          <Box variant="p">
+            <strong>ODCRs:</strong> open-ended duration but don&apos;t clearly support P-family.
+            Cluster placement group assignment is <strong>immutable after creation</strong>.
+            Expanding capacity increases insufficient-capacity risk.
+          </Box>
+          <Alert type="warning">
+            <strong>Critical pricing gotcha:</strong> Capacity Block prices went UP ~15%
+            (January 2026) while On-Demand GPU prices went DOWN ~45%. The reductions
+            do NOT apply to Capacity Blocks.
+          </Alert>
+          <Box variant="p">
+            <strong>Decision rules:</strong>
+          </Box>
+          <ul>
+            <li><strong>Defined training burst (days-weeks)</strong> → Capacity Blocks</li>
+            <li><strong>Open-ended production inference</strong> → ODCR + Savings Plan</li>
+            <li><strong>Cost-sensitive experimentation</strong> → Spot with checkpointing</li>
+            <li><strong>1-3 year steady state</strong> → Savings Plans (no capacity guarantee)</li>
+          </ul>
         </SpaceBetween>
       </Container>
 

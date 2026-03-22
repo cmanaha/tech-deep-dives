@@ -123,6 +123,17 @@ export function Pricing() {
             </Box>
           </div>
         </ColumnLayout>
+        <div>
+          <Box variant="h3">Capacity Blocks for ML</Box>
+          <Box variant="p">
+            The only guaranteed capacity path for P5/P5e/Trn2 at scale.
+            Fixed upfront pricing for a defined window (days to months, up to 6 months).
+            Auto-placed into UltraClusters — no manual placement group needed.
+            Prices increased ~15% in January 2026 while On-Demand prices decreased.
+            No cancellation. End times fixed at 11:30 AM UTC.
+            Book up to 8 weeks in advance. 1-64 instances per block.
+          </Box>
+        </div>
       </Container>
     </SpaceBetween>
   );

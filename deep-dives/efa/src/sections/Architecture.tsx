@@ -173,6 +173,13 @@ export function Architecture() {
                 feasible and impossible memory overhead.
               </Box>
               <Box variant="p">
+                <strong>NCCL does NOT call the EC2 topology API.</strong> NCCL&apos;s topology graph
+                covers intra-node only (PCI, NVLink, NUMA via XML or sysfs). Inter-node topology
+                (which instances are physically close) is consumed by the <strong>scheduler
+                layer</strong> (Slurm, torchrun, MPI hostfile generators) via{' '}
+                <code>DescribeInstanceTopology</code>.
+              </Box>
+              <Box variant="p">
                 <strong>SRD beyond EFA:</strong> SRD has expanded well beyond EFA. All
                 EBS io2 volumes use SRD for storage traffic. ENA (Elastic Network Adapter, standard networking) also
                 supports SRD via the <code>EnaSrdSpecification</code> API — enabling

@@ -43,6 +43,7 @@ Each deep dive directory contains:
 - **Every claim citable** — If it can't be traced to a source, it doesn't go in the app.
 - **Experiment verification** — When we test something ourselves, log the experiment (inputs, outputs, configs) in `research/`.
 - **IaC for all cloud resources** — Never leave resources running. Every experiment has teardown built in.
+- **Freshness verification** — See ADR-002. Claims age; code and experiments don't. Tier 0 (our experiments) > Tier 1 (official docs) > Tier 2 (blogs) > Tier 3 (analysis).
 - **No co-author tags** in commits.
 
 ## Tech Stack
@@ -58,8 +59,15 @@ Each deep dive directory contains:
 - **Visual-first**: Prefer diagrams, animations, and interactive elements over walls of text.
 - **Comparative**: Always show alternatives and trade-offs, not just the happy path.
 
-## Claude Workflow
-- Run research agents in parallel for speed
-- Use doc-researcher for authoritative source verification
-- Build incrementally — scaffold → content → visuals → polish
-- Verify builds pass before committing
+## Iteration Flywheel (ADR-003)
+RESEARCH → DRAFT → DEEP RESEARCH → INTEGRATE → BUILD CHECK → AUDIT → FIX → RE-AUDIT → CLOSE
+
+- Content work first: research, draft, deep research, integrate — get the content right
+- Quality gate last: audit-fix-audit is the pre-commit gate (like tests before push)
+- Audit: parallel agents score against Open Brain principles + research accuracy
+- Fix: targeted edits from audit findings only (not speculative improvement)
+- Re-audit: verify fixes on CURRENT code (dispatch AFTER saves, not before)
+- Close: re-audit passes, commit, push, deploy — see checklist in ADR-003
+- Scope control: fetch budgets, "research only" instructions, Carlos drives topics, ADRs are settled
+- Git operations: always main context (not subagents)
+- Anti-pattern: never fabricate numbers — every quantitative claim needs inline citation

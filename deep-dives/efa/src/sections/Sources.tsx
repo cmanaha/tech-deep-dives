@@ -16,9 +16,15 @@ const sources: Source[] = [
   { id: 20, title: 'AWS Neuron Training FAQ', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/faq/training/neuron-training.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 21, title: 'SageMaker Data Parallel Library', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/data-parallel-intro.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 22, title: 'SageMaker Expert Parallelism', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/model-parallel-core-features-v2-expert-parallelism.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 29, title: 'EC2 DescribeInstanceTopology API Reference', url: 'https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstanceTopology.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 30, title: 'EC2 Capacity Blocks for ML', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 31, title: 'EC2 On-Demand Capacity Reservations', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   // Tier 1 — Source code
   { id: 17, title: 'aws/aws-ofi-nccl GitHub README', url: 'https://github.com/aws/aws-ofi-nccl/blob/master/README.md', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
   { id: 18, title: 'aws/aws-ofi-nccl Releases', url: 'https://github.com/aws/aws-ofi-nccl/releases', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
+  { id: 32, title: 'NVIDIA/nccl source code (search.cc)', url: 'https://github.com/NVIDIA/nccl/blob/master/src/search.cc', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
+  { id: 33, title: 'aws/aws-ofi-nccl tuner source (nccl_ofi_tuner.cpp)', url: 'https://github.com/aws/aws-ofi-nccl/blob/master/tuner/nccl_ofi_tuner.cpp', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
+  { id: 34, title: 'aws/aws-ofi-nccl topology XML files', url: 'https://github.com/aws/aws-ofi-nccl/tree/master/topology', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
   // Tier 2 — AWS product pages, blogs, announcements
   { id: 8, title: 'Amazon EC2 P5 Instance Types', url: 'https://aws.amazon.com/ec2/instance-types/p5/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
   { id: 9, title: 'Amazon EC2 Trn2 Instance Types', url: 'https://aws.amazon.com/ec2/instance-types/trn2/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
@@ -113,6 +119,14 @@ const factChecks: FactCheckItem[] = [
   { claim: '30-40% better price-performance on Trn2 vs P5e at scale', section: 'Decision Guide', sourceId: 9 },
   { claim: 'SMDDP AllGather reduces GPU SM usage from 24 to under 9', section: 'Decision Guide', sourceId: 21 },
 
+  // NCCL topology & capacity planning claims
+  { claim: 'NCCL does not call EC2 topology API — topology graph is intra-node only', section: 'Architecture & SRD Protocol', sourceId: 32 },
+  { claim: 'P5/P5en have no topology XML — plugin uses sort_rails() instead', section: 'AI/ML Training', sourceId: 34 },
+  { claim: 'Setting NCCL_ALGO or NCCL_PROTO env vars disables the tuner entirely', section: 'AI/ML Training', sourceId: 33 },
+  { claim: 'Capacity Block prices increased ~15% in January 2026', section: 'Decision Guide', sourceId: 30 },
+  { claim: 'Capacity Blocks auto-place into UltraClusters', section: 'Decision Guide', sourceId: 30 },
+  { claim: 'ODCR cluster placement group assignment is immutable after creation', section: 'Decision Guide', sourceId: 31 },
+
   // EKS & Containers section
   { claim: 'VPC CNI v1.7.10+ for multi-EFA, v1.18.5+ for EFA-only', section: 'EKS & Containers', sourceId: 7 },
   { claim: 'EC2 instances with EFA pre-allocate 5,128 2MiB huge pages', section: 'EKS & Containers', sourceId: 7 },
@@ -164,6 +178,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'RCCL', fullForm: 'ROCm Communication Collectives Library', description: 'AMD equivalent of NCCL for ROCm GPU collective communications' },
   { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'AWS mechanism to reserve EC2 capacity in a specific AZ without long-term commitment' },
   { acronym: 'MSI-X', fullForm: 'Message Signaled Interrupts Extended', description: 'PCIe interrupt mechanism supporting per-queue interrupts for high-performance I/O' },
+  { acronym: 'NCI', fullForm: 'Network Card Index', description: 'Identifier for a specific network card on a multi-NIC EC2 instance' },
 ];
 
 export function Sources() {

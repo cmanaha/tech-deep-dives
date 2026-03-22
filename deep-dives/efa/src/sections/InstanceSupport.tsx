@@ -219,6 +219,12 @@ export function InstanceSupport() {
   --output text | sort`}
         </Box>
       </Container>
+
+      <Alert type="warning">
+        <strong>P6e-GB200 NCI (Network Card Index) bandwidth sharing:</strong> Network card index
+        pairs ([1,2], [3,4], etc.) share physical NIC hardware. Saturating one NCI reduces
+        bandwidth available to its partner. This is not visible from the headline 1,600 Gbps figure.
+      </Alert>
     </SpaceBetween>
   );
 }

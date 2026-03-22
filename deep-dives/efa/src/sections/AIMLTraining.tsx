@@ -212,6 +212,27 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
                 before committing hardware resources. This matters for large clusters where
                 thousands of endpoints are allocated but only a subset are used.
               </Box>
+              <Box variant="p">
+                <strong>NCCL topology XML schema:</strong> The XML describes a tree of{' '}
+                <code>&lt;system&gt;</code> → <code>&lt;cpu&gt;</code> → <code>&lt;pci&gt;</code> →{' '}
+                <code>&lt;gpu&gt;</code>/<code>&lt;nic&gt;</code> nodes. Each NIC is placed under
+                the same PCIe switch as its paired GPUs — this is how NCCL knows which NIC to use
+                for each GPU&apos;s inter-node traffic. <code>aws-ofi-nccl</code> ships XML files
+                for P4d and P4de only. P5/P5en have NO topology XML — the plugin uses{' '}
+                <code>sort_rails()</code> to software-reorder NIC assignments instead.
+                (Source: <code>aws/aws-ofi-nccl topology/</code> directory)
+              </Box>
+              <Box variant="p">
+                <strong>Algorithm selection:</strong> NCCL&apos;s <code>cmpScore()</code> in{' '}
+                <code>search.cc</code> prioritizes: interBw &gt; interPciBw &gt; interNhops &gt;
+                intraBw &gt; intraNhops. The <code>aws-ofi-nccl</code> tuner does NOT set{' '}
+                <code>NCCL_ALGO</code>/<code>NCCL_PROTO</code> directly — it modifies{' '}
+                <code>collCostTable[][]</code> (the algorithm×protocol cost matrix), making
+                preferred combinations cheaper. Setting <code>NCCL_ALGO</code> or{' '}
+                <code>NCCL_PROTO</code> env vars <strong>disables the tuner entirely</strong>.
+                (Source: NVIDIA/nccl <code>search.cc</code>, aws-ofi-nccl{' '}
+                <code>tuner/nccl_ofi_tuner.cpp</code>)
+              </Box>
             </SpaceBetween>
           </ExpandableSection>
 
