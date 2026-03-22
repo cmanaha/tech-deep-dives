@@ -1,0 +1,21 @@
+{
+  "name": "tech-deep-dives",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Interactive technical deep-dives powered by Cloudscape",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter './deep-dives/*' run dev",
+    "build": "pnpm --filter './deep-dives/*' run build",
+    "lint": "pnpm --filter './deep-dives/*' run lint",
+    "typecheck": "pnpm --filter './deep-dives/*' run typecheck"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
