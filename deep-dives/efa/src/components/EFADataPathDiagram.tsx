@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import {
   ReactFlow,
   Node,
@@ -22,12 +22,6 @@ const nodeStyle = (color: string, borderColor: string) => ({
   minWidth: '140px',
   textAlign: 'center' as const,
 });
-
-const labelStyle = {
-  fontSize: '11px',
-  fontWeight: 600,
-  fill: '#687078',
-};
 
 // Traditional TCP/IP path (left column)
 const tcpNodes: Node[] = [
