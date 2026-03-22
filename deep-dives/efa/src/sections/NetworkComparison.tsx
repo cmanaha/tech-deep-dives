@@ -39,7 +39,7 @@ const comparisonData: ComparisonRow[] = [
   },
   {
     feature: 'Bandwidth (max)',
-    efa: '3,200 Gbps (P5)',
+    efa: '6,400 Gbps (P6-B300)',
     tcp: '200 Gbps (max ENI)',
     rdma: '400 Gbps (NDR)',
     nvlink: '900 GB/s (NVSwitch)',

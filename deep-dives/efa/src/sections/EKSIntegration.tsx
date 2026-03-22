@@ -65,10 +65,13 @@ spec:
     resources:
       requests:
         nvidia.com/gpu: 8
-        vpc.amazonaws.com/efa: 4    # Request 4 EFA interfaces
+        vpc.amazonaws.com/efa: 32   # Request all EFA interfaces (p5)
+        hugepages-2Mi: 5120Mi       # Required for EFA on EKS
+        memory: 32000Mi
       limits:
         nvidia.com/gpu: 8
-        vpc.amazonaws.com/efa: 4
+        vpc.amazonaws.com/efa: 32
+        hugepages-2Mi: 5120Mi
     env:
     - name: FI_PROVIDER
       value: "efa"
@@ -86,6 +89,27 @@ spec:
       sizeLimit: "64Gi"     # Shared memory for NCCL`}
           </Box>
         </ExpandableSection>
+      </Container>
+
+      <Container header={<Header variant="h2">Version Requirements</Header>}>
+        <SpaceBetween size="s">
+          <Box variant="p">
+            <strong>VPC CNI:</strong> v1.7.10+ for multi-EFA (P4d, P5). v1.18.5+ for EFA-only interfaces.
+          </Box>
+          <Box variant="p">
+            <strong>eksctl:</strong> 0.215.0+ required.
+          </Box>
+          <Box variant="p">
+            <strong>EFA Device Plugin:</strong> v0.5.6+ for P6-B200 instances.
+          </Box>
+          <Box variant="p">
+            <strong>Hugepages:</strong> EC2 instances with EFA pre-allocate 5,128 2MiB huge pages.
+            Pods must request <code>hugepages-2Mi: 5120Mi</code> to use them.
+          </Box>
+          <Box variant="p">
+            <strong>Bottlerocket:</strong> v1.28.0+ supports EFA. Configure <code>vm.nr_hugepages</code> via sysctl.
+          </Box>
+        </SpaceBetween>
       </Container>
 
       <Alert type="warning">
