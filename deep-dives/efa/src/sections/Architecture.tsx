@@ -57,7 +57,7 @@ export function Architecture() {
       <Container header={<Header variant="h2">Network Topology: Intra-Node vs Inter-Node</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            The critical architecture decision for distributed training: <strong>NVLink/NVSwitch
+            The critical architecture decision for distributed training: <strong>NVLink (NVIDIA&apos;s GPU interconnect)/NVSwitch (NVIDIA&apos;s GPU switch fabric)
             handles intra-node</strong> (900 GB/s bisection bandwidth), while <strong>EFA handles
             inter-node</strong> (up to 6,400 Gbps). Topology-aware rank assignment maps tensor
             parallelism to NVLink and data/pipeline parallelism to EFA.
@@ -125,7 +125,7 @@ export function Architecture() {
               <Box variant="p">
                 <strong>Multi-path routing (64 parallel paths):</strong> SRD sprays packets
                 across up to 64 paths chosen from hundreds available in AWS datacenters.
-                Unlike ECMP with TCP (which pins flows to paths via 5-tuple hash), SRD
+                Unlike ECMP (Equal-Cost Multi-Path) with TCP (which pins flows to paths via 5-tuple hash), SRD
                 does packet-level spraying by manipulating UDP source ports in the
                 encapsulation header. Continuously monitors RTT on each path at
                 sub-millisecond resolution and dynamically avoids congested routes.
@@ -149,7 +149,7 @@ export function Architecture() {
               </Box>
               <Box variant="p">
                 <strong>Hardware-based reliability:</strong> Reliability is implemented in
-                the Nitro DPU hardware, providing ~100x faster retransmission than the
+                the Nitro DPU (Data Processing Unit) hardware, providing ~100x faster retransmission than the
                 RFC 6298 minimum of 200ms. This keeps the CPU free for application work.
               </Box>
               <Box variant="p">
@@ -167,14 +167,14 @@ export function Architecture() {
                 protocols based on message size thresholds.
               </Box>
               <Box variant="p">
-                <strong>QP scalability:</strong> SRD uses unconnected (datagram) QPs. A cluster
+                <strong>QP (Queue Pair) scalability:</strong> SRD uses unconnected (datagram) QPs. A cluster
                 of N nodes with p processes each needs only N×p QPs total — compared to
                 N×p² for RC (connected) QPs. At 1,000+ nodes this is the difference between
                 feasible and impossible memory overhead.
               </Box>
               <Box variant="p">
                 <strong>SRD beyond EFA:</strong> SRD has expanded well beyond EFA. All
-                EBS io2 volumes use SRD for storage traffic. ENA (standard networking) also
+                EBS io2 volumes use SRD for storage traffic. ENA (Elastic Network Adapter, standard networking) also
                 supports SRD via the <code>EnaSrdSpecification</code> API — enabling
                 multi-path benefits for non-EFA workloads.
               </Box>
@@ -206,7 +206,7 @@ export function Architecture() {
                 <div>
                   <Box variant="h3">mem_bar (LLQ descriptors)</Box>
                   <Box variant="p">
-                    Write-combined mapping for Low-Latency Queue descriptors. The first
+                    Write-combined mapping for LLQ (Low-Latency Queue) descriptors. The first
                     N bytes of each WQE (Work Queue Entry) are written directly to the NIC
                     via MMIO — skipping the DMA read the NIC would otherwise need. This is
                     the &quot;low-latency&quot; path for small messages.
@@ -231,7 +231,7 @@ export function Architecture() {
                 search for the verb table and note the NULL entries.)
               </Alert>
               <Box variant="p">
-                <strong>Phase-bit lockless CQ polling:</strong> Completion Queue entries use a
+                <strong>Phase-bit lockless CQ (Completion Queue) polling:</strong> Completion Queue entries use a
                 phase bit toggled by hardware. User-space polls by reading the phase bit — if
                 it matches the expected phase, a new completion is ready. No locks, no syscalls,
                 no atomic operations. This is how <code>poll_cq</code> achieves sub-microsecond
@@ -239,7 +239,7 @@ export function Architecture() {
               </Box>
               <Box variant="p">
                 <strong>Security model:</strong> Hardware enforces isolation via two mechanisms:
-                (1) <strong>Protection Domains</strong> with hardware-validated lkey/rkey on
+                (1) <strong>PDs (Protection Domains)</strong> with hardware-validated lkey/rkey on
                 every memory access — a process cannot access another process&apos;s registered
                 memory regions; (2) <strong>UARNs</strong> (User Access Region Numbers) that
                 scope doorbells to individual processes — a process can only ring its own
@@ -265,7 +265,7 @@ export function Architecture() {
             <Box variant="p">
               OS-bypass only — no IP address assigned. Cannot be used on the primary
               network card (card 0). Reduces overhead when you don&apos;t need IP
-              networking on secondary interfaces. Requires VPC CNI v1.18.5+ on EKS.
+              networking on secondary interfaces. Requires VPC CNI (Container Network Interface) v1.18.5+ on EKS.
             </Box>
           </div>
         </ColumnLayout>
@@ -279,7 +279,7 @@ export function Architecture() {
               <Box variant="p">
                 NCCL → <code>aws-ofi-nccl</code> plugin → libfabric → EFA hardware.
                 The plugin translates NCCL&apos;s transport APIs to libfabric&apos;s
-                connection-less reliable interface. Also supports AMD RCCL.
+                connection-less reliable interface. Also supports AMD RCCL (ROCm Communication Collectives Library).
               </Box>
             </div>
             <div>

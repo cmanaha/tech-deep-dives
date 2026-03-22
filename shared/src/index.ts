@@ -5,4 +5,6 @@ export { SourcesAppendix } from './components/SourcesAppendix';
 export type { Source, SourceTier, SourceType, FactCheckItem } from './components/SourcesAppendix';
 export { PricingTable } from './components/PricingTable';
 export { ComparisonMatrix } from './components/ComparisonMatrix';
+export { Glossary } from './components/Glossary';
+export type { GlossaryEntry, GlossaryProps } from './components/Glossary';
 export { useTheme } from './hooks/useTheme';

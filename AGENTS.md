@@ -97,6 +97,13 @@ Import from `@tech-deep-dives/shared`:
 - **Right complexity level:** Technical lead audience — skip basics, focus on architecture decisions, trade-offs, pricing implications, and when-to-use guidance.
 - **Fact-checking & sources:** Every quantitative claim (bandwidth numbers, latency figures, percentages, pricing) must have an inline citation linking to the Sources appendix. Every deep dive app includes a Sources appendix section as the last navigation item. Sources are graded by authority: Tier 1 (official AWS docs, API reference, source code), Tier 2 (AWS blog posts, re:Invent talks), Tier 3 (third-party technical analysis, academic papers), Tier 4 (blog posts, tutorials — inspiration only, never cited as fact). Numbers without citations are unverified claims — flag them visually.
 
+## Acronym Standard
+- First occurrence of every acronym in the sequential reading order must expand to its full form: "EFA (Elastic Fabric Adapter)"
+- After first expansion, the acronym alone is fine
+- Every deep dive includes a Glossary in the Sources appendix section listing all acronyms used
+- Niche/domain-specific acronyms always expand: SRD, NCCL, RDMA, MPI, NAPI, DIM, GRO, LRO, QP, CQ, AH, MR, PD, UARN, WQE, etc.
+- Common computing acronyms (CPU, GPU, RAM, API, HTTP) do not need expansion
+
 ## Settled Decisions (Do Not Re-Debate)
 
 - **ADR-001:** Cloudscape + Vite + React + pnpm monorepo. See `deep-dives/efa/docs/adr/ADR-001-tech-stack.md`. The MDX/static site alternative was evaluated and rejected.

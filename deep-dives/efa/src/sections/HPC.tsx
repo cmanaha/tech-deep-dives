@@ -29,7 +29,7 @@ export function HPC() {
           <div>
             <Box variant="h3">Tightly Coupled (EFA critical)</Box>
             <ul>
-              <li><strong>Weather/Climate:</strong> WRF, MPAS, IFS — domain decomposition, halo exchange every timestep</li>
+              <li><strong>Weather/Climate:</strong> WRF (Weather Research and Forecasting), MPAS, IFS — domain decomposition, halo exchange every timestep</li>
               <li><strong>CFD:</strong> OpenFOAM, ANSYS Fluent — mesh partitioning, neighbor communication</li>
               <li><strong>Molecular Dynamics:</strong> GROMACS, LAMMPS, NAMD — particle domain decomposition</li>
               <li><strong>Seismic Processing:</strong> Finite-difference wave propagation</li>
@@ -90,7 +90,7 @@ export function HPC() {
             <div>
               <Box variant="h3">Open MPI</Box>
               <Box variant="p">
-                Use <code>--mca mtl ofi</code> to select the OFI (libfabric) layer.
+                Use <code>--mca mtl ofi</code> to select the OFI (OpenFabrics Interfaces, libfabric) layer.
                 EFA is selected automatically when the EFA provider is available.
               </Box>
             </div>

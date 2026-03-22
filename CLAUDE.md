@@ -31,6 +31,13 @@ Each deep dive directory contains:
 - Sources are graded by authority: Tier 1 (official AWS docs, API reference, source code), Tier 2 (AWS blog posts, re:Invent talks), Tier 3 (third-party technical analysis, academic papers), Tier 4 (blog posts, tutorials — inspiration only, never cited as fact)
 - Numbers without citations are unverified claims — flag them visually
 
+## Acronym Standard
+- First occurrence of every acronym in the sequential reading order must expand to its full form: "EFA (Elastic Fabric Adapter)"
+- After first expansion, the acronym alone is fine
+- Every deep dive includes a Glossary in the Sources appendix section listing all acronyms used
+- Niche/domain-specific acronyms always expand: SRD, NCCL, RDMA, MPI, NAPI, DIM, GRO, LRO, QP, CQ, AH, MR, PD, UARN, WQE, etc.
+- Common computing acronyms (CPU, GPU, RAM, API, HTTP) do not need expansion
+
 ## Quality Rules
 - **Authoritative sources only** — AWS docs, official repos, peer-reviewed papers. Blog posts for inspiration only, never as source of truth.
 - **Every claim citable** — If it can't be traced to a source, it doesn't go in the app.

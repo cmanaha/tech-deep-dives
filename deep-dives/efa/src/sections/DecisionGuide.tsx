@@ -147,7 +147,7 @@ export function DecisionGuide() {
           <Box variant="p">
             <strong>Why it matters:</strong> Getting rank-to-GPU-to-NIC mapping wrong causes
             2-3x performance degradation. NCCL needs to know which GPU is physically closest
-            to which EFA interface to minimize PCIe hops.
+            to which EFA interface to minimize PCIe (Peripheral Component Interconnect Express) hops.
           </Box>
           <Box variant="p">
             <strong>How it works:</strong> <code>NCCL_TOPO_FILE</code> tells NCCL the physical
@@ -214,7 +214,7 @@ export function DecisionGuide() {
               <ul>
                 <li>Multi-day training runs (any interruption is expensive)</li>
                 <li>Tightly-coupled MPI (all ranks must be present)</li>
-                <li>Production inference (SLA requirements)</li>
+                <li>Production inference (SLA (Service Level Agreement) requirements)</li>
                 <li><strong>Capacity Blocks:</strong> time-limited GPU reservations for
                 training bursts — guaranteed capacity without long-term commitment</li>
               </ul>
@@ -271,7 +271,7 @@ export function DecisionGuide() {
           <Alert type="info">
             <strong>For startups on SageMaker:</strong> SageMaker Training automatically
             configures EFA, placement groups, and NCCL when you select EFA-capable instances.
-            The SMDDP library optimizes AllGather with a mesh topology that reduces GPU SM
+            The SMDDP (SageMaker Distributed Data Parallel) library optimizes AllGather with a mesh topology that reduces GPU SM
             usage from 24 to under 9 — freeing compute for your model.
           </Alert>
         </SpaceBetween>

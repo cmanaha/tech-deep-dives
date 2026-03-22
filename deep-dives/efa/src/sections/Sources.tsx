@@ -1,6 +1,7 @@
 import React from 'react';
-import { SourcesAppendix } from '@tech-deep-dives/shared';
-import type { Source, FactCheckItem } from '@tech-deep-dives/shared';
+import SpaceBetween from '@cloudscape-design/components/space-between';
+import { SourcesAppendix, Glossary } from '@tech-deep-dives/shared';
+import type { Source, FactCheckItem, GlossaryEntry } from '@tech-deep-dives/shared';
 
 const sources: Source[] = [
   // Tier 1 — Official AWS docs
@@ -118,6 +119,58 @@ const factChecks: FactCheckItem[] = [
   { claim: 'EFA Device Plugin v0.5.6+ for P6-B200', section: 'EKS & Containers', sourceId: 7 },
 ];
 
+const glossary: GlossaryEntry[] = [
+  { acronym: 'EFA', fullForm: 'Elastic Fabric Adapter', description: 'AWS network interface enabling OS-bypass networking for EC2 instances' },
+  { acronym: 'SRD', fullForm: 'Scalable Reliable Datagram', description: 'AWS proprietary transport protocol for datacenter networks, purpose-built for lossy fabrics' },
+  { acronym: 'NCCL', fullForm: 'NVIDIA Collective Communications Library', description: 'Standard library for GPU-to-GPU collective operations in distributed training' },
+  { acronym: 'RDMA', fullForm: 'Remote Direct Memory Access', description: 'Technology allowing direct memory access between computers without OS involvement' },
+  { acronym: 'MPI', fullForm: 'Message Passing Interface', description: 'Standard communication protocol for parallel computing in HPC workloads' },
+  { acronym: 'HPC', fullForm: 'High-Performance Computing', description: 'Computing paradigm for complex simulations and scientific workloads' },
+  { acronym: 'ENI', fullForm: 'Elastic Network Interface', description: 'Virtual network interface in AWS VPC that can be attached to EC2 instances' },
+  { acronym: 'ENA', fullForm: 'Elastic Network Adapter', description: 'AWS standard high-performance network interface for EC2 (non-OS-bypass)' },
+  { acronym: 'RoCE', fullForm: 'RDMA over Converged Ethernet', description: 'Network protocol enabling RDMA over Ethernet; requires lossless fabric with PFC' },
+  { acronym: 'NVLink', fullForm: 'NVIDIA GPU Interconnect', description: 'NVIDIA proprietary high-bandwidth interconnect for GPU-to-GPU communication within a node' },
+  { acronym: 'NVSwitch', fullForm: 'NVIDIA GPU Switch Fabric', description: 'NVIDIA switch chip enabling all-to-all GPU communication within a node' },
+  { acronym: 'PFC', fullForm: 'Priority Flow Control', description: 'Ethernet flow control mechanism that can pause traffic; required by RoCE, can cause deadlocks' },
+  { acronym: 'ECMP', fullForm: 'Equal-Cost Multi-Path', description: 'Routing strategy distributing traffic across multiple equal-cost paths (flow-level, not packet-level)' },
+  { acronym: 'DPU', fullForm: 'Data Processing Unit', description: 'Specialized processor offloading network, storage, and security functions from the host CPU' },
+  { acronym: 'QP', fullForm: 'Queue Pair', description: 'Fundamental communication endpoint in RDMA/EFA consisting of a send queue and receive queue' },
+  { acronym: 'CQ', fullForm: 'Completion Queue', description: 'Queue where hardware posts completion notifications for finished send/receive operations' },
+  { acronym: 'PD', fullForm: 'Protection Domain', description: 'Security boundary in RDMA/EFA isolating memory regions and queue pairs between processes' },
+  { acronym: 'WQE', fullForm: 'Work Queue Entry', description: 'Individual work item posted to a send or receive queue for the NIC to process' },
+  { acronym: 'LLQ', fullForm: 'Low-Latency Queue', description: 'EFA mechanism writing descriptors directly to NIC via MMIO, skipping DMA for small messages' },
+  { acronym: 'UARN', fullForm: 'User Access Region Number', description: 'Hardware-enforced per-process doorbell scoping mechanism in EFA' },
+  { acronym: 'BAR', fullForm: 'Base Address Register', description: 'PCIe register defining memory-mapped I/O regions for device communication' },
+  { acronym: 'DDP', fullForm: 'Distributed Data Parallel', description: 'PyTorch strategy replicating model across GPUs and synchronizing gradients via allreduce' },
+  { acronym: 'FSDP', fullForm: 'Fully Sharded Data Parallel', description: 'PyTorch strategy sharding model parameters, gradients, and optimizer states across GPUs' },
+  { acronym: 'TP', fullForm: 'Tensor Parallelism', description: 'Splitting individual layers across GPUs; requires all-to-all communication every forward/backward pass' },
+  { acronym: 'PP', fullForm: 'Pipeline Parallelism', description: 'Splitting model layers sequentially across GPUs; requires point-to-point activation transfers' },
+  { acronym: 'DP', fullForm: 'Data Parallelism', description: 'Each GPU processes different data with full model copy; synchronizes via allreduce' },
+  { acronym: 'MoE', fullForm: 'Mixture of Experts', description: 'Architecture routing tokens to different expert sub-networks; uses all-to-all communication' },
+  { acronym: 'GDR', fullForm: 'GPUDirect RDMA', description: 'Technology enabling direct data transfer between GPU memory and network adapter' },
+  { acronym: 'CFD', fullForm: 'Computational Fluid Dynamics', description: 'Simulation of fluid flow using numerical methods; common tightly-coupled HPC workload' },
+  { acronym: 'WRF', fullForm: 'Weather Research and Forecasting', description: 'Mesoscale numerical weather prediction system used in atmospheric research' },
+  { acronym: 'AMI', fullForm: 'Amazon Machine Image', description: 'Template for EC2 instance root volumes containing OS, application server, and applications' },
+  { acronym: 'NIXL', fullForm: 'NVIDIA Inference Xfer Library', description: 'Library for multi-node inference transfer patterns including KV-cache migration (2025+)' },
+  { acronym: 'KV', fullForm: 'Key-Value', description: 'As in KV-cache — stores computed attention keys and values for autoregressive inference' },
+  { acronym: 'CC', fullForm: 'Collective Compute', description: 'Dedicated engine on Trainium chips orchestrating collective operations independently from NeuronCores' },
+  { acronym: 'RDM', fullForm: 'Reliable Datagram Message', description: 'Libfabric endpoint type adding software reliability and message tagging over unreliable datagrams' },
+  { acronym: 'DGRAM', fullForm: 'Datagram', description: 'Raw unreliable datagram endpoint type in libfabric; used directly by some MPI implementations' },
+  { acronym: 'PCIe', fullForm: 'Peripheral Component Interconnect Express', description: 'High-speed serial bus standard connecting CPUs, GPUs, NICs, and other peripherals' },
+  { acronym: 'SLA', fullForm: 'Service Level Agreement', description: 'Contractual commitment defining expected service availability and performance' },
+  { acronym: 'SMDDP', fullForm: 'SageMaker Distributed Data Parallel', description: 'AWS library optimizing AllGather with mesh topology for reduced GPU SM usage' },
+  { acronym: 'CNI', fullForm: 'Container Network Interface', description: 'Plugin specification for configuring network interfaces in Linux containers (used in Kubernetes)' },
+  { acronym: 'OFI', fullForm: 'OpenFabrics Interfaces', description: 'Framework (libfabric) providing a portable API for high-performance fabric services' },
+  { acronym: 'RCCL', fullForm: 'ROCm Communication Collectives Library', description: 'AMD equivalent of NCCL for ROCm GPU collective communications' },
+  { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'AWS mechanism to reserve EC2 capacity in a specific AZ without long-term commitment' },
+  { acronym: 'MSI-X', fullForm: 'Message Signaled Interrupts Extended', description: 'PCIe interrupt mechanism supporting per-queue interrupts for high-performance I/O' },
+];
+
 export function Sources() {
-  return <SourcesAppendix sources={sources} factChecks={factChecks} />;
+  return (
+    <SpaceBetween size="l">
+      <SourcesAppendix sources={sources} factChecks={factChecks} />
+      <Glossary entries={glossary} />
+    </SpaceBetween>
+  );
 }

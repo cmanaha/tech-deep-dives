@@ -29,7 +29,7 @@ export function AIMLTraining() {
       <Container header={<Header variant="h2">Parallelism Strategies & EFA Impact</Header>}>
         <ColumnLayout columns={2} variant="text-grid">
           <div>
-            <Box variant="h3">Data Parallelism (DDP / FSDP)</Box>
+            <Box variant="h3">Data Parallelism (DDP (Distributed Data Parallel) / FSDP (Fully Sharded Data Parallel))</Box>
             <Box variant="p">
               Each node has a full model copy, processes different data, synchronizes gradients
               via <strong>allreduce</strong>. Communication volume per step =
@@ -55,14 +55,14 @@ export function AIMLTraining() {
             <Box variant="p">
               Tensor parallelism is latency-sensitive (many small messages).
               Pipeline parallelism is bandwidth-sensitive (large activation tensors).
-              EFA helps both: low latency for TP, high bandwidth for PP.
+              EFA helps both: low latency for TP (Tensor Parallelism), high bandwidth for PP (Pipeline Parallelism).
             </Box>
             <StatusIndicator type="success">
               EFA critical — especially for tensor parallelism across nodes
             </StatusIndicator>
           </div>
           <div>
-            <Box variant="h3">Expert Parallelism (MoE)</Box>
+            <Box variant="h3">Expert Parallelism (MoE (Mixture of Experts))</Box>
             <Box variant="p">
               Mixture-of-Experts models route tokens to different expert sub-networks.
               The <strong>all-to-all</strong> communication pattern is unique: each node
@@ -82,7 +82,7 @@ export function AIMLTraining() {
             <Box variant="h3">Hybrid Parallelism (3D/4D)</Box>
             <Box variant="p">
               Modern large model training combines all strategies. Common pattern:
-              TP within a node (NVLink), PP + DP across nodes (EFA).
+              TP within a node (NVLink), PP + DP (Data Parallelism) across nodes (EFA).
             </Box>
             <Box variant="p">
               The key architecture decision: <strong>TP stays intra-node</strong> (NVLink
@@ -116,7 +116,7 @@ export function AIMLTraining() {
               <Box variant="p">
                 <strong>3. aws-ofi-nccl plugin</strong> — Translates NCCL&apos;s transport operations
                 (send/recv on channels) into libfabric operations. Handles memory registration,
-                GDR (GPU Direct RDMA) when available.
+                GDR (GPUDirect RDMA) when available.
               </Box>
               <Box variant="p">
                 <strong>4. libfabric EFA provider</strong> — Maps libfabric operations to
@@ -163,7 +163,7 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
           <ExpandableSection headerText="Under the Hood: NCCL → libfabric → Hardware">
             <SpaceBetween size="s">
               <Box variant="p">
-                <strong>RDM vs DGRAM endpoints:</strong> NCCL uses RDM (Reliable Datagram Message)
+                <strong>RDM (Reliable Datagram Message) vs DGRAM (Datagram) endpoints:</strong> NCCL uses RDM
                 endpoints, not raw DGRAM. RDM adds software-layer reliability, message tagging,
                 and RMA (Remote Memory Access) emulation on top of EFA&apos;s unreliable datagram
                 hardware. Raw MPI can use DGRAM endpoints directly. The choice matters: RDM
@@ -230,7 +230,7 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
                 inter-GPU operations.
               </Alert>
               <Alert type="warning">
-                <strong>Disk space:</strong> CUDA toolkit requires 10-20 GiB beyond base AMI.
+                <strong>Disk space:</strong> CUDA toolkit requires 10-20 GiB beyond base AMI (Amazon Machine Image).
                 Allocate at minimum 30 GiB root volume or the EFA installer will fail silently.
               </Alert>
               <Alert type="info">
