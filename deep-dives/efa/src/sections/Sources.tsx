@@ -42,6 +42,12 @@ const sources: Source[] = [
   // Tier 3 — Third-party analysis, benchmarks, academic papers
   { id: 24, title: 'CFD Direct — OpenFOAM HPC with AWS EFA', url: 'https://cfd.direct/cloud/openfoam-hpc-aws-efa/', tier: 3, type: 'third-party-benchmark', accessDate: '2026-03-22' },
   { id: 25, title: 'Ernest Chiang — AWS SRD Protocol Deep Dive', url: 'https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/', tier: 3, type: 'third-party-analysis', accessDate: '2026-03-22' },
+  // NIXL sources
+  { id: 35, title: 'NVIDIA NIXL GitHub Repository', url: 'https://github.com/ai-dynamo/nixl', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
+  { id: 36, title: 'NIXL Architecture Documentation', url: 'https://github.com/ai-dynamo/nixl/blob/main/docs/architecture.md', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
+  { id: 37, title: 'NIXL libfabric Backend README', url: 'https://github.com/ai-dynamo/nixl/blob/main/src/plugins/xfer/libfabric/README.md', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
+  { id: 38, title: 'vLLM NixlConnector Source', url: 'https://github.com/vllm-project/vllm/blob/main/vllm/distributed/kv_transfer/kv_connector/nixl_connector.py', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
+  { id: 39, title: 'UCCL KV-Cache Transfer Benchmark (NIXL vs NCCL)', url: 'https://github.com/NVIDIA/uccl/tree/main/benchmark', tier: 3, type: 'third-party-benchmark', accessDate: '2026-03-22' },
 ];
 
 const factChecks: FactCheckItem[] = [
@@ -89,7 +95,12 @@ const factChecks: FactCheckItem[] = [
   // AI/ML Inference section
   { claim: '405B parameters at fp16 = ~810GB model size', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'P5 has 640GB total GPU memory (8x H100 80GB)', section: 'AI/ML Inference', sourceId: 8 },
-  { claim: 'NIXL requires libfabric 1.21.0+', section: 'AI/ML Inference', sourceId: 17 },
+  { claim: 'NIXL requires libfabric 1.21.0+', section: 'AI/ML Inference', sourceId: 37 },
+  { claim: 'NIXL outperforms NCCL by 30-50% at typical KV-cache sizes (256KB-1MB)', section: 'AI/ML Inference', sourceId: 39 },
+  { claim: 'NCCL launches a GPU kernel even for point-to-point send/recv', section: 'AI/ML Inference', sourceId: 36 },
+  { claim: 'EFA is the only validated libfabric provider for NIXL', section: 'AI/ML Inference', sourceId: 37 },
+  { claim: 'NIXL performs transfers with zero SM consumption (no GPU kernel launch)', section: 'AI/ML Inference', sourceId: 36 },
+  { claim: 'vLLM NixlConnector: prefiller as producer, decoder as consumer', section: 'AI/ML Inference', sourceId: 38 },
 
   // HPC section
   { claim: '98.4% parallel efficiency at 1,008 cores (28 c5n instances) for CFD', section: 'Traditional HPC', sourceId: 24 },
@@ -165,7 +176,8 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'CFD', fullForm: 'Computational Fluid Dynamics', description: 'Simulation of fluid flow using numerical methods; common tightly-coupled HPC workload' },
   { acronym: 'WRF', fullForm: 'Weather Research and Forecasting', description: 'Mesoscale numerical weather prediction system used in atmospheric research' },
   { acronym: 'AMI', fullForm: 'Amazon Machine Image', description: 'Template for EC2 instance root volumes containing OS, application server, and applications' },
-  { acronym: 'NIXL', fullForm: 'NVIDIA Inference Xfer Library', description: 'Library for multi-node inference transfer patterns including KV-cache migration (2025+)' },
+  { acronym: 'NIXL', fullForm: 'NVIDIA Inference Xfer Library', description: 'Library for multi-node inference transfer patterns including KV-cache migration and disaggregated prefill/decode. Uses libfabric over EFA. Zero GPU kernel launch overhead unlike NCCL (2025+)' },
+  { acronym: 'SM', fullForm: 'Streaming Multiprocessor', description: 'GPU compute unit containing CUDA cores; NIXL avoids consuming SMs during transfers unlike NCCL' },
   { acronym: 'KV', fullForm: 'Key-Value', description: 'As in KV-cache — stores computed attention keys and values for autoregressive inference' },
   { acronym: 'CC', fullForm: 'Collective Compute', description: 'Dedicated engine on Trainium chips orchestrating collective operations independently from NeuronCores' },
   { acronym: 'RDM', fullForm: 'Reliable Datagram Message', description: 'Libfabric endpoint type adding software reliability and message tagging over unreliable datagrams' },
@@ -179,6 +191,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'AWS mechanism to reserve EC2 capacity in a specific AZ without long-term commitment' },
   { acronym: 'MSI-X', fullForm: 'Message Signaled Interrupts Extended', description: 'PCIe interrupt mechanism supporting per-queue interrupts for high-performance I/O' },
   { acronym: 'NCI', fullForm: 'Network Card Index', description: 'Identifier for a specific network card on a multi-NIC EC2 instance' },
+  { acronym: 'UCCL', fullForm: 'Unified Collective Communication Library', description: 'NVIDIA library unifying collective and point-to-point communication; includes NIXL benchmarks for KV-cache transfers' },
 ];
 
 export function Sources() {

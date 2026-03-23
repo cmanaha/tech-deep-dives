@@ -206,7 +206,6 @@ export function InstanceSupport() {
           },
         ]}
         items={filtered}
-        sortingDisabled
         variant="full-page"
       />
 

@@ -69,7 +69,7 @@ export function Overview() {
               multiple instances. EFA reduces inter-node communication latency, directly
               improving token generation throughput and time-to-first-token.
             </Box>
-            <StatusIndicator type="info">Matters for multi-node inference only</StatusIndicator>
+            <StatusIndicator type="info">Matters for multi-node inference and disaggregated serving</StatusIndicator>
           </div>
         </ColumnLayout>
       </Container>

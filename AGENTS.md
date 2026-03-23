@@ -35,7 +35,7 @@ tech-deep-dives/
 
 - **Runtime:** React 18 + TypeScript (strict mode)
 - **UI:** Cloudscape Design System (AWS design tokens, dark mode, accessible)
-- **Diagrams:** React Flow (architecture), D3.js (custom visualizations)
+- **Diagrams:** React Flow (architecture diagrams)
 - **Build:** Vite 6 with `@vitejs/plugin-react`
 - **Package Manager:** pnpm 9 with workspaces
 - **Lint:** ESLint 9 + typescript-eslint

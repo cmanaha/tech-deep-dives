@@ -43,12 +43,12 @@ Each deep dive directory contains:
 - **Every claim citable** — If it can't be traced to a source, it doesn't go in the app.
 - **Experiment verification** — When we test something ourselves, log the experiment (inputs, outputs, configs) in `research/`.
 - **IaC for all cloud resources** — Never leave resources running. Every experiment has teardown built in.
-- **Freshness verification** — See ADR-002. Claims age; code and experiments don't. Tier 0 (our experiments) > Tier 1 (official docs) > Tier 2 (blogs) > Tier 3 (analysis).
+- **Freshness verification** — See ADR-002. Claims age; code and experiments don't. Tier 0 (our experiments) > Tier 1 (official docs/API/source code) > Tier 2 (AWS blogs/talks) > Tier 3 (third-party analysis/papers) > Tier 4 (tutorials — inspiration only).
 - **No co-author tags** in commits.
 
 ## Tech Stack
 - **Frontend**: Vite + React 18 + TypeScript + Cloudscape Design System
-- **Diagrams**: React Flow for architecture diagrams, D3.js for custom visualizations
+- **Diagrams**: React Flow for architecture diagrams
 - **Build**: pnpm workspaces
 - **CI**: GitHub Actions — lint, typecheck, build per deep-dive
 - **Deploy**: Static — GitHub Pages or S3+CloudFront (TBD)
@@ -60,14 +60,19 @@ Each deep dive directory contains:
 - **Comparative**: Always show alternatives and trade-offs, not just the happy path.
 
 ## Iteration Flywheel (ADR-003)
-RESEARCH → DRAFT → DEEP RESEARCH → INTEGRATE → BUILD CHECK → AUDIT → FIX → RE-AUDIT → CLOSE
+Three explicit gates, budget controls throughout:
 
-- Content work first: research, draft, deep research, integrate — get the content right
-- Quality gate last: audit-fix-audit is the pre-commit gate (like tests before push)
-- Audit: parallel agents score against Open Brain principles + research accuracy
-- Fix: targeted edits from audit findings only (not speculative improvement)
-- Re-audit: verify fixes on CURRENT code (dispatch AFTER saves, not before)
-- Close: re-audit passes, commit, push, deploy — see checklist in ADR-003
-- Scope control: fetch budgets, "research only" instructions, Carlos drives topics, ADRs are settled
-- Git operations: always main context (not subagents)
-- Anti-pattern: never fabricate numbers — every quantitative claim needs inline citation
+```
+RESEARCH → DRAFT → DEEP RESEARCH → INTEGRATE
+  → [GATE 1: SCOPE/BUDGET] → BUILD → DEPLOY PREVIEW
+  → HUMAN REVIEW → [GATE 2: HUMAN APPROVAL]
+  → AUDIT → FIX → RE-AUDIT → [GATE 3: QUALITY] → CLOSE
+```
+
+- **Gate 1 (scope/budget)**: research budget spent? scope unchanged? findings triaged?
+- **Gate 2 (human approval)**: Carlos reviews on device. Feedback split: corrections (now) vs enhancements (backlog)
+- **Gate 3 (quality)**: no section below 7/10, average >= 8/10, all corrections resolved
+- **Audit is CONSTRAINED**: score what exists, don't request new features. "Add X" → backlog.
+- **Fix = corrections only**: not enhancements, not rewrites. New scope = new iteration.
+- **Budget counters**: fetches used, agents spawned, sections modified, lines changed in fix
+- **Anti-pattern**: never fabricate numbers — every quantitative claim needs inline citation
