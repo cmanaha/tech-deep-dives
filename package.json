@@ -23,5 +23,8 @@
     "onlyBuiltDependencies": [
       "esbuild"
     ]
+  },
+  "devDependencies": {
+    "html-validate": "^10.13.1"
   }
 }
