@@ -1,34 +1,41 @@
 #!/usr/bin/env bash
-# scripts/ci.sh — Master deterministic quality-gate entry point for tech-deep-dives
+# scripts/ci.sh — Local development quality-gate entry point for tech-deep-dives
 #
 # Usage:
-#   bash scripts/ci.sh              # run all required gates
-#   bash scripts/ci.sh --with-links # also run external link check (slow, weekly cron)
+#   bash scripts/ci.sh   # run all deterministic gates
 #
-# Invariant: this script runs only DETERMINISTIC gates. No LLM, no agents.
-#   Same input => same verdict, every time.
+# Scope: this script is for LOCAL development sessions (Carlos + Claude
+# coding sessions). It runs ONLY fast, deterministic, no-network,
+# no-LLM gates so it can be invoked freely without surprises:
 #
-# Agent-driven advisory audits live in scripts/audit.sh (opt-in, never blocks merge).
-# See docs/adr/0004-agent-driven-quality-gates.md for the two-tier discipline.
+#   typecheck → lint → unit tests → build → html-validate
+#
+# Same input => same verdict, every time. No flakiness.
+#
+# What this script intentionally does NOT do:
+#   - Playwright invariant tests (live in scripts/audit.sh, opt-in)
+#   - Agent-driven advisory audits (also in scripts/audit.sh, opt-in)
+#   - External link checks (network-dependent, run separately)
+#   - GitHub Actions integration (CI is owned by Carlos and stays minimal)
+#
+# Those validations belong to a separate session-runner: scripts/audit.sh.
+# CI workflows in .github/workflows/ are not driven by this script.
 
 set -euo pipefail
 
-# ---------- configuration ----------
-WITH_LINKS=0
-for arg in "$@"; do
-  case "$arg" in
-    --with-links) WITH_LINKS=1 ;;
-    --help|-h)
-      sed -n '2,16p' "$0"
-      exit 0
-      ;;
-    *)
-      echo "ci.sh: unknown argument: $arg" >&2
-      echo "use --help for usage" >&2
-      exit 2
-      ;;
-  esac
-done
+case "${1:-}" in
+  --help|-h)
+    sed -n '2,21p' "$0"
+    exit 0
+    ;;
+  '')
+    ;;
+  *)
+    echo "ci.sh: unknown argument: $1" >&2
+    echo "use --help for usage" >&2
+    exit 2
+    ;;
+esac
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -57,28 +64,7 @@ pnpm test || fail "unit tests"
 step "build (all deep dives)"
 pnpm build || fail "build"
 
-# HTML validation on built artifacts.
-# Skipped silently if the gate script isn't present yet (being added incrementally).
-if [[ -x scripts/gates/html-validate.sh ]]; then
-  step "html validation (dist/index.html)"
-  bash scripts/gates/html-validate.sh || fail "html validation"
-fi
-
-# Playwright deterministic rendered-DOM invariants.
-# Skipped silently if no playwright config is present yet.
-if [[ -f deep-dives/efa/playwright.config.ts ]] || [[ -f playwright.config.ts ]]; then
-  step "playwright deterministic gates"
-  pnpm test:gates || fail "playwright gates"
-fi
-
-# External link check — opt-in via flag because external sites flap.
-if [[ "$WITH_LINKS" -eq 1 ]]; then
-  if [[ -x scripts/gates/link-check.sh ]]; then
-    step "external link check"
-    bash scripts/gates/link-check.sh || fail "link check"
-  else
-    echo "ci.sh: --with-links requested but scripts/gates/link-check.sh not yet present" >&2
-  fi
-fi
+step "html validation (built dist/index.html)"
+bash scripts/gates/html-validate.sh || fail "html validation"
 
 printf '\n\033[1;32m[PASS]\033[0m all deterministic gates green\n'
