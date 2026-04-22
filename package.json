@@ -9,7 +9,12 @@
     "build": "pnpm --filter './deep-dives/*' run build",
     "lint": "pnpm --filter './deep-dives/*' run lint && pnpm --filter @tech-deep-dives/shared run lint",
     "typecheck": "pnpm --filter './deep-dives/*' run typecheck && pnpm --filter @tech-deep-dives/shared run typecheck",
-    "test": "pnpm --filter './deep-dives/*' run test"
+    "test": "pnpm --filter './deep-dives/*' run test",
+    "test:gates": "pnpm --filter './deep-dives/*' run test:gates --if-present",
+    "gates": "bash scripts/ci.sh",
+    "gates:links": "bash scripts/ci.sh --with-links",
+    "audit": "bash scripts/audit.sh",
+    "audit:with-agents": "bash scripts/audit.sh --with-agents"
   },
   "engines": {
     "node": ">=20"
