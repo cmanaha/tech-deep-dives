@@ -18,20 +18,19 @@ Scaffold. Sections are placeholders awaiting research integration from `research
 
 ## Layout
 
-Twelve sections in left-side navigation:
+Twenty-five sections in left-side navigation across eight layers. See ADR-0001 for the rationale and revision history.
 
-1. Thesis and Framing — Beyond peak FLOPs
-2. Memory Hierarchy Primer
-3. Chiplet and Interconnect Topology
-4. Host Silicon — Graviton, EPYC, Xeon
-5. NVIDIA GPU Silicon
-6. AWS Custom Silicon
-7. Alternative Paradigms
-8. Inference Memory Techniques
-9. Communication and Scale-Out
-10. Isolation and Determinism
-11. Capital Markets Lens
-12. Glossary and Sources
+Framing (1-3): Thesis, Heterogeneity Fact, Roofline and Arithmetic Intensity.
+Memory (4-6): Memory Hierarchy Primer, HBM and the Bandwidth Wall, DDR5 / MRDIMM / LPDDR5X / CXL.
+Topology (7): Chiplet and Interconnect.
+Host silicon (8-10): Graviton, AMD EPYC Turin, Intel Xeon 6 Granite Rapids.
+NVIDIA silicon (11-13): Hopper, Blackwell, Grace-Blackwell and UltraServer.
+AWS silicon (14): Trainium, Inferentia, Neuron.
+Alternative paradigms (15-17): Cerebras WSE-3, Groq / SambaNova / Dataflow, Compute-in-Memory (PIM / HyperCIM).
+Software memory techniques (18-20): KV Cache and FlashAttention, Quantization and Precision, Disaggregated Serving and Speculative Decoding.
+Fabric (21): Communication and Scale-Out.
+Operational (22-23): Isolation (NIE / MIG), Determinism (NEFF / GPU reproducibility).
+Applied (24-25): Capital Markets Lens, Glossary and Sources.
 
 Each section carries the same invariants: TLDR, cited claims (with access date), UNKNOWN flags for unverified numbers, panelist-map callout, and evaluation-lens callout.
 
