@@ -55,9 +55,19 @@ const GraceBlackwellUltraServer = React.lazy(() =>
   }))
 );
 
-// AWS custom silicon
+// NVIDIA compiler stack
+const NvidiaCompilersAndTooling = React.lazy(() =>
+  import('./sections/NvidiaCompilersAndTooling').then((m) => ({
+    default: m.NvidiaCompilersAndTooling,
+  }))
+);
+
+// AWS custom silicon + compiler stack
 const AwsCustomSilicon = React.lazy(() =>
   import('./sections/AwsCustomSilicon').then((m) => ({ default: m.AwsCustomSilicon }))
+);
+const AwsCompilersAndTooling = React.lazy(() =>
+  import('./sections/AwsCompilersAndTooling').then((m) => ({ default: m.AwsCompilersAndTooling }))
 );
 
 // Alternative paradigms
@@ -125,18 +135,20 @@ const sections = [
   { id: 'hopper', title: '11. NVIDIA Hopper — H100 / H200' },
   { id: 'blackwell', title: '12. NVIDIA Blackwell — B200 / B300' },
   { id: 'grace-blackwell', title: '13. Grace-Blackwell and UltraServer' },
-  { id: 'aws-custom', title: '14. AWS Trainium, Inferentia, Neuron' },
-  { id: 'cerebras', title: '15. Cerebras WSE-3' },
-  { id: 'groq-sambanova', title: '16. Groq, SambaNova, Dataflow' },
-  { id: 'compute-in-memory', title: '17. Compute-in-Memory (PIM, HyperCIM)' },
-  { id: 'kv-cache', title: '18. KV Cache and FlashAttention' },
-  { id: 'quantization', title: '19. Quantization and Precision' },
-  { id: 'disaggregated', title: '20. Disaggregated Serving and Speculative Decoding' },
-  { id: 'communication', title: '21. Communication and Scale-Out' },
-  { id: 'isolation', title: '22. Isolation — NIE and MIG' },
-  { id: 'determinism', title: '23. Determinism — NEFF and GPU Reproducibility' },
-  { id: 'capital-markets', title: '24. Capital Markets Lens' },
-  { id: 'glossary-sources', title: '25. Glossary and Sources' },
+  { id: 'nvidia-compilers', title: '14. NVIDIA Compilers and Kernel Tooling' },
+  { id: 'aws-custom', title: '15. AWS Trainium, Inferentia, Neuron' },
+  { id: 'aws-compilers', title: '16. AWS Compilers and Kernel Tooling' },
+  { id: 'cerebras', title: '17. Cerebras WSE-3' },
+  { id: 'groq-sambanova', title: '18. Groq, SambaNova, Dataflow' },
+  { id: 'compute-in-memory', title: '19. Compute-in-Memory (PIM, HyperCIM)' },
+  { id: 'kv-cache', title: '20. KV Cache and FlashAttention' },
+  { id: 'quantization', title: '21. Quantization and Precision' },
+  { id: 'disaggregated', title: '22. Disaggregated Serving and Speculative Decoding' },
+  { id: 'communication', title: '23. Communication and Scale-Out' },
+  { id: 'isolation', title: '24. Isolation — NIE and MIG' },
+  { id: 'determinism', title: '25. Determinism — NEFF and GPU Reproducibility' },
+  { id: 'capital-markets', title: '26. Capital Markets Lens' },
+  { id: 'glossary-sources', title: '27. Glossary and Sources' },
 ];
 
 const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
@@ -153,7 +165,9 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   hopper: NvidiaHopper,
   blackwell: NvidiaBlackwell,
   'grace-blackwell': GraceBlackwellUltraServer,
+  'nvidia-compilers': NvidiaCompilersAndTooling,
   'aws-custom': AwsCustomSilicon,
+  'aws-compilers': AwsCompilersAndTooling,
   cerebras: CerebrasWaferScale,
   'groq-sambanova': GroqSambanovaDataflow,
   'compute-in-memory': ComputeInMemory,

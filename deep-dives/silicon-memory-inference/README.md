@@ -18,19 +18,21 @@ Scaffold. Sections are placeholders awaiting research integration from `research
 
 ## Layout
 
-Twenty-five sections in left-side navigation across eight layers. See ADR-0001 for the rationale and revision history.
+Twenty-seven sections in left-side navigation across ten layers. See ADR-0001 for the rationale and revision history.
 
 Framing (1-3): Thesis, Heterogeneity Fact, Roofline and Arithmetic Intensity.
 Memory (4-6): Memory Hierarchy Primer, HBM and the Bandwidth Wall, DDR5 / MRDIMM / LPDDR5X / CXL.
 Topology (7): Chiplet and Interconnect.
 Host silicon (8-10): Graviton, AMD EPYC Turin, Intel Xeon 6 Granite Rapids.
 NVIDIA silicon (11-13): Hopper, Blackwell, Grace-Blackwell and UltraServer.
-AWS silicon (14): Trainium, Inferentia, Neuron.
-Alternative paradigms (15-17): Cerebras WSE-3, Groq / SambaNova / Dataflow, Compute-in-Memory (PIM / HyperCIM).
-Software memory techniques (18-20): KV Cache and FlashAttention, Quantization and Precision, Disaggregated Serving and Speculative Decoding.
-Fabric (21): Communication and Scale-Out.
-Operational (22-23): Isolation (NIE / MIG), Determinism (NEFF / GPU reproducibility).
-Applied (24-25): Capital Markets Lens, Glossary and Sources.
+NVIDIA compiler stack (14): CUDA, CUTLASS, CuTe, Triton, cuDNN, Nsight.
+AWS silicon (15): Trainium, Inferentia, Neuron.
+AWS compiler stack (16): torch-neuronx, JAX on Neuron, NKI, Neuron profiler.
+Alternative paradigms (17-19): Cerebras WSE-3, Groq / SambaNova / Dataflow, Compute-in-Memory (PIM / HyperCIM).
+Software memory techniques (20-22): KV Cache and FlashAttention, Quantization and Precision, Disaggregated Serving and Speculative Decoding.
+Fabric (23): Communication and Scale-Out.
+Operational (24-25): Isolation (NIE / MIG), Determinism (NEFF / GPU reproducibility).
+Applied (26-27): Capital Markets Lens, Glossary and Sources.
 
 Each section carries the same invariants: TLDR, cited claims (with access date), UNKNOWN flags for unverified numbers, panelist-map callout, and evaluation-lens callout.
 

@@ -1,7 +1,7 @@
 # ADR-0001: Section Structure and Invariants
 
 Date: 2026-04-23
-Status: Accepted (revised from 12 to 25 sections — see Revision History)
+Status: Accepted (revised from 12 → 25 → 27 sections — see Revision History)
 
 ## Context
 
@@ -34,29 +34,35 @@ The deep dive ships twenty-five top-level sections in left-side navigation, orga
 12. NVIDIA Blackwell — B200 and B300
 13. Grace-Blackwell Superchip and UltraServer
 
+### NVIDIA compiler and kernel tooling stack
+14. NVIDIA Compilers and Kernel Tooling — CUDA, CUTLASS, CuTe, Triton, cuDNN, Nsight
+
 ### AWS silicon
-14. AWS Trainium, Inferentia, and the Neuron compiler
+15. AWS Trainium, Inferentia, and the Neuron compiler
+
+### AWS compiler and kernel tooling stack
+16. AWS Compilers and Kernel Tooling — torch-neuronx, JAX on Neuron, NKI, Neuron profiler
 
 ### Alternative paradigms (one section per panelist territory)
-15. Cerebras WSE-3 (Zigfrid Zvezdin territory)
-16. Groq, SambaNova, and Deterministic Dataflow
-17. Compute-in-Memory — PIM and HyperCIM (Tanya Mangoma territory)
+17. Cerebras WSE-3 (Zigfrid Zvezdin territory)
+18. Groq, SambaNova, and Deterministic Dataflow
+19. Compute-in-Memory — PIM and HyperCIM (Tanya Mangoma territory)
 
 ### Software memory techniques
-18. KV Cache and FlashAttention
-19. Quantization and Precision Formats
-20. Disaggregated Serving and Speculative Decoding
+20. KV Cache and FlashAttention
+21. Quantization and Precision Formats
+22. Disaggregated Serving and Speculative Decoding
 
 ### Fabric and runtime
-21. Communication and Scale-Out — NCCL, NIXL, EFA, NVLink
+23. Communication and Scale-Out — NCCL, NIXL, EFA, NVLink
 
 ### Operational properties
-22. Isolation — Nitro Isolation Engine and MIG
-23. Determinism — Trainium NEFF and GPU Reproducibility
+24. Isolation — Nitro Isolation Engine and MIG
+25. Determinism — Trainium NEFF and GPU Reproducibility
 
 ### Applied lens and reference
-24. Capital Markets Lens
-25. Glossary and Sources
+26. Capital Markets Lens
+27. Glossary and Sources
 
 ## Section invariants
 
@@ -80,6 +86,7 @@ Every section ships a `SectionShell` containing:
 
 - 2026-04-23 (initial): 12 sections.
 - 2026-04-23 (revised): expanded to 25 sections. Host Silicon → Graviton / EPYC / Xeon (3). NVIDIA GPU Silicon → Hopper / Blackwell / Grace-Blackwell (3). Alternative Paradigms → Cerebras / Groq+SambaNova / Compute-in-Memory (3). Inference Memory Techniques → KV Cache / Quantization / Disaggregated (3). Isolation and Determinism → Isolation / Determinism (2). Memory primer expanded to add HBM and Main-Memory+CXL as siblings. Heterogeneity Fact and Roofline added to the framing layer.
+- 2026-04-23 (revised again): expanded to 27 sections. Added NVIDIA Compilers and Kernel Tooling (14) — CUDA, CUTLASS, CuTe, Triton, cuDNN, Nsight — and AWS Compilers and Kernel Tooling (16) — torch-neuronx, JAX on Neuron, NKI (Neuron Kernel Interface), Neuron profiler. Rationale: the compiler and kernel-DSL layer is how silicon peak becomes realized throughput; omitting it would have forced those details to clutter the hardware sections. Sourcing policy in sources.md tightened to require Tier 1 vendor documentation for all compiler and tooling claims — academic papers demoted to context.
 
 ## Alternatives considered
 
