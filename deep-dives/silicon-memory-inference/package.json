@@ -16,6 +16,7 @@
     "@cloudscape-design/design-tokens": "^3.0.0",
     "@cloudscape-design/global-styles": "^1.0.0",
     "@tech-deep-dives/shared": "workspace:*",
+    "@xyflow/react": "^12.10.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

@@ -1,12 +1,14 @@
 import React from 'react';
-import Box from '@cloudscape-design/components/box';
+import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
-import Link from '@cloudscape-design/components/link';
+import Box from '@cloudscape-design/components/box';
+import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Table from '@cloudscape-design/components/table';
-import { SectionShell } from '../components/SectionShell';
+import ExpandableSection from '@cloudscape-design/components/expandable-section';
+import Link from '@cloudscape-design/components/link';
 
-interface TriangleRow {
+interface ArchRow {
   architecture: string;
   instruction: string;
   data: string;
@@ -14,180 +16,197 @@ interface TriangleRow {
   stall: string;
 }
 
-const triangleRows: TriangleRow[] = [
+const rows: ArchRow[] = [
   {
-    architecture: 'Graviton / Xeon / EPYC (out-of-order host CPU)',
-    instruction: 'Branch predictor + BTB + wide fetch, speculation, out-of-order issue',
-    data: 'L1/L2/L3 cache hierarchy, hardware prefetch, TLB',
-    shape: 'Scalar, SVE2 (Arm), AVX-512, AMX tiles',
-    stall: 'Mispredict → pipeline drain and refill; cache miss → DRAM round trip',
+    architecture: 'Graviton / Xeon / EPYC host core',
+    instruction: 'Branch predictor, BTB, wide fetch, speculation, OoO issue',
+    data: 'L1 → L2 → L3 with hardware prefetch and TLB',
+    shape: 'Scalar, SVE2 (Arm), AVX-512, AMX tiles (Xeon 6)',
+    stall: 'Mispredict → pipeline drain; cache miss → DRAM round trip',
   },
   {
-    architecture: 'NVIDIA Hopper / Blackwell (SIMT GPU)',
-    instruction: 'Warp scheduler, static fetch, no speculation, tcgen05 / wgmma issue',
-    data: 'SMEM, TMEM, L2, HBM — staged by software (CUTLASS, Triton)',
-    shape: 'Tiled matmul on tensor cores; precisions from FP4 to FP64',
-    stall: 'Pipeline bubble on warp; lost FLOPs scale with tensor core width',
+    architecture: 'NVIDIA Hopper / Blackwell SM',
+    instruction: 'Warp scheduler, no speculation, tcgen05 / wgmma issue',
+    data: 'SMEM / TMEM / L2 / HBM staged by CUTLASS, Triton, or Inductor',
+    shape: 'Tensor-core tiles at FP4 - FP64; shape follows CuTe layout',
+    stall: 'Pipeline bubble on warp; lost FLOPs scale with tensor-core width',
   },
   {
-    architecture: 'AWS Trainium (compile-time scheduled systolic array)',
-    instruction: 'NEFF descriptor — no runtime scheduler, schedule fixed ahead of time',
-    data: 'SBUF and PSUM scratchpads, compiler-managed',
-    shape: 'Tiles sized by the Neuron compiler to fit SBUF residency',
-    stall: 'Schedule slip — compiler-visible, not runtime-visible',
+    architecture: 'AWS Trainium NeuronCore',
+    instruction: 'NEFF descriptor from the Neuron compiler, no runtime scheduler',
+    data: 'SBUF + PSUM scratchpads, compiler-managed',
+    shape: 'Tiles sized at compile time for SBUF residency',
+    stall: 'Schedule slip visible in NEFF, not at runtime',
   },
   {
-    architecture: 'Cerebras WSE-3 (wafer-scale dataflow)',
-    instruction: 'Static dataflow, per-PE program; no global scheduler',
-    data: 'Entire model weights in on-wafer SRAM (no external DRAM for inference)',
-    shape: 'Row/column tiling over the wafer fabric',
-    stall: 'Fabric congestion — handled by static routing, not dynamic arbitration',
+    architecture: 'Cerebras WSE-3 wafer',
+    instruction: 'Static dataflow, per-PE program, no global scheduler',
+    data: 'Entire model in on-wafer SRAM — no external DRAM in steady state',
+    shape: 'Row / column tiling over the wafer fabric',
+    stall: 'Fabric congestion handled by static routing plan',
   },
   {
-    architecture: 'Compute-in-Memory (PIM / HyperCIM)',
-    instruction: 'A small set of primitives implemented at the memory array itself',
+    architecture: 'Compute-in-Memory (HBM-PIM / HyperCIM)',
+    instruction: 'Small set of primitives implemented inside the memory array',
     data: 'Compute happens where the data lives — no bus traversal',
-    shape: 'Constrained operator set; typically matmul-class',
-    stall: 'Operator miss → fall back to the host, which is catastrophic for the model',
+    shape: 'Constrained operator set, typically matmul-class',
+    stall: 'Operator miss → fall back to host = catastrophic for the model',
   },
 ];
 
 export function HeterogeneityFact() {
   return (
-    <SectionShell
-      status="draft"
-      title="The Heterogeneity Fact"
-      subtitle="Instruction, data, and data shape must arrive at the unit together"
-      tldr={[
-        'Silicon has never been more heterogeneous. Each architecture optimizes a different subset of the triangle: instruction delivery, data delivery, and data-shape fit.',
-        'To land on a FLOP you need three things simultaneously — the instruction decoded at the unit, the operand staged from the right memory tier, and the shape (tile, precision, layout, alignment) native to the unit.',
-        'Workload character selects the bet. Enterprise OLTP and business-logic code leans on branch prediction, speculation, and retirement ordering. Transformer decode leans on wide tensor pipes, predictable streaming, and staged memory.',
-        'Retirement and stall semantics are architecture-specific. A mispredict on an out-of-order core is a different event from a pipeline bubble on a tensor core or a systolic array. The cost of being wrong is not portable.',
-        'Peak FLOPs is the last number that matters. Ask first how the instruction reaches the unit, how the data reaches the unit, and what happens when either is late.',
-      ]}
-      scope={[
-        'The instruction-data-shape triangle as an organizing frame.',
-        'Front-end heterogeneity: branch prediction, BTB, TAGE, speculation depth, fetch width — and their irrelevance on dataflow architectures.',
-        'Back-end heterogeneity: ROB, retirement, load-store queue, register rename — versus compile-time scheduled tensor pipes and systolic arrays.',
-        'Data-shape fit: tile size, precision, layout, stride, alignment. Why NVFP4 is not drop-in on a core that thinks in BF16.',
-        'Stall and bubble semantics per architecture class. What happens when an operand is late on a Xeon, on a GPU SM, on a Trainium array, on a WSE-3.',
-        'Why "compare FLOPs" is not a comparison. What to compare instead.',
-      ]}
-      panelistMap="Foundational for the whole panel. Land this before any vendor-specific question — it makes the rest of the conversation vocabulary-clean. Especially useful when Cerebras or HyperCIM describe a completely different execution model; this section primes the audience to hear it as 'different triangle' rather than 'strange chip'."
-      evaluationLens={[
-        'Which vertex of the triangle is this architecture betting on — instruction, data, or shape?',
-        'What does the architecture do when the other two vertices are not aligned?',
-        'Is the workload front-end bound, memory-bound, or shape-mismatch bound? The fix for each is different.',
-        'Is the ISA expressive enough to emit the kernel the model needs, or does the compiler have to fall back?',
-        'What is the cost of a stall on this architecture, and who pays for it — hardware, compiler, or programmer?',
-      ]}
-    >
-      <SpaceBetween size="l">
-        <Header variant="h2">The three legs, in detail</Header>
-        <Box variant="p">
-          A FLOP happens when a functional unit executes a specified operation on a specified
-          operand. For that to happen, the architecture has to deliver three things to the unit
-          at the same clock:
-        </Box>
-        <Box variant="p">
-          <strong>Instruction delivery.</strong> The front end has to fetch, decode, and issue
-          an instruction that encodes the operation the workload wants. Out-of-order host cores
-          do this with a branch predictor, a big BTB, TAGE-style prediction, and speculative
-          execution — they bet on what the next instruction will be and replay if they lose.
-          GPU SMs do it with warp schedulers and no speculation. Trainium does not do it at all
-          at runtime — the Neuron compiler
-          {' ('}
-          <Link
-            external
-            href="https://awsdocs-neuron.readthedocs-hosted.com/"
+    <SpaceBetween size="l">
+      <Container
+        header={
+          <Header
+            variant="h1"
+            description="Why the silicon you are reasoning about is not a commodity, and the cost of being wrong is architecture-specific"
           >
-            Neuron SDK documentation
-          </Link>
-          , accessed 2026-04-23) emits the NEFF descriptor ahead of time and the runtime plays it
-          back. Dataflow architectures like Cerebras WSE-3 bake the program into per-PE state so
-          there is no front end at all.
-        </Box>
-        <Box variant="p">
-          <strong>Data delivery.</strong> The operand bytes have to be resident in the tier the
-          unit reads from. On a host core that tier is the register file sourced from L1; on a
-          GPU SM it is the register file sourced from SMEM and (on Blackwell) TMEM; on Trainium
-          it is SBUF and PSUM. Data delivery is where the memory hierarchy's seven tiers earn
-          their place — every miss upstream is either a stall or a compiler-visible schedule slip.
-        </Box>
-        <Box variant="p">
-          <strong>Shape fit.</strong> The operand layout has to match what the unit expects.
-          AMX tile registers on Intel Xeon 6 hold 16 rows of up to 64 bytes each
-          {' ('}
-          <Link
-            external
-            href="https://www.intel.com/content/www/us/en/developer/articles/technical/advanced-matrix-extensions-overview.html"
+            The heterogeneity fact
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>The problem with &ldquo;chip&rdquo; as a noun.</strong> Inference silicon
+            in 2026 is not a single class of device with different clock speeds. It is a
+            lineup of fundamentally different execution models: out-of-order host cores that
+            speculate on branches, SIMT GPUs that retire warps in lockstep, compile-time
+            scheduled systolic arrays that have no front end at runtime, wafer-scale dataflow
+            fabrics that route packets through a static graph, and memory arrays that
+            perform arithmetic in place. These are not small variations. They are different
+            ways of holding the instruction-data-shape triangle together.
+          </Box>
+          <Box variant="p">
+            <strong>Why this matters now.</strong> Ten years ago the decision was GPU vs CPU.
+            Five years ago it was GPU family vs GPU family. Today a single workload owner may
+            be asked to compare P5 (Hopper), P6 (Blackwell), Trn2 UltraServer (Trainium2
+            with 64-chip coherent domain), a Cerebras CS-3, a Groq rack, and an M8i fleet
+            with AMX — each with a different precision format, a different memory hierarchy
+            topology, and a different compiler surface. The question is not &ldquo;which
+            FLOPs budget wins.&rdquo; It is &ldquo;which bet about the triangle matches my
+            workload.&rdquo;
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={<Header variant="h2">How the live architectures place their bets</Header>}
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            The rows below are not a feature comparison; they are a bet comparison. Each
+            architecture optimizes a different answer to how the instruction reaches the
+            unit, how the data reaches the unit, what shape the unit expects, and what the
+            cost of being late is.
+          </Box>
+          <Table
+            items={rows}
+            columnDefinitions={[
+              { id: 'arch', header: 'Architecture', cell: (r) => r.architecture, minWidth: 180 },
+              { id: 'inst', header: 'Instruction delivery', cell: (r) => r.instruction },
+              { id: 'data', header: 'Data delivery', cell: (r) => r.data },
+              { id: 'shape', header: 'Shape fit', cell: (r) => r.shape },
+              { id: 'stall', header: 'Cost of being wrong', cell: (r) => r.stall },
+            ]}
+            variant="embedded"
+            wrapLines
+          />
+          <Box variant="small">
+            Row entries are compiled from vendor documentation for each architecture; the
+            per-vendor sections (8-19) carry the Tier 1 inline citations and verified
+            numbers. The Neuron compiler and NEFF descriptor references track{' '}
+            <Link external href="https://awsdocs-neuron.readthedocs-hosted.com/">
+              the AWS Neuron SDK documentation
+            </Link>
+            {' '}(accessed 2026-04-23).
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Retirement semantics are not portable between architecture classes"
           >
-            Intel AMX technical overview
-          </Link>
-          , accessed 2026-04-23). Blackwell tensor cores with tcgen05.mma operate on TMEM tiles
-          in specific shapes. Trainium's systolic array consumes tiles sized by the Neuron
-          compiler. A kernel whose tiles are the wrong size either loses peak (under-fills the
-          unit) or is recompiled into a fallback path that does not hit tensor-core throughput.
-          This is why precision conversation (NVFP4, MXFP8, BF16) is a shape question, not just
-          a bits-per-operand question — the layout changes too.
-        </Box>
-
-        <Header variant="h2">How the live architectures place their bets</Header>
-        <Table
-          items={triangleRows}
-          columnDefinitions={[
-            { id: 'arch', header: 'Architecture', cell: (r) => r.architecture },
-            { id: 'inst', header: 'Instruction delivery', cell: (r) => r.instruction },
-            { id: 'data', header: 'Data delivery', cell: (r) => r.data },
-            { id: 'shape', header: 'Shape fit', cell: (r) => r.shape },
-            { id: 'stall', header: 'Stall / cost of being wrong', cell: (r) => r.stall },
-          ]}
-          variant="embedded"
-          wrapLines
-        />
-        <Box variant="small">
-          Table compiled from vendor documentation for each architecture — see the per-vendor
-          sections (8-16) for inline citations and verified numbers.
-        </Box>
-
-        <Header variant="h2">Workload character selects the bet</Header>
-        <Box variant="p">
-          The same box looks like a different machine depending on what you run on it. A
-          business-logic workload — order books, payment clearing, user sessions — lives in
-          branchy code, short-lived objects, and working sets that fit in L2 and L3. On that
-          workload the branch predictor and the L3 hit rate are the first-order variables;
-          tensor cores are irrelevant. Swap to transformer decode and the same silicon's
-          branches are sparse and easily predicted, the front end is over-provisioned, and the
-          bottleneck is HBM bandwidth staging weights into the tensor pipe.
-        </Box>
-        <Box variant="p">
-          This is why "which chip is fastest" is an ill-formed question. Fastest at what? An
-          HFT matching engine at p99.9 latency, a RAG pipeline at tokens per second per dollar,
-          a foundation-model training run at time-to-convergence, and a mixed-tenant SaaS
-          backend at cost per request are four different architectures of problem. They select
-          different triangles and, often, different silicon.
-        </Box>
-
-        <Header variant="h2">The cost of being wrong is not portable</Header>
-        <Box variant="p">
-          A subtle point that shows up in every technical evaluation: the cost of a stall is an
-          architectural property, not a universal constant. A branch mispredict on an
-          out-of-order core costs on the order of 15-20 cycles of drained pipeline plus the
-          front-end re-steer. A pipeline bubble on a tensor core costs the matmul's worth of
-          FLOPs that did not retire that clock. A schedule slip on Trainium is
-          compiler-visible — the NEFF already encoded when each operand has to arrive, so a
-          slip shows up as a compile-time artifact rather than a runtime surprise. A fabric
-          congestion event on WSE-3 is handled by the static routing plan, which means either
-          the plan avoided it or the model does not fit.
-        </Box>
-        <Box variant="p">
-          Transferring optimization intuitions between these architectures is dangerous. A
-          CUDA kernel that over-subscribes SMEM to hide latency is doing something that has no
-          counterpart on Trainium, where the compiler has already decided what is resident.
-          "We cut p99 by raising speculation depth" does not translate to a systolic array
-          because there is no speculation depth to raise.
-        </Box>
-      </SpaceBetween>
-    </SectionShell>
+            Stall and retirement semantics
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            A subtle point that changes the playbook in every technical review: the cost of
+            a stall is an architectural property, not a universal constant. Engineers who
+            spent a decade tuning out-of-order cores carry intuitions about speculation
+            depth, reorder buffer pressure, and branch target buffer misses. None of those
+            concepts exist on a compile-time scheduled systolic array. Engineers trained on
+            CUDA carry intuitions about occupancy, warp divergence, and SMEM bank conflicts.
+            None of those apply to a dataflow fabric that bakes the program into per-PE
+            state.
+          </Box>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Out-of-order host core</Box>
+              <ul>
+                <li>Mispredict cost: ~15-20 cycles to drain + re-steer the pipeline</li>
+                <li>Cache miss cost: hundreds of cycles of out-of-order shadow</li>
+                <li>Recovery: hardware (ROB, RAS, BTB retraining)</li>
+                <li>Visible to compiler: no — only to the profiler</li>
+              </ul>
+            </div>
+            <div>
+              <Box variant="h3">NVIDIA SIMT GPU</Box>
+              <ul>
+                <li>Bubble cost: the tensor core&apos;s worth of FLOPs for that clock</li>
+                <li>Latency-hiding mechanism: concurrent warps, not speculation</li>
+                <li>Recovery: warp scheduler chooses a ready warp</li>
+                <li>Visible to compiler: partially — occupancy and tile size matter</li>
+              </ul>
+            </div>
+            <div>
+              <Box variant="h3">AWS Trainium systolic array</Box>
+              <ul>
+                <li>Schedule slip: fixed at compile time, visible in NEFF</li>
+                <li>Mitigation: compiler retiling and operator fusion</li>
+                <li>Recovery: none at runtime — the NEFF is the schedule</li>
+                <li>Visible to compiler: entirely — this is the compiler&apos;s job</li>
+              </ul>
+            </div>
+            <div>
+              <Box variant="h3">Wafer-scale dataflow (WSE-3)</Box>
+              <ul>
+                <li>Fabric congestion: handled by static routing plan</li>
+                <li>Mitigation: placement + routing at compile time</li>
+                <li>Recovery: either the plan avoided it or the model does not fit</li>
+                <li>Visible to compiler: entirely — there is no dynamic arbitration</li>
+              </ul>
+            </div>
+          </ColumnLayout>
+          <ExpandableSection headerText="Why this breaks benchmark transplants">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                A common error is to run an identical kernel on two architectures and
+                compare wall-clock time. The comparison is fine as a raw measurement, but
+                the <em>interpretation</em> is wrong because the two architectures are not
+                paying the same costs. On an out-of-order host, 30% of the time may be
+                spent in speculative shadow that never retires — it does not count against
+                the useful throughput. On a GPU, 30% of the time may be a warp scheduler
+                blocking for operands — invisible to a host-side profiler. On Trainium, the
+                schedule is static, so the wall-clock time equals the NEFF prediction with
+                no runtime variance.
+              </Box>
+              <Box variant="p">
+                The right methodology is to compare placement on the roofline (Section 3),
+                not raw wall-clock — and to characterize the workload&apos;s instruction,
+                data, and shape requirements independently before collapsing them into a
+                single &ldquo;throughput&rdquo; number.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+    </SpaceBetween>
   );
 }

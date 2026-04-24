@@ -1,212 +1,307 @@
 import React from 'react';
-import Box from '@cloudscape-design/components/box';
+import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
-import Link from '@cloudscape-design/components/link';
-import Table from '@cloudscape-design/components/table';
+import Box from '@cloudscape-design/components/box';
+import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
-import { SectionShell } from '../components/SectionShell';
+import Table from '@cloudscape-design/components/table';
+import Link from '@cloudscape-design/components/link';
+import ExpandableSection from '@cloudscape-design/components/expandable-section';
+import { MemoryHierarchyTower } from '../components/MemoryHierarchyTower';
 
-interface TierRow {
+interface TierCompareRow {
   tier: string;
   hostExample: string;
   gpuExample: string;
   trainiumExample: string;
-  bandwidth: string;
-  capacity: string;
 }
 
-const tierRows: TierRow[] = [
+const compareRows: TierCompareRow[] = [
   {
     tier: '1. Register file',
-    hostExample: 'Core register file (~10s of KB per core)',
-    gpuExample: 'SM register file (256 KB per SM)',
-    trainiumExample: 'Tensor engine operand registers',
-    bandwidth: 'Effectively free — one operand per clock per lane',
-    capacity: 'KBs',
+    hostExample: 'Per-core register file',
+    gpuExample: '256 KB register file per SM',
+    trainiumExample: 'Tensor-engine operand registers',
   },
   {
-    tier: '2. On-chip SRAM / scratchpad',
+    tier: '2. SRAM scratchpad',
     hostExample: '—',
-    gpuExample: 'SMEM (Hopper, 228 KB/SM), TMEM (Blackwell, 256 KB/SM)',
-    trainiumExample: 'SBUF state buffer, PSUM partial-sum buffer',
-    bandwidth: '10s of TB/s per SM or engine',
-    capacity: 'Hundreds of KB per SM / engine',
+    gpuExample: 'SMEM (Hopper ≈ 228 KB/SM); TMEM (Blackwell 256 KB/SM)',
+    trainiumExample: 'SBUF (state buffer), PSUM (partial sum)',
   },
   {
     tier: '3. L1 cache',
-    hostExample: 'Per-core L1D (typically 48-64 KB)',
+    hostExample: 'Per-core L1D (typ. 48-64 KB)',
     gpuExample: 'L1 shares capacity with SMEM',
-    trainiumExample: '(compiler-managed; no conventional L1)',
-    bandwidth: '~100s GB/s per core or SM',
-    capacity: '~48-64 KB per core',
+    trainiumExample: '— (compiler-managed; no conventional L1)',
   },
   {
     tier: '4. L2 cache',
-    hostExample: 'Per-core private L2 (Xeon 6: 2 MB/core)',
-    gpuExample: 'Device-wide L2 (H100: 50 MB, H200: 50 MB)',
+    hostExample: 'Xeon 6: 2 MB per-core private L2',
+    gpuExample: 'Device-wide L2 (H100: 50 MB; H200: 50 MB)',
     trainiumExample: '—',
-    bandwidth: '~TB/s aggregate',
-    capacity: 'MBs per core (CPU) or chip-wide (GPU)',
   },
   {
     tier: '5. LLC / L3',
-    hostExample: 'Shared LLC (Graviton5, EPYC, Xeon — dozens to hundreds of MB)',
+    hostExample: 'Shared LLC (dozens to hundreds of MB)',
     gpuExample: '(merged into L2 on current GPUs)',
     trainiumExample: '—',
-    bandwidth: 'Hundreds of GB/s',
-    capacity: '100-500 MB',
   },
   {
     tier: '6. HBM or main DRAM',
     hostExample: 'DDR5, MRDIMM (DDR5-8800), LPDDR5X',
-    gpuExample: 'HBM3 (H100) / HBM3e (H200, B200/B300)',
+    gpuExample: 'HBM3 (H100), HBM3e (H200, B200, B300)',
     trainiumExample: 'HBM stacks on Trainium2 / Trainium3',
-    bandwidth: 'TB/s (HBM) or 100s GB/s per socket (DDR)',
-    capacity: '10s GB (HBM) to TBs (DDR)',
   },
   {
     tier: '7. Disaggregated / expansion',
-    hostExample: 'CXL 2.0 pooled memory, CXL 3.0 shared memory',
+    hostExample: 'CXL 2.0 pooling, CXL 3.0 sharing',
     gpuExample: 'NVLink-addressable remote HBM',
-    trainiumExample: 'SBUF/HBM on neighboring NeuronCores via CC-Cores',
-    bandwidth: '10s-100s GB/s',
-    capacity: 'TBs (CXL) to GB-class per neighbor',
+    trainiumExample: 'SBUF / HBM on neighboring NeuronCores via CC-Cores',
   },
 ];
 
 export function MemoryHierarchyPrimer() {
   return (
-    <SectionShell
-      status="draft"
-      title="Memory Hierarchy Primer"
-      subtitle="Seven tiers from register file to disaggregated memory"
-      tldr={[
-        'The modern memory hierarchy has at least seven tiers: registers, SRAM scratchpads, L1/L2, LLC, HBM, DDR5/MRDIMM/LPDDR5X, and disaggregated memory via CXL.',
-        'Each tier differs in bandwidth, latency, capacity, and cost per bit by roughly an order of magnitude from the one above it.',
-        'Inference workloads spend most of their time in the HBM or DDR tier — that is where the bandwidth wall lives.',
-        'Compiler-managed scratchpads (SMEM, TMEM, SBUF, PSUM) are the most important tier people forget exists.',
-      ]}
-      scope={[
-        'Register file sizing and bandwidth per core and per SM.',
-        'SRAM scratchpads: SMEM (Hopper), TMEM (Blackwell, 256 KB per SM), SBUF / PSUM (Trainium).',
-        'L1, L2, LLC per architecture with citations.',
-        'HBM generations: HBM3, HBM3e, HBM3e+, HBM4, with capacity and pin speed per stack.',
-        'DDR5, MRDIMM (DDR5-8800), LPDDR5X — why server DRAM is not one thing.',
-        'CXL 2.0 pooling vs CXL 3.0 sharing — capacity extension, not latency reduction.',
-        'STREAM benchmark, per-core bandwidth regressions as core counts scale.',
-      ]}
-      panelistMap="Sets the vocabulary everyone else is using. Cerebras leans on the register-and-SRAM tiers at wafer scale. HyperCIM collapses the hierarchy into a single compute-in-memory substrate. AWS instances sit across all seven tiers and force the architect to reason about which tier the working set fits in."
-      evaluationLens={[
-        'Which tier does the working set actually fit in — and what is the bandwidth at that tier?',
-        'Is the scratchpad compiler-managed or hardware-managed? Who owns eviction?',
-        'Does the claimed peak bandwidth survive at the per-core or per-SM level, or is it an aggregate that only a full-chip benchmark hits?',
-        'When the workload spills, where does it spill to — and how much latency does that cost?',
-      ]}
-    >
-      <SpaceBetween size="l">
-        <Header variant="h2">The seven tiers</Header>
-        <Box variant="p">
-          The hierarchy below is the union of the tiers that any modern inference system
-          touches. No single workload uses all seven, but the architect needs the full map to
-          reason about where the working set lives and where it spills. Capacities and
-          bandwidths are representative; per-silicon exact figures live in sections 5, 6, and
-          8-16 with direct vendor citations.
-        </Box>
+    <SpaceBetween size="l">
+      <Container
+        header={
+          <Header
+            variant="h1"
+            description="The seven tiers you need to reason about before placing any workload"
+          >
+            Memory hierarchy primer
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>Why a primer.</strong> Every architecture in this deep dive is, at one
+            level, an opinionated answer to the question &ldquo;where do the operands live
+            when the unit executes?&rdquo; Before you can compare answers you need a shared
+            map of the tiers. The modern inference-capable system touches at least seven,
+            and per-tier bandwidth, latency, and capacity differ by roughly an order of
+            magnitude from the tier above.
+          </Box>
+          <Box variant="p">
+            <strong>What is new about it.</strong> Two of the seven tiers — SRAM scratchpads
+            and disaggregated / expansion memory — are the tiers most often missed in
+            casual architecture conversations. They are also the two tiers where the 2026
+            silicon landscape does the most interesting work. The scratchpad tier is where
+            Trainium hides its memory story; the disaggregated tier is where CXL and
+            NVLink-remote HBM change the capacity-vs-latency tradeoff.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="The full hierarchy with representative numbers per tier"
+          >
+            The seven-tier map
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <MemoryHierarchyTower />
+          <Box variant="small">
+            Numbers on the diagram are representative; the per-silicon exact figures carry
+            Tier 1 citations in Sections 5 (HBM), 6 (DDR/MRDIMM/CXL), 11-12 (NVIDIA), and
+            15 (AWS Trainium). H100 / H200 capacities track the{' '}
+            <Link external href="https://www.nvidia.com/en-us/data-center/h200/">
+              NVIDIA H200 product page
+            </Link>
+            ; Xeon 6 per-core L2 tracks the{' '}
+            <Link
+              external
+              href="https://www.intel.com/content/www/us/en/products/docs/processors/xeon/6th-gen-xeon-processors-product-brief.html"
+            >
+              Intel Xeon 6 product brief
+            </Link>
+            {' '}(both accessed 2026-04-23).
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header variant="h2" description="Same tier numbering, one column per architecture class">
+            How the three families use the hierarchy
+          </Header>
+        }
+      >
         <Table
-          items={tierRows}
+          items={compareRows}
           columnDefinitions={[
-            { id: 'tier', header: 'Tier', cell: (r) => r.tier },
+            { id: 'tier', header: 'Tier', cell: (r) => r.tier, minWidth: 160 },
             { id: 'host', header: 'Host CPU', cell: (r) => r.hostExample },
             { id: 'gpu', header: 'NVIDIA GPU', cell: (r) => r.gpuExample },
             { id: 'trn', header: 'AWS Trainium', cell: (r) => r.trainiumExample },
-            { id: 'bw', header: 'Representative bandwidth', cell: (r) => r.bandwidth },
-            { id: 'cap', header: 'Representative capacity', cell: (r) => r.capacity },
           ]}
           variant="embedded"
           wrapLines
         />
-        <Box variant="small">
-          Vendor citations for per-tier figures are in the silicon sections. H100 / H200 L2
-          capacity and HBM bandwidth figures track the{' '}
-          <Link external href="https://www.nvidia.com/en-us/data-center/h200/">
-            NVIDIA H200 product page
-          </Link>
-          {' '}(accessed 2026-04-23). Intel Xeon 6 2 MB/core private L2 tracks the{' '}
-          <Link
-            external
-            href="https://www.intel.com/content/www/us/en/products/docs/processors/xeon/6th-gen-xeon-processors-product-brief.html"
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="The tier that surprises people, and the ownership question underneath it"
           >
-            Intel Xeon 6 product brief
-          </Link>
-          {' '}(accessed 2026-04-23).
-        </Box>
+            Scratchpads — the tier most often forgotten
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Tier 2 — the on-chip SRAM scratchpad — is where modern accelerators do their
+            real work, and it is the tier people forget exists. A scratchpad is not a
+            cache: the compiler (or the programmer) explicitly decides what lives there
+            and when. That responsibility is precisely what lets a Trainium systolic array
+            run at near-peak without a cache coherence protocol, and what lets a Blackwell
+            tensor core use TMEM as a staging buffer in front of tcgen05.
+          </Box>
+          <ColumnLayout columns={3} variant="text-grid">
+            <div>
+              <Box variant="h3">Hopper SMEM</Box>
+              <Box variant="p">
+                Shared memory per SM, roughly 228 KB, partially fused with L1. Used by
+                CUTLASS and Triton to stage tensor-core tiles. Programmer-visible via CUDA
+                cooperative-groups and async-copy intrinsics.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Blackwell TMEM</Box>
+              <Box variant="p">
+                256 KB per SM of tensor-memory dedicated to tcgen05 operand staging —
+                distinct from SMEM. Introduced on Blackwell as the place where tensor-core
+                tiles live across a matmul. Section 12 carries the verified datasheet
+                numbers.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Trainium SBUF + PSUM</Box>
+              <Box variant="p">
+                SBUF holds activations and weights the Neuron compiler has staged; PSUM
+                holds partial sums from the systolic array before write-back. Section 15
+                carries sizing and bandwidth numbers.
+              </Box>
+            </div>
+          </ColumnLayout>
+        </SpaceBetween>
+      </Container>
 
-        <Header variant="h2">The tier that surprises people: scratchpads</Header>
-        <Box variant="p">
-          Tier 2 is the tier most often missed in casual architecture conversations, and it is
-          the tier that determines how much performance modern accelerators extract. Unlike a
-          cache, a scratchpad is software-managed — the compiler (or the programmer) decides
-          what lives there and when. That responsibility is what lets a Trainium systolic
-          array run at near-peak without a cache coherence protocol, and what lets a Blackwell
-          tensor core use TMEM as a staging buffer in front of tcgen05.
-        </Box>
-        <Box variant="p">
-          On NVIDIA Hopper, SMEM sits at ~228 KB per SM and is shared with L1; on Blackwell
-          there is an additional TMEM block of 256 KB per SM dedicated to tensor-core operand
-          staging. On Trainium, SBUF and PSUM are the entire game — SBUF holds activations and
-          weights the compiler has staged, PSUM holds partial sums from the systolic array
-          before they are written back. Software that fails to exploit the scratchpad tier
-          ends up doing &quot;unnecessary round trips to HBM&quot;, which is the polite phrase
-          for performance collapse.
-        </Box>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Who owns eviction decides what performance bugs look like"
+          >
+            Caches vs scratchpads
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Caches (tiers 3-5) are hardware-managed. The CPU decides when to evict lines
+            based on its replacement policy and the programmer just reads and writes memory.
+            Scratchpads (tier 2) are software-managed. The compiler emits explicit copy-in
+            and copy-out instructions and commits to which bytes are resident at which
+            time. This is not a cosmetic distinction.
+          </Box>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Cache miss</Box>
+              <ul>
+                <li>Invisible to the compiler</li>
+                <li>Shows up as tail latency at runtime</li>
+                <li>Mitigation is hardware prefetch, larger caches, NUMA locality</li>
+                <li>Classic debugging is a profiler run after the fact</li>
+              </ul>
+            </div>
+            <div>
+              <Box variant="h3">Scratchpad miss</Box>
+              <ul>
+                <li>Cannot happen at runtime — the compiler already decided</li>
+                <li>
+                  Shows up as a schedule slip at compile time (Trainium) or a lower
+                  occupancy kernel (GPU)
+                </li>
+                <li>Mitigation is re-tiling the operator at compile time</li>
+                <li>Debugging happens in the compiler IR, not the profiler</li>
+              </ul>
+            </div>
+          </ColumnLayout>
+        </SpaceBetween>
+      </Container>
 
-        <Header variant="h2">Caches vs scratchpads — who owns eviction</Header>
-        <Box variant="p">
-          Caches (tiers 3-5) are hardware-managed: the CPU decides when to evict lines based on
-          replacement policy, and the programmer just reads and writes memory. Scratchpads
-          (tier 2) are software-managed: the compiler emits explicit copy-in and copy-out
-          instructions and commits to which bytes are resident at which time. This ownership
-          distinction is not cosmetic — it changes what performance bugs look like. A cache
-          miss is invisible to the compiler and shows up as tail latency. A scratchpad miss
-          does not exist; instead, a compiler that misplans will emit a plan that simply does
-          not reach peak throughput, and the slowdown is visible in the schedule before the
-          kernel even runs.
-        </Box>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Where inference workloads actually spend their time"
+          >
+            The bandwidth wall lives at tier 6
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            A modern inference accelerator pairs ~4-8 TB/s of HBM bandwidth with thousands
+            of TFLOPs of tensor performance — ratios that put the ridge point out of reach
+            of decode workloads (Section 3). Raising HBM bandwidth is expensive: HBM is
+            2.5D-packaged with through-silicon vias and a silicon interposer, pin speed is
+            limited by signal integrity over the stack, and every generation requires new
+            packaging and yield work. Section 5 digs into HBM in depth.
+          </Box>
+          <Alert type="info" header="CXL sits at tier 7 — capacity lever, not latency lever">
+            CXL 2.0 pooling and CXL 3.0 sharing attach TBs of memory to a single socket
+            over a PCIe-class physical layer, extending capacity beyond what DDR DIMMs can
+            hold. They do not reduce latency over a direct DDR channel — in fact they
+            modestly increase it. For latency-sensitive workloads CXL is the wrong lever.
+            For capacity-limited workloads (large recommender embeddings, in-memory
+            analytics, sparse retrieval indexes) it is the right one. Section 6 walks DDR5,
+            MRDIMM, LPDDR5X, and CXL in more detail.
+          </Alert>
+        </SpaceBetween>
+      </Container>
 
-        <Header variant="h2">The bandwidth wall lives at tier 6</Header>
-        <Box variant="p">
-          Tier 6 is where inference workloads spend most of their time, and tier 6 is where
-          the &quot;bandwidth wall&quot; lives. A modern inference accelerator pairs ~4-8 TB/s
-          of HBM bandwidth with thousands of TFLOPs of tensor performance — ratios that put
-          the ridge point out of reach of decode workloads (see Section 3). Raising HBM
-          bandwidth is expensive: HBM is 2.5D-packaged with TSVs and a silicon interposer,
-          and the pin speed is limited by signal integrity over the stack. HBM3 runs at 6.4
-          Gbps/pin; HBM3e pushes to 8-9 Gbps/pin; HBM4 raises both pin speed and channel
-          count. Each generation requires new packaging and yield work, which is why HBM
-          supply is a first-order commercial variable for the whole accelerator market.
-        </Box>
-        <Alert type="info" header="CXL is at tier 7 — it is the capacity lever, not the latency lever">
-          CXL 2.0 pooling and CXL 3.0 sharing sit on top of tier 6. They extend capacity —
-          you can attach TBs of memory to a single socket over a PCIe-class physical layer —
-          but they add latency over a direct DDR channel. For latency-sensitive workloads CXL
-          is the wrong lever; for capacity-limited workloads (large recommender embeddings,
-          in-memory analytics) it is the right one. Section 6 digs into DDR5, MRDIMM, LPDDR5X,
-          and CXL in more detail.
-        </Alert>
-
-        <Header variant="h2">The per-core-bandwidth regression</Header>
-        <Box variant="p">
-          A subtle point that changes architecture decisions on the host side: as core counts
-          rise generation over generation, the peak socket bandwidth rises more slowly than
-          the core count, so per-core bandwidth actually drops. A 96-core Graviton4 and a
-          192-core Graviton5 divided by their respective socket bandwidths produce different
-          per-core budgets, and workloads that are bandwidth-hungry per thread (databases,
-          Java GC-heavy services) can land worse on the higher-core-count chip despite
-          looking faster on paper. Section 8 covers the Graviton4 → Graviton5 transition
-          with measured numbers; the same effect is present on EPYC Turin and Xeon 6.
-        </Box>
-      </SpaceBetween>
-    </SectionShell>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="A subtle generation-over-generation effect on the host side"
+          >
+            The per-core bandwidth regression
+          </Header>
+        }
+      >
+        <ExpandableSection
+          headerText="Why adding cores can make a workload slower per-thread"
+          defaultExpanded
+        >
+          <SpaceBetween size="s">
+            <Box variant="p">
+              Socket bandwidth rises each generation, but core count rises faster. Divide
+              peak socket bandwidth by core count and per-core bandwidth generally drops.
+              Workloads that are bandwidth-hungry per thread — databases, GC-heavy JVM
+              services, some memory-intensive analytics — can land worse on the higher
+              core count chip despite looking faster on the headline spec.
+            </Box>
+            <Box variant="p">
+              Section 8 carries the measured Graviton4 → Graviton5 transition; the same
+              effect shows up on EPYC Turin (Section 9) and Xeon 6 (Section 10). The
+              practical implication: for workloads that stress tier 6 per thread,
+              &ldquo;more cores&rdquo; is not obviously faster. Pay attention to bandwidth
+              per vCPU, not socket bandwidth in aggregate.
+            </Box>
+          </SpaceBetween>
+        </ExpandableSection>
+      </Container>
+    </SpaceBetween>
   );
 }

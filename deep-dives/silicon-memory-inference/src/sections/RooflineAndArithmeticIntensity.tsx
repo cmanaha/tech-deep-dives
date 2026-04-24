@@ -1,211 +1,263 @@
 import React from 'react';
-import Box from '@cloudscape-design/components/box';
+import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
-import Link from '@cloudscape-design/components/link';
+import Box from '@cloudscape-design/components/box';
+import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
-import { SectionShell } from '../components/SectionShell';
+import Link from '@cloudscape-design/components/link';
+import { RooflineChart } from '../components/RooflineChart';
 
 interface RidgeRow {
   chip: string;
   peakFlops: string;
   bandwidth: string;
   ridge: string;
-  citation: string;
   url: string;
 }
 
 const ridgeRows: RidgeRow[] = [
   {
-    chip: 'NVIDIA H100 SXM (FP8)',
-    peakFlops: '3,958 TFLOPS (FP8 tensor, sparse)',
+    chip: 'NVIDIA H100 SXM  — FP8 tensor (sparse)',
+    peakFlops: '3,958 TFLOPS',
     bandwidth: '3.35 TB/s HBM3',
-    ridge: '~1,181 FLOPs/byte',
-    citation: 'NVIDIA H100 product page, accessed 2026-04-23',
+    ridge: '≈ 1,181 FLOPs / byte',
     url: 'https://www.nvidia.com/en-us/data-center/h100/',
   },
   {
-    chip: 'NVIDIA H200 SXM (FP8)',
-    peakFlops: '3,958 TFLOPS (FP8 tensor, sparse)',
+    chip: 'NVIDIA H200 SXM  — FP8 tensor (sparse)',
+    peakFlops: '3,958 TFLOPS',
     bandwidth: '4.8 TB/s HBM3e',
-    ridge: '~825 FLOPs/byte',
-    citation: 'NVIDIA H200 product page, accessed 2026-04-23',
+    ridge: '≈ 825 FLOPs / byte',
     url: 'https://www.nvidia.com/en-us/data-center/h200/',
   },
   {
-    chip: 'NVIDIA H200 SXM (BF16)',
-    peakFlops: '1,979 TFLOPS (BF16 tensor)',
+    chip: 'NVIDIA H200 SXM  — BF16 tensor',
+    peakFlops: '1,979 TFLOPS',
     bandwidth: '4.8 TB/s HBM3e',
-    ridge: '~412 FLOPs/byte',
-    citation: 'NVIDIA H200 product page, accessed 2026-04-23',
+    ridge: '≈ 412 FLOPs / byte',
     url: 'https://www.nvidia.com/en-us/data-center/h200/',
   },
 ];
 
 export function RooflineAndArithmeticIntensity() {
   return (
-    <SectionShell
-      status="draft"
-      title="Roofline and Arithmetic Intensity"
-      subtitle="The ridge point and why decode sits on the memory-bound slope"
-      tldr={[
-        'Arithmetic intensity is operations per byte of memory traffic. The roofline model plots achievable throughput against arithmetic intensity.',
-        'Below the ridge point the workload is memory-bound and performance is gated by bandwidth. Above it the workload is compute-bound and performance is gated by peak FLOPs.',
-        'Prefill sits near or above the ridge point. Decode sits far below it. That single observation drives most of modern inference architecture.',
-        'Ridge point is architecture-specific. A chip with huge FLOPs and mediocre bandwidth has a ridge point far to the right, so more workloads fall into the memory-bound regime.',
-      ]}
-      scope={[
-        'Formal definition of arithmetic intensity and the roofline model (Williams 2009).',
-        'Ridge point calculation per architecture — H100, H200, B200, Trainium2, Graviton5, EPYC Turin, Xeon 6.',
-        'Prefill vs decode arithmetic intensity for modern LLMs with GQA and FlashAttention.',
-        'Batch size as a lever — why decode with batch 1 is pathological and batch 64 is acceptable.',
-        'What moves the ridge point — larger SRAM, higher HBM bandwidth, lower precision, operator fusion.',
-        'Measuring arithmetic intensity in practice: profiler counters, roofline plots from Nsight or perf.',
-      ]}
-      panelistMap="Shared vocabulary. Every panelist will invoke some form of this framing; giving the audience the formal shape up front keeps later claims honest. AWS ties this to choosing between P5 (high FLOPs) and Trainium (balanced) for specific workloads."
-      evaluationLens={[
-        'Where on the roofline does the target workload sit at the target batch size?',
-        'Does the architecture put the ridge point far left (bandwidth-rich) or far right (FLOP-rich)?',
-        'What is the effective arithmetic intensity after operator fusion and tiling — not the naive one?',
-        'Is batching an option, or is the SLA single-request?',
-      ]}
-    >
-      <SpaceBetween size="l">
-        <Header variant="h2">Definitions</Header>
-        <Box variant="p">
-          The roofline model was introduced by Samuel Williams, Andrew Waterman, and David
-          Patterson in{' '}
-          <Link
-            external
-            href="https://dl.acm.org/doi/10.1145/1498765.1498785"
+    <SpaceBetween size="l">
+      <Container
+        header={
+          <Header
+            variant="h1"
+            description="The single model you need to place any workload on any silicon"
           >
-            &quot;Roofline: An Insightful Visual Performance Model for Multicore Architectures&quot;
-          </Link>
-          {' '}(Communications of the ACM, April 2009). It gives you a single picture that
-          answers the question &quot;is this workload compute-bound or memory-bound on this
-          silicon&quot;.
-        </Box>
-        <Box variant="p">
-          <strong>Arithmetic intensity</strong> is the number of floating-point operations a
-          workload performs per byte of DRAM traffic. It is a property of the workload and its
-          implementation, not of the silicon. A dense GEMM with large re-used tiles has high
-          arithmetic intensity; a streaming memory copy has an arithmetic intensity of zero.
-        </Box>
-        <Box variant="p">
-          <strong>Peak FLOPs</strong> is the silicon's maximum sustained throughput. On modern
-          accelerators this number is precision-dependent — FP8 peak is typically 2× BF16 peak
-          which is typically 2× FP32 peak, and so on.
-        </Box>
-        <Box variant="p">
-          <strong>Peak bandwidth</strong> is the silicon's maximum memory throughput to DRAM
-          (or HBM). Vendor spec sheets publish this as a single number; achievable bandwidth is
-          usually 70-90% of it under realistic access patterns.
-        </Box>
-        <Box variant="p">
-          <strong>Ridge point</strong> is where the two rooflines meet: peak FLOPs divided by
-          peak bandwidth, expressed in FLOPs per byte. Workloads with arithmetic intensity
-          below the ridge point are bandwidth-bound — adding more FLOPs to the silicon will
-          not help them go faster. Workloads above the ridge point are compute-bound — adding
-          bandwidth will not help them.
-        </Box>
+            Roofline and arithmetic intensity
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>The model.</strong> Williams, Waterman, and Patterson published the
+            roofline in{' '}
+            <Link external href="https://dl.acm.org/doi/10.1145/1498765.1498785">
+              &ldquo;Roofline: an insightful visual performance model for multicore
+              architectures&rdquo;
+            </Link>
+            {' '}(Communications of the ACM, April 2009). It gives a single picture that
+            answers the question &ldquo;is this workload compute-bound or memory-bound on
+            this silicon?&rdquo; It has held up across fifteen years of architecture
+            changes because it reduces the question to a ratio between two quantities both
+            vendors publish.
+          </Box>
+          <Box variant="p">
+            <strong>The three quantities.</strong>{' '}
+            <em>Arithmetic intensity</em> (FLOPs per byte of DRAM traffic) is a property of
+            the workload and its implementation. <em>Peak FLOPs</em> is the silicon&apos;s
+            ceiling at a given precision. <em>Peak bandwidth</em> is the silicon&apos;s
+            DRAM throughput. The <em>ridge point</em> is peak FLOPs divided by peak
+            bandwidth. Below the ridge: memory-bound, adding FLOPs does not help. Above:
+            compute-bound, adding bandwidth does not help.
+          </Box>
+        </SpaceBetween>
+      </Container>
 
-        <Header variant="h2">Ridge points from vendor data</Header>
-        <Table
-          items={ridgeRows}
-          columnDefinitions={[
-            { id: 'chip', header: 'Chip / precision', cell: (r) => r.chip },
-            { id: 'flops', header: 'Peak FLOPs', cell: (r) => r.peakFlops },
-            { id: 'bw', header: 'Peak HBM bandwidth', cell: (r) => r.bandwidth },
-            { id: 'ridge', header: 'Ridge point', cell: (r) => r.ridge },
-            {
-              id: 'src',
-              header: 'Source',
-              cell: (r) => (
-                <Link external href={r.url}>
-                  {r.citation}
-                </Link>
-              ),
-            },
-          ]}
-          variant="embedded"
-          wrapLines
-        />
-        <Box variant="small">
-          Ridge point values computed from the vendor-stated peak FLOPs and peak HBM bandwidth.
-          FLOPs figures are the tensor-core peaks reported in the cited vendor pages; sparse
-          numbers are used where the vendor reports them as the headline figure. B200 and B300
-          figures intentionally omitted pending a Tier 1 fetch — see the NVIDIA Blackwell
-          section for verified numbers.
-        </Box>
-        <Alert type="warning" header="UNKNOWN">
-          B200 and B300 ridge points are not yet in this table. Current vendor pages emphasize
-          HGX-level aggregate bandwidth rather than per-GPU HBM bandwidth at the level of
-          precision these calculations need. Will be closed when the Blackwell datasheet is
-          read directly in the NVIDIA Blackwell section.
-        </Alert>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="The plot most inference conversations should start with"
+          >
+            The roofline, placed
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <RooflineChart />
+          <Box variant="p">
+            Each marker on the chart is a real workload class. Dense GEMM with large tiles
+            sits on the compute-bound ceiling — its arithmetic intensity is high enough that
+            the silicon runs at peak. Prefill on a long prompt sits near the ridge, which is
+            why prefill benefits modestly from more bandwidth and substantially from more
+            FLOPs. Decode at batch 1 sits two orders of magnitude below the ridge — the
+            silicon is starved and extra FLOPs are wasted. Batching decode requests raises
+            arithmetic intensity because the same weight read is re-used across multiple
+            activations.
+          </Box>
+        </SpaceBetween>
+      </Container>
 
-        <Header variant="h2">Where LLM workloads sit on the roofline</Header>
-        <Box variant="p">
-          <strong>Prefill</strong> — the initial pass over the prompt that fills the KV cache —
-          performs large matmuls with high operand re-use (each weight is used across all
-          prompt tokens in the batch). Prefill's arithmetic intensity scales with prompt
-          length and batch size; for realistic prompts it lands near or above the ridge point
-          on H100 and H200 class silicon. Prefill is normally compute-bound.
-        </Box>
-        <Box variant="p">
-          <strong>Decode</strong> — the per-token generation loop — performs a matmul where
-          one operand (the weights) is re-read from HBM for every single token. Each weight
-          byte is multiplied against a single activation and then discarded. Arithmetic
-          intensity is roughly 2 FLOPs per parameter byte per token for dense models, modified
-          by batch size. At batch size 1 on an FP16 model, that is 2 FLOPs per byte — two to
-          three orders of magnitude below the H200 BF16 ridge point of ~412 FLOPs/byte.
-          Decode is deeply memory-bound.
-        </Box>
-        <Box variant="p">
-          Two practical consequences follow. First, the observable decode throughput on any
-          modern accelerator is roughly HBM bandwidth divided by active parameter bytes per
-          token — a number computable from the spec sheet. Second, every successful technique
-          for accelerating decode (KV cache tricks, grouped-query attention, quantization,
-          speculative decoding, disaggregated prefill/decode) works by changing arithmetic
-          intensity, not by making the silicon faster.
-        </Box>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Computed from the vendor-cited peak FLOPs and peak HBM bandwidth"
+          >
+            Ridge points, from vendor data
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Table
+            items={ridgeRows}
+            columnDefinitions={[
+              { id: 'chip', header: 'Chip / precision', cell: (r) => r.chip, minWidth: 220 },
+              { id: 'flops', header: 'Peak FLOPs', cell: (r) => r.peakFlops },
+              { id: 'bw', header: 'Peak HBM bandwidth', cell: (r) => r.bandwidth },
+              { id: 'ridge', header: 'Ridge point', cell: (r) => r.ridge },
+              {
+                id: 'src',
+                header: 'Vendor page',
+                cell: (r) => (
+                  <Link external href={r.url}>
+                    Source
+                  </Link>
+                ),
+              },
+            ]}
+            variant="embedded"
+            wrapLines
+          />
+          <Box variant="small">All vendor-cited figures accessed 2026-04-23.</Box>
+          <Alert type="warning" header="UNKNOWN — B200 and B300">
+            Per-GPU HBM bandwidth for the Blackwell family is not on the pages fetched for
+            this iteration; those pages emphasize HGX-aggregate NVLink bandwidth instead
+            (NVIDIA HGX B200/B300: 1.8 TB/s GPU-to-GPU, 14.4 TB/s total NVLink). Ridge
+            points for B200 and B300 will land here once the Blackwell section reads the
+            datasheet directly.
+          </Alert>
+        </SpaceBetween>
+      </Container>
 
-        <Header variant="h2">Batch size moves the workload along the x-axis</Header>
-        <Box variant="p">
-          Batching multiple decode requests lets them share a single weight read, which is the
-          cheapest lever for arithmetic intensity. Running two concurrent decode streams
-          doubles the arithmetic intensity (the same weight bytes are re-used across two
-          activations); running 64 doubles it six times. This is why inference serving stacks
-          (vLLM, TensorRT-LLM, SGLang) spend so much code on continuous batching — at batch 1
-          the silicon is starved, at batch 64 it is well-utilized.
-        </Box>
-        <Box variant="p">
-          The ceiling on batch size is KV cache memory, not compute. Each in-flight request
-          carries its own KV cache, and the KV cache scales with context length. Section 20
-          (KV Cache and FlashAttention) walks this tradeoff in detail.
-        </Box>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="The practical reason the ridge point matters: decode is far left, prefill is far right"
+          >
+            Prefill vs decode — the same silicon on two different workloads
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Prefill — near / above the ridge</Box>
+              <Box variant="p">
+                Prefill fills the KV cache by processing the whole prompt in parallel. Every
+                weight byte is re-used across every prompt token in the batch. Arithmetic
+                intensity scales with prompt length × batch size, so on a 4k-token prompt
+                at batch 16 the intensity easily clears the H200 ridge. Prefill is
+                compute-bound on H100/H200-class silicon; more FLOPs help directly, more
+                HBM bandwidth helps only marginally.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Decode — deep below the ridge</Box>
+              <Box variant="p">
+                Decode generates one token at a time. Each weight byte is multiplied by a
+                single activation and discarded. Intensity is roughly 2 FLOPs per parameter
+                byte per token for a dense model. On an FP16 model at batch 1 that is
+                ~2 FLOPs/byte — three orders of magnitude under H200&apos;s BF16 ridge of
+                ≈ 412 FLOPs/byte. Decode is deeply memory-bound; tokens per second tracks
+                HBM bandwidth almost linearly until some other limit binds.
+              </Box>
+            </div>
+          </ColumnLayout>
+          <Alert type="info">
+            Two consequences drive most of modern inference serving. First, a decode TPS
+            estimate is computable from the spec sheet: HBM bandwidth divided by active
+            parameter bytes per token. Second, every successful technique for accelerating
+            decode — grouped-query attention, KV-cache quantization, FlashAttention-class
+            operator fusion, speculative decoding, disaggregated prefill/decode — works by
+            changing arithmetic intensity, not by making the silicon faster.
+          </Alert>
+        </SpaceBetween>
+      </Container>
 
-        <Header variant="h2">What moves the ridge point</Header>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Batch size is the first-order lever, operator fusion is the second"
+          >
+            Moving the workload along the x-axis
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>Batching.</strong> Two concurrent decode streams double arithmetic
+            intensity — the same weight bytes are re-used across two activations. Sixty-four
+            streams raise it 64×. This is why inference servers (vLLM, TensorRT-LLM, SGLang,
+            Neuron-Distributed) spend so much code on continuous batching. At batch 1 the
+            silicon is starved; at batch 64 it is well-utilized. The ceiling on batch size
+            is KV cache capacity, not compute, because each in-flight request carries its
+            own KV cache that grows with context length. Section 20 walks this tradeoff in
+            detail.
+          </Box>
+          <Box variant="p">
+            <strong>Operator fusion.</strong> The software lever that is invisible to
+            benchmarks but dominant in production is fusion. Combining operators into one
+            kernel keeps intermediate tensors resident in SMEM, TMEM, or SBUF rather than
+            round-tripping to HBM. FlashAttention is the canonical example — it fuses the
+            attention matmul, softmax, and second matmul into a single kernel and keeps the
+            working tile resident throughout, which both lowers HBM traffic and raises
+            arithmetic intensity. Section 20 covers the current state (FlashAttention-3,
+            paged variants). Sections 14 and 16 cover the compiler surfaces — CUTLASS /
+            CuTe / Triton on NVIDIA, NKI on Trainium — that emit the fused kernels.
+          </Box>
+          <Box variant="p">
+            <strong>Precision.</strong> Lower precision halves the byte count per operand
+            without halving the FLOP count, so FP8 roughly doubles arithmetic intensity
+            versus BF16 for the same algorithm. NVFP4 (E2M1) and MXFP8 push further.
+            Precision is a shape question, not just a bits-per-operand question; Section
+            21 covers the full precision ladder and the numerics work that makes FP4 and
+            FP8 safe at model scale.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="What moves the ridge point itself"
+          >
+            What the silicon vendors are actually competing on
+          </Header>
+        }
+      >
         <Box variant="p">
-          The ridge point is a ratio. Raising peak FLOPs (a new tensor core, a lower precision
-          format like FP4) moves the ridge to the right — more workloads become memory-bound.
-          Raising HBM bandwidth (HBM3 → HBM3e → HBM4) moves it to the left — more workloads
-          become compute-bound. Modern silicon generations tend to raise FLOPs faster than
-          bandwidth, so the ridge drifts right with each generation and more workloads fall
-          into the bandwidth-bound regime over time.
+          The ridge point is a ratio. Raising peak FLOPs (a new tensor core, a lower
+          precision format like FP4) moves the ridge right — more workloads become
+          memory-bound. Raising HBM bandwidth (HBM3 → HBM3e → HBM4) moves it left — more
+          workloads become compute-bound. Modern silicon generations raise FLOPs faster
+          than bandwidth, so the ridge drifts right each generation and more workloads
+          fall into the bandwidth-bound regime over time. This is why the bandwidth wall
+          (Section 5) is such a central story in inference silicon, and why architectures
+          that avoid the HBM tier altogether (Cerebras, compute-in-memory) are structurally
+          interesting even when their raw FLOPs numbers are lower.
         </Box>
-        <Box variant="p">
-          The software lever is operator fusion — combining several operators into one kernel
-          so that intermediate tensors never leave on-chip memory. Fusion reduces the byte
-          count in the denominator of arithmetic intensity without changing the FLOP count in
-          the numerator. FlashAttention is the canonical example; it fuses attention's matmul,
-          softmax, and second matmul into one kernel and keeps the working tile resident in
-          SMEM / TMEM throughout. This is one of the reasons sections 14 and 16 (compiler and
-          kernel tooling) matter — the compiler's tiling decisions directly determine where
-          the workload sits on the roofline.
-        </Box>
-      </SpaceBetween>
-    </SectionShell>
+      </Container>
+    </SpaceBetween>
   );
 }

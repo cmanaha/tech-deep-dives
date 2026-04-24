@@ -1,158 +1,201 @@
 import React from 'react';
-import Box from '@cloudscape-design/components/box';
+import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
-import Link from '@cloudscape-design/components/link';
+import Box from '@cloudscape-design/components/box';
+import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
-import { SectionShell } from '../components/SectionShell';
+import Link from '@cloudscape-design/components/link';
+import { TriangleDiagram } from '../components/TriangleDiagram';
 
 export function ThesisAndFraming() {
   return (
-    <SectionShell
-      status="draft"
-      title="Thesis and Framing — Beyond peak FLOPs"
-      subtitle="Inference is memory-bound, and silicon has never been more heterogeneous"
-      tldr={[
-        'Peak FLOPs is the last number that matters for inference. The ridge point sits far to the left of most decode workloads.',
-        'To land on the FLOPs, three things have to arrive at the functional unit at the same time: the instruction, the data, and the right data shape.',
-        'Silicon has never been more heterogeneous. Each architecture optimizes a different subset of (instruction delivery, data delivery, shape fit, power, determinism).',
-        'Workload character selects the architecture. OLTP and business-logic workloads lean on branch prediction and retirement; transformer decode leans on wide tensor pipes and staged memory.',
-        'Mispredict or stall costs are architecture-specific. A front-end bubble on a Xeon core is a different event from a pipeline bubble on a tensor core or a Trainium systolic array.',
-      ]}
-      scope={[
-        'Arithmetic intensity and the roofline model — define ridge point, memory-bound, compute-bound.',
-        'The instruction-data-shape triangle — why all three must align.',
-        'Heterogeneity as the organizing fact — the list of live architectures and what each one bets on.',
-        'Workload taxonomy — OLTP, batch analytics, training, prefill, decode, real-time inference, HFT.',
-        'Retirement and stall semantics across out-of-order cores, tensor pipes, systolic arrays, and dataflow fabrics.',
-        'Why FLOPs-first vendor marketing misleads and what to ask instead.',
-      ]}
-      panelistMap="This is the shared lens for the whole panel. Land the framing here and every subsequent answer has a consistent yardstick — AWS, Cerebras, and HyperCIM can each describe what their silicon does without the audience reaching for peak FLOPs."
-      evaluationLens={[
-        'What is the arithmetic intensity of the workload being pitched? Where does it sit on the roofline?',
-        'How does the instruction reach the functional unit — front-end width, ISA, compile-time vs runtime scheduling?',
-        'How does the data reach the unit — tier count, bandwidth, staging, prefetch, page walk cost?',
-        'Is the data shape native or translated? Tile size, precision, layout, stride, alignment.',
-        'What happens on a miss or stall — stall cost, bubble recovery, replay, retry, compensation?',
-      ]}
-    >
-      <SpaceBetween size="l">
-        <Header variant="h2">Why peak FLOPs is the wrong first number</Header>
-        <Box variant="p">
-          The instinctive question when a vendor announces a new accelerator is "how many FLOPs does
-          it do?" For modern inference workloads that question is nearly useless on its own. A
-          transformer model in the decode phase — the per-token generation loop that dominates
-          chatbot and agent latency — produces one output token at a time and, for each token,
-          reads the entire model's weights from memory. The arithmetic per byte read is small. The
-          silicon spends most of its time waiting for bytes, not executing math.
-        </Box>
-        <Box variant="p">
-          Concretely, an NVIDIA H200 SXM reaches 3,958 TFLOPS of FP8 tensor performance against
-          4.8 TB/s of HBM3e bandwidth
-          {' ('}
-          <Link
-            external
-            href="https://www.nvidia.com/en-us/data-center/h200/"
+    <SpaceBetween size="l">
+      <Container
+        header={
+          <Header
+            variant="h1"
+            description="Why peak FLOPs is the wrong first question for modern inference silicon"
           >
-            NVIDIA H200 product page
-          </Link>
-          {', accessed 2026-04-23). The ratio is roughly 825 FLOPs per byte — the ridge point of the'}
-          {' '}
-          <Link
-            external
-            href="https://dl.acm.org/doi/10.1145/1498765.1498785"
+            Beyond peak FLOPs
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>The framing problem.</strong> When a vendor announces a new accelerator, the
+            first slide is almost always a FLOPs number — FP8 peak, sparse peak, or the
+            next-precision-down peak that looks biggest. For modern inference workloads that
+            number is nearly useless on its own. A transformer in the decode phase reads the
+            entire model&apos;s weights from memory once per generated token and does a small
+            amount of arithmetic per byte read. The silicon spends most of its time waiting
+            for operands, not executing math. Peak FLOPs tells you about the ceiling; inference
+            economics live on the floor.
+          </Box>
+          <Box variant="p">
+            <strong>The concrete number.</strong> NVIDIA H200 SXM ships 3,958 TFLOPS of FP8
+            tensor performance against 4.8 TB/s of HBM3e bandwidth
+            {' ('}
+            <Link external href="https://www.nvidia.com/en-us/data-center/h200/">
+              NVIDIA H200 product page
+            </Link>
+            , accessed 2026-04-23). Divide: the ridge point is roughly 825 FLOPs per byte —
+            the boundary where a workload stops being bandwidth-bound and becomes
+            compute-bound. Decode with a modest batch size lives at 2-10 FLOPs per byte. That
+            is two orders of magnitude below the ridge. Doubling the peak FLOPs on that
+            silicon would do nothing for decode; doubling the HBM bandwidth would roughly
+            double the tokens per second.
+          </Box>
+          <Box variant="p">
+            <strong>The heterogeneity reality.</strong> Silicon has never been more varied in
+            how it delivers throughput. Arm Neoverse host cores, x86 CPUs with AMX tile
+            registers, NVIDIA Hopper and Blackwell GPUs, AWS Trainium and Inferentia,
+            Cerebras wafer-scale, Groq LPU, SambaNova RDU, and compute-in-memory devices each
+            make a different bet about how the instruction, the data, and the data shape
+            should arrive at the functional unit. &ldquo;Fastest chip&rdquo; is an ill-formed
+            question until you know which leg of that triangle your workload stresses.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Three things must arrive at the unit simultaneously — not just FLOPs"
           >
-            Roofline model (Williams, Waterman, Patterson — CACM 2009)
-          </Link>
-          . Any workload with arithmetic intensity below that number is memory-bound; adding more
-          FLOPs to the chip does nothing. LLM decode with a modest batch size lives two orders of
-          magnitude below the ridge, which is why memory bandwidth, not FLOPs, is the
-          first-order variable for inference economics.
-        </Box>
+            The instruction-data-shape triangle
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            A single FLOP happens when a functional unit executes a specified operation on a
+            specified operand. For that to happen, the architecture has to deliver three
+            things to the unit at the same clock: an <strong>instruction</strong>, the
+            <strong> data</strong>, and the <strong>shape</strong> of that data. Every modern
+            silicon architecture is a different answer to &ldquo;how do we keep this triangle
+            aligned?&rdquo;
+          </Box>
+          <TriangleDiagram />
+          <ColumnLayout columns={3} variant="text-grid">
+            <div>
+              <Box variant="h3">Instruction delivery</Box>
+              <Box variant="p">
+                The front end must fetch, decode, and issue an operation the workload wants.
+                Out-of-order host cores do this speculatively with a branch predictor and
+                BTB. GPU SMs do it with a warp scheduler and no speculation. AWS Trainium
+                does not do it at runtime at all — the Neuron compiler emits a NEFF
+                descriptor ahead of time and the runtime plays it back. Cerebras WSE-3 bakes
+                the program into per-processing-element state so there is no runtime front
+                end.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Data delivery</Box>
+              <Box variant="p">
+                The operand bytes must be resident in the tier the unit reads from. On a
+                CPU core: the register file sourced from L1. On a GPU SM: the register file
+                sourced from SMEM and (on Blackwell) TMEM. On Trainium: SBUF and PSUM. Every
+                cache miss or scratchpad miss upstream turns into either a pipeline stall
+                or a compiler-visible schedule slip — see Section 4 for the hierarchy.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Shape fit</Box>
+              <Box variant="p">
+                The operand layout — tile size, stride, alignment, precision — must match
+                what the unit expects. AMX tile registers on Intel Xeon 6 hold 16 rows of
+                up to 64 bytes. Blackwell tcgen05 reads TMEM tiles in specific shapes.
+                Trainium&apos;s systolic array consumes tiles sized by the Neuron compiler.
+                A kernel with the wrong tile either under-fills the unit or recompiles
+                into a slower fallback that does not hit tensor-core throughput.
+              </Box>
+            </div>
+          </ColumnLayout>
+          <Alert type="info">
+            Peak FLOPs implicitly assumes all three legs of the triangle are aligned for
+            free. In practice, instruction selection is the compiler&apos;s job, data
+            staging is the memory hierarchy&apos;s job, and shape fit is a property of the
+            kernel author. A silicon choice that looks strong on peak FLOPs can lose to a
+            slower chip that delivers the triangle more consistently on the target workload.
+          </Alert>
+        </SpaceBetween>
+      </Container>
 
-        <Header variant="h2">The instruction-data-shape triangle</Header>
-        <Box variant="p">
-          Saying "the workload is memory-bound" is only half the story. To land an actual
-          operation on a functional unit, three things have to arrive together:
-        </Box>
-        <Box variant="p">
-          <strong>The instruction.</strong> The ISA has to encode the operation the workload
-          wants. A matmul on a Xeon 6 core uses AMX tile-register instructions; on a Blackwell GPU
-          it uses tcgen05.mma; on Trainium it is emitted by the Neuron compiler as a systolic-array
-          descriptor. The compiler decides which of these is issued and when.
-        </Box>
-        <Box variant="p">
-          <strong>The data.</strong> The operand bytes have to be staged through the memory
-          hierarchy so they are resident in registers (or in the tier the ISA reads from) at
-          issue time. On a GPU that means SMEM then TMEM then register file. On Trainium it means
-          SBUF and PSUM. On a Xeon core it means L1D, because AMX reads operands from the tile
-          register file that is sourced from L1.
-        </Box>
-        <Box variant="p">
-          <strong>The shape.</strong> The operand layout — tile size, stride, alignment, precision
-          — has to match what the functional unit expects. A 16×16 BF16 tile that fits a tensor
-          core is a different object from a contiguous FP32 vector that fits AVX-512. A kernel
-          written against the wrong shape either recompiles to something slower or spills to a
-          fallback path.
-        </Box>
-        <Alert type="info" header="Consequence for architecture decisions">
-          Peak FLOPs assumes all three legs of the triangle are aligned for free. In practice
-          instruction selection is the compiler's job, data staging is the memory hierarchy's
-          job, and shape fit is a property of the kernel. A silicon choice that looks strong on
-          peak FLOPs can lose to a slower chip that delivers the triangle more consistently.
-        </Alert>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Workload character selects the bet — the same box looks like a different machine"
+          >
+            Heterogeneity is the organizing fact
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Consider two workloads on the same server. A payments ledger — branchy code,
+            short-lived objects, working set in L2 and L3 — lives on the front end. Branch
+            prediction accuracy and L3 hit rate are the first-order variables; the tensor
+            cores on the same chip are dark silicon for this workload. Swap to transformer
+            decode on the same box and the picture inverts. Branches are sparse and easily
+            predicted, the front end is over-provisioned, and the bottleneck is HBM
+            bandwidth staging weights into the tensor pipe. Different legs of the triangle,
+            different silicon paying attention.
+          </Box>
+          <Box variant="p">
+            This is why &ldquo;which chip is fastest&rdquo; is an ill-formed question until you
+            specify the workload. An HFT matching engine at p99.9 tick-to-trade latency, a
+            Retrieval-Augmented Generation (RAG) pipeline at tokens per second per dollar, a
+            foundation-model training run at time-to-convergence, and a mixed-tenant SaaS
+            backend at cost per request are four different architectures of problem. They
+            select different triangles and, often, different silicon families.
+          </Box>
+          <Alert type="warning" header="Stall cost is not portable">
+            A branch mispredict on an out-of-order core costs 15-20 cycles of drained
+            pipeline. A pipeline bubble on a tensor core costs the matmul&apos;s worth of
+            FLOPs that did not retire that clock. A schedule slip on Trainium is
+            compiler-visible — the NEFF encoded when each operand had to arrive, so the
+            miss shows up as a compile-time artifact rather than a runtime surprise. A
+            fabric congestion event on WSE-3 is handled by static routing, meaning either
+            the plan avoided it or the model does not fit. Transferring optimization
+            intuitions between these architectures is dangerous — &ldquo;we cut p99 by
+            raising speculation depth&rdquo; does not translate to a systolic array because
+            there is no speculation depth to raise.
+          </Alert>
+        </SpaceBetween>
+      </Container>
 
-        <Header variant="h2">Heterogeneity as the organizing fact</Header>
-        <Box variant="p">
-          Silicon has never been more heterogeneous. The live 2026 list includes Arm Neoverse
-          host cores (Graviton4 and Graviton5), x86 hosts (Intel Xeon 6 Granite Rapids, AMD
-          EPYC Turin), NVIDIA Hopper and Blackwell GPUs, AWS Trainium and Inferentia, Cerebras
-          wafer-scale, Groq LPU, SambaNova RDU, and compute-in-memory devices (Samsung HBM-PIM,
-          HyperCIM). Each of these optimizes a different subset of the triangle.
-        </Box>
-        <Box variant="p">
-          A Graviton5 core bets on predictable instruction delivery, branch prediction, and
-          large L3 for OLTP and microservice workloads — the kind of code where the retirement
-          pipeline matters more than tensor throughput. A Blackwell GPU bets on TMEM-resident
-          tiles and tcgen05 matmul — the kind of code where instruction fetch is trivial but
-          data staging is everything. Trainium bets on ahead-of-time schedule compilation —
-          the instruction stream is a fixed descriptor rather than an out-of-order reorder
-          buffer. No single architecture is "best"; the right question is which workload you
-          are sitting on and which leg of the triangle it stresses.
-        </Box>
-
-        <Header variant="h2">Workload character and stall cost</Header>
-        <Box variant="p">
-          The same heterogeneity appears inside a single box when you change the workload. A
-          business-logic workload — payments, user session state, order bookkeeping — spends its
-          time in branchy code with hard-to-predict jumps, short-lived allocations, and data
-          that fits comfortably in L2 and L3. On that workload, the front-end width and branch
-          predictor of an out-of-order core are the dominant performance variables; tensor
-          cores and HBM sit idle.
-        </Box>
-        <Box variant="p">
-          Swap the same box to transformer decode and the picture inverts. Branches are
-          predictable and sparse; the inner loop is a sequence of matmuls staged from HBM.
-          Now the front end is over-provisioned and the bottleneck is HBM bandwidth. Stall
-          costs also change: a branch mispredict on a Xeon costs tens of cycles to drain and
-          refill the pipeline; a pipeline bubble on a tensor core costs the matmul's worth of
-          FLOPs that did not retire; a SBUF miss on Trainium costs a compiler-visible schedule
-          slip. These are qualitatively different events, and architectural choices should be
-          evaluated against the event type the workload actually produces, not against an
-          abstract peak.
-        </Box>
-
-        <Header variant="h2">What to ask instead of "how many FLOPs"</Header>
-        <Box variant="p">
-          The rest of this deep dive is organized around the questions that replace peak FLOPs.
-          Section 3 defines the roofline and computes ridge points for the major silicon
-          families. Section 4 walks the seven-tier memory hierarchy. Sections 8-16 take each
-          silicon family and show which leg of the triangle it optimizes, with vendor-cited
-          evidence. Sections 20-22 cover the software techniques (KV cache, quantization,
-          disaggregated serving) that change a workload's arithmetic intensity and therefore
-          its placement on the roofline.
-        </Box>
-      </SpaceBetween>
-    </SectionShell>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="The rest of this deep dive is organized around the questions that replace peak FLOPs"
+          >
+            What to ask instead
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Section 3 defines the roofline formally and computes ridge points per
+            architecture. Section 4 walks the seven-tier memory hierarchy. Section 5 digs
+            into HBM — the tier that matters most for inference and the tier most actively
+            contested in silicon roadmaps. Sections 8-16 take each silicon family in turn
+            and show which leg of the triangle it optimizes, with Tier 1 vendor citations.
+            Sections 20-22 cover the software techniques (KV cache layout,
+            FlashAttention-class fusion, quantization, speculative decoding, disaggregated
+            serving) that change a workload&apos;s arithmetic intensity and therefore its
+            placement on the roofline.
+          </Box>
+          <Box variant="p">
+            The organizing question of the deep dive is not &ldquo;how many FLOPs does this
+            chip do&rdquo; but &ldquo;on this workload, which leg of the triangle binds, and
+            what does the silicon do when that leg is late?&rdquo;
+          </Box>
+        </SpaceBetween>
+      </Container>
+    </SpaceBetween>
   );
 }
