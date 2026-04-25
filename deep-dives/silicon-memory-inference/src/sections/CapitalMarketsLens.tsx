@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
+import Link from '@cloudscape-design/components/link';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { TickToTradeDiagram } from '../components/TickToTradeDiagram';
 
@@ -187,6 +188,164 @@ export function CapitalMarketsLens() {
             working set in tier 5 or above (LLC, L2, L1, registers) and
             never miss to tier 6 if avoidable.
           </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Adjoint Algorithmic Differentiation, twin networks, and the inference workload that lands on the deep-dive silicon"
+          >
+            Differential Machine Learning — risk and pricing as an inference problem
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>Why this section.</strong> The previous container framed
+            tail latency for trading paths. The other half of the capital
+            markets compute envelope is risk and valuation: FRTB IMA
+            (Fundamental Review of the Trading Book — Internal Models
+            Approach), CCR (Counterparty Credit Risk), CVA / xVA, ISDA SIMM
+            (Standard Initial Margin Model), and intraday RWA (Risk-
+            Weighted Asset) computation. These workloads are not
+            latency-sensitive in the tick-to-trade sense — they are
+            volume-sensitive. A bank revalues a derivatives book through
+            thousands of market scenarios per day. That is millions of
+            pricing function evaluations per book per day. Traditional
+            Monte Carlo at scale is the bottleneck. Differential Machine
+            Learning is the modern answer.
+          </Box>
+          <Box variant="p">
+            <strong>AAD — the foundation underneath everything.</strong>{' '}
+            <em>Adjoint Algorithmic Differentiation</em> is reverse-mode
+            automatic differentiation applied to a pricing function. From
+            Huge and Savine&apos;s 2020 paper:{' '}
+            <em>&ldquo;It takes the time of 2 to 5 evaluations in practice
+            to compute thousands of differentials with an efficient
+            implementation&rdquo;</em>
+            {' ('}
+            <Link external href="https://arxiv.org/abs/2005.02347">
+              Huge and Savine, &ldquo;Differential Machine Learning,&rdquo;
+              arXiv:2005.02347
+            </Link>
+            , accessed 2026-04-25, footnote 3 page 5). This is the
+            constant-time-in-risk-factors property: one reverse pass yields
+            all sensitivities at 2-5× the forward pricing cost regardless
+            of the number of input risk factors. AAD displaced
+            bumping/finite-difference Greeks at investment banks starting
+            with Giles and Glasserman&apos;s &ldquo;Smoking Adjoints&rdquo; in
+            Risk Magazine, 2006.
+          </Box>
+          <Box variant="p">
+            <strong>Differential Machine Learning — what &ldquo;differential&rdquo;
+            means.</strong> Huge and Savine, abstract:{' '}
+            <em>&ldquo;Differential ML is a general extension of supervised
+            learning, where ML models are trained on examples of not only
+            inputs and labels but also differentials of labels wrt
+            inputs.&rdquo;</em> The training labels include both the price
+            (function value) and the gradient of the price with respect to
+            inputs, computed via AAD. Networks learn the pricing function
+            and its sensitivities (Greeks) simultaneously. The mechanism is
+            a <em>twin network</em>: a feed-forward path producing the
+            price plus a backpropagation path producing the differentials,
+            both consumed by the loss function during training.
+          </Box>
+          <Alert type="success" header="The headline result, vendor-cited">
+            The Danske Bank benchmark in the paper trains a twin network on
+            8,192 samples that produces a &ldquo;virtually perfect&rdquo;
+            risk approximation — versus a vanilla neural network requiring
+            65,536 samples to produce a much rougher result. Standard
+            errors: 12.85M (classical at 64k samples) vs 1.77M
+            (differential at 8k samples) on a 200M test range. Huge and
+            Savine&apos;s framing:{' '}
+            <em>&ldquo;Differential ML performs up to thousandfold better
+            on small datasets&rdquo;</em> (paper §2 introduction page 10).
+            And:{' '}
+            <em>&ldquo;The twin network has the same degree of approximation
+            as orders of magnitude slower nested Monte-Carlo&rdquo;</em> (§2.3
+            page 13).
+          </Alert>
+          <Box variant="p">
+            <strong>Where the regulated workloads live.</strong>{' '}
+            <em>&ldquo;Regulations like XVA, CCR, FRTB or SIMM-MVA, where
+            the values and risk sensitivities of Derivatives trading books
+            are repeatedly computed in many different market states. An
+            effective pricing approximation could execute the repeated
+            computations orders of magnitude faster and resolve the
+            considerable bottlenecks of these computations&rdquo;</em>{' '}
+            (Huge and Savine 2020, page 2). FRTB IMA is the BCBS d457
+            framework, January 2019, that defines expected-shortfall
+            internal models for market risk capital
+            ({' '}
+            <Link external href="https://www.bis.org/bcbs/publ/d457.htm">
+              BCBS d457
+            </Link>
+            , accessed 2026-04-25). ISDA SIMM is the bilateral initial
+            margin standard:{' '}
+            <em>&ldquo;SIMM uses sensitivities as inputs&rdquo;</em>{' '}
+            (ISDA SIMM Methodology v2.4 §A.2, accessed 2026-04-25). Six
+            risk classes, three sensitivity types (delta, vega, curvature),
+            computed daily for every UMR-in-scope counterparty. AAD-
+            generated differentials are the natural input.
+          </Box>
+          <Alert type="info" header="The silicon implication">
+            Once the differential network is trained, inference at runtime
+            is{' '}
+            <em>&ldquo;a few matrix by vector products in limited dimension,
+            and differentiation is performed in similar time by
+            backpropagation&rdquo;</em>{' '}
+            (Huge and Savine 2020 page 2). The bank&apos;s entire
+            sensitivities-based risk pipeline — FRTB IMA scenario revaluation,
+            ISDA SIMM daily margin computation, intraday CVA / xVA — collapses
+            from heavy Monte Carlo to dense small-network inference. That
+            inference workload maps cleanly onto the silicon covered by this
+            deep dive: AWS Trainium / Inferentia for cost-optimized inference
+            (Section 16), NVIDIA GPUs for training the twin networks (Section
+            12-13), and host-CPU AMX or Graviton5 SVE2 for embedded inference
+            in the trading and risk path (Sections 9, 11). The silicon answer
+            for risk-and-valuation workloads is no longer a 10,000-CPU grid;
+            it is a fleet of inference accelerators.
+          </Alert>
+          <ExpandableSection headerText="Antoine Savine — the canonical author for the AAD-and-differential-ML literature">
+            <Box variant="p">
+              Antoine Savine has been the most influential author connecting
+              AAD to investment-bank practice. He authored{' '}
+              <em>Modern Computational Finance: AAD and Parallel Simulations
+              </em>{' '}(Wiley, 2018) and{' '}
+              <em>Modern Computational Finance: Scripting for Derivatives
+              and xVA</em>{' '}(Wiley, 2022), the canonical modern treatments
+              of AAD in derivatives pricing. The 2020 differential ML paper
+              with Brian Huge (then at Danske Bank) extended the framework
+              from differentiation to learning. As of 2026, Savine is
+              Managing Director at Barclays Fixed Income Quant Analytics;
+              previously Hudson River Trading, Danske Bank, BNP-Paribas. He
+              received the IAQF Innovation Award in 2026
+              ({' '}
+              <Link external href="https://antoinesavine.com/">
+                Antoine Savine personal site
+              </Link>
+              , accessed 2026-04-25).
+            </Box>
+          </ExpandableSection>
+          <ExpandableSection headerText="Reference implementation and where to start">
+            <Box variant="p">
+              The Huge / Savine reference TensorFlow implementation is open
+              source at{' '}
+              <Link external href="https://github.com/differential-machine-learning">
+                github.com/differential-machine-learning
+              </Link>
+              . The notebooks repo includes the complete pipeline: AAD-
+              generated training labels, twin network architecture, training
+              loop, and the autocallable + Danske netting set benchmarks
+              from the paper. Reading the paper alongside running the
+              notebooks is the fastest way for an inference-silicon engineer
+              to internalize what the workload actually looks like in TensorFlow
+              terms — useful when reasoning about how it will deploy on
+              Trainium, Inferentia, or NVIDIA inference SKUs.
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
