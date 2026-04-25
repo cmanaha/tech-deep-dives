@@ -12,11 +12,12 @@ export function TrainiumChipDiagram() {
   const chipH = 280;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Trainium2 chip layout: 8 NeuronCore-v3 with SBUF and PSUM scratchpads, 16 CC-Cores for collectives, HBM stacks, NeuronLink-v3 fabric"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}

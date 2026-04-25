@@ -11,11 +11,12 @@ export function CerebrasWaferDiagram() {
   const waferR = 150;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Cerebras WSE-3 wafer with 900,000 cores and 44 GB on-wafer SRAM versus a typical GPU package with 4-8 HBM stacks"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}

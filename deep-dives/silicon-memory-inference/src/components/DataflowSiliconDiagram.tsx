@@ -9,11 +9,12 @@ export function DataflowSiliconDiagram() {
   const colW = (width - 40) / 2;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Groq LPU dataflow tile vs SambaNova SN40L three-tier memory architecture"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}

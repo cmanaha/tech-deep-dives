@@ -9,11 +9,12 @@ export function CimDiagram() {
   const colW = (width - 60) / 2;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Conventional von Neumann path versus compute-in-memory path; arithmetic units inside the DRAM bank or memory array eliminate bus traversal"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
@@ -22,7 +23,9 @@ export function CimDiagram() {
           Compute-in-Memory — moving compute to where the data lives
         </text>
 
-        {/* Left: conventional path */}
+        {/* Left: conventional path. Panel spans x=20..(20+colW). All inner shapes
+            sized to fit inside that panel — DRAM box stays well within the panel
+            right edge so it does not clip into the right (CIM) panel. */}
         <rect x={20} y={50} width={colW} height={310} rx={8} fill="#fce7e7" stroke="#d91515" strokeWidth={2} />
         <text x={36} y={78} fontSize={13} fontWeight={700} fill="#d91515">
           Conventional von Neumann
@@ -32,24 +35,24 @@ export function CimDiagram() {
         </text>
 
         {/* Compute box */}
-        <rect x={36} y={120} width={140} height={60} rx={6} fill="#ffffff" stroke="#d91515" strokeWidth={1.5} />
-        <text x={106} y={144} fontSize={12} fontWeight={700} fill="#d91515" textAnchor="middle">CPU / GPU</text>
-        <text x={106} y={162} fontSize={10} fill="#16191f" textAnchor="middle">Functional units</text>
+        <rect x={36} y={120} width={120} height={60} rx={6} fill="#ffffff" stroke="#d91515" strokeWidth={1.5} />
+        <text x={96} y={144} fontSize={12} fontWeight={700} fill="#d91515" textAnchor="middle">CPU / GPU</text>
+        <text x={96} y={162} fontSize={10} fill="#16191f" textAnchor="middle">Functional units</text>
 
         {/* Bus */}
-        <rect x={210} y={138} width={120} height={28} rx={4} fill="#fdf3ec" stroke="#ec7211" strokeWidth={1.5} />
-        <text x={270} y={156} fontSize={11} fontWeight={700} fill="#ec7211" textAnchor="middle">DDR / HBM bus</text>
+        <rect x={170} y={138} width={80} height={28} rx={4} fill="#fdf3ec" stroke="#ec7211" strokeWidth={1.5} />
+        <text x={210} y={156} fontSize={11} fontWeight={700} fill="#ec7211" textAnchor="middle">DDR / HBM bus</text>
 
-        {/* Memory box */}
-        <rect x={364} y={120} width={140} height={60} rx={6} fill="#ffffff" stroke="#d91515" strokeWidth={1.5} />
-        <text x={434} y={144} fontSize={12} fontWeight={700} fill="#d91515" textAnchor="middle">DRAM array</text>
-        <text x={434} y={162} fontSize={10} fill="#16191f" textAnchor="middle">Bytes</text>
+        {/* Memory box — fits within the left panel (right edge at x=384 vs panel right edge ~430) */}
+        <rect x={264} y={120} width={120} height={60} rx={6} fill="#ffffff" stroke="#d91515" strokeWidth={1.5} />
+        <text x={324} y={144} fontSize={12} fontWeight={700} fill="#d91515" textAnchor="middle">DRAM array</text>
+        <text x={324} y={162} fontSize={10} fill="#16191f" textAnchor="middle">Bytes</text>
 
-        {/* Arrows */}
-        <line x1={176} y1={150} x2={209} y2={150} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowR1)" />
-        <line x1={330} y1={150} x2={363} y2={150} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowR1)" />
-        <line x1={363} y1={170} x2={331} y2={170} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowL1)" />
-        <line x1={209} y1={170} x2={177} y2={170} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowL1)" />
+        {/* Arrows — recoordinated to match the new shape positions */}
+        <line x1={156} y1={150} x2={169} y2={150} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowR1)" />
+        <line x1={250} y1={150} x2={263} y2={150} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowR1)" />
+        <line x1={263} y1={170} x2={251} y2={170} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowL1)" />
+        <line x1={169} y1={170} x2={157} y2={170} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowL1)" />
 
         <text x={36} y={210} fontSize={12} fontWeight={600} fill="#16191f">
           Energy cost
