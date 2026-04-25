@@ -332,19 +332,115 @@ export function CapitalMarketsLens() {
           <ExpandableSection headerText="Reference implementation and where to start">
             <Box variant="p">
               The Huge / Savine reference TensorFlow implementation is open
-              source at{' '}
+              source at the{' '}
               <Link external href="https://github.com/differential-machine-learning">
-                github.com/differential-machine-learning
+                differential-machine-learning
               </Link>
-              . The notebooks repo includes the complete pipeline: AAD-
-              generated training labels, twin network architecture, training
-              loop, and the autocallable + Danske netting set benchmarks
-              from the paper. Reading the paper alongside running the
-              notebooks is the fastest way for an inference-silicon engineer
-              to internalize what the workload actually looks like in TensorFlow
-              terms — useful when reasoning about how it will deploy on
-              Trainium, Inferentia, or NVIDIA inference SKUs.
+              {' '}GitHub organization. Two repositories.{' '}
+              <Link external href="https://github.com/differential-machine-learning/notebooks">
+                notebooks
+              </Link>
+              {' '}is the executable code: AAD-generated training labels,
+              twin network architecture, training loop, and the autocallable
+              plus Danske netting set benchmarks from the paper.{' '}
+              <Link external href="https://github.com/differential-machine-learning/appendices">
+                appendices
+              </Link>
+              {' '}is the formal companion: math proofs and production
+              implementation guidance. Reading the paper alongside running
+              the notebooks is the fastest way for an inference-silicon
+              engineer to internalize what the workload actually looks like
+              in TensorFlow terms — useful when reasoning about how it will
+              deploy on Trainium, Inferentia, or NVIDIA inference SKUs.
             </Box>
+          </ExpandableSection>
+          <ExpandableSection headerText="The broader research arc — beyond the 2020 paper">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                Differential Machine Learning is not one paper. The arc
+                extends across at least three publications and five
+                notebooks, each landing on a different production concern.
+                For an inference-silicon engineer evaluating where this
+                workload lands, the breadth matters as much as the
+                depth.
+              </Box>
+              <Box variant="p">
+                <strong>Notebooks repo, five files.</strong>{' '}
+                <code>DifferentialML.ipynb</code> is the original
+                TensorFlow 1.x implementation of the twin network on the
+                Bachelier benchmark.{' '}
+                <code>DifferentialMLTF2.ipynb</code> is the maintained
+                TensorFlow 2 version — described as &ldquo;TF1 code in
+                TF2&rdquo; that benefits from &ldquo;noticeable
+                performance improvement.&rdquo;{' '}
+                <code>DifferentialRegression.ipynb</code> applies the
+                technique to classical regression (polynomial regression
+                to a basket option in correlated Bachelier) and reports
+                &ldquo;massive performance improvement, without the need
+                for additional regularization, or hyperparameter
+                optimization&rdquo; — the differentials regularize the
+                fit by themselves.{' '}
+                <code>DifferentialPCA.ipynb</code> implements the
+                differential dimension reduction from the 2021 follow-up
+                article &ldquo;Axes that Matter: PCA with a
+                Difference.&rdquo;{' '}
+                <code>Bermudan5F.ipynb</code> applies differential
+                regression and PCA to Bermudan option risk factors and
+                continuation values, using AAD-simulated synthetic data
+                for automatic factor-dependence analysis.
+              </Box>
+              <Box variant="p">
+                <strong>Appendices repo, four PDFs.</strong>{' '}
+                <code>App1-LSM</code> reformulates Longstaff-Schwartz LSM
+                (Least Squares Method, 2001) in machine-learning terms and
+                demonstrates convergence under both standard and
+                differential training.{' '}
+                <code>App2-Preprocessing</code> covers differential PCA as
+                a preprocessing layer that improves training in latent
+                risk-factor representations.{' '}
+                <code>App3-Regression</code> derives standard, ridge, and
+                differential regression formulas via eigenvalue
+                decomposition — implemented verbatim in the
+                DifferentialRegression notebook.{' '}
+                <code>App4-UnsupervisedTraining</code> is the production-
+                grade companion. From the README:{' '}
+                <em>&ldquo;automated implementation of training algorithms
+                in production systems&rdquo;</em>{' '}with{' '}
+                <em>&ldquo;worst case convergence guarantees and asymptotic
+                control necessary for training a special breed of neural
+                networks without supervision.&rdquo;</em>{' '}This is the
+                document that maps onto a tier-1 bank&apos;s production
+                deployment requirements — a network that cannot be
+                manually tuned per scenario must converge by construction.
+              </Box>
+              <Box variant="p">
+                <strong>Why this expands the silicon story.</strong> Three
+                deployable shapes, not one. The twin network is a
+                feed-forward MLP with backpropagation — clean inference
+                workload for accelerators. Differential regression is
+                small-matrix linear algebra — a classical workload that
+                runs cleanly on host CPU with AMX (Advanced Matrix
+                Extensions) or SVE2 BFMMLA, no accelerator required.
+                Differential PCA is eigendecomposition with gradient
+                regularization — fits CPU with vectorized BLAS or GPU.
+                The same underlying technique scales from accelerator
+                inference to host-CPU regression to GPU-accelerated
+                eigendecomposition, and the bank&apos;s risk pipeline is
+                often the composition of all three.
+              </Box>
+              <Box variant="p">
+                <strong>TF1-graph-mode advantage matters for Trainium.</strong>{' '}
+                The notebook README explicitly notes that the TF2 version
+                runs TF1 code in TF2 (graph mode rather than idiomatic
+                eager mode) for the &ldquo;noticeable performance
+                improvement.&rdquo; A static computation graph is the
+                native target for the AWS Neuron compiler&apos;s NEFF AOT
+                compilation (Section 17). That maps the differential ML
+                training and inference workload onto Trainium without
+                friction — closer to a free port than to a research
+                project.
+              </Box>
+            </SpaceBetween>
           </ExpandableSection>
         </SpaceBetween>
       </Container>
