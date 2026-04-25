@@ -185,6 +185,79 @@ export function AmdEpycTurin() {
         header={
           <Header
             variant="h2"
+            description="The AMD analog of Intel DDIO — direct PCIe-to-L3 placement of inbound I/O data"
+          >
+            Smart Data Cache Injection (SDCI / SDCIAE)
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>What SDCI is.</strong> Smart Data Cache Injection is AMD&apos;s
+            mechanism for inserting inbound PCIe DMA data directly into L3 cache
+            instead of into DRAM. The AMD Smart Data Cache Injection White Paper
+            (publication #58725) defines it as &ldquo;a mechanism that enables
+            direct insertion of data from I/O devices into the L3 cache. By
+            directly caching data from I/O devices rather than first storing the
+            I/O data in DRAM, SDCI reduces demands on DRAM bandwidth and reduces
+            latency to the processor consuming the I/O data&rdquo;
+            ({' '}
+            <Link
+              external
+              href="https://www.amd.com/content/dam/amd/en/documents/epyc-technical-docs/white-papers/58725.pdf"
+            >
+              AMD White Paper #58725
+            </Link>
+            , accessed 2026-04-25).
+          </Box>
+          <Box variant="p">
+            <strong>How it works.</strong> SDCI rides on the PCIe-standard TLP
+            Processing Hints (TPH) feature. Endpoint devices embed Steering Tags in
+            their TLP headers; the Root Complex uses the tag to choose where the
+            inbound DMA write lands in the cache hierarchy. Linux kernel support
+            for the underlying PCIe TPH plumbing landed in Linux 6.13 (late 2024).
+          </Box>
+          <Box variant="p">
+            <strong>SDCIAE — the L3 enforcement layer.</strong> L3 SDCI Allocation
+            Enforcement is defined in AMD64 APM Volume 2 §19.4.7. AMD: SDCIAE
+            &ldquo;allows system software to control the portion of the L3 cache
+            used for SDCI devices. When enabled, SDCIAE forces all SDCI lines to be
+            placed into the L3 cache partitions identified by the highest-supported
+            L3_MASK_n register&rdquo; — cache partitioning specifically for
+            injected I/O lines, layered on the existing PQOS / Cache Allocation
+            Technology machinery
+            ({' '}
+            <Link external href="https://lwn.net/Articles/1007283/">
+              LWN — SDCIAE patch series
+            </Link>
+            , accessed 2026-04-25).
+          </Box>
+          <Alert type="info" header="The kernel surface lands in Linux 6.19">
+            Userspace controls live under the resctrl filesystem:{' '}
+            <code>/sys/fs/resctrl/info/L3/io_alloc</code> (enable / disable) and{' '}
+            <code>/sys/fs/resctrl/info/L3/io_alloc_cbm</code> (per-device Capacity
+            Bit Masks). The initial driver consumer demonstrated by AMD is the
+            Broadcom BNXT network driver. The kernel does not move bytes — the
+            hardware does. The kernel configures the policy.
+          </Alert>
+          <Box variant="p">
+            <strong>Why this matters for capital markets.</strong> Section 28
+            covers the tick-to-trade pipeline. Stage 1-2 is NIC arrival plus
+            OS-bypass receive, the latency budget on the order of hundreds of
+            nanoseconds. SDCI changes the topology underneath: an inbound packet
+            that would otherwise land in DRAM and be read back by a strategy core
+            is instead placed directly into the L3 of the target CCX, ready for
+            the strategy thread without paying the DRAM round-trip. For
+            HFT-scale workloads on AMD EPYC Turin with TPH-capable NICs, this is
+            a real wall-clock improvement at the tier where it matters.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
             description="On AWS: M8a, R8a, C8a, M8azn"
           >
             EPYC Turin on AWS

@@ -156,10 +156,53 @@ export function IntelXeon6() {
           <Box variant="p">
             <strong>AMX FP16 is the Xeon 6 specific addition.</strong> Sapphire and
             Emerald Rapids supported BF16 and INT8 only. Granite Rapids adds the
-            TDPFP16PS instruction — FP16 tile matmul. For inference workloads quantized
-            to FP16 or BF16, this brings Xeon 6 close to the per-thread tensor density
-            of an entry-level GPU for small-batch host-side inference.
+            TDPFP16PS instruction — FP16 tile matmul. For inference workloads
+            quantized to FP16 or BF16, this brings Xeon 6 close to the per-thread
+            tensor density of an entry-level GPU for small-batch host-side
+            inference.
           </Box>
+          <Box variant="p">
+            <strong>The full AMX instruction set.</strong> Tile state is configured
+            with LDTILECFG (load tile config) using a TILECFG palette — palette_id=1
+            is the only currently-defined palette, providing 8 tile registers each
+            up to 16 rows × 64 bytes. Tiles are loaded with TILELOADD / TILELOADDT1,
+            stored with TILESTORED, zeroed with TILEZERO. The matmul family is
+            TDPBF16PS (BF16 dot-product producing single-precision), TDPFP16PS
+            (FP16, Granite Rapids), and TDPBSSD / TDPBSUD / TDPBUSD / TDPBUUD for
+            INT8 with signed / unsigned operand combinations.
+          </Box>
+          <Alert type="info" header="oneDNN dispatcher tiers — the cleanest authoritative anchor for AMX generations">
+            oneDNN exposes three AMX dispatcher tiers that map cleanly onto the
+            Intel silicon timeline: <code>AVX10_1_512_AMX</code> (Sapphire Rapids
+            and Emerald Rapids — BF16 and INT8 only), <code>AVX10_1_512_AMX_FP16
+            </code> (Granite Rapids — adds TDPFP16PS), and <code>AVX10_2_AMX_2
+            </code> (next-generation Xeon, AMX-2 with extended capabilities).
+            Production code paths reach AMX through oneDNN, which is what PyTorch,
+            TensorFlow, and OpenVINO use under the hood.
+          </Alert>
+          <ExpandableSection headerText="IPEX (Intel Extension for PyTorch) is archived — AMX paths now live in mainline PyTorch">
+            <Box variant="p">
+              IPEX was Intel&apos;s historical fast path for AMX-accelerated
+              inference, providing optimized operators ahead of mainline PyTorch.
+              The IPEX repository was archived as of March 30, 2026 — the AMX
+              code paths have been upstreamed into mainline PyTorch and are
+              accessed transparently via <code>torch.compile</code> on Xeon 6
+              hardware. Production workflows that previously imported{' '}
+              <code>intel_extension_for_pytorch</code> can now drop the import
+              and rely on stock PyTorch.
+            </Box>
+          </ExpandableSection>
+          <ExpandableSection headerText="AMX as the host-side path for SLM inference">
+            <Box variant="p">
+              The natural pairing for AMX FP16 is Small Language Model inference
+              (Section 24). A 1-7B parameter SLM in FP16 fits comfortably in
+              Xeon 6&apos;s 504 MB declared L3 plus DDR5-7200 / MRDIMM-8800
+              channels. The latency profile for SLM decode on AMX is competitive
+              with entry-level GPU inference at small batch sizes — particularly
+              attractive for multi-tenant deployments where the cost of a
+              dedicated accelerator per tenant does not pencil out.
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 

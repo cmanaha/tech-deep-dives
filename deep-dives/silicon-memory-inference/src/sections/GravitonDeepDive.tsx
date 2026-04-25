@@ -172,6 +172,74 @@ export function GravitonDeepDive() {
         header={
           <Header
             variant="h2"
+            description="What AWS publishes about Graviton5 ML uplift, and what is actually doing the work"
+          >
+            ML and SLM inference on Graviton5
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>The vendor-cited number.</strong> AWS&apos;s only first-party ML
+            performance figure for Graviton5 vs Graviton4 is &ldquo;up to 35% faster
+            for machine learning workloads&rdquo; — published on the M9g preview
+            announcement and the M9g product page
+            ({' '}
+            <Link
+              external
+              href="https://www.aboutamazon.com/news/aws/aws-graviton-5-cpu-amazon-ec2"
+            >
+              About Amazon — AWS Graviton 5
+            </Link>
+            , accessed 2026-04-25). Larger uplifts in the 80%+ range that circulate
+            in coverage usually trace back to Arm&apos;s &ldquo;up to 84% in AI data
+            analytics&rdquo; V3-vs-V2 marketing claim — which is data analytics, not
+            SLM inference, and is reported by third parties rather than vendor docs.
+          </Box>
+          <Box variant="p">
+            <strong>What is actually doing the work.</strong> The instructions that
+            accelerate INT8 / BF16 matmul on Neoverse cores — SVE2 BFMMLA (BF16
+            matrix-multiply-accumulate), SMMLA / UMMLA (signed / unsigned int8
+            matrix-multiply-accumulate), and the SDOT / UDOT dot-product family —
+            are <em>not</em> new in Neoverse V3. They have been in the Neoverse V-
+            series since V1 / V2. Graviton3 (c7g) already used these in 2023 for INT8
+            quantized inference via ONNX Runtime BFMMLA / SMMLA / UMMLA kernels
+            ({' '}
+            <Link
+              external
+              href="https://github.com/aws/aws-graviton-getting-started"
+            >
+              AWS Graviton Getting Started
+            </Link>
+            , accessed 2026-04-25). Graviton5 inherits these instructions; it does
+            not introduce a new INT8 FMA accumulator.
+          </Box>
+          <Alert type="info" header="Where the SLM uplift actually comes from">
+            On Graviton5, the dominant lever for SLM (Small Language Model) inference
+            is the <strong>memory subsystem</strong>, not the ISA. DDR5-7200 versus
+            Graviton4&apos;s DDR5-5600 delivers +28.6% per-channel bandwidth. The
+            distributed L3 cache is 5.3× the per-chip total. Inter-core latency drops
+            ~33%. SLM decode is memory-bandwidth bound (Section 21), so the
+            memory-tier upgrade is the bigger lever than any matmul-instruction
+            change. SVE2 + BFMMLA / SMMLA continue to do the matmul work they were
+            already doing on Graviton3 / 4 — the cache and DRAM path is what got
+            faster.
+          </Alert>
+          <Alert type="warning" header="UNKNOWN">
+            SME (Scalable Matrix Extension) and SME2 enablement on Poseidon (Neoverse
+            V3) is not confirmed in the vendor pages fetched. Arm positions SME as a
+            future Neoverse CSS deliverable, with SME2 currently shipping on client
+            Lumex CSS. AWS has not stated SME / SME2 support on Graviton5. Treat any
+            &ldquo;Graviton5 has SME&rdquo; claim as unverified until the V3 TRM
+            confirms.
+          </Alert>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
             description="What capital-markets and inference workloads should care about"
           >
             What this means for workload placement

@@ -97,6 +97,9 @@ const MoeAndSparseActivation = React.lazy(() =>
     default: m.MoeAndSparseActivation,
   }))
 );
+const SmallLanguageModels = React.lazy(() =>
+  import('./sections/SmallLanguageModels').then((m) => ({ default: m.SmallLanguageModels }))
+);
 const QuantizationAndPrecision = React.lazy(() =>
   import('./sections/QuantizationAndPrecision').then((m) => ({
     default: m.QuantizationAndPrecision,
@@ -154,13 +157,14 @@ const sections = [
   { id: 'compute-in-memory', title: '20. Compute-in-Memory (PIM, HyperCIM)' },
   { id: 'kv-cache', title: '21. KV Cache and FlashAttention' },
   { id: 'moe', title: '22. Mixture of Experts and Sparse Activation' },
-  { id: 'quantization', title: '23. Quantization and Precision' },
-  { id: 'disaggregated', title: '24. Disaggregated Serving and Speculative Decoding' },
-  { id: 'communication', title: '25. Communication and Scale-Out' },
-  { id: 'isolation', title: '26. Isolation — NIE and MIG' },
-  { id: 'determinism', title: '27. Determinism — NEFF and GPU Reproducibility' },
-  { id: 'capital-markets', title: '28. Capital Markets Lens' },
-  { id: 'glossary-sources', title: '29. Glossary and Sources' },
+  { id: 'slm', title: '23. Small Language Models' },
+  { id: 'quantization', title: '24. Quantization and Precision' },
+  { id: 'disaggregated', title: '25. Disaggregated Serving and Speculative Decoding' },
+  { id: 'communication', title: '26. Communication and Scale-Out' },
+  { id: 'isolation', title: '27. Isolation — NIE and MIG' },
+  { id: 'determinism', title: '28. Determinism — NEFF and GPU Reproducibility' },
+  { id: 'capital-markets', title: '29. Capital Markets Lens' },
+  { id: 'glossary-sources', title: '30. Glossary and Sources' },
 ];
 
 const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
@@ -186,6 +190,7 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   'compute-in-memory': ComputeInMemory,
   'kv-cache': KvCacheAndFlashAttention,
   moe: MoeAndSparseActivation,
+  slm: SmallLanguageModels,
   quantization: QuantizationAndPrecision,
   disaggregated: DisaggregatedServingAndSpeculative,
   communication: CommunicationAndScaleOut,
