@@ -87,6 +87,11 @@ const KvCacheAndFlashAttention = React.lazy(() =>
     default: m.KvCacheAndFlashAttention,
   }))
 );
+const MoeAndSparseActivation = React.lazy(() =>
+  import('./sections/MoeAndSparseActivation').then((m) => ({
+    default: m.MoeAndSparseActivation,
+  }))
+);
 const QuantizationAndPrecision = React.lazy(() =>
   import('./sections/QuantizationAndPrecision').then((m) => ({
     default: m.QuantizationAndPrecision,
@@ -142,13 +147,14 @@ const sections = [
   { id: 'groq-sambanova', title: '18. Groq, SambaNova, Dataflow' },
   { id: 'compute-in-memory', title: '19. Compute-in-Memory (PIM, HyperCIM)' },
   { id: 'kv-cache', title: '20. KV Cache and FlashAttention' },
-  { id: 'quantization', title: '21. Quantization and Precision' },
-  { id: 'disaggregated', title: '22. Disaggregated Serving and Speculative Decoding' },
-  { id: 'communication', title: '23. Communication and Scale-Out' },
-  { id: 'isolation', title: '24. Isolation — NIE and MIG' },
-  { id: 'determinism', title: '25. Determinism — NEFF and GPU Reproducibility' },
-  { id: 'capital-markets', title: '26. Capital Markets Lens' },
-  { id: 'glossary-sources', title: '27. Glossary and Sources' },
+  { id: 'moe', title: '21. Mixture of Experts and Sparse Activation' },
+  { id: 'quantization', title: '22. Quantization and Precision' },
+  { id: 'disaggregated', title: '23. Disaggregated Serving and Speculative Decoding' },
+  { id: 'communication', title: '24. Communication and Scale-Out' },
+  { id: 'isolation', title: '25. Isolation — NIE and MIG' },
+  { id: 'determinism', title: '26. Determinism — NEFF and GPU Reproducibility' },
+  { id: 'capital-markets', title: '27. Capital Markets Lens' },
+  { id: 'glossary-sources', title: '28. Glossary and Sources' },
 ];
 
 const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
@@ -172,6 +178,7 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   'groq-sambanova': GroqSambanovaDataflow,
   'compute-in-memory': ComputeInMemory,
   'kv-cache': KvCacheAndFlashAttention,
+  moe: MoeAndSparseActivation,
   quantization: QuantizationAndPrecision,
   disaggregated: DisaggregatedServingAndSpeculative,
   communication: CommunicationAndScaleOut,
