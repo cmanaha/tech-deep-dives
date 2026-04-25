@@ -8,11 +8,12 @@ export function BlackwellDieDiagram() {
   const height = 380;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="NVIDIA Blackwell GB100: two reticle-sized dies joined by NV-HBI presented as a single logical GPU; new TMEM 256 KB per SM and tcgen05.mma instructions"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}

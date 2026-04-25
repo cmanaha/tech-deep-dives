@@ -6,25 +6,31 @@ import React from 'react';
 export function Xeon6Topology() {
   const width = 880;
   const height = 420;
-  const tileW = 220;
+  const tileW = 200;
   const tileH = 220;
-  const ioW = 100;
+  const ioW = 80;
   const ioH = 220;
-  const startX = 30;
   const tileY = 70;
+  // Layout: IO die A — gap (EMIB) — Tile 1 — gap — Tile 2 — gap — Tile 3 — gap (EMIB) — IO die B
+  const ioAX = 5;
+  const tile1X = 110;
+  const tile2X = 320;
+  const tile3X = 530;
+  const ioBX = 755;
 
-  const tiles = [0, 1, 2].map((i) => ({
-    x: startX + i * (tileW + 20),
-    label: `Compute tile ${i + 1}`,
-    nodeId: i,
-  }));
+  const tiles = [
+    { x: tile1X, label: 'Compute tile 1', nodeId: 0 },
+    { x: tile2X, label: 'Compute tile 2', nodeId: 1 },
+    { x: tile3X, label: 'Compute tile 3', nodeId: 2 },
+  ];
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Intel Xeon 6 Granite Rapids 6900P: three compute tiles on Intel 3 and two IO dies on Intel 7 joined by EMIB; SNC3 mode partitions into three NUMA domains"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
@@ -65,13 +71,13 @@ export function Xeon6Topology() {
               Tile L3
             </text>
             <text x={t.x + 14} y={tileY + 140} fontSize={11} fill="#16191f">
-              ~160 MB · 40 CHA slices · 2.5 GHz
+              ~160 MB · 40 CHA · 2.5 GHz
             </text>
             <text x={t.x + 14} y={tileY + 168} fontSize={11} fontWeight={600} fill="#16191f">
               Tile DDR5
             </text>
             <text x={t.x + 14} y={tileY + 184} fontSize={11} fill="#16191f">
-              4 channels · DDR5-6400 / MRDIMM-8800
+              4 channels · DDR5-6400 / MRDIMM
             </text>
             <text x={t.x + 14} y={tileY + 206} fontSize={10} fontStyle="italic" fill="#0972d3">
               NUMA domain
@@ -79,9 +85,9 @@ export function Xeon6Topology() {
           </g>
         ))}
 
-        {/* I/O dies (left + right edges) */}
+        {/* IO die A (left) */}
         <rect
-          x={5}
+          x={ioAX}
           y={tileY}
           width={ioW}
           height={ioH}
@@ -90,30 +96,31 @@ export function Xeon6Topology() {
           stroke="#ec7211"
           strokeWidth={2}
         />
-        <text x={5 + ioW / 2} y={tileY + 24} fontSize={11} fontWeight={700} fill="#ec7211" textAnchor="middle">
+        <text x={ioAX + ioW / 2} y={tileY + 24} fontSize={11} fontWeight={700} fill="#ec7211" textAnchor="middle">
           IO die A
         </text>
-        <text x={5 + ioW / 2} y={tileY + 44} fontSize={10} fill="#687078" textAnchor="middle">
+        <text x={ioAX + ioW / 2} y={tileY + 44} fontSize={10} fill="#687078" textAnchor="middle">
           Intel 7
         </text>
-        <text x={5 + ioW / 2} y={tileY + 76} fontSize={10} fill="#16191f" textAnchor="middle">
+        <text x={ioAX + ioW / 2} y={tileY + 76} fontSize={10} fill="#16191f" textAnchor="middle">
           PCIe 5
         </text>
-        <text x={5 + ioW / 2} y={tileY + 92} fontSize={10} fill="#16191f" textAnchor="middle">
+        <text x={ioAX + ioW / 2} y={tileY + 92} fontSize={10} fill="#16191f" textAnchor="middle">
           UPI
         </text>
-        <text x={5 + ioW / 2} y={tileY + 108} fontSize={10} fill="#16191f" textAnchor="middle">
+        <text x={ioAX + ioW / 2} y={tileY + 108} fontSize={10} fill="#16191f" textAnchor="middle">
           CXL 2.0
         </text>
-        <text x={5 + ioW / 2} y={tileY + 130} fontSize={10} fill="#16191f" textAnchor="middle">
+        <text x={ioAX + ioW / 2} y={tileY + 130} fontSize={10} fill="#16191f" textAnchor="middle">
           DSA / IAA
         </text>
-        <text x={5 + ioW / 2} y={tileY + 146} fontSize={10} fill="#16191f" textAnchor="middle">
+        <text x={ioAX + ioW / 2} y={tileY + 146} fontSize={10} fill="#16191f" textAnchor="middle">
           QAT / DLB
         </text>
 
+        {/* IO die B (right) */}
         <rect
-          x={width - ioW - 5}
+          x={ioBX}
           y={tileY}
           width={ioW}
           height={ioH}
@@ -122,27 +129,43 @@ export function Xeon6Topology() {
           stroke="#ec7211"
           strokeWidth={2}
         />
-        <text x={width - ioW / 2 - 5} y={tileY + 24} fontSize={11} fontWeight={700} fill="#ec7211" textAnchor="middle">
+        <text x={ioBX + ioW / 2} y={tileY + 24} fontSize={11} fontWeight={700} fill="#ec7211" textAnchor="middle">
           IO die B
         </text>
-        <text x={width - ioW / 2 - 5} y={tileY + 44} fontSize={10} fill="#687078" textAnchor="middle">
+        <text x={ioBX + ioW / 2} y={tileY + 44} fontSize={10} fill="#687078" textAnchor="middle">
           Intel 7
         </text>
-        <text x={width - ioW / 2 - 5} y={tileY + 76} fontSize={10} fill="#16191f" textAnchor="middle">
+        <text x={ioBX + ioW / 2} y={tileY + 76} fontSize={10} fill="#16191f" textAnchor="middle">
           PCIe 5
         </text>
-        <text x={width - ioW / 2 - 5} y={tileY + 92} fontSize={10} fill="#16191f" textAnchor="middle">
+        <text x={ioBX + ioW / 2} y={tileY + 92} fontSize={10} fill="#16191f" textAnchor="middle">
           UPI
         </text>
-        <text x={width - ioW / 2 - 5} y={tileY + 108} fontSize={10} fill="#16191f" textAnchor="middle">
+        <text x={ioBX + ioW / 2} y={tileY + 108} fontSize={10} fill="#16191f" textAnchor="middle">
           CXL 2.0
         </text>
 
-        {/* EMIB labels */}
-        <text x={(5 + ioW + tiles[0].x) / 2} y={tileY + tileH / 2} fontSize={10} fontWeight={700} fill="#037f0c" textAnchor="middle">
+        {/* EMIB labels — positioned in the dedicated gap between IO die and compute tile, no longer overlapping */}
+        <text
+          x={(ioAX + ioW + tile1X) / 2}
+          y={tileY + tileH / 2}
+          fontSize={10}
+          fontWeight={700}
+          fill="#037f0c"
+          textAnchor="middle"
+          transform={`rotate(-90 ${(ioAX + ioW + tile1X) / 2},${tileY + tileH / 2})`}
+        >
           EMIB
         </text>
-        <text x={(tiles[2].x + tileW + (width - ioW - 5)) / 2} y={tileY + tileH / 2} fontSize={10} fontWeight={700} fill="#037f0c" textAnchor="middle">
+        <text
+          x={(tile3X + tileW + ioBX) / 2}
+          y={tileY + tileH / 2}
+          fontSize={10}
+          fontWeight={700}
+          fill="#037f0c"
+          textAnchor="middle"
+          transform={`rotate(-90 ${(tile3X + tileW + ioBX) / 2},${tileY + tileH / 2})`}
+        >
           EMIB
         </text>
 

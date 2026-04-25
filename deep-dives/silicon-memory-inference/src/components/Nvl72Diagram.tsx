@@ -16,11 +16,12 @@ export function Nvl72Diagram() {
   const cellH = 22;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="GB200 NVL72: 72 Blackwell GPUs and 36 Grace CPUs in one NVLink domain via NVSwitch, 1.8 TB/s GPU-to-GPU, 130 TB/s aggregate"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
@@ -52,6 +53,28 @@ export function Nvl72Diagram() {
         <text x={gridStartX} y={gridStartY - 8} fontSize={11} fontWeight={700} fill="#0972d3">
           72 × Blackwell B200 GPUs
         </text>
+
+        {/* Connector lines: every GPU in the grid into the NVSwitch fabric.
+            Drawn at low opacity from each GPU's right edge to the fabric's left edge
+            so the all-to-all topology is visual, not just verbal. */}
+        {Array.from({ length: rows }).map((_, r) =>
+          Array.from({ length: cols }).map((__, c) => {
+            const x = gridStartX + c * (cellW + 6) + cellW;
+            const y = gridStartY + r * (cellH + 6) + cellH / 2;
+            return (
+              <line
+                key={`link-${r}-${c}`}
+                x1={x}
+                y1={y}
+                x2={420}
+                y2={145}
+                stroke="#037f0c"
+                strokeWidth={0.5}
+                opacity={0.18}
+              />
+            );
+          })
+        )}
 
         {/* NVSwitch fabric */}
         <rect x={420} y={120} width={420} height={50} rx={8} fill="#ecf7ec" stroke="#037f0c" strokeWidth={2} />

@@ -7,11 +7,12 @@ export function HopperSmDiagram() {
   const height = 360;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Hopper Streaming Multiprocessor internals: warp scheduler, register file, shared memory, L1, tensor cores, async copy and TMA, sourced from L2 and HBM3"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
