@@ -1,33 +1,217 @@
 import React from 'react';
-import { SectionShell } from '../components/SectionShell';
+import Container from '@cloudscape-design/components/container';
+import Header from '@cloudscape-design/components/header';
+import SpaceBetween from '@cloudscape-design/components/space-between';
+import Box from '@cloudscape-design/components/box';
+import ColumnLayout from '@cloudscape-design/components/column-layout';
+import Alert from '@cloudscape-design/components/alert';
+import Table from '@cloudscape-design/components/table';
+import Link from '@cloudscape-design/components/link';
+import ExpandableSection from '@cloudscape-design/components/expandable-section';
+import { GravitonComparison } from '../components/GravitonComparison';
+
+interface SpecRow {
+  spec: string;
+  g4: string;
+  g5: string;
+}
+
+const specRows: SpecRow[] = [
+  { spec: 'ISA', g4: 'ARMv9.0-A', g5: 'ARMv9.2-A' },
+  { spec: 'Process', g4: 'TSMC N4 / N5', g5: 'TSMC 3 nm' },
+  { spec: 'Cores per socket', g4: '96', g5: '192 (2×)' },
+  { spec: 'Clock', g4: '2.8 GHz (1S) / 2.7 GHz (2S)', g5: '3.1 GHz' },
+  { spec: 'L1 I / D', g4: '64 / 64 KB · 4-cycle L1D', g5: '64 / 64 KB (likely)' },
+  { spec: 'L2 per core', g4: '2 MB · 8-way · 11 cycles', g5: '2 MB' },
+  { spec: 'L3 total', g4: '36 MB SLC (CMN-700)', g5: '192 MB distributed (CMN-S3)' },
+  { spec: 'L3 per core', g4: '375 KB', g5: '1 MB (2.67×)' },
+  { spec: 'DDR speed', g4: 'DDR5-5600', g5: 'DDR5-7200 (8800 in works)' },
+  { spec: 'Peak DRAM BW', g4: '537.6 GB/s', g5: '691.2 GB/s' },
+  { spec: 'Per-core DRAM BW', g4: '5.6 GB/s', g5: '3.6 GB/s (-36%)' },
+  { spec: 'NUMA', g4: '2-socket; 138 ns cross', g5: 'Eliminated — single socket' },
+  { spec: 'Inter-core latency', g4: '30-60 ns', g5: '~33% lower (AWS claim)' },
+];
 
 export function GravitonDeepDive() {
   return (
-    <SectionShell
-      title="Graviton Deep Dive"
-      subtitle="Neoverse V2 and V3, CMN-700 and CMN-S3, distributed L3"
-      tldr={[
-        'Graviton4 is Arm Neoverse V2 on CMN-700. Graviton5 moves to Neoverse V3 on CMN-S3 with a 192 MB distributed L3.',
-        'The mesh (CMN) is the story. Distributed L3 plus a chiplet-aware fabric keeps per-core bandwidth more stable than Xeon or EPYC as core count scales.',
-        'SVE2 gives Graviton a portable vector ISA; workloads that exploit it see material gains over NEON-only code.',
-        'Graviton targets price-performance and energy-per-instruction, not peak FLOPs. Instance match: M8g, R8g, C8g, and the upcoming M9g family.',
-      ]}
-      scope={[
-        'Neoverse V2 microarchitecture: fetch / decode width, issue width, vector units, L1 / L2.',
-        'Neoverse V3 uplift: wider front end, branch prediction improvements, updated SVE2 and memory ordering.',
-        'CMN-700 vs CMN-S3 interconnect — ring-of-rings vs mesh, bisection bandwidth scaling.',
-        'Distributed L3 — why 192 MB shared across the chip behaves differently from a big monolithic LLC.',
-        'Per-core bandwidth curve as core count scales; the Graviton4 vs Graviton5 regression / uplift story.',
-        'Instance families: M8g, R8g, C8g general + memory + compute; M9g as it lands.',
-        'Workload fit: web tier, stateless services, Java / Node / Go / Rust, and the real story on AI inference on Graviton.',
-      ]}
-      panelistMap="AWS-only territory. Graviton is the silicon no other panelist has. Use this section to ground-truth the heterogeneity argument — not every workload should run on HBM; Graviton wins on service tier and some CPU-resident inference."
-      evaluationLens={[
-        'Is the workload a fit for SVE2, or scalar, or NEON-only legacy?',
-        'Does the service tier need raw per-core throughput or aggregate energy-adjusted throughput?',
-        'How does per-core bandwidth hold up at full core count on the target instance size?',
-        'Is the jump from Graviton3 to Graviton4 to Graviton5 worth the recompile and retest cost for this workload?',
-      ]}
-    />
+    <SpaceBetween size="l">
+      <Container
+        header={
+          <Header
+            variant="h1"
+            description="The Arm host silicon line that powers the largest fraction of EC2 — Neoverse V2 and V3 generations"
+          >
+            Graviton deep dive
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>What Graviton is.</strong> AWS-designed Arm Neoverse server CPUs.
+            Graviton4 (Neoverse V2) shipped at re:Invent 2023 with 96 cores per socket
+            and ARMv9.0 ISA. Graviton5 (Neoverse V3) was announced December 2025 with
+            192 cores per socket and ARMv9.2. Both target general server workloads —
+            web tier, microservices, databases, analytics — and increasingly inference
+            stacks where the host CPU runs orchestration, tokenization, and KV-cache
+            management for a GPU or Trainium accelerator.
+          </Box>
+          <Box variant="p">
+            <strong>Why this section.</strong> Graviton is the Arm point of comparison
+            for every host-side decision in a 2026 inference deployment. Its memory
+            hierarchy made one of the most aggressive architectural shifts of any
+            current host CPU between V2 and V3 — moving from a unified system-level
+            cache (SLC) to a distributed L3, and doubling cores while DRAM channels
+            stayed flat. That shift is the canonical example of the per-core bandwidth
+            regression flagged in Section 4.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Side by side — what changed and what stayed"
+          >
+            Graviton4 → Graviton5
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <GravitonComparison />
+          <Table
+            items={specRows}
+            columnDefinitions={[
+              { id: 'spec', header: 'Spec', cell: (r) => r.spec, minWidth: 180 },
+              { id: 'g4', header: 'Graviton4 (Neoverse V2)', cell: (r) => r.g4 },
+              { id: 'g5', header: 'Graviton5 (Neoverse V3)', cell: (r) => r.g5 },
+            ]}
+            variant="embedded"
+            wrapLines
+          />
+          <Box variant="small">
+            Graviton4 cache and latency numbers measured by{' '}
+            <Link
+              external
+              href="https://chipsandcheese.com/p/arms-neoverse-v2-in-awss-graviton-4"
+            >
+              Chips and Cheese — Neoverse V2
+            </Link>
+            . Graviton5 architectural facts from AWS announcements
+            ({' '}
+            <Link
+              external
+              href="https://www.aboutamazon.com/news/aws/aws-graviton-5-cpu-amazon-ec2"
+            >
+              About Amazon — Graviton 5
+            </Link>
+            ) and{' '}
+            <Link
+              external
+              href="https://www.theregister.com/2025/12/04/amazon_graviton_5/"
+            >
+              The Register
+            </Link>
+            . CMN-S3 reference{' '}
+            <Link
+              external
+              href="https://www.arm.com/products/silicon-ip-system/neoverse-interconnect/cmn-s3"
+            >
+              ARM CMN-S3
+            </Link>
+            . All accessed 2026-04-23.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Why the per-core DRAM bandwidth dropped — and what AWS did about it"
+          >
+            The cache-philosophy shift
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>Graviton4 — System Level Cache (SLC).</strong> 36 MB of L3 sits on
+            the CMN-700 mesh as a unified, shared, last-level cache. Each of the 96
+            cores effectively shares this 36 MB, which works out to ~375 KB of L3 per
+            core if you divided it evenly. The mesh has ~32 bytes/cycle bidirectional
+            bandwidth per stop. CMN-700 also requires a snoop filter sized at least
+            1.5× aggregate L2 capacity — for 96 × 2 MB L2 = 192 MB exclusive L2, the
+            snoop filter eats ~288 MB of on-mesh storage, comparable in area to the
+            SLC itself.
+          </Box>
+          <Box variant="p">
+            <strong>Graviton5 — distributed L3.</strong> 192 MB of L3 distributed
+            across the CMN-S3 mesh. At 192 cores that is exactly 1 MB of L3 per core —
+            5.3× the per-chip L3 of Graviton4 and 2.67× per-core. The shift is not
+            cosmetic. Doubling cores massively increases mesh traffic and contention
+            on a unified cache; distributing L3 across the mesh enables better
+            coherence scaling and predictable latency. AWS claims CMN-S3 delivers
+            ~33% lower inter-core latency vs Graviton4.
+          </Box>
+          <Alert type="warning" header="Per-core DRAM bandwidth dropped 36%">
+            Graviton4: 12 channels of DDR5-5600 = 537.6 GB/s aggregate divided across
+            96 cores = <strong>5.6 GB/s per core</strong>. Graviton5: 12 channels of
+            DDR5-7200 = 691.2 GB/s aggregate divided across 192 cores ={' '}
+            <strong>3.6 GB/s per core</strong>. Aggregate bandwidth went up; per-core
+            bandwidth went down. The 5.3× larger L3 is explicit compensation —
+            workloads with hot working sets that fit in L3 see &gt;100 GB/s effective
+            per-core bandwidth from cache, an order-of-magnitude shift over what they
+            would see going to DRAM. Workloads that miss L3 routinely will land worse
+            on Graviton5 than Graviton4 on a per-thread basis.
+          </Alert>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="What capital-markets and inference workloads should care about"
+          >
+            What this means for workload placement
+          </Header>
+        }
+      >
+        <ColumnLayout columns={2} variant="text-grid">
+          <div>
+            <Box variant="h3">Wins on Graviton5</Box>
+            <ul>
+              <li>Workloads with hot working sets that fit in 1 MB / core L3</li>
+              <li>KV-cache management, tokenizer fleets, embedding servers</li>
+              <li>Microservices with locality-friendly data structures</li>
+              <li>Single-socket deployments (NUMA eliminated)</li>
+              <li>Workloads sensitive to inter-core latency</li>
+            </ul>
+          </div>
+          <div>
+            <Box variant="h3">Watch out on Graviton5</Box>
+            <ul>
+              <li>Workloads streaming through datasets larger than L3</li>
+              <li>JVM-heavy GC where heap traversal misses cache</li>
+              <li>Bandwidth-per-thread-sensitive databases</li>
+              <li>Workloads that benefited from Graviton4&apos;s 5.6 GB/s per-core BW</li>
+              <li>Code that assumed cross-socket cost (it is now zero)</li>
+            </ul>
+          </div>
+        </ColumnLayout>
+        <ExpandableSection headerText="Why eliminating NUMA matters more than it looks">
+          <Box variant="p">
+            Graviton4 supported 2-socket configurations with ~138 ns cross-socket
+            latency. Many workloads (MySQL replication, JVM with a large heap, tightly
+            coupled microservices) had to be NUMA-pinned to avoid the penalty.
+            Graviton5 fits all 192 cores in a single socket — no cross-socket fabric to
+            worry about, no scheduler tuning to keep threads on the &ldquo;right&rdquo;
+            half. That is a real operational simplification, and it changes the
+            performance profile of code that previously paid implicit NUMA tax.
+          </Box>
+        </ExpandableSection>
+      </Container>
+    </SpaceBetween>
   );
 }
