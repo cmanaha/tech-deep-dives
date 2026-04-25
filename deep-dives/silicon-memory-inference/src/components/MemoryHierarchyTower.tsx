@@ -75,11 +75,12 @@ export function MemoryHierarchyTower() {
   const height = tiers.length * (rowH + rowGap) + 30;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Seven-tier memory hierarchy from register file at the top to disaggregated memory at the bottom, with per-tier bandwidth, capacity, and latency"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}

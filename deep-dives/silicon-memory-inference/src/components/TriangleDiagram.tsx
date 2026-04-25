@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   ReactFlow,
+  ReactFlowProvider,
   Node,
   Edge,
   Background,
   MarkerType,
   Position,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -105,24 +107,49 @@ const edges: Edge[] = [
   },
 ];
 
+// FitViewOnResize watches the container for size changes and re-runs fitView so the
+// React Flow coordinate system stays inside the visible area on mobile. React Flow's
+// own fitView only fires once at mount; without this hook the nodes clip off-screen
+// when the container shrinks.
+function FitViewOnResize({ containerRef }: { containerRef: React.RefObject<HTMLDivElement> }) {
+  const { fitView } = useReactFlow();
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver(() => {
+      // Defer to allow React Flow internal layout to settle before fitting.
+      requestAnimationFrame(() => fitView({ padding: 0.2, duration: 0 }));
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [containerRef, fitView]);
+  return null;
+}
+
 export function TriangleDiagram() {
+  const containerRef = useRef<HTMLDivElement>(null);
   return (
-    <div style={{ width: '100%', height: '440px', border: '1px solid #e9ebed', borderRadius: '8px' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        fitView
-        fitViewOptions={{ padding: 0.2 }}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        elementsSelectable={false}
-        zoomOnScroll={false}
-        panOnScroll={false}
-        panOnDrag={false}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Background gap={20} size={1} color="#e9ebed" />
-      </ReactFlow>
+    <div
+      ref={containerRef}
+      style={{ width: '100%', height: '440px', border: '1px solid #e9ebed', borderRadius: '8px' }}
+    >
+      <ReactFlowProvider>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          elementsSelectable={false}
+          zoomOnScroll={false}
+          panOnScroll={false}
+          panOnDrag={false}
+          proOptions={{ hideAttribution: true }}
+        >
+          <Background gap={20} size={1} color="#e9ebed" />
+          <FitViewOnResize containerRef={containerRef} />
+        </ReactFlow>
+      </ReactFlowProvider>
     </div>
   );
 }

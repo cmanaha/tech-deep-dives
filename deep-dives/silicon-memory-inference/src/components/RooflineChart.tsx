@@ -29,11 +29,12 @@ export function RooflineChart() {
   const ridgeX = 65;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Roofline model schematic: memory-bound slope on the left, compute-bound ceiling on the right, with example workloads placed along the arithmetic-intensity axis"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
@@ -76,7 +77,7 @@ export function RooflineChart() {
         />
         <text
           x={margin.left + (plotW * ridgeX) / 100 + 12}
-          y={margin.top + plotH * 0.2 + 4}
+          y={margin.top + plotH * 0.2 + 18}
           fontSize={12}
           fontWeight={700}
           fill="#232f3e"
@@ -97,7 +98,7 @@ export function RooflineChart() {
         </text>
         <text
           x={margin.left + plotW * 0.78}
-          y={margin.top + plotH * 0.15}
+          y={margin.top - 4}
           fontSize={12}
           fontWeight={600}
           fill="#0972d3"

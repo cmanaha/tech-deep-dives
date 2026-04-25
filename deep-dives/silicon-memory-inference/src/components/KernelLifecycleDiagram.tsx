@@ -35,7 +35,7 @@ const stages: Stage[] = [
   {
     num: 3,
     name: 'Device dispatch',
-    who: 'GPU front-end / NeuronCore dispatcher',
+    who: 'GPU front-end / NeuronCore',
     tier: 'On-device queue (SRAM)',
     scale: '~10s of ns',
     fill: '#fdf3ec',
@@ -80,7 +80,7 @@ const stages: Stage[] = [
 ];
 
 export function KernelLifecycleDiagram() {
-  const width = 920;
+  const width = 1240;
   const height = 360;
   const margin = { top: 50, left: 30, right: 30, bottom: 30 };
   const lane = (width - margin.left - margin.right) / stages.length;
@@ -90,11 +90,12 @@ export function KernelLifecycleDiagram() {
   const yBox = margin.top + 20;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Kernel execution lifecycle: seven stages from host issue through driver submit, device dispatch, SM scheduling, operand staging, functional unit firing, and retire/return"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
