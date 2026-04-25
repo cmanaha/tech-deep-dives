@@ -19,6 +19,11 @@ const RooflineAndArithmeticIntensity = React.lazy(() =>
 const MemoryHierarchyPrimer = React.lazy(() =>
   import('./sections/MemoryHierarchyPrimer').then((m) => ({ default: m.MemoryHierarchyPrimer }))
 );
+const KernelExecutionLifecycle = React.lazy(() =>
+  import('./sections/KernelExecutionLifecycle').then((m) => ({
+    default: m.KernelExecutionLifecycle,
+  }))
+);
 const HbmAndBandwidthWall = React.lazy(() =>
   import('./sections/HbmAndBandwidthWall').then((m) => ({ default: m.HbmAndBandwidthWall }))
 );
@@ -131,30 +136,31 @@ const sections = [
   { id: 'heterogeneity', title: '2. The Heterogeneity Fact' },
   { id: 'roofline', title: '3. Roofline and Arithmetic Intensity' },
   { id: 'memory-hierarchy', title: '4. Memory Hierarchy Primer' },
-  { id: 'hbm', title: '5. HBM and the Bandwidth Wall' },
-  { id: 'main-memory-cxl', title: '6. DDR5, MRDIMM, LPDDR5X, CXL' },
-  { id: 'chiplet-interconnect', title: '7. Chiplet and Interconnect' },
-  { id: 'graviton', title: '8. Graviton Deep Dive' },
-  { id: 'epyc-turin', title: '9. AMD EPYC Turin' },
-  { id: 'xeon-6', title: '10. Intel Xeon 6 Granite Rapids' },
-  { id: 'hopper', title: '11. NVIDIA Hopper — H100 / H200' },
-  { id: 'blackwell', title: '12. NVIDIA Blackwell — B200 / B300' },
-  { id: 'grace-blackwell', title: '13. Grace-Blackwell and UltraServer' },
-  { id: 'nvidia-compilers', title: '14. NVIDIA Compilers and Kernel Tooling' },
-  { id: 'aws-custom', title: '15. AWS Trainium, Inferentia, Neuron' },
-  { id: 'aws-compilers', title: '16. AWS Compilers and Kernel Tooling' },
-  { id: 'cerebras', title: '17. Cerebras WSE-3' },
-  { id: 'groq-sambanova', title: '18. Groq, SambaNova, Dataflow' },
-  { id: 'compute-in-memory', title: '19. Compute-in-Memory (PIM, HyperCIM)' },
-  { id: 'kv-cache', title: '20. KV Cache and FlashAttention' },
-  { id: 'moe', title: '21. Mixture of Experts and Sparse Activation' },
-  { id: 'quantization', title: '22. Quantization and Precision' },
-  { id: 'disaggregated', title: '23. Disaggregated Serving and Speculative Decoding' },
-  { id: 'communication', title: '24. Communication and Scale-Out' },
-  { id: 'isolation', title: '25. Isolation — NIE and MIG' },
-  { id: 'determinism', title: '26. Determinism — NEFF and GPU Reproducibility' },
-  { id: 'capital-markets', title: '27. Capital Markets Lens' },
-  { id: 'glossary-sources', title: '28. Glossary and Sources' },
+  { id: 'kernel-lifecycle', title: '5. Anatomy of a Kernel Execution' },
+  { id: 'hbm', title: '6. HBM and the Bandwidth Wall' },
+  { id: 'main-memory-cxl', title: '7. DDR5, MRDIMM, LPDDR5X, CXL' },
+  { id: 'chiplet-interconnect', title: '8. Chiplet and Interconnect' },
+  { id: 'graviton', title: '9. Graviton Deep Dive' },
+  { id: 'epyc-turin', title: '10. AMD EPYC Turin' },
+  { id: 'xeon-6', title: '11. Intel Xeon 6 Granite Rapids' },
+  { id: 'hopper', title: '12. NVIDIA Hopper — H100 / H200' },
+  { id: 'blackwell', title: '13. NVIDIA Blackwell — B200 / B300' },
+  { id: 'grace-blackwell', title: '14. Grace-Blackwell and UltraServer' },
+  { id: 'nvidia-compilers', title: '15. NVIDIA Compilers and Kernel Tooling' },
+  { id: 'aws-custom', title: '16. AWS Trainium, Inferentia, Neuron' },
+  { id: 'aws-compilers', title: '17. AWS Compilers and Kernel Tooling' },
+  { id: 'cerebras', title: '18. Cerebras WSE-3' },
+  { id: 'groq-sambanova', title: '19. Groq, SambaNova, Dataflow' },
+  { id: 'compute-in-memory', title: '20. Compute-in-Memory (PIM, HyperCIM)' },
+  { id: 'kv-cache', title: '21. KV Cache and FlashAttention' },
+  { id: 'moe', title: '22. Mixture of Experts and Sparse Activation' },
+  { id: 'quantization', title: '23. Quantization and Precision' },
+  { id: 'disaggregated', title: '24. Disaggregated Serving and Speculative Decoding' },
+  { id: 'communication', title: '25. Communication and Scale-Out' },
+  { id: 'isolation', title: '26. Isolation — NIE and MIG' },
+  { id: 'determinism', title: '27. Determinism — NEFF and GPU Reproducibility' },
+  { id: 'capital-markets', title: '28. Capital Markets Lens' },
+  { id: 'glossary-sources', title: '29. Glossary and Sources' },
 ];
 
 const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
@@ -162,6 +168,7 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   heterogeneity: HeterogeneityFact,
   roofline: RooflineAndArithmeticIntensity,
   'memory-hierarchy': MemoryHierarchyPrimer,
+  'kernel-lifecycle': KernelExecutionLifecycle,
   hbm: HbmAndBandwidthWall,
   'main-memory-cxl': MainMemoryAndCxl,
   'chiplet-interconnect': ChipletAndInterconnect,
