@@ -4,7 +4,7 @@ import React from 'react';
 // TSVs, the base logic die, the DRAM dies, the silicon interposer, and the PHY link.
 
 export function HbmStackDiagram() {
-  const width = 720;
+  const width = 880;
   const height = 380;
 
   const stackX = 460;
@@ -20,11 +20,12 @@ export function HbmStackDiagram() {
   const accelY = baseY - accelH;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="HBM stack cross section: 8 DRAM dies stacked on a base logic die connected to the accelerator die via through-silicon vias and a silicon interposer"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}

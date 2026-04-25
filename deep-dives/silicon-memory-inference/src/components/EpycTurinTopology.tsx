@@ -11,6 +11,8 @@ export function EpycTurinTopology() {
   const iodW = 220;
   const iodH = 100;
 
+  // Mid-row CCDs (positions 6 and 12) flank the IO die at matching offsets to
+  // keep the layout symmetric — both 10px outside the IOD perimeter on their side.
   const ccdPositions = [
     { x: cx - 320, y: 50 },
     { x: cx - 175, y: 50 },
@@ -23,17 +25,18 @@ export function EpycTurinTopology() {
     { x: cx - 30, y: 320 },
     { x: cx + 115, y: 320 },
     { x: cx + 260, y: 320 },
-    { x: cx + 200, y: 130 },
+    { x: cx + 120, y: 130 },
   ];
   const ccdW = 130;
   const ccdH = 60;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="AMD EPYC Turin topology: up to 12 CCDs each with 8 Zen 5 cores and 32 MB L3, connected to a central IO die over GMI3-Wide, with 12 DDR5 channels"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
@@ -86,6 +89,14 @@ export function EpycTurinTopology() {
         {ccdPositions.map((pos, i) => {
           const ccdCx = pos.x + ccdW / 2;
           const ccdCy = pos.y + ccdH / 2;
+          // Terminate the GMI line at the IOD perimeter, not the IOD center,
+          // so the dashed line does not pass through the IO-die label text.
+          const iodLeft = cx - iodW / 2;
+          const iodRight = cx + iodW / 2;
+          const iodTop = cy - iodH / 2;
+          const iodBottom = cy + iodH / 2;
+          const targetX = Math.max(iodLeft, Math.min(iodRight, ccdCx));
+          const targetY = Math.max(iodTop, Math.min(iodBottom, ccdCy));
           return (
             <g key={i}>
               <rect
@@ -107,12 +118,12 @@ export function EpycTurinTopology() {
               <text x={ccdCx} y={pos.y + 52} fontSize={10} fill="#687078" textAnchor="middle">
                 32 MB L3
               </text>
-              {/* GMI link line */}
+              {/* GMI link line — terminates at IOD perimeter */}
               <line
                 x1={ccdCx}
                 y1={ccdCy}
-                x2={cx}
-                y2={cy}
+                x2={targetX}
+                y2={targetY}
                 stroke="#ec7211"
                 strokeWidth={1.5}
                 strokeDasharray="4 3"

@@ -11,11 +11,12 @@ export function GravitonComparison() {
   const colH = 270;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Graviton4 vs Graviton5: 96 cores with 36 MB SLC on CMN-700 versus 192 cores with 192 MB distributed L3 on CMN-S3"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}

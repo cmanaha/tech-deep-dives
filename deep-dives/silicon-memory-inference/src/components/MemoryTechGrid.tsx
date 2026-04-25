@@ -56,11 +56,12 @@ export function MemoryTechGrid() {
   const height = boxH + 50;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Memory technology comparison: DDR5, MRDIMM, LPDDR5X, CXL with bandwidth, capacity, latency, and use case"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
