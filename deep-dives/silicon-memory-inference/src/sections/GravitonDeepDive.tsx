@@ -197,13 +197,33 @@ export function GravitonDeepDive() {
             SLM inference, and is reported by third parties rather than vendor docs.
           </Box>
           <Box variant="p">
-            <strong>What is actually doing the work.</strong> The instructions that
-            accelerate INT8 / BF16 matmul on Neoverse cores — SVE2 BFMMLA (BF16
-            matrix-multiply-accumulate), SMMLA / UMMLA (signed / unsigned int8
-            matrix-multiply-accumulate), and the SDOT / UDOT dot-product family —
-            are <em>not</em> new in Neoverse V3. They have been in the Neoverse V-
-            series since V1 / V2. Graviton3 (c7g) already used these in 2023 for INT8
-            quantized inference via ONNX Runtime BFMMLA / SMMLA / UMMLA kernels
+            <strong>What the Int8 FMA matrix accumulator actually is, and where it
+            lives.</strong> Neoverse V3 supports FEAT_I8MM, which provides the SMMLA
+            (signed), UMMLA (unsigned), and USMMLA (mixed) instructions — these are
+            the Int8 matrix-multiply-accumulate operations that multiply 4×4 8-bit
+            submatrices into 32-bit accumulators in a single instruction. They are
+            the canonical Int8 FMA accumulator that quantized SLM inference depends
+            on. V3 also supports FEAT_BF16, which provides BFMMLA (BF16
+            matrix-multiply-accumulate) and the SDOT / UDOT dot-product family.
+            Confirmed via the ARM Neoverse V3 product page
+            ({' '}
+            <Link external href="https://www.arm.com/products/silicon-ip-cpu/neoverse/neoverse-v3">
+              ARM Neoverse V3
+            </Link>
+            , accessed 2026-04-25) and the upstream GCC compiler V3 / V3AE feature
+            definitions which enumerate (I8MM, BF16, ...) for both V2 and V3.
+          </Box>
+          <Box variant="p">
+            <strong>What changed in V3 vs V2.</strong> FEAT_I8MM and FEAT_BF16 are
+            inherited from Neoverse V2 — both generations ship SMMLA / UMMLA / BFMMLA.
+            Graviton4 (V2) and Graviton5 (V3) therefore both expose the Int8 FMA
+            matrix accumulator at the ISA level. ARM positions V3 as &ldquo;double-
+            digit performance improvements over Neoverse V2 on cloud and ML
+            applications&rdquo; — roughly 13% IPC plus the platform-level upgrade.
+            The Int8 FMA accumulator is the same instruction; it just runs against a
+            faster memory hierarchy on V3. Graviton3 (c7g) already exploited these
+            instructions in 2023 for INT8 quantized inference via ONNX Runtime
+            BFMMLA / SMMLA / UMMLA kernels
             ({' '}
             <Link
               external
@@ -211,8 +231,7 @@ export function GravitonDeepDive() {
             >
               AWS Graviton Getting Started
             </Link>
-            , accessed 2026-04-25). Graviton5 inherits these instructions; it does
-            not introduce a new INT8 FMA accumulator.
+            , accessed 2026-04-25).
           </Box>
           <Alert type="info" header="Where the SLM uplift actually comes from">
             On Graviton5, the dominant lever for SLM (Small Language Model) inference
