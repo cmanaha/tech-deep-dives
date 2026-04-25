@@ -8,11 +8,12 @@ export function DeterminismDiagram() {
   const colW = (width - 60) / 2;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Trainium NEFF ahead-of-time path versus GPU determinism opt-in flags"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
@@ -38,7 +39,7 @@ export function DeterminismDiagram() {
         <text x={36} y={192} fontSize={11} fill="#16191f">• No cache contention (compiler-managed)</text>
         <text x={36} y={208} fontSize={11} fill="#16191f">• Reduction order baked into schedule</text>
         <text x={36} y={236} fontSize={12} fontWeight={600} fill="#16191f">
-          What you get
+          Outcome
         </text>
         <text x={36} y={254} fontSize={11} fill="#16191f">
           Same NEFF + same input + same silicon
@@ -70,13 +71,13 @@ export function DeterminismDiagram() {
         <text x={56 + colW} y={192} fontSize={11} fill="#16191f">• PRNG seeding + reduction order</text>
         <text x={56 + colW} y={208} fontSize={11} fill="#16191f">• Avoid atomic-add reductions</text>
         <text x={56 + colW} y={236} fontSize={12} fontWeight={600} fill="#16191f">
-          What it costs
+          Outcome
         </text>
         <text x={56 + colW} y={254} fontSize={11} fill="#16191f">
-          Throughput drop (deterministic kernels
+          Bit-exact reproducibility achievable
         </text>
         <text x={56 + colW} y={270} fontSize={11} fill="#16191f">
-          are not always the fastest)
+          → with a throughput cost
         </text>
         <text x={56 + colW} y={300} fontSize={11} fontStyle="italic" fill="#0972d3">
           Achievable, but you opt into it

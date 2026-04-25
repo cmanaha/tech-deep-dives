@@ -23,11 +23,12 @@ export function CommunicationStack() {
   const height = margin.top + layers.length * (rowH + rowGap) + 30;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Communication stack from application down to hardware: NCCL, NIXL, EFA SRD, Nitro v5"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}

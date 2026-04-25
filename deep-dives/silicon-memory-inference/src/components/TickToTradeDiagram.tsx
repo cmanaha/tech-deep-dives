@@ -16,8 +16,8 @@ interface Stage {
 const stages: Stage[] = [
   { num: 1, name: 'Tick arrives at NIC', detail: 'Multicast UDP from exchange feed handler', budget: '~hundreds of ns', fill: '#f2f8fd', border: '#0972d3' },
   { num: 2, name: 'OS-bypass receive', detail: 'Solarflare / EFA / DPDK lifts directly to user space', budget: '~hundreds of ns', fill: '#f2f8fd', border: '#0972d3' },
-  { num: 3, name: 'Decode + book update', detail: 'Order book state updated; cache-resident', budget: '~µs', fill: '#fdf3ec', border: '#ec7211' },
-  { num: 4, name: 'Strategy / inference', detail: 'Decision logic; may include AMX or accelerator inference', budget: '~µs to 10s of µs', fill: '#ecf7ec', border: '#037f0c' },
+  { num: 3, name: 'Decode + book', detail: 'Order book state updated; cache-resident', budget: '~µs', fill: '#fdf3ec', border: '#ec7211' },
+  { num: 4, name: 'Strategy / inference', detail: 'Decision logic; AMX or accelerator', budget: '~µs to 10s of µs', fill: '#ecf7ec', border: '#037f0c' },
   { num: 5, name: 'Order generation', detail: 'Build outgoing message; risk check', budget: '~hundreds of ns', fill: '#fdf3ec', border: '#ec7211' },
   { num: 6, name: 'OS-bypass send', detail: 'Write directly to NIC TX ring', budget: '~hundreds of ns', fill: '#f2f8fd', border: '#0972d3' },
   { num: 7, name: 'Order on the wire', detail: 'Out to colo switch and exchange', budget: '~hundreds of ns', fill: '#f2f8fd', border: '#0972d3' },
@@ -34,11 +34,12 @@ export function TickToTradeDiagram() {
   const yBox = margin.top + 20;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Tick-to-trade latency pipeline: market tick arrives at NIC, OS-bypass receive, decode and book update, strategy or inference, order generation, OS-bypass send, order on the wire"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}

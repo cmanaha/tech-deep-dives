@@ -8,11 +8,12 @@ export function IsolationLayers() {
   const colW = (width - 60) / 3;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Three-pillar isolation: Nitro Isolation Engine on host, MIG with TEE-I/O on NVIDIA accelerators, compiler-managed SBUF partitioning on Trainium"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
@@ -84,19 +85,19 @@ export function IsolationLayers() {
           Per-instance isolation
         </text>
         <text x={56 + colW} y={204} fontSize={11} fill="#16191f">
-          Dedicated SMs, L2 slice,
+          Dedicated SMs, L2 slice, HBM
         </text>
         <text x={56 + colW} y={220} fontSize={11} fill="#16191f">
-          HBM region + bandwidth
+          region + bandwidth + TEE-I/O
         </text>
         <text x={56 + colW} y={248} fontSize={12} fontWeight={600} fill="#16191f">
-          Confidential computing
+          Where it ships
         </text>
         <text x={56 + colW} y={266} fontSize={11} fill="#16191f">
-          TEE-I/O on Blackwell
+          A100, H100, H200, B200, B300
         </text>
         <text x={56 + colW} y={282} fontSize={11} fill="#16191f">
-          Encrypted GPU memory + NVLink
+          TEE-I/O adds encryption on Blackwell
         </text>
         <text x={56 + colW} y={310} fontSize={11} fontStyle="italic" fill="#037f0c">
           B300: up to 7 × ~34 GB
