@@ -29,11 +29,12 @@ export function MoeParamsChart() {
   const maxTotal = Math.max(...models.map((m) => m.totalB));
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Bar chart comparing total parameters versus active parameters per token across major MoE models, with top-k routing and expert count"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
@@ -59,6 +60,13 @@ export function MoeParamsChart() {
           const y = margin.top + i * (rowH + rowGap);
           const totalW = (plotW * m.totalB) / maxTotal;
           const activeW = (plotW * m.activeB) / maxTotal;
+          // Place each label inside its bar only if the bar is wide enough to
+          // physically hold the text. Otherwise render the label outside the
+          // bar, anchored at its right edge, in the matching color.
+          const totalLabel = `${m.totalB}B total`;
+          const activeLabel = `${m.activeB}B active`;
+          const totalLabelInside = totalW > 75;
+          const activeLabelInside = activeW > 80;
           return (
             <g key={m.name}>
               <text
@@ -89,27 +97,54 @@ export function MoeParamsChart() {
                 height={rowH}
                 fill="#0972d3"
               />
-              {/* Total label inside */}
-              <text
-                x={margin.left + totalW - 6}
-                y={y + 16}
-                fontSize={11}
-                fontWeight={700}
-                fill="#0972d3"
-                textAnchor="end"
-              >
-                {`${m.totalB}B total`}
-              </text>
-              {/* Active label inside */}
-              <text
-                x={margin.left + 8}
-                y={y + 32}
-                fontSize={11}
-                fontWeight={700}
-                fill="#ffffff"
-              >
-                {`${m.activeB}B active`}
-              </text>
+              {/* Total label — inside the bar (right-anchored, blue) when wide enough,
+                  otherwise outside the bar (left-anchored, blue) past its right edge. */}
+              {totalLabelInside ? (
+                <text
+                  x={margin.left + totalW - 6}
+                  y={y + 16}
+                  fontSize={11}
+                  fontWeight={700}
+                  fill="#0972d3"
+                  textAnchor="end"
+                >
+                  {totalLabel}
+                </text>
+              ) : (
+                <text
+                  x={margin.left + totalW + 6}
+                  y={y + 16}
+                  fontSize={11}
+                  fontWeight={700}
+                  fill="#0972d3"
+                  textAnchor="start"
+                >
+                  {totalLabel}
+                </text>
+              )}
+              {/* Active label — white inside the active bar when wide enough, otherwise
+                  blue and rendered outside the active bar past its right edge. */}
+              {activeLabelInside ? (
+                <text
+                  x={margin.left + 8}
+                  y={y + 32}
+                  fontSize={11}
+                  fontWeight={700}
+                  fill="#ffffff"
+                >
+                  {activeLabel}
+                </text>
+              ) : (
+                <text
+                  x={margin.left + activeW + 6}
+                  y={y + 32}
+                  fontSize={11}
+                  fontWeight={700}
+                  fill="#0972d3"
+                >
+                  {activeLabel}
+                </text>
+              )}
               {/* Routing meta to the right */}
               <text
                 x={margin.left + plotW + 10}

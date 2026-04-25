@@ -9,11 +9,12 @@ export function KvCacheDiagram() {
   const colW = (width - 60) / 2;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="KV cache size grows with layers, sequence length, and head count; MHA, GQA, and MQA reduce KV head count progressively"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}

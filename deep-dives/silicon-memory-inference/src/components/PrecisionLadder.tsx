@@ -32,11 +32,12 @@ export function PrecisionLadder() {
   const maxBytes = 8;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Precision ladder from FP64 down to FP4 with bytes per value, dynamic range, and use case"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
@@ -47,21 +48,44 @@ export function PrecisionLadder() {
         {formats.map((f, i) => {
           const y = margin.top + i * (rowH + rowGap);
           const bw = (plotW * f.bytes) / maxBytes;
+          // Bytes-per-value strings can grow ("0.5 bytes" is wider than "8 bytes"),
+          // so render the byte label inside the bar only when the bar can hold it.
+          // Always render the dynamic-range sub-line outside narrow bars so it does
+          // not collide with the notes column on the 4-bit rows.
+          const bytesLabel = `${f.bytes === 1 ? '1 byte' : `${f.bytes} bytes`}`;
+          const bytesLabelInside = bw > 60;
+          const rangeLabelInside = bw > 180;
+          // Compute where the notes label starts so the sub-line can be placed
+          // just before it when overflowing outside.
+          const notesX = margin.left + bw + 12;
           return (
             <g key={f.name}>
               <text x={margin.left - 10} y={y + 24} fontSize={12} fontWeight={700} fill="#16191f" textAnchor="end">
                 {f.name}
               </text>
               <rect x={margin.left} y={y} width={bw} height={rowH} rx={4} fill={f.fill} stroke={f.border} strokeWidth={2} />
-              <text x={margin.left + 8} y={y + 17} fontSize={11} fontWeight={700} fill={f.border}>
-                {`${f.bytes} bytes`}
-              </text>
-              <text x={margin.left + 8} y={y + 33} fontSize={10} fill="#16191f">
-                {f.range}
-              </text>
-              <text x={margin.left + bw + 12} y={y + 24} fontSize={11} fill="#687078">
+              {bytesLabelInside ? (
+                <text x={margin.left + 8} y={y + 17} fontSize={11} fontWeight={700} fill={f.border}>
+                  {bytesLabel}
+                </text>
+              ) : (
+                <text x={margin.left + bw + 6} y={y + 17} fontSize={11} fontWeight={700} fill={f.border}>
+                  {bytesLabel}
+                </text>
+              )}
+              {rangeLabelInside ? (
+                <text x={margin.left + 8} y={y + 33} fontSize={10} fill="#16191f">
+                  {f.range}
+                </text>
+              ) : null}
+              <text x={notesX} y={y + 24} fontSize={11} fill="#687078">
                 {f.notes}
               </text>
+              {!rangeLabelInside ? (
+                <text x={notesX} y={y + 38} fontSize={10} fill="#687078">
+                  {f.range}
+                </text>
+              ) : null}
             </g>
           );
         })}

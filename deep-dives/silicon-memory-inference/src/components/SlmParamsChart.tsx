@@ -34,11 +34,12 @@ export function SlmParamsChart() {
   const maxParams = 16;
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div style={{ width: '100%' }}>
       <svg
-        width={width}
+        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Small Language Model lineup with parameter counts in billions, context windows, and vendor"
         style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
