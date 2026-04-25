@@ -253,7 +253,7 @@ export function RooflineAndArithmeticIntensity() {
           workloads become compute-bound. Modern silicon generations raise FLOPs faster
           than bandwidth, so the ridge drifts right each generation and more workloads
           fall into the bandwidth-bound regime over time. This is why the bandwidth wall
-          (Section 5) is such a central story in inference silicon, and why architectures
+          (Section 6) is such a central story in inference silicon, and why architectures
           that avoid the HBM tier altogether (Cerebras, compute-in-memory) are structurally
           interesting even when their raw FLOPs numbers are lower.
         </Box>

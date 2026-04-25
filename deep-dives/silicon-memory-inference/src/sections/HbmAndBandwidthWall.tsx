@@ -88,13 +88,15 @@ export function HbmAndBandwidthWall() {
         <SpaceBetween size="m">
           <HbmStackDiagram />
           <Box variant="p">
-            An HBM3 stack exposes <strong>1,024 bits of data per stack</strong> through
-            sixteen 64-bit channels, versus 64 bits for a single DDR5 DIMM channel. Width
-            is the main reason HBM delivers TB/s-class bandwidth at relatively modest pin
-            speeds. The vertical TSVs connect the stacked DRAM dies to the base logic die,
-            which in turn connects to the accelerator over the silicon interposer. The
-            short, wide, dense electrical path is what makes HBM3 pin speeds in the
-            6.4 Gb/s range — and HBM3e pin speeds in the 8-9 Gb/s range — electrically
+            An HBM (High Bandwidth Memory) generation 3 stack exposes <strong>1,024 bits
+            of data per stack</strong> through sixteen 64-bit channels, versus 64 bits for
+            a single DDR5 DIMM (Dual In-line Memory Module) channel. Width is the main
+            reason HBM delivers TB/s-class bandwidth at relatively modest pin speeds. The
+            vertical TSVs (Through-Silicon Vias) connect the stacked DRAM (Dynamic
+            Random-Access Memory) dies to the base logic die, which in turn connects to the
+            accelerator over the silicon interposer. The short, wide, dense electrical path
+            is what makes HBM3 pin speeds in the 6.4 Gb/s range — and HBM3e pin speeds in
+            the 8-9 Gb/s range — electrically
             feasible. An off-package DDR DIMM over a PCB cannot tolerate those speeds.
           </Box>
         </SpaceBetween>

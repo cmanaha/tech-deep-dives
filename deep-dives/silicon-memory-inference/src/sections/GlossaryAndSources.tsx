@@ -115,6 +115,15 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'OS-bypass', fullForm: 'Operating System Bypass', description: 'Networking technique that lets user-space code talk directly to NIC hardware.' },
   { acronym: 'PHY', fullForm: 'Physical Layer', description: 'The lowest layer in a link — signal integrity, line coding, equalization.' },
   { acronym: 'DSA / IAA / QAT / DLB', fullForm: 'Intel on-die accelerators', description: 'Data Streaming Accelerator, In-Memory Analytics Accelerator, QuickAssist Tech, Dynamic Load Balancer — Xeon 6 IO-die-resident.' },
+  { acronym: 'CCCL', fullForm: 'CUDA Core Compute Library', description: 'NVIDIA library suite (Thrust, CUB, libcu++) providing primitives with deterministic-mode flags as of v3.1.' },
+  { acronym: 'PRNG', fullForm: 'Pseudorandom Number Generator', description: 'Deterministic algorithm producing a number stream from a seed; reproducibility requires explicit seeding.' },
+  { acronym: 'RTS 6', fullForm: 'Regulatory Technical Standards 6', description: 'MiFID II RTS covering organizational requirements for algorithmic trading firms.' },
+  { acronym: 'ICT', fullForm: 'Information and Communication Technology', description: 'EU regulatory term for IT systems; DORA addresses ICT risk management.' },
+  { acronym: 'DPDK', fullForm: 'Data Plane Development Kit', description: 'Open-source set of libraries and drivers for fast user-space packet processing — kernel-bypass networking.' },
+  { acronym: 'OLAP', fullForm: 'Online Analytical Processing', description: 'Database workload pattern for complex analytical queries; benefits from large memory footprints.' },
+  { acronym: 'RAG', fullForm: 'Retrieval-Augmented Generation', description: 'Inference pattern that retrieves context from an external store and provides it to the LLM at inference time.' },
+  { acronym: 'CX7', fullForm: 'NVIDIA ConnectX-7', description: 'NVIDIA InfiniBand / Ethernet smart NIC; common pairing with H800 in DeepSeek’s DeepEP benchmarks.' },
+  { acronym: 'SEC', fullForm: 'U.S. Securities and Exchange Commission', description: 'U.S. financial regulator. Rule 17a-4 governs broker-dealer recordkeeping.' },
 ];
 
 const sources: Source[] = [

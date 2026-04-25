@@ -33,8 +33,9 @@ export function ThesisAndFraming() {
             economics live on the floor.
           </Box>
           <Box variant="p">
-            <strong>The concrete number.</strong> NVIDIA H200 SXM ships 3,958 TFLOPS of FP8
-            tensor performance against 4.8 TB/s of HBM3e bandwidth
+            <strong>The concrete number.</strong> NVIDIA H200 SXM (Server PCIe Module form
+            factor) ships 3,958 TFLOPS of FP8 tensor performance against 4.8 TB/s of
+            HBM3e (High Bandwidth Memory generation 3e) bandwidth
             {' ('}
             <Link external href="https://www.nvidia.com/en-us/data-center/h200/">
               NVIDIA H200 product page
@@ -48,9 +49,11 @@ export function ThesisAndFraming() {
           </Box>
           <Box variant="p">
             <strong>The heterogeneity reality.</strong> Silicon has never been more varied in
-            how it delivers throughput. Arm Neoverse host cores, x86 CPUs with AMX tile
-            registers, NVIDIA Hopper and Blackwell GPUs, AWS Trainium and Inferentia,
-            Cerebras wafer-scale, Groq LPU, SambaNova RDU, and compute-in-memory devices each
+            how it delivers throughput. Arm Neoverse host cores, x86 CPUs with AMX
+            (Advanced Matrix Extensions) tile registers, NVIDIA Hopper and Blackwell GPUs,
+            AWS Trainium and Inferentia, Cerebras wafer-scale, Groq LPU (Language
+            Processing Unit), SambaNova RDU (Reconfigurable Dataflow Unit), and
+            compute-in-memory devices each
             make a different bet about how the instruction, the data, and the data shape
             should arrive at the functional unit. &ldquo;Fastest chip&rdquo; is an ill-formed
             question until you know which leg of that triangle your workload stresses.
@@ -84,21 +87,23 @@ export function ThesisAndFraming() {
               <Box variant="p">
                 The front end must fetch, decode, and issue an operation the workload wants.
                 Out-of-order host cores do this speculatively with a branch predictor and
-                BTB. GPU SMs do it with a warp scheduler and no speculation. AWS Trainium
-                does not do it at runtime at all — the Neuron compiler emits a NEFF
-                descriptor ahead of time and the runtime plays it back. Cerebras WSE-3 bakes
-                the program into per-processing-element state so there is no runtime front
-                end.
+                BTB (Branch Target Buffer). GPU SMs (Streaming Multiprocessors) do it with
+                a warp scheduler and no speculation. AWS Trainium does not do it at runtime
+                at all — the Neuron compiler emits a NEFF (Neuron Executable File Format)
+                descriptor ahead of time and the runtime plays it back. Cerebras WSE-3
+                (Wafer-Scale Engine generation 3) bakes the program into per-processing-
+                element state so there is no runtime front end.
               </Box>
             </div>
             <div>
               <Box variant="h3">Data delivery</Box>
               <Box variant="p">
                 The operand bytes must be resident in the tier the unit reads from. On a
-                CPU core: the register file sourced from L1. On a GPU SM: the register file
-                sourced from SMEM and (on Blackwell) TMEM. On Trainium: SBUF and PSUM. Every
-                cache miss or scratchpad miss upstream turns into either a pipeline stall
-                or a compiler-visible schedule slip — see Section 4 for the hierarchy.
+                CPU core: the register file sourced from L1. On a GPU SM: the register
+                file sourced from SMEM (Shared Memory) and (on Blackwell) TMEM (Tensor
+                Memory). On Trainium: SBUF (State Buffer) and PSUM (Partial Sum buffer).
+                Every cache miss or scratchpad miss upstream turns into either a pipeline
+                stall or a compiler-visible schedule slip — see Section 4 for the hierarchy.
               </Box>
             </div>
             <div>
@@ -180,7 +185,7 @@ export function ThesisAndFraming() {
         <SpaceBetween size="m">
           <Box variant="p">
             Section 3 defines the roofline formally and computes ridge points per
-            architecture. Section 4 walks the seven-tier memory hierarchy. Section 5 digs
+            architecture. Section 4 walks the seven-tier memory hierarchy. Section 6 digs
             into HBM — the tier that matters most for inference and the tier most actively
             contested in silicon roadmaps. Sections 8-16 take each silicon family in turn
             and show which leg of the triangle it optimizes, with Tier 1 vendor citations.

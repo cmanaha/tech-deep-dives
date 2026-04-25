@@ -105,7 +105,7 @@ export function MoeAndSparseActivation() {
             roofline, and it moves the comparative ranking of silicon — Cerebras gains
             because experts live in on-wafer SRAM; AWS Trn2 UltraServer gains because the
             64-chip coherent domain handles expert collectives over NeuronLink; NVIDIA
-            GB200 NVL72 was sized in part for MoE all-to-all. The bandwidth wall (Section 5)
+            GB200 NVL72 was sized in part for MoE all-to-all. The bandwidth wall (Section 6)
             still binds, but it binds against a smaller numerator.
           </Box>
           <Box variant="p">
@@ -312,7 +312,8 @@ export function MoeAndSparseActivation() {
                 is a wafer-internal event — there is no inter-node fabric to congest. This
                 is the architectural reason Cerebras&apos;s third-party-measured Llama 4
                 Maverick throughput (Artificial Analysis: 2,522 tokens/s, May 2025) sits
-                ahead of dense-equivalent GPU silicon, and it is a Zigfrid-on-the-panel
+                ahead of dense-equivalent GPU silicon, and it is a Zigfrid Zvezdin
+                (Cerebras Solution Architect, STAC London 2026 panelist)
                 talking point worth being ready for.
               </Box>
             </div>
@@ -385,7 +386,7 @@ export function MoeAndSparseActivation() {
               activates more experts due to batch dimension, decode is sparser. Several
               production stacks (NVIDIA Dynamo, SGLang, DeepSeek-V3 reference deployment)
               now disaggregate prefill and decode onto different node groups, optimizing
-              each for its profile. Section 23 covers the disaggregated serving story in
+              each for its profile. Section 24 covers the disaggregated serving story in
               detail; for MoE specifically it is the difference between paying for one
               fleet sized for the worse case and paying for two fleets each sized for
               their own case.
