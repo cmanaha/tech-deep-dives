@@ -9,7 +9,12 @@
     "build": "pnpm --filter './deep-dives/*' run build",
     "lint": "pnpm --filter './deep-dives/*' run lint && pnpm --filter @tech-deep-dives/shared run lint",
     "typecheck": "pnpm --filter './deep-dives/*' run typecheck && pnpm --filter @tech-deep-dives/shared run typecheck",
-    "test": "pnpm --filter './deep-dives/*' run test"
+    "test": "pnpm --filter './deep-dives/*' run test",
+    "gates": "bash scripts/ci.sh",
+    "audit": "bash scripts/audit.sh",
+    "audit:playwright": "bash scripts/audit.sh --with-playwright",
+    "audit:agents": "bash scripts/audit.sh --with-agents",
+    "audit:all": "bash scripts/audit.sh --with-playwright --with-agents"
   },
   "engines": {
     "node": ">=20"
@@ -18,5 +23,8 @@
     "onlyBuiltDependencies": [
       "esbuild"
     ]
+  },
+  "devDependencies": {
+    "html-validate": "^10.13.1"
   }
 }

@@ -3,7 +3,9 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/tech-deep-dives/',
+  // Relative base so the EFA dist/ can be served from any sub-path on GitHub Pages
+  // (e.g., /tech-deep-dives/efa/ in the multi-deep-dive layout).
+  base: './',
   build: {
     outDir: 'dist',
     sourcemap: true,

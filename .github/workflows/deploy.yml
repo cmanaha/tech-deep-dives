@@ -1,7 +1,7 @@
 name: Deploy to GitHub Pages
 on:
   push:
-    branches: [main]
+    branches: [main, cicd]
   workflow_dispatch:
 
 permissions:
@@ -28,9 +28,16 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm approve-builds esbuild || true
       - run: pnpm --filter @tech-deep-dives/efa build
+      - run: pnpm --filter @tech-deep-dives/silicon-memory-inference build
+      - name: Assemble Pages artifact
+        run: |
+          mkdir -p _site/efa _site/silicon-memory-inference
+          cp -r deep-dives/efa/dist/. _site/efa/
+          cp -r deep-dives/silicon-memory-inference/dist/. _site/silicon-memory-inference/
+          cp .github/pages-index.html _site/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: deep-dives/efa/dist
+          path: _site
 
   deploy:
     needs: build

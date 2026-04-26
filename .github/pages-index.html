@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tech Deep Dives — Carlos Manzanedo Rueda</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root { color-scheme: light; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        max-width: 760px;
+        margin: 4rem auto;
+        padding: 0 1.25rem;
+        line-height: 1.55;
+        color: #16191f;
+        background: #fafbfc;
+      }
+      h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+      .meta { color: #687078; font-size: 0.95rem; margin-bottom: 2rem; }
+      .card {
+        display: block;
+        padding: 1.25rem 1.5rem;
+        margin: 1rem 0;
+        border: 1px solid #e9ebed;
+        border-radius: 10px;
+        color: #0972d3;
+        text-decoration: none;
+        background: #ffffff;
+        transition: border-color 120ms ease, transform 120ms ease;
+      }
+      .card:hover { border-color: #0972d3; transform: translateY(-1px); }
+      .card-title { font-weight: 700; font-size: 1.05rem; }
+      .card-desc { color: #16191f; font-size: 0.95rem; margin-top: 0.35rem; }
+      footer { color: #687078; font-size: 0.85rem; margin-top: 3rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Tech Deep Dives</h1>
+    <p class="meta">
+      Interactive technical deep dives — Carlos Manzanedo Rueda.
+    </p>
+    <a class="card" href="./efa/">
+      <div class="card-title">Elastic Fabric Adapter (EFA)</div>
+      <div class="card-desc">
+        AWS high-performance networking for AI/ML and HPC. SRD, OS-bypass,
+        packet spraying, instance support matrix, EKS integration.
+      </div>
+    </a>
+    <a class="card" href="./silicon-memory-inference/">
+      <div class="card-title">Silicon, Memory, and Modern Inference</div>
+      <div class="card-desc">
+        Heterogeneous silicon for capital-markets inference. Memory
+        bandwidth vs peak FLOPs, kernel lifecycle, MoE, SLMs, quantization,
+        isolation, determinism, across 30 sections.
+      </div>
+    </a>
+    <footer>
+      Source:
+      <a href="https://github.com/cmanaha/tech-deep-dives">github.com/cmanaha/tech-deep-dives</a>
+    </footer>
+  </body>
+</html>

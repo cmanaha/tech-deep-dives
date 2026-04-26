@@ -53,6 +53,9 @@ export function App() {
       sections={sections}
       activeSection={activeSection}
       onSectionChange={setActiveSection}
+      siblings={[
+        { label: 'Silicon, Memory & Inference', href: '../silicon-memory-inference/' },
+      ]}
     >
       <Suspense fallback={<Spinner size="large" />}>
         <SectionComponent />

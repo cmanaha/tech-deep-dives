@@ -10,6 +10,11 @@ interface Section {
   icon?: string;
 }
 
+export interface SiblingDeepDive {
+  label: string;
+  href: string;
+}
+
 interface DeepDiveLayoutProps {
   title: string;
   subtitle?: string;
@@ -17,6 +22,11 @@ interface DeepDiveLayoutProps {
   activeSection: string;
   onSectionChange: (id: string) => void;
   children: React.ReactNode;
+  // Other deep dives in the same site, surfaced as TopNavigation utility
+  // buttons so the reader can jump from one deep dive to another without
+  // going back to the landing index. Hrefs are relative (e.g. "../efa/")
+  // so the navigation works under any sub-path on GitHub Pages.
+  siblings?: SiblingDeepDive[];
 }
 
 export function DeepDiveLayout({
@@ -26,30 +36,43 @@ export function DeepDiveLayout({
   activeSection,
   onSectionChange,
   children,
+  siblings = [],
 }: DeepDiveLayoutProps) {
   const [navOpen, setNavOpen] = useState(true);
+
+  const utilities = [
+    ...siblings.map((s) => ({
+      type: 'button' as const,
+      text: s.label,
+      href: s.href,
+      // Not external — sibling deep dives live on the same Pages site, so
+      // we want default in-tab navigation rather than the external-link icon.
+      external: false,
+    })),
+    {
+      type: 'button' as const,
+      text: 'GitHub',
+      href: 'https://github.com/cmanaha/tech-deep-dives',
+      external: true,
+    },
+  ];
 
   return (
     <>
       <TopNavigation
         identity={{
-          href: '/',
+          // Relative path back to the landing index that lists every deep
+          // dive. Works on root-domain Pages and sub-path Pages alike.
+          href: '../',
           title: 'Tech Deep Dives',
         }}
-        utilities={[
-          {
-            type: 'button',
-            text: 'GitHub',
-            href: 'https://github.com/cmanaha/tech-deep-dives',
-            external: true,
-          },
-        ]}
+        utilities={utilities}
       />
       <AppLayout
         breadcrumbs={
           <BreadcrumbGroup
             items={[
-              { text: 'Deep Dives', href: '/' },
+              { text: 'Deep Dives', href: '../' },
               { text: title, href: '#' },
             ]}
           />

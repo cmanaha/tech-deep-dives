@@ -50,8 +50,16 @@ Each deep dive directory contains:
 - **Frontend**: Vite + React 18 + TypeScript + Cloudscape Design System
 - **Diagrams**: React Flow for architecture diagrams
 - **Build**: pnpm workspaces
-- **CI**: GitHub Actions — lint, typecheck, build per deep-dive
+- **CI**: GitHub Actions — lint, typecheck, build per deep-dive (owned by Carlos, decoupled from `scripts/ci.sh`)
 - **Deploy**: Static — GitHub Pages or S3+CloudFront (TBD)
+
+## Two-Tier Quality Gates (ADR-004)
+- **Tier 1 — `scripts/ci.sh` (alias `pnpm gates`)**: deterministic local-dev gates. No LLM, no agents. Runs typecheck → lint → unit tests → build → html-validate. Fast enough for the every-commit rhythm during a session. **Never coupled to .github/workflows/** — that workflow is owned and maintained separately by Carlos.
+- **Tier 2 — `scripts/audit.sh` (alias `pnpm audit`)**: session runner. Two opt-in backends:
+  - `--with-playwright` runs deterministic browser-DOM invariants (gate-routes, gate-deep-links, gate-no-hydration-warnings, gate-react-flow-invariants, gate-content-overflow, gate-responsive-collapse, gate-single-active-nav).
+  - `--with-agents` runs LLM-driven advisory audits (render-auditor, diagram-auditor, route-auditor) that write structured markdown to `deep-dives/{topic}/audit-reports/` rather than streaming findings into orchestrator context.
+- **Ratchet principle**: every time the agent layer finds a real bug, encode it as a Tier 1 deterministic gate. Agents stay as the frontier detector; deterministic gates are the ratchet that locks gains in.
+- See `docs/adr/0004-agent-driven-quality-gates.md` for the full rationale.
 
 ## Content Philosophy
 - **Outcome-first**: Start with "what business problem does this solve?" then work backward to mechanism.
