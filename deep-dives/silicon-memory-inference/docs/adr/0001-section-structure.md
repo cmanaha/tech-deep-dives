@@ -5,14 +5,14 @@ Status: Accepted (revised from 12 → 25 → 27 sections — see Revision Histor
 
 ## Context
 
-The STAC London 2026 panel "Beyond peak FLOPs: Memory and modern inference silicon" needs a deep dive that doubles as (a) a field manual Carlos reads before the panel, and (b) a reference for ongoing customer conversations about heterogeneous silicon.
+The "Silicon, Memory, and Modern Inference" deep dive is a field manual for the heterogeneous-silicon and memory-bandwidth-vs-FLOPs tradeoff conversation in capital-markets inference. It needs to work as both (a) a reference Carlos can read end-to-end to keep architectural reasoning current, and (b) a per-section anchor for ongoing customer conversations across the silicon landscape.
 
 ## Decision
 
 The deep dive ships twenty-five top-level sections in left-side navigation, organized into eight layers. The first scaffold used twelve sections; review showed that three of them (Host Silicon, NVIDIA GPU Silicon, Alternative Paradigms) were each carrying multiple vendors' worth of content, which blocked sourcing and rendering at the level of rigor the project demands.
 
 ### Framing layer
-1. Thesis and Framing — Beyond peak FLOPs
+1. Thesis and Framing — Memory bandwidth vs peak FLOPs
 2. The Heterogeneity Fact — instruction, data, shape must land together
 3. Roofline, Arithmetic Intensity, and the Ridge Point
 
@@ -43,10 +43,10 @@ The deep dive ships twenty-five top-level sections in left-side navigation, orga
 ### AWS compiler and kernel tooling stack
 16. AWS Compilers and Kernel Tooling — torch-neuronx, JAX on Neuron, NKI, Neuron profiler
 
-### Alternative paradigms (one section per panelist territory)
-17. Cerebras WSE-3 (Zigfrid Zvezdin territory)
+### Alternative paradigms (one section per architecture)
+17. Cerebras WSE-3
 18. Groq, SambaNova, and Deterministic Dataflow
-19. Compute-in-Memory — PIM and HyperCIM (Tanya Mangoma territory)
+19. Compute-in-Memory — PIM and HyperCIM
 
 ### Software memory techniques
 20. KV Cache and FlashAttention
@@ -66,21 +66,19 @@ The deep dive ships twenty-five top-level sections in left-side navigation, orga
 
 ## Section invariants
 
-Every section ships a `SectionShell` containing:
+Every section ships:
 
 - TLDR (bulleted, one paragraph summary at the top)
-- Scope (what lives in this section — bounds the content)
-- Panelist map (which panelist this topic lands on hardest and why)
+- Cited claims with inline links and access dates
+- UNKNOWN flags for anything not yet traceable to a Tier 1 source
 - Evaluation lens (three to five questions to ask when reasoning about architectures that touch this topic)
-- Status badge (scaffold / draft / reviewed)
 
 ## Consequences
 
 - No section carries more than one vendor's story at the deepest level. Each vendor page can be sourced, fact-checked, and diagrammed independently.
-- Panel preparation is more direct: for each likely question, one section owns the ground truth.
+- For each customer-facing question about heterogeneous silicon, one section owns the ground truth.
 - Left-rail navigation is longer but linear; mobile collapse groups the layers cleanly.
-- The `SectionShell` component enforces the pattern mechanically so drift is visible.
-- Status badges let the fact-check gate see at a glance which sections still need source integration.
+- The fact-check register in `sources.md` can grade each section by tier coverage at a glance.
 
 ## Revision History
 

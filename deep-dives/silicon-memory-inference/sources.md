@@ -1,6 +1,6 @@
 # Sources — Silicon, Memory, and Modern Inference
 
-Scaffold. Sources are being accumulated in `research/stac-london-2026/` at the repo root during panel prep and will be migrated here with tier grading, inline citations, and access dates as each section graduates from scaffold to draft.
+Authoritative sources for the deep dive, organized by tier and section theme. Each cited claim in the app links back to an entry here with its access date.
 
 ## Sourcing policy (Carlos 2026-04-23)
 
@@ -37,24 +37,6 @@ Authoritative owner documentation is the first-class source. Academic papers are
 - PyTorch documentation — https://pytorch.org/docs/
 - torch.compile / Inductor — https://pytorch.org/docs/stable/torch.compiler.html
 - JAX documentation — https://docs.jax.dev/
-
-## Current stage
-
-Research materials live at `/research/stac-london-2026/`:
-
-- `ABSTRACT.md`
-- `TRACK_1_nvidia_gpu.md`
-- `TRACK_2_aws_custom_silicon.md`
-- `TRACK_3_host_silicon.md` (broad)
-- `TRACK_3a_graviton_deep_dive.md`
-- `TRACK_3b_amd_epyc_turin.md`
-- `TRACK_3c_intel_xeon_granite_rapids.md`
-- `TRACK_3d_nvidia_aws_instances.md`
-- `TRACK_3e_nvidia_200_microarch.md`
-- `TRACK_4_cerebras_pim.md`
-- `TRACK_5_memory_techniques.md`
-- `DEEP_DIVE_isolation_determinism.md`
-- `GLOSSARY.md`
 
 ## Fact-check register
 

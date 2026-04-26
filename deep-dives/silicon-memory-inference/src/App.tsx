@@ -207,10 +207,13 @@ export function App() {
   return (
     <DeepDiveLayout
       title="Silicon, Memory, and Modern Inference"
-      subtitle="Beyond peak FLOPs — a field manual for heterogeneous silicon and inference workloads"
+      subtitle="A field manual for heterogeneous silicon and the memory-bandwidth-vs-FLOPs tradeoff in modern inference"
       sections={sections}
       activeSection={activeSection}
       onSectionChange={setActiveSection}
+      siblings={[
+        { label: 'Elastic Fabric Adapter (EFA)', href: '../efa/' },
+      ]}
     >
       <Suspense fallback={<Spinner size="large" />}>
         <SectionComponent />

@@ -312,9 +312,8 @@ export function MoeAndSparseActivation() {
                 is a wafer-internal event — there is no inter-node fabric to congest. This
                 is the architectural reason Cerebras&apos;s third-party-measured Llama 4
                 Maverick throughput (Artificial Analysis: 2,522 tokens/s, May 2025) sits
-                ahead of dense-equivalent GPU silicon, and it is a Zigfrid Zvezdin
-                (Cerebras Solution Architect, STAC London 2026 panelist)
-                talking point worth being ready for.
+                ahead of dense-equivalent GPU silicon, and it is the structural
+                advantage Cerebras leans on whenever MoE inference comes up.
               </Box>
             </div>
             <div>

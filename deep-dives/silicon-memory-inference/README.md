@@ -14,7 +14,7 @@ Technical leads, solution architects, and capital-markets engineers who need to 
 
 ## Status
 
-Scaffold. Sections are placeholders awaiting research integration from `research/stac-london-2026/`.
+Drafted across 30 sections, with citations integrated and visual audits applied. Ongoing edits land on individual sections rather than the structure.
 
 ## Layout
 
@@ -34,7 +34,7 @@ Fabric (23): Communication and Scale-Out.
 Operational (24-25): Isolation (NIE / MIG), Determinism (NEFF / GPU reproducibility).
 Applied (26-27): Capital Markets Lens, Glossary and Sources.
 
-Each section carries the same invariants: TLDR, cited claims (with access date), UNKNOWN flags for unverified numbers, panelist-map callout, and evaluation-lens callout.
+Each section carries the same invariants: TLDR, cited claims (with access date), and UNKNOWN flags for unverified numbers.
 
 ## Development
 
@@ -52,4 +52,4 @@ pnpm gates
 
 ## Sources
 
-See `sources.md` for the authoritative source list. Research notes and extracted data live in `research/` (staged in `research/stac-london-2026/` at the repo root for the panel prep phase).
+See `sources.md` for the authoritative source list, organized by tier and section theme.

@@ -17,7 +17,7 @@ export function ThesisAndFraming() {
             variant="h1"
             description="Why peak FLOPs is the wrong first question for modern inference silicon"
           >
-            Beyond peak FLOPs
+            Memory bandwidth, not peak FLOPs
           </Header>
         }
       >

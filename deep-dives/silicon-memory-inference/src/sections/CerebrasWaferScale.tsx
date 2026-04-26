@@ -72,14 +72,12 @@ export function CerebrasWaferScale() {
             , accessed 2026-04-23).
           </Box>
           <Box variant="p">
-            <strong>Why this matters for the panel.</strong> Co-panelist Zigfrid
-            Zvezdin (Cerebras Solution Architect) leads with this architecture in
-            STAC discussions. The single technical claim that frames every
-            Cerebras conversation is: HBM is a bandwidth-wall problem only
-            because compute and memory are in different packages. Put them in
-            the same wafer and the wall does not exist. The economics of MoE
-            inference (Section 22) lean hard on this — experts in on-wafer SRAM
-            switch in nanoseconds, not microseconds.
+            <strong>Why this matters.</strong> The single technical claim that
+            frames every Cerebras conversation is: HBM is a bandwidth-wall
+            problem only because compute and memory are in different packages.
+            Put them in the same wafer and the wall does not exist. The
+            economics of MoE inference (Section 22) lean hard on this —
+            experts in on-wafer SRAM switch in nanoseconds, not microseconds.
           </Box>
         </SpaceBetween>
       </Container>

@@ -123,13 +123,13 @@ export function ComputeInMemory() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            HyperCIM is the company that co-panelist Tanya Mangoma represents
-            at STAC London 2026. The publicly documented HyperCIM product is
-            an LPU (Language Processing Unit) marketed as a multi-database /
+            HyperCIM is one of the companies bringing CIM-class silicon to
+            market. The publicly documented HyperCIM product is an LPU
+            (Language Processing Unit) marketed as a multi-database /
             data-fabric accelerator rather than directly as an LLM-inference
             accelerator. The architectural framing — compute placed inside
             the memory substrate — is consistent with the broader CIM thesis,
-            but the specific positioning is data-management workloads, not
+            but the public positioning is data-management workloads, not
             transformer decode
             ({' '}
             <Link external href="https://hypercim.com/">
@@ -137,16 +137,15 @@ export function ComputeInMemory() {
             </Link>
             , accessed 2026-04-24).
           </Box>
-          <Alert type="warning" header="What is UNOFFICIAL on stage">
-            If a panelist pitches HyperCIM as an MoE-inference accelerator,
-            that claim is currently UNOFFICIAL — the public materials present
-            HyperCIM as a data-fabric / multi-database LPU. The MoE framing
-            for compute-in-memory generalizes from the energy argument
-            (eliminate data movement → win on sparse activation), but the
-            specific HyperCIM-runs-MoE benchmark is not in the public record
-            we could verify. Worth engaging on stage with curiosity rather
-            than deflection — &ldquo;help me understand the MoE story&rdquo;
-            is the right framing.
+          <Alert type="warning" header="What the public record does and does not show">
+            HyperCIM-as-MoE-inference-accelerator is not a claim the public
+            materials make — they present HyperCIM as a data-fabric /
+            multi-database LPU. The MoE framing for compute-in-memory
+            generalizes from the energy argument (eliminate data movement →
+            win on sparse activation), but a specific HyperCIM-runs-MoE
+            benchmark is not in the public record we could verify. The
+            structural argument is interesting; the production benchmark is
+            not yet there.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -190,7 +189,7 @@ export function ComputeInMemory() {
             variant="h2"
             description="Where CIM fits in the 2026-2027 architecture conversation"
           >
-            The position on the panel
+            CIM in the 2026 portfolio
           </Header>
         }
       >
@@ -203,9 +202,9 @@ export function ComputeInMemory() {
           accelerator architectures from production inference fleets in 2026.
         </Box>
         <Box variant="p">
-          The right framing for the panel is to engage the energy argument as
-          structurally correct — data movement <em>is</em> the dominant cost
-          at scale — while being honest about the deployment timeline and the
+          The right framing is to engage the energy argument as structurally
+          correct — data movement <em>is</em> the dominant cost at scale —
+          while being honest about the deployment timeline and the
           operator-set constraints. AWS&apos;s position is portfolio-based:
           when CIM-class silicon is production-ready for a workload, AWS will
           be where it lands; until then, GPU and Trainium silicon serve the
