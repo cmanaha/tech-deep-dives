@@ -55,6 +55,7 @@ export function App() {
       onSectionChange={setActiveSection}
       siblings={[
         { label: 'Silicon, Memory & Inference', href: '../silicon-memory-inference/' },
+        { label: 'vLLM Inference Engine', href: '../vllm/' },
       ]}
     >
       <Suspense fallback={<Spinner size="large" />}>
