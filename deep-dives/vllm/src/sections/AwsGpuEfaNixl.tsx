@@ -70,7 +70,7 @@ export function AwsGpuEfaNixl() {
           </Box>
           <Box variant="p">
             <strong>What changed in March 2026:</strong> AWS shipped first-party support for NIXL
-            over EFA. <span>[AUTHORITATIVE: AWS What&apos;s New, Mar 19, 2026]</span>{' '}
+            over EFA. <span>[Tier-2: AWS What&apos;s New, Mar 19, 2026]</span>{' '}
             &quot;AWS announces support for NVIDIA Inference Xfer Library (NIXL) with Elastic Fabric
             Adapter (EFA) to accelerate disaggregated large language model (LLM) inference on Amazon
             EC2&quot; — available &quot;on all EFA-enabled EC2 instance types&quot; and{' '}
@@ -158,7 +158,7 @@ export function AwsGpuEfaNixl() {
             AWS-documented configuration selects <code>NixlConnector</code>, keeps the buffer on the
             GPU (<code>kv_buffer_device: cuda</code>), and forces NIXL traffic over EFA by naming the{' '}
             <code>LIBFABRIC</code> backend. The following is the producer/consumer pair from the
-            Tier-1 EC2 guide (verbatim). <span>[AUTHORITATIVE: AWS EC2 User Guide]</span>
+            Tier-1 EC2 guide (verbatim). <span>[Tier-1: AWS EC2 User Guide]</span>
           </Box>
 
           <Box variant="div">
@@ -199,7 +199,7 @@ vllm serve <your-model> \\
                 <code>kv_producer</code> on the prefiller, <code>kv_consumer</code> on the decoder.
                 The AWS sample uses <code>kv_both</code> — symmetric, where a node can act as either,
                 which is convenient for experiments where the role is not predetermined.{' '}
-                <span>[AUTHORITATIVE: AWS EC2 User Guide]</span>
+                <span>[Tier-1: AWS EC2 User Guide]</span>
               </Box>
             </div>
             <div>
@@ -216,7 +216,7 @@ vllm serve <your-model> \\
             The same <code>LIBFABRIC</code> backend name is what the NIXL benchmark
             (<code>nixlbench --backend LIBFABRIC</code>) uses to validate the EFA path before you
             ever start vLLM — a useful pre-flight to confirm the fabric works end-to-end.{' '}
-            <span>[AUTHORITATIVE: AWS EC2 User Guide]</span>
+            <span>[Tier-1: AWS EC2 User Guide]</span>
           </Alert>
         </SpaceBetween>
       </Container>
@@ -233,15 +233,15 @@ vllm serve <your-model> \\
               <ul>
                 <li>
                   NIXL <strong>version 1.0.0 or higher</strong>{' '}
-                  <span>[AUTHORITATIVE: AWS What&apos;s New]</span>
+                  <span>[Tier-2: AWS What&apos;s New]</span>
                 </li>
                 <li>
                   EFA installer <strong>version 1.47.0 or higher</strong>{' '}
-                  <span>[AUTHORITATIVE: AWS What&apos;s New]</span>
+                  <span>[Tier-2: AWS What&apos;s New]</span>
                 </li>
                 <li>
                   No additional cost on EFA-enabled instances{' '}
-                  <span>[AUTHORITATIVE: AWS What&apos;s New]</span>
+                  <span>[Tier-2: AWS What&apos;s New]</span>
                 </li>
               </ul>
             </div>
@@ -250,17 +250,17 @@ vllm serve <your-model> \\
               <ul>
                 <li>
                   Only <strong>Ubuntu 24.04 and Ubuntu 22.04</strong> base AMIs are supported{' '}
-                  <span>[AUTHORITATIVE: AWS EC2 User Guide]</span>
+                  <span>[Tier-1: AWS EC2 User Guide]</span>
                 </li>
                 <li>
                   EFA supports <strong>NIXL 1.0.0 and later</strong>; the guide currently installs
                   the EFA installer at <code>1.48.0</code> (a superset of the 1.47.0 floor){' '}
-                  <span>[AUTHORITATIVE: AWS EC2 User Guide]</span>
+                  <span>[Tier-1: AWS EC2 User Guide]</span>
                 </li>
                 <li>
                   libfabric installs to <code>/opt/amazon/efa</code>; build NIXL with{' '}
                   <code>-Dlibfabric_path=/opt/amazon/efa</code>{' '}
-                  <span>[AUTHORITATIVE: AWS EC2 User Guide]</span>
+                  <span>[Tier-1: AWS EC2 User Guide]</span>
                 </li>
               </ul>
             </div>
@@ -282,7 +282,7 @@ vllm serve <your-model> \\
         <SpaceBetween size="m">
           <Box variant="p">
             EFA and NIXL-over-EFA are available on <strong>all EFA-enabled EC2 instance types</strong>{' '}
-            <span>[AUTHORITATIVE: AWS What&apos;s New]</span>, so the selection question is really
+            <span>[Tier-2: AWS What&apos;s New]</span>, so the selection question is really
             about GPU memory (KV-cache capacity), intra-node NVLink bandwidth, and inter-node EFA
             bandwidth. The bandwidth figures below for P-family aggregate EFA are framed in the{' '}
             <strong>EFA sibling deep dive</strong>; confirm exact per-size EFA availability and GPU
@@ -326,7 +326,7 @@ vllm serve <your-model> \\
             across multiple GPUs and nodes. The recommended multi-node pattern is{' '}
             <strong>LeaderWorkerSet (LWS)</strong>, a custom Kubernetes resource that deploys vLLM in
             a distributed leader+workers configuration so a single model shard set spans several
-            nodes. <span>[SECONDARY: AWS ML Blog — vLLM DLCs on EKS]</span>
+            nodes. <span>[Tier-2: AWS ML Blog — vLLM DLCs on EKS]</span>
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -335,7 +335,7 @@ vllm serve <your-model> \\
                 A vLLM model that needs N GPUs across M nodes is not a stateless Deployment — the
                 ranks must come up together and address each other. LWS models the group as one unit
                 (one leader, K workers), which maps cleanly onto vLLM&apos;s multi-node TP/PP launch.{' '}
-                <span>[SECONDARY: AWS ML Blog]</span>
+                <span>[Tier-2: AWS ML Blog]</span>
               </Box>
             </div>
             <div>
@@ -344,13 +344,13 @@ vllm serve <your-model> \\
                 The blog calls EFA &quot;essential for distributed workloads&quot; — the same wire
                 NIXL uses. EFA-only secondary interfaces on EKS require a recent VPC CNI (Container
                 Network Interface); see the EFA sibling deep dive for the EKS attachment specifics.{' '}
-                <span>[SECONDARY: AWS ML Blog]</span>
+                <span>[Tier-2: AWS ML Blog]</span>
               </Box>
             </div>
           </ColumnLayout>
           <Alert type="info">
             The blog&apos;s worked example uses <code>P4d.24xlarge</code> nodes (8x NVIDIA A100 each)
-            in a managed node group. <span>[SECONDARY: AWS ML Blog]</span> It does not publish a
+            in a managed node group. <span>[Tier-2: AWS ML Blog]</span> It does not publish a
             concrete ECR Public image URI in-text — pull the current DLC tag from the AWS Deep
             Learning Containers reference rather than hardcoding one here.
           </Alert>
@@ -361,7 +361,7 @@ vllm serve <your-model> \\
             >
               Deploy LLMs on Amazon EKS using vLLM Deep Learning Containers (accessed 2026-06-07)
             </Link>{' '}
-            — <span>[SECONDARY: AWS ML Blog, Tier-2]</span>
+            — <span>[Tier-2: AWS ML Blog]</span>
           </Box>
         </SpaceBetween>
       </Container>
@@ -383,13 +383,13 @@ vllm serve <your-model> \\
             prefill and decode pods. The architecture configures vLLM with{' '}
             <code>&quot;kv_connector&quot;:&quot;NixlConnector&quot;</code> and libfabric backends,
             performing point-to-point KV-cache transfers coordinated by a sidecar running alongside
-            the decode instances. <span>[SECONDARY: AWS ML Blog — llm-d]</span>
+            the decode instances. <span>[Tier-2: AWS ML Blog — llm-d]</span>
           </Box>
           <Alert type="success">
             <strong>Blog-claimed headline (project/blog result, not our measurement):</strong>{' '}
             llm-d&apos;s prefill/decode disaggregation path &quot;increases tokens per second by up
             to 70% as concurrency increases compared to using a standard vLLM deployment.&quot;{' '}
-            <span>[SECONDARY: AWS ML Blog — llm-d, Tier-2; attribute to the AWS blog]</span>
+            <span>[Tier-2: AWS ML Blog — llm-d; attribute to the AWS blog]</span>
           </Alert>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -397,14 +397,14 @@ vllm serve <your-model> \\
               <Box variant="p">
                 The disaggregated-inference benchmark ran on an{' '}
                 <code>ml.p6-b200.48xlarge</code> instance (NVIDIA Blackwell B200).{' '}
-                <span>[SECONDARY: AWS ML Blog]</span>
+                <span>[Tier-2: AWS ML Blog]</span>
               </Box>
             </div>
             <div>
               <Box variant="h3">Topology tested</Box>
               <Box variant="p">
                 4 prefill pods (tensor-parallel degree 1) and 1 decode pod (tensor-parallel degree
-                4), connected via NIXL over EFA. <span>[SECONDARY: AWS ML Blog]</span> The asymmetry
+                4), connected via NIXL over EFA. <span>[Tier-2: AWS ML Blog]</span> The asymmetry
                 reflects that prefill is compute-bound and parallelizes across replicas, while
                 decode benefits from larger TP for the memory-bound generation phase (section 10).
               </Box>
@@ -417,7 +417,7 @@ vllm serve <your-model> \\
             >
               Introducing disaggregated inference on AWS powered by llm-d (accessed 2026-06-07)
             </Link>{' '}
-            — <span>[SECONDARY: AWS ML Blog, Tier-2]</span>. The Kubernetes/llm-d control-plane side
+            — <span>[Tier-2: AWS ML Blog]</span>. The Kubernetes/llm-d control-plane side
             of this is covered in <strong>section 17 (llm-d, KServe &amp; Gateway API)</strong>.
           </Box>
         </SpaceBetween>
@@ -471,7 +471,7 @@ vllm serve <your-model> \\
                 <strong>Self-referencing security group is mandatory.</strong> Every EFA instance
                 must sit in a security group with a self-referencing rule allowing all traffic to and
                 from itself, or EFA traffic fails silently. The Tier-1 NIXL guide builds exactly this
-                in Step 1. <span>[AUTHORITATIVE: AWS EC2 User Guide]</span>
+                in Step 1. <span>[Tier-1: AWS EC2 User Guide]</span>
               </Alert>
               <Alert type="warning">
                 <strong>Same AZ only.</strong> EFA does not cross Availability Zone or VPC
@@ -481,13 +481,13 @@ vllm serve <your-model> \\
               <Alert type="warning">
                 <strong>Provision extra disk for the CUDA toolkit.</strong> The guide warns to add
                 10–20 GiB or the NVIDIA driver / CUDA install fails with{' '}
-                <code>insufficient disk space</code>. <span>[AUTHORITATIVE: AWS EC2 User Guide]</span>
+                <code>insufficient disk space</code>. <span>[Tier-1: AWS EC2 User Guide]</span>
               </Alert>
               <Alert type="info">
                 <strong>Validate the fabric before vLLM.</strong> Run{' '}
                 <code>nixlbench --backend LIBFABRIC --initiator_seg_type VRAM</code> across two hosts
                 first. If that GPU-to-GPU transfer does not run clean, vLLM&apos;s NixlConnector will
-                not either. <span>[AUTHORITATIVE: AWS EC2 User Guide]</span>
+                not either. <span>[Tier-1: AWS EC2 User Guide]</span>
               </Alert>
             </SpaceBetween>
           </ExpandableSection>

@@ -227,7 +227,7 @@ response = litellm.completion(
           <Alert type="warning" header="Operational caution — LiteLLM PyPI supply-chain compromise (March 2026)">
             <SpaceBetween size="s">
               <Box variant="p">
-                <strong>[SECONDARY / security reporting]</strong> &mdash; this is an operational
+                <strong>[Tier-3 / security reporting]</strong> &mdash; this is an operational
                 caution about the <em>LiteLLM package</em>, not a statement about vLLM. In late March
                 2026, malicious versions of the <code>litellm</code> package were published to PyPI
                 outside the normal release process and quarantined after a short window. Multiple

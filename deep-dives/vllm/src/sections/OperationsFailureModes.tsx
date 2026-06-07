@@ -247,7 +247,7 @@ const ROWS: FailureRow[] = [
       'A compromised gateway dependency in front of vLLM, not a fault in the engine itself &mdash; e.g. a malicious package version at the proxy tier.',
     cause: (
       <Box variant="p">
-        <Badge color="grey">SECONDARY</Badge> The gateway is its own attack surface. A reported LiteLLM
+        <Badge color="grey">Tier-3</Badge> The gateway is its own attack surface. A reported LiteLLM
         PyPI supply-chain compromise (<strong>section 19</strong>) is a property of the gateway&apos;s
         dependency chain &mdash; infer nothing about vLLM&apos;s posture from it. The lesson is that
         everything you bolt in front of the engine widens the blast radius.
@@ -492,7 +492,7 @@ export function OperationsFailureModes() {
                 </li>
                 <li>
                   <strong>Gateway supply-chain risk</strong> &mdash;{' '}
-                  <Badge color="grey">SECONDARY</Badge> security reporting about the gateway tier, not
+                  <Badge color="grey">Tier-3</Badge> security reporting about the gateway tier, not
                   the engine. Full advisory citations live in <strong>section 19</strong>; nothing here
                   implies anything about vLLM&apos;s own security posture.
                 </li>
