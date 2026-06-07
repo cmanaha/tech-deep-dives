@@ -213,6 +213,7 @@ export function App() {
       onSectionChange={setActiveSection}
       siblings={[
         { label: 'Elastic Fabric Adapter (EFA)', href: '../efa/' },
+        { label: 'vLLM Inference Engine', href: '../vllm/' },
       ]}
     >
       <Suspense fallback={<Spinner size="large" />}>

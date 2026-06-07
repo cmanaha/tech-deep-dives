@@ -29,11 +29,13 @@ jobs:
       - run: pnpm approve-builds esbuild || true
       - run: pnpm --filter @tech-deep-dives/efa build
       - run: pnpm --filter @tech-deep-dives/silicon-memory-inference build
+      - run: pnpm --filter @tech-deep-dives/vllm build
       - name: Assemble Pages artifact
         run: |
-          mkdir -p _site/efa _site/silicon-memory-inference
+          mkdir -p _site/efa _site/silicon-memory-inference _site/vllm
           cp -r deep-dives/efa/dist/. _site/efa/
           cp -r deep-dives/silicon-memory-inference/dist/. _site/silicon-memory-inference/
+          cp -r deep-dives/vllm/dist/. _site/vllm/
           cp .github/pages-index.html _site/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
