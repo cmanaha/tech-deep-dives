@@ -8,6 +8,106 @@ import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
 import Link from '@cloudscape-design/components/link';
 
+function PrefixReuseDiagram() {
+  const blue = '#0972d3';
+  const green = '#1d8102';
+  const secondary = '#5f6b7a';
+  const text = '#16191f';
+  const blueFill = '#f2f8fd';
+  const greenFill = '#e8f5e9';
+  const amberFill = '#fbf3e6';
+  const border = '#879596';
+
+  const bw = 160; // block width
+  const bh = 56;  // block height
+  const gap = 12;
+  const startX = 40;
+
+  const blockLabels = [
+    ['block 0', '[system prompt]'],
+    ['block 1', '[retrieved doc tokens]'],
+    ['block 2', '[retrieved doc tokens]'],
+  ];
+
+  const reqABlock3 = ['block 3', '"...what is X?"'];
+  const reqBBlock3 = ['block 3', '"...how many Y?"'];
+
+  const rowA_Y = 50;
+  const rowB_Y = 230;
+
+  function renderBlocks(y: number, fills: string[], block3Label: string[]) {
+    return Array.from({ length: 4 }, (_, i) => {
+      const x = startX + i * (bw + gap);
+      const labels = i < 3 ? blockLabels[i] : block3Label;
+      return (
+        <g key={i}>
+          <rect x={x} y={y} width={bw} height={bh} rx={6} fill={fills[i]} stroke={border} strokeWidth={1.2} />
+          <text x={x + bw / 2} y={y + 22} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">{labels[0]}</text>
+          <text x={x + bw / 2} y={y + 40} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">{labels[1]}</text>
+        </g>
+      );
+    });
+  }
+
+  return (
+    <svg
+      role="img"
+      aria-labelledby="prefix-reuse-title"
+      style={{ width: '100%', height: 'auto' }}
+      viewBox="0 0 780 380"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title id="prefix-reuse-title">Diagram showing two requests sharing prefix blocks via automatic prefix caching</title>
+      <defs>
+        <marker id="arrow-down" markerWidth="8" markerHeight="8" refX="4" refY="8" orient="auto">
+          <path d="M0,0 L4,8 L8,0" fill={blue} />
+        </marker>
+      </defs>
+
+      {/* Request A label */}
+      <text x={startX} y={rowA_Y - 14} fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">Request A — full prefill (cold)</text>
+
+      {/* Request A blocks */}
+      {renderBlocks(rowA_Y, [blueFill, blueFill, blueFill, amberFill], reqABlock3)}
+
+      {/* "computed" labels below each block */}
+      {Array.from({ length: 4 }, (_, i) => (
+        <text key={`comp-${i}`} x={startX + i * (bw + gap) + bw / 2} y={rowA_Y + bh + 16} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">computed</text>
+      ))}
+
+      {/* Arrows down from blocks 0-2 */}
+      {Array.from({ length: 3 }, (_, i) => {
+        const cx = startX + i * (bw + gap) + bw / 2;
+        return <line key={`arr-${i}`} x1={cx} y1={rowA_Y + bh + 22} x2={cx} y2={rowA_Y + bh + 42} stroke={blue} strokeWidth={1.5} markerEnd="url(#arrow-down)" />;
+      })}
+
+      {/* Hash chain annotation */}
+      <text x={startX} y={rowA_Y + bh + 62} fontSize={12} fill={blue} fontFamily="sans-serif" fontWeight="bold">hash chain: h0 → h1 → h2 (blocks stored, keyed by hash)</text>
+
+      {/* Separator */}
+      <line x1={startX} y1={rowB_Y - 24} x2={740} y2={rowB_Y - 24} stroke={border} strokeWidth={0.8} strokeDasharray="4 3" />
+
+      {/* Request B label */}
+      <text x={startX} y={rowB_Y - 6} fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">Request B — shares prefix, different question</text>
+
+      {/* Request B blocks */}
+      {renderBlocks(rowB_Y + 8, [greenFill, greenFill, greenFill, amberFill], reqBBlock3)}
+
+      {/* HIT labels below blocks 0-2 */}
+      {['h0 HIT', 'h1 HIT', 'h2 HIT'].map((label, i) => (
+        <text key={`hit-${i}`} x={startX + i * (bw + gap) + bw / 2} y={rowB_Y + 8 + bh + 18} textAnchor="middle" fontSize={12} fontWeight="bold" fill={green} fontFamily="sans-serif">{label}</text>
+      ))}
+
+      {/* "reused, zero compute" annotation */}
+      <text x={startX + 3 * (bw + gap) - 20} y={rowB_Y + 8 + bh + 18} textAnchor="end" fontSize={11} fill={green} fontFamily="sans-serif">← reused, zero compute</text>
+
+      {/* Divergence annotation */}
+      <text x={startX + 3 * (bw + gap) + bw / 2} y={rowB_Y + 8 + bh + 18} textAnchor="middle" fontSize={11} fontWeight="bold" fill={secondary} fontFamily="sans-serif">DIVERGES</text>
+      <text x={startX + 3 * (bw + gap) + bw / 2} y={rowB_Y + 8 + bh + 36} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">→ compute only here</text>
+    </svg>
+  );
+}
+
 export function PrefixCaching() {
   return (
     <SpaceBetween size="l">
@@ -71,32 +171,7 @@ export function PrefixCaching() {
             token sequences differ.
           </Box>
 
-          <Box variant="code">
-            <Box variant="small" color="text-status-info">
-              Request A &mdash; full prefill (cold)
-            </Box>
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`
- ┌──────────┬──────────┬──────────┬──────────┐
- │ block 0  │ block 1  │ block 2  │ block 3  │
- │ [system  │ [retrieved          │ "...what │
- │  prompt] │  document tokens]    │  is X?"  │
- └──────────┴──────────┴──────────┴──────────┘
-   computed    computed    computed   computed
-      │           │           │
-      ▼           ▼           ▼
-   hash chain: h0 → h1 → h2  (blocks stored, keyed by hash)
-
- Request B  (shares system prompt + same document, different question)
- ┌──────────┬──────────┬──────────┬──────────┐
- │ block 0  │ block 1  │ block 2  │ block 3  │
- │ [system  │ [retrieved          │ "...how  │
- │  prompt] │  document tokens]    │  many Y?"│
- └──────────┴──────────┴──────────┴──────────┘
-   h0 HIT      h1 HIT      h2 HIT  ◄── reused, zero compute
-   ════════════════════════════════╗
-                                    ╚═► block 3 DIVERGES → compute only here
-`}</pre>
-          </Box>
+          <PrefixReuseDiagram />
 
           <Alert type="info">
             <strong>Why block 3 is the divergence point:</strong> blocks 0&ndash;2 are byte-for-byte
