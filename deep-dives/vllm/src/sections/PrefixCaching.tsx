@@ -98,8 +98,8 @@ function PrefixReuseDiagram() {
         <text key={`hit-${i}`} x={startX + i * (bw + gap) + bw / 2} y={rowB_Y + 8 + bh + 18} textAnchor="middle" fontSize={12} fontWeight="bold" fill={green} fontFamily="sans-serif">{label}</text>
       ))}
 
-      {/* "reused, zero compute" annotation */}
-      <text x={startX + 3 * (bw + gap) - 20} y={rowB_Y + 8 + bh + 18} textAnchor="end" fontSize={11} fill={green} fontFamily="sans-serif">← reused, zero compute</text>
+      {/* "reused, zero compute" annotation — centered below the three HIT labels */}
+      <text x={startX + 1 * (bw + gap) + bw / 2} y={rowB_Y + 8 + bh + 36} textAnchor="middle" fontSize={11} fill={green} fontFamily="sans-serif">↑ reused, zero compute</text>
 
       {/* Divergence annotation */}
       <text x={startX + 3 * (bw + gap) + bw / 2} y={rowB_Y + 8 + bh + 18} textAnchor="middle" fontSize={11} fontWeight="bold" fill={secondary} fontFamily="sans-serif">DIVERGES</text>
