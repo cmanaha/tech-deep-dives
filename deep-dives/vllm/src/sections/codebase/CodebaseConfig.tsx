@@ -22,35 +22,35 @@ const subConfigRows: SubConfigRow[] = [
     name: 'ModelConfig',
     file: 'vllm/config/model.py',
     governs:
-      'Model identity and shape — HF model path, dtype, max_model_len, tokenizer, trust_remote_code, quantization, multimodal limits. The largest dataclass; everything else validates against it.',
+      'Model identity and shape: HF model path, dtype, max_model_len, tokenizer, trust_remote_code, quantization, multimodal limits. The largest dataclass; everything else validates against it.',
     optional: false,
   },
   {
     name: 'CacheConfig',
     file: 'vllm/config/cache.py',
     governs:
-      'KV-cache memory and paging — gpu_memory_utilization, block_size, cache_dtype, enable_prefix_caching, num_gpu_blocks_override.',
+      'KV-cache memory and paging: gpu_memory_utilization, block_size, cache_dtype, enable_prefix_caching, num_gpu_blocks_override.',
     optional: false,
   },
   {
     name: 'ParallelConfig',
     file: 'vllm/config/parallel.py',
     governs:
-      'Distributed execution layout — tensor_parallel_size, pipeline_parallel_size, data_parallel_size, enable_expert_parallel, distributed_executor_backend.',
+      'Distributed execution layout: tensor_parallel_size, pipeline_parallel_size, data_parallel_size, enable_expert_parallel, distributed_executor_backend.',
     optional: false,
   },
   {
     name: 'SchedulerConfig',
     file: 'vllm/config/scheduler.py',
     governs:
-      'Continuous-batching policy — max_num_batched_tokens, max_num_seqs, max_model_len, chunked prefill, preemption mode.',
+      'Continuous-batching policy: max_num_batched_tokens, max_num_seqs, max_model_len, chunked prefill, preemption mode.',
     optional: false,
   },
   {
     name: 'LoadConfig',
     file: 'vllm/config/load.py',
     governs:
-      'How weights get onto the device — load_format (auto, safetensors, sharded_state, runai_streamer), download_dir, ignore_patterns.',
+      'How weights get onto the device: load_format (auto, safetensors, sharded_state, runai_streamer), download_dir, ignore_patterns.',
     optional: false,
   },
   {
@@ -64,42 +64,42 @@ const subConfigRows: SubConfigRow[] = [
     name: 'CompilationConfig',
     file: 'vllm/config/compilation.py',
     governs:
-      'torch.compile and CUDA-graph capture — CompilationMode (NONE / STOCK_TORCH_COMPILE / DYNAMO_TRACE_ONCE / VLLM_COMPILE), cudagraph_capture_sizes, custom-op enable lists. The single largest config file.',
+      'torch.compile and CUDA-graph capture: CompilationMode (NONE / STOCK_TORCH_COMPILE / DYNAMO_TRACE_ONCE / VLLM_COMPILE), cudagraph_capture_sizes, custom-op enable lists. The single largest config file.',
     optional: false,
   },
   {
     name: 'StructuredOutputsConfig',
     file: 'vllm/config/structured_outputs.py',
     governs:
-      'Constrained / grammar decoding — backend selection (auto, xgrammar, guidance, outlines) for JSON-schema and regex output.',
+      'Constrained / grammar decoding: backend selection (auto, xgrammar, guidance, outlines) for JSON-schema and regex output.',
     optional: false,
   },
   {
     name: 'ObservabilityConfig',
     file: 'vllm/config/observability.py',
     governs:
-      'Metrics and tracing — OTLP trace endpoint, per-request timing collection, hidden-metric version gating.',
+      'Metrics and tracing: OTLP trace endpoint, per-request timing collection, hidden-metric version gating.',
     optional: false,
   },
   {
     name: 'LoRAConfig',
     file: 'vllm/config/lora.py',
     governs:
-      'Multi-LoRA serving — max_lora_rank (16), max_loras (1), max_cpu_loras, adapter dtype. Present only when LoRA is enabled.',
+      'Multi-LoRA serving: max_lora_rank (16), max_loras (1), max_cpu_loras, adapter dtype. Present only when LoRA is enabled.',
     optional: true,
   },
   {
     name: 'SpeculativeConfig',
     file: 'vllm/config/speculative.py',
     governs:
-      'Speculative decoding — draft method (ngram, EAGLE, Medusa, draft model), num_speculative_tokens, acceptance method. Present only when speculation is requested.',
+      'Speculative decoding: draft method (ngram, EAGLE, Medusa, draft model), num_speculative_tokens, acceptance method. Present only when speculation is requested.',
     optional: true,
   },
   {
     name: 'KVTransferConfig',
     file: 'vllm/config/kv_transfer.py',
     governs:
-      'Cross-instance KV movement — kv_connector and producer/consumer role for prefill/decode disaggregation. Present only for disaggregated serving.',
+      'Cross-instance KV movement: kv_connector and producer/consumer role for prefill/decode disaggregation. Present only for disaggregated serving.',
     optional: true,
   },
   {
@@ -239,7 +239,7 @@ function ConfigFlowDiagram() {
         vllm/engine/arg_utils.py
       </text>
       <text x={500} y={126} fontSize={10} fill="#5f6b7a">
-        vllm/config/vllm.py — cross-field validation, then read everywhere
+        vllm/config/vllm.py: cross-field validation, then read everywhere
       </text>
       <defs>
         <marker id="cfgArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
@@ -266,8 +266,8 @@ export function CodebaseConfig() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>
-              vLLM&apos;s configuration is a typed, pydantic-validated layer that funnels every input —
-              CLI flags, API kwargs, environment — into a single immutable source of truth called{' '}
+              vLLM&apos;s configuration is a typed, pydantic-validated layer that funnels every input
+              (CLI flags, API kwargs, environment) into a single immutable source of truth called{' '}
               <code>VllmConfig</code>.
             </strong>{' '}
             Nothing in the engine reads raw argparse values. A flat user-facing surface{' '}
@@ -309,7 +309,7 @@ export function CodebaseConfig() {
                 <code>create_engine_config()</code> calls per-subsystem builders
                 (<code>create_model_config()</code>, <code>create_load_config()</code>, …), then
                 passes the typed sub-configs into the <code>VllmConfig(...)</code> constructor. Once
-                built, it is passed by reference throughout the engine, workers, and model code — no
+                built, it is passed by reference throughout the engine, workers, and model code. No
                 subsystem re-parses user input.
               </Box>
             </div>
@@ -318,7 +318,7 @@ export function CodebaseConfig() {
             Every config class is a <strong>pydantic dataclass</strong> created by the shared{' '}
             <code>@config</code> decorator in <code>vllm/config/utils.py</code>, which sets{' '}
             <code>extra=&quot;forbid&quot;</code>. A typo&apos;d field is a hard validation error at
-            construction, not a silently ignored kwarg — the boundary is the contract.
+            construction, not a silently ignored kwarg. The boundary is the contract.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -444,7 +444,7 @@ export function CodebaseConfig() {
                 set by the <code>set_current_vllm_config()</code> context manager (a{' '}
                 <code>@contextmanager</code> over a module-level <code>_current_vllm_config</code>),
                 read via <code>get_current_vllm_config()</code>. Outside that context the getter
-                raises rather than returning <code>None</code> — a crash-early contract.
+                raises rather than returning <code>None</code>, a crash-early contract.
               </Box>
             </div>
             <div>
@@ -452,7 +452,7 @@ export function CodebaseConfig() {
               <Box variant="p">
                 <code>vllm/envs.py</code> defines 350+ <code>VLLM_*</code> variables, each a lazy
                 lambda over <code>os.environ</code>. Many silently change behavior the typed config
-                doesn&apos;t capture — they are read directly at the relevant call site, not folded
+                doesn&apos;t capture. They are read directly at the relevant call site, not folded
                 into <code>VllmConfig</code>. A config object can look correct while an env var has
                 already changed the outcome.
               </Box>
@@ -461,7 +461,7 @@ export function CodebaseConfig() {
           <Alert type="warning">
             <strong>Real examples (verified in <code>vllm/envs.py</code>):</strong>{' '}
             <code>VLLM_ALLOW_LONG_MAX_MODEL_LEN=1</code> lets you set a sequence length beyond what
-            the model&apos;s <code>config.json</code> declares — overriding a validation that would
+            the model&apos;s <code>config.json</code> declares, overriding a validation that would
             otherwise reject it. <code>VLLM_PP_LAYER_PARTITION</code> overrides how transformer
             layers are split across pipeline stages. <code>VLLM_CPU_KVCACHE_SPACE</code> sets the CPU
             KV-cache size on the CPU backend. None of these appear as a flag in the config dump.
@@ -485,7 +485,7 @@ export function CodebaseConfig() {
             <Box variant="p">
               <strong>2. Validate the environment.</strong>{' '}
               <code>envs.validate_environ(...)</code> checks the <code>VLLM_*</code> variables before
-              any heavy work — fail fast on a bad environment.
+              any heavy work, failing fast on a bad environment.
             </Box>
             <Box variant="p">
               <strong>3. Build ModelConfig.</strong> <code>create_model_config()</code> loads the HF
@@ -507,7 +507,7 @@ export function CodebaseConfig() {
           </ColumnLayout>
           <Box variant="p">
             <strong>Cross-field validation lives in one place.</strong>{' '}
-            <code>VllmConfig.__post_init__</code> is where rules that span sub-configs are enforced —
+            <code>VllmConfig.__post_init__</code> is where rules that span sub-configs are enforced,
             for example <code>model_config.verify_with_parallel_config(parallel_config)</code>, and
             feature incompatibilities like &quot;return-routed-experts is incompatible with PP &gt; 1
             and with KV connectors.&quot; Single-field constraints (ranges, enums) are enforced
@@ -529,25 +529,25 @@ export function CodebaseConfig() {
           <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="p">
-                <code>NONE = 0</code> — eager, no compilation.
+                <code>NONE = 0</code>: eager, no compilation.
               </Box>
               <Box variant="p">
-                <code>STOCK_TORCH_COMPILE = 1</code> — standard <code>torch.compile</code> pipeline.
+                <code>STOCK_TORCH_COMPILE = 1</code>: standard <code>torch.compile</code> pipeline.
               </Box>
             </div>
             <div>
               <Box variant="p">
-                <code>DYNAMO_TRACE_ONCE = 2</code> — single Dynamo trace through the model.
+                <code>DYNAMO_TRACE_ONCE = 2</code>: single Dynamo trace through the model.
               </Box>
               <Box variant="p">
-                <code>VLLM_COMPILE = 3</code> — vLLM&apos;s custom Inductor backend with caching.
+                <code>VLLM_COMPILE = 3</code>: vLLM&apos;s custom Inductor backend with caching.
               </Box>
             </div>
           </ColumnLayout>
           <Box variant="p">
             Sitting above this is the top-level <code>optimization_level</code> on{' '}
             <code>VllmConfig</code> itself (<code>OptimizationLevel</code>, an{' '}
-            <code>IntEnum</code> O0–O3, default <code>O2</code>). It is the operator-facing knob{' '}
+            <code>IntEnum</code> O0-O3, default <code>O2</code>). It is the operator-facing knob{' '}
             (<code>-O</code> / <code>--optimization-level</code>) that trades startup time for
             steady-state performance: O0 has the fastest startup, O3 the best runtime. It is a
             higher-level dial that influences compilation, CUDA-graph, and kernel choices rather than

@@ -25,7 +25,7 @@ export function ThesisAndFraming() {
         <SpaceBetween size="m">
           <Box variant="p" fontSize="heading-m">
             vLLM is a <strong>high-throughput, memory-efficient inference and serving engine</strong> for
-            large language models — the runtime that turns a static set of model weights into a
+            large language models: the runtime that turns a static set of model weights into a
             production HTTP endpoint that many concurrent users and agents can hit at once. Its own
             documentation describes it as{' '}
             <Link
@@ -44,10 +44,10 @@ export function ThesisAndFraming() {
             </strong>
             . Autoregressive decoding generates one token at a time, and each new token must attend to
             every prior token&apos;s cached key/value tensors. The hardware spends most of its time moving
-            that growing cache between high-bandwidth memory and the compute units — so the engine that
+            that growing cache between high-bandwidth memory and the compute units, so the engine that
             wins is the one that packs the most useful work into each memory round-trip, not the one with
-            the most arithmetic throughput. For the underlying hardware roofline — why inference is
-            memory-bandwidth-bound rather than compute-bound, and what that means for chip selection —
+            the most arithmetic throughput. For the underlying hardware roofline (why inference is
+            memory-bandwidth-bound rather than compute-bound, and what that means for chip selection),
             see the sibling{' '}
             <Link external href="../silicon-memory-inference/">
               Silicon, Memory &amp; Inference deep dive
@@ -56,9 +56,9 @@ export function ThesisAndFraming() {
             that constraint.
           </Box>
           <Box variant="p">
-            vLLM&apos;s answer is a stack of memory- and scheduling-centric techniques — PagedAttention for
+            vLLM&apos;s answer is a stack of memory- and scheduling-centric techniques. PagedAttention for
             non-fragmented KV-cache, continuous batching so the GPU never idles between requests, prefix
-            caching to reuse shared prompts, and chunked prefill — fronted by an{' '}
+            caching to reuse shared prompts, and chunked prefill, all fronted by an{' '}
             <strong>OpenAI-compatible API server</strong> so existing client code points at it with only a
             base-URL change (
             <Link
@@ -100,7 +100,7 @@ export function ThesisAndFraming() {
               <Box variant="h3">What is above vLLM</Box>
               <Box variant="p">
                 Application code, agent frameworks, RAG (retrieval-augmented generation) pipelines, and
-                gateways — all speaking the OpenAI-compatible protocol (
+                gateways, all speaking the OpenAI-compatible protocol (
                 <code>/v1/chat/completions</code>, <code>/v1/completions</code>,{' '}
                 <code>/v1/embeddings</code>). They neither know nor care how the cache is paged underneath.
               </Box>
@@ -108,9 +108,9 @@ export function ThesisAndFraming() {
           </ColumnLayout>
           <Alert type="info">
             <strong>Ownership boundary.</strong> This section is conceptual framing. The concrete classes
-            that implement each box above — the <code>LLM</code> entrypoint, the{' '}
+            that implement each box above (the <code>LLM</code> entrypoint, the{' '}
             <code>AsyncLLMEngine</code>, the OpenAI server entrypoint, the <code>Worker</code> and{' '}
-            <code>ModelRunner</code> processes — are walked file-by-file in{' '}
+            <code>ModelRunner</code> processes) are walked file-by-file in{' '}
             <strong>Section 14, Inside the Codebase</strong>. The hardware/memory-bandwidth roofline lives
             in the <strong>Silicon, Memory &amp; Inference</strong> sibling deep dive. We cross-link rather
             than duplicate.
@@ -135,7 +135,7 @@ export function ThesisAndFraming() {
             <Box variant="p">
               GPU hours are the dominant cost of serving. Continuous batching and PagedAttention raise the
               number of concurrent requests a single accelerator can serve, which directly lowers cost per
-              million tokens. The framing thesis — memory and batching, not FLOPs — is precisely what makes
+              million tokens. The framing thesis (memory and batching, not FLOPs) is precisely what makes
               this lever exist.
             </Box>
             <Badge color="blue">Cost per token</Badge>
@@ -180,8 +180,8 @@ export function ThesisAndFraming() {
                   2026-06-07)
                 </Link>
                 , describing it as &quot;an open and efficient inference engine for large language
-                models.&quot; This matters to an architect: foundation governance is a durability signal —
-                the project is not tied to a single company&apos;s roadmap.
+                models.&quot; This matters to an architect: foundation governance is a durability signal.
+                The project is not tied to a single company&apos;s roadmap.
               </Box>
             </div>
           </ColumnLayout>
@@ -198,7 +198,7 @@ export function ThesisAndFraming() {
             </Link>
             , V0 &quot;successfully supported a wide range of models and hardware, but as new features were
             developed independently, the system grew increasingly complex.&quot; V1 re-works the core
-            systems — &quot;the scheduler, KV cache manager, worker, sampler, and API server&quot; — into a
+            systems (&quot;the scheduler, KV cache manager, worker, sampler, and API server&quot;) into a
             single cohesive framework, and{' '}
             <strong>V0 has been fully deprecated</strong> with V1 as the default engine.
           </Box>
@@ -212,7 +212,7 @@ export function ThesisAndFraming() {
           <ExpandableSection headerText="Why the V0 → V1 split is the right framing for this deep dive">
             <SpaceBetween size="s">
               <Box variant="p">
-                vLLM moves quickly — releases land on roughly a bi-weekly cadence, so specific feature
+                vLLM moves quickly: releases land on roughly a bi-weekly cadence, so specific feature
                 flags and benchmark numbers age fast. The stable thing to anchor on is the{' '}
                 <em>architectural generation</em>, not the point release. Knowing whether a claim is about
                 V0 or V1 tells you whether it still applies.
@@ -223,7 +223,7 @@ export function ThesisAndFraming() {
                 <Link external href="https://docs.vllm.ai/en/stable/usage/v1_guide/">
                   vLLM docs, accessed 2026-06-07
                 </Link>
-                ). We deliberately do not quote a single speedup multiplier here — the guide&apos;s own
+                ). We deliberately do not quote a single speedup multiplier here: the guide&apos;s own
                 benchmark table is marked &quot;to be added,&quot; and the gain depends heavily on workload
                 shape (context length, batch size, prefix-sharing). Treat throughput numbers as
                 workload-specific and measure on your own traffic; benchmarking is covered in{' '}

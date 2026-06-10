@@ -27,7 +27,7 @@ const capabilityRows: CapabilityRow[] = [
     engineHas:
       'A single vLLM engine schedules its own continuous batches; cross-replica routing is left to whatever sits in front (Production-Stack router, Gateway, llm-d).',
     dynamoAdds:
-      'A "Smart Router" that "tracks KV cache across large fleets of GPUs in multinode and disaggregated deployments, and efficiently routes incoming requests" — KV-aware placement, not round-robin.',
+      'A "Smart Router" that "tracks KV cache across large fleets of GPUs in multinode and disaggregated deployments, and efficiently routes incoming requests": KV-aware placement, not round-robin.',
   },
   {
     capability: 'Multi-tier KV cache management',
@@ -39,14 +39,14 @@ const capabilityRows: CapabilityRow[] = [
   {
     capability: 'GPU resource / autoscaling planning',
     engineHas:
-      'No notion of the fleet — one engine sees only its own GPUs and its own queue.',
+      'No notion of the fleet; one engine sees only its own GPUs and its own queue.',
     dynamoAdds:
       'A "Planner" that "continuously monitors key GPU capacity metrics" and decides how to allocate GPUs between the prefill and decode phases.',
   },
   {
     capability: 'KV / data transport',
     engineHas:
-      'vLLM’s NixlConnector already moves KV over NIXL (UCX / libfabric backends) — see the codebase tab.',
+      'The NixlConnector in vLLM already moves KV over NIXL (UCX / libfabric backends); see the codebase tab.',
     dynamoAdds:
       'The same NIXL library, used fleet-wide: "a high-throughput, low-latency point-to-point communication library" that moves data "across different tiers of memory and storage".',
   },
@@ -139,7 +139,7 @@ function DynamoDiagram() {
       <path className="arr2" d="M490,310 L514,310" />
 
       <text className="lbl" x={430} y={398}>
-        Dynamo wraps the engines — vLLM stays the engine; Dynamo adds routing, planning, and
+        Dynamo wraps the engines. vLLM stays the engine; Dynamo adds routing, planning, and
         fleet-wide KV management
       </text>
       <text className="sub" x={430} y={420}>
@@ -157,7 +157,7 @@ export function NvidiaDynamo() {
         header={
           <Header
             variant="h1"
-            description="A datacenter-scale serving framework that wraps inference engines (vLLM, SGLang, TensorRT-LLM) — it does not replace vLLM; vLLM is a first-class backend"
+            description="A datacenter-scale serving framework that wraps inference engines (vLLM, SGLang, TensorRT-LLM). It does not replace vLLM; vLLM is a first-class backend"
           >
             18. NVIDIA Dynamo &amp; the Ecosystem
           </Header>
@@ -166,7 +166,7 @@ export function NvidiaDynamo() {
         <SpaceBetween size="m">
           <Alert type="info" header="The one thing to get right: Dynamo wraps engines, it does not replace them">
             The common misread is that Dynamo is a competitor to vLLM in the way SGLang or
-            TensorRT-LLM are — another engine to choose <em>instead of</em> vLLM. It is not. Dynamo
+            TensorRT-LLM are, another engine to choose <em>instead of</em> vLLM. It is not. Dynamo
             sits a layer up: it is a <strong>serving framework</strong> that orchestrates a{' '}
             <em>fleet</em> of engines, and vLLM is one of its first-class backends. The GitHub repo
             describes it as{' '}
@@ -177,7 +177,7 @@ export function NvidiaDynamo() {
               [Tier-2: NVIDIA ai-dynamo/dynamo GitHub README, accessed 2026-06-07]
             </Link>
             . If you already run vLLM, Dynamo is a way to operate many vLLM workers as one
-            disaggregated, KV-aware service — not a migration off vLLM.
+            disaggregated, KV-aware service, not a migration off vLLM.
           </Alert>
           <Box variant="p">
             <strong>The problem Dynamo solves:</strong> sections 9 and 10 leave you with a fleet of
@@ -201,9 +201,9 @@ export function NvidiaDynamo() {
             <Link external href="https://developer.nvidia.com/blog/introducing-nvidia-dynamo-a-low-latency-distributed-inference-framework-for-scaling-reasoning-ai-models/">
               [Tier-2: NVIDIA Dynamo introduction blog, accessed 2026-06-07]
             </Link>
-            . Concretely it contributes four fleet-level pieces — disaggregated prefill/decode
+            . Concretely it contributes four fleet-level pieces (disaggregated prefill/decode
             orchestration, a <strong>Smart Router</strong>, a distributed <strong>KV Cache
-            Manager</strong>, and a <strong>Planner</strong> — all wired together over{' '}
+            Manager</strong>, and a <strong>Planner</strong>), all wired together over{' '}
             <strong>NIXL</strong>, the same transfer library vLLM&apos;s own{' '}
             <code>NixlConnector</code> uses.
           </Box>
@@ -225,7 +225,7 @@ export function NvidiaDynamo() {
             Read the diagram top-down. Requests hit the <strong>Dynamo serving layer</strong>; its{' '}
             <strong>Smart Router</strong> places each one onto a worker with KV-affinity in mind, and
             the <strong>Planner</strong> decides how the GPUs split between phases. Underneath sit two
-            pools of <em>ordinary vLLM engines</em> — prefillers and decoders — exactly the disaggregated
+            pools of <em>ordinary vLLM engines</em> (prefillers and decoders), exactly the disaggregated
             topology from section 10. The KV cache produced by a prefiller is shipped to a decoder over{' '}
             <strong>NIXL</strong>, and the <strong>distributed KV Cache Manager</strong> decides which
             blocks stay resident and which spill to cheaper memory tiers across the whole fleet.
@@ -233,8 +233,8 @@ export function NvidiaDynamo() {
           <DynamoDiagram />
           <Alert type="info">
             The wire between the pools is the link back to the engine. vLLM&apos;s{' '}
-            <code>NixlConnector</code> — its send/receive state machine, KV-block registration for
-            RDMA, and the <code>KVConnectorBase_V1</code> contract — is walked in{' '}
+            <code>NixlConnector</code> (its send/receive state machine, KV-block registration for
+            RDMA, and the <code>KVConnectorBase_V1</code> contract) is walked in{' '}
             <strong>Inside the Codebase &rarr; Distributed &amp; KV Transfer</strong>, and the
             architecture of disaggregated prefill/decode is <strong>section 10 (Disaggregated Prefill
             / Decode)</strong>. Dynamo does not reinvent that transport; it uses the same{' '}
@@ -259,7 +259,7 @@ export function NvidiaDynamo() {
           <Box variant="p">
             The clean way to reason about Dynamo is per-capability: take a serving concern, ask what a
             single vLLM engine already does, then ask what Dynamo adds at the fleet level. The
-            right-hand column is the value proposition — and every row is something vLLM hands off
+            right-hand column is the value proposition, and every row is something vLLM hands off
             rather than something Dynamo takes away.
           </Box>
           <Table
@@ -302,7 +302,7 @@ export function NvidiaDynamo() {
         header={
           <Header
             variant="h2"
-            description="NIXL is the shared transport that links vLLM, Dynamo, and llm-d — the same library, used at different scopes"
+            description="NIXL is the shared transport that links vLLM, Dynamo, and llm-d: the same library, used at different scopes"
           >
             NIXL: the shared substrate
           </Header>
@@ -321,7 +321,7 @@ export function NvidiaDynamo() {
               [Tier-2: NVIDIA Dynamo introduction blog, accessed 2026-06-07]
             </Link>
             . That is precisely the library vLLM&apos;s <code>NixlConnector</code> uses for
-            disaggregated KV transfer (section 10) — so the same transport shows up at three
+            disaggregated KV transfer (section 10), so the same transport shows up at three
             scopes: inside a single vLLM disaggregated deployment, across a Dynamo-orchestrated fleet,
             and inside the llm-d project.
           </Box>
@@ -330,7 +330,7 @@ export function NvidiaDynamo() {
               <Box variant="h3">In vLLM (the engine)</Box>
               <Box variant="p">
                 <code>NixlConnector</code> moves KV blocks between a prefiller and a decoder over
-                NIXL (UCX / libfabric backends). This is the bottom of the stack — covered in{' '}
+                NIXL (UCX / libfabric backends). This is the bottom of the stack, covered in{' '}
                 <strong>section 10</strong> and the{' '}
                 <strong>Distributed &amp; KV Transfer</strong> codebase tab.
               </Box>
@@ -338,7 +338,7 @@ export function NvidiaDynamo() {
             <div>
               <Box variant="h3">In Dynamo (the fleet)</Box>
               <Box variant="p">
-                NIXL is the data plane for fleet-wide disaggregation and KV offload — moving cache
+                NIXL is the data plane for fleet-wide disaggregation and KV offload, moving cache
                 across pools and across memory/storage tiers, coordinated by the Smart Router and KV
                 Cache Manager{' '}
                 <Link external href="https://github.com/ai-dynamo/dynamo">
@@ -364,7 +364,7 @@ export function NvidiaDynamo() {
           </ColumnLayout>
           <Alert type="success" header="Why this matters for an architecture decision">
             Because NIXL is shared, the disaggregation work you do at the engine level (section 10)
-            is not wasted if you later adopt Dynamo or llm-d for the fleet layer — the transport,
+            is not wasted if you later adopt Dynamo or llm-d for the fleet layer: the transport,
             the KV-block registration model, and the producer/consumer roles carry over. You are
             choosing an <em>orchestration</em> layer above a stable transport, not swapping
             transports.
@@ -376,7 +376,7 @@ export function NvidiaDynamo() {
         header={
           <Header
             variant="h2"
-            description="Dynamo and llm-d are not competitors — Dynamo is contributing components into the llm-d ecosystem"
+            description="Dynamo and llm-d are not competitors; Dynamo is contributing components into the llm-d ecosystem"
           >
             Relationship to llm-d
           </Header>
@@ -384,8 +384,8 @@ export function NvidiaDynamo() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Dynamo and <strong>llm-d</strong> (covered in <strong>section 17: Kubernetes — llm-d,
-            KServe &amp; Gateway API</strong>) are easy to mistake for rivals; they are collaborators.
+            Dynamo and <strong>llm-d</strong> (covered in <strong>section 17: Kubernetes (llm-d,
+            KServe &amp; Gateway API)</strong>) are easy to mistake for rivals; they are collaborators.
             NVIDIA describes llm-d as{' '}
             <em>
               &quot;built on top of vLLM and Inference Gateway, llm-d extends the capabilities of
@@ -400,7 +400,7 @@ export function NvidiaDynamo() {
             <div>
               <Box variant="h3">NIXL</Box>
               <Box variant="p">
-                Already the shared transport — llm-d{' '}
+                Already the shared transport: llm-d{' '}
                 <em>&quot;relies on NIXL&quot;</em> for KV transfer between prefill and decode in
                 disaggregated setups.
               </Box>
@@ -438,7 +438,7 @@ export function NvidiaDynamo() {
         header={
           <Header
             variant="h2"
-            description="Where Dynamo fits among the engine and orchestration alternatives — and the hardware caveat"
+            description="Where Dynamo fits among the engine and orchestration alternatives, and the hardware caveat"
           >
             When Dynamo is the right layer
           </Header>
@@ -447,12 +447,12 @@ export function NvidiaDynamo() {
         <SpaceBetween size="m">
           <Box variant="p">
             Keep the altitudes straight when comparing options. The{' '}
-            <strong>engine</strong> alternatives — choosing SGLang or TensorRT-LLM <em>instead of</em>{' '}
-            vLLM — are the subject of <strong>section 26 (When Not vLLM)</strong>; that is a question
+            <strong>engine</strong> alternatives (choosing SGLang or TensorRT-LLM <em>instead of</em>{' '}
+            vLLM) are the subject of <strong>section 26 (When Not vLLM)</strong>; that is a question
             of which engine runs a model on a GPU. Dynamo is an <em>orchestration</em> alternative: a
             way to operate a fleet of whichever engine you picked. So &quot;Dynamo vs vLLM&quot; is a
             category error, but &quot;Dynamo vs Production-Stack router (section 16) vs llm-d (section
-            17) vs Ray Serve (section 15)&quot; is a real comparison — these are the things that turn a
+            17) vs Ray Serve (section 15)&quot; is a real comparison: these are the things that turn a
             set of engines into a service.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
@@ -465,7 +465,7 @@ export function NvidiaDynamo() {
                 </li>
                 <li>
                   Your KV working set exceeds aggregate GPU memory and you need fleet-wide,
-                  multi-tier KV offload — not just per-engine offload (section 7).
+                  multi-tier KV offload, not just per-engine offload (section 7).
                 </li>
                 <li>
                   You are standardizing on NVIDIA GPUs and want NIXL-based transport as the common
@@ -478,29 +478,29 @@ export function NvidiaDynamo() {
               <ul>
                 <li>
                   A single vLLM engine, or a thin router (Production-Stack, Gateway API) over a few
-                  replicas, already meets your SLOs — Dynamo&apos;s fleet machinery is overhead you
+                  replicas, already meets your SLOs. Dynamo&apos;s fleet machinery is overhead you
                   do not yet need.
                 </li>
                 <li>
-                  You are Kubernetes-native and want the Gateway-API / KServe ecosystem — llm-d
+                  You are Kubernetes-native and want the Gateway-API / KServe ecosystem, where llm-d
                   (section 17) may be the more idiomatic fit, and it shares NIXL anyway.
                 </li>
                 <li>
-                  You are on non-NVIDIA accelerators — see the hardware caveat below.
+                  You are on non-NVIDIA accelerators; see the hardware caveat below.
                 </li>
               </ul>
             </div>
           </ColumnLayout>
           <Alert type="warning" header="Hardware caveat: Dynamo is most relevant on NVIDIA GPUs">
-            Dynamo is an NVIDIA project (<code>ai-dynamo/dynamo</code>), and its value props — NIXL
-            transport, NVLink/NVSwitch-class KV movement, GPU-capacity planning — are written for and
+            Dynamo is an NVIDIA project (<code>ai-dynamo/dynamo</code>), and its value props (NIXL
+            transport, NVLink/NVSwitch-class KV movement, GPU-capacity planning) are written for and
             tuned to NVIDIA hardware{' '}
             <Link external href="https://github.com/ai-dynamo/dynamo">
               [Tier-2: ai-dynamo/dynamo GitHub, accessed 2026-06-07]
             </Link>
             . On AWS Neuron (Trainium / Inferentia, section 21) the engine and transport story is
             different; this section&apos;s claims should be read as NVIDIA-GPU-scoped. As always with
-            a vendor framework, the tone here is descriptive, not an endorsement — validate the fit
+            a vendor framework, the tone here is descriptive, not an endorsement; validate the fit
             against your own fleet and accelerators.
           </Alert>
         </SpaceBetween>
@@ -516,7 +516,7 @@ export function NvidiaDynamo() {
               [Tier-2: ai-dynamo/dynamo GitHub README, accessed 2026-06-07]
             </Link>
             . That mirrors vLLM&apos;s own trajectory toward a Rust frontend (the{' '}
-            <strong>Rust Frontend</strong> codebase tab) — the performance-critical serving plumbing
+            <strong>Rust Frontend</strong> codebase tab): the performance-critical serving plumbing
             is increasingly Rust in both projects.
           </Box>
           <Box variant="p">
@@ -542,17 +542,17 @@ export function NvidiaDynamo() {
           </Box>
           <Box variant="p">
             <strong>Why &quot;wraps, not replaces&quot; is the load-bearing framing.</strong> Every
-            capability above is engine-agnostic by design — Dynamo lists vLLM, SGLang, and
+            capability above is engine-agnostic by design: Dynamo lists vLLM, SGLang, and
             TensorRT-LLM as interchangeable backends. That is only possible because Dynamo never owns
             the forward pass; the engine does. vLLM keeps doing PagedAttention, continuous batching,
-            prefix caching, quantization, and LoRA exactly as the earlier sections describe — Dynamo
+            prefix caching, quantization, and LoRA exactly as the earlier sections describe; Dynamo
             adds the layer that decides which engine instance sees a request and where its KV lives.
             If you remember one sentence: <em>the engine runs the model; Dynamo runs the fleet</em>.
           </Box>
           <Box variant="p">
             <strong>Roles map cleanly onto vLLM&apos;s connector vocabulary.</strong> A Dynamo prefill
             worker is a vLLM engine in the <code>kv_producer</code> role and a decode worker is a{' '}
-            <code>kv_consumer</code> — the same <code>kv_role</code> wiring section 10 describes for
+            <code>kv_consumer</code>, the same <code>kv_role</code> wiring section 10 describes for
             standalone disaggregation. Dynamo is the orchestrator that assigns those roles across the
             fleet and routes between them, rather than you wiring a fixed prefiller/decoder pair by
             hand.
@@ -561,7 +561,7 @@ export function NvidiaDynamo() {
       </ExpandableSection>
 
       <Box variant="small">
-        Sources — <strong>Tier-2 (NVIDIA vendor blogs &amp; repo):</strong>{' '}
+        Sources. <strong>Tier-2 (NVIDIA vendor blogs &amp; repo):</strong>{' '}
         <Link external href="https://developer.nvidia.com/blog/introducing-nvidia-dynamo-a-low-latency-distributed-inference-framework-for-scaling-reasoning-ai-models/">
           Introducing NVIDIA Dynamo
         </Link>{' '}
@@ -578,7 +578,7 @@ export function NvidiaDynamo() {
         </Link>{' '}
         (the &quot;open-source, datacenter-scale inference stack&quot; tagline, backend list,
         Apache-2.0 license, Rust+Python implementation, and the KV-Aware Routing / KVBM feature
-        names) — all accessed 2026-06-07. Cross-references: disaggregated architecture is{' '}
+        names), all accessed 2026-06-07. Cross-references: disaggregated architecture is{' '}
         <strong>section 10</strong>; the <code>NixlConnector</code> call paths are{' '}
         <strong>Inside the Codebase &rarr; Distributed &amp; KV Transfer</strong>; llm-d is{' '}
         <strong>section 17</strong>; and the engine-vs-engine alternatives (SGLang, TensorRT-LLM)

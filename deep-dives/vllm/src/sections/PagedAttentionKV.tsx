@@ -18,8 +18,8 @@ const wasteRows: WasteRow[] = [
   {
     kind: 'Internal fragmentation',
     cause:
-      'A request is given a buffer sized to max_model_len, but most requests finish far short of it. The unused slots between the actual length and the reserved length sit idle for the request’s whole lifetime.',
-    cost: 'The dominant waste in naive serving — often the majority of the buffer.',
+      'A request is given a buffer sized to max_model_len, but most requests finish far short of it. The unused slots between the actual length and the reserved length sit idle for the whole lifetime of the request.',
+    cost: 'The dominant waste in naive serving, often the majority of the buffer.',
   },
   {
     kind: 'Reservation / over-allocation',
@@ -31,7 +31,7 @@ const wasteRows: WasteRow[] = [
     kind: 'External fragmentation',
     cause:
       'Requests of different sizes come and go, leaving non-contiguous free gaps. A new request needs one contiguous run; the free memory exists but not in one piece.',
-    cost: 'Free memory that cannot be handed out — effectively stranded.',
+    cost: 'Free memory that cannot be handed out, effectively stranded.',
   },
 ];
 
@@ -64,7 +64,7 @@ function BlockTableMappingDiagram() {
 
         {/* Logical block table A */}
         <text x="10" y="22" fontSize="13" fontWeight="bold" fill="#16191f">
-          Request A — logical block table
+          Request A logical block table
         </text>
         {['L0', 'L1', 'L2'].map((l, i) => (
           <g key={`a-${l}`} transform={`translate(${10 + i * 70}, 32)`}>
@@ -77,7 +77,7 @@ function BlockTableMappingDiagram() {
 
         {/* Logical block table B */}
         <text x="10" y="118" fontSize="13" fontWeight="bold" fill="#16191f">
-          Request B — logical block table
+          Request B logical block table
         </text>
         {['L0', 'L1'].map((l, i) => (
           <g key={`b-${l}`} transform={`translate(${10 + i * 70}, 128)`}>
@@ -90,7 +90,7 @@ function BlockTableMappingDiagram() {
 
         {/* Physical pool */}
         <text x="10" y="232" fontSize="13" fontWeight="bold" fill="#16191f">
-          Physical KV block pool (HBM) — fixed-size blocks, any order
+          Physical KV block pool (HBM): fixed-size blocks, any order
         </text>
         {[
           { id: '0', fill: '#e9f7ef', tag: 'free' },
@@ -123,14 +123,14 @@ function BlockTableMappingDiagram() {
         <line x1="111" y1="162" x2="335" y2="244" stroke="#9a6a00" strokeWidth="1.4" markerEnd="url(#patArrow)" />
 
         <text x="430" y="118" fontSize="11" fill="#5f6b7a">
-          #4 is shared (e.g. a common prompt prefix —
+          #4 is shared (e.g. a common prompt prefix,
         </text>
         <text x="430" y="134" fontSize="11" fill="#5f6b7a">
           copy-on-write on divergence). See section 6.
         </text>
         <text x="10" y="350" fontSize="9.5" fill="#879596">
           Logical positions are contiguous; physical blocks are not. The block table is the
-          translation layer — exactly like an OS page table.
+          translation layer, exactly like an OS page table.
         </text>
       </svg>
     </Box>
@@ -144,7 +144,7 @@ export function PagedAttentionKV() {
         header={
           <Header
             variant="h1"
-            description="Why the KV cache, not the weights, decides how many requests fit — and how paging recovered the wasted memory"
+            description="Why the KV cache, not the weights, decides how many requests fit, and how paging recovered the wasted memory"
           >
             5. PagedAttention & KV-Cache Management
           </Header>
@@ -154,11 +154,11 @@ export function PagedAttentionKV() {
           <Box variant="p">
             <strong>The outcome this section is about.</strong> On a fixed HBM (high-bandwidth
             memory) budget, throughput is gated by how many requests you can keep in flight at
-            once — the batch size. Batch size is gated by how much memory each request&apos;s
+            once: the batch size. Batch size is gated by how much memory each request&apos;s
             KV (key-value) cache consumes, and crucially by how much of the allocated memory is
             actually <em>used</em> versus wasted. PagedAttention is the idea that recovered the
             wasted fraction, and it is the reason vLLM exists. The original paper reports a
-            2–4× throughput improvement over the prior state of the art at the same
+            2-4× throughput improvement over the prior state of the art at the same
             latency, with the gains larger for longer sequences and bigger models{' '}
             (
             <Link external href="https://arxiv.org/abs/2309.06180">
@@ -169,11 +169,11 @@ export function PagedAttentionKV() {
           </Box>
           <Box variant="p">
             This section is the practitioner&apos;s view: the idea and its operational
-            consequences. For the actual data structures — <code>BlockPool</code>, the free
-            queue, per-request block tables — see <strong>Inside the Codebase {'→'} Scheduler
-            &amp; KV Cache</strong>, which walks the real source. For the hardware angle —
+            consequences. For the actual data structures (<code>BlockPool</code>, the free
+            queue, per-request block tables), see <strong>Inside the Codebase {'→'} Scheduler
+            &amp; KV Cache</strong>, which walks the real source. For the hardware angle, meaning
             where the KV cache physically lives in HBM, the precise size formula, and the
-            attention variants (GQA / MQA / MLA) that shrink it — see the sibling
+            attention variants (GQA / MQA / MLA) that shrink it, see the sibling
             deep dive{' '}
             <Link external href="../silicon-memory-inference/">
               Silicon, Memory &amp; Inference
@@ -198,7 +198,7 @@ export function PagedAttentionKV() {
             the KV cache <em>grows one token at a time</em> and its final length is unknown at
             admission. A contiguous allocator therefore has to reserve for the worst case, and
             that worst case almost never materializes. The paper measured that, in such systems,
-            only a fraction of the reserved KV memory ever holds real token state — the rest
+            only a fraction of the reserved KV memory ever holds real token state. The rest
             is fragmentation and over-reservation{' '}
             (
             <Link external href="https://arxiv.org/abs/2309.06180">
@@ -219,7 +219,7 @@ export function PagedAttentionKV() {
           <Alert type="info">
             Every wasted byte is a byte that could have held another request&apos;s KV cache.
             Because batch size is the first-order throughput lever for memory-bound decode, this
-            waste does not just cost memory — it directly caps throughput. The whole point of
+            waste costs memory, and it directly caps throughput. The whole point of
             PagedAttention is to convert that stranded memory back into batch capacity.
           </Alert>
         </SpaceBetween>
@@ -246,7 +246,7 @@ export function PagedAttentionKV() {
             <Link external href="https://arxiv.org/abs/2309.06180">
               arXiv:2309.06180
             </Link>
-            , accessed 2026-06-07) — the block table is a page table, the pool is physical
+            , accessed 2026-06-07): the block table is a page table, the pool is physical
             memory, and a request&apos;s logical sequence is its virtual address space.
           </Box>
           <BlockTableMappingDiagram />
@@ -255,7 +255,7 @@ export function PagedAttentionKV() {
               <Box variant="h3">What this kills</Box>
               <Box variant="p">
                 Blocks are allocated on demand as the sequence grows, so there is no
-                worst-case reservation — over-allocation is gone. A block is either fully
+                worst-case reservation, so over-allocation is gone. A block is either fully
                 used or is the single trailing partial block, so internal fragmentation is
                 bounded to at most one block per request. And because any free block fits any
                 request, external fragmentation disappears: free memory is always usable. The
@@ -263,11 +263,11 @@ export function PagedAttentionKV() {
               </Box>
             </div>
             <div>
-              <Box variant="h3">What this unlocks</Box>
+              <Box variant="h3">What this enables</Box>
               <Box variant="p">
                 Once blocks are the unit of allocation, identical prefixes can <em>share</em> the
                 same physical blocks across requests, with copy-on-write only where sequences
-                diverge — the foundation of automatic prefix caching (section 6) and of the
+                diverge, the foundation of automatic prefix caching (section 6) and of the
                 paper&apos;s &quot;flexible sharing of KV cache within and across requests&quot;.
                 Sharing reduces memory further and lets the server skip recomputing shared
                 prompt tokens.
@@ -290,10 +290,10 @@ export function PagedAttentionKV() {
             of the HBM budget holds real, in-use KV state. That share is what determines how many
             concurrent requests fit. More concurrent requests means a wider batch, and a wider
             batch is precisely how a memory-bandwidth-bound decode workload amortizes each weight
-            read across more tokens — raising hardware utilization and therefore tokens per
+            read across more tokens, raising hardware utilization and therefore tokens per
             second. PagedAttention does not make any single request faster; it makes the GPU
             serve <em>many more requests at once</em> from the same memory, which is where the
-            2–4× aggregate throughput comes from.
+            2-4× aggregate throughput comes from.
           </Box>
           <Alert type="success">
             <strong>The one-line intuition.</strong> Contiguous allocation pays for memory it
@@ -319,12 +319,12 @@ export function PagedAttentionKV() {
             terms an operator actually moves at runtime are <code>seq_len</code> (longer contexts
             cost linearly more) and batch size. Unlike the model weights, which are a fixed cost
             paid once, the KV cache is a <em>per-request, per-token</em> cost that scales with
-            load — so under any meaningful concurrency it is the KV cache, not the weights,
+            load. Under any meaningful concurrency it is the KV cache, not the weights,
             that consumes most of the serving memory budget.
           </Box>
           <Box variant="p">
             The exact byte formula, the dtype choices, and the GQA / MQA / MLA reductions that
-            cut the <code>num_kv_heads</code> term (often by 4{'–'}8{'×'}) are derived
+            cut the <code>num_kv_heads</code> term (often by 4-8{'×'}) are derived
             in the sibling deep dive{' '}
             <Link external href="../silicon-memory-inference/">
               Silicon, Memory &amp; Inference
@@ -350,7 +350,7 @@ export function PagedAttentionKV() {
                 <code>block_size</code>
               </Box>
               <Box variant="p">
-                The number of tokens per KV block — the paging granularity. vLLM&apos;s
+                The number of tokens per KV block, the paging granularity. vLLM&apos;s
                 <code>CacheConfig</code> describes it as the &quot;Size of a contiguous cache
                 block in number of tokens&quot; and defaults it to 16{' '}
                 (
@@ -371,7 +371,7 @@ export function PagedAttentionKV() {
                 <code>gpu_memory_utilization</code>
               </Box>
               <Box variant="p">
-                The fraction of GPU memory vLLM may claim — &quot;The fraction of GPU memory
+                The fraction of GPU memory vLLM may claim: &quot;The fraction of GPU memory
                 to be used for the model executor&quot;, default 0.92{' '}
                 (
                 <Link
@@ -382,7 +382,7 @@ export function PagedAttentionKV() {
                 </Link>
                 , accessed 2026-06-07). Whatever is left after the weights and activation
                 workspace becomes the block pool, so this knob directly sets how many KV blocks
-                exist — i.e. the batch-size ceiling. The optimization guide notes vLLM
+                exist, i.e. the batch-size ceiling. The optimization guide notes vLLM
                 &quot;pre-allocates GPU cache using this percentage of memory&quot; and lists
                 raising it as a remedy for preemption{' '}
                 (
@@ -401,12 +401,12 @@ export function PagedAttentionKV() {
             pre-allocated, so an over-aggressive <code>gpu_memory_utilization</code> leaves no
             slack for activation spikes or fragmentation in the allocator and risks
             out-of-memory under load. When KV memory genuinely runs out mid-run, vLLM preempts
-            requests rather than crashing — see the recompute-only preemption path in{' '}
+            requests rather than crashing. See the recompute-only preemption path in{' '}
             <strong>Inside the Codebase {'→'} Scheduler &amp; KV Cache</strong>.
           </Alert>
           <Box variant="p">
-            For the broader set of memory-conservation levers — tensor parallelism,
-            quantization, capping context length and batch size, and reducing CUDA graphs —
+            For the broader set of memory-conservation levers (tensor parallelism,
+            quantization, capping context length and batch size, and reducing CUDA graphs),
             vLLM keeps a dedicated guide{' '}
             (
             <Link
@@ -429,11 +429,11 @@ export function PagedAttentionKV() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Everything above is the concept. The mechanics — how block tables are stored
+            Everything above is the concept. The mechanics (how block tables are stored
             append-only with a null-block sentinel, how the free queue doubles as the LRU
             (least-recently-used) eviction order, how a prefix-cache hit reuses a block id
             without copying any KV data, and how the entire control path is CPU-side bookkeeping
-            while the GPU only ever sees integer block ids — are in{' '}
+            while the GPU only ever sees integer block ids) are in{' '}
             <strong>Inside the Codebase {'→'} Scheduler &amp; KV Cache</strong>, walked
             against the real vLLM source.
           </Box>
@@ -443,7 +443,7 @@ export function PagedAttentionKV() {
                 The OS analogy is exact in the part that matters and loose in the part that
                 doesn&apos;t. <strong>Exact:</strong> a per-request block table translates
                 contiguous logical positions to scattered physical blocks, allocation is
-                on-demand, and sharing-with-copy-on-write is how identical prefixes coexist —
+                on-demand, and sharing-with-copy-on-write is how identical prefixes coexist,
                 all faithful to demand-paged virtual memory.
               </Box>
               <Box variant="p">
@@ -452,8 +452,8 @@ export function PagedAttentionKV() {
                 preempted request&apos;s KV cache, not by swapping it to host memory and faulting
                 it back in. So the &quot;page table&quot; is real, but the &quot;swap&quot; is
                 replaced by recompute. The optional offloading of KV blocks to CPU or remote
-                tiers is a separate, explicit feature — see section 7 (KV-Cache Offloading
-                &amp; LMCache) — not the default paging behavior.
+                tiers is a separate, explicit feature (see section 7, KV-Cache Offloading
+                &amp; LMCache), not the default paging behavior.
               </Box>
             </SpaceBetween>
           </ExpandableSection>

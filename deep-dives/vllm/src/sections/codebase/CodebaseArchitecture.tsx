@@ -20,7 +20,7 @@ const clientRows: ClientRow[] = [
   {
     client: 'InprocClient',
     mode: 'In-process, no ZMQ',
-    used: 'Embedded / debugging — EngineCore runs in the caller thread',
+    used: 'Embedded / debugging: EngineCore runs in the caller thread',
     file: 'core_client.py',
   },
   {
@@ -32,7 +32,7 @@ const clientRows: ClientRow[] = [
   {
     client: 'AsyncMPClient',
     mode: 'ZMQ + background proc, asyncio',
-    used: 'AsyncLLM — the OpenAI-compatible server',
+    used: 'AsyncLLM, the OpenAI-compatible server',
     file: 'core_client.py',
   },
   {
@@ -59,7 +59,7 @@ const executorRows: ExecutorRow[] = [
   {
     executor: 'UniProcExecutor',
     transport: 'Direct calls (no IPC)',
-    notes: 'Single worker in the EngineCore process — TP=1, no distribution',
+    notes: 'Single worker in the EngineCore process (TP=1, no distribution)',
   },
   {
     executor: 'MultiprocExecutor',
@@ -69,7 +69,7 @@ const executorRows: ExecutorRow[] = [
   {
     executor: 'RayExecutorV2',
     transport: 'MessageQueue (subclasses MultiprocExecutor)',
-    notes: 'Default Ray backend — VLLM_USE_RAY_V2_EXECUTOR_BACKEND defaults to 1',
+    notes: 'Default Ray backend: VLLM_USE_RAY_V2_EXECUTOR_BACKEND defaults to 1',
   },
   {
     executor: 'RayDistributedExecutor',
@@ -102,19 +102,19 @@ function RepoMapDiagram() {
       </defs>
 
       <rect x="10" y="10" width="230" height="230" rx="6" className="rm-box" />
-      <text x="24" y="34" className="rm-title">vllm/ &mdash; Python package</text>
+      <text x="24" y="34" className="rm-title">vllm/ : Python package</text>
       <text x="24" y="54" className="rm-sub">~675K LOC across ~1,799 files</text>
-      <text x="24" y="80" className="rm-tag">vllm/v1/ &mdash; the live engine</text>
+      <text x="24" y="80" className="rm-tag">vllm/v1/ : the live engine</text>
       <text x="24" y="98" className="rm-sub">engine/ executor/ core/ worker/</text>
       <text x="24" y="114" className="rm-sub">attention/ sample/ spec_decode/</text>
-      <text x="24" y="138" className="rm-tag">vllm/engine/ &mdash; legacy shim</text>
+      <text x="24" y="138" className="rm-tag">vllm/engine/ : legacy shim</text>
       <text x="24" y="156" className="rm-sub">llm_engine.py = 7-line alias</text>
       <text x="24" y="180" className="rm-tag">model_executor/ distributed/</text>
       <text x="24" y="198" className="rm-sub">entrypoints/ config/ compilation/</text>
       <text x="24" y="222" className="rm-sub">multimodal/ lora/ platforms/ &hellip;</text>
 
       <rect x="255" y="10" width="220" height="230" rx="6" className="rm-box-alt" />
-      <text x="269" y="34" className="rm-title">csrc/ &mdash; CUDA / C++</text>
+      <text x="269" y="34" className="rm-title">csrc/ : CUDA / C++</text>
       <text x="269" y="54" className="rm-sub">242 .cu/.cuh/.cpp/.hpp files</text>
       <text x="269" y="80" className="rm-tag">attention kernels</text>
       <text x="269" y="98" className="rm-sub">paged attention, MLA, FA glue</text>
@@ -125,7 +125,7 @@ function RepoMapDiagram() {
       <text x="269" y="210" className="rm-sub">bound into the wheel at build</text>
 
       <rect x="490" y="10" width="220" height="230" rx="6" className="rm-box-rust" />
-      <text x="504" y="34" className="rm-title">rust/ &mdash; Rust frontend</text>
+      <text x="504" y="34" className="rm-title">rust/ : Rust frontend</text>
       <text x="504" y="54" className="rm-sub">~210 .rs files</text>
       <text x="504" y="80" className="rm-tag">tokenization / request</text>
       <text x="504" y="98" className="rm-sub">parsing on the hot path</text>
@@ -244,7 +244,7 @@ export function CodebaseArchitecture() {
             wheel. The Python package <code>vllm/</code> is roughly 675,000 lines
             across about 1,799 files and holds essentially all of the orchestration,
             scheduling, and model-definition logic. <code>csrc/</code> holds 242
-            CUDA/C++ source and header files &mdash; the attention, quantization,
+            CUDA/C++ source and header files: the attention, quantization,
             MoE, and collective kernels that get compiled into the extension.{' '}
             <code>rust/</code> is the newest tree, ~210 <code>.rs</code> files
             implementing a native frontend for latency-critical glue. The engine you
@@ -309,7 +309,7 @@ export function CodebaseArchitecture() {
                 <code>GPUModelRunner</code>. The executor broadcasts the per-step{' '}
                 <code>SchedulerOutput</code> to every worker and collects each
                 worker&apos;s <code>ModelRunnerOutput</code>. Workers never talk to
-                the frontend directly &mdash; only to the EngineCore via its
+                the frontend directly, only to the EngineCore via its
                 executor. Files under <code>vllm/v1/executor/</code> and{' '}
                 <code>vllm/v1/worker/</code>.
               </Box>
@@ -319,8 +319,8 @@ export function CodebaseArchitecture() {
             <strong>Why the split matters.</strong> With detokenization and HTTP
             handling on one interpreter and the scheduler/GPU step on another,
             tokenizing a 100K-token prompt or formatting a streamed response cannot
-            stall the decode loop. The cost is serialization on every hop &mdash;
-            which is why the wire format is <code>msgspec</code> (zero-copy where
+            stall the decode loop. The cost is serialization on every hop. That is
+            why the wire format is <code>msgspec</code> (zero-copy where
             possible) and the worker hop is shared memory, not ZMQ.
           </Alert>
         </SpaceBetween>
@@ -331,8 +331,8 @@ export function CodebaseArchitecture() {
           <Box variant="p">
             The <code>EngineCoreClient</code> is what the frontend uses to reach the
             EngineCore. Which concrete client it instantiates depends on two
-            booleans &mdash; <code>multiprocess_mode</code> and{' '}
-            <code>asyncio_mode</code> &mdash; resolved in{' '}
+            booleans (<code>multiprocess_mode</code> and{' '}
+            <code>asyncio_mode</code>), resolved in{' '}
             <code>EngineCoreClient.make_client()</code> /{' '}
             <code>make_async_mp_client()</code>. The in-process variant skips ZMQ
             entirely; the rest run the EngineCore in a background process.
@@ -392,10 +392,10 @@ export function CodebaseArchitecture() {
               </Box>
               <Box variant="p">
                 <code>MultiprocExecutor</code> builds an{' '}
-                <code>rpc_broadcast_mq</code> &mdash; a shared-memory{' '}
+                <code>rpc_broadcast_mq</code> (a shared-memory{' '}
                 <code>MessageQueue</code> from{' '}
-                <code>vllm/distributed/device_communicators/shm_broadcast.py</code>{' '}
-                &mdash; and broadcasts the scheduler output to all worker ranks
+                <code>vllm/distributed/device_communicators/shm_broadcast.py</code>)
+                and broadcasts the scheduler output to all worker ranks
                 through it, collecting responses on per-worker queues. No
                 serialization-over-socket on the hot path within a node.{' '}
                 <code>RayExecutorV2</code> subclasses it and reuses the same{' '}
@@ -411,7 +411,7 @@ export function CodebaseArchitecture() {
                 executes it per step. It predates <code>RayExecutorV2</code> and is
                 selected only when <code>VLLM_USE_RAY_V2_EXECUTOR_BACKEND</code> is
                 explicitly set to <code>0</code>. <code>UniProcExecutor</code> is the
-                degenerate case &mdash; a single in-process worker with no IPC at
+                degenerate case: a single in-process worker with no IPC at
                 all, used for TP=1.
               </Box>
             </div>
@@ -423,7 +423,7 @@ export function CodebaseArchitecture() {
             <code>VLLM_USE_RAY_V2_EXECUTOR_BACKEND</code>. The type annotation in{' '}
             <code>envs.py</code> reads <code>False</code>, but the runtime resolver
             is <code>int(os.getenv(&quot;VLLM_USE_RAY_V2_EXECUTOR_BACKEND&quot;,
-            &quot;1&quot;))</code> &mdash; so an unset variable yields{' '}
+            &quot;1&quot;))</code>, so an unset variable yields{' '}
             <code>RayExecutorV2</code>. That is the sense in which V2 is the default.
             (vLLM commit 15652a6b.)
           </Alert>
@@ -432,13 +432,13 @@ export function CodebaseArchitecture() {
 
       <Container header={<Header variant="h2">Two details worth knowing</Header>}>
         <SpaceBetween size="m">
-          <ExpandableSection headerText="gc.freeze() after model load — taming the GC pause">
+          <ExpandableSection headerText="gc.freeze() after model load: taming the GC pause">
             <SpaceBetween size="s">
               <Box variant="p">
                 Python&apos;s cyclic garbage collector periodically scans every
                 tracked object. After a model is loaded, the heap is enormous and
-                almost entirely static &mdash; weights, the KV-cache manager, config
-                trees &mdash; so a generation-2 collection that walks all of it just
+                almost entirely static (weights, the KV-cache manager, config
+                trees), so a generation-2 collection that walks all of it just
                 to free nothing is pure latency added to a decode step.
               </Box>
               <Box variant="p">
@@ -459,7 +459,7 @@ export function CodebaseArchitecture() {
             </SpaceBetween>
           </ExpandableSection>
 
-          <ExpandableSection headerText="Data-parallel waves — idle/wake and the DPCoordinator">
+          <ExpandableSection headerText="Data-parallel waves: idle/wake and the DPCoordinator">
             <SpaceBetween size="s">
               <Box variant="p">
                 In a data-parallel deployment (DP&gt;1) there is one EngineCore per
@@ -474,7 +474,7 @@ export function CodebaseArchitecture() {
               </Box>
               <Box variant="p">
                 When all ranks have drained their queues they go idle (paused)
-                instead of spinning &mdash; no wasted GPU steps on empty batches.
+                instead of spinning, with no wasted GPU steps on empty batches.
                 When a new request arrives at any rank, that rank notifies the
                 coordinator, which broadcasts a <code>START_DP_WAVE</code> message to
                 wake every rank back into the running state so they step in lockstep.
@@ -501,7 +501,7 @@ export function CodebaseArchitecture() {
               <code>vllm/v1/engine/llm_engine.py</code> (sync frontend),{' '}
               <code>vllm/v1/engine/async_llm.py</code> (async frontend),{' '}
               <code>vllm/v1/engine/coordinator.py</code> (DP coordinator). Executors:
-              everything under <code>vllm/v1/executor/</code> &mdash;{' '}
+              everything under <code>vllm/v1/executor/</code>:{' '}
               <code>abstract.py</code>, <code>multiproc_executor.py</code>,{' '}
               <code>ray_executor_v2.py</code>, <code>ray_executor.py</code>,{' '}
               <code>uniproc_executor.py</code>. The legacy shim is{' '}

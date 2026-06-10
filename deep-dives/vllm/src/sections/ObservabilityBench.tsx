@@ -120,14 +120,14 @@ const METRIC_ROWS: MetricRow[] = [
   {
     metric: 'vllm:time_to_first_token_seconds',
     type: 'Histogram',
-    tells: 'TTFT — prefill responsiveness. Spikes mean queueing or large/uncached prompts.',
+    tells: 'TTFT: prefill responsiveness. Spikes mean queueing or large/uncached prompts.',
     action:
-      'Watch p99 against your section-2 TTFT SLO. If high while the GPU is idle, the queue is starving — check num_requests_waiting and admission.',
+      'Watch p99 against your section-2 TTFT SLO. If high while the GPU is idle, the queue is starving; check num_requests_waiting and admission.',
   },
   {
     metric: 'vllm:inter_token_latency_seconds',
     type: 'Histogram',
-    tells: 'ITL, a.k.a. Time Per Output Token (TPOT) — decode smoothness as the user perceives it.',
+    tells: 'ITL, a.k.a. Time Per Output Token (TPOT): decode smoothness as the user perceives it.',
     action:
       'Rising ITL with a full batch means decode contention. Trade batch size / max-num-seqs for tail latency, or scale out.',
   },
@@ -162,14 +162,14 @@ const METRIC_ROWS: MetricRow[] = [
   {
     metric: 'vllm:kv_cache_usage_perc',
     type: 'Gauge',
-    tells: 'Fraction (0–1) of KV-cache blocks in use. The memory pressure that drives preemption.',
+    tells: 'Fraction (0 to 1) of KV-cache blocks in use. The memory pressure that drives preemption.',
     action:
       'Sustained near 1.0 precedes preemptions and throughput collapse. Cut max-num-seqs, shorten max-model-len, or add GPUs.',
   },
   {
     metric: 'vllm:num_preemptions',
     type: 'Counter',
-    tells: 'Requests preempted (KV evicted, recomputed later) because the cache ran out — the section-4 failure mode.',
+    tells: 'Requests preempted (KV evicted, recomputed later) because the cache ran out, the section-4 failure mode.',
     action:
       'Any sustained rate means you over-subscribed memory. Lower concurrency or leave gpu-memory-utilization headroom. Recompute is wasted work.',
   },
@@ -202,8 +202,8 @@ export function ObservabilityBench() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>The problem:</strong> an LLM server is a queueing system feeding a GPU. The SLOs
-            that matter to callers &mdash; TTFT, ITL, end-to-end latency, and throughput (defined in{' '}
-            <strong>section 2</strong>) &mdash; are emergent properties of scheduler decisions (
+            that matter to callers (TTFT, ITL, end-to-end latency, and throughput, defined in{' '}
+            <strong>section 2</strong>) are emergent properties of scheduler decisions (
             <strong>section 4</strong>): how many requests run per step, how deep the waiting queue
             is, how full the KV cache is, and how often requests get preempted. You cannot tune what
             you cannot see, and you cannot promise an SLO you have never measured.
@@ -226,14 +226,14 @@ export function ObservabilityBench() {
             default, every series prefixed with <code>vllm:</code>. Prometheus scrapes that endpoint
             on an interval; Grafana renders dashboards and fires alerts. A load generator (GuideLLM
             or inference-perf) sits on the left during a benchmark, driving the same server whose
-            metrics you are watching &mdash; so a benchmark run and the live dashboard read from one
+            metrics you are watching, so a benchmark run and the live dashboard read from one
             source of truth.
           </Box>
           <MetricsPipelineDiagram />
           <Box variant="p">
-            vLLM ships a runnable example of exactly this stack &mdash; a{' '}
+            vLLM ships a runnable example of exactly this stack (a{' '}
             <code>docker-compose.yaml</code>, a <code>prometheus.yaml</code> whose scrape job targets
-            the vLLM server on port 8000, and a pre-built <code>grafana.json</code> dashboard &mdash;
+            the vLLM server on port 8000, and a pre-built <code>grafana.json</code> dashboard)
             under{' '}
             <Link
               external
@@ -248,7 +248,7 @@ export function ObservabilityBench() {
             Metric names move. vLLM iterates roughly bi-weekly and renamed several series in the V1
             engine (the legacy <code>vllm:num_requests_swapped</code> and the old CPU-cache gauges are
             gone). Every name in this section is pinned to the V1 metrics design doc and the engine
-            source as accessed on 2026-06-07 &mdash; re-confirm against{' '}
+            source as accessed on 2026-06-07. Re-confirm against{' '}
             <Link
               external
               href="https://docs.vllm.ai/en/latest/design/metrics/"
@@ -310,7 +310,7 @@ export function ObservabilityBench() {
               <Box variant="h3">SLO metrics (section 2)</Box>
               <Box variant="p">
                 <code>time_to_first_token_seconds</code>, <code>inter_token_latency_seconds</code>,
-                and <code>e2e_request_latency_seconds</code> are histograms &mdash; alert on
+                and <code>e2e_request_latency_seconds</code> are histograms: alert on
                 quantiles (p95/p99), never the mean. These map one-to-one onto the TTFT / ITL /
                 latency SLOs from section 2. ITL is the same quantity the docs also call TPOT (Time
                 Per Output Token); vLLM&apos;s canonical series is{' '}
@@ -322,7 +322,7 @@ export function ObservabilityBench() {
               <Box variant="p">
                 <code>num_requests_running</code>, <code>num_requests_waiting</code>,{' '}
                 <code>kv_cache_usage_perc</code>, and <code>num_preemptions</code> are the leading
-                indicators. They move <em>before</em> the SLO histograms do &mdash; a rising waiting
+                indicators. They move <em>before</em> the SLO histograms do: a rising waiting
                 queue or KV usage near 1.0 is your early warning that latency is about to break.
               </Box>
             </div>
@@ -331,7 +331,7 @@ export function ObservabilityBench() {
               <Box variant="p">
                 <code>rate(vllm:generation_tokens_total)</code> is your real output-throughput SLI.{' '}
                 <code>prefix_cache_hits / prefix_cache_queries</code> shows how much prefill you save
-                via automatic prefix caching (section 6) &mdash; a number routing decisions directly
+                via automatic prefix caching (section 6), a number routing decisions directly
                 move.
               </Box>
             </div>
@@ -340,7 +340,7 @@ export function ObservabilityBench() {
             Counters are exported with a <code>_total</code> suffix at exposition time: the source
             declares <code>vllm:generation_tokens</code> but you query{' '}
             <code>vllm:generation_tokens_total</code> in PromQL. Always wrap counters in{' '}
-            <code>rate()</code> &mdash; the raw counter is monotonic and meaningless on its own.
+            <code>rate()</code>: the raw counter is monotonic and meaningless on its own.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -349,8 +349,8 @@ export function ObservabilityBench() {
         <SpaceBetween size="m">
           <Box variant="p">
             Metrics tell you the aggregate is unhealthy; tracing tells you <em>which request</em> and{' '}
-            <em>which phase</em>. vLLM can emit OpenTelemetry spans per request &mdash; queue time,
-            prefill, decode &mdash; to an OTLP collector (then Jaeger/Tempo for the UI). It is off by
+            <em>which phase</em>. vLLM can emit OpenTelemetry spans per request (queue time,
+            prefill, decode) to an OTLP collector (then Jaeger/Tempo for the UI). It is off by
             default; you opt in by pointing the server at a collector:
           </Box>
           <Box variant="code">
@@ -360,7 +360,7 @@ export function ObservabilityBench() {
             <div>
               <Box variant="h3">When to reach for it</Box>
               <Box variant="p">
-                Use it to debug tail latency you cannot explain from histograms alone &mdash; a
+                Use it to debug tail latency you cannot explain from histograms alone: a
                 single request stuck in the queue, or an outlier prompt blowing up prefill. The
                 per-request spans decompose e2e latency into the same buckets the section-4 scheduler
                 reasons about.
@@ -401,7 +401,7 @@ export function ObservabilityBench() {
           <Box variant="p">
             A single number (&quot;X tokens/sec&quot;) is meaningless without the latency it was
             achieved at. The job of a benchmark is to <strong>sweep the request rate</strong> and
-            plot throughput against TTFT and ITL &mdash; the curve has a knee where adding load stops
+            plot throughput against TTFT and ITL. The curve has a knee where adding load stops
             buying throughput and only adds latency. Your sustainable operating point sits just below
             that knee, and that is where your section-2 SLO numbers should come from.
           </Box>
@@ -427,7 +427,7 @@ export function ObservabilityBench() {
             <div>
               <Box variant="h3">In-repo benchmarks</Box>
               <Box variant="p">
-                vLLM ships benchmark scripts under <code>benchmarks/</code> in the repo &mdash;
+                vLLM ships benchmark scripts under <code>benchmarks/</code> in the repo:
                 latency, throughput, and serving harnesses used by the project&apos;s own CI. The
                 fastest way to sanity-check a config change on one box, with no extra install.
               </Box>
@@ -446,7 +446,7 @@ export function ObservabilityBench() {
               <Box variant="p">
                 A kubernetes-sigs tool for cluster-scale benchmarking. It supports vLLM and any
                 OpenAI-compatible endpoint, runs multi-stage load (constant, Poisson, concurrent
-                users) to find saturation, and reports goodput against SLOs &mdash; the right tool
+                users) to find saturation, and reports goodput against SLOs, the right tool
                 when you benchmark a fleet behind a router, not one replica.
               </Box>
               <Box variant="p">
@@ -480,13 +480,13 @@ export function ObservabilityBench() {
               <Box variant="p">
                 <strong>3. Read the knee.</strong> Plot output-token throughput against p99 TTFT and
                 p99 ITL. The sustainable operating point is the highest rate that still meets your
-                section-2 SLOs &mdash; not the peak throughput number.
+                section-2 SLOs, not the peak throughput number.
               </Box>
               <Box variant="p">
                 <strong>4. Cross-check with live metrics.</strong> During the run, watch{' '}
                 <code>vllm:num_requests_waiting</code> and <code>vllm:kv_cache_usage_perc</code>. The
                 rate at which the queue starts growing and KV usage approaches 1.0 is the same knee
-                the benchmark finds &mdash; two views of one saturation point.
+                the benchmark finds: two views of one saturation point.
               </Box>
               <Box variant="p">
                 <strong>5. Re-run on every change.</strong> A quantization change, a{' '}

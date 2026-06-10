@@ -26,7 +26,7 @@ const knobRows: KnobRow[] = [
     knob: 'gpu_memory_utilization',
     config: 'CacheConfig',
     meaning:
-      'Fraction of GPU memory the executor may use. What is left after weights becomes the block pool — i.e. how many blocks exist.',
+      'Fraction of GPU memory the executor may use. What is left after weights becomes the block pool, i.e. how many blocks exist.',
     dflt: '0.92',
   },
   {
@@ -51,13 +51,13 @@ const knobRows: KnobRow[] = [
   {
     knob: 'max_num_batched_tokens',
     config: 'SchedulerConfig',
-    meaning: 'The per-step token budget — the single number that bounds prefill + decode work in one iteration.',
+    meaning: 'The per-step token budget: the single number that bounds prefill + decode work in one iteration.',
     dflt: '2048 (testing default; set by EngineArgs in real use)',
   },
   {
     knob: 'max_num_seqs',
     config: 'SchedulerConfig',
-    meaning: 'Maximum sequences processed in one iteration — the batch-width cap, separate from the token cap.',
+    meaning: 'Maximum sequences processed in one iteration: the batch-width cap, separate from the token cap.',
     dflt: '128',
   },
   {
@@ -90,7 +90,7 @@ function BlockPoolDiagram() {
 
         {/* BlockPool row of physical blocks */}
         <text x="10" y="24" fontSize="13" fontWeight="bold" fill="#16191f">
-          BlockPool — num_gpu_blocks fixed-size blocks
+          BlockPool: num_gpu_blocks fixed-size blocks
         </text>
         {[
           { id: '0', label: 'null', fill: '#fde2e4' },
@@ -115,7 +115,7 @@ function BlockPoolDiagram() {
 
         {/* FreeKVCacheBlockQueue */}
         <text x="10" y="120" fontSize="13" fontWeight="bold" fill="#16191f">
-          FreeKVCacheBlockQueue — intrusive doubly linked list, O(1) ops
+          FreeKVCacheBlockQueue: intrusive doubly linked list, O(1) ops
         </text>
         <g transform="translate(10, 132)">
           <rect width="60" height="40" rx="4" fill="#f4f4f4" stroke="#879596" />
@@ -160,7 +160,7 @@ function BlockPoolDiagram() {
 
         {/* req_to_blocks block tables */}
         <text x="380" y="216" fontSize="13" fontWeight="bold" fill="#16191f">
-          req_to_blocks — append-only block tables
+          req_to_blocks: append-only block tables
         </text>
         <g transform="translate(380, 226)">
           <text x="0" y="14" fontSize="10" fill="#5f6b7a">
@@ -314,7 +314,7 @@ export function CodebaseScheduler() {
             The most important thing to internalize about vLLM&apos;s memory management is
             that <strong>the entire control path is CPU-side</strong>. The
             <code>BlockPool</code>, the free queue, the hash map, and the per-request block
-            tables are all plain Python objects. None of these structures touch GPU memory —
+            tables are all plain Python objects. None of these structures touch GPU memory;
             the GPU kernels only ever receive the resulting integer block ids. Paging here
             means &quot;which physical block id does logical position <em>p</em> of this
             request map to&quot;, computed on the host.
@@ -338,7 +338,7 @@ export function CodebaseScheduler() {
                 <code>prev_free_block</code> / <code>next_free_block</code> fields of each
                 block. It exists instead of a <code>deque</code> specifically to support
                 <code>remove()</code> from the middle in O(1) and to allocate no Python
-                objects on the hot path — no GC pressure
+                objects on the hot path (no GC pressure)
                 (<code>vllm/v1/core/kv_cache_utils.py</code>, <code>KVCacheBlock</code>).
               </Box>
             </div>
@@ -348,7 +348,7 @@ export function CodebaseScheduler() {
             caching is on, a freed-but-still-cached block sits in the queue as an eviction
             candidate; the tail is the least-recently-used. Allocation pops from the head, and
             <code>_maybe_evict_cached_block()</code> drops that block&apos;s hash on reuse.
-            That is the whole LRU mechanism — no separate eviction thread.
+            That is the whole LRU mechanism, with no separate eviction thread.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -369,7 +369,7 @@ export function CodebaseScheduler() {
           <Box variant="p">
             When positions must be skipped (e.g. tokens outside a sliding window),
             <code>remove_skipped_blocks()</code> overwrites the slot with
-            <code>null_block</code> rather than shifting the list — preserving position
+            <code>null_block</code> rather than shifting the list, preserving position
             stability. The null block is special: it is popped from the free queue at pool
             construction and gets <code>block_id == 0</code>, with <code>is_null = True</code>
             and a ref count that is intentionally not tracked
@@ -390,7 +390,7 @@ export function CodebaseScheduler() {
           <Alert type="warning" header="The root seed is process-local by default">
             The chain root, <code>NONE_HASH</code>, is initialized in
             <code>init_none_hash()</code>: when <code>PYTHONHASHSEED</code> is unset it is
-            <code>os.urandom(32)</code> — a fresh random 32 bytes per process. So prefix-cache
+            <code>os.urandom(32)</code>, a fresh random 32 bytes per process. So prefix-cache
             block hashes are <strong>not reproducible across processes by default</strong>,
             mirroring Python&apos;s own randomized <code>hash()</code>. The code logs a warning
             for CBOR-based hash functions and tells you to set <code>PYTHONHASHSEED</code> if
@@ -404,7 +404,7 @@ export function CodebaseScheduler() {
                 multimodal feature identifiers, and the request&apos;s
                 <code>cache_salt</code> into the hash. The salt is only attached to the first
                 block (<code>start_token_idx == 0</code>), which is enough to fork the whole
-                chain — so a salt cleanly <strong>isolates tenants</strong> that would
+                chain, so a salt cleanly <strong>isolates tenants</strong> that would
                 otherwise share an identical text prefix.
               </Box>
             </div>
@@ -414,7 +414,7 @@ export function CodebaseScheduler() {
                 Hashes are precomputed on the <code>Request</code> as tokens arrive.
                 <code>KVCacheManager.get_computed_blocks()</code> calls
                 <code>find_longest_cache_hit()</code> over those hashes against the in-memory
-                map — a host-side dictionary walk. A &quot;cache hit&quot; reuses an existing
+                map, a host-side dictionary walk. A &quot;cache hit&quot; reuses an existing
                 block id; no KV data is copied on the GPU
                 (<code>vllm/v1/core/kv_cache_manager.py</code>).
               </Box>
@@ -429,15 +429,15 @@ export function CodebaseScheduler() {
             When the running loop calls <code>allocate_slots()</code> and it returns
             <code>None</code> (not enough free blocks), the scheduler preempts. Under FCFS it
             pops the <em>last</em> running request; under the priority policy it preempts the
-            lowest-priority one. Either way it then loops and retries the allocation — possibly
+            lowest-priority one. Either way it then loops and retries the allocation, possibly
             preempting several requests until the current one fits, or until there is nothing
             left to preempt and it gives up on scheduling this request this step.
           </Box>
           <SchedulerStateDiagram />
           <Box variant="p">
             Crucially, <code>_preempt_request()</code> does <strong>not</strong> swap KV cache
-            to host memory. It calls <code>kv_cache_manager.free(request)</code> — returning
-            the blocks straight to the pool — sets <code>num_computed_tokens = 0</code>,
+            to host memory. It calls <code>kv_cache_manager.free(request)</code> (returning
+            the blocks straight to the pool), sets <code>num_computed_tokens = 0</code>,
             flips status to <code>PREEMPTED</code>, and <code>prepend_request()</code>s the
             request to the <em>front</em> of the waiting queue. There is no CPU swap path in
             V1; recovery is <strong>recompute-only</strong>
@@ -446,7 +446,7 @@ export function CodebaseScheduler() {
           <Alert type="info">
             Recompute is <strong>best-effort cheap</strong>, not free. Because the freed blocks
             may still be cached and the request re-enters at the front of the queue, the prefix
-            cache often lets it skip recomputing most of its prompt — but only if those blocks
+            cache often lets it skip recomputing most of its prompt, but only if those blocks
             survived eviction in the meantime. There is no guarantee; the prefix cache is an
             optimization layered on top of the recompute fallback, not a swap substitute.
           </Alert>
@@ -457,7 +457,7 @@ export function CodebaseScheduler() {
         <SpaceBetween size="m">
           <Box variant="p">
             These are the <code>CacheConfig</code> and <code>SchedulerConfig</code> fields that
-            most directly shape the behavior above — block geometry, pool size, caching, and
+            most directly shape the behavior above: block geometry, pool size, caching, and
             the per-step budget (<code>vllm/config/cache.py</code>,
             <code>vllm/config/scheduler.py</code>).
           </Box>
@@ -485,10 +485,10 @@ export function CodebaseScheduler() {
         <SpaceBetween size="m">
           <Box variant="p">
             <code>KVCacheManager</code> is the seam between the scheduler and the block
-            machinery. It hides the internal data structures behind a small surface —
+            machinery. It hides the internal data structures behind a small surface:
             <code>get_computed_blocks()</code> (prefix-cache lookup),
             <code>allocate_slots()</code> (the allocate-or-fail call the loop relies on),
-            <code>free()</code>, and <code>get_block_ids()</code> — returning
+            <code>free()</code>, and <code>get_block_ids()</code>. It returns
             <code>KVCacheBlocks</code> rather than raw blocks so the scheduler never sees a
             <code>KVCacheBlock</code> directly (<code>vllm/v1/core/kv_cache_manager.py</code>).
           </Box>

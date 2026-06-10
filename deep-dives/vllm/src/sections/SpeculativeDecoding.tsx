@@ -26,7 +26,7 @@ function ProposeVerifyAcceptDiagram() {
       <desc id="spec-loop-desc">
         Step starts from context &quot;the quick brown&quot;. PROPOSE drafts [fox jumps over the].
         VERIFY scores all four candidates in one pass. ACCEPT/REJECT keeps fox and jumps, rejects
-        over, discards the, and emits &quot;fox jumps lazy&quot; — three tokens from one target pass.
+        over, discards the, and emits &quot;fox jumps lazy&quot;: three tokens from one target pass.
       </desc>
       <style>
         {`
@@ -75,7 +75,7 @@ function ProposeVerifyAcceptDiagram() {
         1. PROPOSE
       </text>
       <text className="ss" x={380} y={98}>
-        cheap drafter, K = 4 — drafts the next four tokens
+        cheap drafter, K = 4, drafts the next four tokens
       </text>
       {['fox', 'jumps', 'over', 'the'].map((t, i) => {
         const x = 150 + i * 120;
@@ -100,7 +100,7 @@ function ProposeVerifyAcceptDiagram() {
         2. VERIFY
       </text>
       <text className="ss" x={380} y={238}>
-        target model, ONE forward pass — scores every position in parallel
+        target model, ONE forward pass: scores every position in parallel
       </text>
       {['fox?', 'jumps?', 'over?', 'the?'].map((t, i) => {
         const x = 150 + i * 120;
@@ -160,7 +160,7 @@ function ProposeVerifyAcceptDiagram() {
       {/* emit result */}
       <rect className="emit" x={210} y={474} width={340} height={40} rx={8} />
       <text className="st" x={380} y={499}>
-        &#8594; &quot;fox jumps lazy&quot; — 3 tokens from ONE target pass
+        &#8594; &quot;fox jumps lazy&quot;: 3 tokens from ONE target pass
       </text>
 
       {/* outcome annotations */}
@@ -181,7 +181,7 @@ export function SpeculativeDecoding() {
         header={
           <Header
             variant="h1"
-            description="A cheap drafter guesses ahead; the expensive model checks the whole guess in one pass. When the guesses are good, you emit several tokens per target step — and the output distribution is provably preserved."
+            description="A cheap drafter guesses ahead; the expensive model checks the whole guess in one pass. When the guesses are good, you emit several tokens per target step, and the output distribution is provably preserved."
           >
             11. Speculative Decoding
           </Header>
@@ -192,7 +192,7 @@ export function SpeculativeDecoding() {
             <strong>The problem it attacks:</strong> autoregressive decoding is serial. To produce
             token <em>N</em> you must have produced token <em>N&minus;1</em>, so the model runs one
             full forward pass per output token. At low batch sizes that pass is{' '}
-            <strong>memory-bandwidth bound</strong> &mdash; the GPU spends most of its time streaming
+            <strong>memory-bandwidth bound</strong>: the GPU spends most of its time streaming
             the model weights and the KV (key/value) cache through memory, not doing math. The
             arithmetic units sit largely idle. You are paying for a forward pass and getting a single
             token out of it.
@@ -200,7 +200,7 @@ export function SpeculativeDecoding() {
           <Box variant="p">
             <strong>The core idea:</strong> a small, cheap <em>drafter</em> proposes the next{' '}
             <em>K</em> tokens. The large <em>target</em> model then verifies all <em>K</em> proposed
-            tokens <strong>in a single forward pass</strong> &mdash; the same pass it would have spent
+            tokens <strong>in a single forward pass</strong>. The same pass it would have spent
             on one token now scores a whole candidate sequence, because checking K tokens is mostly
             extra arithmetic against weights and KV that were going to be read anyway. Tokens the
             target accepts are kept; the first rejected token is corrected and the rest discarded. When
@@ -208,12 +208,12 @@ export function SpeculativeDecoding() {
             arithmetic into throughput without buying a bigger model.
           </Box>
           <Box variant="p">
-            <strong>It is lossless &mdash; not approximate.</strong> Verification uses{' '}
+            <strong>It is lossless, not approximate.</strong> Verification uses{' '}
             rejection sampling so the accepted output matches the distribution the target model would
             have produced on its own. The vLLM docs state speculative decoding{' '}
             <em>&quot;aims to enhance inference efficiency while maintaining accuracy&quot;</em> and is{' '}
-            <em>&quot;theoretically lossless up to the precision limits of hardware numerics&quot;</em>{' '}
-            &mdash; with vLLM&apos;s implementation <em>&quot;algorithmically validated to be
+            <em>&quot;theoretically lossless up to the precision limits of hardware numerics&quot;</em>,{' '}
+            with vLLM&apos;s implementation <em>&quot;algorithmically validated to be
             lossless&quot;</em> via rejection-sampler convergence and greedy-equality tests. The only
             deviations come from floating-point error, the same numerics caveat that applies to any
             two runs of the same model (
@@ -227,8 +227,8 @@ export function SpeculativeDecoding() {
             on, and the catches. The proposer classes and the verify/rejection-sample call path are
             walked against the real source in the{' '}
             <strong>Inside the Codebase &rarr; Spec Decode, Guided Decode &amp; Compile</strong> tab.
-            The hardware &quot;why&quot; &mdash; arithmetic intensity, the roofline, why a single pass
-            can verify K tokens almost for free &mdash; is the{' '}
+            The hardware &quot;why&quot; (arithmetic intensity, the roofline, why a single pass
+            can verify K tokens almost for free) is the{' '}
             <Link external href="../silicon-memory-inference/">
               Silicon, Memory &amp; Inference
             </Link>{' '}
@@ -242,7 +242,7 @@ export function SpeculativeDecoding() {
           <Box variant="p">
             One target step now does three things: the drafter proposes K candidate tokens, the target
             scores all of them in one pass, and a rejection-sampling check walks the candidates
-            left-to-right &mdash; keeping the longest accepted prefix and correcting the first
+            left-to-right, keeping the longest accepted prefix and correcting the first
             mismatch. The number of tokens you actually emit per step is{' '}
             <em>1 + (number accepted)</em>, so a high acceptance rate is the entire game.
           </Box>
@@ -254,7 +254,7 @@ export function SpeculativeDecoding() {
             a probability derived from the target and draft distributions; on the first rejection the
             position is re-sampled from a corrected distribution and the remaining candidates are
             thrown away. The math guarantees the emitted tokens are distributed exactly as if the
-            target had sampled them directly &mdash; speculation changes the <em>speed</em>, not the{' '}
+            target had sampled them directly. Speculation changes the <em>speed</em>, not the{' '}
             <em>answer</em>. vLLM exposes the verification policy via{' '}
             <code>rejection_sample_method</code> (<code>strict</code>, <code>probabilistic</code>, or{' '}
             <code>synthetic</code>); <code>strict</code> is the default (
@@ -272,8 +272,8 @@ export function SpeculativeDecoding() {
             vLLM ships several drafters that trade off setup cost against acceptance quality.{' '}
             Model-based proposers (EAGLE, MTP, draft models, PARD, MLP) give the strongest latency
             reduction; the lightweight string-matching methods (n-gram, suffix) need no extra model
-            and give modest, safe speedups. The list below is pinned to the docs as accessed &mdash;{' '}
-            vLLM moves quickly and the set changes; verify against the page before relying on it.
+            and give modest, safe speedups. The list below is pinned to the docs as accessed:{' '}
+            vLLM moves quickly and the set changes, so verify against the page before relying on it.
           </Box>
 
           <Table
@@ -287,33 +287,33 @@ export function SpeculativeDecoding() {
             items={[
               {
                 method: 'EAGLE / EAGLE-3',
-                extra: 'Yes — a small trained EAGLE head',
+                extra: 'Yes, a small trained EAGLE head',
                 best: 'Strong general-purpose model-based method. Listed as high gain at low QPS, medium-to-high at high QPS.',
               },
               {
                 method: 'Multi-Token Prediction (MTP)',
-                extra: 'Uses the target model’s native MTP head',
-                best: 'Best when the target model has native MTP support — no separate draft model to host. High gain at low QPS.',
+                extra: 'Uses the native MTP head of the target model',
+                best: 'Best when the target model has native MTP support, with no separate draft model to host. High gain at low QPS.',
               },
               {
                 method: 'Draft model',
-                extra: 'Yes — a separate, smaller LLM',
+                extra: 'Yes, a separate, smaller LLM',
                 best: 'The generic approach: any small compatible model drafts for a larger one. High gain at low QPS, medium at high QPS.',
               },
               {
                 method: 'Parallel Draft Model (PARD)',
-                extra: 'Yes — a parallel draft model',
+                extra: 'Yes, a parallel draft model',
                 best: 'Low draft-model latency; high gain at low QPS, medium-to-high at high QPS.',
               },
               {
                 method: 'MLP speculator',
-                extra: 'Yes — a compatible MLP speculator',
+                extra: 'Yes, a compatible MLP speculator',
                 best: 'Good when compatible MLP speculators are available. Medium-to-high gain at low QPS.',
               },
               {
                 method: 'N-gram (prompt-lookup)',
                 extra: 'No',
-                best: 'Lightweight and easy to enable — drafts by matching recent context against the prompt. Strong for repetitive / quote-heavy output.',
+                best: 'Lightweight and easy to enable; drafts by matching recent context against the prompt. Strong for repetitive / quote-heavy output.',
               },
               {
                 method: 'Suffix decoding',
@@ -323,7 +323,7 @@ export function SpeculativeDecoding() {
               {
                 method: 'Custom Proposer (experimental)',
                 extra: 'Your call',
-                best: 'Bring your own proposer class — set method to custom_class and point model at your module path. Gains vary.',
+                best: 'Bring your own proposer class: set method to custom_class and point model at your module path. Gains vary.',
               },
             ]}
           />
@@ -331,8 +331,8 @@ export function SpeculativeDecoding() {
           <Alert type="info">
             The docs also list <strong>Hidden State Extraction</strong> and a{' '}
             <strong>Multi-Layer Perceptron</strong> entry under &quot;vLLM Speculation Methods.&quot;
-            The verified, dated authority for the exact supported set is the docs page itself &mdash;{' '}
-            the method set is the part that drifts most between releases, so treat the table above as a
+            The verified, dated authority for the exact supported set is the docs page itself.{' '}
+            The method set is the part that drifts most between releases, so treat the table above as a
             snapshot, not a contract (
             <Link external href="https://docs.vllm.ai/en/latest/features/speculative_decoding/">
               vLLM Docs: Speculative Decoding &rarr; &quot;vLLM Speculation Methods&quot;, accessed 2026-06-07
@@ -342,13 +342,13 @@ export function SpeculativeDecoding() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">When it helps &mdash; and when it hurts</Header>}>
+      <Container header={<Header variant="h2">When it helps, and when it hurts</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
             Speculative decoding is a <strong>latency tool for memory-bound regimes</strong>. The vLLM
             docs frame it precisely: it is for reducing <em>&quot;inter-token latency under
             medium-to-low QPS (query per second), memory-bound workloads.&quot;</em> The economics are
-            asymmetric &mdash; when the GPU is idle on arithmetic (low batch), verifying K tokens is
+            asymmetric. When the GPU is idle on arithmetic (low batch), verifying K tokens is
             nearly free and high acceptance is pure win; when the GPU is already saturated (high
             batch), there is no idle arithmetic to reclaim and the drafting + verification overhead is
             not amortized (
@@ -363,7 +363,7 @@ export function SpeculativeDecoding() {
               <Box variant="h3">It helps when…</Box>
               <ul>
                 <li>
-                  <strong>You are latency-bound, not throughput-bound</strong> — interactive chat,
+                  <strong>You are latency-bound, not throughput-bound:</strong> interactive chat,
                   copilots, low concurrency. The GPU has idle arithmetic to fill.
                 </li>
                 <li>
@@ -376,7 +376,7 @@ export function SpeculativeDecoding() {
                   in multiple tokens per pass.
                 </li>
                 <li>
-                  <strong>The drafter is well matched</strong> to the target — a same-family small
+                  <strong>The drafter is well matched</strong> to the target: a same-family small
                   model, an EAGLE head trained on the target, or native MTP.
                 </li>
               </ul>
@@ -391,7 +391,7 @@ export function SpeculativeDecoding() {
                 </li>
                 <li>
                   <strong>Acceptance is low.</strong> Open-ended, high-entropy generation means most
-                  drafts are rejected — you pay to draft and verify but emit ~1 token per pass, net
+                  drafts are rejected: you pay to draft and verify but emit ~1 token per pass, net
                   slower.
                 </li>
                 <li>
@@ -410,7 +410,7 @@ export function SpeculativeDecoding() {
             <strong>Speculation and high-throughput batching pull in opposite directions.</strong>{' '}
             Continuous batching wins by packing many requests into a compute-bound regime; speculation
             wins by exploiting the idle-arithmetic of a memory-bound one. On a busy multi-tenant
-            endpoint, measure before assuming it helps &mdash; the right answer is workload-specific,
+            endpoint, measure before assuming it helps. The right answer is workload-specific,
             and the docs point you at <code>spec_decode_offline.py</code> / the benchmark CLI for
             reproducible measurement in your environment.
           </Alert>
@@ -429,7 +429,7 @@ export function SpeculativeDecoding() {
 
           <Box variant="code">
             <Box variant="small" color="text-status-info">
-              Generic draft model — verbatim from the docs (accessed 2026-06-07)
+              Generic draft model, verbatim from the docs (accessed 2026-06-07)
             </Box>
             <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`vllm serve <target-model> \
   --speculative-config '{
@@ -441,7 +441,7 @@ export function SpeculativeDecoding() {
 
           <Box variant="code">
             <Box variant="small" color="text-status-info">
-              N-gram / prompt-lookup (no extra model) — verbatim from the docs (accessed 2026-06-07)
+              N-gram / prompt-lookup (no extra model), verbatim from the docs (accessed 2026-06-07)
             </Box>
             <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`vllm serve <target-model> \
   --speculative-config '{
@@ -457,25 +457,25 @@ export function SpeculativeDecoding() {
               <Box variant="h3">Common keys</Box>
               <ul>
                 <li>
-                  <code>method</code> — the proposer. Documented values include{' '}
+                  <code>method</code>: the proposer. Documented values include{' '}
                   <code>draft_model</code>, <code>ngram</code>, <code>suffix</code>,{' '}
                   <code>mtp</code>, <code>eagle3</code>, and <code>dflash</code>; omitting it lets
                   vLLM infer the method from the rest of the config when possible.
                 </li>
                 <li>
-                  <code>model</code> — draft model, EAGLE head, or auxiliary identifier. Often
+                  <code>model</code>: draft model, EAGLE head, or auxiliary identifier. Often
                   omitted for <code>ngram</code>, <code>suffix</code>, and <code>mtp</code>.
                 </li>
                 <li>
-                  <code>num_speculative_tokens</code> — K, the tokens proposed per step. Required for
+                  <code>num_speculative_tokens</code>: K, the tokens proposed per step. Required for
                   methods that can&apos;t infer it.
                 </li>
                 <li>
-                  <code>draft_tensor_parallel_size</code> — TP (tensor parallel) size for the draft
+                  <code>draft_tensor_parallel_size</code>: TP (tensor parallel) size for the draft
                   model.
                 </li>
                 <li>
-                  <code>rejection_sample_method</code> — <code>strict</code> (default),{' '}
+                  <code>rejection_sample_method</code>: <code>strict</code> (default),{' '}
                   <code>probabilistic</code>, or <code>synthetic</code>.
                 </li>
               </ul>
@@ -484,20 +484,20 @@ export function SpeculativeDecoding() {
               <Box variant="h3">N-gram and suffix knobs</Box>
               <ul>
                 <li>
-                  <code>prompt_lookup_min</code> / <code>prompt_lookup_max</code> — the n-gram window
+                  <code>prompt_lookup_min</code> / <code>prompt_lookup_max</code>: the n-gram window
                   bounds for prompt-lookup drafting (each defaults to 5 when both are omitted).
                 </li>
                 <li>
-                  <code>suffix_decoding_max_tree_depth</code> (default 24) — max combined prefix-match
+                  <code>suffix_decoding_max_tree_depth</code> (default 24): max combined prefix-match
                   + speculation tree depth.
                 </li>
                 <li>
-                  <code>suffix_decoding_max_cached_requests</code> (default 10000) — size of the
+                  <code>suffix_decoding_max_cached_requests</code> (default 10000): size of the
                   global suffix tree; set 0 to disable the global cache.
                 </li>
                 <li>
                   <code>suffix_decoding_max_spec_factor</code> /{' '}
-                  <code>suffix_decoding_min_token_prob</code> — cap speculation length and the minimum
+                  <code>suffix_decoding_min_token_prob</code>: cap speculation length and the minimum
                   token probability required to speculate.
                 </li>
               </ul>
@@ -521,7 +521,7 @@ export function SpeculativeDecoding() {
         <SpaceBetween size="m">
           <Box variant="p">
             Speculation composes with most of the engine, but not all of it, and a few details bite in
-            production. The docs call out specific incompatibilities tied to version &mdash; another
+            production. The docs call out specific incompatibilities tied to version, another
             reason to re-check against the page you are running, not a remembered one.
           </Box>
 
@@ -550,14 +550,14 @@ export function SpeculativeDecoding() {
                   mismatched parallelism between drafter and target is a classic source of failure.
                 </li>
                 <li>
-                  <strong>Native heads beat generic checkpoints</strong> where available — the docs
+                  <strong>Native heads beat generic checkpoints</strong> where available. The docs
                   note, e.g., that Gemma assistant checkpoints are handled as MTP speculators, not as
                   generic draft models. Use the method the checkpoint was built for.
                 </li>
                 <li>
                   <strong>Logprobs aren&apos;t guaranteed stable.</strong> vLLM does not currently
                   guarantee stable token logprobs, so the same request can yield different outputs
-                  across runs — independent of speculation, but relevant if you compare runs.
+                  across runs. This is independent of speculation, but relevant if you compare runs.
                 </li>
               </ul>
             </div>
@@ -587,9 +587,9 @@ export function SpeculativeDecoding() {
                 ).
               </Box>
               <Box variant="p">
-                For the arithmetic-intensity reason this works at all &mdash; why a memory-bound
+                For the arithmetic-intensity reason this works at all (why a memory-bound
                 decode pass has spare compute to verify K tokens, and where the roofline crossover to
-                throughput-bound batching sits &mdash; see the{' '}
+                throughput-bound batching sits), see the{' '}
                 <Link external href="../silicon-memory-inference/">
                   Silicon, Memory &amp; Inference
                 </Link>{' '}

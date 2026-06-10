@@ -116,6 +116,19 @@ Import from `@tech-deep-dives/shared`:
 - **No overlapping text or components.** After authoring any diagram, verify there are NO collisions: text overflowing its shape, labels overlapping each other or connector lines, edges crossing through labels, or content clipped by the `viewBox`. Overlap is acceptable only when clearly intentional (e.g. deliberately layered/stacked depth). Practical rules: size every box to its longest label, pad text generously, keep a minimum gap between nodes, and confirm against the *rendered* output (Playwright DOM/visual audit) instead of trusting hand-computed coordinates.
 - **Accessible & responsive:** every diagram scales to its container width, stays legible on a phone, and (for SVG) carries `role="img"` plus a `<title>`.
 
+## Writing Style: No AI Tells
+
+Reader-facing prose must read like a careful human wrote it, not like an LLM. These are banned in any section content:
+
+- **No em-dashes.** Never use the em-dash character or the `&mdash;` entity in prose. The em-dash is the clearest LLM tell. Use a comma, a colon, parentheses, or two sentences. A plain hyphen in a compound word (multi-node, OS-bypass) is fine.
+- **No en-dash in ranges.** Write "5 to 6" or "5-6" with a plain hyphen, not the en-dash form.
+- **Straight quotes only.** Use ' and " in reader text, not curly/smart quotes.
+- **No LLM vocabulary:** delve, tapestry, seamless, robust, leverage (as a verb), boasts, underscores, pivotal, harness, unlock, supercharge, realm, landscape, testament, game-changer, cutting-edge, best-in-class. Say the plain thing.
+- **No rhetorical tics:** "it's worth noting", "in conclusion", "needless to say", the "not just X, but Y" flourish, the three-item triad used only for cadence, or emoji.
+- Write declaratively: short, concrete sentences over hedged or flowery ones.
+
+Exempt: code, config, and real CLI output are left verbatim. This applies to every deep dive, and every section gets a final pass to strip these tells before it ships.
+
 ## Settled Decisions (Do Not Re-Debate)
 
 - **ADR-001:** Cloudscape + Vite + React + pnpm monorepo. See `deep-dives/efa/docs/adr/ADR-001-tech-stack.md`. The MDX/static site alternative was evaluated and rejected.

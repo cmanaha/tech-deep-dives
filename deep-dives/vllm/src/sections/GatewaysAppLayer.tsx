@@ -53,7 +53,7 @@ function DataPathDiagram() {
       <text className="tier" x={830} y={26} textAnchor="end">ENGINE TIER</text>
       <text className="tiersub" x={830} y={42} textAnchor="end">own GPU, KV cache, scheduler</text>
 
-      {/* App tier — three boxes */}
+      {/* App tier: three boxes */}
       <rect className="app" x={40} y={60} width={220} height={64} rx={8} />
       <text className="at" x={150} y={88}>Web / chat UI</text>
       <text className="as" x={150} y={108}>(Open WebUI)</text>
@@ -91,7 +91,7 @@ function DataPathDiagram() {
       <path className="arr" d="M430,282 L430,330" />
       <path className="arr" d="M430,282 C430,310 690,316 710,330" />
 
-      {/* Engine tier — vLLM endpoints + other compat/SaaS */}
+      {/* Engine tier: vLLM endpoints + other compat/SaaS */}
       <rect className="eng" x={40} y={334} width={220} height={72} rx={8} />
       <text className="et" x={150} y={362}>vLLM endpoint</text>
       <text className="es" x={150} y={382}>/v1 (model A)</text>
@@ -118,7 +118,7 @@ export function GatewaysAppLayer() {
         header={
           <Header
             variant="h1"
-            description="What teams put in front of vLLM — gateways, UIs, and RAG/agent frameworks — and why none of it requires touching the engine."
+            description="What teams put in front of vLLM (gateways, UIs, and RAG/agent frameworks), and why none of it requires touching the engine."
           >
             19. Gateways &amp; Application Layer
           </Header>
@@ -129,7 +129,7 @@ export function GatewaysAppLayer() {
             <strong>The architectural point in one sentence:</strong> because vLLM exposes an
             OpenAI-compatible HTTP API (see{' '}
             <strong>12. The OpenAI-Compatible Server</strong>), the entire OpenAI-ecosystem tooling
-            stack snaps in front of it with no code changes &mdash; you swap a base URL and an API
+            stack snaps in front of it with no code changes: you swap a base URL and an API
             key, and the gateway, the chat UI, and the RAG/agent framework all believe they are
             talking to OpenAI. vLLM owns the <em>engine tier</em> (the GPU, the KV cache, the
             scheduler); these tools own the <em>product / control tier</em> (auth, budgets, routing,
@@ -143,7 +143,7 @@ export function GatewaysAppLayer() {
             spend caps, multi-provider fallback, or a human-facing UI. In production you almost never
             expose that process directly. You front it with a gateway for control-plane concerns and
             point apps at the gateway, not the engine. Everything below is something the OpenAI wire
-            contract lets you bolt on for free &mdash; the cost vLLM deliberately avoided imposing on
+            contract lets you bolt on for free. The cost vLLM deliberately avoided imposing on
             you was a rewrite of your call sites.
           </Box>
         </SpaceBetween>
@@ -155,7 +155,7 @@ export function GatewaysAppLayer() {
             Read the diagram top-down as the request path. Applications and agents never address a
             GPU; they address an OpenAI-shaped URL. A gateway (here, LiteLLM) terminates that
             contract, applies control-plane policy, and re-issues the call to one or more vLLM
-            endpoints &mdash; each of which is, again, just an OpenAI-compatible server.
+            endpoints, each of which is, again, just an OpenAI-compatible server.
           </Box>
 
           <DataPathDiagram />
@@ -184,7 +184,7 @@ export function GatewaysAppLayer() {
               {
                 layer: 'Chat / web UI',
                 tools: 'Open WebUI',
-                adds: 'A human-facing chat interface, conversation history, user accounts, and model selection — no application code required to talk to the model.',
+                adds: 'A human-facing chat interface, conversation history, user accounts, and model selection, with no application code required to talk to the model.',
                 connects: (
                   <span>
                     Set <code>OPENAI_API_BASE_URL</code> to the vLLM (or gateway) endpoint; the served
@@ -195,7 +195,7 @@ export function GatewaysAppLayer() {
               {
                 layer: 'RAG / agent framework',
                 tools: 'LangChain, LlamaIndex',
-                adds: 'Retrieval, chunking, tool/agent orchestration, prompt templating, and memory — the application logic around the model.',
+                adds: 'Retrieval, chunking, tool/agent orchestration, prompt templating, and memory: the application logic around the model.',
                 connects: (
                   <span>
                     Use the framework&apos;s OpenAI client class and set the base URL to the vLLM
@@ -223,8 +223,8 @@ export function GatewaysAppLayer() {
       <Container header={<Header variant="h2">The gateway tier (LiteLLM)</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            A gateway is the seam where control-plane concerns live. LiteLLM &mdash; in its own
-            framing a unified interface to many providers &mdash; sits between your apps and the
+            A gateway is the seam where control-plane concerns live. LiteLLM (in its own
+            framing a unified interface to many providers) sits between your apps and the
             engines and gives you the things <code>vllm serve</code> deliberately does not: retries
             and fallbacks across endpoints, per-key and per-team spend budgets, rate limits, and a
             single OpenAI-shaped URL that can fan out to vLLM <em>and</em> hosted providers behind one
@@ -234,7 +234,7 @@ export function GatewaysAppLayer() {
           <Box variant="code">
             <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`import litellm
 
-# Call your vLLM server through LiteLLM — note the hosted_vllm/ prefix
+# Call your vLLM server through LiteLLM: note the hosted_vllm/ prefix
 response = litellm.completion(
     model="hosted_vllm/qwen/Qwen1.5-0.5B-Chat",   # hosted_vllm is required
     messages=messages,
@@ -246,11 +246,11 @@ response = litellm.completion(
 
           <Box variant="p">
             Two things to internalize. First, the <code>hosted_vllm/</code> prefix is{' '}
-            <strong>not optional</strong> &mdash; the docs state plainly that{' '}
+            <strong>not optional</strong>. The docs state plainly that{' '}
             &quot;<code>hosted_vllm</code> is prefix key word and necessary.&quot; It is what tells
             LiteLLM to route to a self-hosted OpenAI-compatible vLLM server (at your{' '}
             <code>api_base</code>) rather than to a hosted vendor. Second, the same call shape works
-            for embeddings &mdash; you can set <code>HOSTED_VLLM_API_BASE</code> as an environment
+            for embeddings, and you can set <code>HOSTED_VLLM_API_BASE</code> as an environment
             variable instead of passing <code>api_base</code> per call (
             <Link external href="https://docs.vllm.ai/en/latest/deployment/frameworks/litellm/">
               vLLM Docs: LiteLLM, accessed 2026-06-07
@@ -263,7 +263,7 @@ response = litellm.completion(
               <Box variant="h3">What the gateway is good at</Box>
               <ul>
                 <li>
-                  <strong>Reliability:</strong> retries and fallbacks &mdash; if one vLLM endpoint is
+                  <strong>Reliability:</strong> retries and fallbacks. If one vLLM endpoint is
                   down or saturated, route to another (or to a hosted provider).
                 </li>
                 <li>
@@ -285,14 +285,14 @@ response = litellm.completion(
               <ul>
                 <li>
                   <strong>Throughput:</strong> continuous batching, the scheduler, KV-cache
-                  management &mdash; vLLM&apos;s reason to exist.
+                  management, vLLM&apos;s reason to exist.
                 </li>
                 <li>
                   <strong>Model placement:</strong> which GPU, tensor/pipeline parallelism, quantization.
                 </li>
                 <li>
                   <strong>Decode features:</strong> structured outputs, tool-call parsing, prefix
-                  caching &mdash; configured on <code>vllm serve</code> (§12), not the gateway.
+                  caching, configured on <code>vllm serve</code> (§12), not the gateway.
                 </li>
                 <li>
                   <strong>Don&apos;t leak tiers:</strong> keep budgets/keys in the gateway and engine
@@ -302,10 +302,10 @@ response = litellm.completion(
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="Operational caution — LiteLLM PyPI supply-chain compromise (March 2026)">
+          <Alert type="warning" header="Operational caution: LiteLLM PyPI supply-chain compromise (March 2026)">
             <SpaceBetween size="s">
               <Box variant="p">
-                <strong>[Tier-3 / security reporting]</strong> &mdash; this is an operational
+                <strong>[Tier-3 / security reporting]</strong>: this is an operational
                 caution about the <em>LiteLLM package</em>, not a statement about vLLM. In late March
                 2026, malicious versions of the <code>litellm</code> package were published to PyPI
                 outside the normal release process and quarantined after a short window. Multiple
@@ -346,8 +346,8 @@ response = litellm.completion(
       <Container header={<Header variant="h2">The UI tier (Open WebUI)</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            When you want a chat interface in front of a self-hosted model &mdash; for an internal
-            team, a demo, or a private deployment &mdash; you do not build one. You point an existing
+            When you want a chat interface in front of a self-hosted model (for an internal
+            team, a demo, or a private deployment), you do not build one. You point an existing
             OpenAI-client UI at the vLLM endpoint. Open WebUI connects by treating vLLM as its OpenAI
             backend: start the server with a reachable host, then set one environment variable on the
             UI container.
@@ -376,13 +376,13 @@ OPENAI_API_BASE_URL=http://0.0.0.0:8000/v1`}</pre>
       <Container header={<Header variant="h2">The RAG / agent tier (LangChain, LlamaIndex)</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            RAG and agent frameworks need a chat/completions endpoint and embeddings &mdash; both of
+            RAG and agent frameworks need a chat/completions endpoint and embeddings, both of
             which the vLLM server already speaks (§12). The integration pattern is the same as
             everything else in this tier: use the framework&apos;s OpenAI client and override the base
             URL.
           </Box>
           <Alert type="info" header="Integrate via the OpenAI-compatible API, not a dedicated connector">
-            The robust, documented path is to treat vLLM as an <em>OpenAI endpoint</em> &mdash;
+            The reliable, documented path is to treat vLLM as an <em>OpenAI endpoint</em>:
             instantiate the framework&apos;s OpenAI-style client (chat model and/or embeddings) and set
             its base URL to the vLLM <code>/v1</code> path. This works precisely because vLLM
             implements the OpenAI wire contract. Do not assume a first-party &quot;vLLM connector&quot;
@@ -393,19 +393,19 @@ OPENAI_API_BASE_URL=http://0.0.0.0:8000/v1`}</pre>
           </Alert>
           <Box variant="code">
             <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# Pattern (illustrative): point the framework's OpenAI client at vLLM.
-# LangChain — ChatOpenAI with an overridden base URL:
+# LangChain, ChatOpenAI with an overridden base URL:
 #   ChatOpenAI(model="<served-model>",
 #              base_url="http://localhost:8000/v1",
 #              api_key="token-abc123")
 #
-# LlamaIndex — OpenAILike / OpenAI client with api_base set to the vLLM URL:
+# LlamaIndex, OpenAILike / OpenAI client with api_base set to the vLLM URL:
 #   OpenAILike(model="<served-model>",
 #              api_base="http://localhost:8000/v1",
 #              api_key="token-abc123", is_chat_model=True)`}</pre>
           </Box>
           <Box variant="small">
             The base-URL-override mechanism is the same swap shown in{' '}
-            <strong>12. The OpenAI-Compatible Server</strong> &mdash;{' '}
+            <strong>12. The OpenAI-Compatible Server</strong>:{' '}
             <code>base_url=&quot;http://localhost:8000/v1&quot;</code> on the OpenAI client. Confirm the
             exact client class and parameter names against your installed framework version; the
             load-bearing fact is that vLLM is addressed as an OpenAI provider, verified by vLLM&apos;s
@@ -422,7 +422,7 @@ OPENAI_API_BASE_URL=http://0.0.0.0:8000/v1`}</pre>
         <SpaceBetween size="m">
           <Box variant="p">
             The recurring failure mode is letting control-plane logic leak into the engine, or pinning
-            the control plane to one engine. The OpenAI contract is the decoupling boundary &mdash;
+            the control plane to one engine. The OpenAI contract is the decoupling boundary:
             respect it and you can swap either side independently.
           </Box>
           <ExpandableSection headerText="Decoupling rules of thumb">
@@ -439,7 +439,7 @@ OPENAI_API_BASE_URL=http://0.0.0.0:8000/v1`}</pre>
               </Box>
               <Box variant="p">
                 <strong>Throughput and decode features live in the engine.</strong> Continuous
-                batching, KV cache, structured outputs, tool-call parsing, prefix caching &mdash; these
+                batching, KV cache, structured outputs, tool-call parsing, prefix caching: these
                 are <code>vllm serve</code> flags (§12). A gateway cannot add them; it can only pass
                 them through.
               </Box>

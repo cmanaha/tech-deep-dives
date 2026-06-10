@@ -21,7 +21,7 @@ const mechanismRows: MechanismRow[] = [
     kind: 'Control (placement directive)',
     effect:
       'Packs instances into one AZ on the same high-bisection-bandwidth segment; raises the single-flow TCP limit from 5 Gbps to 10 Gbps between members.',
-    use: 'Default lever for any multi-node job where the nodes talk to each other constantly — TP/PP collectives, and (by inference) disaggregated KV transfer.',
+    use: 'Default lever for any multi-node job where the nodes talk to each other constantly: TP/PP collectives, and (by inference) disaggregated KV transfer.',
   },
   {
     mechanism: 'ODCR inside a cluster placement group',
@@ -42,7 +42,7 @@ const mechanismRows: MechanismRow[] = [
     kind: 'Control (anti-affinity)',
     effect:
       'Spreads instances across distinct racks (each its own power/network) to bound correlated hardware failure. The opposite intent of cluster.',
-    use: 'Replicated distributed stores (HDFS, Cassandra) — NOT latency-coupled inference. Wrong tool for KV locality.',
+    use: 'Replicated distributed stores (HDFS, Cassandra), NOT latency-coupled inference. Wrong tool for KV locality.',
   },
   {
     mechanism: 'Spread placement group',
@@ -94,8 +94,8 @@ function ControlVsObserveDiagram() {
         </marker>
       </defs>
 
-      <text className="ph" x={215} y={26}>BEFORE / AT LAUNCH — YOU CONTROL</text>
-      <text className="ph" x={645} y={26}>AFTER LAUNCH — YOU OBSERVE</text>
+      <text className="ph" x={215} y={26}>BEFORE / AT LAUNCH: YOU CONTROL</text>
+      <text className="ph" x={645} y={26}>AFTER LAUNCH: YOU OBSERVE</text>
       <line className="div" x1={430} y1={40} x2={430} y2={400} />
 
       {/* Control levers */}
@@ -143,8 +143,8 @@ function ControlVsObserveDiagram() {
 
       <path className="arr" d="M755,200 C755,225 700,245 670,262" />
 
-      <text className="bs" x={640} y={372}>The API never launches or moves instances —</text>
-      <text className="bs" x={640} y={390}>it tells you what the control levers already did.</text>
+      <text className="bs" x={640} y={372}>The API never launches or moves instances.</text>
+      <text className="bs" x={640} y={390}>It tells you what the control levers already did.</text>
     </svg>
   );
 }
@@ -240,7 +240,7 @@ export function Ec2TopologyPlacement() {
         header={
           <Header
             variant="h1"
-            description="Placement on AWS is two separate things — what you can command before launch, and what you can only read after. Confuse them and you will reach for the API to do a job only a capacity reservation can do."
+            description="Placement on AWS is two separate things: what you can command before launch, and what you can only read after. Confuse them and you will reach for the API to do a job only a capacity reservation can do."
           >
             {'23. EC2 Topology, Placement Groups & KV Locality'}
           </Header>
@@ -250,10 +250,10 @@ export function Ec2TopologyPlacement() {
           <Box variant="p">
             <strong>The mental model: control versus observability.</strong> Everything in this
             section divides cleanly into two buckets. One bucket holds the levers that{' '}
-            <em>control</em> where instances physically land — cluster placement groups,
+            <em>control</em> where instances physically land: cluster placement groups,
             On-Demand Capacity Reservations created inside them, and Capacity Blocks for ML.
             The other bucket holds exactly one tool that only lets you <em>observe</em> the
-            placement you already got —{' '}
+            placement you already got,{' '}
             <code>DescribeInstanceTopology</code>. The single most common mistake an SA sees
             is treating the observability tool as a control lever: asking the topology API to
             &quot;launch my instances close together.&quot; It cannot. It describes running
@@ -271,7 +271,7 @@ export function Ec2TopologyPlacement() {
               Elastic Fabric Adapter (EFA) deep dive
             </Link>
             . The fabric is fast, but its speed assumes the endpoints are close. This section
-            is about how you make them close — and how you find out whether they are.
+            is about how you make them close, and how you find out whether they are.
           </Box>
         </SpaceBetween>
       </Container>
@@ -280,7 +280,7 @@ export function Ec2TopologyPlacement() {
         header={
           <Header
             variant="h2"
-            description="Six mechanisms, two jobs. Read the 'kind' column first — it tells you whether the thing decides placement or merely reports it."
+            description="Six mechanisms, two jobs. Read the 'kind' column first. It tells you whether the thing decides placement or merely reports it."
           >
             The mechanisms at a glance
           </Header>
@@ -322,7 +322,7 @@ export function Ec2TopologyPlacement() {
             variant="h2"
             description="The control levers and the observer, side by side. Left of the dashed line is decided before the instances exist; right of it can only be read once they are running."
           >
-            Diagram 1 — control levers vs the post-launch observer
+            Diagram 1: control levers vs the post-launch observer
           </Header>
         }
       >
@@ -333,7 +333,7 @@ export function Ec2TopologyPlacement() {
             high-bisection network segment; <em>only then</em> can{' '}
             <code>DescribeInstanceTopology</code> tell you the shape of where they landed, which
             you feed into rank/pair assignment. There is no arrow back from the API to the
-            placement — the API is a mirror, not a steering wheel.
+            placement. The API is a mirror, not a steering wheel.
           </Box>
         </SpaceBetween>
       </Container>
@@ -344,7 +344,7 @@ export function Ec2TopologyPlacement() {
             variant="h2"
             description="A cluster placement group is the workhorse. Know exactly what it promises and what it merely makes likely."
           >
-            CONTROL — cluster placement groups
+            CONTROL: cluster placement groups
           </Header>
         }
       >
@@ -384,7 +384,7 @@ export function Ec2TopologyPlacement() {
               <Box variant="h3">partition</Box>
               <Box variant="p">
                 Splits into up to seven rack-isolated partitions per AZ to bound correlated
-                failure. Built for HDFS/HBase/Cassandra — anti-affinity, not proximity.
+                failure. Built for HDFS/HBase/Cassandra: anti-affinity, not proximity.
               </Box>
             </div>
             <div>
@@ -395,7 +395,7 @@ export function Ec2TopologyPlacement() {
               </Box>
             </div>
           </ColumnLayout>
-          <Alert type="warning" header="Cluster PG is a request, not a guarantee — and it has sharp edges">
+          <Alert type="warning" header="Cluster PG is a request, not a guarantee, and it has sharp edges">
             <SpaceBetween size="s">
               <Box variant="p">
                 The docs are explicit that scaling a cluster placement group risks an{' '}
@@ -414,8 +414,8 @@ export function Ec2TopologyPlacement() {
                 <em>
                   &quot;reserve capacity explicitly in the cluster placement group by creating
                   an On-Demand Capacity Reservation in the cluster placement group&quot;
-                </em>{' '}
-                — and note you <em>cannot</em> reserve capacity with zonal Reserved Instances,
+                </em>
+                . Note you <em>cannot</em> reserve capacity with zonal Reserved Instances,
                 which can&apos;t target a placement group (same source). That is the ODCR-in-PG
                 pattern in the next panel.
               </Box>
@@ -428,9 +428,9 @@ export function Ec2TopologyPlacement() {
         header={
           <Header
             variant="h2"
-            description="Two ways to pin capacity AND proximity together — one you wire by hand, one AWS wires for you."
+            description="Two ways to pin capacity AND proximity together: one you wire by hand, one AWS wires for you."
           >
-            CONTROL — pinning capacity: ODCR-in-PG vs Capacity Blocks
+            CONTROL: pinning capacity, ODCR-in-PG vs Capacity Blocks
           </Header>
         }
       >
@@ -447,7 +447,7 @@ export function Ec2TopologyPlacement() {
                 <Link external href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html">
                   [Tier-1: EC2 placement strategies, accessed 2026-06-07]
                 </Link>
-                . Manual, durable, and yours to keep — fits a long-running fleet.
+                . Manual, durable, and yours to keep. Fits a long-running fleet.
               </Box>
             </div>
             <div>
@@ -481,9 +481,9 @@ export function Ec2TopologyPlacement() {
         header={
           <Header
             variant="h2"
-            description="DescribeInstanceTopology is a diagnostic. It tells you how close your running nodes already are — it has no power to make them close."
+            description="DescribeInstanceTopology is a diagnostic. It tells you how close your running nodes already are. It has no power to make them close."
           >
-            OBSERVABILITY — DescribeInstanceTopology
+            OBSERVABILITY: DescribeInstanceTopology
           </Header>
         }
       >
@@ -503,7 +503,7 @@ export function Ec2TopologyPlacement() {
               [Tier-1: DescribeInstanceTopology API reference, accessed 2026-06-07]
             </Link>
             . It is firmly post-launch: the prerequisites require instances be in the{' '}
-            <code>running</code> state — you{' '}
+            <code>running</code> state, since you{' '}
             <em>&quot;can&apos;t get topology information for instances ... in any other state&quot;</em>{' '}
             <Link external href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-topology-prerequisites.html">
               [Tier-1: EC2 topology prerequisites, accessed 2026-06-07]
@@ -545,7 +545,7 @@ export function Ec2TopologyPlacement() {
               </Box>
             </div>
           </ColumnLayout>
-          <Alert type="error" header="You cannot launch close with this API — only read close">
+          <Alert type="error" header="You cannot launch close with this API: only read close">
             The API surface confirms it: <code>DescribeInstanceTopology</code> takes filters,
             instance IDs, and placement-group <em>names</em> as <em>read</em> inputs and returns
             a topology view{' '}
@@ -573,7 +573,7 @@ export function Ec2TopologyPlacement() {
                   instances are to each other&quot;
                 </em>{' '}
                 (same source). Two instances sharing the same <em>bottom-layer</em> node are the
-                tightest pairing you can get — that is the basis of rank/pair assignment.
+                tightest pairing you can get. That is the basis of rank/pair assignment.
               </Box>
               <Box variant="p">
                 There is also a pre-launch sibling,{' '}
@@ -590,7 +590,7 @@ export function Ec2TopologyPlacement() {
               <Box variant="p">
                 <strong>[SPECULATIVE]</strong> Practitioners often describe the{' '}
                 <code>nn-...</code> node identifiers as effectively account-scoped opaque
-                handles — useful for relative comparison <em>within</em> your account, not as a
+                handles: useful for relative comparison <em>within</em> your account, not as a
                 stable, cross-account physical map. The AWS reference pages document the
                 hierarchy and the comparison rule but do <em>not</em> state a hashing or
                 per-account-uniqueness guarantee on this page, so treat the IDs as relative
@@ -607,7 +607,7 @@ export function Ec2TopologyPlacement() {
             variant="h2"
             description="Two instances under one bottom-layer node are the closest pairing. This is the picture rank/pair assignment is built on."
           >
-            Diagram 2 — the NetworkNodes hierarchy
+            Diagram 2: the NetworkNodes hierarchy
           </Header>
         }
       >
@@ -615,11 +615,11 @@ export function Ec2TopologyPlacement() {
           <NetworkNodesDiagram />
           <Box variant="p">
             Read each instance&apos;s path bottom-up. <strong>i-1</strong> and{' '}
-            <strong>i-2</strong> both connect to <strong>NN4</strong> — they share a bottom-layer
+            <strong>i-2</strong> both connect to <strong>NN4</strong>: they share a bottom-layer
             node, so they are the closest pair and the obvious candidates to pair as a
             prefiller/decoder cell or as adjacent TP ranks. <strong>i-3</strong> shares only{' '}
             <strong>NN2</strong> (an upper layer) with them, so it is further. <strong>i-4</strong>{' '}
-            shares only <strong>NN1</strong>, the top — the furthest of the four. This mirrors
+            shares only <strong>NN1</strong>, the top, making it the furthest of the four. This mirrors
             the worked example in the AWS docs{' '}
             <Link external href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ec2-instance-topology-works.html">
               [Tier-1: how EC2 topology works, accessed 2026-06-07]
@@ -633,9 +633,9 @@ export function Ec2TopologyPlacement() {
         header={
           <Header
             variant="h2"
-            description="The pattern isn't theoretical — Amazon's own production inference fleet uses the topology API to pair nodes."
+            description="The pattern isn't theoretical: Amazon's own production inference fleet uses the topology API to pair nodes."
           >
-            Proof point — Amazon Rufus pairs nodes by topology
+            Proof point: Amazon Rufus pairs nodes by topology
           </Header>
         }
       >
@@ -654,14 +654,14 @@ export function Ec2TopologyPlacement() {
               available to instances&quot;
             </em>{' '}
             <Link external href="https://aws.amazon.com/blogs/machine-learning/how-amazon-scaled-rufus-by-building-multi-node-inference-using-aws-trainium-chips-and-vllm/">
-              [Tier-2: AWS ML blog — scaling Rufus on Trainium with vLLM, accessed 2026-06-07]
+              [Tier-2: AWS ML blog, scaling Rufus on Trainium with vLLM, accessed 2026-06-07]
             </Link>
             . A vLLM <em>leader</em> node handles scheduling and orchestration while{' '}
-            <em>follower</em> nodes run the distributed computation (same source) — and the
+            <em>follower</em> nodes run the distributed computation (same source). The
             leader/follower cell is composed by{' '}
             <em>&quot;pairing nodes based on their physical location and proximity&quot;</em>{' '}
             (same source). That is the topology API used precisely as a post-launch observer to
-            assign which nodes work together — not to place them.
+            assign which nodes work together, not to place them.
           </Box>
         </SpaceBetween>
       </Container>
@@ -672,7 +672,7 @@ export function Ec2TopologyPlacement() {
             variant="h2"
             description="The most important caveat in this section. Spell it out for any team about to assume the docs say more than they do."
           >
-            Honest unknowns — what AWS does NOT publish
+            Honest unknowns: what AWS does NOT publish
           </Header>
         }
       >
@@ -683,7 +683,7 @@ export function Ec2TopologyPlacement() {
             <strong>no public mapping from physical spine/leaf switches to NetworkNode IDs</strong>.
             You can rank pairs as closer or further; you cannot read a microsecond budget off a
             layer. Any &quot;layer iii is X μs faster than layer ii&quot; claim would be
-            fabrication — the docs simply do not say it.
+            fabrication. The docs simply do not say it.
           </Alert>
           <Alert type="warning" header="Is point-to-point KV transfer as placement-sensitive as collective AllReduce? Unstated.">
             <SpaceBetween size="s">
@@ -702,8 +702,8 @@ export function Ec2TopologyPlacement() {
                 .
               </Box>
               <Box variant="p">
-                The <strong>EFA + NIXL</strong> inference guide — which covers exactly the
-                prefiller/decoder KV transfer vLLM uses — walks through launching EFA-enabled
+                The <strong>EFA + NIXL</strong> inference guide (which covers exactly the
+                prefiller/decoder KV transfer vLLM uses) walks through launching EFA-enabled
                 instances and even a vLLM disaggregated test, but{' '}
                 <strong>never mentions cluster placement groups at all</strong>{' '}
                 <Link external href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nixl.html">
@@ -717,27 +717,27 @@ export function Ec2TopologyPlacement() {
                 may be less placement-sensitive than dense collective AllReduce across many ranks,
                 where the slowest path gates every step. But AWS does not state this. Until they
                 do, the safe engineering call is to keep prefiller and decoder pools in the same
-                proximity domain — a cluster placement group, ODCR-in-PG, or Capacity Block —
+                proximity domain (a cluster placement group, ODCR-in-PG, or Capacity Block)
                 because the cost of doing so is near zero and the cost of being wrong is paid on
                 every token.
               </Box>
             </SpaceBetween>
           </Alert>
-          <Alert type="info" header="Gotcha — Kubernetes inference schedulers do NOT score on physical network topology">
+          <Alert type="info" header="Gotcha: Kubernetes inference schedulers do NOT score on physical network topology">
             <SpaceBetween size="s">
               <Box variant="p">
-                If you serve vLLM on Kubernetes (<strong>section 17 — llm-d, KServe &amp; the
+                If you serve vLLM on Kubernetes (<strong>section 17: llm-d, KServe &amp; the
                 Gateway API Inference Extension</strong>), be clear about what the smart
-                scheduler does and does not do. The inference-aware schedulers — llm-d&apos;s
-                Endpoint Picker (EPP) and the Gateway API Inference Extension — score endpoints on{' '}
+                scheduler does and does not do. The inference-aware schedulers (llm-d&apos;s
+                Endpoint Picker (EPP) and the Gateway API Inference Extension) score endpoints on{' '}
                 <strong>KV-cache state, prefix-cache hits, queue depth, and observed latency</strong>.
                 They do <strong>not</strong> score on which physical network node a pod&apos;s host
                 sits under.
               </Box>
               <Box variant="p">
                 So on AWS the proximity guarantee cannot come from the request scheduler. It has
-                to be established one layer down — at the <strong>node-group / placement-group</strong>{' '}
-                level — by launching the node group into a cluster placement group, an ODCR-in-PG,
+                to be established one layer down, at the <strong>node-group / placement-group</strong>{' '}
+                level, by launching the node group into a cluster placement group, an ODCR-in-PG,
                 or a Capacity Block before any pod is scheduled. The scheduler then makes good
                 routing decisions <em>within</em> a pool that proximity has already made fast. Mix
                 these up and you will tune EPP weights for hours chasing a latency cliff that is
@@ -754,7 +754,7 @@ export function Ec2TopologyPlacement() {
             variant="h2"
             description="The whole section as a recipe you can hand to a team."
           >
-            Putting it together — the SA playbook
+            Putting it together: the SA playbook
           </Header>
         }
       >
@@ -767,7 +767,7 @@ export function Ec2TopologyPlacement() {
           </Box>
           <Box variant="p">
             <strong>2. Keep coupled pools in the same proximity domain.</strong> Put multi-node
-            TP/PP ranks — and, conservatively, paired prefiller/decoder pools — inside the same
+            TP/PP ranks (and, conservatively, paired prefiller/decoder pools) inside the same
             cluster placement group or Capacity Block. The NCCL guide recommends it for
             collectives; for KV transfer it is the prudent default until AWS says otherwise.
           </Box>
@@ -775,7 +775,7 @@ export function Ec2TopologyPlacement() {
             <strong>3. Observe after launch and assign accordingly.</strong> Call{' '}
             <code>DescribeInstanceTopology</code> on the running fleet, find instances sharing a
             bottom-layer node, and assign ranks or prefiller/decoder cells so the busiest
-            cross-node traffic runs between the closest nodes — the Rufus pattern.
+            cross-node traffic runs between the closest nodes: the Rufus pattern.
           </Box>
           <Box variant="p">
             <strong>4. Do not ask the API to place, and do not ask the scheduler to be

@@ -140,7 +140,7 @@ export function AwsEks() {
         header={
           <Header
             variant="h1"
-            description="The canonical EKS deployment story for vLLM — DLCs, Karpenter, multi-node serving, a gateway, S3 weights, and observability — assembled from the parts the rest of this deep dive already built."
+            description="The canonical EKS deployment story for vLLM, assembled from the parts the rest of this deep dive already built: DLCs, Karpenter, multi-node serving, a gateway, S3 weights, and observability."
           >
             24. vLLM on Amazon EKS
           </Header>
@@ -149,7 +149,7 @@ export function AwsEks() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>The framing in one sentence:</strong> running vLLM on Amazon EKS (Elastic
-            Kubernetes Service) is not a new pattern &mdash; it is the conceptual stack from sections
+            Kubernetes Service) is not a new pattern. It is the conceptual stack from sections
             16 and 17 (the Kubernetes operator and router layers) landed onto the AWS data plane from
             sections 22 and 23 (GPUs, EFA, and placement groups), wired together with five EKS
             primitives: <strong>AWS vLLM Deep Learning Containers</strong> as the image,{' '}
@@ -163,7 +163,7 @@ export function AwsEks() {
           <Box variant="p">
             <strong>Why EKS rather than raw EC2 or SageMaker:</strong> you reach for EKS when you
             already run platform workloads on Kubernetes and want vLLM to live under the same
-            scheduler, IAM, networking, and GitOps surface as everything else &mdash; not as a
+            scheduler, IAM, networking, and GitOps surface as everything else, not as a
             bespoke island. The trade is that you own the control plane assembly (device plugins,
             autoscaler, gateway, monitoring) instead of buying it. The two AWS-authored quickstarts
             below exist precisely to remove that assembly cost, and they disagree in instructive ways
@@ -180,7 +180,7 @@ export function AwsEks() {
             path. Single-replica inference rides Karpenter-provisioned GPU nodes (the EKS vLLM
             quickstart shape). Multi-node tensor/pipeline-parallel serving rides a separate
             EFA-enabled managed node group inside a cluster placement group, because{' '}
-            <strong>Karpenter does not natively create EC2 placement groups</strong> &mdash; the
+            <strong>Karpenter does not natively create EC2 placement groups</strong>, so the
             EFA-dependent path needs the locality guarantee from section 23.
           </Box>
 
@@ -206,7 +206,7 @@ export function AwsEks() {
         <SpaceBetween size="m">
           <Box variant="p">
             There are two canonical AWS walkthroughs, and the cleanest way to understand EKS-for-vLLM
-            is to see where they agree and where they diverge. They are not competing &mdash; they
+            is to see where they agree and where they diverge. They are not competing. They
             target the single-node and the multi-node ends of the same spectrum.
           </Box>
 
@@ -296,7 +296,7 @@ export function AwsEks() {
                 mech: (
                   <span>
                     AWS vLLM Deep Learning Containers from{' '}
-                    <code>public.ecr.aws/deep-learning-containers/vllm</code> &mdash; pinned vLLM +
+                    <code>public.ecr.aws/deep-learning-containers/vllm</code>: pinned vLLM +
                     CUDA, security-patched, SOCI-enabled for fast image pull.
                   </span>
                 ),
@@ -319,7 +319,7 @@ export function AwsEks() {
                 mech: (
                   <span>
                     Same Karpenter pattern with Inferentia/Trainium selectors and the Neuron device
-                    plugin (<code>aws.amazon.com/neuron</code> resource) &mdash; see{' '}
+                    plugin (<code>aws.amazon.com/neuron</code> resource), covered in{' '}
                     <strong>section 21 (vLLM on AWS Neuron)</strong>.
                   </span>
                 ),
@@ -342,7 +342,7 @@ export function AwsEks() {
                   <span>
                     LeaderWorkerSet groups a leader + worker pods into one logical replica spanning
                     nodes. The emerging DisaggregatedSet extends this for separate prefill/decode
-                    groups &mdash; concepts from <strong>section 16</strong> /{' '}
+                    groups, concepts from <strong>section 16</strong> /{' '}
                     <strong>section 17</strong>.
                   </span>
                 ),
@@ -353,7 +353,7 @@ export function AwsEks() {
                 mech: (
                   <span>
                     EFA-enabled managed node group inside a cluster placement group; NIXL/NCCL ride
-                    EFA for KV and collective transfer &mdash; see{' '}
+                    EFA for KV and collective transfer, covered in{' '}
                     <strong>section 22 (GPUs, EFA &amp; NIXL)</strong> and{' '}
                     <strong>section 23 (topology &amp; placement groups)</strong>.
                   </span>
@@ -388,7 +388,7 @@ export function AwsEks() {
                   <span>
                     vLLM exposes Prometheus metrics; scrape with a ServiceMonitor into
                     kube-prometheus-stack and render the community vLLM Grafana dashboard (gnetId
-                    25263) &mdash; see <strong>section 20 (Observability &amp; Benchmarking)</strong>.
+                    25263), covered in <strong>section 20 (Observability &amp; Benchmarking)</strong>.
                   </span>
                 ),
                 tier: 'Tier-1',
@@ -413,7 +413,7 @@ export function AwsEks() {
         <SpaceBetween size="s">
           <Box variant="p">
             <strong>[Tier-1 mechanism]</strong> Karpenter is the right tool for autoscaling
-            single-node GPU inference replicas &mdash; it provisions a node, the pod lands, done. But
+            single-node GPU inference replicas: it provisions a node, the pod lands, done. But
             EFA-dependent multi-node serving needs all participating instances inside one{' '}
             <strong>EC2 cluster placement group</strong> so the low-latency fabric assumptions from
             section 23 hold. <strong>Karpenter does not natively create cluster placement groups.</strong>{' '}
@@ -441,7 +441,7 @@ export function AwsEks() {
             models do not land on the most expensive accelerators.
           </Box>
           <Box variant="code">
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# Karpenter NodePool — GPU inference (illustrative; verify against your Karpenter version)
+            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# Karpenter NodePool: GPU inference (illustrative; verify against your Karpenter version)
 apiVersion: karpenter.sh/v1
 kind: NodePool
 metadata:
@@ -492,19 +492,19 @@ spec:
           <Box variant="p">
             When a model does not fit one node&apos;s GPUs (tensor parallel beyond a single box, or
             pipeline parallel across boxes), one Kubernetes Deployment per replica is the wrong
-            primitive &mdash; you need a group of pods that scale, schedule, and fail as one unit.
+            primitive: you need a group of pods that scale, schedule, and fail as one unit.
             That is the <strong>LeaderWorkerSet (LWS)</strong>: a leader pod plus N worker pods form a
             single logical replica spanning nodes, which is exactly how the DLC blog runs
             DeepSeek-R1-Distill-Qwen-32B across <code>p4d.24xlarge</code> nodes.
           </Box>
           <Box variant="p">
-            The <strong>disaggregated</strong> evolution &mdash; separating prefill (compute-bound)
-            from decode (memory-bound) pod groups, the concept from section 10 and section 17 &mdash;
+            The <strong>disaggregated</strong> evolution, separating prefill (compute-bound)
+            from decode (memory-bound) pod groups (the concept from section 10 and section 17),
             is what AWS&apos;s llm-d blog deploys on EKS. Prefill and decode become distinct sets,
             KV cache moves between them over NIXL on EFA, and the inference-aware Gateway API
             Inference Extension routes requests across the split.
           </Box>
-          <ExpandableSection headerText="LeaderWorkerSet vs DisaggregatedSet — what changes on EKS">
+          <ExpandableSection headerText="LeaderWorkerSet vs DisaggregatedSet: what changes on EKS">
             <SpaceBetween size="s">
               <Box variant="p">
                 <strong>LeaderWorkerSet (LWS):</strong> one replica = one leader + workers, co-scheduled
@@ -520,12 +520,12 @@ spec:
               </Box>
               <Box variant="p">
                 <strong>[Tier-2: AWS ML blog, project-claimed]</strong> AWS&apos;s llm-d post states
-                that &ldquo;<em>llm-d&apos;s prefill/decode disaggregation path increases tokens per
-                second by up to 70%</em>&rdquo; under its own test conditions (1024 input tokens, 1024
+                that "<em>llm-d&apos;s prefill/decode disaggregation path increases tokens per
+                second by up to 70%</em>" under its own test conditions (1024 input tokens, 1024
                 output tokens, concurrency up to 128, on <code>ml.p6-b200.48xlarge</code> /{' '}
                 <code>p5.48xlarge</code> with 32 EFA interfaces). Treat the 70% as a project-claimed
-                benchmark under a specific workload, not a guarantee for your traffic shape &mdash;
-                see <strong>section 20</strong> for how to benchmark your own.
+                benchmark under a specific workload, not a guarantee for your traffic shape. See{' '}
+                <strong>section 20</strong> for how to benchmark your own.
               </Box>
               <Box variant="small">
                 <strong>[Tier-2: AWS ML blog]</strong>{' '}
@@ -553,14 +553,14 @@ spec:
         <SpaceBetween size="m">
           <Box variant="p">
             EKS gives you three composable layers in front of the vLLM pods, and which you reach for
-            depends on how routing-aware you need to be. They stack &mdash; you can run all three.
+            depends on how routing-aware you need to be. They stack, so you can run all three.
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
             <div>
               <Box variant="h3">ALB (ingress) [Tier-2]</Box>
               <Box variant="p">
                 The AWS Load Balancer Controller provisions an Application Load Balancer for L7
-                ingress &mdash; the DLC blog&apos;s front door. Gets traffic into the cluster; it is
+                ingress, the DLC blog&apos;s front door. Gets traffic into the cluster; it is
                 not LLM-aware (round-robin / least-outstanding, no KV-cache or queue awareness).
               </Box>
             </div>
@@ -569,7 +569,7 @@ spec:
               <Box variant="p">
                 The AWS reference architecture uses LiteLLM as the API gateway: virtual keys,
                 per-team budgets, retries/fallbacks, and a single OpenAI-shaped URL fronting many
-                vLLM endpoints. Control-plane concerns, decoupled from the engine &mdash; the full
+                vLLM endpoints. Control-plane concerns, decoupled from the engine. The full
                 argument is in <strong>section 19</strong>.
               </Box>
             </div>
@@ -587,7 +587,7 @@ spec:
             Pick by need, not by novelty: ALB alone is fine for one model behind one service; add
             LiteLLM the moment you have multiple teams, keys, or budgets; graduate to the GAIE/llm-d
             inference gateway only when round-robin is demonstrably leaving throughput on the table
-            (cache-locality misses, hot/cold replica skew) &mdash; the decision criteria live in
+            (cache-locality misses, hot/cold replica skew). The decision criteria live in
             sections 16, 17, and 19.
           </Alert>
         </SpaceBetween>
@@ -634,7 +634,7 @@ spec:
           />
           <Box variant="small">
             <strong>[Tier-1: AWS EKS docs]</strong> Run:ai Model Streamer + S3, SOCI fast image pull,
-            and the &ldquo;Model loading took &hellip; ~5 seconds&rdquo; behavior are from the EKS vLLM
+            and the "Model loading took &hellip; ~5 seconds" behavior are from the EKS vLLM
             quickstart:{' '}
             <Link
               external
@@ -658,7 +658,7 @@ spec:
       <Container header={<Header variant="h2">Observability: ServiceMonitor &rarr; Prometheus &rarr; Grafana</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            vLLM exposes Prometheus metrics on <code>/metrics</code> out of the box &mdash; request
+            vLLM exposes Prometheus metrics on <code>/metrics</code> out of the box: request
             rate, token throughput, end-to-end latency percentiles, and GPU KV-cache utilization. On
             EKS you wire that into the standard stack with a ServiceMonitor, and the AWS quickstart
             pre-provisions a community vLLM Grafana dashboard so there is nothing to build.
@@ -681,7 +681,7 @@ spec:
       interval: 15s
 
 # Dashboard: community "vLLM Metrics" (Grafana gnetId 25263),
-# provisioned by the kube-prometheus-stack values file — no manual import.`}</pre>
+# provisioned by the kube-prometheus-stack values file, no manual import.`}</pre>
           </Box>
           <Box variant="small">
             <strong>[Tier-1: AWS EKS docs]</strong> ServiceMonitor, kube-prometheus-stack, the
@@ -710,8 +710,8 @@ spec:
           </Box>
           <Box variant="p">
             <strong>2. If not, you need multi-node.</strong> Provision an EFA-enabled managed node
-            group inside a cluster placement group (section 23) &mdash; not Karpenter, because of the
-            placement-group gap &mdash; and run the replica as a LeaderWorkerSet. KV/collective
+            group inside a cluster placement group (section 23), not Karpenter, because of the
+            placement-group gap, and run the replica as a LeaderWorkerSet. KV/collective
             traffic rides NIXL/NCCL over EFA (section 22).
           </Box>
           <Box variant="p">
@@ -732,17 +732,17 @@ spec:
 
       <Container header={<Header variant="h2">Sources</Header>}>
         <SpaceBetween size="s">
-          <Box variant="h3">Tier-1 — AWS documentation</Box>
+          <Box variant="h3">Tier-1: AWS documentation</Box>
           <ul>
             <li>
               <Link
                 external
                 href="https://docs.aws.amazon.com/eks/latest/userguide/ml-realtime-inference-llm-inference-vllm.html"
               >
-                Amazon EKS User Guide &mdash; Load &amp; Serve Models on Amazon EKS (vLLM
+                Amazon EKS User Guide: Load &amp; Serve Models on Amazon EKS (vLLM
                 quickstart), accessed 2026-06-07
-              </Link>{' '}
-              &mdash; AWS vLLM DLC image, Karpenter/EKS Auto Mode, S3 + Run:ai Model Streamer, SOCI,
+              </Link>
+              . Covers AWS vLLM DLC image, Karpenter/EKS Auto Mode, S3 + Run:ai Model Streamer, SOCI,
               ServiceMonitor + kube-prometheus-stack + Grafana dashboard (gnetId 25263), Open WebUI.
             </li>
             <li>
@@ -750,14 +750,14 @@ spec:
                 external
                 href="https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html"
               >
-                Amazon EKS Best Practices &mdash; AI/ML Compute, accessed 2026-06-07
-              </Link>{' '}
-              &mdash; Karpenter selectors (instance-category g/p, instance-generation,
+                Amazon EKS Best Practices: AI/ML Compute, accessed 2026-06-07
+              </Link>
+              . Covers Karpenter selectors (instance-category g/p, instance-generation,
               instance-gpu-memory), GPU taints, Bottlerocket accelerated AMI device plugin, ML
               Capacity Blocks / ODCRs, managed-node-group vs Karpenter guidance.
             </li>
           </ul>
-          <Box variant="h3">Tier-2 — AWS blogs</Box>
+          <Box variant="h3">Tier-2: AWS blogs</Box>
           <ul>
             <li>
               <Link
@@ -765,8 +765,8 @@ spec:
                 href="https://aws.amazon.com/blogs/machine-learning/deploy-llms-on-amazon-eks-using-vllm-deep-learning-containers/"
               >
                 Deploy LLMs on Amazon EKS using vLLM Deep Learning Containers, accessed 2026-06-07
-              </Link>{' '}
-              &mdash; p4d.24xlarge managed node groups, FSx for Lustre weights, LeaderWorkerSet, ALB
+              </Link>
+              . Covers p4d.24xlarge managed node groups, FSx for Lustre weights, LeaderWorkerSet, ALB
               via AWS Load Balancer Controller. (EFA benefits stated qualitatively; no throughput
               numbers.)
             </li>
@@ -776,8 +776,8 @@ spec:
                 href="https://aws.amazon.com/blogs/machine-learning/introducing-disaggregated-inference-on-aws-powered-by-llm-d/"
               >
                 Introducing disaggregated inference on AWS powered by llm-d, accessed 2026-06-07
-              </Link>{' '}
-              &mdash; disaggregated prefill/decode on EKS, Gateway API Inference Extension, NIXL over
+              </Link>
+              . Covers disaggregated prefill/decode on EKS, Gateway API Inference Extension, NIXL over
               EFA on p5/p6-B200; <em>project-claimed</em> up to 70% more tokens/sec under a stated
               benchmark.
             </li>

@@ -35,7 +35,7 @@ const kvTransferConfigRows: ConfigRow[] = [
   {
     field: 'kv_buffer_device',
     type: 'str',
-    detail: 'Device the connector buffers KV on — "cuda", "cpu", or "xpu". Defaults to the current platform device type.',
+    detail: 'Device the connector buffers KV on: "cuda", "cpu", or "xpu". Defaults to the current platform device type.',
   },
   {
     field: 'kv_connector_extra_config',
@@ -213,10 +213,10 @@ export function CodebaseDistributed() {
             <strong>What this layer does.</strong> Everything under{' '}
             <code>vllm/distributed/</code> answers two questions: how is one model
             laid out across many GPUs, and how does KV cache move between separate
-            engines. The first is the parallel-group machinery —{' '}
+            engines. The first is the parallel-group machinery ({' '}
             <code>GroupCoordinator</code> plus{' '}
             <code>initialize_model_parallel</code> in{' '}
-            <code>vllm/distributed/parallel_state.py</code> — that builds the
+            <code>vllm/distributed/parallel_state.py</code>) that builds the
             tensor / pipeline / data / expert process groups. The second is the KV
             connector framework under{' '}
             <code>vllm/distributed/kv_transfer/</code>, whose production member is
@@ -228,7 +228,7 @@ export function CodebaseDistributed() {
             every forward pass over fast collectives. KV transfer is{' '}
             <em>between</em> engines: a prefiller fills the cache, a decoder reads
             it over the network, and the two never share a process group. On AWS
-            both kinds of traffic ultimately ride EFA — the AWS sections of this
+            both kinds of traffic ultimately ride EFA. The AWS sections of this
             deep dive cover that data path; here we stay in the vLLM source.
           </Box>
         </SpaceBetween>
@@ -265,8 +265,8 @@ export function CodebaseDistributed() {
             <code>cpu_group</code> (Gloo) for direct CPU-side coordination, tracks
             its <code>rank_in_group</code> versus global <code>rank</code>, and
             lazily attaches a <code>device_communicator</code> chosen by the
-            platform. The module keeps one global per axis —{' '}
-            <code>_TP, _PP, _DP, _EP, _PCP, _DCP</code> — each with a{' '}
+            platform. The module keeps one global per axis ({' '}
+            <code>_TP, _PP, _DP, _EP, _PCP, _DCP</code>), each with a{' '}
             <code>get_*_group()</code> accessor.
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
@@ -317,7 +317,7 @@ export function CodebaseDistributed() {
             A <code>GroupCoordinator</code> does not call NCCL directly. It
             resolves a platform-specific{' '}
             <code>DeviceCommunicatorBase</code> subclass from{' '}
-            <code>vllm/distributed/device_communicators/</code> —{' '}
+            <code>vllm/distributed/device_communicators/</code>:{' '}
             <code>CudaCommunicator</code>,{' '}
             <code>CpuCommunicator</code>,{' '}
             <code>XpuCommunicator</code>, or the Ray variant. On CUDA, the
@@ -363,7 +363,7 @@ export function CodebaseDistributed() {
         }
       >
         <SpaceBetween size="m">
-          <Alert type="warning" header="Experimental API — straight from the source">
+          <Alert type="warning" header="Experimental API: straight from the source">
             <code>KVConnectorBase_V1.__init__</code>{' '}
             (kv_transfer/kv_connector/v1/base.py:190) logs on every
             instantiation:{' '}
@@ -422,7 +422,7 @@ export function CodebaseDistributed() {
               { id: 'detail', header: 'What it is', cell: (r) => r.detail },
             ]}
             items={[
-              { field: 'NixlConnector', type: '', detail: 'Production prefill/decode connector — ZMQ handshake + NIXL/UCX RDMA read. Default for disaggregation.' },
+              { field: 'NixlConnector', type: '', detail: 'Production prefill/decode connector: ZMQ handshake + NIXL/UCX RDMA read. Default for disaggregation.' },
               { field: 'P2pNcclConnector', type: '', detail: 'Point-to-point KV transfer over NCCL; expects kv_parallel_size = 2.' },
               { field: 'LMCacheConnectorV1', type: '', detail: 'Integration with LMCache for tiered KV caching and offload (also LMCacheMPConnector).' },
               { field: 'MooncakeConnector', type: '', detail: 'Mooncake transfer engine / store (also MooncakeStoreConnector).' },
@@ -444,7 +444,7 @@ export function CodebaseDistributed() {
             variant="h2"
             description="The production prefill/decode connector: side-channel handshake, async RDMA read, block lease + heartbeat"
           >
-            NixlConnector — the disaggregation data path
+            NixlConnector: the disaggregation data path
           </Header>
         }
       >
@@ -465,7 +465,7 @@ export function CodebaseDistributed() {
                 The decoder worker opens a <code>zmq.REQ</code> socket to the
                 prefiller&apos;s side-channel host/port and sends{' '}
                 <code>(GET_META_MSG, remote_rank)</code> (worker.py:504). The
-                prefiller replies with a <code>NixlHandshakePayload</code> —
+                prefiller replies with a <code>NixlHandshakePayload</code>:
                 agent metadata plus a compatibility hash. A 5-second recv timeout
                 guards against a dead peer.
               </Box>
@@ -485,7 +485,7 @@ export function CodebaseDistributed() {
             <div>
               <Box variant="h3">3. Lease + heartbeat</Box>
               <Box variant="p">
-                Prefiller blocks are held under a lease —{' '}
+                Prefiller blocks are held under a lease:{' '}
                 <code>kv_lease_duration</code> defaults to{' '}
                 <strong>30s</strong> (scheduler.py:70). The decoder sends periodic
                 heartbeats at <code>kv_lease_duration // 6</code> to renew it; if
@@ -539,9 +539,9 @@ export function CodebaseDistributed() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            One dataclass —{' '}
+            One dataclass ({' '}
             <code>KVTransferConfig</code> in{' '}
-            <code>vllm/config/kv_transfer.py</code> — carries everything the
+            <code>vllm/config/kv_transfer.py</code>) carries everything the
             factory and connectors need. Per-connector knobs live inside the
             free-form <code>kv_connector_extra_config</code> dict and are read via{' '}
             <code>get_from_extra_config(key, default)</code>.
@@ -587,7 +587,7 @@ export function CodebaseDistributed() {
                 broadcasts each scheduler step to all workers through a shared-
                 memory <code>MessageQueue</code> (<code>rpc_broadcast_mq</code>,
                 multiproc_executor.py:151) and collects results over per-worker
-                response queues. No external orchestrator — ideal for
+                response queues. No external orchestrator, ideal for
                 single-node TP / PP.
               </Box>
             </div>
@@ -600,8 +600,8 @@ export function CodebaseDistributed() {
                 <code>VLLM_USE_RAY_V2_EXECUTOR_BACKEND</code> is explicitly 0.
                 The field annotation in <code>envs.py</code> reads{' '}
                 <code>False</code>, but the runtime resolver is{' '}
-                <code>bool(int(os.getenv(&quot;VLLM_USE_RAY_V2_EXECUTOR_BACKEND&quot;, &quot;1&quot;)))</code>{' '}
-                — so V2 is the effective default.{' '}
+                <code>bool(int(os.getenv(&quot;VLLM_USE_RAY_V2_EXECUTOR_BACKEND&quot;, &quot;1&quot;)))</code>,{' '}
+                so V2 is the effective default.{' '}
                 <code>RayExecutorV2</code> subclasses{' '}
                 <code>MultiprocExecutor</code> and reuses its MessageQueue path
                 while placing workers across the Ray cluster.
@@ -644,8 +644,8 @@ export function CodebaseDistributed() {
                 Elastic expert parallelism (elastic_state.py) lets the EP world
                 scale up and down at runtime by reconfiguring distributed groups
                 and pre-creating standby groups. It requires{' '}
-                <code>enable_eplb=True</code> — the config raises if{' '}
-                <code>enable_elastic_ep</code> is set without it — and is what
+                <code>enable_eplb=True</code> (the config raises if{' '}
+                <code>enable_elastic_ep</code> is set without it) and is what
                 drives the stateless <code>_DP</code> / <code>_EP</code> group
                 path in <code>initialize_model_parallel</code>.
               </Box>
@@ -664,7 +664,7 @@ export function CodebaseDistributed() {
             Adapter): NCCL via the aws-ofi-nccl plugin and libfabric, and NIXL via
             UCX over libfabric. The AWS GPU / EFA / NIXL section of this deep dive
             covers the EFA data path, SRD transport, and topology-aware placement
-            that make these transfers fast — this section stays inside the vLLM
+            that make these transfers fast. This section stays inside the vLLM
             source that issues them.
           </Box>
         </SpaceBetween>

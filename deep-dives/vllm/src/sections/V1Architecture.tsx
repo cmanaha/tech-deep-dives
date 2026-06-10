@@ -33,10 +33,10 @@ const removedRows: RemovedRow[] = [
   },
   {
     feature: 'GPU ↔ CPU KV-cache swapping',
-    v0: 'On preemption, a sequence’s KV blocks were copied (swapped) to host RAM and back.',
-    v1: 'Removed. V1 "no longer requires KV cache swapping to handle request preemptions" — preempted requests are recomputed instead.',
+    v0: 'On preemption, a sequence\'s KV blocks were copied (swapped) to host RAM and back.',
+    v1: 'Removed. V1 "no longer requires KV cache swapping to handle request preemptions". Preempted requests are recomputed instead.',
     impact:
-      'swap_space tuning is moot for this path. Preemption cost shifts from PCIe copy bandwidth to recompute FLOPs. Under heavy memory pressure you pay a prefill again, not a host round-trip — a different, usually cheaper, failure mode.',
+      'swap_space tuning is moot for this path. Preemption cost shifts from PCIe copy bandwidth to recompute FLOPs. Under heavy memory pressure you pay a prefill again, not a host round-trip (a different, usually cheaper, failure mode).',
   },
   {
     feature: 'Request-level structured-output backend',
@@ -63,7 +63,7 @@ export function V1Architecture() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>The problem V1 solves:</strong> GPUs kept getting faster, so model
-            execution time shrank — and the CPU work wrapped around each step (running the
+            execution time shrank, and the CPU work wrapped around each step (running the
             HTTP server, scheduling, building input tensors, de-tokenizing, streaming
             responses) became a first-order bottleneck. In V0 that work sat in the same
             process and largely the same critical path as the GPU step, so a fast GPU spent
@@ -80,7 +80,7 @@ export function V1Architecture() {
           <Box variant="p">
             <strong>The answer:</strong> a re-architected core with two structural changes.
             First, a <strong>unified scheduler</strong> that stops distinguishing prompt
-            (prefill) tokens from generated (decode) tokens — it just hands out a
+            (prefill) tokens from generated (decode) tokens. It just hands out a
             per-request token budget each step. Second, a <strong>multi-process design</strong>{' '}
             that isolates the engine loop (scheduler + model executor) from the API and
             tokenization frontend, so CPU-heavy work overlaps the GPU step instead of
@@ -92,7 +92,7 @@ export function V1Architecture() {
             </Link>
           </Box>
           <Alert type="info">
-            <strong>This is not a flag you turn on — it is the engine.</strong> V1 shipped
+            <strong>This is not a flag you turn on: it is the engine.</strong> V1 shipped
             as alpha in January 2025, became the default, and as of the current{' '}
             <Link external href="https://docs.vllm.ai/en/stable/usage/v1_guide/">
               V1 user guide (accessed 2026-06-07)
@@ -108,7 +108,7 @@ export function V1Architecture() {
       <Container header={<Header variant="h2">V0 vs V1 at a glance</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            The contrast below is conceptual — it shows <em>where the work lives</em>, not
+            The contrast below is conceptual: it shows <em>where the work lives</em>, not
             the class names. In V0 the API server, tokenization, scheduling, the GPU step,
             and de-tokenization were effectively serialized around one busy process. In V1
             the frontend (HTTP + tokenize + de-tokenize + stream) runs in its own process and
@@ -269,7 +269,7 @@ export function V1Architecture() {
             <strong>What changed:</strong> V0 carried an explicit prefill-vs-decode split in
             the scheduler, with chunked prefill bolted on conditionally. V1 removes the
             distinction. A scheduling decision is now just &ldquo;a simple dictionary, e.g.{' '}
-            <code>{'{request_id: num_tokens}'}</code>&rdquo; — the scheduler decides how
+            <code>{'{request_id: num_tokens}'}</code>&rdquo;. The scheduler decides how
             many tokens to process for each active request this step, whether those tokens
             are prompt or freshly generated.{' '}
             <Link external href="https://docs.vllm.ai/en/stable/usage/v1_guide/">
@@ -278,9 +278,9 @@ export function V1Architecture() {
           </Box>
           <Box variant="p">
             <strong>Why it matters operationally:</strong> three features that were separate,
-            sometimes mutually awkward code paths in V0 —{' '}
-            <strong>chunked prefill</strong>, <strong>prefix caching</strong>, and{' '}
-            <strong>speculative decoding</strong> — now compose naturally in one flow,
+            sometimes mutually awkward code paths in V0{' '}
+            (<strong>chunked prefill</strong>, <strong>prefix caching</strong>, and{' '}
+            <strong>speculative decoding</strong>) now compose naturally in one flow,
             because they are all just &ldquo;how many tokens does this request get this
             step.&rdquo; A long prompt can be chunked across steps while short decodes from
             other requests ride along in the same batch, and cached prefixes simply reduce
@@ -307,7 +307,7 @@ export function V1Architecture() {
               <Box variant="p">
                 V1 redesigned prefix caching for &ldquo;near-zero performance degradation,
                 even when the cache hit rate is 0%,&rdquo; so it is now on by default. The old
-                cost-benefit calculation — enable caching only if you expect hits — goes
+                cost-benefit calculation (enable caching only if you expect hits) goes
                 away.{' '}
                 <Link external href="https://vllm.ai/blog/2025-01-27-v1-alpha-release">
                   vLLM V1 alpha blog (accessed 2026-06-07)
@@ -328,15 +328,15 @@ export function V1Architecture() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Features removed or changed — the operator&apos;s checklist</Header>}>
+      <Container header={<Header variant="h2">Features removed or changed: the operator&apos;s checklist</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
             The V1 guide grades every feature into{' '}
             <Badge color="green">🟢 Functional</Badge>{' '}
             <Badge color="blue">🟡 In progress</Badge>{' '}
             <Badge color="red">🔴 Removed</Badge>. The Removed list is the one that
-            silently breaks deployments on upgrade, because the API still accepts the request
-            — the behavior just isn&apos;t there anymore. These are the four the guide
+            silently breaks deployments on upgrade, because the API still accepts the request:
+            the behavior just isn&apos;t there anymore. These are the four the guide
             lists under Removed Features.{' '}
             <Link external href="https://docs.vllm.ai/en/stable/usage/v1_guide/">
               V1 user guide (accessed 2026-06-07)
@@ -387,7 +387,7 @@ export function V1Architecture() {
             <Box variant="h3">Different failure modes</Box>
             <Box variant="p">
               Preemption costs compute (recompute), not host round-trips. CUDA graph capture
-              &ldquo;takes up more memory in V1 than in V0,&rdquo; per the guide — budget GPU
+              &ldquo;takes up more memory in V1 than in V0,&rdquo; per the guide. Budget GPU
               memory accordingly. Multi-process means a frontend↔core IPC link to monitor.
             </Box>
           </div>

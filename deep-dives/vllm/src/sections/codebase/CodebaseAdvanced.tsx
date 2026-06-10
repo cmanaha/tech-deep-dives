@@ -22,7 +22,7 @@ const specRows: SpecRow[] = [
     proposer: 'NgramProposer',
     base: 'standalone (numba JIT)',
     notes:
-      'Prompt-lookup decoding. Matches the last n tokens against earlier context and copies the continuation. No model, no probabilities — the cheapest proposer.',
+      'Prompt-lookup decoding. Matches the last n tokens against earlier context and copies the continuation. No model, no probabilities: the cheapest proposer.',
   },
   {
     method: 'ngram (GPU)',
@@ -446,7 +446,7 @@ export function CodebaseAdvanced() {
           </Box>
           <Box variant="p">
             <strong>The through-line.</strong> Each subsystem is a family of interchangeable
-            implementations behind one interface — proposers behind{' '}
+            implementations behind one interface: proposers behind{' '}
             <code>SpecDecodeBaseProposer</code>, grammar backends behind{' '}
             <code>StructuredOutputBackend</code>, logit shapers behind{' '}
             <code>LogitsProcessor</code>, and kernels behind the <code>vllm_ir</code> op
@@ -525,7 +525,7 @@ export function CodebaseAdvanced() {
               <Box variant="h3">Recovered</Box>
               <Box variant="p">
                 On the first rejection, one token is resampled from an adjusted distribution
-                derived from both the draft and target probabilities — the &quot;recover&quot;
+                derived from both the draft and target probabilities, the &quot;recover&quot;
                 step that keeps the output distribution exact.
               </Box>
             </div>
@@ -538,7 +538,7 @@ export function CodebaseAdvanced() {
             </div>
           </ColumnLayout>
           <Box variant="small">
-            <code>draft_probs</code> can be <code>None</code> — that is the n-gram case, where
+            <code>draft_probs</code> can be <code>None</code>. That is the n-gram case, where
             there is no draft distribution, only copied tokens. The forward signature carries
             this explicitly: <code>logits</code> is shaped{' '}
             <code>[num_tokens + batch_size, vocab_size]</code> so the bonus position is scored
@@ -576,10 +576,10 @@ export function CodebaseAdvanced() {
               <Box variant="p">
                 Multi-Token Prediction heads are shipped inside a growing list of model
                 families. <code>vllm/config/speculative.py</code> enumerates the MTP model types
-                — <code>deepseek_mtp</code>, <code>glm4_moe_mtp</code>,{' '}
+                (<code>deepseek_mtp</code>, <code>glm4_moe_mtp</code>,{' '}
                 <code>qwen3_next_mtp</code>, <code>ernie_mtp</code>,{' '}
                 <code>nemotron_h_mtp</code>, <code>step3p5_mtp</code>,{' '}
-                <code>gemma4_mtp</code>, and more — and rewrites the draft{' '}
+                <code>gemma4_mtp</code>, and more), and rewrites the draft{' '}
                 <code>hf_config</code> so the right MTP module loads.
               </Box>
               <Box variant="p">
@@ -597,7 +597,7 @@ export function CodebaseAdvanced() {
                 A guardrail in the config warns that enabling{' '}
                 <code>num_speculative_tokens &gt; 1</code> on a single MTP layer &quot;will run
                 multiple times of forward on same MTP layer, which may result in lower
-                acceptance rate&quot; — and there is a related{' '}
+                acceptance rate&quot;, and there is a related{' '}
                 <code>FIXME(luccafong)</code> noting that CUDA graph with v32 MTP is not yet
                 supported.
               </Box>
@@ -629,8 +629,8 @@ export function CodebaseAdvanced() {
           </Box>
           <GuidedDecodeDiagram />
           <Box variant="p">
-            <strong>The mask path.</strong> The grammar produces a packed bitmask on the CPU —
-            one bit per token, 32 tokens per <code>int32</code> — via{' '}
+            <strong>The mask path.</strong> The grammar produces a packed bitmask on the CPU
+            (one bit per token, 32 tokens per <code>int32</code>) via{' '}
             <code>grammar.fill_bitmask(...)</code>; the all-allowed value is{' '}
             <code>-1</code> (every bit set). The compacted bitmask is reordered to match the
             runner&apos;s batch, copied to the device with a non-blocking transfer, and then{' '}
@@ -655,7 +655,7 @@ export function CodebaseAdvanced() {
             Backend selection is in <code>structured_output/__init__.py</code>; the config
             default is <code>backend = &quot;auto&quot;</code> in{' '}
             <code>vllm/config/structured_outputs.py</code>, which &quot;will make opinionated
-            choices based on request contents&quot; — in practice xgrammar. V1 supports a{' '}
+            choices based on request contents&quot;, in practice xgrammar. V1 supports a{' '}
             <strong>single</strong> backend per engine, not per-request: an inline NOTE states
             &quot;We only support a single backend. We do NOT support different backends on a
             per-request basis in V1.&quot;
@@ -663,7 +663,7 @@ export function CodebaseAdvanced() {
           <Alert type="info" header="Grammar rollback is what makes structured spec-decode work">
             Because spec-decode advances the grammar by several draft tokens speculatively, the
             matcher needs to undo that advance when tokens are rejected. The{' '}
-            <code>rollback(num_tokens)</code> method on every grammar does exactly this — both
+            <code>rollback(num_tokens)</code> method on every grammar does exactly this: both
             xgrammar (<code>matcher.rollback(...)</code>) and guidance
             (<code>ll_matcher.rollback(...)</code>) implement it, and{' '}
             <code>structured_output/__init__.py</code> sizes its bitmask to cover{' '}
@@ -695,7 +695,7 @@ export function CodebaseAdvanced() {
             <code>float32</code>, captures raw logprobs first (so top-k logprobs reflect the
             pre-penalty distribution), runs <code>apply_logits_processors</code>, then{' '}
             <code>sample</code>. Inside, the order is: logits processors, penalties,{' '}
-            temperature scaling, then top-k / top-p sampling — with a fast path that returns
+            temperature scaling, then top-k / top-p sampling, with a fast path that returns
             <code>greedy_sample</code> when the batch is all-greedy.
           </Box>
           <Box variant="p">
@@ -712,8 +712,8 @@ export function CodebaseAdvanced() {
           </Box>
           <Box variant="small">
             The guided-decoding bitmask is applied outside this pipeline (directly to the
-            model&apos;s output logits in the runner), so it composes with — rather than running
-            inside — the logits-processor chain.
+            model&apos;s output logits in the runner), so it composes with (rather than running
+            inside) the logits-processor chain.
           </Box>
         </SpaceBetween>
       </Container>
@@ -732,7 +732,7 @@ export function CodebaseAdvanced() {
           <Box variant="p">
             <strong>The entry point.</strong> A model opts in with the{' '}
             <code>@support_torch_compile</code> decorator from{' '}
-            <code>vllm/compilation/decorators.py</code> — applied to roughly 133 model classes,
+            <code>vllm/compilation/decorators.py</code>, applied to roughly 133 model classes,
             including <code>llama.py</code>. In <code>VLLM_COMPILE</code> mode the decorated
             forward is routed through <code>VllmBackend</code>{' '}
             (<code>vllm/compilation/backends.py</code>), vLLM&apos;s custom{' '}
@@ -756,7 +756,7 @@ export function CodebaseAdvanced() {
             fusion passes, then <code>post_cleanup</code>, then{' '}
             <code>VllmIRLoweringPass</code> (lowers <code>vllm_ir</code> ops to a concrete
             implementation), a clone-elimination pass, another <code>post_cleanup</code>, and{' '}
-            <code>FixFunctionalizationPass</code> &quot;always run last&quot; — so every pass
+            <code>FixFunctionalizationPass</code> &quot;always run last&quot;, so every pass
             before it sees a functionalized graph.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
@@ -781,7 +781,7 @@ export function CodebaseAdvanced() {
             </div>
           </ColumnLayout>
 
-          <ExpandableSection headerText="vllm/ir — a portable op registry that picks a kernel at compile time">
+          <ExpandableSection headerText="vllm/ir: a portable op registry that picks a kernel at compile time">
             <SpaceBetween size="s">
               <Box variant="p">
                 <code>vllm/ir/</code> is a small registry that lets one logical op carry several
@@ -803,15 +803,15 @@ export function CodebaseAdvanced() {
                 it, and rewrites the node to that implementation via{' '}
                 <code>match.replace_by_example</code>. The op the model graph contains is generic;
                 the concrete kernel is bound during compilation. The current registry is
-                deliberately tiny — the registered op set in <code>vllm/ir/ops/</code> is{' '}
-                <code>layernorm</code> — which is the point: it is an extension mechanism, not a
+                deliberately tiny (the registered op set in <code>vllm/ir/ops/</code> is{' '}
+                <code>layernorm</code>), which is the point: it is an extension mechanism, not a
                 replacement for every kernel.
                 {' '}<Badge color="grey">two in-code TODOs in lowering_pass.py</Badge>
               </Box>
               <Box variant="small">
                 Real TODOs in <code>passes/ir/lowering_pass.py</code>:{' '}
                 &quot;Cache the fx_replacement to avoid re-tracing the same impl&quot; and
-                &quot;write self.selected_impls to depyf/tlparse dir&quot; — the selected-impl
+                &quot;write self.selected_impls to depyf/tlparse dir&quot;: the selected-impl
                 map is computed but not yet persisted for offline inspection.
               </Box>
             </SpaceBetween>

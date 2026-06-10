@@ -46,7 +46,7 @@ export function InsideCodebase() {
         header={
           <Header
             variant="h1"
-            description="How vLLM is actually built — module map, process model, and the call paths through the real source (pinned to commit 15652a6b, accessed 2026-06-07)"
+            description="How vLLM is actually built: module map, process model, and the call paths through the real source (pinned to commit 15652a6b, accessed 2026-06-07)"
           >
             Inside the Codebase
           </Header>
@@ -54,7 +54,7 @@ export function InsideCodebase() {
       >
         <Box variant="p">
           This section walks the vLLM source itself, organized by subsystem. Each
-          tab covers one part of the engine — what files implement it, the key
+          tab covers one part of the engine: what files implement it, the key
           abstractions, and how a request flows through them. It complements the
           conceptual sections above: those explain the ideas, these show the code
           that realizes them.

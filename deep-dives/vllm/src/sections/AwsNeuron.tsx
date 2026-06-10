@@ -12,7 +12,7 @@ import Badge from '@cloudscape-design/components/badge';
 // ---------------------------------------------------------------------------
 // Feature support matrix (Tier-1: vllm-neuron README + Neuron NxD Inference
 // release notes, accessed 2026-06-07). Status reflects the plugin path on the
-// current Neuron SDK; verify against the live release notes — this moves fast.
+// current Neuron SDK; verify against the live release notes. This moves fast.
 // ---------------------------------------------------------------------------
 interface FeatureRow {
   feature: string;
@@ -49,7 +49,7 @@ const featureRows: FeatureRow[] = [
   {
     feature: 'Quantization (INT8 / FP8)',
     status: 'Supported',
-    notes: 'Configured through Neuron config (override_neuron_config in additional_config) — NOT vLLM’s --quantization flag. See note below.',
+    notes: "Configured through Neuron config (override_neuron_config in additional_config), NOT vLLM's --quantization flag. See note below.",
   },
   {
     feature: 'Multimodal',
@@ -87,7 +87,7 @@ function statusBadge(status: FeatureRow['status']) {
 function NeuronStackDiagram() {
   const layers = [
     { y: 20, fill: '#e9f2ff', stroke: '#0972d3', title: 'vLLM frontend + scheduler', sub: 'OpenAI server, continuous batching, prefix cache, LoRA, spec-decode logic' },
-    { y: 86, fill: '#e9f7ef', stroke: '#037f0c', title: 'vllm-neuron plugin', sub: 'Hardware plugin via vLLM Plugin System — swaps in the NeuronWorker / model executor' },
+    { y: 86, fill: '#e9f7ef', stroke: '#037f0c', title: 'vllm-neuron plugin', sub: 'Hardware plugin via vLLM Plugin System, swaps in the NeuronWorker / model executor' },
     { y: 152, fill: '#f2f0fb', stroke: '#6b4fbb', title: 'NxD Inference (neuronx-distributed-inference)', sub: 'Sharding, compilation, optimized kernels, cross-node collectives' },
     { y: 218, fill: '#fdf3e7', stroke: '#b7791f', title: 'Neuron runtime + NKI kernels', sub: 'libnrt, compiler artifacts, NeuronCore scheduling' },
     { y: 284, fill: '#eef1f4', stroke: '#5f6b7a', title: 'Trainium / Inferentia silicon', sub: 'NeuronCores, on-chip HBM, NeuronLink intra-node, EFA inter-node' },
@@ -131,7 +131,7 @@ export function AwsNeuron() {
         header={
           <Header
             variant="h1"
-            description="vLLM runs on Trainium and Inferentia through a hardware plugin on top of NxD Inference — not a fork. The SA job is knowing which instances the current SDK still supports, which features survive the port, and when the multi-node fork is the only thing that does what you need."
+            description="vLLM runs on Trainium and Inferentia through a hardware plugin on top of NxD Inference, not a fork. The SA job is knowing which instances the current SDK still supports, which features survive the port, and when the multi-node fork is the only thing that does what you need."
           >
             21. vLLM on AWS Neuron (Trainium / Inferentia)
           </Header>
@@ -142,12 +142,12 @@ export function AwsNeuron() {
             <strong>The mental model:</strong> vLLM&apos;s frontend, scheduler, and serving surface
             stay exactly what they are on GPU. What changes underneath is the model-execution layer.
             On Neuron that layer is supplied by the{' '}
-            <strong>vllm-neuron plugin</strong> &mdash; a <em>hardware plugin</em>, not a fork &mdash;
+            <strong>vllm-neuron plugin</strong> (a <em>hardware plugin</em>, not a fork),
             which uses vLLM&apos;s Plugin System to swap in a NeuronWorker that drives{' '}
             <strong>NxD Inference</strong> (<code>neuronx-distributed-inference</code>), which in turn
             compiles and runs the model on Trainium/Inferentia NeuronCores. The vllm-neuron README
-            describes itself as a &ldquo;hardware plugin for vLLM on AWS Neuron&rdquo; that
-            &ldquo;integrates with vLLM by using vLLM&apos;s Plugin System&rdquo; (
+            describes itself as a &quot;hardware plugin for vLLM on AWS Neuron&quot; that
+            &quot;integrates with vLLM by using vLLM&apos;s Plugin System&quot; (
             <Link external href="https://github.com/vllm-project/vllm-neuron">
               github.com/vllm-project/vllm-neuron, accessed 2026-06-07
             </Link>
@@ -155,7 +155,7 @@ export function AwsNeuron() {
           </Box>
           <Box variant="p">
             <strong>Why this matters for an SA:</strong> the plugin model means you do <em>not</em> run
-            a forked, lagging copy of vLLM for the common case &mdash; you run upstream vLLM with a
+            a forked, lagging copy of vLLM for the common case. You run upstream vLLM with a
             Neuron backend. But coverage is not 1:1 with GPU. Some features are WIP, some are
             configured differently (quantization), and the headline multi-node pattern that Amazon
             Rufus ships in production lives in a <em>separate AWS-maintained fork</em>, not the plugin.
@@ -163,8 +163,8 @@ export function AwsNeuron() {
             and a stalled POC.
           </Box>
           <Box variant="p">
-            The hardware itself &mdash; NeuronCores, on-chip HBM, NeuronLink, the Trainium/Inferentia
-            memory hierarchy and why it suits inference economics &mdash; is the{' '}
+            The hardware itself (NeuronCores, on-chip HBM, NeuronLink, the Trainium/Inferentia
+            memory hierarchy and why it suits inference economics) is the{' '}
             <Link external href="../silicon-memory-inference/">
               Silicon, Memory &amp; Inference
             </Link>{' '}
@@ -222,7 +222,7 @@ export function AwsNeuron() {
         header={
           <Header
             variant="h2"
-            description="The single most consequential thing to get right — and it changed recently"
+            description="The single most consequential thing to get right, and it changed recently"
           >
             Which instances are supported (and the version coupling)
           </Header>
@@ -233,8 +233,8 @@ export function AwsNeuron() {
             <Box variant="p">
               [<strong>Tier-1, AWS docs</strong>] On the <strong>current Neuron SDK</strong>, NxD
               Inference supports <strong>Trn2 and newer hardware only</strong>. The release notes
-              state that &ldquo;NxD Inference models are now only supported on Trn2 and newer
-              hardware&rdquo; because the current NKI (Neuron Kernel Interface) kernels are not
+              state that &quot;NxD Inference models are now only supported on Trn2 and newer
+              hardware&quot; because the current NKI (Neuron Kernel Interface) kernels are not
               supported on Trn1/Inf2, and direct customers to{' '}
               <strong>pin to Neuron release 2.28</strong> if they need Trn1/Inf2 (
               <Link external href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nxd-inference.html">
@@ -286,7 +286,7 @@ export function AwsNeuron() {
             </Link>
             ). Exact plugin / vLLM version numbers are intentionally not stated as hard facts here
             because the docs surfaces (README, install guide, release-notes index) report them at
-            slightly different points in the release cycle &mdash; confirm at install time.
+            slightly different points in the release cycle: confirm at install time.
           </Box>
         </SpaceBetween>
       </Container>
@@ -298,7 +298,7 @@ export function AwsNeuron() {
         header={
           <Header
             variant="h2"
-            description="What survives the port from GPU vLLM — and what does not"
+            description="What survives the port from GPU vLLM, and what does not"
           >
             Supported vs unsupported features on Neuron
           </Header>
@@ -329,8 +329,8 @@ export function AwsNeuron() {
             <Link external href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nxd-inference.html">
               NxD Inference release notes
             </Link>
-            . The &ldquo;WIP&rdquo; and model-specific items (multimodal model coverage, EAGLE
-            variants) change most often &mdash; verify per release.
+            . The &quot;WIP&quot; and model-specific items (multimodal model coverage, EAGLE
+            variants) change most often, so verify per release.
           </Box>
 
           <Alert type="info" header="Two gotchas that bite GPU-trained intuition">
@@ -359,11 +359,11 @@ export function AwsNeuron() {
               <Box variant="p">
                 <strong>The legacy / AWS fork.</strong> [Tier-1] AWS has historically maintained a
                 Neuron fork of vLLM (<code>aws-neuron/upstreaming-to-vllm</code>) on the older vLLM-v0
-                architecture. It carried features the plugin did not &mdash; notably{' '}
+                architecture. It carried features the plugin did not, notably{' '}
                 <strong>disaggregated inference</strong>, <strong>mllama</strong>, and the{' '}
                 <strong>multi-node distributed inference</strong> pattern. The plugin README notes the
-                v0 fork is &ldquo;no longer supported,&rdquo; while the upstream vLLM install page
-                still points to an AWS fork &ldquo;for a more stable experience.&rdquo; (
+                v0 fork is &quot;no longer supported,&quot; while the upstream vLLM install page
+                still points to an AWS fork &quot;for a more stable experience.&quot; (
                 <Link external href="https://github.com/aws-neuron/upstreaming-to-vllm">
                   aws-neuron/upstreaming-to-vllm, accessed 2026-06-07
                 </Link>
@@ -372,7 +372,7 @@ export function AwsNeuron() {
               <Alert type="warning">
                 The fork story is the single most version-sensitive thing on this page. If your design
                 depends on multi-node or disaggregation on Neuron, <strong>confirm which artifact
-                provides it for your SDK</strong> before architecting around it &mdash; do not assume
+                provides it for your SDK</strong> before architecting around it. Do not assume
                 the upstream plugin has reached parity.
               </Alert>
             </SpaceBetween>
@@ -397,8 +397,8 @@ export function AwsNeuron() {
           <Box variant="p">
             [<strong>Tier-2, AWS ML blog</strong>] Amazon&apos;s Rufus shopping assistant runs
             multi-node LLM inference on Trainium with vLLM at production scale. AWS describes serving
-            &ldquo;at production scale using tens of thousands of TRN1 instances&rdquo; and launching a
-            larger model &ldquo;across over tens of thousands of AWS Trainium chips&rdquo; for Prime
+            &quot;at production scale using tens of thousands of TRN1 instances&quot; and launching a
+            larger model &quot;across over tens of thousands of AWS Trainium chips&quot; for Prime
             Day traffic (
             <Link external href="https://aws.amazon.com/blogs/machine-learning/how-amazon-scaled-rufus-by-building-multi-node-inference-using-aws-trainium-chips-and-vllm/">
               AWS ML blog: How Amazon scaled Rufus, accessed 2026-06-07
@@ -410,16 +410,16 @@ export function AwsNeuron() {
             <div>
               <Box variant="h3">Leader node</Box>
               <Box variant="p">
-                [Tier-2] &ldquo;Runs the Triton Inference Server and vLLM engine, serving as the
-                primary orchestration unit for inference.&rdquo; The leader owns the request lifecycle
+                [Tier-2] &quot;Runs the Triton Inference Server and vLLM engine, serving as the
+                primary orchestration unit for inference.&quot; The leader owns the request lifecycle
                 and broadcasts model inputs to the followers.
               </Box>
             </div>
             <div>
               <Box variant="h3">Follower nodes</Box>
               <Box variant="p">
-                [Tier-2] Each follower &ldquo;operates as an independent process and acts as a wrapper
-                around the vLLM NeuronWorker component,&rdquo; continuously listening for inputs
+                [Tier-2] Each follower &quot;operates as an independent process and acts as a wrapper
+                around the vLLM NeuronWorker component,&quot; continuously listening for inputs
                 broadcast from the leader. Leader and followers share the same NeuronWorker
                 implementation in vLLM.
               </Box>
@@ -428,9 +428,9 @@ export function AwsNeuron() {
 
           <Box variant="p">
             [Tier-2] <strong>Chip-to-chip / inter-node communication is EFA.</strong> The blog states
-            &ldquo;cross-node collectives (such as all gather or all reduce) are managed by the Neuron
+            &quot;cross-node collectives (such as all gather or all reduce) are managed by the Neuron
             Distributed Inference (NxDI) library, which uses EFA to deliver high-bandwidth, low-latency
-            inter-node communication.&rdquo; This is the same EFA + collectives story covered in the{' '}
+            inter-node communication.&quot; This is the same EFA + collectives story covered in the{' '}
             <Link external href="../silicon-memory-inference/">
               Silicon, Memory &amp; Inference
             </Link>{' '}
@@ -440,7 +440,7 @@ export function AwsNeuron() {
           <Alert type="info" header="What the SA should take from Rufus">
             <Box variant="p">
               Rufus is the proof that multi-node Trainium + vLLM works at the very top of the scale
-              range &mdash; but note the architecture: a <strong>Triton leader</strong> running the
+              range, but note the architecture: a <strong>Triton leader</strong> running the
               vLLM engine, <strong>NeuronWorker followers</strong>, NxDI managing cross-node
               collectives over <strong>EFA</strong>. That multi-node distribution is the capability
               that has historically lived in the <strong>AWS-maintained fork</strong>, not the
@@ -471,14 +471,14 @@ export function AwsNeuron() {
               <ul>
                 <li>You are price-sensitive on inference economics and your model + features are on the supported list (see matrix).</li>
                 <li>You are on <strong>Trn2/Trn3</strong> and can track the current Neuron SDK cadence.</li>
-                <li>Your feature set is the &ldquo;survives the port&rdquo; subset: continuous batching, prefix caching, multi-LoRA, tool calling, EAGLE, Neuron-native quantization.</li>
+                <li>Your feature set is the &quot;survives the port&quot; subset: continuous batching, prefix caching, multi-LoRA, tool calling, EAGLE, Neuron-native quantization.</li>
                 <li>You can standardize on a single-node serving topology, or you are prepared to adopt the AWS multi-node fork pattern deliberately.</li>
               </ul>
             </div>
             <div>
               <Box variant="h3">Stay on GPU vLLM when</Box>
               <ul>
-                <li>You depend on features that are WIP or absent on Neuron &mdash; <strong>chunked prefill</strong>, disaggregated prefill/decode, broad multimodal coverage.</li>
+                <li>You depend on features that are WIP or absent on Neuron: <strong>chunked prefill</strong>, disaggregated prefill/decode, broad multimodal coverage.</li>
                 <li>You need multi-node inference and cannot take a dependency on a separate fork&apos;s lifecycle.</li>
                 <li>You must stay on the absolute latest upstream vLLM features the day they ship (the Neuron path trails by the plugin/SDK coupling).</li>
                 <li>Your only available capacity is Trn1/Inf2 and you are unwilling to pin to Neuron 2.28.</li>
@@ -488,7 +488,7 @@ export function AwsNeuron() {
           <Alert type="info">
             This is a <strong>capability</strong> decision guide, not a performance one. Cost and
             throughput comparisons depend on model, sequence lengths, and the specific Trainium/GPU
-            generation &mdash; benchmark your own workload rather than porting a published ratio. The
+            generation: benchmark your own workload rather than porting a published ratio. The
             hardware-economics reasoning (memory bandwidth, HBM capacity, NeuronCore utilization) is
             in the{' '}
             <Link external href="../silicon-memory-inference/">

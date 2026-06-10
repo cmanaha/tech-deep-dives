@@ -133,7 +133,7 @@ function MixedBatchDiagram() {
 
       {/* base weights */}
       <rect x={repX + 24} y={repY + 38} width={repW - 48} height={56} rx={6} fill={blueFill} stroke={blue} strokeWidth={1.3} />
-      <text x={repX + repW / 2} y={repY + 62} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">BASE MODEL WEIGHTS — loaded once, shared</text>
+      <text x={repX + repW / 2} y={repY + 62} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">BASE MODEL WEIGHTS: loaded once, shared</text>
       <text x={repX + repW / 2} y={repY + 80} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">frozen W (the expensive multi-GB copy)</text>
 
       {/* adapter slots label */}
@@ -153,8 +153,8 @@ function MixedBatchDiagram() {
 
       {/* batched kernel box */}
       <rect x={repX + 24} y={252} width={repW - 48} height={58} rx={6} fill="#ffffff" stroke={border} strokeWidth={1.2} />
-      <text x={repX + repW / 2} y={274} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">batched LoRA kernels — one forward pass</text>
-      <text x={repX + repW / 2} y={294} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">y = Wx + (per-row adapter)·B·A·x — correct delta per row</text>
+      <text x={repX + repW / 2} y={274} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">batched LoRA kernels, one forward pass</text>
+      <text x={repX + repW / 2} y={294} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">y = Wx + (per-row adapter)·B·A·x, correct delta per row</text>
 
       {/* slots -> kernel arrows (three loaded slots) */}
       {[0, 1, 2].map((i) => {
@@ -206,7 +206,7 @@ export function LoRAServing() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>The problem it removes:</strong> You have one base model and a dozen
-            specializations &mdash; a SQL generator, a support-tone rewriter, a per-customer
+            specializations: a SQL generator, a support-tone rewriter, a per-customer
             persona, a classifier. The naive answer is a dozen full fine-tunes, each a complete
             copy of the weights, each pinned to its own GPU. That is a dozen times the VRAM, a dozen
             cold replicas to keep warm, and a dozen things to deploy. Most of those copies are{' '}
@@ -215,12 +215,12 @@ export function LoRAServing() {
           </Box>
           <Box variant="p">
             <strong>What LoRA serving buys:</strong> A LoRA (Low-Rank Adaptation) adapter is that
-            thin slice &mdash; a small pair of low-rank matrices that ride on top of the frozen base
+            thin slice: a small pair of low-rank matrices that ride on top of the frozen base
             weights. Instead of N full models you load the base model <em>once</em> and attach many
             adapters, each a few megabytes to low hundreds of megabytes, against that one shared copy
             of the expensive weights. vLLM goes further than &quot;load them all&quot;: it{' '}
-            <strong>selects the adapter per request</strong> by name and &mdash; the part that makes
-            this economical at scale &mdash; runs requests targeting <em>different</em> adapters{' '}
+            <strong>selects the adapter per request</strong> by name and (the part that makes
+            this economical at scale) runs requests targeting <em>different</em> adapters{' '}
             <strong>together in a single batch</strong>. One base model, one set of GPUs, many
             specializations, no per-adapter replica (
             <Link external href="https://docs.vllm.ai/en/latest/features/lora/">
@@ -232,8 +232,8 @@ export function LoRAServing() {
             This section is the practitioner&apos;s view: how to register and select adapters, the
             knobs that govern memory and concurrency, the multi-tenant production caveat, and how
             Kubernetes routes to the right replica. The batched kernels that actually let one GPU
-            apply many different adapters in the same forward pass &mdash; the Punica / SGMV
-            (Segmented Gather Matrix-Vector) style implementation &mdash; are walked against the real
+            apply many different adapters in the same forward pass, the Punica / SGMV
+            (Segmented Gather Matrix-Vector) style implementation, are walked against the real
             source in the <strong>Inside the Codebase &rarr; Model Layer, Quant &amp; LoRA</strong>{' '}
             tab. Here we stay above the kernel.
           </Box>
@@ -245,7 +245,7 @@ export function LoRAServing() {
           <Box variant="p">
             The base weights are loaded once and shared. Each in-flight request carries an adapter ID
             (or none, meaning the raw base model). The scheduler assembles a batch from whatever
-            requests are ready &mdash; <em>regardless of which adapter each one wants</em> &mdash; and
+            requests are ready (<em>regardless of which adapter each one wants</em>) and
             the batched LoRA kernels apply the correct adapter&apos;s low-rank delta per row of the
             batch. The diagram below shows three adapters plus a base-only request all riding the same
             forward pass.
@@ -260,7 +260,7 @@ export function LoRAServing() {
 
           <Alert type="info">
             <strong>Why &quot;base&quot; sits in the same batch:</strong> a base-only request is just
-            a request with no adapter delta &mdash; the LoRA term is zero for that row. There is no
+            a request with no adapter delta: the LoRA term is zero for that row. There is no
             penalty for mixing adapted and un-adapted traffic; they share the one prefill/decode pass
             over the shared base weights. The cost of an adapter is the small extra{' '}
             <code>B&middot;A&middot;x</code> term per token, not a separate model invocation.
@@ -288,7 +288,7 @@ export function LoRAServing() {
           <Box variant="p">
             From the caller&apos;s side there is nothing new to learn: a request{' '}
             <strong>selects an adapter by putting its name in the <code>model</code> field</strong>{' '}
-            &mdash; <code>{'"model": "sql-lora"'}</code> &mdash; exactly as it would name a base
+            (<code>{'"model": "sql-lora"'}</code>), exactly as it would name a base
             model. The <code>/models</code> endpoint lists the base model <em>and</em> every
             registered adapter, so clients can discover what is available. Quoting the docs, requests
             &quot;can use the LoRA adapter as if it were any other model via the <code>model</code>{' '}
@@ -298,7 +298,7 @@ export function LoRAServing() {
             </Link>
             ). Omit the adapter name (or name the base model) and you get the raw base model. This is
             the whole reason the OpenAI-compatible surface needs no extension for multi-adapter
-            serving &mdash; an adapter <em>is</em> a model name. See{' '}
+            serving: an adapter <em>is</em> a model name. See{' '}
             <strong>12. The OpenAI-Compatible Server</strong> for the endpoint itself.
           </Box>
 
@@ -306,7 +306,7 @@ export function LoRAServing() {
             <strong>Multi-LoRA batching is the differentiator.</strong> Registering many adapters is
             cheap; the hard engineering is serving requests for different adapters in the{' '}
             <em>same</em> batch without falling back to one-batch-per-adapter. vLLM does this with
-            batched, segmented kernels in the Punica / SGMV family &mdash; a single GPU op gathers the
+            batched, segmented kernels in the Punica / SGMV family: a single GPU op gathers the
             right adapter weights for each row and applies them together. The internals (the kernel
             shapes, the segment gather, where it plugs into the linear layers) are deferred to the{' '}
             <strong>Inside the Codebase &rarr; Model Layer, Quant &amp; LoRA</strong> tab on purpose;
@@ -340,7 +340,7 @@ export function LoRAServing() {
               {
                 flag: 'max_loras',
                 doc: '"Max number of LoRAs in a single batch."',
-                use: 'The count of concurrent GPU adapter slots — how many distinct adapters can co-exist in one mixed batch. Each slot reserves GPU memory, so this is a throughput-vs-VRAM dial, not a hard catalog limit. More registered adapters than slots is fine; they page in.',
+                use: 'The count of concurrent GPU adapter slots: how many distinct adapters can co-exist in one mixed batch. Each slot reserves GPU memory, so this is a throughput-vs-VRAM dial, not a hard catalog limit. More registered adapters than slots is fine; they page in.',
               },
               {
                 flag: 'max_lora_rank',
@@ -367,8 +367,7 @@ export function LoRAServing() {
             and{' '}
             <Link external href="https://docs.vllm.ai/en/latest/api/vllm/config/lora.html">
               vLLM Docs: LoRAConfig reference
-            </Link>{' '}
-            &mdash; both accessed 2026-06-07.
+            </Link>, both accessed 2026-06-07.
           </Box>
 
           <Alert type="info">
@@ -390,7 +389,7 @@ export function LoRAServing() {
             the server. The endpoints are <code>POST /v1/load_lora_adapter</code> (with a{' '}
             <code>lora_name</code> and <code>lora_path</code>) and{' '}
             <code>POST /v1/unload_lora_adapter</code>, and they are gated behind the environment
-            variable <code>VLLM_ALLOW_RUNTIME_LORA_UPDATING=True</code> &mdash; they do nothing unless
+            variable <code>VLLM_ALLOW_RUNTIME_LORA_UPDATING=True</code>: they do nothing unless
             you opt in. This is genuinely useful for fast iteration: push a freshly trained adapter
             and serve it in seconds.
           </Box>
@@ -411,7 +410,7 @@ export function LoRAServing() {
           <Box variant="p">
             Why it is dangerous: the load endpoint takes a <strong>path</strong>, and the server
             reads adapter weights from it. In a shared or internet-exposed deployment that is an
-            arbitrary-path / untrusted-artifact vector &mdash; an attacker who can reach the endpoint
+            arbitrary-path / untrusted-artifact vector: an attacker who can reach the endpoint
             can make the server load weights of their choosing. The guidance is therefore not
             &quot;never use it&quot; but &quot;only behind a trust boundary&quot;: a developer
             sandbox, a single-tenant CI loop, an internal isolated environment where every caller is
@@ -423,11 +422,11 @@ export function LoRAServing() {
           <Alert type="info">
             <strong>The unsolved-upstream part:</strong> dynamic runtime loading is{' '}
             <em>per-replica</em>. In a fleet of N replicas, a single{' '}
-            <code>load_lora_adapter</code> call lands on whichever replica served the request &mdash;
-            it does not propagate to the others. Keeping a dynamically-managed adapter set consistent
+            <code>load_lora_adapter</code> call lands on whichever replica served the request. It
+            does not propagate to the others. Keeping a dynamically-managed adapter set consistent
             across a horizontally-scaled, multi-tenant fleet is not something vLLM solves on its own;
             it pushes the problem up to the orchestration layer. That is exactly the gap the
-            Kubernetes routing story below addresses &mdash; and why, for multi-tenant production,
+            Kubernetes routing story below addresses, and why, for multi-tenant production,
             static registration plus adapter-aware routing is the durable pattern rather than ad-hoc
             runtime loads.
           </Alert>
@@ -439,7 +438,7 @@ export function LoRAServing() {
           <Box variant="p">
             Once you scale past one replica, &quot;which replica is serving adapter X right now?&quot;
             becomes a routing question. A naive load balancer scatters requests across replicas
-            blindly &mdash; so a request for <code>sql-lora</code> may land on a replica that has
+            blindly, so a request for <code>sql-lora</code> may land on a replica that has
             paged that adapter out, forcing a reload and a cold slot. The fix is{' '}
             <strong>adapter-aware routing</strong>: send each request to a replica that already holds
             the adapter it wants.
@@ -448,7 +447,7 @@ export function LoRAServing() {
             The <strong>Gateway API Inference Extension</strong> (an official Kubernetes project for
             self-hosting generative models) implements exactly this. Its model-aware routing
             &quot;extends to Low-Rank Adaptation (LoRA) fine-tuned models,&quot; and it routes using
-            capability data the model servers expose &mdash; described as &quot;Data provided by model
+            capability data the model servers expose, described as &quot;Data provided by model
             serving platforms about performance, availability and capabilities to optimize routing.
             Includes things like Prefix Cache status or LoRA Adapters availability&quot; (
             <Link external href="https://gateway-api-inference-extension.sigs.k8s.io/">
@@ -458,14 +457,14 @@ export function LoRAServing() {
           </Box>
           <Box variant="p">
             The concrete signal on the vLLM side is the Prometheus metric{' '}
-            <code>vllm:lora_requests_info</code> &mdash; documented as &quot;Running stats on lora
+            <code>vllm:lora_requests_info</code>, documented as &quot;Running stats on lora
             requests&quot; (
             <Link external href="https://docs.vllm.ai/en/latest/usage/metrics.html">
               vLLM Docs: Metrics, accessed 2026-06-07
             </Link>
             ). It reports which adapters a replica is actually serving, which the gateway scrapes to
-            place adapter-targeted requests on the replica that already has the adapter resident
-            &mdash; turning the per-replica nature of adapter loading from a liability into a routing
+            place adapter-targeted requests on the replica that already has the adapter resident.
+            This turns the per-replica nature of adapter loading from a liability into a routing
             input. The Kubernetes and gateway integration details live in{' '}
             <strong>17. Kubernetes: llm-d, KServe &amp; Gateway API</strong>; the metrics themselves,
             their labels, and how to scrape them are covered in{' '}
@@ -478,7 +477,7 @@ export function LoRAServing() {
                 <strong>1. Register statically.</strong> Bake the adapter set into the deployment via{' '}
                 <code>--lora-modules</code>; do not rely on runtime <code>load_lora_adapter</code> for
                 user-facing traffic. The adapter set becomes a versioned artifact, not a mutable
-                runtime input &mdash; sidestepping the untrusted-path risk in the warning above.
+                runtime input, sidestepping the untrusted-path risk in the warning above.
               </Box>
               <Box variant="p">
                 <strong>2. Size the two caches.</strong> Set <code>max_loras</code> to the number of
@@ -492,13 +491,13 @@ export function LoRAServing() {
                 <strong>3. Route by adapter.</strong> Front the fleet with the Gateway API Inference
                 Extension (or an equivalent adapter-aware router) consuming{' '}
                 <code>vllm:lora_requests_info</code>, so requests land on a replica that already holds
-                the target adapter &mdash; minimizing cross-replica reloads and keeping the GPU
+                the target adapter, minimizing cross-replica reloads and keeping the GPU
                 working set stable per replica.
               </Box>
               <Box variant="p">
                 <strong>4. Reserve dynamic loading for trusted lanes.</strong> Use{' '}
                 <code>VLLM_ALLOW_RUNTIME_LORA_UPDATING</code> only in isolated, fully-trusted
-                environments &mdash; development, CI, internal experimentation &mdash; never on a
+                environments (development, CI, internal experimentation), never on a
                 multi-tenant, user-facing endpoint. Treat &quot;dynamic in dev, static in
                 prod&quot; as the default split.
               </Box>
@@ -539,7 +538,7 @@ export function LoRAServing() {
             {
               situation: 'Specializations that diverge heavily from the base',
               verdict: 'Reconsider',
-              why: 'LoRA captures low-rank deltas. If a use case needs the model to behave very differently, a full fine-tune (its own replica) may serve quality better than a high-rank adapter — weigh quality against the cost of a separate model.',
+              why: 'LoRA captures low-rank deltas. If a use case needs the model to behave very differently, a full fine-tune (its own replica) may serve quality better than a high-rank adapter. Weigh quality against the cost of a separate model.',
             },
             {
               situation: 'One model, no specializations',

@@ -166,7 +166,7 @@ function BedrockVsSelfHostDiagram() {
       <text className="bqs" x={450} y={172}>multi-LoRA fleet, P/D disaggregation,</text>
       <text className="bqs" x={450} y={188}>custom batching / scheduling</text>
 
-      {/* Q2 -> SELF-HOST (yes, left) — arrives at the leaf's right edge */}
+      {/* Q2 -> SELF-HOST (yes, left), arrives at the leaf's right edge */}
       <path className="bedge" d="M250 164 H220" />
       <text className="belbl" x={235} y={156}>yes</text>
 
@@ -174,7 +174,7 @@ function BedrockVsSelfHostDiagram() {
       <path className="bedge" d="M450 200 V252" />
       <text className="belbl" x={468} y={226}>no</text>
 
-      {/* SELF-HOST leaf (left) — shared target of Q1-yes and Q2-yes */}
+      {/* SELF-HOST leaf (left), shared target of Q1-yes and Q2-yes */}
       <rect className="bself" x={20} y={108} width={200} height={64} rx={6} />
       <text className="bleaf" x={120} y={136}>SELF-HOST vLLM</text>
       <text className="bleafsub" x={120} y={156}>control &amp; specificity</text>
@@ -194,7 +194,7 @@ function BedrockVsSelfHostDiagram() {
       <path className="bedge" d="M450 340 V420" />
       <text className="belbl" x={468} y={384}>no</text>
 
-      {/* SELF-HOST leaf (bottom-left) — target of Q3-yes */}
+      {/* SELF-HOST leaf (bottom-left), target of Q3-yes */}
       <rect className="bself" x={20} y={420} width={200} height={64} rx={6} />
       <text className="bleaf" x={120} y={448}>SELF-HOST vLLM</text>
       <text className="bleafsub" x={120} y={468}>maximal control</text>
@@ -202,7 +202,7 @@ function BedrockVsSelfHostDiagram() {
       {/* BEDROCK leaf (bottom-center) */}
       <rect className="bbed" x={300} y={420} width={300} height={64} rx={6} />
       <text className="bleaf" x={450} y={448}>USE BEDROCK</text>
-      <text className="bleafsub" x={450} y={468}>lowest ops — the startup default</text>
+      <text className="bleafsub" x={450} y={468}>lowest ops, the startup default</text>
     </svg>
   );
 }
@@ -273,7 +273,7 @@ function LmiConfigToEngineDiagram() {
       <rect className="lcpass" x={510} y={136} width={210} height={72} rx={6} />
       <text className="lct" x={615} y={160}>pass-through keys</text>
       <text className="lcs" x={615} y={180}>forwarded opaquely to</text>
-      <text className="lcs" x={615} y={194}>EngineArgs — not validated</text>
+      <text className="lcs" x={615} y={194}>EngineArgs (not validated)</text>
 
       {/* edges LMI -> classes */}
       <path className="lcedge" d="M450 108 H480 V68 H510" />
@@ -334,11 +334,11 @@ function SageMakerHostingSurfaceDiagram() {
 
       {/* Platform frame */}
       <rect className="ssplatform" x={12} y={12} width={896} height={396} rx={10} />
-      <text className="ssph" x={460} y={36} textAnchor="middle">Amazon SageMaker AI — hosting surface for vLLM</text>
+      <text className="ssph" x={460} y={36} textAnchor="middle">Amazon SageMaker AI: hosting surface for vLLM</text>
 
       {/* Real-time endpoint with Inference Components */}
       <rect className="ssrt" x={36} y={58} width={400} height={180} rx={8} />
-      <text className="sspt" x={236} y={82}>Real-time endpoint — Inference Components</text>
+      <text className="sspt" x={236} y={82}>Real-time endpoint: Inference Components</text>
 
       <rect className="sship" x={56} y={100} width={170} height={114} rx={6} />
       <text className="sspt" x={141} y={124}>IC: base model</text>
@@ -357,7 +357,7 @@ function SageMakerHostingSurfaceDiagram() {
       {/* HyperPod (EKS) */}
       <rect className="sshp" x={460} y={58} width={424} height={180} rx={8} />
       <text className="sspt" x={672} y={82}>HyperPod (EKS)</text>
-      <text className="sss" x={672} y={106}>vLLM pods — multi-node over EFA</text>
+      <text className="sss" x={672} y={106}>vLLM pods, multi-node over EFA</text>
       <text className="sss" x={672} y={128}>tiered KV cache (L1 CPU, L2 managed)</text>
       <text className="sss" x={672} y={150}>cache-aware routing (prefix / KV / session)</text>
       <text className="sss" x={672} y={172}>KEDA + Karpenter, minReplicaCount: 0</text>
@@ -366,7 +366,7 @@ function SageMakerHostingSurfaceDiagram() {
 
       {/* JumpStart */}
       <rect className="ssjs" x={36} y={300} width={300} height={86} rx={8} />
-      <text className="sspt" x={186} y={326}>JumpStart — one-click source</text>
+      <text className="sspt" x={186} y={326}>JumpStart: one-click source</text>
       <text className="sss" x={186} y={348}>open-source models land on the</text>
       <text className="sss" x={186} y={366}>LMI container (vLLM backend)</text>
 
@@ -384,7 +384,7 @@ export function AwsSageMakerBedrock() {
         header={
           <Header
             variant="h1"
-            description="Three ways to run vLLM under SageMaker, the mechanics that actually bite (config, endpoint limits, scaling, HyperPod/JumpStart, placement) — and the harder question of whether a startup should self-host vLLM at all when Amazon Bedrock exists."
+            description="Three ways to run vLLM under SageMaker, the mechanics that actually bite (config, endpoint limits, scaling, HyperPod/JumpStart, placement), and the harder question of whether a startup should self-host vLLM at all when Amazon Bedrock exists."
           >
             25. vLLM on SageMaker &amp; vs Bedrock
           </Header>
@@ -395,7 +395,7 @@ export function AwsSageMakerBedrock() {
             <strong>The framing:</strong> by this point in the deep dive you know <em>how</em> vLLM
             works. This section is about <em>where you run it on AWS</em> and, one level up, whether
             you run it yourself at all. Two decisions, nested. First: if you have decided to operate
-            vLLM, SageMaker gives you three distinct paths to host it &mdash; from fully managed to
+            vLLM, SageMaker gives you three distinct paths to host it, from fully managed to
             fully bring-your-own. Second, and prior to that: a startup founder should ask whether the
             right answer is to skip operating an inference server entirely and call{' '}
             <strong>Amazon Bedrock&apos;s</strong> managed model API instead. Get the second decision
@@ -409,7 +409,7 @@ export function AwsSageMakerBedrock() {
           <Box variant="p">
             <strong>The honest disclaimer up front:</strong> the &quot;self-host vLLM vs Bedrock&quot;
             decision below is <strong>synthesized guidance</strong> drawn from AWS&apos;s public
-            positioning of each service &mdash; it is <em>not</em> a single AWS decision document, and
+            positioning of each service. It is <em>not</em> a single AWS decision document, and
             you will not find an official AWS page that says &quot;choose Bedrock when X, choose
             self-hosted vLLM when Y.&quot; Treat the decision table as a practitioner&apos;s map, not
             an authoritative spec. The three SageMaker hosting paths, by contrast, are documented
@@ -438,7 +438,7 @@ export function AwsSageMakerBedrock() {
 
           <Alert type="info">
             <strong>What all three share:</strong> whichever path you pick, the thing you get is a{' '}
-            <em>SageMaker endpoint</em> &mdash; managed autoscaling, IAM auth, VPC attachment,
+            <em>SageMaker endpoint</em>. Managed autoscaling, IAM auth, VPC attachment,
             CloudWatch metrics, and the model registry come from SageMaker, not from vLLM. The choice
             between A, B, and C is purely about <strong>who owns the container</strong>: AWS owns it
             (A and B) or you do (C). The vLLM engine inside is the same engine documented in the rest
@@ -446,7 +446,7 @@ export function AwsSageMakerBedrock() {
           </Alert>
 
           <ExpandableSection
-            headerText="Path A — LMI / DJL-Serving with vLLM as the rolling-batch backend (the managed path)"
+            headerText="Path A: LMI / DJL-Serving with vLLM as the rolling-batch backend (the managed path)"
             defaultExpanded
           >
             <SpaceBetween size="s">
@@ -462,14 +462,14 @@ export function AwsSageMakerBedrock() {
                 >
                   DJL Docs: LMI Container Overview, accessed 2026-06-07
                 </Link>
-                ). LMI supports two inference backends &mdash; <strong>vLLM</strong> and
-                TensorRT-LLM &mdash; behind a unified configuration format.
+                ). LMI supports two inference backends (<strong>vLLM</strong> and
+                TensorRT-LLM) behind a unified configuration format.
               </Box>
               <Box variant="p">
                 <strong>The key move is that vLLM is selected by configuration, not code.</strong> You
                 do not write a server; you set <code>OPTION_ROLLING_BATCH=vllm</code> (or, in{' '}
                 <code>serving.properties</code>, <code>option.rolling_batch=vllm</code>) and DJL-Serving
-                runs vLLM as its rolling-batch &mdash; that is, continuous-batching &mdash; engine
+                runs vLLM as its rolling-batch (that is, continuous-batching) engine
                 under the hood (
                 <Link
                   external
@@ -484,9 +484,9 @@ export function AwsSageMakerBedrock() {
               <Alert type="warning">
                 <strong>[Tier-1, DJL release notes / LMI blog] One correction:{' '}
                 <code>OPTION_ROLLING_BATCH=vllm</code> is now the LEGACY path.</strong> Since LMI v17
-                (September 2025) the default is <strong>async mode</strong> &mdash;{' '}
+                (September 2025) the default is <strong>async mode</strong>:{' '}
                 <code>OPTION_ASYNC_MODE=true</code> with{' '}
-                <code>OPTION_ENTRYPOINT=djl_python.lmi_vllm.vllm_async_service</code> &mdash; which wires
+                <code>OPTION_ENTRYPOINT=djl_python.lmi_vllm.vllm_async_service</code>, which wires
                 LMI directly to vLLM&apos;s <code>AsyncLLMEngine</code> through vLLM&apos;s own OpenAI
                 modules. The practical consequence: the request/response surface matches upstream
                 vLLM&apos;s OpenAI-compatible server (tool calling, multimodal, logprobs) rather than
@@ -509,12 +509,12 @@ export function AwsSageMakerBedrock() {
             </SpaceBetween>
           </ExpandableSection>
 
-          <ExpandableSection headerText="Path B — the AWS vLLM Deep Learning Container deployed directly on an endpoint">
+          <ExpandableSection headerText="Path B: the AWS vLLM Deep Learning Container deployed directly on an endpoint">
             <SpaceBetween size="s">
               <Box variant="p">
                 <strong>[Tier-1, AWS docs]</strong> AWS publishes a <strong>vLLM Deep Learning
-                Container</strong> &mdash; an AWS-built, AWS-maintained image that ships vLLM itself
-                (not vLLM-as-a-backend-of-DJL) &mdash; with first-party guidance for deploying it onto a
+                Container</strong>, an AWS-built, AWS-maintained image that ships vLLM itself
+                (not vLLM-as-a-backend-of-DJL), with first-party guidance for deploying it onto a
                 SageMaker endpoint (
                 <Link
                   external
@@ -537,15 +537,15 @@ export function AwsSageMakerBedrock() {
                 vLLM&apos;s own surface rather than DJL&apos;s abstraction.
               </Box>
               <Alert type="info">
-                <strong>When Path B fits:</strong> you want to talk to vLLM directly &mdash; its native
-                OpenAI-compatible surface and engine arguments &mdash; while still letting AWS own the
+                <strong>When Path B fits:</strong> you want to talk to vLLM directly (its native
+                OpenAI-compatible surface and engine arguments) while still letting AWS own the
                 container build and its security updates. A middle ground between &quot;DJL abstracts
                 vLLM for me&quot; (A) and &quot;I build the image myself&quot; (C).
               </Alert>
             </SpaceBetween>
           </ExpandableSection>
 
-          <ExpandableSection headerText="Path C — bring-your-own-container (the awslabs ml-container-creator generator)">
+          <ExpandableSection headerText="Path C: bring-your-own-container (the awslabs ml-container-creator generator)">
             <SpaceBetween size="s">
               <Box variant="p">
                 <strong>[Tier-1, AWS docs / Tier-3, awslabs repo]</strong> SageMaker has always
@@ -563,14 +563,14 @@ export function AwsSageMakerBedrock() {
               <Box variant="p">
                 This is the path when you need a specific vLLM (or SGLang) version, a custom patch, an
                 unusual dependency, or serving glue that neither LMI nor the AWS vLLM DLC ships. You own
-                the Dockerfile and therefore the entire upgrade and security burden &mdash; the cost of
+                the Dockerfile and therefore the entire upgrade and security burden: the cost of
                 maximum control.
               </Box>
               <Alert type="warning">
                 <strong>The tier on this one:</strong> SageMaker BYOC is Tier-1 documented; the{' '}
                 <code>ml-container-creator</code> generator itself is an <strong>AWS Labs</strong>{' '}
                 project (Tier-3 relative to core AWS docs). Treat it as a convenience generator, not a
-                supported product surface &mdash; you can always hand-write the Dockerfile against the
+                supported product surface. You can always hand-write the Dockerfile against the
                 SageMaker contract if you prefer not to depend on a Labs tool.
               </Alert>
             </SpaceBetween>
@@ -607,7 +607,7 @@ export function AwsSageMakerBedrock() {
             ]}
           />
           <Box variant="small">
-            Sources &mdash; all accessed 2026-06-07:{' '}
+            Sources, all accessed 2026-06-07:{' '}
             <Link external href="https://docs.djl.ai/master/docs/serving/serving/docs/lmi/index.html">
               DJL LMI Overview
             </Link>{' '}
@@ -627,17 +627,17 @@ export function AwsSageMakerBedrock() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Configuring vLLM under LMI — and a worked deploy</Header>}>
+      <Container header={<Header variant="h2">Configuring vLLM under LMI, and a worked deploy</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
             Path A is the default, so it is worth knowing how its dials actually work. LMI takes config
             two equivalent ways: a <code>serving.properties</code> file using <code>option.*</code> keys,
-            or environment variables using <code>OPTION_*</code> keys &mdash; and where both are set,{' '}
+            or environment variables using <code>OPTION_*</code> keys, and where both are set,{' '}
             <strong><code>serving.properties</code> overrides the environment</strong>. Under that there
             are two classes of key. <strong>LMI-native</strong> keys are ones LMI understands and{' '}
             <em>translates</em> into engine settings. <strong>Pass-through</strong> keys are forwarded
-            opaquely to vLLM&apos;s <code>EngineArgs</code> and are <strong>not validated by LMI</strong>{' '}
-            &mdash; so a typo in a pass-through key does not fail at parse time; it fails at container
+            opaquely to vLLM&apos;s <code>EngineArgs</code> and are <strong>not validated by LMI</strong>,
+            so a typo in a pass-through key does not fail at parse time; it fails at container
             startup when vLLM rejects the argument (
             <Link
               external
@@ -703,7 +703,7 @@ export function AwsSageMakerBedrock() {
           />
           <Box variant="small">
             ECR account <code>763104351884</code>, repo <code>djl-inference</code>. The LMI-bundled vLLM
-            consistently <strong>lags upstream vLLM</strong> &mdash; a real tradeoff for Path A vs
+            consistently <strong>lags upstream vLLM</strong>, a real tradeoff for Path A vs
             BYOC/EKS if you need a feature in a release LMI has not picked up yet (
             <Link
               external
@@ -765,11 +765,11 @@ predictor = model.deploy(
           <Alert type="info">
             <strong>One route, two request schemas.</strong> The same <code>/invocations</code> route
             serves both the LMI-native <code>{'{"inputs", "parameters"}'}</code> schema and the OpenAI{' '}
-            <code>{'{"messages": [...]}'}</code> schema &mdash; the presence of a <code>messages</code>{' '}
+            <code>{'{"messages": [...]}'}</code> schema: the presence of a <code>messages</code>{' '}
             field triggers a <code>chat.completion</code> response. Streaming uses SageMaker&apos;s{' '}
             <code>/invocations-response-stream</code> with <code>{'"stream": true'}</code> (JSON-lines{' '}
             <code>chat.completion.chunk</code> events). In async mode (v17+) the surface is exactly
-            upstream vLLM&apos;s OpenAI API &mdash; tool calling, multimodal, and logprobs all come
+            upstream vLLM&apos;s OpenAI API: tool calling, multimodal, and logprobs all come
             straight from the vLLM backend (
             <Link
               external
@@ -785,7 +785,7 @@ predictor = model.deploy(
       <Container header={<Header variant="h2">Endpoint types, limits, and the streaming timeout</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            Whichever container path you pick, it lands on a SageMaker endpoint &mdash; and the endpoint{' '}
+            Whichever container path you pick, it lands on a SageMaker endpoint, and the endpoint{' '}
             <em>type</em> decides your payload ceiling, your timeout, and whether scale-to-zero is even
             possible. For vLLM there is really one primary choice and a couple of situational ones.
           </Box>
@@ -800,10 +800,10 @@ predictor = model.deploy(
               { id: 'use', header: 'Use it for', cell: (i) => i.use },
             ]}
             items={[
-              { type: 'Real-time', gpu: 'Yes', lim: '6 MB payload; 60 s (8 min streaming)', use: 'The PRIMARY choice — interactive, low-latency, streaming serving.' },
+              { type: 'Real-time', gpu: 'Yes', lim: '6 MB payload; 60 s (8 min streaming)', use: 'The PRIMARY choice: interactive, low-latency, streaming serving.' },
               { type: 'Asynchronous', gpu: 'Yes', lim: '1 GB payload; 60 min timeout', use: 'Long / large / batch-like requests; supports scale-to-zero.' },
               { type: 'Batch Transform', gpu: 'Yes (job)', lim: 'Job-based, offline', use: 'Niche offline eval / bulk generation.' },
-              { type: 'Serverless', gpu: 'No', lim: '—', use: 'INCOMPATIBLE with vLLM — no GPU.' },
+              { type: 'Serverless', gpu: 'No', lim: '-', use: 'INCOMPATIBLE with vLLM: no GPU.' },
             ]}
           />
           <Box variant="small">
@@ -822,7 +822,7 @@ predictor = model.deploy(
             <strong>The streaming-timeout footgun.</strong> A real-time <em>non-streaming</em> request
             hard-caps at <strong>60 seconds</strong> (non-adjustable). Streaming via{' '}
             <code>/invocations-response-stream</code> extends that to <strong>8 minutes</strong>. A long
-            generation that does <em>not</em> stream will silently fail at 60 s &mdash; so for very long
+            generation that does <em>not</em> stream will silently fail at 60 s, so for very long
             jobs, either stream or move to an <strong>Asynchronous</strong> endpoint (60 min / 1 GB).
             Payload ceilings: <strong>6 MB</strong> for <code>InvokeEndpoint</code> (HTTP 413 if exceeded),{' '}
             <strong>25 MB</strong> for streaming (
@@ -837,19 +837,19 @@ predictor = model.deploy(
             load, so the SageMaker defaults will fight you:
             <ul>
               <li>
-                <code>VolumeSizeInGB</code> &mdash; default is too small for {'>'}30 GB models; a 70B FP16
+                <code>VolumeSizeInGB</code>: default is too small for {'>'}30 GB models; a 70B FP16
                 (~140 GB) needs {'>'}=180 GB.
               </li>
               <li>
-                <code>ModelDataDownloadTimeoutInSeconds</code> &mdash; {'>'}=1800 for {'>'}40 GB models.
+                <code>ModelDataDownloadTimeoutInSeconds</code>: {'>'}=1800 for {'>'}40 GB models.
               </li>
               <li>
-                <code>ContainerStartupHealthCheckTimeoutInSeconds</code> &mdash; {'>'}=1800, or
+                <code>ContainerStartupHealthCheckTimeoutInSeconds</code>: {'>'}=1800, or
                 vLLM&apos;s slow load trips the <code>/ping</code> health check into a restart loop.
               </li>
             </ul>
             The container must serve <code>/invocations</code> + <code>/ping</code> on{' '}
-            <strong>port 8080</strong> &mdash; vLLM defaults to 8000, so the official vLLM SageMaker
+            <strong>port 8080</strong>. vLLM defaults to 8000, so the official vLLM SageMaker
             entrypoint and its <code>SM_VLLM_*</code> env vars do the translation (
             <Link external href="https://docs.aws.amazon.com/sagemaker/latest/dg/large-model-inference-hosting.html">
               [Tier-1] SageMaker large-model inference hosting, accessed 2026-06-07
@@ -863,7 +863,7 @@ predictor = model.deploy(
 
           <Box variant="p">
             <strong>One open gap.</strong> vLLM does not yet natively honor SageMaker session affinity
-            (the <code>X-Amzn-SageMaker-Session-Id</code> header) for cross-request KV reuse &mdash; it is
+            (the <code>X-Amzn-SageMaker-Session-Id</code> header) for cross-request KV reuse: it is
             an open RFC, so for now session-sticky prefix reuse on a SageMaker endpoint is not a
             turnkey feature (
             <Link external href="https://github.com/vllm-project/vllm/issues/28163">
@@ -878,7 +878,7 @@ predictor = model.deploy(
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>Inference Components (ICs)</strong> are the modern hosting object on a real-time
-            endpoint. An IC is a deployable unit &mdash; a container plus a model &mdash; that reserves a
+            endpoint. An IC is a deployable unit (a container plus a model) that reserves a
             slice of accelerators/memory and carries its own <code>MinCopyCount</code>/
             <code>MaxCopyCount</code>. Multiple ICs can share one endpoint. This is exactly the shape the
             multi-LoRA pattern wants: one IC is a vLLM/LMI container holding a base model that swaps LoRA
@@ -899,7 +899,7 @@ predictor = model.deploy(
             endpoints cannot scale to zero; ICs can, via <code>MinInstanceCount: 0</code> +{' '}
             <code>ManagedInstanceScaling</code>. Scale-out from zero is driven by the{' '}
             <code>NoCapacityInvocationFailures</code> step policy, and the cold start back up is roughly{' '}
-            <strong>5&ndash;6 minutes</strong> &mdash; fine for dev/batch tenants, too slow for
+            <strong>5-6 minutes</strong>: fine for dev/batch tenants, too slow for
             latency-critical paths (
             <Link external href="https://aws.amazon.com/blogs/machine-learning/unlock-cost-savings-with-the-new-scale-down-to-zero-feature-in-amazon-sagemaker-inference/">
               [Tier-2] AWS ML Blog: scale-down-to-zero on SageMaker Inference, accessed 2026-06-07
@@ -919,12 +919,12 @@ predictor = model.deploy(
               {
                 metric: 'SageMakerVariantInvocationsPerInstance',
                 res: '60 s',
-                note: 'Legacy, not LLM-aware — counts invocations, blind to in-flight concurrency and streaming.',
+                note: 'Legacy, not LLM-aware: counts invocations, blind to in-flight concurrency and streaming.',
               },
               {
                 metric: 'SageMakerVariantConcurrentRequestsPerModelHighResolution',
                 res: '10 s',
-                note: 'Newer, streaming-aware (ConcurrentRequestsPerModel) — counts until the LAST streamed token; ~6x faster scale-out.',
+                note: 'Newer, streaming-aware (ConcurrentRequestsPerModel): counts until the LAST streamed token; ~6x faster scale-out.',
               },
               {
                 metric: 'SageMakerInferenceComponentConcurrentRequestsPerCopyHighResolution',
@@ -990,7 +990,7 @@ predictor = model.deploy(
           <Box variant="p">
             <strong>JumpStart</strong> is the one-click / few-line front door: open-source models deploy
             with <code>JumpStartModel(model_id=...).deploy()</code>, and under the hood they run on the
-            LMI container &mdash; which uses vLLM as its backend. A <code>JumpStartModel</code> CRD also
+            LMI container, which uses vLLM as its backend. A <code>JumpStartModel</code> CRD also
             deploys to HyperPod (via <code>modelHubName</code> <code>SageMakerPublicHub</code>) (
             <Link external href="https://aws.amazon.com/blogs/machine-learning/supercharge-your-llm-performance-with-amazon-sagemaker-large-model-inference-container-v15/">
               [Tier-2] AWS ML Blog: LMI v15 (JumpStart on LMI/vLLM), accessed 2026-06-07
@@ -1007,7 +1007,7 @@ predictor = model.deploy(
             endpoints (LMI) confirm <em>single-instance, multi-GPU</em> tensor parallelism. Genuine
             <em> cross-instance multi-node</em> vLLM is the HyperPod/EKS path. Whether a standard managed
             endpoint supports multi-node (cross-instance) vLLM was <strong>not confirmed in the
-            docs</strong> at access time &mdash; treat multi-node-on-standard-endpoint as unverified and
+            docs</strong> at access time. Treat multi-node-on-standard-endpoint as unverified and
             default to HyperPod/EKS for it.
           </Alert>
         </SpaceBetween>
@@ -1017,10 +1017,10 @@ predictor = model.deploy(
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>Observability first, because it is the most common surprise.</strong> A SageMaker
-            endpoint emits CloudWatch infrastructure and invocation metrics &mdash;{' '}
+            endpoint emits CloudWatch infrastructure and invocation metrics:{' '}
             <code>GPUUtilization</code>, <code>ModelLatency</code> (p50/p90/p99),{' '}
             <code>Invocation4XX</code>/<code>5XX</code>, <code>ConcurrentRequestsPerModel</code>, and
-            streaming-specific <code>FirstChunkLatency</code> / <code>MidStreamErrors</code> &mdash; plus
+            streaming-specific <code>FirstChunkLatency</code> / <code>MidStreamErrors</code>, plus
             enhanced per-GPU / per-container metrics (March 2026), and it forwards the container&apos;s
             stdout/stderr (so vLLM&apos;s logs) to CloudWatch Logs (
             <Link external href="https://docs.aws.amazon.com/sagemaker/latest/dg/monitoring-cloudwatch.html">
@@ -1035,12 +1035,12 @@ predictor = model.deploy(
 
           <Alert type="warning">
             <strong>The metrics gotcha.</strong> vLLM&apos;s own Prometheus <code>/metrics</code>{' '}
-            &mdash; <code>vllm:num_requests_waiting</code>, the TTFT/TPOT histograms, the KV-cache hit
-            rate &mdash; is <strong>not surfaced through a SageMaker endpoint</strong>. The container only
+            (<code>vllm:num_requests_waiting</code>, the TTFT/TPOT histograms, the KV-cache hit
+            rate) is <strong>not surfaced through a SageMaker endpoint</strong>. The container only
             exposes <code>/invocations</code> + <code>/ping</code> on 8080, so the rich vLLM-internal
-            signals never leave the box by default. To get them you must bridge them out-of-band &mdash;
+            signals never leave the box by default. To get them you must bridge them out-of-band:
             for example, have the container <code>PutMetricData</code> to CloudWatch itself. That bridge
-            is <strong>[SPECULATIVE]</strong> &mdash; it is a plausible pattern, not an AWS-official one (
+            is <strong>[SPECULATIVE]</strong>: it is a plausible pattern, not an AWS-official one (
             <Link external href="https://docs.vllm.ai/en/latest/design/metrics/">
               [Tier-1] vLLM Docs: metrics design, accessed 2026-06-07
             </Link>
@@ -1058,8 +1058,8 @@ predictor = model.deploy(
             ]}
             items={[
               { dim: 'Managed infra', sm: 'Yes', eks: 'Partial (you run K8s)', ec2: 'No' },
-              { dim: 'Cost vs EC2', sm: '~15–40% premium [Tier-3, verify]', eks: 'Near EC2 + control plane', ec2: 'Baseline' },
-              { dim: 'Spot for inference', sm: 'No (Spot = training only)', eks: 'Yes (+Karpenter, ~60–70% off)', ec2: 'Yes (DIY)' },
+              { dim: 'Cost vs EC2', sm: '~15-40% premium [Tier-3, verify]', eks: 'Near EC2 + control plane', ec2: 'Baseline' },
+              { dim: 'Spot for inference', sm: 'No (Spot = training only)', eks: 'Yes (+Karpenter, ~60-70% off)', ec2: 'Yes (DIY)' },
               { dim: 'A/B variants', sm: 'Native', eks: 'DIY', ec2: 'DIY' },
               { dim: 'Model Registry', sm: 'Native', eks: 'DIY', ec2: 'DIY' },
               { dim: 'vLLM Prometheus /metrics', sm: 'No (bridge out-of-band)', eks: 'Native', ec2: 'Native' },
@@ -1082,8 +1082,8 @@ predictor = model.deploy(
             <Link external href="https://aws.amazon.com/blogs/machine-learning/build-real-time-voice-applications-with-amazon-sagemaker-ai-and-vllm/">
               [Tier-2] AWS ML Blog: real-time voice with SageMaker AI + vLLM (streaming)
             </Link>
-            . The <strong>cost premium figure is [Tier-3 / third-party] and time- and region-sensitive</strong>{' '}
-            &mdash; verify against current pricing for your instances. For the EKS path in depth, see{' '}
+            . The <strong>cost premium figure is [Tier-3 / third-party] and time- and region-sensitive</strong>.
+            Verify against current pricing for your instances. For the EKS path in depth, see{' '}
             <strong>24. vLLM on Amazon EKS</strong>.
           </Box>
 
@@ -1093,7 +1093,7 @@ predictor = model.deploy(
               <Link external href="https://github.com/aws/model-hosting-container-standards">
                 [Tier-1] aws/model-hosting-container-standards
               </Link>{' '}
-              is the official vLLM-on-SageMaker quickstart &mdash; it carries the vLLM ECR Public image,
+              is the official vLLM-on-SageMaker quickstart: it carries the vLLM ECR Public image,
               the <code>SM_VLLM_*</code> env-var contract, and the <code>sagemaker-entrypoint.sh</code>{' '}
               that maps vLLM&apos;s 8000 to SageMaker&apos;s 8080. For load testing,{' '}
               <Link external href="https://github.com/aws-samples/load-test-llm-with-locust">
@@ -1110,46 +1110,46 @@ predictor = model.deploy(
           <Box variant="p">
             <strong>Before you pick a SageMaker path, decide whether you should be operating an
             inference server at all.</strong> For a startup, the default answer is often &quot;no, call
-            Bedrock&quot; &mdash; and then the SageMaker paths above become irrelevant until a concrete
+            Bedrock&quot;, and then the SageMaker paths above become irrelevant until a concrete
             constraint forces you off the managed API. The honest version of this decision is a small
             number of <em>needs</em> that, when present, justify the operational weight of self-hosting.
             Absent all of them, Bedrock is the lower-total-cost choice for most early-stage teams.
           </Box>
 
           <Alert type="warning">
-            <strong>[SPECULATIVE — synthesized]</strong> Everything in this decision section is the
+            <strong>[SPECULATIVE: synthesized]</strong> Everything in this decision section is the
             author&apos;s synthesis of AWS&apos;s public positioning of Bedrock and self-hosted vLLM. It
             is <em>not</em> a single AWS decision document. Use it as a starting map and validate the
-            specifics &mdash; especially model availability and instance pricing &mdash; against
+            specifics (especially model availability and instance pricing) against
             first-party sources for your region and your model.
           </Alert>
 
           <Box variant="div">
             <Box variant="small" color="text-status-info">
-              Decision tree: managed Bedrock vs self-hosted vLLM (SPECULATIVE — synthesized guidance)
+              Decision tree: managed Bedrock vs self-hosted vLLM (SPECULATIVE: synthesized guidance)
             </Box>
             <BedrockVsSelfHostDiagram />
           </Box>
 
           <ColumnLayout columns={2} variant="text-grid">
             <div>
-              <Box variant="h3">Amazon Bedrock — the default for startups</Box>
+              <Box variant="h3">Amazon Bedrock: the default for startups</Box>
               <Box variant="p">
                 <strong>[Tier-1, AWS]</strong> Bedrock is a fully managed service that exposes
-                foundation models through a single API &mdash; no servers, no GPUs to provision, no vLLM
+                foundation models through a single API: no servers, no GPUs to provision, no vLLM
                 to operate, pay-per-token by default. For an early-stage team, that is the lowest
                 operational burden and the fastest path to a working product. It is also{' '}
                 <em>itself</em> powered by purpose-built AWS infrastructure, including AWS Trainium for
-                the Amazon-built models &mdash; you get accelerator-grade serving without ever touching
+                the Amazon-built models, so you get accelerator-grade serving without ever touching
                 an accelerator. The trade you make is control: you serve the models AWS offers, on the
                 tuning AWS chose, behind the API AWS exposes.
               </Box>
             </div>
             <div>
-              <Box variant="h3">Self-hosted vLLM (EKS / EC2 / SageMaker) — when a need forces it</Box>
+              <Box variant="h3">Self-hosted vLLM (EKS / EC2 / SageMaker): when a need forces it</Box>
               <Box variant="p">
-                <strong>[SPECULATIVE — synthesized]</strong> You take on operating the inference server
-                &mdash; capacity, autoscaling, upgrades, on-call &mdash; in exchange for control. The
+                <strong>[SPECULATIVE: synthesized]</strong> You take on operating the inference server
+                (capacity, autoscaling, upgrades, on-call) in exchange for control. The
                 justifying needs are concrete: <strong>custom or fine-tuned weights</strong> Bedrock
                 does not host; <strong>instance-level hardware control</strong> to drive down cost at
                 high, steady volume; <strong>specific vLLM features</strong> (a multi-LoRA fleet,
@@ -1163,7 +1163,7 @@ predictor = model.deploy(
 
           <Table
             variant="embedded"
-            header={<Header variant="h3">Need → Bedrock vs self-host vLLM (SPECULATIVE — synthesized)</Header>}
+            header={<Header variant="h3">Need → Bedrock vs self-host vLLM (SPECULATIVE: synthesized)</Header>}
             columnDefinitions={[
               { id: 'need', header: 'The need', cell: (i) => i.need },
               { id: 'choice', header: 'Lean toward', cell: (i) => <strong>{i.choice}</strong> },
@@ -1198,7 +1198,7 @@ predictor = model.deploy(
               {
                 need: 'Spiky, unpredictable, or low-volume traffic',
                 choice: 'Bedrock',
-                why: 'Pay-per-token means you pay nothing when idle. A self-hosted endpoint pays for the instance whether or not requests arrive — bad economics for bursty or low traffic.',
+                why: 'Pay-per-token means you pay nothing when idle. A self-hosted endpoint pays for the instance whether or not requests arrive, bad economics for bursty or low traffic.',
               },
             ]}
           />
@@ -1218,7 +1218,7 @@ predictor = model.deploy(
           <Box variant="p">
             A common misframing is that Bedrock/SageMaker are Amazon&apos;s &quot;proprietary&quot;
             stack sitting opposite the &quot;open&quot; vLLM you self-host. That is not how it works.{' '}
-            <strong>Amazon contributes optimizations directly upstream into vLLM</strong> &mdash; so the
+            <strong>Amazon contributes optimizations directly upstream into vLLM</strong>, so the
             open engine you run yourself <em>and</em> the engine inside AWS&apos;s managed services share
             the same improvements. The managed services then layer Amazon-specific tuning on top. Two
             concrete, first-party-blogged examples:
@@ -1226,12 +1226,12 @@ predictor = model.deploy(
 
           <ColumnLayout columns={2} variant="text-grid">
             <div>
-              <Box variant="h3">fused_moe_lora — multi-LoRA on MoE models</Box>
+              <Box variant="h3">fused_moe_lora: multi-LoRA on MoE models</Box>
               <Box variant="p">
                 <strong>[Tier-2, AWS blog]</strong> Amazon created a{' '}
                 <code>fused_moe_lora</code> kernel that &quot;integrates LoRA operations into&quot; the
                 existing Mixture-of-Experts kernel, handling expert routing and adapter selection
-                together &mdash; enabling efficient multi-LoRA serving where &quot;multiple custom
+                together, enabling efficient multi-LoRA serving where &quot;multiple custom
                 models share the same GPU, with only the adapters swapped in and out per request.&quot;
                 The blog reports, for GPT-OSS 20B,{' '}
                 <strong>&quot;454% OTPS [output tokens per second] improvements and 87% lower TTFT [time
@@ -1249,11 +1249,11 @@ predictor = model.deploy(
               </Box>
             </div>
             <div>
-              <Box variant="h3">P-EAGLE — parallel speculative decoding</Box>
+              <Box variant="h3">P-EAGLE: parallel speculative decoding</Box>
               <Box variant="p">
                 <strong>[Tier-2, AWS blog]</strong> Amazon contributed <strong>P-EAGLE</strong>, which
-                turns EAGLE speculative decoding from autoregressive to parallel &mdash; generating
-                &quot;all K draft tokens in a single forward pass&quot; &mdash; integrated into vLLM
+                turns EAGLE speculative decoding from autoregressive to parallel (generating
+                &quot;all K draft tokens in a single forward pass&quot;), integrated into vLLM
                 from version 0.16.0 and enabled with one config line,{' '}
                 <code>{'"parallel_drafting": true'}</code>. On NVIDIA B200 the blog reports{' '}
                 <strong>&quot;up to 1.69&times; speedup&quot;</strong> over vanilla EAGLE-3 at
@@ -1262,7 +1262,7 @@ predictor = model.deploy(
                   external
                   href="https://aws.amazon.com/blogs/machine-learning/p-eagle-faster-llm-inference-with-parallel-speculative-decoding-in-vllm/"
                 >
-                  AWS ML Blog: P-EAGLE &mdash; Faster LLM inference with Parallel Speculative Decoding in
+                  AWS ML Blog: P-EAGLE: Faster LLM inference with Parallel Speculative Decoding in
                   vLLM, accessed 2026-06-07
                 </Link>
                 ).
@@ -1274,8 +1274,8 @@ predictor = model.deploy(
             <strong>Tier discipline on the numbers:</strong> every percentage and multiplier above is{' '}
             <strong>[Tier-2 / blog-claimed]</strong> by AWS, measured on AWS-chosen hardware (NVIDIA
             B200) and models (GPT-OSS 20B/120B, Qwen3-Coder 30B). They are AWS&apos;s benchmarks, not
-            independently reproduced here. Do not launder them into &quot;vLLM is 454% faster&quot;
-            &mdash; they are deltas across specific optimization versions on specific configurations.
+            independently reproduced here. Do not launder them into &quot;vLLM is 454% faster&quot;:
+            they are deltas across specific optimization versions on specific configurations.
             Treat them as directional evidence that Amazon&apos;s upstream work is real and material,
             not as portable performance guarantees for your workload.
           </Alert>
@@ -1285,11 +1285,11 @@ predictor = model.deploy(
               <Box variant="p">
                 The upstream-contribution pattern collapses part of the &quot;open vs managed&quot;
                 tension. If you self-host vLLM at a recent enough version, you inherit Amazon&apos;s{' '}
-                <code>fused_moe_lora</code> and P-EAGLE work directly &mdash; they are in the open engine.
+                <code>fused_moe_lora</code> and P-EAGLE work directly; they are in the open engine.
                 If you use SageMaker (Path A/B) or Bedrock, you get those same contributions{' '}
                 <em>plus</em> Amazon&apos;s additional service-side tuning (the &quot;19% higher OTPS&quot;
                 delta is exactly that extra layer). So the decision is not &quot;fast managed vs slow
-                open&quot; &mdash; the open engine is genuinely fast and Amazon helps make it so. The
+                open&quot;. The open engine is genuinely fast and Amazon helps make it so. The
                 decision is the one in the table above: <strong>do you have a concrete need (weights,
                 cost-at-volume, a specific feature, isolation) that justifies operating the server
                 yourself</strong>, given that the managed path gives you the same engine plus extra tuning
@@ -1297,7 +1297,7 @@ predictor = model.deploy(
               </Box>
               <Box variant="p">
                 Put plainly: choose self-hosted vLLM for <em>control and specificity</em>, not because
-                you assume managed services are running an inferior engine. They are not &mdash; they are
+                you assume managed services are running an inferior engine. They are not; they are
                 often running <em>your</em> engine, improved.
               </Box>
             </SpaceBetween>
@@ -1311,17 +1311,17 @@ predictor = model.deploy(
             <strong>Two nested decisions, in order.</strong> First, the prior question: should you
             operate an inference server at all? For most startups the answer starts at{' '}
             <strong>Bedrock</strong> (lowest ops, managed FM API, itself on purpose-built AWS infra
-            including Trainium) and only moves to self-hosted vLLM when a concrete need &mdash; custom
-            weights, cost-at-volume, a specific vLLM feature, or VPC/data-residency isolation &mdash;
+            including Trainium) and only moves to self-hosted vLLM when a concrete need (custom
+            weights, cost-at-volume, a specific vLLM feature, or VPC/data-residency isolation)
             forces the move. Second, only once you have decided to self-host on SageMaker: pick the
-            hosting path by how much of the container you want to own &mdash;{' '}
+            hosting path by how much of the container you want to own:{' '}
             <strong>(A) LMI / DJL-Serving</strong> with <code>OPTION_ROLLING_BATCH=vllm</code> for the
             least ownership, <strong>(B) the AWS vLLM DLC</strong> for vLLM&apos;s native surface with
             AWS maintaining the image, or <strong>(C) BYOC</strong> when you need full control.
           </Box>
           <Alert type="info">
             <strong>Cross-links.</strong> For the cases where you should not run vLLM <em>at all</em>{' '}
-            &mdash; including many of the &quot;just call Bedrock&quot; situations &mdash; see{' '}
+            (including many of the &quot;just call Bedrock&quot; situations), see{' '}
             <strong>26. When Not vLLM</strong>. For the consolidated end-to-end chooser that folds this
             Bedrock-vs-self-host decision into the broader engine-and-platform selection, see{' '}
             <strong>28. Decision Guide</strong>.

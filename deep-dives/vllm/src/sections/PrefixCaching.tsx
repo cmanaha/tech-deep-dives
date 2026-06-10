@@ -65,7 +65,7 @@ function PrefixReuseDiagram() {
       </defs>
 
       {/* Request A label */}
-      <text x={startX} y={rowA_Y - 14} fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">Request A — full prefill (cold)</text>
+      <text x={startX} y={rowA_Y - 14} fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">Request A: full prefill (cold)</text>
 
       {/* Request A blocks */}
       {renderBlocks(rowA_Y, [blueFill, blueFill, blueFill, amberFill], reqABlock3)}
@@ -88,7 +88,7 @@ function PrefixReuseDiagram() {
       <line x1={startX} y1={rowB_Y - 24} x2={740} y2={rowB_Y - 24} stroke={border} strokeWidth={0.8} strokeDasharray="4 3" />
 
       {/* Request B label */}
-      <text x={startX} y={rowB_Y - 6} fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">Request B — shares prefix, different question</text>
+      <text x={startX} y={rowB_Y - 6} fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">Request B: shares prefix, different question</text>
 
       {/* Request B blocks */}
       {renderBlocks(rowB_Y + 8, [greenFill, greenFill, greenFill, amberFill], reqBBlock3)}
@@ -98,7 +98,7 @@ function PrefixReuseDiagram() {
         <text key={`hit-${i}`} x={startX + i * (bw + gap) + bw / 2} y={rowB_Y + 8 + bh + 18} textAnchor="middle" fontSize={12} fontWeight="bold" fill={green} fontFamily="sans-serif">{label}</text>
       ))}
 
-      {/* "reused, zero compute" annotation — centered below the three HIT labels */}
+      {/* "reused, zero compute" annotation, centered below the three HIT labels */}
       <text x={startX + 1 * (bw + gap) + bw / 2} y={rowB_Y + 8 + bh + 36} textAnchor="middle" fontSize={11} fill={green} fontFamily="sans-serif">↑ reused, zero compute</text>
 
       {/* Divergence annotation */}
@@ -115,7 +115,7 @@ export function PrefixCaching() {
         header={
           <Header
             variant="h1"
-            description="Reuse already-computed KV blocks across requests that share a prefix — for free, by default, in V1."
+            description="Reuse already-computed KV blocks across requests that share a prefix: for free, by default, in V1."
           >
             6. Automatic Prefix Caching
           </Header>
@@ -128,12 +128,12 @@ export function PrefixCaching() {
             Generation) pipeline stuffs the same retrieved document into hundreds of queries. An
             agent ships a fixed tool-definition preamble on every turn. A chat session re-feeds the
             entire history with each new user message. Without caching, the engine runs a full
-            prefill over those identical tokens every single time — recomputing key/value tensors it
+            prefill over those identical tokens every single time, recomputing key/value tensors it
             already produced seconds ago and then threw away.
           </Box>
           <Box variant="p">
             <strong>What automatic prefix caching (APC) does:</strong> The KV (key/value) cache for a
-            block of tokens depends only on that block&apos;s tokens and everything before it — never
+            block of tokens depends only on that block&apos;s tokens and everything before it, never
             on what comes after. So if two requests start with the same tokens, the KV blocks for
             that shared prefix are <em>identical</em>. APC keeps those computed blocks around, keys
             them by a hash over the prefix tokens, and lets the next request that shares the prefix
@@ -146,9 +146,9 @@ export function PrefixCaching() {
             <em>&quot;disabled by default&quot;</em> because, in the words of the V1 release post,
             &quot;enabling prefix caching sometimes causes significant CPU overhead, leading to
             rather decreased performance when the cache hit rate is low.&quot; V1 re-engineered the
-            data structures so that overhead effectively vanishes —{' '}
+            data structures so that overhead effectively vanishes:{' '}
             <em>&quot;V1&apos;s prefix caching causes less than 1% decrease in throughput even when
-            the cache hit rate is 0%&quot;</em> — which is exactly why it could be flipped on for
+            the cache hit rate is 0%&quot;</em>, which is exactly why it could be flipped on for
             everyone (
             <Link
               external
@@ -174,7 +174,7 @@ export function PrefixCaching() {
           <PrefixReuseDiagram />
 
           <Alert type="info">
-            <strong>Why block 3 is the divergence point:</strong> blocks 0&ndash;2 are byte-for-byte
+            <strong>Why block 3 is the divergence point:</strong> blocks 0-2 are byte-for-byte
             identical token sequences, so their hashes match and their KV is reused. Block 3 contains
             the user&apos;s differing question, so its hash misses and only that block (and anything
             after it) is recomputed. Reuse is a function of the <em>longest shared prefix</em>, not
@@ -190,14 +190,14 @@ export function PrefixCaching() {
             parent block&apos;s hash, plus this block&apos;s own tokens, plus a few extra qualifiers
             (LoRA adapter ID, multimodal input hashes, and the optional cache salt described below).
             Because the parent hash is folded in, a block only matches when the <em>entire</em>{' '}
-            prefix up to and including it is identical &mdash; two requests with the same block 2
+            prefix up to and including it is identical. Two requests with the same block 2
             tokens but different block 1 tokens will <em>not</em> collide. That chaining is what makes
             &quot;shared prefix&quot; a precise, verifiable property rather than a fuzzy guess.
           </Box>
           <Alert type="info">
             The exact hash construction, the parent-hash chaining, the <code>BlockHash</code> data
             structures, and the constant-time eviction queue live in the implementation. This section
-            stays conceptual on purpose &mdash; see the <strong>Inside the Codebase &rarr; Scheduler
+            stays conceptual on purpose. See the <strong>Inside the Codebase &rarr; Scheduler
             &amp; KV Cache</strong> tab for the block-hash walkthrough against the real source.
           </Alert>
         </SpaceBetween>
@@ -208,7 +208,7 @@ export function PrefixCaching() {
           <Box variant="p">
             Prefix sharing is purely a function of token equality, and it is{' '}
             <strong>indifferent to who sent the request</strong>. If two tenants happen to send the
-            same opening tokens &mdash; the same boilerplate system prompt, say &mdash; they will
+            same opening tokens (the same boilerplate system prompt, say) they will
             share KV blocks. The KV cache holds no plaintext that one tenant can read from another,
             but the <em>timing</em> of a cache hit is observable: a sufficiently fast response can
             reveal that someone else already submitted that exact prefix. For workloads where that
@@ -216,11 +216,11 @@ export function PrefixCaching() {
           </Box>
           <Box variant="p">
             <strong>cache_salt</strong> is a per-request value that gets injected into the hash of the
-            first block, so &mdash; quoting the design doc &mdash;{' '}
+            first block, so (quoting the design doc){' '}
             <em>&quot;only requests with the same salt can reuse cached KV blocks.&quot;</em> Give
             each tenant (or each trust boundary) a distinct salt and their prefixes become
             unshareable across the boundary while still being fully reusable <em>within</em> it. The
-            cost is that you forgo cross-tenant reuse of genuinely identical prefixes &mdash; an
+            cost is that you forgo cross-tenant reuse of genuinely identical prefixes, an
             intentional trade of efficiency for isolation (
             <Link external href="https://docs.vllm.ai/en/latest/design/prefix_caching/">
               vLLM Docs: Automatic Prefix Caching design, accessed 2026-06-07
@@ -241,7 +241,7 @@ export function PrefixCaching() {
         <Box variant="p">
           The KV cache is finite, shared with all the live requests doing actual decoding, and
           cached prefix blocks compete for the same space. When room is needed, vLLM evicts on an{' '}
-          <strong>LRU (Least Recently Used)</strong> basis &mdash; the design doc describes evicting
+          <strong>LRU (Least Recently Used)</strong> basis: the design doc describes evicting
           &quot;the head block (least recently used block) of the free queue.&quot; Cached blocks
           that nothing is currently using sit on a free queue and are reclaimed oldest-first, so a
           hot prefix that keeps getting hit stays resident while a one-off prefix ages out. The
@@ -251,13 +251,13 @@ export function PrefixCaching() {
         </Box>
       </Container>
 
-      <Container header={<Header variant="h2">Where it wins &mdash; and where it barely moves the needle</Header>}>
+      <Container header={<Header variant="h2">Where it wins, and where it barely moves the needle</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
             APC pays off in direct proportion to <strong>how much of each request is shared,
             recurring prefix</strong> versus unique tail. The more your traffic front-loads identical
             tokens, the more prefill you skip. Because the V1 overhead is under 1% even at a 0% hit
-            rate, you essentially never pay to leave it on &mdash; the only question is how much you{' '}
+            rate, you essentially never pay to leave it on. The only question is how much you{' '}
             <em>gain</em>.
           </Box>
 
@@ -278,7 +278,7 @@ export function PrefixCaching() {
               {
                 workload: 'RAG over a shared document',
                 impact: 'A lot',
-                why: 'Many different questions against the same long document — the document tokens are a large fixed prefix reused across every query.',
+                why: 'Many different questions against the same long document; the document tokens are a large fixed prefix reused across every query.',
               },
               {
                 workload: 'Agents with a fixed tool preamble',
@@ -298,7 +298,7 @@ export function PrefixCaching() {
               {
                 workload: 'High-cardinality unique prompts',
                 impact: 'A little',
-                why: 'Little to no shared prefix and a long tail that evicts before reuse — hit rate stays near zero, but the <1% overhead means you lose nothing by leaving it on.',
+                why: 'Little to no shared prefix and a long tail that evicts before reuse. Hit rate stays near zero, but the <1% overhead means you lose nothing by leaving it on.',
               },
               {
                 workload: 'Mostly-decode, short-prompt traffic',
@@ -339,15 +339,15 @@ export function PrefixCaching() {
               <Box variant="p">
                 Block hashes are computed within the serving process. The design doc warns that with
                 the default hashing algorithm, <em>&quot;Hashes may not be reproducible across
-                different Python or vLLM versions&quot;</em> &mdash; and Python&apos;s built-in hash
+                different Python or vLLM versions&quot;</em>, and Python&apos;s built-in hash
                 randomization means hash values can differ run-to-run unless{' '}
                 <code>PYTHONHASHSEED</code> is pinned. This does not affect correctness or
                 hit rates <em>within</em> a single running process: a process hashes consistently
                 against itself, so prefixes still match and reuse still works.
               </Box>
               <Box variant="p">
-                It matters when you need hashes to be <em>stable across processes or restarts</em>{' '}
-                &mdash; for example, sharing or persisting a KV cache across instances, or
+                It matters when you need hashes to be <em>stable across processes or restarts</em>:{' '}
+                for example, sharing or persisting a KV cache across instances, or
                 reproducing an exact cache layout in a test. For those cases vLLM offers reproducible
                 hashing algorithms (e.g. <code>sha256_cbor</code> / <code>xxhash_cbor</code>) instead
                 of the default. Set <code>PYTHONHASHSEED</code> if you depend on cross-process hash

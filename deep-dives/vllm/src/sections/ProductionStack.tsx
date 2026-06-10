@@ -130,7 +130,7 @@ export function ProductionStack() {
         header={
           <Header
             variant="h1"
-            description="The vLLM project's own reference Kubernetes deployment — serving replicas, a prefix- and session-aware router, and a bundled Prometheus + Grafana stack, all installed by one Helm chart."
+            description="The vLLM project's own reference Kubernetes deployment: serving replicas, a prefix- and session-aware router, and a bundled Prometheus + Grafana stack, all installed by one Helm chart."
           >
             16. Kubernetes: Production-Stack &amp; Router
           </Header>
@@ -143,29 +143,29 @@ export function ProductionStack() {
             balancer, a way to keep a user&apos;s conversation landing on the replica that already
             holds its KV (key/value) cache, autoscaling on the right signals, and dashboards that
             speak the language of LLM serving (time-to-first-token, queue depth, KV-cache
-            utilization) rather than generic HTTP latency. Wiring that yourself &mdash; Deployments,
-            a Service, an ingress, a routing layer, scrape configs, Grafana panels &mdash; is the
+            utilization) rather than generic HTTP latency. Wiring that yourself (Deployments,
+            a Service, an ingress, a routing layer, scrape configs, Grafana panels) is the
             undifferentiated heavy lifting that every team re-invents.
           </Box>
           <Box variant="p">
             <strong>What production-stack is:</strong> the vLLM project&apos;s answer to that, shipped
             as a Helm chart under the vLLM org. The repository describes itself as{' '}
             <em>&quot;vLLM&apos;s reference system for K8S-native cluster-wide deployment with
-            community-driven performance optimization&quot;</em> &mdash; i.e. the{' '}
+            community-driven performance optimization&quot;</em>, i.e. the{' '}
             <strong>official, batteries-included reference deployment</strong>, not a vendor distro
             and not an operator you have to learn (
             <Link external href="https://github.com/vllm-project/production-stack">
               GitHub: vllm-project/production-stack (project Tier-1 README), accessed 2026-06-07
             </Link>
             ). It bundles three things: a fleet of vLLM serving-engine replicas, a request router
-            that maximizes KV-cache reuse, and a Prometheus + Grafana observability stack &mdash; one{' '}
+            that maximizes KV-cache reuse, and a Prometheus + Grafana observability stack, one{' '}
             <code>helm install</code> away.
           </Box>
           <Box variant="p">
-            <strong>Where it sits in the K8s landscape:</strong> this is the path for teams that want
+            <strong>Where it sits among the K8s options:</strong> this is the path for teams that want
             production-grade vLLM on Kubernetes <em>without</em> adopting a full operator. If you do
-            want the operator model &mdash; CRDs, an inference scheduler, the Gateway API
-            inference extension &mdash; that is the <strong>llm-d</strong> path covered in{' '}
+            want the operator model (CRDs, an inference scheduler, the Gateway API
+            inference extension), that is the <strong>llm-d</strong> path covered in{' '}
             <strong>section 17 (Kubernetes: llm-d, KServe &amp; Gateway API)</strong>. production-stack
             is the lighter, Helm-chart-shaped on-ramp; llm-d is the heavier, more programmable one.
             They are alternatives, not layers.
@@ -195,10 +195,10 @@ export function ProductionStack() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Part 1 &mdash; The vLLM serving-engine replicas</Header>}>
+      <Container header={<Header variant="h2">Part 1: The vLLM serving-engine replicas</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            The bottom tier is just vLLM &mdash; the same OpenAI-compatible server from{' '}
+            The bottom tier is just vLLM, the same OpenAI-compatible server from{' '}
             <strong>section 12</strong>, run as a Kubernetes Deployment and scaled to multiple pods.
             The Helm chart parameterizes the model, the engine arguments, GPU resource requests, and
             replica count through <code>values.yaml</code>; the <code>modelSpec</code> list lets one
@@ -208,14 +208,14 @@ export function ProductionStack() {
           <Box variant="p">
             Critically, these are stateful in one specific sense: each replica accumulates its own
             in-GPU KV cache as it serves. Two replicas serving the same model are <em>not</em>{' '}
-            interchangeable at the cache level &mdash; replica A may hold a conversation&apos;s history
+            interchangeable at the cache level. Replica A may hold a conversation&apos;s history
             while replica B is cold for it. That asymmetry is exactly why the routing tier above them
             cannot be a dumb round-robin if you care about latency.
           </Box>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Part 2 &mdash; The request router and why KV/prefix-aware routing pays</Header>}>
+      <Container header={<Header variant="h2">Part 2: The request router and why KV/prefix-aware routing pays</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
             The router is a lightweight reverse proxy in front of the fleet that selects a backend per
@@ -229,8 +229,8 @@ export function ProductionStack() {
             ).
           </Box>
           <Box variant="p">
-            <strong>The mechanism, concretely:</strong> a request&apos;s long prefix &mdash; a system
-            prompt, a RAG document, a chat history &mdash; was turned into KV blocks on whichever
+            <strong>The mechanism, concretely:</strong> a request&apos;s long prefix (a system
+            prompt, a RAG document, a chat history) was turned into KV blocks on whichever
             replica first served it (<strong>section 6</strong>). If the router sends the{' '}
             <em>next</em> request that shares that prefix to the <em>same</em> replica, the engine
             finds those blocks already resident and skips the prefill for them: a cache hit. Higher
@@ -243,7 +243,7 @@ export function ProductionStack() {
 
           <Table
             variant="embedded"
-            header={<Header variant="h3">Routing strategies &mdash; and when to reach for each</Header>}
+            header={<Header variant="h3">Routing strategies, and when to reach for each</Header>}
             columnDefinitions={[
               { id: 'strategy', header: 'Strategy', cell: (i) => i.strategy },
               { id: 'when', header: 'When to use it', cell: (i) => i.when },
@@ -252,7 +252,7 @@ export function ProductionStack() {
             items={[
               {
                 strategy: 'Round-robin (--routing-logic roundrobin)',
-                when: 'Stateless, prefix-light traffic where every request is roughly independent — high-cardinality one-shot prompts, batch scoring. No cache locality to exploit, so even spread is the right default.',
+                when: 'Stateless, prefix-light traffic where every request is roughly independent: high-cardinality one-shot prompts, batch scoring. No cache locality to exploit, so even spread is the right default.',
                 status: 'Shipping (production-stack README)',
               },
               {
@@ -262,7 +262,7 @@ export function ProductionStack() {
               },
               {
                 strategy: 'Prefix-aware',
-                when: 'Traffic where the natural sharing key is the prompt content itself, not a session ID — many users hitting the same long system prompt or shared document. Routes by the request prefix so identical prefixes converge on one replica even without a session header.',
+                when: 'Traffic where the natural sharing key is the prompt content itself, not a session ID: many users hitting the same long system prompt or shared document. Routes by the request prefix so identical prefixes converge on one replica even without a session header.',
                 status: 'WIP / under development (production-stack README)',
               },
               {
@@ -279,7 +279,7 @@ export function ProductionStack() {
           />
 
           <Alert type="warning">
-            <strong>Two routers, same org &mdash; don&apos;t conflate them.</strong> The router{' '}
+            <strong>Two routers, same org: don&apos;t conflate them.</strong> The router{' '}
             <em>bundled in</em> production-stack today is the Python/Go <code>vllm_router</code>, whose
             shipping strategies are <code>roundrobin</code> and <code>session</code>, with prefix-aware
             marked work-in-progress (
@@ -294,7 +294,7 @@ export function ProductionStack() {
               vLLM Blog: vLLM Router release (project Tier-1), accessed 2026-06-07
             </Link>
             ). The KV-cache-aware and disaggregation rows above describe that newer component, which
-            production-stack is expected to converge on &mdash; not the Python router it ships with
+            production-stack is expected to converge on, not the Python router it ships with
             as of this writing.
           </Alert>
 
@@ -320,7 +320,7 @@ export function ProductionStack() {
               </Box>
               <Box variant="p">
                 <strong>Project-claimed benchmark figures</strong> (the blog&apos;s own numbers, from
-                its own charts &mdash; treat as project-claimed, not independently reproduced here):
+                its own charts; treat as project-claimed, not independently reproduced here):
               </Box>
               <ul>
                 <li>
@@ -348,22 +348,22 @@ export function ProductionStack() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Part 3 &mdash; The bundled observability stack</Header>}>
+      <Container header={<Header variant="h2">Part 3: The bundled observability stack</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
             The chart can install <strong>Prometheus + Grafana</strong> alongside the engines, with
             scrape configuration and serving-oriented dashboards pre-wired. Because every vLLM replica
             already exports the engine&apos;s native metrics on <code>/metrics</code>, the
             observability tier is largely a matter of pointing Prometheus at the pods and dropping in
-            dashboards that plot the metrics that actually matter for inference &mdash; not CPU and
+            dashboards that plot the metrics that actually matter for inference: not CPU and
             request count, but TTFT, inter-token latency, running vs waiting request counts, and
             KV-cache utilization.
           </Box>
           <Alert type="info">
             <strong>This is the on-ramp, not the whole story.</strong> The bundled Prometheus +
-            Grafana gets you dashboards on day one. The full vocabulary of vLLM&apos;s metrics &mdash;
-            what each gauge means, which ones predict saturation, how to alert and autoscale on them
-            &mdash; is the subject of <strong>section 20 (Observability &amp; Benchmarking)</strong>.
+            Grafana gets you dashboards on day one. The full vocabulary of vLLM&apos;s metrics
+            (what each gauge means, which ones predict saturation, how to alert and autoscale on them)
+            is the subject of <strong>section 20 (Observability &amp; Benchmarking)</strong>.
             production-stack&apos;s contribution here is that the wiring is done for you, not that it
             invents new telemetry.
           </Alert>
@@ -374,7 +374,7 @@ export function ProductionStack() {
                 The single biggest reason to keep cache-aware routing healthy is observable here: if
                 your cache hit rate quietly drops after a deploy, TTFT climbs and throughput falls
                 with no code change. With the router and dashboards co-deployed, you can correlate a
-                routing-config change against the KV-utilization and TTFT panels directly &mdash;
+                routing-config change against the KV-utilization and TTFT panels directly,
                 rather than discovering the regression as a vague latency complaint.
               </Box>
             </div>
@@ -400,7 +400,7 @@ export function ProductionStack() {
             the model(s), engine arguments, replica count, the router&apos;s routing logic, and
             whether to deploy the observability stack. Scaling out is changing a replica count;
             switching routing behavior is changing <code>routing-logic</code>; turning on dashboards
-            is a chart value. That is the entire pitch &mdash; the production concerns are{' '}
+            is a chart value. That is the entire pitch: the production concerns are{' '}
             <em>configuration</em>, not bespoke YAML you author and maintain (
             <Link external href="https://github.com/vllm-project/production-stack">
               production-stack README, accessed 2026-06-07
@@ -419,8 +419,8 @@ export function ProductionStack() {
             items={[
               {
                 dim: 'Install model',
-                ps: 'Helm chart — declarative values.yaml, no controller to operate',
-                llmd: 'Operator + CRDs — programmable control plane you run',
+                ps: 'Helm chart with a declarative values.yaml, no controller to operate',
+                llmd: 'Operator plus CRDs: a programmable control plane you run',
               },
               {
                 dim: 'Mental model',
@@ -446,7 +446,7 @@ export function ProductionStack() {
             production-stack is the shorter path. If the outcome is &quot;build an inference platform
             we extend and program against the Gateway API,&quot; that is section 17&apos;s territory.
             Both ultimately drive the same vLLM engines and both want the same prefix-locality
-            (section 6) and observability (section 20) properties &mdash; they differ in how much
+            (section 6) and observability (section 20) properties. They differ in how much
             control plane you take on to get there.
           </Alert>
         </SpaceBetween>

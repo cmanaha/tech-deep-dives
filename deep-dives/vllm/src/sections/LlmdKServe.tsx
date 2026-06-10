@@ -129,7 +129,7 @@ function GatewayRoutingDiagram() {
 
       {/* InferencePool box around pods */}
       <rect x={250} y={210} width={600} height={188} rx={8} fill="#fbfbfd" stroke="#b6bec9" strokeWidth={1.5} strokeDasharray="4 3" />
-      <text className="lbl" x={550} y={232}>InferencePool — vLLM pods (the engine: §4-13)</text>
+      <text className="lbl" x={550} y={232}>InferencePool: vLLM pods (the engine: §4-13)</text>
 
       {/* gateway -> chosen pod (hot) */}
       <path className="arrhot" d="M190,250 C 240,250 250,300 296,300" />
@@ -176,7 +176,7 @@ export function LlmdKServe() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>The problem:</strong> A single vLLM replica is a process. Production is a
-            fleet &mdash; dozens of replicas across nodes, some doing prefill and some decode
+            fleet: dozens of replicas across nodes, some doing prefill and some decode
             (<strong>section 10</strong>), some holding a hot prefix cache, some with a given
             LoRA adapter already resident (<strong>section 13</strong>). A plain Kubernetes{' '}
             <code>Service</code> load-balances round-robin and is blind to all of that. It will
@@ -186,8 +186,8 @@ export function LlmdKServe() {
           </Box>
           <Box variant="p">
             <strong>The answer:</strong> separate the three concerns. An <strong>engine</strong>{' '}
-            (vLLM) runs the model. A pair of <strong>operators</strong> &mdash; KServe and llm-d
-            &mdash; turn a declarative CRD into the underlying fleet and keep it reconciled. An{' '}
+            (vLLM) runs the model. A pair of <strong>operators</strong> (KServe and llm-d)
+            turn a declarative CRD into the underlying fleet and keep it reconciled. An{' '}
             <strong>inference-aware gateway</strong> (the Kubernetes Gateway API Inference
             Extension) routes each request to the <em>right</em> pod by scoring endpoints on
             KV-cache/prefix-hit, queue depth, session affinity, predicted latency, and LoRA
@@ -212,7 +212,7 @@ export function LlmdKServe() {
             <strong>Endpoint Picker (EPP)</strong> over Envoy External Processing (ext-proc);
             the EPP scores the pods in the <code>InferencePool</code> using metrics it scrapes
             from every vLLM replica, returns one endpoint, and the gateway forwards there.
-            KServe and llm-d sit on the <em>control plane</em> &mdash; they reconcile the CRD
+            KServe and llm-d sit on the <em>control plane</em>. They reconcile the CRD
             into the Deployments, the <code>InferencePool</code>, the EPP, and autoscaling. They
             are not in the per-request hot path.
           </Box>
@@ -220,7 +220,7 @@ export function LlmdKServe() {
           <Alert type="info">
             The dashed purple arrows are the per-request <code>ext-proc</code> round trip to the
             EPP; the solid blue arrow is the gateway forwarding to the pod the EPP chose. The
-            teal box (KServe + llm-d) reconciles the dashed grey path &mdash; it shapes the
+            teal box (KServe + llm-d) reconciles the dashed grey path: it shapes the
             fleet, it does not touch individual requests.
           </Alert>
         </SpaceBetween>
@@ -262,11 +262,11 @@ export function LlmdKServe() {
           <Box variant="p">
             The EPP is the brain. The Gateway API Inference Extension describes it as{' '}
             <em>
-              &ldquo;an implementation of an Inference Scheduler with additional Routing, Flow,
-              and Request Control layers to allow for sophisticated routing strategies&rdquo;
+              &quot;an implementation of an Inference Scheduler with additional Routing, Flow,
+              and Request Control layers to allow for sophisticated routing strategies&quot;
             </em>{' '}
             that is{' '}
-            <em>&ldquo;kv-cache and request cost aware, avoiding evictions or queueing as load increases.&rdquo;</em>{' '}
+            <em>&quot;kv-cache and request cost aware, avoiding evictions or queueing as load increases.&quot;</em>{' '}
             (
             <Link external href="https://github.com/kubernetes-sigs/gateway-api-inference-extension">
               GIE, GitHub, accessed 2026-06-07
@@ -280,7 +280,7 @@ export function LlmdKServe() {
                 Prefer the pod whose KV cache already holds the request&apos;s prefix, so the
                 shared prompt is not recomputed. This is exactly the automatic-prefix-cache win
                 from <strong>section 6</strong>, lifted from one engine to the whole fleet.
-                llm-d calls it <em>&ldquo;prefix-cache aware routing&rdquo;</em>.
+                llm-d calls it <em>&quot;prefix-cache aware routing&quot;</em>.
               </Box>
             </div>
             <div>
@@ -296,16 +296,16 @@ export function LlmdKServe() {
               <Box variant="h3">Session affinity</Box>
               <Box variant="p">
                 Pin a multi-turn conversation to the pod that already holds its KV cache.
-                Without affinity, turn 2 lands on a cold pod and re-prefills the entire history
-                &mdash; the single most expensive routing mistake for chat workloads.
+                Without affinity, turn 2 lands on a cold pod and re-prefills the entire history,
+                the single most expensive routing mistake for chat workloads.
               </Box>
             </div>
             <div>
               <Box variant="h3">Predicted latency</Box>
               <Box variant="p">
-                Score endpoints on expected completion cost, not just current load &mdash; the
-                &ldquo;request cost aware&rdquo; behaviour above. The goal is to honour TTFT/ITL
-                SLOs, which is why llm-d ships <em>&ldquo;SLO-aware autoscaling&rdquo;</em> as a
+                Score endpoints on expected completion cost, not just current load. This is the
+                &quot;request cost aware&quot; behaviour above. The goal is to honour TTFT/ITL
+                SLOs, which is why llm-d ships <em>&quot;SLO-aware autoscaling&quot;</em> as a
                 companion.
               </Box>
             </div>
@@ -314,7 +314,7 @@ export function LlmdKServe() {
               <Box variant="p">
                 Route a request for adapter <code>X</code> to a pod that already has{' '}
                 <code>X</code> loaded. The EPP reads this from the{' '}
-                <code>vllm:lora_requests_info</code> metric &mdash; the same metric{' '}
+                <code>vllm:lora_requests_info</code> metric, the same metric{' '}
                 <strong>section 13</strong> covers for multi-adapter serving and{' '}
                 <strong>section 20</strong> covers for observability.
               </Box>
@@ -349,10 +349,10 @@ export function LlmdKServe() {
         <SpaceBetween size="m">
           <Box variant="p">
             The two big engine-level optimizations from earlier sections do not disappear at the
-            cluster layer &mdash; they become routing inputs. <strong>Disaggregated
+            cluster layer; they become routing inputs. <strong>Disaggregated
             prefill/decode (section 10)</strong> turns one homogeneous pool into two: a prefiller
             pool that owns TTFT and a decoder pool that owns ITL. llm-d names this{' '}
-            <em>&ldquo;prefill/decode disaggregation&rdquo;</em> and the EPP routes the prompt
+            <em>&quot;prefill/decode disaggregation&quot;</em> and the EPP routes the prompt
             pass to a prefiller, then steers decode to a decoder, with the KV cache moving over
             the connector (<strong>section 10</strong>) between them.
           </Box>
@@ -360,8 +360,8 @@ export function LlmdKServe() {
             <strong>Prefix-cache-aware routing</strong> is the cluster-scale version of
             automatic prefix caching (<strong>section 6</strong>): instead of hoping a hot
             prefix is reused within one engine, the EPP actively sends the request to the pod
-            that holds it. Combined with llm-d&apos;s <em>&ldquo;tiered offloading to CPU or
-            disk&rdquo;</em> for KV cache (the LMCache pattern from <strong>section 7</strong>),
+            that holds it. Combined with llm-d&apos;s <em>&quot;tiered offloading to CPU or
+            disk&quot;</em> for KV cache (the LMCache pattern from <strong>section 7</strong>),
             a prefix that does not fit in HBM can still be a routing target.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
@@ -388,8 +388,8 @@ export function LlmdKServe() {
       <Container header={<Header variant="h2">vs production-stack (section 16): operator path vs all-in-one</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            Both stacks solve the same problem &mdash; route inference traffic to vLLM replicas
-            intelligently &mdash; at different weights. Pick by how much Kubernetes machinery you
+            Both stacks solve the same problem (route inference traffic to vLLM replicas
+            intelligently) at different weights. Pick by how much Kubernetes machinery you
             already run and how much CRD-driven control you need.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
@@ -400,7 +400,7 @@ export function LlmdKServe() {
                 <li>Standard Gateway API gateway (Envoy) with the GA Inference Extension</li>
                 <li>Pluggable, metric-aware EPP scoring; co-developed with vLLM</li>
                 <li>Multi-vendor backing (Red Hat, Google, IBM, NVIDIA, CoreWeave); CNCF sandbox</li>
-                <li>More moving parts &mdash; gateway, EPP, operator, pools &mdash; for full control</li>
+                <li>More moving parts (gateway, EPP, operator, pools) for full control</li>
               </ul>
             </div>
             <div>
@@ -424,16 +424,16 @@ export function LlmdKServe() {
 
       <Container header={<Header variant="h2">Deep dives</Header>}>
         <SpaceBetween size="s">
-          <ExpandableSection headerText="KServe's LLMInferenceService CRD — the declarative spec">
+          <ExpandableSection headerText="KServe's LLMInferenceService CRD: the declarative spec">
             <SpaceBetween size="s">
               <Box variant="p">
                 vLLM&apos;s own docs describe two KServe paths: deployment{' '}
-                <em>&ldquo;using KServe&apos;s Hugging Face serving runtime&rdquo;</em> for
+                <em>&quot;using KServe&apos;s Hugging Face serving runtime&quot;</em> for
                 single-model serving, or{' '}
-                <em>&ldquo;via LLMInferenceService that uses llm-d&rdquo;</em> for distributed
-                serving &mdash; the page states vLLM{' '}
-                <em>&ldquo;can be deployed with KServe on Kubernetes for highly scalable
-                distributed model serving.&rdquo;</em> (
+                <em>&quot;via LLMInferenceService that uses llm-d&quot;</em> for distributed
+                serving. The page states vLLM{' '}
+                <em>&quot;can be deployed with KServe on Kubernetes for highly scalable
+                distributed model serving.&quot;</em> (
                 <Link external href="https://docs.vllm.ai/en/latest/deployment/integrations/kserve/">
                   vLLM docs, accessed 2026-06-07
                 </Link>
@@ -442,17 +442,17 @@ export function LlmdKServe() {
               <Box variant="p">
                 The production blog frames the CRD as exposing{' '}
                 <em>
-                  &ldquo;the standard Kubernetes API, allowing us to override the spec precisely
-                  where needed&rdquo;
-                </em>{' '}
-                &mdash; the operator owns the boilerplate (Deployments, Services,
+                  &quot;the standard Kubernetes API, allowing us to override the spec precisely
+                  where needed&quot;
+                </em>
+                : the operator owns the boilerplate (Deployments, Services,
                 InferencePool, autoscaling) while the <code>LLMInferenceService</code> and{' '}
                 <code>LLMInferenceConfig</code> objects give granular overrides for specialized
                 hardware. (
                 <Link external href="https://llm-d.ai/blog/production-grade-llm-inference-at-scale-kserve-llm-d-vllm">
                   llm-d production blog
                 </Link>
-                , Tang et al., 2026 &mdash; <strong>Tier-2 vendor blog (Red Hat / Tesla authors)</strong>, accessed 2026-06-07.)
+                , Tang et al., 2026, <strong>Tier-2 vendor blog (Red Hat / Tesla authors)</strong>, accessed 2026-06-07.)
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -462,17 +462,17 @@ export function LlmdKServe() {
               <Box variant="p">
                 llm-d describes itself as{' '}
                 <em>
-                  &ldquo;a high-performance distributed inference serving stack optimized for
-                  production deployments on Kubernetes&rdquo;
+                  &quot;a high-performance distributed inference serving stack optimized for
+                  production deployments on Kubernetes&quot;
                 </em>{' '}
                 whose four core capabilities are{' '}
-                <em>&ldquo;intelligent routing&rdquo;</em> (
-                <em>&ldquo;prefix-cache and load-aware balancing&rdquo;</em>),{' '}
-                <em>&ldquo;advanced KV-cache management&rdquo;</em> (
-                <em>&ldquo;tiered offloading to CPU or disk&rdquo;</em>),{' '}
-                <em>&ldquo;serving large models&rdquo;</em> via{' '}
-                <em>&ldquo;prefill/decode disaggregation&rdquo;</em>, and{' '}
-                <em>&ldquo;SLO-aware autoscaling.&rdquo;</em> (
+                <em>&quot;intelligent routing&quot;</em> (
+                <em>&quot;prefix-cache and load-aware balancing&quot;</em>),{' '}
+                <em>&quot;advanced KV-cache management&quot;</em> (
+                <em>&quot;tiered offloading to CPU or disk&quot;</em>),{' '}
+                <em>&quot;serving large models&quot;</em> via{' '}
+                <em>&quot;prefill/decode disaggregation&quot;</em>, and{' '}
+                <em>&quot;SLO-aware autoscaling.&quot;</em> (
                 <Link external href="https://github.com/llm-d/llm-d">
                   llm-d, GitHub, accessed 2026-06-07
                 </Link>
@@ -480,12 +480,12 @@ export function LlmdKServe() {
               </Box>
               <Box variant="p">
                 It is a <strong>CNCF sandbox project</strong>, per its own README{' '}
-                <em>&ldquo;founded by Red Hat, Google Cloud, IBM Research, CoreWeave, and
-                NVIDIA&rdquo;</em> with additional contributors including AMD, Cisco, Hugging
+                <em>&quot;founded by Red Hat, Google Cloud, IBM Research, CoreWeave, and
+                NVIDIA&quot;</em> with additional contributors including AMD, Cisco, Hugging
                 Face, Intel, Lambda, and Mistral AI. Model servers (vLLM, SGLang){' '}
-                <em>&ldquo;handle efficiently running large language models on accelerators&rdquo;</em>{' '}
+                <em>&quot;handle efficiently running large language models on accelerators&quot;</em>{' '}
                 while llm-d provides{' '}
-                <em>&ldquo;state-of-the-art orchestration and optimizations above model servers.&rdquo;</em>{' '}
+                <em>&quot;state-of-the-art orchestration and optimizations above model servers.&quot;</em>{' '}
                 (
                 <Link external href="https://github.com/llm-d/llm-d">
                   llm-d, GitHub, accessed 2026-06-07
@@ -494,10 +494,10 @@ export function LlmdKServe() {
               </Box>
               <Alert type="warning">
                 <strong>Project-claimed benchmark:</strong> the llm-d production blog reports{' '}
-                <em>&ldquo;a 3x improvement in output tokens/s and a 2x reduction in time to
-                first token (TTFT)&rdquo;</em> on Llama 3.1 70B across 4 AMD MI300X GPUs after
+                <em>&quot;a 3x improvement in output tokens/s and a 2x reduction in time to
+                first token (TTFT)&quot;</em> on Llama 3.1 70B across 4 AMD MI300X GPUs after
                 enabling prefix-cache-aware routing. This is a vendor-authored, project-claimed
-                figure on one model/hardware configuration &mdash; not an independent benchmark.
+                figure on one model/hardware configuration, not an independent benchmark.
                 Treat as directional. (
                 <Link external href="https://llm-d.ai/blog/production-grade-llm-inference-at-scale-kserve-llm-d-vllm">
                   llm-d production blog, Tang et al.
@@ -512,8 +512,8 @@ export function LlmdKServe() {
               <Box variant="p">
                 The Gateway API Inference Extension is{' '}
                 <em>
-                  &ldquo;an official Kubernetes project that optimizes self-hosting Generative
-                  Models on Kubernetes&rdquo;
+                  &quot;an official Kubernetes project that optimizes self-hosting Generative
+                  Models on Kubernetes&quot;
                 </em>
                 , extending a Gateway API gateway through Envoy External Processing into an{' '}
                 inference gateway. It is <strong>GA</strong>, with v1.5.0 the current release
@@ -528,11 +528,11 @@ export function LlmdKServe() {
                 , accessed 2026-06-07.)
               </Box>
               <Box variant="p">
-                The central CRD is the <code>InferencePool</code> &mdash; the set of model-server
+                The central CRD is the <code>InferencePool</code>, the set of model-server
                 pods the EPP scores over. The gateway routes to the pool, the EPP picks the
                 endpoint inside it. The docs cite{' '}
-                <em>&ldquo;Prefix Cache status or LoRA Adapters availability&rdquo;</em> as
-                examples of the model-server <em>&ldquo;Metrics and Capabilities&rdquo;</em> the
+                <em>&quot;Prefix Cache status or LoRA Adapters availability&quot;</em> as
+                examples of the model-server <em>&quot;Metrics and Capabilities&quot;</em> the
                 scheduler consumes. (
                 <Link external href="https://gateway-api-inference-extension.sigs.k8s.io/">
                   GIE docs, accessed 2026-06-07
@@ -544,8 +544,8 @@ export function LlmdKServe() {
 
           <ExpandableSection headerText="The AWS realization → section 24 (vLLM on Amazon EKS)">
             <Box variant="p">
-              This entire stack &mdash; KServe/llm-d operators, an Envoy-based Gateway with the
-              Inference Extension, the EPP, and <code>InferencePool</code>s of vLLM pods &mdash;
+              This entire stack (KServe/llm-d operators, an Envoy-based Gateway with the
+              Inference Extension, the EPP, and <code>InferencePool</code>s of vLLM pods)
               is cloud-portable Kubernetes. <strong>Section 24 (vLLM on Amazon EKS)</strong> is
               the AWS realization: the same CRDs and gateway running on managed Kubernetes, with
               GPU/EFA-backed node groups (sections on EFA and NIXL) under the vLLM pods. Read

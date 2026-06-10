@@ -42,8 +42,8 @@ const ROWS: FailureRow[] = [
     cause: (
       <Box variant="p">
         Too little KV-cache space for the in-flight batch. The scheduler (
-        <strong>section 4</strong>) evicts a running sequence&apos;s KV and recomputes it later &mdash;
-        in V1 there is no GPU&rarr;CPU swap, preemption is pure <em>recompute</em>, so the evicted
+        <strong>section 4</strong>) evicts a running sequence&apos;s KV and recomputes it later. In
+        V1 there is no GPU&rarr;CPU swap, preemption is pure <em>recompute</em>, so the evicted
         prefill is thrown away and redone. The exact log line is{' '}
         <code>
           &quot;Sequence group ... is preempted by PreemptionMode.RECOMPUTE mode because there is not
@@ -76,7 +76,7 @@ const ROWS: FailureRow[] = [
     cause: (
       <Box variant="p">
         Chunked prefill splits a long prompt&apos;s <em>prefill compute</em> across steps so it
-        interleaves with decode &mdash; it does <strong>not</strong> shrink KV memory. A long request
+        interleaves with decode. It does <strong>not</strong> shrink KV memory. A long request
         still reserves KV blocks for its full sequence. It is a latency/throughput-shaping knob, not a
         capacity knob. (Enabled by default in V1.)
       </Box>
@@ -128,7 +128,7 @@ const ROWS: FailureRow[] = [
     area: 'OOM at model load / first capture',
     grounding: 'doc',
     symptom:
-      'CUDA out-of-memory during startup &mdash; either while loading weights or right as CUDA graphs are captured, before the server accepts traffic.',
+      'CUDA out-of-memory during startup, either while loading weights or right as CUDA graphs are captured, before the server accepts traffic.',
     cause: (
       <Box variant="p">
         The static footprint (weights + activations + CUDA graph pool) plus the KV pre-allocation does
@@ -169,7 +169,7 @@ const ROWS: FailureRow[] = [
     detection: (
       <Box variant="p">
         Load-time error naming the quant method / kernel, or a compute-capability check failing at
-        startup &mdash; reproducible per GPU type, independent of load.
+        startup (reproducible per GPU type, independent of load).
       </Box>
     ),
     fix: (
@@ -192,7 +192,7 @@ const ROWS: FailureRow[] = [
         <code>POST /v1/load_lora_adapter</code> is gated behind{' '}
         <code>VLLM_ALLOW_RUNTIME_LORA_UPDATING=True</code> and the docs warn it &quot;should not be used
         in production&quot; outside a trusted boundary. A runtime load lands only on the replica that
-        served it &mdash; it does not propagate to siblings (<strong>section 13</strong>).
+        served it; it does not propagate to siblings (<strong>section 13</strong>).
       </Box>
     ),
     detection: (
@@ -205,8 +205,8 @@ const ROWS: FailureRow[] = [
       <Box variant="p">
         Use <strong>static registration</strong> (<code>--lora-modules</code>) and treat the adapter
         set as part of the deployment artifact. Reserve <code>VLLM_ALLOW_RUNTIME_LORA_UPDATING</code>{' '}
-        for isolated, fully-trusted lanes &mdash; never expose <code>load_lora_adapter</code> to
-        untrusted callers (<strong>section 13</strong>).
+        for isolated, fully-trusted lanes. Never expose <code>load_lora_adapter</code> to untrusted
+        callers (<strong>section 13</strong>).
       </Box>
     ),
   },
@@ -215,7 +215,7 @@ const ROWS: FailureRow[] = [
     area: 'Client disconnect / cancellation',
     grounding: 'pattern',
     symptom:
-      'GPU keeps generating for requests whose clients already hung up &mdash; wasted decode, inflated cost, KV blocks held by dead requests during a spike.',
+      'GPU keeps generating for requests whose clients already hung up: wasted decode, inflated cost, KV blocks held by dead requests during a spike.',
     cause: (
       <Box variant="p">
         A streaming caller (browser tab closed, gateway timeout, cancelled agent step) drops the
@@ -234,8 +234,8 @@ const ROWS: FailureRow[] = [
         Set sane server- and gateway-side request timeouts so abandoned requests are bounded; cap{' '}
         <code>max_tokens</code> per request; and front the engine with a gateway (
         <strong>section 19</strong>) that enforces timeouts and rate limits rather than relying on every
-        client to disconnect cleanly. <em>(General operational pattern &mdash; confirm cancellation
-        behavior against the version you run.)</em>
+        client to disconnect cleanly. <em>(General operational pattern; confirm cancellation behavior
+        against the version you run.)</em>
       </Box>
     ),
   },
@@ -244,12 +244,12 @@ const ROWS: FailureRow[] = [
     area: 'Gateway-tier supply-chain risk (LiteLLM)',
     grounding: 'pattern',
     symptom:
-      'A compromised gateway dependency in front of vLLM, not a fault in the engine itself &mdash; e.g. a malicious package version at the proxy tier.',
+      'A compromised gateway dependency in front of vLLM, not a fault in the engine itself: e.g. a malicious package version at the proxy tier.',
     cause: (
       <Box variant="p">
         <Badge color="grey">Tier-3</Badge> The gateway is its own attack surface. A reported LiteLLM
         PyPI supply-chain compromise (<strong>section 19</strong>) is a property of the gateway&apos;s
-        dependency chain &mdash; infer nothing about vLLM&apos;s posture from it. The lesson is that
+        dependency chain. Infer nothing about vLLM&apos;s posture from it. The lesson is that
         everything you bolt in front of the engine widens the blast radius.
       </Box>
     ),
@@ -309,7 +309,7 @@ export function OperationsFailureModes() {
         header={
           <Header
             variant="h1"
-            description="The operational gotchas an SRE or architect hits running vLLM in production — and how to catch each one before it pages you."
+            description="The operational gotchas an SRE or architect hits running vLLM in production, and how to catch each one before it pages you."
           >
             27. Operations &amp; Failure Modes
           </Header>
@@ -318,7 +318,7 @@ export function OperationsFailureModes() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>The problem:</strong> a vLLM deployment fails in a small number of recurring,
-            recognizable ways &mdash; and almost all of them trace back to the same root cause: the KV
+            recognizable ways, and almost all of them trace back to the same root cause: the KV
             cache is a fixed budget (<strong>section 5</strong>) and the scheduler (
             <strong>section 4</strong>) is a queueing system rationing it. When demand outruns that
             budget you do not get a clean error; you get a throughput cliff, a tail-latency spike, or a
@@ -328,7 +328,7 @@ export function OperationsFailureModes() {
           <Box variant="p">
             <strong>The frame:</strong> every row below is{' '}
             <strong>SYMPTOM &rarr; CAUSE &rarr; DETECTION &rarr; FIX</strong>. Detection is always a
-            metric from <strong>section 20</strong> or a specific log line &mdash; if you cannot detect
+            metric from <strong>section 20</strong> or a specific log line: if you cannot detect
             it, you cannot alarm on it, and you will learn about it from a customer instead of a
             dashboard. Each row is tagged{' '}
             <Badge color="blue">doc-cited</Badge> when it maps to a documented limitation, or{' '}
@@ -413,7 +413,7 @@ export function OperationsFailureModes() {
               <Box variant="h3">Doc-cited</Box>
               <ul>
                 <li>
-                  <strong>Preemption cliff &amp; KV levers</strong> &mdash; the{' '}
+                  <strong>Preemption cliff &amp; KV levers:</strong> the{' '}
                   <code>PreemptionMode.RECOMPUTE</code> warning and the{' '}
                   <code>gpu_memory_utilization</code> / <code>tensor_parallel_size</code> /{' '}
                   <code>max_num_seqs</code> guidance are in the{' '}
@@ -427,7 +427,7 @@ export function OperationsFailureModes() {
                   .
                 </li>
                 <li>
-                  <strong>Recompute-only preemption &amp; chunked prefill default</strong> &mdash; the V1
+                  <strong>Recompute-only preemption &amp; chunked prefill default:</strong> the V1
                   engine no longer swaps KV to CPU on preemption, and chunked prefill is on by default,
                   per the{' '}
                   <Link
@@ -440,7 +440,7 @@ export function OperationsFailureModes() {
                   , which also notes CUDA graph capture uses more memory in V1 than V0.
                 </li>
                 <li>
-                  <strong>Cold start &amp; OOM at load</strong> &mdash; the{' '}
+                  <strong>Cold start &amp; OOM at load:</strong> the{' '}
                   <code>enforce_eager</code> / <code>self.graph.replay()</code> CUDAGraph note and the{' '}
                   <code>--load-format dummy</code> isolation tip are in the{' '}
                   <Link
@@ -462,7 +462,7 @@ export function OperationsFailureModes() {
                   .
                 </li>
                 <li>
-                  <strong>Dynamic LoRA caveat</strong> &mdash; cross-linked to{' '}
+                  <strong>Dynamic LoRA caveat:</strong> cross-linked to{' '}
                   <strong>section 13</strong>, which quotes the &quot;should not be used in
                   production&quot; warning and the per-replica propagation gap.
                 </li>
@@ -472,7 +472,7 @@ export function OperationsFailureModes() {
               <Box variant="h3">Pattern (general practice)</Box>
               <ul>
                 <li>
-                  <strong>Quantization-vs-architecture</strong> &mdash; the support matrix is real and{' '}
+                  <strong>Quantization-vs-architecture:</strong> the support matrix is real and{' '}
                   architecture-gated by compute capability (
                   <Link
                     external
@@ -486,12 +486,12 @@ export function OperationsFailureModes() {
                   cell for your GPU rather than assuming a particular Blackwell INT8/FP8 result.
                 </li>
                 <li>
-                  <strong>Client disconnect / cancellation</strong> &mdash; the failure mode is real,
+                  <strong>Client disconnect / cancellation:</strong> the failure mode is real,
                   but precise abort-on-disconnect behavior is version-dependent and not pinned here to a
                   single doc line. Treated as a pattern; cross-linked to <strong>section 12</strong>.
                 </li>
                 <li>
-                  <strong>Gateway supply-chain risk</strong> &mdash;{' '}
+                  <strong>Gateway supply-chain risk:</strong>{' '}
                   <Badge color="grey">Tier-3</Badge> security reporting about the gateway tier, not
                   the engine. Full advisory citations live in <strong>section 19</strong>; nothing here
                   implies anything about vLLM&apos;s own security posture.
@@ -553,7 +553,7 @@ export function OperationsFailureModes() {
           <Box variant="p">
             Nearly every row in the table is the same scarce resource showing a different face. So plan
             it explicitly. After weights, activations, and the CUDA graph pool are subtracted from HBM,
-            what remains is the KV-cache budget &mdash; and that budget, divided by the per-request KV
+            what remains is the KV-cache budget, and that budget, divided by the per-request KV
             cost, is your real concurrency ceiling. Capacity planning is making that arithmetic visible
             instead of discovering it as a 2&nbsp;a.m. preemption storm.
           </Box>
@@ -563,7 +563,7 @@ export function OperationsFailureModes() {
               <ul>
                 <li>
                   <strong>Total HBM</strong> per GPU is the ceiling.{' '}
-                  <code>gpu_memory_utilization</code> caps how much vLLM pre-allocates &mdash; the rest
+                  <code>gpu_memory_utilization</code> caps how much vLLM pre-allocates; the rest
                   is slack the OS, the graph pool, and fragmentation need.
                 </li>
                 <li>
@@ -573,7 +573,7 @@ export function OperationsFailureModes() {
                 </li>
                 <li>
                   <strong>What is left is the KV budget.</strong> Sharding with{' '}
-                  <code>tensor_parallel_size</code> frees per-GPU HBM for KV &mdash; the docs call this
+                  <code>tensor_parallel_size</code> frees per-GPU HBM for KV. The docs call this
                   out as a memory lever, not just a throughput one.
                 </li>
               </ul>
@@ -583,17 +583,17 @@ export function OperationsFailureModes() {
               <ul>
                 <li>
                   A request reserves KV blocks for its full sequence length, up to{' '}
-                  <code>max_model_len</code> &mdash; longer contexts cost proportionally more KV
+                  <code>max_model_len</code>: longer contexts cost proportionally more KV
                   (<strong>section 5</strong>).
                 </li>
                 <li>
                   <strong>Concurrency ceiling</strong> &asymp; KV budget &divide; average per-request KV
-                  cost. Push past it and the scheduler preempts &mdash; the first row of the table.
+                  cost. Push past it and the scheduler preempts: the first row of the table.
                 </li>
                 <li>
                   Levers that buy concurrency: lower <code>max_model_len</code>, cap{' '}
                   <code>max_num_seqs</code>, quantize the KV cache, or offload (
-                  <strong>section 7</strong>). Each trades something &mdash; reach, batch size, quality,
+                  <strong>section 7</strong>). Each trades something: reach, batch size, quality,
                   or latency.
                 </li>
               </ul>

@@ -11,11 +11,11 @@ import Badge from '@cloudscape-design/components/badge';
 import Link from '@cloudscape-design/components/link';
 
 // ---------------------------------------------------------------------------
-// Section 28 — Decision Guide.
+// Section 28: Decision Guide.
 // The capstone: synthesis of the whole deep dive into actionable decisions.
 // Most claims here are architectural JUDGMENT (framed as guidance). The few
 // hard facts (defaults, the "no throughput" property of disaggregation) carry
-// inline Tier-1 citations. Pure-CSS / SVG diagrams only — no React Flow.
+// inline Tier-1 citations. Pure-CSS / SVG diagrams only, no React Flow.
 // ---------------------------------------------------------------------------
 
 // ---- "Start here" decision tree (pure SVG, no deps) -----------------------
@@ -57,14 +57,14 @@ function StartHereTree() {
 
       {/* Q1 -> No (managed) */}
       <path className="edge" d="M300,44 L120,44 L120,96" />
-      <text className="el" x={205} y={36}>No — just want an API</text>
+      <text className="el" x={205} y={36}>No, just want an API</text>
       <rect className="node stop" x={20} y={96} width={200} height={56} rx={8} />
       <text className="nt" x={120} y={120}>Use Amazon Bedrock</text>
       <text className="ns" x={120} y={138}>managed, pay-per-token (§25)</text>
 
       {/* Q1 -> Yes -> Q2 */}
       <path className="edge" d="M440,72 L440,104" />
-      <text className="el" x={520} y={92}>Yes — self-host vLLM</text>
+      <text className="el" x={520} y={92}>Yes, self-host vLLM</text>
       <rect className="node q" x={300} y={104} width={280} height={56} rx={8} />
       <text className="nt" x={440} y={128}>How does your team operate?</text>
       <text className="ns" x={440} y={146}>Python-native vs Kubernetes / operators</text>
@@ -130,7 +130,7 @@ const orchRows: OrchRow[] = [
   {
     option: 'bare vllm serve',
     fit: 'One model on one node (or one multi-GPU box via TP).',
-    team: 'Any — a single CLI command, no cluster.',
+    team: 'Any: a single CLI command, no cluster.',
     scale: 'Single replica. No built-in autoscaling or fleet routing.',
     pick: 'Prototypes, one-model internal services, the inner loop of every other option.',
   },
@@ -175,7 +175,7 @@ const leverRows: LeverRow[] = [
     lever: 'Chunked prefill (§4)',
     state: 'default ON',
     turnOn: 'Leave on. Smooths ITL by stopping a long prefill from freezing the batch.',
-    note: 'Scheduling technique — does NOT reduce KV memory. Not a fix for OOM/preemption.',
+    note: 'Scheduling technique; does NOT reduce KV memory. Not a fix for OOM/preemption.',
   },
   {
     lever: 'Quantization (§8)',
@@ -193,7 +193,7 @@ const leverRows: LeverRow[] = [
     lever: 'Disaggregated prefill/decode (§10)',
     state: 'opt-in (experimental)',
     turnOn: 'ONLY for strict, separately-negotiated TTFT and ITL SLOs, or big prefill:decode imbalance.',
-    note: 'Does NOT raise throughput — it is a latency-isolation play that adds a KV-transfer tax.',
+    note: 'Does NOT raise throughput; it is a latency-isolation play that adds a KV-transfer tax.',
   },
   {
     lever: 'KV offloading / LMCache (§7)',
@@ -212,28 +212,28 @@ interface ParallelRow {
 
 const parallelRows: ParallelRow[] = [
   {
-    strategy: 'TP — Tensor Parallel',
+    strategy: 'TP (Tensor Parallel)',
     splits: 'Each layer split across GPUs (intra-node).',
     use: 'First lever when a model + its KV will not fit on one GPU. Stay within a node (NVLink).',
-    cost: 'Per-layer all-reduce every step — wants the fastest intra-node fabric.',
+    cost: 'Per-layer all-reduce every step; wants the fastest intra-node fabric.',
   },
   {
-    strategy: 'PP — Pipeline Parallel',
+    strategy: 'PP (Pipeline Parallel)',
     splits: 'Layers grouped into stages across GPUs/nodes.',
     use: 'When the model exceeds one node and TP across nodes would be too chatty.',
     cost: 'Pipeline bubbles; cross-stage activation transfer. Cheaper cross-node link than TP.',
   },
   {
-    strategy: 'EP — Expert Parallel',
+    strategy: 'EP (Expert Parallel)',
     splits: 'MoE experts distributed across GPUs.',
-    use: 'Mixture-of-Experts models — route tokens to the GPUs holding their experts.',
+    use: 'Mixture-of-Experts models: route tokens to the GPUs holding their experts.',
     cost: 'All-to-all expert routing traffic; benefits from a high-bandwidth fabric (EFA).',
   },
   {
-    strategy: 'DP — Data Parallel',
+    strategy: 'DP (Data Parallel)',
     splits: 'Whole-model replicas, each serving a share of requests.',
     use: 'Scaling throughput once one replica already fits and meets latency.',
-    cost: 'N× the weight memory; no per-step cross-GPU comms — the simplest horizontal scale.',
+    cost: 'N× the weight memory; no per-step cross-GPU comms, the simplest horizontal scale.',
   },
 ];
 
@@ -246,7 +246,7 @@ interface HwRow {
 const hwRows: HwRow[] = [
   {
     workload: 'Cost-optimized single-model serving, vLLM-supported model',
-    path: 'AWS Neuron — Inf2 / Trn (§21)',
+    path: 'AWS Neuron (Inf2 / Trn) (§21)',
     why: 'Best price/token when the model is on the Neuron-supported path; no GPU premium.',
   },
   {
@@ -273,7 +273,7 @@ export function DecisionGuide() {
         header={
           <Header
             variant="h1"
-            description="The capstone — one page that answers 'how should I serve this model?' by tying the rest of the deep dive into ordered decisions. Most of this is synthesis; hard facts carry citations, everything else is framed as guidance."
+            description="The capstone: one page that answers 'how should I serve this model?' by tying the rest of the deep dive into ordered decisions. Most of this is synthesis; hard facts carry citations, everything else is framed as guidance."
           >
             28. Decision Guide
           </Header>
@@ -291,7 +291,7 @@ export function DecisionGuide() {
           </Box>
           <Alert type="info" header="How to read this section">
             Recommendations marked as <strong>guidance</strong> are architectural judgment
-            synthesized from the rest of the deep dive — they are starting points, not vendor
+            synthesized from the rest of the deep dive. They are starting points, not vendor
             guarantees. The few hard facts (engine defaults, the property that disaggregation does
             not raise throughput) carry inline Tier-1 citations. Always validate against the docs at
             your pinned vLLM version and benchmark your own workload (§20).
@@ -312,8 +312,8 @@ export function DecisionGuide() {
         <SpaceBetween size="m">
           <StartHereTree />
           <Box variant="small" color="text-body-secondary">
-            Guidance. The ordering — managed vs self-host, then orchestrator, then sizing, then
-            levers — is the recommended sequence; the boxes name the section that covers each branch.
+            Guidance. The ordering (managed vs self-host, then orchestrator, then sizing, then
+            levers) is the recommended sequence; the boxes name the section that covers each branch.
           </Box>
         </SpaceBetween>
       </Container>
@@ -330,7 +330,7 @@ export function DecisionGuide() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Self-hosting vLLM buys you <strong>control</strong> — arbitrary open-weight models,
+            Self-hosting vLLM buys you <strong>control</strong>: arbitrary open-weight models,
             custom quantization and kernels, full access to the engine knobs in this deep dive, and
             data that never leaves your account/VPC. The price is that you now own capacity planning,
             scaling, upgrades, and the failure modes in §27. Managed inference (Amazon Bedrock,
@@ -350,18 +350,18 @@ export function DecisionGuide() {
                 <li>Data residency / VPC isolation requires the weights run in your account.</li>
                 <li>You serve many fine-tunes / LoRA adapters off one base (§13).</li>
               </ul>
-              <Box variant="small" color="text-body-secondary">Guidance — see §25 for the full comparison.</Box>
+              <Box variant="small" color="text-body-secondary">Guidance. See §25 for the full comparison.</Box>
             </div>
             <div>
               <Box variant="h3">Use managed (Bedrock) when…</Box>
               <ul>
                 <li>You want an API, not an inference platform to operate.</li>
-                <li>Traffic is spiky or low — you do not want idle GPUs billed by the hour.</li>
+                <li>Traffic is spiky or low, and you do not want idle GPUs billed by the hour.</li>
                 <li>The model you need is already in the catalog.</li>
                 <li>You lack the team to own GPU capacity, scaling, and upgrades.</li>
                 <li>Time-to-first-call matters more than per-token cost at scale.</li>
               </ul>
-              <Box variant="small" color="text-body-secondary">Guidance — see §25 (vLLM on SageMaker &amp; vs Bedrock).</Box>
+              <Box variant="small" color="text-body-secondary">Guidance. See §25 (vLLM on SageMaker &amp; vs Bedrock).</Box>
             </div>
           </ColumnLayout>
         </SpaceBetween>
@@ -379,7 +379,7 @@ export function DecisionGuide() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Every option below runs the <em>same</em> vLLM engine — the choice is the control plane
+            Every option below runs the <em>same</em> vLLM engine; the choice is the control plane
             around it. The two axes that actually decide it are <strong>how your team
             operates</strong> (Python-native vs Kubernetes/operator) and <strong>scale</strong> (one
             replica, one model, one node → a multi-model fleet that autoscales and may
@@ -405,7 +405,7 @@ export function DecisionGuide() {
             <strong>production-stack (§16)</strong>. Kubernetes platform team running a multi-model
             fleet, or you need disaggregation-aware routing → <strong>llm-d / KServe / Gateway API
             Inference Extension (§17)</strong>. Disaggregation (§10) in particular needs a
-            disagg-aware router — that pushes you toward the llm-d/Gateway tier.
+            disagg-aware router, which pushes you toward the llm-d/Gateway tier.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -414,7 +414,7 @@ export function DecisionGuide() {
         header={
           <Header
             variant="h2"
-            description="Two of these are already on. The rest are opt-in — turn each on only when a metric, not a hunch, demands it."
+            description="Two of these are already on. The rest are opt-in: turn each on only when a metric, not a hunch, demands it."
           >
             3. When to turn on the advanced levers
           </Header>
@@ -424,7 +424,7 @@ export function DecisionGuide() {
           <Box variant="p">
             The single most common over-engineering pattern in vLLM deployments is enabling advanced
             levers speculatively. <strong>Prefix caching (§6) and chunked prefill (§4) are on by
-            default</strong> — leave them on. The rest cost complexity and only pay off against a
+            default</strong>; leave them on. The rest cost complexity and only pay off against a
             specific bottleneck. The right trigger for each is a number you are missing, not a feature
             you read about.
           </Box>
@@ -450,13 +450,13 @@ export function DecisionGuide() {
             <SpaceBetween size="s">
               <Box variant="p">
                 <strong>Chunked prefill does not reduce KV memory.</strong> It is a scheduling
-                technique that spreads prefill compute over steps to protect ITL — a 30K-token prompt
+                technique that spreads prefill compute over steps to protect ITL: a 30K-token prompt
                 still reserves KV blocks for all 30K positions. If you are hitting OOM or preemption,
                 chunking will not save you; the memory knobs in §5 and §4 will.
               </Box>
               <Box variant="p">
                 <strong>Disaggregated prefill/decode does not raise throughput.</strong> The vLLM
-                docs state it outright —{' '}
+                docs state it outright:{' '}
                 <em>&quot;Disaggregated prefill DOES NOT improve throughput&quot;</em>{' '}
                 <Link external href="https://docs.vllm.ai/en/stable/features/disagg_prefill/">
                   [Tier-1: vLLM disaggregated-prefilling docs, accessed 2026-06-07]
@@ -483,7 +483,7 @@ export function DecisionGuide() {
         <SpaceBetween size="m">
           <Box variant="p">
             Parallelism is driven by a single forcing question: <strong>what does not
-            fit?</strong> If a model plus its KV cache fits on one GPU, do not shard it at all —
+            fit?</strong> If a model plus its KV cache fits on one GPU, do not shard it at all;
             replicate it (DP) for throughput. When it does not fit, add tensor parallelism within a
             node first (NVLink is the cheapest fabric for TP&apos;s per-step all-reduce), then reach
             across nodes with pipeline parallelism, and use expert parallelism only for
@@ -506,7 +506,7 @@ export function DecisionGuide() {
             <strong>TP</strong> across that node&apos;s GPUs. Exceeds one node →{' '}
             <strong>PP</strong> across nodes (and TP within each node) so the chatty per-layer
             all-reduce stays on NVLink. <strong>MoE</strong> model → add <strong>EP</strong> to
-            distribute experts. Multi-node TP/PP/EP all want a fast inter-node fabric — on AWS that
+            distribute experts. Multi-node TP/PP/EP all want a fast inter-node fabric: on AWS that
             is EFA (§22) with the nodes placed close together (§23).
           </Alert>
         </SpaceBetween>
@@ -529,7 +529,7 @@ export function DecisionGuide() {
             instances give the widest model, kernel, and quantization coverage and the EFA fabric
             that multi-node serving and NIXL KV transfer ride on. Orthogonal to that: as soon as you
             go <strong>multi-node</strong> (cross-node TP/PP/EP) or <strong>disaggregate</strong>,
-            placement stops being free — the nodes must be physically close (§23).
+            placement stops being free: the nodes must be physically close (§23).
           </Box>
           <Table
             variant="embedded"
@@ -543,8 +543,8 @@ export function DecisionGuide() {
           />
           <Alert type="warning" header="Placement is part of the hardware decision">
             For a single instance, intra-node GPU communication is handled by NVLink and placement is
-            irrelevant. The moment you span nodes — multi-node TP/PP/EP, or a prefiller pool feeding a
-            decoder pool over a KV connector — the inter-node hops become the bottleneck. Put those
+            irrelevant. The moment you span nodes (multi-node TP/PP/EP, or a prefiller pool feeding a
+            decoder pool over a KV connector), the inter-node hops become the bottleneck. Put those
             nodes in a <strong>cluster placement group</strong> so they share the same low-latency
             spine (§23). A disaggregated pair on opposite ends of a data center pays a KV-transfer tax
             that can exceed the prefill stall it was meant to remove (§10).
@@ -565,14 +565,14 @@ export function DecisionGuide() {
         <SpaceBetween size="m">
           <Box variant="p">
             Sizing comes <strong>before</strong> any advanced lever. The ceiling on concurrency is
-            not a config value — it is <strong>KV-cache capacity</strong>. After the model weights
+            not a config value: it is <strong>KV-cache capacity</strong>. After the model weights
             and activation workspace are placed, whatever GPU memory is left becomes the block pool,
             and that pool divided by the per-request KV footprint is your real batch-size ceiling.
             The knobs below shape that, but the budget is physics.
           </Box>
 
           <ExpandableSection
-            headerText="KV-memory budget — the rule of thumb"
+            headerText="KV-memory budget: the rule of thumb"
             defaultExpanded
           >
             <SpaceBetween size="s">
@@ -583,18 +583,18 @@ export function DecisionGuide() {
                 number of layers, the number of KV heads, the head dimension, and the bytes per
                 element (2 for FP16/BF16; less if you quantize the KV cache). So the maximum number
                 of concurrent full-length sequences ≈ KV pool ÷ (per-token KV × max sequence length).
-                Long-context workloads burn the pool fastest — that is why context length is itself a
+                Long-context workloads burn the pool fastest, which is why context length is itself a
                 capacity lever (§5).
               </Box>
               <Box variant="p">
-                The cache is laid out in fixed blocks. vLLM&apos;s <code>block_size</code> — &quot;Size
-                of a contiguous cache block in number of tokens&quot; — defaults to{' '}
+                The cache is laid out in fixed blocks. vLLM&apos;s <code>block_size</code> (&quot;Size
+                of a contiguous cache block in number of tokens&quot;) defaults to{' '}
                 <strong>16</strong>{' '}
                 <Link external href="https://docs.vllm.ai/en/latest/api/vllm/config/cache.html">
                   [Tier-1: vLLM CacheConfig API reference, accessed 2026-06-07]
                 </Link>
                 . Smaller blocks waste less on the trailing partial block; larger blocks cut
-                bookkeeping. The default is a deliberate middle — leave it unless profiling says
+                bookkeeping. The default is a deliberate middle; leave it unless profiling says
                 otherwise (§5).
               </Box>
             </SpaceBetween>
@@ -621,7 +621,7 @@ export function DecisionGuide() {
                         </Link>
                       </span>
                     ),
-                    move: 'Raise toward ~0.95 to give the KV pool more room (first remedy for preemption). Lower if you share the GPU or hit OOM at startup — the pool is pre-allocated, so too high leaves no slack for activation spikes (§5).',
+                    move: 'Raise toward ~0.95 to give the KV pool more room (first remedy for preemption). Lower if you share the GPU or hit OOM at startup: the pool is pre-allocated, so too high leaves no slack for activation spikes (§5).',
                   },
                   {
                     knob: <code>max_num_batched_tokens</code>,
@@ -638,7 +638,7 @@ export function DecisionGuide() {
                   {
                     knob: <code>max_num_seqs</code>,
                     start: <span>tune from your KV budget (guidance)</span>,
-                    move: 'Raise when you have spare KV cache and want more concurrent decodes/throughput. Lower when you see preemption/OOM — fewer concurrent sequences need less KV space (§4).',
+                    move: 'Raise when you have spare KV cache and want more concurrent decodes/throughput. Lower when you see preemption/OOM: fewer concurrent sequences need less KV space (§4).',
                   },
                 ]}
               />
@@ -648,7 +648,7 @@ export function DecisionGuide() {
                 <code>max_num_seqs</code> / <code>max_num_batched_tokens</code>; (3) increase{' '}
                 <code>tensor_parallel_size</code> (or <code>pipeline_parallel_size</code>) so weights
                 leave more room per GPU for KV; (4) quantize (§8). These are the same memory levers
-                §4 and §5 describe — chunked prefill is <em>not</em> on this list because it does not
+                §4 and §5 describe; chunked prefill is <em>not</em> on this list because it does not
                 change the KV footprint.
               </Alert>
             </SpaceBetween>
@@ -684,13 +684,13 @@ export function DecisionGuide() {
             <strong>Size first:</strong> compute the KV budget; set{' '}
             <code>gpu_memory_utilization</code> (0.92 default),{' '}
             <code>max_num_batched_tokens</code> (&gt;8192 for throughput),{' '}
-            <code>max_num_seqs</code> from the budget (§4–§6).
+            <code>max_num_seqs</code> from the budget (§4 to §6).
           </Box>
           <Box variant="p">
             <Badge color="blue">6</Badge>{' '}
             <strong>Then levers, only on a missed metric:</strong> prefix caching + chunked prefill
             already on; quantize for memory/cost (§8); spec-decode for latency-bound low-concurrency
-            (§11); disaggregate only for strict separate TTFT/ITL SLOs — <em>not</em> for throughput
+            (§11); disaggregate only for strict separate TTFT/ITL SLOs, <em>not</em> for throughput
             (§10); KV offload for cross-request reuse (§7).
           </Box>
           <Box variant="p">
@@ -702,7 +702,7 @@ export function DecisionGuide() {
       </Container>
 
       <Box variant="small">
-        Sources — <strong>Tier-1 (vLLM official docs):</strong>{' '}
+        Sources. <strong>Tier-1 (vLLM official docs):</strong>{' '}
         <Link external href="https://docs.vllm.ai/en/latest/api/vllm/config/cache.html">
           CacheConfig API reference
         </Link>{' '}
@@ -715,7 +715,7 @@ export function DecisionGuide() {
         <Link external href="https://docs.vllm.ai/en/stable/features/disagg_prefill/">
           disaggregated prefilling
         </Link>{' '}
-        (the &quot;does not improve throughput&quot; statement) — all accessed 2026-06-07. Everything
+        (the &quot;does not improve throughput&quot; statement), all accessed 2026-06-07. Everything
         else in this section is <strong>synthesis / architectural guidance</strong> drawn from the
         preceding sections (cross-referenced inline by number) and is presented as a recommended
         decision order, not as a vendor guarantee. Always benchmark your own workload (§20) and

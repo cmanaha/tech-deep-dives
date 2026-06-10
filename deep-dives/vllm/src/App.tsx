@@ -174,7 +174,7 @@ export function App() {
   return (
     <DeepDiveLayout
       title="vLLM: The LLM Inference Serving Engine"
-      subtitle="A field manual for high-throughput LLM serving — engine internals, distributed and disaggregated serving, the ecosystem, and the AWS deployment paths"
+      subtitle="A field manual for high-throughput LLM serving: engine internals, distributed and disaggregated serving, the ecosystem, and the AWS deployment paths"
       sections={sections}
       activeSection={activeSection}
       onSectionChange={setActiveSection}

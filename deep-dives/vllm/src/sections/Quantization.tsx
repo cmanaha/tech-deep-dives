@@ -42,7 +42,7 @@ const formatRows: FormatRow[] = [
     bits: 'W8A16 / W4A16 (NF4)',
     family: 'Weight-only',
     notes:
-      'On-the-fly weight quantization at load time — no separate prequantized checkpoint needed. Convenient for quick experiments; lower throughput than Marlin-backed paths.',
+      'On-the-fly weight quantization at load time, with no separate prequantized checkpoint needed. Convenient for quick experiments; lower throughput than Marlin-backed paths.',
   },
   {
     format: 'GGUF',
@@ -56,7 +56,7 @@ const formatRows: FormatRow[] = [
     bits: 'W8A8 (8-bit weights + activations)',
     family: 'W8A8',
     notes:
-      'Both weights and activations in INT8 — the activations are quantized too, so the matmul runs in INT8. Prequantized via llm-compressor (SmoothQuant-style). Real compute speedup, not just memory.',
+      'Both weights and activations in INT8: the activations are quantized too, so the matmul runs in INT8. Prequantized via llm-compressor (SmoothQuant-style). A real compute speedup, not only a memory saving.',
   },
   {
     format: 'FP8 W8A8 (E4M3)',
@@ -84,7 +84,7 @@ const formatRows: FormatRow[] = [
     bits: 'KV entries in FP8 (E4M3 / E5M2)',
     family: 'KV cache',
     notes:
-      'Orthogonal to weight quantization — shrinks the per-request KV footprint so more concurrent sequences fit. Enabled separately via kv_cache_dtype.',
+      'Orthogonal to weight quantization: it shrinks the per-request KV footprint so more concurrent sequences fit. Enabled separately via kv_cache_dtype.',
   },
 ];
 
@@ -215,7 +215,7 @@ export function Quantization() {
         header={
           <Header
             variant="h1"
-            description="vLLM's quantization support surface — what the formats buy you in production, which run on your GPU, and how to turn them on"
+            description="vLLM's quantization support surface: what the formats buy you in production, which run on your GPU, and how to turn them on"
           >
             8. Quantization &amp; Precision
           </Header>
@@ -226,7 +226,7 @@ export function Quantization() {
             <strong>Why quantize for serving.</strong> Two scarce resources bound
             an inference deployment: HBM capacity and HBM bandwidth. Quantization
             attacks both. Storing weights in 8 or 4 bits instead of 16 shrinks the
-            parameter footprint by 2&ndash;4x, which either lets a model fit on
+            parameter footprint by 2-4x, which either lets a model fit on
             fewer GPUs or frees HBM that the KV cache can then use for more
             concurrent requests. Because decode is memory-bandwidth bound (Section
             2), moving fewer bytes per parameter per token also raises throughput
@@ -235,7 +235,7 @@ export function Quantization() {
             model.
           </Box>
           <Box variant="p">
-            <strong>What this section is &mdash; and is not.</strong> This is the
+            <strong>What this section is, and is not.</strong> This is the
             practitioner&apos;s map of vLLM&apos;s quantization{' '}
             <em>support surface</em>: the families it accepts, which run on which
             silicon, and the flags that enable them. It does not re-derive the
@@ -245,10 +245,10 @@ export function Quantization() {
             <Link external href="../silicon-memory-inference/">
               Silicon, Memory &amp; Inference
             </Link>{' '}
-            deep dive (Section 24, &ldquo;Quantization and Precision&rdquo;). For
+            deep dive (Section 24, "Quantization and Precision"). For
             how vLLM picks the concrete kernel for a given format at runtime, see
-            the <strong>Inside the Codebase</strong> section, &ldquo;Model Layer,
-            Quantization &amp; LoRA&rdquo; tab &mdash; this section stops at the
+            the <strong>Inside the Codebase</strong> section, "Model Layer,
+            Quantization &amp; LoRA" tab. This section stops at the{' '}
             <code>--quantization</code> flag; that tab follows it down to{' '}
             <code>get_quant_method</code> and the kernel priority lists.
           </Box>
@@ -261,7 +261,7 @@ export function Quantization() {
               quantization documentation
             </Link>{' '}
             as accessed 2026-06-07. vLLM ships roughly bi-weekly and this matrix
-            moves &mdash; re-verify against the docs before relying on a specific
+            moves. Re-verify against the docs before relying on a specific
             cell.
           </Box>
         </SpaceBetween>
@@ -280,10 +280,10 @@ export function Quantization() {
         <SpaceBetween size="m">
           <Box variant="p">
             Every quantization format in vLLM can be located by answering two
-            questions. <strong>How many bits per weight?</strong> &mdash; 8, 4, or
+            questions. <strong>How many bits per weight?</strong> 8, 4, or
             (on Blackwell) 4-bit float. And <strong>are the activations
-            quantized too?</strong> &mdash; the difference between
-            &ldquo;weight-only&rdquo; and &ldquo;W8A8&rdquo;. That second axis is
+            quantized too?</strong> This is the difference between
+            "weight-only" and "W8A8". That second axis is
             the one practitioners most often miss, and it determines whether you
             get a real compute speedup or only a memory saving.
           </Box>
@@ -304,7 +304,7 @@ export function Quantization() {
               <Box variant="p">
                 Both weights <em>and</em> activations are quantized, so the matmul
                 itself executes in INT8 or FP8 on dedicated tensor cores. This is a
-                true compute speedup on top of the memory saving &mdash; but it
+                true compute speedup on top of the memory saving, but it
                 requires the hardware to have those low-precision tensor cores
                 (Ada/Hopper for FP8) and is more sensitive to activation outliers,
                 which is why W8A8 checkpoints lean on per-token dynamic activation
@@ -317,7 +317,7 @@ export function Quantization() {
             cache is orthogonal to weight/activation quantization: it shrinks the
             per-request KV footprint rather than the weights, so it composes with
             any of the formats above. You can run BF16 weights with an FP8 KV
-            cache, or FP8 weights with a BF16 KV cache &mdash; they are independent
+            cache, or FP8 weights with a BF16 KV cache. They are independent
             flags. See Section 5 (PagedAttention &amp; KV-Cache) for why KV
             footprint is the binding constraint on batch size.
           </Alert>
@@ -379,7 +379,7 @@ export function Quantization() {
         header={
           <Header
             variant="h2"
-            description="Which formats run on which NVIDIA GPU generation (and AMD) — the cell that decides your options"
+            description="Which formats run on which NVIDIA GPU generation (and AMD): the cell that decides your options"
           >
             Hardware-support matrix
           </Header>
@@ -422,15 +422,15 @@ export function Quantization() {
             per the docs, it does not support Marlin MXFP4. FP8 W8A8 is the only
             row supported on AMD GPU (MI300-class) in this matrix. Blackwell-class
             low-bit float formats (NVFP4/MXFP4/MXFP8) are documented on their own
-            method pages rather than in this generation grid &mdash; treat
+            method pages rather than in this generation grid. Treat
             Blackwell support as additive to the Hopper column and confirm against
             the per-method page.
           </Box>
           <Alert type="warning">
             <strong>Read the caveats, not just the checkmarks.</strong> A green
-            cell means &ldquo;vLLM has a kernel path for this format on this
-            generation,&rdquo; not &ldquo;it is fast.&rdquo; On Ampere/Turing, FP8
-            checkpoints fall back to weight-only W8A16 via Marlin &mdash; correct
+            cell means "vLLM has a kernel path for this format on this
+            generation," not "it is fast." On Ampere/Turing, FP8
+            checkpoints fall back to weight-only W8A16 via Marlin, with correct
             output, but you lose the FP8 compute speedup. Always match the format
             to silicon that has native tensor-core support for it.
           </Alert>
@@ -458,7 +458,7 @@ export function Quantization() {
               <Box variant="p">
                 Prequantized checkpoints from the Hub carry a quantization config
                 in their metadata (for example a <code>quantization_config</code>{' '}
-                block in <code>config.json</code>). vLLM auto-detects it &mdash; you
+                block in <code>config.json</code>). vLLM auto-detects it, so you
                 just point at the model and serve. This is the path for any AWQ,
                 GPTQ, FP8 or NVFP4 checkpoint someone has already produced. No flag
                 needed; the config in the checkpoint is the source of truth.
@@ -471,7 +471,7 @@ export function Quantization() {
                 <code>quantization=&quot;fp8&quot;</code>) tells vLLM to quantize an
                 unquantized checkpoint <em>online</em> at load time, or to force a
                 specific method/backend. Online FP8 uses a per-tensor scale and is
-                the zero-friction way to get FP8 from a BF16 model &mdash; though the
+                the zero-friction way to get FP8 from a BF16 model, though the
                 docs note latency gains are more limited than a properly
                 prequantized checkpoint.
               </Box>
@@ -481,10 +481,10 @@ export function Quantization() {
             <strong>KV cache is enabled separately.</strong> Quantizing the KV
             cache is its own flag: <code>--kv-cache-dtype fp8</code> (engine arg{' '}
             <code>kv_cache_dtype=&quot;fp8&quot;</code>), with{' '}
-            <code>auto</code> meaning &ldquo;use the model&apos;s native
-            dtype.&rdquo; Scales can be left at 1.0, estimated on-the-fly during
-            warmup (<code>calculate_kv_scales=True</code>), or &mdash; for best
-            accuracy &mdash; baked in from a dataset calibration via llm-compressor.
+            <code>auto</code> meaning "use the model&apos;s native
+            dtype." Scales can be left at 1.0, estimated on-the-fly during
+            warmup (<code>calculate_kv_scales=True</code>), or (for best
+            accuracy) baked in from a dataset calibration via llm-compressor.
             Source:{' '}
             <Link
               external
@@ -499,7 +499,7 @@ export function Quantization() {
             quantization is convenient and needs no separate artifact, but it
             applies a coarse (per-tensor) scheme at load time and leaves
             throughput on the table. Prequantized checkpoints carry per-channel /
-            per-group scales computed offline with calibration data &mdash; better
+            per-group scales computed offline with calibration data, giving better
             accuracy and better speed, at the cost of producing the checkpoint
             once. For production, prefer prequantized; for a quick fit-it-on-the-GPU
             experiment, online is fine.
@@ -520,9 +520,9 @@ export function Quantization() {
         <SpaceBetween size="m">
           <Box variant="p">
             Work backward from the constraint. The decision is rarely
-            &ldquo;which format is best&rdquo; in the abstract &mdash; it is
-            &ldquo;what does my silicon support, and how much accuracy can this
-            workload give up?&rdquo;
+            "which format is best" in the abstract. It is
+            "what does my silicon support, and how much accuracy can this
+            workload give up?"
           </Box>
           <DecisionDiagram />
           <ColumnLayout columns={3} variant="text-grid">
@@ -532,13 +532,13 @@ export function Quantization() {
                 The matrix prunes the option set before accuracy even enters. Ada
                 or Hopper: FP8 W8A8 is the default high-throughput path. Ampere or
                 older: INT4/INT8 weight-only (AWQ/GPTQ on Marlin). Blackwell: the
-                FP4 microscaling formats unlock the best accuracy-per-byte.
+                FP4 microscaling formats give the best accuracy-per-byte.
               </Box>
             </div>
             <div>
               <Box variant="h3">Then accuracy budget</Box>
               <Box variant="p">
-                8-bit (FP8/INT8) is the conservative choice &mdash; the docs cite up
+                8-bit (FP8/INT8) is the conservative choice: the docs cite up
                 to ~1.6x throughput with minimal accuracy impact for FP8. 4-bit
                 weight-only saves the most memory but costs more accuracy and
                 benefits most from calibration (AWQ&apos;s activation-aware
@@ -552,7 +552,7 @@ export function Quantization() {
                 Weight-only formats help most when weight bytes dominate (small
                 batch, bandwidth-bound decode). W8A8 adds compute speedup that
                 shows up at larger batches. Layer FP8 KV cache on top when KV
-                footprint &mdash; not weights &mdash; is what caps your batch size.
+                footprint, not weights, is what caps your batch size.
               </Box>
             </div>
           </ColumnLayout>
@@ -564,8 +564,8 @@ export function Quantization() {
             >
               docs.vllm.ai/features/quantization/fp8
             </Link>
-            , accessed 2026-06-07 (&ldquo;up to a 1.6x improvement in throughput
-            with minimal impact on accuracy&rdquo;). Treat the exact multiplier as
+            , accessed 2026-06-07 ("up to a 1.6x improvement in throughput
+            with minimal impact on accuracy"). Treat the exact multiplier as
             model- and workload-dependent.
           </Box>
         </SpaceBetween>
@@ -573,7 +573,7 @@ export function Quantization() {
 
       <Container header={<Header variant="h2">Going deeper</Header>}>
         <SpaceBetween size="s">
-          <ExpandableSection headerText="Prequantized vs online — what actually differs in the checkpoint">
+          <ExpandableSection headerText="Prequantized vs online: what actually differs in the checkpoint">
             <SpaceBetween size="s">
               <Box variant="p">
                 A prequantized checkpoint ships the low-precision weights{' '}
@@ -581,11 +581,11 @@ export function Quantization() {
                 llm-compressor and AutoAWQ run a calibration pass over a small
                 dataset to choose per-channel or per-group scales that minimise the
                 quantization error where it matters most. vLLM loads those weights
-                and scales directly &mdash; no quantization happens at serve time.
+                and scales directly. No quantization happens at serve time.
               </Box>
               <Box variant="p">
                 Online quantization (<code>--quantization fp8</code> on a BF16
-                model) computes scales at load time with no calibration data &mdash;
+                model) computes scales at load time with no calibration data,
                 typically a single per-tensor scale per weight. It is strictly
                 less precise than an offline-calibrated checkpoint and, per the FP8
                 docs, yields more limited latency improvement. The mental model:
@@ -603,23 +603,23 @@ export function Quantization() {
                 checkpoint can dispatch to DeepGEMM or CUTLASS on Hopper/Blackwell,
                 fall back to Marlin on older silicon, or to a portable Triton
                 kernel as a last resort. vLLM picks the highest-priority kernel
-                whose minimum compute capability the device satisfies &mdash; which
+                whose minimum compute capability the device satisfies, which
                 is why an AWQ checkpoint runs on Marlin on an A100 but the same
                 logical format may take a different path on an H100.
               </Box>
               <Box variant="p">
-                That selection logic &mdash;{' '}
+                That selection logic (
                 <code>quant_config.get_quant_method()</code>, the per-format kernel
-                priority lists, and the capability gating &mdash; is walked
+                priority lists, and the capability gating) is walked
                 file-by-file in the <strong>Inside the Codebase</strong> section,
-                &ldquo;Model Layer, Quantization &amp; LoRA&rdquo; tab. This section
+                "Model Layer, Quantization &amp; LoRA" tab. This section
                 tells you which formats exist and how to ask for them; that tab
                 shows how the request becomes a concrete GEMM call.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
 
-          <ExpandableSection headerText="The number formats themselves (FP8 / NVFP4 / MXFP4) — where to go">
+          <ExpandableSection headerText="The number formats themselves (FP8 / NVFP4 / MXFP4): where to go">
             <Box variant="p">
               This section deliberately treats the formats as a support surface and
               does not re-derive the bit layouts. FP8 E4M3 vs E5M2 (mantissa vs
@@ -629,8 +629,8 @@ export function Quantization() {
               <Link external href="../silicon-memory-inference/">
                 Silicon, Memory &amp; Inference
               </Link>{' '}
-              deep dive, Section 24 (&ldquo;Quantization and Precision&rdquo;) and
-              Section 13 (&ldquo;NVIDIA Blackwell&rdquo;). Read those for the{' '}
+              deep dive, Section 24 ("Quantization and Precision") and
+              Section 13 ("NVIDIA Blackwell"). Read those for the{' '}
               <em>why these formats exist</em>; read this for{' '}
               <em>how vLLM lets you use them</em>.
             </Box>

@@ -155,7 +155,7 @@ function ForwardPipelineDiagram() {
       </defs>
       <text x={10} y={124} fontSize={11} fill="#5f6b7a">
         {
-          'Two-phase split: execute_model() runs through "model forward" and returns None; sample_tokens() then drains the stashed ExecuteModelState — enabling async scheduling to launch the next batch while this one samples.'
+          'Two-phase split: execute_model() runs through "model forward" and returns None; sample_tokens() then drains the stashed ExecuteModelState, enabling async scheduling to launch the next batch while this one samples.'
         }
       </text>
     </svg>
@@ -310,7 +310,7 @@ export function CodebaseExecution() {
         header={
           <Header
             variant="h2"
-            description="The execution layer — how one scheduler step becomes a GPU forward pass and a row of sampled tokens (vLLM commit 15652a6b, accessed 2026-06-07)"
+            description="The execution layer: how one scheduler step becomes a GPU forward pass and a row of sampled tokens (vLLM commit 15652a6b, accessed 2026-06-07)"
           >
             Execution &amp; Attention
           </Header>
@@ -322,15 +322,15 @@ export function CodebaseExecution() {
             <em>what</em> runs each step; the execution layer makes it actually
             happen on the GPU. Two classes carry the weight.{' '}
             <code>Worker</code> (<code>vllm/v1/worker/gpu_worker.py</code>) owns
-            the physical device — it sets the CUDA device, loads weights,
+            the physical device: it sets the CUDA device, loads weights,
             profiles available memory, and on multi-node deployments handles
             pipeline-parallel send/receive of intermediate tensors. The{' '}
             <code>GPUModelRunner</code> (
             <code>vllm/v1/worker/gpu_model_runner.py</code>, roughly 7,560
             lines) is the workhorse: it turns a <code>SchedulerOutput</code> into
             packed input tensors, builds attention metadata, runs the model
-            forward, and samples. Almost every execution-time feature — CUDA
-            graphs, speculative decoding, LoRA, structured output, KV transfer —
+            forward, and samples. Almost every execution-time feature (CUDA
+            graphs, speculative decoding, LoRA, structured output, KV transfer)
             threads through this one file.
           </Box>
           <Box variant="p">
@@ -343,7 +343,7 @@ export function CodebaseExecution() {
             <code>use_v2_model_runner</code> reads the{' '}
             <code>VLLM_USE_V2_MODEL_RUNNER</code> env var, and when unset falls
             back to a per-model default that also requires Triton and rejects
-            unsupported features. V2 is opt-in and under active development — its
+            unsupported features. V2 is opt-in and under active development. Its
             README simply says {'"under active development"'} and names a
             maintainer.
           </Box>
@@ -373,7 +373,7 @@ export function CodebaseExecution() {
                 <code>_prepare_inputs()</code> packs the scheduled tokens into
                 flat tensors. It uses <code>np.repeat</code> /{' '}
                 <code>cumsum</code> tricks to build per-token request indices and
-                cumulative sequence-length offsets — the ragged layout that
+                cumulative sequence-length offsets, the ragged layout that
                 varlen attention kernels consume. Block tables are committed
                 first so the host-to-device copy overlaps the CPU work.
               </Box>
@@ -382,7 +382,7 @@ export function CodebaseExecution() {
               <Box variant="h3">Attention metadata</Box>
               <Box variant="p">
                 <code>_build_attention_metadata()</code> produces, per KV-cache
-                group, the per-backend metadata object — query start locations,
+                group, the per-backend metadata object: query start locations,
                 max sequence lengths, the <code>slot_mapping</code> that maps
                 each token to its physical KV-cache slot, and the block table.
                 The forward then runs inside{' '}
@@ -400,11 +400,11 @@ export function CodebaseExecution() {
           <Box variant="p">
             vLLM does not hardcode an attention kernel. The registry (
             <code>vllm/v1/attention/backends/registry.py</code>) enumerates 28
-            named backends in <code>AttentionBackendEnum</code> — FlashAttention,
+            named backends in <code>AttentionBackendEnum</code>: FlashAttention,
             FlashInfer, the FlashMLA / CUTLASS-MLA / Triton-MLA family, ROCm and
             XPU variants, plus placeholders like <code>TORCH_SDPA</code> (used
             only for vision encoders), <code>NO_ATTENTION</code>, and{' '}
-            <code>CUSTOM</code> — and a separate{' '}
+            <code>CUSTOM</code>. A separate{' '}
             <code>MambaAttentionBackendEnum</code> holds six linear-attention /
             state-space backends. Each enum value is a class path that{' '}
             <code>register_backend()</code> can override at runtime.
@@ -418,7 +418,7 @@ export function CodebaseExecution() {
             <code>get_attn_backend_cls()</code> walks that list and asks each
             backend&apos;s <code>validate_configuration()</code> whether it
             supports the current head size, dtype, KV-cache dtype, block size,
-            and so on — the first that returns no objections wins. An explicit{' '}
+            and so on. The first that returns no objections wins. An explicit{' '}
             <code>--attention-backend</code> short-circuits the whole tree (and
             errors loudly if that backend is invalid).
           </Box>
@@ -460,11 +460,11 @@ export function CodebaseExecution() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h3">CUDA graphs: why FA3 unlocks more capture</Header>}>
+      <Container header={<Header variant="h3">CUDA graphs: why FA3 enables more capture</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
             CUDA graphs replay a recorded sequence of kernel launches with
-            near-zero CPU launch overhead — decisive for small-batch decode where
+            near-zero CPU launch overhead, decisive for small-batch decode where
             the GPU would otherwise idle waiting on Python. But a captured graph
             is shape-rigid, so each backend declares how much batch variety its
             graph can tolerate via the <code>AttentionCGSupport</code> enum (
@@ -481,7 +481,7 @@ export function CodebaseExecution() {
                 FA2 captures graphs with <code>max_query_len=1</code>. Those
                 graphs work for uniform decode (and, with spec-decode, uniform
                 multi-token decode) but <strong>not</strong> for a batch that
-                mixes prefill and decode — a quirk of FA2&apos;s packed-GQA
+                mixes prefill and decode, a quirk of FA2&apos;s packed-GQA
                 handling for the single-token case. So FA2 drops down to a
                 piecewise-plus-full capture strategy.
               </Box>
@@ -508,7 +508,7 @@ export function CodebaseExecution() {
             </code>{' '}
             in <code>backends/flash_attn.py</code>. The model runner later
             reduces over all attention layers to a single{' '}
-            <code>min_cg_support</code> — the weakest backend in the model caps
+            <code>min_cg_support</code>: the weakest backend in the model caps
             what graphs the whole model can use.
           </Alert>
         </SpaceBetween>
@@ -543,8 +543,8 @@ export function CodebaseExecution() {
                 <code>flash_attn_varlen_func(...)</code>, fed the cumulative
                 query offsets (<code>cu_seqlens_q</code>), per-sequence KV
                 lengths, and the <code>block_table</code>. The kernel gathers
-                each sequence&apos;s scattered KV blocks on the fly — no
-                contiguous copy — so the ragged, paged layout is consumed
+                each sequence&apos;s scattered KV blocks on the fly (no
+                contiguous copy), so the ragged, paged layout is consumed
                 directly by the fused attention kernel.
               </Box>
             </div>
@@ -578,7 +578,7 @@ export function CodebaseExecution() {
             carries an explicit note that{' '}
             {'"V1 Model Runner does not fully support async scheduling with PP"'},
             and <code>max_concurrent_batches</code> returns different values for
-            V1 vs V2 to compensate — one of several places the older runner shows
+            V1 vs V2 to compensate, one of several places the older runner shows
             its seams.
           </Alert>
         </SpaceBetween>
@@ -599,9 +599,9 @@ export function CodebaseExecution() {
                 Right above the <code>UNIFORM_BATCH</code> assignment in{' '}
                 <code>backends/flash_attn.py</code>:{' '}
                 {
-                  '"There’s probably a better way to describe this using AttentionCGSupport but for now just set it to UNIFORM_BATCH ... TODO(luka, lucas): audit FA2"'
-                }{' '}
-                — with a linked tracking issue. The current value is a deliberate
+                  '"There\'s probably a better way to describe this using AttentionCGSupport but for now just set it to UNIFORM_BATCH ... TODO(luka, lucas): audit FA2"'
+                }
+                , with a linked tracking issue. The current value is a deliberate
                 drop-down, not a clean classification.
               </Box>
               <Box variant="p">

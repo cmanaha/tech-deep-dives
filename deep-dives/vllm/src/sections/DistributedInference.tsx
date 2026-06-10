@@ -19,14 +19,14 @@ interface AxisRow {
 const axisRows: AxisRow[] = [
   {
     axis: 'Tensor parallelism (TP)',
-    splits: 'Each weight matrix is sharded across GPUs — every GPU holds a slice of every layer.',
+    splits: 'Each weight matrix is sharded across GPUs, so every GPU holds a slice of every layer.',
     flag: '--tensor-parallel-size',
     comms: 'All-reduce on every layer (twice per transformer block). Highest collective frequency of the four axes.',
     reach: 'Within one node, over the fast intra-node fabric.',
   },
   {
     axis: 'Pipeline parallelism (PP)',
-    splits: 'Layers are split into contiguous stages — each GPU/node holds whole layers, not slices.',
+    splits: 'Layers are split into contiguous stages; each GPU/node holds whole layers, not slices.',
     flag: '--pipeline-parallel-size',
     comms: 'Point-to-point activation hand-off between adjacent stages. Low volume, but introduces pipeline bubbles.',
     reach: 'Across nodes, where the inter-node link is the bottleneck.',
@@ -36,11 +36,11 @@ const axisRows: AxisRow[] = [
     splits: 'Full (or TP/PP-sharded) model replicas, each serving an independent slice of the request stream.',
     flag: '--data-parallel-size',
     comms: 'None for dense models; for MoE, DP ranks synchronize each forward pass (see below).',
-    reach: 'Anywhere — replicas need no fast interconnect between them unless MoE couples them.',
+    reach: 'Anywhere. Replicas need no fast interconnect between them unless MoE couples them.',
   },
   {
     axis: 'Expert parallelism (EP)',
-    splits: 'MoE experts are distributed across GPUs — each rank owns a subset of the experts.',
+    splits: 'MoE experts are distributed across GPUs, so each rank owns a subset of the experts.',
     flag: '--enable-expert-parallel',
     comms: 'All-to-all dispatch/combine to route tokens to the GPU that owns each chosen expert.',
     reach: 'Within and across nodes; the all-to-all is the dominant cost at scale.',
@@ -56,7 +56,7 @@ interface DecisionRow {
 const decisionRows: DecisionRow[] = [
   {
     symptom: 'Model fits on one GPU.',
-    reach: 'None — single GPU. Scale out with DP replicas only if you need more throughput.',
+    reach: 'None; single GPU. Scale out with DP replicas only if you need more throughput.',
     why: 'The docs are explicit: "if the model fits on a single GPU, distributed inference is probably unnecessary." Adding parallelism only buys collective overhead.',
   },
   {
@@ -66,7 +66,7 @@ const decisionRows: DecisionRow[] = [
   },
   {
     symptom: 'GPU count does not evenly divide the model.',
-    reach: 'Pipeline parallelism (PP) — alone or stacked on TP.',
+    reach: 'Pipeline parallelism (PP), alone or stacked on TP.',
     why: '"enable pipeline parallelism, which splits the model along layers and supports uneven splits." TP requires the shard dimension to divide evenly; PP does not.',
   },
   {
@@ -81,7 +81,7 @@ const decisionRows: DecisionRow[] = [
   },
   {
     symptom: 'Engine is saturated but each replica fits; you need more QPS.',
-    reach: 'Data parallelism (DP) — add replicas.',
+    reach: 'Data parallelism (DP): add replicas.',
     why: 'DP multiplies throughput by running independent replicas behind one endpoint (internal load balancing) or behind your own balancer (external).',
   },
   {
@@ -98,7 +98,7 @@ export function DistributedInference() {
         header={
           <Header
             variant="h1"
-            description="Four ways to spread one model — or many copies of it — across GPUs and nodes, and how to pick the right combination."
+            description="Four ways to spread one model (or many copies of it) across GPUs and nodes, and how to pick the right combination."
           >
             9. Distributed Inference
           </Header>
@@ -107,9 +107,9 @@ export function DistributedInference() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>The decision you are actually making:</strong> distributed inference is
-            not one switch. It is a choice among four orthogonal axes —{' '}
+            not one switch. It is a choice among four orthogonal axes ({' '}
             <strong>tensor</strong>, <strong>pipeline</strong>, <strong>data</strong>, and{' '}
-            <strong>expert</strong> parallelism — each answering a different question. Tensor
+            <strong>expert</strong> parallelism), each answering a different question. Tensor
             and pipeline parallelism exist because a model is <em>too big to fit</em>; data
             parallelism exists because you need <em>more throughput</em>; expert parallelism
             exists because Mixture-of-Experts (MoE) models have a fundamentally different
@@ -118,10 +118,10 @@ export function DistributedInference() {
           </Box>
           <Box variant="p">
             <strong>The first rule is restraint.</strong> The vLLM parallelism guide opens
-            with it: &ldquo;if the model fits on a single GPU, distributed inference is
-            probably unnecessary.&rdquo; Every axis you add buys a collective operation you
+            with it: "if the model fits on a single GPU, distributed inference is
+            probably unnecessary." Every axis you add buys a collective operation you
             did not have before. The job is to reach for the minimum parallelism that makes
-            the model fit and the throughput land — not the maximum the cluster allows.{' '}
+            the model fit and the throughput land, not the maximum the cluster allows.{' '}
             <Link
               external
               href="https://docs.vllm.ai/en/latest/serving/parallelism_scaling/"
@@ -131,12 +131,12 @@ export function DistributedInference() {
           </Box>
           <Alert type="info">
             This section is the practitioner&apos;s map: what each axis is, when to reach for
-            it, and which flag turns it on. The <em>code</em> behind it — vLLM&apos;s{' '}
+            it, and which flag turns it on. The <em>code</em> behind it (vLLM&apos;s{' '}
             <code>parallel_state</code>, the <code>GroupCoordinator</code> that owns each
-            process group, and the KV-transfer connectors — lives in the{' '}
+            process group, and the KV-transfer connectors) lives in the{' '}
             <strong>Inside the Codebase &rarr; Distributed &amp; KV Transfer</strong> tab. The{' '}
-            <em>physics</em> of the collectives — NVLink versus the inter-node fabric, why an
-            all-reduce wants intra-node bandwidth and an all-to-all stresses scale-out — is
+            <em>physics</em> of the collectives, NVLink versus the inter-node fabric, why an
+            all-reduce wants intra-node bandwidth and an all-to-all stresses scale-out, is
             owned by the sibling <strong>Silicon, Memory &amp; Inference</strong> deep dive.
             This section does not re-derive either; it tells you which knob to turn.
           </Alert>
@@ -176,7 +176,7 @@ export function DistributedInference() {
             ]}
           />
           <Box variant="small">
-            Flags and the &ldquo;too big &rarr; TP, too big for a node &rarr; TP+PP&rdquo;
+            Flags and the "too big &rarr; TP, too big for a node &rarr; TP+PP"
             reasoning are from the{' '}
             <Link
               external
@@ -241,7 +241,7 @@ export function DistributedInference() {
               {/* Node 0 (pipeline stage 0) */}
               <rect x="20" y="44" width="330" height="150" rx="10" className="node" />
               <text x="32" y="64" className="lbl">
-                Node 0 — pipeline stage 0 (layers 0–N/2)
+                Node 0: pipeline stage 0 (layers 0 to N/2)
               </text>
               {[0, 1, 2, 3].map((i) => (
                 <g key={`n0-${i}`}>
@@ -257,13 +257,13 @@ export function DistributedInference() {
               {/* TP all-reduce link node 0 */}
               <line x1="68" y1="158" x2="296" y2="158" className="tp" />
               <text x="182" y="180" textAnchor="middle" className="tag" fill="#1d8102">
-                TP all-reduce (every layer) — fast intra-node fabric
+                TP all-reduce (every layer): fast intra-node fabric
               </text>
 
               {/* Node 1 (pipeline stage 1) */}
               <rect x="410" y="44" width="330" height="150" rx="10" className="node" />
               <text x="422" y="64" className="lbl">
-                Node 1 — pipeline stage 1 (layers N/2–N)
+                Node 1: pipeline stage 1 (layers N/2 to N)
               </text>
               {[0, 1, 2, 3].map((i) => (
                 <g key={`n1-${i}`}>
@@ -278,7 +278,7 @@ export function DistributedInference() {
               ))}
               <line x1="458" y1="158" x2="686" y2="158" className="tp" />
               <text x="572" y="180" textAnchor="middle" className="tag" fill="#1d8102">
-                TP all-reduce (every layer) — fast intra-node fabric
+                TP all-reduce (every layer): fast intra-node fabric
               </text>
 
               {/* PP activation hand-off across nodes */}
@@ -287,7 +287,7 @@ export function DistributedInference() {
                 PP
               </text>
               <text x="380" y="220" textAnchor="middle" className="sub">
-                Pipeline hand-off: activations only, at the stage boundary — inter-node link
+                Pipeline hand-off: activations only, at the stage boundary, inter-node link
               </text>
 
               {/* DP replication */}
@@ -296,7 +296,7 @@ export function DistributedInference() {
                 Data parallelism: replicate this entire 2-node unit for throughput
               </text>
               <text x="380" y="294" textAnchor="middle" className="sub">
-                Replica 1 · Replica 2 · … · Replica D — each serves an independent slice of the request stream
+                Replica 1 · Replica 2 · … · Replica D, each serving an independent slice of the request stream
               </text>
 
               <text x="380" y="336" textAnchor="middle" className="sub">
@@ -309,9 +309,9 @@ export function DistributedInference() {
             </svg>
           </Box>
           <Box variant="small" textAlign="center">
-            Conceptual layout. The composition rule &mdash; &ldquo;Set{' '}
+            Conceptual layout. The composition rule, "Set{' '}
             <code>tensor_parallel_size</code> to the number of GPUs per node and{' '}
-            <code>pipeline_parallel_size</code> to the number of nodes&rdquo; &mdash; is from
+            <code>pipeline_parallel_size</code> to the number of nodes," is from
             the{' '}
             <Link
               external
@@ -335,15 +335,15 @@ export function DistributedInference() {
             <div>
               <Box variant="h3">Tensor parallelism (shard within a layer)</Box>
               <Box variant="p">
-                Reach for TP first when &ldquo;the model is too large to fit on a single
-                GPU&rdquo; and the GPUs sit in one node. Each weight matrix is split across
+                Reach for TP first when "the model is too large to fit on a single
+                GPU" and the GPUs sit in one node. Each weight matrix is split across
                 GPUs, so every GPU does a fraction of every layer&apos;s math, then the ranks{' '}
                 <strong>all-reduce on each layer</strong> to recombine. That collective is
                 frequent and latency-sensitive, which is exactly why TP belongs on the fast
-                intra-node fabric and why the docs warn that raising it &ldquo;may cause
-                excessive synchronization overhead.&rdquo; A useful side effect: higher TP
-                gives &ldquo;each GPU ... more memory available for KV cache,&rdquo; so TP is
-                also a lever when KV cache &mdash; not weights &mdash; is your bottleneck.{' '}
+                intra-node fabric and why the docs warn that raising it "may cause
+                excessive synchronization overhead." A useful side effect: higher TP
+                gives "each GPU ... more memory available for KV cache," so TP is
+                also a lever when KV cache, not weights, is your bottleneck.{' '}
                 <Link
                   external
                   href="https://docs.vllm.ai/en/latest/configuration/optimization/"
@@ -355,16 +355,16 @@ export function DistributedInference() {
             <div>
               <Box variant="h3">Pipeline parallelism (split the layers)</Box>
               <Box variant="p">
-                Reach for PP &ldquo;when you&apos;ve already maxed out efficient tensor
-                parallelism but need to distribute,&rdquo; or &ldquo;for very deep and narrow
-                models where layer distribution is more efficient.&rdquo; PP assigns whole
+                Reach for PP "when you&apos;ve already maxed out efficient tensor
+                parallelism but need to distribute," or "for very deep and narrow
+                models where layer distribution is more efficient." PP assigns whole
                 contiguous layers to each stage and only hands activations across stage
-                boundaries &mdash; cheap traffic, which is why PP is the axis you stretch{' '}
-                <strong>across nodes</strong>. Two practical edges: it &ldquo;supports uneven
-                splits&rdquo; (use it when your GPU count doesn&apos;t evenly divide the model),
-                and it introduces pipeline bubbles, so the docs flag &ldquo;latency
-                penalties.&rdquo; It also reduces per-GPU weight memory, &ldquo;indirectly
-                leaving more memory available for KV cache.&rdquo;{' '}
+                boundaries (cheap traffic), which is why PP is the axis you stretch{' '}
+                <strong>across nodes</strong>. Two practical edges: it "supports uneven
+                splits" (use it when your GPU count doesn&apos;t evenly divide the model),
+                and it introduces pipeline bubbles, so the docs flag "latency
+                penalties." It also reduces per-GPU weight memory, "indirectly
+                leaving more memory available for KV cache."{' '}
                 <Link
                   external
                   href="https://docs.vllm.ai/en/latest/configuration/optimization/"
@@ -383,12 +383,12 @@ export function DistributedInference() {
             TP and PP make a model fit; <strong>data parallelism</strong> makes it serve more.
             DP runs independent replicas of the model (each replica may itself be TP/PP-sharded)
             and spreads the request stream across them. Enable it with{' '}
-            <code>--data-parallel-size</code> &mdash; the docs note it &ldquo;can be configured
+            <code>--data-parallel-size</code>. The docs note it "can be configured
             by simply including e.g. <code>--data-parallel-size=4</code> in the{' '}
-            <code>vllm serve</code> command line.&rdquo; vLLM can balance across replicas
-            itself behind a single endpoint (&ldquo;self-contained data parallel deployments
-            that expose a single API endpoint&rdquo;) or defer to your own balancer, which
-            &ldquo;can make sense&rdquo; for larger-scale deployments.{' '}
+            <code>vllm serve</code> command line." vLLM can balance across replicas
+            itself behind a single endpoint ("self-contained data parallel deployments
+            that expose a single API endpoint") or defer to your own balancer, which
+            "can make sense" for larger-scale deployments.{' '}
             <Link
               external
               href="https://docs.vllm.ai/en/latest/serving/data_parallel_deployment/"
@@ -402,12 +402,12 @@ export function DistributedInference() {
             place to shard: <code>--enable-expert-parallel</code> distributes the experts
             across GPUs, and tokens are routed by an all-to-all to whichever GPU owns their
             chosen expert. The shape that pairs with it is data-parallel attention: for MoE
-            models &ldquo;it can be advantageous to use data parallel for the attention layers
-            and expert or tensor parallel (EP or TP) for the expert layers.&rdquo; The two are
-            coupled by design &mdash; &ldquo;EP is more efficient when used in conjunction with
-            DP&rdquo; &mdash; and EP size follows <code>EP_SIZE = TP_SIZE &times; DP_SIZE</code>.
-            Because they run together, &ldquo;expert layers across all ranks are required to
-            synchronize during every forward pass.&rdquo;{' '}
+            models "it can be advantageous to use data parallel for the attention layers
+            and expert or tensor parallel (EP or TP) for the expert layers." The two are
+            coupled by design ("EP is more efficient when used in conjunction with
+            DP"), and EP size follows <code>EP_SIZE = TP_SIZE &times; DP_SIZE</code>.
+            Because they run together, "expert layers across all ranks are required to
+            synchronize during every forward pass."{' '}
             <Link
               external
               href="https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment/"
@@ -419,10 +419,10 @@ export function DistributedInference() {
             <strong>Scaling MoE wide.</strong> At large EP counts, uneven token routing leaves
             some experts hot and others idle. vLLM ships an <strong>Expert Parallel Load
             Balancer (EPLB)</strong>, enabled with <code>--enable-eplb</code>, that
-            &ldquo;redistribute[s] expert mappings across EP ranks, evening the load across
-            experts,&rdquo; and supports the <code>deepep_high_throughput</code> and{' '}
+            "redistribute[s] expert mappings across EP ranks, evening the load across
+            experts," and supports the <code>deepep_high_throughput</code> and{' '}
             <code>deepep_low_latency</code> DeepEP communication backends for the dispatch /
-            combine all-to-all. These are the knobs behind &ldquo;wide&rdquo; MoE deployments
+            combine all-to-all. These are the knobs behind "wide" MoE deployments
             spanning many GPUs.{' '}
             <Link
               external
@@ -488,8 +488,8 @@ export function DistributedInference() {
             Parallelism describes <em>how the model is split</em>; the{' '}
             <strong>executor backend</strong> decides <em>which runtime spawns and
             coordinates the worker processes</em>. vLLM picks a sensible default by topology:
-            &ldquo;The default distributed runtimes are Ray for multi-node inference and native
-            Python <code>multiprocessing</code> for single-node inference,&rdquo; and you can
+            "The default distributed runtimes are Ray for multi-node inference and native
+            Python <code>multiprocessing</code> for single-node inference," and you can
             force either with <code>--distributed-executor-backend</code> set to{' '}
             <code>ray</code> or <code>mp</code>.{' '}
             <Link
@@ -505,7 +505,7 @@ export function DistributedInference() {
               <Box variant="p">
                 One node, several GPUs, TP and/or PP within the box: vLLM uses native Python
                 multiprocessing to fork a worker per GPU. No cluster scheduler, no extra
-                moving parts &mdash; this is the path for the common single-instance deployment.
+                moving parts. This is the path for the common single-instance deployment.
               </Box>
             </div>
             <div>
@@ -513,7 +513,7 @@ export function DistributedInference() {
               <Box variant="p">
                 Once PP (or DP) spans nodes, vLLM defaults to Ray to place and supervise
                 workers across the cluster. Ray owns process placement, health, and the
-                cross-node wiring. The orchestration story &mdash; Ray and Ray Serve LLM &mdash;
+                cross-node wiring. The orchestration story (Ray and Ray Serve LLM)
                 is its own section.
               </Box>
             </div>
@@ -521,10 +521,10 @@ export function DistributedInference() {
           <Alert type="info">
             <strong>Two cross-links for the layers this section deliberately skips.</strong>{' '}
             The Ray runtime, cluster bring-up, and Ray Serve LLM are covered in{' '}
-            <strong>Section 15 &mdash; Orchestration: Ray &amp; Ray Serve LLM</strong>. The
-            in-tree machinery that realizes every axis above &mdash; the process groups,{' '}
+            <strong>Section 15, Orchestration: Ray &amp; Ray Serve LLM</strong>. The
+            in-tree machinery that realizes every axis above (the process groups,{' '}
             <code>parallel_state</code>, the <code>GroupCoordinator</code>, and the KV-transfer
-            connectors that move cache between workers &mdash; is in{' '}
+            connectors that move cache between workers) is in{' '}
             <strong>Inside the Codebase &rarr; Distributed &amp; KV Transfer</strong>.
           </Alert>
         </SpaceBetween>
@@ -541,7 +541,7 @@ export function DistributedInference() {
             <code>pipeline_parallel_size=2</code> (the node count). TP keeps each
             layer&apos;s all-reduce inside a node on the fast fabric; PP cuts the model into
             two layer-stages, one per node, with only activation hand-offs crossing the slower
-            inter-node link. This is the &ldquo;TP per node, PP per node-count&rdquo; rule made
+            inter-node link. This is the "TP per node, PP per node-count" rule made
             concrete.{' '}
             <Link
               external
@@ -552,9 +552,9 @@ export function DistributedInference() {
           </Box>
           <Box variant="p">
             Multi-node launches also surface the operational flags around the parallelism
-            itself &mdash; <code>--nnodes</code>, <code>--node-rank</code>,{' '}
+            itself (<code>--nnodes</code>, <code>--node-rank</code>,{' '}
             <code>--master-addr</code>, and a <code>--headless</code> mode for worker-only
-            nodes &mdash; plus the choice of <code>--distributed-executor-backend ray</code>{' '}
+            nodes), plus the choice of <code>--distributed-executor-backend ray</code>{' '}
             for the cross-node case. The exact invocation and the helper script vLLM ships for
             this are in the parallelism &amp; scaling guide above.
           </Box>

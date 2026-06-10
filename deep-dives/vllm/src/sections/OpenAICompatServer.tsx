@@ -85,7 +85,7 @@ function EndpointSurfaceDiagram() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <title id="endpoint-surface-title">
-        Diagram of vllm serve exposing three route families — OpenAI mirrors, cross-vendor mirrors
+        Diagram of vllm serve exposing three route families: OpenAI mirrors, cross-vendor mirrors
         (Anthropic, Cohere, Jina, SageMaker), and vLLM-native / utility routes
       </title>
       <defs>
@@ -218,7 +218,7 @@ export function OpenAICompatServer() {
         header={
           <Header
             variant="h1"
-            description="The HTTP surface an integrator actually talks to — vllm serve, the endpoints it speaks, and the OpenAI dialect it deviates from."
+            description="The HTTP surface an integrator actually talks to: vllm serve, the endpoints it speaks, and the OpenAI dialect it deviates from."
           >
             12. The OpenAI-Compatible Server
           </Header>
@@ -229,7 +229,7 @@ export function OpenAICompatServer() {
             <strong>The drop-in value proposition:</strong> vLLM ships an HTTP server that{' '}
             <em>implements OpenAI&apos;s wire protocol</em>, so the client code you already wrote
             against OpenAI keeps working when you point it at your own GPU. You launch it with one
-            command &mdash; <code>vllm serve</code> &mdash; and you get a server that, in the docs&apos;
+            command (<code>vllm serve</code>) and you get a server that, in the docs&apos;
             own framing, &quot;implements OpenAI&apos;s Completions API, Chat API, and more.&quot; The
             integration cost is a base-URL swap and an API key:
           </Box>
@@ -256,7 +256,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
             ).
           </Box>
           <Alert type="info">
-            This section is the <strong>integrator&apos;s view</strong> &mdash; the API surface and
+            This section is the <strong>integrator&apos;s view</strong>: the API surface and
             serving flags you configure from outside. How that server is actually wired (the Python
             entrypoint versus the opt-in Rust frontend, the request lifecycle) lives in{' '}
             <strong>Inside the Codebase &rarr; The Rust Frontend</strong>, and how guided decoding is
@@ -274,7 +274,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
             compatible with the named OpenAI API), <strong>cross-vendor mirrors</strong> (Anthropic
             Messages, Cohere Embed/Rerank) for clients written against those SDKs, and{' '}
             <strong>vLLM-native and utility routes</strong> (pooling, scoring, tokenizer, health).
-            Which routes light up depends on the model class you loaded &mdash; a generative model
+            Which routes light up depends on the model class you loaded: a generative model
             serves chat/completions, an embedding model serves <code>/v1/embeddings</code>, an ASR
             model serves the audio routes.
           </Box>
@@ -395,7 +395,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>What it guarantees:</strong> structured outputs constrain the decoder so the
-            generated text is forced to conform to a shape you specify &mdash; one of a fixed set of
+            generated text is forced to conform to a shape you specify: one of a fixed set of
             choices, a regex, a JSON schema, or a context-free grammar. This is a{' '}
             <em>format</em> guarantee enforced at the token level, not a quality guarantee: the model
             cannot emit a token that would violate the constraint, but the docs are careful that this
@@ -423,7 +423,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
           />
 
           <Box variant="p">
-            These ride in the request as extra parameters &mdash; for example{' '}
+            These ride in the request as extra parameters, for example{' '}
             <code>{'extra_body={"structured_outputs": {"choice": ["positive", "negative"]}}'}</code>.
             The OpenAI-standard <code>response_format</code> with a <code>json_schema</code> type is
             also honored for plain OpenAI-client compatibility (
@@ -434,7 +434,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
           </Box>
 
           <Alert type="warning">
-            <strong>API change &mdash; the old <code>guided_*</code> fields are gone.</strong> If you
+            <strong>API change: the old <code>guided_*</code> fields are gone.</strong> If you
             are porting older code or following older tutorials, note that{' '}
             <code>guided_json</code>, <code>guided_regex</code>, <code>guided_choice</code>,{' '}
             <code>guided_grammar</code>, <code>guided_whitespace_pattern</code>, and the standalone{' '}
@@ -453,7 +453,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
                 available). The default is <code>auto</code>, which &quot;will try to choose an
                 appropriate backend based on the details of the request.&quot; You can pin one with{' '}
                 <code>--structured-outputs-config.backend</code> on <code>vllm serve</code>. Backend
-                choice has real consequences: regex syntax differs &mdash; xgrammar, guidance, and
+                choice has real consequences: regex syntax differs. Xgrammar, guidance, and
                 outlines use Rust-style regex while lm-format-enforcer uses Python&apos;s{' '}
                 <code>re</code> module.
               </Box>
@@ -462,7 +462,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
               <Box variant="h3">Reasoning models</Box>
               <Box variant="p">
                 Structured outputs compose with reasoning models, but the reasoning trace must be
-                parsed out separately &mdash; you start the server with a reasoning parser, e.g.{' '}
+                parsed out separately: you start the server with a reasoning parser, e.g.{' '}
                 <code>--reasoning-parser deepseek_r1</code>. For some models (the docs cite Qwen3
                 Coder, v0.11.2+) structured outputs can silently disable when reasoning content is not
                 split into the <code>reasoning</code> field; to force both on together set{' '}
@@ -473,7 +473,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
 
           <Alert type="info">
             The finite-state-machine construction, grammar compilation, and the per-backend
-            internals are out of scope here &mdash; they are walked against the real source in{' '}
+            internals are out of scope here. They are walked against the real source in{' '}
             <strong>Inside the Codebase &rarr; Spec Decode, Guided Decode &amp; Compile</strong>.
           </Alert>
         </SpaceBetween>
@@ -504,7 +504,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
                 <code>required</code> (as of vllm&nbsp;&ge;&nbsp;0.8.3), and <code>none</code>. With{' '}
                 <code>required</code>, &quot;the model is guaranteed to generate one or more tool
                 calls&quot; matching the supplied schema. Named and required both run through the
-                structured-outputs backend, so a validly-parsable call is guaranteed &mdash; the docs
+                structured-outputs backend, so a validly-parsable call is guaranteed. The docs
                 phrase it bluntly: &quot;You are guaranteed a validly-parsable function call - not a
                 high-quality one.&quot;
               </Box>
@@ -512,7 +512,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
             <div>
               <Box variant="h3">Per-model parsers</Box>
               <Box variant="p">
-                Parsers are named and model-specific &mdash; e.g. <code>hermes</code>,{' '}
+                Parsers are named and model-specific, e.g. <code>hermes</code>,{' '}
                 <code>mistral</code>, <code>llama3_json</code>, <code>llama4_pythonic</code>,{' '}
                 <code>internlm</code>, <code>granite</code> / <code>granite4</code>,{' '}
                 <code>deepseek_v3</code> / <code>deepseek_v31</code>, <code>qwen3_xml</code>,{' '}
@@ -530,7 +530,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
             &quot;does not implement <code>strict</code> mode today. The <code>strict</code> field is
             accepted in requests (to avoid breaking clients that set it), but it has no effect on
             decoding behavior.&quot; In <code>auto</code> mode, argument validity therefore depends
-            entirely on the model&apos;s output quality and the parser &mdash; if you need a hard
+            entirely on the model&apos;s output quality and the parser. If you need a hard
             schema guarantee, use named or <code>required</code> tool choice, which <em>do</em> route
             through structured outputs (
             <Link external href="https://docs.vllm.ai/en/latest/features/tool_calling/">
@@ -542,7 +542,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
           <Box variant="small">
             Note on parallel calls: setting <code>parallel_tool_calls=false</code> ensures vLLM
             returns zero or one tool call per request; the default <code>true</code> permits more
-            than one, but &mdash; per the docs &mdash; there is no guarantee more than one is
+            than one, but (per the docs) there is no guarantee more than one is
             returned, as that is model-dependent.
           </Box>
         </SpaceBetween>
@@ -553,7 +553,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
           <Box variant="p">
             On the Chat Completions endpoint, vLLM accepts the OpenAI multimodal message format, so
             vision and audio requests look exactly like they would against OpenAI. Images go in via{' '}
-            <code>image_url</code> &mdash; either a remote URL or a base64 <code>data:</code> URI;
+            <code>image_url</code>: either a remote URL or a base64 <code>data:</code> URI;
             audio via <code>input_audio</code> (base64) or <code>audio_url</code>; video via{' '}
             <code>video_url</code>. Multiple media items per message are supported.
           </Box>
@@ -566,7 +566,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
                   API. <em>Note: the <code>image_url.detail</code> parameter is not supported.</em>
                 </li>
                 <li>
-                  Audio via <code>input_audio</code> or <code>audio_url</code> &mdash; any format
+                  Audio via <code>input_audio</code> or <code>audio_url</code>, any format
                   readable by the underlying decoders.
                 </li>
                 <li>Video via <code>video_url</code>.</li>
@@ -616,7 +616,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
             items={[
               {
                 param: 'top_k',
-                purpose: 'Top-k sampling cutoff — not in the OpenAI API.',
+                purpose: 'Top-k sampling cutoff, not in the OpenAI API.',
               },
               {
                 param: 'min_p',
@@ -674,7 +674,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
             <SpaceBetween size="s">
               <Box variant="p">
                 Compatibility is high but not total. The docs call out specific parameters the server
-                does not honor &mdash; design around these rather than assuming OpenAI-identical
+                does not honor. Design around these rather than assuming OpenAI-identical
                 behavior:
               </Box>
               <Table
@@ -703,14 +703,14 @@ client = OpenAI(base_url="http://localhost:8000/v1",
                   {
                     endpoint: 'Tool calling',
                     param: 'strict',
-                    behavior: 'Accepted but a no-op — no effect on decoding.',
+                    behavior: 'Accepted but a no-op. No effect on decoding.',
                   },
                 ]}
               />
               <Box variant="p">
                 Two more behaviors worth knowing: by default the server applies{' '}
                 <code>generation_config.json</code> from the model repo, so a model creator&apos;s
-                recommended sampling defaults can override yours &mdash; pass{' '}
+                recommended sampling defaults can override yours. Pass{' '}
                 <code>--generation-config vllm</code> to disable that. And only the{' '}
                 <code>X-Request-Id</code> HTTP header is supported, gated behind{' '}
                 <code>--enable-request-id-headers</code> (
@@ -727,7 +727,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
               The same <code>vllm serve</code> command can run the server&apos;s HTTP/request-handling
               frontend either as the default Python implementation or as an opt-in Rust frontend,
               which moves the per-request parsing and routing hot path off the Python interpreter. From
-              an integrator&apos;s standpoint the wire contract is identical &mdash; the endpoints,
+              an integrator&apos;s standpoint the wire contract is identical: the endpoints,
               parameters, and OpenAI compatibility described above do not change. The process model,
               what the Rust frontend takes over, and how to turn it on are covered against the source
               in <strong>Inside the Codebase &rarr; The Rust Frontend</strong>.

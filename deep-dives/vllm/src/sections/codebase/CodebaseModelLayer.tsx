@@ -199,7 +199,7 @@ function QuantDispatchDiagram() {
 
       <rect x="20" y="244" width="720" height="116" rx="6" fill="#f7f8fa" stroke="#7d8998" />
       <text x="380" y="266" textAnchor="middle" fontSize="11" fill="#16191f">
-        kernels/linear/ — FP8-block CUDA priority order
+        kernels/linear/: FP8-block CUDA priority order
       </text>
       {FP8_BLOCK_CUDA.map((k, i) => (
         <g key={k.label}>
@@ -239,7 +239,7 @@ export function CodebaseModelLayer() {
         header={
           <Header
             variant="h1"
-            description="vllm/model_executor/ — how an architecture string becomes a running model, where quantization is dispatched, and how LoRA adapters slot in (commit 15652a6b, accessed 2026-06-07)"
+            description="vllm/model_executor/: how an architecture string becomes a running model, where quantization is dispatched, and how LoRA adapters slot in (commit 15652a6b, accessed 2026-06-07)"
           >
             Model Layer, Quantization &amp; LoRA
           </Header>
@@ -295,8 +295,8 @@ export function CodebaseModelLayer() {
             only happens in <code>load_model_cls()</code>, which calls{' '}
             <code>importlib.import_module(self.module_name)</code> and pulls the
             attribute. This keeps the registry import cheap and, critically, avoids
-            initializing CUDA in the parent process — important because forked workers
-            cannot re-initialize CUDA (the{' '}
+            initializing CUDA in the parent process. That matters because forked
+            workers cannot re-initialize CUDA (the{' '}
             <code>RuntimeError: Cannot re-initialize CUDA in forked subprocess</code>{' '}
             failure the registry docstring explicitly calls out).
           </Box>
@@ -312,7 +312,7 @@ export function CodebaseModelLayer() {
             <code>VLLM_CACHE_ROOT/modelinfos</code>. On a cache miss it builds the{' '}
             <code>_ModelInfo</code> by importing and inspecting the class inside a{' '}
             <em>separate process</em> via <code>_run_in_subprocess</code> (cloudpickle
-            plus a child <code>python</code> invocation) — &quot;Performed in another
+            plus a child <code>python</code> invocation): &quot;Performed in another
             process to avoid initializing CUDA,&quot; as the inline comment states. The
             file-hash cache means this expensive step runs once per model file version,
             not once per launch.
@@ -378,8 +378,8 @@ export function CodebaseModelLayer() {
                 <code>SupportsTranscription</code>, <code>HasInnerState</code>,{' '}
                 <code>IsHybrid</code>, <code>IsAttentionFree</code>,{' '}
                 <code>SupportsEagle</code> / <code>SupportsEagle3</code>, and{' '}
-                <code>SupportsMRoPE</code> — the same protocol pattern, one per
-                capability.
+                <code>SupportsMRoPE</code>. All follow the same protocol pattern, one
+                per capability.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -422,7 +422,7 @@ export function CodebaseModelLayer() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>The dispatch point.</strong> Quantization is not woven through the
-            model code — it is localized to the linear layers in{' '}
+            model code; it is localized to the linear layers in{' '}
             <code>vllm/model_executor/layers/linear.py</code>. In{' '}
             <code>LinearBase.__init__</code>, if a <code>quant_config</code> is
             present, the layer calls{' '}
@@ -453,7 +453,7 @@ export function CodebaseModelLayer() {
             chooser functions in <code>vllm/model_executor/kernels/linear/</code>,
             which hold per-platform lists in <em>priority/performance order</em> and
             return the first kernel whose <code>can_implement</code> succeeds for the
-            given layer shape and compute capability — skipping kernels disabled via{' '}
+            given layer shape and compute capability. It skips kernels disabled via{' '}
             <code>VLLM_DISABLED_KERNELS</code> or whose{' '}
             <code>get_min_capability()</code> exceeds the device. The CUDA FP8-block
             order is concrete and load-bearing:
@@ -496,7 +496,7 @@ export function CodebaseModelLayer() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>The shape that makes batched LoRA work.</strong> vLLM serves many
-            adapters concurrently, so adapter weights are not stored per-request — they
+            adapters concurrently, so adapter weights are not stored per-request. They
             are pre-allocated into stacked buffers shaped{' '}
             <code>[max_loras, 1, ...]</code> (see{' '}
             <code>vllm/lora/layers/base_linear.py</code>, where{' '}
@@ -520,7 +520,7 @@ export function CodebaseModelLayer() {
 
           <ColumnLayout columns={3} variant="text-grid">
             <div>
-              <Box variant="awsui-key-label">1 — Shrink</Box>
+              <Box variant="awsui-key-label">1: Shrink</Box>
               <Box variant="p">
                 <code>add_shrink</code>: input to LoRA rank via stacked{' '}
                 <code>lora_a</code>. Output is a small{' '}
@@ -528,14 +528,14 @@ export function CodebaseModelLayer() {
               </Box>
             </div>
             <div>
-              <Box variant="awsui-key-label">2 — All-gather</Box>
+              <Box variant="awsui-key-label">2: All-gather</Box>
               <Box variant="p">
                 <code>tensor_model_parallel_all_gather</code> over the rank dim, since{' '}
                 <code>lora_a</code> is sharded but the expand needs the full rank.
               </Box>
             </div>
             <div>
-              <Box variant="awsui-key-label">3 — Expand</Box>
+              <Box variant="awsui-key-label">3: Expand</Box>
               <Box variant="p">
                 <code>add_expand</code>: rank back up to output via stacked{' '}
                 <code>lora_b</code>, accumulated in place onto the base output.
@@ -557,7 +557,7 @@ export function CodebaseModelLayer() {
           <Alert type="warning">
             <strong>Static vs dynamic.</strong> Adapters loaded at startup into the
             fixed <code>max_loras</code> slots are the stable path. Dynamic
-            multi-tenant swapping — loading and evicting adapters at request time —
+            multi-tenant swapping (loading and evicting adapters at request time)
             shares those same slots and the same all-gather path, so it carries caveats
             around slot pressure and load/evict cost. Size <code>max_loras</code> for
             the concurrency you actually expect.
@@ -576,7 +576,7 @@ export function CodebaseModelLayer() {
               </Box>
               <Box variant="p">
                 In other words, as of this commit there is no pure-PyTorch reference
-                implementation of the fused LoRA GEMMs on the base wrapper — every live
+                implementation of the fused LoRA GEMMs on the base wrapper. Every live
                 backend must override these with its own kernels. It is a small thing,
                 but it tells you where the real work lives and that hardware without a
                 Punica backend has no graceful fallback here.

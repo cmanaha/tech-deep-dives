@@ -46,7 +46,7 @@ const decisionRows: DecisionRow[] = [
     why: 'Physical isolation means a prefill burst cannot blow the decode ITL budget, and vice versa.',
   },
   {
-    signal: 'Large prefill:decode imbalance (long prompts, short answers — or the reverse)',
+    signal: 'Large prefill:decode imbalance (long prompts, short answers, or the reverse)',
     verdict: 'Use it',
     why: 'Each pool sizes to its own load instead of one engine sized for the worse of the two.',
   },
@@ -153,7 +153,7 @@ function DisaggDiagram() {
       <text className="ts" x={690} y={300}>+M decoders</text>
 
       <text className="lbl" x={410} y={356}>
-        Each pool scales and tunes independently — the connector is the only coupling
+        Each pool scales and tunes independently; the connector is the only coupling
       </text>
     </svg>
   );
@@ -166,14 +166,14 @@ export function DisaggregatedServing() {
         header={
           <Header
             variant="h1"
-            description="Run prefill on one set of instances and decode on another, so each phase scales and tunes to its own bottleneck — a latency / SLO-isolation play, not a throughput one"
+            description="Run prefill on one set of instances and decode on another, so each phase scales and tunes to its own bottleneck. This is a latency / SLO-isolation play, not a throughput one"
           >
             10. Disaggregated Prefill / Decode
           </Header>
         }
       >
         <SpaceBetween size="m">
-          <Alert type="warning" header="Experimental feature — moving target">
+          <Alert type="warning" header="Experimental feature: a moving target">
             Disaggregated prefilling is explicitly <strong>experimental</strong>. The vLLM
             docs state plainly that the feature is{' '}
             <em>&quot;experimental and subject to change&quot;</em>{' '}
@@ -187,9 +187,9 @@ export function DisaggregatedServing() {
           <Box variant="p">
             <strong>The problem:</strong> a single inference engine serves two phases with
             opposite resource profiles. <strong>Prefill</strong> processes the whole prompt in
-            one parallel pass — it is <strong>compute-bound</strong> and it owns{' '}
+            one parallel pass, so it is <strong>compute-bound</strong> and it owns{' '}
             <strong>TTFT (time-to-first-token)</strong>. <strong>Decode</strong> then emits one
-            token per step, reading the entire KV (key-value) cache every step — it is{' '}
+            token per step, reading the entire KV (key-value) cache every step, so it is{' '}
             <strong>memory-bandwidth-bound</strong> and it owns{' '}
             <strong>ITL (inter-token latency)</strong>. When both run in the same engine, a
             burst of expensive prefills stalls the decode loop and spikes tail ITL; conversely,
@@ -202,7 +202,7 @@ export function DisaggregatedServing() {
             <strong>decoder pool</strong>). The prompt&apos;s KV cache, computed by a prefiller,
             is shipped to a decoder over a <strong>KV connector</strong>, and the decoder
             generates from it. Now each pool scales to its own load and tunes to its own
-            bottleneck — and a prefill burst can no longer touch the decode latency budget.
+            bottleneck, and a prefill burst can no longer touch the decode latency budget.
           </Box>
         </SpaceBetween>
       </Container>
@@ -222,14 +222,14 @@ export function DisaggregatedServing() {
             The whole architecture is three boxes and one wire. The prefiller does the
             compute-heavy prompt pass and produces a KV cache. A KV connector moves that cache
             across the network. The decoder receives it and runs the bandwidth-heavy token
-            loop. The connector is the <em>only</em> coupling between the pools — everything
+            loop. The connector is the <em>only</em> coupling between the pools. Everything
             else about each side (replica count, parallel layout, hardware) is independent.
           </Box>
           <DisaggDiagram />
           <Alert type="info">
-            The connector internals — <code>NixlConnector</code>&apos;s send/receive state
+            The connector internals (<code>NixlConnector</code>&apos;s send/receive state
             machine, how KV blocks are registered for RDMA, the role/lease wiring, and the
-            <code> KVConnectorBase_V1</code> contract — are documented in{' '}
+            <code> KVConnectorBase_V1</code> contract) are documented in{' '}
             <strong>Inside the Codebase &rarr; Distributed &amp; KV Transfer</strong>. This
             section stays at the architecture altitude and does not duplicate that call-path
             walk-through.
@@ -241,7 +241,7 @@ export function DisaggregatedServing() {
         header={
           <Header
             variant="h2"
-            description="Prefill and decode have opposite resource profiles — that asymmetry is the entire reason to split them"
+            description="Prefill and decode have opposite resource profiles, and that asymmetry is the entire reason to split them"
           >
             Two phases, two bottlenecks
           </Header>
@@ -271,7 +271,7 @@ export function DisaggregatedServing() {
             <SpaceBetween size="s">
               <Box variant="p">
                 The most-misread thing about disaggregation: it does not make the system
-                faster in aggregate. The vLLM docs say it outright —{' '}
+                faster in aggregate. The vLLM docs say it outright:{' '}
                 <strong><em>&quot;Disaggregated prefill DOES NOT improve throughput&quot;</em></strong>{' '}
                 <Link external href="https://docs.vllm.ai/en/stable/features/disagg_prefill/">
                   [Tier-1: vLLM disaggregated-prefilling docs, accessed 2026-06-07]
@@ -284,7 +284,7 @@ export function DisaggregatedServing() {
                 The same docs give two reasons to want it: it lets you{' '}
                 <em>tune TTFT and ITL separately</em> with different parallel strategies for
                 each phase, and it <em>controls tail ITL</em> by keeping prefill work from
-                inserting itself into the decode stream — which the docs frame as more reliable
+                inserting itself into the decode stream, which the docs frame as more reliable
                 than chunked prefill for that purpose{' '}
                 <Link external href="https://docs.vllm.ai/en/stable/features/disagg_prefill/">
                   [Tier-1, same source]
@@ -301,7 +301,7 @@ export function DisaggregatedServing() {
         header={
           <Header
             variant="h2"
-            description="The KV connector is the only thing wiring the two pools together — pick the one that matches your fabric"
+            description="The KV connector is the only thing wiring the two pools together, so pick the one that matches your fabric"
           >
             Moving KV from prefiller to decoder
           </Header>
@@ -315,7 +315,7 @@ export function DisaggregatedServing() {
             framework moves KV <em>down a memory hierarchy</em> within one engine; here it moves
             KV <em>across engines</em>. Same surface (<code>--kv-transfer-config</code>),
             different intent. The disaggregation docs list several connectors that implement the
-            cross-instance path —{' '}
+            cross-instance path:{' '}
             <code>NixlConnector</code>, <code>LMCacheConnectorV1</code>,{' '}
             <code>P2pNcclConnector</code>, <code>MooncakeConnector</code>, and{' '}
             <code>MultiConnector</code> among them{' '}
@@ -325,7 +325,7 @@ export function DisaggregatedServing() {
             .
           </Box>
           <Box variant="p">
-            The reference implementation is <strong>NixlConnector</strong> — described as a{' '}
+            The reference implementation is <strong>NixlConnector</strong>, described as a{' '}
             <em>
               &quot;high-performance KV cache transfer connector for vLLM&apos;s disaggregated
               prefilling feature&quot;
@@ -349,12 +349,12 @@ export function DisaggregatedServing() {
             <strong>The AWS realization.</strong> On AWS the libfabric backend is where this
             lands on real hardware: NIXL transfers KV over <strong>EFA (Elastic Fabric
             Adapter)</strong> via libfabric, the same OS-bypass RDMA path used for training
-            collectives. That data path — GPUs, EFA, and the NIXL plugin — is the subject of{' '}
+            collectives. That data path (GPUs, EFA, and the NIXL plugin) is the subject of{' '}
             <strong>section 22 (vLLM on AWS GPUs, EFA &amp; NIXL)</strong>, and the placement
             decisions that keep prefiller and decoder pools close enough for the transfer to be
             cheap are covered in{' '}
             <strong>section 23 (EC2 Topology, Placement Groups &amp; KV Locality)</strong>. The
-            networking primitives themselves — SRD, packet spraying, the libfabric provider —
+            networking primitives themselves (SRD, packet spraying, the libfabric provider)
             and the broader question of where this sits in the memory/interconnect stack are
             framed in the sibling <strong>Silicon, Memory &amp; Inference</strong> deep dive.
           </Alert>
@@ -390,7 +390,7 @@ export function DisaggregatedServing() {
                   &quot;immediately fail the request with an error when KV load fails.&quot;
                 </em>{' '}
                 Clean and predictable: the failure is visible, the request errors, and you can
-                retry it through the router. No silent latency cliff — the cost shows up as an
+                retry it through the router. No silent latency cliff: the cost shows up as an
                 error rate you can alarm on, not as a mystery ITL spike.
               </Box>
             </div>
@@ -399,7 +399,7 @@ export function DisaggregatedServing() {
               <Box variant="p">
                 The docs describe it as{' '}
                 <em>&quot;recompute failed blocks locally on the decode instance.&quot;</em>{' '}
-                The request survives — but the decoder, a memory-bandwidth-bound machine sized
+                The request survives, but the decoder, a memory-bandwidth-bound machine sized
                 for the token loop, now has to do prefill-shaped compute it was never tuned for.
               </Box>
             </div>
@@ -415,7 +415,7 @@ export function DisaggregatedServing() {
             <Link external href="https://docs.vllm.ai/en/stable/features/nixl_connector_usage/">
               [Tier-1: vLLM NixlConnector usage docs, accessed 2026-06-07]
             </Link>
-            . Treat recompute as a survivability fallback, not a steady-state policy — if your
+            . Treat recompute as a survivability fallback, not a steady-state policy. If your
             transfers fail often enough that recompute matters, the fabric, not the policy, is
             the bug.
           </Alert>
@@ -426,9 +426,9 @@ export function DisaggregatedServing() {
         header={
           <Header
             variant="h2"
-            description="Disaggregation is an SLO tool — use it for isolation and imbalance, not for throughput"
+            description="Disaggregation is an SLO tool: use it for isolation and imbalance, not for throughput"
           >
-            When to disaggregate — and when not to
+            When to disaggregate, and when not to
           </Header>
         }
       >
@@ -479,7 +479,7 @@ export function DisaggregatedServing() {
             request pays a KV round-trip that a unified engine never does. On a fast RDMA
             fabric (EFA via libfabric, or NVLink-class intra-node links) that tax is small
             relative to the prefill it isolates; on a slow link it can exceed the prefill stall
-            you were trying to avoid — which is precisely why &quot;no fast fabric&quot; is a
+            you were trying to avoid, which is precisely why &quot;no fast fabric&quot; is a
             do-not-use signal above. The KV cache moved per request scales with prompt length,
             layer count, and head dimension, so long-context workloads move the most bytes and
             are the most fabric-sensitive.
@@ -490,13 +490,13 @@ export function DisaggregatedServing() {
             prompt:response shape and re-tune as traffic shifts. A long-prompt / short-answer
             workload wants more prefillers; a chatty long-generation workload wants more
             decoders. Getting this ratio wrong leaves one pool idle while the other is the
-            bottleneck — the imbalance disaggregation was supposed to fix, reintroduced at the
+            bottleneck, the imbalance disaggregation was supposed to fix, reintroduced at the
             fleet level.
           </Box>
           <Box variant="p">
             <strong>Routing has to be disaggregation-aware.</strong> A request now visits two
             pools in sequence, so the router must place prefill, carry the KV handle, and place
-            decode — and ideally keep the pair on instances close enough that the transfer is
+            decode, and ideally keep the pair on instances close enough that the transfer is
             cheap (the EC2 topology / placement concern in section 23). This is the same
             cache-aware-routing problem section 7 raised for cross-replica reuse, one step
             harder: here the route is part of the request&apos;s critical path, not an
@@ -511,13 +511,13 @@ export function DisaggregatedServing() {
               [Tier-1: vLLM NixlConnector usage docs, accessed 2026-06-07]
             </Link>
             . As with everything here, validate against the docs at your pinned vLLM version
-            before relying on it — the surface moves.
+            before relying on it. The surface moves.
           </Box>
         </SpaceBetween>
       </ExpandableSection>
 
       <Box variant="small">
-        Sources — <strong>Tier-1 (vLLM official docs):</strong>{' '}
+        Sources. <strong>Tier-1 (vLLM official docs):</strong>{' '}
         <Link external href="https://docs.vllm.ai/en/stable/features/disagg_prefill/">
           Disaggregated prefilling
         </Link>{' '}
@@ -528,7 +528,7 @@ export function DisaggregatedServing() {
         </Link>{' '}
         (NIXL/UCX/libfabric transport, <code>kv_role</code>, and the{' '}
         <code>kv_load_failure_policy</code> fail-vs-recompute behavior and its degradation
-        warning) — both accessed 2026-06-07. Connector class internals: see{' '}
+        warning), both accessed 2026-06-07. Connector class internals: see{' '}
         <strong>Inside the Codebase &rarr; Distributed &amp; KV Transfer</strong>. AWS data
         path and placement: <strong>sections 22 and 23</strong>. Hardware framing: the sibling{' '}
         <strong>Silicon, Memory &amp; Inference</strong> deep dive. This feature is{' '}

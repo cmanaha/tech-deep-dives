@@ -10,7 +10,7 @@ import Link from '@cloudscape-design/components/link';
 import Badge from '@cloudscape-design/components/badge';
 
 // ---------------------------------------------------------------------------
-// Diagram 1 — the request path: Python frontend vs Rust frontend, both landing
+// Diagram 1, the request path: Python frontend vs Rust frontend, both landing
 // on the SAME unchanged Python EngineCoreProc over the same ZMQ/MessagePack wire.
 // ---------------------------------------------------------------------------
 
@@ -58,7 +58,7 @@ function RequestPathDiagram() {
           OpenAI-compatible HTTP / gRPC client
         </text>
 
-        {/* Left column — Python frontend */}
+        {/* Left column: Python frontend */}
         {box(leftX, 100, colW, 150, '#0972d3', '#f2f8fd')}
         <text x={leftX + 16} y={124} fontSize={12} fontWeight={700} fill="#0972d3">
           Default: Python API server
@@ -78,7 +78,7 @@ function RequestPathDiagram() {
           GIL-bound: render + parse contend for one lock
         </text>
 
-        {/* Right column — Rust frontend */}
+        {/* Right column: Rust frontend */}
         {box(rightX, 100, colW, 150, '#037f0c', '#ecf7ec')}
         <text x={rightX + 16} y={124} fontSize={12} fontWeight={700} fill="#037f0c">
           Opt-in: Rust frontend (vllm-rs)
@@ -118,7 +118,7 @@ function RequestPathDiagram() {
           scheduler · PagedAttention KV manager · model executor
         </text>
         <text x={width / 2} y={368} fontSize={11} fontWeight={700} fill="#16191f" textAnchor="middle">
-          GPU / accelerator path — byte-for-byte identical either way
+          GPU / accelerator path: byte-for-byte identical either way
         </text>
         <text x={width / 2} y={388} fontSize={10} fill="#687078" textAnchor="middle">
           frontend swap never touches the engine or the kernels
@@ -129,7 +129,7 @@ function RequestPathDiagram() {
 }
 
 // ---------------------------------------------------------------------------
-// Diagram 2 — the Rust crate dependency stack, bottom-up.
+// Diagram 2: the Rust crate dependency stack, bottom-up.
 // ---------------------------------------------------------------------------
 
 interface StackRow {
@@ -140,7 +140,7 @@ interface StackRow {
 }
 
 const stackRows: StackRow[] = [
-  { crate: 'vllm-rs (src/cmd)', role: 'CLI entrypoint — frontend subprocess or managed serve', fill: '#f2f8fd', stroke: '#0972d3' },
+  { crate: 'vllm-rs (src/cmd)', role: 'CLI entrypoint: frontend subprocess or managed serve', fill: '#f2f8fd', stroke: '#0972d3' },
   { crate: 'vllm-server', role: 'axum OpenAI-compatible HTTP + optional gRPC Generate', fill: '#f2f8fd', stroke: '#0972d3' },
   { crate: 'vllm-chat', role: 'minijinja / DeepSeek renderers + tool & reasoning parsers', fill: '#ecf7ec', stroke: '#037f0c' },
   { crate: 'vllm-text', role: 'tokenizer + incremental detokenizer', fill: '#ecf7ec', stroke: '#037f0c' },
@@ -238,7 +238,7 @@ export function CodebaseRust() {
         header={
           <Header
             variant="h1"
-            description="An opt-in Rust drop-in for the API-server process only — never the engine (rust/, pinned to commit 15652a6b, accessed 2026-06-07)"
+            description="An opt-in Rust drop-in for the API-server process only, never the engine (rust/, pinned to commit 15652a6b, accessed 2026-06-07)"
           >
             The Rust Frontend
           </Header>
@@ -248,8 +248,8 @@ export function CodebaseRust() {
           <Box variant="p">
             <strong>What it is.</strong> vLLM now ships a Rust frontend under{' '}
             <code>rust/</code>. It is a drop-in replacement for one specific
-            process — the northbound{' '}
-            <strong>API-server / OpenAI-compatible HTTP layer</strong> — and
+            process, the northbound{' '}
+            <strong>API-server / OpenAI-compatible HTTP layer</strong>, and
             nothing else. The scheduler, the PagedAttention KV manager, the
             model executor, and every GPU kernel stay in unchanged Python. The
             crate&apos;s own README is blunt about scope: rebuild the serving
@@ -284,7 +284,7 @@ export function CodebaseRust() {
               Inferact/vllm-frontend-rs
             </Link>{' '}
             (which preserves the pre-merge history). It is{' '}
-            <strong>experimental and not feature-complete</strong> — the project
+            <strong>experimental and not feature-complete</strong>. The project
             README and the in-tree argument inventory both say so explicitly.
           </Alert>
         </SpaceBetween>
@@ -296,7 +296,7 @@ export function CodebaseRust() {
             Both frontends are northbound layers that terminate the OpenAI HTTP
             API and forward token-level work to the engine. They are
             interchangeable because they converge on the identical lower
-            boundary — the unchanged Python{' '}
+            boundary: the unchanged Python{' '}
             <code>EngineCoreProc</code> reached over ZMQ.
           </Box>
           <RequestPathDiagram />
@@ -338,7 +338,7 @@ export function CodebaseRust() {
           <CrateStackDiagram />
           <ColumnLayout columns={2} variant="text-grid">
             <div>
-              <Box variant="h3">vllm-chat — the heavy lifting</Box>
+              <Box variant="h3">vllm-chat: the heavy lifting</Box>
               <Box variant="p">
                 This is where the GIL pain is actually paid down. It holds the{' '}
                 <code>minijinja</code> HF template renderer plus dedicated
@@ -380,8 +380,8 @@ export function CodebaseRust() {
               </Box>
               <Box variant="p">
                 <strong>Renderer selection</strong> (<code>chat/src/renderer/selection.rs</code>)
-                is an enum — <code>Auto</code>, <code>Hf</code>,{' '}
-                <code>DeepSeekV32</code>, <code>DeepSeekV4</code> — where{' '}
+                is an enum (<code>Auto</code>, <code>Hf</code>,{' '}
+                <code>DeepSeekV32</code>, <code>DeepSeekV4</code>) where{' '}
                 <code>Auto</code> resolves by model type and otherwise falls back
                 to the HF minijinja renderer.
               </Box>
@@ -404,7 +404,7 @@ export function CodebaseRust() {
           <Box variant="p">
             The Rust frontend is <strong>off by default</strong>. You opt in
             with <code>VLLM_USE_RUST_FRONTEND=1</code>, and Python stays in
-            charge of process lifecycle — the Rust binary is a Python-supervised
+            charge of process lifecycle: the Rust binary is a Python-supervised
             worker, not a separate stack you run yourself.
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
@@ -432,7 +432,7 @@ export function CodebaseRust() {
               <Box variant="p">
                 It is wired into{' '}
                 <code>vllm/entrypoints/cli/serve.py</code> as a peer of{' '}
-                <code>APIServerProcessManager</code> — same monitoring
+                <code>APIServerProcessManager</code>, with the same monitoring
                 interface, so the rest of the launch path does not care which
                 frontend is running.
               </Box>
@@ -441,7 +441,7 @@ export function CodebaseRust() {
           <Alert type="info">
             <strong>Reverse direction too.</strong> Run standalone, the Rust{' '}
             <code>managed-engine</code> crate can spawn the Python headless
-            engine as a child — it shells out to{' '}
+            engine as a child: it shells out to{' '}
             <code>python -m vllm.entrypoints.cli.main serve &lt;model&gt; --headless ...</code>{' '}
             and supervises it. Either way the GPU work runs in Python; only who
             launches whom changes. The Tokio worker pool is also capped (default
@@ -457,7 +457,7 @@ export function CodebaseRust() {
             Because it is experimental, the Rust frontend keeps an explicit
             inventory of Python server flags it recognizes but does not yet
             implement (<code>cmd/src/cli/unsupported.rs</code>). Passing one of
-            those flags does not silently degrade — it{' '}
+            those flags does not silently degrade: it{' '}
             <strong>aborts startup</strong> with a message telling you to remove
             it (a few low-risk knobs are instead accepted as no-ops with a
             warning). In the pinned commit the inventory carries 63 hard-error
@@ -477,7 +477,7 @@ export function CodebaseRust() {
             <strong>Production guardrail.</strong> The hard-error list is the
             real eligibility test. If your deployment relies on TLS termination,
             API-key auth, CORS, dynamic LoRA, or OTLP tracing at the server
-            layer, the Rust frontend will refuse to start — by design — until
+            layer, the Rust frontend will refuse to start (by design) until
             those features land. Front it with a proxy that supplies TLS/auth/CORS,
             or stay on the Python API server.
           </Alert>
