@@ -8,6 +8,209 @@ import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
 import Link from '@cloudscape-design/components/link';
 
+function EndpointSurfaceDiagram() {
+  const blue = '#0972d3';
+  const green = '#1d8102';
+  const secondary = '#5f6b7a';
+  const text = '#16191f';
+  const blueFill = '#f2f8fd';
+  const greenFill = '#e8f5e9';
+  const amberFill = '#fbf3e6';
+  const border = '#879596';
+
+  // Three family columns. Each box sized to its longest route line.
+  const colW = 250;
+  const gap = 24;
+  const startX = 24;
+  const colTop = 132;
+  const headerH = 28;
+  const lineH = 19;
+  const padTop = 40; // space inside box above first route line
+  const padBottom = 16;
+
+  const columns = [
+    {
+      title: 'OpenAI mirrors',
+      fill: blueFill,
+      routes: [
+        '/v1/completions',
+        '/v1/chat/completions',
+        '/v1/responses',
+        '/v1/embeddings',
+        '/v1/audio/transcriptions',
+        '/v1/audio/translations',
+      ],
+    },
+    {
+      title: 'Cross-vendor mirrors',
+      fill: greenFill,
+      routes: [
+        '/v1/messages  (Anthropic)',
+        '/v2/embed  (Cohere)',
+        '/rerank /v1/rerank /v2/rerank',
+        '(Cohere / Jina)',
+        '/invocations  (SageMaker)',
+      ],
+    },
+    {
+      title: 'vLLM-native / utility',
+      fill: amberFill,
+      routes: [
+        '/pooling   /classify',
+        '/score   /v1/score',
+        '/tokenize   /detokenize',
+        '/health   /ping',
+        '/version   /load',
+        '/v1/models',
+      ],
+    },
+  ];
+
+  const maxRoutes = Math.max(...columns.map((c) => c.routes.length));
+  const colH = padTop + maxRoutes * lineH + padBottom;
+  const colCenters = columns.map((_, i) => startX + i * (colW + gap) + colW / 2);
+  const rootCx = colCenters[1]; // centered over middle column
+  const rootY = 24;
+  const rootH = 40;
+  const vbW = startX * 2 + columns.length * colW + (columns.length - 1) * gap;
+  const footerY = colTop + colH + 30;
+  const vbH = footerY + 28;
+
+  return (
+    <svg
+      role="img"
+      aria-labelledby="endpoint-surface-title"
+      style={{ width: '100%', height: 'auto' }}
+      viewBox={`0 0 ${vbW} ${vbH}`}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title id="endpoint-surface-title">
+        Diagram of vllm serve exposing three route families — OpenAI mirrors, cross-vendor mirrors
+        (Anthropic, Cohere, Jina, SageMaker), and vLLM-native / utility routes
+      </title>
+      <defs>
+        <marker id="surface-arrow" markerWidth="9" markerHeight="9" refX="4.5" refY="8" orient="auto">
+          <path d="M0,0 L4.5,8 L9,0" fill={blue} />
+        </marker>
+      </defs>
+
+      {/* Root node: vllm serve */}
+      <rect
+        x={rootCx - 150}
+        y={rootY}
+        width={300}
+        height={rootH}
+        rx={6}
+        fill={blueFill}
+        stroke={blue}
+        strokeWidth={1.4}
+      />
+      <text
+        x={rootCx}
+        y={rootY + 25}
+        textAnchor="middle"
+        fontSize={14}
+        fontWeight="bold"
+        fill={text}
+        fontFamily="sans-serif"
+      >
+        vllm serve &#8594; http://host:8000
+      </text>
+
+      {/* Fan-out connectors: root bottom -> a bus -> each column top */}
+      {(() => {
+        const busY = colTop - 18;
+        const rootBottom = rootY + rootH;
+        return (
+          <g>
+            {/* vertical stub from root to bus */}
+            <line x1={rootCx} y1={rootBottom} x2={rootCx} y2={busY} stroke={blue} strokeWidth={1.5} />
+            {/* horizontal bus spanning the outer columns */}
+            <line x1={colCenters[0]} y1={busY} x2={colCenters[2]} y2={busY} stroke={blue} strokeWidth={1.5} />
+            {/* drop into each column */}
+            {colCenters.map((cx, i) => (
+              <line
+                key={`drop-${i}`}
+                x1={cx}
+                y1={busY}
+                x2={cx}
+                y2={colTop - 2}
+                stroke={blue}
+                strokeWidth={1.5}
+                markerEnd="url(#surface-arrow)"
+              />
+            ))}
+          </g>
+        );
+      })()}
+
+      {/* Family columns */}
+      {columns.map((col, i) => {
+        const x = startX + i * (colW + gap);
+        return (
+          <g key={col.title}>
+            <rect
+              x={x}
+              y={colTop}
+              width={colW}
+              height={colH}
+              rx={6}
+              fill={col.fill}
+              stroke={border}
+              strokeWidth={1.2}
+            />
+            <text
+              x={x + colW / 2}
+              y={colTop + headerH - 8}
+              textAnchor="middle"
+              fontSize={13}
+              fontWeight="bold"
+              fill={text}
+              fontFamily="sans-serif"
+            >
+              {col.title}
+            </text>
+            <line
+              x1={x + 14}
+              y1={colTop + headerH}
+              x2={x + colW - 14}
+              y2={colTop + headerH}
+              stroke={border}
+              strokeWidth={0.8}
+            />
+            {col.routes.map((r, j) => (
+              <text
+                key={r + j}
+                x={x + 16}
+                y={colTop + padTop + j * lineH + 2}
+                textAnchor="start"
+                fontSize={12}
+                fill={secondary}
+                fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
+              >
+                {r}
+              </text>
+            ))}
+          </g>
+        );
+      })}
+
+      {/* Footer annotation under the OpenAI-mirrors column */}
+      <text
+        x={colCenters[0]}
+        y={footerY}
+        textAnchor="middle"
+        fontSize={12}
+        fontWeight="bold"
+        fill={green}
+        fontFamily="sans-serif"
+      >
+        &#8593; point any OpenAI SDK / LangChain / LiteLLM here
+      </text>
+    </svg>
+  );
+}
+
 export function OpenAICompatServer() {
   return (
     <SpaceBetween size="l">
@@ -76,24 +279,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
             model serves the audio routes.
           </Box>
 
-          <Box variant="code">
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`
-                         vllm serve  →  http://host:8000
-                                  │
-       ┌──────────────────────────┼──────────────────────────┐
-       ▼                          ▼                          ▼
-  OpenAI mirrors          Cross-vendor mirrors        vLLM-native / utility
-  ─────────────           ────────────────────        ─────────────────────
-  /v1/completions         /v1/messages    (Anthropic)  /pooling
-  /v1/chat/completions    /v2/embed       (Cohere)     /classify
-  /v1/responses           /rerank /v1/rerank /v2/rerank /score  /v1/score
-  /v1/embeddings            (Cohere/Jina)              /tokenize /detokenize
-  /v1/audio/transcriptions /invocations  (SageMaker)   /health /ping
-  /v1/audio/translations                               /version /load
-       │                                               /v1/models
-       └── point any OpenAI SDK / LangChain / LiteLLM here
-`}</pre>
-          </Box>
+          <EndpointSurfaceDiagram />
 
           <Table
             variant="embedded"

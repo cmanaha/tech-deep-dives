@@ -7,6 +7,189 @@ import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
 import Link from '@cloudscape-design/components/link';
 
+function MixedBatchDiagram() {
+  const blue = '#0972d3';
+  const green = '#1d8102';
+  const amber = '#8b6c00';
+  const secondary = '#5f6b7a';
+  const text = '#16191f';
+  const blueFill = '#f2f8fd';
+  const greenFill = '#e8f5e9';
+  const amberFill = '#fbf3e6';
+  const grayFill = '#f4f4f4';
+  const border = '#879596';
+
+  // Incoming requests (left column): each names a model.
+  const reqs = [
+    { label: 'req → "sql-lora"', fill: blueFill },
+    { label: 'req → "base"', fill: grayFill },
+    { label: 'req → "tone-lora"', fill: greenFill },
+    { label: 'req → "sql-lora"', fill: blueFill },
+    { label: 'req → "persona-7"', fill: amberFill },
+  ];
+  const reqX = 24;
+  const reqW = 150;
+  const reqH = 30;
+  const reqGap = 8;
+  const reqTop = 78;
+
+  // Scheduler box.
+  const schedX = reqX;
+  const schedY = reqTop + reqs.length * (reqH + reqGap) + 24;
+  const schedW = reqW;
+  const schedH = 64;
+
+  // Adapter slots (inside replica).
+  const slots = [
+    { name: 'sql-lora', sub: 'B·A', fill: blueFill, stroke: blue },
+    { name: 'tone-lora', sub: 'B·A', fill: greenFill, stroke: green },
+    { name: 'persona-7', sub: 'B·A', fill: amberFill, stroke: amber },
+    { name: '(free)', sub: '', fill: grayFill, stroke: border },
+  ];
+  const slotW = 96;
+  const slotH = 48;
+  const slotGap = 12;
+  const slotsTop = 168;
+  const slotsLeft = 244;
+
+  // Replica frame.
+  const repX = 220;
+  const repY = 46;
+  const repW = 580;
+  const repH = 300;
+
+  return (
+    <svg
+      role="img"
+      aria-labelledby="mixed-batch-title"
+      aria-describedby="mixed-batch-desc"
+      style={{ width: '100%', height: 'auto' }}
+      viewBox="0 0 820 470"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title id="mixed-batch-title">
+        One shared base model plus slotted LoRA adapters serving a mixed batch
+      </title>
+      <desc id="mixed-batch-desc">
+        Five incoming requests each name a model (some a LoRA adapter, one the raw base). A
+        scheduler assembles them into one mixed batch on a single GPU replica that holds the base
+        weights once plus a small set of active adapter slots. One forward pass applies the correct
+        per-row adapter delta; adapters page between a host-RAM LRU cache and the GPU slots.
+      </desc>
+      <defs>
+        <marker id="lora-arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill={secondary} />
+        </marker>
+      </defs>
+
+      {/* ---- Left column: incoming requests ---- */}
+      <text x={reqX} y={reqTop - 28} fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">
+        Incoming requests
+      </text>
+      <text x={reqX} y={reqTop - 12} fontSize={11} fill={secondary} fontFamily="sans-serif">
+        (each names a model)
+      </text>
+      {reqs.map((r, i) => {
+        const y = reqTop + i * (reqH + reqGap);
+        return (
+          <g key={`req-${i}`}>
+            <rect x={reqX} y={y} width={reqW} height={reqH} rx={5} fill={r.fill} stroke={border} strokeWidth={1.1} />
+            <text x={reqX + 12} y={y + 19} fontSize={12} fill={text} fontFamily="sans-serif">{r.label}</text>
+          </g>
+        );
+      })}
+
+      {/* requests -> scheduler */}
+      <line
+        x1={reqX + reqW / 2}
+        y1={reqTop + reqs.length * (reqH + reqGap) - reqGap + 2}
+        x2={reqX + reqW / 2}
+        y2={schedY - 4}
+        stroke={secondary}
+        strokeWidth={1.6}
+        markerEnd="url(#lora-arrow)"
+      />
+
+      {/* ---- Scheduler ---- */}
+      <rect x={schedX} y={schedY} width={schedW} height={schedH} rx={6} fill="#ffffff" stroke={blue} strokeWidth={1.5} />
+      <text x={schedX + schedW / 2} y={schedY + 22} textAnchor="middle" fontSize={13} fontWeight="bold" fill={blue} fontFamily="sans-serif">scheduler</text>
+      <text x={schedX + schedW / 2} y={schedY + 40} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">builds ONE</text>
+      <text x={schedX + schedW / 2} y={schedY + 54} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">mixed batch</text>
+
+      {/* scheduler -> replica */}
+      <line
+        x1={schedX + schedW}
+        y1={schedY + schedH / 2}
+        x2={repX - 4}
+        y2={schedY + schedH / 2}
+        stroke={secondary}
+        strokeWidth={1.6}
+        markerEnd="url(#lora-arrow)"
+      />
+
+      {/* ---- Replica frame ---- */}
+      <rect x={repX} y={repY} width={repW} height={repH} rx={8} fill="none" stroke={secondary} strokeWidth={1.4} strokeDasharray="6 4" />
+      <text x={repX + repW / 2} y={repY + 22} textAnchor="middle" fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">single GPU replica</text>
+
+      {/* base weights */}
+      <rect x={repX + 24} y={repY + 38} width={repW - 48} height={56} rx={6} fill={blueFill} stroke={blue} strokeWidth={1.3} />
+      <text x={repX + repW / 2} y={repY + 62} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">BASE MODEL WEIGHTS — loaded once, shared</text>
+      <text x={repX + repW / 2} y={repY + 80} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">frozen W (the expensive multi-GB copy)</text>
+
+      {/* adapter slots label */}
+      <text x={slotsLeft} y={slotsTop - 8} fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">active adapter slots (max_loras on GPU)</text>
+      {slots.map((s, i) => {
+        const x = slotsLeft + i * (slotW + slotGap);
+        return (
+          <g key={`slot-${i}`}>
+            <rect x={x} y={slotsTop} width={slotW} height={slotH} rx={6} fill={s.fill} stroke={s.stroke} strokeWidth={1.3} />
+            <text x={x + slotW / 2} y={slotsTop + 21} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">{s.name}</text>
+            {s.sub ? (
+              <text x={x + slotW / 2} y={slotsTop + 38} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">{s.sub}</text>
+            ) : null}
+          </g>
+        );
+      })}
+
+      {/* batched kernel box */}
+      <rect x={repX + 24} y={252} width={repW - 48} height={58} rx={6} fill="#ffffff" stroke={border} strokeWidth={1.2} />
+      <text x={repX + repW / 2} y={274} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">batched LoRA kernels — one forward pass</text>
+      <text x={repX + repW / 2} y={294} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">y = Wx + (per-row adapter)·B·A·x — correct delta per row</text>
+
+      {/* slots -> kernel arrows (three loaded slots) */}
+      {[0, 1, 2].map((i) => {
+        const cx = slotsLeft + i * (slotW + slotGap) + slotW / 2;
+        return (
+          <line
+            key={`s2k-${i}`}
+            x1={cx}
+            y1={slotsTop + slotH + 2}
+            x2={cx}
+            y2={250}
+            stroke={secondary}
+            strokeWidth={1.4}
+            markerEnd="url(#lora-arrow)"
+          />
+        );
+      })}
+
+      {/* batch rows note */}
+      <text x={repX + repW / 2} y={336} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">
+        rows: [sql-lora, base, tone-lora, sql-lora, persona-7]
+      </text>
+
+      {/* ---- CPU LRU cache (below replica) ---- */}
+      <rect x={slotsLeft} y={386} width={repW - 48} height={56} rx={6} fill={amberFill} stroke={amber} strokeWidth={1.3} />
+      <text x={slotsLeft + (repW - 48) / 2} y={410} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">CPU LRU cache (max_cpu_loras)</text>
+      <text x={slotsLeft + (repW - 48) / 2} y={428} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">adapters parked in host RAM, paged onto a GPU slot on demand</text>
+
+      {/* cache <-> slots (bidirectional paging) */}
+      <line x1={slotsLeft + (repW - 48) / 2} y1={384} x2={slotsLeft + (repW - 48) / 2} y2={slotsTop + slotH + 4} stroke={amber} strokeWidth={1.5} markerEnd="url(#lora-arrow)" />
+      <text x={slotsLeft + (repW - 48) / 2 + 12} y={372} fontSize={11} fill={amber} fontFamily="sans-serif" fontStyle="italic">page in / evict (LRU)</text>
+    </svg>
+  );
+}
+
 export function LoRAServing() {
   return (
     <SpaceBetween size="l">
@@ -68,34 +251,11 @@ export function LoRAServing() {
             forward pass.
           </Box>
 
-          <Box variant="code">
+          <Box>
             <Box variant="small" color="text-status-info">
               One shared base model + slotted adapters serving a mixed batch
             </Box>
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`
- incoming requests          ┌──────────────── single GPU replica ────────────────┐
- (each names a model):      │                                                     │
-                            │   BASE MODEL WEIGHTS  (loaded once, shared)         │
-  req → "sql-lora"   ──┐    │   ┌───────────────────────────────────────────┐   │
-  req → "base"       ──┤    │   │   frozen W  (the expensive multi-GB copy)  │   │
-  req → "tone-lora"  ──┤    │   └───────────────────────────────────────────┘   │
-  req → "sql-lora"   ──┤    │                                                     │
-  req → "persona-7"  ──┘    │   active adapter slots  (max_loras on GPU):         │
-        │                   │   ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐      │
-        │  per-request      │   │sql-lora│ │tone-   │ │persona-│ │ (free) │      │
-        │  adapter select   │   │  A·B   │ │lora A·B│ │ 7  A·B │ │        │      │
-        ▼                   │   └────────┘ └────────┘ └────────┘ └────────┘      │
-   ┌─────────────┐         │        ▲          ▲          ▲                       │
-   │  scheduler  │─────────│────────┴──────────┴──────────┴── CPU LRU cache ◄──┐ │
-   │ builds ONE  │         │            batched LoRA kernels                    │ │
-   │ mixed batch │         │   y = Wx  +  (per-row adapter)·B·A·x               │ │
-   └─────────────┘         │            ──────┬──────                          │ │
-        │                  │                   ▼                                │ │
-   rows:[sql,base,tone,    │   one forward pass, correct delta applied per row  │ │
-        sql,persona-7]     └─────────────────────────────────────────────────────┘
-                                          max_cpu_loras: adapters parked in host RAM,
-                                          paged onto a GPU slot on demand (LRU) ──────┘
-`}</pre>
+            <MixedBatchDiagram />
           </Box>
 
           <Alert type="info">

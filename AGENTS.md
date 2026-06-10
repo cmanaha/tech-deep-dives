@@ -35,7 +35,7 @@ tech-deep-dives/
 
 - **Runtime:** React 18 + TypeScript (strict mode)
 - **UI:** Cloudscape Design System (AWS design tokens, dark mode, accessible)
-- **Diagrams:** React Flow (architecture diagrams)
+- **Diagrams:** Rendered graphics only — never ASCII art. Inline SVG (default), React Flow for node/edge graphs, D3 for data viz, Cloudscape for simple panels. See **Diagram Standards** below.
 - **Build:** Vite 6 with `@vitejs/plugin-react`
 - **Package Manager:** pnpm 9 with workspaces
 - **Lint:** ESLint 9 + typescript-eslint
@@ -103,6 +103,18 @@ Import from `@tech-deep-dives/shared`:
 - Every deep dive includes a Glossary in the Sources appendix section listing all acronyms used
 - Niche/domain-specific acronyms always expand: SRD, NCCL, RDMA, MPI, NAPI, DIM, GRO, LRO, QP, CQ, AH, MR, PD, UARN, WQE, etc.
 - Common computing acronyms (CPU, GPU, RAM, API, HTTP) do not need expansion
+
+## Diagram Standards
+
+- **No ASCII art — ever.** Diagrams must be rendered graphics, never ASCII / Unicode box-drawing (┌─┐ │ └─┘ ► ▼ →) inside `<pre>` or `<code>`. ASCII diagrams break word-wrap on mobile, fail accessibility, and read as unfinished. `<pre>` / `<code>` is for real code or config snippets only.
+- **Pick the rendering tool that fits the diagram** (author's judgment — no single mandated tool):
+  - **Inline SVG** — a small local React component: `<svg viewBox="..." role="img">` with a `<title>` (and `<desc>` where useful), `width: 100%`, `height: auto`. The default for one-off structural diagrams — timelines, hierarchies, decision trees, sequence/flow, box-and-arrow. Most flexible; used throughout `silicon-memory-inference`.
+  - **React Flow (`@xyflow/react`)** — node-and-edge architecture/flow graphs, especially interactive ones (pan/zoom, auto-layout). Used in `efa`. Reach for it when there are many nodes/edges or interactivity helps.
+  - **D3 + SVG** — data-driven charts (rooflines, distributions, scaled axes).
+  - **Cloudscape primitives** (`ColumnLayout` / `Container` / `Box`) — simple labeled panels that are really structured layouts, not graphs.
+  - Don't add a new heavy dependency when inline SVG, React Flow, or Cloudscape already cover the need.
+- **No overlapping text or components.** After authoring any diagram, verify there are NO collisions: text overflowing its shape, labels overlapping each other or connector lines, edges crossing through labels, or content clipped by the `viewBox`. Overlap is acceptable only when clearly intentional (e.g. deliberately layered/stacked depth). Practical rules: size every box to its longest label, pad text generously, keep a minimum gap between nodes, and confirm against the *rendered* output (Playwright DOM/visual audit) instead of trusting hand-computed coordinates.
+- **Accessible & responsive:** every diagram scales to its container width, stays legible on a phone, and (for SVG) carries `role="img"` plus a `<title>`.
 
 ## Settled Decisions (Do Not Re-Debate)
 

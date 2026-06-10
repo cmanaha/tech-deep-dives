@@ -8,6 +8,205 @@ import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
 import Link from '@cloudscape-design/components/link';
 
+function SageMakerPathsDiagram() {
+  return (
+    <svg
+      viewBox="0 0 880 360"
+      role="img"
+      aria-labelledby="sm-paths-title"
+      style={{ width: '100%', height: 'auto' }}
+    >
+      <title id="sm-paths-title">
+        The three SageMaker paths to host vLLM arranged on an ownership spectrum, from most
+        AWS-managed on the left to most you-managed on the right. Path A is LMI / DJL-Serving,
+        where vLLM is the rolling-batch backend selected by config (OPTION_ROLLING_BATCH=vllm) and
+        AWS owns the image. Path B is the AWS vLLM Deep Learning Container, an AWS-built image
+        shipping vLLM deployed straight onto an endpoint, where AWS owns the image and you own
+        config plus the endpoint. Path C is Bring-Your-Own-Container, where you own the Dockerfile,
+        the vLLM or SGLang version, and the serving glue, and AWS owns only the endpoint runtime
+        contract. All three paths deploy onto the same SageMaker real-time or async inference
+        endpoint, which provides managed autoscaling, IAM, VPC, CloudWatch, and the model registry.
+      </title>
+      <style>
+        {`
+          .smcardA { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; }
+          .smcardB { fill: #effcf8; stroke: #1f7a70; stroke-width: 1.5; }
+          .smcardC { fill: #fbf3d5; stroke: #8b6c00; stroke-width: 1.5; }
+          .smbase { fill: #e9f2fb; stroke: #065299; stroke-width: 2; }
+          .smtitle { fill: #0f1b2a; font: 600 14px sans-serif; text-anchor: middle; }
+          .smsub { fill: #414d5c; font: 11px sans-serif; text-anchor: middle; }
+          .smspectrum { fill: #5f6b7a; font: 600 12px sans-serif; text-anchor: middle; letter-spacing: 0.4px; }
+          .smbasetitle { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: middle; }
+          .smedge { stroke: #879596; stroke-width: 1.5; fill: none; marker-end: url(#sm-arrow); }
+        `}
+      </style>
+      <defs>
+        <marker id="sm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#879596" />
+        </marker>
+        <marker id="sm-spec-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M10,0 L0,5 L10,10 z" fill="#5f6b7a" />
+        </marker>
+        <marker id="sm-spec-end" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#5f6b7a" />
+        </marker>
+      </defs>
+
+      {/* Spectrum arrow */}
+      <line
+        x1={150}
+        y1={28}
+        x2={730}
+        y2={28}
+        stroke="#5f6b7a"
+        strokeWidth={1.5}
+        markerStart="url(#sm-spec-start)"
+        markerEnd="url(#sm-spec-end)"
+      />
+      <text className="smspectrum" x={150} y={18} textAnchor="start">MORE AWS-MANAGED</text>
+      <text className="smspectrum" x={730} y={18} textAnchor="end">MORE YOU-MANAGED</text>
+
+      {/* Path A card */}
+      <rect className="smcardA" x={20} y={50} width={260} height={150} rx={8} />
+      <text className="smtitle" x={150} y={74}>A. LMI / DJL-Serving</text>
+      <text className="smsub" x={150} y={96}>vLLM is the rolling-batch</text>
+      <text className="smsub" x={150} y={112}>backend of a managed</text>
+      <text className="smsub" x={150} y={128}>model server.</text>
+      <text className="smsub" x={150} y={152}>Config, not code:</text>
+      <text className="smsub" x={150} y={168}>OPTION_ROLLING_BATCH=vllm</text>
+      <text className="smsub" x={150} y={190} style={{ fontWeight: 600 }}>AWS owns the image.</text>
+
+      {/* Path B card */}
+      <rect className="smcardB" x={310} y={50} width={260} height={150} rx={8} />
+      <text className="smtitle" x={440} y={74}>B. AWS vLLM DLC</text>
+      <text className="smsub" x={440} y={96}>AWS-built Deep Learning</text>
+      <text className="smsub" x={440} y={112}>Container shipping vLLM,</text>
+      <text className="smsub" x={440} y={128}>deployed straight onto</text>
+      <text className="smsub" x={440} y={144}>an endpoint.</text>
+      <text className="smsub" x={440} y={168}>AWS owns the image;</text>
+      <text className="smsub" x={440} y={190} style={{ fontWeight: 600 }}>you own config + endpoint.</text>
+
+      {/* Path C card */}
+      <rect className="smcardC" x={600} y={50} width={260} height={150} rx={8} />
+      <text className="smtitle" x={730} y={74}>C. Bring-Your-Own-Container</text>
+      <text className="smsub" x={730} y={96}>Your Dockerfile, your</text>
+      <text className="smsub" x={730} y={112}>vLLM / SGLang version,</text>
+      <text className="smsub" x={730} y={128}>your serving glue.</text>
+      <text className="smsub" x={730} y={152}>ml-container-creator</text>
+      <text className="smsub" x={730} y={168}>can scaffold it.</text>
+      <text className="smsub" x={730} y={190} style={{ fontWeight: 600 }}>You own the image.</text>
+
+      {/* Connectors down to the shared endpoint */}
+      <path className="smedge" d="M150 200 V250" />
+      <path className="smedge" d="M440 200 V250" />
+      <path className="smedge" d="M730 200 V250" />
+
+      {/* Shared SageMaker endpoint base */}
+      <rect className="smbase" x={20} y={254} width={840} height={86} rx={8} />
+      <text className="smbasetitle" x={440} y={286}>SageMaker real-time / async inference endpoint</text>
+      <text className="smsub" x={440} y={310}>managed autoscaling, IAM, VPC, CloudWatch,</text>
+      <text className="smsub" x={440} y={326}>model registry</text>
+    </svg>
+  );
+}
+
+function BedrockVsSelfHostDiagram() {
+  return (
+    <svg
+      viewBox="0 0 900 540"
+      role="img"
+      aria-labelledby="bedrock-tree-title"
+      style={{ width: '100%', height: 'auto' }}
+    >
+      <title id="bedrock-tree-title">
+        A decision tree for choosing between self-hosting vLLM and Amazon Bedrock. First, do you
+        need custom or fine-tuned weights that are not offered on Bedrock? If yes, self-host vLLM.
+        If no, do you need a specific vLLM feature such as a multi-LoRA fleet, prefill/decode
+        disaggregation, or custom batching and scheduling? If yes, self-host vLLM. If no, do you
+        need instance-level hardware control for cost at volume, or VPC and data-residency
+        isolation that Bedrock cannot give you? If yes, self-host vLLM. If no, use Bedrock, the
+        lowest-ops choice. This is speculative, synthesized guidance, not a single AWS decision
+        document.
+      </title>
+      <style>
+        {`
+          .bq { fill: #ffffff; stroke: #879596; stroke-width: 1.5; }
+          .bself { fill: #e9f2fb; stroke: #065299; stroke-width: 2; }
+          .bbed { fill: #effcf8; stroke: #1f7a70; stroke-width: 2; }
+          .bqt { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: middle; }
+          .bqs { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .bleaf { fill: #0f1b2a; font: 600 14px sans-serif; text-anchor: middle; }
+          .bleafsub { fill: #414d5c; font: 11px sans-serif; text-anchor: middle; }
+          .bedge { stroke: #879596; stroke-width: 1.5; fill: none; marker-end: url(#bt-arrow); }
+          .belbl { fill: #414d5c; font: 600 11px sans-serif; text-anchor: middle; }
+        `}
+      </style>
+      <defs>
+        <marker id="bt-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#879596" />
+        </marker>
+      </defs>
+
+      {/* Q1 */}
+      <rect className="bq" x={250} y={20} width={400} height={56} rx={6} />
+      <text className="bqt" x={450} y={44}>Need custom / fine-tuned weights</text>
+      <text className="bqt" x={450} y={62}>NOT offered on Bedrock?</text>
+
+      {/* Q1 -> SELF-HOST (yes, left) */}
+      <path className="bedge" d="M250 48 H120 V108" />
+      <text className="belbl" x={170} y={40}>yes</text>
+
+      {/* Q1 -> Q2 (no, down) */}
+      <path className="bedge" d="M450 76 V128" />
+      <text className="belbl" x={468} y={102}>no</text>
+
+      {/* Q2 */}
+      <rect className="bq" x={250} y={128} width={400} height={72} rx={6} />
+      <text className="bqt" x={450} y={152}>Need a specific vLLM feature?</text>
+      <text className="bqs" x={450} y={172}>multi-LoRA fleet, P/D disaggregation,</text>
+      <text className="bqs" x={450} y={188}>custom batching / scheduling</text>
+
+      {/* Q2 -> SELF-HOST (yes, left) — arrives at the leaf's right edge */}
+      <path className="bedge" d="M250 164 H220" />
+      <text className="belbl" x={235} y={156}>yes</text>
+
+      {/* Q2 -> Q3 (no, down) */}
+      <path className="bedge" d="M450 200 V252" />
+      <text className="belbl" x={468} y={226}>no</text>
+
+      {/* SELF-HOST leaf (left) — shared target of Q1-yes and Q2-yes */}
+      <rect className="bself" x={20} y={108} width={200} height={64} rx={6} />
+      <text className="bleaf" x={120} y={136}>SELF-HOST vLLM</text>
+      <text className="bleafsub" x={120} y={156}>control &amp; specificity</text>
+
+      {/* Q3 */}
+      <rect className="bq" x={250} y={252} width={400} height={88} rx={6} />
+      <text className="bqt" x={450} y={276}>Need instance-level hardware</text>
+      <text className="bqt" x={450} y={294}>control for cost-at-volume, OR</text>
+      <text className="bqs" x={450} y={314}>VPC / data-residency isolation</text>
+      <text className="bqs" x={450} y={330}>Bedrock can&apos;t give you?</text>
+
+      {/* Q3 -> SELF-HOST (yes, left) */}
+      <path className="bedge" d="M250 296 H120 V420" />
+      <text className="belbl" x={170} y={288}>yes</text>
+
+      {/* Q3 -> BEDROCK (no, down) */}
+      <path className="bedge" d="M450 340 V420" />
+      <text className="belbl" x={468} y={384}>no</text>
+
+      {/* SELF-HOST leaf (bottom-left) — target of Q3-yes */}
+      <rect className="bself" x={20} y={420} width={200} height={64} rx={6} />
+      <text className="bleaf" x={120} y={448}>SELF-HOST vLLM</text>
+      <text className="bleafsub" x={120} y={468}>maximal control</text>
+
+      {/* BEDROCK leaf (bottom-center) */}
+      <rect className="bbed" x={300} y={420} width={300} height={64} rx={6} />
+      <text className="bleaf" x={450} y={448}>USE BEDROCK</text>
+      <text className="bleafsub" x={450} y={468}>lowest ops — the startup default</text>
+    </svg>
+  );
+}
+
 export function AwsSageMakerBedrock() {
   return (
     <SpaceBetween size="l">
@@ -56,34 +255,11 @@ export function AwsSageMakerBedrock() {
             the tabs below walk each one against its first-party source.
           </Box>
 
-          <Box variant="code">
+          <Box variant="div">
             <Box variant="small" color="text-status-info">
               Three SageMaker paths to host vLLM, ordered by how much AWS owns vs. you own
             </Box>
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`
-            MORE AWS-MANAGED  ◄──────────────────────────────────►  MORE YOU-MANAGED
-
-  ┌──────────────────────┐   ┌──────────────────────┐   ┌──────────────────────────┐
-  │  (A) LMI / DJL-      │   │  (B) AWS vLLM Deep   │   │  (C) Bring-Your-Own-     │
-  │      Serving         │   │      Learning        │   │      Container (BYOC)    │
-  │                      │   │      Container (DLC) │   │                          │
-  │  vLLM is the rolling │   │                      │   │  Your Dockerfile, your   │
-  │  -batch BACKEND of a │   │  AWS-built image     │   │  vLLM/SGLang version,    │
-  │  managed model       │   │  shipping vLLM,      │   │  your serving glue.      │
-  │  server.             │   │  deployed straight   │   │  awslabs ml-container-   │
-  │                      │   │  onto an endpoint.   │   │  creator generates it.   │
-  │  Config, not code:   │   │                      │   │                          │
-  │  OPTION_ROLLING_     │   │  AWS owns the image; │   │  You own the image; AWS  │
-  │  BATCH=vllm          │   │  you own config +    │   │  owns only the endpoint  │
-  │                      │   │  the endpoint.       │   │  runtime contract.       │
-  └──────────┬───────────┘   └──────────┬───────────┘   └────────────┬─────────────┘
-             │                          │                            │
-             ▼                          ▼                            ▼
-     ┌───────────────────────────────────────────────────────────────────────┐
-     │            SageMaker real-time / async inference endpoint               │
-     │     (managed autoscaling, IAM, VPC, CloudWatch, model registry)         │
-     └───────────────────────────────────────────────────────────────────────┘
-`}</pre>
+            <SageMakerPathsDiagram />
           </Box>
 
           <Alert type="info">
@@ -277,38 +453,11 @@ export function AwsSageMakerBedrock() {
             first-party sources for your region and your model.
           </Alert>
 
-          <Box variant="code">
+          <Box variant="div">
             <Box variant="small" color="text-status-info">
               Decision tree: managed Bedrock vs self-hosted vLLM (SPECULATIVE — synthesized guidance)
             </Box>
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`
-                         ┌──────────────────────────────────────────┐
-                         │  Do you need custom / fine-tuned weights   │
-                         │  that are NOT offered on Bedrock?          │
-                         └───────────────┬───────────────┬──────────┘
-                                    yes  │               │  no
-                                         ▼               ▼
-                              ┌────────────────┐   ┌──────────────────────────────────┐
-                              │ SELF-HOST vLLM │   │ Do you need a specific vLLM       │
-                              └────────────────┘   │ feature? (multi-LoRA fleet,       │
-                                         ▲         │ P/D disaggregation, custom        │
-                                         │ yes     │ batching/scheduling)              │
-                                         │         └───────────┬──────────────┬───────┘
-                                         └─────────────────────┘  yes         │ no
-                                                                              ▼
-                                                            ┌──────────────────────────────────┐
-                                                            │ Do you need instance-level         │
-                                                            │ hardware control for cost-at-      │
-                                                            │ volume, OR VPC / data-residency    │
-                                                            │ isolation Bedrock can't give you?  │
-                                                            └───────────┬──────────────┬────────┘
-                                                                  yes   │              │ no
-                                                                        ▼              ▼
-                                                              ┌────────────────┐  ┌──────────────┐
-                                                              │ SELF-HOST vLLM │  │ USE BEDROCK  │
-                                                              └────────────────┘  │ (lowest ops) │
-                                                                                  └──────────────┘
-`}</pre>
+            <BedrockVsSelfHostDiagram />
           </Box>
 
           <ColumnLayout columns={2} variant="text-grid">

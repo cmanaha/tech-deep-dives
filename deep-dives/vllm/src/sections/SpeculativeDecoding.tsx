@@ -8,6 +8,172 @@ import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
 import Link from '@cloudscape-design/components/link';
 
+function ProposeVerifyAcceptDiagram() {
+  return (
+    <svg
+      viewBox="0 0 760 560"
+      role="img"
+      aria-labelledby="spec-loop-title"
+      aria-describedby="spec-loop-desc"
+      style={{ width: '100%', height: 'auto' }}
+    >
+      <title id="spec-loop-title">
+        One target step of speculative decoding with K = 4 proposed tokens: a cheap drafter
+        proposes four tokens, the target model verifies all four in one forward pass, and a
+        left-to-right rejection-sampling check accepts the longest matching prefix and corrects
+        the first mismatch
+      </title>
+      <desc id="spec-loop-desc">
+        Step starts from context &quot;the quick brown&quot;. PROPOSE drafts [fox jumps over the].
+        VERIFY scores all four candidates in one pass. ACCEPT/REJECT keeps fox and jumps, rejects
+        over, discards the, and emits &quot;fox jumps lazy&quot; — three tokens from one target pass.
+      </desc>
+      <style>
+        {`
+          .stage { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; }
+          .verify { fill: #eef6f5; stroke: #2ea597; stroke-width: 1.5; }
+          .tok { fill: #ffffff; stroke: #879596; stroke-width: 1.2; }
+          .tok-ok { fill: #e8f5e9; stroke: #1d8102; stroke-width: 1.4; }
+          .tok-bad { fill: #fdecea; stroke: #d13212; stroke-width: 1.4; }
+          .tok-drop { fill: #f4f4f4; stroke: #b5bcc4; stroke-width: 1.2; }
+          .emit { fill: #e8f5e9; stroke: #1d8102; stroke-width: 1.5; }
+          .st { fill: #0f1b2a; font: 700 13px sans-serif; text-anchor: middle; }
+          .ss { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .tk { fill: #16191f; font: 600 12px sans-serif; text-anchor: middle; }
+          .verdict-ok { fill: #1d8102; font: 700 11px sans-serif; text-anchor: middle; }
+          .verdict-bad { fill: #d13212; font: 700 11px sans-serif; text-anchor: middle; }
+          .verdict-drop { fill: #8d99a3; font: 11px sans-serif; text-anchor: middle; }
+          .ctx { fill: #414d5c; font: 600 12px sans-serif; text-anchor: middle; }
+          .ann { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .annb { fill: #0972d3; font: 700 12px sans-serif; text-anchor: middle; }
+          .arr { stroke: #5f6b7a; stroke-width: 2; fill: none; marker-end: url(#spec-ah); }
+        `}
+      </style>
+      <defs>
+        <marker
+          id="spec-ah"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto-start-reverse"
+        >
+          <path d="M0,0 L10,5 L0,10 z" fill="#5f6b7a" />
+        </marker>
+      </defs>
+
+      {/* Step start / context */}
+      <text className="ctx" x={380} y={22}>
+        step start: context = &quot;...the quick brown&quot;
+      </text>
+      <line className="arr" x1={380} y1={30} x2={380} y2={54} />
+
+      {/* 1. PROPOSE */}
+      <rect className="stage" x={70} y={56} width={620} height={90} rx={8} />
+      <text className="st" x={380} y={80}>
+        1. PROPOSE
+      </text>
+      <text className="ss" x={380} y={98}>
+        cheap drafter, K = 4 — drafts the next four tokens
+      </text>
+      {['fox', 'jumps', 'over', 'the'].map((t, i) => {
+        const x = 150 + i * 120;
+        return (
+          <g key={`prop-${t}`}>
+            <rect className="tok" x={x} y={110} width={100} height={26} rx={5} />
+            <text className="tk" x={x + 50} y={127}>
+              {t}
+            </text>
+          </g>
+        );
+      })}
+
+      <text className="ann" x={380} y={166}>
+        send all K candidates at once
+      </text>
+      <line className="arr" x1={380} y1={172} x2={380} y2={194} />
+
+      {/* 2. VERIFY */}
+      <rect className="verify" x={70} y={196} width={620} height={92} rx={8} />
+      <text className="st" x={380} y={220}>
+        2. VERIFY
+      </text>
+      <text className="ss" x={380} y={238}>
+        target model, ONE forward pass — scores every position in parallel
+      </text>
+      {['fox?', 'jumps?', 'over?', 'the?'].map((t, i) => {
+        const x = 150 + i * 120;
+        return (
+          <g key={`ver-${t}`}>
+            <rect className="tok" x={x} y={252} width={100} height={26} rx={5} />
+            <text className="tk" x={x + 50} y={269}>
+              {t}
+            </text>
+          </g>
+        );
+      })}
+
+      <line className="arr" x1={380} y1={290} x2={380} y2={314} />
+
+      {/* 3. ACCEPT / REJECT */}
+      <rect className="stage" x={70} y={316} width={620} height={132} rx={8} />
+      <text className="st" x={380} y={340}>
+        3. ACCEPT / REJECT
+      </text>
+      <text className="ss" x={380} y={358}>
+        rejection sampling, walked left &#8594; right
+      </text>
+
+      {/* per-token verdicts */}
+      {[
+        { t: 'fox', cls: 'tok-ok', vc: 'verdict-ok', v: '✓ accept' },
+        { t: 'jumps', cls: 'tok-ok', vc: 'verdict-ok', v: '✓ accept' },
+        { t: 'over', cls: 'tok-bad', vc: 'verdict-bad', v: '✗ REJECT' },
+        { t: 'the', cls: 'tok-drop', vc: 'verdict-drop', v: 'discarded' },
+      ].map((d, i) => {
+        const x = 150 + i * 120;
+        return (
+          <g key={`acc-${d.t}`}>
+            <rect className={d.cls} x={x} y={372} width={100} height={26} rx={5} />
+            <text className="tk" x={x + 50} y={389}>
+              {d.t}
+            </text>
+            <text className={d.vc} x={x + 50} y={414}>
+              {d.v}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* stop-here marker under the rejected token */}
+      <text className="ann" x={510} y={432}>
+        stop at first reject
+      </text>
+
+      <text className="annb" x={380} y={434}>
+        emit accepted prefix + 1 corrected token from target
+      </text>
+
+      <line className="arr" x1={380} y1={450} x2={380} y2={472} />
+
+      {/* emit result */}
+      <rect className="emit" x={210} y={474} width={340} height={40} rx={8} />
+      <text className="st" x={380} y={499}>
+        &#8594; &quot;fox jumps lazy&quot; — 3 tokens from ONE target pass
+      </text>
+
+      {/* outcome annotations */}
+      <text className="verdict-ok" x={380} y={534}>
+        high acceptance &#8594; many tokens per pass &#8594; big speedup
+      </text>
+      <text className="verdict-bad" x={380} y={550}>
+        low acceptance &#8594; ~1 token per pass + drafting overhead &#8594; slower
+      </text>
+    </svg>
+  );
+}
+
 export function SpeculativeDecoding() {
   return (
     <SpaceBetween size="l">
@@ -81,39 +247,7 @@ export function SpeculativeDecoding() {
             <em>1 + (number accepted)</em>, so a high acceptance rate is the entire game.
           </Box>
 
-          <Box variant="code">
-            <Box variant="small" color="text-status-info">
-              One target step with K = 4 proposed tokens
-            </Box>
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`
- step start: context = "...the quick brown"
-
- ┌─ 1. PROPOSE (cheap drafter, K=4) ───────────────────────────┐
- │   draft → [ fox  jumps  over  the ]                          │
- └─────────────────────────────────────────────────────────────┘
-                    │  send all K candidates at once
-                    ▼
- ┌─ 2. VERIFY (target model, ONE forward pass) ────────────────┐
- │   scores every candidate position in parallel:              │
- │     fox?   jumps?   over?   the?                             │
- │   one pass over weights + KV → distributions for all K      │
- └─────────────────────────────────────────────────────────────┘
-                    │
-                    ▼
- ┌─ 3. ACCEPT / REJECT (rejection sampling, left → right) ─────┐
- │     fox   ✓ accept                                          │
- │     jumps ✓ accept                                          │
- │     over  ✗ REJECT  ── stop here ──┐                        │
- │     the     (discarded)            │                        │
- │                                    ▼                         │
- │   emit accepted prefix + 1 corrected token from target:     │
- │     → "fox jumps lazy"   (3 tokens from ONE target pass)    │
- └─────────────────────────────────────────────────────────────┘
-
-   high acceptance → many tokens per pass → big speedup
-   low acceptance  → ~1 token per pass + drafting overhead → slower
-`}</pre>
-          </Box>
+          <ProposeVerifyAcceptDiagram />
 
           <Alert type="info">
             <strong>Why the rejection step keeps it lossless:</strong> each candidate is accepted with

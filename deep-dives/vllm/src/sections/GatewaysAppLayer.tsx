@@ -8,6 +8,109 @@ import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
 import Link from '@cloudscape-design/components/link';
 
+function DataPathDiagram() {
+  return (
+    <svg
+      viewBox="0 0 860 470"
+      role="img"
+      aria-labelledby="datapath-title"
+      style={{ width: '100%', height: 'auto' }}
+    >
+      <title id="datapath-title">
+        Request data path: web/chat, agent, and RAG applications all speak the OpenAI wire
+        format to a single LiteLLM gateway, which applies control-plane policy and re-issues each
+        call to one or more OpenAI-compatible vLLM endpoints.
+      </title>
+      <style>
+        {`
+          .app { fill: #0972d3; stroke: #065299; stroke-width: 1.5; }
+          .gw { fill: #2ea597; stroke: #1f7a70; stroke-width: 1.5; }
+          .eng { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; }
+          .engalt { fill: #f9f9fa; stroke: #879596; stroke-width: 1.5; }
+          .at { fill: #ffffff; font: 600 14px sans-serif; text-anchor: middle; }
+          .as { fill: #ffffff; font: 11px sans-serif; text-anchor: middle; }
+          .gt { fill: #ffffff; font: 600 14px sans-serif; text-anchor: middle; }
+          .gs { fill: #d6f2ee; font: 11px sans-serif; text-anchor: middle; }
+          .et { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: middle; }
+          .es { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .tier { fill: #5f6b7a; font: 600 12px sans-serif; letter-spacing: 0.5px; }
+          .tiersub { fill: #879596; font: 11px sans-serif; }
+          .wire { fill: #414d5c; font: 600 12px sans-serif; text-anchor: middle; }
+          .note { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .arr { stroke: #5f6b7a; stroke-width: 2; fill: none; marker-end: url(#dah); }
+          .baseline { stroke: #879596; stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
+        `}
+      </style>
+      <defs>
+        <marker id="dah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#5f6b7a" />
+        </marker>
+      </defs>
+
+      {/* Tier labels */}
+      <text className="tier" x={30} y={26}>PRODUCT / CONTROL TIER</text>
+      <text className="tiersub" x={30} y={42}>own auth, budgets, routing, UX</text>
+      <text className="tier" x={830} y={26} textAnchor="end">ENGINE TIER</text>
+      <text className="tiersub" x={830} y={42} textAnchor="end">own GPU, KV cache, scheduler</text>
+
+      {/* App tier — three boxes */}
+      <rect className="app" x={40} y={60} width={220} height={64} rx={8} />
+      <text className="at" x={150} y={88}>Web / chat UI</text>
+      <text className="as" x={150} y={108}>(Open WebUI)</text>
+
+      <rect className="app" x={320} y={60} width={220} height={64} rx={8} />
+      <text className="at" x={430} y={88}>Agents</text>
+      <text className="as" x={430} y={108}>(LangChain)</text>
+
+      <rect className="app" x={600} y={60} width={220} height={64} rx={8} />
+      <text className="at" x={710} y={88}>RAG pipeline</text>
+      <text className="as" x={710} y={108}>(LlamaIndex)</text>
+
+      {/* Wire-format annotation */}
+      <text className="wire" x={430} y={150}>
+        all speak POST /v1/chat/completions (OpenAI wire format)
+      </text>
+
+      {/* Arrows from each app down to the gateway */}
+      <path className="arr" d="M150,124 C150,170 380,170 425,185" />
+      <path className="arr" d="M430,124 L430,185" />
+      <path className="arr" d="M710,124 C710,170 480,170 435,185" />
+
+      {/* Gateway tier */}
+      <rect className="gw" x={250} y={190} width={360} height={92} rx={8} />
+      <text className="gt" x={430} y={218}>LLM gateway / proxy (LiteLLM)</text>
+      <text className="gs" x={430} y={240}>retries · fallbacks · budgets · rate limits</text>
+      <text className="gs" x={430} y={258}>virtual keys · logging · multi-provider unification</text>
+      <text className="gs" x={430} y={276}>model = hosted_vllm/...</text>
+
+      {/* Re-issue annotation */}
+      <text className="note" x={430} y={306}>re-issues OpenAI-format request to api_base</text>
+
+      {/* Arrows fanning out to the three engine endpoints */}
+      <path className="arr" d="M430,282 C430,310 170,316 150,330" />
+      <path className="arr" d="M430,282 L430,330" />
+      <path className="arr" d="M430,282 C430,310 690,316 710,330" />
+
+      {/* Engine tier — vLLM endpoints + other compat/SaaS */}
+      <rect className="eng" x={40} y={334} width={220} height={72} rx={8} />
+      <text className="et" x={150} y={362}>vLLM endpoint</text>
+      <text className="es" x={150} y={382}>/v1 (model A)</text>
+
+      <rect className="eng" x={320} y={334} width={220} height={72} rx={8} />
+      <text className="et" x={430} y={362}>vLLM endpoint</text>
+      <text className="es" x={430} y={382}>/v1 (model B)</text>
+
+      <rect className="engalt" x={600} y={334} width={220} height={72} rx={8} />
+      <text className="et" x={710} y={362}>other OpenAI-</text>
+      <text className="es" x={710} y={382}>compat / SaaS</text>
+
+      {/* Shared baseline under the vLLM endpoints */}
+      <path className="baseline" d="M150,422 L430,422" />
+      <text className="note" x={290} y={440}>vllm serve · OpenAI-compatible (§12)</text>
+    </svg>
+  );
+}
+
 export function GatewaysAppLayer() {
   return (
     <SpaceBetween size="l">
@@ -55,32 +158,7 @@ export function GatewaysAppLayer() {
             endpoints &mdash; each of which is, again, just an OpenAI-compatible server.
           </Box>
 
-          <Box variant="code">
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`  PRODUCT / CONTROL TIER                                ENGINE TIER
-  (own auth, budgets, routing, UX)                      (own GPU, KV cache, scheduler)
-
-  ┌─────────────┐  ┌─────────────┐  ┌──────────────┐
-  │  Web / chat │  │   Agents    │  │ RAG pipeline │
-  │ (Open WebUI)│  │ (LangChain) │  │ (LlamaIndex) │
-  └──────┬──────┘  └──────┬──────┘  └──────┬───────┘
-         │                │                │
-         │   all speak  POST /v1/chat/completions  (OpenAI wire format)
-         └────────────────┼────────────────┘
-                          ▼
-              ┌───────────────────────────┐
-              │   LLM gateway / proxy      │   ← retries · fallbacks · budgets
-              │   (LiteLLM)                │     rate limits · key mgmt · logging
-              │   model = hosted_vllm/...  │     multi-provider unification
-              └─────────────┬─────────────┘
-                            │  re-issues OpenAI-format request to api_base
-            ┌───────────────┼───────────────┐
-            ▼               ▼                ▼
-   ┌────────────────┐ ┌────────────────┐ ┌────────────────┐
-   │ vLLM endpoint  │ │ vLLM endpoint  │ │ (other OpenAI- │
-   │ /v1  (model A) │ │ /v1  (model B) │ │  compat / SaaS)│
-   └────────────────┘ └────────────────┘ └────────────────┘
-            └──────── vllm serve · OpenAI-compatible (§12) ───────┘`}</pre>
-          </Box>
+          <DataPathDiagram />
 
           <Table
             variant="embedded"

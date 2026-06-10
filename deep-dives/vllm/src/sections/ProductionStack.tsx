@@ -8,6 +8,121 @@ import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
 import Link from '@cloudscape-design/components/link';
 
+function DeploymentShapeDiagram() {
+  return (
+    <svg
+      viewBox="0 0 860 470"
+      role="img"
+      aria-labelledby="prodstack-shape-title"
+      style={{ width: '100%', height: 'auto' }}
+    >
+      <title id="prodstack-shape-title">
+        A client sends OpenAI-compatible HTTP requests to a vLLM router, which routes each
+        request to one of a fleet of vLLM engine replicas using session-, prefix-, or
+        round-robin (KV-cache-aware) logic. Every replica exposes a /metrics endpoint scraped
+        by Prometheus, which feeds Grafana LLM-serving dashboards. The router, replicas, and
+        observability stack all live in one Kubernetes namespace installed by a single Helm
+        chart.
+      </title>
+      <style>
+        {`
+          .ns { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; stroke-dasharray: 6 4; }
+          .router { fill: #0972d3; stroke: #065299; stroke-width: 1.5; }
+          .replica { fill: #2ea597; stroke: #1f7a70; stroke-width: 1.5; }
+          .obs { fill: #fbf3d5; stroke: #8b6c00; stroke-width: 1.5; }
+          .client { fill: #ffffff; stroke: #5f6b7a; stroke-width: 1.5; }
+          .rt { fill: #ffffff; font: 600 15px sans-serif; text-anchor: middle; }
+          .rs { fill: #eaf3fb; font: 11px sans-serif; text-anchor: middle; }
+          .pt { fill: #ffffff; font: 600 13px sans-serif; text-anchor: middle; }
+          .ps { fill: #e6f4f1; font: 11px sans-serif; text-anchor: middle; }
+          .ot { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: middle; }
+          .os { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .ct { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: middle; }
+          .cs { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .nslbl { fill: #0972d3; font: 600 12px sans-serif; letter-spacing: 0.5px; }
+          .elbl { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .cap { fill: #5f6b7a; font: 600 12px sans-serif; text-anchor: middle; }
+          .arr { stroke: #5f6b7a; stroke-width: 2; fill: none; marker-end: url(#psah); }
+          .scrape { stroke: #8b6c00; stroke-width: 2; fill: none; stroke-dasharray: 5 4; marker-end: url(#psahg); }
+        `}
+      </style>
+      <defs>
+        <marker id="psah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#5f6b7a" />
+        </marker>
+        <marker id="psahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#8b6c00" />
+        </marker>
+      </defs>
+
+      {/* Client (outside the namespace) */}
+      <rect className="client" x={20} y={150} width={150} height={70} rx={8} />
+      <text className="ct" x={95} y={180}>client</text>
+      <text className="cs" x={95} y={200}>OpenAI-compatible</text>
+
+      {/* client -> router arrow */}
+      <path className="arr" d="M170,185 L230,185" />
+      <text className="elbl" x={200} y={176}>HTTP</text>
+
+      {/* Kubernetes namespace boundary */}
+      <rect className="ns" x={230} y={40} width={610} height={400} rx={10} />
+      <text className="nslbl" x={250} y={64}>Kubernetes namespace</text>
+
+      {/* vLLM Router */}
+      <rect className="router" x={290} y={90} width={250} height={84} rx={8} />
+      <text className="rt" x={415} y={120}>vLLM Router</text>
+      <text className="rs" x={415} y={142}>routing-logic: session | prefix |</text>
+      <text className="rs" x={415} y={158}>round-robin (KV-cache-aware)</text>
+
+      {/* router -> replicas arrows */}
+      <path className="arr" d="M340,174 L320,224" />
+      <path className="arr" d="M415,174 L415,224" />
+      <path className="arr" d="M490,174 L510,224" />
+
+      {/* vLLM engine replicas (fleet) */}
+      <rect className="replica" x={260} y={228} width={120} height={78} rx={8} />
+      <text className="pt" x={320} y={256}>vLLM</text>
+      <text className="ps" x={320} y={274}>engine</text>
+      <text className="ps" x={320} y={290}>replica</text>
+
+      <rect className="replica" x={400} y={228} width={120} height={78} rx={8} />
+      <text className="pt" x={460} y={256}>vLLM</text>
+      <text className="ps" x={460} y={274}>engine</text>
+      <text className="ps" x={460} y={290}>replica</text>
+
+      <rect className="replica" x={540} y={228} width={120} height={78} rx={8} />
+      <text className="pt" x={600} y={256}>vLLM</text>
+      <text className="ps" x={600} y={274}>engine</text>
+      <text className="ps" x={600} y={290}>replica</text>
+
+      <text className="elbl" x={730} y={272}>... +N replicas</text>
+
+      {/* replicas -> Prometheus (scrape) */}
+      <path className="scrape" d="M320,306 L320,340 L470,340 L470,360" />
+      <path className="scrape" d="M460,306 L470,335" />
+      <path className="scrape" d="M600,306 L600,340 L490,340 L490,360" />
+      <text className="elbl" x={470} y={332}>/metrics (Prometheus scrape)</text>
+
+      {/* Prometheus */}
+      <rect className="obs" x={370} y={362} width={150} height={64} rx={8} />
+      <text className="ot" x={445} y={388}>Prometheus</text>
+      <text className="os" x={445} y={408}>scrape + store</text>
+
+      {/* Prometheus -> Grafana */}
+      <path className="arr" d="M520,394 L580,394" />
+
+      {/* Grafana */}
+      <rect className="obs" x={580} y={362} width={160} height={64} rx={8} />
+      <text className="ot" x={660} y={384}>Grafana</text>
+      <text className="os" x={660} y={402}>LLM-serving</text>
+      <text className="os" x={660} y={418}>dashboards</text>
+
+      {/* one Helm chart caption */}
+      <text className="cap" x={535} y={462}>all of the above: one Helm chart</text>
+    </svg>
+  );
+}
+
 export function ProductionStack() {
   return (
     <SpaceBetween size="l">
@@ -68,35 +183,7 @@ export function ProductionStack() {
             replica answering from a warm cache.
           </Box>
 
-          <Box variant="code">
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`
-                         ┌──────────────────────────────────────────────┐
-                         │            Kubernetes namespace               │
-                         │                                               │
-   client ─── HTTP ───▶  │   ┌───────────────────────────────────┐      │
-   (OpenAI-compatible)   │   │          vLLM Router              │      │
-                         │   │  routing-logic: session | prefix |│      │
-                         │   │  round-robin  (KV-cache-aware)    │      │
-                         │   └───────────────────────────────────┘      │
-                         │        │            │            │           │
-                         │        ▼            ▼            ▼           │
-                         │   ┌────────┐   ┌────────┐   ┌────────┐       │
-                         │   │ vLLM   │   │ vLLM   │   │ vLLM   │  ...   │
-                         │   │ engine │   │ engine │   │ engine │       │
-                         │   │ replica│   │ replica│   │ replica│       │
-                         │   └───┬────┘   └───┬────┘   └───┬────┘       │
-                         │       │            │            │           │
-                         │       └──── /metrics (Prometheus scrape) ───┐│
-                         │                                            ▼ │
-                         │   ┌──────────────┐        ┌──────────────┐  │
-                         │   │  Prometheus  │ ─────▶ │   Grafana    │  │
-                         │   │  (scrape +   │        │ (LLM-serving │  │
-                         │   │   store)     │        │  dashboards) │  │
-                         │   └──────────────┘        └──────────────┘  │
-                         └──────────────────────────────────────────────┘
-                                   all of the above: one Helm chart
-`}</pre>
-          </Box>
+          <DeploymentShapeDiagram />
 
           <Alert type="info">
             <strong>The router is the load-bearing component.</strong> A plain Kubernetes Service

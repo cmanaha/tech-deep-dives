@@ -42,6 +42,112 @@ const instanceRows: InstanceRow[] = [
   },
 ];
 
+function KvDataPathDiagram() {
+  return (
+    <svg
+      viewBox="0 0 860 440"
+      role="img"
+      aria-labelledby="kv-datapath-title"
+      style={{ width: '100%', height: 'auto' }}
+    >
+      <title id="kv-datapath-title">
+        A prefiller EC2 node and a decoder EC2 node, both inside one Availability Zone. The
+        prefiller&apos;s vLLM engine (kv_role producer, NixlConnector) holds KV blocks in GPU HBM and
+        hands them to its EFA NIXL/LIBFABRIC interface; the KV cache is transferred by GPUDirect RDMA
+        over EFA (SRD, OS-bypass) to the decoder&apos;s EFA interface, into decoder GPU HBM, where the
+        vLLM engine (kv_role consumer) generates tokens.
+      </title>
+      <style>
+        {`
+          .az { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; stroke-dasharray: 7 5; }
+          .azlbl { fill: #0972d3; font: 600 12px sans-serif; letter-spacing: 0.5px; }
+          .node { fill: #ffffff; stroke: #879596; stroke-width: 1.5; }
+          .nodehd { fill: #232f3e; }
+          .ht { fill: #ffffff; font: 600 13px sans-serif; text-anchor: middle; }
+          .hs { fill: #d5dbdb; font: 11px sans-serif; text-anchor: middle; }
+          .hbm { fill: #e8f5e9; stroke: #1d8102; stroke-width: 1.4; }
+          .efa { fill: #fbf3d5; stroke: #8b6c00; stroke-width: 1.4; }
+          .bt { fill: #0f1b2a; font: 600 12px sans-serif; text-anchor: middle; }
+          .bs { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .cfg { fill: #414d5c; font: 11px sans-serif; text-anchor: middle; }
+          .cfgm { fill: #0972d3; font: 600 11px sans-serif; text-anchor: middle; }
+          .iarr { stroke: #5f6b7a; stroke-width: 1.6; fill: none; marker-end: url(#kvdown); }
+          .xarr { stroke: #0972d3; stroke-width: 2.5; fill: none; marker-end: url(#kvx); }
+          .xt { fill: #0972d3; font: 600 12px sans-serif; text-anchor: middle; }
+          .xs { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+        `}
+      </style>
+      <defs>
+        <marker id="kvdown" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#5f6b7a" />
+        </marker>
+        <marker id="kvx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#0972d3" />
+        </marker>
+      </defs>
+
+      {/* Availability Zone boundary */}
+      <rect className="az" x={16} y={16} width={828} height={408} rx={12} />
+      <text className="azlbl" x={34} y={40}>ONE AVAILABILITY ZONE (EFA cannot cross AZ / VPC)</text>
+
+      {/* ---- Prefiller node ---- */}
+      <rect className="node" x={44} y={58} width={310} height={320} rx={8} />
+      <rect className="nodehd" x={44} y={58} width={310} height={34} rx={8} />
+      <text className="ht" x={199} y={80}>PREFILLER NODE (EC2)</text>
+
+      <text className="bt" x={199} y={114}>e.g. p5.48xlarge</text>
+      <text className="bs" x={199} y={134}>vLLM engine &middot; NixlConnector</text>
+      <text className="cfgm" x={199} y={152}>kv_role = producer</text>
+      <text className="cfg" x={199} y={170}>kv_buffer_device = cuda</text>
+
+      {/* prefiller GPU HBM */}
+      <rect className="hbm" x={104} y={188} width={190} height={48} rx={6} />
+      <text className="bt" x={199} y={209}>GPU HBM</text>
+      <text className="bs" x={199} y={226}>KV blocks</text>
+
+      {/* internal arrow HBM -> EFA */}
+      <line className="iarr" x1={199} y1={236} x2={199} y2={284} />
+      <text className="bs" x={199} y={262}>GPUDirect RDMA</text>
+
+      {/* prefiller EFA */}
+      <rect className="efa" x={104} y={290} width={190} height={62} rx={6} />
+      <text className="bt" x={199} y={313}>EFA interface</text>
+      <text className="bs" x={199} y={331}>NIXL / LIBFABRIC</text>
+      <text className="bs" x={199} y={347}>OS-bypass</text>
+
+      {/* ---- Decoder node ---- */}
+      <rect className="node" x={506} y={58} width={310} height={320} rx={8} />
+      <rect className="nodehd" x={506} y={58} width={310} height={34} rx={8} />
+      <text className="ht" x={661} y={80}>DECODER NODE (EC2)</text>
+
+      <text className="bt" x={661} y={114}>e.g. p5.48xlarge</text>
+      <text className="bs" x={661} y={134}>vLLM engine &middot; NixlConnector</text>
+      <text className="cfgm" x={661} y={152}>kv_role = consumer</text>
+      <text className="cfg" x={661} y={170}>kv_buffer_device = cuda</text>
+
+      {/* decoder EFA (top, receives) */}
+      <rect className="efa" x={566} y={290} width={190} height={62} rx={6} />
+      <text className="bt" x={661} y={313}>EFA interface</text>
+      <text className="bs" x={661} y={331}>NIXL / LIBFABRIC</text>
+      <text className="bs" x={661} y={347}>OS-bypass</text>
+
+      {/* decoder GPU HBM */}
+      <rect className="hbm" x={566} y={188} width={190} height={48} rx={6} />
+      <text className="bt" x={661} y={209}>GPU HBM</text>
+      <text className="bs" x={661} y={226}>KV blocks in</text>
+
+      {/* internal arrow EFA -> HBM (upward) */}
+      <line className="iarr" x1={661} y1={290} x2={661} y2={240} />
+      <text className="bs" x={661} y={272}>GPUDirect RDMA</text>
+
+      {/* ---- KV transfer between EFA interfaces ---- */}
+      <line className="xarr" x1={294} y1={321} x2={566} y2={321} />
+      <text className="xt" x={430} y={306}>KV cache transfer</text>
+      <text className="xs" x={430} y={343}>SRD over EFA &middot; packet-spraying</text>
+    </svg>
+  );
+}
+
 export function AwsGpuEfaNixl() {
   return (
     <SpaceBetween size="l">
@@ -105,41 +211,7 @@ export function AwsGpuEfaNixl() {
             staging through host memory and no kernel on the data path.
           </Box>
 
-          <Box variant="div">
-            <pre
-              style={{
-                fontFamily: 'Monaco, Consolas, monospace',
-                fontSize: '12px',
-                lineHeight: 1.5,
-                overflowX: 'auto',
-                margin: 0,
-              }}
-            >
-{`  ┌─────────────────────────┐                          ┌─────────────────────────┐
-  │  PREFILLER NODE (EC2)    │                          │  DECODER NODE (EC2)      │
-  │  e.g. p5.48xlarge        │                          │  e.g. p5.48xlarge        │
-  │                          │                          │                          │
-  │  vLLM engine             │                          │  vLLM engine             │
-  │  kv_role = producer      │                          │  kv_role = consumer      │
-  │  NixlConnector           │                          │  NixlConnector           │
-  │  kv_buffer_device = cuda │                          │  kv_buffer_device = cuda │
-  │      │                   │                          │            ▲             │
-  │      ▼ KV blocks in HBM  │                          │   KV blocks in HBM       │
-  │  ┌──────────┐            │                          │       ┌──────────┐       │
-  │  │ GPU HBM  │            │                          │       │ GPU HBM  │       │
-  │  └────┬─────┘            │                          │       └────▲─────┘       │
-  │       │ GPUDirect RDMA   │                          │            │             │
-  │  ┌────▼─────┐            │                          │       ┌────┴─────┐       │
-  │  │   EFA    │            │                          │       │   EFA    │       │
-  │  │ (NIXL /  │            │                          │       │ (NIXL /  │       │
-  │  │ LIBFABRIC│            │                          │       │ LIBFABRIC│       │
-  │  └────┬─────┘            │                          │       └────▲─────┘       │
-  └───────┼──────────────────┘                          └────────────┼────────────┘
-          │                                                           │
-          └──────────►  SRD over EFA, OS-bypass, within one AZ  ──────┘
-                        (packet-spraying — see EFA deep dive)`}
-            </pre>
-          </Box>
+          <KvDataPathDiagram />
 
           <Alert type="info">
             <strong>Keep the two nodes physically close.</strong> EFA cannot cross Availability

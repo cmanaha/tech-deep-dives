@@ -8,6 +8,131 @@ import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
 import Link from '@cloudscape-design/components/link';
 
+function EksRequestProvisioningDiagram() {
+  const blue = '#0972d3';
+  const blueDark = '#065299';
+  const teal = '#2ea597';
+  const tealDark = '#1f7a70';
+  const secondary = '#5f6b7a';
+  const text = '#16191f';
+  const blueFill = '#f2f8fd';
+  const tealFill = '#e6f4f2';
+  const amberFill = '#fbf3e6';
+  const amberStroke = '#8b6c00';
+  const border = '#879596';
+
+  return (
+    <svg
+      role="img"
+      aria-labelledby="eks-reqprov-title"
+      style={{ width: '100%', height: 'auto' }}
+      viewBox="0 0 900 560"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title id="eks-reqprov-title">
+        vLLM on Amazon EKS: the request path runs client to ALB/Gateway to LiteLLM to vLLM pods,
+        which split into a single-replica path on Karpenter-provisioned GPU nodes and a multi-node
+        LeaderWorkerSet path on an EFA-enabled managed node group inside a cluster placement group.
+        The provisioning path streams model weights from S3 through a Karpenter NodePool that
+        just-in-time provisions GPU nodes.
+      </title>
+      <defs>
+        <marker id="eks-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill={secondary} />
+        </marker>
+      </defs>
+
+      {/* ---- Phase labels ---- */}
+      <text x={250} y={26} textAnchor="middle" fontSize={12} fontWeight="bold" fill={secondary} fontFamily="sans-serif" letterSpacing="0.5">REQUEST PATH (left to right)</text>
+      <text x={730} y={26} textAnchor="middle" fontSize={12} fontWeight="bold" fill={secondary} fontFamily="sans-serif" letterSpacing="0.5">PROVISIONING PATH (bottom up)</text>
+      <line x1={500} y1={40} x2={500} y2={540} stroke="#d1d5db" strokeWidth={1.5} strokeDasharray="5 4" />
+
+      {/* ================= REQUEST PATH (left column) ================= */}
+      {/* client */}
+      <rect x={30} y={50} width={130} height={48} rx={8} fill={blueFill} stroke={blue} strokeWidth={1.5} />
+      <text x={95} y={79} textAnchor="middle" fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">client</text>
+
+      {/* ALB / Gateway */}
+      <rect x={30} y={130} width={420} height={56} rx={8} fill={blue} stroke={blueDark} strokeWidth={1.5} />
+      <text x={240} y={154} textAnchor="middle" fontSize={13} fontWeight="bold" fill="#ffffff" fontFamily="sans-serif">ALB / Gateway</text>
+      <text x={240} y={173} textAnchor="middle" fontSize={11} fill="#ffffff" fontFamily="sans-serif">L7 ingress / Gateway API Inference Extension</text>
+
+      {/* LiteLLM */}
+      <rect x={30} y={218} width={420} height={56} rx={8} fill={blue} stroke={blueDark} strokeWidth={1.5} />
+      <text x={240} y={242} textAnchor="middle" fontSize={13} fontWeight="bold" fill="#ffffff" fontFamily="sans-serif">LiteLLM (API gateway)</text>
+      <text x={240} y={261} textAnchor="middle" fontSize={11} fill="#ffffff" fontFamily="sans-serif">virtual keys / budgets / fallback &middot; OpenAI /v1</text>
+
+      {/* arrows client -> ALB -> LiteLLM */}
+      <line x1={95} y1={98} x2={95} y2={128} stroke={secondary} strokeWidth={2} markerEnd="url(#eks-arr)" />
+      <line x1={240} y1={186} x2={240} y2={216} stroke={secondary} strokeWidth={2} markerEnd="url(#eks-arr)" />
+
+      {/* split label */}
+      <text x={240} y={296} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">routes to vLLM pods</text>
+
+      {/* single-replica vLLM */}
+      <rect x={20} y={312} width={210} height={74} rx={8} fill={blueFill} stroke={blue} strokeWidth={1.5} />
+      <text x={125} y={336} textAnchor="middle" fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">single-replica vLLM</text>
+      <text x={125} y={356} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">1 GPU / TP=1</text>
+      <text x={125} y={374} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">OpenAI /v1</text>
+
+      {/* multi-node vLLM */}
+      <rect x={250} y={312} width={230} height={74} rx={8} fill={tealFill} stroke={teal} strokeWidth={1.5} />
+      <text x={365} y={336} textAnchor="middle" fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">multi-node vLLM</text>
+      <text x={365} y={356} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">LeaderWorkerSet</text>
+      <text x={365} y={374} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">TP &times; PP across nodes</text>
+
+      {/* arrows LiteLLM -> two pod boxes */}
+      <line x1={125} y1={274} x2={125} y2={310} stroke={secondary} strokeWidth={2} markerEnd="url(#eks-arr)" />
+      <line x1={365} y1={274} x2={365} y2={310} stroke={secondary} strokeWidth={2} markerEnd="url(#eks-arr)" />
+
+      {/* Karpenter GPU node (single) */}
+      <rect x={20} y={430} width={210} height={70} rx={8} fill="#ffffff" stroke={border} strokeWidth={1.5} />
+      <text x={125} y={456} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">Karpenter GPU node</text>
+      <text x={125} y={476} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">g6e / p-series</text>
+      <text x={125} y={492} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">just-in-time</text>
+
+      {/* EFA managed node group (multi) */}
+      <rect x={250} y={430} width={230} height={70} rx={8} fill={tealFill} stroke={tealDark} strokeWidth={1.5} />
+      <text x={365} y={454} textAnchor="middle" fontSize={12} fontWeight="bold" fill={text} fontFamily="sans-serif">EFA managed node group</text>
+      <text x={365} y={473} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">+ cluster placement group (&sect;23)</text>
+      <text x={365} y={490} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">NIXL / NCCL over EFA (&sect;22)</text>
+
+      {/* arrows pod -> node */}
+      <line x1={125} y1={386} x2={125} y2={428} stroke={secondary} strokeWidth={2} markerEnd="url(#eks-arr)" />
+      <line x1={365} y1={386} x2={365} y2={428} stroke={secondary} strokeWidth={2} markerEnd="url(#eks-arr)" />
+
+      {/* note: Karpenter does not create placement groups */}
+      <text x={250} y={528} textAnchor="middle" fontSize={11} fontStyle="italic" fill={secondary} fontFamily="sans-serif">Karpenter autoscales single-replica nodes; the EFA group is pre-provisioned standing capacity</text>
+
+      {/* ================= PROVISIONING PATH (right column) ================= */}
+      {/* S3 weights */}
+      <rect x={560} y={50} width={300} height={56} rx={8} fill={amberFill} stroke={amberStroke} strokeWidth={1.5} />
+      <text x={710} y={74} textAnchor="middle" fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">Amazon S3 (model weights)</text>
+      <text x={710} y={93} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">Run:ai Model Streamer &middot; Mountpoint &middot; FSx-linked</text>
+
+      {/* Karpenter NodePool */}
+      <rect x={560} y={186} width={300} height={86} rx={8} fill={blueFill} stroke={blue} strokeWidth={1.5} />
+      <text x={710} y={212} textAnchor="middle" fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">Karpenter NodePool</text>
+      <text x={710} y={232} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">instance-category g / p</text>
+      <text x={710} y={250} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">taint nvidia.com/gpu:NoSchedule</text>
+
+      {/* Karpenter GPU node(s) provisioned */}
+      <rect x={560} y={352} width={300} height={70} rx={8} fill="#ffffff" stroke={border} strokeWidth={1.5} />
+      <text x={710} y={382} textAnchor="middle" fontSize={13} fontWeight="bold" fill={text} fontFamily="sans-serif">Karpenter GPU node(s)</text>
+      <text x={710} y={402} textAnchor="middle" fontSize={11} fill={secondary} fontFamily="sans-serif">provisioned on demand</text>
+
+      {/* arrows: S3 stream -> NodePool -> GPU nodes */}
+      <line x1={710} y1={106} x2={710} y2={184} stroke={secondary} strokeWidth={2} markerEnd="url(#eks-arr)" />
+      <text x={726} y={150} fontSize={11} fontStyle="italic" fill={secondary} fontFamily="sans-serif">stream</text>
+      <line x1={710} y1={272} x2={710} y2={350} stroke={secondary} strokeWidth={2} markerEnd="url(#eks-arr)" />
+      <text x={726} y={316} fontSize={11} fontStyle="italic" fill={secondary} fontFamily="sans-serif">just-in-time</text>
+
+      {/* note tying provisioned nodes back to the request-path single-replica node */}
+      <text x={710} y={452} textAnchor="middle" fontSize={11} fontStyle="italic" fill={secondary} fontFamily="sans-serif">these are the GPU nodes the single-replica pods land on</text>
+    </svg>
+  );
+}
+
 export function AwsEks() {
   return (
     <SpaceBetween size="l">
@@ -59,27 +184,7 @@ export function AwsEks() {
             EFA-dependent path needs the locality guarantee from section 23.
           </Box>
 
-          <Box variant="code">
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`  REQUEST PATH                                                  PROVISIONING PATH
-
-  client ──▶ ALB / Gateway ──▶ LiteLLM ──▶ vLLM pods            S3 (model weights)
-            (ingress / GAIE)   (gateway)   (OpenAI /v1)                 │ stream
-                                  │                                     ▼
-                                  │                          ┌──────────────────────┐
-                    ┌─────────────┴───────────────┐          │ Karpenter NodePool    │
-                    ▼                              ▼          │ instance-category g/p │
-        ┌────────────────────┐        ┌────────────────────┐ │ taint nvidia.com/gpu  │
-        │ single-replica vLLM │       │ multi-node vLLM     │ └──────────┬───────────┘
-        │ 1 GPU / TP=1        │       │ LeaderWorkerSet     │            ▼ just-in-time
-        │ Karpenter GPU node  │       │ TP×PP across nodes  │   ┌──────────────────────┐
-        └─────────┬──────────┘        └─────────┬──────────┘   │ Karpenter GPU node(s) │
-                  ▼                              ▼              └──────────────────────┘
-        ┌────────────────────┐        ┌────────────────────────────┐
-        │ Karpenter GPU node │        │ EFA managed node group      │  ◀── §23 cluster
-        │ (g6e / p-series)   │        │ + cluster placement group   │      placement group
-        └────────────────────┘        │ (NIXL / NCCL over EFA, §22) │
-                                       └────────────────────────────┘`}</pre>
-          </Box>
+          <EksRequestProvisioningDiagram />
 
           <Box variant="small">
             The single-replica path (ALB/Gateway &rarr; vLLM on a Karpenter GPU node, weights
