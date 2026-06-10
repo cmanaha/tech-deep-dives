@@ -116,6 +116,33 @@ const sources: Source[] = [
 
   // Third-party analysis (Tier 3)
   { id: 120, title: 'Datadog Security Labs — LiteLLM PyPI supply-chain campaign', url: 'https://securitylabs.datadoghq.com/articles/litellm-compromised-pypi-teampcp-supply-chain-campaign/', tier: 3, type: 'third-party-analysis', accessDate: '2026-06-07' },
+
+  // AWS SageMaker — deep integration (Section 25), Tier 1 docs / source
+  { id: 130, title: 'DJL LMI — Container & model configurations (option.* / pass-through)', url: 'https://docs.djl.ai/master/docs/serving/serving/docs/lmi/deployment_guide/configurations.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 131, title: 'DJL LMI — Release notes (LMI → vLLM version mapping)', url: 'https://docs.djl.ai/master/docs/serving/serving/docs/lmi/release_notes.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 132, title: 'DJL LMI — Deploying your model on a SageMaker endpoint', url: 'https://docs.djl.ai/master/docs/serving/serving/docs/lmi/deployment_guide/deploying-your-endpoint.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 133, title: 'DJL LMI — Chat input/output schema', url: 'https://docs.djl.ai/master/docs/serving/serving/docs/lmi/user_guides/chat_input_output_schema.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 134, title: 'AWS SageMaker — Model deploy feature matrix', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/model-deploy-feature-matrix.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 135, title: 'AWS SageMaker — Inference deployment options', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model-options.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 136, title: 'AWS SageMaker — Model hosting FAQs (limits / timeouts)', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/hosting-faqs.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 137, title: 'AWS SageMaker — Large-model inference hosting parameters', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/large-model-inference-hosting.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 138, title: 'AWS SageMaker — CloudWatch metrics', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/monitoring-cloudwatch.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 139, title: 'AWS SageMaker — Endpoint auto-scaling policy (Inference Components)', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-auto-scaling-policy.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 140, title: 'AWS SageMaker — Define an auto-scaling policy', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-auto-scaling-add-code-define.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 141, title: 'AWS SageMaker HyperPod — Model deployment (vLLM container)', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-model-deployment.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 142, title: 'AWS SageMaker HyperPod — Deploy a model with kubectl (S3/FSx/HF)', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-model-deployment-deploy-ftm.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 143, title: 'AWS SageMaker HyperPod — Inference autoscaling (KEDA / Karpenter, JumpStartModel CRD)', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-model-deployment-autoscaling.html', tier: 1, type: 'official-docs', accessDate: '2026-06-07' },
+  { id: 144, title: 'aws/model-hosting-container-standards (vLLM-on-SageMaker quickstart, SM_VLLM_*)', url: 'https://github.com/aws/model-hosting-container-standards', tier: 1, type: 'aws-open-source', accessDate: '2026-06-07' },
+  { id: 145, title: 'vLLM RFC — SageMaker session affinity / X-Amzn-SageMaker-Session-Id (#28163)', url: 'https://github.com/vllm-project/vllm/issues/28163', tier: 1, type: 'source-code', accessDate: '2026-06-07' },
+
+  // AWS SageMaker — deep integration (Section 25), Tier 2 blogs / samples
+  { id: 146, title: 'AWS ML Blog — SageMaker LMI container v15 (async mode; JumpStart on LMI/vLLM)', url: 'https://aws.amazon.com/blogs/machine-learning/supercharge-your-llm-performance-with-amazon-sagemaker-large-model-inference-container-v15/', tier: 2, type: 'aws-blog', accessDate: '2026-06-07' },
+  { id: 147, title: 'AWS ML Blog — Multi-tenant LoRA serving on Amazon SageMaker', url: 'https://aws.amazon.com/blogs/machine-learning/efficient-and-cost-effective-multi-tenant-lora-serving-with-amazon-sagemaker/', tier: 2, type: 'aws-blog', accessDate: '2026-06-07' },
+  { id: 148, title: 'AWS ML Blog — Scale down to zero in SageMaker Inference', url: 'https://aws.amazon.com/blogs/machine-learning/unlock-cost-savings-with-the-new-scale-down-to-zero-feature-in-amazon-sagemaker-inference/', tier: 2, type: 'aws-blog', accessDate: '2026-06-07' },
+  { id: 149, title: 'AWS ML Blog — Faster autoscaling for generative AI (ConcurrentRequestsPerModel)', url: 'https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-inference-launches-faster-auto-scaling-for-generative-ai-models/', tier: 2, type: 'aws-blog', accessDate: '2026-06-07' },
+  { id: 150, title: 'AWS ML Blog — Enhanced metrics for SageMaker AI endpoints', url: 'https://aws.amazon.com/blogs/machine-learning/enhanced-metrics-for-amazon-sagemaker-ai-endpoints-deeper-visibility-for-better-performance/', tier: 2, type: 'aws-blog', accessDate: '2026-06-07' },
+  { id: 151, title: 'AWS ML Blog — Real-time voice with SageMaker AI + vLLM (streaming)', url: 'https://aws.amazon.com/blogs/machine-learning/build-real-time-voice-applications-with-amazon-sagemaker-ai-and-vllm/', tier: 2, type: 'aws-blog', accessDate: '2026-06-07' },
+  { id: 152, title: 'aws-samples/load-test-llm-with-locust (sagemaker_vllm_loadtest.ipynb)', url: 'https://github.com/aws-samples/load-test-llm-with-locust', tier: 2, type: 'aws-open-source', accessDate: '2026-06-07' },
 ];
 
 const glossary: GlossaryEntry[] = [
@@ -178,12 +205,23 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'EKS', fullForm: 'Elastic Kubernetes Service', description: 'AWS managed Kubernetes; the canonical place to run vLLM with DLCs, Karpenter, and LeaderWorkerSet.' },
   { acronym: 'DLC', fullForm: 'Deep Learning Container', description: 'AWS-published, pre-built vLLM container images on ECR Public.' },
   { acronym: 'LWS', fullForm: 'LeaderWorkerSet', description: 'A Kubernetes API for grouping a leader + worker pods together for multi-node serving.' },
-  { acronym: 'LMI', fullForm: 'Large Model Inference', description: 'The SageMaker DJL-Serving container family that can run vLLM as its rolling-batch backend.' },
+  { acronym: 'LMI', fullForm: 'Large Model Inference', description: 'The SageMaker DJL-Serving container family that runs vLLM as its backend (async mode by default since LMI v17).' },
   { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'Reserved EC2 capacity; created inside a cluster placement group to control co-location.' },
   { acronym: 'Cluster placement group', fullForm: 'Cluster Placement Group', description: 'Packs instances into one AZ on a high-bisection-bandwidth segment (up to 10 Gbps single-flow) for low-latency multi-node work.' },
   { acronym: 'DescribeInstanceTopology', fullForm: 'DescribeInstanceTopology API', description: 'A diagnostic EC2 API returning a relative NetworkNodes proximity hierarchy for running instances — used to assign ranks, not to place instances.' },
   { acronym: 'UltraCluster', fullForm: 'EC2 UltraCluster', description: 'Co-located accelerated EC2 instances on a petabit-scale EFA network; Capacity Blocks auto-place inside one.' },
   { acronym: 'Bedrock', fullForm: 'Amazon Bedrock', description: 'AWS managed foundation-model API; the lower-ops alternative to self-hosting vLLM.' },
+
+  // SageMaker integration (Section 25)
+  { acronym: 'DJL-Serving', fullForm: 'Deep Java Library Serving', description: 'The model server inside the SageMaker LMI container; runs vLLM (or TensorRT-LLM) behind a unified config format.' },
+  { acronym: 'async mode (LMI)', fullForm: 'LMI Asynchronous Mode', description: 'LMI default since v17; wires LMI straight to vLLM’s AsyncLLMEngine via vLLM’s OpenAI modules, replacing the legacy OPTION_ROLLING_BATCH path.' },
+  { acronym: 'serving.properties', fullForm: 'LMI serving.properties', description: 'LMI config file using option.* keys (overriding the equivalent OPTION_* env vars); pass-through keys forward opaquely to vLLM EngineArgs.' },
+  { acronym: 'Inference Component', fullForm: 'SageMaker Inference Component', description: 'A hosting object on a real-time endpoint reserving accelerators/memory with its own copy counts; the unit that enables scale-to-zero and multi-LoRA fan-out.' },
+  { acronym: 'scale-to-zero', fullForm: 'Scale to Zero', description: 'Scaling a SageMaker endpoint to 0 instances when idle; available only with Inference Components (MinInstanceCount 0); ~5–6 min cold start.' },
+  { acronym: 'ConcurrentRequestsPerModel', fullForm: 'Concurrent Requests Per Model', description: 'A high-resolution (10s), streaming-aware SageMaker autoscaling metric counting in-flight requests until the last streamed token — faster scale-out than InvocationsPerInstance.' },
+  { acronym: 'HyperPod', fullForm: 'SageMaker HyperPod', description: 'EKS-only SageMaker surface running vLLM as a first-class container with multi-node EFA, tiered KV cache, cache-aware routing, and KEDA/Karpenter autoscaling.' },
+  { acronym: 'JumpStart', fullForm: 'SageMaker JumpStart', description: 'One-click deploy of open-source models that run on the LMI container (vLLM backend) via JumpStartModel(...).deploy().' },
+  { acronym: 'SM_VLLM_*', fullForm: 'SageMaker vLLM entrypoint env vars', description: 'The env-var contract in the official vLLM SageMaker entrypoint that maps vLLM’s port 8000 to SageMaker’s required 8080 and translates settings.' },
 ];
 
 export function GlossaryAndSources() {
