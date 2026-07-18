@@ -385,7 +385,7 @@ export function MoeAndSparseActivation() {
               activates more experts due to batch dimension, decode is sparser. Several
               production stacks (NVIDIA Dynamo, SGLang, DeepSeek-V3 reference deployment)
               now disaggregate prefill and decode onto different node groups, optimizing
-              each for its profile. Section 24 covers the disaggregated serving story in
+              each for its profile. Section 26 covers the disaggregated serving story in
               detail; for MoE specifically it is the difference between paying for one
               fleet sized for the worse case and paying for two fleets each sized for
               their own case.

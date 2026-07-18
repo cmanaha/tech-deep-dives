@@ -63,7 +63,7 @@ export function AwsCustomSilicon() {
             <strong>Why this section sits where it does.</strong> Section 13 covered
             NVIDIA at the silicon level. This section is the AWS counterpart at the
             silicon level — the same kind of hardware deep dive, focused on what is
-            in the package and how operands flow through it. Section 17 covers the
+            in the package and how operands flow through it. Section 18 covers the
             compiler stack on top.
           </Box>
         </SpaceBetween>

@@ -52,7 +52,7 @@ export function IsolationNie() {
             <strong>The three pillars together.</strong> Host-level isolation
             via the Nitro Isolation Engine. Accelerator-level partitioning
             via MIG (NVIDIA) or compiler-managed SBUF (Trainium). Software-
-            level isolation via NEFF AOT compilation (covered in Section 27).
+            level isolation via NEFF AOT compilation (covered in Section 29).
             Each pillar addresses a different class of jitter source. Together
             they map directly to the regulated-workloads compliance
             requirements every capital-markets firm has to satisfy.

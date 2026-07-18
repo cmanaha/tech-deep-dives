@@ -47,7 +47,7 @@ export function QuantizationAndPrecision() {
           <Box variant="p">
             <strong>Why this section.</strong> Section 3 listed precision as the
             third lever (alongside batching and operator fusion) for moving decode
-            workloads rightward on the roofline. Section 22 (MoE) showed NVFP4
+            workloads rightward on the roofline. Section 23 (MoE) showed NVFP4
             cutting DeepSeek-V3.2 from 690 GB FP8 to 415 GB. This section walks
             the precision ladder formally, explains what each format buys and
             costs, and shows what the major silicon families support.

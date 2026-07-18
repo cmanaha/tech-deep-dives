@@ -211,7 +211,7 @@ export function RooflineAndArithmeticIntensity() {
             Neuron-Distributed) spend so much code on continuous batching. At batch 1 the
             silicon is starved; at batch 64 it is well-utilized. The ceiling on batch size
             is KV cache capacity, not compute, because each in-flight request carries its
-            own KV cache that grows with context length. Section 20 walks this tradeoff in
+            own KV cache that grows with context length. Section 22 walks this tradeoff in
             detail.
           </Box>
           <Box variant="p">
@@ -221,7 +221,7 @@ export function RooflineAndArithmeticIntensity() {
             round-tripping to HBM. FlashAttention is the canonical example — it fuses the
             attention matmul, softmax, and second matmul into a single kernel and keeps the
             working tile resident throughout, which both lowers HBM traffic and raises
-            arithmetic intensity. Section 20 covers the current state (FlashAttention-3,
+            arithmetic intensity. Section 22 covers the current state (FlashAttention-3,
             paged variants). Sections 14 and 16 cover the compiler surfaces — CUTLASS /
             CuTe / Triton on NVIDIA, NKI on Trainium — that emit the fused kernels.
           </Box>

@@ -241,7 +241,7 @@ export function AmdEpycTurin() {
             hardware does. The kernel configures the policy.
           </Alert>
           <Box variant="p">
-            <strong>Why this matters for capital markets.</strong> Section 28
+            <strong>Why this matters for capital markets.</strong> Section 30
             covers the tick-to-trade pipeline. Stage 1-2 is NIC arrival plus
             OS-bypass receive, the latency budget on the order of hundreds of
             nanoseconds. SDCI changes the topology underneath: an inbound packet

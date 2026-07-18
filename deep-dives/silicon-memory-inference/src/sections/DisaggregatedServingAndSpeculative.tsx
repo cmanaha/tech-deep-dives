@@ -39,7 +39,7 @@ export function DisaggregatedServingAndSpeculative() {
             wall-clock drops because multiple tokens are emitted per
             big-model pass. When the speculation misses, you fall back. Both
             techniques compose with the precision and batching levers from
-            Sections 23 and 21.
+            Sections 25 and 22.
           </Box>
         </SpaceBetween>
       </Container>

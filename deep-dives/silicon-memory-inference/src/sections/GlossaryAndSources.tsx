@@ -38,6 +38,11 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'SNC', fullForm: 'Sub-NUMA Clustering', description: 'Intel NUMA mode; SNC3 partitions Xeon 6 6900P into three NUMA domains per tile.' },
   { acronym: 'NUMA', fullForm: 'Non-Uniform Memory Access', description: 'Architecture where memory access latency depends on which CPU is making the request.' },
   { acronym: 'NV-HBI', fullForm: 'NVIDIA High-Bandwidth Interface', description: 'Custom interconnect joining the two reticle-sized dies in Blackwell GB100 (~10 TB/s).' },
+  { acronym: 'NVLink-C2C', fullForm: 'NVLink Chip-to-Chip', description: 'Coherent CPU-GPU interconnect in Grace-Hopper, Grace-Blackwell, and GB10. 900 GB/s on Grace-Hopper; GB10 figure unpublished ("5x PCIe Gen 5").' },
+  { acronym: 'GB10', fullForm: 'Grace Blackwell 10 Superchip', description: 'The DGX Spark SoC: 20 Arm cores (10x X925 + 10x A725) plus a Blackwell GPU on 128 GB unified LPDDR5X at 273 GB/s.' },
+  { acronym: 'RoCE', fullForm: 'RDMA over Converged Ethernet', description: 'RDMA transport over Ethernet; carries the two-Spark ConnectX-7 cluster link at up to ~190 Gbps measured.' },
+  { acronym: 'QSFP', fullForm: 'Quad Small Form-factor Pluggable', description: 'The network port/cable form factor used by the ConnectX-7 pair on DGX Spark for two-unit clustering.' },
+  { acronym: 'CoWoS-R', fullForm: 'Chip-on-Wafer-on-Substrate with Redistribution layer', description: 'TSMC 2.5D packaging; teardown analysis reports GB10 uses it to join the CPU and GPU dies (Tier 3).' },
   { acronym: 'NVLink', fullForm: 'NVIDIA Link', description: 'NVIDIA GPU-to-GPU interconnect; Gen 5 on Blackwell at 1.8 TB/s per GPU.' },
   { acronym: 'NVSwitch', fullForm: 'NVIDIA Switch', description: 'NVLink switch fabric providing full bisection bandwidth in HGX and NVL72 systems.' },
   { acronym: 'MNNVL', fullForm: 'Multi-Node NVLink', description: 'NVLink protocol crossing node boundaries inside an UltraServer like NVL72.' },
@@ -199,6 +204,26 @@ const sources: Source[] = [
   { id: 114, title: 'Artificial Analysis', url: 'https://artificialanalysis.ai/', tier: 3, type: 'third-party-benchmark', accessDate: '2026-04-23' },
   { id: 115, title: 'NextPlatform — Granite Rapids', url: 'https://www.nextplatform.com/2024/09/24/intel-shoots-granite-rapids-xeon-6-into-the-datacenter/', tier: 3, type: 'third-party-analysis', accessDate: '2026-04-23' },
   { id: 116, title: 'The Register — Graviton 5', url: 'https://www.theregister.com/2025/12/04/amazon_graviton_5/', tier: 3, type: 'third-party-analysis', accessDate: '2026-04-23' },
+
+  // Edge shared-memory silicon (Section 15)
+  { id: 120, title: 'NVIDIA DGX Spark product page', url: 'https://www.nvidia.com/en-us/products/workstations/dgx-spark/', tier: 1, type: 'product-page', accessDate: '2026-07-18' },
+  { id: 121, title: 'DGX Spark User Guide — Hardware Overview', url: 'https://docs.nvidia.com/dgx/dgx-spark/hardware.html', tier: 1, type: 'official-docs', accessDate: '2026-07-18' },
+  { id: 122, title: 'DGX Spark Porting Guide — System Overview', url: 'https://docs.nvidia.com/dgx/dgx-spark-porting-guide/overview.html', tier: 1, type: 'official-docs', accessDate: '2026-07-18' },
+  { id: 123, title: 'DGX Spark User Guide — Spark Stacking (clustering)', url: 'https://docs.nvidia.com/dgx/dgx-spark/spark-clustering.html', tier: 1, type: 'official-docs', accessDate: '2026-07-18' },
+  { id: 124, title: 'NIM for LLMs — Deploy on DGX Spark', url: 'https://docs.nvidia.com/nim/large-language-models/1.15.0/deploy-on-dgx-spark.html', tier: 1, type: 'official-docs', accessDate: '2026-07-18' },
+  { id: 125, title: 'Jetson Orin Nano Series Modules Data Sheet DS-11105-001_v1.5 (NVIDIA doc, mirrored PDF)', url: 'https://www.esys.ir/images/img_Item/3029/Files/Jetson-Orin-Nano-Series-Modules-Datasheet_DS-11105-001_v1.5.pdf', tier: 1, type: 'official-docs', accessDate: '2026-07-18' },
+  { id: 126, title: 'Jetson Orin Nano Super Developer Kit page', url: 'https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/nano-super-developer-kit/', tier: 1, type: 'product-page', accessDate: '2026-07-18' },
+  { id: 127, title: 'CUDA for Tegra Application Note', url: 'https://docs.nvidia.com/cuda/cuda-for-tegra-appnote/index.html', tier: 1, type: 'official-docs', accessDate: '2026-07-18' },
+  { id: 128, title: 'JetPack 6.2 Release Notes', url: 'https://docs.nvidia.com/jetson/archives/jetpack-archived/jetpack-62/release-notes/index.html', tier: 1, type: 'official-docs', accessDate: '2026-07-18' },
+  { id: 129, title: 'NVIDIA blog — How DGX Spark Performance Enables Intensive AI Tasks', url: 'https://developer.nvidia.com/blog/how-nvidia-dgx-sparks-performance-enables-intensive-ai-tasks/', tier: 2, type: 'aws-blog', accessDate: '2026-07-18' },
+  { id: 130, title: 'NVIDIA blog — Jetson Orin Nano Developer Kit Gets a Super Boost', url: 'https://developer.nvidia.com/blog/nvidia-jetson-orin-nano-developer-kit-gets-a-super-boost/', tier: 2, type: 'aws-blog', accessDate: '2026-07-18' },
+  { id: 131, title: 'Jetson AI Lab benchmarks (NVIDIA-operated)', url: 'https://www.jetson-ai-lab.com/archive/benchmarks.html', tier: 2, type: 'third-party-benchmark', accessDate: '2026-07-18' },
+  { id: 132, title: 'NVIDIA newsroom — DGX Spark and DGX Station announcement', url: 'https://nvidianews.nvidia.com/news/nvidia-announces-dgx-spark-and-dgx-station-personal-ai-computers', tier: 2, type: 'announcement', accessDate: '2026-07-18' },
+  { id: 133, title: 'llama.cpp — Performance of llama.cpp on NVIDIA DGX Spark', url: 'https://github.com/ggml-org/llama.cpp/discussions/16578', tier: 3, type: 'third-party-benchmark', accessDate: '2026-07-18' },
+  { id: 134, title: 'LMSYS — NVIDIA DGX Spark In-Depth Review', url: 'https://www.lmsys.org/blog/2025-10-13-nvidia-dgx-spark/', tier: 3, type: 'third-party-benchmark', accessDate: '2026-07-18' },
+  { id: 135, title: 'TechInsights — NVIDIA GB10 Superchip Advanced Packaging Analysis', url: 'https://www.techinsights.com/blog/nvidia-gb10-superchip-advanced-packaging-analysis', tier: 3, type: 'third-party-analysis', accessDate: '2026-07-18' },
+  { id: 136, title: 'EXO Labs — DGX Spark + Mac Studio disaggregated inference', url: 'https://blog.exolabs.net/nvidia-dgx-spark/', tier: 3, type: 'third-party-benchmark', accessDate: '2026-07-18' },
+  { id: 137, title: 'NVIDIA blog — Getting Started with Edge AI on Jetson', url: 'https://developer.nvidia.com/blog/getting-started-with-edge-ai-on-nvidia-jetson-llms-vlms-and-foundation-models-for-robotics/', tier: 2, type: 'aws-blog', accessDate: '2026-07-18' },
 ];
 
 export function GlossaryAndSources() {

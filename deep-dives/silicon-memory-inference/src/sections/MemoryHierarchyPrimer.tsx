@@ -109,7 +109,7 @@ export function MemoryHierarchyPrimer() {
           <MemoryHierarchyTower />
           <Box variant="small">
             Numbers on the diagram are representative; the per-silicon exact figures carry
-            Tier 1 citations in Sections 5 (HBM), 6 (DDR/MRDIMM/CXL), 11-12 (NVIDIA), and
+            Tier 1 citations in Sections 6 (HBM), 7 (DDR/MRDIMM/CXL), 12-13 (NVIDIA), and
             15 (AWS Trainium). H100 / H200 capacities track the{' '}
             <Link external href="https://www.nvidia.com/en-us/data-center/h200/">
               NVIDIA H200 product page
@@ -179,7 +179,7 @@ export function MemoryHierarchyPrimer() {
               <Box variant="p">
                 256 KB per SM of tensor-memory dedicated to tcgen05 operand staging —
                 distinct from SMEM. Introduced on Blackwell as the place where tensor-core
-                tiles live across a matmul. Section 12 carries the verified datasheet
+                tiles live across a matmul. Section 13 carries the verified datasheet
                 numbers.
               </Box>
             </div>
@@ -187,7 +187,7 @@ export function MemoryHierarchyPrimer() {
               <Box variant="h3">Trainium SBUF + PSUM</Box>
               <Box variant="p">
                 SBUF holds activations and weights the Neuron compiler has staged; PSUM
-                holds partial sums from the systolic array before write-back. Section 15
+                holds partial sums from the systolic array before write-back. Section 17
                 carries sizing and bandwidth numbers.
               </Box>
             </div>
@@ -256,7 +256,7 @@ export function MemoryHierarchyPrimer() {
             of decode workloads (Section 3). Raising HBM bandwidth is expensive: HBM is
             2.5D-packaged with through-silicon vias and a silicon interposer, pin speed is
             limited by signal integrity over the stack, and every generation requires new
-            packaging and yield work. Section 5 digs into HBM in depth.
+            packaging and yield work. Section 6 digs into HBM in depth.
           </Box>
           <Alert type="info" header="CXL sits at tier 7 — capacity lever, not latency lever">
             CXL 2.0 pooling and CXL 3.0 sharing attach TBs of memory to a single socket
@@ -264,7 +264,7 @@ export function MemoryHierarchyPrimer() {
             hold. They do not reduce latency over a direct DDR channel — in fact they
             modestly increase it. For latency-sensitive workloads CXL is the wrong lever.
             For capacity-limited workloads (large recommender embeddings, in-memory
-            analytics, sparse retrieval indexes) it is the right one. Section 6 walks DDR5,
+            analytics, sparse retrieval indexes) it is the right one. Section 7 walks DDR5,
             MRDIMM, LPDDR5X, and CXL in more detail.
           </Alert>
         </SpaceBetween>
@@ -293,8 +293,8 @@ export function MemoryHierarchyPrimer() {
               core count chip despite looking faster on the headline spec.
             </Box>
             <Box variant="p">
-              Section 8 carries the measured Graviton4 → Graviton5 transition; the same
-              effect shows up on EPYC Turin (Section 9) and Xeon 6 (Section 10). The
+              Section 9 carries the measured Graviton4 → Graviton5 transition; the same
+              effect shows up on EPYC Turin (Section 10) and Xeon 6 (Section 11). The
               practical implication: for workloads that stress tier 6 per thread,
               &ldquo;more cores&rdquo; is not obviously faster. Pay attention to bandwidth
               per vCPU, not socket bandwidth in aggregate.

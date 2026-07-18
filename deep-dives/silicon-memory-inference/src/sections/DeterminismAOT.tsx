@@ -44,7 +44,7 @@ export function DeterminismAOT() {
             and audit-sensitive workloads increasingly treat per-call
             determinism as a first-class requirement. Not approximate
             reproducibility — bit-exact output for the same input on the
-            same silicon, every time. Section 26 covered the spatial
+            same silicon, every time. Section 28 covered the spatial
             isolation story (tenant separation). This section covers the
             temporal isolation story (per-call reproducibility).
           </Box>
@@ -208,7 +208,7 @@ export function DeterminismAOT() {
       >
         <ColumnLayout columns={2} variant="text-grid">
           <div>
-            <Box variant="h3">Spatial — what Section 26 covered</Box>
+            <Box variant="h3">Spatial — what Section 28 covered</Box>
             <Box variant="p">
               NIE on Graviton5 (formally verified host isolation), MIG on
               NVIDIA (hardware GPU partitioning), TEE-I/O on Blackwell
