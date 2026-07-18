@@ -187,9 +187,9 @@ export function ThesisAndFraming() {
             Section 3 defines the roofline formally and computes ridge points per
             architecture. Section 4 walks the seven-tier memory hierarchy. Section 6 digs
             into HBM — the tier that matters most for inference and the tier most actively
-            contested in silicon roadmaps. Sections 8-16 take each silicon family in turn
+            contested in silicon roadmaps. Sections 9-18 take each silicon family in turn
             and show which leg of the triangle it optimizes, with Tier 1 vendor citations.
-            Sections 20-22 cover the software techniques (KV cache layout,
+            Sections 22-26 cover the software techniques (KV cache layout,
             FlashAttention-class fusion, quantization, speculative decoding, disaggregated
             serving) that change a workload&apos;s arithmetic intensity and therefore its
             placement on the roofline.

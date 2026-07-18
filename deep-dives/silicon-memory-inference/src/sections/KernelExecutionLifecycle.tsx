@@ -127,7 +127,7 @@ export function KernelExecutionLifecycle() {
             calls a kernel, which tier gets touched at which moment, and how many cycles
             does the silicon spend in each? That is what this section walks through. The
             same vocabulary applies later, in the vendor-specific chapters; here we
-            establish the sequence so the bandwidth numbers in Sections 6-15 read against
+            establish the sequence so the bandwidth numbers in Sections 6-18 read against
             a clear flow.
           </Box>
           <Box variant="p">
@@ -356,7 +356,7 @@ export function KernelExecutionLifecycle() {
               run in a tight loop with no detour through HBM. Section 4&apos;s
               point about &ldquo;round trips to HBM&rdquo; being the cost of
               missing the scratchpad tier shows up here as the concrete payoff
-              for kernel fusion. Section 20 covers FlashAttention-class techniques
+              for kernel fusion. Section 22 covers FlashAttention-class techniques
               in detail; the lifecycle here is what fusion is actually changing.
             </Box>
           </SpaceBetween>
@@ -391,9 +391,9 @@ export function KernelExecutionLifecycle() {
           in time. Chiplet topology (Section 8) determines how many extra
           nanoseconds stage 5 has to absorb when the working set crosses a
           chiplet boundary. NVIDIA Hopper / Blackwell (Sections 12-13) and AWS
-          Trainium (Section 16) implement stages 4-6 differently and the
+          Trainium (Section 17) implement stages 4-6 differently and the
           differences directly affect the cycle counts in this section&apos;s
-          table. Communication and scale-out (Section 24) is what stage 7 looks
+          table. Communication and scale-out (Section 27) is what stage 7 looks
           like when the result has to leave the device. Every per-vendor number
           you see later in the deep dive is, ultimately, an answer to &ldquo;how
           many cycles does this stage cost on this silicon for this workload.&rdquo;

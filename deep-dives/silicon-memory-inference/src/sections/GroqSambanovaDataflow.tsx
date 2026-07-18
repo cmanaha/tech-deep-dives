@@ -162,12 +162,12 @@ export function GroqSambanovaDataflow() {
         }
       >
         <Box variant="p">
-          The capital-markets framing in Section 28 will land on this point
+          The capital-markets framing in Section 30 will land on this point
           again, but it is worth flagging here. Both Groq and SambaNova produce
           the per-token wall-clock time as a property of the compiled schedule,
           not of runtime contention. For a tick-to-trade pipeline that needs
           consistent p99.9 latency, the predictability is more valuable than
-          peak throughput. The Cerebras bet (Section 18) generalizes the same
+          peak throughput. The Cerebras bet (Section 19) generalizes the same
           argument to wafer-scale; Groq and SambaNova generalize it to chip-
           scale with different memory choices.
         </Box>

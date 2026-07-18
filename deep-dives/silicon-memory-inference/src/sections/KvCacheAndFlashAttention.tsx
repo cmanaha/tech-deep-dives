@@ -44,7 +44,7 @@ export function KvCacheAndFlashAttention() {
           <Box variant="p">
             <strong>Why this section.</strong> Section 3 said decode workloads
             sit two orders of magnitude below the ridge point on the roofline.
-            Sections 22 (MoE) and 23 (Quantization) showed two architectural
+            Sections 23 (MoE) and 25 (Quantization) showed two architectural
             ways to move that placement. This section covers the two software
             techniques that do the same job at the kernel level — KV-cache
             management for attention&apos;s memory cost, and FlashAttention-
@@ -225,7 +225,7 @@ export function KvCacheAndFlashAttention() {
           an OS. Requests acquire and release pages from a pool. The result is
           near-zero memory waste from fragmentation, which directly raises the
           maximum batch size the server can sustain on a given HBM budget.
-          Section 24 (Disaggregated Serving) covers how this composes with
+          Section 26 (Disaggregated Serving) covers how this composes with
           prefill / decode disaggregation.
         </Box>
         <ExpandableSection headerText="Why KV-cache management is the second lever after batching">
@@ -234,7 +234,7 @@ export function KvCacheAndFlashAttention() {
             arithmetic intensity rightward on the roofline. Batching is bounded
             by KV-cache memory. KV-cache shrinking techniques (GQA, MLA,
             FP8 KV-cache, paging) raise the ceiling on batch size, which in
-            turn raises arithmetic intensity. Quantization (Section 23) does
+            turn raises arithmetic intensity. Quantization (Section 25) does
             the same job from a different angle — fewer bytes per parameter
             also means fewer bytes per KV-cache entry. In production these
             techniques compose; in panels and architecture reviews they are

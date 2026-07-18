@@ -32,12 +32,12 @@ interface FailureRow {
 }
 
 const failureRows: FailureRow[] = [
-  { source: 'Noisy neighbor on shared HBM', cost: 'p99.9 spike from contention', pillarFix: 'MIG hardware partitioning (Section 26)' },
+  { source: 'Noisy neighbor on shared HBM', cost: 'p99.9 spike from contention', pillarFix: 'MIG hardware partitioning (Section 28)' },
   { source: 'NUMA-cross memory access', cost: 'Tens of ns over local DRAM', pillarFix: 'NPS / SNC sub-NUMA mode (Sections 8, 10, 11)' },
-  { source: 'Hypervisor scheduling jitter', cost: 'Microsecond-class outliers', pillarFix: 'NIE on Graviton5 (Section 26)' },
-  { source: 'GPU kernel non-determinism', cost: 'Cannot reproduce decisions for audit', pillarFix: 'Trainium NEFF AOT or GPU determinism opt-in (Section 27)' },
+  { source: 'Hypervisor scheduling jitter', cost: 'Microsecond-class outliers', pillarFix: 'NIE on Graviton5 (Section 28)' },
+  { source: 'GPU kernel non-determinism', cost: 'Cannot reproduce decisions for audit', pillarFix: 'Trainium NEFF AOT or GPU determinism opt-in (Section 29)' },
   { source: 'Cross-CCD core-to-core hops', cost: '~150 ns over intra-CCD', pillarFix: 'Thread / memory pinning, NPS4 (Section 10)' },
-  { source: 'NCCL kernel launch consuming SMs', cost: 'Decode kernels stalled', pillarFix: 'NIXL for KV-cache transport (Section 25)' },
+  { source: 'NCCL kernel launch consuming SMs', cost: 'Decode kernels stalled', pillarFix: 'NIXL for KV-cache transport (Section 27)' },
 ];
 
 export function CapitalMarketsLens() {
@@ -302,7 +302,7 @@ export function CapitalMarketsLens() {
             from heavy Monte Carlo to dense small-network inference. That
             inference workload maps cleanly onto the silicon covered by this
             deep dive: AWS Trainium / Inferentia for cost-optimized inference
-            (Section 16), NVIDIA GPUs for training the twin networks (Section
+            (Section 17), NVIDIA GPUs for training the twin networks (Section
             12-13), and host-CPU AMX or Graviton5 SVE2 for embedded inference
             in the trading and risk path (Sections 9, 11). The silicon answer
             for risk-and-valuation workloads is no longer a 10,000-CPU grid;
@@ -435,7 +435,7 @@ export function CapitalMarketsLens() {
                 eager mode) for the &ldquo;noticeable performance
                 improvement.&rdquo; A static computation graph is the
                 native target for the AWS Neuron compiler&apos;s NEFF AOT
-                compilation (Section 17). That maps the differential ML
+                compilation (Section 18). That maps the differential ML
                 training and inference workload onto Trainium without
                 friction — closer to a free port than to a research
                 project.
@@ -459,19 +459,19 @@ export function CapitalMarketsLens() {
           <div>
             <Box variant="h3">For latency-sensitive trading</Box>
             <ul>
-              <li>Graviton5 with NIE for tenant isolation (Section 9, 26)</li>
+              <li>Graviton5 with NIE for tenant isolation (Section 9, 28)</li>
               <li>EPYC Turin M8azn 5 GHz for clock-bound paths (Section 10)</li>
               <li>NUMA pinning, NPS4 / SNC3 for predictable memory locality (Sections 4, 8, 10, 11)</li>
-              <li>OS-bypass networking via EFA + SRD (Section 25)</li>
+              <li>OS-bypass networking via EFA + SRD (Section 27)</li>
             </ul>
           </div>
           <div>
             <Box variant="h3">For inference in regulated workflows</Box>
             <ul>
-              <li>Trainium NEFF AOT for bit-exact reproducibility (Section 16, 27)</li>
-              <li>NVIDIA MIG for hardware-partitioned multi-tenancy (Section 26)</li>
-              <li>NVFP4 / FP8 quantization to fit models economically (Section 23)</li>
-              <li>Disaggregated serving for cost-efficient scale-out (Section 24)</li>
+              <li>Trainium NEFF AOT for bit-exact reproducibility (Section 17, 29)</li>
+              <li>NVIDIA MIG for hardware-partitioned multi-tenancy (Section 28)</li>
+              <li>NVFP4 / FP8 quantization to fit models economically (Section 25)</li>
+              <li>Disaggregated serving for cost-efficient scale-out (Section 26)</li>
             </ul>
           </div>
           <div>
@@ -486,9 +486,9 @@ export function CapitalMarketsLens() {
           <div>
             <Box variant="h3">For audit + compliance</Box>
             <ul>
-              <li>NIE Isabelle/HOL proof for tenant isolation evidence (Section 26)</li>
-              <li>Trainium NEFF replay for inference reconstruction (Section 27)</li>
-              <li>TEE-I/O on Blackwell for cryptographic separation (Section 26)</li>
+              <li>NIE Isabelle/HOL proof for tenant isolation evidence (Section 28)</li>
+              <li>Trainium NEFF replay for inference reconstruction (Section 29)</li>
+              <li>TEE-I/O on Blackwell for cryptographic separation (Section 28)</li>
               <li>Confidential computing across the stack</li>
             </ul>
           </div>
@@ -523,7 +523,7 @@ export function CapitalMarketsLens() {
               The MIG configuration and TEE-I/O attestation produce hardware
               evidence. The Trainium NEFF binary is the schedule, replayable
               indefinitely. Each piece maps to a specific compliance
-              framework (Section 26 covered the mapping).
+              framework (Section 28 covered the mapping).
             </Box>
             <Box variant="p">
               <strong>3. What does this cost vs running in our colo?</strong>{' '}

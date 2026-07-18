@@ -238,7 +238,7 @@ export function GravitonDeepDive() {
             is the <strong>memory subsystem</strong>, not the ISA. DDR5-7200 versus
             Graviton4&apos;s DDR5-5600 delivers +28.6% per-channel bandwidth. The
             distributed L3 cache is 5.3× the per-chip total. Inter-core latency drops
-            ~33%. SLM decode is memory-bandwidth bound (Section 21), so the
+            ~33%. SLM decode is memory-bandwidth bound (Section 22), so the
             memory-tier upgrade is the bigger lever than any matmul-instruction
             change. SVE2 + BFMMLA / SMMLA continue to do the matmul work they were
             already doing on Graviton3 / 4 — the cache and DRAM path is what got

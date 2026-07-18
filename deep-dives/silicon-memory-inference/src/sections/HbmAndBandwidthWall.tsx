@@ -139,7 +139,7 @@ export function HbmAndBandwidthWall() {
             aggregate numbers (1.8 TB/s GPU-to-GPU, 14.4 TB/s total NVLink on HGX B200/B300)
             rather than per-GPU HBM specs. The HGX Rubin NVL8 row on the same page shows a
             3.6 TB/s NVLink figure for the next generation. Per-GPU HBM capacity and
-            bandwidth for B200 and B300 will land in Section 12 when the Blackwell
+            bandwidth for B200 and B300 will land in Section 13 when the Blackwell
             datasheet is read directly.
           </Alert>
         </SpaceBetween>
@@ -225,7 +225,7 @@ export function HbmAndBandwidthWall() {
             <Box variant="p">
               <strong>HBM4.</strong> Rather than winning everything on pin speed, the HBM4
               standards work widens the bus to 2,048 bits per stack — betting that width
-              scales more cleanly than frequency. Section 12 carries the verified numbers
+              scales more cleanly than frequency. Section 13 carries the verified numbers
               as Blackwell and Rubin roadmaps arrive.
             </Box>
           </SpaceBetween>
@@ -282,7 +282,7 @@ export function HbmAndBandwidthWall() {
             <Box variant="p">
               Cerebras WSE-3 abandons HBM as a discrete tier and holds the model in
               on-wafer SRAM. No external DRAM in the steady state. The tradeoff is model
-              size — the model has to fit. Section 17 walks capacity, bandwidth, and the
+              size — the model has to fit. Section 19 walks capacity, bandwidth, and the
               programming model.
             </Box>
           </div>
@@ -291,7 +291,7 @@ export function HbmAndBandwidthWall() {
             <Box variant="p">
               Samsung HBM-PIM and HyperCIM move arithmetic units into the memory array so
               the operation happens where the data lives, eliminating most bus traversal.
-              The tradeoff is a constrained operator set. Section 19 carries the details.
+              The tradeoff is a constrained operator set. Section 21 carries the details.
             </Box>
           </div>
           <div>
@@ -300,7 +300,7 @@ export function HbmAndBandwidthWall() {
               Less radical. Split the serving cluster: prefill on FLOP-rich GPUs, decode
               on bandwidth-optimized GPUs, move the KV cache between them over a fast
               fabric. Changes the arithmetic intensity profile per node without changing
-              the silicon. Section 22 covers the current state of the art.
+              the silicon. Section 26 covers the current state of the art.
             </Box>
           </div>
         </ColumnLayout>

@@ -24,13 +24,13 @@ export function SmallLanguageModels() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Why this section.</strong> Sections 21 and 22 covered LLM
+            <strong>Why this section.</strong> Sections 22 and 23 covered LLM
             decode and Mixture-of-Experts inference at frontier scale (70B-1T
             parameters). The other end of the spectrum is increasingly important
             in production: Small Language Models in the 1-7B parameter range that
             fit comfortably on a single accelerator, on a host CPU with AMX
             (Advanced Matrix Extensions, Section 11) or SVE2 BFMMLA (Graviton5,
-            Section 9), or in a MIG (Multi-Instance GPU, Section 26) slice. SLMs
+            Section 9), or in a MIG (Multi-Instance GPU, Section 28) slice. SLMs
             are not a smaller version of the LLM problem — they have different
             economics, different hardware fits, and increasingly distinct
             deployment patterns.
@@ -141,7 +141,7 @@ export function SmallLanguageModels() {
           <div>
             <Box variant="h3">As drafters for speculative decoding</Box>
             <Box variant="p">
-              Speculative decoding (Section 24) pairs an SLM drafter with an
+              Speculative decoding (Section 26) pairs an SLM drafter with an
               LLM verifier. Llama 3.2 1B drafting Llama 3.3 70B is a common
               pattern — the small model does the cheap forward passes; the
               large model verifies in a single batch. The SLM&apos;s economic
@@ -181,7 +181,7 @@ export function SmallLanguageModels() {
                 hardware-isolated SMs (Streaming Multiprocessors) and bandwidth
                 per instance. Each instance hosts a separate SLM at full FP16
                 without contention — the cleanest multi-tenant SLM serving
-                substrate available on a public cloud (Section 26).
+                substrate available on a public cloud (Section 28).
               </Box>
             </div>
             <div>
@@ -200,7 +200,7 @@ export function SmallLanguageModels() {
               <Box variant="p">
                 The SLM runs alongside the LLM on the same accelerator,
                 producing draft tokens that the LLM verifies in batch. vLLM,
-                TensorRT-LLM, and SGLang all support this pattern (Section 24).
+                TensorRT-LLM, and SGLang all support this pattern (Section 26).
                 The SLM does not own a separate hardware budget; it borrows
                 cycles on the LLM&apos;s silicon.
               </Box>

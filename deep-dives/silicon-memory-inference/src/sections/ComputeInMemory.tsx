@@ -219,7 +219,7 @@ export function ComputeInMemory() {
             architecture each expert lives in its own memory region, and
             firing only k of N is the natural operation rather than an
             optimization to chase. The energy-per-token win compounds: lower
-            arithmetic intensity (Section 22) plus lower energy per byte
+            arithmetic intensity (Section 23) plus lower energy per byte
             moved. Whether this translates into a deployable MoE-on-CIM
             system is open; the structural argument is the strongest version
             of the CIM case.

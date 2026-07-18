@@ -43,10 +43,10 @@ export function AwsCompilersAndTooling() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Why this section.</strong> Section 16 covered Trainium and
+            <strong>Why this section.</strong> Section 17 covered Trainium and
             Inferentia at the silicon level. This section covers the toolchain that
             targets that silicon — the AWS counterpart to the NVIDIA compiler stack
-            in Section 15. The two stacks make different bets, and most of those
+            in Section 16. The two stacks make different bets, and most of those
             differences trace back to one architectural choice: Trainium uses
             ahead-of-time compilation. The NEFF binary <em>is</em> the schedule.
           </Box>
@@ -136,7 +136,7 @@ export function AwsCompilersAndTooling() {
           <Alert type="info" header="The properties that fall out">
             <strong>Determinism.</strong> Same NEFF, same input, same silicon
             produces the same output in the same order. This is the property
-            regulated workloads point to. Section 27 (Determinism) covers it in
+            regulated workloads point to. Section 29 (Determinism) covers it in
             depth.{' '}
             <strong>Compile-time-visible misses.</strong> A schedule slip is
             detectable in the NEFF, not at runtime. The optimizer fix is a

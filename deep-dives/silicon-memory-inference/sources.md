@@ -38,6 +38,22 @@ Authoritative owner documentation is the first-class source. Academic papers are
 - torch.compile / Inductor — https://pytorch.org/docs/stable/torch.compiler.html
 - JAX documentation — https://docs.jax.dev/
 
+### Edge shared-memory silicon: DGX Spark and Jetson Orin Nano (Section 15)
+Tier 0 — our own hardware capture (2026-07-18): lstopo/lscpu/nvidia-smi/lspci evidence bundle from a physical DGX Spark in `research/dgx-spark/` (NOTES.md documents method and findings). Full research notes: `research/dgx-spark-tier1-research.md`, `research/jetson-orin-nano-tier1-research.md`, `research/edge-community-models-research.md`.
+
+Tier 1 (all accessed 2026-07-18):
+- DGX Spark product page — https://www.nvidia.com/en-us/products/workstations/dgx-spark/
+- DGX Spark User Guide: hardware, clustering, DGX OS, software, NGC — https://docs.nvidia.com/dgx/dgx-spark/
+- DGX Spark Porting Guide (CPU cluster topology, L2/L3, UMA) — https://docs.nvidia.com/dgx/dgx-spark-porting-guide/overview.html
+- NIM for LLMs: Deploy on DGX Spark — https://docs.nvidia.com/nim/large-language-models/1.15.0/deploy-on-dgx-spark.html
+- Jetson Orin Nano Series Modules Data Sheet DS-11105-001_v1.5 (NVIDIA doc; mirrored PDF hosting flagged) — https://www.esys.ir/images/img_Item/3029/Files/Jetson-Orin-Nano-Series-Modules-Datasheet_DS-11105-001_v1.5.pdf
+- Jetson Orin Nano Super Developer Kit page — https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/nano-super-developer-kit/
+- CUDA for Tegra Application Note (iGPU/CPU shared SoC DRAM, zero-copy, coherency) — https://docs.nvidia.com/cuda/cuda-for-tegra-appnote/index.html
+- JetPack 6.2 Release Notes (Super power modes) — https://docs.nvidia.com/jetson/archives/jetpack-archived/jetpack-62/release-notes/index.html
+
+Tier 2: NVIDIA newsroom DGX Spark announcements (2025-01/03/10), NVIDIA developer blog DGX Spark performance (2025-10-24), Jetson Super Boost blog (2024-12-17), Jetson AI Lab benchmarks, dgx-spark-playbooks repo, Getting Started with Edge AI on Jetson (2025-12-11).
+Tier 3: TechInsights GB10 packaging teardown (2025-12-05), ServeTheHome Hot Chips 2025 GB10 coverage, LMSYS DGX Spark review (2025-10-13), llama.cpp discussions #16578/#18254, JetsonHacks llama.cpp bench (2025-10-31), EXO Labs disaggregated-inference blog.
+
 ## Fact-check register
 
 Will be populated here as each section moves from scaffold to draft. Format per entry:

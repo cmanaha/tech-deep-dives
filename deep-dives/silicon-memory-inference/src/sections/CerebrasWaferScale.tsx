@@ -76,7 +76,7 @@ export function CerebrasWaferScale() {
             frames every Cerebras conversation is: HBM is a bandwidth-wall
             problem only because compute and memory are in different packages.
             Put them in the same wafer and the wall does not exist. The
-            economics of MoE inference (Section 22) lean hard on this —
+            economics of MoE inference (Section 23) lean hard on this —
             experts in on-wafer SRAM switch in nanoseconds, not microseconds.
           </Box>
         </SpaceBetween>

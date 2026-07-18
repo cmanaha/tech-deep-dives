@@ -102,7 +102,7 @@ export function GraceBlackwellUltraServer() {
             DeepSeek-class MoE end-to-end without an InfiniBand crossing.
           </Alert>
           <Box variant="p">
-            The TensorRT-LLM Wide-EP path (Section 15) uses MNNVL — Multi-Node NVLink
+            The TensorRT-LLM Wide-EP path (Section 16) uses MNNVL — Multi-Node NVLink
             — to carry expert all-to-all over the NVL72 fabric. EP &gt; 8 was
             previously rare because the NVLink domain was 8 GPUs (HGX); on NVL72 the
             domain is 72, and Wide-EP up to 64 ships in TRT-LLM v0.21.0 onward. The

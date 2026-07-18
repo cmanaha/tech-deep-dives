@@ -164,7 +164,7 @@ export function CommunicationAndScaleOut() {
       >
         <Box variant="p">
           Trainium ships dedicated silicon for collectives — the CC-Cores
-          (Section 16). On Trainium2 there are 16 CC-Cores per chip,
+          (Section 17). On Trainium2 there are 16 CC-Cores per chip,
           handling on-chip, on-host, and cross-host collectives without
           contending with the NeuronCores that run model compute. NeuronLink
           -v3 is the chip-to-chip fabric: 1.28 TB/s per chip intra-node, 256
