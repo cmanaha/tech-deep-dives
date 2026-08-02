@@ -689,7 +689,7 @@ kubectl get nodes -L topology.k8s.aws/network-node-layer-3
 
 and a visualization script:
 ```bash
-git clone https://github.com/aws-samples/awsome-distributed-training.git
+git clone https://github.com/awslabs/awsome-distributed-ai.git
 cd awsome-distributed-training/1.architectures/7.sagemaker-hyperpod-eks/task-governance
 bash visualize_topology.sh   # emits Mermaid flowchart
 ```
@@ -931,9 +931,9 @@ All accessed **2026-08-01**.
 15. EKS — Manage compute for AI/ML workloads with EKS Auto Mode and Karpenter (well-known label tables) — https://docs.aws.amazon.com/eks/latest/userguide/ml-node-pools.html
 16. ParallelCluster — Placement groups and instance launch issues — https://docs.aws.amazon.com/parallelcluster/latest/ug/troubleshooting-v3-placemment-groups.html
 17. ParallelCluster — ODCR / zonal RI troubleshooting (spine mismatch → ICE) — https://docs.aws.amazon.com/parallelcluster/latest/ug/compute-node-initialization-odcr-v3.html
-18. `aws/aws-ofi-nccl` — `doc/topology-aware.md` — https://github.com/aws/aws-ofi-nccl/blob/master/doc/topology-aware.md
-19. `aws/aws-ofi-nccl` — `contrib/scripts/topology_aware/README.md` — https://github.com/aws/aws-ofi-nccl/blob/master/contrib/scripts/topology_aware/README.md
-20. `aws/aws-ofi-nccl` — `contrib/scripts/topology_aware/hostfile-topologify.py` (Copyright 2025 Amazon.com) — https://github.com/aws/aws-ofi-nccl/blob/master/contrib/scripts/topology_aware/hostfile-topologify.py
+18. `aws/aws-ofi-nccl` — `doc/topology-aware.md` — https://github.com/aws/aws-ofi-nccl/blob/117aa133f7efed66b0b0438b8181176b1ca63191/doc/topology-aware.md
+19. `aws/aws-ofi-nccl` — `contrib/scripts/topology_aware/README.md` — https://github.com/aws/aws-ofi-nccl/blob/117aa133f7efed66b0b0438b8181176b1ca63191/contrib/scripts/topology_aware/README.md
+20. `aws/aws-ofi-nccl` — `contrib/scripts/topology_aware/hostfile-topologify.py` (Copyright 2025 Amazon.com) — https://github.com/aws/aws-ofi-nccl/blob/117aa133f7efed66b0b0438b8181176b1ca63191/contrib/scripts/topology_aware/hostfile-topologify.py
 
 ### Tier 2 — AWS blogs, what's-new announcements, aws-samples
 
@@ -944,7 +944,7 @@ All accessed **2026-08-01**.
 23. Schedule topology-aware workloads using Amazon SageMaker HyperPod task governance — published **2025-09-15** — https://aws.amazon.com/blogs/machine-learning/schedule-topology-aware-workloads-using-amazon-sagemaker-hyperpod-task-governance/
 24. Unlocking next-generation AI performance with DRA on Amazon EKS and Amazon EC2 P6e-GB200 — https://aws.amazon.com/blogs/containers/unlocking-next-generation-ai-performance-with-dynamic-resource-allocation-on-amazon-eks-and-amazon-ec2-p6e-gb200/
 25. `aws-samples/ec2-topology-aware-for-slurm` (MIT-0; last pushed 2025-05-30) — https://github.com/aws-samples/ec2-topology-aware-for-slurm
-26. `aws-samples/awsome-distributed-training` — `1.architectures/7.sagemaker-hyperpod-eks/task-governance/visualize_topology.sh` — https://github.com/aws-samples/awsome-distributed-training
+26. `awslabs/awsome-distributed-ai` — `1.architectures/7.sagemaker-hyperpod-eks/task-governance/visualize_topology.sh` — https://github.com/awslabs/awsome-distributed-ai
 27. `aws-samples/sample-rlinf-on-eks` — `infrastructure/manifests/topology-labeler.yaml` — https://github.com/aws-samples/sample-rlinf-on-eks
 28. Amazon EC2 P6-B300 instances GA (Blackwell Ultra, 6.4 Tbps EFA) — posted 2025-11 — https://aws.amazon.com/about-aws/whats-new/2025/11/amazon-ec2-p6-b300-instances-nvidia-blackwell-ultra-gpus-available/
 29. Announcing Capacity Blocks support for AWS Parallel Computing Service — https://aws.amazon.com/blogs/hpc/announcing-capacity-blocks-support-for-aws-parallel-computing-service/

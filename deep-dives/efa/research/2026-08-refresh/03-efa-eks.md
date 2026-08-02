@@ -1,24 +1,31 @@
 # EFA on Amazon EKS — Research Refresh
 
-> **CORRECTION, added 2026-08-02, then itself corrected.** This document cites
-> `aws/aws-eks-best-practices` `aiml_networking.adoc` on the `master` branch.
-> An initial reading concluded the quotes were fabricated, because at `master`
-> (head `71a660c6`) that file is a 55-line pre-2026-07-30 revision containing
-> none of them. That conclusion was wrong. The repository's default branch is
-> `mainline`, and at commit `828f285d` (2026-07-30, two days before the access
-> date here) every quoted passage is present verbatim.
+> **CORRECTION, added 2026-08-02, then itself corrected, then resolved.** This
+> document used to cite `aws/aws-eks-best-practices` `aiml_networking.adoc` on
+> the `master` branch. An initial reading concluded the quotes were fabricated,
+> because at `master` (head `71a660c6`, last advanced 2026-04-17) that file is a
+> 55-line pre-2026-07-30 revision containing none of them. That conclusion was
+> wrong. The repository's default branch is `mainline`, and at commit
+> `828f285d` (2026-07-30, two days before the access date here) every quoted
+> passage is present verbatim.
 >
-> So this is a wrong-branch pin, not a misattribution. The content is sound and
-> the claims stand. The fix is to re-pin these references to `828f285d` rather
-> than to remove them. The published section had already re-sourced the same
+> So this was a wrong-branch pin, not a misattribution. The content is sound and
+> the claims stand. The published section had already re-sourced the same
 > corrections from the EC2 User Guide `efa-start.html`, and the citation
 > re-verification pass confirms no `aws-eks-best-practices` citation ships in
 > the dive at all.
 >
-> Wider gap this exposed: `research/**.md` carries 65 branch-pinned GitHub URLs
-> (`/blob/main/`, `/blob/master/`) that neither `scripts/gates/pinned-refs.sh`
-> nor `scripts/audit/verify-citations.sh` covers, because both scan `src/` only.
-> This defect class is invisible to the current gates.
+> **Resolved 2026-08-02.** Every `aws-eks-best-practices` reference in this file
+> is now pinned to `828f285d5888010993bd8948bc2b8305181e513d`, and each quoted
+> passage was re-checked against the file at that commit before the pin was
+> written.
+>
+> Wider gap this exposed: `research/**.md` carried 75 branch-pinned GitHub URLs
+> (`/blob/main/`, `/blob/master/`, `/tree/main/`, `/tree/master/`) that neither
+> `scripts/gates/pinned-refs.sh` nor `scripts/audit/verify-citations.sh`
+> covered, because both scanned `src/` only. All 75 are now pinned to commit
+> SHAs, and both scripts gained a research scan controlled by the
+> `pinned-refs-research` key in `.gates.json`.
 
 **Researched:** 2026-08-01
 **Scope:** How EFA (Elastic Fabric Adapter) integrates with Amazon EKS, with emphasis on the EKS AMI layer.
@@ -60,7 +67,7 @@ Sources:
 - https://docs.aws.amazon.com/eks/latest/userguide/eks-ami-build-scripts.html — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** The `awslabs/amazon-eks-ami` repo now carries only one Packer template directory: `templates/al2023`. There is no `templates/al2` directory in `main`. (The AL2 usage doc `doc/usage/al2.md` survives with a deprecation banner but the build template is gone.)
-Source: https://github.com/awslabs/amazon-eks-ami/tree/main/templates — Tier 1 — accessed 2026-08-01
+Source: https://github.com/awslabs/amazon-eks-ami/tree/c029c3d71745a3b3ab202ada94626e7e44c38152/templates — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** "Any newly created managed node groups in clusters on version `1.30` or newer will automatically default to using AL2023 as the node operating system."
 Source: https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html — Tier 1 — accessed 2026-08-01
@@ -110,7 +117,7 @@ if [ "${ENABLE_ACCELERATOR:-}" != "nvidia" ]; then
 fi
 ```
 
-Source: https://github.com/awslabs/amazon-eks-ami/blob/main/templates/al2023/provisioners/install-efa.sh — Tier 1 — accessed 2026-08-01
+Source: https://github.com/awslabs/amazon-eks-ami/blob/c029c3d71745a3b3ab202ada94626e7e44c38152/templates/al2023/provisioners/install-efa.sh — Tier 1 — accessed 2026-08-01
 
 Note the GPG verification step: the script imports `aws-efa-installer.key`, downloads the `.sig`, and `exit 2`s on `gpg --verify` failure. It also swaps `gnupg2-minimal` for `gnupg2-full` for the duration of the build (AL2023 issue #243) and swaps back afterwards.
 
@@ -121,8 +128,8 @@ Source: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html — T
 
 **[TIER 1] aws-ofi-nccl is now bundled with the EFA installer** (in the full install, not `--minimal`). The AWS reference NCCL-tests Dockerfile comment: "EFA 1.48 ships the OFI NCCL plugin at `/opt/amazon/ofi-nccl/lib/` (no arch subdir). Keep the legacy `x86_64/aarch64` entries for back-compat with images rebuilt against older EFA installers." The README variable table marks `AWS_OFI_NCCL_VERSION` as "*(deprecated)* — AWS OFI NCCL plugin is now bundled with EFA installer".
 Sources:
-- https://github.com/awslabs/awsome-distributed-ai/blob/main/micro-benchmarks/nccl-tests/nccl-tests.Dockerfile — Tier 1 — accessed 2026-08-01
-- https://github.com/awslabs/awsome-distributed-ai/blob/main/micro-benchmarks/nccl-tests/README.md — Tier 1 — accessed 2026-08-01
+- https://github.com/awslabs/awsome-distributed-ai/blob/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests/nccl-tests.Dockerfile — Tier 1 — accessed 2026-08-01
+- https://github.com/awslabs/awsome-distributed-ai/blob/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests/README.md — Tier 1 — accessed 2026-08-01
 
 ### 1.3 Concrete component versions in a shipped AMI (AL2023, release v20260728)
 
@@ -163,7 +170,7 @@ Source: https://docs.aws.amazon.com/eks/latest/userguide/ml-eks-optimized-ami.ht
 - **Side A [TIER 1, docs]:** "The EKS-optimized AL2023 accelerated AMIs (NVIDIA and Neuron) and all Bottlerocket AMIs include the host-level components required to use EFA." — this phrasing scopes EFA to the *accelerated* AL2023 variants.
   Source: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html — Tier 1 — accessed 2026-08-01
 - **Side B [TIER 1, build source + release notes]:** `templates/al2023/variables-default.json` sets `"enable_efa": "true"` as the **default for every AL2023 build**, with no accelerator gate; `install-efa.sh` only checks `$ENABLE_EFA`, not `$ENABLE_ACCELERATOR`. Release v20260728 lists package `efa 3.1.0-1.amzn2023` spanning all five AL2023 variants, including `AL2023_x86_64_STANDARD` and `AL2023_ARM_64_STANDARD`.
-  Sources: https://github.com/awslabs/amazon-eks-ami/blob/main/templates/al2023/variables-default.json , https://github.com/awslabs/amazon-eks-ami/blob/main/templates/al2023/provisioners/install-efa.sh , https://github.com/awslabs/amazon-eks-ami/releases — Tier 1 — accessed 2026-08-01
+  Sources: https://github.com/awslabs/amazon-eks-ami/blob/c029c3d71745a3b3ab202ada94626e7e44c38152/templates/al2023/variables-default.json , https://github.com/awslabs/amazon-eks-ami/blob/c029c3d71745a3b3ab202ada94626e7e44c38152/templates/al2023/provisioners/install-efa.sh , https://github.com/awslabs/amazon-eks-ami/releases — Tier 1 — accessed 2026-08-01
 
 **Resolution:** the code and release notes say the EFA kernel package is present on standard AL2023 EKS AMIs too; the prose docs scope the *support statement* to the accelerated variants. Safest framing for the app: "every published AL2023 EKS AMI in release v20260728 carries the `efa` kernel package; AWS documents EFA support only for the accelerated (NVIDIA, Neuron) and Bottlerocket variants." Do not claim standard AL2023 is a supported EFA path.
 
@@ -197,7 +204,7 @@ make k8s=1.36 os_distro=al2023 \
 Source: https://docs.aws.amazon.com/eks/latest/userguide/eks-ami-build-scripts.html — Tier 1 — accessed 2026-08-01
 
 The Makefile composes the AMI name from `AMI_VARIANT`: `amazon-eks` + `-al2023` + (`-arm64`) + (`-fips`) + (`-$(enable_accelerator)`), producing e.g. `amazon-eks-al2023-nvidia-node-1.36-v20260801`.
-Source: https://github.com/awslabs/amazon-eks-ami/blob/main/Makefile — Tier 1 — accessed 2026-08-01
+Source: https://github.com/awslabs/amazon-eks-ami/blob/c029c3d71745a3b3ab202ada94626e7e44c38152/Makefile — Tier 1 — accessed 2026-08-01
 
 ### 1.6 What you still have to install yourself
 
@@ -211,7 +218,7 @@ Source: https://docs.aws.amazon.com/eks/latest/userguide/ml-eks-optimized-ami.ht
 Source: https://docs.aws.amazon.com/eks/latest/userguide/ml-eks-optimized-ami.html — Tier 1 — accessed 2026-08-01
 
 **[TIER 2]** In the container image: "Ensure your container image includes NCCL and the aws-ofi-nccl plugin (which enables NCCL to use EFA via libfabric). MPI may also be required depending on your training framework's launcher."
-Source: https://github.com/aws/aws-eks-best-practices/blob/master/latest/bpg/aiml/aiml_networking.adoc — Tier 2 — accessed 2026-08-01
+Source: https://github.com/aws/aws-eks-best-practices/blob/828f285d5888010993bd8948bc2b8305181e513d/latest/bpg/aiml/aiml_networking.adoc — Tier 2 — accessed 2026-08-01
 
 **[TIER 1] Reference container stack** (AWS's own NCCL-tests image, current defaults):
 
@@ -227,7 +234,7 @@ Source: https://github.com/aws/aws-eks-best-practices/blob/master/latest/bpg/aim
 `LD_LIBRARY_PATH` in that image: `/usr/local/cuda/extras/CUPTI/lib64:/opt/amazon/openmpi/lib:/opt/nccl/build/lib:/opt/amazon/efa/lib:/opt/amazon/ofi-nccl/lib:/opt/amazon/ofi-nccl/lib/aarch64-linux-gnu:/opt/amazon/ofi-nccl/lib/x86_64-linux-gnu:/usr/local/lib`
 `PATH`: `/opt/amazon/openmpi/bin/:/opt/amazon/efa/bin:/usr/bin:/usr/local/bin`
 The image is built with `NVCC_GENCODE` covering `sm_80`, `sm_86`, `sm_89`, `sm_90`, `sm_100`, `sm_103` (A100, Ada, H100/H200, B200/GB200, B300/GB300). PTX is not embedded.
-Sources: https://github.com/awslabs/awsome-distributed-ai/blob/main/micro-benchmarks/nccl-tests/nccl-tests.Dockerfile , https://github.com/awslabs/awsome-distributed-ai/blob/main/micro-benchmarks/nccl-tests/README.md — Tier 1 — accessed 2026-08-01
+Sources: https://github.com/awslabs/awsome-distributed-ai/blob/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests/nccl-tests.Dockerfile , https://github.com/awslabs/awsome-distributed-ai/blob/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests/README.md — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** Latest published EFA installer version referenced by EC2 docs: **1.49.0** (`https://efa-installer.amazonaws.com/aws-efa-installer-1.49.0.tar.gz`). GPG fingerprint to verify: `4E90 91BC BB97 A96B 26B1 5E59 A054 80B1 DD2D 3CCC`. Since EFA installer 1.48.0 there is a `--check-signatures` flag that verifies each individual RPM/DEB.
 Source: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html — Tier 1 — accessed 2026-08-01
@@ -274,7 +281,7 @@ Source: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.h
 Source: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** The chart's own NOTES.txt, verbatim: `EFA device plugin is installed, it can be requested as 'vpc.amazonaws.com/efa' resource.`
-Source: https://github.com/aws/eks-charts/blob/master/stable/aws-efa-k8s-device-plugin/templates/NOTES.txt — Tier 1 — accessed 2026-08-01
+Source: https://github.com/aws/eks-charts/blob/97cf2c16913b8c8125defc9cea1e7824f1b8c950/stable/aws-efa-k8s-device-plugin/templates/NOTES.txt — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** Verification commands and expected output:
 ```bash
@@ -292,7 +299,7 @@ Sources: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.
 Source: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html — Tier 1 — accessed 2026-08-01
 
 **Important nuance:** the advertised count is the number of EFA devices **actually attached at launch**, not the instance-type maximum. `eksctl efaEnabled: true` attaches all of them; Karpenter without a `networkInterfaces` block "will launch instances with all EFA devices configured"; a hand-written launch template attaches exactly what you list.
-Sources: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html , https://github.com/aws/karpenter-provider-aws/blob/main/designs/efa-for-static-capacity.md — Tier 1 — accessed 2026-08-01
+Sources: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html , https://github.com/aws/karpenter-provider-aws/blob/4b2a2049469190a8a379668794e053207464b740/designs/efa-for-static-capacity.md — Tier 1 — accessed 2026-08-01
 
 Per-instance network-card counts from EC2 docs (Tier 1, https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.html, accessed 2026-08-01):
 
@@ -319,7 +326,7 @@ kubectl get daemonset -n kube-system efa-aws-efa-k8s-device-plugin
 Source: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** Chart metadata as of 2026-08-01: chart `version: v0.5.30`, `appVersion: v0.5.20`, image `602401143452.dkr.ecr.us-west-2.amazonaws.com/eks/aws-efa-k8s-device-plugin:v0.5.20`.
-Source: https://github.com/aws/eks-charts/blob/master/stable/aws-efa-k8s-device-plugin/Chart.yaml — Tier 1 — accessed 2026-08-01
+Source: https://github.com/aws/eks-charts/blob/97cf2c16913b8c8125defc9cea1e7824f1b8c950/stable/aws-efa-k8s-device-plugin/Chart.yaml — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** Recent chart/image release cadence (commits on `stable/aws-efa-k8s-device-plugin/values.yaml`): 0.5.13 (2025-12-25), 0.5.17 (2026-03-26), 0.5.18 (2026-04-29), 0.5.19 (2026-05-22), 0.5.20 (2026-06-12); instance-type list refreshed 2026-07-21.
 Source: https://github.com/aws/eks-charts/commits/master/stable/aws-efa-k8s-device-plugin — Tier 1 — accessed 2026-08-01
@@ -334,12 +341,12 @@ Source: https://github.com/aws/eks-charts/commits/master/stable/aws-efa-k8s-devi
 - node affinity: `node.kubernetes.io/instance-type In <long EFA instance list>` **AND** `eks.amazonaws.com/compute-type NotIn [auto]`
 - resource requests: `cpu: 10m`, `memory: 20Mi`
 
-Source: https://github.com/aws/eks-charts/blob/master/stable/aws-efa-k8s-device-plugin/templates/daemonset.yaml — Tier 1 — accessed 2026-08-01
+Source: https://github.com/aws/eks-charts/blob/97cf2c16913b8c8125defc9cea1e7824f1b8c950/stable/aws-efa-k8s-device-plugin/templates/daemonset.yaml — Tier 1 — accessed 2026-08-01
 
 The `eks.amazonaws.com/compute-type NotIn [auto]` affinity is notable: the community chart deliberately excludes EKS Auto Mode nodes, because Auto Mode manages that component itself.
 
 **[TIER 1]** The chart's `supportedInstanceLabels.values` list is an explicit allowlist of ~300 instance types (c5n through c9gd, g4dn through g7e, hpc6a/hpc7a/hpc7g/hpc8a, i3en/i4i/i7i/i8g, inf1, m5dn through m9gd, p3dn/p4d/p4de/p5/p5e/p5en/p6-b200/p6-b300/p6e-gb200/p6e-gb300, r5dn through r8in, trn1/trn1n/trn2/trn2u, u7i/u7in, vt1, x2idn/x8i...). If your new instance type is not in the list, the DaemonSet will not schedule there until the chart is bumped.
-Source: https://github.com/aws/eks-charts/blob/master/stable/aws-efa-k8s-device-plugin/values.yaml — Tier 1 — accessed 2026-08-01
+Source: https://github.com/aws/eks-charts/blob/97cf2c16913b8c8125defc9cea1e7824f1b8c950/stable/aws-efa-k8s-device-plugin/values.yaml — Tier 1 — accessed 2026-08-01
 
 ### 3.4 Automatic (older, kubectl) install path via eksctl
 
@@ -347,7 +354,7 @@ Source: https://github.com/aws/eks-charts/blob/master/stable/aws-efa-k8s-device-
 Source: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html — Tier 1 — accessed 2026-08-01
 
 **[STALE REFERENCE — flag this]** The AWS NCCL-tests README still points readers at `https://github.com/aws-samples/aws-efa-eks` for the device plugin. That repo is **archived**, last pushed 2024-10-15.
-Sources: https://github.com/awslabs/awsome-distributed-ai/blob/main/micro-benchmarks/nccl-tests/README.md , GitHub API `repos/aws-samples/aws-efa-eks` (`"archived": true`) — Tier 1 — accessed 2026-08-01
+Sources: https://github.com/awslabs/awsome-distributed-ai/blob/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests/README.md , GitHub API `repos/aws-samples/aws-efa-eks` (`"archived": true`) — Tier 1 — accessed 2026-08-01
 
 ### 3.5 The NVIDIA MOFED collision (new, high-value operational gotcha)
 
@@ -394,7 +401,7 @@ kubectl logs -n kube-system -l app=aws-dranet
 Source: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** Chart facts: `aws-dranet` chart `version: 1.0.0`, `appVersion: v1.2.0-eksbuild.2`, image `602401143452.dkr.ecr.us-west-2.amazonaws.com/eks/dranet:v1.2.0-eksbuild.2`. Chart first landed in `aws/eks-charts` on **2026-04-30** ("Add aws-dranet helm chart for DRA network driver (#1322)"). Unlike the EFA device plugin, its `securityContext` is `privileged: false`, `readOnlyRootFilesystem: true`, `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]`, `seccompProfile: RuntimeDefault`.
-Sources: https://github.com/aws/eks-charts/tree/master/stable/aws-dranet , https://github.com/aws/eks-charts/commits/master/stable/aws-dranet — Tier 1 — accessed 2026-08-01
+Sources: https://github.com/aws/eks-charts/tree/97cf2c16913b8c8125defc9cea1e7824f1b8c950/stable/aws-dranet , https://github.com/aws/eks-charts/commits/master/stable/aws-dranet — Tier 1 — accessed 2026-08-01
 
 **[TIER 1] Basic claim:**
 ```yaml
@@ -487,7 +494,7 @@ AWS's own p5 manifests request `hugepages-2Mi: 5120Mi` (2,560 pages), i.e. rough
 Source: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html — Tier 1 — accessed 2026-08-01
 
 **[TIER 1] Counterexample worth showing:** the GB200 NCCL-test manifest requests **no hugepages at all** — only `nvidia.com/gpu: 4`, `vpc.amazonaws.com/efa: 4`, `memory: 32000Mi`. So hugepages are not universally required in practice.
-Source: https://github.com/awslabs/awsome-distributed-ai/blob/main/micro-benchmarks/nccl-tests/kubernetes/nccl-tests-gb200.yaml — Tier 1 — accessed 2026-08-01
+Source: https://github.com/awslabs/awsome-distributed-ai/blob/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests/kubernetes/nccl-tests-gb200.yaml — Tier 1 — accessed 2026-08-01
 
 ### 5.3 `hostNetwork` — the current app is WRONG here
 
@@ -501,7 +508,7 @@ Evidence:
 - `aws-samples/sample-llm-inference-on-eks` LeaderWorkerSet manifests for DeepSeek-V3.2 / GLM on p5/p5en: no `hostNetwork`; they set `NCCL_SOCKET_IFNAME: eth0`, i.e. explicitly pod-network.
 - `aws/eks-charts` EFA **device plugin** DaemonSet does set `hostNetwork: true` — but that is the plugin itself, not the workload.
 
-Sources: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html , https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html , https://github.com/awslabs/awsome-distributed-ai/tree/main/micro-benchmarks/nccl-tests/kubernetes , https://github.com/aws-samples/sample-llm-inference-on-eks/tree/main/k8s-manifest/lws , https://github.com/aws/eks-charts/blob/master/stable/aws-efa-k8s-device-plugin/templates/daemonset.yaml — Tier 1 — accessed 2026-08-01
+Sources: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html , https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html , https://github.com/awslabs/awsome-distributed-ai/tree/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests/kubernetes , https://github.com/aws-samples/sample-llm-inference-on-eks/tree/48b7d85170a9ca5789c6e48488fcba0bb1726949/k8s-manifest/lws , https://github.com/aws/eks-charts/blob/97cf2c16913b8c8125defc9cea1e7824f1b8c950/stable/aws-efa-k8s-device-plugin/templates/daemonset.yaml — Tier 1 — accessed 2026-08-01
 
 **Verdict:** the current `EKSIntegration.tsx` comment `hostNetwork: true # Required for EFA` and the entire `hostNetwork requirement` alert are unsupported by any Tier 1 source and contradicted by every AWS-authored manifest. EFA device access comes from the device plugin injecting `/dev/infiniband/uverbs*` into the container, not from sharing the host network namespace.
 
@@ -518,7 +525,7 @@ Sources: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html , https:
               - IPC_LOCK
 ```
 The inline comment in AWS's own sample is itself the clearest available statement: **`privileged` is not required for EFA.** `IPC_LOCK` is present but uncommented, so its necessity is not documented.
-Source: https://github.com/aws-samples/sample-llm-inference-on-eks/blob/main/k8s-manifest/lws/lws-deepseek-v3.2-tp16-p5.yaml — Tier 1 — accessed 2026-08-01
+Source: https://github.com/aws-samples/sample-llm-inference-on-eks/blob/48b7d85170a9ca5789c6e48488fcba0bb1726949/k8s-manifest/lws/lws-deepseek-v3.2-tp16-p5.yaml — Tier 1 — accessed 2026-08-01
 
 Same manifests also mount the devices explicitly:
 ```yaml
@@ -541,7 +548,7 @@ Recommended framing for the app: "AWS's own inference samples add `IPC_LOCK` (me
             hostPath:
               path: /dev/shm
 ```
-Sources: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html , https://github.com/awslabs/awsome-distributed-ai/blob/main/micro-benchmarks/nccl-tests/kubernetes/nccl-tests.yaml — Tier 1 — accessed 2026-08-01
+Sources: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html , https://github.com/awslabs/awsome-distributed-ai/blob/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests/kubernetes/nccl-tests.yaml — Tier 1 — accessed 2026-08-01
 
 The current app uses `emptyDir: {medium: Memory, sizeLimit: 64Gi}`. That is a legitimate alternative pattern but is not what AWS ships. Worth showing both and explaining the tradeoff (emptyDir counts against the pod's memory limit; hostPath does not).
 
@@ -552,10 +559,10 @@ The current app uses `emptyDir: {medium: Memory, sizeLimit: 64Gi}`. That is a le
 Source: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** From `awsome-distributed-ai` nccl-tests: `FI_PROVIDER=efa`, `FI_EFA_FORK_SAFE=1`, `NCCL_DEBUG=INFO`. GB200 variant adds `NCCL_NVLS_ENABLE=1`, `NCCL_MNNVL_ENABLE=1`.
-Source: https://github.com/awslabs/awsome-distributed-ai/tree/main/micro-benchmarks/nccl-tests/kubernetes — Tier 1 — accessed 2026-08-01
+Source: https://github.com/awslabs/awsome-distributed-ai/tree/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests/kubernetes — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** From `sample-llm-inference-on-eks` (SGLang on p5): `FI_PROVIDER=efa`, `FI_EFA_USE_DEVICE_RDMA=1`, `NCCL_NET_PLUGIN=ofi`, `NCCL_TUNER_PLUGIN=ofi`, `NCCL_SOCKET_IFNAME=eth0`, `NCCL_P2P_LEVEL=NVL`.
-Source: https://github.com/aws-samples/sample-llm-inference-on-eks/blob/main/k8s-manifest/lws/lws-deepseek-v3.2-tp16-p5.yaml — Tier 1 — accessed 2026-08-01
+Source: https://github.com/aws-samples/sample-llm-inference-on-eks/blob/48b7d85170a9ca5789c6e48488fcba0bb1726949/k8s-manifest/lws/lws-deepseek-v3.2-tp16-p5.yaml — Tier 1 — accessed 2026-08-01
 
 **`NCCL_TOPO_FILE`: UNKNOWN.** No AWS EKS documentation or AWS-authored manifest fetched sets or mentions `NCCL_TOPO_FILE`. The current app's claim that you must mount "the correct `NCCL_TOPO_FILE`" is unsupported.
 
@@ -570,7 +577,7 @@ Source: https://github.com/aws-samples/sample-llm-inference-on-eks/blob/main/k8s
 - "Additionally, AWS recommends launching all EFA-enabled instances in a cluster placement group to minimize the physical distance between them within that single AZ, which gives you the lowest possible latency. **A placement group is not required for EFA to function, but is strongly recommended for optimal performance.**"
 - "All EFA instances must be in the same security group with a **self-referencing rule allowing ALL traffic to/from itself. Without this, EFA traffic fails silently.**"
 
-Source: https://github.com/aws/aws-eks-best-practices/blob/master/latest/bpg/aiml/aiml_networking.adoc — Tier 2 — accessed 2026-08-01
+Source: https://github.com/aws/aws-eks-best-practices/blob/828f285d5888010993bd8948bc2b8305181e513d/latest/bpg/aiml/aiml_networking.adoc — Tier 2 — accessed 2026-08-01
 
 **[TIER 1]** EC2 docs agree on placement groups: "It is not an absolute requirement to launch your EFA-enabled instances into a cluster placement group. However, we do recommend running your EFA-enabled instances in a cluster placement group as it launches the instances into a low-latency group in a single Availability Zone."
 Source: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html — Tier 1 — accessed 2026-08-01
@@ -618,7 +625,7 @@ Source: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.h
     placement:
       groupName: eks-efa-testing
 ```
-Source: https://github.com/eksctl-io/eksctl/blob/main/userdocs/src/usage/nodegroup-managed.md — Tier 1 — accessed 2026-08-01
+Source: https://github.com/eksctl-io/eksctl/blob/a5cb648e5bd6245a80e6b62b8817ce6fa1e6d7cd/userdocs/src/usage/nodegroup-managed.md — Tier 1 — accessed 2026-08-01
 
 **[TIER 1] eksctl limitation (still true):** "You can't use `eksctl` to create nodes and node groups that use EFA-only interfaces." AWS's guidance: "If you need to customize the per-device EFA configuration when using `eksctl`, it is recommended to use eksctl's support for launch templates."
 Sources: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html , https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html — Tier 1 — accessed 2026-08-01
@@ -702,7 +709,7 @@ Plus these documented limitations:
 - **Drift:** "When an EC2NodeClass's `networkInterfaces` configuration changes, Karpenter will drift existing nodes."
 - **Not shipped:** an `interfacePolicy: bandwidthOptimized | ipOptimized` shorthand was considered and deferred. A `karpenter.k8s.aws/instance-efa-count` well-known label was also considered and **not** shipped at launch, because "Karpenter currently does not support scheduling with dynamic label applications."
 
-Source: https://github.com/aws/karpenter-provider-aws/blob/main/designs/efa-for-static-capacity.md — Tier 1 — accessed 2026-08-01
+Source: https://github.com/aws/karpenter-provider-aws/blob/4b2a2049469190a8a379668794e053207464b740/designs/efa-for-static-capacity.md — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** Karpenter `EC2NodeClass` also has `placementGroupSelector` (cluster / partition / spread strategies) and beta `capacityReservationSelectorTerms` for ODCRs.
 Source: https://karpenter.sh/docs/concepts/nodeclasses/ — Tier 1 — accessed 2026-08-01
@@ -713,11 +720,11 @@ Source: https://karpenter.sh/docs/concepts/nodeclasses/ — Tier 1 — accessed 
 - "Set appropriate expiration. Configure `expireAfter` on the NodePool to a value longer than your longest training job, or disable it for training NodePools entirely. A node expiring mid-training terminates the job."
 - For Capacity Blocks for ML: "placement is handled automatically via UltraClusters — no manual placement group is needed. Note that, in this case, the AZ is already locked."
 
-Source: https://github.com/aws/aws-eks-best-practices/blob/master/latest/bpg/aiml/aiml_networking.adoc — Tier 2 — accessed 2026-08-01
+Source: https://github.com/aws/aws-eks-best-practices/blob/828f285d5888010993bd8948bc2b8305181e513d/latest/bpg/aiml/aiml_networking.adoc — Tier 2 — accessed 2026-08-01
 
 **[TIER 2] Spot + EFA correlated-interruption warning** (good, non-obvious material):
 "EFA requires all communicating nodes to reside in the same Availability Zone, and AWS recommends placing them in a cluster placement group for optimal latency. This co-location introduces *correlated interruption risk*: instances share underlying physical infrastructure within the same AZ (and even more so within a placement group), so a single capacity reclamation event can affect multiple instances simultaneously — potentially interrupting your entire multi-node training job at once rather than a single node. This is fundamentally different from Spot usage without EFA constraints, where nodes can be spread across AZs and interruptions are statistically independent."
-Source: https://github.com/aws/aws-eks-best-practices/blob/master/latest/bpg/aiml/aiml_networking.adoc — Tier 2 — accessed 2026-08-01
+Source: https://github.com/aws/aws-eks-best-practices/blob/828f285d5888010993bd8948bc2b8305181e513d/latest/bpg/aiml/aiml_networking.adoc — Tier 2 — accessed 2026-08-01
 
 ### 6.6 EKS Auto Mode (2026 material, absent from the current app)
 
@@ -775,8 +782,8 @@ Caveat: "The `WARM_ENI_TARGET` and `WARM_IP_TARGET` settings are cluster-wide an
 
 Source: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html — Tier 1 — accessed 2026-08-01
 
-**[TIER 2]** Best-practices version adds `MINIMUM_IP_TARGET` and points at https://github.com/aws/amazon-vpc-cni-k8s/blob/master/docs/eni-and-ip-target.md
-Source: https://github.com/aws/aws-eks-best-practices/blob/master/latest/bpg/aiml/aiml_networking.adoc — Tier 2 — accessed 2026-08-01
+**[TIER 2]** Best-practices version adds `MINIMUM_IP_TARGET` and points at https://github.com/aws/amazon-vpc-cni-k8s/blob/18404b458ea2b4a980e80570d5939d72db917a4a/docs/eni-and-ip-target.md
+Source: https://github.com/aws/aws-eks-best-practices/blob/828f285d5888010993bd8948bc2b8305181e513d/latest/bpg/aiml/aiml_networking.adoc — Tier 2 — accessed 2026-08-01
 
 ---
 
@@ -791,7 +798,7 @@ Source: https://github.com/aws/aws-eks-best-practices/blob/master/latest/bpg/aim
 6. libfabric inside the container enumerates them (`fi_info -p efa`) as `efa_0-rdm`, `efa_1-rdm`, ...
 7. aws-ofi-nccl maps NCCL rings/channels onto them.
 
-Sources: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html , https://github.com/aws/eks-charts/blob/master/stable/aws-efa-k8s-device-plugin/templates/daemonset.yaml , https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html — Tier 1 — accessed 2026-08-01
+Sources: https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html , https://github.com/aws/eks-charts/blob/97cf2c16913b8c8125defc9cea1e7824f1b8c950/stable/aws-efa-k8s-device-plugin/templates/daemonset.yaml , https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html — Tier 1 — accessed 2026-08-01
 
 **[TIER 1] Bandwidth is shared, not additive.** For p5: "`p5.48xlarge` and `p5e.48xlarge` instances support 32 network cards and have a total network bandwidth capacity of 3,200 Gbps, of which up to 800 Gbps can be utilized for IP network traffic. Because EFA and IP network traffic share the same underlying resources, bandwidth used by one will reduce the bandwidth that is available to the other. ... if you use 400 Gbps for IP bandwidth, you can achieve up to 2,800 Gbps of EFA bandwidth at the same time."
 Source: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.html — Tier 1 — accessed 2026-08-01
@@ -806,7 +813,7 @@ Source: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.h
 Source: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.html — Tier 1 — accessed 2026-08-01
 
 This explains the AWS GB200 NCCL manifest requesting only `vpc.amazonaws.com/efa: 4` with the comment `#p6e has 4 NICs`.
-Source: https://github.com/awslabs/awsome-distributed-ai/blob/main/micro-benchmarks/nccl-tests/kubernetes/nccl-tests-gb200.yaml — Tier 1 — accessed 2026-08-01
+Source: https://github.com/awslabs/awsome-distributed-ai/blob/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests/kubernetes/nccl-tests-gb200.yaml — Tier 1 — accessed 2026-08-01
 
 ---
 
@@ -826,21 +833,21 @@ Source: https://github.com/kubeflow/trainer/releases — Tier 1 — accessed 202
 **Note:** the current app's claim "The `PyTorchJob` CRD supports EFA natively" is not stated in any AWS doc. PyTorchJob has no EFA-specific field; EFA works because you put `vpc.amazonaws.com/efa` in the worker pod template's resources, same as any other pod. Reframe as "any operator that lets you set container resources works: MPIJob, PyTorchJob, LeaderWorkerSet, RayJob."
 
 **[TIER 1] LeaderWorkerSet** is what AWS's own multi-node inference samples use for EFA on p5/p5en (`leaderworkerset.x-k8s.io/v1`), pairing `vpc.amazonaws.com/efa: 16` with `nvidia.com/gpu: 8` per replica for TP=16 across 2 nodes.
-Source: https://github.com/aws-samples/sample-llm-inference-on-eks/tree/main/k8s-manifest/lws — Tier 1 — accessed 2026-08-01
+Source: https://github.com/aws-samples/sample-llm-inference-on-eks/tree/48b7d85170a9ca5789c6e48488fcba0bb1726949/k8s-manifest/lws — Tier 1 — accessed 2026-08-01
 
 ### 8.2 NCCL tests on EKS
 
-**[TIER 1]** The EKS docs walkthrough uses the public image `public.ecr.aws/hpc-cloud/nccl-tests:latest` and points to https://github.com/aws-samples/awsome-distributed-training/tree/main/micro-benchmarks/nccl-tests.
+**[TIER 1]** The EKS docs walkthrough uses the public image `public.ecr.aws/hpc-cloud/nccl-tests:latest` and points to https://github.com/awslabs/awsome-distributed-ai/tree/cb99a28a85c8333ddbad004221230dac967ddbab/micro-benchmarks/nccl-tests.
 Source: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html — Tier 1 — accessed 2026-08-01
 
-**[STALE LINK — flag this]** That repo has been renamed/moved: `aws-samples/awsome-distributed-training` now resolves to **`awslabs/awsome-distributed-ai`** ("Collection of best practices, reference architectures, model training examples and utilities to train large models on AWS"), last pushed 2026-07-31.
-Source: GitHub API `repos/aws-samples/awsome-distributed-training` → `awslabs/awsome-distributed-ai` — Tier 1 — accessed 2026-08-01
+**[STALE LINK — flag this]** That repo has been renamed/moved: `awslabs/awsome-distributed-ai` now resolves to **`awslabs/awsome-distributed-ai`** ("Collection of best practices, reference architectures, model training examples and utilities to train large models on AWS"), last pushed 2026-07-31.
+Source: GitHub API `repos/awslabs/awsome-distributed-ai` → `awslabs/awsome-distributed-ai` — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** Expected job topology: 1 launcher pod + N worker pods, `slotsPerWorker: 8`, `mpirun -np 16 -N 8` for 2 × p5.48xlarge, running `/opt/nccl-tests/build/all_reduce_perf -b 8 -e 16G -f 2 -g 1 -c 1 -n 100`.
 Source: https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** A HyperPod-authored EFA stack validation recipe exists (`efa-versions.py`), checking EFA installer version, libfabric version, aws-ofi-nccl version, NCCL version, NVIDIA driver, CUDA, and enumerating EFA interfaces (`rdmap0s29-rdm`, `rdmap1s29-rdm`, ...) and `/dev/infiniband` uverbs devices. Runnable as a plain `batch/v1 Job` requesting `vpc.amazonaws.com/efa: 32`.
-Source: https://github.com/awslabs/ai-on-sagemaker-hyperpod/blob/main/website/docs/00-eks-orchestration/validation-and-testing/environment-validation/efa-validation.md — Tier 1 — accessed 2026-08-01
+Source: https://github.com/awslabs/ai-on-sagemaker-hyperpod/blob/8e4bebe27419ec46c0c6b4194a6278d30997c6df/website/docs/00-eks-orchestration/validation-and-testing/environment-validation/efa-validation.md — Tier 1 — accessed 2026-08-01
 
 ### 8.3 AI on EKS / Data on EKS
 
@@ -857,7 +864,7 @@ module "efa_network_interfaces" {
 }
 ```
 and on managed node groups: `enable_efa_support = true` with the comment "Add security group rules on the node group security group to allow EFA traffic".
-Source: https://github.com/awslabs/ai-on-eks/blob/main/infra/base/terraform/eks.tf — Tier 1 — accessed 2026-08-01
+Source: https://github.com/awslabs/ai-on-eks/blob/5e6282cb121f423e734caccb550a9f61c2935584/infra/base/terraform/eks.tf — Tier 1 — accessed 2026-08-01
 
 The `efa-networkinterfaces-generator` module implements the same bandwidth-optimized vs IP-optimized policy split that Karpenter's design doc describes but did not ship.
 
@@ -870,7 +877,7 @@ Sources: GitHub API `repos/awslabs/data-on-eks` , https://awslabs.github.io/ai-o
 Source: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks.html — Tier 1 — accessed 2026-08-01
 
 **[TIER 1]** HyperPod-on-EKS workloads use the same `vpc.amazonaws.com/efa` resource; AWS's HyperPod EKS docs list "EFA device plugin deployed" as a prerequisite for their validation and FSDP recipes.
-Sources: https://github.com/awslabs/ai-on-sagemaker-hyperpod/tree/main/website/docs/00-eks-orchestration — Tier 1 — accessed 2026-08-01
+Sources: https://github.com/awslabs/ai-on-sagemaker-hyperpod/tree/8e4bebe27419ec46c0c6b4194a6278d30997c6df/website/docs/00-eks-orchestration — Tier 1 — accessed 2026-08-01
 
 **UNKNOWN:** whether HyperPod automatically installs the EFA device plugin on cluster creation. Not stated in the pages fetched.
 
@@ -909,7 +916,7 @@ File: `/Users/carlos/workspace/git_repositories/tech-deep-dives/deep-dives/efa/s
 | S4 | **"Version Requirements" panel is incomplete and mixes tiers.** Missing: K8s 1.34 for DRA, Karpenter v1.11, current device-plugin chart v0.5.30 / appVersion v0.5.20, EFA kernel package 3.1.0 in AMI v20260728. |
 | S5 | The Alert claiming "eksctl does not support configuring EFA-only interfaces directly" is still **true** but the recommended workaround has been updated: AWS now points at eksctl's launch-template support, not just "roll your own launch template". |
 | S6 | Shared-memory example uses `emptyDir: {medium: Memory}`; AWS ships `hostPath: /dev/shm`. Not wrong, but not the reference pattern. |
-| S7 | No mention that `aws-samples/aws-efa-eks` is archived (2024-10-15) and `aws-samples/awsome-distributed-training` moved to `awslabs/awsome-distributed-ai`. Anyone following old links lands wrong. |
+| S7 | No mention that `aws-samples/aws-efa-eks` is archived (2024-10-15) and `awslabs/awsome-distributed-ai` moved to `awslabs/awsome-distributed-ai`. Anyone following old links lands wrong. |
 
 ### 9.3 Missing (high-value, would carry the section)
 
@@ -1027,19 +1034,19 @@ A 4×8 grid of network-card cells, NCI 0-31. Use case 1 rendering: NCI 0 shows t
 
 ### Tier 1 — official AWS source repositories
 15. `awslabs/amazon-eks-ami` README — https://github.com/awslabs/amazon-eks-ami — accessed 2026-08-01
-16. `templates/al2023/provisioners/install-efa.sh` — https://github.com/awslabs/amazon-eks-ami/blob/main/templates/al2023/provisioners/install-efa.sh — accessed 2026-08-01
-17. `templates/al2023/variables-default.json` — https://github.com/awslabs/amazon-eks-ami/blob/main/templates/al2023/variables-default.json — accessed 2026-08-01
-18. `templates/al2023/template.json` — https://github.com/awslabs/amazon-eks-ami/blob/main/templates/al2023/template.json — accessed 2026-08-01
-19. `Makefile` (AMI_VARIANT naming) — https://github.com/awslabs/amazon-eks-ami/blob/main/Makefile — accessed 2026-08-01
-20. `doc/usage/al2023.md` — https://github.com/awslabs/amazon-eks-ami/blob/main/doc/usage/al2023.md — accessed 2026-08-01
+16. `templates/al2023/provisioners/install-efa.sh` — https://github.com/awslabs/amazon-eks-ami/blob/c029c3d71745a3b3ab202ada94626e7e44c38152/templates/al2023/provisioners/install-efa.sh — accessed 2026-08-01
+17. `templates/al2023/variables-default.json` — https://github.com/awslabs/amazon-eks-ami/blob/c029c3d71745a3b3ab202ada94626e7e44c38152/templates/al2023/variables-default.json — accessed 2026-08-01
+18. `templates/al2023/template.json` — https://github.com/awslabs/amazon-eks-ami/blob/c029c3d71745a3b3ab202ada94626e7e44c38152/templates/al2023/template.json — accessed 2026-08-01
+19. `Makefile` (AMI_VARIANT naming) — https://github.com/awslabs/amazon-eks-ami/blob/c029c3d71745a3b3ab202ada94626e7e44c38152/Makefile — accessed 2026-08-01
+20. `doc/usage/al2023.md` — https://github.com/awslabs/amazon-eks-ami/blob/c029c3d71745a3b3ab202ada94626e7e44c38152/doc/usage/al2023.md — accessed 2026-08-01
 21. Releases, tag `v20260728` (published 2026-07-29) — https://github.com/awslabs/amazon-eks-ami/releases — accessed 2026-08-01
-22. `aws/eks-charts` — `stable/aws-efa-k8s-device-plugin/Chart.yaml`, `values.yaml`, `templates/daemonset.yaml`, `templates/NOTES.txt`, `README.md` — https://github.com/aws/eks-charts/tree/master/stable/aws-efa-k8s-device-plugin — accessed 2026-08-01
-23. `aws/eks-charts` — `stable/aws-dranet/Chart.yaml`, `values.yaml` — https://github.com/aws/eks-charts/tree/master/stable/aws-dranet — accessed 2026-08-01
-24. `aws/karpenter-provider-aws` — `designs/efa-for-static-capacity.md` — https://github.com/aws/karpenter-provider-aws/blob/main/designs/efa-for-static-capacity.md — accessed 2026-08-01
+22. `aws/eks-charts` — `stable/aws-efa-k8s-device-plugin/Chart.yaml`, `values.yaml`, `templates/daemonset.yaml`, `templates/NOTES.txt`, `README.md` — https://github.com/aws/eks-charts/tree/97cf2c16913b8c8125defc9cea1e7824f1b8c950/stable/aws-efa-k8s-device-plugin — accessed 2026-08-01
+23. `aws/eks-charts` — `stable/aws-dranet/Chart.yaml`, `values.yaml` — https://github.com/aws/eks-charts/tree/97cf2c16913b8c8125defc9cea1e7824f1b8c950/stable/aws-dranet — accessed 2026-08-01
+24. `aws/karpenter-provider-aws` — `designs/efa-for-static-capacity.md` — https://github.com/aws/karpenter-provider-aws/blob/4b2a2049469190a8a379668794e053207464b740/designs/efa-for-static-capacity.md — accessed 2026-08-01
 25. `aws/karpenter-provider-aws` — `website/content/en/docs/concepts/nodeclasses.md` — accessed 2026-08-01
-26. `eksctl-io/eksctl` — `userdocs/src/usage/nodegroup-managed.md` — https://github.com/eksctl-io/eksctl/blob/main/userdocs/src/usage/nodegroup-managed.md — accessed 2026-08-01
-27. `awslabs/awsome-distributed-ai` (formerly `aws-samples/awsome-distributed-training`) — `micro-benchmarks/nccl-tests/` (README.md, nccl-tests.Dockerfile, kubernetes/nccl-tests.yaml, kubernetes/nccl-tests-gb200.yaml) — accessed 2026-08-01
-28. `awslabs/ai-on-eks` — `infra/base/terraform/eks.tf` — https://github.com/awslabs/ai-on-eks/blob/main/infra/base/terraform/eks.tf — accessed 2026-08-01
+26. `eksctl-io/eksctl` — `userdocs/src/usage/nodegroup-managed.md` — https://github.com/eksctl-io/eksctl/blob/a5cb648e5bd6245a80e6b62b8817ce6fa1e6d7cd/userdocs/src/usage/nodegroup-managed.md — accessed 2026-08-01
+27. `awslabs/awsome-distributed-ai` (formerly `awslabs/awsome-distributed-ai`) — `micro-benchmarks/nccl-tests/` (README.md, nccl-tests.Dockerfile, kubernetes/nccl-tests.yaml, kubernetes/nccl-tests-gb200.yaml) — accessed 2026-08-01
+28. `awslabs/ai-on-eks` — `infra/base/terraform/eks.tf` — https://github.com/awslabs/ai-on-eks/blob/5e6282cb121f423e734caccb550a9f61c2935584/infra/base/terraform/eks.tf — accessed 2026-08-01
 29. `awslabs/ai-on-sagemaker-hyperpod` — `website/docs/00-eks-orchestration/validation-and-testing/environment-validation/efa-validation.md` — accessed 2026-08-01
 30. `aws-samples/sample-llm-inference-on-eks` — `k8s-manifest/lws/lws-deepseek-v3.2-tp16-p5.yaml` — accessed 2026-08-01
 31. `aws/aws-ofi-nccl` releases — https://github.com/aws/aws-ofi-nccl/releases — accessed 2026-08-01
@@ -1048,14 +1055,14 @@ A 4×8 grid of network-card cells, NCI 0-31. Use case 1 rendering: NCI 0 shows t
 34. AI on EKS site — https://awslabs.github.io/ai-on-eks/ — accessed 2026-08-01
 
 ### Tier 2 — AWS best-practices guides
-35. EKS Best Practices Guide, AI/ML Networking (authored 2025-05-30, Leah Tucker) — https://github.com/aws/aws-eks-best-practices/blob/master/latest/bpg/aiml/aiml_networking.adoc — accessed 2026-08-01
+35. EKS Best Practices Guide, AI/ML Networking (authored 2025-05-30, Leah Tucker) — https://github.com/aws/aws-eks-best-practices/blob/828f285d5888010993bd8948bc2b8305181e513d/latest/bpg/aiml/aiml_networking.adoc — accessed 2026-08-01
 
 ### Tier 3 / Tier 4
 None used.
 
 ### Archived or moved (cite only as "this moved")
 - `aws-samples/aws-efa-eks` — **archived**, last pushed 2024-10-15
-- `aws-samples/awsome-distributed-training` — renamed to `awslabs/awsome-distributed-ai`, last pushed 2026-07-31
+- `awslabs/awsome-distributed-ai` — renamed to `awslabs/awsome-distributed-ai`, last pushed 2026-07-31
 
 ---
 

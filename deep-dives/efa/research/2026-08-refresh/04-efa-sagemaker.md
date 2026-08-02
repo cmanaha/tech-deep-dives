@@ -524,7 +524,7 @@ On-demand invocation: `StartClusterHealthCheck` API.
 
 **[T1] Node labels:** passing nodes get `sagemaker.amazonaws.com/node-health-status: Schedulable`; failing nodes "will be terminated and replaced." — https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-node-labels.html (accessed 2026-08-01)
 
-**[T1] EFA observability:** HyperPod's cluster metrics include a **Network** category sourced from the **EFA Exporter**, **not enabled by default** (advanced mode only). Doc points at https://github.com/aws-samples/awsome-distributed-training/blob/main/4.validation_and_observability/3.efa-node-exporter/README.md . — https://docs.aws.amazon.com/sagemaker/latest/dg/hyperpod-observability-cluster-metrics.html (accessed 2026-08-01)
+**[T1] EFA observability:** HyperPod's cluster metrics include a **Network** category sourced from the **EFA Exporter**, **not enabled by default** (advanced mode only). Doc points at https://github.com/awslabs/awsome-distributed-ai/blob/cb99a28a85c8333ddbad004221230dac967ddbab/4.validation_and_observability/3.efa-node-exporter/README.md . — https://docs.aws.amazon.com/sagemaker/latest/dg/hyperpod-observability-cluster-metrics.html (accessed 2026-08-01)
 
 > **Gotcha for the deep dive:** EFA metrics on HyperPod are opt-in. Teams debugging fabric issues frequently do not have the exporter running.
 

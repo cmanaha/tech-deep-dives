@@ -5,6 +5,75 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
+import Alert from '@cloudscape-design/components/alert';
+import { SourceRef } from '@tech-deep-dives/shared';
+import type { DocRef } from '@tech-deep-dives/shared';
+
+/**
+ * EFA for Traditional HPC.
+ *
+ * Sourcing rule for this file (revamp/source-authority-standard.md): every
+ * load-bearing claim carries a SourceRef.
+ *
+ * Corrections applied on 2026-08-02:
+ *  - Every benchmark number now names the benchmark, the instance type and
+ *    what it was compared against, because the three panels were previously
+ *    labelled "EFA vs ENA" while measuring three different things.
+ *  - "HPC instances are only available in cluster placement groups" was not
+ *    stated by any AWS source and is removed. The sourced constraints are
+ *    single Availability Zone for EFA traffic, and no Spot, no Dedicated
+ *    Hosts and no metal sizes for the HPC families.
+ *  - Hpc8a has 192 cores, not 96, and its processor is a 5th Gen AMD EPYC.
+ */
+
+const ACCESSED = '2026-08-02';
+
+const docs: Record<string, DocRef> = {
+  hpc: {
+    title: 'EC2 instance types: Specifications for high-performance computing instances',
+    url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/hpc.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  efa: {
+    title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  efaStart: {
+    title: 'EC2 User Guide: Get started with EFA and MPI',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  hpc8a: {
+    title: "AWS What's New: Announcing new high performance computing Amazon EC2 Hpc8a instances",
+    url: 'https://aws.amazon.com/about-aws/whats-new/2026/02/announcing-amazon-ec2-hpc8a-instances/',
+    tier: 2,
+    accessed: ACCESSED,
+  },
+  multirail: {
+    title:
+      'AWS HPC Blog: Optimizing MPI application performance on hpc7a by effectively using both EFA devices',
+    url: 'https://aws.amazon.com/blogs/hpc/optimizing-mpi-application-performance-on-hpc7a-by-effectively-using-both-efa-devices/',
+    tier: 2,
+    accessed: ACCESSED,
+  },
+  gen2: {
+    title:
+      'AWS HPC Blog: Second generation EFA, improving HPC and ML application performance in the cloud',
+    url: 'https://aws.amazon.com/blogs/hpc/second-generation-efa-improving-hpc-and-ml-application-performance-in-the-cloud/',
+    tier: 2,
+    accessed: ACCESSED,
+  },
+  cfdDirect: {
+    title: 'CFD Direct: OpenFOAM HPC with AWS EFA',
+    url: 'https://cfd.direct/cloud/openfoam-hpc-aws-efa/',
+    tier: 3,
+    accessed: ACCESSED,
+  },
+};
 
 export function HPC() {
   return (
@@ -48,43 +117,66 @@ export function HPC() {
         </ColumnLayout>
       </Container>
 
-      <Container header={<Header variant="h2">Measured Performance (EFA vs ENA)</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Three published results. Each one compares a different pair of things, so each says what it measured."
+          >
+            Measured performance
+          </Header>
+        }
+      >
         <ColumnLayout columns={3} variant="text-grid">
           <div>
-            <Box variant="h3">CFD (OpenFOAM)</Box>
+            <Box variant="h3">CFD (OpenFOAM), EFA against standard networking</Box>
             <Box variant="p">
-              97-million-cell external aerodynamics on c5n.18xlarge:
-              <strong> 98.4% parallel efficiency</strong> at 1,008 cores (28 instances).
-              <strong> 4x improvement</strong> in scaling over ENA for standard CFD.
-              Applications scale extra-linearly to over 200 cores.
+              Strong scaling of a fixed 97-million-cell case on c5n.18xlarge, 36 physical cores per
+              instance. CFD Direct reports linear scaling at 1,008 cores across 28 instances, which
+              they put at <strong>98.4%</strong> parallel efficiency. The same report puts standard
+              networking at 70 to 90% scaling at 504 cores{' '}
+              <SourceRef provenance="documented" doc={docs.cfdDirect} />.
             </Box>
           </div>
           <div>
-            <Box variant="h3">Weather (WRF)</Box>
+            <Box variant="h3">Weather (WRF), multi-rail EFA against single-rail</Box>
             <Box variant="p">
-              CONUS 2.5km benchmark on hpc7a: enabling multi-rail EFA
-              (<code>I_MPI_MULTIRAIL=1</code>) delivered <strong>10% speedup at 32
-              instances</strong> and <strong>30%+ improvement at 192 instances</strong>.
-              Multi-rail is critical for instances with 2+ EFA interfaces.
+              WRF v4.2.2 CONUS 2.5 km on hpc7a with Intel MPI 2021.9.0. Setting{' '}
+              <code>I_MPI_MULTIRAIL=1</code> gave a <strong>10% increase in speedup at 32
+              instances</strong>, and at 192 instances <strong>the increase was over 30%</strong>{' '}
+              <SourceRef provenance="documented" doc={docs.multirail} />. This is EFA against EFA.
+              It is what you leave on the table by using one of two EFA devices.
             </Box>
           </div>
           <div>
-            <Box variant="h3">Molecular Dynamics</Box>
+            <Box variant="h3">Collectives, newer EFA software against older</Box>
             <Box variant="p">
-              AMBER, GROMACS, NAMD, LAMMPS: up to <strong>2.05x speedup</strong> at
-              2 instances and 1.2x at 768 cores versus ENA networking. EFA&apos;s
-              low-latency benefits are most pronounced at moderate scale where
-              communication-to-compute ratio is highest.
+              On a 128-GPU, 16-instance p4d.24xlarge cluster, AWS compared its January 2022 EFA
+              software stack against November 2022 and reports allreduce performance up{' '}
+              <strong>10% for large messages and 50% for small messages</strong>, with over 18%
+              improvement for FSDP and over 8% for Megatron-LM on the same hardware{' '}
+              <SourceRef provenance="documented" doc={docs.gen2} />. The stack moves under you, so
+              re-measure after upgrades.
             </Box>
           </div>
         </ColumnLayout>
+        <Alert type="info" header="What was removed from this panel">
+          Earlier text here claimed a 4x scaling improvement over ENA for standard CFD, extra-linear
+          scaling past 200 cores, and molecular dynamics speedups of 2.05x at two instances and 1.2x
+          at 768 cores. None traced to a source we could fetch and verify, so all four numbers are
+          gone.
+        </Alert>
       </Container>
 
       <Container header={<Header variant="h2">MPI + EFA Integration</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            MPI (Message Passing Interface) is the standard for HPC communication.
-            EFA integrates via libfabric&apos;s EFA provider. Supported MPI implementations:
+            MPI (Message Passing Interface) is the standard for HPC communication. EFA integrates
+            via libfabric&apos;s EFA provider. AWS names two MPI implementations as supported, Open
+            MPI 4.1 and later and Intel MPI 2019 Update 5 and later{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />. MPICH works over the same
+            libfabric provider but is not on that list, so treat it as unsupported by AWS rather
+            than broken.
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
             <div>
@@ -120,9 +212,12 @@ export function HPC() {
                 HPC jobs, this can consume significant memory.
               </Box>
               <Box variant="p">
-                <strong>Message sizes:</strong> EFA is most impactful for small messages
-                (&lt;64KB) where kernel overhead dominates. For large messages, the bandwidth
-                advantage is still significant but the latency improvement is less dramatic.
+                <strong>Message sizes:</strong> EFA helps most where per-message overhead dominates,
+                which means small messages sent at high rate. For large messages the bandwidth
+                advantage still applies but the per-message saving is a smaller share of the
+                transfer. The one sourced data point on this page agrees in direction: the allreduce
+                improvement AWS reports was 50% for small messages against 10% for large ones{' '}
+                <SourceRef provenance="documented" doc={docs.gen2} />.
               </Box>
               <Box variant="p">
                 <strong>Collectives:</strong> EFA accelerates all MPI collectives (Allreduce,
@@ -137,26 +232,51 @@ export function HPC() {
       <Container header={<Header variant="h2">HPC Instance Selection</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            For CPU-only HPC with EFA, the dedicated HPC instance families offer the best
-            price-performance. Key differentiator: <strong>HPC instances are only available
-            in cluster placement groups</strong> and are designed for sustained compute.
+            For CPU-only HPC with EFA, the dedicated HPC families are the price-performance answer.
+            They are also the most constrained families on EC2: no Spot, no Dedicated Hosts, no
+            metal sizes, and every one of them is Linux-first{' '}
+            <SourceRef provenance="documented" doc={docs.hpc} />. The networking constraint is the
+            same one every EFA workload has, and it is the Availability Zone, not the placement
+            group: EFA traffic cannot cross Availability Zones or VPCs{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />. AWS recommends a cluster placement
+            group rather than requiring one{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} />.
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
             <div>
-              <Box variant="h3">Hpc7a (AMD)</Box>
-              <Box variant="p">96 cores, 300 Gbps EFA. Best for floating-point heavy workloads. AMD EPYC with AVX-512.</Box>
+              <Box variant="h3">Hpc7a (AMD, Nitro v4)</Box>
+              <Box variant="p">
+                Up to 192 cores of AMD EPYC 9R14, 300 Gbps EFA. Reaching 300 Gbps needs at least two
+                ENIs on separate network cards; one card tops out at 150 Gbps{' '}
+                <SourceRef provenance="documented" doc={docs.hpc} />.
+              </Box>
             </div>
             <div>
-              <Box variant="h3">Hpc7g (Graviton3)</Box>
-              <Box variant="p">64 cores, 200 Gbps EFA. Best price-performance for ARM-compatible HPC codes.</Box>
+              <Box variant="h3">Hpc7g (Graviton3E, Nitro v5)</Box>
+              <Box variant="p">
+                Up to 64 cores, 200 Gbps EFA, one network card{' '}
+                <SourceRef provenance="documented" doc={docs.hpc} />. Note the RDMA asymmetry: every
+                hpc7g size is RDMA read only, with no RDMA write{' '}
+                <SourceRef provenance="documented" doc={docs.efa} />.
+              </Box>
             </div>
             <div>
-              <Box variant="h3">Hpc6id (Intel)</Box>
-              <Box variant="p">64 vCPUs, 200 Gbps EFA + 15.2TB NVMe. For HPC with local storage needs.</Box>
+              <Box variant="h3">Hpc6id (Intel, Nitro v4)</Box>
+              <Box variant="p">
+                64 cores of Intel Xeon Ice Lake, 200 Gbps EFA, and 4 x 3800 GB of NVMe instance
+                store for jobs that need local scratch{' '}
+                <SourceRef provenance="documented" doc={docs.hpc} />.
+              </Box>
             </div>
             <div>
-              <Box variant="h3">Hpc8a (AMD, newest)</Box>
-              <Box variant="p">96 cores (EPYC 9005), 300 Gbps EFA, Nitro v6. 40% higher performance and 42% greater memory bandwidth than hpc7a.</Box>
+              <Box variant="h3">Hpc8a (AMD, Nitro v6, newest)</Box>
+              <Box variant="p">
+                192 cores of AMD EPYC 9R45, 768 GiB, 300 Gbps EFA{' '}
+                <SourceRef provenance="documented" doc={docs.hpc} />. AWS states up to 40% higher
+                performance, up to 25% better price performance and up to 42% higher memory
+                bandwidth than Hpc7a <SourceRef provenance="documented" doc={docs.hpc8a} />. Nitro
+                v6 pairs with EFA v4.
+              </Box>
             </div>
           </ColumnLayout>
         </SpaceBetween>

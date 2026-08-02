@@ -1542,7 +1542,7 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
                 AWS documentation still links there for the device plugin. Use the eks-charts Helm chart instead.
               </Box>
               <Box variant="p">
-                aws-samples/awsome-distributed-training was transferred and renamed. It now resolves to
+                awslabs/awsome-distributed-ai was transferred and renamed. It now resolves to
                 awslabs/awsome-distributed-ai, which is actively maintained. The NCCL test manifests and the
                 reference Dockerfile live there{' '}
                 <SourceRef provenance="code-derived" code={code.ncclTests} />.

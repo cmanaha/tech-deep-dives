@@ -6,6 +6,46 @@ import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
+import { SourceRef } from '@tech-deep-dives/shared';
+import type { DocRef } from '@tech-deep-dives/shared';
+
+/**
+ * EFA for AI/ML Inference.
+ *
+ * Sourcing rule for this file (revamp/source-authority-standard.md): every
+ * load-bearing claim carries a SourceRef.
+ *
+ * Corrections applied on 2026-08-02:
+ *  - A cluster placement group is not a requirement for EFA. The hard
+ *    constraint is the Availability Zone. See the Instance Support section.
+ *  - The "NIXL beats NCCL by 30 to 50%" figure rested on a benchmark
+ *    repository that does not exist at the cited URL and was misattributed.
+ *    It is removed rather than re-hedged (see sources.md, id 39).
+ */
+
+const ACCESSED = '2026-08-02';
+const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
+
+const docs: Record<string, DocRef> = {
+  efa: {
+    title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
+    url: `${EC2_DOC}efa.html`,
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  efaStart: {
+    title: 'EC2 User Guide: Get started with EFA and MPI',
+    url: `${EC2_DOC}efa-start.html`,
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  efaNixl: {
+    title: 'EC2 User Guide: Get started with EFA and NIXL',
+    url: `${EC2_DOC}efa-start-nixl.html`,
+    tier: 1,
+    accessed: ACCESSED,
+  },
+};
 
 export function AIMLInference() {
   return (
@@ -73,26 +113,30 @@ export function AIMLInference() {
                 generating tokens; stealing SMs for communication directly reduces throughput.
               </Box>
               <Box variant="p">
-                NIXL uses EFA via the libfabric backend. EFA is the <strong>only validated
-                libfabric provider</strong> for NIXL. NIXL stripes transfers across all available
-                EFA devices (multi-rail) and routes NUMA-aware to minimize host-side latency.
-                Requires libfabric 1.21.0+.
+                NIXL uses EFA via the libfabric backend. AWS documents the pairing directly: EFA
+                supports NIXL for AI and ML applications, and NIXL integrates with Libfabric 1.21.0
+                and later <SourceRef provenance="documented" doc={docs.efa} />, with its own
+                getting-started page <SourceRef provenance="documented" doc={docs.efaNixl} />. NIXL
+                stripes transfers across the available EFA devices and routes NUMA-aware to keep
+                host-side latency down.
               </Box>
               <StatusIndicator type="success">EFA critical for NIXL</StatusIndicator>
             </div>
             <div>
-              <Box variant="h3">Performance: NIXL vs NCCL</Box>
+              <Box variant="h3">NIXL vs NCCL: the shape of the difference</Box>
               <Box variant="p">
-                At typical KV-cache transfer sizes (256KB-1MB), NIXL outperforms NCCL by
-                <strong> 30 to 50%</strong> due to zero kernel launch overhead and optimized
-                point-to-point paths. NCCL recovers at 10MB+ where its collective algorithms
-                amortize the kernel launch cost.
+                NCCL is designed for steady-state collectives in training: allreduce, allgather,
+                reduce-scatter, running every step at a predictable size. NIXL is designed for
+                bursty point-to-point transfers in inference, where a KV-cache block moves once,
+                between two specific nodes, at an unpredictable moment. Different patterns, so
+                different libraries.
               </Box>
-              <Box variant="p">
-                This is the key architectural difference: NCCL is designed for steady-state
-                collectives (allreduce, allgather) in training. NIXL is designed for bursty,
-                point-to-point transfers in inference. Different tools for different patterns.
-              </Box>
+              <Alert type="info" header="The percentage that used to be here is gone">
+                This panel previously claimed NIXL outperforms NCCL by 30 to 50% at KV-cache
+                transfer sizes. That figure rested on a benchmark repository cited at a URL that
+                does not exist and was attributed to the wrong organization. Rather than re-hedge
+                it, we removed it. If you need the number, measure it on your own transfer sizes.
+              </Alert>
             </div>
           </ColumnLayout>
           <Box variant="p">
@@ -154,7 +198,9 @@ export function AIMLInference() {
             <Box variant="p">
               If latency isn&apos;t critical (batch processing, embedding generation),
               even multi-node inference can tolerate standard networking. The throughput
-              improvement from EFA may not justify the placement group constraint.
+              improvement from EFA may not justify keeping every node in one Availability Zone,
+              which is the constraint EFA actually imposes: EFA traffic cannot cross Availability
+              Zones or VPCs <SourceRef provenance="documented" doc={docs.efa} />.
             </Box>
             <StatusIndicator type="stopped">EFA optional</StatusIndicator>
           </div>
@@ -183,7 +229,10 @@ export function AIMLInference() {
           </Box>
           <Box variant="p" padding={{ left: 'l' }}>
             → <strong>Yes:</strong> EFA critical. Tensor parallelism across nodes with NCCL
-            over EFA. Cluster placement group required.
+            over EFA. Put every node in the same Availability Zone, which EFA requires{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />. A cluster placement group is the
+            recommended way to satisfy that and keep latency low, not an absolute requirement{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} />.
           </Box>
 
           <Box variant="p" fontSize="heading-s">

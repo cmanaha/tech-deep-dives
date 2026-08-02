@@ -31,7 +31,7 @@ Source: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html — Tier 1 
 
 This is now **historically stale within the repo itself** — the same repository's driver code implements `EFA_IO_RDMA_READ` and `EFA_IO_RDMA_WRITE` (see F-9). `SRD.txt` documents the original 2019-era SRD QP semantics and has not been revised.
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/SRD.txt — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/SRD.txt — Tier 1 — accessed 2026-08-01
 
 **F-3. SRD QP scalability math, verbatim from `SRD.txt`:**
 > "With the Reliable Connected (RC) Transport Service, the number of QPs and connection contexts required per endnode to achieve full process to process connectivity is equal to N*p*p (where N is the number of nodes in the cluster and p the number of processes per node)."
@@ -39,22 +39,22 @@ Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/SRD.tx
 
 Note the units: these are **per endnode** figures, not cluster totals.
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/SRD.txt — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/SRD.txt — Tier 1 — accessed 2026-08-01
 
 **F-4. SRD provides reliable, out-of-order delivery without segmentation.** Verbatim:
 > "As RD, SRD QPs provide reliable delivery. Unlike RD (and similar to UD) SRD QPs provide out-of-order delivery without segmentation support."
 
 **SRD is a RELIABLE transport at the hardware level.** Any claim that EFA hardware is "unreliable datagram" and that libfabric adds reliability is wrong.
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/SRD.txt — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/SRD.txt — Tier 1 — accessed 2026-08-01
 
 **F-5. SRD hardware-level error semantics.** `SRD.txt` documents SRD-specific work-completion errors: "Bad Dest QP Error" (responder rejected because destination QP does not exist or is in error state) and "SRD RNR error" (Receive Queue has no posted WRs; "Requester does not perform any retries"). Plus an unaffiliated async event: "Remote Unresponsive Event - The local transport timeout was exceeded while trying to send messages to a specific destination (AH)."
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/SRD.txt — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/SRD.txt — Tier 1 — accessed 2026-08-01
 
 **F-6. SRD address model: no EE contexts; each Send WR carries an AH (Address Handle) which is implicitly associated with an SRD context.** Verbatim: "Instead of EE context, each SRD WR includes the AH (Address Handle) of the remote destination (as in UD). Each AH is implicitly associated with an SRD context."
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/SRD.txt — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/SRD.txt — Tier 1 — accessed 2026-08-01
 
 **F-7. The 64-path packet-spraying figure is confirmed by AWS.** Verbatim from the AWS HPC Blog:
 > "SRD can push all the packets making up a block of data all at once, over all the possible pathways in our fabric (in practice, for memory reasons, we choose 64 paths at a time from the hundreds or even thousands available)."
@@ -91,17 +91,17 @@ Source: https://github.com/ofiwg/libfabric/blob/v2.6.0/prov/efa/docs/efa_fabric_
 - "Add driver support for >4GB MR page size"
 - "Add driver mechanism for reusing AH device objects"
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/RELEASENOTES.md — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/RELEASENOTES.md — Tier 1 — accessed 2026-08-01
 
 **F-11. Device IDs map to EFA generations.** Driver release notes record PCI device ID additions:
 - `0xefa3` added in r2.12.0
 - `0xefa4` added in r3.3.0
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/RELEASENOTES.md — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/RELEASENOTES.md — Tier 1 — accessed 2026-08-01
 
 **F-12. RDMA Write was added to the kernel driver in r2.4.0; RDMA write statistics in r2.5.0; inline WRITE in r3.3.0.** Verbatim entries: r2.4.0 — "Add RDMA write support", "Add data polling support"; r2.5.0 — "Add RDMA write statistics"; r2.10.0 — "Introduce QP with unsolicited write with immediate receive"; r3.3.0 — "Add support for inline WRITE operation".
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/RELEASENOTES.md — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/RELEASENOTES.md — Tier 1 — accessed 2026-08-01
 
 **F-13. CRITICAL CHANGE — the kernel driver NOW implements `post_send`, `post_recv`, and `poll_cq`.** Driver release notes r2.12.0: "Introduce EFA kernel verbs support". At HEAD there is a dedicated 798-line source file `kernel/linux/efa/src/efa_data_verbs.c` implementing `efa_post_send`, `efa_post_recv`, `efa_poll_cq`, `efa_req_notify_cq`, `efa_map_mr_sg`, and `efa_set_page`.
 
@@ -121,7 +121,7 @@ These are registered in the `ib_device_ops` table in `efa_main.c` (lines 549-558
 
 **Essential nuance:** this is the **kernel-verbs path for in-kernel RDMA consumers**. It does not change the userspace OS-bypass model. A userspace application using libfabric still never enters the kernel on the data path. But the statement "the kernel driver intentionally does NOT implement post_send/post_recv/poll_cq" is no longer factually true at HEAD.
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/src/efa_main.c and https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/src/efa_data_verbs.c — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/src/efa_main.c and https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/src/efa_data_verbs.c — Tier 1 — accessed 2026-08-01
 
 **F-14. RDMA Read and RDMA Write are native hardware opcodes, not software emulation.** From the hardware I/O descriptor definitions shared between device and driver:
 
@@ -142,11 +142,11 @@ enum efa_io_send_op_type {
 
 `efa_data_verbs.c` maps `IB_WR_RDMA_READ → EFA_IO_RDMA_READ` (line 355-356) and `IB_WR_RDMA_WRITE → EFA_IO_RDMA_WRITE` (line 364-365), and decodes completions back (`EFA_IO_RDMA_WRITE → IB_WC_RDMA_WRITE`, line 628-629).
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/src/efa_io_defs.h and `.../src/efa_data_verbs.c` — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/src/efa_io_defs.h and `.../src/efa_data_verbs.c` — Tier 1 — accessed 2026-08-01
 
 **F-15. BAR regions and UARN scoping still exist at HEAD.** `efa.h` declares `reg_bar_addr`/`reg_bar_len`, `mem_bar_addr`/`mem_bar_len`, `db_bar_addr`/`db_bar_len`, the `__iomem` pointers `mem_bar` and `db_bar`, and `u16 uarn` fields on both ucontext and QP structs.
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/src/efa.h — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/src/efa.h — Tier 1 — accessed 2026-08-01
 
 **F-16. Phase-bit lockless CQ polling is confirmed in source.** `efa_data_verbs.c`:
 ```c
@@ -157,7 +157,7 @@ static int efa_cqe_is_pending(struct efa_io_cdesc_common *cqe_common, int phase)
 ```
 with `sub_cq->phase = 1 - sub_cq->phase;` on wrap, and the send queue setting `EFA_IO_TX_META_DESC_PHASE` from `qp->sq.wq.phase`.
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/src/efa_data_verbs.c — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/src/efa_data_verbs.c — Tier 1 — accessed 2026-08-01
 
 **F-17. Other notable driver capabilities added 2024-2026** (all verbatim from RELEASENOTES.md):
 - r2.17.0: "Add Network HW statistics counters", "Add CQ with external memory support"
@@ -168,7 +168,7 @@ Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/src/ef
 
 The driver also carries Neuron P2P support (`efa_neuronmem.c`) and NVIDIA P2P shims (`efa_nvmem_v1.c`, `efa_nvmem_v2.c`, `nv-p2p.h`, `nv-p2p_v2.h`).
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/RELEASENOTES.md, directory listing of `kernel/linux/efa/src` — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/RELEASENOTES.md, directory listing of `kernel/linux/efa/src` — Tier 1 — accessed 2026-08-01
 
 ---
 
@@ -323,7 +323,7 @@ Source: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html — Tier 1 
 
 **F-35. Driver r3.3.0 adds reporting for 800 and 1600 Gbps link speeds** ("Support reporting 800 and 1600 Gbps link speed"), consistent with EFA v4 / `0xefa4` hardware.
 
-Source: https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/RELEASENOTES.md — Tier 1 — accessed 2026-08-01
+Source: https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/RELEASENOTES.md — Tier 1 — accessed 2026-08-01
 
 **F-36. Network card counts and per-instance EFA bandwidth (Tier 1, current):**
 
@@ -886,12 +886,12 @@ Different percentile (p99 vs p99.9) and different magnitude (10x vs 85%). Recomm
 10. https://aws.amazon.com/about-aws/whats-new/2024/10/aws-efa-updates-scalability-ai-ml-applications/ — EFA-only interface announcement (Oct 24, 2024)
 
 **Source repositories** (all accessed 2026-08-01):
-11. https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/SRD.txt — SRD QP-type specification
-12. https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/RELEASENOTES.md — EFA kernel driver release notes through r3.3.0
-13. https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/src/efa_main.c — `efa_dev_ops` ib_device_ops table
-14. https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/src/efa_data_verbs.c — `efa_post_send`, `efa_post_recv`, `efa_poll_cq`, phase-bit polling
-15. https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/src/efa_io_defs.h — `enum efa_io_send_op_type` hardware opcodes
-16. https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/efa/src/efa.h — BAR regions, UARN
+11. https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/SRD.txt — SRD QP-type specification
+12. https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/RELEASENOTES.md — EFA kernel driver release notes through r3.3.0
+13. https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/src/efa_main.c — `efa_dev_ops` ib_device_ops table
+14. https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/src/efa_data_verbs.c — `efa_post_send`, `efa_post_recv`, `efa_poll_cq`, phase-bit polling
+15. https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/src/efa_io_defs.h — `enum efa_io_send_op_type` hardware opcodes
+16. https://github.com/amzn/amzn-drivers/blob/b99452b70756b1b394b1e7ff238d4efbdca44c5b/kernel/linux/efa/src/efa.h — BAR regions, UARN
 17. https://github.com/ofiwg/libfabric/blob/v2.6.0/man/fi_efa.7.md — EFA provider man page: `efa` vs `efa-direct`, GDA ops, env vars, `fi_setopt` options
 18. https://github.com/ofiwg/libfabric/blob/v2.6.0/prov/efa/docs/efa_fabric_comparison.md — `efa` vs `efa-direct` feature matrix, data path direct, util CQ bypass, RDMA offload
 19. https://github.com/ofiwg/libfabric/blob/v2.6.0/prov/efa/src/efa_data_path_direct.h — Data Path Direct interface

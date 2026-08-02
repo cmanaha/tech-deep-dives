@@ -29,6 +29,23 @@
 # present at the pinned ref is a misattribution: the claim was written against
 # something, but not against the thing we told the reader to check.
 #
+# RESEARCH SCOPE
+# --------------
+# By default this reads src/ only. That leaves the research markdown, where a
+# claim is first bound to a URL, unchecked. Set "pinned-refs-research": true in
+# the dive's .gates.json and research/**/*.md joins the scan.
+#
+# The research pass extracts GitHub blob and tree URLs only, as pinned code
+# references. It deliberately does not sweep every documentation URL in the
+# research: that would add a few hundred network probes per run for link rot in
+# working notes, and drown the code-reference findings that are the point. The
+# defect this closes is the one that produced the aws-eks-best-practices scare,
+# where a repo whose default branch is "mainline" was cited on "master" and the
+# quoted passages were absent there. A URL carrying "main" or "master" instead
+# of a ref is caught deterministically upstream by scripts/gates/pinned-refs.sh
+# under the same key; this pass is the networked half, confirming the pinned
+# path still exists at the pinned ref.
+#
 # WHAT IT EXTRACTS
 # ----------------
 # Both citation shapes used across the portfolio, from src/**/*.tsx and
@@ -108,6 +125,7 @@ cd "$ROOT"
 . "scripts/gates/_common.sh"
 
 CHECK="verify-citations"
+RESEARCH_KEY="pinned-refs-research"
 
 # ---------- defaults ----------
 
@@ -163,14 +181,20 @@ cat >"$EXTRACT" <<'MJS'
 //
 // kind is prop (url: or href), arg (positional string in a helper call),
 // or text (a URL inside a template literal or JSX body).
+//
+// With SCAN_RESEARCH=1 the walk also covers research/**/*.md, from which only
+// GitHub blob and tree URLs are taken, as CODE rows. See the RESEARCH SCOPE
+// note in the shell header for why the doc sweep stops at src/.
 
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const diveDir = process.argv[2];
 const srcDir = join(diveDir, 'src');
+const researchDir = join(diveDir, 'research');
+const scanResearch = process.env.SCAN_RESEARCH === '1';
 
-function walk(dir, out = []) {
+function walk(dir, match = /\.(tsx|ts)$/, out = []) {
   let entries;
   try {
     entries = readdirSync(dir);
@@ -181,8 +205,8 @@ function walk(dir, out = []) {
     if (e === 'node_modules' || e === 'dist') continue;
     const p = join(dir, e);
     const st = statSync(p);
-    if (st.isDirectory()) walk(p, out);
-    else if (/\.(tsx|ts)$/.test(e)) out.push(p);
+    if (st.isDirectory()) walk(p, match, out);
+    else if (match.test(e)) out.push(p);
   }
   return out;
 }
@@ -357,6 +381,45 @@ function objectFields(body) {
 const rows = [];
 const clean = (c) => String(c).replace(/[\t\r\n]+/g, ' ').trim();
 const push = (...cells) => rows.push(cells.map(clean).join('\t'));
+
+// ---- research markdown: GitHub blob and tree URLs as pinned code refs -----
+//
+// A research URL is plain prose, so there is no builder or object literal to
+// parse. The shape is the browser URL itself:
+//
+//   https://github.com/<owner>/<repo>/blob/<ref>/<path>#L12-L26
+//   https://github.com/<owner>/<repo>/tree/<ref>/<path>
+//
+// The ref segment is taken verbatim, including "main" or "master". Those are
+// reported here as whatever the checker finds, which for a live branch is
+// usually OK. The deterministic gate is the one that rejects a branch ref, and
+// it runs first. This pass answers the different question: at the ref actually
+// written, is the path still there.
+if (scanResearch) {
+  const gre = /https?:\/\/(?:www\.)?github\.com\/([A-Za-z0-9._-]+\/[A-Za-z0-9._-]+)\/(?:blob|tree)\/([^/\s'"`<>)\]]+)\/([^\s'"`<>)\]]+)/g;
+  for (const file of walk(researchDir, /\.md$/)) {
+    const rel = relative(diveDir, file);
+    const text = readFileSync(file, 'utf8');
+    let gm;
+    while ((gm = gre.exec(text)) !== null) {
+      const repo = gm[1];
+      const ref = gm[2];
+      let path = trimUrl(gm[3]);
+      let lines = '';
+      const hash = path.indexOf('#');
+      if (hash !== -1) {
+        const frag = path.slice(hash + 1);
+        path = path.slice(0, hash);
+        if (/^L\d+/.test(frag)) lines = frag;
+      }
+      const q = path.indexOf('?');
+      if (q !== -1) path = path.slice(0, q);
+      path = path.replace(/\/+$/, '');
+      if (path === '') continue;
+      push('CODE', rel, lineOf(text, gm.index), repo, ref, path, lines);
+    }
+  }
+}
 
 for (const file of walk(srcDir)) {
   const rel = relative(diveDir, file);
@@ -628,8 +691,20 @@ for dive in "${dives[@]}"; do
   topic="$(basename "$dive")"
   gate_step "$CHECK: $dive"
 
+  # Research markdown joins the scan only when the dive opted into it under
+  # its own key, so turning it on for one dive cannot lengthen another's run.
+  scan_research=0
+  if [[ "$(gates_read_flag "$dive/.gates.json" "$RESEARCH_KEY")" == "true" ]]; then
+    if [[ -d "$dive/research" ]]; then
+      scan_research=1
+      gate_note "research scan on ($RESEARCH_KEY): $dive/research/**/*.md, GitHub code refs only"
+    else
+      gate_warn "$RESEARCH_KEY is true but $dive/research does not exist"
+    fi
+  fi
+
   raw="$WORK/$topic.tsv"
-  if ! node "$EXTRACT" "$dive" >"$raw" 2>"$WORK/$topic.err"; then
+  if ! SCAN_RESEARCH="$scan_research" node "$EXTRACT" "$dive" >"$raw" 2>"$WORK/$topic.err"; then
     gate_fail "$CHECK: extractor failed for $dive"
     sed 's/^/    /' "$WORK/$topic.err" >&2
     EXIT=2
@@ -801,7 +876,11 @@ for dive in "${dives[@]}"; do
     printf 'Run date: %s  \n' "$TODAY"
     printf 'Tree: `%s`  \n' "$sha"
     printf 'Check: `scripts/audit/verify-citations.sh` (Tier 1.5, deterministic, networked, no LLM)  \n'
-    printf 'Scope: `%s/src/**/*.tsx` and `*.ts`, excluding tests\n\n' "$dive"
+    printf 'Scope: `%s/src/**/*.tsx` and `*.ts`, excluding tests\n' "$dive"
+    if [[ "$scan_research" -eq 1 ]]; then
+      printf 'Also: `%s/research/**/*.md`, GitHub blob and tree URLs only (`%s`)\n' "$dive" "$RESEARCH_KEY"
+    fi
+    printf '\n'
 
     printf '## Summary\n\n'
     printf '| Metric | Count |\n|---|---|\n'

@@ -787,7 +787,7 @@ Additional exclusions, verbatim:
 AWS docs state the *why* but not the number, verbatim from `ena-express.html`:
 > **MTU size** – ENA Express requires a lower MTU than the default to accommodate additional AWS SRD headers. Newly established TCP connections automatically clamp the MSS to mitigate this, but UDP traffic still requires a lower MTU.
 
-The **number** comes from AWS's own first-party checker script, `amzn/amzn-ec2-ena-utilities`, `ena-express/check-ena-express-settings.sh` (fetched 2026-08-01 from `raw.githubusercontent.com/amzn/amzn-ec2-ena-utilities/main/`):
+The **number** comes from AWS's own first-party checker script, `amzn/amzn-ec2-ena-utilities`, `ena-express/check-ena-express-settings.sh` (fetched 2026-08-01 from `raw.githubusercontent.com/amzn/amzn-ec2-ena-utilities/6ecb14cf1dc3f17a375ea72c1aa3dfd72dc5a1e7/`):
 ```sh
 # 1. MTU <= 8900 (required)
 MTU_RECOMMENDED_MAX=8900

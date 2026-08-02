@@ -96,7 +96,6 @@ const factChecks: FactCheckItem[] = [
   { claim: '405B parameters at fp16 = ~810GB model size', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'P5 has 640GB total GPU memory (8x H100 80GB)', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'NIXL requires libfabric 1.21.0+', section: 'AI/ML Inference', sourceId: 37 },
-  { claim: 'NIXL outperforms NCCL by 30-50% at typical KV-cache sizes (256KB-1MB)', section: 'AI/ML Inference', sourceId: 39 },
   { claim: 'NCCL launches a GPU kernel even for point-to-point send/recv', section: 'AI/ML Inference', sourceId: 36 },
   { claim: 'EFA is the only validated libfabric provider for NIXL', section: 'AI/ML Inference', sourceId: 37 },
   { claim: 'NIXL performs transfers with zero SM consumption (no GPU kernel launch)', section: 'AI/ML Inference', sourceId: 36 },
@@ -109,7 +108,6 @@ const factChecks: FactCheckItem[] = [
   { claim: '30%+ improvement at 192 instances with multi-rail EFA', section: 'Traditional HPC', sourceId: 27 },
   { claim: 'Up to 2.05x MD speedup at 2 instances vs ENA', section: 'Traditional HPC', sourceId: 28 },
   { claim: 'Hpc7a: 96 AMD EPYC cores, 300 Gbps EFA', section: 'Traditional HPC', sourceId: 5 },
-  { claim: 'Hpc8a: 96 EPYC 9005 cores, 300 Gbps EFA, 42% greater memory bandwidth', section: 'Traditional HPC', sourceId: 5 },
 
   // EFA vs Alternatives section
   { claim: '~15.5\u03BCs MPI ping-pong latency (EFA)', section: 'EFA vs Alternatives', sourceId: 25 },
@@ -163,7 +161,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'CQ', fullForm: 'Completion Queue', description: 'Queue where hardware posts completion notifications for finished send/receive operations' },
   { acronym: 'PD', fullForm: 'Protection Domain', description: 'Security boundary in RDMA/EFA isolating memory regions and queue pairs between processes' },
   { acronym: 'WQE', fullForm: 'Work Queue Entry', description: 'Individual work item posted to a send or receive queue for the NIC to process' },
-  { acronym: 'LLQ', fullForm: 'Low-Latency Queue', description: 'EFA mechanism writing descriptors directly to NIC via MMIO, skipping DMA for small messages' },
+  { acronym: 'LLQ', fullForm: 'Low Latency Queue', description: 'EFA mechanism writing descriptors directly to NIC via MMIO, skipping DMA for small messages' },
   { acronym: 'UARN', fullForm: 'User Access Region Number', description: 'Hardware-enforced per-process doorbell scoping mechanism in EFA' },
   { acronym: 'BAR', fullForm: 'Base Address Register', description: 'PCIe register defining memory-mapped I/O regions for device communication' },
   { acronym: 'DDP', fullForm: 'Distributed Data Parallel', description: 'PyTorch strategy replicating model across GPUs and synchronizing gradients via allreduce' },
@@ -176,7 +174,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'CFD', fullForm: 'Computational Fluid Dynamics', description: 'Simulation of fluid flow using numerical methods; common tightly-coupled HPC workload' },
   { acronym: 'WRF', fullForm: 'Weather Research and Forecasting', description: 'Mesoscale numerical weather prediction system used in atmospheric research' },
   { acronym: 'AMI', fullForm: 'Amazon Machine Image', description: 'Template for EC2 instance root volumes containing OS, application server, and applications' },
-  { acronym: 'NIXL', fullForm: 'NVIDIA Inference Xfer Library', description: 'Library for multi-node inference transfer patterns including KV-cache migration and disaggregated prefill/decode. Uses libfabric over EFA. Zero GPU kernel launch overhead unlike NCCL (2025+)' },
+  { acronym: 'NIXL', fullForm: 'NVIDIA Inference Xfer Library', description: 'NVIDIA library for point-to-point inference transfers, including KV cache migration and disaggregated prefill and decode. Reaches EFA through its libfabric backend plugin, which requires libfabric 1.21.0 or later' },
   { acronym: 'SM', fullForm: 'Streaming Multiprocessor', description: 'GPU compute unit containing CUDA cores; NIXL avoids consuming SMs during transfers unlike NCCL' },
   { acronym: 'KV', fullForm: 'Key-Value', description: 'As in KV-cache: stores computed attention keys and values for autoregressive inference' },
   { acronym: 'CC', fullForm: 'Collective Compute', description: 'Dedicated engine on Trainium chips orchestrating collective operations independently from NeuronCores' },
@@ -184,14 +182,83 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'DGRAM', fullForm: 'Datagram', description: 'Raw unreliable datagram endpoint type in libfabric; used directly by some MPI implementations' },
   { acronym: 'PCIe', fullForm: 'Peripheral Component Interconnect Express', description: 'High-speed serial bus standard connecting CPUs, GPUs, NICs, and other peripherals' },
   { acronym: 'SLA', fullForm: 'Service Level Agreement', description: 'Contractual commitment defining expected service availability and performance' },
-  { acronym: 'SMDDP', fullForm: 'SageMaker Distributed Data Parallel', description: 'AWS library optimizing AllGather with mesh topology for reduced GPU SM usage' },
+  { acronym: 'SMDDP', fullForm: 'SageMaker Distributed Data Parallel', description: 'AWS library that replaces the NCCL AllReduce and AllGather path on a narrow instance set. Supports ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge only, with the optimized AllGather on P4 alone. Nothing newer is supported' },
   { acronym: 'CNI', fullForm: 'Container Network Interface', description: 'Plugin specification for configuring network interfaces in Linux containers (used in Kubernetes)' },
   { acronym: 'OFI', fullForm: 'OpenFabrics Interfaces', description: 'Framework (libfabric) providing a portable API for high-performance fabric services' },
   { acronym: 'RCCL', fullForm: 'ROCm Communication Collectives Library', description: 'AMD equivalent of NCCL for ROCm GPU collective communications' },
   { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'AWS mechanism to reserve EC2 capacity in a specific AZ without long-term commitment' },
   { acronym: 'MSI-X', fullForm: 'Message Signaled Interrupts Extended', description: 'PCIe interrupt mechanism supporting per-queue interrupts for high-performance I/O' },
   { acronym: 'NCI', fullForm: 'Network Card Index', description: 'Identifier for a specific network card on a multi-NIC EC2 instance' },
-  { acronym: 'UCCL', fullForm: 'Unified Collective Communication Library', description: 'NVIDIA library unifying collective and point-to-point communication; includes NIXL benchmarks for KV-cache transfers' },
+  { acronym: 'UCCL', fullForm: 'Unified Collective Communication Library', description: 'Open source GPU communication library developed at the UC Berkeley Sky Computing Lab and UC Davis, covering collectives, point-to-point transfers and expert parallelism. It is not an NVIDIA project. Cited here for the NIXL versus NCCL KV cache benchmarks under p2p/benchmarks in uccl-project/uccl' },
+
+  // EFA hardware generations
+  { acronym: 'EFAv1', fullForm: 'Elastic Fabric Adapter generation 1', description: 'First EFA generation, on Nitro v3 instances such as P4d. Baseline for the 75% collectives improvement AWS claims for EFAv2' },
+  { acronym: 'EFAv2', fullForm: 'Elastic Fabric Adapter generation 2', description: 'Second EFA generation, on Nitro v4. AWS states 75% faster collectives than EFAv1' },
+  { acronym: 'EFAv3', fullForm: 'Elastic Fabric Adapter generation 3', description: 'Third EFA generation, on Nitro v5 instances such as P5en and Trn2. AWS states 35% lower latency than EFAv2' },
+  { acronym: 'EFAv4', fullForm: 'Elastic Fabric Adapter generation 4', description: 'Generation label AWS uses on the P6 and UltraServers product pages for P6e-GB200. The EC2 User Guide places the same instance under Nitro v5, which maps to EFAv3. This dive publishes the conflict rather than picking a side' },
+
+  // AWS platform
+  { acronym: 'EC2', fullForm: 'Elastic Compute Cloud', description: 'AWS virtual machine service. EFA attaches to EC2 instances as an additional network interface' },
+  { acronym: 'EKS', fullForm: 'Elastic Kubernetes Service', description: 'AWS managed Kubernetes. Reaches EFA through the EFA device plugin or the EFA DRA driver' },
+  { acronym: 'ECS', fullForm: 'Elastic Container Service', description: 'AWS container orchestrator. Exposes EFA to tasks on supported instance types' },
+  { acronym: 'VPC', fullForm: 'Virtual Private Cloud', description: 'Isolated AWS network. EFA traffic stays inside one VPC and inside one Availability Zone' },
+  { acronym: 'AZ', fullForm: 'Availability Zone', description: 'Isolated datacenter group inside an AWS Region. EFA traffic cannot cross an AZ boundary, which is why co-located training jobs pin to one AZ' },
+  { acronym: 'IAM', fullForm: 'Identity and Access Management', description: 'AWS permissions service. Governs which principal may call the topology and capacity APIs cited here' },
+  { acronym: 'AL2023', fullForm: 'Amazon Linux 2023', description: 'Current Amazon Linux generation and the AMI family the EKS EFA install scripts target' },
+  { acronym: 'DLC', fullForm: 'Deep Learning Container', description: 'AWS-maintained container image shipping libfabric, aws-ofi-nccl, NCCL and OpenMPI. Installs EFA with --skip-kmod, so the host keeps the kernel module' },
+  { acronym: 'CRT', fullForm: 'AWS Common Runtime', description: 'S3 client library used by the AWS CLI and Boto3 for parallel multipart transfers. It runs over TCP on the ENA device, never over EFA' },
+
+  // Kubernetes and scheduler layer
+  { acronym: 'DRA', fullForm: 'Dynamic Resource Allocation', description: 'Kubernetes API for claiming specialized devices. The EFA DRA driver is the successor to the EFA device plugin' },
+  { acronym: 'DRANET', fullForm: 'DRA network driver', description: 'Kubernetes network driver, upstream at kubernetes-sigs/dranet, that exposes EFA devices through DRA. AWS packages it as the aws-dranet chart in aws/eks-charts' },
+  { acronym: 'SPANK', fullForm: 'Slurm Plug-in Architecture for Node and job (K)control', description: 'Slurm plug-in framework. SageMaker HyperPod builds its Slurm auto-resume health check on it' },
+  { acronym: 'DCGM', fullForm: 'Data Center GPU Manager', description: 'NVIDIA GPU health and telemetry suite. HyperPod deep health checks run its level 4 diagnostics alongside the EFA benchmark' },
+  { acronym: 'DKMS', fullForm: 'Dynamic Kernel Module Support', description: 'Linux framework that rebuilds out-of-tree modules against a new kernel. The EFA kernel driver installs through it' },
+  { acronym: 'MOFED', fullForm: 'Mellanox OpenFabrics Enterprise Distribution', description: 'NVIDIA networking driver stack. Enabling it next to the EFA installer causes a driver collision on EKS nodes' },
+
+  // Inference and transfer stack
+  { acronym: 'DPD', fullForm: 'Disaggregated Prefill and Decode', description: 'Inference pattern that runs prefill and decode on separate nodes and ships the KV cache between them. The one documented SageMaker path where EFA carries inference traffic' },
+  { acronym: 'LMCache', fullForm: 'LMCache KV cache layer', description: 'Open source KV cache layer for LLM serving. In the HyperPod DPD stack it sits above NIXL and splits prefill from decode' },
+  { acronym: 'SMP', fullForm: 'SageMaker Model Parallelism library', description: 'AWS training library for sharded model parallelism. Its relationship to EFA is indirect, mediated by SMDDP or by NCCL over aws-ofi-nccl' },
+
+  // GPU data movement
+  { acronym: 'GIN', fullForm: 'GPU-Initiated Networking', description: 'Subsystem in the aws-ofi-nccl plugin that lets a GPU kernel drive network operations directly' },
+  { acronym: 'GDAKI', fullForm: 'GPUDirect Async Kernel-Initiated', description: 'GIN implementation that drives EFA queue pairs from GPU kernels through the libfabric FI_EFA_GDA_OPS table. Opt-in only, via OFI_NCCL_GIN_TYPE=GDAKI' },
+  { acronym: 'GDRCopy', fullForm: 'GPUDirect RDMA Copy library', description: 'NVIDIA low-latency library for copying between host and GPU memory. It is a documented EFA install step and it is not the same thing as GPUDirect RDMA' },
+  { acronym: 'GDS', fullForm: 'GPUDirect Storage', description: 'NVIDIA path moving file data straight between storage and GPU memory, skipping a host bounce buffer. Used by FSx for Lustre on a restricted instance list' },
+  { acronym: 'GDRDMA', fullForm: 'GPUDirect RDMA', description: 'Token printed in the NCCL log line NET/Libfabric/0/GDRDMA, which is the evidence that the plugin selected the GPUDirect RDMA path' },
+  { acronym: 'DMA', fullForm: 'Direct Memory Access', description: 'Device-initiated memory transfer that does not go through the CPU' },
+  { acronym: 'MMIO', fullForm: 'Memory-Mapped I/O', description: 'Addressing a device through the CPU memory map. EFA uses it for the LLQ doorbell write' },
+
+  // Verbs and queue objects
+  { acronym: 'MR', fullForm: 'Memory Region', description: 'Registered and pinned memory range the NIC is allowed to read and write directly' },
+  { acronym: 'AH', fullForm: 'Address Handle', description: 'Verbs object holding the destination addressing a send needs on an unreliable or SRD endpoint' },
+  { acronym: 'SQ', fullForm: 'Send Queue', description: 'Half of a queue pair. Work requests are written here for the NIC to pick up' },
+  { acronym: 'RNR', fullForm: 'Receiver Not Ready', description: 'Condition where the receiver has no posted buffer. RNR retry is an SRD-only property on EFA' },
+  { acronym: 'ABI', fullForm: 'Application Binary Interface', description: 'Binary contract between kernel driver and userspace provider. Changing it breaks an installed libfabric' },
+  { acronym: 'VF', fullForm: 'Virtual Function', description: 'SR-IOV device presented to a guest. Every EFA PCI ID is a VF; there is no EFA physical function' },
+  { acronym: 'PF', fullForm: 'Physical Function', description: 'Full PCIe function of an SR-IOV device. ENA exposes one; EFA does not' },
+
+  // Network and kernel offloads
+  { acronym: 'MTU', fullForm: 'Maximum Transmission Unit', description: 'Largest frame a link carries without fragmenting' },
+  { acronym: 'MSS', fullForm: 'Maximum Segment Size', description: 'Largest TCP payload per segment, clamped automatically on some AWS paths' },
+  { acronym: 'TSO', fullForm: 'TCP Segmentation Offload', description: 'Hardware splitting of a large TCP buffer into wire-sized segments. An ENA feature with no EFA equivalent' },
+  { acronym: 'GRO', fullForm: 'Generic Receive Offload', description: 'Kernel-side merging of received packets into fewer, larger buffers' },
+  { acronym: 'LRO', fullForm: 'Large Receive Offload', description: 'Hardware-side merging of received segments before they reach the kernel' },
+  { acronym: 'RSS', fullForm: 'Receive Side Scaling', description: 'Hashing received flows across queues so multiple cores share the receive load' },
+  { acronym: 'DIM', fullForm: 'Dynamic Interrupt Moderation', description: 'Adaptive tuning of interrupt coalescing against observed traffic' },
+  { acronym: 'XDP', fullForm: 'eXpress Data Path', description: 'Kernel eBPF hook running at the driver receive path. Supported on ENA, not part of the EFA data path' },
+  { acronym: 'NIC', fullForm: 'Network Interface Card', description: 'The network adapter itself. On EFA-capable instances a network card can present both an ENA and an EFA device' },
+  { acronym: 'RMA', fullForm: 'Remote Memory Access', description: 'One-sided read and write into a peer address space. Not offered by the libfabric DGRAM endpoint type' },
+  { acronym: 'AEAD', fullForm: 'Authenticated Encryption with Associated Data', description: 'Encryption class that authenticates as it encrypts. Used by the Nitro in-transit encryption applied to EFA traffic' },
+
+  // Storage and memory
+  { acronym: 'LNet', fullForm: 'Lustre Networking', description: 'Lustre transport layer. On FSx for Lustre it runs over the EFA device, and over TCP on ENA where EFA is absent' },
+  { acronym: 'NVMe', fullForm: 'Non-Volatile Memory Express', description: 'Protocol for attaching solid state storage over PCIe' },
+  { acronym: 'HBM3e', fullForm: 'High Bandwidth Memory 3e', description: 'Stacked memory generation on current training accelerators' },
+
+  // Publication venue
+  { acronym: 'NSDI', fullForm: 'Networked Systems Design and Implementation', description: 'USENIX conference. Named here because the SRD paper is often miscited to it. The SRD paper is Shalev et al., IEEE Micro 2020' },
 ];
 
 export function Sources() {

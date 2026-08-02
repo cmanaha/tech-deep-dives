@@ -7,6 +7,139 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import Table from '@cloudscape-design/components/table';
+import { SourceRef } from '@tech-deep-dives/shared';
+import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
+
+const ACCESSED = '2026-08-02';
+const READ = '2026-08-02';
+
+const docs: Record<string, DocRef> = {
+  efa: {
+    title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  efaStart: {
+    title: 'EC2 User Guide: Get started with EFA and MPI',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  ac: {
+    title: 'EC2 instance types: Accelerated computing',
+    url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  hpc: {
+    title: 'EC2 instance types: HPC optimized',
+    url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/hpc.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  capacityBlocks: {
+    title: 'EC2 User Guide: how Capacity Blocks for ML work',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-how.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  hyperpodEks: {
+    title: 'SageMaker Developer Guide: topology-aware scheduling in HyperPod task governance',
+    url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-tasks-scheduling.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  eksMlPools: {
+    title: 'EKS User Guide: manage compute for AI/ML with EKS Auto Mode and Karpenter',
+    url: 'https://docs.aws.amazon.com/eks/latest/userguide/ml-node-pools.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  eksNodeClass: {
+    title: 'EKS User Guide: create a NodeClass, static network interface configuration',
+    url: 'https://docs.aws.amazon.com/eks/latest/userguide/create-node-class.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  karpenterNodeClasses: {
+    title: 'Karpenter documentation: EC2NodeClass',
+    url: 'https://karpenter.sh/docs/concepts/nodeclasses/',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  karpenterDisruption: {
+    title: 'Karpenter documentation: Disruption',
+    url: 'https://karpenter.sh/docs/concepts/disruption/',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  smCapacity: {
+    title: 'SageMaker Developer Guide: Get compute capacity for SageMaker Training Jobs',
+    url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/train-get-capacity.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  smTrainEfa: {
+    title: 'SageMaker Developer Guide: Run Training with EFA',
+    url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-efa.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  ddpSupport: {
+    title: 'SageMaker Developer Guide: SMDDP supported frameworks, Regions and instance types',
+    url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/distributed-data-parallel-support.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  ddpIntro: {
+    title: 'SageMaker Developer Guide: Introduction to the SMDDP library',
+    url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/data-parallel-intro.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  ddpRelease: {
+    title: 'SageMaker Developer Guide: SMDDP release notes',
+    url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/data-parallel-release-notes.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  eksBestPractices: {
+    title: 'EKS Best Practices Guide: AI/ML networking, Spot instance risks with EFA co-location',
+    url: 'https://docs.aws.amazon.com/eks/latest/best-practices/aiml-networking.html',
+    tier: 2,
+    accessed: ACCESSED,
+  },
+  trn2: {
+    title: 'AWS product page: Amazon EC2 Trn2 Instances',
+    url: 'https://aws.amazon.com/ec2/instance-types/trn2/',
+    tier: 2,
+    accessed: ACCESSED,
+  },
+};
+
+const code: Record<string, CodeRef> = {
+  karpenterPlacementGroup: {
+    repo: 'aws/karpenter-provider-aws',
+    ref: 'v1.14.0',
+    path: 'pkg/apis/v1/ec2nodeclass.go',
+    lines: 'L56-L60',
+    read: READ,
+  },
+  karpenterPkg: {
+    repo: 'aws/karpenter-provider-aws',
+    ref: 'v1.14.0',
+    path: 'pkg',
+    read: READ,
+  },
+  eksBpSpot: {
+    repo: 'aws/aws-eks-best-practices',
+    ref: '828f285d5888010993bd8948bc2b8305181e513d',
+    path: 'latest/bpg/aiml/aiml_networking.adoc',
+    lines: 'L35-L43',
+    read: READ,
+  },
+};
 
 interface DecisionRow {
   scenario: string;
@@ -26,7 +159,7 @@ const decisions: DecisionRow[] = [
     scenario: 'Pre-training 70B model on 8 nodes',
     efaNeeded: 'Yes',
     reason: 'Multi-node DDP/FSDP: allreduce is the bottleneck',
-    recommendation: 'P5 with EFA in cluster placement group',
+    recommendation: 'P5 with EFA, all 8 nodes in one Availability Zone. Cluster placement group recommended, not required',
   },
   {
     scenario: 'Pre-training 400B+ model on 100+ nodes',
@@ -50,7 +183,7 @@ const decisions: DecisionRow[] = [
     scenario: 'CFD simulation (1000 MPI ranks)',
     efaNeeded: 'Yes',
     reason: 'Tightly-coupled: halo exchange every timestep',
-    recommendation: 'Hpc7a in cluster placement group',
+    recommendation: 'Hpc7a, every rank in one Availability Zone. Cluster placement group recommended, not required. Hpc7a is not Spot eligible',
   },
   {
     scenario: 'Batch embedding generation',
@@ -76,12 +209,23 @@ export function DecisionGuide() {
           </Header>
         }
       >
-        <Box variant="p">
-          EFA adds no cost, but it adds <strong>operational constraints</strong>: cluster
-          placement groups (single AZ), capacity planning, security group configuration,
-          and container/Kubernetes complexity. Use it when the performance benefit justifies
-          these constraints.
-        </Box>
+        <SpaceBetween size="m">
+          <Box variant="p">
+            EFA adds no cost, but it adds <strong>operational constraints</strong>: every
+            instance in the job has to sit in one Availability Zone, plus capacity planning,
+            security group configuration, and container/Kubernetes complexity. Use it when the
+            performance benefit justifies these constraints.
+          </Box>
+          <Box variant="p">
+            The single-AZ rule is the hard one. AWS states that EFA traffic cannot cross
+            Availability Zones or VPCs (Virtual Private Clouds){' '}
+            <SourceRef provenance="documented" doc={docs.efa} />. A cluster placement group is
+            the recommended way to satisfy that rule and keep latency low, and AWS says in as
+            many words that it is not an absolute requirement{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} />. Skipping it is legal and
+            usually a mistake.
+          </Box>
+        </SpaceBetween>
       </Container>
 
       <Table
@@ -102,6 +246,19 @@ export function DecisionGuide() {
         items={decisions}
         sortingDisabled
         variant="full-page"
+        footer={
+          <Box variant="small" color="text-body-secondary">
+            Every recommendation above states the Availability Zone constraint rather than a
+            placement group requirement, because that is what AWS documents{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} label="doc: efa-start" />.
+            Spot eligibility per family comes from the instance specification tables{' '}
+            <SourceRef provenance="documented" doc={docs.ac} />{' '}
+            <SourceRef provenance="documented" doc={docs.hpc} label="doc: hpc" />. Instance
+            rates live in the Pricing Analysis section, which pins every figure to a price list
+            version. No rate is restated here.
+          </Box>
+        }
       />
 
       <Container header={<Header variant="h2">The Three Questions</Header>}>
@@ -128,12 +285,16 @@ export function DecisionGuide() {
             </Alert>
           </div>
           <div>
-            <Box variant="h3">3. Can you use a placement group?</Box>
+            <Box variant="h3">3. Can every node live in one Availability Zone?</Box>
             <Box variant="p">
-              EFA strongly recommends a cluster placement group = single AZ (not strictly
-              required, but performance degrades without it). Cross-subnet within the same
-              AZ is supported since 2024. Design training/HPC jobs to checkpoint frequently
-              and tolerate AZ-level failure.
+              This is the gate, not the placement group. AWS states that EFA traffic cannot
+              cross Availability Zones or VPCs{' '}
+              <SourceRef provenance="documented" doc={docs.efa} />, so a job that has to span
+              zones cannot use EFA at all. A cluster placement group is the recommended way to
+              land inside one zone with low latency, and AWS states it is not an absolute
+              requirement{' '}
+              <SourceRef provenance="documented" doc={docs.efaStart} />. Design training and HPC
+              jobs to checkpoint frequently and tolerate AZ-level failure.
             </Box>
             <Alert type="info">
               For training: always checkpoint. For inference: consider failover to another AZ cluster.
@@ -178,37 +339,108 @@ export function DecisionGuide() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">EFA + Karpenter: Topology-Aware Scheduling</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="What Karpenter provisions for EFA, and the one capability it does not have"
+          >
+            EFA and Karpenter
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
+          <Alert type="error" header="Karpenter cannot do network-node topology-aware scheduling">
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                AWS states that topology-aware scheduling is not supported with Karpenter
+                autoscaling, that it is on by default in HyperPod task governance, and that
+                anyone using Karpenter for node provisioning has to disable it by setting
+                TopologyAwareScheduling to false in the kueue-manager-config ConfigMap and
+                restarting the Kueue controller{' '}
+                <SourceRef provenance="documented" doc={docs.hyperpodEks} />.
+              </Box>
+              <Box variant="p">
+                The source tree agrees. A search of the aws/karpenter-provider-aws v1.14.0
+                release for network-node-layer returns zero occurrences, and so does a search
+                for DescribeInstanceTopology{' '}
+                <SourceRef provenance="code-derived" code={code.karpenterPkg} />. Karpenter
+                never calls the topology API and never emits those labels. The EKS well-known
+                label tables for Auto Mode and self-managed Karpenter list instance family,
+                category, generation, GPU attributes, capacity type and zone, with no network
+                node layer entry <SourceRef provenance="documented" doc={docs.eksMlPools} />.
+                For the part Karpenter does not cover, see the EC2 Instance Topology API
+                section: node labels come from HyperPod task governance or from a labeler
+                DaemonSet you run yourself.
+              </Box>
+            </SpaceBetween>
+          </Alert>
           <Box variant="p">
-            On EKS, <strong>Karpenter</strong> can enforce topology constraints that EFA
-            requires. Use <code>topology.kubernetes.io/zone</code> to pin nodes to a single
-            AZ, and node affinity to target a specific cluster placement group.
-          </Box>
-          <Box variant="p">
-            Key Karpenter patterns for EFA:
+            What Karpenter does do for EFA is provision the nodes and constrain where they
+            land:
           </Box>
           <ul>
-            <li><strong>NodePool with placement group:</strong> Configure the launch template
-            to specify the cluster placement group. Karpenter provisions into it automatically.</li>
-            <li><strong>Consolidation caution:</strong> Karpenter&apos;s consolidation may
-            attempt to move EFA workloads between nodes. Use <code>do-not-disrupt</code>
-            annotations on training pods to prevent mid-job disruption.</li>
-            <li><strong>Capacity type:</strong> Use <code>on-demand</code> for long training
-            runs in placement groups. Spot in placement groups has cascading interruption
-            risk (see below).</li>
+            <li><strong>Zonal pinning:</strong> a NodePool requirement on{' '}
+            <code>topology.kubernetes.io/zone</code> keeps every node in one Availability Zone,
+            which is the constraint EFA actually has{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />.</li>
+            <li><strong>Placement group as first-class API:</strong> since v1.14 the
+            EC2NodeClass carries <code>spec.placementGroupSelector</code>, which resolves a
+            placement group by name or by id, the two being mutually exclusive{' '}
+            <SourceRef
+              provenance="code-confirmed"
+              doc={docs.karpenterNodeClasses}
+              code={code.karpenterPlacementGroup}
+            />. No launch template edit is needed. EKS Auto Mode exposes the same field on its
+            own NodeClass{' '}
+            <SourceRef provenance="documented" doc={docs.eksNodeClass} />.</li>
+            <li><strong>EFA interfaces per network card:</strong> the same EC2NodeClass
+            declares <code>spec.networkInterfaces</code> with an{' '}
+            <code>interfaceType</code> of <code>interface</code> or <code>efa-only</code> per
+            network card index{' '}
+            <SourceRef provenance="documented" doc={docs.karpenterNodeClasses} />.</li>
+            <li><strong>Disruption settings for tightly coupled jobs:</strong> put{' '}
+            <code>karpenter.sh/do-not-disrupt</code> on training pods, set{' '}
+            <code>consolidationPolicy: WhenEmpty</code> on the NodePool, and set{' '}
+            <code>expireAfter</code> longer than the longest job or disable it{' '}
+            <SourceRef provenance="documented" doc={docs.karpenterDisruption} />. Without
+            these, consolidation or node expiry can replace a node mid-run and take the whole
+            collective down.</li>
           </ul>
+          <Box variant="p">
+            The split is worth stating plainly. Karpenter can put nodes in the right zone and
+            the right placement group. It cannot rank them by network node, because it never
+            reads the topology.
+          </Box>
         </SpaceBetween>
       </Container>
 
       <Container header={<Header variant="h2">Spot + EFA: The Cascading Interruption Risk</Header>}>
         <SpaceBetween size="m">
           <Alert type="warning">
-            <strong>Spot in placement groups is risky for tightly-coupled workloads.</strong> If
-            one node in a multi-node training job gets a Spot interruption, the entire job
-            stops. In a cluster placement group, Spot capacity is correlated: an interruption
-            often affects multiple instances simultaneously because they share the same
-            physical rack/spine.
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                <strong>Spot is risky for tightly-coupled EFA workloads, and the reason is the
+                Availability Zone, not the placement group.</strong> If one node in a multi-node
+                training job gets a Spot interruption, the entire job stops.
+              </Box>
+              <Box variant="p">
+                AWS states it directly. EFA requires all communicating nodes to reside in the
+                same Availability Zone, and that co-location introduces correlated interruption
+                risk: instances share underlying physical infrastructure within the same AZ, and
+                even more so within a placement group, so a single capacity reclamation event
+                can affect multiple instances at once rather than a single node. Without EFA
+                constraints, nodes spread across AZs and interruptions are statistically
+                independent{' '}
+                <SourceRef
+                  provenance="documented"
+                  doc={docs.eksBestPractices}
+                  code={code.eksBpSpot}
+                  label="tier 2: EKS best practices"
+                />. AWS publishes no mapping from its topology layers to a named rack or spine,
+                so this page does not name the shared hardware.
+              </Box>
+            </SpaceBetween>
           </Alert>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -216,8 +448,13 @@ export function DecisionGuide() {
               <ul>
                 <li>Short training runs (&lt;2 hours) with frequent checkpointing</li>
                 <li>Fault-tolerant frameworks (elastic training, auto-restart)</li>
-                <li>Non-tightly-coupled HPC (embarrassingly parallel with EFA for fast reduce)</li>
                 <li>Development/experimentation (acceptable to restart)</li>
+                <li>P and Trn families only. Every HPC family is Spot-ineligible: hpc6a,
+                hpc6id, hpc7a, hpc7g and hpc8a all show Spot support of No{' '}
+                <SourceRef provenance="documented" doc={docs.hpc} />, as do
+                p6e-gb200.36xlarge and trn2u.48xlarge{' '}
+                <SourceRef provenance="documented" doc={docs.ac} />. Spot is not an option for
+                loosely-coupled HPC on those types, whatever the coupling looks like.</li>
               </ul>
             </div>
             <div>
@@ -236,34 +473,66 @@ export function DecisionGuide() {
             group, query the Spot Placement Score to estimate likelihood of getting and
             keeping your desired instance count. Low scores = high interruption risk.
           </Box>
+          <Box variant="p">
+            <strong>No Spot savings figure appears anywhere on this site.</strong> Spot rates
+            are not published in the EC2 Price List bulk API or in any credential-free
+            first-party AWS endpoint, so the Pricing Analysis section publishes eligibility and
+            nothing else. Treat any fixed savings percentage you see for Spot on EFA instances
+            as unsourced until someone shows you the endpoint it came from.
+          </Box>
         </SpaceBetween>
       </Container>
 
       <Container header={<Header variant="h2">Capacity Planning: Blocks vs ODCRs</Header>}>
         <SpaceBetween size="m">
-          <Box variant="p">
-            <strong>Capacity Blocks</strong> are the ONLY guaranteed capacity path for P5/P5e/Trn2
-            at cluster scale. Auto-placed into UltraClusters (no manual placement group needed).
-            Up to 64 instances (512 GPUs). Fixed upfront pricing, no cancellation, end times
-            fixed at 11:30 AM UTC.
-          </Box>
-          <Box variant="p">
-            <strong>ODCRs:</strong> open-ended duration but don&apos;t clearly support P-family.
-            Cluster placement group assignment is <strong>immutable after creation</strong>.
-            Expanding capacity increases insufficient-capacity risk.
-          </Box>
-          <Alert type="warning">
-            <strong>Critical pricing gotcha:</strong> Capacity Block prices went UP ~15%
-            (January 2026) while On-Demand GPU prices went DOWN ~45%. The reductions
-            do NOT apply to Capacity Blocks.
+          <Alert type="error" header="Correction: Capacity Blocks are one guaranteed path, not the only one">
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                An earlier version of this section called Capacity Blocks the only guaranteed
+                capacity path at cluster scale. AWS documents On-Demand Capacity Reservations
+                against a cluster placement group in the EFA setup guide itself: to ensure that
+                capacity is available as you scale your cluster&apos;s instances, you can create
+                a Capacity Reservation for your cluster placement group{' '}
+                <SourceRef provenance="documented" doc={docs.efaStart} />. ODCRs are a
+                documented path for EFA fleets, not an ill-fitting one.
+              </Box>
+              <Box variant="p">
+                Three other statements that used to sit here have been deleted rather than
+                reworded, because none of them appears in the Capacity Blocks documentation:
+                that Capacity Block prices rose roughly 15 percent in January 2026, that block
+                end times are fixed at a set clock time in UTC, and that blocks cannot be
+                cancelled. The 15 percent claim was also paired with an On-Demand price cut
+                that actually landed in the June 2025 price list, so even the timing was wrong.
+                The Pricing Analysis section owns every rate and pins each one to a price list
+                version.
+              </Box>
+            </SpaceBetween>
           </Alert>
+          <Box variant="p">
+            <strong>Capacity Blocks:</strong> reserve a start time up to 8 weeks ahead, for 1 to
+            14 days or multiples of 7 days up to 182 days. Up to 64 instances per block and up
+            to 256 across multiple blocks. One UltraServer equals one Capacity Block, so you
+            reserve the UltraServer rather than the instances inside it. Instances are
+            terminated starting 30 minutes before the block ends for instance types, or 60
+            minutes for UltraServer types, with an EventBridge event 10 minutes before
+            termination begins{' '}
+            <SourceRef provenance="documented" doc={docs.capacityBlocks} />.
+          </Box>
+          <Box variant="p">
+            <strong>ODCRs:</strong> open-ended duration, and the documented way to hold capacity
+            for a cluster placement group as a fleet grows{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} />. The placement group is
+            chosen when the reservation is created. Expanding an existing reservation raises
+            insufficient-capacity risk.
+          </Box>
           <Box variant="p">
             <strong>Decision rules:</strong>
           </Box>
           <ul>
             <li><strong>Defined training burst (days-weeks)</strong> → Capacity Blocks</li>
             <li><strong>Open-ended production inference</strong> → ODCR + Savings Plan</li>
-            <li><strong>Cost-sensitive experimentation</strong> → Spot with checkpointing</li>
+            <li><strong>Cost-sensitive experimentation</strong> → Spot with checkpointing, on a
+            Spot-eligible family only</li>
             <li><strong>1-3 year steady state</strong> → Savings Plans (no capacity guarantee)</li>
           </ul>
         </SpaceBetween>
@@ -279,7 +548,9 @@ export function DecisionGuide() {
             <div>
               <Box variant="h3">Stage 1: Single GPU</Box>
               <Box variant="p">
-                Fine-tuning 7B models, LoRA/QLoRA. One g5.xlarge or p5.xlarge.
+                Fine-tuning 7B models, LoRA/QLoRA. One g5.xlarge, or p5.4xlarge if you want a
+                single H100. There is no p5.xlarge{' '}
+                <SourceRef provenance="documented" doc={docs.ac} />.
                 <strong> No EFA needed.</strong> Focus on data pipeline, not networking.
               </Box>
             </div>
@@ -295,25 +566,71 @@ export function DecisionGuide() {
               <Box variant="h3">Stage 3: Multi-Node (EFA enters)</Box>
               <Box variant="p">
                 Pre-training 70B+ or custom architectures exceeding single-node memory.
-                2-8 nodes. <strong>EFA is now critical.</strong> Start with P4d (cheapest
-                multi-node) or Trn1n (best networking value). Cluster placement group required.
+                2-8 nodes. <strong>EFA is now critical.</strong> P4d and Trn1n are the usual
+                entry points, and their rates sit close enough together that the choice turns
+                on EFA bandwidth per dollar rather than on the instance rate. The Pricing
+                Analysis section carries both, pinned to a price list version.{' '}
+                <strong>One Availability Zone is required. A cluster placement group is
+                recommended, not required{' '}
+                <SourceRef provenance="documented" doc={docs.efaStart} />.</strong>
               </Box>
             </div>
             <div>
               <Box variant="h3">Stage 4: Scale (10-100+ nodes)</Box>
               <Box variant="p">
                 Frontier training. P5/Trn2 with full EFA. Topology-aware rank assignment,
-                NCCL tuner plugin, Capacity Reservations. Consider Trn2 for
-                <strong> 30-40% better price-performance</strong> vs P5e, significant
-                at this scale.
+                NCCL tuner plugin, Capacity Reservations. The Trn2 product page states that
+                Trn2 instances offer 30-40% better price performance than GPU-based EC2 P5e and
+                P5en instances{' '}
+                <SourceRef provenance="documented" doc={docs.trn2} label="tier 2: product page" />,
+                which is a first-party marketing figure rather than a benchmark you can
+                reproduce. Worth testing at this scale, not worth planning around untested.
               </Box>
             </div>
           </ColumnLayout>
-          <Alert type="info">
-            <strong>For startups on SageMaker:</strong> SageMaker Training automatically
-            configures EFA, placement groups, and NCCL when you select EFA-capable instances.
-            The SMDDP (SageMaker Distributed Data Parallel) library optimizes AllGather with a mesh topology that reduces GPU SM
-            usage from 24 to under 9, freeing compute for your model.
+          <Alert type="info" header="For startups on SageMaker: less is automatic than you think">
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                SageMaker AI launches all instances for a given job within a single subnet,
+                which is a single Availability Zone, to keep them physically close and minimize
+                inter-node latency{' '}
+                <SourceRef provenance="documented" doc={docs.smCapacity} />. That satisfies the
+                one boundary EFA traffic cannot cross. No AWS source states that training jobs
+                use EC2 cluster placement groups, so do not assume one is created for you.
+              </Box>
+              <Box variant="p">
+                NCCL is not configured for you either. AWS states that your container must
+                download and install the EFA software, and that tools like MPI and NCCL must be
+                installed and managed inside the container{' '}
+                <SourceRef provenance="documented" doc={docs.smTrainEfa} />.
+              </Box>
+            </SpaceBetween>
+          </Alert>
+          <Alert type="warning" header="SMDDP is P4-class only, and frozen. It does not apply to Stage 4.">
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                An earlier version of this section put the SMDDP (SageMaker Distributed Data
+                Parallel) streaming-multiprocessor claim inside this P5 and Trn2 stage. SMDDP
+                supports neither. The supported instance list is exactly ml.p3dn.24xlarge,
+                ml.p4d.24xlarge and ml.p4de.24xlarge, and the optimized AllGather collective is
+                available on P4 only{' '}
+                <SourceRef provenance="documented" doc={docs.ddpSupport} />. No P5, P5e, P5en,
+                P6 or Trn2 size is supported.
+              </Box>
+              <Box variant="p">
+                The library is frozen rather than deprecated. AWS has not announced a
+                deprecation, and the latest release is v2.5.0, dated October 17, 2024{' '}
+                <SourceRef provenance="documented" doc={docs.ddpRelease} />.
+              </Box>
+              <Box variant="p">
+                The underlying number holds inside that scope. P4d and P4de carry NVIDIA A100
+                GPUs, NCCL takes up to 24 streaming multiprocessors to run collective
+                operations, and SMDDP uses fewer than 9{' '}
+                <SourceRef provenance="documented" doc={docs.ddpIntro} />. That is an A100
+                measurement. Quote it with the instance family attached or do not quote it. The
+                EFA on SageMaker and HyperPod section covers the rest.
+              </Box>
+            </SpaceBetween>
           </Alert>
         </SpaceBetween>
       </Container>
@@ -323,7 +640,8 @@ export function DecisionGuide() {
           <Box variant="p">
             <StatusIndicator type="success">
               EFA is free: the only cost is the instance. Enable it whenever available.
-            </StatusIndicator>
+            </StatusIndicator>{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />
           </Box>
           <Box variant="p">
             <StatusIndicator type="success">
@@ -342,8 +660,12 @@ export function DecisionGuide() {
           </Box>
           <Box variant="p">
             <StatusIndicator type="warning">
-              Cluster placement group = single AZ. Plan for capacity and availability accordingly.
-            </StatusIndicator>
+              One Availability Zone is the hard constraint, not the placement group. EFA traffic
+              cannot cross Availability Zones or VPCs, and AWS states a cluster placement group
+              is not an absolute requirement. Plan capacity and availability around the zone.
+            </StatusIndicator>{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} label="doc: efa-start" />
           </Box>
         </SpaceBetween>
       </Container>

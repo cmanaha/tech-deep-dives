@@ -462,7 +462,7 @@ full_name=aws-samples/aws-efa-eks archived=true disabled=false pushed_at=2024-10
 ```
 Archived: confirmed.
 
-`gh api repos/aws-samples/awsome-distributed-training`:
+`gh api repos/awslabs/awsome-distributed-ai`:
 ```
 full_name=awslabs/awsome-distributed-ai archived=false disabled=false pushed_at=2026-07-31T23:11:34Z archived_at=null default_branch=main
 ```
