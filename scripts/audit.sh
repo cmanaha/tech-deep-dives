@@ -4,8 +4,9 @@
 # Usage:
 #   bash scripts/audit.sh                        # show help, list available checks
 #   bash scripts/audit.sh --with-playwright      # run deterministic browser-DOM invariants
+#   bash scripts/audit.sh --with-citations       # re-verify every citation over the network
 #   bash scripts/audit.sh --with-agents          # run LLM-driven advisory audits
-#   bash scripts/audit.sh --with-playwright --with-agents   # both
+#   bash scripts/audit.sh --with-playwright --with-agents   # any combination
 #   bash scripts/audit.sh --help                 # full usage
 #
 # WHEN TO USE THIS:
@@ -20,15 +21,34 @@
 # - Not invoked by .github/workflows/ (CI is owned separately)
 # - Not a merge-blocker
 #
-# Two runner backends:
+# Three runner backends:
 #
 #   --with-playwright
 #     Deterministic browser-level invariants (Tier 1 rendered-DOM gates).
 #     No LLM. Same input => same verdict. Tests live in:
 #       deep-dives/{topic}/playwright/gate-*.test.ts
-#     Findings: routing integrity, deep-link wiring, no hydration warnings,
-#     React Flow node-overlap invariants, content overflow, responsive
-#     collapse, single-active-nav.
+#     Gates shipped so far, each run at 1440 and at 390 wide:
+#       gate-routes             every nav section mounts real content rather
+#                               than a Suspense spinner that never resolves
+#       gate-content-overflow   nothing spills horizontally out of its box
+#       gate-svg-overlap        no <text> in a hand-authored inline SVG
+#                               collides with another or falls outside the
+#                               viewBox, measured in viewBox user units
+#       gate-no-console-errors  no console error, uncaught page error or React
+#                               warning while visiting every section
+#     Runner: scripts/audit/run-playwright.sh
+#     Opt in per dive by shipping playwright.config.ts plus playwright/.
+#
+#   --with-citations
+#     Deterministic citation re-verification over the network (Tier 1.5 in
+#     docs/verification/2026-08-01/P5-verification-harness-design.md). No LLM.
+#     Every documentation URL is fetched and classified, and every pinned code
+#     reference is re-fetched at its exact ref to confirm the file is there and
+#     long enough for the cited line range. This lives here rather than in
+#     ci.sh because ci.sh excludes network-dependent checks by contract: a
+#     verdict that depends on a remote server cannot be a Tier 1 gate.
+#     Runner: scripts/audit/verify-citations.sh
+#     Opt-in per dive via deep-dives/{topic}/.gates.json "verify-citations".
 #
 #   --with-agents
 #     LLM-driven advisory audits (Tier 2 — discovery layer).
@@ -47,22 +67,25 @@
 set -euo pipefail
 
 WITH_PLAYWRIGHT=0
+WITH_CITATIONS=0
 WITH_AGENTS=0
+STATUS=0
 
 usage() {
-  sed -n '2,46p' "$0"
+  sed -n '2,65p' "$0"
 }
 
 if [[ $# -eq 0 ]]; then
   usage
   echo
-  echo "audit.sh: no flags given. Pick --with-playwright, --with-agents, or both."
+  echo "audit.sh: no flags given. Pick --with-playwright, --with-citations, --with-agents, or any combination."
   exit 0
 fi
 
 for arg in "$@"; do
   case "$arg" in
     --with-playwright) WITH_PLAYWRIGHT=1 ;;
+    --with-citations) WITH_CITATIONS=1 ;;
     --with-agents) WITH_AGENTS=1 ;;
     --help|-h) usage; exit 0 ;;
     *)
@@ -93,15 +116,42 @@ fail() {
 
 run_playwright() {
   step "playwright deterministic gates"
-  local runner="scripts/audit/run-playwright.sh"
-  if [[ ! -x "$runner" ]]; then
-    note "$runner not present yet."
-    note "Phase 2 backlog: install @playwright/test, write playwright.config.ts,"
-    note "and add gate-*.test.ts files. The runner script will dispatch them and"
-    note "write per-test markdown reports under deep-dives/{topic}/audit-reports/playwright/."
-    return 0
+  local runner="scripts/audit/run-playwright.sh" rc=0
+  if [[ ! -f "$runner" ]]; then
+    fail "$runner is missing"
   fi
-  bash "$runner" || fail "playwright invariants"
+  bash "$runner" || rc=$?
+  case "$rc" in
+    0) ;;
+    1) note "playwright gates found problems; see deep-dives/{topic}/audit-reports/playwright/"
+       STATUS=1 ;;
+    2) note "playwright gates could not run (no dive opted in, chromium missing, or the dive failed to build): UNVERIFIABLE" ;;
+    *) fail "playwright gates exited $rc" ;;
+  esac
+}
+
+# ---------- Tier 1.5 deterministic networked citation checks ----------
+#
+# Real dispatch, not a placeholder. Exit codes follow the P5 design:
+# 0 clean, 1 findings, 2 could not run. A 2 is not a content defect, so it is
+# recorded and the run continues; a 1 is carried to audit.sh's own exit status
+# so the result is scriptable. Neither blocks a commit: ADR-004 keeps the
+# merge path free of this tier.
+
+run_citations() {
+  step "citation re-verification (deterministic, networked)"
+  local runner="scripts/audit/verify-citations.sh" rc=0
+  if [[ ! -f "$runner" ]]; then
+    fail "$runner is missing"
+  fi
+  bash "$runner" || rc=$?
+  case "$rc" in
+    0) ;;
+    1) note "citation check found dead or missing citations; see the per-dive report"
+       STATUS=1 ;;
+    2) note "citation check could not run (no network, missing tool, or no dive opted in): UNVERIFIABLE" ;;
+    *) fail "citation re-verification exited $rc" ;;
+  esac
 }
 
 # ---------- Tier 2 agent-driven advisory audits ----------
@@ -133,8 +183,17 @@ if [[ "$WITH_PLAYWRIGHT" -eq 1 ]]; then
   run_playwright
 fi
 
+if [[ "$WITH_CITATIONS" -eq 1 ]]; then
+  run_citations
+fi
+
 if [[ "$WITH_AGENTS" -eq 1 ]]; then
   run_agents
 fi
 
-printf '\n\033[1;32m[DONE]\033[0m audit complete\n'
+if [[ "$STATUS" -ne 0 ]]; then
+  printf '\n\033[1;33m[DONE]\033[0m audit complete with findings\n'
+else
+  printf '\n\033[1;32m[DONE]\033[0m audit complete\n'
+fi
+exit "$STATUS"

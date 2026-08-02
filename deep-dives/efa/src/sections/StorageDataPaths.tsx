@@ -106,9 +106,13 @@ const docs = {
   fsxStart: doc('FSx for Lustre User Guide: Getting started with Amazon FSx for Lustre', `${FSX_DOC}getting-started.html`, 1),
   fsxHistory: doc('FSx for Lustre User Guide: Document history', `${FSX_DOC}doc-history.html`, 1),
   s3Perf: doc('S3 User Guide: Best practices design patterns, optimizing S3 performance', `${S3_DOC}optimizing-performance.html`, 1),
+  // Re-pinned 2026-08-02: the s3-optimizing-performance-best-practices
+  // whitepaper path now redirects to the S3 User Guide index, which the
+  // citation re-verification check flags as rot. The horizontal-scaling and
+  // request-parallelization guidance now lives in the User Guide itself.
   s3Paper: doc(
-    'AWS Whitepaper: Horizontal scaling and request parallelization for high throughput',
-    'https://docs.aws.amazon.com/whitepapers/latest/s3-optimizing-performance-best-practices/horizontal-scaling-and-request-parallelization-for-high-throughput.html',
+    'S3 User Guide: Performance design patterns, horizontal scaling and request parallelization',
+    'https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-design-patterns.html',
     1
   ),
   cliConfig: doc('AWS CLI Reference: S3 configuration topic', 'https://docs.aws.amazon.com/cli/latest/topic/s3-config.html', 1),

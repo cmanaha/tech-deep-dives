@@ -1,5 +1,25 @@
 # EFA on Amazon EKS — Research Refresh
 
+> **CORRECTION, added 2026-08-02, then itself corrected.** This document cites
+> `aws/aws-eks-best-practices` `aiml_networking.adoc` on the `master` branch.
+> An initial reading concluded the quotes were fabricated, because at `master`
+> (head `71a660c6`) that file is a 55-line pre-2026-07-30 revision containing
+> none of them. That conclusion was wrong. The repository's default branch is
+> `mainline`, and at commit `828f285d` (2026-07-30, two days before the access
+> date here) every quoted passage is present verbatim.
+>
+> So this is a wrong-branch pin, not a misattribution. The content is sound and
+> the claims stand. The fix is to re-pin these references to `828f285d` rather
+> than to remove them. The published section had already re-sourced the same
+> corrections from the EC2 User Guide `efa-start.html`, and the citation
+> re-verification pass confirms no `aws-eks-best-practices` citation ships in
+> the dive at all.
+>
+> Wider gap this exposed: `research/**.md` carries 65 branch-pinned GitHub URLs
+> (`/blob/main/`, `/blob/master/`) that neither `scripts/gates/pinned-refs.sh`
+> nor `scripts/audit/verify-citations.sh` covers, because both scan `src/` only.
+> This defect class is invisible to the current gates.
+
 **Researched:** 2026-08-01
 **Scope:** How EFA (Elastic Fabric Adapter) integrates with Amazon EKS, with emphasis on the EKS AMI layer.
 **Target artifact:** `deep-dives/efa/src/sections/EKSIntegration.tsx` (currently ~318 prose words)

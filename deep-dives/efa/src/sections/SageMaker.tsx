@@ -34,6 +34,10 @@ const DLC_SHA = '4c921b9ecade7322bebb79224bea6f1c5c3d0591';
 
 const SM_DG = 'https://docs.aws.amazon.com/sagemaker/latest/dg/';
 const SM_API = 'https://docs.aws.amazon.com/sagemaker/latest/APIReference/';
+// Do not "fix" this to https://aws.amazon.com/new/. Only the bare index
+// redirects there; the dated child paths below are served solely under
+// /about-aws/whats-new/ and 404 under /new/. Changing the base on 2026-08-02
+// broke five working citations, which the re-verification check caught.
 const WHATS_NEW = 'https://aws.amazon.com/about-aws/whats-new/';
 const ML_BLOG = 'https://aws.amazon.com/blogs/machine-learning/';
 

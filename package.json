@@ -14,7 +14,8 @@
     "audit": "bash scripts/audit.sh",
     "audit:playwright": "bash scripts/audit.sh --with-playwright",
     "audit:agents": "bash scripts/audit.sh --with-agents",
-    "audit:all": "bash scripts/audit.sh --with-playwright --with-agents"
+    "audit:all": "bash scripts/audit.sh --with-playwright --with-citations --with-agents",
+    "audit:citations": "bash scripts/audit.sh --with-citations"
   },
   "engines": {
     "node": ">=20"
