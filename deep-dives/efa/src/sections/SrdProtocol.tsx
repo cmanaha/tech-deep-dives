@@ -67,6 +67,22 @@ const code = {
   robufDefault: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L12'),
   envRecvwin: libfabricRef('prov/efa/src/efa_env.c', 'L18'),
   envRecvwinHelp: libfabricRef('prov/efa/src/efa_env.c', 'L188-L189'),
+  recvwinAlloc: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L46-L66'),
+  recvwinUse: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L31'),
+  recvwinModulo: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L320'),
+  // The two tuning commits that left the help string behind.
+  tune16kTo8k: {
+    repo: 'ofiwg/libfabric',
+    ref: '7232f8af12d0a7ad54cc571529e37c006cb3bc92',
+    path: 'prov/efa/src/rdm/efa_rdm_peer.h',
+    read: CODE_READ,
+  } as CodeRef,
+  tune8kTo16: {
+    repo: 'ofiwg/libfabric',
+    ref: 'bd987ab20e57',
+    path: 'prov/efa/src/rdm/efa_rdm_peer.h',
+    read: CODE_READ,
+  } as CodeRef,
   envOoo: libfabricRef('prov/efa/src/efa_env.c', 'L208-L209'),
 };
 
@@ -1004,12 +1020,44 @@ export function SrdProtocol() {
                 constant is what the environment structure is initialised with.
               </Box>
               <Box variant="p">
+                <strong>The unit is messages, not bytes.</strong> This is worth stating because a
+                jump from 16384 to 16 looks like a units error, and it is not. The value is passed
+                to the allocator unscaled{' '}
+                <SourceRef provenance="code-derived" code={code.recvwinUse} />, which sizes the
+                pending queue as <code>sizeof(struct efa_rdm_pke*) * size</code>: one pointer slot
+                per held message, with a power-of-two assertion on the count{' '}
+                <SourceRef provenance="code-derived" code={code.recvwinAlloc} />. The window index
+                is then taken modulo that same value against the message id{' '}
+                <SourceRef provenance="code-derived" code={code.recvwinModulo} />. Nothing anywhere
+                multiplies it by a page, a packet size or a kilobyte. Both numbers count messages,
+                so the two really do disagree.
+              </Box>
+              <Box variant="p">
+                <strong>What the window is for.</strong> SRD delivers out of order by design, so the
+                provider keeps a per-peer buffer of messages that arrived early and cannot be handed
+                up yet. The window is how many such messages a single peer may hold pending before
+                the excess spills to an overflow list. A window of 16 is a bet that reordering
+                depth stays shallow, which is the normal case on a healthy fabric.
+              </Box>
+              <Box variant="p">
+                <strong>The help text is two tuning rounds stale, not one.</strong> The default was
+                16384. In October 2025 it went to 8192 while the peer reorder buffer pool dropped
+                from 1024 to 16{' '}
+                <SourceRef provenance="code-derived" code={code.tune16kTo8k} label="commit" />. In
+                November 2025 the window itself was cut to 16 to match the pool, on the reasoning
+                that a differently sized pool and buffer make no sense when every peer needs one
+                buffer{' '}
+                <SourceRef provenance="code-derived" code={code.tune8kTo16} label="commit" />. Both
+                changes were made to hold performance without the memory overhead. The help string
+                was updated in neither.
+              </Box>
+              <Box variant="p">
                 Code wins. Treat the per-peer reorder window as 16 outstanding messages unless you
                 set the variable yourself{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   code={code.robufDefault}
-                  conflict="prov/efa/src/efa_env.c line 188 defines FI_EFA_RECVWIN_SIZE with the help text 'Defines the size of sliding receive window. (Default: 16384)'. The initialiser at line 18 of the same file sets recvwin_size to EFA_RDM_PEER_DEFAULT_REORDER_BUFFER_SIZE, which prov/efa/src/rdm/efa_rdm_peer.h line 12 defines as 16."
+                  conflict="prov/efa/src/efa_env.c line 188 defines FI_EFA_RECVWIN_SIZE with the help text 'Defines the size of sliding receive window. (Default: 16384)'. The initialiser at line 18 of the same file sets recvwin_size to EFA_RDM_PEER_DEFAULT_REORDER_BUFFER_SIZE, which prov/efa/src/rdm/efa_rdm_peer.h line 12 defines as 16. Both values count messages, not bytes: the count is passed to efa_recvwin_buf_alloc unscaled and sizes a pointer array. The default went 16384 to 8192 in commit 7232f8af (2025-10-16), then 8192 to 16 in commit bd987ab2 (2025-11-18). The help string was not updated by either."
                   label="doc vs code"
                 />
                 . The two citations are eight lines apart in the same file{' '}

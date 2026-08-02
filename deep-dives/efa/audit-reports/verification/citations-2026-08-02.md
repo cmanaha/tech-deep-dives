@@ -1,7 +1,7 @@
 # Citation re-verification: efa
 
 Run date: 2026-08-02  
-Tree: `d4d0262`  
+Tree: `972572a`  
 Check: `scripts/audit/verify-citations.sh` (Tier 1.5, deterministic, networked, no LLM)  
 Scope: `deep-dives/efa/src/**/*.tsx` and `*.ts`, excluding tests
 Also: `deep-dives/efa/research/**/*.md`, GitHub blob and tree URLs only (`pinned-refs-research`)
@@ -19,9 +19,9 @@ Also: `deep-dives/efa/research/**/*.md`, GitHub blob and tree URLs only (`pinned
 | URLs blocked (401, 403, 429) | 0 |
 | URLs timed out | 0 |
 | URLs erroring | 0 |
-| Code citations extracted | 377 |
-| Unique pinned files checked | 165 |
-| Files present and long enough at the pinned ref | 165 |
+| Code citations extracted | 379 |
+| Unique pinned files checked | 167 |
+| Files present and long enough at the pinned ref | 167 |
 | Of those, directory references (no line check) | 12 |
 | Files present but shorter than the cited line | 0 |
 | Files missing at a ref that does resolve | 0 |
@@ -67,7 +67,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://aws.amazon.com/blogs/machine-learning/scale-foundation-model-inference-to-hundreds-of-models-with-amazon-sagemaker-part-1/` | src/sections/SageMaker.tsx:199 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/machine-learning/training-large-language-models-on-amazon-sagemaker-best-practices/` | src/sections/SageMaker.tsx:174 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/storage/improving-amazon-s3-throughput-for-the-aws-cli-and-boto3-with-the-aws-common-runtime/` | src/sections/StorageDataPaths.tsx:126 | 1 | - |
-| OK | 200 | `https://aws.amazon.com/blogs/storage/storage-for-i-o-intensive-sql-server-using-amazon-ebs-io2-block-express/` | src/sections/SrdProtocol.tsx:112 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/blogs/storage/storage-for-i-o-intensive-sql-server-using-amazon-ebs-io2-block-express/` | src/sections/SrdProtocol.tsx:128 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/ec2/capacityblocks/pricing/` | src/data/pricing.ts:94 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/ec2/instance-types/p5/` | src/sections/Sources.tsx:29 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/ec2/instance-types/trn2/` | src/sections/AIMLTraining.tsx:109 | 3 | - |
@@ -79,7 +79,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html` | src/sections/Sources.tsx:15 | 1 | - |
 | OK | 200 | `https://awslabs.github.io/ai-on-eks/` | src/sections/EKSIntegration.tsx:119 | 1 | - |
 | OK | 200 | `https://cfd.direct/cloud/openfoam-hpc-aws-efa/` | src/sections/HPC.tsx:72 | 2 | - |
-| OK | 200 | `https://conferences.sigcomm.org/sigcomm/2015/pdf/papers/p523.pdf` | src/sections/SrdProtocol.tsx:126 | 1 | - |
+| OK | 200 | `https://conferences.sigcomm.org/sigcomm/2015/pdf/papers/p523.pdf` | src/sections/SrdProtocol.tsx:142 | 1 | - |
 | OK | 200 | `https://d1.awsstatic.com/whitepapers/benchmarking-aws-and-hpc-services.pdf` | src/sections/Sources.tsx:41 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-design-patterns.html` | src/sections/StorageDataPaths.tsx:115 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html` | src/sections/StorageDataPaths.tsx:108 | 1 | - |
@@ -113,7 +113,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://docs.aws.amazon.com/batch/latest/userguide/multi-node-parallel-jobs.html` | src/sections/EKSIntegration.tsx:101 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-capacity-reservation-topology.html` | src/sections/TopologyApi.tsx:92 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/cli/latest/topic/s3-config.html` | src/sections/StorageDataPaths.tsx:118 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html` | src/sections/SrdProtocol.tsx:94 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html` | src/sections/SrdProtocol.tsx:110 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/ec2/latest/devguide/ec2-api-throttling.html` | src/sections/TopologyApi.tsx:98 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/ec2/latest/devguide/eventual-consistency.html` | src/sections/TopologyApi.tsx:104 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html` | src/data/instances.ts:44 | 4 | - |
@@ -175,7 +175,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://github.com/ai-dynamo/nixl` | src/sections/Sources.tsx:46 | 1 | - |
 | OK | 200 | `https://github.com/ai-dynamo/nixl/blob/v1.3.2/src/plugins/libfabric/README.md` | src/sections/Sources.tsx:48 | 1 | - |
 | OK | 200 | `https://github.com/ai-dynamo/nixl/tree/v1.3.2` | src/sections/Sources.tsx:47 | 1 | - |
-| OK | 200 | `https://github.com/amzn/amzn-drivers.git` | src/sections/SrdProtocol.tsx:1230 | 1 | `https://github.com/amzn/amzn-drivers` |
+| OK | 200 | `https://github.com/amzn/amzn-drivers.git` | src/sections/SrdProtocol.tsx:1278 | 1 | `https://github.com/amzn/amzn-drivers` |
 | OK | 200 | `https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/README.md` | src/sections/Sources.tsx:23 | 1 | - |
 | OK | 200 | `https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/src/tuner/nccl_ofi_tuner.cpp` | src/sections/Sources.tsx:26 | 1 | - |
 | OK | 200 | `https://github.com/aws/aws-ofi-nccl/releases` | src/sections/Sources.tsx:24 | 1 | - |
@@ -186,7 +186,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://github.com/vllm-project/vllm/tree/v0.26.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl` | src/sections/Sources.tsx:49 | 1 | - |
 | OK | 200 | `https://karpenter.sh/docs/concepts/disruption/` | src/sections/DecisionGuide.tsx:73 | 1 | - |
 | OK | 200 | `https://karpenter.sh/docs/concepts/nodeclasses/` | src/sections/DecisionGuide.tsx:67 | 2 | - |
-| OK | 200 | `https://man7.org/linux/man-pages/man3/ibv_modify_qp.3.html` | src/sections/SrdProtocol.tsx:100 | 1 | - |
+| OK | 200 | `https://man7.org/linux/man-pages/man3/ibv_modify_qp.3.html` | src/sections/SrdProtocol.tsx:116 | 1 | - |
 | OK | 200 | `https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-1/index.csv` | src/data/pricing.ts:17 | 1 | - |
 | OK | 200 | `https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-2/index.csv` | src/data/pricing.ts:24 | 1 | - |
 | OK | 200 | `https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/index.json` | src/data/pricing.ts:31 | 1 | - |
@@ -195,7 +195,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/` | src/sections/Sources.tsx:44 | 1 | - |
 | OK | 200 | `https://www.nvidia.com/en-us/data-center/nvlink/` | src/sections/AIMLTraining.tsx:103 | 2 | - |
 | OK | 200 | `https://www.nvidia.com/en-us/networking/products/infiniband/` | src/sections/NetworkComparison.tsx:81 | 1 | - |
-| REDIRECT | 202 | `https://doi.org/10.1109/MM.2020.3016891` | src/sections/SrdProtocol.tsx:119 | 1 | `https://ieeexplore.ieee.org/document/9167399/` |
+| REDIRECT | 202 | `https://doi.org/10.1109/MM.2020.3016891` | src/sections/SrdProtocol.tsx:135 | 1 | `https://ieeexplore.ieee.org/document/9167399/` |
 
 ## Pinned code references
 
@@ -341,6 +341,8 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/include/plugin/nccl_tuner.h` | L25 | 43 | 61 | src/sections/NcclOverEfa.tsx:133 | - |
 | OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/init.cc` | L781-L786 | 786 | 3317 | src/sections/NcclOverEfa.tsx:145 | - |
 | OK | `NVIDIA/nvidia-container-toolkit` | `v1.19.1` | `internal/discover/mofed.go` | L25-L36 | 36 | 36 | src/sections/EKSIntegration.tsx:156 | - |
+| OK | `ofiwg/libfabric` | `7232f8af12d0a7ad54cc571529e37c006cb3bc92` | `prov/efa/src/rdm/efa_rdm_peer.h` | - | 0 | 272 | src/sections/SrdProtocol.tsx:75 | - |
+| OK | `ofiwg/libfabric` | `bd987ab20e57` | `prov/efa/src/rdm/efa_rdm_peer.h` | - | 0 | 271 | src/sections/SrdProtocol.tsx:81 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `man/fi_efa.7.md` | - | 681 | 721 | research/2026-08-refresh/01-efa-core.md:180 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `man/fi_mr.3.md` | L1054-L1080 | 1080 | 1115 | src/sections/Operations.tsx:117 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `man/fi_pingpong.1.md` | - | 0 | 181 | src/sections/Operations.tsx:116 | - |
