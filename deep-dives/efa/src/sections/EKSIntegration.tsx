@@ -781,8 +781,8 @@ resources:
           </Alert>
 
           <Box variant="p">
-            The other half of the correction runs the opposite way. Saying the AMI has only the kernel module plus
-            rdma-core reads as far more spartan than reality. rdma-core is skipped only by an explicit
+            The node is also less spartan than kernel module plus rdma-core makes it sound. rdma-core is skipped
+            only by an explicit
             --skip-rdma-core flag, never by --minimal, so the node receives the complete suite: ibacm,
             infiniband-diags, libibumad, libibverbs, libibverbs-utils, librdmacm, librdmacm-utils, python3-pyverbs,
             rdma-core and rdma-core-devel{' '}
@@ -1135,17 +1135,17 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
           <Alert type="warning" header="hostNetwork: true is not required, and it is not folklore either">
             <SpaceBetween size="xs">
               <Box variant="p">
-                Earlier versions of this page carried the comment <code>hostNetwork: true # Required for EFA</code>{' '}
-                and a whole warning built on it. That comment is wrong. The word hostNetwork does not appear
-                anywhere on the AWS EFA device management page, including in its own workload pod example, and it
-                does not appear on the EKS machine learning training page either{' '}
+                The comment <code>hostNetwork: true # Required for EFA</code> travels with a lot of copied
+                manifests, and it is wrong. The word hostNetwork does not appear anywhere on the AWS EFA device
+                management page, including in its own workload pod example, and it does not appear on the EKS
+                machine learning training page either{' '}
                 <SourceRef provenance="documented" doc={docs.eksDevice} />. EFA reaches the container through
                 injected /dev/infiniband device nodes, regardless of network namespace. AWS multi-node inference
                 samples run EFA on the pod network and set NCCL_SOCKET_IFNAME to eth0 to prove the point.
               </Box>
               <Box variant="p">
-                But the stronger claim, that no AWS source ever sets it on a workload, is false and a reader can
-                disprove it in one search. Three AWS-authored workload manifests set hostNetwork next to
+                The opposite claim, that no AWS source ever sets it on a workload, is also false and one search
+                disproves it. Three AWS-authored workload manifests set hostNetwork next to
                 vpc.amazonaws.com/efa. The HyperPod checkpointless training example hard-codes hostNetwork: True on
                 a p5 pretraining job that requests 32 EFA devices{' '}
                 <SourceRef provenance="code-derived" code={code.ckptJob} />. The HyperPod recipes expose it as a
@@ -1167,8 +1167,8 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
           </Alert>
 
           <ExpandableSection
-            headerText="A corrected worker pod spec"
-            headerDescription="What is left after the unsupported lines come out"
+            headerText="A worker pod spec you can copy"
+            headerDescription="Only the fields the sources support, with the p5-specific numbers marked"
             defaultExpanded
           >
             <Box variant="code">
@@ -1251,9 +1251,9 @@ spec:
               </Box>
               <Box variant="p">
                 The hard constraint is the Availability Zone, because EFA traffic cannot cross one. The placement
-                group is the documented way to satisfy that constraint and shorten the physical distance. Listing it
-                as a flat setup requirement, as earlier versions of this page did, states a recommendation as a
-                rule. The genuinely non-negotiable networking item is the security group: it must allow all inbound
+                group is the documented way to satisfy that constraint and shorten the physical distance. Any
+                checklist that lists it as a flat setup requirement is stating a recommendation as a rule. The
+                genuinely non-negotiable networking item is the security group: it must allow all inbound
                 and outbound traffic to and from itself to enable EFA OS-bypass{' '}
                 <SourceRef provenance="documented" doc={docs.eksDevice} />, and when it is missing, EFA traffic
                 fails without a useful error.
@@ -1460,6 +1460,75 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
 
       <Container
         header={
+          <Header variant="h2" description="Two of the three repositories people are still sent to are stale, and one AWS API looks like it supports EFA on EKS when it cannot.">
+            Where to start from, and what not to copy
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Where to get code that runs</Box>
+              <Box variant="p">
+                awslabs/ai-on-eks is the current blueprint home. Its Terraform declares the EFA instance type list
+                and generates per-instance-type network interface blocks through an
+                efa-networkinterfaces-generator module with a bandwidth-optimized against IP-optimized policy
+                switch{' '}
+                <SourceRef provenance="code-derived" code={code.aiOnEksTf} />. That policy split is the same one the
+                Karpenter design document considered and did not ship{' '}
+                <SourceRef provenance="code-derived" code={code.karpenterDesign} />. Start here rather than from a
+                blank launch template <SourceRef provenance="documented" doc={docs.aiOnEks} />.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Two repository links still in circulation</Box>
+              <Box variant="p">
+                aws-samples/aws-efa-eks is archived. Its last push was 2024-10-15, and the GitHub API reports no
+                archive date, so treat the archive date itself as unknown rather than assuming it matches the push.
+                AWS documentation still links there for the device plugin. Use the eks-charts Helm chart instead.
+              </Box>
+              <Box variant="p">
+                awslabs/awsome-distributed-ai was transferred and renamed. It now resolves to
+                awslabs/awsome-distributed-ai, which is actively maintained. The NCCL test manifests and the
+                reference Dockerfile live there{' '}
+                <SourceRef provenance="code-derived" code={code.ncclTests} />.
+              </Box>
+            </div>
+          </ColumnLayout>
+
+          <ExpandableSection
+            headerText="AWS Batch multi-node parallel jobs are ECS-only, whatever the SDK model suggests"
+            headerDescription="A generated SDK field implies support the API cannot express. Read the shape documentation."
+          >
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                The Batch API model states it affirmatively rather than by omission. The NodeProperties shape
+                documentation reads: an object that represents the node properties of a multi-node parallel job,
+                with the note that node properties cannot be specified for Amazon EKS based job definitions{' '}
+                <SourceRef provenance="code-derived" code={code.batchModel} />. Since a multi-node parallel job is
+                defined by the presence of nodeProperties, and nodeProperties is mutually exclusive with
+                eksProperties, the combination is not expressible in the API at all. The Batch documentation agrees:
+                multi-node parallel jobs use the Amazon ECS (Elastic Container Service) awsvpc network mode{' '}
+                <SourceRef provenance="documented" doc={docs.batchMnpCe} />, and neither multi-node parallel page
+                mentions EFA, EKS or Kubernetes{' '}
+                <SourceRef provenance="documented" doc={docs.batchMnp} />.
+              </Box>
+              <Box variant="p">
+                Here is the trap that makes this worth publishing. The same API model does carry an eksProperties
+                member on the NodeRangeProperty shape, with documentation so generic it says nothing{' '}
+                <SourceRef provenance="code-derived" code={code.batchModel} />. Anyone reading the SDK model or the
+                generated SDK types, rather than the prose documentation, would reasonably conclude that multi-node
+                parallel on EKS is supported. A field in a generated SDK is not evidence of support. Batch on EKS is
+                real, it just runs single-node jobs through an overlay model{' '}
+                <SourceRef provenance="documented" doc={docs.batchEks} />.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
           <Header variant="h2" description="The two-node all_reduce that tells you whether any of this worked.">
             Proving it works
           </Header>
@@ -1496,79 +1565,6 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
             not load, NCCL falls back to sockets and the job still completes, just slowly. A run that finishes at a
             few GB/s on a p5 is not a tuning problem, it is a missing plugin.
           </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Two claims that were wrong, and two links that no longer go anywhere.">
-            Corrections and dead links
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Alert type="error" header="AWS Batch multi-node parallel jobs are ECS-only. There is no Batch on EKS with EFA.">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                The Batch API model states it affirmatively rather than by omission. The NodeProperties shape
-                documentation reads: an object that represents the node properties of a multi-node parallel job,
-                with the note that node properties cannot be specified for Amazon EKS based job definitions{' '}
-                <SourceRef provenance="code-derived" code={code.batchModel} />. Since a multi-node parallel job is
-                defined by the presence of nodeProperties, and nodeProperties is mutually exclusive with
-                eksProperties, the combination is not expressible in the API at all. The Batch documentation agrees:
-                multi-node parallel jobs use the Amazon ECS (Elastic Container Service) awsvpc network mode{' '}
-                <SourceRef provenance="documented" doc={docs.batchMnpCe} />, and neither multi-node parallel page
-                mentions EFA, EKS or Kubernetes{' '}
-                <SourceRef provenance="documented" doc={docs.batchMnp} />.
-              </Box>
-              <Box variant="p">
-                Here is the trap that makes this worth publishing. The same API model does carry an eksProperties
-                member on the NodeRangeProperty shape, with documentation so generic it says nothing{' '}
-                <SourceRef provenance="code-derived" code={code.batchModel} />. Anyone reading the SDK model or the
-                generated SDK types, rather than the prose documentation, would reasonably conclude that multi-node
-                parallel on EKS is supported. A field in a generated SDK is not evidence of support. Batch on EKS is
-                real, it just runs single-node jobs through an overlay model{' '}
-                <SourceRef provenance="documented" doc={docs.batchEks} />.
-              </Box>
-            </SpaceBetween>
-          </Alert>
-
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">Two repository links still in circulation</Box>
-              <Box variant="p">
-                aws-samples/aws-efa-eks is archived. Its last push was 2024-10-15, and the GitHub API reports no
-                archive date, so treat the archive date itself as unknown rather than assuming it matches the push.
-                AWS documentation still links there for the device plugin. Use the eks-charts Helm chart instead.
-              </Box>
-              <Box variant="p">
-                awslabs/awsome-distributed-ai was transferred and renamed. It now resolves to
-                awslabs/awsome-distributed-ai, which is actively maintained. The NCCL test manifests and the
-                reference Dockerfile live there{' '}
-                <SourceRef provenance="code-derived" code={code.ncclTests} />.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">Where to get code that runs</Box>
-              <Box variant="p">
-                awslabs/ai-on-eks is the current blueprint home. Its Terraform declares the EFA instance type list
-                and generates per-instance-type network interface blocks through an
-                efa-networkinterfaces-generator module with a bandwidth-optimized against IP-optimized policy
-                switch{' '}
-                <SourceRef provenance="code-derived" code={code.aiOnEksTf} />. That policy split is the same one the
-                Karpenter design document considered and did not ship{' '}
-                <SourceRef provenance="code-derived" code={code.karpenterDesign} />. Start here rather than from a
-                blank launch template <SourceRef provenance="documented" doc={docs.aiOnEks} />.
-              </Box>
-            </div>
-          </ColumnLayout>
-
-          <Alert type="info" header="Two more corrections to earlier versions of this page">
-            The claim that a correct NCCL_TOPO_FILE must be mounted has been removed. No AWS documentation and no
-            AWS-authored EFA manifest sets that variable. The claim that PyTorchJob supports EFA natively has also
-            been removed. No operator CRD has an EFA-specific field, and EFA works through ordinary container
-            resource requests in the worker template. Both claims were unsupported by any source at any tier.
-          </Alert>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

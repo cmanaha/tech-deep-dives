@@ -204,17 +204,19 @@ export function DecisionGuide() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="When to use EFA, and when to save the complexity">
+          <Header variant="h1" description="EFA costs nothing to enable and quite a lot to operate. The decision is about the constraints, not the price.">
             Decision Guide
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            EFA adds no cost, but it adds <strong>operational constraints</strong>: every
-            instance in the job has to sit in one Availability Zone, plus capacity planning,
-            security group configuration, and container/Kubernetes complexity. Use it when the
-            performance benefit justifies these constraints.
+            EFA adds no charge of its own{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />, but it adds{' '}
+            <strong>operational constraints</strong>: every instance in the job has to sit in one
+            Availability Zone, plus capacity planning, security group configuration, and
+            container/Kubernetes complexity. Use it when the performance benefit justifies these
+            constraints.
           </Box>
           <Box variant="p">
             The single-AZ rule is the hard one. AWS states that EFA traffic cannot cross
@@ -229,7 +231,7 @@ export function DecisionGuide() {
       </Container>
 
       <Table
-        header={<Header variant="h2">Scenario-Based Recommendations</Header>}
+        header={<Header variant="h2" description="Eight workloads, and the answer is No about as often as it is Yes.">Scenario-Based Recommendations</Header>}
         columnDefinitions={[
           { id: 'scenario', header: 'Scenario', cell: (item) => <strong>{item.scenario}</strong> },
           {
@@ -261,7 +263,9 @@ export function DecisionGuide() {
         }
       />
 
-      <Container header={<Header variant="h2">The Three Questions</Header>}>
+      <Container
+        header={<Header variant="h2" description="Answer these in order. Two of them can end the conversation before EFA is ever configured.">The Three Questions</Header>}
+      >
         <ColumnLayout columns={3} variant="text-grid">
           <div>
             <Box variant="h3">1. Is this multi-node?</Box>
@@ -303,7 +307,9 @@ export function DecisionGuide() {
         </ColumnLayout>
       </Container>
 
-      <Container header={<Header variant="h2">Topology-Aware Rank Assignment</Header>}>
+      <Container
+        header={<Header variant="h2" description="Three layers know about topology and none of them talks to the other two. Assembling them is the opportunity.">Topology-Aware Rank Assignment</Header>}
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>Why it matters:</strong> Getting rank-to-GPU-to-NIC mapping wrong causes
@@ -415,7 +421,9 @@ export function DecisionGuide() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Spot + EFA: The Cascading Interruption Risk</Header>}>
+      <Container
+        header={<Header variant="h2" description="Single-zone co-location is what makes EFA fast and what makes Spot interruptions arrive together instead of one at a time.">Spot and EFA: the cascading interruption risk</Header>}
+      >
         <SpaceBetween size="m">
           <Alert type="warning">
             <SpaceBetween size="xs">
@@ -474,7 +482,7 @@ export function DecisionGuide() {
             keeping your desired instance count. Low scores = high interruption risk.
           </Box>
           <Box variant="p">
-            <strong>No Spot savings figure appears anywhere on this site.</strong> Spot rates
+            <strong>Do not expect a Spot savings percentage here.</strong> Spot rates
             are not published in the EC2 Price List bulk API or in any credential-free
             first-party AWS endpoint, so the Pricing Analysis section publishes eligibility and
             nothing else. Treat any fixed savings percentage you see for Spot on EFA instances
@@ -483,30 +491,17 @@ export function DecisionGuide() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Capacity Planning: Blocks vs ODCRs</Header>}>
+      <Container
+        header={<Header variant="h2" description="Two guaranteed-capacity paths, not one. The choice is duration, and it is decided before the fleet exists.">Capacity planning: Blocks against ODCRs</Header>}
+      >
         <SpaceBetween size="m">
-          <Alert type="error" header="Correction: Capacity Blocks are one guaranteed path, not the only one">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                An earlier version of this section called Capacity Blocks the only guaranteed
-                capacity path at cluster scale. AWS documents On-Demand Capacity Reservations
-                against a cluster placement group in the EFA setup guide itself: to ensure that
-                capacity is available as you scale your cluster&apos;s instances, you can create
-                a Capacity Reservation for your cluster placement group{' '}
-                <SourceRef provenance="documented" doc={docs.efaStart} />. ODCRs are a
-                documented path for EFA fleets, not an ill-fitting one.
-              </Box>
-              <Box variant="p">
-                Three other statements that used to sit here have been deleted rather than
-                reworded, because none of them appears in the Capacity Blocks documentation:
-                that Capacity Block prices rose roughly 15 percent in January 2026, that block
-                end times are fixed at a set clock time in UTC, and that blocks cannot be
-                cancelled. The 15 percent claim was also paired with an On-Demand price cut
-                that actually landed in the June 2025 price list, so even the timing was wrong.
-                The Pricing Analysis section owns every rate and pins each one to a price list
-                version.
-              </Box>
-            </SpaceBetween>
+          <Alert type="info" header="Both paths are documented for EFA fleets">
+            Capacity Blocks are the better-known option and they are not the only one. AWS
+            documents On-Demand Capacity Reservations against a cluster placement group in the EFA
+            setup guide itself: to ensure that capacity is available as you scale your
+            cluster&apos;s instances, you can create a Capacity Reservation for your cluster
+            placement group <SourceRef provenance="documented" doc={docs.efaStart} />. Pick on
+            duration, not on which one you have heard of.
           </Alert>
           <Box variant="p">
             <strong>Capacity Blocks:</strong> reserve a start time up to 8 weeks ahead, for 1 to
@@ -538,12 +533,10 @@ export function DecisionGuide() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Startup Scaling Playbook</Header>}>
+      <Container
+        header={<Header variant="h2" description="Four stages from one GPU to a hundred nodes. EFA is irrelevant for the first two, and the constraint that arrives with it is the Availability Zone.">Startup scaling playbook</Header>}
+      >
         <SpaceBetween size="m">
-          <Box variant="p">
-            <strong>The journey from single-GPU to multi-node training: when does EFA
-            enter the picture?</strong>
-          </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="h3">Stage 1: Single GPU</Box>
@@ -588,32 +581,13 @@ export function DecisionGuide() {
               </Box>
             </div>
           </ColumnLayout>
-          <Alert type="info" header="For startups on SageMaker: less is automatic than you think">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                SageMaker AI launches all instances for a given job within a single subnet,
-                which is a single Availability Zone, to keep them physically close and minimize
-                inter-node latency{' '}
-                <SourceRef provenance="documented" doc={docs.smCapacity} />. That satisfies the
-                one boundary EFA traffic cannot cross. No AWS source states that training jobs
-                use EC2 cluster placement groups, so do not assume one is created for you.
-              </Box>
-              <Box variant="p">
-                NCCL is not configured for you either. AWS states that your container must
-                download and install the EFA software, and that tools like MPI and NCCL must be
-                installed and managed inside the container{' '}
-                <SourceRef provenance="documented" doc={docs.smTrainEfa} />.
-              </Box>
-            </SpaceBetween>
-          </Alert>
           <Alert type="warning" header="SMDDP is P4-class only, and frozen. It does not apply to Stage 4.">
             <SpaceBetween size="xs">
               <Box variant="p">
-                An earlier version of this section put the SMDDP (SageMaker Distributed Data
-                Parallel) streaming-multiprocessor claim inside this P5 and Trn2 stage. SMDDP
-                supports neither. The supported instance list is exactly ml.p3dn.24xlarge,
-                ml.p4d.24xlarge and ml.p4de.24xlarge, and the optimized AllGather collective is
-                available on P4 only{' '}
+                The SMDDP (SageMaker Distributed Data Parallel) library does not run on the
+                instance types this stage is about. Its supported instance list is exactly
+                ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, and the optimized
+                AllGather collective is available on P4 only{' '}
                 <SourceRef provenance="documented" doc={docs.ddpSupport} />. No P5, P5e, P5en,
                 P6 or Trn2 size is supported.
               </Box>
@@ -632,41 +606,29 @@ export function DecisionGuide() {
               </Box>
             </SpaceBetween>
           </Alert>
-        </SpaceBetween>
-      </Container>
-
-      <Container header={<Header variant="h2">Key Takeaways</Header>}>
-        <SpaceBetween size="s">
-          <Box variant="p">
-            <StatusIndicator type="success">
-              EFA is free: the only cost is the instance. Enable it whenever available.
-            </StatusIndicator>{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />
-          </Box>
-          <Box variant="p">
-            <StatusIndicator type="success">
-              EFA transforms multi-node training economics: 90%+ scaling efficiency vs 40-60% without.
-            </StatusIndicator>
-          </Box>
-          <Box variant="p">
-            <StatusIndicator type="info">
-              SRD is not RDMA. It&apos;s purpose-built for cloud networks and handles congestion better at scale.
-            </StatusIndicator>
-          </Box>
-          <Box variant="p">
-            <StatusIndicator type="info">
-              Single-node workloads get zero benefit from EFA. NVLink handles intra-node communication.
-            </StatusIndicator>
-          </Box>
-          <Box variant="p">
-            <StatusIndicator type="warning">
-              One Availability Zone is the hard constraint, not the placement group. EFA traffic
-              cannot cross Availability Zones or VPCs, and AWS states a cluster placement group
-              is not an absolute requirement. Plan capacity and availability around the zone.
-            </StatusIndicator>{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />{' '}
-            <SourceRef provenance="documented" doc={docs.efaStart} label="doc: efa-start" />
-          </Box>
+          <Alert type="info" header="If Stage 3 lands you on SageMaker, less is automatic than you think">
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                SageMaker AI launches all instances for a given job within a single subnet, which is
+                a single Availability Zone, to keep them physically close and minimize inter-node
+                latency{' '}
+                <SourceRef provenance="documented" doc={docs.smCapacity} />. That satisfies the one
+                boundary EFA traffic cannot cross{' '}
+                <SourceRef provenance="documented" doc={docs.efa} />. No AWS source states that
+                training jobs use EC2 cluster placement groups, so do not assume one is created for
+                you, and remember AWS calls the placement group a recommendation rather than a
+                requirement{' '}
+                <SourceRef provenance="documented" doc={docs.efaStart} label="doc: efa-start" />.
+              </Box>
+              <Box variant="p">
+                NCCL is not configured for you either. AWS states that your container must download
+                and install the EFA software, and that tools like MPI and NCCL must be installed and
+                managed inside the container{' '}
+                <SourceRef provenance="documented" doc={docs.smTrainEfa} />. That is the work the
+                platform name hides, and it is where a job silently ends up on TCP.
+              </Box>
+            </SpaceBetween>
+          </Alert>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

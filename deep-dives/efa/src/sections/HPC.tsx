@@ -5,7 +5,6 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
-import Alert from '@cloudscape-design/components/alert';
 import { SourceRef } from '@tech-deep-dives/shared';
 import type { DocRef } from '@tech-deep-dives/shared';
 
@@ -13,17 +12,9 @@ import type { DocRef } from '@tech-deep-dives/shared';
  * EFA for Traditional HPC.
  *
  * Sourcing rule for this file (revamp/source-authority-standard.md): every
- * load-bearing claim carries a SourceRef.
- *
- * Corrections applied on 2026-08-02:
- *  - Every benchmark number now names the benchmark, the instance type and
- *    what it was compared against, because the three panels were previously
- *    labelled "EFA vs ENA" while measuring three different things.
- *  - "HPC instances are only available in cluster placement groups" was not
- *    stated by any AWS source and is removed. The sourced constraints are
- *    single Availability Zone for EFA traffic, and no Spot, no Dedicated
- *    Hosts and no metal sizes for the HPC families.
- *  - Hpc8a has 192 cores, not 96, and its processor is a 5th Gen AMD EPYC.
+ * load-bearing claim carries a SourceRef. Every benchmark figure names the
+ * benchmark, the instance type and what it was compared against, because
+ * "EFA against ENA" is three different measurements depending on the pair.
  */
 
 const ACCESSED = '2026-08-02';
@@ -93,7 +84,9 @@ export function HPC() {
         </Box>
       </Container>
 
-      <Container header={<Header variant="h2">HPC Workload Categories</Header>}>
+      <Container
+        header={<Header variant="h2" description="How often a rank has to hear from its neighbours decides this, not how big the job is.">Which HPC workloads the fabric actually changes</Header>}
+      >
         <ColumnLayout columns={2} variant="text-grid">
           <div>
             <Box variant="h3">Tightly Coupled (EFA critical)</Box>
@@ -118,14 +111,7 @@ export function HPC() {
       </Container>
 
       <Container
-        header={
-          <Header
-            variant="h2"
-            description="Three published results. Each one compares a different pair of things, so each says what it measured."
-          >
-            Measured performance
-          </Header>
-        }
+        header={<Header variant="h2" description="Three published results. Each compares a different pair of things, so each one says what it measured.">Measured performance</Header>}
       >
         <ColumnLayout columns={3} variant="text-grid">
           <div>
@@ -160,15 +146,11 @@ export function HPC() {
             </Box>
           </div>
         </ColumnLayout>
-        <Alert type="info" header="What was removed from this panel">
-          Earlier text here claimed a 4x scaling improvement over ENA for standard CFD, extra-linear
-          scaling past 200 cores, and molecular dynamics speedups of 2.05x at two instances and 1.2x
-          at 768 cores. None traced to a source we could fetch and verify, so all four numbers are
-          gone.
-        </Alert>
       </Container>
 
-      <Container header={<Header variant="h2">MPI + EFA Integration</Header>}>
+      <Container
+        header={<Header variant="h2" description="EFA is reached through libfabric, so the MPI question is really which libfabric your MPI has loaded.">Wiring MPI to the fabric</Header>}
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             MPI (Message Passing Interface) is the standard for HPC communication. EFA integrates
@@ -229,7 +211,9 @@ export function HPC() {
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">HPC Instance Selection</Header>}>
+      <Container
+        header={<Header variant="h2" description="The dedicated HPC families are the price-performance answer and the most constrained families on EC2. Pick knowing both.">Choosing the instance</Header>}
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             For CPU-only HPC with EFA, the dedicated HPC families are the price-performance answer.
@@ -248,7 +232,10 @@ export function HPC() {
               <Box variant="p">
                 Up to 192 cores of AMD EPYC 9R14, 300 Gbps EFA. Reaching 300 Gbps needs at least two
                 ENIs on separate network cards; one card tops out at 150 Gbps{' '}
-                <SourceRef provenance="documented" doc={docs.hpc} />.
+                <SourceRef provenance="documented" doc={docs.hpc} />. This is the family the
+                multi-rail result above was measured on, so leaving the second device idle is the
+                10% at 32 instances and over 30% at 192 that AWS published{' '}
+                <SourceRef provenance="documented" doc={docs.multirail} />.
               </Box>
             </div>
             <div>

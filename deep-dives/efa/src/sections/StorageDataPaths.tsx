@@ -1230,6 +1230,59 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
+            description="What is covered here changes with the fabric. What does not is named where it matters and left to a storage dive everywhere else."
+          >
+            The boundary of this section
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            The test for inclusion was one question: does this claim change with the fabric? FSx
+            deployment type, GPUDirect Storage scope, per-client ceilings and interface binding all
+            change with the fabric, so they are covered. TCP connection counts, HTTP range sizing,
+            retry accounting and S3 prefix partitioning do not, so they are named only where they
+            change a fabric decision.
+          </Box>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Deferred to a future storage deep dive</Box>
+              <Box variant="p">
+                The three-stage part size resolution and how the client-level size, the per-request
+                size and the upload service-limit adjustment interact. The full memory ladder and its
+                interaction with container limits. The ETag suffix parse that derives an object's
+                stored part size and the read-throughput consequences of write-time layout. The retry
+                token bucket accounting, backoff jitter modes and their per-error costs. Data
+                repository task mechanics, preload with hsm_restore, export with hsm_archive, and
+                release behaviour.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Named here, not developed</Box>
+              <Box variant="p">
+                Each of those appears above only in the one form that changes a fabric decision. The
+                memory ladder appears because it is what makes range requests shrink as the target
+                rises. The ETag parse appears because it is the second irreversible decision. The
+                token bucket appears because it explains why a client under throttling fails rather
+                than converging. If you came looking for the mechanics rather than the consequence,
+                the storage dive is where they belong, and the pinned commits above are where to
+                start reading.
+              </Box>
+            </div>
+          </ColumnLayout>
+          <Box variant="p">
+            One provenance note before the comparison. FSx for Lustre here is documentation-sourced,
+            because the service side has no open-source artifact to read. The S3 client is
+            code-sourced at pinned commits. Both are strong, they are not the same class of evidence,
+            and the badge on each claim says which one you are looking at.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
             description="Three paths, five axes. Pick by access semantics first, then by whether your per-client target clears 100 Gbps."
           >
             Choosing a path
@@ -1303,59 +1356,6 @@ export function StorageDataPaths() {
         </SpaceBetween>
       </Container>
 
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="This is one section of an EFA dive. Here is the line it stops at, so you know what is missing rather than assuming it was covered."
-          >
-            Where this section stops
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            The test for inclusion here was one question: does this claim change with the fabric? FSx
-            deployment type, GPUDirect Storage scope, per-client ceilings and interface binding all
-            change with the fabric, so they are covered. TCP connection counts, HTTP range sizing,
-            retry accounting and S3 prefix partitioning do not, so they are named only where they
-            change a fabric decision.
-          </Box>
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">Deferred to a future storage deep dive</Box>
-              <Box variant="p">
-                The three-stage part size resolution and how the client-level size, the per-request
-                size and the upload service-limit adjustment interact. The full memory ladder and its
-                interaction with container limits. The ETag suffix parse that derives an object's
-                stored part size and the read-throughput consequences of write-time layout. The retry
-                token bucket accounting, backoff jitter modes and their per-error costs. Data
-                repository task mechanics, preload with hsm_restore, export with hsm_archive, and
-                release behaviour.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">Named here, not developed</Box>
-              <Box variant="p">
-                Each of those appears above only in the one form that changes a fabric decision. The
-                memory ladder appears because it is what makes range requests shrink as the target
-                rises. The ETag parse appears because it is the second irreversible decision. The
-                token bucket appears because it explains why a client under throttling fails rather
-                than converging. If you came looking for the mechanics rather than the consequence,
-                the storage dive is where they belong, and the pinned commits above are where to
-                start reading.
-              </Box>
-            </div>
-          </ColumnLayout>
-          <Box variant="p">
-            One provenance note to carry away. Everything about FSx for Lustre in this section is
-            documentation-sourced, because the service side has no open-source artifact to read.
-            Everything about the S3 client is code-sourced at pinned commits. Both are strong. They
-            are not the same class of evidence, and the badges on each claim say which one you are
-            looking at.
-          </Box>
-        </SpaceBetween>
-      </Container>
     </SpaceBetween>
   );
 }

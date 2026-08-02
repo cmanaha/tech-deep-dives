@@ -21,8 +21,8 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * and the code wins. Nothing is laundered between the categories.
  *
  * Where a latency or threshold number could not be sourced, this file says
- * UNKNOWN. An earlier version of this dive carried unsourced microsecond
- * figures and they were removed for exactly that reason.
+ * UNKNOWN rather than quoting a plausible figure. Preserve that word and the
+ * scope attached to it when editing; it is load-bearing, not hedging.
  */
 
 const ACCESSED = '2026-08-02';
@@ -570,10 +570,11 @@ export function Operations() {
             against.
           </Box>
           <Alert type="info" header="Numbers this page does not give you">
-            AWS publishes no numeric threshold for any EFA counter, and no latency figure for the
-            device. Where a threshold would be useful, this page says UNKNOWN and tells you to
-            baseline it yourself. That is deliberate: an earlier version of this dive carried
-            microsecond figures with no source behind them.
+            No AWS page stating a numeric threshold for any EFA counter was located during this
+            research, and none stating a device latency figure. Where a threshold would be useful,
+            this page says UNKNOWN and tells you to baseline it yourself. A microsecond figure
+            quoted without a source is worse than no figure, because you will size an alert
+            against it.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -676,9 +677,13 @@ cat /sys/class/infiniband/rdmap0s31/device/p2p
 # efa_0-rdm through efa_31-rdm. Fewer means fewer attached interfaces.
 fi_info -p efa -t FI_EP_RDM | grep -c '^provider: efa'`}</pre>
           </Box>
-          <Alert
-            type="warning"
-            header="The fabric line in the AWS sample no longer matches current libfabric"
+          <Box variant="p">
+            Two lines decide the check: provider: efa and type: FI_EP_RDM. A fabric line that does
+            not match the AWS walkthrough is expected, not a failure.
+          </Box>
+          <ExpandableSection
+            headerText="Why your fabric line does not match the AWS sample"
+            headerDescription="The documentation and current libfabric print different things here. The code wins."
           >
             <SpaceBetween size="xs">
               <Box variant="p">
@@ -698,15 +703,11 @@ fi_info -p efa -t FI_EP_RDM | grep -c '^provider: efa'`}</pre>
                   code={code.fabricNames}
                   conflict="fabric: EFA-fe80::94:3dff:fe89:1b70"
                 />
-                .
-              </Box>
-              <Box variant="p">
-                Do not treat the mismatch as a failure. The two lines that decide the check are
-                provider: efa and type: FI_EP_RDM. The fabric line now tells you something more
-                useful: which of the two fabrics you got.
+                . What the line gives you now is more useful anyway: which of the two fabrics you
+                got.
               </Box>
             </SpaceBetween>
-          </Alert>
+          </ExpandableSection>
 
           <Box variant="h3">4. A two-node round trip</Box>
           <Box variant="p">
@@ -1248,6 +1249,17 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
             </div>
           </ColumnLayout>
 
+          <Box variant="p">
+            One more path worth knowing about and not over-trusting. You can create a VPC (Virtual
+            Private Cloud) Flow Log for an EFA, and AWS states that in the flow log entries EFA
+            traffic is identified by a source and destination address that are both formatted as MAC
+            addresses{' '}
+            <SourceRef provenance="documented" doc={docs.monitor} />. The documented example shows the
+            port and protocol fields empty, which follows from EFA traffic not being IP traffic. Flow
+            logs will tell you that two instances exchanged EFA packets. They will not tell you
+            anything about retransmission, impairment, or whether the run was fast.
+          </Box>
+
           <Alert
             type="error"
             header="On EKS, the managed metrics path drops exactly the counters worth alerting on"
@@ -1269,17 +1281,6 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
               </Box>
             </SpaceBetween>
           </Alert>
-
-          <Box variant="p">
-            One more path worth knowing about and not over-trusting. You can create a VPC (Virtual
-            Private Cloud) Flow Log for an EFA, and AWS states that in the flow log entries EFA
-            traffic is identified by a source and destination address that are both formatted as MAC
-            addresses{' '}
-            <SourceRef provenance="documented" doc={docs.monitor} />. The documented example shows the
-            port and protocol fields empty, which follows from EFA traffic not being IP traffic. Flow
-            logs will tell you that two instances exchanged EFA packets. They will not tell you
-            anything about retransmission, impairment, or whether the run was fast.
-          </Box>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

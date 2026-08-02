@@ -931,24 +931,15 @@ export function SageMaker() {
             <SourceRef provenance="documented" doc={docs.resourceConfig} />.
           </Box>
 
-          <Alert type="warning" header="Correction: SageMaker training jobs and EC2 placement groups">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                An earlier version of this dive said SageMaker Training automatically configures EFA,
-                placement groups and NCCL. The placement-group half of that is unverified. No AWS
-                source found states that training jobs use EC2 cluster placement groups.
-              </Box>
-              <Box variant="p">
-                The claim AWS does make is weaker and more specific. SageMaker AI launches all
-                instances for a given job within a single subnet, which is a single Availability
-                Zone, to keep them physically close and minimize inter-node latency, and additional
-                subnets only broaden the options SageMaker can choose from rather than spreading one
-                job across Availability Zones{' '}
-                <SourceRef provenance="documented" doc={docs.capacity} />. That is the sentence to
-                repeat. Single subnet, therefore single Availability Zone, which is exactly the
-                boundary EFA traffic cannot cross anyway.
-              </Box>
-            </SpaceBetween>
+          <Alert type="warning" header="You do not get a cluster placement group, and you do not need one">
+            SageMaker AI launches all instances for a given job within a single subnet, which is a
+            single Availability Zone, to keep them physically close and minimize inter-node latency,
+            and additional subnets only broaden the options SageMaker can choose from rather than
+            spreading one job across Availability Zones{' '}
+            <SourceRef provenance="documented" doc={docs.capacity} />. That is the sentence to
+            repeat: single subnet, therefore single Availability Zone, which is exactly the boundary
+            EFA traffic cannot cross. No AWS source found states that training jobs use EC2 cluster
+            placement groups, so do not plan around one being created for you.
           </Alert>
 
           <Box variant="h3">What actually turns EFA on</Box>
@@ -1052,7 +1043,10 @@ SM_EFA_RDMA_INSTANCES = [
             items={allowRows}
           />
 
-          <Alert type="warning" header="Two AWS-owned repositories disagree about P5">
+          <ExpandableSection
+            headerText="On P5, two AWS-owned repositories disagree about FI_EFA_USE_DEVICE_RDMA"
+            headerDescription="Read the code for the path you are on, and set the variable yourself if you need it"
+          >
             <SpaceBetween size="xs">
               <Box variant="p">
                 The SageMaker Python SDK does not list ml.p5.48xlarge in SM_EFA_RDMA_INSTANCES, so a
@@ -1069,12 +1063,11 @@ SM_EFA_RDMA_INSTANCES = [
                   conflict="aws/sagemaker-python-sdk omits ml.p5.48xlarge from SM_EFA_RDMA_INSTANCES at the same read date."
                   label="repo vs repo"
                 />
-                . Both were read on the same day, at pinned commits, in repositories AWS owns. We do
-                not know which one is intended. Publish the disagreement, read the code for the path
-                you are on, and set the variable yourself if you need it.
+                . Both were read on the same day, at pinned commits, in repositories AWS owns. Which
+                one is intended is unknown, so the disagreement is published rather than resolved.
               </Box>
             </SpaceBetween>
-          </Alert>
+          </ExpandableSection>
 
           <Alert type="info" header="What the allowlist gap does and does not prove">
             It proves that on ml.p5e.48xlarge, ml.p5en.48xlarge, ml.p6-b200.48xlarge,
@@ -1361,22 +1354,13 @@ SM_EFA_RDMA_INSTANCES = [
             <SourceRef provenance="documented" doc={docs.ddpSupport} />.
           </Box>
 
-          <Alert type="error" header="Correction: the SM saving does not apply to P5 or Trn2">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                An earlier version of this dive placed the SMDDP streaming-multiprocessor claim
-                inside a paragraph about scaling to 10 or more nodes on P5 and Trn2. SMDDP supports
-                neither. On every instance type AWS currently markets for frontier training, SMDDP is
-                not an option.
-              </Box>
-              <Box variant="p">
-                The underlying number is correct within its scope. P4d and P4de carry NVIDIA A100
-                GPUs with 108 streaming multiprocessors each, NCCL takes up to 24 of them to run
-                collective operations, and SMDDP uses fewer than 9{' '}
-                <SourceRef provenance="documented" doc={docs.ddpIntro} />. That is an A100
-                measurement. Quote it with the instance family attached or do not quote it.
-              </Box>
-            </SpaceBetween>
+          <Alert type="error" header="The streaming multiprocessor saving is an A100 number, and it travels without its scope">
+            P4d and P4de carry NVIDIA A100 GPUs with 108 streaming multiprocessors each, NCCL takes
+            up to 24 of them to run collective operations, and SMDDP uses fewer than 9{' '}
+            <SourceRef provenance="documented" doc={docs.ddpIntro} />. That figure gets quoted at
+            people planning P5 and Trn2 clusters, where SMDDP does not run at all. On every instance
+            type AWS currently markets for frontier training it is not an option. Quote the number
+            with the instance family attached or do not quote it.
           </Alert>
 
           <Box variant="p">

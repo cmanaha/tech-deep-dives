@@ -1,7 +1,7 @@
 # Citation re-verification: efa
 
 Run date: 2026-08-02  
-Tree: `4f7ffa1`  
+Tree: `ae4574d`  
 Check: `scripts/audit/verify-citations.sh` (Tier 1.5, deterministic, networked, no LLM)  
 Scope: `deep-dives/efa/src/**/*.tsx` and `*.ts`, excluding tests
 Also: `deep-dives/efa/research/**/*.md`, GitHub blob and tree URLs only (`pinned-refs-research`)
@@ -47,7 +47,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/10/capacity-reservation-topology-api-ai-ml-hpc-instance-type/` | src/sections/TopologyApi.tsx:145 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/` | src/data/instances.ts:86 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-g7e-instances-generally-available/` | src/data/instances.ts:74 | 2 | - |
-| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/02/announcing-amazon-ec2-hpc8a-instances/` | src/sections/HPC.tsx:52 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/02/announcing-amazon-ec2-hpc8a-instances/` | src/sections/HPC.tsx:43 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/04/amazon-sagemaker-ai-inf-auto-inst/` | src/sections/SageMaker.tsx:169 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/04/amazon-sagemaker-hyperpod-automatic-slurm-topology/` | src/sections/SageMaker.tsx:159 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/04/sagemaker-hyperpod-flexible-instance-groups/` | src/sections/SageMaker.tsx:164 | 1 | - |
@@ -57,8 +57,8 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://aws.amazon.com/ai/machine-learning/trainium/` | src/sections/AIMLTraining.tsx:105 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/containers/unlocking-next-generation-ai-performance-with-dynamic-resource-allocation-on-amazon-eks-and-amazon-ec2-p6e-gb200/` | src/sections/TopologyApi.tsx:151 | 2 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/hpc/in-the-search-for-performance-theres-more-than-one-way-to-build-a-network/` | src/sections/NetworkComparison.tsx:69 | 3 | - |
-| OK | 200 | `https://aws.amazon.com/blogs/hpc/optimizing-mpi-application-performance-on-hpc7a-by-effectively-using-both-efa-devices/` | src/sections/HPC.tsx:59 | 2 | - |
-| OK | 200 | `https://aws.amazon.com/blogs/hpc/second-generation-efa-improving-hpc-and-ml-application-performance-in-the-cloud/` | src/sections/HPC.tsx:66 | 2 | - |
+| OK | 200 | `https://aws.amazon.com/blogs/hpc/optimizing-mpi-application-performance-on-hpc7a-by-effectively-using-both-efa-devices/` | src/sections/HPC.tsx:50 | 2 | - |
+| OK | 200 | `https://aws.amazon.com/blogs/hpc/second-generation-efa-improving-hpc-and-ml-application-performance-in-the-cloud/` | src/sections/HPC.tsx:57 | 2 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/machine-learning/accelerate-pre-training-of-mistrals-mathstral-model-with-highly-resilient-clusters-on-amazon-sagemaker-hyperpod/` | src/sections/SageMaker.tsx:189 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/machine-learning/disaggregated-prefill-and-decode-for-llm-inference-on-sagemaker-hyperpod/` | src/sections/SageMaker.tsx:179 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/machine-learning/how-amazon-scaled-rufus-by-building-multi-node-inference-using-aws-trainium-chips-and-vllm/` | src/sections/SageMaker.tsx:204 | 1 | - |
@@ -78,7 +78,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/faq/training/neuron-training.html` | src/sections/Sources.tsx:16 | 1 | - |
 | OK | 200 | `https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html` | src/sections/Sources.tsx:15 | 1 | - |
 | OK | 200 | `https://awslabs.github.io/ai-on-eks/` | src/sections/EKSIntegration.tsx:119 | 1 | - |
-| OK | 200 | `https://cfd.direct/cloud/openfoam-hpc-aws-efa/` | src/sections/HPC.tsx:72 | 2 | - |
+| OK | 200 | `https://cfd.direct/cloud/openfoam-hpc-aws-efa/` | src/sections/HPC.tsx:63 | 2 | - |
 | OK | 200 | `https://conferences.sigcomm.org/sigcomm/2015/pdf/papers/p523.pdf` | src/sections/SrdProtocol.tsx:142 | 1 | - |
 | OK | 200 | `https://d1.awsstatic.com/whitepapers/benchmarking-aws-and-hpc-services.pdf` | src/sections/Sources.tsx:41 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-design-patterns.html` | src/sections/StorageDataPaths.tsx:115 | 1 | - |
@@ -100,7 +100,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.html` | src/data/instances.ts:32 | 11 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-changelog.html` | src/sections/DataPath.tsx:100 | 4 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nccl.html` | src/sections/AIMLTraining.tsx:81 | 6 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nixl.html` | src/sections/AIMLInference.tsx:44 | 3 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nixl.html` | src/sections/AIMLInference.tsx:39 | 3 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html` | src/data/instances.ts:38 | 11 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-verify.html` | src/sections/Operations.tsx:85 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-working-monitor.html` | src/sections/Operations.tsx:81 | 1 | - |
