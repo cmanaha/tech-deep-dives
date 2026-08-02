@@ -412,7 +412,7 @@ export function EfaDevice() {
             variant="h2"
             description="EFA-only removes the ENA device. That is the whole difference, and it decides everything else."
           >
-            Attachment modes at the device level
+            Choosing between EFA-only and EFA with ENA
           </Header>
         }
       >
@@ -480,7 +480,7 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="Four counts, four owners. Worked on p5.48xlarge, the type where they diverge most."
+            description="32, 33, 32 and something that is not a count at all. Four numbers, four owners, worked on p5.48xlarge."
           >
             Network cards, EFA interfaces and rails
           </Header>
@@ -507,8 +507,10 @@ export function EfaDevice() {
             0 device index 0, an EFA-only interface on network card index 0 device index 1, and one
             EFA-only interface on each of network card index 1 through 31{' '}
             <SourceRef provenance="documented" doc={docs.efaAcc} />. Card 0 carries two interfaces
-            at different device indexes. That is how you get 32 EFA devices out of 32 cards while
-            still having somewhere to put the IP stack.
+            at different device indexes. That is how 32 cards and 33 interfaces produce 32 EFA
+            devices, with somewhere left to put the IP stack. Count the interfaces instead of the
+            devices and you ask a Kubernetes resource claim for 33 of something the instance has 32
+            of.
           </Box>
 
           <Table
@@ -566,7 +568,7 @@ export function EfaDevice() {
 
           <Alert
             type="warning"
-            header="The 8 GPUs times 4 EFA devices per PCIe root decomposition is our inference"
+            header="AWS documents four EFA devices sharing a PCIe root with one GPU. The eight groups of four are arithmetic, not documentation."
           >
             <SpaceBetween size="xs">
               <Box variant="p">
@@ -577,11 +579,10 @@ export function EfaDevice() {
                 the aligned group without knowing its size.
               </Box>
               <Box variant="p">
-                Multiplying that ratio by the 8 GPUs on the instance to get eight groups of one GPU
-                plus four EFA devices, totalling 32, is arithmetic we performed. It is consistent
-                with the documented 32-device count and it is very likely correct. It is not an AWS
-                statement, and no AWS source enumerates the groups. Treat the group count as
-                inferred{' '}
+                Multiply that ratio by the 8 GPUs on the instance and you get eight groups of one
+                GPU plus four EFA devices, totalling 32. That multiplication is ours. It is
+                consistent with the documented 32-device count and it is very likely correct, but no
+                AWS source enumerates the groups, so treat the grouping as inferred{' '}
                 <SourceRef
                   provenance="code-derived"
                   doc={docs.eksDevice}
@@ -629,7 +630,7 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="Interrupt vectors, huge pages and registration limits. The three host resources the device negotiates for."
+            description="Interrupt vectors, huge pages and registration limits are negotiated per instance, not compiled in. Read them off the instance you have."
           >
             What the host owes the device
           </Header>
@@ -719,6 +720,160 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
+            description="There is no single current EFA driver version. There are two channels and they are two releases apart."
+          >
+            Driver and installer versions
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">
+                What you get from the installer <Badge color="green">shipping</Badge>
+              </Box>
+              <Box variant="p">
+                EFA installer 1.49.0, released June 27, 2026, upgrades to libfabric 2.4.0amzn5.0,
+                EFA driver 3.1.0, rdma-core 63.0 and AWS OFI NCCL Plugin 1.20.0, and discontinues
+                support for openSUSE Leap{' '}
+                <SourceRef provenance="documented" doc={docs.changelog} />. This is what
+                efa_installer.sh puts on a host today.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">
+                What is in the repository <Badge color="grey">unreleased</Badge>
+              </Box>
+              <Box variant="p">
+                The amzn-drivers tree carries driver r3.3.0, with the package version recorded in
+                the DKMS (Dynamic Kernel Module Support) configuration{' '}
+                <SourceRef provenance="code-derived" code={code.dkms} />. Its release notes add the
+                0xefa4 device id, support for reporting 800 and 1600 Gbps link speed, completion
+                counters, 64-bit work request ids, 128-byte send queue work queue entries, inline
+                RDMA (Remote Direct Memory Access) write and memory region page sizes above 4 GB{' '}
+                <SourceRef provenance="code-derived" code={code.releaseNotes} />.
+              </Box>
+            </div>
+          </ColumnLayout>
+
+          <Alert type="warning" header="The current EFA driver version has two different right answers">
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                Installer 1.49.0 ships driver 3.1.0. The repository is at r3.3.0. Those are two
+                different answers to the same question, and the gap is not cosmetic: the 0xefa4
+                device id landed in r3.3.0, so a host installed from 1.49.0 does not carry it.
+              </Box>
+              <Box variant="p">
+                The same rule applies to the userspace half. Installer 1.49.0 ships libfabric
+                2.4.0amzn5.0, which is an AWS fork with backports, while upstream ofiwg has released
+                v2.6.0. The version strings are not comparable across the two channels. Name the
+                channel before you quote a version.
+              </Box>
+            </SpaceBetween>
+          </Alert>
+
+          <Box variant="p">
+            The practical check on a running host is the installer's own verification path rather
+            than a version table. The driver version in the repository is recorded in the DKMS
+            configuration, and the installed release is what the changelog describes, so comparing
+            what modinfo reports on the instance against the installer changelog entry is the only
+            reliable way to tell which of the two you are on.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Four documented generations, five PCI device ids. They do not line up, so the mapping you have seen quoted cannot be right."
+          >
+            Which generation you are on, and what branches on it
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            The generation labels come from the EC2 User Guide, which organises its supported
+            instance types under four table headings, read here verbatim: Nitro v6 (EFA v4), Nitro
+            v5 (EFA v3), Nitro v4 (EFA v2) and Nitro v3 (EFA v1){' '}
+            <SourceRef provenance="documented" doc={docs.efa} />. That is the mapping. It is a
+            heading you read, not a pairing you derive, and the instance table elsewhere in this
+            dive is keyed to it.
+          </Box>
+
+          <Alert type="warning" header="Five PCI device ids against four EFA versions: the mapping you have seen quoted does not exist">
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                The driver defines five PCI device ids, 0xefa0 through 0xefa4, and registers all
+                five in its PCI device table{' '}
+                <SourceRef provenance="code-derived" code={code.pciIds} />. AWS documents four EFA
+                versions. Five ids against four versions cannot be a one to one mapping, and no AWS
+                source and no line of driver source maps a device id to an EFA version number at
+                all.
+              </Box>
+              <Box variant="p">
+                So the widely repeated equivalence between 0xefa4 and EFA v4 is unsourced inference.
+                What you can say is narrower and still useful: 0xefa4 was added in driver r3.3.0
+                alongside 800 and 1600 Gbps link-speed reporting{' '}
+                <SourceRef provenance="code-derived" code={code.releaseNotes} />, and r3.3.0 is not
+                in the shipping installer.
+              </Box>
+            </SpaceBetween>
+          </Alert>
+
+          <Box variant="p">
+            Device ids are still a real runtime discriminator, just not a generation label. Two
+            independent code paths branch on them. libfabric turns off its direct data path on
+            0xefa0 parts, using a helper whose entire body compares the vendor part id against
+            0xefa0{' '}
+            <SourceRef provenance="code-derived" code={code.subCq} />. The NCCL plugin computes
+            device identifiers differently for 0xefa0, 0xefa1 and 0xefa2 than for newer parts,
+            falling back to a node id and device index instead of the per-card PCI domain and bus{' '}
+            <SourceRef provenance="code-derived" code={code.guidByDeviceId} />.
+          </Box>
+          <Box variant="p">
+            Both of those group the first three ids together and treat later ones as one newer
+            class. Neither draws a four-way generation boundary. If you need to know which EFA
+            generation an instance is, read the User Guide table heading for its instance type. If
+            you need to know how the software will behave on it, read the device id.
+          </Box>
+
+          <ExpandableSection
+            headerText="Where the generation actually changes behaviour"
+            headerDescription="Two concrete branches, both code-derived"
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                First: libfabric's Data Path Direct feature, which moves work queue entry
+                construction and completion parsing into libfabric itself, is disabled on 0xefa0
+                devices because those parts use a sub completion queue implementation{' '}
+                <SourceRef provenance="code-derived" code={code.subCq} />. The oldest EFA hardware
+                therefore does not get the newest fast path, regardless of which libfabric you
+                install.
+              </Box>
+              <Box variant="p">
+                Second: the NCCL plugin's device identifier is what lets it recognise that two EFA
+                devices sit on the same physical card. On 0xefa0, 0xefa1 and 0xefa2 it cannot use
+                the per-card PCI domain and bus fields and falls back to a plain node and device
+                index{' '}
+                <SourceRef provenance="code-derived" code={code.guidByDeviceId} />. That is the same
+                information rail sorting depends on, which is consistent with rail sorting being a
+                P5-era concern.
+              </Box>
+              <Box variant="p">
+                Neither of these is documented by AWS. Both are visible in one grep of the pinned
+                sources, and both are the kind of thing that explains a performance difference
+                between two instance families that otherwise look identical on paper.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+      <Container
+        header={
+          <Header
+            variant="h2"
             description="One security group rule, one hard placement constraint, and one recommendation that is often misquoted as a requirement."
           >
             Security group, subnets and placement
@@ -772,6 +927,13 @@ export function EfaDevice() {
             Zone boundary as the hard line.
           </Box>
 
+          <Box variant="p">
+            Two more documented placement limits that bite specific fleets: EFA traffic between P4d,
+            P4de or DL1 instances and other instance types is not supported, and c7g.16xlarge,
+            m7g.16xlarge and r7g.16xlarge Dedicated Instances and Dedicated Hosts are not supported
+            when an EFA is attached <SourceRef provenance="documented" doc={docs.efa} />.
+          </Box>
+
           <Alert type="warning" header="A cluster placement group is recommended, not required">
             <SpaceBetween size="xs">
               <Box variant="p">
@@ -784,8 +946,8 @@ export function EfaDevice() {
               <Box variant="p">
                 The hard constraint is the Availability Zone. The placement group is the documented
                 way to satisfy that constraint and to keep latency low, not a gate on EFA itself.
-                Any page that says EFA requires a cluster placement group, including earlier
-                versions of this one, is stating a recommendation as a rule.
+                Any page that says EFA requires a cluster placement group is stating a
+                recommendation as a rule.
               </Box>
               <Box variant="p">
                 The practical follow-on is capacity. AWS's answer for that is on the same page: to
@@ -795,169 +957,6 @@ export function EfaDevice() {
               </Box>
             </SpaceBetween>
           </Alert>
-
-          <Box variant="p">
-            Two more documented placement limits that bite specific fleets: EFA traffic between P4d,
-            P4de or DL1 instances and other instance types is not supported, and c7g.16xlarge,
-            m7g.16xlarge and r7g.16xlarge Dedicated Instances and Dedicated Hosts are not supported
-            when an EFA is attached{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="There is no single current EFA driver version. There are two channels and they are two releases apart."
-          >
-            Driver and installer versions
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">
-                What you get from the installer <Badge color="green">shipping</Badge>
-              </Box>
-              <Box variant="p">
-                EFA installer 1.49.0, released June 27, 2026, upgrades to libfabric 2.4.0amzn5.0,
-                EFA driver 3.1.0, rdma-core 63.0 and AWS OFI NCCL Plugin 1.20.0, and discontinues
-                support for openSUSE Leap{' '}
-                <SourceRef provenance="documented" doc={docs.changelog} />. This is what
-                efa_installer.sh puts on a host today.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">
-                What is in the repository <Badge color="grey">unreleased</Badge>
-              </Box>
-              <Box variant="p">
-                The amzn-drivers tree carries driver r3.3.0, with the package version recorded in
-                the DKMS (Dynamic Kernel Module Support) configuration{' '}
-                <SourceRef provenance="code-derived" code={code.dkms} />. Its release notes add the
-                0xefa4 device id, support for reporting 800 and 1600 Gbps link speed, completion
-                counters, 64-bit work request ids, 128-byte send queue work queue entries, inline
-                RDMA (Remote Direct Memory Access) write and memory region page sizes above 4 GB{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />.
-              </Box>
-            </div>
-          </ColumnLayout>
-
-          <Alert type="warning" header="Never say the current EFA driver version without naming the channel">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                Installer 1.49.0 ships driver 3.1.0. The repository is at r3.3.0. Those are two
-                different answers to the same question, and the gap is not cosmetic: the 0xefa4
-                device id landed in r3.3.0, so a host installed from 1.49.0 does not carry it.
-              </Box>
-              <Box variant="p">
-                The same rule applies to the userspace half. Installer 1.49.0 ships libfabric
-                2.4.0amzn5.0, which is an AWS fork with backports, while upstream ofiwg has released
-                v2.6.0. The version strings are not comparable across the two channels. State which
-                one you mean, every time.
-              </Box>
-            </SpaceBetween>
-          </Alert>
-
-          <Box variant="p">
-            The practical check on a running host is the installer's own verification path rather
-            than a version table. The driver version in the repository is recorded in the DKMS
-            configuration, and the installed release is what the changelog describes, so comparing
-            what modinfo reports on the instance against the installer changelog entry is the only
-            reliable way to tell which of the two you are on.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Four documented generations, five PCI device ids. Those two sequences do not line up, and the mismatch is worth publishing."
-          >
-            Device generations
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            The generation labels come from the EC2 User Guide, which organises its supported
-            instance types under four table headings, read here verbatim: Nitro v6 (EFA v4), Nitro
-            v5 (EFA v3), Nitro v4 (EFA v2) and Nitro v3 (EFA v1){' '}
-            <SourceRef provenance="documented" doc={docs.efa} />. That is the mapping. It is a
-            heading you read, not a pairing you derive, and the instance table elsewhere in this
-            dive is keyed to it.
-          </Box>
-
-          <Alert type="warning" header="Do not map PCI device ids to EFA versions">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                The driver defines five PCI device ids, 0xefa0 through 0xefa4, and registers all
-                five in its PCI device table{' '}
-                <SourceRef provenance="code-derived" code={code.pciIds} />. AWS documents four EFA
-                versions. Five ids against four versions cannot be a one to one mapping, and no AWS
-                source and no line of driver source maps a device id to an EFA version number at
-                all.
-              </Box>
-              <Box variant="p">
-                So the widely repeated equivalence between 0xefa4 and EFA v4 is unsourced inference.
-                This page does not publish it. What can be said is narrower and still useful: 0xefa4
-                was added in driver r3.3.0 alongside 800 and 1600 Gbps link-speed reporting{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />, and r3.3.0 is not
-                in the shipping installer.
-              </Box>
-            </SpaceBetween>
-          </Alert>
-
-          <Box variant="p">
-            Device ids are still a real runtime discriminator, just not a generation label. Two
-            independent code paths branch on them. libfabric turns off its direct data path on
-            0xefa0 parts, using a helper whose entire body compares the vendor part id against
-            0xefa0{' '}
-            <SourceRef provenance="code-derived" code={code.subCq} />. The NCCL plugin computes
-            device identifiers differently for 0xefa0, 0xefa1 and 0xefa2 than for newer parts,
-            falling back to a node id and device index instead of the per-card PCI domain and bus{' '}
-            <SourceRef provenance="code-derived" code={code.guidByDeviceId} />.
-          </Box>
-          <Box variant="p">
-            Both of those group the first three ids together and treat later ones as one newer
-            class. Neither draws a four-way generation boundary. If you need to know which EFA
-            generation an instance is, read the User Guide table heading for its instance type. If
-            you need to know how the software will behave on it, read the device id.
-          </Box>
-
-          <ExpandableSection
-            headerText="Where the generation actually changes behaviour"
-            headerDescription="Two concrete branches, both code-derived"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                First: libfabric's Data Path Direct feature, which moves work queue entry
-                construction and completion parsing into libfabric itself, is disabled on 0xefa0
-                devices because those parts use a sub completion queue implementation{' '}
-                <SourceRef provenance="code-derived" code={code.subCq} />. The oldest EFA hardware
-                therefore does not get the newest fast path, regardless of which libfabric you
-                install.
-              </Box>
-              <Box variant="p">
-                Second: the NCCL plugin's device identifier is what lets it recognise that two EFA
-                devices sit on the same physical card. On 0xefa0, 0xefa1 and 0xefa2 it cannot use
-                the per-card PCI domain and bus fields and falls back to a plain node and device
-                index{' '}
-                <SourceRef provenance="code-derived" code={code.guidByDeviceId} />. That is the same
-                information rail sorting depends on, which is consistent with rail sorting being a
-                P5-era concern.
-              </Box>
-              <Box variant="p">
-                Neither of these is documented by AWS. Both are visible in one grep of the pinned
-                sources, and both are the kind of thing that explains a performance difference
-                between two instance families that otherwise look identical on paper.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

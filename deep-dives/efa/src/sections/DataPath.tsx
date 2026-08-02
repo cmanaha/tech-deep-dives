@@ -14,17 +14,11 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * The Data Path section.
  *
  * Every code citation here is pinned to an immutable ref, per
- * revamp/source-authority-standard.md. Three claims the previous version of
- * this page carried are corrected below and the corrections are published
- * rather than quietly patched:
- *
- *   1. "Proof of OS bypass by absence" (the kernel driver omits post_send).
- *      Dead since driver r2.12.0 for the out-of-tree module. Still true of
- *      mainline Linux, which is the more interesting fact.
- *   2. "Data Path Direct bypasses rdma-core." It bypasses it on the data
- *      path only, and it depends on rdma-core to start at all.
- *   3. "RDMA read and write are emulated in software." They are device
- *      operations, gated by device-reported capability bits.
+ * revamp/source-authority-standard.md. Three facts on this page are easy to
+ * get backwards and each is sourced from code rather than prose: EFA has two
+ * kernel drivers that answer the kernel-verbs question differently, Data Path
+ * Direct bypasses rdma-core on the data path only, and RDMA read and write are
+ * device operations gated by device-reported capability bits.
  */
 
 const AMZN = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
@@ -549,6 +543,43 @@ export function DataPath() {
             splits the cost so that the expensive work happens once and the per-message work is a
             handful of stores.
           </Alert>
+          <ExpandableSection
+            headerText="Which EFA kernel driver you are running changes the answer"
+            headerDescription="The out-of-tree module AWS ships implements the hot-path verbs. The one inside mainline Linux does not."
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                The driver the EFA installer builds is not the driver in the Linux tree, and they
+                differ on exactly this question. The out-of-tree module AWS ships carries a dedicated
+                data-path source file implementing post send (<code>post_send</code>), post receive
+                (<code>post_recv</code>), poll completion queue (<code>poll_cq</code>) and request
+                notify, and has done since driver r2.12.0{' '}
+                <SourceRef provenance="code-derived" code={code.kverbs} />, and registers all four in
+                the device operations table behind a kernel-verbs build guard{' '}
+                <SourceRef provenance="code-derived" code={code.devOps} />, with a second
+                registration site for older kernels that lack the newer registration helper{' '}
+                <SourceRef provenance="code-derived" code={code.devOpsLegacy} />. That guard is on by
+                default: the build sets the kernel-verbs option to ON in its own cache{' '}
+                <SourceRef provenance="code-derived" code={code.kverbsOn} />, and the DKMS (Dynamic
+                Kernel Module Support) configure script that the EFA installer actually runs does not
+                override it <SourceRef provenance="code-derived" code={code.dkms} />. So on any host
+                that installed the driver the normal way, those operations are live.
+              </Box>
+              <Box variant="p">
+                The driver inside mainline Linux is a different driver. Its device operations table
+                contains no post send, no post receive, no poll completion queue and no request
+                notify, and there is no data-path source file in that tree at all{' '}
+                <SourceRef provenance="code-derived" code={code.mainlineOps} />. Any sentence about
+                the EFA kernel driver has to say which one it means.
+              </Box>
+              <Box variant="p">
+                Neither answer weakens OS bypass. These are the in-kernel verbs entry points,
+                reachable only by other kernel modules. A libfabric application still never enters
+                the kernel to send. The proof of the bypass is the mapping you can watch the driver
+                create, not the absence of a kernel entry point.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -624,6 +655,56 @@ export function DataPath() {
               </Box>
             </div>
           </ColumnLayout>
+          <ExpandableSection
+            headerText="Who builds the descriptor: libfabric, or the userspace verbs library?"
+            headerDescription="Data Path Direct is on by default, and it still needs rdma-core for everything except the data path"
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                When Data Path Direct is active, libfabric builds the work queue entry and parses
+                completion entries itself, in the same descriptor formats the kernel driver uses,
+                instead of calling the userspace verbs library to do it. The fallback is one branch
+                away in the same header, and still calls the verbs library when the feature is off{' '}
+                <SourceRef provenance="code-derived" code={code.dpdFallback} />. It is on by default{' '}
+                <SourceRef provenance="code-derived" code={code.dpdDefault} />.
+              </Box>
+              <Box variant="p">
+                What it does not do is remove rdma-core. Setup goes straight through it: the
+                queue-pair initialiser calls the rdma-core device-specific query that returns the
+                send-queue and receive-queue buffers, doorbells, entry sizes and depths{' '}
+                <SourceRef provenance="code-derived" code={code.dpdQp} />, and the
+                completion-queue initialiser calls the matching query for the completion ring{' '}
+                <SourceRef provenance="code-derived" code={code.dpdCq} />. rdma-core still owns
+                and unmaps those buffers{' '}
+                <SourceRef provenance="code-derived" code={code.dpdOwner} />. The build gate makes
+                the dependency explicit: the feature is compiled in only when rdma-core provides
+                both of those queries{' '}
+                <SourceRef provenance="code-derived" code={code.dpdGate} />.
+              </Box>
+              <Alert type="error" header="Two libfabric documents disagree about how far the bypass goes">
+                The parameter help text says the careful thing, describing the feature as bypassing
+                rdma-core on the data path, including completion polling and transmit and receive
+                submission <SourceRef provenance="code-derived" code={code.dpdHelp} />. The provider
+                comparison document in the same repository drops the qualifier and says it
+                implements the work-queue post and completion poll directly in libfabric without
+                the rdma-core interface, full stop. The code wins{' '}
+                <SourceRef
+                  provenance="doc-code-conflict"
+                  code={code.dpdQp}
+                  conflict="prov/efa/docs/efa_fabric_comparison.md lines 281 to 282 state that Data Path Direct implements the WQE post and CQ poll directly in Libfabric without rdma-core API, with no qualifier. The implementation calls efadv_query_qp_wqs and efadv_query_cq, both rdma-core, and the build gate requires them."
+                  label="doc vs code"
+                />
+                .
+              </Alert>
+              <Box variant="p">
+                Two more gates are worth knowing before you assume it is on. The feature turns
+                itself off on first-generation devices, which the provider detects by vendor part
+                identifier <SourceRef provenance="code-derived" code={code.subCq} />, and it declines
+                completion queues that carry a wait object when the installed rdma-core lacks a
+                doorbell field in its completion-queue attributes.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -686,7 +767,8 @@ export function DataPath() {
               <Box variant="h3">Doorbells: uncached</Box>
               <Box variant="p">
                 The send-queue and receive-queue doorbells come from the doorbell BAR (Base Address
-                Register) and are mapped uncached, not write-combined{' '}
+                Register) and are mapped uncached, not write-combined; the memory BAR is the
+                write-combining case in the same switch statement{' '}
                 <SourceRef provenance="code-derived" code={code.mmapProt} />. That is the point:
                 a doorbell must reach the device as a single, immediate, ordered write. Buffering
                 it would defeat it.
@@ -715,14 +797,6 @@ export function DataPath() {
               </Box>
             </div>
           </ColumnLayout>
-          <Alert type="error" header="Correction: doorbells are not write-combined">
-            An earlier version of this page described the doorbell region as a write-combined
-            mapping and the memory BAR as the low-latency queue. Half of that was right. The
-            driver maps the doorbell BAR with the uncached attribute and the memory BAR with the
-            write-combining attribute, and the two are separate cases in the same switch statement{' '}
-            <SourceRef provenance="code-derived" code={code.mmapProt} />. Getting this backwards
-            inverts the reason each mapping exists.
-          </Alert>
           <Box variant="p">
             Isolation between processes is a hardware property, not a software check. Each user
             context is allocated a UARN (User Access Region Number) that the driver records on the
@@ -754,146 +828,18 @@ export function DataPath() {
             registers the buffer from a shared file descriptor instead{' '}
             <SourceRef provenance="code-derived" code={code.dmabuf} />.
           </Box>
-          <Alert type="info" header="GPUDirect RDMA is on by default; it is not the same as GDRCopy">
-            AWS made the installer flag that used to enable it a no-op in 2021, because the
-            driver enables the support by default{' '}
-            <SourceRef provenance="documented" doc={docs.changelog} />. GDRCopy, which the AWS
-            NCCL getting-started guide installs as its own step{' '}
-            <SourceRef provenance="documented" doc={docs.nccl} />, is a different thing: it gives
-            the host processor a low-latency mapping into GPU memory. Missing GDRCopy does not
-            force host staging. Missing peer-to-peer does.
-          </Alert>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Three claims this page used to make. The code says otherwise on all three."
-          >
-            Corrections
-          </Header>
-        }
-      >
-        <SpaceBetween size="s">
           <ExpandableSection
-            headerText="The proof of OS bypass by absence is dead"
-            headerDescription="The out-of-tree driver implements post_send, post_recv and poll_cq, and has since r2.12.0"
+            headerText="RDMA read and write are device operations, and the device says which it has"
+            headerDescription="Capability bits reported over the admin queue, so the answer is per device, not per product"
           >
             <SpaceBetween size="s">
-              <Box variant="p">
-                The old argument ran: the kernel driver deliberately omits the hot-path verbs, so
-                they can only exist in userspace, so the bypass must be real. The premise is no
-                longer true. The out-of-tree driver AWS ships carries a dedicated data-path source
-                file implementing post send, post receive, poll completion queue and request
-                notify{' '}
-                <SourceRef provenance="code-derived" code={code.kverbs} />, and registers all four
-                in the device operations table behind a kernel-verbs build guard{' '}
-                <SourceRef provenance="code-derived" code={code.devOps} />, with a second
-                registration site for older kernels that lack the newer registration helper{' '}
-                <SourceRef provenance="code-derived" code={code.devOpsLegacy} />.
-              </Box>
-              <Box variant="p">
-                That guard is on by default. The build sets the kernel-verbs option to ON in its
-                own cache{' '}
-                <SourceRef provenance="code-derived" code={code.kverbsOn} />, and the DKMS
-                (Dynamic Kernel Module Support) configure script that the EFA installer actually
-                runs does not override it{' '}
-                <SourceRef provenance="code-derived" code={code.dkms} />. So on any host that
-                installed the driver the normal way, those operations are live.
-              </Box>
-              <Alert type="info" header="The divergence is the better fact">
-                The driver inside mainline Linux is a different driver. Its device operations
-                table contains no post send, no post receive, no poll completion queue and no
-                request notify, and there is no data-path source file in that tree at all{' '}
-                <SourceRef provenance="code-derived" code={code.mainlineOps} />. Any sentence
-                about the EFA kernel driver has to say which one it means.
-              </Alert>
-              <Box variant="p">
-                Neither reading weakens OS bypass. These are the in-kernel verbs entry points,
-                reachable only by other kernel modules. A libfabric application still never enters
-                the kernel to send. What changed is the argument, not the behaviour: the honest
-                proof is the mapping, which you can see the driver create, not an absence you have
-                to take on trust.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
-
-          <ExpandableSection
-            headerText="Data Path Direct does not bypass rdma-core"
-            headerDescription="It bypasses rdma-core on the data path, and it cannot build without it"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                Data Path Direct is real and it is the sharper version of the bypass story. When it
-                is active, libfabric builds the work queue entry and parses completion entries
-                itself, in the same descriptor formats the kernel driver uses, instead of calling
-                the userspace verbs library to do it. The fallback is one branch away in the same
-                header, and still calls the verbs library when the feature is off{' '}
-                <SourceRef provenance="code-derived" code={code.dpdFallback} />. It is on by
-                default{' '}
-                <SourceRef provenance="code-derived" code={code.dpdDefault} />.
-              </Box>
-              <Box variant="p">
-                What it does not do is remove rdma-core. Setup goes straight through it: the
-                queue-pair initialiser calls the rdma-core device-specific query that returns the
-                send-queue and receive-queue buffers, doorbells, entry sizes and depths{' '}
-                <SourceRef provenance="code-derived" code={code.dpdQp} />, and the
-                completion-queue initialiser calls the matching query for the completion ring{' '}
-                <SourceRef provenance="code-derived" code={code.dpdCq} />. rdma-core still owns
-                and unmaps those buffers{' '}
-                <SourceRef provenance="code-derived" code={code.dpdOwner} />. The build gate makes
-                the dependency explicit: the feature is compiled in only when rdma-core provides
-                both of those queries{' '}
-                <SourceRef provenance="code-derived" code={code.dpdGate} />.
-              </Box>
-              <Alert type="error" header="A document in the same repository overstates this">
-                libfabric says the correct thing in its own parameter help text, which describes
-                the feature as bypassing rdma-core on the data path, including completion polling
-                and transmit and receive submission{' '}
-                <SourceRef provenance="code-derived" code={code.dpdHelp} />. The provider
-                comparison document in the same repository drops the qualifier and says it
-                implements the work-queue post and completion poll directly in libfabric without
-                the rdma-core interface, full stop. The code wins{' '}
-                <SourceRef
-                  provenance="doc-code-conflict"
-                  code={code.dpdQp}
-                  conflict="prov/efa/docs/efa_fabric_comparison.md lines 281 to 282 state that Data Path Direct implements the WQE post and CQ poll directly in Libfabric without rdma-core API, with no qualifier. The implementation calls efadv_query_qp_wqs and efadv_query_cq, both rdma-core, and the build gate requires them."
-                  label="doc vs code"
-                />
-                .
-              </Alert>
-              <Box variant="p">
-                Two more gates are worth knowing before you assume it is on. The feature turns
-                itself off on first-generation devices, which the provider detects by vendor part
-                identifier{' '}
-                <SourceRef provenance="code-derived" code={code.subCq} />, and it declines
-                completion queues that carry a wait object when the installed rdma-core lacks a
-                doorbell field in its completion-queue attributes.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
-
-          <ExpandableSection
-            headerText="RDMA read and write are device operations, not software emulation"
-            headerDescription="The decisive evidence is the device-reported capability bits, not the opcode list"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                The old claim was that SRD hardware implements only Send, and that the libfabric
-                provider emulates read and write by sending a request and waiting for the peer to
-                perform the memory operation. That is wrong, and the source it traces to is a
-                specification file written in 2019 and never revised.
-              </Box>
               <Box variant="p">
                 The descriptor format shared between driver and device defines RDMA read as opcode
                 1 and RDMA write as opcode 2, in the four-bit operation-type field of the transmit
-                descriptor{' '}
-                <SourceRef provenance="code-derived" code={code.ioDefs} />. On its own that proves
-                less than it looks: an enumeration in a header is a software namespace. The
-                decisive evidence is that the device reports these as capabilities of itself. The
-                device attribute descriptor returned over the admin queue carries a capability
+                descriptor <SourceRef provenance="code-derived" code={code.ioDefs} />. On its own
+                that proves less than it looks: an enumeration in a header is a software namespace.
+                The decisive evidence is that the device reports these as capabilities of itself.
+                The device attribute descriptor returned over the admin queue carries a capability
                 word whose bit 0 means RDMA read is supported on transmit queues and whose bit 3
                 means RDMA write is, alongside a maximum RDMA transfer size{' '}
                 <SourceRef provenance="code-derived" code={code.deviceCaps} />, with the driver
@@ -909,10 +855,10 @@ export function DataPath() {
                 p4de.24xlarge are Nitro v3 and still have RDMA read, and c7gn and hpc7g are Nitro
                 v5 and are read only.
               </Alert>
-              <Alert type="error" header="The stale document is in the same repository as the code">
-                This is the clearest case for the rule that code is the authority. The file that
-                produced the false claim sits next to the driver that contradicts it, in an
-                official AWS repository, which is exactly why it read like a primary source{' '}
+              <Alert type="error" header="A file in the same repository still says only Send is supported">
+                That file is a specification document written in 2019 and never revised. It sits
+                next to the driver that contradicts it, inside an official AWS repository, which is
+                exactly why it reads like a primary source. It is not one, and the code wins{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   code={code.deviceCaps}
@@ -923,6 +869,15 @@ export function DataPath() {
               </Alert>
             </SpaceBetween>
           </ExpandableSection>
+          <Alert type="info" header="GPUDirect RDMA is on by default; it is not the same as GDRCopy">
+            AWS made the installer flag that used to enable it a no-op in 2021, because the
+            driver enables the support by default{' '}
+            <SourceRef provenance="documented" doc={docs.changelog} />. GDRCopy, which the AWS
+            NCCL getting-started guide installs as its own step{' '}
+            <SourceRef provenance="documented" doc={docs.nccl} />, is a different thing: it gives
+            the host processor a low-latency mapping into GPU memory. Missing GDRCopy does not
+            force host staging. Missing peer-to-peer does.
+          </Alert>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

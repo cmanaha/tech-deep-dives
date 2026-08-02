@@ -15,19 +15,9 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  *
  * Sourcing rule for this file (revamp/source-authority-standard.md): every
  * load-bearing claim carries a SourceRef, and every code reference is pinned
- * to a release tag or commit SHA.
- *
- * Corrections applied on 2026-08-02, from research/2026-08-refresh:
- *  - The tuner path is src/tuner/nccl_ofi_tuner.cpp, not tuner/. NCCL's
- *    comparison function is in src/graph/search.cc. There has never been a
- *    src/search.cc.
- *  - NCCL_ALGO / NCCL_PROTO do not disable the tuner on current versions.
- *    That bailout is in the v2 entry point only. The NCCL over EFA section
- *    owns the full version-by-version account; this page defers to it.
- *  - EFA does support GPUDirect Async, through FI_EFA_GDA_OPS on the
- *    efa-direct fabric, and the plugin consumes it.
- *  - SRD is reliable in hardware. RDMA read and write are device operations.
- *    Neither is emulated in software.
+ * to a release tag or commit SHA. The NCCL over EFA section owns the
+ * version-by-version account of the plugin and its tuner; this page states
+ * the consequence and defers to it for the mechanism.
  */
 
 const ACCESSED = '2026-08-02';
@@ -123,20 +113,26 @@ export function AIMLTraining() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="How EFA enables multi-node distributed training at scale">
+          <Header variant="h1" description="Whether the fabric changes your step time is decided by which parallelism strategy you run and what it puts on the wire">
             EFA for AI/ML Training
           </Header>
         }
       >
         <Box variant="p">
-          Distributed training is fundamentally a <strong>communication-bound</strong> problem.
-          As you scale from 1 node to N nodes, the fraction of time spent synchronizing
-          gradients grows. EFA&apos;s role is to minimize this communication overhead so
-          that scaling efficiency stays close to linear.
+          Distributed training is fundamentally a <strong>communication-bound</strong> problem. As
+          you scale from 1 node to N nodes, the fraction of time spent synchronizing gradients
+          grows. EFA&apos;s role is to minimize this communication overhead so that scaling
+          efficiency stays close to linear.
         </Box>
       </Container>
 
-      <Container header={<Header variant="h2">Parallelism Strategies & EFA Impact</Header>}>
+      <Container
+        header={
+          <Header variant="h2" description="Each strategy puts a different pattern on the wire, and the pattern decides whether the fabric is the thing holding you back">
+            Parallelism Strategies & EFA Impact
+          </Header>
+        }
+      >
         <ColumnLayout columns={2} variant="text-grid">
           <div>
             <Box variant="h3">Data Parallelism (DDP (Distributed Data Parallel) / FSDP (Fully Sharded Data Parallel))</Box>
@@ -182,18 +178,15 @@ export function AIMLTraining() {
               sends different amounts of data to different nodes based on routing decisions.
             </Box>
             <Box variant="p">
-              SRD&apos;s multi-path routing handles asymmetric traffic well. An earlier version of
-              this page said two more things here and both have been removed. The first was a
-              message-size comparison against InfiniBand ConnectX-7 that traced to no benchmark we
-              could cite. The second was wrong: EFA does support GPUDirect Async. The libfabric EFA
-              provider exposes it as FI_EFA_GDA_OPS on the efa-direct fabric{' '}
-              <SourceRef provenance="code-derived" code={code.gdaOps} />, and the aws-ofi-nccl
-              plugin consumes it through a GIN (GPU-Initiated Networking) subsystem with a GDAKI
-              variant <SourceRef provenance="code-derived" code={code.ginGdaki} />. It is opt-in at
-              build time and at run time. The NCCL over EFA section has the full sequence.
+              SRD&apos;s multi-path routing handles asymmetric traffic well. EFA supports GPUDirect
+              Async: the libfabric EFA provider exposes it as FI_EFA_GDA_OPS on the efa-direct fabric{' '}
+              <SourceRef provenance="code-derived" code={code.gdaOps} />, and the aws-ofi-nccl plugin
+              consumes it through a GIN (GPU-Initiated Networking) subsystem with a GDAKI variant{' '}
+              <SourceRef provenance="code-derived" code={code.ginGdaki} />. It is opt-in at build time
+              and at run time. The NCCL over EFA section has the full sequence.
             </Box>
             <StatusIndicator type="info">
-              EFA beneficial. No sourced MoE dispatch gap to report.
+              EFA beneficial: all-to-all volume is set by the routing, not by the model size
             </StatusIndicator>
           </div>
           <div>
@@ -218,7 +211,70 @@ export function AIMLTraining() {
         </ColumnLayout>
       </Container>
 
-      <Container header={<Header variant="h2">The NCCL + EFA Stack</Header>}>
+      <Container
+        header={
+          <Header variant="h2" description="Trainium reaches EFA without NCCL at all, and puts collectives on cores that are not doing your compute">
+            Neuron + EFA (Trainium/Inferentia)
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            AWS Trainium and Inferentia2 chips use the <strong>Neuron SDK</strong> instead of
+            CUDA/NCCL. The Neuron Collective Communication Library (Neuron CCL) talks to EFA directly
+            via libfabric (no NCCL plugin needed).
+          </Box>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Trn1/Trn1n</Box>
+              <Box variant="p">
+                Up to 16 Trainium chips per instance. Trn1n has 16 EFA interfaces at 1,600 Gbps against
+                Trn1&apos;s 8 at 800 Gbps <SourceRef provenance="documented" doc={docs.efa} />. The{' '}
+                &quot;n&quot; suffix is twice the networking. For multi-node training, prefer Trn1n.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Trn2</Box>
+              <Box variant="p">
+                16 Trainium2 chips interconnected with NeuronLink, and 16 EFA interfaces at 200 Gbps
+                each for 3.2 Tbps of EFAv3 networking. AWS states 30 to 40% better price performance
+                than the GPU-based P5e and P5en instances. A Trn2 UltraServer connects 64 Trainium2
+                chips across four Trn2 instances for 12.8 Tbps of EFAv3 networking{' '}
+                <SourceRef provenance="documented" doc={docs.trn2} />. Instance rates are in the
+                Pricing section, not here.
+              </Box>
+            </div>
+          </ColumnLayout>
+
+          <ExpandableSection headerText="Neuron architecture advantage: dedicated CC Engine">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                Trainium puts collectives on <strong>dedicated collective cores</strong>. AWS
+                describes them as dozens of communication cores physically separate from compute,
+                with zero contention between compute and communication and on-chip traffic
+                prioritization so time-sensitive data moves first, which minimizes the straggler
+                effect <SourceRef provenance="documented" doc={docs.trainium} />. That is a
+                structural difference from the CUDA and NCCL path, where a collective occupies GPU
+                streaming multiprocessors. AWS publishes no figure for the resulting speedup, and it
+                is workload-dependent.
+              </Box>
+              <Box variant="p">
+                <strong>Hierarchical communication:</strong> Neuron automatically applies local
+                reductions within a node first (NeuronLink), then inter-node coordination among
+                designated processes over EFA, then broadcasts results. This minimizes EFA traffic.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header variant="h2" description="Four layers, and the shortest correct configuration of them is almost empty">
+            The NCCL + EFA Stack
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             NVIDIA NCCL (Collective Communications Library) is the standard for GPU-to-GPU
@@ -227,39 +283,24 @@ export function AIMLTraining() {
           <ExpandableSection headerText="How the stack works">
             <SpaceBetween size="s">
               <Box variant="p">
-                <strong>1. PyTorch/framework layer:</strong> Calls NCCL for collective operations
-                (allreduce, allgather, reduce-scatter)
+                <strong>1. PyTorch/framework layer:</strong> Calls NCCL for collective operations (allreduce, allgather, reduce-scatter)
               </Box>
               <Box variant="p">
                 <strong>2. NCCL:</strong> Implements collective algorithms (ring, tree, recursive halving-doubling).
                 Determines which GPU talks to which GPU and in what order.
               </Box>
               <Box variant="p">
-                <strong>3. aws-ofi-nccl plugin:</strong> Translates NCCL&apos;s transport operations
-                (send/recv on channels) into libfabric operations. Handles memory registration,
-                GDR (GPUDirect RDMA) when available.
+                <strong>3. aws-ofi-nccl plugin:</strong> Translates NCCL&apos;s transport operations (send/recv
+                on channels) into libfabric operations. Handles memory registration, GDR (GPUDirect RDMA) when available.
               </Box>
               <Box variant="p">
-                <strong>4. libfabric EFA provider:</strong> Maps libfabric operations to
-                EFA hardware commands. Manages queue pairs, completion queues.
+                <strong>4. libfabric EFA provider:</strong> Maps libfabric operations to EFA hardware commands. Manages queue pairs, completion queues.
               </Box>
               <Box variant="p">
-                <strong>5. EFA hardware + SRD:</strong> Moves data between nodes. Multi-path
-                routing, packet spraying, hardware-based reliability.
+                <strong>5. EFA hardware + SRD:</strong> Moves data between nodes. Multi-path routing, packet spraying, hardware-based reliability.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
-
-          <Alert type="warning" header="Common gotcha: NCCL_TOPO_FILE is a legacy path">
-            Advice to point <code>NCCL_TOPO_FILE</code> at a file for your instance type is stale on
-            anything newer than P4d. The plugin ships exactly three topology XML files at v1.20.0,
-            for p4d, p4de and g5.48xlarge{' '}
-            <SourceRef provenance="code-derived" code={code.topoP4d} />
-            <SourceRef provenance="code-derived" code={code.topoG5} />. On P5 and later there is no
-            file to point at: the plugin discovers the topology and reorders the NIC-to-GPU rail
-            assignment itself <SourceRef provenance="code-derived" code={code.sortRails} />. Leave
-            the variable unset there.
-          </Alert>
 
           <ExpandableSection headerText="NCCL environment variables for EFA: set almost nothing">
             <SpaceBetween size="s">
@@ -278,7 +319,7 @@ export function AIMLTraining() {
                 What is worth setting is the debug pair. The two lines below make the plugin report
                 what it loaded and let libfabric say what it selected.
               </Box>
-              <pre>
+              <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>
 {`NCCL_DEBUG=INFO     # plugin init banner, provider, device count, rail groups
 FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               </pre>
@@ -305,9 +346,7 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 and skips the medium-message path. The mechanism is a threshold, not a pointer
                 check: the provider sets the maximum medium message size to zero for CUDA, ROCR and
                 Neuron memory and warns that only eager and runting read protocols are supported{' '}
-                <SourceRef provenance="code-derived" code={code.hmemThresholds} />. An earlier
-                version of this page named a function that does not exist and gave a rationale that
-                appears nowhere in the source. Both are gone.
+                <SourceRef provenance="code-derived" code={code.hmemThresholds} />.
               </Box>
               <Box variant="p">
                 <strong>NCCL operation mapping to libfabric verbs:</strong>
@@ -354,10 +393,9 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 <strong>Algorithm selection:</strong> the <code>aws-ofi-nccl</code> tuner does not
                 set <code>NCCL_ALGO</code> or <code>NCCL_PROTO</code>. It writes into{' '}
                 <code>collCostTable</code>, the algorithm by protocol cost matrix, making preferred
-                combinations cheaper. Two things this page used to say about that are corrected in
-                the NCCL over EFA section, which owns the detail. First, <code>cmpScore</code> is
-                not algorithm selection: it is the comparison function for a sort over candidate
-                GPUs during ring and tree search, and it lives in{' '}
+                combinations cheaper. Two claims circulate about that path and neither survives the
+                code. First, <code>cmpScore</code> is not algorithm selection: it is the comparison
+                function for a sort over candidate GPUs during ring and tree search, and it lives in{' '}
                 <code>src/graph/search.cc</code>, never in <code>src/search.cc</code>{' '}
                 <SourceRef provenance="code-derived" code={code.ncclCmpScore} />. Second, setting{' '}
                 <code>NCCL_ALGO</code> or <code>NCCL_PROTO</code> does not disable the tuner on
@@ -377,18 +415,16 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               <Alert type="warning">
                 <strong>GDRCopy is a documented install step, and it is not GPUDirect RDMA:</strong>{' '}
                 the AWS NCCL getting-started guide has a step for installing GDRCopy{' '}
-                <SourceRef provenance="documented" doc={docs.efaNccl} />. It is a different
-                mechanism from GPUDirect RDMA, which the EFA kernel driver enables on its own. Host
-                staging happens when NIC-to-GPU peer-to-peer is unavailable, not because GDRCopy is
-                absent. An earlier version of this page equated the two and stated a minimum GDRCopy
-                version that no AWS source gives. Both are removed.
+                <SourceRef provenance="documented" doc={docs.efaNccl} />. It is a different mechanism
+                from GPUDirect RDMA, which the EFA kernel driver enables on its own. Host staging
+                happens when NIC-to-GPU peer-to-peer is unavailable, not because GDRCopy is absent.
+                AWS gives no minimum GDRCopy version, so this page quotes none.
               </Alert>
               <Alert type="error">
                 <strong>NVIDIA Fabric Manager required on P4d/P5:</strong> The{' '}
-                <code>nvidia-fabricmanager</code> systemd service must be running to manage
-                NVSwitch. Its version must <strong>exactly match</strong> the NVIDIA kernel
-                module version. A mismatch renders all 8 GPUs non-functional for
-                inter-GPU operations.
+                <code>nvidia-fabricmanager</code> systemd service must be running to manage NVSwitch.
+                Its version must <strong>exactly match</strong> the NVIDIA kernel module version. A
+                mismatch renders all 8 GPUs non-functional for inter-GPU operations.
               </Alert>
               <Alert type="warning">
                 <strong>Disk space:</strong> CUDA toolkit requires 10-20 GiB beyond base AMI (Amazon Machine Image).
@@ -396,68 +432,31 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               </Alert>
               <Alert type="info">
                 <strong>nouveau driver:</strong> Must be blacklisted before installing NVIDIA
-                proprietary drivers. Add <code>blacklist nouveau</code> to
-                <code>/etc/modprobe.d/</code> and regenerate initramfs.
+                proprietary drivers. Add <code>blacklist nouveau</code> to <code>/etc/modprobe.d/</code> and regenerate initramfs.
               </Alert>
             </SpaceBetween>
           </ExpandableSection>
+
+          <Alert type="warning" header="Common gotcha: NCCL_TOPO_FILE is a legacy path">
+            Advice to point <code>NCCL_TOPO_FILE</code> at a file for your instance type is stale on
+            anything newer than P4d. The plugin ships exactly three topology XML files at v1.20.0,
+            for p4d, p4de and g5.48xlarge{' '}
+            <SourceRef provenance="code-derived" code={code.topoP4d} />
+            <SourceRef provenance="code-derived" code={code.topoG5} />. On P5 and later there is no
+            file to point at: the plugin discovers the topology and reorders the NIC-to-GPU rail
+            assignment itself <SourceRef provenance="code-derived" code={code.sortRails} />. Leave
+            the variable unset there.
+          </Alert>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Neuron + EFA (Trainium/Inferentia)</Header>}>
-        <SpaceBetween size="m">
-          <Box variant="p">
-            AWS Trainium and Inferentia2 chips use the <strong>Neuron SDK</strong> instead of
-            CUDA/NCCL. The Neuron Collective Communication Library (Neuron CCL) talks to EFA
-            directly via libfabric (no NCCL plugin needed).
-          </Box>
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">Trn1/Trn1n</Box>
-              <Box variant="p">
-                Up to 16 Trainium chips per instance. Trn1n has 16 EFA interfaces at 1,600 Gbps
-                against Trn1&apos;s 8 at 800 Gbps{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />. The &quot;n&quot; suffix is
-                twice the networking. For multi-node training, prefer Trn1n.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">Trn2</Box>
-              <Box variant="p">
-                16 Trainium2 chips interconnected with NeuronLink, and 16 EFA interfaces at 200 Gbps
-                each for 3.2 Tbps of EFAv3 networking. AWS states 30 to 40% better price performance
-                than the GPU-based P5e and P5en instances. A Trn2 UltraServer connects 64 Trainium2
-                chips across four Trn2 instances for 12.8 Tbps of EFAv3 networking{' '}
-                <SourceRef provenance="documented" doc={docs.trn2} />. Instance rates are in the
-                Pricing section, not here.
-              </Box>
-            </div>
-          </ColumnLayout>
-
-          <ExpandableSection headerText="Neuron architecture advantage: dedicated CC Engine">
-            <SpaceBetween size="s">
-              <Box variant="p">
-                Trainium puts collectives on <strong>dedicated collective cores</strong>. AWS
-                describes them as dozens of communication cores physically separate from compute,
-                with zero contention between compute and communication and on-chip traffic
-                prioritization so time-sensitive data moves first, which minimizes the straggler
-                effect <SourceRef provenance="documented" doc={docs.trainium} />. That is a
-                structural difference from the CUDA and NCCL path, where a collective occupies GPU
-                streaming multiprocessors. The size of the resulting speedup is workload-dependent
-                and we have no AWS figure to quote for it.
-              </Box>
-              <Box variant="p">
-                <strong>Hierarchical communication:</strong> Neuron automatically applies
-                local reductions within a node first (NeuronLink), then inter-node
-                coordination among designated processes over EFA, then broadcasts results.
-                This minimizes expensive EFA traffic.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
-        </SpaceBetween>
-      </Container>
-
-      <Container header={<Header variant="h2">Scaling Efficiency: The Metric That Matters</Header>}>
+      <Container
+        header={
+          <Header variant="h2" description="How much of the speedup you are paying for you actually get, and why no published number will tell you">
+            Scaling Efficiency: The Metric That Matters
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             The metric that matters is <strong>scaling efficiency</strong>: how much of the
@@ -470,12 +469,12 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
             that the nodes you are already paying for stop idling.
           </Box>
           <Alert type="info" header="No efficiency percentage is published here">
-            An earlier version of this page gave a scaling efficiency band for EFA on P5 and a lower
-            band for TCP at the same scale. Neither traces to a benchmark we can cite, so both are
-            removed. Efficiency depends on model, parallelism strategy, batch size, node count and
-            the collective algorithm chosen, so a single band would be misleading even if it were
-            sourced. Measure it on your own job. The sourced performance numbers on this site are in
-            the Traditional HPC section, each tied to a named benchmark and instance type.
+            No scaling efficiency band for EFA on P5, and none for TCP at the same scale, traces to
+            a benchmark that can be cited, so this page quotes neither. Efficiency depends on model,
+            parallelism strategy, batch size, node count and the collective algorithm chosen, so a
+            single band would be misleading even if it were sourced. Measure it on your own job. The
+            sourced performance numbers on this site are in the Traditional HPC section, each tied
+            to a named benchmark and instance type.
           </Alert>
         </SpaceBetween>
       </Container>

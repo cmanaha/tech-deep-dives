@@ -5,6 +5,7 @@
     "pinned-refs": true,
     "pinned-refs-research": true,
     "required-files": true,
-    "verify-citations": true
+    "verify-citations": true,
+    "pre-overflow": true
   }
 }

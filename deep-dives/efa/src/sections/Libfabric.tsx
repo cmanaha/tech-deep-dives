@@ -13,15 +13,12 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 
 /**
  * libfabric and the EFA provider: the only supported way an application
- * reaches the EFA device, and the handful of settings that change what it
- * does.
+ * reaches the EFA device, and the settings that change what it does.
  *
- * Sourcing rule (deep-dives/efa/revamp/source-authority-standard.md): AWS
- * statements are 'documented'. Anything read out of libfabric or the NCCL
- * plugin is 'code-derived' and pinned to a release tag, because upstream
- * libfabric is not an AWS document even though it is first-party for the EFA
- * provider. Where two files in the same repository disagree, the claim is
- * marked 'doc-code-conflict' and both sides are named.
+ * Sourcing (revamp/source-authority-standard.md): AWS statements are
+ * 'documented'; anything read out of libfabric or the NCCL plugin is
+ * 'code-derived' and pinned to a release tag. Where two files in the same
+ * repository disagree the claim is 'doc-code-conflict', with both sides named.
  */
 
 const ACCESSED = '2026-08-01';
@@ -576,8 +573,8 @@ fi_info -g FI_EFA`}</pre>
           <Alert type="info" header="Read the defaults off the binary you have, not off a table">
             Command 4 prints the help text compiled into the provider you installed. Because AWS
             ships a fork of libfabric rather than upstream tags, that output is the only defaults
-            list that is guaranteed to describe your host. The caveat below on the recvwin default
-            is a reminder that even it can be wrong.
+            list guaranteed to describe your host. It is still a help string, and for two settings
+            the help string is not the value the provider compiles in.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -818,97 +815,7 @@ fi_info -g FI_EFA`}</pre>
         header={
           <Header
             variant="h2"
-            description="A short list worth knowing, and a shorter list the plugin documentation tells you to leave alone."
-          >
-            The settings that matter
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Table
-            variant="embedded"
-            columnDefinitions={[
-              {
-                id: 'name',
-                header: 'Setting',
-                cell: (item) => (
-                  <SpaceBetween size="xxxs">
-                    <strong>{item.name}</strong>
-                    {statusBadge(item.status)}
-                  </SpaceBetween>
-                ),
-              },
-              { id: 'effect', header: 'What it changes', cell: (item) => item.effect },
-              { id: 'advice', header: 'Guidance', cell: (item) => item.advice },
-            ]}
-            items={tunables}
-          />
-          <Box variant="small" color="text-body-secondary">
-            The plugin-side guidance rows come from the plugin's own EFA cheatsheet{' '}
-            <SourceRef provenance="code-derived" code={code.envCheatsheet} />. The provider-side
-            effects and defaults are the parameter definitions in the provider{' '}
-            <SourceRef provenance="code-derived" code={code.envDefine} /> and the core cache
-            parameters{' '}
-            <SourceRef provenance="code-derived" code={code.cacheParams} />.
-          </Box>
-
-          <Alert type="warning" header="Three FI_EFA variables abort the process on sight">
-            The provider keeps a list of deprecated names and calls abort if any of them is present
-            in the environment: FI_EFA_MTU_SIZE, FI_EFA_TX_IOV_LIMIT and FI_EFA_RX_IOV_LIMIT{' '}
-            <SourceRef provenance="code-derived" code={code.envAbort} />. A second list, including
-            FI_EFA_SET_CUDA_SYNC_MEMOPS and FI_EFA_ZCPY_RX_SEED, only logs{' '}
-            <SourceRef provenance="code-derived" code={code.envAbort} />. Copying an old environment
-            file forward is therefore not a harmless act. It is one of the few ways to make an EFA
-            job fail before it opens a single endpoint.
-          </Alert>
-
-          <ExpandableSection
-            headerText="Caution: the provider's own help text contradicts its own defaults"
-            headerDescription="Two settings where the printed default and the compiled default disagree"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                The receive-window setting is described in the help string as the size of the
-                sliding receive window with a default of 16384{' '}
-                <SourceRef provenance="code-derived" code={code.envDefine} />. The initialiser in
-                the same file sets it from a named constant{' '}
-                <SourceRef provenance="code-derived" code={code.envDefaults} />, and that constant
-                is defined as 16{' '}
-                <SourceRef
-                  provenance="doc-code-conflict"
-                  code={code.reorderConst}
-                  conflict="The FI_EFA_RECVWIN_SIZE help text compiled into the provider says the default is 16384. The initialiser reads a constant whose value is 16."
-                  label="doc vs code"
-                />
-                . Those cannot both be true, and the help text is what fi_info prints at you.
-              </Box>
-              <Box variant="p">
-                The same file has a second instance. The shared-memory address vector size is
-                initialised to 256 while its help string says the default is 128{' '}
-                <SourceRef
-                  provenance="doc-code-conflict"
-                  code={code.envDefaults}
-                  conflict="The FI_EFA_SHM_AV_SIZE help text says the default is 128. The initialiser in the same file sets 256."
-                  label="doc vs code"
-                />
-                .
-              </Box>
-              <Box variant="p">
-                Neither is a serious bug on its own. Both matter for how you work: a default printed
-                by fi_info is a documentation string, not a reading of the running value. When a
-                default is load-bearing for a decision, read the initialiser at the version you have
-                installed.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Supported, on one fabric, and consumed by the NCCL plugin. An earlier version of this page said otherwise."
+            description="The GPU builds and posts its own work requests, on one fabric only, behind two opt-ins."
           >
             GPUDirect Async
           </Header>
@@ -945,30 +852,24 @@ fi_info -g FI_EFA`}</pre>
             <SourceRef provenance="code-derived" code={code.manGda} />.
           </Box>
 
-          <Alert type="info" header="Correction: this dive previously said GDA was not wired into the NCCL plugin">
+          <Alert type="info" header="The NCCL plugin consumes it, behind an environment variable and a build flag">
             <SpaceBetween size="xs">
               <Box variant="p">
-                That claim came from a repository search that missed a subdirectory, and it is
-                refuted. aws-ofi-nccl v1.20.0 carries a GPU-initiated networking subsystem that
-                opens FI_EFA_GDA_OPS on the domain the proxy plugin already selected, then calls
+                aws-ofi-nccl v1.20.0 carries a GPU-initiated networking subsystem that opens
+                FI_EFA_GDA_OPS on the domain the proxy plugin already selected, then calls
                 query_qp_wqs and query_cq to populate GPU-resident queue pair and completion queue
                 descriptors{' '}
                 <SourceRef provenance="code-derived" code={code.ginOpen} />. Its own step comments
-                spell out the dependency on the efa-direct fabric and on libfabric 2.4 and newer{' '}
+                name the dependency on the efa-direct fabric and on libfabric 2.4 and newer{' '}
                 <SourceRef provenance="code-derived" code={code.ginOpen} />.
               </Box>
               <Box variant="p">
                 It is opt-in twice over. The plugin switches to the GDAKI implementation only when
-                OFI_NCCL_GIN_TYPE is set to GDAKI, logging that GDAKI mode is enabled, and if the
-                binary was built without that support it fails initialisation rather than falling
-                back silently, on the stated grounds that GDAKI was an explicit opt-in{' '}
-                <SourceRef provenance="code-derived" code={code.ginSwitch} />.
-              </Box>
-              <Box variant="p">
-                So the accurate statement is narrow and positive: GPUDirect Async is supported on
-                EFA, through efa-direct, and the NCCL plugin can consume it behind an environment
-                variable and a build flag. It is not on by default and it is not available on the
-                efa fabric.
+                OFI_NCCL_GIN_TYPE is set to GDAKI, logging that GDAKI mode is enabled, and a binary
+                built without that support fails initialisation rather than falling back silently,
+                on the stated grounds that GDAKI was an explicit opt-in{' '}
+                <SourceRef provenance="code-derived" code={code.ginSwitch} />. So it is not on by
+                default, and it is not available on the efa fabric at all.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -979,7 +880,7 @@ fi_info -g FI_EFA`}</pre>
         header={
           <Header
             variant="h2"
-            description="Two version numbers, two namespaces. Both trip up anyone reading older material, including older versions of this page."
+            description="Two version numbers that cannot be compared, and a rename that dates every guide you will read."
           >
             Version skew and the symbol rename
           </Header>
@@ -1027,17 +928,15 @@ fi_info -g FI_EFA`}</pre>
             <SourceRef provenance="code-derived" code={code.selectRtm} />.
           </Box>
           <Box variant="p">
-            This matters because it dates any piece of writing instantly. Symbols such as
-            rxr_pkt_post_ctrl appear in a great deal of EFA material, including an earlier version
-            of this dive, and none of them exist in libfabric today. A citation to one of those
-            names is a citation to a tree nobody is running. The same applies to efa_rdm_ep.c, which
-            was split into a header plus two implementation files.
+            That rename dates any piece of writing instantly. Symbols such as rxr_pkt_post_ctrl
+            appear in a great deal of EFA material and none of them exist in libfabric today. A
+            citation to one of those names is a citation to a tree nobody is running. The same
+            applies to efa_rdm_ep.c, which was split into a header plus two implementation files.
           </Box>
           <Box variant="p">
-            The practical rule that follows: when you read an EFA tuning guide, grep the pinned
-            source for the first symbol it names. If the symbol is gone, the rest of the guidance is
-            from the same era and deserves the same suspicion. That check takes ten seconds and it
-            is how several of the corrections on this page were found.
+            So when you read an EFA tuning guide, grep the pinned source for the first symbol it
+            names. If the symbol is gone, the rest of the guidance is from the same era and deserves
+            the same suspicion. The check takes ten seconds.
           </Box>
 
           <ExpandableSection
@@ -1076,6 +975,95 @@ fi_info -g FI_EFA`}</pre>
               </Box>
             </SpaceBetween>
           </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="A short list worth knowing, and a shorter list the plugin documentation tells you to leave alone."
+          >
+            The settings that matter
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Table
+            variant="embedded"
+            columnDefinitions={[
+              {
+                id: 'name',
+                header: 'Setting',
+                cell: (item) => (
+                  <SpaceBetween size="xxxs">
+                    <strong>{item.name}</strong>
+                    {statusBadge(item.status)}
+                  </SpaceBetween>
+                ),
+              },
+              { id: 'effect', header: 'What it changes', cell: (item) => item.effect },
+              { id: 'advice', header: 'Guidance', cell: (item) => item.advice },
+            ]}
+            items={tunables}
+          />
+          <Box variant="small" color="text-body-secondary">
+            The plugin-side guidance rows come from the plugin's own EFA cheatsheet{' '}
+            <SourceRef provenance="code-derived" code={code.envCheatsheet} />. The provider-side
+            effects and defaults are the parameter definitions in the provider{' '}
+            <SourceRef provenance="code-derived" code={code.envDefine} /> and the core cache
+            parameters{' '}
+            <SourceRef provenance="code-derived" code={code.cacheParams} />.
+          </Box>
+
+          <ExpandableSection
+            headerText="fi_info printed a default. For two settings it is not the one in force."
+            headerDescription="Which number to believe when the help text and the initialiser disagree"
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                The receive-window setting describes itself in the help string as the size of the
+                sliding receive window with a default of 16384{' '}
+                <SourceRef provenance="code-derived" code={code.envDefine} />. The initialiser in
+                the same file sets it from a named constant{' '}
+                <SourceRef provenance="code-derived" code={code.envDefaults} />, and that constant
+                is defined as 16{' '}
+                <SourceRef
+                  provenance="doc-code-conflict"
+                  code={code.reorderConst}
+                  conflict="The FI_EFA_RECVWIN_SIZE help text compiled into the provider says the default is 16384. The initialiser reads a constant whose value is 16."
+                  label="doc vs code"
+                />
+                . Code wins. Treat the receive window as 16.
+              </Box>
+              <Box variant="p">
+                Same file, second case: the shared-memory address vector size is initialised to 256
+                while its help string says the default is 128{' '}
+                <SourceRef
+                  provenance="doc-code-conflict"
+                  code={code.envDefaults}
+                  conflict="The FI_EFA_SHM_AV_SIZE help text says the default is 128. The initialiser in the same file sets 256."
+                  label="doc vs code"
+                />
+                . Code wins again. Treat it as 256.
+              </Box>
+              <Box variant="p">
+                The rule behind both: a default printed by fi_info is a documentation string, not a
+                reading of the running value. When a default is load-bearing for a decision, read
+                the initialiser at the version you have installed.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+
+          <Alert type="warning" header="Three FI_EFA variables abort the process on sight">
+            The provider keeps a list of deprecated names and calls abort if any of them is present
+            in the environment: FI_EFA_MTU_SIZE, FI_EFA_TX_IOV_LIMIT and FI_EFA_RX_IOV_LIMIT{' '}
+            <SourceRef provenance="code-derived" code={code.envAbort} />. A second list, including
+            FI_EFA_SET_CUDA_SYNC_MEMOPS and FI_EFA_ZCPY_RX_SEED, only logs{' '}
+            <SourceRef provenance="code-derived" code={code.envAbort} />. Copying an old environment
+            file forward is therefore not a harmless act. It is one of the few ways to make an EFA
+            job fail before it opens a single endpoint.
+          </Alert>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

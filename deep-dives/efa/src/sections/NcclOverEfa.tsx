@@ -14,10 +14,6 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 /**
  * NCCL over EFA: the aws-ofi-nccl plugin.
  *
- * This section replaces the NCCL material that used to live in the
- * Architecture and AI/ML Training sections. Several claims in that material
- * were wrong and are corrected here, each with the code that settles it.
- *
  * Sourcing rule for this file (deep-dives/efa/revamp/source-authority-standard.md):
  * every load-bearing claim carries a SourceRef. 'documented' means AWS states
  * it in its own documentation. 'code-derived' means it was read out of an
@@ -627,21 +623,21 @@ export function NcclOverEfa() {
             mechanism <SourceRef provenance="documented" doc={docs.efaNccl} />, so the rest of this
             section is read out of the plugin at release tag v1.20.0.
           </Box>
-          <Alert type="info" header="What this section corrects">
-            The earlier version of this material said that setting NCCL_ALGO or NCCL_PROTO disables
-            the tuner, that the tuner filter runs after the tuner, that the plugin ships topology
-            files for two instance types, and that GPUDirect Async is not wired into the plugin.
-            None of those hold at v1.20.0. Each correction below carries the code that settles it.
-          </Alert>
+          <Box variant="p">
+            The short version, if all you want is the settings: run with NCCL_DEBUG=INFO and
+            FI_LOG_LEVEL=info, and leave the rest of the standard EFA environment block unset. The
+            plugin&apos;s own cheatsheet scopes FI_PROVIDER=efa and FI_EFA_USE_DEVICE_RDMA=1 to
+            software from 2023, and says to leave NCCL_BUFFSIZE and NCCL_MIN_CHANNELS alone{' '}
+            <SourceRef provenance="code-derived" code={code.envCheatsheet} />. The one bailout that
+            makes NCCL_ALGO or NCCL_PROTO switch the tuner off is in the v2 entry point, which only
+            NCCL 2.21.x binds to <SourceRef provenance="code-derived" code={code.tunerV2} />.
+          </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header
-            variant="h2"
-            description="One shared library, two exported plugin interfaces, and a hard boundary at libfabric."
-          >
+          <Header variant="h2" description="Every variable you are about to set belongs to exactly one of these layers, and that is why advice copied from one rarely works at another">
             What the plugin is and where it sits
           </Header>
         }
@@ -698,10 +694,67 @@ export function NcclOverEfa() {
 
       <Container
         header={
-          <Header
-            variant="h2"
-            description="Two decisions the plugin makes before a single collective runs: which provider, and which platform."
+          <Header variant="h2" description="Most tuning advice circulating for EFA is stale. The plugin's own cheatsheet says so, variable by variable.">
+            Environment variables: which layer, and which era
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <KnobLayersDiagram />
+
+          <Box variant="p">
+            The single most useful document here is the plugin's own EFA cheatsheet, which is
+            scoped by version rather than written as timeless advice{' '}
+            <SourceRef provenance="code-derived" code={code.envCheatsheet} />. Read against it, the
+            standard EFA environment block that circulates in tutorials is almost entirely obsolete.
+            The libfabric side of these variables is covered in the libfabric section; what follows
+            is the NCCL and plugin side.
+          </Box>
+
+          <Table
+            variant="embedded"
+            header={<Header variant="h3">The standard block, line by line</Header>}
+            columnDefinitions={[
+              { id: 'advice', header: 'Commonly recommended', cell: (item) => <code>{item.advice}</code> },
+              {
+                id: 'verdict',
+                header: 'Verdict',
+                cell: (item) => (
+                  <Badge color={item.verdict === 'Do not set' ? 'red' : 'blue'}>{item.verdict}</Badge>
+                ),
+              },
+              { id: 'why', header: 'Why', cell: (item) => item.why },
+            ]}
+            items={staleRows}
+          />
+
+          <ExpandableSection
+            headerText="NCCL_BUFFSIZE: the default is not NCCL's default"
+            headerDescription="The cheatsheet and the platform table disagree about what leaving it unset gets you"
           >
+            <Box variant="p">
+              The cheatsheet's advice on NCCL_BUFFSIZE is to leave it out and use the default, which
+              reads as leaving NCCL's own value in place{' '}
+              <SourceRef
+                provenance="doc-code-conflict"
+                code={code.platformTable}
+                conflict="doc/efa-env-var.md says of NCCL_BUFFSIZE: 'Recommend to leave it out to use the default.' The platform table in platform-aws.cpp injects NCCL_BUFFSIZE=8388608 on p4d, p4de, p5, p5e, p5en, p6-b200, the p-series catch-all, and g7e."
+              />
+              . NCCL's default is 4 MiB{' '}
+              <SourceRef provenance="code-derived" code={code.ncclBuffsize} />. On every EFA GPU
+              platform in the table the plugin injects 8388608, which is 8 MiB, so the effective
+              default is twice what NCCL would have chosen and it tracks the platform. Code wins:
+              treat 8 MiB as the default you already have. Setting it by hand does not change the
+              value, it changes who owns it, and the plugin logs that it skipped its own{' '}
+              <SourceRef provenance="code-derived" code={code.envSkipLog} />.
+            </Box>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header variant="h2" description="Two decisions the plugin makes before a single collective runs: which provider, and which platform.">
             Provider selection and platform detection
           </Header>
         }
@@ -798,17 +851,14 @@ export function NcclOverEfa() {
 
       <Container
         header={
-          <Header
-            variant="h2"
-            description="Three static XML files, a runtime-generated one, and a sort function. They solve different problems."
-          >
+          <Header variant="h2" description="Three static XML files, a runtime-generated one, and a sort function. They solve different problems.">
             Topology XML files versus sort_rails
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The plugin ships three static NCCL topology XML files, not two: p4d-24xl-topo.xml,
+            The plugin ships three static NCCL topology XML files: p4d-24xl-topo.xml,
             p4de-24xl-topo.xml and g5.48xl-topo.xml. They are the only entries in the platform table
             with a non-null topology field; every other platform, including all of p5, p5en, p6 and
             the Trainium family, has null there{' '}
@@ -891,10 +941,7 @@ export function NcclOverEfa() {
 
       <Container
         header={
-          <Header
-            variant="h2"
-            description="The tuner writes into a cost matrix. It does not set NCCL_ALGO, and NCCL_ALGO does not switch it off."
-          >
+          <Header variant="h2" description="The tuner writes into a cost matrix. It does not set NCCL_ALGO, and NCCL_ALGO does not switch it off.">
             The tuner: what it actually does
           </Header>
         }
@@ -911,11 +958,82 @@ export function NcclOverEfa() {
             not a measured time.
           </Box>
 
-          <Alert type="error" header="Correction: the filter runs before the tuner, not after">
-            <SpaceBetween size="xs">
+          <Alert type="warning" header="NCCL_ALGO and NCCL_PROTO do not disable the tuner">
+            There is exactly one environment-variable bailout in the plugin's tuner, and it is in
+            the v2 entry point <SourceRef provenance="code-derived" code={code.tunerV2} />. The v3
+            entry point binds to the plain initialiser with no such check{' '}
+            <SourceRef provenance="code-derived" code={code.tunerV3} />, and so does v6{' '}
+            <SourceRef provenance="code-derived" code={code.tunerV6} />. Only a job pinned to NCCL
+            2.21.x hits it.
+          </Alert>
+
+          <Box variant="h3">What does turn the tuner off</Box>
+          <Box variant="p">
+            Three conditions, checked in one predicate that the shared initialiser calls before it
+            does anything else, and none of them is NCCL_ALGO or NCCL_PROTO{' '}
+            <SourceRef provenance="code-derived" code={code.tunerInit} />. The tuner runs only when
+            a platform type was detected, the tuner type was not forced to Internal, and the
+            rail-count override is unset{' '}
+            <SourceRef provenance="code-derived" code={code.shouldUse} />. When it declines, it logs
+            which of the three reasons applied{' '}
+            <SourceRef provenance="code-derived" code={code.fallbackLog} />. The rail-count case has
+            a comment explaining the logic: each AWS platform has a different device-per-GPU ratio,
+            so a user setting the rail count is treated as a signal that the job is running on
+            heterogeneous hardware, where per-process tuner answers could diverge{' '}
+            <SourceRef provenance="code-derived" code={code.fallbackLog} />.
+          </Box>
+          <Box variant="p">
+            The tuner also narrows itself by platform name. It maps the product name to one of five
+            internal platform constants, covering p5 and p5e, p5en, p6-b200 and p6-b300, with
+            everything else falling through to unknown{' '}
+            <SourceRef provenance="code-derived" code={code.tunerPlatform} />. On an instance type
+            outside that list the tuner loads, finds no region or model support, and NCCL's own
+            model decides.
+          </Box>
+
+          <ExpandableSection
+            headerText="Which entry point your NCCL binds to, and why only v2 bails out"
+            headerDescription="The symbol NCCL looks for decides this, so the plugin has no say in it"
+          >
+            <SpaceBetween size="s">
               <Box variant="p">
-                The previous text had the causality backwards. The real order is visible in one
-                function in NCCL. It initialises every cell of the table to NCCL_ALGO_PROTO_IGNORE{' '}
+                NCCL 2.21.5 defines the tuner plugin symbol as ncclTunerPlugin_v2{' '}
+                <SourceRef provenance="code-derived" code={code.ncclSymbol221} />, NCCL 2.22.3 moved
+                it to v3 <SourceRef provenance="code-derived" code={code.ncclSymbol222} />, and NCCL
+                2.30.4 uses v6 <SourceRef provenance="code-derived" code={code.ncclSymbol} />. The
+                plugin exports all three, so the choice is made by the NCCL you are running, not by
+                the plugin <SourceRef provenance="code-derived" code={code.tunerV2Symbol} />.
+              </Box>
+              <Box variant="p">
+                The v3 entry point has never carried the check, back to plugin v1.13.0-aws, and the
+                commit that introduced the guard says so in its own subject line: updating tuner
+                v1/v2 to fall back on internal when algo or proto is set{' '}
+                <SourceRef provenance="code-derived" code={code.v2Guard} />. The v1 tuner interface
+                was removed entirely in v1.20.0{' '}
+                <SourceRef provenance="code-derived" code={code.releaseNotes} />.
+              </Box>
+              <Table
+                variant="embedded"
+                header={<Header variant="h3">Which tuner interface your NCCL binds to</Header>}
+                columnDefinitions={[
+                  { id: 'iface', header: 'Exported symbol', cell: (item) => <code>{item.iface}</code> },
+                  { id: 'nccl', header: 'NCCL versions', cell: (item) => item.nccl },
+                  { id: 'entry', header: 'Plugin entry point', cell: (item) => <code>{item.entry}</code> },
+                  { id: 'bailout', header: 'NCCL_ALGO / NCCL_PROTO bailout', cell: (item) => item.bailout },
+                ]}
+                items={tunerRows}
+              />
+            </SpaceBetween>
+          </ExpandableSection>
+
+          <ExpandableSection
+            headerText="Where your NCCL_ALGO filter is applied, if not by the tuner"
+            headerDescription="NCCL marks the cells you excluded before the tuner is ever called"
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                The order is visible in one function in NCCL. It initialises every cell of the table
+                to NCCL_ALGO_PROTO_IGNORE{' '}
                 <SourceRef provenance="code-derived" code={code.ncclInitTable} />, fills in modelled
                 times only for combinations the communicator allows{' '}
                 <SourceRef provenance="code-derived" code={code.ncclUpdateTable} />, then calls the
@@ -940,51 +1058,7 @@ export function NcclOverEfa() {
                 your filter. It does not fight it, and NCCL does not overrule the tuner afterwards.
               </Box>
             </SpaceBetween>
-          </Alert>
-
-          <Alert type="error" header="Correction: NCCL_ALGO and NCCL_PROTO do not disable the tuner">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                There is exactly one environment-variable bailout in the plugin's tuner, and it is
-                in the v2 entry point{' '}
-                <SourceRef provenance="code-derived" code={code.tunerV2} />. The v3 entry point
-                binds to the plain initialiser with no such check{' '}
-                <SourceRef provenance="code-derived" code={code.tunerV3} />, and so does v6{' '}
-                <SourceRef provenance="code-derived" code={code.tunerV6} />.
-              </Box>
-              <Box variant="p">
-                Which entry point NCCL uses is decided by the symbol it looks for. NCCL 2.21.5
-                defines the tuner plugin symbol as ncclTunerPlugin_v2{' '}
-                <SourceRef provenance="code-derived" code={code.ncclSymbol221} />, NCCL 2.22.3
-                moved it to v3 <SourceRef provenance="code-derived" code={code.ncclSymbol222} />,
-                and NCCL 2.30.4 uses v6{' '}
-                <SourceRef provenance="code-derived" code={code.ncclSymbol} />. The plugin exports
-                all three, so the choice is made by the NCCL you are running, not by the plugin{' '}
-                <SourceRef provenance="code-derived" code={code.tunerV2Symbol} />. Only a job pinned
-                to NCCL 2.21.x hits the bailout.
-              </Box>
-              <Box variant="p">
-                This is not a recent change. The v3 entry point has never carried the check, and the
-                commit that introduced the guard says so in its own subject line: updating tuner
-                v1/v2 to fall back on internal when algo or proto is set{' '}
-                <SourceRef provenance="code-derived" code={code.v2Guard} />. The v1 tuner interface
-                was removed entirely in v1.20.0{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />.
-              </Box>
-            </SpaceBetween>
-          </Alert>
-
-          <Table
-            variant="embedded"
-            header={<Header variant="h3">Which tuner interface your NCCL binds to</Header>}
-            columnDefinitions={[
-              { id: 'iface', header: 'Exported symbol', cell: (item) => <code>{item.iface}</code> },
-              { id: 'nccl', header: 'NCCL versions', cell: (item) => item.nccl },
-              { id: 'entry', header: 'Plugin entry point', cell: (item) => <code>{item.entry}</code> },
-              { id: 'bailout', header: 'NCCL_ALGO / NCCL_PROTO bailout', cell: (item) => item.bailout },
-            ]}
-            items={tunerRows}
-          />
+          </ExpandableSection>
 
           <ExpandableSection
             headerText="The segfault fix does not prove the tuner was running"
@@ -1018,56 +1092,33 @@ export function NcclOverEfa() {
             </SpaceBetween>
           </ExpandableSection>
 
-          <Box variant="h3">What does turn the tuner off</Box>
-          <Box variant="p">
-            Three conditions, checked in one predicate that the shared initialiser calls before it
-            does anything else, and none of them is NCCL_ALGO or NCCL_PROTO{' '}
-            <SourceRef provenance="code-derived" code={code.tunerInit} />. The tuner runs only when
-            a platform type was detected, the tuner type was not forced to Internal, and the
-            rail-count override is unset{' '}
-            <SourceRef provenance="code-derived" code={code.shouldUse} />. When it declines, it logs
-            which of the three reasons applied{' '}
-            <SourceRef provenance="code-derived" code={code.fallbackLog} />. The rail-count case has
-            a comment explaining the logic: each AWS platform has a different device-per-GPU ratio,
-            so a user setting the rail count is treated as a signal that the job is running on
-            heterogeneous hardware, where per-process tuner answers could diverge{' '}
-            <SourceRef provenance="code-derived" code={code.fallbackLog} />.
-          </Box>
-          <Box variant="p">
-            The tuner also narrows itself by platform name. It maps the product name to one of five
-            internal platform constants, covering p5 and p5e, p5en, p6-b200 and p6-b300, with
-            everything else falling through to unknown{' '}
-            <SourceRef provenance="code-derived" code={code.tunerPlatform} />. On an instance type
-            outside that list the tuner loads, finds no region or model support, and NCCL's own
-            model decides.
-          </Box>
-
-          <Alert
-            type="warning"
-            header="The fallback log line names a variable that does not exist"
+          <ExpandableSection
+            headerText="The fallback log line names a variable that does not exist"
+            headerDescription="Copying the name out of the log will not switch the tuner off"
           >
-            When the tuner declines because the tuner type was forced to Internal, it prints a
-            message naming NCCL_OFI_TUNER_TYPE. The parameter it actually read is
-            OFI_NCCL_TUNER_TYPE: every plugin parameter is constructed by prefixing OFI_NCCL_ to the
-            short name in the parameter table{' '}
-            <SourceRef
-              provenance="doc-code-conflict"
-              code={code.paramPrefix}
-              conflict="The tuner fallback log message in nccl_ofi_tuner_process_config.h prints NCCL_OFI_TUNER_TYPE. That string appears nowhere else in the repository, and no parameter of that name is defined."
-            />
-            . Copying the variable name out of the log will not switch the tuner off. The working
-            names are OFI_NCCL_TUNER_TYPE and OFI_NCCL_FORCE_NUM_RAILS{' '}
-            <SourceRef provenance="code-derived" code={code.paramTuner} />.
-          </Alert>
+            <Box variant="p">
+              When the tuner declines because the tuner type was forced to Internal, it prints a
+              message naming NCCL_OFI_TUNER_TYPE. The parameter it actually read is
+              OFI_NCCL_TUNER_TYPE: every plugin parameter is constructed by prefixing OFI_NCCL_ to
+              the short name in the parameter table{' '}
+              <SourceRef
+                provenance="doc-code-conflict"
+                code={code.paramPrefix}
+                conflict="The tuner fallback log message in nccl_ofi_tuner_process_config.h prints NCCL_OFI_TUNER_TYPE. That string appears nowhere else in the repository, and no parameter of that name is defined."
+              />
+              . The working names are OFI_NCCL_TUNER_TYPE and OFI_NCCL_FORCE_NUM_RAILS{' '}
+              <SourceRef provenance="code-derived" code={code.paramTuner} />.
+            </Box>
+          </ExpandableSection>
 
           <ExpandableSection
             headerText="cmpScore is not algorithm selection"
-            headerDescription="A second thing the earlier text conflated"
+            headerDescription="A function widely cited as the algorithm chooser, and what it really sorts"
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                The old text attributed algorithm selection to cmpScore in NCCL's search.cc, listing
-                its ordering as interBw, then interPciBw, then interNhops, then intraBw, then
+                cmpScore in NCCL's search.cc is often named as the place algorithms get chosen, with
+                its ordering given as interBw, then interPciBw, then interNhops, then intraBw, then
                 intraNhops. The ordering is right{' '}
                 <SourceRef provenance="code-derived" code={code.ncclCmpScore} />. What it orders is
                 not algorithms.
@@ -1082,73 +1133,11 @@ export function NcclOverEfa() {
                 protocol selection is the cost-table path described above, in enqueue.cc.
               </Box>
               <Box variant="p">
-                The path is also worth stating correctly: the file is src/graph/search.cc, and has
-                been since at least NCCL 2.21.5. There has never been a src/search.cc.
+                The path matters too: the file is src/graph/search.cc, and has been since at least
+                NCCL 2.21.5. There has never been a src/search.cc.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Most tuning advice circulating for EFA is stale. The plugin's own cheatsheet says so, variable by variable."
-          >
-            Environment variables: which layer, and which era
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <KnobLayersDiagram />
-
-          <Box variant="p">
-            The single most useful document here is the plugin's own EFA cheatsheet, which is
-            scoped by version rather than written as timeless advice{' '}
-            <SourceRef provenance="code-derived" code={code.envCheatsheet} />. Read against it, the
-            standard EFA environment block that circulates in tutorials is almost entirely obsolete.
-            The libfabric side of these variables is covered in the libfabric section; what follows
-            is the NCCL and plugin side.
-          </Box>
-
-          <Table
-            variant="embedded"
-            header={<Header variant="h3">The standard block, line by line</Header>}
-            columnDefinitions={[
-              { id: 'advice', header: 'Commonly recommended', cell: (item) => <code>{item.advice}</code> },
-              {
-                id: 'verdict',
-                header: 'Verdict',
-                cell: (item) => (
-                  <Badge color={item.verdict === 'Do not set' ? 'red' : 'blue'}>{item.verdict}</Badge>
-                ),
-              },
-              { id: 'why', header: 'Why', cell: (item) => item.why },
-            ]}
-            items={staleRows}
-          />
-
-          <Alert
-            type="warning"
-            header="NCCL_BUFFSIZE: the default is not NCCL's default"
-          >
-            The cheatsheet's advice on NCCL_BUFFSIZE is to leave it out and use the default, which
-            reads as leaving NCCL's own value in place{' '}
-            <SourceRef
-              provenance="doc-code-conflict"
-              code={code.platformTable}
-              conflict="doc/efa-env-var.md says of NCCL_BUFFSIZE: 'Recommend to leave it out to use the default.' The platform table in platform-aws.cpp injects NCCL_BUFFSIZE=8388608 on p4d, p4de, p5, p5e, p5en, p6-b200, the p-series catch-all, and g7e."
-            />
-            . NCCL's default is 4 MiB{' '}
-            <SourceRef provenance="code-derived" code={code.ncclBuffsize} />. On every EFA GPU
-            platform in the table the plugin injects 8388608, which is 8 MiB, so the effective
-            default is twice what NCCL would have chosen and it tracks the platform. Setting 8 MiB
-            by hand does not change the value, it changes who owns it: your value is now pinned and
-            the plugin logs that it skipped its own{' '}
-            <SourceRef provenance="code-derived" code={code.envSkipLog} />.
-          </Alert>
-
           <ExpandableSection
             headerText="One case where the plugin sets NCCL_PROTO for you"
             headerDescription="And the interaction with the v2 tuner bailout that follows from it"
@@ -1168,9 +1157,9 @@ export function NcclOverEfa() {
               <Box variant="p">
                 That creates a case worth naming: on a non-GDR platform running NCCL 2.21.x, the
                 variable that trips the v2 tuner bailout can be one the plugin set rather than one
-                you set. We have not traced the load ordering between the network plugin's
-                environment rewrite and NCCL's tuner load, so treat the consequence as inference
-                rather than established behaviour{' '}
+                you set. The load ordering between the network plugin's environment rewrite and
+                NCCL's tuner load is not traced here, so treat the consequence as inference rather
+                than established behaviour{' '}
                 <SourceRef provenance="code-derived" code={code.protoSimple} label="inference" />.
                 The mechanism on each side is code-confirmed; the interaction between them is not.
               </Box>
@@ -1181,10 +1170,7 @@ export function NcclOverEfa() {
 
       <Container
         header={
-          <Header
-            variant="h2"
-            description="Four version numbers have to agree, and only one place tells you what is actually loaded."
-          >
+          <Header variant="h2" description="Four version numbers have to agree, and only one place tells you what is actually loaded.">
             Version compatibility, and how to tell what you are running
           </Header>
         }
@@ -1238,10 +1224,7 @@ export function NcclOverEfa() {
 
       <Container
         header={
-          <Header
-            variant="h2"
-            description="NCCL_DEBUG=INFO produces thousands of lines. These are the ones that answer a question."
-          >
+          <Header variant="h2" description="NCCL_DEBUG=INFO produces thousands of lines. These are the ones that answer a question.">
             Reading NCCL debug output that actually means something
           </Header>
         }
@@ -1288,10 +1271,7 @@ export function NcclOverEfa() {
 
       <Container
         header={
-          <Header
-            variant="h2"
-            description="A GPU-initiated networking path exists in the plugin today, behind a build flag and an environment variable."
-          >
+          <Header variant="h2" description="A GPU-initiated networking path exists in the plugin today, behind a build flag and an environment variable.">
             GPUDirect Async is wired in
           </Header>
         }
@@ -1349,6 +1329,21 @@ export function NcclOverEfa() {
         }
       >
         <SpaceBetween size="m">
+          <ExpandableSection
+            headerText="Where AWS documentation ends"
+            headerDescription="Which of the claims above you can look up, and which you have to re-read from the tag you run"
+          >
+            <Box variant="p">
+              AWS documents how to install the plugin and how to verify EFA is present{' '}
+              <SourceRef provenance="documented" doc={docs.efaNccl} />
+              <SourceRef provenance="documented" doc={docs.efaStart} />, and documents which instance
+              types support EFA <SourceRef provenance="documented" doc={docs.efa} />. It documents
+              none of the plugin behaviour on this page: the platform table, the tuner conditions,
+              the topology generation and the environment injection are all read from the
+              implementation at release tag v1.20.0. Re-check them against the tag you are running.
+            </Box>
+          </ExpandableSection>
+
           <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="h3">Confirm the path is real</Box>
@@ -1380,17 +1375,6 @@ export function NcclOverEfa() {
               </Box>
             </div>
           </ColumnLayout>
-
-          <Alert type="info" header="Where AWS documentation ends">
-            AWS documents how to install the plugin and how to verify EFA is present{' '}
-            <SourceRef provenance="documented" doc={docs.efaNccl} />
-            <SourceRef provenance="documented" doc={docs.efaStart} />, and documents which instance
-            types support EFA <SourceRef provenance="documented" doc={docs.efa} />. It documents
-            none of the plugin behaviour on this page: the platform table, the tuner conditions, the
-            topology generation and the environment injection are all read from the implementation
-            at release tag v1.20.0. Treat them as our reading of the source, and re-check them
-            against the tag you are running.
-          </Alert>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

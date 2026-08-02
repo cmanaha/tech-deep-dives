@@ -8,7 +8,7 @@
 # coding sessions). It runs ONLY fast, deterministic, no-network,
 # no-LLM gates so it can be invoked freely without surprises:
 #
-#   required-files → no-ai-tells → svg-a11y → pinned-refs
+#   required-files → no-ai-tells → svg-a11y → pinned-refs → pre-overflow
 #     → typecheck → lint → unit tests → build → html-validate
 #
 # The four static-grep gates run first because they finish in well under a
@@ -74,6 +74,9 @@ bash scripts/gates/svg-a11y.sh || fail "svg accessibility"
 
 step "pinned code references (opted-in deep dives)"
 bash scripts/gates/pinned-refs.sh || fail "pinned code references"
+
+step "pre-overflow (opted-in deep dives)"
+bash scripts/gates/pre-overflow.sh || fail "pre overflow"
 
 step "typecheck (all workspaces)"
 pnpm typecheck || fail "typecheck"

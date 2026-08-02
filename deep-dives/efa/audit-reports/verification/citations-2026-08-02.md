@@ -1,7 +1,7 @@
 # Citation re-verification: efa
 
 Run date: 2026-08-02  
-Tree: `972572a`  
+Tree: `4f7ffa1`  
 Check: `scripts/audit/verify-citations.sh` (Tier 1.5, deterministic, networked, no LLM)  
 Scope: `deep-dives/efa/src/**/*.tsx` and `*.ts`, excluding tests
 Also: `deep-dives/efa/research/**/*.md`, GitHub blob and tree URLs only (`pinned-refs-research`)
@@ -44,7 +44,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-ec2-trn2-instances-available/` | src/sections/Sources.tsx:36 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/03/amazon-ec2-p5en-instances-n-virginia-jakarta/` | src/sections/Sources.tsx:34 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/05/amazon-ec2-p5en-instances-aws-us-west-n-california-region/` | src/sections/Sources.tsx:35 | 1 | - |
-| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/10/capacity-reservation-topology-api-ai-ml-hpc-instance-type/` | src/sections/TopologyApi.tsx:146 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/10/capacity-reservation-topology-api-ai-ml-hpc-instance-type/` | src/sections/TopologyApi.tsx:145 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/` | src/data/instances.ts:86 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-g7e-instances-generally-available/` | src/data/instances.ts:74 | 2 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/02/announcing-amazon-ec2-hpc8a-instances/` | src/sections/HPC.tsx:52 | 1 | - |
@@ -54,8 +54,8 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-ec2-g7-generally-available/` | src/data/instances.ts:80 | 2 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-sagemaker-hyperpod-efa-only/` | src/sections/SageMaker.tsx:149 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/7/amazon-sagemaker-hyperpod-dpd/` | src/sections/SageMaker.tsx:154 | 1 | - |
-| OK | 200 | `https://aws.amazon.com/ai/machine-learning/trainium/` | src/sections/AIMLTraining.tsx:115 | 1 | - |
-| OK | 200 | `https://aws.amazon.com/blogs/containers/unlocking-next-generation-ai-performance-with-dynamic-resource-allocation-on-amazon-eks-and-amazon-ec2-p6e-gb200/` | src/sections/TopologyApi.tsx:152 | 2 | - |
+| OK | 200 | `https://aws.amazon.com/ai/machine-learning/trainium/` | src/sections/AIMLTraining.tsx:105 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/blogs/containers/unlocking-next-generation-ai-performance-with-dynamic-resource-allocation-on-amazon-eks-and-amazon-ec2-p6e-gb200/` | src/sections/TopologyApi.tsx:151 | 2 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/hpc/in-the-search-for-performance-theres-more-than-one-way-to-build-a-network/` | src/sections/NetworkComparison.tsx:69 | 3 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/hpc/optimizing-mpi-application-performance-on-hpc7a-by-effectively-using-both-efa-devices/` | src/sections/HPC.tsx:59 | 2 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/hpc/second-generation-efa-improving-hpc-and-ml-application-performance-in-the-cloud/` | src/sections/HPC.tsx:66 | 2 | - |
@@ -70,7 +70,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://aws.amazon.com/blogs/storage/storage-for-i-o-intensive-sql-server-using-amazon-ebs-io2-block-express/` | src/sections/SrdProtocol.tsx:128 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/ec2/capacityblocks/pricing/` | src/data/pricing.ts:94 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/ec2/instance-types/p5/` | src/sections/Sources.tsx:29 | 1 | - |
-| OK | 200 | `https://aws.amazon.com/ec2/instance-types/trn2/` | src/sections/AIMLTraining.tsx:109 | 3 | - |
+| OK | 200 | `https://aws.amazon.com/ec2/instance-types/trn2/` | src/sections/AIMLTraining.tsx:99 | 3 | - |
 | OK | 200 | `https://aws.amazon.com/ec2/ultraservers/` | src/data/instances.ts:92 | 2 | - |
 | OK | 200 | `https://aws.amazon.com/hpc/efa/` | src/sections/Sources.tsx:32 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/new/` | src/sections/SageMaker.tsx:37 | 1 | - |
@@ -83,39 +83,39 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://d1.awsstatic.com/whitepapers/benchmarking-aws-and-hpc-services.pdf` | src/sections/Sources.tsx:41 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-design-patterns.html` | src/sections/StorageDataPaths.tsx:115 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html` | src/sections/StorageDataPaths.tsx:108 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CapacityReservationTopology.html` | src/sections/TopologyApi.tsx:86 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeCapacityReservationTopology.html` | src/sections/TopologyApi.tsx:80 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CapacityReservationTopology.html` | src/sections/TopologyApi.tsx:85 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeCapacityReservationTopology.html` | src/sections/TopologyApi.tsx:79 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstanceTopology.html` | src/sections/Sources.tsx:19 | 2 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstanceTypes.html` | src/data/instances.ts:68 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_InstanceTopology.html` | src/sections/TopologyApi.tsx:74 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_InstanceTopology.html` | src/sections/TopologyApi.tsx:73 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-how.html` | src/data/pricing.ts:87 | 2 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cr-cpg.html` | src/sections/TopologyApi.tsx:110 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cr-cpg.html` | src/sections/TopologyApi.tsx:109 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/detach-efa.html` | src/sections/Operations.tsx:86 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html` | src/sections/Sources.tsx:20 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html` | src/sections/Sources.tsx:21 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html` | src/sections/EnaVsEfa.tsx:87 | 4 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-topology-examples.html` | src/sections/TopologyApi.tsx:62 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-topology-prerequisites.html` | src/sections/TopologyApi.tsx:56 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-topology.html` | src/sections/TopologyApi.tsx:44 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html` | src/sections/EnaVsEfa.tsx:84 | 4 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-topology-examples.html` | src/sections/TopologyApi.tsx:61 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-topology-prerequisites.html` | src/sections/TopologyApi.tsx:55 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-topology.html` | src/sections/TopologyApi.tsx:43 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.html` | src/data/instances.ts:32 | 11 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-changelog.html` | src/sections/DataPath.tsx:106 | 4 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nccl.html` | src/sections/AIMLTraining.tsx:91 | 6 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-changelog.html` | src/sections/DataPath.tsx:100 | 4 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nccl.html` | src/sections/AIMLTraining.tsx:81 | 6 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nixl.html` | src/sections/AIMLInference.tsx:44 | 3 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html` | src/data/instances.ts:38 | 11 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-verify.html` | src/sections/Operations.tsx:85 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-working-monitor.html` | src/sections/Operations.tsx:81 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html` | src/data/instances.ts:26 | 20 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ena-express.html` | src/sections/EnaVsEfa.tsx:81 | 4 | - |
-| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ec2-instance-topology-works.html` | src/sections/TopologyApi.tsx:50 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ena-express.html` | src/sections/EnaVsEfa.tsx:78 | 4 | - |
+| OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ec2-instance-topology-works.html` | src/sections/TopologyApi.tsx:49 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html` | src/sections/Sources.tsx:13 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/batch/latest/userguide/eks.html` | src/sections/EKSIntegration.tsx:107 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/batch/latest/userguide/mnp-ce.html` | src/sections/EKSIntegration.tsx:104 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/batch/latest/userguide/multi-node-parallel-jobs.html` | src/sections/EKSIntegration.tsx:101 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-capacity-reservation-topology.html` | src/sections/TopologyApi.tsx:92 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-capacity-reservation-topology.html` | src/sections/TopologyApi.tsx:91 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/cli/latest/topic/s3-config.html` | src/sections/StorageDataPaths.tsx:118 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html` | src/sections/SrdProtocol.tsx:110 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/ec2/latest/devguide/ec2-api-throttling.html` | src/sections/TopologyApi.tsx:98 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/ec2/latest/devguide/eventual-consistency.html` | src/sections/TopologyApi.tsx:104 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/ec2/latest/devguide/ec2-api-throttling.html` | src/sections/TopologyApi.tsx:97 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/ec2/latest/devguide/eventual-consistency.html` | src/sections/TopologyApi.tsx:103 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html` | src/data/instances.ts:44 | 4 | - |
 | OK | 200 | `https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html` | src/data/instances.ts:56 | 2 | - |
 | OK | 200 | `https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html` | src/data/instances.ts:62 | 2 | - |
@@ -138,8 +138,8 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://docs.aws.amazon.com/fsx/latest/LustreGuide/limit-access-security-groups.html` | src/sections/StorageDataPaths.tsx:99 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html` | src/sections/StorageDataPaths.tsx:96 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-fsx-lustre.html` | src/sections/StorageDataPaths.tsx:105 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/parallelcluster/latest/ug/compute-node-initialization-odcr-v3.html` | src/sections/TopologyApi.tsx:140 | 1 | - |
-| OK | 200 | `https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks-nvidia-imex.html` | src/sections/TopologyApi.tsx:128 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/parallelcluster/latest/ug/compute-node-initialization-odcr-v3.html` | src/sections/TopologyApi.tsx:139 | 1 | - |
+| OK | 200 | `https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks-nvidia-imex.html` | src/sections/TopologyApi.tsx:127 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterNetworkInterface.html` | src/sections/SageMaker.tsx:89 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ProductionVariant.html` | src/sections/SageMaker.tsx:88 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ResourceConfig.html` | src/sections/SageMaker.tsx:87 | 1 | - |
@@ -175,7 +175,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://github.com/ai-dynamo/nixl` | src/sections/Sources.tsx:46 | 1 | - |
 | OK | 200 | `https://github.com/ai-dynamo/nixl/blob/v1.3.2/src/plugins/libfabric/README.md` | src/sections/Sources.tsx:48 | 1 | - |
 | OK | 200 | `https://github.com/ai-dynamo/nixl/tree/v1.3.2` | src/sections/Sources.tsx:47 | 1 | - |
-| OK | 200 | `https://github.com/amzn/amzn-drivers.git` | src/sections/SrdProtocol.tsx:1278 | 1 | `https://github.com/amzn/amzn-drivers` |
+| OK | 200 | `https://github.com/amzn/amzn-drivers.git` | src/sections/SrdProtocol.tsx:693 | 1 | `https://github.com/amzn/amzn-drivers` |
 | OK | 200 | `https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/README.md` | src/sections/Sources.tsx:23 | 1 | - |
 | OK | 200 | `https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/src/tuner/nccl_ofi_tuner.cpp` | src/sections/Sources.tsx:26 | 1 | - |
 | OK | 200 | `https://github.com/aws/aws-ofi-nccl/releases` | src/sections/Sources.tsx:24 | 1 | - |
@@ -193,7 +193,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://repost.aws/knowledge-center/s3-upload-large-files` | src/sections/StorageDataPaths.tsx:121 | 1 | - |
 | OK | 200 | `https://www.amazonaws.cn/en/new/2024/elastic-fabric-adapter-supports-cross-subnet-communication/` | src/sections/Sources.tsx:37 | 1 | - |
 | OK | 200 | `https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/` | src/sections/Sources.tsx:44 | 1 | - |
-| OK | 200 | `https://www.nvidia.com/en-us/data-center/nvlink/` | src/sections/AIMLTraining.tsx:103 | 2 | - |
+| OK | 200 | `https://www.nvidia.com/en-us/data-center/nvlink/` | src/sections/AIMLTraining.tsx:93 | 2 | - |
 | OK | 200 | `https://www.nvidia.com/en-us/networking/products/infiniband/` | src/sections/NetworkComparison.tsx:81 | 1 | - |
 | REDIRECT | 202 | `https://doi.org/10.1109/MM.2020.3016891` | src/sections/SrdProtocol.tsx:135 | 1 | `https://ieeexplore.ieee.org/document/9167399/` |
 
@@ -207,17 +207,17 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | DIR | `aws/aws-ofi-nccl` | `v1.20.0` | `topology` | - | 0 | 0 | research/2026-08-refresh/01-efa-core.md:434 | - |
 | DIR | `aws/eks-charts` | `97cf2c16913b8c8125defc9cea1e7824f1b8c950` | `stable/aws-dranet` | - | 0 | 0 | research/2026-08-refresh/03-efa-eks.md:1044 | - |
 | DIR | `aws/eks-charts` | `97cf2c16913b8c8125defc9cea1e7824f1b8c950` | `stable/aws-efa-k8s-device-plugin` | - | 0 | 0 | research/2026-08-refresh/03-efa-eks.md:1043 | - |
-| DIR | `aws/karpenter-provider-aws` | `v1.14.0` | `pkg` | - | 43 | 0 | src/sections/TopologyApi.tsx:195 | - |
+| DIR | `aws/karpenter-provider-aws` | `v1.14.0` | `pkg` | - | 43 | 0 | src/sections/TopologyApi.tsx:194 | - |
 | DIR | `awslabs/ai-on-sagemaker-hyperpod` | `8e4bebe27419ec46c0c6b4194a6278d30997c6df` | `website/docs/00-eks-orchestration` | - | 0 | 0 | research/2026-08-refresh/03-efa-eks.md:880 | - |
 | DIR | `awslabs/amazon-eks-ami` | `c029c3d71745a3b3ab202ada94626e7e44c38152` | `templates` | - | 0 | 0 | research/2026-08-refresh/03-efa-eks.md:70 | - |
 | DIR | `awslabs/awsome-distributed-ai` | `cb99a28a85c8333ddbad004221230dac967ddbab` | `micro-benchmarks/nccl-tests` | - | 0 | 0 | research/2026-08-refresh/03-efa-eks.md:840 | - |
 | DIR | `awslabs/awsome-distributed-ai` | `cb99a28a85c8333ddbad004221230dac967ddbab` | `micro-benchmarks/nccl-tests/kubernetes` | - | 0 | 0 | research/2026-08-refresh/03-efa-eks.md:511 | - |
 | DIR | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/rdm` | - | 0 | 0 | research/2026-08-refresh/01-efa-core.md:226 | - |
-| OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/CMakeLists.txt` | L36 | 36 | 38 | src/sections/DataPath.tsx:57 | - |
-| OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/conf/configure-dkms.sh` | - | 0 | 15 | src/sections/DataPath.tsx:58 | - |
+| OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/CMakeLists.txt` | L36 | 36 | 38 | src/sections/DataPath.tsx:51 | - |
+| OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/conf/configure-dkms.sh` | - | 0 | 15 | src/sections/DataPath.tsx:52 | - |
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/conf/dkms.conf` | - | 0 | 12 | src/sections/EfaDevice.tsx:85 | - |
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/RELEASENOTES.md` | - | 0 | 244 | research/2026-08-refresh/01-efa-core.md:100 | - |
-| OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa_admin_cmds_defs.h` | L1296-L1299 | 1299 | 1346 | src/sections/DataPath.tsx:61 | - |
+| OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa_admin_cmds_defs.h` | L1296-L1299 | 1299 | 1346 | src/sections/DataPath.tsx:55 | - |
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa_com_cmd.h` | L183-L188 | 188 | 430 | src/sections/EfaDevice.tsx:84 | - |
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa_data_verbs.c` | - | 756 | 798 | research/2026-08-refresh/01-efa-core.md:124 | - |
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa_io_defs.h` | - | 93 | 455 | research/2026-08-refresh/01-efa-core.md:145 | - |
@@ -225,50 +225,50 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa_neuronmem.c` | L157-L166 | 166 | 181 | src/sections/Operations.tsx:106 | - |
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa_nvmem_impl.h` | L294-L306 | 306 | 336 | src/sections/Operations.tsx:105 | - |
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa_sysfs.c` | L34-L51 | 51 | 59 | src/sections/Operations.tsx:104 | - |
-| OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa_verbs.c` | L1333 | 3715 | 4022 | src/sections/DataPath.tsx:68 | - |
+| OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa_verbs.c` | L1333 | 3715 | 4022 | src/sections/DataPath.tsx:62 | - |
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/src/efa.h` | - | 99 | 502 | research/2026-08-refresh/01-efa-core.md:149 | - |
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/efa/SRD.txt` | - | 0 | 128 | research/2026-08-refresh/01-efa-core.md:34 | - |
 | OK | `amzn/amzn-drivers` | `b99452b70756b1b394b1e7ff238d4efbdca44c5b` | `kernel/linux/ena/ena_ethtool.c` | L113-L119 | 119 | 2116 | src/sections/Operations.tsx:109 | - |
-| OK | `amzn/amzn-ec2-ena-utilities` | `6ecb14cf1dc3f17a375ea72c1aa3dfd72dc5a1e7` | `ena-express/check-ena-express-settings.sh` | L26-L27 | 27 | 384 | src/sections/EnaVsEfa.tsx:64 | - |
+| OK | `amzn/amzn-ec2-ena-utilities` | `6ecb14cf1dc3f17a375ea72c1aa3dfd72dc5a1e7` | `ena-express/check-ena-express-settings.sh` | L26-L27 | 27 | 384 | src/sections/EnaVsEfa.tsx:61 | - |
 | OK | `aws-samples/aws-do-eks` | `1542b55051b3ffc17fe91a796cf5700ed4d82c24` | `Container-Root/eks/deployment/inference/agentic-ai/nemotron/ultra/agg/lws.yaml-template` | L30-L31 | 31 | 295 | src/sections/EKSIntegration.tsx:170 | - |
-| OK | `aws-samples/ec2-topology-aware-for-slurm` | `57abd4d9347e8a31b533918639a69b7637dd6328` | `ec2-topology.py` | L196-L202 | 202 | 211 | src/sections/TopologyApi.tsx:174 | - |
+| OK | `aws-samples/ec2-topology-aware-for-slurm` | `57abd4d9347e8a31b533918639a69b7637dd6328` | `ec2-topology.py` | L196-L202 | 202 | 211 | src/sections/TopologyApi.tsx:173 | - |
 | OK | `aws-samples/sample-llm-inference-on-eks` | `48b7d85170a9ca5789c6e48488fcba0bb1726949` | `k8s-manifest/lws/lws-deepseek-v3.2-tp16-p5.yaml` | - | 0 | 162 | research/2026-08-refresh/03-efa-eks.md:528 | - |
-| OK | `aws-samples/sample-rlinf-on-eks` | `c8b5e3a39d89de783b5eb97eaa57dc30a6307f33` | `infrastructure/manifests/topology-labeler.yaml` | L80-L92 | 92 | 140 | src/sections/TopologyApi.tsx:188 | - |
+| OK | `aws-samples/sample-rlinf-on-eks` | `c8b5e3a39d89de783b5eb97eaa57dc30a6307f33` | `infrastructure/manifests/topology-labeler.yaml` | L80-L92 | 92 | 140 | src/sections/TopologyApi.tsx:187 | - |
 | OK | `aws/amazon-vpc-cni-k8s` | `18404b458ea2b4a980e80570d5939d72db917a4a` | `docs/eni-and-ip-target.md` | - | 0 | 54 | research/2026-08-refresh/03-efa-eks.md:785 | - |
 | OK | `aws/aws-eks-best-practices` | `828f285d5888010993bd8948bc2b8305181e513d` | `latest/bpg/aiml/aiml_networking.adoc` | - | 43 | 54 | research/2026-08-refresh/03-efa-eks.md:1058 | - |
 | OK | `aws/aws-ofi-nccl` | `117aa133f7efed66b0b0438b8181176b1ca63191` | `contrib/scripts/topology_aware/hostfile-topologify.py` | - | 0 | 158 | research/2026-08-refresh/02-ec2-topology-api.md:936 | - |
 | OK | `aws/aws-ofi-nccl` | `117aa133f7efed66b0b0438b8181176b1ca63191` | `contrib/scripts/topology_aware/README.md` | - | 0 | 80 | research/2026-08-refresh/02-ec2-topology-api.md:935 | - |
 | OK | `aws/aws-ofi-nccl` | `117aa133f7efed66b0b0438b8181176b1ca63191` | `doc/topology-aware.md` | - | 0 | 150 | research/2026-08-refresh/02-ec2-topology-api.md:934 | - |
-| OK | `aws/aws-ofi-nccl` | `3c2e20cfb73dc22e29eb2996d260f9b91108b8e8` | `src/tuner/nccl_ofi_tuner.cpp` | - | 0 | 330 | src/sections/NcclOverEfa.tsx:127 | - |
-| OK | `aws/aws-ofi-nccl` | `d204003337ff4e66d28bc7463d9570b18bd1ad49` | `src/tuner/nccl_ofi_tuner.cpp` | - | 0 | 260 | src/sections/NcclOverEfa.tsx:122 | - |
-| OK | `aws/aws-ofi-nccl` | `faf2e8f2ef9bcbac3ff1fb2f626e96e7a98bc60d` | `src/tuner/nccl_ofi_tuner.cpp` | - | 0 | 315 | src/sections/NcclOverEfa.tsx:126 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `contrib/scripts/topology_aware/hostfile-topologify.py` | L110-L125 | 125 | 158 | src/sections/TopologyApi.tsx:160 | - |
+| OK | `aws/aws-ofi-nccl` | `3c2e20cfb73dc22e29eb2996d260f9b91108b8e8` | `src/tuner/nccl_ofi_tuner.cpp` | - | 0 | 330 | src/sections/NcclOverEfa.tsx:123 | - |
+| OK | `aws/aws-ofi-nccl` | `d204003337ff4e66d28bc7463d9570b18bd1ad49` | `src/tuner/nccl_ofi_tuner.cpp` | - | 0 | 260 | src/sections/NcclOverEfa.tsx:118 | - |
+| OK | `aws/aws-ofi-nccl` | `faf2e8f2ef9bcbac3ff1fb2f626e96e7a98bc60d` | `src/tuner/nccl_ofi_tuner.cpp` | - | 0 | 315 | src/sections/NcclOverEfa.tsx:122 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `contrib/scripts/topology_aware/hostfile-topologify.py` | L110-L125 | 125 | 158 | src/sections/TopologyApi.tsx:159 | - |
 | OK | `aws/aws-ofi-nccl` | `v1.20.0` | `doc/efa-env-var.md` | - | 69 | 153 | research/2026-08-refresh/01-efa-core.md:296 | - |
 | OK | `aws/aws-ofi-nccl` | `v1.20.0` | `doc/topology-aware.md` | - | 149 | 150 | research/2026-08-refresh/01-efa-core.md:454 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `include/nccl_ofi_environ.h` | L101-L110 | 110 | 205 | src/sections/NcclOverEfa.tsx:107 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `include/nccl_ofi_param.h` | L266-L305 | 390 | 409 | src/sections/NcclOverEfa.tsx:110 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `include/nccl_ofi_platform.h` | L75-L97 | 97 | 187 | src/sections/NcclOverEfa.tsx:103 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `include/rdma/gin/nccl_ofi_gin_gdaki.h` | L15 | 15 | 17 | src/sections/NcclOverEfa.tsx:149 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `include/nccl_ofi_environ.h` | L101-L110 | 110 | 205 | src/sections/NcclOverEfa.tsx:103 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `include/nccl_ofi_param.h` | L266-L305 | 390 | 409 | src/sections/NcclOverEfa.tsx:106 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `include/nccl_ofi_platform.h` | L75-L97 | 97 | 187 | src/sections/NcclOverEfa.tsx:99 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `include/rdma/gin/nccl_ofi_gin_gdaki.h` | L15 | 15 | 17 | src/sections/NcclOverEfa.tsx:145 | - |
 | OK | `aws/aws-ofi-nccl` | `v1.20.0` | `include/tuner/nccl_ofi_tuner_process_config.h` | - | 111 | 129 | research/2026-08-refresh/01-efa-core.md:904 | - |
 | OK | `aws/aws-ofi-nccl` | `v1.20.0` | `README.md` | - | 0 | 83 | research/2026-08-refresh/01-efa-core.md:289 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `RELEASENOTES.md` | L10-L16 | 16 | 1102 | src/sections/NcclOverEfa.tsx:152 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `RELEASENOTES.md` | L10-L16 | 16 | 1102 | src/sections/NcclOverEfa.tsx:148 | - |
 | OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/Makefile.am` | - | 190 | 192 | research/2026-08-refresh/01-efa-core.md:422 | - |
 | OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_cuda.cpp` | - | 290 | 348 | research/2026-08-refresh/01-efa-core.md:446 | - |
 | OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_gdrcopy.cpp` | - | 0 | 290 | research/2026-08-refresh/01-efa-core.md:302 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_interface_neuron.cpp` | L323-L390 | 390 | 391 | src/sections/NcclOverEfa.tsx:79 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_interface_nvidia.cpp` | L661-L830 | 858 | 858 | src/sections/NcclOverEfa.tsx:78 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_net.cpp` | L188-L195 | 969 | 969 | src/sections/NcclOverEfa.tsx:83 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_param.cpp` | L10-L20 | 20 | 42 | src/sections/NcclOverEfa.tsx:109 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_rdma.cpp` | - | 7407 | 7626 | src/sections/AIMLTraining.tsx:69 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_system.cpp` | L110-L140 | 140 | 185 | src/sections/NcclOverEfa.tsx:92 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_topo.cpp` | L1128-L1145 | 1172 | 1827 | src/sections/NcclOverEfa.tsx:100 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_interface_neuron.cpp` | L323-L390 | 390 | 391 | src/sections/NcclOverEfa.tsx:75 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_interface_nvidia.cpp` | L661-L830 | 858 | 858 | src/sections/NcclOverEfa.tsx:74 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_net.cpp` | L188-L195 | 969 | 969 | src/sections/NcclOverEfa.tsx:79 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_param.cpp` | L10-L20 | 20 | 42 | src/sections/NcclOverEfa.tsx:105 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_rdma.cpp` | - | 7407 | 7626 | src/sections/AIMLTraining.tsx:59 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_system.cpp` | L110-L140 | 140 | 185 | src/sections/NcclOverEfa.tsx:88 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/nccl_ofi_topo.cpp` | L1128-L1145 | 1172 | 1827 | src/sections/NcclOverEfa.tsx:96 | - |
 | OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/platform-aws.cpp` | - | 991 | 1089 | research/2026-08-refresh/01-efa-core.md:908 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/rdma/gin/nccl_ofi_gin_api.cpp` | L90-L118 | 118 | 565 | src/sections/Libfabric.tsx:84 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/rdma/gin/nccl_ofi_gin_gdaki.cpp` | L112-L174 | 175 | 422 | src/sections/Libfabric.tsx:83 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/rdma/gin/nccl_ofi_gin_api.cpp` | L90-L118 | 118 | 565 | src/sections/Libfabric.tsx:81 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/rdma/gin/nccl_ofi_gin_gdaki.cpp` | L112-L174 | 175 | 422 | src/sections/Libfabric.tsx:80 | - |
 | OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/tuner/nccl_ofi_regions.cpp` | - | 2117 | 2209 | research/2026-08-refresh/01-efa-core.md:386 | - |
 | OK | `aws/aws-ofi-nccl` | `v1.20.0` | `src/tuner/nccl_ofi_tuner.cpp` | - | 258 | 260 | research/2026-08-refresh/01-efa-core.md:404 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `topology/g5.48xl-topo.xml` | - | 0 | 26 | src/sections/AIMLTraining.tsx:72 | - |
-| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `topology/p4d-24xl-topo.xml` | - | 26 | 40 | src/sections/AIMLTraining.tsx:71 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `topology/g5.48xl-topo.xml` | - | 0 | 26 | src/sections/AIMLTraining.tsx:62 | - |
+| OK | `aws/aws-ofi-nccl` | `v1.20.0` | `topology/p4d-24xl-topo.xml` | - | 26 | 40 | src/sections/AIMLTraining.tsx:61 | - |
 | OK | `aws/deep-learning-containers` | `4c921b9ecade7322bebb79224bea6f1c5c3d0591` | `.github/config/image/pytorch/2.13-sagemaker-cuda.yml` | L20-L29 | 29 | 40 | src/sections/SageMaker.tsx:217 | - |
 | OK | `aws/deep-learning-containers` | `4c921b9ecade7322bebb79224bea6f1c5c3d0591` | `docker/base/cu132/Dockerfile` | L106-L108 | 108 | 185 | src/sections/SageMaker.tsx:216 | - |
 | OK | `aws/deep-learning-containers` | `4c921b9ecade7322bebb79224bea6f1c5c3d0591` | `docker/pytorch/Dockerfile.cuda` | L161-L164 | 289 | 300 | src/sections/SageMaker.tsx:224 | - |
@@ -330,44 +330,44 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | `NVIDIA/k8s-device-plugin` | `v0.18.2` | `cmd/nvidia-device-plugin/main.go` | L114-L118 | 118 | 407 | src/sections/EKSIntegration.tsx:154 | - |
 | OK | `NVIDIA/k8s-device-plugin` | `v0.19.0` | `cmd/nvidia-device-plugin/main.go` | L116-L121 | 121 | 410 | src/sections/EKSIntegration.tsx:153 | - |
 | OK | `NVIDIA/k8s-device-plugin` | `v0.19.0` | `internal/cdi/cdi.go` | L154-L156 | 156 | 270 | src/sections/EKSIntegration.tsx:155 | - |
-| OK | `NVIDIA/nccl` | `v2.21.5-1` | `src/include/nccl_tuner.h` | L58 | 58 | 60 | src/sections/NcclOverEfa.tsx:134 | - |
-| OK | `NVIDIA/nccl` | `v2.22.3-1` | `src/include/nccl_tuner.h` | L60 | 60 | 104 | src/sections/NcclOverEfa.tsx:135 | - |
+| OK | `NVIDIA/nccl` | `v2.21.5-1` | `src/include/nccl_tuner.h` | L58 | 58 | 60 | src/sections/NcclOverEfa.tsx:130 | - |
+| OK | `NVIDIA/nccl` | `v2.22.3-1` | `src/include/nccl_tuner.h` | L60 | 60 | 104 | src/sections/NcclOverEfa.tsx:131 | - |
 | OK | `NVIDIA/nccl` | `v2.28.9-1` | `src/init.cc` | L428 | 428 | 2778 | src/sections/Operations.tsx:123 | - |
 | OK | `NVIDIA/nccl` | `v2.28.9-1` | `src/plugin/net.cc` | L225 | 337 | 526 | src/sections/Operations.tsx:125 | - |
 | OK | `NVIDIA/nccl` | `v2.28.9-1` | `src/transport/net_socket.cc` | L720-L721 | 721 | 743 | src/sections/Operations.tsx:126 | - |
-| OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/enqueue.cc` | L1893-L1899 | 2066 | 3134 | src/sections/NcclOverEfa.tsx:136 | - |
-| OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/graph/search.cc` | L181-L202 | 280 | 1407 | src/sections/AIMLTraining.tsx:68 | - |
-| OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/graph/tuning.cc` | L416-L435 | 599 | 611 | src/sections/NcclOverEfa.tsx:140 | - |
-| OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/include/plugin/nccl_tuner.h` | L25 | 43 | 61 | src/sections/NcclOverEfa.tsx:133 | - |
-| OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/init.cc` | L781-L786 | 786 | 3317 | src/sections/NcclOverEfa.tsx:145 | - |
+| OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/enqueue.cc` | L1893-L1899 | 2066 | 3134 | src/sections/NcclOverEfa.tsx:132 | - |
+| OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/graph/search.cc` | L181-L202 | 280 | 1407 | src/sections/AIMLTraining.tsx:58 | - |
+| OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/graph/tuning.cc` | L416-L435 | 599 | 611 | src/sections/NcclOverEfa.tsx:136 | - |
+| OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/include/plugin/nccl_tuner.h` | L25 | 43 | 61 | src/sections/NcclOverEfa.tsx:129 | - |
+| OK | `NVIDIA/nccl` | `v2.30.4-1` | `src/init.cc` | L781-L786 | 786 | 3317 | src/sections/NcclOverEfa.tsx:141 | - |
 | OK | `NVIDIA/nvidia-container-toolkit` | `v1.19.1` | `internal/discover/mofed.go` | L25-L36 | 36 | 36 | src/sections/EKSIntegration.tsx:156 | - |
 | OK | `ofiwg/libfabric` | `7232f8af12d0a7ad54cc571529e37c006cb3bc92` | `prov/efa/src/rdm/efa_rdm_peer.h` | - | 0 | 272 | src/sections/SrdProtocol.tsx:75 | - |
 | OK | `ofiwg/libfabric` | `bd987ab20e57` | `prov/efa/src/rdm/efa_rdm_peer.h` | - | 0 | 271 | src/sections/SrdProtocol.tsx:81 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `man/fi_efa.7.md` | - | 681 | 721 | research/2026-08-refresh/01-efa-core.md:180 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `man/fi_mr.3.md` | L1054-L1080 | 1080 | 1115 | src/sections/Operations.tsx:117 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `man/fi_pingpong.1.md` | - | 0 | 181 | src/sections/Operations.tsx:116 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/configure.m4` | L317-L322 | 322 | 434 | src/sections/DataPath.tsx:85 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/configure.m4` | L317-L322 | 322 | 434 | src/sections/DataPath.tsx:79 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/docs/efa_fabric_comparison.md` | - | 271 | 284 | research/2026-08-refresh/01-efa-core.md:188 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_data_path_direct_entry.h` | L435-L445 | 445 | 670 | src/sections/DataPath.tsx:89 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_data_path_direct.c` | L130-L132 | 200 | 213 | src/sections/DataPath.tsx:84 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_data_path_direct_entry.h` | L435-L445 | 445 | 670 | src/sections/DataPath.tsx:83 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_data_path_direct.c` | L130-L132 | 200 | 213 | src/sections/DataPath.tsx:78 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_data_path_direct.h` | - | 0 | 79 | research/2026-08-refresh/01-efa-core.md:197 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_data_path_ops.h` | L216-L219 | 219 | 539 | src/sections/DataPath.tsx:88 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_data_path_ops.h` | L216-L219 | 219 | 539 | src/sections/DataPath.tsx:82 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_device.c` | L520-L526 | 526 | 760 | src/sections/EfaDevice.tsx:90 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_domain.c` | L114-L127 | 897 | 1019 | src/sections/Libfabric.tsx:73 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_env.c` | L11-L46 | 262 | 272 | src/sections/Libfabric.tsx:71 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_fork_support.c` | L12-L62 | 192 | 325 | src/sections/Libfabric.tsx:77 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_domain.c` | L114-L127 | 897 | 1019 | src/sections/Libfabric.tsx:70 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_env.c` | L11-L46 | 262 | 272 | src/sections/Libfabric.tsx:68 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_fork_support.c` | L12-L62 | 192 | 325 | src/sections/Libfabric.tsx:74 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_hmem.c` | - | 116 | 627 | research/2026-08-refresh/01-efa-core.md:248 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_prov_info.c` | L346-L356 | 640 | 795 | src/sections/Operations.tsx:112 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_prov.c` | L106-L133 | 176 | 272 | src/sections/Operations.tsx:111 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_user_info.c` | L626-L668 | 668 | 801 | src/sections/Libfabric.tsx:66 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa.h` | L62-L63 | 63 | 323 | src/sections/Libfabric.tsx:67 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/fi_ext_efa.h` | L11 | 11 | 141 | src/sections/AIMLTraining.tsx:76 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa_user_info.c` | L626-L668 | 668 | 801 | src/sections/Libfabric.tsx:63 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/efa.h` | L62-L63 | 63 | 323 | src/sections/Libfabric.tsx:64 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/fi_ext_efa.h` | L11 | 11 | 141 | src/sections/AIMLTraining.tsx:66 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/rdm/efa_rdm_mr.c` | L111-L126 | 169 | 828 | src/sections/Operations.tsx:114 | - |
 | OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/rdm/efa_rdm_msg.c` | - | 102 | 1121 | research/2026-08-refresh/01-efa-core.md:899 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/rdm/efa_rdm_peer.h` | L12 | 12 | 259 | src/sections/Libfabric.tsx:79 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/util/src/util_mem_monitor.c` | L244-L270 | 270 | 562 | src/sections/Libfabric.tsx:75 | - |
-| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/util/src/util_mr_cache.c` | L48-L54 | 54 | 640 | src/sections/Libfabric.tsx:76 | - |
-| OK | `torvalds/linux` | `2d2338c93da79b3bfe4b6099a931d9468d539952` | `drivers/infiniband/hw/efa/efa_main.c` | L365-L403 | 403 | 706 | src/sections/DataPath.tsx:62 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/efa/src/rdm/efa_rdm_peer.h` | L12 | 12 | 259 | src/sections/Libfabric.tsx:76 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/util/src/util_mem_monitor.c` | L244-L270 | 270 | 562 | src/sections/Libfabric.tsx:72 | - |
+| OK | `ofiwg/libfabric` | `v2.6.0` | `prov/util/src/util_mr_cache.c` | L48-L54 | 54 | 640 | src/sections/Libfabric.tsx:73 | - |
+| OK | `torvalds/linux` | `2d2338c93da79b3bfe4b6099a931d9468d539952` | `drivers/infiniband/hw/efa/efa_main.c` | L365-L403 | 403 | 706 | src/sections/DataPath.tsx:56 | - |
 
 ## Method
 

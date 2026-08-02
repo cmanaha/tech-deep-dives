@@ -12,18 +12,15 @@ import { SourceRef } from '@tech-deep-dives/shared';
 import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 
 /**
- * ENA vs EFA.
- *
- * Readers conflate the two constantly. The conflation has three distinct
- * forms, and this section kills each one with evidence rather than assertion:
+ * ENA vs EFA. Three conflations, each answered from driver source:
  *
  *   1. "EFA is a mode of ENA"        -> disjoint PCI ID sets, two drivers.
  *   2. "SRD is built on top of ENA"  -> EFA-only carries SRD with no ENA device.
  *   3. "LLQ is what ENA has and EFA lacks" -> both have it; the difference is
  *      which side of the kernel boundary writes the descriptor.
  *
- * Every structural claim is read from driver source at a pinned commit, per
- * revamp/source-authority-standard.md. Research: research/2026-08-refresh/06-ena-vs-efa.md.
+ * Structural claims are pinned to a commit, per revamp/source-authority-standard.md.
+ * Research: research/2026-08-refresh/06-ena-vs-efa.md.
  */
 
 const READ = '2026-08-01';
@@ -529,9 +526,8 @@ export function EnaVsEfa() {
                 traditional EFA interface, also called EFA with ENA, which creates both an EFA
                 device and an ENA device, or using an EFA-only interface, which creates just the
                 EFA device{' '}
-                <SourceRef provenance="code-confirmed" doc={docs.efa} code={code.efaPciIds} />.
-                Documentation and code agree exactly, which is the strongest citation category
-                this page has.
+                <SourceRef provenance="code-confirmed" doc={docs.efa} code={code.efaPciIds} />. The
+                documentation and the ID table say the same thing, down to the count of devices.
               </Box>
               <Box variant="p">
                 The same page separates EFA traffic from normal IP traffic from the ENA device of
@@ -555,7 +551,112 @@ export function EnaVsEfa() {
         header={
           <Header
             variant="h2"
-            description="The correction that matters most, because it inverts the dependency"
+            description="Both drivers push descriptors into the same write-combined region. Only the side of the kernel boundary changes."
+          >
+            Both have a low latency queue. The difference is who holds the pen.
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>
+              The ENA and EFA difference is not LLQ (Low Latency Queue) against no LLQ. Both push
+              transmit descriptors into device memory over PCIe. Only the writer differs.
+            </strong>{' '}
+            Both drivers use the same BAR (Base Address Register) convention: register BAR 0,
+            memory BAR 2. ENA defines ENA_REG_BAR 0 and ENA_MEM_BAR 2{' '}
+            <SourceRef provenance="code-derived" code={code.enaBars} />. EFA defines EFA_REG_BAR 0
+            and EFA_MEM_BAR 2{' '}
+            <SourceRef provenance="code-derived" code={code.efaBars} />. Both push into that
+            region with write-combining. Then the paths diverge.
+          </Box>
+
+          <WhoHoldsThePenDiagram />
+
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">ENA: the kernel driver writes</Box>
+              <Box variant="p">
+                ena.ko maps BAR 2 with devm_ioremap_wc, a write-combined mapping, during probe{' '}
+                <SourceRef provenance="code-derived" code={code.enaWcMap} />. On transmit the
+                driver assembles the descriptor entry in a host-memory bounce buffer, issues a
+                write memory barrier, then blits the whole entry into the device with
+                __iowrite64_copy, flipping a phase bit on ring wrap so the device can tell fresh
+                entries from stale ones{' '}
+                <SourceRef provenance="code-derived" code={code.enaPush} />.
+              </Box>
+              <Box variant="p">
+                Push mode removes a device-side descriptor fetch. It does not remove the kernel.
+                The application still makes a system call, the kernel network stack still
+                processes the packet, and ena.ko is still in the data path for every packet sent.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">EFA: the application writes</Box>
+              <Box variant="p">
+                EFA send-queue descriptors live in the same MEM BAR. The driver computes
+                sq-&gt;desc as mem_bar plus llq_descriptors_offset{' '}
+                <SourceRef provenance="code-derived" code={code.efaSqDesc} />. Then it does the
+                thing ENA never does: it hands the region to userspace. efa_user_mmap_entry_insert
+                creates a mapping with attribute EFA_MMAP_IO_WC, write-combined, and returns a
+                key{' '}
+                <SourceRef provenance="code-derived" code={code.efaUserMap} />.
+              </Box>
+              <Box variant="p">
+                That key crosses the user ABI (Application Binary Interface) as llq_desc_mmap_key,
+                alongside llq_desc_offset{' '}
+                <SourceRef provenance="code-derived" code={code.efaAbiKeys} />. libfabric mmaps it
+                and writes descriptors straight into the card. efa.ko set the mapping up and left.
+              </Box>
+            </div>
+          </ColumnLayout>
+
+          <Alert type="success" header="OS bypass, expressed in code rather than asserted in prose">
+            A grep across the ENA driver sources for .mmap, remap_pfn_range and vm_ops returns
+            zero hits. There is no character device, no verbs interface, and no userspace-visible
+            doorbell or descriptor ring anywhere in the ENA tree{' '}
+            <SourceRef provenance="code-derived" code={code.enaWcMap} />. EFA has all of them.
+            That single asymmetry is what OS bypass means. What the two do share is a house design
+            language, admin queue abstraction, phase bits, BAR 2 push region, write-combining,
+            while remaining separate implementations.
+          </Alert>
+
+          <ExpandableSection
+            headerText="Depth: why write-combining is the load-bearing attribute"
+            headerDescription="The reason both drivers ask for the same mapping type"
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                A write-combined mapping lets the CPU buffer consecutive stores and emit them as
+                one large PCIe transaction instead of many small ones. Without it, a 128-byte
+                descriptor entry becomes sixteen separate 8-byte writes across the bus, and push
+                mode would be slower than letting the device fetch the descriptor itself.
+              </Box>
+              <Box variant="p">
+                ENA gets it from devm_ioremap_wc in the kernel{' '}
+                <SourceRef provenance="code-derived" code={code.enaWcMap} />. EFA gets it from
+                EFA_MMAP_IO_WC on the userspace mapping{' '}
+                <SourceRef provenance="code-derived" code={code.efaUserMap} />. EFA maps doorbells
+                separately as non-cached, because a doorbell is a single write that must land
+                immediately rather than sit in a combining buffer. Two mapping types, chosen for
+                two access patterns, in one driver.
+              </Box>
+              <Box variant="p">
+                One asymmetry worth knowing on the ENA side: LLQ is transmit only. Receive
+                submission queues always run in regular mode, so the device fetches receive
+                descriptors from host memory. Push mode removes a fetch on the send path and
+                nothing on the receive path.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="The dependency runs the opposite way to the common phrasing, and one shipping configuration proves it."
           >
             SRD is not built on top of ENA
           </Header>
@@ -626,113 +727,7 @@ export function EnaVsEfa() {
 
       <Container
         header={
-          <Header
-            variant="h2"
-            description="The most useful finding in this section, and the one most write-ups omit"
-          >
-            Both have a low latency queue. The difference is who holds the pen.
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            <strong>
-              The ENA and EFA difference is not LLQ (Low Latency Queue) against no LLQ. Both push
-              transmit descriptors into device memory over PCIe. Only the writer differs.
-            </strong>{' '}
-            Both drivers use the same BAR (Base Address Register) convention: register BAR 0,
-            memory BAR 2. ENA defines ENA_REG_BAR 0 and ENA_MEM_BAR 2{' '}
-            <SourceRef provenance="code-derived" code={code.enaBars} />. EFA defines EFA_REG_BAR 0
-            and EFA_MEM_BAR 2{' '}
-            <SourceRef provenance="code-derived" code={code.efaBars} />. Both push into that
-            region with write-combining. Then the paths diverge.
-          </Box>
-
-          <WhoHoldsThePenDiagram />
-
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">ENA: the kernel driver writes</Box>
-              <Box variant="p">
-                ena.ko maps BAR 2 with devm_ioremap_wc, a write-combined mapping, during probe{' '}
-                <SourceRef provenance="code-derived" code={code.enaWcMap} />. On transmit the
-                driver assembles the descriptor entry in a host-memory bounce buffer, issues a
-                write memory barrier, then blits the whole entry into the device with
-                __iowrite64_copy, flipping a phase bit on ring wrap so the device can tell fresh
-                entries from stale ones{' '}
-                <SourceRef provenance="code-derived" code={code.enaPush} />.
-              </Box>
-              <Box variant="p">
-                Push mode removes a device-side descriptor fetch. It does not remove the kernel.
-                The application still makes a system call, the kernel network stack still
-                processes the packet, and ena.ko is still in the data path for every packet sent.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">EFA: the application writes</Box>
-              <Box variant="p">
-                EFA send-queue descriptors live in the same MEM BAR. The driver computes
-                sq-&gt;desc as mem_bar plus llq_descriptors_offset{' '}
-                <SourceRef provenance="code-derived" code={code.efaSqDesc} />. Then it does the
-                thing ENA never does: it hands the region to userspace. efa_user_mmap_entry_insert
-                creates a mapping with attribute EFA_MMAP_IO_WC, write-combined, and returns a
-                key{' '}
-                <SourceRef provenance="code-derived" code={code.efaUserMap} />.
-              </Box>
-              <Box variant="p">
-                That key crosses the user ABI (Application Binary Interface) as llq_desc_mmap_key,
-                alongside llq_desc_offset{' '}
-                <SourceRef provenance="code-derived" code={code.efaAbiKeys} />. libfabric mmaps it
-                and writes descriptors straight into the card. efa.ko set the mapping up and left.
-              </Box>
-            </div>
-          </ColumnLayout>
-
-          <Alert type="success" header="OS bypass, expressed in code rather than asserted in prose">
-            A grep across the ENA driver sources for .mmap, remap_pfn_range and vm_ops returns
-            zero hits. There is no character device, no verbs interface, and no userspace-visible
-            doorbell or descriptor ring anywhere in the ENA tree{' '}
-            <SourceRef provenance="code-derived" code={code.enaWcMap} />. EFA has all of them.
-            That single asymmetry is what OS bypass means. It is also the strongest evidence for
-            the shared-substrate reading: the two devices are built from one house design
-            language, admin queue abstraction, phase bits, BAR 2 push region, write-combining,
-            while remaining separate implementations.
-          </Alert>
-
-          <ExpandableSection
-            headerText="Depth: why write-combining is the load-bearing attribute"
-            headerDescription="The reason both drivers ask for the same mapping type"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                A write-combined mapping lets the CPU buffer consecutive stores and emit them as
-                one large PCIe transaction instead of many small ones. Without it, a 128-byte
-                descriptor entry becomes sixteen separate 8-byte writes across the bus, and push
-                mode would be slower than letting the device fetch the descriptor itself.
-              </Box>
-              <Box variant="p">
-                ENA gets it from devm_ioremap_wc in the kernel{' '}
-                <SourceRef provenance="code-derived" code={code.enaWcMap} />. EFA gets it from
-                EFA_MMAP_IO_WC on the userspace mapping{' '}
-                <SourceRef provenance="code-derived" code={code.efaUserMap} />. EFA maps doorbells
-                separately as non-cached, because a doorbell is a single write that must land
-                immediately rather than sit in a combining buffer. Two mapping types, chosen for
-                two access patterns, in one driver.
-              </Box>
-              <Box variant="p">
-                One asymmetry worth knowing on the ENA side: LLQ is transmit only. Receive
-                submission queues always run in regular mode, so the device fetches receive
-                descriptors from host memory. Push mode removes a fetch on the send path and
-                nothing on the receive path.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="A conventional network device driver, and a good one">
+          <Header variant="h2" description="A conventional multi-queue NIC driver, with the kernel in the data path for every packet">
             What ENA actually is
           </Header>
         }
@@ -780,14 +775,14 @@ export function EnaVsEfa() {
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="Correction: ENA does not do LRO">
+          <Alert type="warning" header="Software GRO, not hardware LRO">
             Secondary write-ups routinely credit ENA with LRO (Large Receive Offload). The code
             says otherwise. The receive path calls napi_gro_receive, the Linux stack entry point
             for GRO (Generic Receive Offload), which aggregates in software after delivery{' '}
             <SourceRef provenance="code-derived" code={code.enaGro} />. A grep for lro across the
             ENA and common driver trees returns zero hits beyond incidental substring matches on
             tailroom. There is no LRO implementation, no NETIF_F_LRO feature bit, and no hardware
-            coalescing path. Software GRO, not hardware LRO.
+            coalescing path.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -816,7 +811,7 @@ export function EnaVsEfa() {
             the entire point.
           </Box>
 
-          <Alert type="info" header="The honest caveat AWS publishes and most write-ups omit">
+          <Alert type="info" header="The same AWS guide documents a median latency cost">
             In the same guide: during periods of time when network traffic is light, you might
             notice a slight increase in median packet latency, tens of microseconds, when the
             packet uses ENA Express{' '}
@@ -1031,6 +1026,79 @@ ethtool -S eth0 | grep ena_srd
 
       <Container
         header={
+          <Header
+            variant="h2"
+            description="No first-party source settles any of these three. Do not size anything on them."
+          >
+            Three questions that stay open
+          </Header>
+        }
+      >
+        <SpaceBetween size="s">
+          <ExpandableSection
+            headerText="Is the ENA Express 25 Gbps figure same-Availability-Zone or same-Region?"
+            headerDescription="Two AWS pages, two different scopes, both first-party"
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                The instance network bandwidth guide says, verbatim: configure ENA Express for
+                eligible instances within the same Availability Zone to achieve up to 25 Gbps
+                between those instances{' '}
+                <SourceRef provenance="documented" doc={docs.bandwidth} />.
+              </Box>
+              <Box variant="p">
+                The ENA Express guide says, verbatim: increases the maximum bandwidth a single
+                flow can use from 5 Gbps up to 25 Gbps within the same Region, up to the aggregate
+                instance limit. It reserves the same-Availability-Zone language for the tail
+                latency benefit instead{' '}
+                <SourceRef provenance="documented" doc={docs.enaExpress} />.
+              </Box>
+              <Box variant="p">
+                These cannot both be the scope, and the driver cannot break the tie, because it
+                only reads counters{' '}
+                <SourceRef provenance="code-derived" code={code.srdGet} />. If you are sizing on the
+                25 Gbps figure across Availability Zones, confirm it before you build on it.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+
+          <ExpandableSection
+            headerText="Do the five EFA PCI IDs map to EFA v1 through v4?"
+            headerDescription="The obvious reading is not stated anywhere, so it is not asserted here"
+          >
+            <Box variant="p">
+              The table defines five IDs, PCI_DEV_ID_EFA0_VF through PCI_DEV_ID_EFA4_VF{' '}
+              <SourceRef provenance="code-derived" code={code.efaPciIds} />, while AWS names four
+              EFA generations across four Nitro versions{' '}
+              <SourceRef provenance="documented" doc={docs.efa} />. The tempting reading is that
+              0xefa0 is EFA v1 and so on. No source in the repository states that mapping, and five
+              identifiers against four named generations does not reconcile cleanly under any
+              obvious rule, so do not infer a generation from a device ID. Running lspci with
+              numeric IDs on a current-generation instance would settle it.
+            </Box>
+          </ExpandableSection>
+
+          <ExpandableSection
+            headerText="Can ENA Express run on the ENA half of an EFA attachment?"
+            headerDescription="Not determinable from driver code"
+          >
+            <Box variant="p">
+              An EFA with ENA attachment has both devices{' '}
+              <SourceRef provenance="documented" doc={docs.efa} />, and ENA Express is an
+              attachment-level setting{' '}
+              <SourceRef provenance="code-derived" code={code.srdFlags} />. Whether the EC2 control
+              plane permits enabling ENA Express on the ENA half of an EFA-type interface is
+              visible nowhere in the drivers, because the drivers have no SET path at all{' '}
+              <SourceRef provenance="code-derived" code={code.srdGet} />, and the fetched
+              documentation does not address it. Settling it needs an API experiment against an
+              efa-type interface, not more reading.
+            </Box>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
           <Header variant="h2" description="Four axes that actually decide it: latency, CPU cost, ordering, programming model">
             Choosing between them
           </Header>
@@ -1111,80 +1179,6 @@ ethtool -S eth0 | grep ena_srd
             uncongested-latency tax. EFA is SRD without the kernel: you get the lowest latency but
             must adopt libfabric and give up IP addressing, routing and cross-zone reach.
           </Alert>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Published as open rather than resolved, because no source settles them"
-          >
-            What this section does not know
-          </Header>
-        }
-      >
-        <SpaceBetween size="s">
-          <ExpandableSection
-            headerText="Is the ENA Express 25 Gbps figure same-Availability-Zone or same-Region?"
-            headerDescription="Two AWS pages, two different scopes, both first-party"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                The instance network bandwidth guide says, verbatim: configure ENA Express for
-                eligible instances within the same Availability Zone to achieve up to 25 Gbps
-                between those instances{' '}
-                <SourceRef provenance="documented" doc={docs.bandwidth} />.
-              </Box>
-              <Box variant="p">
-                The ENA Express guide says, verbatim: increases the maximum bandwidth a single
-                flow can use from 5 Gbps up to 25 Gbps within the same Region, up to the aggregate
-                instance limit. It reserves the same-Availability-Zone language for the tail
-                latency benefit instead{' '}
-                <SourceRef provenance="documented" doc={docs.enaExpress} />.
-              </Box>
-              <Box variant="p">
-                These cannot both be the scope. The driver cannot settle it, because the driver
-                only reads counters{' '}
-                <SourceRef provenance="code-derived" code={code.srdGet} />. Both quotes are
-                published here and neither is picked. If you are sizing on the 25 Gbps figure
-                across Availability Zones, confirm it before you build on it.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
-
-          <ExpandableSection
-            headerText="Do the five EFA PCI IDs map to EFA v1 through v4?"
-            headerDescription="The obvious reading is not stated anywhere, so it is not asserted here"
-          >
-            <Box variant="p">
-              The table defines five IDs, PCI_DEV_ID_EFA0_VF through PCI_DEV_ID_EFA4_VF{' '}
-              <SourceRef provenance="code-derived" code={code.efaPciIds} />, while AWS names four
-              EFA generations across four Nitro versions{' '}
-              <SourceRef provenance="documented" doc={docs.efa} />. The tempting reading is that
-              0xefa0 is EFA v1 and so on. No source in the repository states that mapping, and
-              five identifiers against four named generations does not reconcile cleanly under
-              any obvious rule. This page does not assert it. Running lspci with numeric IDs on a
-              current-generation instance would settle it.
-            </Box>
-          </ExpandableSection>
-
-          <ExpandableSection
-            headerText="Can ENA Express run on the ENA half of an EFA attachment?"
-            headerDescription="Not determinable from driver code"
-          >
-            <Box variant="p">
-              An EFA with ENA attachment has both devices{' '}
-              <SourceRef provenance="documented" doc={docs.efa} />, and ENA Express is an
-              attachment-level setting{' '}
-              <SourceRef provenance="code-derived" code={code.srdFlags} />. Whether the EC2 control
-              plane permits enabling ENA Express on the ENA half of an EFA-type interface is
-              visible nowhere in the drivers, because the drivers have no SET path at all{' '}
-              <SourceRef provenance="code-derived" code={code.srdGet} />, and the fetched
-              documentation does not address it. Settling it needs an API experiment against an
-              efa-type interface, not more reading.
-            </Box>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

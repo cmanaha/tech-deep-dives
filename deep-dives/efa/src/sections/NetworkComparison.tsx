@@ -296,13 +296,13 @@ export function NetworkComparison() {
         variant="embedded"
       />
 
-      <Alert type="info" header="Numbers this table no longer carries">
-        The latency row used to give four microsecond figures, one per column. None traced to a
-        source. The tail-latency row used to say p99.9 and 85%; the AWS statement is p99 and around
-        a factor of ten <SourceRef provenance="documented" doc={docs.hpcBlog} />. The RDMA row used
-        to say write arrived at Nitro v6; it is Nitro v4 and later{' '}
-        <SourceRef provenance="documented" doc={docs.efa} />. Per-port InfiniBand rates were removed
-        because we could not fetch an NVIDIA page stating them.
+      <Alert type="info" header="Numbers this table does not carry">
+        There is no latency row: no per-column microsecond figure for these four fabrics traces to a
+        source that can be cited. The tail-latency figures p99.9 and 85% are not what AWS states;
+        the AWS statement is p99 and around a factor of ten{' '}
+        <SourceRef provenance="documented" doc={docs.hpcBlog} />. RDMA write did not arrive at Nitro
+        v6; it is Nitro v4 and later <SourceRef provenance="documented" doc={docs.efa} />. Per-port
+        InfiniBand rates are absent because no NVIDIA page stating them was located.
       </Alert>
 
       <Container header={<Header variant="h2">Where SRD Wins, and Where It Does Not</Header>}>

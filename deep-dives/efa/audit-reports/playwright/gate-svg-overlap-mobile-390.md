@@ -4,7 +4,7 @@ Status: **PASS** (0 finding(s))
 
 | field | value |
 | --- | --- |
-| generated | 2026-08-02T17:48:48.722Z |
+| generated | 2026-08-02T21:12:38.388Z |
 | viewport | 390 x 844 |
 | base URL | http://127.0.0.1:4173/ |
 | sections visited | 20 |
@@ -81,13 +81,13 @@ These do not change the verdict above. They are a human judgement call.
 
 - smallest label renders at 3.8px (34 of 34 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
 
-**ena-efa-substrate-title - SRD, the Scalable Reliable Datagram transport, lives in the Nitro card below both devices. The ENA device cons...**
-
-- smallest label renders at 3.5px (17 of 17 labels below 8px). The diagram is 308px wide here against a 880-unit viewBox.
-
 **ena-efa-pen-title - ENA and EFA push transmit descriptors into the same write-combined memory region on the Nitro card, base addre...**
 
 - smallest label renders at 3.4px (29 of 29 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
+
+**ena-efa-substrate-title - SRD, the Scalable Reliable Datagram transport, lives in the Nitro card below both devices. The ENA device cons...**
+
+- smallest label renders at 3.5px (17 of 17 labels below 8px). The diagram is 308px wide here against a 880-unit viewBox.
 
 ### topology (3)
 

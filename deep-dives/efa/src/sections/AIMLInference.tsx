@@ -131,11 +131,11 @@ export function AIMLInference() {
                 between two specific nodes, at an unpredictable moment. Different patterns, so
                 different libraries.
               </Box>
-              <Alert type="info" header="The percentage that used to be here is gone">
-                This panel previously claimed NIXL outperforms NCCL by 30 to 50% at KV-cache
-                transfer sizes. That figure rested on a benchmark repository cited at a URL that
-                does not exist and was attributed to the wrong organization. Rather than re-hedge
-                it, we removed it. If you need the number, measure it on your own transfer sizes.
+              <Alert type="info" header="Do not trust a NIXL versus NCCL percentage you find quoted">
+                A figure in the 30 to 50% range circulates for NIXL against NCCL at KV-cache
+                transfer sizes. No benchmark that supports it was located during this research, and
+                the repository usually cited for it is attributed to the wrong organization. Treat
+                the gap as unquantified and measure it on your own transfer sizes.
               </Alert>
             </div>
           </ColumnLayout>

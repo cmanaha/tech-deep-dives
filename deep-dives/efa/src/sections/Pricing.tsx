@@ -251,7 +251,7 @@ export function Pricing() {
         header={
           <Header
             variant="h2"
-            description="Why the previous version of this page was wrong, and what that says about citing prices"
+            description="Why a stale rate and a recent price cut look identical unless the version is cited"
           >
             Staleness, not a price move
           </Header>
@@ -259,12 +259,11 @@ export function Pricing() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            This page used to quote $98.32 for p5.48xlarge and $32.77 for p4d.24xlarge. Both were
-            genuinely correct at the time they were written. AWS cut them in the June 2025 price
-            list and they have not moved since. The March 2026 content pass could already have
-            read $55.04 and $21.957642 out of the live file and did not. The old figures were
-            stale, not fabricated, and calling this a recent price cut would misattribute an
-            authoring miss to AWS.{' '}
+            $98.32 for p5.48xlarge and $32.77 for p4d.24xlarge were correct on-demand rates when
+            the January and May 2025 price lists published them. AWS cut both in the June 2025
+            price list, to $55.04 and $21.957642, and they have not moved since. Quoting the older
+            pair today would read as a recent AWS price cut rather than as a citation that aged,
+            which is why a rate needs the version it came from attached to it.{' '}
             <SourceRef provenance="documented" doc={PRICE_LIST_ARCHIVE} label="doc: archived versions" />
           </Box>
           <Table
@@ -345,11 +344,11 @@ export function Pricing() {
 
       <Container header={<Header variant="h2">Placement, capacity and the constraints that actually bind</Header>}>
         <SpaceBetween size="m">
-          <Alert type="error" header="Correction: a cluster placement group is recommended, not required">
+          <Alert type="error" header="A cluster placement group is recommended, not required">
             <Box variant="p">
-              An earlier version of this page said EFA requires a cluster placement group. AWS says
-              the opposite in as many words: "It is not an absolute requirement to launch your
-              EFA-enabled instances into a cluster placement group. However, we do recommend
+              EFA does not require a cluster placement group. AWS says so in as many words: "It is
+              not an absolute requirement to launch your EFA-enabled instances into a cluster
+              placement group. However, we do recommend
               running your EFA-enabled instances in a cluster placement group as it launches the
               instances into a low-latency group in a single Availability Zone."{' '}
               <SourceRef provenance="documented" doc={EFA_START_DOC} label="doc: efa-start" />
