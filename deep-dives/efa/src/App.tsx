@@ -10,11 +10,15 @@ const Libfabric = React.lazy(() => import('./sections/Libfabric').then(m => ({ d
 const EnaVsEfa = React.lazy(() => import('./sections/EnaVsEfa').then(m => ({ default: m.EnaVsEfa })));
 const TopologyApi = React.lazy(() => import('./sections/TopologyApi').then(m => ({ default: m.TopologyApi })));
 const InstanceSupport = React.lazy(() => import('./sections/InstanceSupport').then(m => ({ default: m.InstanceSupport })));
+const NcclOverEfa = React.lazy(() => import('./sections/NcclOverEfa').then(m => ({ default: m.NcclOverEfa })));
 const AIMLTraining = React.lazy(() => import('./sections/AIMLTraining').then(m => ({ default: m.AIMLTraining })));
 const AIMLInference = React.lazy(() => import('./sections/AIMLInference').then(m => ({ default: m.AIMLInference })));
 const HPC = React.lazy(() => import('./sections/HPC').then(m => ({ default: m.HPC })));
 const NetworkComparison = React.lazy(() => import('./sections/NetworkComparison').then(m => ({ default: m.NetworkComparison })));
 const EKSIntegration = React.lazy(() => import('./sections/EKSIntegration').then(m => ({ default: m.EKSIntegration })));
+const SageMaker = React.lazy(() => import('./sections/SageMaker').then(m => ({ default: m.SageMaker })));
+const StorageDataPaths = React.lazy(() => import('./sections/StorageDataPaths').then(m => ({ default: m.StorageDataPaths })));
+const Operations = React.lazy(() => import('./sections/Operations').then(m => ({ default: m.Operations })));
 const Pricing = React.lazy(() => import('./sections/Pricing').then(m => ({ default: m.Pricing })));
 const DecisionGuide = React.lazy(() => import('./sections/DecisionGuide').then(m => ({ default: m.DecisionGuide })));
 const Sources = React.lazy(() => import('./sections/Sources').then(m => ({ default: m.Sources })));
@@ -24,17 +28,13 @@ const Sources = React.lazy(() => import('./sections/Sources').then(m => ({ defau
  * framing, then mechanism, then placement and topology, then workloads,
  * then platform surfaces, then comparison and reference.
  *
- * The former 'architecture' section is deliberately no longer routed. It has
- * been split into Data Path, SRD, The EFA Device and libfabric, and its
- * original text carried three claims those sections now correct (proof of
- * OS bypass by absence, RDMA read and write being software-emulated, and
- * Data Path Direct removing rdma-core entirely). Routing both would have
- * published a page that contradicts itself.
- *
- * Architecture.tsx stays on disk because its NCCL tuning and operational
- * gotchas content has not been migrated yet. That content moves to the
- * planned 'NCCL over EFA' and 'Operations and Failure Modes' sections in the
- * next wave, at which point the file is deleted.
+ * The former 'architecture' section has been deleted. It was split into Data
+ * Path, SRD, The EFA Device and libfabric; its NCCL tuning content moved to
+ * 'NCCL over EFA' and its operational gotchas, including the lib versus lib64
+ * install-path trap, moved to 'Operations'. Its original text carried three
+ * claims those sections now correct: proof of OS bypass by absence, RDMA read
+ * and write being software-emulated, and Data Path Direct removing rdma-core
+ * entirely. It is recoverable from git history if anything was missed.
  */
 const sections = [
   { id: 'overview', title: 'What is EFA?' },
@@ -45,11 +45,15 @@ const sections = [
   { id: 'ena', title: 'ENA and EFA: Two Devices, One Nitro Card' },
   { id: 'topology', title: 'The EC2 Instance Topology API' },
   { id: 'instances', title: 'Instance Support Matrix' },
+  { id: 'nccl', title: 'NCCL over EFA: the aws-ofi-nccl Plugin' },
   { id: 'training', title: 'AI/ML Training' },
   { id: 'inference', title: 'AI/ML Inference' },
   { id: 'hpc', title: 'Traditional HPC' },
+  { id: 'storage', title: 'Storage Data Paths: FSx, S3 and the CRT' },
   { id: 'comparison', title: 'EFA vs Alternatives' },
-  { id: 'eks', title: 'EKS & Containers' },
+  { id: 'eks', title: 'EFA on Amazon EKS' },
+  { id: 'sagemaker', title: 'EFA on SageMaker and HyperPod' },
+  { id: 'operations', title: 'Operations, Observability and Failure Modes' },
   { id: 'pricing', title: 'Pricing Analysis' },
   { id: 'decision', title: 'Decision Guide' },
   { id: 'sources', title: 'Sources' },
@@ -64,11 +68,15 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   ena: EnaVsEfa,
   topology: TopologyApi,
   instances: InstanceSupport,
+  nccl: NcclOverEfa,
   training: AIMLTraining,
   inference: AIMLInference,
   hpc: HPC,
+  storage: StorageDataPaths,
   comparison: NetworkComparison,
   eks: EKSIntegration,
+  sagemaker: SageMaker,
+  operations: Operations,
   pricing: Pricing,
   decision: DecisionGuide,
   sources: Sources,
