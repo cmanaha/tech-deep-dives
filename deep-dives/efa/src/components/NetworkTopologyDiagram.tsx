@@ -60,7 +60,7 @@ const switchStyle = {
   textAlign: 'center' as const,
 };
 
-// Node 1 — p5.48xlarge
+// Node 1: p5.48xlarge
 const node1Gpus: Node[] = Array.from({ length: 8 }, (_, i) => ({
   id: `n1-gpu-${i}`,
   position: { x: 20 + i * 42, y: 40 },
@@ -80,7 +80,7 @@ const node1Efas: Node[] = Array.from({ length: 4 }, (_, i) => ({
   sourcePosition: Position.Bottom,
 }));
 
-// Node 2 — p5.48xlarge
+// Node 2: p5.48xlarge
 const node2Gpus: Node[] = Array.from({ length: 8 }, (_, i) => ({
   id: `n2-gpu-${i}`,
   position: { x: 20 + i * 42, y: 40 },
@@ -149,7 +149,7 @@ const containerNodes: Node[] = [
   {
     id: 'simplification-label',
     position: { x: 230, y: 370 },
-    data: { label: '(4 of 32 EFA shown — simplified)' },
+    data: { label: '(4 of 32 EFA shown, simplified)' },
     style: { background: 'transparent', border: 'none', fontSize: '10px', color: '#687078', fontStyle: 'italic', fontWeight: 400, width: '260px', textAlign: 'center' as const },
     draggable: false,
   },

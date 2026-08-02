@@ -120,8 +120,8 @@ export function NetworkComparison() {
         }
       >
         <Box variant="p">
-          <strong>The question isn&apos;t &quot;which protocol is fastest&quot;</strong> —
-          it&apos;s &quot;given my workload&apos;s communication pattern, node count, and
+          <strong>The question isn&apos;t &quot;which protocol is fastest&quot;</strong>.
+          It&apos;s &quot;given my workload&apos;s communication pattern, node count, and
           budget, which networking approach gives the best outcome?&quot; NVLink wins
           intra-node. EFA wins inter-node on AWS. RDMA/InfiniBand wins on-prem for
           MoE and latency-critical workloads. TCP is fine when networking isn&apos;t
@@ -150,7 +150,7 @@ export function NetworkComparison() {
             <Box variant="p">
               RDMA (RoCE v2) requires a <strong>lossless network fabric</strong>. This means
               Priority Flow Control (PFC) must be enabled on every switch. PFC works by
-              pausing traffic when buffers fill — but this creates <strong>head-of-line
+              pausing traffic when buffers fill, but this creates <strong>head-of-line
               blocking</strong> that can cascade across the entire fabric. At datacenter scale,
               PFC-induced deadlocks are a real operational risk.
             </Box>

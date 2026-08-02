@@ -19,7 +19,7 @@ export function HPC() {
         <Box variant="p">
           EFA was originally built for HPC. The AI/ML use case came later as distributed
           training grew. For HPC, EFA enables <strong>tightly-coupled MPI workloads</strong> that
-          exchange boundary conditions every timestep — workloads that were historically
+          exchange boundary conditions every timestep, workloads that were historically
           impossible in the cloud due to network latency and jitter.
         </Box>
       </Container>
@@ -29,11 +29,11 @@ export function HPC() {
           <div>
             <Box variant="h3">Tightly Coupled (EFA critical)</Box>
             <ul>
-              <li><strong>Weather/Climate:</strong> WRF (Weather Research and Forecasting), MPAS, IFS — domain decomposition, halo exchange every timestep</li>
-              <li><strong>CFD:</strong> OpenFOAM, ANSYS Fluent — mesh partitioning, neighbor communication</li>
-              <li><strong>Molecular Dynamics:</strong> GROMACS, LAMMPS, NAMD — particle domain decomposition</li>
+              <li><strong>Weather/Climate:</strong> WRF (Weather Research and Forecasting), MPAS, IFS: domain decomposition, halo exchange every timestep</li>
+              <li><strong>CFD:</strong> OpenFOAM, ANSYS Fluent: mesh partitioning, neighbor communication</li>
+              <li><strong>Molecular Dynamics:</strong> GROMACS, LAMMPS, NAMD: particle domain decomposition</li>
               <li><strong>Seismic Processing:</strong> Finite-difference wave propagation</li>
-              <li><strong>Structural Analysis:</strong> ABAQUS, LS-DYNA — implicit solvers with global coupling</li>
+              <li><strong>Structural Analysis:</strong> ABAQUS, LS-DYNA: implicit solvers with global coupling</li>
             </ul>
           </div>
           <div>
@@ -41,7 +41,7 @@ export function HPC() {
             <ul>
               <li><strong>Monte Carlo:</strong> Independent trajectories, minimal communication</li>
               <li><strong>Parameter sweeps:</strong> Embarrassingly parallel, no inter-rank communication</li>
-              <li><strong>Genomics pipelines:</strong> BWA, GATK — mostly I/O bound, not network bound</li>
+              <li><strong>Genomics pipelines:</strong> BWA, GATK: mostly I/O bound, not network bound</li>
               <li><strong>Rendering:</strong> Frame-independent, scatter-gather at boundaries</li>
             </ul>
           </div>
@@ -99,7 +99,7 @@ export function HPC() {
               <Box variant="p">
                 Set <code>FI_PROVIDER=efa</code>, <code>I_MPI_OFI_LIBRARY_INTERNAL=0</code>,
                 and <code>I_MPI_MULTIRAIL=1</code> (for instances with 2+ EFA interfaces).
-                Intel MPI has its own libfabric — point it to the system libfabric with EFA support.
+                Intel MPI has its own libfabric. Point it to the system libfabric with EFA support.
               </Box>
             </div>
             <div>

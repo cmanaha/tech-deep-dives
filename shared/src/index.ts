@@ -2,6 +2,8 @@
 export { DeepDiveLayout } from './layouts/DeepDiveLayout';
 export type { SiblingDeepDive } from './layouts/DeepDiveLayout';
 export { SourceCitation } from './components/SourceCitation';
+export { SourceRef, codeUrl, codeLabel } from './components/SourceRef';
+export type { Provenance, DocRef, CodeRef, SourceRefProps } from './components/SourceRef';
 export { SourcesAppendix } from './components/SourcesAppendix';
 export type { Source, SourceTier, SourceType, FactCheckItem } from './components/SourcesAppendix';
 export { PricingTable } from './components/PricingTable';

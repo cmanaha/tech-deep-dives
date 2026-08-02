@@ -41,15 +41,15 @@ export function AIMLTraining() {
               At 3,200 Gbps (P5 EFA): ~70ms. That&apos;s a <strong>31x reduction</strong>.
             </Box>
             <StatusIndicator type="success">
-              EFA critical — allreduce is the bottleneck
+              EFA critical: allreduce is the bottleneck
             </StatusIndicator>
           </div>
           <div>
             <Box variant="h3">Model Parallelism (Tensor + Pipeline)</Box>
             <Box variant="p">
-              Tensor parallelism splits individual layers across GPUs — requires
+              Tensor parallelism splits individual layers across GPUs and requires
               <strong> all-to-all</strong> communication every forward/backward pass.
-              Pipeline parallelism splits layers sequentially — requires
+              Pipeline parallelism splits layers sequentially and requires
               <strong> point-to-point</strong> activation transfers between stages.
             </Box>
             <Box variant="p">
@@ -58,7 +58,7 @@ export function AIMLTraining() {
               EFA helps both: low latency for TP (Tensor Parallelism), high bandwidth for PP (Pipeline Parallelism).
             </Box>
             <StatusIndicator type="success">
-              EFA critical — especially for tensor parallelism across nodes
+              EFA critical, especially for tensor parallelism across nodes
             </StatusIndicator>
           </div>
           <div>
@@ -106,24 +106,24 @@ export function AIMLTraining() {
           <ExpandableSection headerText="How the stack works">
             <SpaceBetween size="s">
               <Box variant="p">
-                <strong>1. PyTorch/framework layer</strong> — Calls NCCL for collective operations
+                <strong>1. PyTorch/framework layer:</strong> Calls NCCL for collective operations
                 (allreduce, allgather, reduce-scatter)
               </Box>
               <Box variant="p">
-                <strong>2. NCCL</strong> — Implements collective algorithms (ring, tree, recursive halving-doubling).
+                <strong>2. NCCL:</strong> Implements collective algorithms (ring, tree, recursive halving-doubling).
                 Determines which GPU talks to which GPU and in what order.
               </Box>
               <Box variant="p">
-                <strong>3. aws-ofi-nccl plugin</strong> — Translates NCCL&apos;s transport operations
+                <strong>3. aws-ofi-nccl plugin:</strong> Translates NCCL&apos;s transport operations
                 (send/recv on channels) into libfabric operations. Handles memory registration,
                 GDR (GPUDirect RDMA) when available.
               </Box>
               <Box variant="p">
-                <strong>4. libfabric EFA provider</strong> — Maps libfabric operations to
+                <strong>4. libfabric EFA provider:</strong> Maps libfabric operations to
                 EFA hardware commands. Manages queue pairs, completion queues.
               </Box>
               <Box variant="p">
-                <strong>5. EFA hardware + SRD</strong> — Moves data between nodes. Multi-path
+                <strong>5. EFA hardware + SRD:</strong> Moves data between nodes. Multi-path
                 routing, packet spraying, hardware-based reliability.
               </Box>
             </SpaceBetween>
@@ -173,7 +173,7 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
               <Box variant="p">
                 <strong>GPU memory gets different transfer protocols:</strong> When the source
                 or destination is GPU memory (detected via <code>cuda_is_addr_cuda_accessible</code>),
-                libfabric restricts to only eager and runt-read protocols — the medium-message
+                libfabric restricts to only eager and runt-read protocols: the medium-message
                 rendezvous protocol is skipped entirely. This is because GPU memory cannot be
                 used as an inline source for the medium protocol&apos;s copy semantics.
                 (Source: <code>efa_rdm_ep_use_p2p</code> in ofiwg/libfabric)
@@ -182,11 +182,11 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
                 <strong>NCCL operation mapping to libfabric verbs:</strong>
               </Box>
               <ul>
-                <li><code>fi_send</code> — eager sends for small messages (below rendezvous threshold)</li>
-                <li><code>fi_write</code> with immediate data — RDMA write path; immediate data
+                <li><code>fi_send</code>: eager sends for small messages (below rendezvous threshold)</li>
+                <li><code>fi_write</code> with immediate data: RDMA write path; immediate data
                   bit-packs <code>comm_id + seq_num + segment_count</code> into a single 64-bit value
                   for zero-copy completion signaling</li>
-                <li><code>fi_read</code> — runt-read protocol for large GPU transfers</li>
+                <li><code>fi_read</code>: runt-read protocol for large GPU transfers</li>
               </ul>
               <Box variant="p">
                 <strong>Multi-rail implementation</strong> (Source: <code>nccl_ofi_rdma.c</code> in
@@ -195,20 +195,20 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
                 Rail selection uses a three-phase software handshake: (1) sender picks a
                 rail, (2) sends connection request with rail metadata, (3) receiver
                 confirms and binds the rail for that communicator. This is entirely in
-                software — the hardware has no concept of rails.
+                software. The hardware has no concept of rails.
               </Box>
               <Box variant="p">
                 <strong>P2P GPU RDMA is runtime-probed:</strong> The plugin calls
                 <code>cuPointerGetAttribute</code> at runtime to check if GPU memory is
                 directly accessible from the NIC. If not (older drivers, unsupported topology),
                 it silently falls back to <code>cudaMemcpy</code> staging through host memory.
-                This means P2P RDMA is never guaranteed — always verify with{' '}
+                This means P2P RDMA is never guaranteed. Always verify with{' '}
                 <code>NCCL_DEBUG=INFO</code> logs showing &quot;GPU Direct RDMA Enabled&quot;.
               </Box>
               <Box variant="p">
                 <strong>Lazy QP creation:</strong> Queue Pairs are not created at{' '}
                 <code>fi_endpoint</code> allocation time. The actual hardware QP is created
-                at <code>fi_enable</code> — allowing the application to set all QP parameters
+                at <code>fi_enable</code>, allowing the application to set all QP parameters
                 before committing hardware resources. This matters for large clusters where
                 thousands of endpoints are allocated but only a subset are used.
               </Box>
@@ -216,9 +216,9 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
                 <strong>NCCL topology XML schema:</strong> The XML describes a tree of{' '}
                 <code>&lt;system&gt;</code> → <code>&lt;cpu&gt;</code> → <code>&lt;pci&gt;</code> →{' '}
                 <code>&lt;gpu&gt;</code>/<code>&lt;nic&gt;</code> nodes. Each NIC is placed under
-                the same PCIe switch as its paired GPUs — this is how NCCL knows which NIC to use
+                the same PCIe switch as its paired GPUs. This is how NCCL knows which NIC to use
                 for each GPU&apos;s inter-node traffic. <code>aws-ofi-nccl</code> ships XML files
-                for P4d and P4de only. P5/P5en have NO topology XML — the plugin uses{' '}
+                for P4d and P4de only. P5/P5en have NO topology XML, so the plugin uses{' '}
                 <code>sort_rails()</code> to software-reorder NIC assignments instead.
                 (Source: <code>aws/aws-ofi-nccl topology/</code> directory)
               </Box>
@@ -226,7 +226,7 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
                 <strong>Algorithm selection:</strong> NCCL&apos;s <code>cmpScore()</code> in{' '}
                 <code>search.cc</code> prioritizes: interBw &gt; interPciBw &gt; interNhops &gt;
                 intraBw &gt; intraNhops. The <code>aws-ofi-nccl</code> tuner does NOT set{' '}
-                <code>NCCL_ALGO</code>/<code>NCCL_PROTO</code> directly — it modifies{' '}
+                <code>NCCL_ALGO</code>/<code>NCCL_PROTO</code> directly. It modifies{' '}
                 <code>collCostTable[][]</code> (the algorithm×protocol cost matrix), making
                 preferred combinations cheaper. Setting <code>NCCL_ALGO</code> or{' '}
                 <code>NCCL_PROTO</code> env vars <strong>disables the tuner entirely</strong>.
@@ -247,7 +247,7 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
                 <strong>NVIDIA Fabric Manager required on P4d/P5:</strong> The{' '}
                 <code>nvidia-fabricmanager</code> systemd service must be running to manage
                 NVSwitch. Its version must <strong>exactly match</strong> the NVIDIA kernel
-                module version — a mismatch renders all 8 GPUs non-functional for
+                module version. A mismatch renders all 8 GPUs non-functional for
                 inter-GPU operations.
               </Alert>
               <Alert type="warning">
@@ -269,7 +269,7 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
           <Box variant="p">
             AWS Trainium and Inferentia2 chips use the <strong>Neuron SDK</strong> instead of
             CUDA/NCCL. The Neuron Collective Communication Library (Neuron CCL) talks to EFA
-            directly via libfabric — no NCCL plugin needed.
+            directly via libfabric (no NCCL plugin needed).
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -297,7 +297,7 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
                 Engine</strong> that orchestrates collectives (AllReduce, AllGather,
                 ReduceScatter, All-to-All) independently from the NeuronCores. The CC cores
                 control data movement engines, enabling communication to execute
-                <strong> in parallel</strong> with compute — providing 10-15% additional
+                <strong> in parallel</strong> with compute, providing 10-15% additional
                 acceleration that CUDA/NCCL architectures cannot match.
               </Box>
               <Box variant="p">
@@ -323,10 +323,10 @@ FI_LOG_LEVEL=info                  # Enable libfabric logging`}
             hundreds of nodes. Without EFA (TCP): drops to 40-60% at the same scale.
           </Box>
           <Box variant="p">
-            The difference is not subtle — it directly translates to cost.
+            The difference is not subtle. It directly translates to cost.
             If scaling efficiency is 90% on 64 nodes, you&apos;re paying for 64 nodes
             but getting the work of ~58. At 50% efficiency, you&apos;re getting the work of ~32.
-            EFA doesn&apos;t just make training faster — it makes multi-node training
+            EFA doesn&apos;t just make training faster. It makes multi-node training
             <strong> economically viable</strong>.
           </Box>
         </SpaceBetween>

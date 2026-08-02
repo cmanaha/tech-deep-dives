@@ -1,0 +1,4 @@
+# Playwright run artifacts. The reviewable output of an audit run is the
+# markdown under audit-reports/playwright/, which is committed on purpose.
+playwright-report/
+test-results/

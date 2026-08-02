@@ -18,7 +18,7 @@ export function AIMLInference() {
         }
       >
         <Alert type="info">
-          <strong>Key insight:</strong> EFA matters for inference in three distinct scenarios — not
+          <strong>Key insight:</strong> EFA matters for inference in three distinct scenarios, not
           just when the model doesn&apos;t fit on one node. Disaggregated serving architectures and
           KV-cache migration create EFA-critical transfer patterns even when every node has enough
           GPU memory for the full model.
@@ -59,7 +59,7 @@ export function AIMLInference() {
             In disaggregated prefill/decode, prefill runs on one set of nodes and decode on another.
             The model fits on each node individually, but the architecture is deliberately multi-node
             to optimize throughput and latency independently. The KV-cache computed during prefill
-            must transfer from prefill nodes to decode nodes via the network — this is where EFA
+            must transfer from prefill nodes to decode nodes via the network. This is where EFA
             becomes critical.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
@@ -68,7 +68,7 @@ export function AIMLInference() {
               <Box variant="p">
                 Purpose-built for disaggregated inference transfers. Unlike NCCL, which always
                 launches a GPU kernel even for point-to-point send/recv, NIXL performs transfers
-                with <strong>zero SM (Streaming Multiprocessor) consumption</strong> — no GPU kernel
+                with <strong>zero SM (Streaming Multiprocessor) consumption</strong>: no GPU kernel
                 launch required. This matters because inference GPUs are already compute-bound
                 generating tokens; stealing SMs for communication directly reduces throughput.
               </Box>
@@ -83,8 +83,8 @@ export function AIMLInference() {
             <div>
               <Box variant="h3">Performance: NIXL vs NCCL</Box>
               <Box variant="p">
-                At typical KV-cache transfer sizes (256KB–1MB), NIXL outperforms NCCL by
-                <strong> 30–50%</strong> due to zero kernel launch overhead and optimized
+                At typical KV-cache transfer sizes (256KB-1MB), NIXL outperforms NCCL by
+                <strong> 30 to 50%</strong> due to zero kernel launch overhead and optimized
                 point-to-point paths. NCCL recovers at 10MB+ where its collective algorithms
                 amortize the kernel launch cost.
               </Box>
@@ -97,7 +97,7 @@ export function AIMLInference() {
           </ColumnLayout>
           <Box variant="p">
             <strong>vLLM integration:</strong> vLLM implements disaggregated serving via
-            NixlConnector — the prefiller acts as producer, the decoder as consumer, and a proxy
+            NixlConnector: the prefiller acts as producer, the decoder as consumer, and a proxy
             coordinates the KV-cache handoff. The transfer happens over EFA without consuming
             any GPU compute cycles.
           </Box>
@@ -111,7 +111,7 @@ export function AIMLInference() {
             <Box variant="p">
               A draft model on one node generates candidate tokens; a verifier on another node
               accepts or rejects them. Both models may fit on their respective nodes individually,
-              but the verification loop is latency-sensitive — every round-trip adds to
+              but the verification loop is latency-sensitive: every round-trip adds to
               time-to-first-token. EFA reduces this communication overhead.
             </Box>
             <StatusIndicator type="info">EFA beneficial</StatusIndicator>
@@ -121,14 +121,14 @@ export function AIMLInference() {
             <Box variant="p">
               Moving hot KV-cache between serving instances during autoscaling or rebalancing.
               When a request is migrated to a less-loaded node, its KV-cache must follow.
-              These are bursty, latency-sensitive point-to-point transfers — exactly the pattern
+              These are bursty, latency-sensitive point-to-point transfers, exactly the pattern
               NIXL is built for.
             </Box>
             <StatusIndicator type="info">EFA beneficial (NIXL)</StatusIndicator>
           </div>
         </ColumnLayout>
         <Box variant="p" padding={{ top: 'm' }}>
-          These patterns are <strong>not collective operations</strong> — they are point-to-point
+          These patterns are <strong>not collective operations</strong>. They are point-to-point
           and bursty. This is why NIXL exists alongside NCCL: different communication patterns
           need different libraries.
         </Box>

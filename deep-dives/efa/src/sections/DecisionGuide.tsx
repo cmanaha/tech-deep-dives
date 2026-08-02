@@ -19,13 +19,13 @@ const decisions: DecisionRow[] = [
   {
     scenario: 'Fine-tuning 7B model on 1 node',
     efaNeeded: 'No',
-    reason: 'Single node — NVLink handles GPU communication',
+    reason: 'Single node: NVLink handles GPU communication',
     recommendation: 'p5.48xlarge or trn1.32xlarge, no EFA needed',
   },
   {
     scenario: 'Pre-training 70B model on 8 nodes',
     efaNeeded: 'Yes',
-    reason: 'Multi-node DDP/FSDP — allreduce is the bottleneck',
+    reason: 'Multi-node DDP/FSDP: allreduce is the bottleneck',
     recommendation: 'P5 with EFA in cluster placement group',
   },
   {
@@ -43,13 +43,13 @@ const decisions: DecisionRow[] = [
   {
     scenario: 'Serving Llama 3.1 405B (fp16)',
     efaNeeded: 'Yes',
-    reason: '~810GB model — exceeds single P5 memory, needs multi-node TP',
+    reason: '~810GB model: exceeds single P5 memory, needs multi-node TP',
     recommendation: '2x P5 with EFA, minimize TP across nodes',
   },
   {
     scenario: 'CFD simulation (1000 MPI ranks)',
     efaNeeded: 'Yes',
-    reason: 'Tightly-coupled — halo exchange every timestep',
+    reason: 'Tightly-coupled: halo exchange every timestep',
     recommendation: 'Hpc7a in cluster placement group',
   },
   {
@@ -62,7 +62,7 @@ const decisions: DecisionRow[] = [
     scenario: 'Mixture-of-Experts training (Mixtral-scale)',
     efaNeeded: 'Yes',
     reason: 'All-to-all communication for expert routing',
-    recommendation: 'P5 with EFA — SRD handles asymmetric traffic patterns',
+    recommendation: 'P5 with EFA: SRD handles asymmetric traffic patterns',
   },
 ];
 
@@ -151,7 +151,7 @@ export function DecisionGuide() {
           </Box>
           <Box variant="p">
             <strong>How it works:</strong> <code>NCCL_TOPO_FILE</code> tells NCCL the physical
-            topology — which GPUs connect to which NVSwitch, which NIC connects via which
+            topology: which GPUs connect to which NVSwitch, which NIC connects via which
             PCIe root complex. The <code>aws-ofi-nccl</code> plugin auto-detects this for
             known platforms (P4d, P5, P5en) and sets the topology file automatically. For
             custom AMIs or new instance types, verify with <code>NCCL_DEBUG=INFO</code> that
@@ -165,10 +165,10 @@ export function DecisionGuide() {
             over manual env vars.
           </Box>
           <Box variant="p">
-            <strong>Three independent layers:</strong> (1) <strong>NCCL topology graph</strong> —
+            <strong>Three independent layers:</strong> (1) <strong>NCCL topology graph:</strong>
             intra-node, from XML or sysfs auto-detect. (2) <strong>aws-ofi-nccl platform
-            detection</strong> — instance-type matching, NIC reordering. (3) <strong>EC2{' '}
-            <code>DescribeInstanceTopology</code></strong> — inter-node physical hierarchy
+            detection:</strong> instance-type matching, NIC reordering. (3) <strong>EC2{' '}
+            <code>DescribeInstanceTopology</code></strong>: inter-node physical hierarchy
             (3-4 layers of hashed network node IDs). These layers don&apos;t communicate with
             each other. The optimization opportunity is assembling them: use{' '}
             <code>DescribeInstanceTopology</code> to group instances by physical proximity,
@@ -206,7 +206,7 @@ export function DecisionGuide() {
           <Alert type="warning">
             <strong>Spot in placement groups is risky for tightly-coupled workloads.</strong> If
             one node in a multi-node training job gets a Spot interruption, the entire job
-            stops. In a cluster placement group, Spot capacity is correlated — an interruption
+            stops. In a cluster placement group, Spot capacity is correlated: an interruption
             often affects multiple instances simultaneously because they share the same
             physical rack/spine.
           </Alert>
@@ -227,7 +227,7 @@ export function DecisionGuide() {
                 <li>Tightly-coupled MPI (all ranks must be present)</li>
                 <li>Production inference (SLA (Service Level Agreement) requirements)</li>
                 <li><strong>Capacity Blocks:</strong> time-limited GPU reservations for
-                training bursts — guaranteed capacity without long-term commitment</li>
+                training bursts (guaranteed capacity without long-term commitment)</li>
               </ul>
             </div>
           </ColumnLayout>
@@ -272,7 +272,7 @@ export function DecisionGuide() {
       <Container header={<Header variant="h2">Startup Scaling Playbook</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The journey from single-GPU to multi-node training — when does EFA
+            <strong>The journey from single-GPU to multi-node training: when does EFA
             enter the picture?</strong>
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
@@ -287,7 +287,7 @@ export function DecisionGuide() {
               <Box variant="h3">Stage 2: Single Node, Multi-GPU</Box>
               <Box variant="p">
                 Full fine-tuning up to 70B, or pre-training up to 13B. One p5.48xlarge
-                (8x H100) or trn1.32xlarge. <strong>No EFA needed</strong> — NVLink handles
+                (8x H100) or trn1.32xlarge. <strong>No EFA needed.</strong> NVLink handles
                 all GPU communication. This is where most startups should stay as long as possible.
               </Box>
             </div>
@@ -304,7 +304,7 @@ export function DecisionGuide() {
               <Box variant="p">
                 Frontier training. P5/Trn2 with full EFA. Topology-aware rank assignment,
                 NCCL tuner plugin, Capacity Reservations. Consider Trn2 for
-                <strong> 30-40% better price-performance</strong> vs P5e — significant
+                <strong> 30-40% better price-performance</strong> vs P5e, significant
                 at this scale.
               </Box>
             </div>
@@ -313,7 +313,7 @@ export function DecisionGuide() {
             <strong>For startups on SageMaker:</strong> SageMaker Training automatically
             configures EFA, placement groups, and NCCL when you select EFA-capable instances.
             The SMDDP (SageMaker Distributed Data Parallel) library optimizes AllGather with a mesh topology that reduces GPU SM
-            usage from 24 to under 9 — freeing compute for your model.
+            usage from 24 to under 9, freeing compute for your model.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -322,22 +322,22 @@ export function DecisionGuide() {
         <SpaceBetween size="s">
           <Box variant="p">
             <StatusIndicator type="success">
-              EFA is free — the only cost is the instance. Enable it whenever available.
+              EFA is free: the only cost is the instance. Enable it whenever available.
             </StatusIndicator>
           </Box>
           <Box variant="p">
             <StatusIndicator type="success">
-              EFA transforms multi-node training economics — 90%+ scaling efficiency vs 40-60% without.
+              EFA transforms multi-node training economics: 90%+ scaling efficiency vs 40-60% without.
             </StatusIndicator>
           </Box>
           <Box variant="p">
             <StatusIndicator type="info">
-              SRD is not RDMA — it&apos;s purpose-built for cloud networks and handles congestion better at scale.
+              SRD is not RDMA. It&apos;s purpose-built for cloud networks and handles congestion better at scale.
             </StatusIndicator>
           </Box>
           <Box variant="p">
             <StatusIndicator type="info">
-              Single-node workloads get zero benefit from EFA — NVLink handles intra-node communication.
+              Single-node workloads get zero benefit from EFA. NVLink handles intra-node communication.
             </StatusIndicator>
           </Box>
           <Box variant="p">
