@@ -41,14 +41,14 @@ export function Architecture() {
         <SpaceBetween size="m">
           <Box variant="p">
             The fundamental difference: TCP/IP traverses 6 layers through the kernel.
-            EFA bypasses the kernel entirely — application talks directly to hardware via libfabric.
+            EFA bypasses the kernel entirely: the application talks directly to hardware via libfabric.
           </Box>
           <EFADataPathDiagram />
           <Alert type="info">
             OS-bypass only applies to the <strong>data path</strong>. Control operations
             (creating queue pairs, registering memory regions) still go through the kernel.
             This is the same model as RDMA. Note: EFA does support RDMA read operations
-            (Nitro v4+) and RDMA write (Nitro v6) over SRD — but it does NOT use
+            (Nitro v4+) and RDMA write (Nitro v6) over SRD, but it does NOT use
             traditional RoCE or InfiniBand protocols.
           </Alert>
         </SpaceBetween>
@@ -68,7 +68,7 @@ export function Architecture() {
               <Box variant="h3">Intra-node (NVLink)</Box>
               <Box variant="p">
                 GPU-to-GPU within one instance via NVSwitch. 900 GB/s per GPU pair (P5).
-                Used for tensor parallelism — frequent small all-reduce per layer.
+                Used for tensor parallelism: frequent small all-reduce per layer.
                 <strong> No EFA involvement.</strong>
               </Box>
             </div>
@@ -95,20 +95,20 @@ export function Architecture() {
             <div>
               <Box variant="h3">Why not TCP?</Box>
               <ul>
-                <li>Head-of-line blocking — one lost packet stalls the entire stream</li>
+                <li>Head-of-line blocking: one lost packet stalls the entire stream</li>
                 <li>In-order delivery requirement adds latency</li>
                 <li>Congestion control (CUBIC/BBR) optimized for WAN, not datacenter</li>
-                <li>Connection-oriented — state per connection doesn&apos;t scale</li>
+                <li>Connection-oriented: state per connection doesn&apos;t scale</li>
                 <li>Max single-flow ~5 Gbps vs SRD&apos;s ~25 Gbps</li>
               </ul>
             </div>
             <div>
               <Box variant="h3">Why not RDMA/RoCE?</Box>
               <ul>
-                <li>RoCE v2 relies on Priority Flow Control (PFC) — creates head-of-line blocking at switch level</li>
+                <li>RoCE v2 relies on Priority Flow Control (PFC), which creates head-of-line blocking at switch level</li>
                 <li>PFC can cause deadlocks in large fabrics</li>
                 <li>Doesn&apos;t handle multi-path well</li>
-                <li>Requires lossless network fabric — expensive to maintain at scale</li>
+                <li>Requires lossless network fabric, which is expensive to maintain at scale</li>
                 <li>Not available on AWS infrastructure</li>
               </ul>
             </div>
@@ -118,7 +118,7 @@ export function Architecture() {
             <SpaceBetween size="s">
               <Box variant="p">
                 <strong>Origin:</strong> SRD is described in the IEEE Micro 2020 paper by
-                Shalev et al. (Annapurna Labs) — not NSDI as sometimes cited. The paper
+                Shalev et al. (Annapurna Labs), not NSDI as sometimes cited. The paper
                 details a transport protocol designed for lossy datacenter fabrics without
                 requiring PFC or lossless infrastructure.
               </Box>
@@ -130,20 +130,20 @@ export function Architecture() {
                 encapsulation header. Continuously monitors RTT on each path at
                 sub-millisecond resolution and dynamically avoids congested routes.
                 Retransmitted packets go on <strong>different paths</strong> than the
-                original — avoiding the congested route that caused the drop.
+                original, avoiding the congested route that caused the drop.
               </Box>
               <Box variant="p">
                 <strong>Out-of-order delivery:</strong> SRD deliberately decouples
                 reliability from ordering. Packets arrive in any order; reassembly
                 happens at the receiver in libfabric. This eliminates head-of-line
-                blocking — a lost packet on one path doesn&apos;t stall others.
+                blocking: a lost packet on one path doesn&apos;t stall others.
               </Box>
               <Box variant="p">
                 <strong>Proactive congestion management:</strong> SRD estimates available
                 bandwidth and RTT continuously, reducing send rate <em>before</em> congestion
-                occurs. This prevents queue buildup in switches — the root cause of
+                occurs. This prevents queue buildup in switches, the root cause of
                 tail latency in datacenter networks. The congestion control algorithm is
-                closest to TIMELY/Swift (RTT-based, proactive) — not loss-based like TCP
+                closest to TIMELY/Swift (RTT-based, proactive), not loss-based like TCP
                 CUBIC. Compare to Google&apos;s Falcon protocol, which occupies the same
                 design space.
               </Box>
@@ -155,7 +155,7 @@ export function Architecture() {
               <Box variant="p">
                 <strong>Send-only in hardware:</strong> SRD hardware only implements Send
                 operations. RDMA Read and Write are <strong>emulated in software</strong> by
-                the libfabric EFA provider — the provider issues a Send to the remote side,
+                the libfabric EFA provider. The provider issues a Send to the remote side,
                 which performs the memory operation and sends a response. This is a deliberate
                 simplification: keep hardware simple, handle complexity in software.
                 (Source: <code>rxr_pkt_post_ctrl</code> in ofiwg/libfabric EFA provider)
@@ -168,7 +168,7 @@ export function Architecture() {
               </Box>
               <Box variant="p">
                 <strong>QP (Queue Pair) scalability:</strong> SRD uses unconnected (datagram) QPs. A cluster
-                of N nodes with p processes each needs only N×p QPs total — compared to
+                of N nodes with p processes each needs only N×p QPs total, compared to
                 N×p² for RC (connected) QPs. At 1,000+ nodes this is the difference between
                 feasible and impossible memory overhead.
               </Box>
@@ -182,12 +182,12 @@ export function Architecture() {
               <Box variant="p">
                 <strong>SRD beyond EFA:</strong> SRD has expanded well beyond EFA. All
                 EBS io2 volumes use SRD for storage traffic. ENA (Elastic Network Adapter, standard networking) also
-                supports SRD via the <code>EnaSrdSpecification</code> API — enabling
+                supports SRD via the <code>EnaSrdSpecification</code> API, enabling
                 multi-path benefits for non-EFA workloads.
               </Box>
               <Box variant="p">
                 <strong>P99.9 tail latency:</strong> SRD achieves P99.9 latency of tens
-                of microseconds — an 85% reduction versus TCP. This matters enormously
+                of microseconds, an 85% reduction versus TCP. This matters enormously
                 for collective operations where the slowest participant determines
                 overall completion time.
               </Box>
@@ -207,7 +207,7 @@ export function Architecture() {
                     Write-combined mapping. User-space writes a doorbell to notify the NIC
                     that new work has been posted. One write = one notification, no syscall.
                     Each process gets its own doorbell range via UARNs (User Access Region
-                    Numbers) — hardware-enforced per-process scoping.
+                    Numbers), hardware-enforced per-process scoping.
                   </Box>
                 </div>
                 <div>
@@ -215,7 +215,7 @@ export function Architecture() {
                   <Box variant="p">
                     Write-combined mapping for LLQ (Low-Latency Queue) descriptors. The first
                     N bytes of each WQE (Work Queue Entry) are written directly to the NIC
-                    via MMIO — skipping the DMA read the NIC would otherwise need. This is
+                    via MMIO, skipping the DMA read the NIC would otherwise need. This is
                     the &quot;low-latency&quot; path for small messages.
                   </Box>
                 </div>
@@ -231,15 +231,15 @@ export function Architecture() {
               <Alert type="info">
                 <strong>Proof of true OS bypass:</strong> The kernel driver <code>efa_verbs.c</code>{' '}
                 intentionally does NOT implement <code>post_send</code>, <code>post_recv</code>,
-                or <code>poll_cq</code> — these are the hot-path data operations. They
+                or <code>poll_cq</code>. These are the hot-path data operations. They
                 exist only in the user-space library (<code>libefa</code>). The kernel handles
                 only control-path operations: creating QPs, registering memory, allocating
-                protection domains. (Source: <code>efa_verbs.c</code> in amzn/amzn-drivers —
-                search for the verb table and note the NULL entries.)
+                protection domains. (Source: <code>efa_verbs.c</code> in amzn/amzn-drivers.
+                Search for the verb table and note the NULL entries.)
               </Alert>
               <Box variant="p">
                 <strong>Phase-bit lockless CQ (Completion Queue) polling:</strong> Completion Queue entries use a
-                phase bit toggled by hardware. User-space polls by reading the phase bit — if
+                phase bit toggled by hardware. User-space polls by reading the phase bit. If
                 it matches the expected phase, a new completion is ready. No locks, no syscalls,
                 no atomic operations. This is how <code>poll_cq</code> achieves sub-microsecond
                 latency in user-space.
@@ -247,9 +247,9 @@ export function Architecture() {
               <Box variant="p">
                 <strong>Security model:</strong> Hardware enforces isolation via two mechanisms:
                 (1) <strong>PDs (Protection Domains)</strong> with hardware-validated lkey/rkey on
-                every memory access — a process cannot access another process&apos;s registered
+                every memory access: a process cannot access another process&apos;s registered
                 memory regions; (2) <strong>UARNs</strong> (User Access Region Numbers) that
-                scope doorbells to individual processes — a process can only ring its own
+                scope doorbells to individual processes: a process can only ring its own
                 doorbells. Both are enforced by the NIC hardware, not software checks.
               </Box>
             </SpaceBetween>
@@ -270,7 +270,7 @@ export function Architecture() {
           <div>
             <Box variant="h3">EFA-only</Box>
             <Box variant="p">
-              OS-bypass only — no IP address assigned. Cannot be used on the primary
+              OS-bypass only. No IP address assigned. Cannot be used on the primary
               network card (card 0). Reduces overhead when you don&apos;t need IP
               networking on secondary interfaces. Requires VPC CNI (Container Network Interface) v1.18.5+ on EKS.
             </Box>
@@ -293,7 +293,7 @@ export function Architecture() {
               <Box variant="h3">For NIXL (inference)</Box>
               <Box variant="p">
                 NVIDIA Inference Xfer Library → libfabric → EFA hardware.
-                New in 2025 — purpose-built for multi-node inference transfer patterns.
+                New in 2025, purpose-built for multi-node inference transfer patterns.
                 Requires libfabric 1.21.0+.
               </Box>
             </div>
@@ -307,7 +307,7 @@ export function Architecture() {
           </ColumnLayout>
 
           <Alert type="warning">
-            <strong>Gotcha — lib vs lib64:</strong> libfabric installs to{' '}
+            <strong>Gotcha (lib vs lib64):</strong> libfabric installs to{' '}
             <code>/opt/amazon/efa/lib64</code> on Amazon Linux/RHEL and{' '}
             <code>/opt/amazon/efa/lib</code> on Ubuntu/Debian. This path inconsistency
             is a frequent source of runtime linker errors when using pre-built scripts

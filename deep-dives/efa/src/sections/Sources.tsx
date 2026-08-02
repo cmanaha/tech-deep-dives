@@ -4,14 +4,14 @@ import { SourcesAppendix, Glossary } from '@tech-deep-dives/shared';
 import type { Source, FactCheckItem, GlossaryEntry } from '@tech-deep-dives/shared';
 
 const sources: Source[] = [
-  // Tier 1 — Official AWS docs
-  { id: 1, title: 'AWS EC2 User Guide — Elastic Fabric Adapter', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
-  { id: 2, title: 'AWS EC2 User Guide — Get started with EFA and MPI', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
-  { id: 3, title: 'AWS EC2 User Guide — Get started with EFA and NCCL', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nccl.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
-  { id: 4, title: 'AWS EC2 User Guide — EFA Accelerated Instance Types', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  // Tier 1: Official AWS docs
+  { id: 1, title: 'AWS EC2 User Guide: Elastic Fabric Adapter', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 2, title: 'AWS EC2 User Guide: Get started with EFA and MPI', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 3, title: 'AWS EC2 User Guide: Get started with EFA and NCCL', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nccl.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 4, title: 'AWS EC2 User Guide: EFA Accelerated Instance Types', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 5, title: 'AWS EC2 Accelerated Computing Instance Specs', url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 6, title: 'AWS EC2 Placement Groups', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
-  { id: 7, title: 'AWS EKS — Node EFA', url: 'https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 7, title: 'AWS EKS: Node EFA', url: 'https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 19, title: 'AWS Neuron Collective Communication Docs', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 20, title: 'AWS Neuron Training FAQ', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/faq/training/neuron-training.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 21, title: 'SageMaker Data Parallel Library', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/data-parallel-intro.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
@@ -19,35 +19,35 @@ const sources: Source[] = [
   { id: 29, title: 'EC2 DescribeInstanceTopology API Reference', url: 'https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstanceTopology.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 30, title: 'EC2 Capacity Blocks for ML', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 31, title: 'EC2 On-Demand Capacity Reservations', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
-  // Tier 1 — Source code
-  { id: 17, title: 'aws/aws-ofi-nccl GitHub README', url: 'https://github.com/aws/aws-ofi-nccl/blob/master/README.md', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
+  // Tier 1: Source code
+  { id: 17, title: 'aws/aws-ofi-nccl GitHub README (v1.20.0)', url: 'https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/README.md', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
   { id: 18, title: 'aws/aws-ofi-nccl Releases', url: 'https://github.com/aws/aws-ofi-nccl/releases', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
-  { id: 32, title: 'NVIDIA/nccl source code (search.cc)', url: 'https://github.com/NVIDIA/nccl/blob/master/src/search.cc', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
-  { id: 33, title: 'aws/aws-ofi-nccl tuner source (nccl_ofi_tuner.cpp)', url: 'https://github.com/aws/aws-ofi-nccl/blob/master/tuner/nccl_ofi_tuner.cpp', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
-  { id: 34, title: 'aws/aws-ofi-nccl topology XML files', url: 'https://github.com/aws/aws-ofi-nccl/tree/master/topology', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
-  // Tier 2 — AWS product pages, blogs, announcements
+  { id: 32, title: 'NVIDIA/nccl source code (src/graph/search.cc, v2.30.7-1)', url: 'https://github.com/NVIDIA/nccl/blob/v2.30.7-1/src/graph/search.cc', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
+  { id: 33, title: 'aws/aws-ofi-nccl tuner source (src/tuner/nccl_ofi_tuner.cpp, v1.20.0)', url: 'https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/src/tuner/nccl_ofi_tuner.cpp', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
+  { id: 34, title: 'aws/aws-ofi-nccl topology XML files (v1.20.0)', url: 'https://github.com/aws/aws-ofi-nccl/tree/v1.20.0/topology', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
+  // Tier 2: AWS product pages, blogs, announcements
   { id: 8, title: 'Amazon EC2 P5 Instance Types', url: 'https://aws.amazon.com/ec2/instance-types/p5/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
   { id: 9, title: 'Amazon EC2 Trn2 Instance Types', url: 'https://aws.amazon.com/ec2/instance-types/trn2/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
   { id: 10, title: 'Amazon EC2 UltraServers', url: 'https://aws.amazon.com/ec2/ultraservers/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
   { id: 11, title: 'AWS EFA Product Page', url: 'https://aws.amazon.com/hpc/efa/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
-  { id: 12, title: 'AWS What\'s New — P5en GA (Dec 2024)', url: 'https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-ec2-p5en-instances-generative-ai-hpc-generally-available/', tier: 2, type: 'announcement', accessDate: '2026-03-22' },
-  { id: 13, title: 'AWS What\'s New — P5en N. Virginia/Jakarta (Mar 2025)', url: 'https://aws.amazon.com/about-aws/whats-new/2025/03/amazon-ec2-p5en-instances-n-virginia-jakarta/', tier: 2, type: 'announcement', accessDate: '2026-03-22' },
-  { id: 14, title: 'AWS What\'s New — P5en N. California (May 2025)', url: 'https://aws.amazon.com/about-aws/whats-new/2025/05/amazon-ec2-p5en-instances-aws-us-west-n-california-region/', tier: 2, type: 'announcement', accessDate: '2026-03-22' },
-  { id: 15, title: 'AWS What\'s New — Trn2 GA (Dec 2024)', url: 'https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-ec2-trn2-instances-available/', tier: 2, type: 'announcement', accessDate: '2026-03-22' },
-  { id: 16, title: 'AWS What\'s New — EFA Cross-Subnet (2024)', url: 'https://www.amazonaws.cn/en/new/2024/elastic-fabric-adapter-supports-cross-subnet-communication/', tier: 2, type: 'announcement', accessDate: '2026-03-22' },
+  { id: 12, title: 'AWS What\'s New: P5en GA (Dec 2024)', url: 'https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-ec2-p5en-instances-generative-ai-hpc-generally-available/', tier: 2, type: 'announcement', accessDate: '2026-03-22' },
+  { id: 13, title: 'AWS What\'s New: P5en N. Virginia/Jakarta (Mar 2025)', url: 'https://aws.amazon.com/about-aws/whats-new/2025/03/amazon-ec2-p5en-instances-n-virginia-jakarta/', tier: 2, type: 'announcement', accessDate: '2026-03-22' },
+  { id: 14, title: 'AWS What\'s New: P5en N. California (May 2025)', url: 'https://aws.amazon.com/about-aws/whats-new/2025/05/amazon-ec2-p5en-instances-aws-us-west-n-california-region/', tier: 2, type: 'announcement', accessDate: '2026-03-22' },
+  { id: 15, title: 'AWS What\'s New: Trn2 GA (Dec 2024)', url: 'https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-ec2-trn2-instances-available/', tier: 2, type: 'announcement', accessDate: '2026-03-22' },
+  { id: 16, title: 'AWS What\'s New: EFA Cross-Subnet (2024)', url: 'https://www.amazonaws.cn/en/new/2024/elastic-fabric-adapter-supports-cross-subnet-communication/', tier: 2, type: 'announcement', accessDate: '2026-03-22' },
   { id: 23, title: 'Multi-Node vLLM EKS Blueprints', url: 'https://aws-ia.github.io/terraform-aws-eks-blueprints/patterns/machine-learning/multi-node-vllm/', tier: 2, type: 'aws-open-source', accessDate: '2026-03-22' },
-  { id: 26, title: 'AWS HPC Blog — Second Generation EFA', url: 'https://aws.amazon.com/blogs/hpc/second-generation-efa-improving-hpc-and-ml-application-performance-in-the-cloud/', tier: 2, type: 'aws-blog', accessDate: '2026-03-22' },
-  { id: 27, title: 'AWS HPC Blog — hpc7a MPI Multi-Rail EFA', url: 'https://aws.amazon.com/blogs/hpc/optimizing-mpi-application-performance-on-hpc7a-by-effectively-using-both-efa-devices/', tier: 2, type: 'aws-blog', accessDate: '2026-03-22' },
+  { id: 26, title: 'AWS HPC Blog: Second Generation EFA', url: 'https://aws.amazon.com/blogs/hpc/second-generation-efa-improving-hpc-and-ml-application-performance-in-the-cloud/', tier: 2, type: 'aws-blog', accessDate: '2026-03-22' },
+  { id: 27, title: 'AWS HPC Blog: hpc7a MPI Multi-Rail EFA', url: 'https://aws.amazon.com/blogs/hpc/optimizing-mpi-application-performance-on-hpc7a-by-effectively-using-both-efa-devices/', tier: 2, type: 'aws-blog', accessDate: '2026-03-22' },
   { id: 28, title: 'AWS HPC Benchmarking Whitepaper', url: 'https://d1.awsstatic.com/whitepapers/benchmarking-aws-and-hpc-services.pdf', tier: 2, type: 'whitepaper', accessDate: '2026-03-22' },
-  // Tier 3 — Third-party analysis, benchmarks, academic papers
-  { id: 24, title: 'CFD Direct — OpenFOAM HPC with AWS EFA', url: 'https://cfd.direct/cloud/openfoam-hpc-aws-efa/', tier: 3, type: 'third-party-benchmark', accessDate: '2026-03-22' },
-  { id: 25, title: 'Ernest Chiang — AWS SRD Protocol Deep Dive', url: 'https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/', tier: 3, type: 'third-party-analysis', accessDate: '2026-03-22' },
+  // Tier 3: Third-party analysis, benchmarks, academic papers
+  { id: 24, title: 'CFD Direct: OpenFOAM HPC with AWS EFA', url: 'https://cfd.direct/cloud/openfoam-hpc-aws-efa/', tier: 3, type: 'third-party-benchmark', accessDate: '2026-03-22' },
+  { id: 25, title: 'Ernest Chiang: AWS SRD Protocol Deep Dive', url: 'https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/', tier: 3, type: 'third-party-analysis', accessDate: '2026-03-22' },
   // NIXL sources
   { id: 35, title: 'NVIDIA NIXL GitHub Repository', url: 'https://github.com/ai-dynamo/nixl', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
-  { id: 36, title: 'NIXL Architecture Documentation', url: 'https://github.com/ai-dynamo/nixl/blob/main/docs/architecture.md', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
-  { id: 37, title: 'NIXL libfabric Backend README', url: 'https://github.com/ai-dynamo/nixl/blob/main/src/plugins/xfer/libfabric/README.md', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
-  { id: 38, title: 'vLLM NixlConnector Source', url: 'https://github.com/vllm-project/vllm/blob/main/vllm/distributed/kv_transfer/kv_connector/nixl_connector.py', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
-  { id: 39, title: 'UCCL KV-Cache Transfer Benchmark (NIXL vs NCCL)', url: 'https://github.com/NVIDIA/uccl/tree/main/benchmark', tier: 3, type: 'third-party-benchmark', accessDate: '2026-03-22' },
+  { id: 36, title: 'NIXL Repository at v1.3.2 (docs/architecture.md no longer exists upstream; no equivalent document published)', url: 'https://github.com/ai-dynamo/nixl/tree/v1.3.2', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
+  { id: 37, title: 'NIXL libfabric Backend README (src/plugins/libfabric, v1.3.2)', url: 'https://github.com/ai-dynamo/nixl/blob/v1.3.2/src/plugins/libfabric/README.md', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
+  { id: 38, title: 'vLLM NixlConnector Source (kv_connector/v1/nixl, v0.26.0)', url: 'https://github.com/vllm-project/vllm/tree/v0.26.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
+  { id: 39, title: 'UCCL KV-Cache Transfer Benchmark (NIXL vs NCCL, uccl-project/uccl v0.1.1)', url: 'https://github.com/uccl-project/uccl/tree/v0.1.1/p2p/benchmarks', tier: 3, type: 'third-party-benchmark', accessDate: '2026-08-02' },
 ];
 
 const factChecks: FactCheckItem[] = [
@@ -56,7 +56,7 @@ const factChecks: FactCheckItem[] = [
   { claim: '~15 microseconds EFA MPI ping-pong latency', section: 'What is EFA?', sourceId: 25 },
   { claim: 'Up to 3,200 Gbps aggregate bandwidth on P5', section: 'What is EFA?', sourceId: 8 },
   { claim: 'EFA traffic encrypted in transit by Nitro with zero performance penalty', section: 'What is EFA?', sourceId: 1 },
-  { claim: 'EFA is free — no per-interface charge, no data transfer fee', section: 'What is EFA?', sourceId: 11 },
+  { claim: 'EFA is free (no per-interface charge, no data transfer fee)', section: 'What is EFA?', sourceId: 11 },
 
   // Architecture & SRD Protocol section
   { claim: '30-60% of total step time is network communication at 64+ nodes', section: 'Architecture & SRD Protocol', sourceId: 26 },
@@ -131,8 +131,8 @@ const factChecks: FactCheckItem[] = [
   { claim: 'SMDDP AllGather reduces GPU SM usage from 24 to under 9', section: 'Decision Guide', sourceId: 21 },
 
   // NCCL topology & capacity planning claims
-  { claim: 'NCCL does not call EC2 topology API — topology graph is intra-node only', section: 'Architecture & SRD Protocol', sourceId: 32 },
-  { claim: 'P5/P5en have no topology XML — plugin uses sort_rails() instead', section: 'AI/ML Training', sourceId: 34 },
+  { claim: 'NCCL does not call EC2 topology API, so the topology graph is intra-node only', section: 'Architecture & SRD Protocol', sourceId: 32 },
+  { claim: 'P5/P5en have no topology XML, so the plugin uses sort_rails() instead', section: 'AI/ML Training', sourceId: 34 },
   { claim: 'Setting NCCL_ALGO or NCCL_PROTO env vars disables the tuner entirely', section: 'AI/ML Training', sourceId: 33 },
   { claim: 'Capacity Block prices increased ~15% in January 2026', section: 'Decision Guide', sourceId: 30 },
   { claim: 'Capacity Blocks auto-place into UltraClusters', section: 'Decision Guide', sourceId: 30 },
@@ -178,7 +178,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'AMI', fullForm: 'Amazon Machine Image', description: 'Template for EC2 instance root volumes containing OS, application server, and applications' },
   { acronym: 'NIXL', fullForm: 'NVIDIA Inference Xfer Library', description: 'Library for multi-node inference transfer patterns including KV-cache migration and disaggregated prefill/decode. Uses libfabric over EFA. Zero GPU kernel launch overhead unlike NCCL (2025+)' },
   { acronym: 'SM', fullForm: 'Streaming Multiprocessor', description: 'GPU compute unit containing CUDA cores; NIXL avoids consuming SMs during transfers unlike NCCL' },
-  { acronym: 'KV', fullForm: 'Key-Value', description: 'As in KV-cache — stores computed attention keys and values for autoregressive inference' },
+  { acronym: 'KV', fullForm: 'Key-Value', description: 'As in KV-cache: stores computed attention keys and values for autoregressive inference' },
   { acronym: 'CC', fullForm: 'Collective Compute', description: 'Dedicated engine on Trainium chips orchestrating collective operations independently from NeuronCores' },
   { acronym: 'RDM', fullForm: 'Reliable Datagram Message', description: 'Libfabric endpoint type adding software reliability and message tagging over unreliable datagrams' },
   { acronym: 'DGRAM', fullForm: 'Datagram', description: 'Raw unreliable datagram endpoint type in libfabric; used directly by some MPI implementations' },

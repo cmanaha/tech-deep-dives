@@ -12,7 +12,7 @@ export function EKSIntegration() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="I'm already on EKS — what do I change to get EFA benefits?">
+          <Header variant="h1" description="I'm already on EKS: what do I change to get EFA benefits?">
             EKS & Container Integration
           </Header>
         }
@@ -122,7 +122,7 @@ spec:
       <Alert type="warning">
         <strong>hostNetwork requirement:</strong> EFA pods typically need <code>hostNetwork: true</code>,
         which means the pod uses the host&apos;s network namespace. This has security
-        implications — pods can see all host network traffic. For production, consider
+        implications: pods can see all host network traffic. For production, consider
         network policies and RBAC to limit access. The Multus CNI can provide more
         granular control by attaching EFA interfaces as secondary networks.
       </Alert>
