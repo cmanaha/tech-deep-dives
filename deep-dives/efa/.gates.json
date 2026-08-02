@@ -1,0 +1,8 @@
+{
+  "gates": {
+    "no-ai-tells": true,
+    "svg-a11y": true,
+    "pinned-refs": true,
+    "required-files": true
+  }
+}

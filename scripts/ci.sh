@@ -8,7 +8,15 @@
 # coding sessions). It runs ONLY fast, deterministic, no-network,
 # no-LLM gates so it can be invoked freely without surprises:
 #
-#   typecheck → lint → unit tests → build → html-validate
+#   required-files → no-ai-tells → svg-a11y → pinned-refs
+#     → typecheck → lint → unit tests → build → html-validate
+#
+# The four static-grep gates run first because they finish in well under a
+# second, so a style or citation regression surfaces immediately instead of
+# after a full typecheck-plus-build cycle. They are opt-in per deep dive via
+# deep-dives/{topic}/.gates.json; a dive without that file is skipped by all
+# four. See scripts/gates/_common.sh for the opt-in model and why the ratchet
+# needs it.
 #
 # Same input => same verdict, every time. No flakiness.
 #
@@ -25,7 +33,7 @@ set -euo pipefail
 
 case "${1:-}" in
   --help|-h)
-    sed -n '2,21p' "$0"
+    sed -n '2,29p' "$0"
     exit 0
     ;;
   '')
@@ -51,6 +59,21 @@ fail() {
 }
 
 # ---------- gates ----------
+#
+# Static greps first: they are the cheapest signal in the whole script and
+# they fail on content problems that a typecheck or build will never see.
+
+step "required files (opted-in deep dives)"
+bash scripts/gates/required-files.sh || fail "required files"
+
+step "no AI tells (opted-in deep dives)"
+bash scripts/gates/no-ai-tells.sh || fail "no AI tells"
+
+step "svg accessibility (opted-in deep dives)"
+bash scripts/gates/svg-a11y.sh || fail "svg accessibility"
+
+step "pinned code references (opted-in deep dives)"
+bash scripts/gates/pinned-refs.sh || fail "pinned code references"
 
 step "typecheck (all workspaces)"
 pnpm typecheck || fail "typecheck"
