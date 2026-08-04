@@ -88,6 +88,56 @@ Exempt: code, config, and real CLI output are left verbatim. This applies to eve
 - **Visual-first**: Prefer diagrams, animations, and interactive elements over walls of text.
 - **Comparative**: Always show alternatives and trade-offs, not just the happy path.
 
+## Section Shape: Mental Model Or Practical Value
+
+The governing test for every deep dive. Full standard, with worked examples, in
+`deep-dives/efa/revamp/section-shape-standard.md`.
+
+**Content earns its place when it does at least one of two things.**
+
+1. **It builds a mental model.** It gives the reader a way to think about how
+   something works, and to predict what a system they have never touched will
+   do. Theory is welcome here. "SRD keeps reliability and gives up ordering, and
+   everything else follows from that trade" is a mental model.
+2. **It is practical to know.** It changes what the reader types, chooses,
+   budgets or checks. A default that differs from its documentation. An
+   environment variable that quietly does nothing on current versions.
+
+Content doing neither comes out, however hard it was to establish. The question
+is never how much work a fact cost us; it is whether it gives the reader a way
+to think, or something to do. When a section is hard to shape, the usual cause
+is material that passes neither test.
+
+**Writing rules that follow from it:**
+
+- **Write for a technical reader meeting the page for the first time.** No page
+  history, no "Correction:", no "an earlier version said". The corrected fact
+  stays, the story of the correction goes.
+- **Define things by what they are.** "This is B, C and D, because X" carries
+  meaning; "this is not A" carries almost none and is a clear AI tell. The same
+  test applies inside a sentence: "Why more nodes make the fabric better, not
+  worse" says everything in "Why more nodes make the fabric better".
+- **Frame the subject as a challenge rather than a problem.** A challenge can be
+  met. Opening with "The problem:" sets a negative tone before the first fact.
+- **Introduce a thing before dissecting it.** Two or three sentences on what it
+  is and why it matters, before the mechanism.
+- **Frame guidance as how to get it right.** Name a pitfall attached to the
+  correct approach it protects, rather than organising a section around what
+  breaks.
+- **Cite evidence for authority or for conflict**, and say where it comes from.
+  Citations on undisputed claims add weight without adding trust.
+- **Every h2 description states the payoff**, naming the reader's moment or the
+  result rather than restating the topic.
+- **Repeat the section's strongest number.** One figure, landed more than once.
+- **Demote supporting evidence into an `ExpandableSection`** so the argument
+  reads clean and the curious reader can open it.
+- **End on the reader's next action**, reached by ordering blocks so the payoff
+  lands last rather than by appending a summary.
+- **No key-takeaways boxes.** A summary box lets the body stay unfocused.
+- **Preserve the scope of every hedge.** "No AWS benchmark was located during
+  this research" is honest; "no AWS benchmark exists" is a claim about the world
+  that the research cannot support.
+
 ## Iteration Flywheel (ADR-003)
 Three explicit gates, budget controls throughout:
 
