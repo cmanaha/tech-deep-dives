@@ -180,8 +180,8 @@ function OsBypassPathDiagram() {
         A message sent over TCP crosses a system call, a socket buffer copy, the TCP protocol
         stack and the ENA driver before it reaches the Nitro card. The same message sent over EFA
         goes from the application through libfabric into queue memory already mapped into the
-        process, and from there to the card. The four kernel layers are not on the EFA path at
-        all.
+        process, and from there to the card. Those four kernel layers belong to the TCP path
+        alone.
       </title>
       <style>
         {`
@@ -210,7 +210,7 @@ function OsBypassPathDiagram() {
       <text className="obp-h" x="205" y="34">TCP over the ENA path</text>
       <text className="obp-hs" x="205" y="54">every send crosses into the kernel</text>
       <text className="obp-h" x="675" y="34">EFA OS-bypass path</text>
-      <text className="obp-hs" x="675" y="54">the send never leaves userspace</text>
+      <text className="obp-hs" x="675" y="54">the send stays in userspace</text>
 
       {column(kernelPath, 40, 330, 60, 'obp-a')}
       {column(bypassPath, 500, 350, 100, 'obp-g')}
@@ -240,8 +240,8 @@ function KernelUserspaceSplitDiagram() {
         The EFA kernel driver is on the control plane only. It creates queue pairs, protection
         domains, memory regions and address handles, and maps the device registers into the
         process. Once that mapping exists, the application writes work queue entries and reads
-        completions straight from that memory to the Nitro card, and the kernel is not called
-        again until teardown.
+        completions straight from that memory to the Nitro card, and the kernel is called again
+        only at teardown.
       </title>
       <style>
         {`
@@ -481,21 +481,20 @@ export function DataPath() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The problem:</strong> one collective operation in NCCL (NVIDIA Collective
-            Communications Library) or MPI (Message Passing Interface) is millions of small
-            messages. On a TCP (Transmission Control Protocol) socket, each one pays for a system
-            call, a copy out of your buffer into a socket buffer, protocol processing, and a
-            driver hand-off. That cost is fixed per message and does not shrink as the cluster
-            grows, so at high message rates the software path becomes the bottleneck rather than
-            the link.
+            One collective operation in NCCL (NVIDIA Collective Communications Library) or MPI
+            (Message Passing Interface) is millions of small messages. On a TCP (Transmission
+            Control Protocol) socket, each one pays for a system call, a copy out of your buffer
+            into a socket buffer, protocol processing, and a driver hand-off. That cost is fixed
+            per message and stays fixed as the cluster grows, so at high message rates the
+            software path is what sets the ceiling.
           </Box>
           <Box variant="p">
-            <strong>The answer:</strong> EFA (Elastic Fabric Adapter) maps the device queues into
-            the process once, at setup, and then stays out of the way. To send, the application
-            writes a WQE (Work Queue Entry) into memory it already owns and rings a doorbell with
-            a single write to a mapped device register. To reap the result it reads a CQE
-            (Completion Queue Entry) out of another mapped ring. No system call, no copy, no
-            protocol stack.
+            <strong>EFA (Elastic Fabric Adapter)</strong> maps the device queues into the process
+            once, at setup, and then stays out of the way. To send, the application writes a WQE
+            (Work Queue Entry) into memory it already owns and rings a doorbell with a single
+            write to a mapped device register. To reap the result it reads a CQE (Completion Queue
+            Entry) out of another mapped ring. Both are ordinary memory accesses inside the
+            process.
           </Box>
           <OsBypassPathDiagram />
           <Box variant="small" color="text-body-secondary">
@@ -514,6 +513,10 @@ export function DataPath() {
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            The split is by lifetime. Work that happens once per resource goes through the kernel,
+            and work that happens once per message stays in userspace.
+          </Box>
           <KernelUserspaceSplitDiagram />
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -531,26 +534,25 @@ export function DataPath() {
               <Box variant="h3">Userspace, once per message</Box>
               <Box variant="p">
                 Building the descriptor, writing it into the send queue, ringing the doorbell,
-                reading completions. None of these calls the kernel. The mapping created at setup
-                is the whole mechanism: after it exists, the queues are ordinary memory in the
-                process and the doorbell is an ordinary store instruction.
+                reading completions. The mapping created at setup is the whole mechanism: once it
+                exists, the queues are ordinary memory in the process and the doorbell is an
+                ordinary store instruction.
               </Box>
             </div>
           </ColumnLayout>
-          <Alert type="info" header="OS bypass is a data-plane property, not a whole-stack one">
-            Setup is not fast and does not need to be. Registering a large buffer pins pages and
-            programs the device page tables. Doing that on a hot path would be a bug. The design
-            splits the cost so that the expensive work happens once and the per-message work is a
-            handful of stores.
+          <Alert type="info" header="OS bypass is a property of the data plane">
+            Setup is expensive by design: registering a large buffer pins pages and programs the
+            device page tables. Paying that once per resource is what leaves the per-message path
+            as a handful of stores.
           </Alert>
           <ExpandableSection
             headerText="Which EFA kernel driver you are running changes the answer"
-            headerDescription="The out-of-tree module AWS ships implements the hot-path verbs. The one inside mainline Linux does not."
+            headerDescription="The out-of-tree module AWS ships implements the hot-path verbs; the mainline Linux driver stops at the control plane."
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                The driver the EFA installer builds is not the driver in the Linux tree, and they
-                differ on exactly this question. The out-of-tree module AWS ships carries a dedicated
+                The EFA installer builds an out-of-tree module, mainline Linux carries a driver of its
+                own, and the two answer this question differently. The module AWS ships carries a dedicated
                 data-path source file implementing post send (<code>post_send</code>), post receive
                 (<code>post_recv</code>), poll completion queue (<code>poll_cq</code>) and request
                 notify, and has done since driver r2.12.0{' '}
@@ -561,22 +563,22 @@ export function DataPath() {
                 <SourceRef provenance="code-derived" code={code.devOpsLegacy} />. That guard is on by
                 default: the build sets the kernel-verbs option to ON in its own cache{' '}
                 <SourceRef provenance="code-derived" code={code.kverbsOn} />, and the DKMS (Dynamic
-                Kernel Module Support) configure script that the EFA installer actually runs does not
-                override it <SourceRef provenance="code-derived" code={code.dkms} />. So on any host
+                Kernel Module Support) configure script that the EFA installer actually runs leaves it
+                at that default <SourceRef provenance="code-derived" code={code.dkms} />. So on any host
                 that installed the driver the normal way, those operations are live.
               </Box>
               <Box variant="p">
-                The driver inside mainline Linux is a different driver. Its device operations table
-                contains no post send, no post receive, no poll completion queue and no request
-                notify, and there is no data-path source file in that tree at all{' '}
+                The driver inside mainline Linux is a separate driver, and its device operations table
+                stops at the control plane: no post send, no post receive, no poll completion queue,
+                no request notify, and the tree carries no EFA data-path source file{' '}
                 <SourceRef provenance="code-derived" code={code.mainlineOps} />. Any sentence about
                 the EFA kernel driver has to say which one it means.
               </Box>
               <Box variant="p">
-                Neither answer weakens OS bypass. These are the in-kernel verbs entry points,
-                reachable only by other kernel modules. A libfabric application still never enters
-                the kernel to send. The proof of the bypass is the mapping you can watch the driver
-                create, not the absence of a kernel entry point.
+                Both answers leave OS bypass intact. These are the in-kernel verbs entry points,
+                reachable only by other kernel modules, and a libfabric application reaches the device
+                through the mapping instead. That mapping, which you can watch the driver create, is
+                the proof of the bypass.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -591,6 +593,10 @@ export function DataPath() {
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            Verbs is the RDMA (Remote Direct Memory Access) object model EFA is programmed
+            through, and five of its objects stand behind every send.
+          </Box>
           <Table
             columnDefinitions={[
               {
@@ -609,8 +615,8 @@ export function DataPath() {
           <Box variant="p">
             SRD (Scalable Reliable Datagram) is why the address handle matters more here than it
             would on a connected transport. There is no per-peer connection state to hold, so the
-            destination travels with the descriptor rather than with the queue pair. That is what
-            keeps queue-pair count linear in peers rather than quadratic.
+            destination travels with each descriptor. That is what keeps queue-pair count linear
+            in the number of peers, where a connected transport goes quadratic.
           </Box>
         </SpaceBetween>
       </Container>
@@ -641,8 +647,8 @@ export function DataPath() {
               <Box variant="p">
                 The card reads the descriptor, then reads the payload out of the registered buffer
                 by DMA (Direct Memory Access) using the local key in the descriptor to find it.
-                For small messages the payload rides inline in the descriptor instead, which is
-                what the low-latency queue exists for.
+                For small messages the payload rides inline in the descriptor, which is what the
+                low-latency queue exists for.
               </Box>
             </div>
             <div>
@@ -650,8 +656,9 @@ export function DataPath() {
               <Box variant="p">
                 The device writes a completion entry into the completion-queue ring with a phase
                 bit set to the current generation. The reader compares that bit against the phase
-                it expects. A match means a new completion. There is no lock, no interrupt and no
-                system call in the common case.
+                it expects. A match means a new completion, and in the common case that comparison
+                is the whole reap: a load and a compare in userspace, with no lock, interrupt or
+                system call.
               </Box>
             </div>
           </ColumnLayout>
@@ -663,13 +670,13 @@ export function DataPath() {
               <Box variant="p">
                 When Data Path Direct is active, libfabric builds the work queue entry and parses
                 completion entries itself, in the same descriptor formats the kernel driver uses,
-                instead of calling the userspace verbs library to do it. The fallback is one branch
+                instead of calling the userspace verbs library. The fallback is one branch
                 away in the same header, and still calls the verbs library when the feature is off{' '}
                 <SourceRef provenance="code-derived" code={code.dpdFallback} />. It is on by default{' '}
                 <SourceRef provenance="code-derived" code={code.dpdDefault} />.
               </Box>
               <Box variant="p">
-                What it does not do is remove rdma-core. Setup goes straight through it: the
+                rdma-core still owns setup. The
                 queue-pair initialiser calls the rdma-core device-specific query that returns the
                 send-queue and receive-queue buffers, doorbells, entry sizes and depths{' '}
                 <SourceRef provenance="code-derived" code={code.dpdQp} />, and the
@@ -697,7 +704,7 @@ export function DataPath() {
                 .
               </Alert>
               <Box variant="p">
-                Two more gates are worth knowing before you assume it is on. The feature turns
+                Two gates decide whether it is live on a given host. The feature turns
                 itself off on first-generation devices, which the provider detects by vendor part
                 identifier <SourceRef provenance="code-derived" code={code.subCq} />, and it declines
                 completion queues that carry a wait object when the installed rdma-core lacks a
@@ -717,13 +724,14 @@ export function DataPath() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The device cannot read arbitrary process memory. A buffer has to be registered first,
-            which pins it and returns a local key and a remote key that the hardware validates on
-            every access. Registration is a kernel call and it is not cheap, so a naive
-            application that registers per send would give back everything OS bypass earned.
+            The device reads exactly the memory that has been registered with it. Registration pins
+            the buffer and returns a local key and a remote key that the hardware validates on
+            every access. It is a kernel call and an expensive one, so the shape that works is to
+            register buffers once and reuse them; registering inside the send loop gives back
+            everything OS bypass earned.
           </Box>
           <Box variant="p">
-            libfabric solves this with a registration cache on the domain. It opens the cache when
+            libfabric does that reuse for you with a registration cache on the domain. It opens the cache when
             the application has not asked to manage registrations itself{' '}
             <SourceRef provenance="code-derived" code={code.mrCacheOpen} />, and the cache is on
             by default outside of address-sanitizer builds{' '}
@@ -735,12 +743,12 @@ export function DataPath() {
             defaults to 4096 bytes{' '}
             <SourceRef provenance="code-derived" code={code.memcpyThreshold} />.
           </Box>
-          <Alert type="warning" header="The cache is why a stale registration is a real failure mode">
-            A cached registration is keyed on an address range. If the application frees and
-            remaps that range behind libfabric, the cache can hand back a registration pointing at
-            pages the process no longer owns. This is the reason the provider hooks memory
-            monitors and flushes the cache across a fork. Bounded cache size is tunable through
-            the maximum cached count and maximum cached size parameters{' '}
+          <Alert type="warning" header="Keeping the cache honest">
+            A cached registration is keyed on an address range, so the provider hooks memory
+            monitors and flushes the cache across a fork to keep those keys pointing at pages the
+            process still owns. Watch for allocators that free and remap a range behind libfabric,
+            which is the case those hooks exist to catch. Bound the cache through the maximum
+            cached count and maximum cached size parameters{' '}
             <SourceRef provenance="code-derived" code={code.mrCacheHelp} />.
           </Alert>
         </SpaceBetween>
@@ -758,7 +766,7 @@ export function DataPath() {
             The driver hands userspace three kinds of mapping, and it names them in an enumeration
             with exactly three members{' '}
             <SourceRef provenance="code-derived" code={code.mmapKinds} />. Which kind a region
-            gets is a correctness decision, not a tuning one, and the driver picks it per region
+            gets is a correctness decision, fixed by the driver per region
             when it creates the queue pair{' '}
             <SourceRef provenance="code-derived" code={code.mmapQueue} />.
           </Box>
@@ -767,11 +775,11 @@ export function DataPath() {
               <Box variant="h3">Doorbells: uncached</Box>
               <Box variant="p">
                 The send-queue and receive-queue doorbells come from the doorbell BAR (Base Address
-                Register) and are mapped uncached, not write-combined; the memory BAR is the
-                write-combining case in the same switch statement{' '}
-                <SourceRef provenance="code-derived" code={code.mmapProt} />. That is the point:
-                a doorbell must reach the device as a single, immediate, ordered write. Buffering
-                it would defeat it.
+                Register) and are mapped uncached; the memory BAR is the write-combining case in
+                the same switch statement{' '}
+                <SourceRef provenance="code-derived" code={code.mmapProt} />. That is what a
+                doorbell needs: an uncached mapping makes it reach the device as a single,
+                immediate, ordered write.
               </Box>
             </div>
             <div>
@@ -798,39 +806,38 @@ export function DataPath() {
             </div>
           </ColumnLayout>
           <Box variant="p">
-            Isolation between processes is a hardware property, not a software check. Each user
+            Isolation between processes is enforced by the device itself. Each user
             context is allocated a UARN (User Access Region Number) that the driver records on the
             context and on every queue pair{' '}
             <SourceRef provenance="code-derived" code={code.uarn} />, and it passes that number to
             the device when it creates the queue pair{' '}
             <SourceRef provenance="code-derived" code={code.uarnScope} />. A process can only ring
-            doorbells inside its own region, and the local and remote keys on every memory region
-            are validated by the device on every access.
+            doorbells inside its own region.
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Getting the GPU out of the copy path as well">
+          <Header variant="h2" description="Taking host memory out of the copy path as well">
             GPUDirect RDMA
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            OS bypass removes the kernel from the send path. GPUDirect RDMA (Remote Direct Memory
-            Access) removes host memory from it. The registered buffer is GPU memory, the device
-            reads it over the peer-to-peer path, and the payload never lands in system memory at
-            all. The driver carries the peer-to-peer plumbing for this and takes it whenever the
+            OS bypass takes the kernel off the send path. GPUDirect RDMA takes host memory off it.
+            The registered buffer is GPU memory, the device reads it over the peer-to-peer path,
+            and the payload travels from GPU memory to the wire. The driver carries the
+            peer-to-peer plumbing for this and takes it whenever the
             registered range resolves to accelerator memory{' '}
             <SourceRef provenance="code-derived" code={code.p2p} />. A second, more modern route
-            registers the buffer from a shared file descriptor instead{' '}
+            registers the buffer from a shared file descriptor{' '}
             <SourceRef provenance="code-derived" code={code.dmabuf} />.
           </Box>
           <ExpandableSection
             headerText="RDMA read and write are device operations, and the device says which it has"
-            headerDescription="Capability bits reported over the admin queue, so the answer is per device, not per product"
+            headerDescription="Capability bits reported over the admin queue, so the answer is per device"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -847,11 +854,11 @@ export function DataPath() {
                 <SourceRef provenance="code-derived" code={code.capMasks} />.
               </Box>
               <Alert type="info" header="Because it is device-reported, it is negotiated per device">
-                A blanket statement that EFA does RDMA is itself an overstatement. AWS documents
+                The answer is per instance type. AWS documents
                 RDMA write on most supported instance types with Nitro version 4 and later, and
                 RDMA read on all instances with Nitro version 4 and later{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />. RDMA write is Nitro v4, not
-                Nitro v6. Two documented exceptions cut both ways: p4d.24xlarge and
+                <SourceRef provenance="documented" doc={docs.efa} />. Two documented exceptions cut
+                both ways: p4d.24xlarge and
                 p4de.24xlarge are Nitro v3 and still have RDMA read, and c7gn and hpc7g are Nitro
                 v5 and are read only.
               </Alert>
@@ -869,14 +876,15 @@ export function DataPath() {
               </Alert>
             </SpaceBetween>
           </ExpandableSection>
-          <Alert type="info" header="GPUDirect RDMA is on by default; it is not the same as GDRCopy">
+          <Alert type="info" header="GPUDirect RDMA is on by default; GDRCopy is a separate install">
             AWS made the installer flag that used to enable it a no-op in 2021, because the
             driver enables the support by default{' '}
-            <SourceRef provenance="documented" doc={docs.changelog} />. GDRCopy, which the AWS
-            NCCL getting-started guide installs as its own step{' '}
-            <SourceRef provenance="documented" doc={docs.nccl} />, is a different thing: it gives
-            the host processor a low-latency mapping into GPU memory. Missing GDRCopy does not
-            force host staging. Missing peer-to-peer does.
+            <SourceRef provenance="documented" doc={docs.changelog} />. GDRCopy is its own
+            component, installed as its own step in the AWS NCCL getting-started guide{' '}
+            <SourceRef provenance="documented" doc={docs.nccl} />, and it gives the host processor
+            a low-latency mapping into GPU memory. Peer-to-peer support is what decides whether
+            payloads leave GPU memory, so that is the one to confirm on a new instance; a build
+            without GDRCopy still sends straight from GPU memory.
           </Alert>
         </SpaceBetween>
       </Container>

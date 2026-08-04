@@ -45,35 +45,33 @@ const docs: Record<string, DocRef> = {
 export function AIMLInference() {
   return (
     <SpaceBetween size="l">
-      <Container header={<Header variant="h1" description="The model fitting on one node does not settle the question. Three serving patterns put request traffic on the fabric anyway.">EFA for AI/ML Inference</Header>}>
+      <Container header={<Header variant="h1" description="Whether inference needs the fabric turns on what crosses the network per request, and three serving patterns put request traffic there.">EFA for AI/ML Inference</Header>}>
         <Box variant="p">
-          <strong>The problem:</strong> the usual test for whether inference needs EFA (Elastic
-          Fabric Adapter) is whether the model fits in one instance. That test misses the cases that
-          cost the most. <strong>The answer:</strong> the question is not model size, it is whether
-          anything crosses the network on the critical path of a request. Disaggregated prefill and
-          decode, cross-node speculative decoding and KV-cache migration all move bytes between
+          The usual test for whether inference needs EFA (Elastic Fabric Adapter) is whether the
+          model fits in one instance. The test that decides your architecture is what crosses the
+          network on the critical path of a request. Disaggregated prefill and decode, cross-node
+          speculative decoding and KV-cache (Key-Value cache) migration each move bytes between
           instances while every node holds a full copy of the model.
         </Box>
       </Container>
 
-      <Container header={<Header variant="h2" description="The model fits on every node and the KV-cache still crosses the wire on every request.">Disaggregated serving is the case people miss</Header>}>
+      <Container header={<Header variant="h2" description="The model fits on every node and the KV-cache still crosses the wire on every request.">Disaggregated serving puts the KV-cache on the wire</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            In disaggregated prefill/decode, prefill runs on one set of nodes and decode on another.
-            The model fits on each node individually, but the architecture is deliberately multi-node
-            to optimize throughput and latency independently. The KV-cache computed during prefill
-            must transfer from prefill nodes to decode nodes via the network. This is where EFA
-            becomes critical.
+            In disaggregated prefill and decode, prefill runs on one set of nodes and decode on
+            another, so throughput and latency scale independently. The model fits on each node, and
+            the KV-cache computed during prefill still crosses the network to the decode nodes once
+            per request. That transfer is why EFA matters here.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="h3">NIXL (NVIDIA Inference Xfer Library)</Box>
               <Box variant="p">
-                Purpose-built for disaggregated inference transfers. Unlike NCCL, which always
-                launches a GPU kernel even for point-to-point send/recv, NIXL performs transfers
-                with <strong>zero SM (Streaming Multiprocessor) consumption</strong>: no GPU kernel
-                launch required. This matters because inference GPUs are already compute-bound
-                generating tokens; stealing SMs for communication directly reduces throughput.
+                Purpose-built for disaggregated inference transfers. NIXL moves a buffer with{' '}
+                <strong>zero SM (Streaming Multiprocessor) consumption</strong>: the transfer needs
+                no GPU kernel launch, so the GPU keeps every SM on token generation. NCCL
+                launches a GPU kernel for each point-to-point send and receive, and on an inference
+                GPU that is already compute-bound, those SMs come straight out of throughput.
               </Box>
               <Box variant="p">
                 NIXL uses EFA via the libfabric backend. AWS documents the pairing directly: EFA
@@ -94,105 +92,102 @@ export function AIMLInference() {
                 between two specific nodes, at an unpredictable moment. Different patterns, so
                 different libraries.
               </Box>
-              <Alert type="info" header="Do not trust a NIXL versus NCCL percentage you find quoted">
-                A figure in the 30 to 50% range circulates for NIXL against NCCL at KV-cache
-                transfer sizes. No benchmark that supports it was located during this research, and
-                the repository usually cited for it is attributed to the wrong organization. Treat
-                the gap as unquantified and measure it on your own transfer sizes.
+              <Alert type="info" header="Size the NIXL advantage on your own transfer sizes">
+                A percentage figure circulates for NIXL against NCCL at KV-cache transfer sizes. No
+                benchmark that supports it was located during this research, and the repository
+                usually cited for it is attributed to the wrong organization. Treat the gap as
+                unquantified and measure it at the block sizes your serving stack actually moves.
               </Alert>
             </div>
           </ColumnLayout>
           <Box variant="p">
-            <strong>vLLM integration:</strong> vLLM implements disaggregated serving via
-            NixlConnector: the prefiller acts as producer, the decoder as consumer, and a proxy
-            coordinates the KV-cache handoff. The transfer happens over EFA without consuming
-            any GPU compute cycles.
+            <strong>vLLM integration:</strong> vLLM implements disaggregated serving through
+            NixlConnector. The prefiller produces, the decoder consumes, and a proxy coordinates the
+            KV-cache handoff over EFA with no GPU compute cycles spent on it.
           </Box>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2" description="Tensor parallelism pays the network cost once per token, so one added millisecond becomes a second per response.">When the model genuinely does not fit</Header>}>
-        <ColumnLayout columns={2} variant="text-grid">
-          <div>
-            <Box variant="h3">Multi-Node Tensor Parallelism</Box>
-            <Box variant="p">
-              Models too large for a single instance (for example 405B parameters at fp16 is about
-              810GB, exceeding even P5&apos;s 640GB total GPU memory). Tensor parallelism across
-              nodes requires EFA for acceptable latency.
-            </Box>
-            <Box variant="p">
-              Every token generation step requires communication between all TP ranks. For
-              autoregressive generation, this happens <strong>per token</strong>. One extra
-              millisecond of network latency across a 1,000-token response is a full second added to
-              the answer.
-            </Box>
-            <StatusIndicator type="success">EFA critical</StatusIndicator>
-          </div>
-          <div>
-            <Box variant="h3">Pipeline Parallelism for Throughput</Box>
-            <Box variant="p">
-              Splitting model layers across nodes for serving. Less latency-sensitive than TP
-              (communication is between pipeline stages, not within every layer).
-              But high bandwidth still matters for activation transfer.
-            </Box>
-            <StatusIndicator type="info">EFA beneficial</StatusIndicator>
-          </div>
-        </ColumnLayout>
+      <Container header={<Header variant="h2" description="Tensor parallelism pays the network cost once per token, so one added millisecond becomes a second per response.">Models that need more than one node</Header>}>
+        <SpaceBetween size="m">
+          <Box variant="p">
+            405B parameters at fp16 is about 810 GB, more than the 640 GB of total GPU memory in a
+            P5 instance. Two strategies split a model across nodes, and they load the fabric
+            differently.
+          </Box>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Multi-node tensor parallelism</Box>
+              <Box variant="p">
+                Every token generation step needs communication between all tensor-parallel ranks,
+                and autoregressive generation repeats that <strong>per token</strong>. One extra
+                millisecond of network latency across a 1,000-token response is a full second added
+                to the answer, which makes this the latency-critical case for EFA.
+              </Box>
+              <StatusIndicator type="success">EFA critical</StatusIndicator>
+            </div>
+            <div>
+              <Box variant="h3">Pipeline parallelism for throughput</Box>
+              <Box variant="p">
+                Model layers split across nodes, with communication happening at stage boundaries.
+                That makes it more forgiving of latency than tensor parallelism, and it still wants
+                high bandwidth for the activation tensors moving between stages.
+              </Box>
+              <StatusIndicator type="info">EFA beneficial</StatusIndicator>
+            </div>
+          </ColumnLayout>
+        </SpaceBetween>
       </Container>
 
       <Container header={<Header variant="h2" description="Both are point-to-point and bursty, which is why a collectives library is the wrong tool for them.">Speculative decoding and KV-cache migration</Header>}>
         <ColumnLayout columns={2} variant="text-grid">
           <div>
-            <Box variant="h3">Cross-Node Speculative Decoding</Box>
+            <Box variant="h3">Cross-node speculative decoding</Box>
             <Box variant="p">
-              A draft model on one node generates candidate tokens; a verifier on another node
-              accepts or rejects them. Both models may fit on their respective nodes individually,
-              but the verification loop is latency-sensitive: every round-trip adds to
-              time-to-first-token. EFA reduces this communication overhead.
+              A draft model on one node generates candidate tokens and a verifier on another node
+              accepts or rejects them. Each model fits on its own node, and the verification loop is
+              latency-sensitive: every round-trip adds to time-to-first-token, which is what EFA
+              shortens here.
             </Box>
             <StatusIndicator type="info">EFA beneficial</StatusIndicator>
           </div>
           <div>
-            <Box variant="h3">KV-Cache Migration for Load Balancing</Box>
+            <Box variant="h3">KV-cache migration for load balancing</Box>
             <Box variant="p">
-              Moving hot KV-cache between serving instances during autoscaling or rebalancing.
-              When a request is migrated to a less-loaded node, its KV-cache must follow.
-              These are bursty, latency-sensitive point-to-point transfers, exactly the pattern
-              NIXL is built for.
+              Autoscaling and rebalancing move a request to a less-loaded node, and its KV-cache has
+              to follow. These are bursty, latency-sensitive point-to-point transfers, exactly the
+              pattern NIXL is built for.
             </Box>
             <StatusIndicator type="info">EFA beneficial (NIXL)</StatusIndicator>
           </div>
         </ColumnLayout>
         <Box variant="p" padding={{ top: 'm' }}>
-          Neither of these is a collective operation. A library tuned for a predictable allreduce
-          every step is the wrong tool for one block of cache moving between two named nodes at an
-          unpredictable moment, which is the whole reason NIXL exists alongside NCCL.
+          Both are point-to-point transfers between two named nodes at an unpredictable moment. A
+          library tuned for a predictable allreduce every step is the wrong shape for that, which is
+          the whole reason NIXL exists alongside NCCL.
         </Box>
       </Container>
 
-      <Container header={<Header variant="h2" description="Two shapes where the fabric buys nothing and the single-zone constraint still costs you.">When EFA does not matter for inference</Header>}>
+      <Container header={<Header variant="h2" description="Two serving shapes where the intra-node links carry everything, and the single-zone constraint you sidestep by staying there.">Where NVLink already covers it</Header>}>
         <ColumnLayout columns={2} variant="text-grid">
           <div>
-            <Box variant="h3">Single-Node, Single-Request Serving</Box>
+            <Box variant="h3">Single-node, single-request serving</Box>
             <Box variant="p">
-              Model fits on one node, no disaggregated architecture, no cross-node speculative
-              decoding. All GPU-to-GPU communication uses NVLink/NVSwitch within the instance.
-              EFA is not involved.
-            </Box>
-            <Box variant="p">
-              Models up to roughly 300B parameters at fp16, or roughly 600B at fp8/int8, fit on a
-              single P5. With quantization, even larger models fit.
+              One node holds the model, one node serves the request, and all GPU-to-GPU
+              communication travels over NVLink and NVSwitch inside the instance. Roughly 300B
+              parameters at fp16, or roughly 600B at fp8 and int8, fit on a single P5, and
+              quantization raises that further.
             </Box>
             <StatusIndicator type="stopped">EFA irrelevant</StatusIndicator>
           </div>
           <div>
-            <Box variant="h3">Batch Inference / Offline</Box>
+            <Box variant="h3">Batch and offline inference</Box>
             <Box variant="p">
-              If latency isn&apos;t critical (batch processing, embedding generation),
-              even multi-node inference can tolerate standard networking. The throughput
-              improvement from EFA may not justify keeping every node in one Availability Zone,
-              which is the constraint EFA actually imposes: EFA traffic cannot cross Availability
-              Zones or VPCs <SourceRef provenance="documented" doc={docs.efa} />.
+              With a loose latency budget (batch processing, embedding generation), multi-node
+              inference runs acceptably on standard networking. EFA traffic stays inside one
+              Availability Zone and one VPC{' '}
+              <SourceRef provenance="documented" doc={docs.efa} />, so the throughput it buys costs
+              you the freedom to spread nodes across zones.
             </Box>
             <StatusIndicator type="stopped">EFA optional</StatusIndicator>
           </div>
@@ -202,8 +197,8 @@ export function AIMLInference() {
       <Container header={<Header variant="h2" description="Five questions in order. The first one you answer yes to decides the architecture.">Deciding it for your own deployment</Header>}>
         <SpaceBetween size="s">
           <Box variant="p">
-            <strong>1. Is serving single-node and single-request, with no disaggregation?</strong>{' '}
-            Then no EFA. NVLink handles all intra-node GPU communication, and most fine-tuning and
+            <strong>1. Does one node serve a whole request, prefill and decode together?</strong>{' '}
+            Skip EFA. NVLink handles all intra-node GPU communication, and most fine-tuning and
             inference workloads stop here.
           </Box>
           <Box variant="p">
@@ -212,12 +207,12 @@ export function AIMLInference() {
             networking. Use NIXL over EFA.
           </Box>
           <Box variant="p">
-            <strong>3. Is the model too large for one node?</strong> EFA is critical. Tensor
-            parallelism across nodes with NCCL over EFA. Put every node in the same Availability
-            Zone, which is the boundary EFA traffic cannot cross{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />. A cluster placement group is the
-            recommended way to satisfy that and keep latency low, not an absolute requirement{' '}
-            <SourceRef provenance="documented" doc={docs.efaStart} />.
+            <strong>3. Does the model need more than one node?</strong> EFA is critical. Tensor
+            parallelism across nodes with NCCL over EFA. Put every node in one Availability Zone and
+            one VPC, the boundary EFA traffic stays inside{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />. AWS recommends a cluster placement
+            group to satisfy that and keep latency low; it is a recommendation, and the hard
+            boundary is the zone <SourceRef provenance="documented" doc={docs.efaStart} />.
           </Box>
           <Box variant="p">
             <strong>4. Are you running speculative decoding across nodes?</strong> EFA is

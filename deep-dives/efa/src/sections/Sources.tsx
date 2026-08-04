@@ -50,96 +50,88 @@ const sources: Source[] = [
   { id: 39, title: 'UCCL KV-Cache Transfer Benchmark (NIXL vs NCCL, uccl-project/uccl v0.1.1)', url: 'https://github.com/uccl-project/uccl/tree/v0.1.1/p2p/benchmarks', tier: 3, type: 'third-party-benchmark', accessDate: '2026-08-02' },
 ];
 
+/**
+ * Fact-check register.
+ *
+ * Every row's `section` field must name a title that exists in the live nav in
+ * App.tsx, and the claim must appear in that section's prose at that value.
+ * The register is a spot-check on figures that travel, not a mirror of the
+ * roughly 400 inline SourceRef citations the sections now carry: several
+ * sections deliberately hold no rows here because their citations are inline.
+ *
+ * Two rules learned the hard way. Do not carry a figure the sections removed
+ * as unsourceable (the per-message microsecond latencies and the single-flow
+ * SRD numbers came out for that reason, and the ENA Express 25 Gbps figure
+ * describes ENA Express rather than EFA). Do not restate a number the dive
+ * corrected: prices are pinned to a price list version in the Pricing section,
+ * and the pre-June-2025 p5 and p4d rates read as a fresh price cut if quoted.
+ */
 const factChecks: FactCheckItem[] = [
-  // Overview section
-  { claim: '~100+ microseconds TCP kernel overhead per message', section: 'What is EFA?', sourceId: 25 },
-  { claim: '~15 microseconds EFA MPI ping-pong latency', section: 'What is EFA?', sourceId: 25 },
+  // What is EFA?
   { claim: 'Up to 3,200 Gbps aggregate bandwidth on P5', section: 'What is EFA?', sourceId: 8 },
   { claim: 'EFA traffic encrypted in transit by Nitro with zero performance penalty', section: 'What is EFA?', sourceId: 1 },
-  { claim: 'EFA is free (no per-interface charge, no data transfer fee)', section: 'What is EFA?', sourceId: 11 },
 
-  // Architecture & SRD Protocol section
-  { claim: '30-60% of total step time is network communication at 64+ nodes', section: 'Architecture & SRD Protocol', sourceId: 26 },
-  { claim: '~15\u03BCs per-message latency with SRD', section: 'Architecture & SRD Protocol', sourceId: 25 },
-  { claim: '64-path packet spraying in SRD', section: 'Architecture & SRD Protocol', sourceId: 25 },
-  { claim: '900 GB/s NVLink bisection bandwidth intra-node', section: 'Architecture & SRD Protocol', sourceId: 8 },
-  { claim: 'Up to 6,400 Gbps inter-node on P6-B300', section: 'Architecture & SRD Protocol', sourceId: 5 },
-  { claim: 'Max single-flow ~5 Gbps TCP vs SRD ~25 Gbps', section: 'Architecture & SRD Protocol', sourceId: 25 },
-  { claim: '~100x faster retransmission than RFC 6298 200ms minimum', section: 'Architecture & SRD Protocol', sourceId: 25 },
-  { claim: 'P99.9 latency 85% reduction versus TCP', section: 'Architecture & SRD Protocol', sourceId: 25 },
-  { claim: 'P5 has 32 network cards = 32 EFA interfaces', section: 'Architecture & SRD Protocol', sourceId: 4 },
-  { claim: 'P5en has 16 network cards = 16 EFA but same 3,200 Gbps total', section: 'Architecture & SRD Protocol', sourceId: 12 },
-  { claim: 'SRD described in IEEE Micro 2020 paper by Shalev et al.', section: 'Architecture & SRD Protocol', sourceId: 25 },
+  // The EFA Device
+  { claim: 'p5.48xlarge: 32 network cards, 33 interfaces in the AWS launch example, 32 EFA devices', section: 'The EFA Device: Attachment, Cards and Rails', sourceId: 4 },
 
-  // Instance Support Matrix section
-  { claim: '6,400 Gbps bandwidth on P6-B300 with 17 EFA interfaces', section: 'Instance Support Matrix', sourceId: 5 },
+  // The EC2 Instance Topology API
+  { claim: 'Topology enters above NCCL, which never calls either topology API', section: 'The EC2 Instance Topology API', sourceId: 32 },
+
+  // Instance Support Matrix
+  { claim: '6,400 Gbps on P6-B300: 17 network cards, 16 of them EFA-capable at 400 Gbps each', section: 'Instance Support Matrix', sourceId: 5 },
   { claim: '3,200 Gbps bandwidth on P5 with 32 EFA interfaces', section: 'Instance Support Matrix', sourceId: 8 },
   { claim: '400 Gbps bandwidth on P4d with 4 EFA interfaces', section: 'Instance Support Matrix', sourceId: 4 },
   { claim: '3,200 Gbps bandwidth on Trn2 with 16 EFA interfaces', section: 'Instance Support Matrix', sourceId: 9 },
-  { claim: '28.8 Tbps per UltraServer (P6e-GB200, 72 GPUs)', section: 'Instance Support Matrix', sourceId: 10 },
-  { claim: 'EFAv3 has 35% lower latency vs EFAv2', section: 'Instance Support Matrix', sourceId: 12 },
-  { claim: '75% faster collectives on EFAv2 vs EFAv1', section: 'Instance Support Matrix', sourceId: 26 },
+  { claim: 'P5en has 16 network cards = 16 EFA but same 3,200 Gbps total', section: 'Instance Support Matrix', sourceId: 12 },
+  { claim: 'Up to 28.8 Tbps per P6e-GB200 UltraServer, on a product page that also says EFAv4', section: 'Instance Support Matrix', sourceId: 10 },
   { claim: 'Inf2 does NOT have EFA; only inf1.24xlarge has single 100 Gbps EFA', section: 'Instance Support Matrix', sourceId: 4 },
-  { claim: 'Hpc8a: 40% higher performance than hpc7a', section: 'Instance Support Matrix', sourceId: 5 },
 
-  // AI/ML Training section
-  { claim: '7B model allreduce: ~2.2s at 100 Gbps vs ~70ms at 3,200 Gbps (31x reduction)', section: 'AI/ML Training', sourceId: 8 },
-  { claim: '85-95% scaling efficiency with EFA on P5 for DDP', section: 'AI/ML Training', sourceId: 26 },
-  { claim: '40-60% scaling efficiency without EFA at same scale', section: 'AI/ML Training', sourceId: 26 },
+  // NCCL over EFA
+  { claim: 'P5 and P5en ship no static topology XML; the plugin generates one at run time', section: 'NCCL over EFA: the aws-ofi-nccl Plugin', sourceId: 34 },
+  { claim: 'NCCL_ALGO and NCCL_PROTO switch the tuner off only in the v2 entry point (NCCL 2.21.x); v3 and v6 run it either way', section: 'NCCL over EFA: the aws-ofi-nccl Plugin', sourceId: 33 },
+
+  // AI/ML Training
+  { claim: '7B model allreduce: about 2.2s at 100 Gbps against about 70ms at 3,200 Gbps', section: 'AI/ML Training', sourceId: 8 },
   { claim: 'Trn1n has 16 EFA interfaces (1,600 Gbps) vs Trn1 8 EFA (800 Gbps)', section: 'AI/ML Training', sourceId: 4 },
-  { claim: 'Trn2: 30-40% better price-performance than P5e', section: 'AI/ML Training', sourceId: 9 },
-  { claim: 'NeuronLink 2D torus at 1 TB/s intra-node on Trn2', section: 'AI/ML Training', sourceId: 9 },
-  { claim: 'CC Engine provides 10-15% additional acceleration over NCCL', section: 'AI/ML Training', sourceId: 19 },
+  { claim: 'Trn2: 30 to 40% better price performance than P5e and P5en', section: 'AI/ML Training', sourceId: 9 },
   { claim: 'Trn2 UltraServers: 4 nodes = 64 chips, 12.8 Tbps EFA', section: 'AI/ML Training', sourceId: 9 },
+  { claim: '900 GB/s per GPU on fourth-generation NVLink, which is what P5 carries', section: 'AI/ML Training', sourceId: 8 },
 
-  // AI/ML Inference section
+  // AI/ML Inference
   { claim: '405B parameters at fp16 = ~810GB model size', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'P5 has 640GB total GPU memory (8x H100 80GB)', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'NIXL requires libfabric 1.21.0+', section: 'AI/ML Inference', sourceId: 37 },
   { claim: 'NCCL launches a GPU kernel even for point-to-point send/recv', section: 'AI/ML Inference', sourceId: 36 },
-  { claim: 'EFA is the only validated libfabric provider for NIXL', section: 'AI/ML Inference', sourceId: 37 },
   { claim: 'NIXL performs transfers with zero SM consumption (no GPU kernel launch)', section: 'AI/ML Inference', sourceId: 36 },
   { claim: 'vLLM NixlConnector: prefiller as producer, decoder as consumer', section: 'AI/ML Inference', sourceId: 38 },
 
-  // HPC section
+  // Traditional HPC
   { claim: '98.4% parallel efficiency at 1,008 cores (28 c5n instances) for CFD', section: 'Traditional HPC', sourceId: 24 },
-  { claim: '4x improvement in CFD scaling over ENA', section: 'Traditional HPC', sourceId: 11 },
   { claim: '10% speedup at 32 instances with multi-rail EFA on hpc7a', section: 'Traditional HPC', sourceId: 27 },
   { claim: '30%+ improvement at 192 instances with multi-rail EFA', section: 'Traditional HPC', sourceId: 27 },
-  { claim: 'Up to 2.05x MD speedup at 2 instances vs ENA', section: 'Traditional HPC', sourceId: 28 },
-  { claim: 'Hpc7a: 96 AMD EPYC cores, 300 Gbps EFA', section: 'Traditional HPC', sourceId: 5 },
+  { claim: 'Hpc7a: up to 192 AMD EPYC cores, 300 Gbps EFA', section: 'Traditional HPC', sourceId: 5 },
+  { claim: 'Hpc8a: up to 40% higher performance than Hpc7a', section: 'Traditional HPC', sourceId: 5 },
 
-  // EFA vs Alternatives section
-  { claim: '~15.5\u03BCs MPI ping-pong latency (EFA)', section: 'EFA vs Alternatives', sourceId: 25 },
-  { claim: '~100+ \u03BCs latency (TCP kernel path)', section: 'EFA vs Alternatives', sourceId: 25 },
-  { claim: '~1-2 \u03BCs latency (InfiniBand RDMA)', section: 'EFA vs Alternatives', sourceId: 25 },
-  { claim: '200 Gbps max ENI bandwidth (TCP)', section: 'EFA vs Alternatives', sourceId: 5 },
-  { claim: '~25 Gbps max single-flow SRD vs ~5 Gbps TCP', section: 'EFA vs Alternatives', sourceId: 25 },
+  // EFA vs Alternatives
+  { claim: 'Up to 6,400 Gbps per instance on P6-B300, the EFA row of the transport comparison', section: 'EFA vs Alternatives', sourceId: 5 },
 
-  // Pricing section
-  { claim: 'p5.48xlarge On-Demand: $98.32/hr', section: 'Pricing Analysis', sourceId: 8 },
-  { claim: 'p4d.24xlarge On-Demand: $32.77/hr', section: 'Pricing Analysis', sourceId: 8 },
+  // Pricing Analysis
+  { claim: 'EFA is free (no per-interface charge, no data transfer fee)', section: 'Pricing Analysis', sourceId: 11 },
+  { claim: 'p5.48xlarge On-Demand: $55.04/hr, us-east-1, price list 20260728175247', section: 'Pricing Analysis', sourceId: 8 },
+  { claim: 'p4d.24xlarge On-Demand: $21.957642/hr, us-east-1, price list 20260728175247', section: 'Pricing Analysis', sourceId: 8 },
   { claim: 'trn1.32xlarge On-Demand: $21.50/hr', section: 'Pricing Analysis', sourceId: 9 },
   { claim: 'trn1n.32xlarge On-Demand: $24.78/hr', section: 'Pricing Analysis', sourceId: 9 },
-  { claim: 'hpc7a.96xlarge On-Demand: $3.60/hr', section: 'Pricing Analysis', sourceId: 5 },
+  { claim: 'hpc7a.96xlarge On-Demand: $7.20/hr in us-east-2. There is no us-east-1 SKU', section: 'Pricing Analysis', sourceId: 5 },
 
-  // Decision Guide section
-  { claim: '90%+ scaling efficiency with EFA vs 40-60% without', section: 'Decision Guide', sourceId: 26 },
-  { claim: '30-40% better price-performance on Trn2 vs P5e at scale', section: 'Decision Guide', sourceId: 9 },
-  { claim: 'SMDDP AllGather reduces GPU SM usage from 24 to under 9', section: 'Decision Guide', sourceId: 21 },
+  // Decision Guide
+  { claim: '30 to 40% better price performance on Trn2 vs P5e at scale', section: 'Decision Guide', sourceId: 9 },
+  { claim: 'SMDDP AllGather reduces GPU SM usage from 24 to under 9, on P4 only', section: 'Decision Guide', sourceId: 21 },
+  { claim: 'The placement group for an ODCR is chosen when the reservation is created', section: 'Decision Guide', sourceId: 31 },
 
-  // NCCL topology & capacity planning claims
-  { claim: 'NCCL does not call EC2 topology API, so the topology graph is intra-node only', section: 'Architecture & SRD Protocol', sourceId: 32 },
-  { claim: 'P5/P5en have no topology XML, so the plugin uses sort_rails() instead', section: 'AI/ML Training', sourceId: 34 },
-  { claim: 'Setting NCCL_ALGO or NCCL_PROTO env vars disables the tuner entirely', section: 'AI/ML Training', sourceId: 33 },
-  { claim: 'Capacity Block prices increased ~15% in January 2026', section: 'Decision Guide', sourceId: 30 },
-  { claim: 'Capacity Blocks auto-place into UltraClusters', section: 'Decision Guide', sourceId: 30 },
-  { claim: 'ODCR cluster placement group assignment is immutable after creation', section: 'Decision Guide', sourceId: 31 },
-
-  // EKS & Containers section
-  { claim: 'VPC CNI v1.7.10+ for multi-EFA, v1.18.5+ for EFA-only', section: 'EKS & Containers', sourceId: 7 },
-  { claim: 'EC2 instances with EFA pre-allocate 5,128 2MiB huge pages', section: 'EKS & Containers', sourceId: 7 },
-  { claim: 'EFA Device Plugin v0.5.6+ for P6-B200', section: 'EKS & Containers', sourceId: 7 },
+  // EFA on Amazon EKS
+  { claim: 'VPC CNI v1.7.10+ for multi-EFA, v1.18.5+ for EFA-only', section: 'EFA on Amazon EKS', sourceId: 7 },
+  { claim: 'EC2 instances with EFA pre-allocate 5128 2MiB huge pages', section: 'EFA on Amazon EKS', sourceId: 7 },
+  { claim: 'EFA Device Plugin v0.5.6+ for P6-B200', section: 'EFA on Amazon EKS', sourceId: 7 },
 ];
 
 const glossary: GlossaryEntry[] = [
@@ -150,12 +142,12 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'MPI', fullForm: 'Message Passing Interface', description: 'Standard communication protocol for parallel computing in HPC workloads' },
   { acronym: 'HPC', fullForm: 'High-Performance Computing', description: 'Computing paradigm for complex simulations and scientific workloads' },
   { acronym: 'ENI', fullForm: 'Elastic Network Interface', description: 'Virtual network interface in AWS VPC that can be attached to EC2 instances' },
-  { acronym: 'ENA', fullForm: 'Elastic Network Adapter', description: 'AWS standard high-performance network interface for EC2 (non-OS-bypass)' },
+  { acronym: 'ENA', fullForm: 'Elastic Network Adapter', description: 'AWS standard high-performance network interface for EC2. Its traffic goes through the kernel stack' },
   { acronym: 'RoCE', fullForm: 'RDMA over Converged Ethernet', description: 'Network protocol enabling RDMA over Ethernet; requires lossless fabric with PFC' },
   { acronym: 'NVLink', fullForm: 'NVIDIA GPU Interconnect', description: 'NVIDIA proprietary high-bandwidth interconnect for GPU-to-GPU communication within a node' },
   { acronym: 'NVSwitch', fullForm: 'NVIDIA GPU Switch Fabric', description: 'NVIDIA switch chip enabling all-to-all GPU communication within a node' },
   { acronym: 'PFC', fullForm: 'Priority Flow Control', description: 'Ethernet flow control mechanism that can pause traffic; required by RoCE, can cause deadlocks' },
-  { acronym: 'ECMP', fullForm: 'Equal-Cost Multi-Path', description: 'Routing strategy distributing traffic across multiple equal-cost paths (flow-level, not packet-level)' },
+  { acronym: 'ECMP', fullForm: 'Equal-Cost Multi-Path', description: 'Routing strategy distributing traffic across multiple equal-cost paths, hashing each flow onto one path' },
   { acronym: 'DPU', fullForm: 'Data Processing Unit', description: 'Specialized processor offloading network, storage, and security functions from the host CPU' },
   { acronym: 'QP', fullForm: 'Queue Pair', description: 'Fundamental communication endpoint in RDMA/EFA consisting of a send queue and receive queue' },
   { acronym: 'CQ', fullForm: 'Completion Queue', description: 'Queue where hardware posts completion notifications for finished send/receive operations' },
@@ -182,14 +174,14 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'DGRAM', fullForm: 'Datagram', description: 'Raw unreliable datagram endpoint type in libfabric; used directly by some MPI implementations' },
   { acronym: 'PCIe', fullForm: 'Peripheral Component Interconnect Express', description: 'High-speed serial bus standard connecting CPUs, GPUs, NICs, and other peripherals' },
   { acronym: 'SLA', fullForm: 'Service Level Agreement', description: 'Contractual commitment defining expected service availability and performance' },
-  { acronym: 'SMDDP', fullForm: 'SageMaker Distributed Data Parallel', description: 'AWS library that replaces the NCCL AllReduce and AllGather path on a narrow instance set. Supports ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge only, with the optimized AllGather on P4 alone. Nothing newer is supported' },
+  { acronym: 'SMDDP', fullForm: 'SageMaker Distributed Data Parallel', description: 'AWS library that replaces the NCCL AllReduce and AllGather path on a narrow instance set. Supports ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge only, with the optimized AllGather on P4 alone' },
   { acronym: 'CNI', fullForm: 'Container Network Interface', description: 'Plugin specification for configuring network interfaces in Linux containers (used in Kubernetes)' },
   { acronym: 'OFI', fullForm: 'OpenFabrics Interfaces', description: 'Framework (libfabric) providing a portable API for high-performance fabric services' },
   { acronym: 'RCCL', fullForm: 'ROCm Communication Collectives Library', description: 'AMD equivalent of NCCL for ROCm GPU collective communications' },
   { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'AWS mechanism to reserve EC2 capacity in a specific AZ without long-term commitment' },
   { acronym: 'MSI-X', fullForm: 'Message Signaled Interrupts Extended', description: 'PCIe interrupt mechanism supporting per-queue interrupts for high-performance I/O' },
   { acronym: 'NCI', fullForm: 'Network Card Index', description: 'Identifier for a specific network card on a multi-NIC EC2 instance' },
-  { acronym: 'UCCL', fullForm: 'Unified Collective Communication Library', description: 'Open source GPU communication library developed at the UC Berkeley Sky Computing Lab and UC Davis, covering collectives, point-to-point transfers and expert parallelism. It is not an NVIDIA project. Cited here for the NIXL versus NCCL KV cache benchmarks under p2p/benchmarks in uccl-project/uccl' },
+  { acronym: 'UCCL', fullForm: 'Unified Collective Communication Library', description: 'Open source GPU communication library developed at the UC Berkeley Sky Computing Lab and UC Davis, covering collectives, point-to-point transfers and expert parallelism. Cited here for the NIXL versus NCCL KV cache benchmarks under p2p/benchmarks in uccl-project/uccl' },
 
   // EFA hardware generations
   { acronym: 'EFAv1', fullForm: 'Elastic Fabric Adapter generation 1', description: 'First EFA generation, on Nitro v3 instances such as P4d. Baseline for the 75% collectives improvement AWS claims for EFAv2' },
@@ -206,7 +198,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'IAM', fullForm: 'Identity and Access Management', description: 'AWS permissions service. Governs which principal may call the topology and capacity APIs cited here' },
   { acronym: 'AL2023', fullForm: 'Amazon Linux 2023', description: 'Current Amazon Linux generation and the AMI family the EKS EFA install scripts target' },
   { acronym: 'DLC', fullForm: 'Deep Learning Container', description: 'AWS-maintained container image shipping libfabric, aws-ofi-nccl, NCCL and OpenMPI. Installs EFA with --skip-kmod, so the host keeps the kernel module' },
-  { acronym: 'CRT', fullForm: 'AWS Common Runtime', description: 'S3 client library used by the AWS CLI and Boto3 for parallel multipart transfers. It runs over TCP on the ENA device, never over EFA' },
+  { acronym: 'CRT', fullForm: 'AWS Common Runtime', description: 'S3 client library used by the AWS CLI and Boto3 for parallel multipart transfers. Its traffic is TCP on the ENA device' },
 
   // Kubernetes and scheduler layer
   { acronym: 'DRA', fullForm: 'Dynamic Resource Allocation', description: 'Kubernetes API for claiming specialized devices. The EFA DRA driver is the successor to the EFA device plugin' },
@@ -224,10 +216,10 @@ const glossary: GlossaryEntry[] = [
   // GPU data movement
   { acronym: 'GIN', fullForm: 'GPU-Initiated Networking', description: 'Subsystem in the aws-ofi-nccl plugin that lets a GPU kernel drive network operations directly' },
   { acronym: 'GDAKI', fullForm: 'GPUDirect Async Kernel-Initiated', description: 'GIN implementation that drives EFA queue pairs from GPU kernels through the libfabric FI_EFA_GDA_OPS table. Opt-in only, via OFI_NCCL_GIN_TYPE=GDAKI' },
-  { acronym: 'GDRCopy', fullForm: 'GPUDirect RDMA Copy library', description: 'NVIDIA low-latency library for copying between host and GPU memory. It is a documented EFA install step and it is not the same thing as GPUDirect RDMA' },
+  { acronym: 'GDRCopy', fullForm: 'GPUDirect RDMA Copy library', description: 'NVIDIA low-latency library for copying between host and GPU memory, and a documented EFA install step. A separate component from GPUDirect RDMA, listed here as GDR' },
   { acronym: 'GDS', fullForm: 'GPUDirect Storage', description: 'NVIDIA path moving file data straight between storage and GPU memory, skipping a host bounce buffer. Used by FSx for Lustre on a restricted instance list' },
   { acronym: 'GDRDMA', fullForm: 'GPUDirect RDMA', description: 'Token printed in the NCCL log line NET/Libfabric/0/GDRDMA, which is the evidence that the plugin selected the GPUDirect RDMA path' },
-  { acronym: 'DMA', fullForm: 'Direct Memory Access', description: 'Device-initiated memory transfer that does not go through the CPU' },
+  { acronym: 'DMA', fullForm: 'Direct Memory Access', description: 'Transfer the device drives itself, straight to and from host memory' },
   { acronym: 'MMIO', fullForm: 'Memory-Mapped I/O', description: 'Addressing a device through the CPU memory map. EFA uses it for the LLQ doorbell write' },
 
   // Verbs and queue objects
@@ -237,7 +229,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'RNR', fullForm: 'Receiver Not Ready', description: 'Condition where the receiver has no posted buffer. RNR retry is an SRD-only property on EFA' },
   { acronym: 'ABI', fullForm: 'Application Binary Interface', description: 'Binary contract between kernel driver and userspace provider. Changing it breaks an installed libfabric' },
   { acronym: 'VF', fullForm: 'Virtual Function', description: 'SR-IOV device presented to a guest. Every EFA PCI ID is a VF; there is no EFA physical function' },
-  { acronym: 'PF', fullForm: 'Physical Function', description: 'Full PCIe function of an SR-IOV device. ENA exposes one; EFA does not' },
+  { acronym: 'PF', fullForm: 'Physical Function', description: 'Full PCIe function of an SR-IOV device. ENA exposes one; EFA presents virtual functions only' },
 
   // Network and kernel offloads
   { acronym: 'MTU', fullForm: 'Maximum Transmission Unit', description: 'Largest frame a link carries without fragmenting' },
@@ -247,9 +239,9 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'LRO', fullForm: 'Large Receive Offload', description: 'Hardware-side merging of received segments before they reach the kernel' },
   { acronym: 'RSS', fullForm: 'Receive Side Scaling', description: 'Hashing received flows across queues so multiple cores share the receive load' },
   { acronym: 'DIM', fullForm: 'Dynamic Interrupt Moderation', description: 'Adaptive tuning of interrupt coalescing against observed traffic' },
-  { acronym: 'XDP', fullForm: 'eXpress Data Path', description: 'Kernel eBPF hook running at the driver receive path. Supported on ENA, not part of the EFA data path' },
+  { acronym: 'XDP', fullForm: 'eXpress Data Path', description: 'Kernel eBPF hook at the driver receive path. Supported on ENA; the EFA data path bypasses the kernel' },
   { acronym: 'NIC', fullForm: 'Network Interface Card', description: 'The network adapter itself. On EFA-capable instances a network card can present both an ENA and an EFA device' },
-  { acronym: 'RMA', fullForm: 'Remote Memory Access', description: 'One-sided read and write into a peer address space. Not offered by the libfabric DGRAM endpoint type' },
+  { acronym: 'RMA', fullForm: 'Remote Memory Access', description: 'One-sided read and write into a peer address space. The libfabric DGRAM endpoint type omits it' },
   { acronym: 'AEAD', fullForm: 'Authenticated Encryption with Associated Data', description: 'Encryption class that authenticates as it encrypts. Used by the Nitro in-transit encryption applied to EFA traffic' },
 
   // Storage and memory

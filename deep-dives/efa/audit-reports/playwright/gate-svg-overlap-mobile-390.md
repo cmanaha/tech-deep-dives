@@ -4,7 +4,7 @@ Status: **PASS** (0 finding(s))
 
 | field | value |
 | --- | --- |
-| generated | 2026-08-02T21:50:55.618Z |
+| generated | 2026-08-04T05:32:24.295Z |
 | viewport | 390 x 844 |
 | base URL | http://127.0.0.1:4173/ |
 | sections visited | 20 |
@@ -77,7 +77,7 @@ These do not change the verdict above. They are a human judgement call.
 
 ### ena (3)
 
-**ena-efa-devices-title - One network interface attachment can materialize one PCI function or two, and the two are different devices ra...**
+**ena-efa-devices-title - One network interface attachment can materialize one PCI function or two, and each function is its own device ...**
 
 - smallest label renders at 3.8px (34 of 34 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
 
@@ -111,7 +111,7 @@ These do not change the verdict above. They are a human judgement call.
 
 ### nccl (2)
 
-**nccl-stack-title - NCCL never talks to EFA directly. It loads aws-ofi-nccl as a network plugin, the plugin calls libfabric, and l...**
+**nccl-stack-title - NCCL reaches EFA through three layers. It loads aws-ofi-nccl as a network plugin, the plugin calls libfabric, ...**
 
 - smallest label renders at 3.8px (21 of 21 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
 
@@ -129,7 +129,7 @@ These do not change the verdict above. They are a human judgement call.
 
 - smallest label renders at 3.3px (30 of 30 labels below 8px). The diagram is 308px wide here against a 920-unit viewBox.
 
-**tfo-fanout-title - The throughput target passed to the Common Runtime S3 client is a divisor, not a rate limiter. One number pick...**
+**tfo-fanout-title - The throughput target passed to the Common Runtime S3 client is a divisor. One number picks the connection cou...**
 
 - smallest label renders at 3.3px (31 of 31 labels below 8px). The diagram is 308px wide here against a 920-unit viewBox.
 
@@ -149,15 +149,15 @@ These do not change the verdict above. They are a human judgement call.
 
 ### sagemaker (4)
 
-**sm-contracts-title - Training jobs and HyperPod answer all four EFA ownership questions, with different owners at every stage, whil...**
+**sm-contracts-title - Training jobs and HyperPod answer all four EFA ownership questions, with different owners at every stage. Mana...**
 
 - smallest label renders at 2.9px (43 of 43 labels below 8px). The diagram is 308px wide here against a 960-unit viewBox.
 
-**sm-gates-title - A SageMaker training job only runs NCCL over EFA after passing four gates: an EFA-capable instance type, a con...**
+**sm-gates-title - A SageMaker training job runs NCCL over EFA after passing four gates: an EFA-capable instance type, a containe...**
 
 - smallest label renders at 3.2px (32 of 32 labels below 8px). The diagram is 308px wide here against a 960-unit viewBox.
 
-**sm-smddp-title - SMDDP supports only three instance types, all of them P3dn or P4 generation, and its optimized AllGather is P4...**
+**sm-smddp-title - SMDDP supports three instance types, ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, with its optimize...**
 
 - smallest label renders at 3.2px (21 of 21 labels below 8px). The diagram is 308px wide here against a 960-unit viewBox.
 

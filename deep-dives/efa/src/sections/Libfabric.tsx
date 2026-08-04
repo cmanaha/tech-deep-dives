@@ -349,7 +349,7 @@ const tunables: Tunable[] = [
     name: 'FI_PROVIDER=efa',
     effect: 'Restricts libfabric to the EFA provider.',
     advice:
-      'Applies only to aws-ofi-nccl 1.5.0 and older. The plugin cheatsheet scopes it that way explicitly. On a current plugin it does nothing useful.',
+      'Applies only to aws-ofi-nccl 1.5.0 and older, which is how the plugin cheatsheet scopes it explicitly.',
     status: 'never',
   },
   {
@@ -397,7 +397,7 @@ const tunables: Tunable[] = [
     name: 'FI_EFA_RUNT_SIZE',
     effect: 'How many bytes the read-based protocol sends eagerly before the receiver reads the rest.',
     advice:
-      'The parameter definition gives 307200. It shapes the accelerator-memory path, where medium does not exist. On host memory the initialiser starts it at zero.',
+      'The parameter definition gives 307200. It shapes the accelerator-memory path, where the ladder is eager then runting read. On host memory the initialiser starts it at zero.',
     status: 'set',
   },
   {
@@ -448,7 +448,7 @@ export function Libfabric() {
         header={
           <Header
             variant="h1"
-            description="Why does everything go through libfabric, and which of its several hundred settings actually change what EFA does?"
+            description="How an application reaches the EFA device, and which of libfabric's several hundred settings change what it does."
           >
             libfabric and the EFA Provider
           </Header>
@@ -456,13 +456,15 @@ export function Libfabric() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The problem:</strong> the EFA (Elastic Fabric Adapter) device has no public
-            native API. There is no libefa you can call, no AWS SDK for posting a work request.{' '}
-            <strong>The answer:</strong> libfabric is the API. AWS states the shape directly: EFA
-            integrates with Libfabric, and it supports NCCL (NVIDIA Collective Communications
-            Library) and NIXL (NVIDIA Inference Xfer Library) for AI and ML applications, and Open
-            MPI (Message Passing Interface) 4.1 and later and Intel MPI 2019 Update 5 and later for
-            HPC applications{' '}
+            <strong>
+              libfabric is the API to the EFA (Elastic Fabric Adapter) device.
+            </strong>{' '}
+            It is a portable fabric API with a provider per transport, and the EFA provider is how
+            an application reaches this one. AWS states the shape directly: EFA integrates with
+            Libfabric, and it supports NCCL (NVIDIA Collective Communications Library) and NIXL
+            (NVIDIA Inference Xfer Library) for AI and ML applications, and Open MPI (Message
+            Passing Interface) 4.1 and later and Intel MPI 2019 Update 5 and later for HPC
+            applications{' '}
             <SourceRef provenance="documented" doc={docs.efa} />.
           </Box>
           <Box variant="p">
@@ -471,13 +473,12 @@ export function Libfabric() {
             system kernel and communicates directly with the EFA device to put packets on the
             network{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. The bypass is a property of the
-            libfabric provider, not of something you can reach around it.
+            libfabric provider, so it is reached by going through libfabric.
           </Box>
           <Box variant="p">
-            The practical consequence is that every EFA question eventually becomes a libfabric
-            question. Which fabric was selected, which endpoint type, which protocol the provider
-            chose for a given message size, whether a registration came out of the cache. The rest
-            of this section is those four questions.
+            Every EFA question eventually becomes a libfabric question: which fabric was selected,
+            which endpoint type, which protocol the provider chose for a message size, whether a
+            registration came out of the cache. The rest of this section is those four questions.
           </Box>
         </SpaceBetween>
       </Container>
@@ -486,9 +487,9 @@ export function Libfabric() {
         header={
           <Header
             variant="h2"
-            description="One device, two fabrics, three consumers. The provider is picked at runtime from a list, not compiled in."
+            description="One device, two fabrics, three consumers, and a provider chosen at runtime from a list."
           >
-            The stack, and why it is not a native API
+            The stack: one API, two fabrics, one device
           </Header>
         }
       >
@@ -497,12 +498,11 @@ export function Libfabric() {
 
           <Box variant="p">
             libfabric's own EFA man page frames the split. For the reliable datagram endpoint type
-            it supports two fabric names, efa and efa-direct. The efa fabric implements a set of
-            wire protocols to support more capabilities and features beyond the EFA device
-            capabilities. The efa-direct fabric, on the contrary, offloads all libfabric data plane
-            calls to the device directly without wire protocols, and compared to the efa fabric it
-            supports fewer capabilities and has more mode requirements for applications, but it
-            provides a fast path to hand off application requests to the device{' '}
+            it supports two fabric names. The efa fabric implements a set of wire protocols to
+            support more capabilities and features beyond the EFA device capabilities. The
+            efa-direct fabric offloads all libfabric data plane calls to the device directly
+            without wire protocols, providing a fast path to hand off application requests to the
+            device{' '}
             <SourceRef provenance="code-derived" code={code.manOverview} />.
           </Box>
           <Box variant="p">
@@ -518,7 +518,7 @@ export function Libfabric() {
         header={
           <Header
             variant="h2"
-            description="fi_info is not a diagnostic. It is the mechanism, and the order of its output is deliberate."
+            description="Why efa-direct comes back first, and four commands that show what your host actually offers."
           >
             fi_info and provider selection
           </Header>
@@ -527,9 +527,11 @@ export function Libfabric() {
         <SpaceBetween size="m">
           <Box variant="p">
             An application calls fi_getinfo with hints and gets back a linked list of matching
-            options. The EFA provider builds that list in three passes, and it puts efa-direct
-            first on purpose. Its own comment says so: the EFA direct provider is more performant if
-            the application can use it, therefore the efa-direct info objects should be returned
+            options, and the fi_info command line tool prints that same list. Selection happens
+            there, so the order of the list is a design decision. The EFA provider builds it in
+            three passes, and it puts efa-direct first on purpose. Its own comment says so: the
+            EFA direct provider is more performant if the application can use it, therefore the
+            efa-direct info objects should be returned
             before efa rdm or dgram, so we populate the efa-direct info objects first{' '}
             <SourceRef provenance="code-derived" code={code.provOrder} />.
           </Box>
@@ -549,7 +551,7 @@ export function Libfabric() {
             against source address, fabric name, domain name and PCI (Peripheral Component
             Interconnect) bus id in turn, and anything that fails a check is skipped{' '}
             <SourceRef provenance="code-derived" code={code.getUserInfo} />. Those are the fields
-            worth putting in hints when you want a specific device rather than whatever comes first.
+            to put in hints when you want one specific device.
           </Box>
 
           <Box variant="code">
@@ -570,11 +572,11 @@ fi_info -p efa -f efa-direct -t FI_EP_RDM | grep -c 'domain:'
 fi_info -g FI_EFA`}</pre>
           </Box>
 
-          <Alert type="info" header="Read the defaults off the binary you have, not off a table">
+          <Alert type="info" header="Read the defaults off the binary you have">
             Command 4 prints the help text compiled into the provider you installed. Because AWS
             ships a fork of libfabric rather than upstream tags, that output is the only defaults
-            list guaranteed to describe your host. It is still a help string, and for two settings
-            the help string is not the value the provider compiles in.
+            list guaranteed to describe your host. Treat it as a help string: for two settings the
+            provider compiles in a different value, and both are named at the end of this section.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -583,13 +585,20 @@ fi_info -g FI_EFA`}</pre>
         header={
           <Header
             variant="h2"
-            description="Reliable datagram versus datagram, and why collectives are never on the datagram one."
+            description="Which endpoint your collectives run on, and what asking for efa-direct puts on your side of the line."
           >
             Endpoint types
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            An endpoint is the libfabric object you post sends and receives to. The type you ask
+            for in your hints decides which operations exist, how large a message can be, and what
+            ordering you get. The EFA provider offers two, and the choice is effectively made for
+            you by what your middleware needs.
+          </Box>
+
           <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="h3">
@@ -613,34 +622,33 @@ fi_info -g FI_EFA`}</pre>
             </div>
             <div>
               <Box variant="h3">
-                FI_EP_DGRAM <Badge color="grey">not for collectives</Badge>
+                FI_EP_DGRAM <Badge color="grey">single-packet messages</Badge>
               </Box>
               <Box variant="p">
                 The datagram endpoint supports only FI_MSG, with a maximum message size of the
                 maximum transmission unit of the underlying hardware, approximately 8 KiB{' '}
                 <SourceRef provenance="code-derived" code={code.manEndpoints} />. It also requires
-                the FI_MSG_PREFIX mode and does not support wait objects{' '}
+                the FI_MSG_PREFIX mode, and wait objects are unavailable on it{' '}
                 <SourceRef provenance="code-derived" code={code.manEndpoints} />.
               </Box>
               <Box variant="p">
-                No tagging, no RMA (remote memory access), no message longer than one packet, and no
-                blocking completion read. Every collective algorithm needs at least one of those, so
-                NCCL, MPI and NIXL all sit on RDM. The datagram endpoint exists for applications
-                that genuinely want a raw unreliable datagram, and it is the only place the phrase
-                unreliable is accurate for EFA.
+                Every collective algorithm needs tagging, RMA (remote memory access), messages
+                longer than one packet or a blocking completion read, so NCCL, MPI and NIXL all sit
+                on RDM. The datagram endpoint serves applications that genuinely want a raw
+                unreliable datagram, and it is the one place the word unreliable applies to EFA.
               </Box>
             </div>
           </ColumnLayout>
 
-          <Alert type="info" header="Reliable datagram on efa-direct is a narrower object than on efa">
-            Same endpoint type, different contract. On efa-direct an RDM endpoint supports FI_MSG,
-            FI_SEND, FI_RECV, FI_RMA, FI_WRITE, FI_READ and FI_SOURCE, gives no send-after-send
-            guarantee, caps messages at the device transmission unit and remote memory operations at
-            the device maximum RDMA (Remote Direct Memory Access) size, and requires the FI_CONTEXT2
-            mode{' '}
-            <SourceRef provenance="code-derived" code={code.manEndpoints} />. It also only supports
-            FI_MR_LOCAL, which means the application registers its own buffers, while the efa fabric
-            does not require registration for send and receive at all{' '}
+          <Alert type="info" header="Same endpoint type, a different contract on efa-direct">
+            On efa-direct an RDM endpoint supports FI_MSG, FI_SEND, FI_RECV, FI_RMA, FI_WRITE,
+            FI_READ and FI_SOURCE, leaves send-after-send ordering to the application, caps
+            messages at the device
+            transmission unit and remote memory operations at the device maximum RDMA (Remote
+            Direct Memory Access) size, and requires the FI_CONTEXT2 mode{' '}
+            <SourceRef provenance="code-derived" code={code.manEndpoints} />. It also supports
+            FI_MR_LOCAL only, so the application registers its own buffers, where the efa fabric
+            accepts unregistered buffers for send and receive{' '}
             <SourceRef provenance="code-derived" code={code.manMrModes} />. Asking for efa-direct is
             asking to take that work on.
           </Alert>
@@ -651,43 +659,49 @@ fi_info -g FI_EFA`}</pre>
         header={
           <Header
             variant="h2"
-            description="Four protocols on the efa fabric, chosen per send. The thresholds are per memory type, and one of them is zero."
+            description="Which wire protocol your sends actually use, and the one threshold that is zero on GPU memory."
           >
             Eager, medium and rendezvous
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            On the efa fabric the provider picks a wire protocol for every two-sided send, from the
+            message length and the kind of memory the buffer lives in. Knowing the ladder is how
+            you predict which one a given send takes, and which setting would move it.
+          </Box>
+
           <ProtocolLadderDiagram />
 
           <Box variant="p">
-            The selection function is small enough to read in one sitting. Its own comment names the
-            options: four types of protocol can be used, eager, medium, longcts and longread, each
-            with a tagged and non-tagged version and some with a delivery-complete version{' '}
-            <SourceRef provenance="code-derived" code={code.selectRtm} />. The body then does four
-            things in order.
+            The selection function's own comment names the options: four types of protocol can be
+            used, eager, medium, longcts and longread, each with a tagged and non-tagged version
+            and some with a delivery-complete version{' '}
+            <SourceRef provenance="code-derived" code={code.selectRtm} />. It checks the read-based
+            branch first, then falls through to a size ladder.
           </Box>
           <Box variant="p">
-            First it tests the read-based branch, and that test is not about size alone. It fires
-            only when peer to peer is usable, the message length is at or above the minimum read
-            message size for this memory type, the peer supports RDMA read, and either the
+            The read-based branch turns on four conditions at once, and size is only one of them.
+            It fires when peer to peer is usable, the message length is at or above the minimum
+            read message size for this memory type, the peer supports RDMA read, and either the
             application passed a memory descriptor or the registration cache is available{' '}
-            <SourceRef provenance="code-derived" code={code.selectRtm} />. If that fails it falls
-            through to a plain size ladder: eager if the message fits in one request packet, medium
-            if it fits under the medium threshold, longcts otherwise{' '}
+            <SourceRef provenance="code-derived" code={code.selectRtm} />. Everything else lands on
+            the size ladder: eager if the message fits in one request packet, medium if it fits
+            under the medium threshold, longcts above that{' '}
             <SourceRef provenance="code-derived" code={code.selectRtm} />.
           </Box>
           <Box variant="p">
-            That last condition in the read branch is the one people trip over. Disabling the
-            memory registration cache does not just make registration slower. On a send with no
-            application-supplied descriptor it makes the read-based rendezvous protocol ineligible,
-            and the provider silently drops to the credit-based long protocol instead.
+            That last condition is the one people trip over. The memory registration cache is doing
+            protocol-selection work as well as registration work: on a send with no
+            application-supplied descriptor, turning the cache off makes the read-based rendezvous
+            protocol ineligible, and the provider drops silently to the credit-based long protocol.
           </Box>
 
           <Box variant="h3">Where the thresholds are actually set</Box>
           <Box variant="p">
-            Not in the selection function. They are per memory interface, initialised once, and the
-            values differ by interface{' '}
+            They live outside the selection function, one set per memory interface, initialised
+            once, with values that differ by interface{' '}
             <SourceRef provenance="code-derived" code={code.hmemThresholds} />. For host memory all
             four are read from the environment with documented defaults. For CUDA and ROCr memory
             the medium threshold is set to zero and the minimum read size is set to one byte past
@@ -726,7 +740,7 @@ fi_info -g FI_EFA`}</pre>
         header={
           <Header
             variant="h2"
-            description="Registration is the expensive part of an RDMA transfer. The cache exists so you pay it once, and fork is what breaks it."
+            description="Why leaving the cache on changes which wire protocol you get, and how to keep fork from aborting the job."
           >
             The memory registration cache and fork safety
           </Header>
@@ -745,15 +759,14 @@ fi_info -g FI_EFA`}</pre>
             buffers, the provider stays out of the way.
           </Box>
           <Box variant="p">
-            The caps are derived from the device rather than fixed. When neither limit is set the
-            provider computes them from the device reported maximum registration count and maximum
-            registration size, multiplied by a fixed factor{' '}
-            <SourceRef provenance="code-derived" code={code.cacheInit} />. Above that sit the core
-            libfabric caps, FI_MR_CACHE_MAX_COUNT and FI_MR_CACHE_MAX_SIZE, where setting the count
-            to zero disables memory registration caching outright{' '}
-            <SourceRef provenance="code-derived" code={code.cacheParams} />, with a shipped default
-            of 1024 entries{' '}
-            <SourceRef provenance="code-derived" code={code.cacheDefaults} />.
+            Its caps come from the device: with neither limit set, the provider computes them from
+            the device reported maximum registration count and size{' '}
+            <SourceRef provenance="code-derived" code={code.cacheInit} />. Above those sit the core
+            libfabric caps, FI_MR_CACHE_MAX_COUNT and FI_MR_CACHE_MAX_SIZE, shipping at 1024
+            entries{' '}
+            <SourceRef provenance="code-derived" code={code.cacheDefaults} />, where setting the
+            count to zero disables memory registration caching outright{' '}
+            <SourceRef provenance="code-derived" code={code.cacheParams} />.
           </Box>
 
           <Box variant="h3">The monitor, and the Open MPI collision</Box>
@@ -774,16 +787,18 @@ fi_info -g FI_EFA`}</pre>
             broken configuration{' '}
             <SourceRef provenance="code-derived" code={code.cacheInit} />.
           </Box>
-          <Alert type="warning" header="If you pin FI_MR_CACHE_MONITOR to memhooks under Open MPI, you own the outcome">
-            The fallback exists because the conflict is real and version dependent. Forcing the
-            monitor removes the fallback. This is the one FI_MR setting where a wrong value is a
-            correctness problem, not a slow one.
+          <Alert type="warning" header="Leave FI_MR_CACHE_MONITOR unset under Open MPI">
+            The automatic switch to userfaultfd exists because the conflict is real and version
+            dependent. Pinning the monitor to memhooks removes that fallback and puts the outcome
+            on you. This is the one FI_MR setting where a wrong value is a correctness problem
+            rather than a slow one.
           </Alert>
 
           <Box variant="h3">Fork safety</Box>
           <Box variant="p">
-            Registered pages and fork do not mix. On older kernels a child process could see pages
-            the device still owns. The provider resolves this at startup: if rdma-core reports that
+            Registered pages and fork interact badly: on older kernels a child process could see
+            pages the device still owns. The provider resolves this at startup: if rdma-core
+            reports that
             fork support is not needed, it stops there, otherwise it checks FI_EFA_FORK_SAFE,
             RDMAV_FORK_SAFE and IBV_FORK_SAFE and turns fork support on if any of them is set{' '}
             <SourceRef provenance="code-derived" code={code.forkInit} />.
@@ -815,7 +830,7 @@ fi_info -g FI_EFA`}</pre>
         header={
           <Header
             variant="h2"
-            description="The GPU builds and posts its own work requests, on one fabric only, behind two opt-ins."
+            description="What the GPU can post for itself, which fabric it needs, and the two opt-ins that turn it on."
           >
             GPUDirect Async
           </Header>
@@ -823,53 +838,47 @@ fi_info -g FI_EFA`}</pre>
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            libfabric exposes GPUDirect Async, which lets the GPU interact directly with the network
-            device, by requesting FI_EFA_GDA_OPS in the name parameter of a domain ops open on the
-            efa-direct fabric{' '}
-            <SourceRef provenance="code-derived" code={code.manGda} />. The name is a string
-            constant in the provider extension header{' '}
-            <SourceRef provenance="code-derived" code={code.gdaHeader} />, and the request returns a
-            populated function table with query_addr, query_qp_wqs, query_cq, cq_open_ext,
-            get_mr_lkey and cntr_open_ext{' '}
-            <SourceRef provenance="code-derived" code={code.gdaTable} />.
+            GPUDirect Async lets the GPU interact directly with the network device. An application
+            reaches it by requesting FI_EFA_GDA_OPS in the name parameter of a domain ops open on
+            the efa-direct fabric{' '}
+            <SourceRef provenance="code-derived" code={code.manGda} />, a string constant in the
+            provider extension header{' '}
+            <SourceRef provenance="code-derived" code={code.gdaHeader} />.
           </Box>
           <Box variant="p">
-            The fabric restriction is enforced in code, not just described. The domain ops handler
-            checks the info type and returns a not-supported error with the log line stating that
-            only efa direct supports FI_EFA_GDA_OPS{' '}
-            <SourceRef provenance="code-derived" code={code.gdaTable} />. The provider's own feature
-            comparison agrees, listing the GPU Direct Async domain ops extension as unsupported on
-            efa and supported on efa-direct{' '}
-            <SourceRef provenance="code-derived" code={code.fabricComparison} />.
-          </Box>
-          <Box variant="p">
-            Read what that table actually gives you. Every entry is a query or an extended open, not
-            a data-path call. libfabric does not perform GPU-initiated posting itself. It hands a
-            GPU-side consumer the raw handles needed to build and ring work queue entries from
-            device code: the address handle number, remote queue pair number and remote key, the
-            send and receive queue buffers and doorbells, the completion queue buffer and doorbell,
-            and the local registration key{' '}
-            <SourceRef provenance="code-derived" code={code.manGda} />.
+            The model to hold is a handover rather than an offload. Every entry in the returned
+            function table is a query or an extended open, so libfabric supplies the address
+            handle, the queue buffers and the doorbells, and GPU-side code builds and rings the
+            work queue entries itself{' '}
+            <SourceRef provenance="code-derived" code={code.manGda} />. That is also why the
+            efa-direct requirement is enforced in code: the domain ops handler checks the info type
+            and returns a not-supported error, logging that only efa direct supports
+            FI_EFA_GDA_OPS{' '}
+            <SourceRef provenance="code-derived" code={code.gdaTable} />{' '}
+            <SourceRef
+              provenance="code-derived"
+              code={code.fabricComparison}
+              label="code: efa_fabric_comparison.md"
+            />.
           </Box>
 
           <Alert type="info" header="The NCCL plugin consumes it, behind an environment variable and a build flag">
             <SpaceBetween size="xs">
               <Box variant="p">
                 aws-ofi-nccl v1.20.0 carries a GPU-initiated networking subsystem that opens
-                FI_EFA_GDA_OPS on the domain the proxy plugin already selected, then calls
-                query_qp_wqs and query_cq to populate GPU-resident queue pair and completion queue
-                descriptors{' '}
-                <SourceRef provenance="code-derived" code={code.ginOpen} />. Its own step comments
-                name the dependency on the efa-direct fabric and on libfabric 2.4 and newer{' '}
+                FI_EFA_GDA_OPS on the domain the proxy plugin already selected, then populates
+                GPU-resident queue pair and completion queue descriptors from it. Its own step
+                comments name the dependency on the efa-direct fabric and on libfabric 2.4 and
+                newer{' '}
                 <SourceRef provenance="code-derived" code={code.ginOpen} />.
               </Box>
               <Box variant="p">
-                It is opt-in twice over. The plugin switches to the GDAKI implementation only when
-                OFI_NCCL_GIN_TYPE is set to GDAKI, logging that GDAKI mode is enabled, and a binary
-                built without that support fails initialisation rather than falling back silently,
-                on the stated grounds that GDAKI was an explicit opt-in{' '}
-                <SourceRef provenance="code-derived" code={code.ginSwitch} />. So it is not on by
-                default, and it is not available on the efa fabric at all.
+                It is opt-in twice over: a build that includes GDAKI support, and
+                OFI_NCCL_GIN_TYPE set to GDAKI at run time. The plugin logs that GDAKI mode is
+                enabled when it switches, and a binary built without that support fails
+                initialisation loudly, on the stated grounds that GDAKI was an explicit opt-in{' '}
+                <SourceRef provenance="code-derived" code={code.ginSwitch} />. Both opt-ins sit on
+                top of the efa-direct requirement above.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -880,13 +889,19 @@ fi_info -g FI_EFA`}</pre>
         header={
           <Header
             variant="h2"
-            description="Two version numbers that cannot be compared, and a rename that dates every guide you will read."
+            description="Which version number to quote, and a ten-second check that dates any EFA guide you read."
           >
             Version skew and the symbol rename
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            Two libfabric version numbers circulate for EFA, and they describe different trees. One
+            is the upstream project's tag. The other is what the EFA installer puts on your host.
+            Knowing which is which is what keeps a version-dependent claim honest.
+          </Box>
+
           <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="h3">
@@ -912,31 +927,29 @@ fi_info -g FI_EFA`}</pre>
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="There is no single current libfabric version. Name the channel.">
-            2.4.0amzn5.0 and 2.6.0 are different code, and the version strings are not comparable
-            across the two channels. A backport can put a v2.6 feature into an amzn5 build, and a
-            v2.5 feature can be absent from it. When a claim depends on a version, say whether you
-            mean the installer channel or the upstream tag, and prefer checking the installed binary
+          <Alert type="warning" header="Name the channel whenever you quote a libfabric version">
+            2.4.0amzn5.0 and 2.6.0 are different code, and the version strings are comparable only
+            within a channel. A backport can put a v2.6 feature into an amzn5 build, and a v2.5
+            feature can be absent from it. When a claim depends on a version, say whether you mean
+            the installer channel or the upstream tag, and prefer checking the installed binary
             with fi_info over either.
           </Alert>
 
           <Box variant="h3">The rxr to efa_rdm rename</Box>
           <Box variant="p">
             The EFA provider's reliable-datagram implementation used to live under an rxr_ prefix.
-            It does not anymore. The reliable-datagram sources are now under a dedicated directory
-            with an efa_rdm_ prefix, which is where the protocol selection cited earlier lives{' '}
+            It now sits in a dedicated directory under an efa_rdm_ prefix, which is where the
+            protocol selection cited earlier lives{' '}
             <SourceRef provenance="code-derived" code={code.selectRtm} />.
           </Box>
           <Box variant="p">
             That rename dates any piece of writing instantly. Symbols such as rxr_pkt_post_ctrl
-            appear in a great deal of EFA material and none of them exist in libfabric today. A
+            appear in a great deal of EFA material, and libfabric today has none of them, so a
             citation to one of those names is a citation to a tree nobody is running. The same
             applies to efa_rdm_ep.c, which was split into a header plus two implementation files.
-          </Box>
-          <Box variant="p">
-            So when you read an EFA tuning guide, grep the pinned source for the first symbol it
-            names. If the symbol is gone, the rest of the guidance is from the same era and deserves
-            the same suspicion. The check takes ten seconds.
+            Use it: when you read an EFA tuning guide, grep the pinned source for the first symbol
+            it names. If the symbol is gone, the rest of the guidance is from the same era and
+            deserves the same suspicion. The check takes ten seconds.
           </Box>
 
           <ExpandableSection
@@ -962,8 +975,8 @@ fi_info -g FI_EFA`}</pre>
                 API version 1.18 and later RDMA is enabled by default on any hardware which supports
                 it, and for earlier API versions only on certain newer hardware revisions{' '}
                 <SourceRef provenance="code-derived" code={code.manDeviceRdma} />. That is the real
-                reason FI_EFA_USE_DEVICE_RDMA stopped being useful, and it depends on the API
-                version the application requests, not on the libfabric build alone.
+                reason FI_EFA_USE_DEVICE_RDMA stopped being useful. The behaviour follows the API
+                version the application requests, alongside the hardware revision.
               </Box>
               <Box variant="p">
                 NIXL is the newest consumer of all this. AWS documents it as integrating with
@@ -982,13 +995,19 @@ fi_info -g FI_EFA`}</pre>
         header={
           <Header
             variant="h2"
-            description="A short list worth knowing, and a shorter list the plugin documentation tells you to leave alone."
+            description="The handful worth setting, the ones to leave alone, and where the printed default is the wrong number."
           >
             The settings that matter
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            The EFA provider registers dozens of FI_EFA parameters and libfabric core adds its own.
+            A short list changes behaviour you would notice, and the plugin's own cheatsheet marks
+            several of the popular ones as obsolete. The badges below are that split.
+          </Box>
+
           <Table
             variant="embedded"
             columnDefinitions={[
@@ -1017,7 +1036,7 @@ fi_info -g FI_EFA`}</pre>
           </Box>
 
           <ExpandableSection
-            headerText="fi_info printed a default. For two settings it is not the one in force."
+            headerText="Two settings where the compiled default differs from the printed help text"
             headerDescription="Which number to believe when the help text and the initialiser disagree"
           >
             <SpaceBetween size="s">
@@ -1048,21 +1067,21 @@ fi_info -g FI_EFA`}</pre>
                 . Code wins again. Treat it as 256.
               </Box>
               <Box variant="p">
-                The rule behind both: a default printed by fi_info is a documentation string, not a
-                reading of the running value. When a default is load-bearing for a decision, read
-                the initialiser at the version you have installed.
+                The rule behind both: a default printed by fi_info is a documentation string, and
+                the initialiser is the running value. When a default is load-bearing for a
+                decision, read the initialiser at the version you have installed.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
 
-          <Alert type="warning" header="Three FI_EFA variables abort the process on sight">
+          <Alert type="warning" header="Audit an inherited environment file before you reuse it">
             The provider keeps a list of deprecated names and calls abort if any of them is present
             in the environment: FI_EFA_MTU_SIZE, FI_EFA_TX_IOV_LIMIT and FI_EFA_RX_IOV_LIMIT{' '}
             <SourceRef provenance="code-derived" code={code.envAbort} />. A second list, including
             FI_EFA_SET_CUDA_SYNC_MEMOPS and FI_EFA_ZCPY_RX_SEED, only logs{' '}
-            <SourceRef provenance="code-derived" code={code.envAbort} />. Copying an old environment
-            file forward is therefore not a harmless act. It is one of the few ways to make an EFA
-            job fail before it opens a single endpoint.
+            <SourceRef provenance="code-derived" code={code.envAbort} />. Those three names are the
+            ones to grep an old launch script for: they end an EFA job before it opens a single
+            endpoint.
           </Alert>
         </SpaceBetween>
       </Container>

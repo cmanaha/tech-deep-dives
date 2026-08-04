@@ -17,10 +17,10 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  *
  * Scope discipline for this file: this is one section of an EFA dive, not a
  * storage dive. It covers the fabric-facing story (which FSx for Lustre
- * configuration reaches the fabric, and why S3 never does) and the resulting
- * comparison. The Common Runtime's internal mechanics are named where they
- * change a fabric decision and deferred everywhere else, with the boundary
- * stated in the closing container.
+ * configuration reaches the fabric, and where S3 throughput comes from) and
+ * the resulting comparison. The Common Runtime's internal mechanics are named
+ * where they change a fabric decision and deferred everywhere else, with the
+ * boundary stated in the container before the comparison.
  *
  * Sourcing rule (deep-dives/efa/revamp/source-authority-standard.md): every
  * load-bearing claim carries a SourceRef. FSx material is 'documented',
@@ -165,8 +165,8 @@ function ThreeDataPathsDiagram() {
       sub: 'inter-node collectives',
       fabric: true,
       traverses: [
-        'Userspace libfabric writes work queue entries to the EFA',
-        'device. The kernel network stack is not on the data path.',
+        'Userspace libfabric writes work queue entries straight to',
+        'the EFA device, bypassing the kernel network stack.',
         'GPUDirect RDMA moves buffers without a host copy.',
       ],
       endpoint: ['Another instance in the', 'same Availability Zone'],
@@ -188,11 +188,11 @@ function ThreeDataPathsDiagram() {
     },
     {
       path: 'FSx for Lustre',
-      sub: 'Scratch 2, no EFA',
+      sub: 'Scratch 2, TCP over ENA',
       fabric: false,
       traverses: [
         'LNet runs over TCP on the ENA device. Same service, same',
-        'POSIX semantics, no fabric. Traffic to any one object',
+        'POSIX semantics, ENA speed. Traffic to any one object',
         'storage server caps at 5 Gbps, so fan-out has to be wide.',
       ],
       endpoint: ['FSx for Lustre object', 'storage servers'],
@@ -205,8 +205,8 @@ function ThreeDataPathsDiagram() {
       fabric: false,
       traverses: [
         'Full userspace TCP, TLS and HTTP over ENA, spread across',
-        'many parallel connections. No EFA, no RDMA, no libfabric',
-        'and no GPU memory awareness anywhere in the client source.',
+        'many parallel connections. A TCP socket is the only',
+        'transport that appears in the client source.',
       ],
       endpoint: ['Many S3 front-end IP', 'addresses'],
       ceiling: 'About 400 Gbps',
@@ -309,8 +309,8 @@ function ThreeDataPathsDiagram() {
       })}
 
       <text className="sdp-cap" x="460" y="562">
-        FSx for Lustre ceilings come from one AWS table. The S3 figure is read from the Common
-        Runtime's own instance table, not from AWS documentation.
+        FSx for Lustre ceilings come from one AWS table. The S3 figure comes from the Common
+        Runtime's own instance table in source.
       </text>
     </svg>
   );
@@ -353,8 +353,8 @@ function CreateTimeDoorsDiagram() {
       lines: [
         'Throughput is independent of storage.',
         'EFA: yes. GPUDirect Storage: yes.',
-        'S3 data repository association: NO.',
-        'Lazy loading from S3 is unavailable.',
+        'S3 data repository association: no, so',
+        'no lazy loading from S3.',
       ],
       ceiling: '700 / 1,200 Gbps',
     },
@@ -448,7 +448,7 @@ function CreateTimeDoorsDiagram() {
       </text>
 
       <text className="fod-cap" x="460" y="518">
-        Every claim in this diagram is from AWS documentation, not from source code.
+        Every claim in this diagram comes from AWS documentation.
       </text>
     </svg>
   );
@@ -481,9 +481,9 @@ function TargetFanOutDiagram() {
       style={{ width: '100%', height: 'auto' }}
     >
       <title id="tfo-fanout-title">
-        The throughput target passed to the Common Runtime S3 client is a divisor, not a rate
-        limiter. One number picks the connection count, the process memory ceiling, the size of
-        each range request and the in-flight request cap, and because the memory ceiling is divided
+        The throughput target passed to the Common Runtime S3 client is a divisor. One number picks
+        the connection count, the process memory ceiling, the size of each range request and the
+        in-flight request cap, and because the memory ceiling is divided
         by a growing connection count, raising the target makes every range request smaller until
         it hits an 8 mebibyte floor.
       </title>
@@ -576,7 +576,7 @@ function TargetFanOutDiagram() {
       </text>
 
       <text className="tfo-cap" x="460" y="380">
-        Read from the client source at a pinned commit. AWS documentation describes none of this.
+        Every value here is read from the client source at a pinned commit.
       </text>
     </svg>
   );
@@ -611,7 +611,7 @@ const efaScope: ScopeRow[] = [
   {
     dimension: 'GPUDirect Storage clients',
     requirement:
-      'P5, P5e, P5en or P6-B200 only, with CUDA, the open source NVIDIA driver, and NVIDIA GDS driver 2.24.2 or higher. P4d, P4de and Trainium are not on the list.',
+      'P5, P5e, P5en or P6-B200 only, with CUDA, the open source NVIDIA driver, and NVIDIA GDS driver 2.24.2 or higher.',
   },
   {
     dimension: 'Fleet-wide limit',
@@ -643,7 +643,7 @@ interface CompareRow {
 const comparison: CompareRow[] = [
   {
     axis: 'Semantics',
-    efa: 'Message passing. No files, no objects. Tag-matched send and receive plus RDMA read and write through libfabric.',
+    efa: 'Message passing. Tag-matched send and receive plus RDMA read and write through libfabric.',
     fsx: 'POSIX filesystem. Byte ranges, open and seek, hard links, permissions, partial overwrite in place.',
     s3: 'Objects. Whole-key PUT and GET, ranged GET, multipart upload. No partial in-place update, no rename.',
   },
@@ -675,7 +675,7 @@ const comparison: CompareRow[] = [
     axis: 'What actually binds first',
     efa: 'Placement and instance availability.',
     fsx: 'The create-time choice. EFA cannot be turned on later.',
-    s3: 'Prefix design and host CPU, not client configuration.',
+    s3: 'Prefix design and host CPU.',
   },
 ];
 
@@ -693,17 +693,17 @@ const blogClaims: BlogClaimRow[] = [
   {
     claim: 'Tunes to CPU topology',
     reality:
-      'Not found. The connection count is a pure function of the throughput target, computed once at construction.',
+      'Absent. The connection count is a pure function of the throughput target, computed once at construction.',
   },
   {
     claim: 'Tunes to the amount of memory',
     reality:
-      'Inverted. Host memory is never read. The memory ceiling is an output of the throughput target, not an input to it.',
+      'Inverted. Host memory is never read; the memory ceiling is an output of the throughput target.',
   },
   {
     claim: 'Chooses the number of requests per S3 IP address',
     reality:
-      'Not present as a decision. Spreading across S3 addresses falls out of the resolver cache in aws-c-io, which vends a different cached address each time.',
+      'Absent as a decision. Spreading across S3 addresses falls out of the resolver cache in aws-c-io, which vends a different cached address each time.',
   },
 ];
 
@@ -714,52 +714,50 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h1"
-            description="Two storage services sit next to an EFA cluster. Only one of them can be put on the fabric, and the decision is made before a single byte is written."
+            description="Two storage services sit next to an EFA cluster. One of them can be put on the fabric, and that choice is made in the create call, before a byte is written."
           >
             Storage Data Paths: FSx for Lustre, S3 and the CRT
           </Header>
         }
       >
         <SpaceBetween size="m">
-          <Alert type="warning" header="Start here: scratch mode is the ENA path, not the fast path">
+          <Alert type="info" header="Start here: the file system configuration that reaches the fabric">
             <SpaceBetween size="xs">
               <Box variant="p">
-                The common assumption is that a scratch FSx for Lustre file system with an S3 data
-                repository link is the quick way to feed a training cluster. On throughput per
-                client, it is the slowest of the file system options. AWS scopes EFA (Elastic Fabric
-                Adapter) support positively: EFA is supported on Persistent 2 file systems with a
-                metadata configuration specified, including file systems using the
-                Intelligent-Tiering storage class{' '}
-                <SourceRef provenance="documented" doc={docs.fsxEfa} />. Scratch 1, Scratch 2,
-                Persistent 1 and HDD are all outside that statement. They get no EFA and no
-                GPUDirect Storage (GDS).
+                AWS scopes EFA (Elastic Fabric Adapter) support for FSx for Lustre positively: EFA
+                is supported on Persistent 2 file systems with a metadata configuration specified,
+                including file systems using the Intelligent-Tiering storage class{' '}
+                <SourceRef provenance="documented" doc={docs.fsxEfa} />. That is the file system to
+                create if the cluster will ever want the fabric, and it is the thing to get right
+                first, because EFA cannot be enabled on an existing file system{' '}
+                <SourceRef provenance="documented" doc={docs.fsxEfa} />.
               </Box>
               <Box variant="p">
-                Because AWS names the supported configuration rather than listing exclusions, the
-                omission carries weight. Reading it as our inference rather than as an AWS denial is
-                the honest framing, and the practical guidance is the same either way: choosing
-                scratch for cost or for ephemerality gives up the fabric for the life of that file
-                system, and EFA cannot be enabled on an existing file system{' '}
-                <SourceRef provenance="documented" doc={docs.fsxEfa} />.
+                Scratch 1, Scratch 2, Persistent 1 and HDD sit outside that statement, so they run
+                over ENA (Elastic Network Adapter) and get no GPUDirect Storage (GDS). Because AWS
+                states which configurations are supported and stops there, the omission is our
+                inference rather than an AWS denial. The practical guidance is the same either way:
+                a scratch file system chosen for cost or for ephemerality is off the fabric for its
+                whole life.
               </Box>
             </SpaceBetween>
           </Alert>
 
           <Box variant="p">
-            One AWS table puts a number on the forfeit. For the same file system, maximum throughput
-            per client instance is 100 Gbps over ENA (Elastic Network Adapter), 100 Gbps over ENA
-            Express, 700 Gbps over EFA, and 1,200 Gbps over EFA with GPUDirect Storage{' '}
+            One AWS table puts numbers on all four options. For the same file system, maximum
+            throughput per client instance is 100 Gbps over ENA, 100 Gbps over ENA Express, 700 Gbps
+            over EFA, and 1,200 Gbps over EFA with GPUDirect Storage{' '}
             <SourceRef provenance="documented" doc={docs.fsxPerf} />. That is 7 times for the fabric
-            and 12 times with the GPU path added. The non-EFA rows carry a footnote that explains
-            why they need wide fan-out to reach even 100 Gbps: traffic between an individual client
+            and 12 times with the GPU path added. The ENA rows carry a footnote that explains why
+            they need wide fan-out to reach even 100 Gbps: traffic between an individual client
             instance and an individual FSx for Lustre object storage server is limited to 5 Gbps{' '}
             <SourceRef provenance="documented" doc={docs.fsxPerf} />.
           </Box>
 
           <Box variant="p">
-            The second half of this section answers the question a reader of an EFA dive asks next.
-            If FSx for Lustre can be moved onto the fabric, can S3 be moved there too? It cannot,
-            and that is settled in source rather than argued from documentation.
+            The second half of this section answers what a reader of an EFA dive asks next: what the
+            S3 path is made of, and where its ceiling comes from. That answer is settled in the
+            client source at pinned commits.
           </Box>
         </SpaceBetween>
       </Container>
@@ -768,18 +766,21 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="Four configurations, four ceilings, drawn side by side so the gap is visible rather than described."
+            description="Four configurations, four ceilings, side by side so the gap is something you can see."
           >
             Where the bytes actually go
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            A GPU instance in a cluster has four ways to move bytes, and they differ in what the
+            bytes traverse before they leave the host. Two of them reach the fabric.
+          </Box>
           <ThreeDataPathsDiagram />
           <Box variant="p">
             Two rows in that diagram are the same AWS service. The only difference between them is a
-            field in the create-file-system call, and the gap it produces is 7 times per client. That
-            is the single most useful sentence in this section.
+            field in the create-file-system call, and the gap it produces is 7 times per client.
           </Box>
         </SpaceBetween>
       </Container>
@@ -795,10 +796,18 @@ export function StorageDataPaths() {
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            Putting a file system on the fabric is a create-time flag plus a client-side install.
+            The file system is created as Persistent 2 with EfaEnabled set, and each client gets the
+            Lustre client, the EFA driver and, for GPUDirect Storage, the NVIDIA GDS driver. LNet,
+            the Lustre network layer, then runs over the EFA device. The supported scope is narrower
+            than EFA support on EC2 generally, so check your clients against it before you provision
+            anything.
+          </Box>
           <Table
             variant="embedded"
             header={
-              <Header variant="h3" description="All rows documented by AWS. No code source exists for the service side.">
+              <Header variant="h3" description="Every row traces to an AWS documentation page, cited below the table.">
                 EFA support scope for FSx for Lustre
               </Header>
             }
@@ -823,22 +832,22 @@ export function StorageDataPaths() {
                 GDS is narrower than EFA <Badge color="blue">four instance types</Badge>
               </Box>
               <Box variant="p">
-                GPUDirect Storage builds on EFA. AWS describes it as enabling direct data transfer
-                between the file system and the GPU memory, bypassing the CPU, and it names the
-                client instances exhaustively: P5, P5e, P5en or P6-B200{' '}
-                <SourceRef provenance="documented" doc={docs.fsxEfa} />. There is no GDS-only path.
-                An EFA-enabled Persistent 2 file system is a prerequisite.
+                GPUDirect Storage builds on EFA, so an EFA-enabled Persistent 2 file system is the
+                prerequisite. AWS describes it as enabling direct data transfer between the file
+                system and the GPU memory, bypassing the CPU, and it names the client instances
+                exhaustively: P5, P5e, P5en or P6-B200{' '}
+                <SourceRef provenance="documented" doc={docs.fsxEfa} />.
               </Box>
               <Box variant="p">
                 The list being closed matters for anyone reading the instance matrix elsewhere in
-                this dive. Plenty of EFA-capable instance types are not on it. P4d, P4de and the
-                Trainium families are absent, and trn2 is excluded from FSx EFA support outright.
-                EFA-capable does not imply GDS-capable here.
+                this dive: it is four instance types out of the many that are EFA-capable. P4d, P4de
+                and the Trainium families are absent, and trn2 is excluded from FSx EFA support
+                outright.
               </Box>
             </div>
             <div>
               <Box variant="h3">
-                Client setup is a documented script <Badge color="grey">not hand-rolled</Badge>
+                Client setup is a documented script <Badge color="grey">installer provided</Badge>
               </Box>
               <Box variant="p">
                 AWS ships an installer invoked as install-fsx-lustre-client.sh with the
@@ -857,21 +866,21 @@ export function StorageDataPaths() {
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="CIDR-based security group rules do not work, including 0.0.0.0/0">
+          <Alert type="warning" header="Write the security group rules by group ID, on both sides">
             <SpaceBetween size="xs">
               <Box variant="p">
-                AWS states it flatly. For EFA-enabled FSx for Lustre file systems, the file system
-                and client security groups must allow all traffic to and from each other, and the
-                file system security group must also allow all traffic to and from itself. CIDR-based
-                rules, including 0.0.0.0/0, do not satisfy EFA requirements even if they allow all
-                traffic on all ports. You must explicitly specify a security group ID as the source
-                or destination for all EFA traffic rules{' '}
+                AWS states the requirement flatly. For EFA-enabled FSx for Lustre file systems, the
+                file system and client security groups must allow all traffic to and from each
+                other, and the file system security group must also allow all traffic to and from
+                itself. You must explicitly specify a security group ID as the source or destination
+                for all EFA traffic rules. CIDR-based rules, including 0.0.0.0/0, do not satisfy EFA
+                requirements even if they allow all traffic on all ports{' '}
                 <SourceRef provenance="documented" doc={docs.fsxSecGroups} />.
               </Box>
               <Box variant="p">
                 This is the same self-referencing security group requirement EFA already has for
-                instance-to-instance traffic, described in the device section of this dive. The
-                failure mode is worth naming: a file system created with EfaEnabled true, mounted
+                instance-to-instance traffic, described in the device section of this dive. Get it
+                wrong and the file system still works: created with EfaEnabled true, mounted
                 successfully, running at ENA speed, with nothing in the console indicating anything
                 is wrong. A rule that looks maximally permissive is the one that silently keeps you
                 off the fabric.
@@ -924,8 +933,8 @@ export function StorageDataPaths() {
                 file system from 2.4 TiB per object storage server to between 4.8 and 38.4 TiB per
                 server depending on tier{' '}
                 <SourceRef provenance="documented" doc={docs.fsxUsing} />. Fewer, larger servers is
-                how the per-client ceiling rises. The cost consequence is that a small EFA-enabled
-                file system is not a thing you can provision.
+                how the per-client ceiling rises. The cost consequence is that the smallest
+                EFA-enabled file system you can provision starts at one of those increments.
               </Box>
               <Box variant="p">
                 AWS also gives a threshold for when to bother: if you are creating a file system with
@@ -943,33 +952,35 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="Not a gap to configure around. The transport is absent from the architecture, and a grep at three pinned commits shows it."
+            description="The client's only transport is a TCP socket over ENA, and its ceiling is the host CPU. Both are readable in the source at three pinned commits."
           >
-            There is no EFA path to S3
+            What the S3 path is made of
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The AWS Common Runtime (CRT) S3 client is the fast path for S3 from EC2. It is what the
-            AWS CLI and boto3 use when the CRT transfer manager is enabled. A case-insensitive search
-            for efa, libfabric, rdma, ibverbs, GPUDirect and nvidia across the whole of aws-c-s3,
-            aws-c-io and aws-c-http at the pinned commits returns zero hits{' '}
+            The AWS Common Runtime (CRT) S3 client is the fast path for S3 from EC2, and it is a
+            userspace TCP client. It is what the AWS CLI and boto3 use when the CRT transfer manager
+            is enabled. It creates a socket with an explicit socket options structure and hands it
+            to the operating system to route, which on EC2 means ENA{' '}
+            <SourceRef provenance="code-derived" code={code.endpointSocket} />. That socket is the
+            whole transport story: a case-insensitive search for efa, libfabric, rdma, ibverbs,
+            GPUDirect and nvidia across the whole of aws-c-s3, aws-c-io and aws-c-http at the pinned
+            commits returns zero hits{' '}
             <SourceRef provenance="code-derived" code={code.endpointSocket} label="code, zero hits" />
-            . The only transport the client has is a TCP socket, created with an explicit socket
-            options structure and handed to the operating system to route, which on EC2 means ENA{' '}
-            <SourceRef provenance="code-derived" code={code.endpointSocket} />.
+            .
           </Box>
           <Box variant="p">
-            So S3 throughput is bought with parallelism, not with a low-latency fabric. The client
-            opens many connections, splits every large object into many range requests, and spreads
-            those across many S3 front-end addresses. That works, and it is the right design for an
-            object store with 100 to 200 millisecond first-byte latency{' '}
-            <SourceRef provenance="documented" doc={docs.s3Perf} />. It does not converge on fabric
-            numbers, and no configuration changes that.
+            S3 throughput is therefore bought with parallelism. The client opens many connections,
+            splits every large object into many range requests, and spreads those across many S3
+            front-end addresses. That is the right design for an object store with 100 to 200
+            millisecond first-byte latency{' '}
+            <SourceRef provenance="documented" doc={docs.s3Perf} />, and it puts the ceiling on the
+            host CPU.
           </Box>
 
-          <Alert type="info" header="The client's own source says the advertised bandwidth is not reachable">
+          <Alert type="info" header="The client's own source puts the reachable ceiling near 400 Gbps on p5">
             <SpaceBetween size="xs">
               <Box variant="p">
                 The CRT carries a per-instance table of throughput targets. Next to the p5 entry its
@@ -993,10 +1004,11 @@ export function StorageDataPaths() {
 
           <Box variant="h3">Multiple network interfaces: real, manual, and marked experimental</Box>
           <Box variant="p">
-            The client will spread connections across several network interfaces. It will never find
-            them for you. The public option is an array of interface names plus a count, and its
-            header comment opens with the words THIS IS AN EXPERIMENTAL AND UNSTABLE API. The same
-            comment records the platform limits: supported on Linux, macOS and platforms that have
+            The client spreads connections across several network interfaces when the caller names
+            them, and naming them is the caller&apos;s job. The public option is an array of
+            interface names plus a count, and its header comment opens with the words THIS IS AN
+            EXPERIMENTAL AND UNSTABLE API. The same comment records the platform limits: supported
+            on Linux, macOS and platforms that have
             either SO_BINDTODEVICE or IP_BOUND_IF, not supported on Windows, and on Linux
             SO_BINDTODEVICE requires kernel version 5.7 or newer, or root privileges{' '}
             <SourceRef provenance="code-derived" code={code.nicOption} />.
@@ -1013,12 +1025,12 @@ export function StorageDataPaths() {
             strategy is round-robin and nothing else.
           </Box>
 
-          <Alert type="warning" header="The client never discovers network interfaces, and says so in a TODO comment">
+          <Alert type="warning" header="Name the interfaces yourself: the client's own TODO calls auto-detection future work">
             <SpaceBetween size="xs">
               <Box variant="p">
-                This is the most quotable passage in the client. Next to the per-instance throughput
-                table, the source reads: for all instances from p5e.48xlarge to p6-b300.48xlarge, the
-                max_throughput_gbps values configured are based on the maximum bandwidth offered from
+                Next to the per-instance throughput table, the source reads: for all instances from
+                p5e.48xlarge to p6-b300.48xlarge, the max_throughput_gbps values configured are
+                based on the maximum bandwidth offered from
                 a single NIC (network interface card) in these instances. CRT clients default to
                 using a single NIC unless configured to use multiple NICs by identifying the number
                 of NICs and providing the names in an array. The comment ends with a TODO: once we
@@ -1045,16 +1057,16 @@ export function StorageDataPaths() {
             variant="h2"
             description="One knob, four effects, and a relationship that runs the opposite way to intuition."
           >
-            The throughput target is a divisor, not a rate limiter
+            What the throughput target actually sets
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A reader coming from the fabric side needs one thing from the S3 client: the knob does
-            not shape traffic. It is fed into a division that picks a connection count and into a
-            lookup that picks a memory budget. The constant is 100 divided by 250 Gbps per
-            connection, which is 0.4 Gbps, and its own comment describes it as a magic value chosen
+            A reader coming from the fabric side needs one thing from the S3 client: the throughput
+            target is a divisor. It feeds a division that picks a connection count and a lookup that
+            picks a memory budget. The constant is 100 divided by 250 Gbps per connection, which is
+            0.4 Gbps, and its own comment describes it as a magic value chosen
             to match the results of the previous algorithm{' '}
             <SourceRef provenance="code-derived" code={code.perConnection} />. The connection count is
             the target divided by that constant, rounded up{' '}
@@ -1088,7 +1100,7 @@ export function StorageDataPaths() {
             <SourceRef provenance="documented" doc={docs.cliConfig} />.
           </Box>
 
-          <Alert type="warning" header="There is no adaptive concurrency control on 503 SlowDown">
+          <Alert type="warning" header="Spread the keys before you raise the target: the client holds its socket count through a 503">
             <SpaceBetween size="xs">
               <Box variant="p">
                 The connection count field is declared const and written exactly once, through a
@@ -1106,8 +1118,8 @@ export function StorageDataPaths() {
                 converging on a sustainable rate. AWS documents five mitigations for 503 responses,
                 including distributing requests across multiple prefixes and reacting to 5xx rates{' '}
                 <SourceRef provenance="documented" doc={docs.s3Perf} />. The client implements the
-                two that are purely local. Key layout is the caller's problem, which makes prefix
-                design, not client configuration, the binding constraint at high targets.
+                two that are purely local. Key layout is the caller's job, so prefix design is the
+                binding constraint at high targets.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1118,7 +1130,7 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="An AWS blog describes auto-tuning the client does not do. The interesting part was checking whether some layer above it does."
+            description="An AWS blog describes auto-tuning that the code performs differently. Read this before you trust a documented default."
           >
             Where the documentation and the code disagree
           </Header>
@@ -1159,14 +1171,15 @@ export function StorageDataPaths() {
             <SourceRef provenance="code-derived" code={code.memLadder} />.
           </Box>
 
-          <Alert type="info" header="The layer above the C client was checked, and it does not close the gap">
+          <Alert type="info" header="The layers above the C client were read too, and the gap stays open">
             <SpaceBetween size="xs">
               <Box variant="p">
-                A contradiction claim is only safe if the discovery is not happening somewhere else.
-                The C client exposes its instance table only as a standalone query API and never
-                consults it internally, so a binding could plausibly call that API and pass the
-                result down. One of them does. The Python binding exposes a recommended throughput
-                function whose entire body reads the platform info and returns the recorded maximum
+                A conflict claim is only safe once you have checked whether the discovery happens
+                somewhere else. The C client exposes its instance table only as a standalone query
+                API and never consults it internally, so a binding could plausibly call that API and
+                pass the result down. One of them does. The Python binding exposes a recommended
+                throughput function whose entire body reads the platform info and returns the
+                recorded maximum
                 for the detected instance type{' '}
                 <SourceRef provenance="code-derived" code={code.pyNative} />, and boto3's CRT
                 transfer layer calls it, logs the result, and falls back to 10.0 when it comes back
@@ -1194,8 +1207,7 @@ export function StorageDataPaths() {
                 commits, for aws-crt-python {PY_TAG}, for aws-crt-java {JAVA_TAG}, and for s3transfer{' '}
                 {XFER_TAG}. The C++ and Rust bindings and the Java SDK transfer manager were not read.
                 Within that scope, no layer performs the interface, CPU or memory discovery the blog
-                describes, so the blog is not describing a higher layer that exists. It is describing
-                behaviour that the runtime's own comments treat as future work.
+                describes, and the runtime's own comments treat that discovery as future work.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1214,12 +1226,12 @@ export function StorageDataPaths() {
               </Box>
               <Box variant="p">
                 The client provisions for 50 MB/s per connection, so it opens 25 connections for that
-                same 10 Gb/s target rather than 15{' '}
+                same 10 Gb/s target where the whitepaper predicts 15{' '}
                 <SourceRef provenance="code-derived" code={code.perConnection} />. These are two
-                different safety margins rather than contradictory guidance: the whitepaper describes
-                what a connection can do under good conditions, and the client provisions for what one
-                reliably does. Anyone who sizes from the whitepaper and then counts sockets on a
-                running host will think something is broken. Nothing is.
+                safety margins: the whitepaper describes what a connection can do under good
+                conditions, and the client provisions for what one reliably does. Anyone who sizes
+                from the whitepaper and then counts sockets on a running host is looking at a
+                healthy client.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1230,7 +1242,7 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="What is covered here changes with the fabric. What does not is named where it matters and left to a storage dive everywhere else."
+            description="What this section covers, and where to go for the Common Runtime mechanics it leaves alone."
           >
             The boundary of this section
           </Header>
@@ -1238,38 +1250,15 @@ export function StorageDataPaths() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The test for inclusion was one question: does this claim change with the fabric? FSx
-            deployment type, GPUDirect Storage scope, per-client ceilings and interface binding all
-            change with the fabric, so they are covered. TCP connection counts, HTTP range sizing,
-            retry accounting and S3 prefix partitioning do not, so they are named only where they
-            change a fabric decision.
+            Everything above earns its place by changing with the fabric: FSx deployment type,
+            GPUDirect Storage scope, per-client ceilings and interface binding. The Common Runtime's
+            other mechanics appear in the one form that changes a fabric decision. The memory ladder
+            is here because it makes range requests shrink as the target rises, the ETag parse
+            because it is the second irreversible decision, and the token bucket because it explains
+            why a throttled client fails instead of converging. Part size resolution, backoff jitter
+            modes, prefix partitioning and data repository task mechanics belong to a storage dive,
+            and the pinned commits above are where to start reading.
           </Box>
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">Deferred to a future storage deep dive</Box>
-              <Box variant="p">
-                The three-stage part size resolution and how the client-level size, the per-request
-                size and the upload service-limit adjustment interact. The full memory ladder and its
-                interaction with container limits. The ETag suffix parse that derives an object's
-                stored part size and the read-throughput consequences of write-time layout. The retry
-                token bucket accounting, backoff jitter modes and their per-error costs. Data
-                repository task mechanics, preload with hsm_restore, export with hsm_archive, and
-                release behaviour.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">Named here, not developed</Box>
-              <Box variant="p">
-                Each of those appears above only in the one form that changes a fabric decision. The
-                memory ladder appears because it is what makes range requests shrink as the target
-                rises. The ETag parse appears because it is the second irreversible decision. The
-                token bucket appears because it explains why a client under throttling fails rather
-                than converging. If you came looking for the mechanics rather than the consequence,
-                the storage dive is where they belong, and the pinned commits above are where to
-                start reading.
-              </Box>
-            </div>
-          </ColumnLayout>
           <Box variant="p">
             One provenance note before the comparison. FSx for Lustre here is documentation-sourced,
             because the service side has no open-source artifact to read. The S3 client is
@@ -1283,7 +1272,7 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="Three paths, five axes. Pick by access semantics first, then by whether your per-client target clears 100 Gbps."
+            description="Pick by access semantics first, then by whether your per-client target clears 100 Gbps."
           >
             Choosing a path
           </Header>
@@ -1315,27 +1304,29 @@ export function StorageDataPaths() {
             GPUDirect Storage{' '}
             <SourceRef provenance="documented" doc={docs.fsxPerf} />. S3 with the CRT buys durability
             and object semantics, and pays for throughput in connections, CPU cycles, memory and
-            request charges rather than in fabric.
+            request charges.
           </Box>
 
-          <Alert type="info" header="Both interesting decisions are made before any data is written">
+          <Alert type="info" header="Two decisions to get right before any data is written">
             <SpaceBetween size="xs">
               <Box variant="p">
-                First, the FSx deployment type. EFA cannot be enabled or disabled on an existing file
-                system, and the throughput tier cannot be changed{' '}
+                First, the FSx deployment type. Create the file system as Persistent 2 with EFA
+                enabled and the throughput tier you intend to live with, because EFA cannot be
+                enabled or disabled on an existing file system and the tier cannot be changed{' '}
                 <SourceRef provenance="documented" doc={docs.fsxEfa} />. Picking scratch for cost
                 gives up the fabric permanently for that file system.
               </Box>
               <Box variant="p">
-                Second, S3 object layout. The client parses the part count out of an object's ETag
-                and uses the resulting stored part size to bound its range requests{' '}
-                <SourceRef provenance="code-derived" code={code.rangeSize} />, so the part size chosen
-                at upload time constrains download parallelism afterwards, short of rewriting the
-                object. How an object was written decides how fast it can be read.
+                Second, S3 object layout. Choose the multipart part size at upload time for the read
+                pattern you want later: the client parses the part count out of an object's ETag and
+                uses the resulting stored part size to bound its range requests{' '}
+                <SourceRef provenance="code-derived" code={code.rangeSize} />, so the part size
+                chosen at upload time constrains download parallelism afterwards, short of rewriting
+                the object. How an object was written decides how fast it can be read.
               </Box>
               <Box variant="p">
                 Everything else in this section is runtime tuning that a configuration edit can undo.
-                These two cannot.
+                These two are set once.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1344,13 +1335,12 @@ export function StorageDataPaths() {
           <Box variant="p">
             Answer the questions in this order and most of the design falls out. What are my access
             semantics, objects or POSIX files? Is my per-client throughput target above 100 Gbps? If
-            it is, every ENA-only option is already excluded and the only remaining answer is an
-            EFA-enabled Persistent 2 file system{' '}
+            it is, an EFA-enabled Persistent 2 file system is the one option that clears it{' '}
             <SourceRef provenance="documented" doc={docs.fsxPerf} />. Can I commit to Persistent 2 at
             create time, including the 4.8 to 38.4 TiB capacity steps{' '}
             <SourceRef provenance="documented" doc={docs.fsxStart} />? Do I need lazy loading from
-            S3, which rules out Intelligent-Tiering{' '}
-            <SourceRef provenance="documented" doc={docs.fsxRepos} />? Only after those does it make
+            S3? That points at SSD, since Intelligent-Tiering file systems link no data repository{' '}
+            <SourceRef provenance="documented" doc={docs.fsxRepos} />. Only after those does it make
             sense to tune a throughput target, a prefix layout or a list of interface names.
           </Box>
         </SpaceBetween>

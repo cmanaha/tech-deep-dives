@@ -52,30 +52,29 @@ export function Overview() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="The link is fast. Why is the job still slow?">
+          <Header variant="h1" description="The link is fast. What decides whether the job is.">
             What is Elastic Fabric Adapter?
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p" fontSize="heading-m">
-            <strong>The problem:</strong> every TCP message crosses the kernel network stack, and that cost is
-            paid per message. For workloads that exchange millions of small messages per second (gradient
-            synchronization in distributed training, MPI (Message Passing Interface) collectives in HPC
-            (High-Performance Computing)) that per-message cost dominates the step time.
+            Every TCP message crosses the kernel network stack, and that cost is paid once per message.
+            Workloads that exchange millions of small messages per second (gradient synchronization in
+            distributed training, MPI (Message Passing Interface) collectives in HPC (High-Performance
+            Computing)) spend their step time inside that per-message cost.
           </Box>
           <Box variant="p">
-            <strong>The answer:</strong> EFA (Elastic Fabric Adapter) is a network interface for EC2 instances
-            that enables applications to communicate at the{' '}
+            <strong>EFA (Elastic Fabric Adapter)</strong> is a network interface for EC2 instances that
+            enables applications to communicate at the{' '}
             <strong>scale and performance of on-premises HPC clusters</strong>, but in the cloud. It achieves
             this through <strong>OS-bypass</strong>: applications talk directly to the network hardware,
-            skipping the kernel network stack entirely. AWS states the outcome without publishing a
-            per-message figure: EFA provides lower and more consistent latency and higher throughput than the
-            TCP transport traditionally used in cloud-based HPC systems{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />.
+            skipping the kernel network stack entirely. AWS states the outcome: EFA provides lower and more
+            consistent latency and higher throughput than the TCP transport traditionally used in cloud-based
+            HPC systems <SourceRef provenance="documented" doc={docs.efa} />.
           </Box>
           <Box variant="p">
-            The one comparative latency figure AWS publishes is about the tail, not the median: relaxing
+            The one comparative latency figure AWS publishes is about the tail: relaxing
             in-order packet delivery dropped p99 tail latency by around a factor of ten{' '}
             <SourceRef provenance="documented" doc={docs.hpcBlog} />. A collective finishes when its slowest
             member finishes, so the tail is what decides the step time. The SRD (Scalable Reliable Datagram)
@@ -86,9 +85,9 @@ export function Overview() {
             encryption uses AEAD (Authenticated Encryption with Associated Data) algorithms with 256-bit
             encryption, that there is no impact on network performance, and that EFA traffic is automatically
             encrypted between cluster members <SourceRef provenance="documented" doc={docs.hpcLens} />. EFA
-            itself carries no charge: it is an optional EC2 networking feature you can enable on any supported
-            instance at no additional cost <SourceRef provenance="documented" doc={docs.efa} />. The instance
-            is the cost, and the Pricing section carries the rates.
+            itself is an optional EC2 networking feature you can enable on any supported instance at no
+            additional cost <SourceRef provenance="documented" doc={docs.efa} />. The instance is the cost,
+            and the Pricing section carries the rates.
           </Box>
         </SpaceBetween>
       </Container>
@@ -108,8 +107,8 @@ export function Overview() {
               allreduce operations. EFA + NCCL (NVIDIA Collective Communications Library) runs on
               the full EFA fabric of the instance: AWS documents a P5 layout that provides{' '}
               <strong>up to 3,200 Gbps</strong> of EFA networking bandwidth{' '}
-              <SourceRef provenance="documented" doc={docs.efaAcc} />. That is the difference
-              between a training run finishing in hours and one finishing in days.
+              <SourceRef provenance="documented" doc={docs.efaAcc} />. Every step of the run waits
+              on that exchange, so the fabric sets the wall clock.
             </Box>
             <StatusIndicator type="success">Critical for multi-node GPU training</StatusIndicator>
           </div>
@@ -117,17 +116,17 @@ export function Overview() {
             <Box variant="h3">HPC Simulations</Box>
             <Box variant="p">
               Weather modeling, CFD (Computational Fluid Dynamics), molecular dynamics: workloads that exchange boundary
-              conditions across thousands of ranks every timestep. EFA&apos;s low latency
-              enables tightly-coupled simulations that were previously cloud-impossible.
+              conditions across thousands of ranks every timestep. Every rank waits for its
+              neighbors, so the slowest exchange sets the timestep, and EFA holds that tail down.
             </Box>
             <StatusIndicator type="success">Enables cloud HPC migration</StatusIndicator>
           </div>
           <div>
             <Box variant="h3">AI/ML Inference</Box>
             <Box variant="p">
-              Large model inference (100B+ parameters) that requires model parallelism across
-              multiple instances. EFA reduces inter-node communication latency, directly
-              improving token generation throughput and time-to-first-token.
+              A model too large for one instance is split across several, so every token crosses
+              the fabric. EFA reduces inter-node communication latency, directly improving token
+              generation throughput and time-to-first-token.
             </Box>
             <StatusIndicator type="info">Matters for multi-node inference and disaggregated serving</StatusIndicator>
           </div>
@@ -145,19 +144,20 @@ export function Overview() {
           <div>
             <Box variant="h3">1. Hardware</Box>
             <Box variant="p">
-              A network device you attach to a supported EC2 instance, not a separate service. It comes in two
+              A network device you attach to a supported EC2 instance, chosen at launch time. It comes in two
               shapes: an EFA (EFA with ENA) interface, which creates both an EFA device and an ENA (Elastic
-              Network Adapter) device, and an EFA-only interface, which creates just the EFA device and cannot
-              hold an IP address or be the primary interface <SourceRef provenance="documented" doc={docs.efa} />.
-              You choose at launch time. The EFA Device section covers attachment, network cards and rails.
+              Network Adapter) device, and an EFA-only interface, which creates just the EFA device and is
+              always a secondary interface with no IP address{' '}
+              <SourceRef provenance="documented" doc={docs.efa} />. The EFA Device section covers attachment,
+              network cards and rails.
             </Box>
           </div>
           <div>
             <Box variant="h3">2. Protocol: SRD</Box>
             <Box variant="p">
-              AWS&apos;s own transport protocol. Not TCP, not UDP, and not RoCE (RDMA over Converged
-              Ethernet) or InfiniBand. SRD uses multi-path routing and out-of-order delivery to hold tail
-              latency down under congestion, which is where that factor of ten comes from. RDMA (Remote
+              AWS&apos;s own transport protocol. SRD uses multi-path routing and out-of-order delivery to
+              hold tail latency down under congestion, which is where that factor of ten comes from, and the
+              SRD section sets it against InfiniBand and RoCE (RDMA over Converged Ethernet). RDMA (Remote
               Direct Memory Access) is a separate question from the transport: EFA supports RDMA read on all
               instances with Nitro version 4 and later, and RDMA write on most of them{' '}
               <SourceRef provenance="documented" doc={docs.efa} />. Those are device operations; the Data Path
@@ -168,9 +168,9 @@ export function Overview() {
             <Box variant="h3">3. Software: libfabric</Box>
             <Box variant="p">
               Applications use <code>libfabric</code> (the OpenFabrics Interfaces library) to talk to EFA.
-              NCCL uses the <code>aws-ofi-nccl</code> plugin. MPI uses the EFA provider. Your app code
-              doesn&apos;t change: the libraries handle it, and the libfabric section is where that handling
-              stops being a black box.
+              NCCL uses the <code>aws-ofi-nccl</code> plugin. MPI uses the EFA provider. Your app code stays
+              as it is: the libraries handle it, and the libfabric section is where that handling stops being
+              a black box.
             </Box>
           </div>
         </ColumnLayout>

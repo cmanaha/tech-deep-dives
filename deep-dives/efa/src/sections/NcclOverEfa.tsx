@@ -159,8 +159,8 @@ function PluginStackDiagram() {
     {
       title: 'Training framework',
       sub: 'PyTorch, JAX, a custom trainer',
-      owns: 'Calls ncclAllReduce and friends. Knows nothing about EFA.',
-      knobs: 'No EFA-specific knobs at this layer.',
+      owns: 'Calls ncclAllReduce and friends. Its view of the world stops at NCCL.',
+      knobs: 'The EFA knobs all live below this layer.',
     },
     {
       title: 'NCCL',
@@ -184,7 +184,7 @@ function PluginStackDiagram() {
       title: 'EFA device and SRD',
       sub: 'Nitro hardware',
       owns: 'Moves the bytes. Multi-path spraying, hardware retransmit, out-of-order delivery.',
-      knobs: 'Nothing to set. What you get is decided by the instance type.',
+      knobs: 'The instance type decides what you get here.',
     },
   ];
 
@@ -196,10 +196,10 @@ function PluginStackDiagram() {
       style={{ width: '100%', height: 'auto' }}
     >
       <title id="nccl-stack-title">
-        NCCL never talks to EFA directly. It loads aws-ofi-nccl as a network plugin, the plugin calls
-        libfabric, and libfabric drives the EFA device. Each layer owns a different family of
-        environment variables, which is why advice copied from one layer rarely does what the reader
-        expects at another.
+        NCCL reaches EFA through three layers. It loads aws-ofi-nccl as a network plugin, the
+        plugin calls libfabric, and libfabric drives the EFA device. Each layer owns a different
+        family of environment variables, which is why advice copied from one layer rarely does what
+        the reader expects at another.
       </title>
       <style>
         {`
@@ -478,13 +478,13 @@ const tunerRows: TunerRow[] = [
     iface: 'ncclTunerPlugin_v3',
     nccl: 'NCCL 2.22.3 and later',
     entry: 'nccl_ofi_tuner_init',
-    bailout: 'No. It has never had one, back to plugin v1.13.0-aws.',
+    bailout: 'None, back to plugin v1.13.0-aws.',
   },
   {
     iface: 'ncclTunerPlugin_v6',
     nccl: 'NCCL 2.30.3 and later',
     entry: 'nccl_ofi_tuner_init_v6',
-    bailout: 'No. A bailout was added and removed before any release shipped it.',
+    bailout: 'None in any shipped release. One was added and removed inside v1.20.0.',
   },
 ];
 
@@ -497,44 +497,44 @@ interface StaleRow {
 const staleRows: StaleRow[] = [
   {
     advice: 'FI_PROVIDER=efa',
-    verdict: 'Do not set',
+    verdict: 'Leave unset',
     why:
       'The plugin cheatsheet scopes it to aws-ofi-nccl 1.5.0 and older. On anything newer the plugin sets the provider filter itself when FI_PROVIDER is unset.',
   },
   {
     advice: 'FI_EFA_USE_DEVICE_RDMA=1',
-    verdict: 'Do not set',
+    verdict: 'Leave unset',
     why:
-      'The cheatsheet says do not set it for libfabric 1.18.0 or newer with aws-ofi-nccl 1.7.0 or newer. It is harmless on p4 and p5 with current software, and pointless.',
+      'The cheatsheet scopes it to software older than libfabric 1.18.0 with aws-ofi-nccl 1.7.0. On p4 and p5 with current software it is harmless and pointless.',
   },
   {
     advice: 'NCCL_PROTO=simple',
-    verdict: 'Do not set',
+    verdict: 'Leave unset',
     why:
-      'Also scoped to aws-ofi-nccl 1.5.0 and older. The plugin forces it itself, and only when it has a reason to: no GPUDirect RDMA support.',
+      'Also scoped to aws-ofi-nccl 1.5.0 and older. The plugin forces the simple protocol itself, and only where GPUDirect RDMA support is missing.',
   },
   {
     advice: 'NCCL_BUFFSIZE=8388608',
-    verdict: 'Do not set',
+    verdict: 'Leave unset',
     why:
       'The cheatsheet says leave it out. The plugin already inserts exactly this value on p4d, p4de, p5, p5e, p5en, p6 and g7e, and the value it inserts tracks the platform.',
   },
   {
     advice: 'NCCL_MIN_CHANNELS=4',
-    verdict: 'Do not set',
+    verdict: 'Leave unset',
     why:
       'The cheatsheet says leave it out and explains the failure mode: more channels than necessary makes each message smaller and starves EFA for data.',
   },
   {
     advice: 'NCCL_TUNER_PLUGIN=...libnccl-ofi-tuner.so',
-    verdict: 'Not needed',
+    verdict: 'Loads itself',
     why:
-      'From NCCL 2.21 onward NCCL looks for the tuner interface inside the network plugin after checking NCCL_TUNER_PLUGIN. The tuner is compiled into the network plugin, so it loads by default.',
+      'The tuner is compiled into the network plugin, and from NCCL 2.21 onward NCCL looks for the tuner interface inside the network plugin after checking NCCL_TUNER_PLUGIN. It loads by default.',
   },
   {
     advice: 'NCCL_SOCKET_NTHREADS, NCCL_NSOCKS_PERTHREAD',
-    verdict: 'Not applicable',
-    why: 'The cheatsheet marks both as not applicable for EFA. They tune the TCP socket transport, which is not in this path.',
+    verdict: 'Other transport',
+    why: 'Both tune the TCP socket transport, which sits outside the EFA path. The cheatsheet marks them as not applicable for EFA.',
   },
 ];
 
@@ -551,16 +551,16 @@ const logRows: LogRow[] = [
   },
   {
     line: 'NET/OFI Using Libfabric version <major>.<minor>',
-    meaning: 'The libfabric the plugin linked against at run time, not the one on the build host.',
+    meaning: 'The libfabric the running process linked against, which can differ from the one on the build host.',
   },
   {
     line: 'NET/OFI Selected provider is efa, fabric is efa (found N nics)',
     meaning:
-      'EFA is in the path and N devices were found. If the fabric reads efa-direct instead of efa, the plugin picked the direct fabric.',
+      'EFA is in the path and N devices were found. A fabric reading efa-direct means the plugin picked the direct fabric.',
   },
   {
     line: 'NET/OFI Configuring AWS-specific options',
-    meaning: 'Platform detection ran and decided this is an EC2 instance. If this line is missing, none of the AWS defaults were applied.',
+    meaning: 'Platform detection ran and decided this is an EC2 instance. This line is what tells you the AWS defaults were applied.',
   },
   {
     line: 'NET/OFI Running on <type> platform, topology file <path>',
@@ -569,7 +569,7 @@ const logRows: LogRow[] = [
   {
     line: 'NET/OFI Internode latency set at <n> us',
     meaning:
-      'The per-platform latency hint the plugin fed to NCCL. 75 microseconds for p4d and p5, 35 for p5en and later, 75 as the fall-through for anything unrecognised.',
+      'The per-platform latency hint the plugin fed to NCCL. 75 microseconds for p4d and p5, 35 for p5en and later, and 75 as the fall-through for anything unrecognised.',
   },
   {
     line: 'NET/OFI NIC group <i> device #<j> <bdf>',
@@ -583,17 +583,17 @@ const logRows: LogRow[] = [
   },
   {
     line: 'NET/OFI Tuner selected platform: AWS',
-    meaning: 'The tuner recognised the platform. If it prints anything else, the OFI tuner is not going to run.',
+    meaning: 'The tuner recognised the platform and will run. Any other value here means NCCL tunes on its own.',
   },
   {
     line: 'NET/OFI Region Tuner choosing algo <a> proto <p> with cost 0.00000000',
     meaning:
-      'The tuner found a region matching this message size and rank count, and zeroed that cell of the cost table. A cost of zero is the tuner voting, not a measurement.',
+      'The tuner found a region matching this message size and rank count, and zeroed that cell of the cost table. A cost of zero is a vote, not a measured time.',
   },
   {
     line: "NET/OFI Falling back to NCCL's tuner for coll <c> size <n>",
     meaning:
-      'No region matched. NCCL picks with its own model for this one call. Seeing this for some sizes and not others is normal.',
+      'No region matched, so NCCL picks with its own model for this one call. Seeing it at some message sizes and not others is normal.',
   },
 ];
 
@@ -604,7 +604,7 @@ export function NcclOverEfa() {
         header={
           <Header
             variant="h1"
-            description="NCCL does not know EFA exists. Everything EFA-specific in a GPU training job happens inside one shared library, and most of the tuning advice written about it is out of date."
+            description="Everything EFA-specific in a GPU training job happens inside one shared library between NCCL and libfabric, and most of the tuning advice written about it is scoped to 2023 software."
           >
             NCCL over EFA: the aws-ofi-nccl Plugin
           </Header>
@@ -612,16 +612,13 @@ export function NcclOverEfa() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The problem:</strong> a distributed training job that uses EFA (Elastic Fabric
-            Adapter) has four pieces of software between the framework and the wire, each with its
-            own environment variables, its own version number, and its own idea of what a good
-            default is. When throughput is wrong, the first question is which layer to look at, and
-            the second is whether the variable you are about to set still means what a 2023 blog
-            post said it meant. <strong>The answer:</strong> NCCL (NVIDIA Collective Communications
-            Library) loads aws-ofi-nccl as a network plugin, and that plugin is where every
-            EFA-specific decision is made. AWS documents the install path and nothing about the
-            mechanism <SourceRef provenance="documented" doc={docs.efaNccl} />, so the rest of this
-            section is read out of the plugin at release tag v1.20.0.
+            aws-ofi-nccl is a shared library that NCCL (NVIDIA Collective Communications Library)
+            loads at startup. It implements NCCL&apos;s network interface on top of libfabric, and
+            it supplies a tuner that tells NCCL which collective algorithm to prefer. Every decision
+            specific to EFA (Elastic Fabric Adapter) is made there, between the framework above and
+            the device below. AWS documents the install path{' '}
+            <SourceRef provenance="documented" doc={docs.efaNccl} /> and leaves the mechanism to the
+            implementation, so this section reads it out of the plugin at release tag v1.20.0.
           </Box>
           <Box variant="p">
             The short version, if all you want is the settings: run with NCCL_DEBUG=INFO and
@@ -632,6 +629,20 @@ export function NcclOverEfa() {
             makes NCCL_ALGO or NCCL_PROTO switch the tuner off is in the v2 entry point, which only
             NCCL 2.21.x binds to <SourceRef provenance="code-derived" code={code.tunerV2} />.
           </Box>
+          <ExpandableSection
+            headerText="Where AWS documentation ends"
+            headerDescription="Which of the claims below you can look up, and which you have to re-read from the tag you run"
+          >
+            <Box variant="p">
+              AWS documents how to install the plugin and how to verify EFA is present{' '}
+              <SourceRef provenance="documented" doc={docs.efaNccl} />
+              <SourceRef provenance="documented" doc={docs.efaStart} />, and documents which instance
+              types support EFA <SourceRef provenance="documented" doc={docs.efa} />. It documents
+              none of the plugin behaviour on this page: the platform table, the tuner conditions,
+              the topology generation and the environment injection are all read from the
+              implementation at release tag v1.20.0. Re-check them against the tag you are running.
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -652,8 +663,8 @@ export function NcclOverEfa() {
             <SourceRef provenance="code-derived" code={code.netSymbols} />. A separate file exports
             the Neuron interface at versions 4 through 6 for Trainium and Inferentia
             <SourceRef provenance="code-derived" code={code.neuronSymbols} />. The library reports
-            itself as OFI by default, and renames itself to AWS Libfabric only if you set NCCL_NET
-            to that string, which the code comment describes as backwards compatibility for scripts
+            itself as OFI by default, and renames itself to AWS Libfabric when you set NCCL_NET to
+            that string, which the code comment describes as backwards compatibility for scripts
             written against plugin 1.11.0 and earlier{' '}
             <SourceRef provenance="code-derived" code={code.nameFixup} />.
           </Box>
@@ -672,29 +683,30 @@ export function NcclOverEfa() {
             <div>
               <Box variant="h3">The tuner plugin</Box>
               <Box variant="p">
-                This is advisory. It never moves a byte. NCCL asks it, per collective call, which
-                algorithm and protocol combination it prefers. The tuner code is compiled into the
-                network plugin, and a standalone libnccl-ofi-tuner.so is also built for historical
-                reasons <SourceRef provenance="code-derived" code={code.tunerPackaging} />.
+                This is advisory. NCCL asks it, per collective call, which algorithm and protocol
+                combination it prefers, and NCCL keeps the final say. The tuner code is compiled
+                into the network plugin, and a standalone libnccl-ofi-tuner.so is also built for
+                historical reasons{' '}
+                <SourceRef provenance="code-derived" code={code.tunerPackaging} />.
               </Box>
             </div>
           </ColumnLayout>
 
-          <Alert type="success" header="Why you do not need NCCL_TUNER_PLUGIN">
+          <Alert type="success" header="On NCCL 2.21 or later, the tuner loads itself">
             The plugin build system spells out the version history in its own comment: NCCL 2.19
             through 2.20 loaded a tuner only when NCCL_TUNER_PLUGIN named a file, and from NCCL 2.21
             onward NCCL first checks NCCL_TUNER_PLUGIN and then looks for the tuner interface inside
             the network plugin. Bundling the tuner into the network plugin is a deliberate choice so
             that it loads by default on NCCL 2.21 or later{' '}
             <SourceRef provenance="code-derived" code={code.tunerPackaging} />. Pointing
-            NCCL_TUNER_PLUGIN at a path is a 2024 workaround that current software does not need.
+            NCCL_TUNER_PLUGIN at a path is a 2024 workaround, scoped to NCCL 2.19 and 2.20.
           </Alert>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Most tuning advice circulating for EFA is stale. The plugin's own cheatsheet says so, variable by variable.">
+          <Header variant="h2" description="The settings that survive contact with current software, and the ones the plugin already owns for you">
             Environment variables: which layer, and which era
           </Header>
         }
@@ -703,12 +715,12 @@ export function NcclOverEfa() {
           <KnobLayersDiagram />
 
           <Box variant="p">
-            The single most useful document here is the plugin's own EFA cheatsheet, which is
-            scoped by version rather than written as timeless advice{' '}
+            The single most useful document here is the plugin's own EFA cheatsheet: every entry
+            names the software releases it applies to{' '}
             <SourceRef provenance="code-derived" code={code.envCheatsheet} />. Read against it, the
-            standard EFA environment block that circulates in tutorials is almost entirely obsolete.
-            The libfabric side of these variables is covered in the libfabric section; what follows
-            is the NCCL and plugin side.
+            standard EFA environment block that circulates in tutorials turns out to be scoped to
+            releases from 2023. The libfabric side of these variables is covered in the libfabric
+            section; what follows is the NCCL and plugin side.
           </Box>
 
           <Table
@@ -720,7 +732,7 @@ export function NcclOverEfa() {
                 id: 'verdict',
                 header: 'Verdict',
                 cell: (item) => (
-                  <Badge color={item.verdict === 'Do not set' ? 'red' : 'blue'}>{item.verdict}</Badge>
+                  <Badge color={item.verdict === 'Leave unset' ? 'red' : 'blue'}>{item.verdict}</Badge>
                 ),
               },
               { id: 'why', header: 'Why', cell: (item) => item.why },
@@ -729,7 +741,7 @@ export function NcclOverEfa() {
           />
 
           <ExpandableSection
-            headerText="NCCL_BUFFSIZE: the default is not NCCL's default"
+            headerText="NCCL_BUFFSIZE: the effective default is 8 MiB, set by the plugin"
             headerDescription="The cheatsheet and the platform table disagree about what leaving it unset gets you"
           >
             <Box variant="p">
@@ -744,8 +756,8 @@ export function NcclOverEfa() {
               <SourceRef provenance="code-derived" code={code.ncclBuffsize} />. On every EFA GPU
               platform in the table the plugin injects 8388608, which is 8 MiB, so the effective
               default is twice what NCCL would have chosen and it tracks the platform. Code wins:
-              treat 8 MiB as the default you already have. Setting it by hand does not change the
-              value, it changes who owns it, and the plugin logs that it skipped its own{' '}
+              treat 8 MiB as the default you already have. Setting it by hand keeps the same value
+              and moves ownership to you, and the plugin logs that it skipped its own{' '}
               <SourceRef provenance="code-derived" code={code.envSkipLog} />.
             </Box>
           </ExpandableSection>
@@ -761,14 +773,14 @@ export function NcclOverEfa() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The provider decision is short. If FI_PROVIDER is unset, the plugin logs that it is
-            setting the provider filter to efa and forces it. If FI_PROVIDER is set to efa, it
-            proceeds. If FI_PROVIDER is set to anything else, the plugin does not force EFA, and the
-            in-code comment states the intended outcome: on platforms without EFA this falls back to
-            NCCL's internal TCP transport, and on Neuron it is a hard failure when there are no
-            network interface cards <SourceRef provenance="code-derived" code={code.providerFilter} />.
-            That is the whole reason FI_PROVIDER=efa is unnecessary today: the plugin already does
-            it, and does it only when you have not.
+            The provider decision is short. With FI_PROVIDER unset, the plugin logs that it is
+            setting the provider filter to efa and forces it. With FI_PROVIDER set to efa, it
+            proceeds. With FI_PROVIDER set to anything else, your choice stands, and the in-code
+            comment states the intended outcome: on platforms lacking EFA this falls back to NCCL's
+            internal TCP transport, and on Neuron it is a hard failure when there are no network
+            interface cards <SourceRef provenance="code-derived" code={code.providerFilter} />. So
+            leaving FI_PROVIDER unset is what gets you the efa filter: the plugin sets it for you,
+            and it defers to you when you set it yourself.
           </Box>
 
           <Box variant="p">
@@ -783,10 +795,11 @@ export function NcclOverEfa() {
             It reads the DMI product name out of sysfs, at
             /sys/devices/virtual/dmi/id/product_name, caches it, and matches it against an ordered
             table <SourceRef provenance="code-derived" code={code.productNameFile} />
-            <SourceRef provenance="code-derived" code={code.productName} />. There is no call to the
-            EC2 instance metadata service and no API call. That matters in a container: the sysfs
-            path has to be visible, and OFI_NCCL_FORCE_PRODUCT_NAME is the documented override in
-            the parameter list if it is not{' '}
+            <SourceRef provenance="code-derived" code={code.productName} />. Sysfs is the only
+            source it consults: the EC2 instance metadata service and the EC2 API stay out of the
+            path. That matters in a container, where the sysfs path has to be visible, and
+            OFI_NCCL_FORCE_PRODUCT_NAME is the documented override in the parameter list for
+            containers where it is hidden{' '}
             <SourceRef provenance="code-derived" code={code.productName} />.
           </Box>
           <Box variant="p">
@@ -822,46 +835,51 @@ export function NcclOverEfa() {
                 <SourceRef provenance="code-derived" code={code.platformTable} />.
               </Box>
               <Box variant="p">
-                A catch-all p-series entry matches p5 and later families that the earlier rows did
-                not claim, and the comment says it is expected to apply to P6e-GB200 and later{' '}
+                A catch-all p-series entry picks up whichever p5 and later families the earlier
+                rows leave, and the comment says it is expected to apply to P6e-GB200 and later{' '}
                 <SourceRef provenance="code-derived" code={code.platformTable} />. Trainium and
-                Inferentia have their own entries with no injected variables at all.
+                Inferentia have their own entries, each with an empty injection map.
               </Box>
               <Box variant="p">
-                If nothing matches, the latency fall-through is 75 microseconds, with a comment
+                Where no row matches, the latency fall-through is 75 microseconds, with a comment
                 saying that value came from empirical testing on P5 and needs revisiting for newer
                 EFA generations <SourceRef provenance="code-derived" code={code.latency} />. An
-                unrecognised instance type does not fail. It runs with P5-era assumptions.
+                unrecognised instance type still runs, on P5-era assumptions.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
 
-          <Alert type="info" header="Injected defaults never overwrite you">
-            The plugin does not call setenv directly. It stages every variable in an environment
-            manager, then rewrites the process environment pointer once at the end of plugin
-            creation <SourceRef provenance="code-derived" code={code.envManager} />
+          <Alert type="info" header="Anything you set wins over the plugin's defaults">
+            The plugin stages every variable in an environment manager, then rewrites the process
+            environment pointer once at the end of plugin creation{' '}
+            <SourceRef provenance="code-derived" code={code.envManager} />
             <SourceRef provenance="code-derived" code={code.envFreeze} />. Platform defaults are
             staged with overwrite set to false, so a value you already set survives, and the plugin
             logs one line naming the variable it skipped{' '}
             <SourceRef provenance="code-derived" code={code.envSkipLog} />. Every getenv guard
-            inside platform detection therefore sees your original environment, not the plugin's.
+            inside platform detection therefore reads your original environment.
           </Alert>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Three static XML files, a runtime-generated one, and a sort function. They solve different problems.">
+          <Header variant="h2" description="Why an unset NCCL_TOPO_FILE is the correct setting on every EFA instance family, old and new">
             Topology XML files versus sort_rails
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
+            NCCL routes a GPU&apos;s inter-node traffic through the network device nearest to it, so
+            it needs a map of which device sits behind which PCIe switch. The plugin supplies that
+            map two different ways, and picks which one by instance family.
+          </Box>
+          <Box variant="p">
             The plugin ships three static NCCL topology XML files: p4d-24xl-topo.xml,
             p4de-24xl-topo.xml and g5.48xl-topo.xml. They are the only entries in the platform table
-            with a non-null topology field; every other platform, including all of p5, p5en, p6 and
-            the Trainium family, has null there{' '}
+            carrying a topology field; every other platform, including all of p5, p5en, p6 and
+            the Trainium family, leaves that field null{' '}
             <SourceRef provenance="code-derived" code={code.platformTable} />. The files are
             installed under the plugin's data directory{' '}
             <SourceRef provenance="code-derived" code={code.xmlDir} />, and platform initialisation
@@ -879,22 +897,21 @@ export function NcclOverEfa() {
             <SourceRef provenance="code-derived" code={code.topoXml} />.
           </Box>
 
-          <Alert type="warning" header="The absence of an XML file is not a gap">
+          <Alert type="warning" header="On p5 and later the topology file is generated at run time">
             <SpaceBetween size="xs">
               <Box variant="p">
                 On the RDMA transport path the plugin builds a topology at run time and writes it to
                 an anonymous in-memory file, then sets NCCL_TOPO_FILE to the /proc/self/fd path of
-                that descriptor. It does this only when the computed maximum group size is greater
-                than one, and it skips the work entirely if NCCL_TOPO_FILE is already set{' '}
+                that descriptor. It does this when the computed maximum group size is greater than
+                one, and it skips the work entirely where NCCL_TOPO_FILE is already set{' '}
                 <SourceRef provenance="code-derived" code={code.writeTopoFile} />
                 <SourceRef provenance="code-derived" code={code.writeTopoGate} />.
               </Box>
               <Box variant="p">
-                So the p5 family does get a topology file. It is generated from what the plugin
-                discovered on the running instance rather than shipped as a static asset. The old
-                advice to hunt for the right topology XML and set NCCL_TOPO_FILE by hand now does
-                the opposite of what it promises: setting it suppresses both the packaged file and
-                the generated one.
+                So the p5 family gets a topology file built from what the plugin discovered on the
+                running instance. Leaving NCCL_TOPO_FILE unset is what lets that happen: setting it
+                by hand suppresses both the packaged file and the generated one, which is the
+                opposite of what the old advice to hunt for the right topology XML promises.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -917,31 +934,31 @@ export function NcclOverEfa() {
             platform interface states the contract in its own comment: implementations should sort
             the list so that the Nth provider on this node is assumed to talk to the Nth provider on
             remote nodes <SourceRef provenance="code-derived" code={code.railContract} />. A rail is
-            an agreed ordinal, not a piece of hardware.
+            an ordinal that both ends agree on, held in software.
           </Box>
           <Box variant="p">
-            The AWS implementation says why the natural order is not enough. On P5 and P5e there are
-            up to 32 EFA devices, each pair shares Nitro card resources, and there is a marginal
-            gain if the 0th device of a pair only talks to 0th devices remotely. The hypervisor is
-            not consistent in how it maps bus, device and function numbers across the two devices
-            that share resources, so the code reorders the list to force the pairing{' '}
+            The AWS implementation explains why it reorders. On P5 and P5e there are up to 32 EFA
+            devices, each pair shares Nitro card resources, and there is a marginal gain if the 0th
+            device of a pair only talks to 0th devices remotely. The hypervisor varies in how it
+            maps bus, device and function numbers across the two devices that share resources, so
+            the code reorders the list to force the pairing{' '}
             <SourceRef provenance="code-derived" code={code.sortRails} />. It returns immediately
             when there is at most one device per group, with the comment that on P4d or Trainium the
             topology ordering is assumed sufficient{' '}
             <SourceRef provenance="code-derived" code={code.sortRails} />.
           </Box>
           <Box variant="p">
-            The two mechanisms answer different questions. The XML tells NCCL which GPU is near which
-            network device. sort_rails decides, among the devices already known to be near a GPU,
-            which one is rail 0. The instance types with a static XML are exactly the ones where
-            sort_rails does nothing, because they have one device per group.
+            The two mechanisms answer different questions. The XML tells NCCL which GPU is near
+            which network device. sort_rails decides, among the devices already known to be near a
+            GPU, which one is rail 0. The instance types with a static XML are exactly the ones with
+            one device per group, where sort_rails returns straight away.
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="The tuner writes into a cost matrix. It does not set NCCL_ALGO, and NCCL_ALGO does not switch it off.">
+          <Header variant="h2" description="How the plugin biases NCCL's choice of algorithm, and what that means for the NCCL_ALGO you were about to set">
             The tuner: what it actually does
           </Header>
         }
@@ -952,34 +969,34 @@ export function NcclOverEfa() {
             algorithm and by protocol, and asks it to fill in preferences. The plugin's region tuner
             walks a list of regions for the collective type, finds the one containing the point
             defined by message size and rank count, and sets that cell to 0.0{' '}
-            <SourceRef provenance="code-derived" code={code.regionSkip} />. It never sets NCCL_ALGO
-            or NCCL_PROTO. NCCL then scans the table and picks the lowest non-ignored cost{' '}
-            <SourceRef provenance="code-derived" code={code.ncclPickMin} />. A zero cost is a vote,
-            not a measured time.
+            <SourceRef provenance="code-derived" code={code.regionSkip} />. NCCL then scans the
+            table and picks the lowest non-ignored cost{' '}
+            <SourceRef provenance="code-derived" code={code.ncclPickMin} />. That is the whole
+            mental model: the tuner biases a choice NCCL still makes, one cell at a time, and a zero
+            cost is a vote rather than a measured time.
           </Box>
 
-          <Alert type="warning" header="NCCL_ALGO and NCCL_PROTO do not disable the tuner">
+          <Alert type="warning" header="On NCCL 2.22 and later the tuner keeps running when you set NCCL_ALGO">
             There is exactly one environment-variable bailout in the plugin's tuner, and it is in
-            the v2 entry point <SourceRef provenance="code-derived" code={code.tunerV2} />. The v3
-            entry point binds to the plain initialiser with no such check{' '}
-            <SourceRef provenance="code-derived" code={code.tunerV3} />, and so does v6{' '}
-            <SourceRef provenance="code-derived" code={code.tunerV6} />. Only a job pinned to NCCL
-            2.21.x hits it.
+            the v2 entry point <SourceRef provenance="code-derived" code={code.tunerV2} />, which
+            only a job pinned to NCCL 2.21.x binds to. The v3 entry point binds to the plain
+            initialiser <SourceRef provenance="code-derived" code={code.tunerV3} />, and so does v6{' '}
+            <SourceRef provenance="code-derived" code={code.tunerV6} />. On those versions your
+            NCCL_ALGO filter and the tuner both apply, in that order.
           </Alert>
 
-          <Box variant="h3">What does turn the tuner off</Box>
+          <Box variant="h3">The three conditions that decide whether the tuner runs</Box>
           <Box variant="p">
-            Three conditions, checked in one predicate that the shared initialiser calls before it
-            does anything else, and none of them is NCCL_ALGO or NCCL_PROTO{' '}
-            <SourceRef provenance="code-derived" code={code.tunerInit} />. The tuner runs only when
-            a platform type was detected, the tuner type was not forced to Internal, and the
-            rail-count override is unset{' '}
-            <SourceRef provenance="code-derived" code={code.shouldUse} />. When it declines, it logs
-            which of the three reasons applied{' '}
-            <SourceRef provenance="code-derived" code={code.fallbackLog} />. The rail-count case has
-            a comment explaining the logic: each AWS platform has a different device-per-GPU ratio,
-            so a user setting the rail count is treated as a signal that the job is running on
-            heterogeneous hardware, where per-process tuner answers could diverge{' '}
+            One predicate, checked by the shared initialiser before it does anything else{' '}
+            <SourceRef provenance="code-derived" code={code.tunerInit} />. The tuner runs when a
+            platform type was detected, the tuner type is left at its default rather than forced to
+            Internal, and the rail-count override is unset{' '}
+            <SourceRef provenance="code-derived" code={code.shouldUse} />. NCCL_ALGO and NCCL_PROTO
+            appear in none of the three. When the tuner declines, it logs which of the three reasons
+            applied <SourceRef provenance="code-derived" code={code.fallbackLog} />. The rail-count
+            case has a comment explaining the logic: each AWS platform has a different
+            device-per-GPU ratio, so a user setting the rail count is treated as a signal that the
+            job is running on heterogeneous hardware, where per-process tuner answers could diverge{' '}
             <SourceRef provenance="code-derived" code={code.fallbackLog} />.
           </Box>
           <Box variant="p">
@@ -987,13 +1004,13 @@ export function NcclOverEfa() {
             internal platform constants, covering p5 and p5e, p5en, p6-b200 and p6-b300, with
             everything else falling through to unknown{' '}
             <SourceRef provenance="code-derived" code={code.tunerPlatform} />. On an instance type
-            outside that list the tuner loads, finds no region or model support, and NCCL's own
+            outside that list the tuner loads, finds region and model support absent, and NCCL's own
             model decides.
           </Box>
 
           <ExpandableSection
-            headerText="Which entry point your NCCL binds to, and why only v2 bails out"
-            headerDescription="The symbol NCCL looks for decides this, so the plugin has no say in it"
+            headerText="Which entry point your NCCL binds to"
+            headerDescription="Evidence for the version mapping above: the symbol NCCL looks for decides it"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1001,16 +1018,13 @@ export function NcclOverEfa() {
                 <SourceRef provenance="code-derived" code={code.ncclSymbol221} />, NCCL 2.22.3 moved
                 it to v3 <SourceRef provenance="code-derived" code={code.ncclSymbol222} />, and NCCL
                 2.30.4 uses v6 <SourceRef provenance="code-derived" code={code.ncclSymbol} />. The
-                plugin exports all three, so the choice is made by the NCCL you are running, not by
-                the plugin <SourceRef provenance="code-derived" code={code.tunerV2Symbol} />.
-              </Box>
-              <Box variant="p">
-                The v3 entry point has never carried the check, back to plugin v1.13.0-aws, and the
-                commit that introduced the guard says so in its own subject line: updating tuner
-                v1/v2 to fall back on internal when algo or proto is set{' '}
-                <SourceRef provenance="code-derived" code={code.v2Guard} />. The v1 tuner interface
-                was removed entirely in v1.20.0{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />.
+                plugin exports all three, so the NCCL you are running makes the choice{' '}
+                <SourceRef provenance="code-derived" code={code.tunerV2Symbol} />. The v1 interface
+                was removed entirely in plugin v1.20.0{' '}
+                <SourceRef provenance="code-derived" code={code.releaseNotes} />, and the commit that
+                introduced the guard scopes it in its own subject line: updating tuner v1/v2 to fall
+                back on internal when algo or proto is set{' '}
+                <SourceRef provenance="code-derived" code={code.v2Guard} />.
               </Box>
               <Table
                 variant="embedded"
@@ -1027,7 +1041,7 @@ export function NcclOverEfa() {
           </ExpandableSection>
 
           <ExpandableSection
-            headerText="Where your NCCL_ALGO filter is applied, if not by the tuner"
+            headerText="Where NCCL applies your NCCL_ALGO filter"
             headerDescription="NCCL marks the cells you excluded before the tuner is ever called"
           >
             <SpaceBetween size="s">
@@ -1053,24 +1067,25 @@ export function NcclOverEfa() {
               </Box>
               <Box variant="p">
                 So by the time the tuner is called, the cells you excluded are already marked, and
-                the tuner skips any cell equal to NCCL_ALGO_PROTO_IGNORE rather than zeroing it{' '}
-                <SourceRef provenance="code-derived" code={code.regionSkip} />. The tuner respects
-                your filter. It does not fight it, and NCCL does not overrule the tuner afterwards.
+                the tuner skips any cell equal to NCCL_ALGO_PROTO_IGNORE{' '}
+                <SourceRef provenance="code-derived" code={code.regionSkip} />. Your filter and the
+                tuner compose: the filter narrows the table, the tuner votes inside what is left,
+                and NCCL takes the minimum of that.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
 
           <ExpandableSection
-            headerText="The segfault fix does not prove the tuner was running"
-            headerDescription="A tempting inference from the v1.20.0 release notes, refuted by the commit"
+            headerText="What the v1.20.0 tuner segfault fix actually changed"
+            headerDescription="The release-note line reads like evidence the tuner ran anyway; the commit says otherwise"
           >
             <SpaceBetween size="s">
               <Box variant="p">
                 The v1.20.0 release notes list a fix for a tuner segfault when NCCL_ALGO or
                 NCCL_PROTO is explicitly set{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />. It is tempting to
-                read that as evidence that the tuner was running despite those variables, since a
-                crash needs code to be executing. That reading is wrong, and the commit says so.
+                <SourceRef provenance="code-derived" code={code.releaseNotes} />. Since a crash needs
+                code to be executing, that line invites the reading that the tuner ran despite those
+                variables. The commit places the crash somewhere else.
               </Box>
               <Box variant="p">
                 The crash was inside the bailout. The v2 initialiser logged an informational message
@@ -1083,18 +1098,19 @@ export function NcclOverEfa() {
               <Box variant="p">
                 The same commit removed an identical bailout from the v6 initialiser, with the
                 commit message stating that NCCL 2.30 and later handle algorithm and protocol
-                filtering internally and do not need the tuner to opt out{' '}
+                filtering internally, leaving the tuner nothing to opt out of{' '}
                 <SourceRef provenance="code-derived" code={code.segfaultFix} />. That v6 block had
                 arrived only two months earlier, when the v5 and v6 API headers were imported{' '}
                 <SourceRef provenance="code-derived" code={code.v6HeadersImport} />, and both
-                commits land only in v1.20.0. No shipped release ever had a v6 bailout.
+                commits land only in v1.20.0, so the v6 bailout existed only between those two
+                commits and shipped in no release.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
 
           <ExpandableSection
-            headerText="The fallback log line names a variable that does not exist"
-            headerDescription="Copying the name out of the log will not switch the tuner off"
+            headerText="The variable name to use when the fallback log prints another"
+            headerDescription="Copy the name from the parameter table, not from the log line"
           >
             <Box variant="p">
               When the tuner declines because the tuner type was forced to Internal, it prints a
@@ -1112,17 +1128,10 @@ export function NcclOverEfa() {
           </ExpandableSection>
 
           <ExpandableSection
-            headerText="cmpScore is not algorithm selection"
-            headerDescription="A function widely cited as the algorithm chooser, and what it really sorts"
+            headerText="What cmpScore actually sorts"
+            headerDescription="A function widely cited as the algorithm chooser, and the job it really does"
           >
             <SpaceBetween size="s">
-              <Box variant="p">
-                cmpScore in NCCL's search.cc is often named as the place algorithms get chosen, with
-                its ordering given as interBw, then interPciBw, then interNhops, then intraBw, then
-                intraNhops. The ordering is right{' '}
-                <SourceRef provenance="code-derived" code={code.ncclCmpScore} />. What it orders is
-                not algorithms.
-              </Box>
               <Box variant="p">
                 cmpScore is the comparison function for a sort over candidate GPUs, used while NCCL
                 searches for the next GPU to add to a ring or tree channel. The scores are filled in
@@ -1133,8 +1142,11 @@ export function NcclOverEfa() {
                 protocol selection is the cost-table path described above, in enqueue.cc.
               </Box>
               <Box variant="p">
-                The path matters too: the file is src/graph/search.cc, and has been since at least
-                NCCL 2.21.5. There has never been a src/search.cc.
+                Guides that cite it as the place algorithms get chosen quote its ordering correctly:
+                interBw, then interPciBw, then interNhops, then intraBw, then intraNhops{' '}
+                <SourceRef provenance="code-derived" code={code.ncclCmpScore} />. The path is worth
+                copying carefully too. The file is src/graph/search.cc, and has been since at least
+                NCCL 2.21.5.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1144,24 +1156,25 @@ export function NcclOverEfa() {
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                If GPUDirect RDMA support is not present, the plugin logs that it needs to force the
-                simple protocol because GDR is not supported, and stages NCCL_PROTO as simple with
+                Where GPUDirect RDMA support is missing, the plugin logs that it needs to force the
+                simple protocol because GDR is unsupported, and stages NCCL_PROTO as simple with
                 overwrite set to false{' '}
                 <SourceRef provenance="code-derived" code={code.gdrForce} />
-                <SourceRef provenance="code-derived" code={code.protoSimple} />. The reasoning in
-                the surrounding comment is a correctness argument, not a performance one: without
-                GDR the low-latency protocol polls host memory for completion flags and assumes
-                8-byte update granularity, which providers without host-memory guarantees do not
-                promise <SourceRef provenance="code-derived" code={code.gdrForce} />.
+                <SourceRef provenance="code-derived" code={code.protoSimple} />. The surrounding
+                comment argues correctness rather than performance: the low-latency protocol polls
+                host memory for completion flags and assumes 8-byte update granularity, a promise
+                only providers with host-memory guarantees make{' '}
+                <SourceRef provenance="code-derived" code={code.gdrForce} />.
               </Box>
               <Box variant="p">
-                That creates a case worth naming: on a non-GDR platform running NCCL 2.21.x, the
-                variable that trips the v2 tuner bailout can be one the plugin set rather than one
-                you set. The load ordering between the network plugin's environment rewrite and
-                NCCL's tuner load is not traced here, so treat the consequence as inference rather
-                than established behaviour{' '}
+                That creates a case worth naming: on a platform lacking GDR and running NCCL 2.21.x,
+                the variable that trips the v2 tuner bailout can be one the plugin set rather than
+                one you set. The load ordering between the network plugin's environment rewrite and
+                NCCL's tuner load was not traced during this research, so treat the consequence as
+                inference{' '}
                 <SourceRef provenance="code-derived" code={code.protoSimple} label="inference" />.
-                The mechanism on each side is code-confirmed; the interaction between them is not.
+                The mechanism on each side is code-confirmed; the interaction between them remains
+                untraced.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1177,8 +1190,9 @@ export function NcclOverEfa() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The plugin's release notes state the tested matrix for each release rather than a
-            compatibility promise. Release v1.20.0 was tested with NCCL v2.28.9-1, v2.29.7-1 and
+            The plugin's release notes state the tested matrix for each release, which is a
+            narrower thing than a compatibility promise. Release v1.20.0 was tested with NCCL
+            v2.28.9-1, v2.29.7-1 and
             v2.30.4-1, and states backward compatibility with NCCL v2.17.1 and later. It was tested
             with an AWS build of libfabric 2.4.0, requires at least libfabric 1.11.0 to build, and
             requires at least libfabric 1.22.0 to compile AWS-specific support{' '}
@@ -1189,24 +1203,24 @@ export function NcclOverEfa() {
 
           <ColumnLayout columns={2} variant="text-grid">
             <div>
-              <Box variant="h3">What breaks when versions drift</Box>
+              <Box variant="h3">What each version drift costs you</Box>
               <Box variant="p">
-                Too-new NCCL against a too-old plugin means NCCL looks for a network plugin symbol
-                the plugin does not export, and falls back to its own transport. Too-old NCCL means
-                the tuner binds to the v2 interface and the NCCL_ALGO bailout is live again. Too-old
-                libfabric means the plugin refuses EFA at init. A platform name the table does not
-                match means no injected defaults and a 75 microsecond latency hint{' '}
+                Too-new NCCL against a too-old plugin: NCCL looks for a network plugin symbol beyond
+                the exported range and falls back to its own transport. Too-old NCCL: the tuner
+                binds to the v2 interface and the NCCL_ALGO bailout is live again. Too-old
+                libfabric: the plugin refuses EFA at init. A platform name outside the table: the
+                job runs with no injected defaults and a 75 microsecond latency hint{' '}
                 <SourceRef provenance="code-derived" code={code.latency} />.
               </Box>
             </div>
             <div>
               <Box variant="h3">Where to read the truth</Box>
               <Box variant="p">
-                Not from the package manager. The plugin, the NCCL in the process and the libfabric
-                that was actually dynamically linked can all differ from what is installed on disk,
-                especially inside a container that inherits libraries from the host. The init banner
-                is the only source that reports what the running process loaded{' '}
-                <SourceRef provenance="code-derived" code={code.banner} />.
+                Read it from the init banner, the one source that reports what the running process
+                loaded <SourceRef provenance="code-derived" code={code.banner} />. The plugin, the
+                NCCL in the process and the libfabric that was actually dynamically linked can all
+                differ from what the package manager installed on disk, especially inside a
+                container that inherits libraries from the host.
               </Box>
             </div>
           </ColumnLayout>
@@ -1248,21 +1262,19 @@ export function NcclOverEfa() {
             items={logRows}
           />
 
-          <Alert type="warning" header="Two strings that changed and are still quoted from memory">
+          <Alert type="warning" header="Two strings to grep for exactly as this version prints them">
             <SpaceBetween size="xs">
               <Box variant="p">
                 The provider line is Selected provider is, lowercase, and it now also reports the
                 fabric name and the device count in the same line{' '}
-                <SourceRef provenance="code-derived" code={code.libfabricGate} />. Guides quoting
-                Selected Provider with a capital P are matching a string this version does not
-                print, and a grep for it comes back empty on a working job.
+                <SourceRef provenance="code-derived" code={code.libfabricGate} />. Guides quote
+                Selected Provider with a capital P, which returns an empty grep on a working job.
               </Box>
               <Box variant="p">
-                GPU Direct RDMA Enabled is an NCCL-side string, not a plugin string. The plugin's
-                own signal for the opposite condition is the forced-simple-protocol line, which
-                names GDR as the missing capability{' '}
-                <SourceRef provenance="code-derived" code={code.protoSimple} />. If you want to know
-                whether the plugin thinks GDR is available, look for the absence of that line.
+                GPU Direct RDMA Enabled is an NCCL-side string. The plugin's own GDR signal is the
+                forced-simple-protocol line, which it prints when GDR support is missing{' '}
+                <SourceRef provenance="code-derived" code={code.protoSimple} />. A log without that
+                line is the plugin telling you GDR is available.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1281,8 +1293,8 @@ export function NcclOverEfa() {
             The plugin carries a GIN (GPU-Initiated Networking) subsystem: seven implementation
             files under src/rdma/gin and nine headers, with a GDAKI variant that consumes the
             libfabric EFA provider's GPUDirect Async operations{' '}
-            <SourceRef provenance="code-derived" code={code.ginOpen} />. Any claim that the feature
-            is exposed by libfabric but unused by the NCCL plugin is out of date.
+            <SourceRef provenance="code-derived" code={code.ginOpen} />. The plugin is a consumer
+            of the libfabric feature at release tag v1.20.0.
           </Box>
           <Box variant="p">
             The sequence is explicit in the code. It reuses the libfabric domain the proxy plugin
@@ -1293,29 +1305,27 @@ export function NcclOverEfa() {
             completion-queue attributes needed to populate GPU-resident queue-pair and
             completion-queue descriptors{' '}
             <SourceRef provenance="code-derived" code={code.ginOpen} />
-            <SourceRef provenance="code-derived" code={code.gdaOps} />. If the open fails it throws
-            with a message naming the two likely causes: libfabric too old, or the proxy selected a
-            fabric other than efa-direct{' '}
+            <SourceRef provenance="code-derived" code={code.gdaOps} />. A failed open throws with a
+            message naming the two likely causes: libfabric too old, or a proxy-selected fabric
+            other than efa-direct{' '}
             <SourceRef provenance="code-derived" code={code.ginOpen} />.
           </Box>
           <Box variant="p">
             The result is exported against NCCL's GPU-initiated networking interface at version 13{' '}
             <SourceRef provenance="code-derived" code={code.ginExport} />. It is opt-in twice over.
-            The plugin must be built with the GDAKI option, and
-            OFI_NCCL_GIN_TYPE must be set to GDAKI at run time, at which point it logs that GDAKI
-            mode is enabled and overwrites the exported GIN plugin symbol with the GDAKI one. Asking
-            for GDAKI on a plugin built without it fails init deliberately rather than falling back
-            silently, on the stated grounds that GDAKI was an explicit opt-in{' '}
-            <SourceRef provenance="code-derived" code={code.ginSwitch} />
+            The plugin must be built with the GDAKI option, and OFI_NCCL_GIN_TYPE must be set to
+            GDAKI at run time, at which point it logs that GDAKI mode is enabled and overwrites the
+            exported GIN plugin symbol with the GDAKI one. Asking for GDAKI on a plugin built
+            without it fails init deliberately, on the stated grounds that GDAKI was an explicit
+            opt-in <SourceRef provenance="code-derived" code={code.ginSwitch} />
             <SourceRef provenance="code-derived" code={code.paramGin} />. The default remains the
             proxy path.
           </Box>
           <Alert type="info" header="What the libfabric side actually exposes">
-            The operations table behind FI_EFA_GDA_OPS is queries and extended opens, not a data
-            path: remote addressing fields, work-queue and completion-queue buffers with their
-            doorbells and entry sizes, and a memory-registration local key. The libfabric section
-            covers that table and the efa-direct gate in detail. What matters here is that the
-            plugin is a consumer of it today{' '}
+            The operations table behind FI_EFA_GDA_OPS holds queries and extended opens: remote
+            addressing fields, work-queue and completion-queue buffers with their doorbells and
+            entry sizes, and a memory-registration local key. The data path itself stays where it
+            was. The libfabric section covers that table and the efa-direct gate in detail{' '}
             <SourceRef provenance="code-derived" code={code.gdaOps} />.
           </Alert>
         </SpaceBetween>
@@ -1329,21 +1339,6 @@ export function NcclOverEfa() {
         }
       >
         <SpaceBetween size="m">
-          <ExpandableSection
-            headerText="Where AWS documentation ends"
-            headerDescription="Which of the claims above you can look up, and which you have to re-read from the tag you run"
-          >
-            <Box variant="p">
-              AWS documents how to install the plugin and how to verify EFA is present{' '}
-              <SourceRef provenance="documented" doc={docs.efaNccl} />
-              <SourceRef provenance="documented" doc={docs.efaStart} />, and documents which instance
-              types support EFA <SourceRef provenance="documented" doc={docs.efa} />. It documents
-              none of the plugin behaviour on this page: the platform table, the tuner conditions,
-              the topology generation and the environment injection are all read from the
-              implementation at release tag v1.20.0. Re-check them against the tag you are running.
-            </Box>
-          </ExpandableSection>
-
           <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="h3">Confirm the path is real</Box>
@@ -1352,8 +1347,8 @@ export function NcclOverEfa() {
                 is 1.22.0 or later, the selected provider is efa, and the device count matches the
                 EFA devices you attached{' '}
                 <SourceRef provenance="code-derived" code={code.banner} />
-                <SourceRef provenance="code-derived" code={code.libfabricGate} />. If the
-                AWS-specific options line is missing, platform detection failed and no defaults were
+                <SourceRef provenance="code-derived" code={code.libfabricGate} />. The AWS-specific
+                options line is the one that confirms platform detection ran and the defaults were
                 applied <SourceRef provenance="code-derived" code={code.providerFilter} />. Then read
                 the NIC group lines: the group count should match the accelerator count, and devices
                 inside a group should share a PCIe prefix{' '}
@@ -1361,16 +1356,16 @@ export function NcclOverEfa() {
               </Box>
             </div>
             <div>
-              <Box variant="h3">Confirm nothing is being displaced</Box>
+              <Box variant="h3">Confirm your settings and the plugin's agree</Box>
               <Box variant="p">
                 Grep for the line about skipping a variable that is already set{' '}
                 <SourceRef provenance="code-derived" code={code.envSkipLog} />. Every hit is a
                 platform default you overrode, whether or not you meant to. Then check the tuner:
                 the selected-platform line and the region-tuner choices say it ran{' '}
                 <SourceRef provenance="code-derived" code={code.tunerPlatform} />, and the fallback
-                message names which of the three conditions failed if it did not{' '}
+                message names which of the three conditions applied when it declined{' '}
                 <SourceRef provenance="code-derived" code={code.fallbackLog} />. Jobs of two nodes or
-                fewer are skipped by design, because the regions are not defined there{' '}
+                fewer are skipped by design, because the regions start above that size{' '}
                 <SourceRef provenance="code-derived" code={code.regionSkip} />.
               </Box>
             </div>

@@ -100,12 +100,13 @@ function OneAttachmentTwoDevicesDiagram() {
       style={{ width: '100%', height: 'auto' }}
     >
       <title id="ena-efa-devices-title">
-        One network interface attachment can materialize one PCI function or two, and the two
-        are different devices rather than two modes of one device. A plain interface creates
-        only an ENA function bound by ena.ko to a network device. An EFA with ENA interface
-        creates an ENA function and a separate EFA function, bound by two independent drivers
-        into two different kernel subsystems. An EFA-only interface creates just the EFA
-        function, so there is no network device, no IP address, and no routing.
+        One network interface attachment can materialize one PCI function or two, and each
+        function is its own device with its own driver. A plain interface creates an ENA
+        function bound by ena.ko to a network device. An EFA with ENA interface creates an ENA
+        function and a separate EFA function, bound by two independent drivers into two
+        different kernel subsystems. An EFA-only interface creates the EFA function alone, so
+        the attachment carries verbs and SRD queue pairs but no network device, IP address or
+        route.
       </title>
       <style>
         {`
@@ -328,8 +329,8 @@ function SrdSubstrateDiagram() {
         SRD, the Scalable Reliable Datagram transport, lives in the Nitro card below both
         devices. The ENA device consumes it as ENA Express, accelerating ordinary TCP and UDP
         flows with no application change. The EFA device consumes it as a verbs queue pair type
-        for libfabric, NCCL and MPI. Neither device is built on the other, and neither driver
-        contains an SRD implementation.
+        for libfabric, NCCL and MPI. Both are peer consumers of the same transport, and the
+        implementation sits below the PCI boundary in the card.
       </title>
       <style>
         {`
@@ -385,7 +386,7 @@ function SrdSubstrateDiagram() {
       <text className="sb-s" x="440" y="336">Neither kernel driver contains any SRD implementation</text>
 
       <text className="sb-cap" x="440" y="368">
-        SRD is not layered on ENA. ENA and EFA are peer consumers of the same transport.
+        ENA and EFA are peer consumers of the same transport.
       </text>
     </svg>
   );
@@ -438,7 +439,7 @@ const ladderRows: LadderRow[] = [
   {
     config: 'Multipath TCP across several paths',
     ceiling: 'Higher, by adding flows',
-    note: 'Not one flow going faster. Several flows, each still policed.',
+    note: 'Several flows in parallel, each one still policed at its own ceiling.',
   },
 ];
 
@@ -449,7 +450,7 @@ export function EnaVsEfa() {
         header={
           <Header
             variant="h1"
-            description="Readers conflate these constantly. They are two devices on one Nitro card, and the drivers prove it."
+            description="Two PCI devices on one card: which one an attachment gives you, how to tell them apart, and which to pick."
           >
             ENA and EFA: Two Devices, One Nitro Card
           </Header>
@@ -458,18 +459,20 @@ export function EnaVsEfa() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>
-              EFA (Elastic Fabric Adapter) is not a mode of ENA (Elastic Network Adapter). They
-              are separate PCI (Peripheral Component Interconnect) devices, bound by separate
-              drivers, into separate kernel subsystems.
+              EFA (Elastic Fabric Adapter) and ENA (Elastic Network Adapter) are two separate PCI
+              (Peripheral Component Interconnect) devices, each bound by its own driver into its
+              own kernel subsystem.
             </strong>{' '}
-            The word doing the damage is attachment. One network interface attachment can create
-            two PCI functions, so people reason backward from one attachment to one device. The
-            device ID tables settle it. ENA claims 0x0ec2, 0x1ec2, 0xec20, 0xec21 and 0x0051{' '}
-            <SourceRef provenance="code-derived" code={code.enaPciIds} />. EFA claims 0xefa0
-            through 0xefa4, every one of them a VF (Virtual Function), with no EFA PF (Physical
-            Function) in the table at all{' '}
-            <SourceRef provenance="code-derived" code={code.efaPciIds} />. The two sets do not
-            intersect.
+            You tell them apart by device ID and by the driver that claims them. ENA claims
+            0x0ec2, 0x1ec2, 0xec20, 0xec21 and 0x0051, a mix of PF (Physical Function) and VF
+            (Virtual Function) entries{' '}
+            <SourceRef provenance="code-derived" code={code.enaPciIds} />, and ena.ko binds them
+            into netdev. EFA claims 0xefa0 through 0xefa4, every one of them a VF entry{' '}
+            <SourceRef provenance="code-derived" code={code.efaPciIds} />, and efa.ko binds them
+            into the RDMA (Remote Direct Memory Access) subsystem. Each identifier belongs to
+            exactly one of the two sets. The word doing the damage is attachment: one network
+            interface attachment can create two PCI functions, so people reason backward from one
+            attachment to one device.
           </Box>
 
           <OneAttachmentTwoDevicesDiagram />
@@ -477,7 +480,7 @@ export function EnaVsEfa() {
           <Table
             variant="embedded"
             header={
-              <Header variant="h3" description="All vendor 0x1d0f, Amazon. No overlap in either direction.">
+              <Header variant="h3" description="All vendor 0x1d0f, Amazon. Each identifier belongs to exactly one set.">
                 The two device ID sets
               </Header>
             }
@@ -506,9 +509,8 @@ export function EnaVsEfa() {
                 <SourceRef provenance="code-derived" code={code.enaDriver} /> and efa_probe{' '}
                 <SourceRef provenance="code-derived" code={code.efaDriver} />. The third is code
                 sharing, tested in both directions: grepping the EFA sources for includes naming
-                ena returns zero hits, and grepping the ENA sources for includes naming efa
-                returns zero hits. The EFA build is self-contained and never references the ENA
-                sources{' '}
+                ena and the ENA sources for includes naming efa each returns zero hits. The EFA
+                build is self-contained{' '}
                 <SourceRef provenance="code-derived" code={code.efaKbuild} />.
               </Box>
               <Box variant="p">
@@ -516,7 +518,9 @@ export function EnaVsEfa() {
                 node_type to RDMA_NODE_UNSPECIFIED, declining to claim it is InfiniBand or RoCE{' '}
                 <SourceRef provenance="code-derived" code={code.efaIbDevice} />. Grepping the EFA
                 sources for net_device, register_netdev and netdev_ops returns zero hits. The EFA
-                device has no network interface, no MAC address, no IP address, and no ethtool.
+                device exists purely as an ib_device, so everything that hangs off a network
+                interface, a MAC address, an IP address, ethtool, belongs to the ENA side of the
+                attachment.
               </Box>
             </div>
             <div>
@@ -533,17 +537,11 @@ export function EnaVsEfa() {
                 The same page separates EFA traffic from normal IP traffic from the ENA device of
                 an EFA interface when it lists limitations{' '}
                 <SourceRef provenance="documented" doc={docs.efa} />. That phrasing only makes
-                sense if there are two devices. AWS has never claimed otherwise. The conflation is
-                a reader artifact, not a documentation error.
+                sense if there are two devices. Documentation and driver tables agree, so the
+                conflation starts with the reader.
               </Box>
             </div>
           </ColumnLayout>
-
-          <Alert type="info" header="The 60-second answer">
-            Is EFA a kind of ENA? No. An EFA with ENA attachment gives you two PCI functions and
-            two drivers. An EFA-only attachment gives you one PCI function, no network device, no
-            IP address, and no routing. Everything below is elaboration on that.
-          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -551,7 +549,7 @@ export function EnaVsEfa() {
         header={
           <Header
             variant="h2"
-            description="Both drivers push descriptors into the same write-combined region. Only the side of the kernel boundary changes."
+            description="What OS bypass actually is, stated so you can check it in the driver sources yourself."
           >
             Both have a low latency queue. The difference is who holds the pen.
           </Header>
@@ -560,8 +558,9 @@ export function EnaVsEfa() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>
-              The ENA and EFA difference is not LLQ (Low Latency Queue) against no LLQ. Both push
-              transmit descriptors into device memory over PCIe. Only the writer differs.
+              Both ENA and EFA have an LLQ (Low Latency Queue). Both push transmit descriptors
+              into device memory over PCIe. The difference is which side of the kernel boundary
+              writes them.
             </strong>{' '}
             Both drivers use the same BAR (Base Address Register) convention: register BAR 0,
             memory BAR 2. ENA defines ENA_REG_BAR 0 and ENA_MEM_BAR 2{' '}
@@ -586,9 +585,9 @@ export function EnaVsEfa() {
                 <SourceRef provenance="code-derived" code={code.enaPush} />.
               </Box>
               <Box variant="p">
-                Push mode removes a device-side descriptor fetch. It does not remove the kernel.
-                The application still makes a system call, the kernel network stack still
-                processes the packet, and ena.ko is still in the data path for every packet sent.
+                Push mode buys one thing: it removes a device-side descriptor fetch. The kernel
+                stays where it was. The application makes a system call, the kernel network stack
+                processes the packet, and ena.ko writes the descriptor for every packet sent.
               </Box>
             </div>
             <div>
@@ -596,10 +595,9 @@ export function EnaVsEfa() {
               <Box variant="p">
                 EFA send-queue descriptors live in the same MEM BAR. The driver computes
                 sq-&gt;desc as mem_bar plus llq_descriptors_offset{' '}
-                <SourceRef provenance="code-derived" code={code.efaSqDesc} />. Then it does the
-                thing ENA never does: it hands the region to userspace. efa_user_mmap_entry_insert
-                creates a mapping with attribute EFA_MMAP_IO_WC, write-combined, and returns a
-                key{' '}
+                <SourceRef provenance="code-derived" code={code.efaSqDesc} />. Then it hands that
+                region to the application: efa_user_mmap_entry_insert creates a mapping with
+                attribute EFA_MMAP_IO_WC, write-combined, and returns a key{' '}
                 <SourceRef provenance="code-derived" code={code.efaUserMap} />.
               </Box>
               <Box variant="p">
@@ -611,14 +609,13 @@ export function EnaVsEfa() {
             </div>
           </ColumnLayout>
 
-          <Alert type="success" header="OS bypass, expressed in code rather than asserted in prose">
-            A grep across the ENA driver sources for .mmap, remap_pfn_range and vm_ops returns
-            zero hits. There is no character device, no verbs interface, and no userspace-visible
-            doorbell or descriptor ring anywhere in the ENA tree{' '}
-            <SourceRef provenance="code-derived" code={code.enaWcMap} />. EFA has all of them.
-            That single asymmetry is what OS bypass means. What the two do share is a house design
-            language, admin queue abstraction, phase bits, BAR 2 push region, write-combining,
-            while remaining separate implementations.
+          <Alert type="success" header="OS bypass, read straight out of the driver sources">
+            EFA exposes to userspace what ENA keeps in the kernel: a character device, a verbs
+            interface, and a mappable doorbell and descriptor ring. A grep across the ENA driver
+            sources for .mmap, remap_pfn_range and vm_ops returns zero hits{' '}
+            <SourceRef provenance="code-derived" code={code.enaWcMap} />. That single asymmetry is
+            what OS bypass means. The two share a house design language, admin queue abstraction,
+            phase bits, BAR 2 push region, write-combining, as separate implementations of it.
           </Alert>
 
           <ExpandableSection
@@ -644,8 +641,7 @@ export function EnaVsEfa() {
               <Box variant="p">
                 One asymmetry worth knowing on the ENA side: LLQ is transmit only. Receive
                 submission queues always run in regular mode, so the device fetches receive
-                descriptors from host memory. Push mode removes a fetch on the send path and
-                nothing on the receive path.
+                descriptors from host memory and push mode changes the send path alone.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -656,9 +652,9 @@ export function EnaVsEfa() {
         header={
           <Header
             variant="h2"
-            description="The dependency runs the opposite way to the common phrasing, and one shipping configuration proves it."
+            description="Where the transport actually lives, and the shipping configuration that shows it."
           >
-            SRD is not built on top of ENA
+            SRD sits below both devices
           </Header>
         }
       >
@@ -668,66 +664,49 @@ export function EnaVsEfa() {
               SRD (Scalable Reliable Datagram) lives in the Nitro card. ENA and EFA are peer
               consumers of it.
             </strong>{' '}
-            The common phrasing puts SRD above ENA, as though EFA were an accelerated ENA. The
-            dependency runs the other way. ENA reaches SRD through ENA Express. EFA reaches SRD
-            as a native queue pair type. Neither one sits on the other.
+            ENA reaches SRD through ENA Express. EFA reaches SRD as a native queue pair type.
+            Both sit above the same transport on the same card, and the implementation itself is
+            below the PCI boundary, inside the Nitro card.
           </Box>
 
           <SrdSubstrateDiagram />
 
           <ColumnLayout columns={2} variant="text-grid">
             <div>
-              <Box variant="h3">The decisive disproof</Box>
+              <Box variant="h3">EFA-only, with no ENA device present</Box>
               <Box variant="p">
-                An EFA-only interface creates an EFA device and no ENA device at all{' '}
+                An EFA-only interface creates an EFA device and no ENA device{' '}
                 <SourceRef provenance="documented" doc={docs.efa} />, and it still carries SRD
-                traffic. If SRD were built on top of ENA, an EFA-only interface could not
-                function. One configuration that AWS ships and documents falsifies the claim.
+                traffic. SRD therefore reaches the wire with the ENA device absent, in a
+                configuration AWS ships and documents.
               </Box>
             </div>
             <div>
-              <Box variant="h3">The second disproof</Box>
+              <Box variant="h3">What the ENA driver knows about SRD</Box>
               <Box variant="p">
-                The ENA driver contains no SRD implementation. Its entire knowledge of SRD is a
-                read-only statistics structure, struct ena_admin_ena_srd_stats, holding four
-                counters{' '}
-                <SourceRef provenance="code-derived" code={code.srdStats} />. There is no
-                retransmission logic, no reliability state machine, no congestion control and no
-                reordering anywhere in the ENA tree. All of it lives below the PCI boundary.
+                Its entire knowledge of SRD is a read-only statistics structure, struct
+                ena_admin_ena_srd_stats, holding four counters{' '}
+                <SourceRef provenance="code-derived" code={code.srdStats} />. Retransmission, the
+                reliability state machine, congestion control and reordering all live below the
+                PCI boundary, in the card.
               </Box>
             </div>
           </ColumnLayout>
 
-          <Alert type="success" header="Correct and incorrect phrasings">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                Accurate: ENA Express uses SRD. EFA uses SRD. Both devices sit on the same Nitro
-                card and share a hardware design idiom.
-              </Box>
-              <Box variant="p">
-                Inaccurate: SRD is built on top of ENA. EFA is built on top of ENA. EFA is a mode
-                of ENA. EFA is ENA with RDMA (Remote Direct Memory Access) turned on.
-              </Box>
-            </SpaceBetween>
-          </Alert>
-
-          <Alert type="warning" header="common/ena_com is a false friend">
-            The ENA build pulls a directory named kernel/linux/common/ena_com. The name suggests
-            code shared between ENA and EFA. It is not. That directory is shared across the ENA
-            ports for Linux, FreeBSD and DPDK. Only the ENA Makefile references it, through
-            ENA_COM_PATH{' '}
-            <SourceRef provenance="code-derived" code={code.enaMakefile} />, and the EFA build
-            does not{' '}
-            <SourceRef provenance="code-derived" code={code.efaKbuild} />. EFA carries its own
-            efa_com, structurally parallel and textually independent. Do not read the word common
-            as a claim of ENA and EFA sharing.
+          <Alert type="warning" header="What common means in kernel/linux/common/ena_com">
+            The ENA build pulls a directory named kernel/linux/common/ena_com. Common there means
+            shared across the ENA ports for Linux, FreeBSD and DPDK. Only the ENA Makefile
+            references it, through ENA_COM_PATH{' '}
+            <SourceRef provenance="code-derived" code={code.enaMakefile} />, while the EFA build
+            carries its own efa_com, structurally parallel and textually independent{' '}
+            <SourceRef provenance="code-derived" code={code.efaKbuild} />.
           </Alert>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="A conventional multi-queue NIC driver, with the kernel in the data path for every packet">
+          <Header variant="h2" description="The baseline the other two are measured against: queue model, interrupt layout, offload list.">
             What ENA actually is
           </Header>
         }
@@ -755,11 +734,11 @@ export function EnaVsEfa() {
             <div>
               <Box variant="h3">Moderation</Box>
               <Box variant="p">
-                ENA implements DIM (Dynamic Interrupt Moderation) using the kernel net_dim library
-                rather than a private scheme{' '}
-                <SourceRef provenance="code-derived" code={code.enaDim} />. DIM is receive only in
-                this driver. The function is ena_adjust_adaptive_rx_intr_moderation and it calls
-                net_dim_get_rx_moderation. There is no transmit counterpart.
+                ENA implements DIM (Dynamic Interrupt Moderation) on top of the kernel net_dim
+                library{' '}
+                <SourceRef provenance="code-derived" code={code.enaDim} />. DIM applies to the
+                receive path only: the driver's single adaptive-moderation function is
+                ena_adjust_adaptive_rx_intr_moderation, which calls net_dim_get_rx_moderation.
               </Box>
             </div>
             <div>
@@ -769,20 +748,20 @@ export function EnaVsEfa() {
                 receive checksum, scatter-gather, RSS (Receive Side Scaling) receive hashing, and
                 n-tuple flow steering{' '}
                 <SourceRef provenance="code-derived" code={code.enaOffloads} />. All stateless and
-                per-packet. XDP (eXpress Data Path) is supported, which is a kernel eBPF hook and
-                not OS bypass.
+                per-packet. XDP (eXpress Data Path) is supported: an eBPF hook that runs inside
+                the kernel, with the kernel still in the path.
               </Box>
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="Software GRO, not hardware LRO">
-            Secondary write-ups routinely credit ENA with LRO (Large Receive Offload). The code
-            says otherwise. The receive path calls napi_gro_receive, the Linux stack entry point
-            for GRO (Generic Receive Offload), which aggregates in software after delivery{' '}
-            <SourceRef provenance="code-derived" code={code.enaGro} />. A grep for lro across the
-            ENA and common driver trees returns zero hits beyond incidental substring matches on
-            tailroom. There is no LRO implementation, no NETIF_F_LRO feature bit, and no hardware
-            coalescing path.
+          <Alert type="warning" header="Receive aggregation is GRO, done in software">
+            The receive path calls napi_gro_receive, the Linux stack entry point for GRO (Generic
+            Receive Offload), which aggregates after delivery on the host CPU{' '}
+            <SourceRef provenance="code-derived" code={code.enaGro} />. Secondary write-ups
+            routinely credit ENA with hardware LRO (Large Receive Offload) instead. A grep for lro
+            across the ENA and common driver trees returns zero hits beyond incidental substring
+            matches on tailroom, and the tree carries no NETIF_F_LRO feature bit and no hardware
+            coalescing path. Code is the authority: budget host cycles for receive aggregation.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -791,7 +770,7 @@ export function EnaVsEfa() {
         header={
           <Header
             variant="h2"
-            description="The interesting middle ground: SRD benefits without EFA's programming model"
+            description="SRD under your existing sockets code: what it buys, what it costs, and how to confirm it is carrying traffic."
           >
             ENA Express
           </Header>
@@ -818,24 +797,23 @@ export function EnaVsEfa() {
             <SourceRef provenance="documented" doc={docs.enaExpress} />. AWS follows it with a
             note that applications with high packets-per-second requirements needing to optimize
             for latency during uncongested periods may be better served by plain enhanced
-            networking. SRD is a congestion play. It is not free at idle.
+            networking. SRD is a congestion play, and it costs tens of microseconds at idle.
           </Alert>
 
           <ColumnLayout columns={2} variant="text-grid">
             <div>
-              <Box variant="h3">The driver can only read it</Box>
+              <Box variant="h3">Enable it from the control plane</Box>
               <Box variant="p">
+                ENA Express is configured on the ENI (Elastic Network Interface) attachment
+                through the EC2 control plane, and the driver observes the result.
                 ena_com_get_ena_srd_info reaches SRD through exactly one path, the statistics
                 admin command ENA_ADMIN_GET_STATS_TYPE_ENA_SRD{' '}
-                <SourceRef provenance="code-derived" code={code.srdGet} />. There is no
-                ena_com_set_ena_srd function anywhere in the tree. ENA Express cannot be enabled
-                from inside the instance. It is configured on the ENI (Elastic Network Interface)
-                attachment through the EC2 control plane, and the driver observes the result.
+                <SourceRef provenance="code-derived" code={code.srdGet} />, and the tree carries
+                no ena_com_set_ena_srd counterpart. Reading is the whole of the driver's access.
               </Box>
               <Box variant="p">
-                Any guide showing an in-instance command to turn ENA Express on is describing
-                tuning, MTU (Maximum Transmission Unit), queue sizes, byte queue limits, and not
-                enablement.
+                Any in-instance command you find for ENA Express is tuning: MTU (Maximum
+                Transmission Unit), queue sizes, byte queue limits.
               </Box>
             </div>
             <div>
@@ -845,8 +823,8 @@ export function EnaVsEfa() {
                 ENA_ADMIN_ENA_SRD_UDP_ENABLED, then ENA_ADMIN_ENA_SRD_UDP_ORDERING_BYPASS_ENABLED{' '}
                 <SourceRef provenance="code-derived" code={code.srdFlags} />. The third one is the
                 interesting one. It controls whether the device restores UDP ordering on receive
-                or hands packets up out of order. That is an ordering-semantics knob that plain
-                ENA does not have and that EFA expresses differently, as its native model.
+                or hands packets up out of order. That is an ordering-semantics knob, and it is
+                the one place the sockets path offers the choice EFA makes natively.
               </Box>
               <Box variant="p">
                 The enum comment reads ENA SRD configuration for ENI. This is attachment-level
@@ -855,7 +833,7 @@ export function EnaVsEfa() {
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="MTU 8900, and the UDP trap">
+          <Alert type="warning" header="Set the interface MTU to 8900 or lower, and set it yourself for UDP">
             <SpaceBetween size="xs">
               <Box variant="p">
                 AWS documents the requirement without the number: ENA Express requires a lower MTU
@@ -869,36 +847,38 @@ export function EnaVsEfa() {
                 MTU_RECOMMENDED_MAX is 8900 and MTU_RECOMMENDED_MIN is 8800{' '}
                 <SourceRef provenance="code-derived" code={code.mtuCheck} />. So the MTU must be
                 8900 or lower, down from the 9001 jumbo default, and going below 8800 costs
-                bandwidth. TCP handles this by itself. UDP does not. A UDP application left at
-                9001 is the real trap here, and nothing in the instance will tell you.
+                bandwidth. TCP clamps its own MSS on new connections. For UDP the interface MTU is
+                yours to set, and an application left at 9001 gets no warning from anything inside
+                the instance.
               </Box>
             </SpaceBetween>
           </Alert>
 
-          <Alert type="warning" header="A genuine tuning conflict: large LLQ against a deep transmit ring">
+          <Alert type="warning" header="Pick one: large LLQ or a deep transmit ring">
             Large LLQ raises the descriptor entry size from 128 to 256 bytes so tunneled packets
             fit their headers, and the hardware pays for it by halving the transmit ring from 1024
             entries to 512{' '}
             <SourceRef provenance="code-derived" code={code.enaRings} />. ENA Express wants a deep
             transmit ring. AWS's own checker script verifies both, that the transmit queue size is
-            large enough and that the ENA module parameter does not disable large LLQ{' '}
+            large enough and that the ENA module parameter keeps large LLQ available{' '}
             <SourceRef provenance="documented" doc={docs.enaExpress} />. The two pull against each
-            other. Decide which one your traffic actually needs rather than enabling both and
-            hoping.
+            other, so choose on traffic shape: tunneled packets need the wider descriptor, ENA
+            Express needs the depth.
           </Alert>
 
           <ExpandableSection
-            headerText="Verify it is actually engaged, do not assume"
+            headerText="Confirm ENA Express is carrying the traffic, with the counters"
             headerDescription="Fallback is silent and bilateral, so the counters are the only ground truth"
           >
             <SpaceBetween size="s">
               <Box variant="p">
                 AWS states that if ENA Express is not operating on both the sending and receiving
                 instance, the communication falls back to standard ENA transmission{' '}
-                <SourceRef provenance="documented" doc={docs.enaExpress} />. Nothing errors.
-                Nothing logs. You get standard TCP and a mystery about why the bandwidth did not
-                move. Asymmetric configuration is worse: two instances can both use ENA Express
-                for TCP while UDP between them falls back, because only one of them enabled UDP.
+                <SourceRef provenance="documented" doc={docs.enaExpress} />. The fallback is
+                silent: standard TCP, no error and no log line, and bandwidth that stays where it
+                was. Asymmetric configuration is subtler still: two instances can both use ENA
+                Express for TCP while UDP between them falls back, because only one of them
+                enabled UDP.
               </Box>
               <Box variant="p">
                 The driver exposes the counters through ethtool, gated on the SRD info capability{' '}
@@ -932,7 +912,7 @@ ethtool -S eth0 | grep ena_srd
 
       <Container
         header={
-          <Header variant="h2" description="Why one flow cannot saturate a large instance, and what actually helps">
+          <Header variant="h2" description="What caps a single flow at 5 Gbps, and which of the three caps each fix removes.">
             Bandwidth reality
           </Header>
         }
@@ -966,7 +946,7 @@ ethtool -S eth0 | grep ena_srd
             }
           />
 
-          <Box variant="h3">Three independent reasons a single flow underperforms</Box>
+          <Box variant="h3">Three independent caps on a single flow</Box>
           <ColumnLayout columns={3} variant="text-grid">
             <div>
               <Box variant="p">
@@ -1005,21 +985,21 @@ ethtool -S eth0 | grep ena_srd
             more interfaces.
           </Alert>
 
-          <Box variant="h3">What multiple network cards do and do not buy you</Box>
+          <Box variant="h3">What multiple network cards buy you</Box>
           <Box variant="p">
             Instance types that support multiple network cards can be configured with one EFA per
             network card, and all other supported types support only one EFA per instance{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. More cards raise the aggregate
-            ceiling and give more independent paths into the fabric. They do not raise the ceiling
-            of any individual flow.
+            ceiling and give more independent paths into the fabric. The per-flow ceiling stays
+            exactly where it was.
           </Box>
           <Box variant="p">
-            Nothing in either driver aggregates across PCI functions. ena_probe and efa_probe each
-            bind one PCI function to one independent device instance{' '}
-            <SourceRef provenance="code-derived" code={code.enaDriver} />. There is no
-            driver-level link aggregation in amzn-drivers. Bonding across network cards is a host
-            concern, through Linux bonding or ECMP, or an application concern. For EFA, libfabric
-            enumerates several domains rather than striping automatically underneath you.
+            Spreading across those cards is yours to arrange. ena_probe and efa_probe each bind
+            one PCI function to one independent device instance{' '}
+            <SourceRef provenance="code-derived" code={code.enaDriver} />, and amzn-drivers carries
+            no driver-level link aggregation. At the host that means Linux bonding or ECMP
+            (Equal-Cost Multi-Path); in the application it means opening more flows. For EFA,
+            libfabric enumerates several domains and leaves the striping to the caller.
           </Box>
         </SpaceBetween>
       </Container>
@@ -1028,7 +1008,7 @@ ethtool -S eth0 | grep ena_srd
         header={
           <Header
             variant="h2"
-            description="No first-party source settles any of these three. Do not size anything on them."
+            description="What the sources leave unsettled, and the experiment that would close each. Do not size anything on them."
           >
             Three questions that stay open
           </Header>
@@ -1064,7 +1044,7 @@ ethtool -S eth0 | grep ena_srd
 
           <ExpandableSection
             headerText="Do the five EFA PCI IDs map to EFA v1 through v4?"
-            headerDescription="The obvious reading is not stated anywhere, so it is not asserted here"
+            headerDescription="Five identifiers, four named generations, and no source stating the mapping"
           >
             <Box variant="p">
               The table defines five IDs, PCI_DEV_ID_EFA0_VF through PCI_DEV_ID_EFA4_VF{' '}
@@ -1080,7 +1060,7 @@ ethtool -S eth0 | grep ena_srd
 
           <ExpandableSection
             headerText="Can ENA Express run on the ENA half of an EFA attachment?"
-            headerDescription="Not determinable from driver code"
+            headerDescription="The drivers have no set path, so an API experiment is what settles it"
           >
             <Box variant="p">
               An EFA with ENA attachment has both devices{' '}
@@ -1099,12 +1079,19 @@ ethtool -S eth0 | grep ena_srd
 
       <Container
         header={
-          <Header variant="h2" description="Four axes that actually decide it: latency, CPU cost, ordering, programming model">
+          <Header variant="h2" description="Four axes that decide it: latency, CPU cost, ordering, programming model.">
             Choosing between them
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            ENA Express is SRD with EFA's programming model left out: you keep sockets and pay a
+            small uncongested-latency tax. EFA is SRD with the kernel left out: you get the lowest
+            latency and adopt libfabric, giving up IP addressing, routing and cross-zone reach.
+            Plain ENA is the baseline both are measured against.
+          </Box>
+
           <ColumnLayout columns={3} variant="text-grid">
             <div>
               <Box variant="h3">
@@ -1119,7 +1106,7 @@ ethtool -S eth0 | grep ena_srd
                 <strong>CPU cost:</strong> full kernel stack per packet, amortized by GRO.
               </Box>
               <Box variant="p">
-                <strong>Ordering:</strong> TCP ordered. UDP unordered, as always.
+                <strong>Ordering:</strong> TCP ordered, UDP unordered.
               </Box>
               <Box variant="p">
                 <strong>Programming model:</strong> sockets. Crosses Availability Zones, routable,
@@ -1154,11 +1141,12 @@ ethtool -S eth0 | grep ena_srd
                 EFA <Badge color="green">lowest latency</Badge>
               </Box>
               <Box variant="p">
-                <strong>Latency:</strong> best, because the kernel is not in the data path at all.
+                <strong>Latency:</strong> best of the three, because the application writes the
+                descriptor itself and the kernel sits outside the data path entirely.
               </Box>
               <Box variant="p">
-                <strong>CPU cost:</strong> lowest. No system call and no protocol processing per
-                message.
+                <strong>CPU cost:</strong> lowest of the three. A send is a store into mapped
+                memory, and the SRD protocol work happens in the card.
               </Box>
               <Box variant="p">
                 <strong>Ordering:</strong> out-of-order delivery is the native model.
@@ -1167,18 +1155,20 @@ ethtool -S eth0 | grep ena_srd
                 application or middleware problem.
               </Box>
               <Box variant="p">
-                <strong>Programming model:</strong> libfabric, NCCL, MPI or NIXL. No IP address,
-                not routable, cannot cross Availability Zones{' '}
+                <strong>Programming model:</strong> libfabric, NCCL, MPI or NIXL. The device
+                carries no IP address and no route, and its reach stops at the Availability Zone
+                boundary{' '}
                 <SourceRef provenance="documented" doc={docs.efa} />.
               </Box>
             </div>
           </ColumnLayout>
 
-          <Alert type="info" header="The one-sentence framing">
-            ENA Express is SRD without EFA's programming model: you keep sockets and pay a small
-            uncongested-latency tax. EFA is SRD without the kernel: you get the lowest latency but
-            must adopt libfabric and give up IP addressing, routing and cross-zone reach.
-          </Alert>
+          <Box variant="p">
+            Start from the programming model, because it is the axis that decides the other three.
+            Sockets keep you on plain ENA or ENA Express, and the choice between those two is
+            whether your traffic spends its time congested. Code you can port to libfabric, NCCL,
+            MPI or NIXL puts EFA on the table, and from there the latency and CPU numbers follow.
+          </Box>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

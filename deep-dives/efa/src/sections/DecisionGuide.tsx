@@ -152,8 +152,8 @@ const decisions: DecisionRow[] = [
   {
     scenario: 'Fine-tuning 7B model on 1 node',
     efaNeeded: 'No',
-    reason: 'Single node: NVLink handles GPU communication',
-    recommendation: 'p5.48xlarge or trn1.32xlarge, no EFA needed',
+    reason: 'Single node: NVLink carries all GPU communication',
+    recommendation: 'p5.48xlarge or trn1.32xlarge, standard networking',
   },
   {
     scenario: 'Pre-training 70B model on 8 nodes',
@@ -204,7 +204,7 @@ export function DecisionGuide() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="EFA costs nothing to enable and quite a lot to operate. The decision is about the constraints, not the price.">
+          <Header variant="h1" description="EFA costs nothing to enable and quite a lot to operate. The decision turns on the constraints it puts on your fleet.">
             Decision Guide
           </Header>
         }
@@ -270,8 +270,9 @@ export function DecisionGuide() {
           <div>
             <Box variant="h3">1. Is this multi-node?</Box>
             <Box variant="p">
-              If your workload runs on a single instance, stop here. EFA is irrelevant.
-              NVLink handles all intra-node GPU communication.
+              A single-instance workload runs entirely on NVLink, which already carries
+              intra-node GPU communication at full speed. The fabric has nothing to add,
+              so stop here.
             </Box>
             <Alert type="info">
               Most inference and fine-tuning workloads are single-node.
@@ -280,9 +281,10 @@ export function DecisionGuide() {
           <div>
             <Box variant="h3">2. Is it communication-bound?</Box>
             <Box variant="p">
-              Even multi-node workloads may not benefit from EFA if communication is a
-              small fraction of total time. Embarrassingly parallel workloads, large-batch
-              training with infrequent syncs, and loosely-coupled HPC don&apos;t need it.
+              EFA pays off in proportion to the share of wall clock a job spends in
+              collectives. Embarrassingly parallel workloads, large-batch training with
+              infrequent syncs and loosely-coupled HPC spend theirs in compute, so faster
+              messages move the total very little.
             </Box>
             <Alert type="info">
               Profile your workload. If &gt;10% of time is in NCCL/MPI, EFA will help.
@@ -291,7 +293,7 @@ export function DecisionGuide() {
           <div>
             <Box variant="h3">3. Can every node live in one Availability Zone?</Box>
             <Box variant="p">
-              This is the gate, not the placement group. AWS states that EFA traffic cannot
+              The Availability Zone is the gate. AWS states that EFA traffic cannot
               cross Availability Zones or VPCs{' '}
               <SourceRef provenance="documented" doc={docs.efa} />, so a job that has to span
               zones cannot use EFA at all. A cluster placement group is the recommended way to
@@ -312,9 +314,10 @@ export function DecisionGuide() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Why it matters:</strong> Getting rank-to-GPU-to-NIC mapping wrong causes
-            2-3x performance degradation. NCCL needs to know which GPU is physically closest
-            to which EFA interface to minimize PCIe (Peripheral Component Interconnect Express) hops.
+            <strong>What it is:</strong> the mapping from rank to GPU to EFA interface. Get it
+            right and every rank sends through the interface physically closest to its GPU, which
+            is what minimizes PCIe (Peripheral Component Interconnect Express) hops. Get it wrong
+            and the same job runs 2-3x slower.
           </Box>
           <Box variant="p">
             <strong>How it works:</strong> <code>NCCL_TOPO_FILE</code> tells NCCL the physical
@@ -349,41 +352,15 @@ export function DecisionGuide() {
         header={
           <Header
             variant="h2"
-            description="What Karpenter provisions for EFA, and the one capability it does not have"
+            description="What Karpenter provisions for EFA, and where network-node ranking comes from instead"
           >
             EFA and Karpenter
           </Header>
         }
       >
         <SpaceBetween size="m">
-          <Alert type="error" header="Karpenter cannot do network-node topology-aware scheduling">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                AWS states that topology-aware scheduling is not supported with Karpenter
-                autoscaling, that it is on by default in HyperPod task governance, and that
-                anyone using Karpenter for node provisioning has to disable it by setting
-                TopologyAwareScheduling to false in the kueue-manager-config ConfigMap and
-                restarting the Kueue controller{' '}
-                <SourceRef provenance="documented" doc={docs.hyperpodEks} />.
-              </Box>
-              <Box variant="p">
-                The source tree agrees. A search of the aws/karpenter-provider-aws v1.14.0
-                release for network-node-layer returns zero occurrences, and so does a search
-                for DescribeInstanceTopology{' '}
-                <SourceRef provenance="code-derived" code={code.karpenterPkg} />. Karpenter
-                never calls the topology API and never emits those labels. The EKS well-known
-                label tables for Auto Mode and self-managed Karpenter list instance family,
-                category, generation, GPU attributes, capacity type and zone, with no network
-                node layer entry <SourceRef provenance="documented" doc={docs.eksMlPools} />.
-                For the part Karpenter does not cover, see the EC2 Instance Topology API
-                section: node labels come from HyperPod task governance or from a labeler
-                DaemonSet you run yourself.
-              </Box>
-            </SpaceBetween>
-          </Alert>
           <Box variant="p">
-            What Karpenter does do for EFA is provision the nodes and constrain where they
-            land:
+            Karpenter provisions the nodes an EFA fleet runs on and constrains where they land:
           </Box>
           <ul>
             <li><strong>Zonal pinning:</strong> a NodePool requirement on{' '}
@@ -413,11 +390,33 @@ export function DecisionGuide() {
             these, consolidation or node expiry can replace a node mid-run and take the whole
             collective down.</li>
           </ul>
-          <Box variant="p">
-            The split is worth stating plainly. Karpenter can put nodes in the right zone and
-            the right placement group. It cannot rank them by network node, because it never
-            reads the topology.
-          </Box>
+          <Alert
+            type="warning"
+            header="Network-node topology labels come from HyperPod task governance or a labeler DaemonSet you run"
+          >
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                AWS states that topology-aware scheduling is not supported with Karpenter
+                autoscaling, that it is on by default in HyperPod task governance, and that
+                anyone using Karpenter for node provisioning has to disable it by setting
+                TopologyAwareScheduling to false in the kueue-manager-config ConfigMap and
+                restarting the Kueue controller{' '}
+                <SourceRef provenance="documented" doc={docs.hyperpodEks} />.
+              </Box>
+              <Box variant="p">
+                The source tree agrees. A search of the aws/karpenter-provider-aws v1.14.0
+                release for network-node-layer returns zero occurrences, and so does a search
+                for DescribeInstanceTopology{' '}
+                <SourceRef provenance="code-derived" code={code.karpenterPkg} />. Karpenter
+                never calls the topology API and never emits those labels. The EKS well-known
+                label tables for Auto Mode and self-managed Karpenter list instance family,
+                category, generation, GPU attributes, capacity type and zone, with no network
+                node layer entry <SourceRef provenance="documented" doc={docs.eksMlPools} />.
+                Karpenter sets zone and placement group; ranking by network node comes from the
+                EC2 Instance Topology API section.
+              </Box>
+            </SpaceBetween>
+          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -428,9 +427,9 @@ export function DecisionGuide() {
           <Alert type="warning">
             <SpaceBetween size="xs">
               <Box variant="p">
-                <strong>Spot is risky for tightly-coupled EFA workloads, and the reason is the
-                Availability Zone, not the placement group.</strong> If one node in a multi-node
-                training job gets a Spot interruption, the entire job stops.
+                <strong>The Availability Zone is what makes Spot risky for tightly-coupled EFA
+                workloads.</strong> If one node in a multi-node training job gets a Spot
+                interruption, the entire job stops.
               </Box>
               <Box variant="p">
                 AWS states it directly. EFA requires all communicating nodes to reside in the
@@ -482,7 +481,7 @@ export function DecisionGuide() {
             keeping your desired instance count. Low scores = high interruption risk.
           </Box>
           <Box variant="p">
-            <strong>Do not expect a Spot savings percentage here.</strong> Spot rates
+            <strong>Where a Spot savings percentage would come from.</strong> Spot rates
             are not published in the EC2 Price List bulk API or in any credential-free
             first-party AWS endpoint, so the Pricing Analysis section publishes eligibility and
             nothing else. Treat any fixed savings percentage you see for Spot on EFA instances
@@ -496,12 +495,13 @@ export function DecisionGuide() {
       >
         <SpaceBetween size="m">
           <Alert type="info" header="Both paths are documented for EFA fleets">
-            Capacity Blocks are the better-known option and they are not the only one. AWS
-            documents On-Demand Capacity Reservations against a cluster placement group in the EFA
+            Capacity Blocks are the better-known option, and On-Demand Capacity Reservations cover
+            the same need. AWS
+            documents them against a cluster placement group in the EFA
             setup guide itself: to ensure that capacity is available as you scale your
             cluster&apos;s instances, you can create a Capacity Reservation for your cluster
             placement group <SourceRef provenance="documented" doc={docs.efaStart} />. Pick on
-            duration, not on which one you have heard of.
+            duration.
           </Alert>
           <Box variant="p">
             <strong>Capacity Blocks:</strong> reserve a start time up to 8 weeks ahead, for 1 to
@@ -534,7 +534,7 @@ export function DecisionGuide() {
       </Container>
 
       <Container
-        header={<Header variant="h2" description="Four stages from one GPU to a hundred nodes. EFA is irrelevant for the first two, and the constraint that arrives with it is the Availability Zone.">Startup scaling playbook</Header>}
+        header={<Header variant="h2" description="Four stages from one GPU to a hundred nodes. Where EFA enters, and the Availability Zone constraint that arrives with it.">Startup scaling playbook</Header>}
       >
         <SpaceBetween size="m">
           <ColumnLayout columns={2} variant="text-grid">
@@ -544,15 +544,16 @@ export function DecisionGuide() {
                 Fine-tuning 7B models, LoRA/QLoRA. One g5.xlarge, or p5.4xlarge if you want a
                 single H100. There is no p5.xlarge{' '}
                 <SourceRef provenance="documented" doc={docs.ac} />.
-                <strong> No EFA needed.</strong> Focus on data pipeline, not networking.
+                <strong> One GPU, so the data pipeline is the bottleneck.</strong> Spend the
+                effort there.
               </Box>
             </div>
             <div>
               <Box variant="h3">Stage 2: Single Node, Multi-GPU</Box>
               <Box variant="p">
                 Full fine-tuning up to 70B, or pre-training up to 13B. One p5.48xlarge
-                (8x H100) or trn1.32xlarge. <strong>No EFA needed.</strong> NVLink handles
-                all GPU communication. This is where most startups should stay as long as possible.
+                (8x H100) or trn1.32xlarge. <strong>NVLink carries every collective</strong>, so
+                the fabric adds nothing. This is where most startups should stay as long as possible.
               </Box>
             </div>
             <div>
@@ -581,13 +582,12 @@ export function DecisionGuide() {
               </Box>
             </div>
           </ColumnLayout>
-          <Alert type="warning" header="SMDDP is P4-class only, and frozen. It does not apply to Stage 4.">
+          <Alert type="warning" header="SMDDP covers P4-class instances only, and it is frozen at v2.5.0">
             <SpaceBetween size="xs">
               <Box variant="p">
-                The SMDDP (SageMaker Distributed Data Parallel) library does not run on the
-                instance types this stage is about. Its supported instance list is exactly
-                ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, and the optimized
-                AllGather collective is available on P4 only{' '}
+                The supported instance list for the SMDDP (SageMaker Distributed Data Parallel)
+                library is exactly ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, and the
+                optimized AllGather collective is available on P4 only{' '}
                 <SourceRef provenance="documented" doc={docs.ddpSupport} />. No P5, P5e, P5en,
                 P6 or Trn2 size is supported.
               </Box>
@@ -606,7 +606,7 @@ export function DecisionGuide() {
               </Box>
             </SpaceBetween>
           </Alert>
-          <Alert type="info" header="If Stage 3 lands you on SageMaker, less is automatic than you think">
+          <Alert type="info" header="If Stage 3 lands you on SageMaker, here is what you still configure yourself">
             <SpaceBetween size="xs">
               <Box variant="p">
                 SageMaker AI launches all instances for a given job within a single subnet, which is
@@ -621,11 +621,12 @@ export function DecisionGuide() {
                 <SourceRef provenance="documented" doc={docs.efaStart} label="doc: efa-start" />.
               </Box>
               <Box variant="p">
-                NCCL is not configured for you either. AWS states that your container must download
+                NCCL is yours to configure. AWS states that your container must download
                 and install the EFA software, and that tools like MPI and NCCL must be installed and
                 managed inside the container{' '}
                 <SourceRef provenance="documented" doc={docs.smTrainEfa} />. That is the work the
-                platform name hides, and it is where a job silently ends up on TCP.
+                platform name hides. Build the EFA stack into the image, then confirm the provider
+                line on the first run.
               </Box>
             </SpaceBetween>
           </Alert>

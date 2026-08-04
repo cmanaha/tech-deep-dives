@@ -199,7 +199,7 @@ function CardsInterfacesRailsDiagram() {
       lines: [
         'AWS states p5.48xlarge and p5e.48xlarge support 32 network cards, indexed',
         '0 through 31. DescribeInstanceTypes returns this as MaximumNetworkCards.',
-        'It is a slot count, not an EFA count.',
+        'It is the slot count, and it bounds every row below.',
       ],
     },
     {
@@ -230,7 +230,7 @@ function CardsInterfacesRailsDiagram() {
       count: 'N',
       unit: 'per group',
       lines: [
-        'A rail is an index, not a device. The NCCL plugin sorts the provider list',
+        'A rail is a software index. The NCCL plugin sorts the provider list',
         'so the Nth device here talks to the Nth device on remote nodes, then splits',
         'it into one group per accelerator. No AWS document defines the term.',
       ],
@@ -369,7 +369,7 @@ const hostRequirements: HostRequirement[] = [
     id: 'mr',
     item: 'Memory registration budget',
     what:
-      'Registration counts and sizes are device-reported, not constants. The driver copies max_mr, max_pd, max_ah and page_size_cap out of the admin-queue device attributes, and computes max_mr_size as max_mr_pages multiplied by the host page size.',
+      'The device reports its own registration counts and sizes. The driver copies max_mr, max_pd, max_ah and page_size_cap out of the admin-queue device attributes, and computes max_mr_size as max_mr_pages multiplied by the host page size.',
     fails: 'Registration fails with a not-supported error when no page size in page_size_cap fits the region being registered.',
   },
 ];
@@ -389,12 +389,12 @@ export function EfaDevice() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The problem:</strong> four different numbers get called the same thing. Network
-            cards, network interfaces, EFA (Elastic Fabric Adapter) devices and rails are counted
-            differently, and a p5.48xlarge reports 32, 33, 32 and something else depending on which
-            one you mean. <strong>The answer:</strong> they are separate layers with separate
-            owners. EC2 owns the card count, you own the interface count, libfabric sees the device
-            count, and the collectives plugin invents the rail index on top of all three.
+            Four different numbers get called the same thing. Network cards, network interfaces,
+            EFA (Elastic Fabric Adapter) devices and rails are counted differently, and a
+            p5.48xlarge reports 32, 33, 32 and something else depending on which one you mean.{' '}
+            <strong>What sorts them out:</strong> they are separate layers with separate owners.
+            EC2 owns the card count, you own the interface count, libfabric sees the device count,
+            and the collectives plugin invents the rail index on top of all three.
           </Box>
           <Box variant="p">
             AWS states the top of that stack plainly: an EFA device attaches to an EC2 instance in
@@ -410,18 +410,27 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="EFA-only removes the ENA device. That is the whole difference, and it decides everything else."
+            description="What each attachment mode creates inside the instance, and which one to pass at launch"
           >
             Choosing between EFA-only and EFA with ENA
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            An attachment mode is the <code>InterfaceType</code> you pass to EC2 when you create a
+            network interface, and it decides which device nodes appear inside the instance. The
+            three values that matter here are <code>interface</code>, <code>efa</code> and{' '}
+            <code>efa-only</code>. IP addressing, eligibility to be the primary interface, and
+            access to the OS-bypass transport all turn on that one choice.
+          </Box>
+
           <AttachmentModesDiagram />
 
           <Box variant="p">
-            The EFA device does not have an IP address because it does not use IP. AWS gives the
-            reason in the announcement that introduced EFA-only interfaces: the EFA device is not
+            The EFA device is addressed at the MAC layer, which is why it holds no IP address. AWS
+            gives the reason in the announcement that introduced EFA-only interfaces: the EFA
+            device is not
             assigned an IP address because it uses the Scalable Reliable Datagram (SRD) protocol,
             which operates over MAC addresses, and EFA-only interfaces can only be configured as a
             secondary interface, with the primary interface being either EFA coupled with ENA or
@@ -480,7 +489,7 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="32, 33, 32 and something that is not a count at all. Four numbers, four owners, worked on p5.48xlarge."
+            description="32, 33, 32, and a rail index the software invents. Four numbers, four owners, worked on p5.48xlarge."
           >
             Network cards, EFA interfaces and rails
           </Header>
@@ -501,16 +510,16 @@ export function EfaDevice() {
           </Box>
 
           <Box variant="p">
-            Now read the AWS launch example carefully, because it is where the naive arithmetic
+            Now read the AWS launch example, where the naive arithmetic
             breaks. AWS introduces it as a request with 32 EFA devices and one ENA device, and the
             command attaches 33 interfaces across 32 cards: an ENA interface on network card index
             0 device index 0, an EFA-only interface on network card index 0 device index 1, and one
             EFA-only interface on each of network card index 1 through 31{' '}
             <SourceRef provenance="documented" doc={docs.efaAcc} />. Card 0 carries two interfaces
             at different device indexes. That is how 32 cards and 33 interfaces produce 32 EFA
-            devices, with somewhere left to put the IP stack. Count the interfaces instead of the
-            devices and you ask a Kubernetes resource claim for 33 of something the instance has 32
-            of.
+            devices, with somewhere left to put the IP stack. Size a Kubernetes resource claim from
+            the device count, which is 32 here. A claim written from the interface count asks for
+            33 of something the instance has 32 of.
           </Box>
 
           <Table
@@ -541,7 +550,7 @@ export function EfaDevice() {
                 <SourceRef provenance="code-derived" code={code.railContract} />.
               </Box>
               <Box variant="p">
-                So a rail is an ordinal agreed between nodes, not a piece of hardware. Two EFA
+                So a rail is an ordinal agreed between nodes. Two EFA
                 devices are on the same rail when they hold the same index in their respective
                 sorted lists. Every node has to compute the same order or the pairing collapses,
                 which is exactly why the sort exists.
@@ -568,7 +577,7 @@ export function EfaDevice() {
 
           <Alert
             type="warning"
-            header="AWS documents four EFA devices sharing a PCIe root with one GPU. The eight groups of four are arithmetic, not documentation."
+            header="AWS documents four EFA devices sharing a PCIe root with one GPU. The eight groups of four are our arithmetic."
           >
             <SpaceBetween size="xs">
               <Box variant="p">
@@ -597,7 +606,7 @@ export function EfaDevice() {
 
           <ExpandableSection
             headerText="P6-B300: 17 network cards, 16 of them EFA-capable"
-            headerDescription="The headline card count includes one card that cannot carry EFA at all"
+            headerDescription="The primary card carries ENA only, so 16 of the 17 cards carry the fabric"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -609,10 +618,10 @@ export function EfaDevice() {
                 <SourceRef provenance="documented" doc={docs.efaAcc} />.
               </Box>
               <Box variant="p">
-                Network card index 0 is ENA-only. The EFA-capable count is 16, and 16 times 400 Gbps
-                is exactly the 6,400 Gbps headline. Quoting 17 EFA interfaces both overstates the
-                fabric by one card and makes the bandwidth arithmetic stop working, which is the
-                fastest way to spot the error in someone else's sizing sheet.
+                Network card index 0 is ENA-only. Size the fabric from the 16 EFA-capable cards and
+                the headline arithmetic works: 16 times 400 Gbps is exactly the 6,400 Gbps figure.
+                A sizing sheet quoting 17 EFA interfaces overstates the fabric by one card and
+                breaks that multiplication, which is the fastest way to spot the error.
               </Box>
               <Box variant="p">
                 One more caution on the same page: since EFA and ENA traffic share the same
@@ -630,13 +639,20 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="Interrupt vectors, huge pages and registration limits are negotiated per instance, not compiled in. Read them off the instance you have."
+            description="Interrupt vectors, huge pages and registration limits are negotiated per instance. Read them off the instance you have."
           >
             What the host owes the device
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            The device draws three things from the host it attaches to: interrupt vectors, huge
+            pages and memory registration budget. Each is settled at attach time from what the
+            device advertises and what the instance has, so the working numbers belong to the
+            instance in front of you.
+          </Box>
+
           <Table
             variant="embedded"
             columnDefinitions={[
@@ -649,8 +665,7 @@ export function EfaDevice() {
 
           <Box variant="h3">MSI-X vectors</Box>
           <Box variant="p">
-            The driver reserves the maximum vectors it might need, one of which is reserved for
-            admin: it asks for the smaller of the device advertised vector count and the number of
+            The driver asks for the smaller of the device advertised vector count and the number of
             online CPUs plus one, then allocates them as MSI-X (Message Signaled Interrupts
             Extended){' '}
             <SourceRef provenance="code-derived" code={code.msix} />. The split is fixed in a
@@ -662,8 +677,7 @@ export function EfaDevice() {
           </Box>
           <Box variant="p">
             AWS documents none of this. It matters because it is the one place where host CPU count
-            feeds back into EFA resources, and because completion counters on the newer software
-            path are described by libfabric as backed by MSI-X hardware counters on the EFA device.
+            feeds back into EFA resources.
           </Box>
 
           <Box variant="h3">Huge pages</Box>
@@ -673,8 +687,7 @@ export function EfaDevice() {
             specifications{' '}
             <SourceRef provenance="documented" doc={docs.eksNode} />. That number is worth holding
             on to, because AWS's own p5 manifests request 5120Mi of hugepages-2Mi, which is 2,560
-            pages, roughly half of what was pre-allocated. The requested figure and the
-            pre-allocated figure are not the same quantity and are easy to confuse.
+            pages, roughly half of what was pre-allocated. The two figures are easy to confuse.
           </Box>
           <Alert type="info" header="Huge pages are also a libfabric setting, and the two interact">
             The EFA provider uses huge page memory for its own internal buffers by default, and
@@ -685,13 +698,13 @@ export function EfaDevice() {
 
           <Box variant="h3">Memory registration limits</Box>
           <Box variant="p">
-            Every buffer the device touches has to be registered first. The limits on that are
-            reported by the device over the admin queue rather than compiled in. The driver's query
+            Every buffer the device touches has to be registered first. The limits on that come
+            from the device over the admin queue. The driver's query
             path copies max_mr, max_pd and max_ah straight out of the device attributes, takes
             page_size_cap as reported, and computes the maximum registration size as max_mr_pages
             multiplied by the host page size{' '}
             <SourceRef provenance="code-derived" code={code.queryDevice} />. Read them with
-            ibv_devinfo on the instance you actually have rather than assuming a constant.
+            ibv_devinfo on the instance you actually have.
           </Box>
           <Box variant="p">
             Registration itself picks the largest page size the device advertises that fits the
@@ -705,7 +718,7 @@ export function EfaDevice() {
             Reading those two together suggests why larger pages help registration cost, since a
             larger page size means fewer entries in the page list for the same buffer. AWS does not
             state that as the reason huge pages are pre-allocated, so treat the causal link as our
-            reading of the code and not as a documented rationale.
+            reading of the code.
           </Box>
           <Box variant="p">
             Driver r3.3.0 moved this ceiling: its release notes list adding driver support for
@@ -720,7 +733,7 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="There is no single current EFA driver version. There are two channels and they are two releases apart."
+            description="Two channels ship EFA software, two releases apart. Which one you installed decides which features you have."
           >
             Driver and installer versions
           </Header>
@@ -773,11 +786,10 @@ export function EfaDevice() {
           </Alert>
 
           <Box variant="p">
-            The practical check on a running host is the installer's own verification path rather
-            than a version table. The driver version in the repository is recorded in the DKMS
-            configuration, and the installed release is what the changelog describes, so comparing
-            what modinfo reports on the instance against the installer changelog entry is the only
-            reliable way to tell which of the two you are on.
+            On a running host, compare what modinfo reports against the installer changelog entry.
+            The repository version lives in the DKMS configuration and the installed release is
+            what the changelog describes, so that comparison is what tells you which of the two you
+            are on.
           </Box>
         </SpaceBetween>
       </Container>
@@ -786,7 +798,7 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="Four documented generations, five PCI device ids. They do not line up, so the mapping you have seen quoted cannot be right."
+            description="Four documented generations, five PCI device ids. Read the generation from the User Guide, and the behaviour from the device id."
           >
             Which generation you are on, and what branches on it
           </Header>
@@ -802,7 +814,7 @@ export function EfaDevice() {
             dive is keyed to it.
           </Box>
 
-          <Alert type="warning" header="Five PCI device ids against four EFA versions: the mapping you have seen quoted does not exist">
+          <Alert type="warning" header="Five PCI device ids against four EFA versions, and no AWS source maps one to the other">
             <SpaceBetween size="xs">
               <Box variant="p">
                 The driver defines five PCI device ids, 0xefa0 through 0xefa4, and registers all
@@ -823,8 +835,8 @@ export function EfaDevice() {
           </Alert>
 
           <Box variant="p">
-            Device ids are still a real runtime discriminator, just not a generation label. Two
-            independent code paths branch on them. libfabric turns off its direct data path on
+            Device ids are still a real runtime discriminator, and two independent code paths
+            branch on them. libfabric turns off its direct data path on
             0xefa0 parts, using a helper whose entire body compares the vendor part id against
             0xefa0{' '}
             <SourceRef provenance="code-derived" code={code.subCq} />. The NCCL plugin computes
@@ -862,8 +874,7 @@ export function EfaDevice() {
                 P5-era concern.
               </Box>
               <Box variant="p">
-                Neither of these is documented by AWS. Both are visible in one grep of the pinned
-                sources, and both are the kind of thing that explains a performance difference
+                Neither of these is documented by AWS. Both explain a performance difference
                 between two instance families that otherwise look identical on paper.
               </Box>
             </SpaceBetween>
@@ -874,7 +885,7 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="One security group rule, one hard placement constraint, and one recommendation that is often misquoted as a requirement."
+            description="One security group rule, one hard placement constraint, and one recommendation. Telling them apart decides how you build the cluster."
           >
             Security group, subnets and placement
           </Header>
@@ -885,9 +896,8 @@ export function EfaDevice() {
           <Box variant="p">
             AWS states the requirement in one sentence: an EFA requires a security group that allows
             all inbound and outbound traffic to and from the security group itself{' '}
-            <SourceRef provenance="documented" doc={docs.efaStart} />. Not a port range. Not a
-            protocol. All traffic, in both directions, with the group as both the target and the
-            source.
+            <SourceRef provenance="documented" doc={docs.efaStart} />. All traffic, in both
+            directions, with the group as both the target and the source.
           </Box>
           <Box variant="p">
             The reason follows from the device. EFA traffic is not IP traffic, so there are no TCP
@@ -895,9 +905,9 @@ export function EfaDevice() {
             an IP address at all because SRD operates over MAC addresses{' '}
             <SourceRef provenance="documented" doc={docs.efaOnlyNews} />. A rule scoped to a CIDR
             range and a port is not expressible for this traffic. Self-referencing the group is the
-            only shape that matches what the device sends, and it is why this is the single most
-            common reason a freshly built cluster hangs at the first collective instead of failing
-            at launch.
+            only shape that matches what the device sends. A missing self-reference is the single
+            most common reason a freshly built cluster launches cleanly and then hangs at the first
+            collective.
           </Box>
           <Alert type="info" header="Scope the group, not the rule">
             Since the rule cannot be narrowed, the security boundary is membership. Put only the

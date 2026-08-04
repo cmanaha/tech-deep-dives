@@ -145,8 +145,8 @@ export function InstanceSupport() {
       >
         <Box variant="p">
           <strong>
-            EFA (Elastic Fabric Adapter) support is a property of the Nitro hypervisor generation,
-            not of the accelerator.
+            EFA (Elastic Fabric Adapter) support is a property of the Nitro hypervisor generation
+            the instance runs on.
           </strong>{' '}
           That single fact decides the EFA generation, the RDMA (Remote Direct Memory Access)
           capability and the bandwidth ceiling of every row below. EFA-capable types run from 25
@@ -166,7 +166,7 @@ export function InstanceSupport() {
         header={
           <Header
             counter={`(${filtered.length})`}
-            description="One EFA interface per network card. Bandwidth is the aggregate EFA ceiling, not per interface."
+            description="One EFA interface per network card. Bandwidth is the aggregate EFA ceiling across all interfaces."
           >
             EFA-Enabled Instances
           </Header>
@@ -262,7 +262,7 @@ export function InstanceSupport() {
         header={
           <Header
             variant="h2"
-            description="Do not trust this table. Ask the API, in your own region, on the day you need the answer."
+            description="Ask the API, in your own region, on the day you need the answer"
           >
             Check it yourself with the CLI
           </Header>
@@ -317,7 +317,7 @@ aws ec2 describe-instance-types \
           </Alert>
 
           <ExpandableSection
-            headerText="What the table above leaves out"
+            headerText="How the rows above were chosen"
             headerDescription="The rows are a shortlist, and the legacy tail is slower than its reputation"
           >
             <Box variant="p">
@@ -338,7 +338,7 @@ aws ec2 describe-instance-types \
 
       <Container
         header={
-          <Header variant="h2" description="Read the heading, do not infer the pairing">
+          <Header variant="h2" description="AWS states the pairing in its own table headings">
             EFA generation to Nitro version
           </Header>
         }
@@ -346,11 +346,12 @@ aws ec2 describe-instance-types \
         <SpaceBetween size="m">
           <GenerationMappingDiagram />
           <Box variant="p">
-            The pairing is stated, not inferred. AWS titles its four supported-instance-type tables
-            verbatim as <em>Using Nitro v6 (EFA v4)</em>, <em>Using Nitro v5 (EFA v3)</em>,{' '}
-            <em>Using Nitro v4 (EFA v2)</em> and <em>Using Nitro v3 (EFA v1)</em>{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />. EFA v4 is a broad Nitro v6
-            family, not one UltraServer type: P6-B200, P6-B300, Hpc8a, C8i and M8i are all in it.
+            The pairing comes straight from the headings. AWS titles its four
+            supported-instance-type tables verbatim as <em>Using Nitro v6 (EFA v4)</em>,{' '}
+            <em>Using Nitro v5 (EFA v3)</em>, <em>Using Nitro v4 (EFA v2)</em> and{' '}
+            <em>Using Nitro v3 (EFA v1)</em> <SourceRef provenance="documented" doc={docs.efa} />.
+            EFA v4 spans a broad Nitro v6 family: P6-B200, P6-B300, Hpc8a, C8i and M8i are all in
+            it.
           </Box>
           <Box variant="p">
             RDMA follows the same ladder. AWS states that EFA supports RDMA write on most
@@ -414,7 +415,7 @@ aws ec2 describe-instance-types \
               </Box>
               <Box variant="p">
                 Trust Nitro v5: two independent Tier 1 technical documents agree on it. The EFA
-                generation stays flagged as contested rather than silently resolved{' '}
+                generation stays flagged as contested{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   doc={docs.efa}
@@ -438,7 +439,7 @@ aws ec2 describe-instance-types \
 
           <ExpandableSection
             headerText="P6-B300: 17 network cards, 16 of them EFA-capable"
-            headerDescription="The headline card count includes one that cannot carry EFA"
+            headerDescription="The primary card carries ENA only, so 16 x 400 Gbps is the 6,400 Gbps headline"
           >
             <Box variant="p">
               AWS states that P6-B300 instances have 8 GPUs and 17 network cards, where the primary
@@ -466,8 +467,8 @@ aws ec2 describe-instance-types \
           </ExpandableSection>
 
           <ExpandableSection
-            headerText="Trn3 UltraServers: announced, not listed"
-            headerDescription="Generally available since 2025-12-02, with no trn3 entry in the EFA table"
+            headerText="Trn3 UltraServers: generally available, absent from the EFA tables"
+            headerDescription="Announced 2025-12-02, with no trn3 entry in the EFA table"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -484,7 +485,7 @@ aws ec2 describe-instance-types \
                 EFA device count or per-instance EFA bandwidth for Trn3 can be stated from any
                 Tier 1 source today.
               </Box>
-              <Alert type="warning" header="One figure to not repeat">
+              <Alert type="warning" header="Ask for a direct citation before quoting 28.8 Tbps for Trn3">
                 A 28.8 Tbps aggregate scale-out bandwidth figure circulates for Trn3 UltraServers.
                 It does not appear in the AWS announcement, and 28.8 Tbps is also the published
                 P6e-GB200 UltraServer EFA figure, which makes a transcription collision the
@@ -494,8 +495,8 @@ aws ec2 describe-instance-types \
           </ExpandableSection>
 
           <ExpandableSection
-            headerText="Spot eligibility, where it is missing"
-            headerDescription="Sourceable from the instance-types pages. Spot prices are not."
+            headerText="Spot eligibility, family by family"
+            headerDescription="Which families support Spot, from the instance-types pages"
           >
             <Box variant="p">
               P6e-GB200 and Trn2u carry no Spot support, and neither does any HPC family: Hpc6a,
@@ -512,13 +513,13 @@ aws ec2 describe-instance-types \
 
       <Container
         header={
-          <Header variant="h2" description="Inf2 has none at all, P6e-GB200 shares its bandwidth twice over, and the placement group you think is mandatory is not">
-            Three constraints the table cannot show you
+          <Header variant="h2" description="Inf2 runs on ENA, P6e-GB200 shares its bandwidth twice over, and the placement group is a recommendation">
+            Three constraints behind the numbers
           </Header>
         }
       >
         <SpaceBetween size="m">
-          <Alert type="warning" header="Common misconception: Inf2 has no EFA">
+          <Alert type="warning" header="Multi-node Inf2 inference runs over ENA">
             No Inf2 size appears in any of the four EFA supported-instance-type tables{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. Only inf1.24xlarge, the largest
             Inf1, has a single 100 Gbps EFA interface, and on Nitro v3 it has no RDMA at all.
@@ -535,7 +536,7 @@ aws ec2 describe-instance-types \
             valid layouts for it: 4 interfaces at 400 Gbps, or 8 interfaces at 200 Gbps.
           </Alert>
 
-          <Alert type="warning" header="A cluster placement group is not required for EFA">
+          <Alert type="warning" header="AWS recommends a cluster placement group, and the hard requirement is the Availability Zone">
             <SpaceBetween size="xs">
               <Box variant="p">
                 AWS is explicit: it is not an absolute requirement to launch your EFA-enabled
@@ -549,9 +550,9 @@ aws ec2 describe-instance-types \
                 <SourceRef provenance="documented" doc={docs.efa} />. EFA is also unsupported on
                 AWS Outposts, and EFA traffic between P4d, P4de or DL1 instances and other
                 instance types is not supported. Treat the placement group as the recommended way
-                to satisfy the same Availability Zone requirement and to keep latency low, not as
-                a gate on EFA itself. If capacity is the worry, a Capacity Reservation for the
-                cluster placement group is the documented answer.
+                to satisfy that same Availability Zone requirement and to keep latency low. If
+                capacity is the worry, a Capacity Reservation for the cluster placement group is
+                the documented answer.
               </Box>
             </SpaceBetween>
           </Alert>

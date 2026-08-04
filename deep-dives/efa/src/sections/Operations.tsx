@@ -319,7 +319,7 @@ function FailureLayerMapDiagram() {
         EFA failure modes sit at five different layers, and the ones that stop a job outright are
         concentrated in the host and kernel layer. Most of the failures at the control plane,
         libfabric and collectives layers are silent: the job runs to completion with correct results
-        while the transport is not the one you paid for.
+        while a slower transport carries the traffic.
       </title>
       <style>
         {`
@@ -406,13 +406,13 @@ const counterRows: CounterRow[] = [
     meaning:
       'Raw volume across the device since instance launch or the last driver reset. AWS describes rx_drops as packets that were received and then dropped.',
     problem:
-      'Only rx_drops. The other four are the liveness check during bring-up: if they do not move while the job runs, the transport is not EFA.',
+      'Only rx_drops. The other four are the liveness check during bring-up: if they do not move while the job runs, something other than EFA is carrying the traffic.',
   },
   {
     group: 'Messages',
     counters: 'send_bytes, send_wrs, recv_bytes, recv_wrs',
     meaning: 'Two-sided send and receive work requests and the bytes they carried.',
-    problem: 'No. These are volume, not health. Useful for splitting two-sided from one-sided traffic.',
+    problem: 'No. These measure volume. Use them to split two-sided from one-sided traffic.',
   },
   {
     group: 'RDMA read',
@@ -434,7 +434,7 @@ const counterRows: CounterRow[] = [
     meaning:
       'AWS states these are Nitro v4 and later only. retrans_timeout_events counts times SRD traffic timed out and resulted in a network path change. impaired_remote_conn_events counts times a connection entered an impaired state, resulting in a reduced throughput rate limit.',
     problem:
-      'Yes, this is the group that matters. Alert on the rate of change of the three event counters, not on the two byte and packet counters.',
+      'Yes, this is the group that matters. Alert on the rate of change of the three event counters.',
   },
 ];
 
@@ -444,18 +444,19 @@ interface FailureRow {
   symptom: string;
   detect: string;
   fix: string;
-  /** Provenance for the detection claim. Rendered inline in the Detection column. */
+  /** Provenance for the confirmation claim. Rendered inline in the confirmation column. */
   src: React.ReactNode;
 }
 
+/** Rendered correct-configuration first; the failure hangs off it. */
 const failureRows: FailureRow[] = [
   {
     id: 'tcp',
     mode: 'Silent fallback to TCP',
     symptom: 'The job completes with correct results and low throughput. No error anywhere.',
     detect:
-      'NCCL prints Using network Socket instead of Using network Libfabric. The plugin line Selected provider is efa is absent. EFA tx_pkts stays flat during the run.',
-    fix: 'Fix whatever made the plugin fail to load or fail to init, then re-check all three signals. Do not declare it fixed on one.',
+      'Healthy is Using network Libfabric, Selected provider is efa, and tx_pkts climbing during the run. Using network Socket, a missing provider line, or flat tx_pkts each mean TCP.',
+    fix: 'Keep the plugin loadable so NCCL settles on Libfabric, and clear all three signals before calling a run healthy.',
     src: <SourceRef provenance="code-derived" code={code.usingNetwork} />,
   },
   {
@@ -464,8 +465,8 @@ const failureRows: FailureRow[] = [
     symptom:
       'Throughput drops as the job progresses, or after a change to the allocator or to batch shape. CPU time rises in registration paths.',
     detect:
-      'Cache limits are derived from the device, not fixed: the provider defaults the maximum cached count and size to 0.9 times the device reported max_mr and max_mr_size. Set FI_EFA_MR_MAX_CACHED_COUNT and FI_EFA_MR_MAX_CACHED_SIZE explicitly and compare.',
-    fix: 'Stop the allocator returning memory to the kernel, so the cache monitor stops invalidating entries. Failing that, raise the cache limits or disable caching to confirm the diagnosis.',
+      'Cache limits are derived from the device: the provider defaults the maximum cached count and size to 0.9 times the device reported max_mr and max_mr_size. Set FI_EFA_MR_MAX_CACHED_COUNT and FI_EFA_MR_MAX_CACHED_SIZE explicitly and compare.',
+    fix: 'Hold memory in the allocator so the cache monitor stops invalidating entries. Failing that, raise the cache limits or disable caching to confirm the diagnosis.',
     src: <SourceRef provenance="code-derived" code={code.mrCacheLimits} />,
   },
   {
@@ -473,8 +474,8 @@ const failureRows: FailureRow[] = [
     mode: 'Wrong or missing topology file',
     symptom: 'Correct results, uneven rail usage, worse scaling than an identical cluster.',
     detect:
-      'The plugin logs NCCL_TOPO_FILE environment variable is already set to and then defers to your file. If you see that line and you did not intend to set the variable, the plugin generated topology is being ignored.',
-    fix: 'Unset NCCL_TOPO_FILE on P5 and later and let the plugin write its own into a memfd. The static XML files that ship with the plugin cover p4d, p4de and g5.48xl only.',
+      'A healthy P5 run has NCCL_TOPO_FILE unset. Where it is set, the plugin logs NCCL_TOPO_FILE environment variable is already set to and defers to your file, and the topology it generated goes unused.',
+    fix: 'Leave NCCL_TOPO_FILE unset on P5 and later so the plugin writes its own into a memfd. The static XML files that ship with the plugin cover p4d, p4de and g5.48xl only.',
     src: <SourceRef provenance="code-derived" code={code.topoDefer} />,
   },
   {
@@ -483,7 +484,7 @@ const failureRows: FailureRow[] = [
     symptom: 'Init fails, or a pod is admitted and then dies inside libfabric init.',
     detect:
       'AWS states EC2 instances with the EFA driver installed pre-allocate 5128 huge pages of 2 MiB each. On Kubernetes they are a schedulable resource the pod must request.',
-    fix: 'Request hugepages-2Mi in the pod spec. Watch fork-heavy data loaders. Note that setting FI_EFA_USE_HUGE_PAGE together with fork safety is an abort, not a warning.',
+    fix: 'Request hugepages-2Mi in the pod spec and watch fork-heavy data loaders. Setting FI_EFA_USE_HUGE_PAGE together with fork safety aborts the process.',
     src: <SourceRef provenance="documented" doc={docs.eksNode} />,
   },
   {
@@ -492,7 +493,7 @@ const failureRows: FailureRow[] = [
     symptom: 'The cluster hangs at the first collective rather than failing at launch.',
     detect:
       'AWS states an EFA requires a security group that allows all inbound and outbound traffic to and from the security group itself. Any rule scoped to a port or a CIDR range is too narrow.',
-    fix: 'Self-reference the group with protocol all, both directions. Scope the blast radius by group membership, not by narrowing the rule, and keep administrative access in a separate group.',
+    fix: 'Self-reference the group with protocol all, both directions. Scope the blast radius by group membership, and keep administrative access in a separate group.',
     src: <SourceRef provenance="documented" doc={docs.start} />,
   },
   {
@@ -500,7 +501,7 @@ const failureRows: FailureRow[] = [
     mode: 'Instances in different Availability Zones',
     symptom: 'Some rank pairs never connect. Partial hang that looks like a slow node.',
     detect:
-      'AWS states EFA traffic cannot cross Availability Zones or VPCs and is not routable. There is no documented subnet restriction, so this is an Availability Zone check, not a subnet check.',
+      'AWS states EFA traffic cannot cross Availability Zones or VPCs and is not routable. There is no documented subnet restriction, so check the Availability Zone rather than the subnet.',
     fix: 'Pin the fleet to one Availability Zone. A cluster placement group is the documented way to get that, and AWS is explicit that it is a recommendation rather than a requirement.',
     src: <SourceRef provenance="documented" doc={docs.efa} />,
   },
@@ -509,7 +510,7 @@ const failureRows: FailureRow[] = [
     mode: 'Cascading Spot interruption',
     symptom: 'One reclamation event takes several ranks, and the tightly coupled job dies entirely.',
     detect:
-      'The same Availability Zone and placement group constraint that makes EFA fast makes interruptions correlated rather than independent. This is a design consequence, not a metric you can poll.',
+      'The same Availability Zone and placement group constraint that makes EFA fast makes interruptions correlated rather than independent. It is a design consequence you plan around, and no counter reports it.',
     fix: 'Checkpoint on a cadence you can afford to lose. Prefer Capacity Blocks or a capacity reservation for the coupled phase, and keep Spot for work that can lose a rank.',
     src: <SourceRef provenance="code-derived" doc={docs.efa} label="inference" />,
   },
@@ -518,7 +519,7 @@ const failureRows: FailureRow[] = [
     mode: 'Version skew across the four components',
     symptom: 'Works on one AMI and not another. A feature described in release notes does nothing.',
     detect:
-      'Read what is installed, not what you think you installed: dkms status for the driver, the installer changelog entry for the bundle, fi_info --version for libfabric, and the plugin version in the NCCL log.',
+      'Read the four components where they report themselves: dkms status for the driver, the installer changelog entry for the bundle, fi_info --version for libfabric, and the plugin version in the NCCL log.',
     fix: 'Pin the whole set to one installer version across the fleet and re-verify after every AMI rebuild.',
     src: <SourceRef provenance="documented" doc={docs.changelog} />,
   },
@@ -557,19 +558,20 @@ export function Operations() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The problem:</strong> almost every EFA (Elastic Fabric Adapter) failure that
-            costs real money is silent. The stack is designed to degrade rather than stop. NCCL
-            (NVIDIA Collective Communications Library) has an internal transport list it falls
-            through, libfabric has other providers it can pick, and a job that never touches the EFA
-            device still produces exactly the right numbers. It just takes longer and costs more.
+            EFA (Elastic Fabric Adapter) degrades under fault. NCCL (NVIDIA Collective
+            Communications Library) falls through an internal transport list, libfabric picks
+            another provider, and a job that never touches the EFA device still produces exactly
+            the right numbers. It just takes longer and costs more.
           </Box>
           <Box variant="p">
-            <strong>The answer:</strong> verify from the bottom of the stack upward, once, at
-            bring-up, and then watch a small number of counters that only move when something is
-            wrong. Everything below is a command you can run and an output shape you can compare
-            against.
+            That is the model for everything below. A healthy run and a silent fallback to TCP look
+            identical from the outside, which puts verification in the bring-up
+            checklist alongside the checks that stop a job outright, and again after every AMI
+            rebuild or container change. Work from the bottom of the stack upward, then watch a
+            small number of counters that move only when something is wrong. Everything here is a
+            command you can run and an output shape you can compare against.
           </Box>
-          <Alert type="info" header="Numbers this page does not give you">
+          <Alert type="info" header="Baseline every threshold on your own cluster">
             No AWS page stating a numeric threshold for any EFA counter was located during this
             research, and none stating a device latency figure. Where a threshold would be useful,
             this page says UNKNOWN and tells you to baseline it yourself. A microsecond figure
@@ -592,8 +594,8 @@ export function Operations() {
         <SpaceBetween size="m">
           <Box variant="h3">1. The device is present, and which one it is</Box>
           <Box variant="p">
-            The EFA device shows up as an InfiniBand-class device, not as a network interface, so the
-            tool is ibv_devinfo rather than ip or ethtool. Read vendor_part_id and compare it against
+            The EFA device shows up as an InfiniBand-class device, so the tool is ibv_devinfo rather
+            than ip or ethtool. Read vendor_part_id and compare it against
             the five PCI (Peripheral Component Interconnect) device identifiers the driver registers,
             0xefa0 through 0xefa4, which are 61344 through 61348 in decimal{' '}
             <SourceRef provenance="code-derived" code={code.pciIds} />.
@@ -613,7 +615,7 @@ ibv_devinfo -d rdmap0s31 | grep -E 'vendor_part_id|phys_state|state'
     phys_state:             LINK_UP (5)
     vendor_part_id:         61346`}</pre>
           </Box>
-          <Alert type="warning" header="A device id is not a generation label">
+          <Alert type="warning" header="vendor_part_id names the silicon, the User Guide names the generation">
             The driver registers five device identifiers and AWS documents four EFA versions, and no
             AWS source and no line of driver source maps one to the other{' '}
             <SourceRef provenance="code-derived" code={code.pciIds} />. Use vendor_part_id to predict
@@ -640,7 +642,7 @@ dkms status | grep -i efa
     efa/2.17.3, 6.1.0-1030-aws, x86_64: installed
 
 # Undocumented, and the fastest accelerator peer-to-peer check there is.
-# Empty means no P2P provider is loaded, which is not the same as broken.
+# Empty means no P2P provider is loaded, which is a normal state.
 cat /sys/class/infiniband/rdmap0s31/device/p2p
 
     NVIDIA`}</pre>
@@ -652,8 +654,8 @@ cat /sys/class/infiniband/rdmap0s31/device/p2p
             available peer-to-peer provider string: NVIDIA peermem or NVIDIA{' '}
             <SourceRef provenance="code-derived" code={code.nvP2pString} />, or NEURON{' '}
             <SourceRef provenance="code-derived" code={code.neuronP2pString} />, or an empty line
-            when none is loaded. AWS documents none of this, and it answers in one command a question
-            that otherwise takes a full NCCL run to answer.
+            when none is loaded. AWS documents none of this, and it answers in one command what
+            otherwise takes a full NCCL run.
           </Box>
 
           <Box variant="h3">3. libfabric sees the provider</Box>
@@ -678,11 +680,11 @@ cat /sys/class/infiniband/rdmap0s31/device/p2p
 fi_info -p efa -t FI_EP_RDM | grep -c '^provider: efa'`}</pre>
           </Box>
           <Box variant="p">
-            Two lines decide the check: provider: efa and type: FI_EP_RDM. A fabric line that does
-            not match the AWS walkthrough is expected, not a failure.
+            Two lines decide the check: provider: efa and type: FI_EP_RDM. Expect the fabric line to
+            differ from the AWS walkthrough; the block below says what it prints now.
           </Box>
           <ExpandableSection
-            headerText="Why your fabric line does not match the AWS sample"
+            headerText="Why your fabric line differs from the AWS sample"
             headerDescription="The documentation and current libfabric print different things here. The code wins."
           >
             <SpaceBetween size="xs">
@@ -711,9 +713,9 @@ fi_info -p efa -t FI_EP_RDM | grep -c '^provider: efa'`}</pre>
 
           <Box variant="h3">4. A two-node round trip</Box>
           <Box variant="p">
-            Everything above runs on one host and proves nothing about the network between two of
-            them. fi_pingpong is the smallest thing that does: two copies of the same binary, one
-            started as the server, one pointed at it{' '}
+            Everything above runs on one host. fi_pingpong is the smallest thing that tests the
+            network between two: two copies of the same binary, one started as the server, one
+            pointed at it{' '}
             <SourceRef provenance="code-derived" code={code.pingpong} />. Pass the endpoint type
             explicitly, because the default is datagram rather than the reliable datagram endpoint
             the EFA stack actually uses{' '}
@@ -757,9 +759,9 @@ fi_pingpong -p efa -e rdm -I 1000 -S all 10.0.1.42
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            NCCL does not fail when the EFA plugin is unusable. It falls through. After any external
-            network plugins, NCCL appends two internal plugins to its own list, the InfiniBand one
-            and the socket one, and it will use them{' '}
+            When the EFA plugin is unusable, NCCL falls through instead of failing. After any
+            external network plugins it appends two internal plugins to its own list, the InfiniBand
+            one and the socket one, and it will use them{' '}
             <SourceRef provenance="code-derived" code={code.internalPlugins} />. The socket transport
             names itself Socket{' '}
             <SourceRef provenance="code-derived" code={code.socketName} />. The result is a training
@@ -806,9 +808,9 @@ fi_pingpong -p efa -e rdm -I 1000 -S all 10.0.1.42
               <Box variant="p">
                 Logs record intent. Counters record traffic. Sample the device counters before and
                 after a short run and confirm tx_pkts and rx_pkts increased{' '}
-                <SourceRef provenance="documented" doc={docs.monitor} />. This is the only signal of
-                the three that a misconfigured stack cannot satisfy by merely believing it is using
-                EFA. Do all three: each catches a different failure.
+                <SourceRef provenance="documented" doc={docs.monitor} />. Counters are the one
+                signal of the three a misconfigured stack cannot fake. Do all three: each catches a
+                different failure.
               </Box>
             </div>
           </ColumnLayout>
@@ -842,7 +844,7 @@ diff /tmp/before /tmp/after`}</pre>
         header={
           <Header
             variant="h2"
-            description="Twenty-two port counters, a dozen device counters AWS does not document, and one tool that does not reach either."
+            description="Where the counters live, which five carry the fault signal, and why ethtool reaches none of them."
           >
             EFA counters
           </Header>
@@ -850,8 +852,15 @@ diff /tmp/before /tmp/after`}</pre>
       >
         <SpaceBetween size="m">
           <Box variant="p">
+            EFA counters are statistics the device keeps and the driver publishes through the RDMA
+            (Remote Direct Memory Access) subsystem, at two scopes: one set per port, meaning per
+            EFA link, and one set per device. They live in sysfs under /sys/class/infiniband, and
+            the rdma tool reads the same values. They are the only direct evidence of what crossed
+            the fabric, which is why they settle what a log cannot.
+          </Box>
+          <Box variant="p">
             The driver asks the device for statistics over the admin queue in five separate types:
-            basic, messages, RDMA (Remote Direct Memory Access) read, RDMA write and network{' '}
+            basic, messages, RDMA read, RDMA write and network{' '}
             <SourceRef provenance="code-derived" code={code.statsTypes} />. Those five responses are
             flattened into a single list of twenty-two port-scope counters{' '}
             <SourceRef provenance="code-derived" code={code.portStats} />. AWS documents that list,
@@ -875,8 +884,8 @@ diff /tmp/before /tmp/after`}</pre>
           <Box variant="h3">The network stats struct</Box>
           <Box variant="p">
             The five counters that matter arrive in one structure shared between the device and the
-            driver. Reading it is the fastest way to see that these are device-reported quantities,
-            not something the driver computes{' '}
+            driver. Reading it is the fastest way to see that the device reports these quantities
+            directly{' '}
             <SourceRef provenance="code-derived" code={code.netStatsStruct} />.
           </Box>
           <Box variant="code">
@@ -895,8 +904,8 @@ diff /tmp/before /tmp/after`}</pre>
 
           <Box variant="h3">How to read them</Box>
           <Box variant="p">
-            AWS documents two ways. The first is the rdma command line tool, which prints every
-            counter for every EFA link on the instance. The second is sysfs, one file per counter{' '}
+            AWS documents both retrieval paths: the rdma tool, which prints every counter for every
+            EFA link on the instance, and sysfs, one file per counter{' '}
             <SourceRef provenance="documented" doc={docs.monitor} />.
           </Box>
           <Box variant="code">
@@ -917,12 +926,12 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
           </Box>
 
           <ExpandableSection
-            headerText="The device-scope counters AWS does not document"
-            headerDescription="Twelve more counters, and the two that fire when registration or queue creation fails"
+            headerText="The device-scope counters, and the two worth collecting"
+            headerDescription="Twelve counters the driver defines and the AWS monitoring table omits"
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                There is a second set. The driver defines twelve device-scope counters:
+                The driver defines twelve device-scope counters:
                 submitted_cmds, completed_cmds, cmds_err, no_completion_cmds, keep_alive_rcvd,
                 alloc_pd_err, create_qp_err, create_cq_err, reg_mr_err, alloc_ucontext_err,
                 create_ah_err and mmap_err{' '}
@@ -939,8 +948,7 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
                 These are all error counters, and none of them appears in the AWS monitoring table{' '}
                 <SourceRef provenance="documented" doc={docs.monitor} />. reg_mr_err and create_qp_err
                 are worth collecting: they move when memory registration or queue pair creation is
-                failing, which is the shape of a huge page or registration limit problem rather than a
-                network problem.
+                failing, which is the shape of a huge page or registration limit problem.
               </Box>
               <Box variant="p">
                 One counter the device reports is never surfaced at all. The basic statistics
@@ -953,7 +961,7 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
             </SpaceBetween>
           </ExpandableSection>
 
-          <Alert type="warning" header="ethtool cannot show you EFA counters">
+          <Alert type="warning" header="EFA counters come from the RDMA subsystem, and ethtool reads the ENA side">
             <SpaceBetween size="xs">
               <Box variant="p">
                 The EFA driver registers an InfiniBand device and nothing else. A search of the whole
@@ -969,8 +977,8 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
                 the ENA side: bw_in_allowance_exceeded, bw_out_allowance_exceeded,
                 pps_allowance_exceeded, conntrack_allowance_exceeded and linklocal_allowance_exceeded{' '}
                 <SourceRef provenance="code-derived" code={code.enaEthtool} />. Those are real and
-                worth watching, and they are ENA allowances, not EFA. Confusing the two sends you
-                looking for a fabric problem that is actually an instance networking allowance.
+                worth watching. They are ENA allowances, so a spike there points at instance
+                networking rather than the fabric.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -981,9 +989,9 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
         header={
           <Header
             variant="h2"
-            description="Ten modes, each with what you see, what you measure, and what you change. Sorted by how quiet they are."
+            description="Ten configurations to get right, the failure each prevents, and the check that tells you which you have. Sorted by how quiet the failure is."
           >
-            Failure modes
+            Ten things to get right
           </Header>
         }
       >
@@ -993,18 +1001,18 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
           <Table
             variant="embedded"
             columnDefinitions={[
-              { id: 'mode', header: 'Failure mode', cell: (item) => <strong>{item.mode}</strong> },
-              { id: 'symptom', header: 'Symptom', cell: (item) => item.symptom },
+              { id: 'fix', header: 'Correct configuration', cell: (item) => <strong>{item.fix}</strong> },
+              { id: 'mode', header: 'Failure it prevents', cell: (item) => item.mode },
+              { id: 'symptom', header: 'What you see when it is wrong', cell: (item) => item.symptom },
               {
                 id: 'detect',
-                header: 'Detection',
+                header: 'How to confirm',
                 cell: (item) => (
                   <>
                     {item.detect} {item.src}
                   </>
                 ),
               },
-              { id: 'fix', header: 'Remediation', cell: (item) => item.fix },
             ]}
             items={failureRows}
           />
@@ -1016,8 +1024,8 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
             <SpaceBetween size="s">
               <Box variant="p">
                 The EFA provider caches memory registrations so that a buffer used repeatedly is
-                registered once. The limits are not constants. When neither is set explicitly, the
-                provider derives the maximum cached count from the device reported max_mr and the
+                registered once. The limits are device-derived. When neither is set explicitly, the
+                provider takes the maximum cached count from the device reported max_mr and the
                 maximum cached size from the device reported max_mr_size, each multiplied by 0.9{' '}
                 <SourceRef provenance="code-derived" code={code.mrCacheLimits} />. Two instance types
                 with different registration budgets therefore get different cache sizes for the same
@@ -1033,7 +1041,7 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
                 have to be registered again.
               </Box>
               <Box variant="p">
-                The EFA provider has a documented conflict here worth knowing about. If the default
+                The EFA provider has a documented conflict here. If the default
                 monitor is memhooks and something else already installed those patches, the provider
                 switches to userfaultfd on its own and logs that it did; if you asked for memhooks
                 explicitly and it cannot be installed, the provider fails rather than silently
@@ -1050,7 +1058,7 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
           </ExpandableSection>
 
           <ExpandableSection
-            headerText="Two more that are worth the code, not just the table row"
+            headerText="Two of these are worth the code behind them"
             headerDescription="The fork and huge page combination is a hard abort, and NCCL_TOPO_FILE switches the plugin off"
           >
             <SpaceBetween size="s">
@@ -1059,7 +1067,7 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
                 EFA driver installed pre-allocate 5128 huge pages of 2 MiB each, and that on
                 Kubernetes these are a resource a job requests{' '}
                 <SourceRef provenance="documented" doc={docs.eksNode} />. Asking for huge pages and
-                fork safety together is not a warning. If fork support is requested through
+                fork safety together aborts the process. If fork support is requested through
                 FI_EFA_FORK_SAFE, RDMAV_FORK_SAFE or IBV_FORK_SAFE while FI_EFA_USE_HUGE_PAGE is on,
                 the provider prints a multi-line explanation ending in Your application will now abort
                 and calls abort; if huge pages were not explicitly requested, it silently turns them
@@ -1085,15 +1093,15 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
             </SpaceBetween>
           </ExpandableSection>
 
-          <Alert type="info" header="Two placement constraints that are not failures, but shape the ones above">
+          <Alert type="info" header="Two placement constraints that shape every failure above">
             EFA interfaces cannot be detached from a running instance. AWS states you must first stop
             the instance, and that you cannot detach an EFA from an instance in the running state{' '}
             <SourceRef provenance="documented" doc={docs.detach} />. And instance types that support
             multiple network cards can be configured with one EFA per network card, while all other
             supported types support one EFA per instance{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />. Both of these turn a
-            misconfiguration into a relaunch rather than a repair, which is why the bring-up checklist
-            is worth running before the fleet scales.
+            <SourceRef provenance="documented" doc={docs.efa} />. Both turn a misconfiguration into
+            a relaunch, which is why the bring-up checklist is worth running before the fleet
+            scales.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -1102,7 +1110,7 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
         header={
           <Header
             variant="h2"
-            description="There is no single current EFA version. There are channels, and they disagree by two releases right now."
+            description="Two channels, two correct answers to what version am I on, and they disagree by two releases right now."
           >
             Version and channel discipline
           </Header>
@@ -1136,7 +1144,7 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="Never state a current version without naming the channel">
+          <Alert type="warning" header="Name the channel every time you name a version">
             Installer 1.49.0 ships driver 3.1.0 while the repository is at r3.3.0. Those are two
             correct answers to the same question, and the gap is functional rather than cosmetic: a
             host built from 1.49.0 does not carry the 0xefa4 device id, because that landed in r3.3.0{' '}
@@ -1146,7 +1154,7 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
             <SourceRef provenance="documented" doc={docs.changelog} />.
           </Alert>
 
-          <Box variant="h3">Determining what is actually installed</Box>
+          <Box variant="h3">Determining what is installed</Box>
           <Box variant="p">
             Every one of the four components reports itself, and none of them reports the installer
             version that put it there. Read all four, then map them back to a single installer release
@@ -1169,7 +1177,7 @@ NCCL_DEBUG=INFO ... 2>&1 | grep -i 'NET/OFI.*version'
 # 4. The tarball you think you used. AWS publishes checksums per release.
 sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
           </Box>
-          <Alert type="info" header="The libfabric on the path is not always the one you installed">
+          <Alert type="info" header="Two checks that identify what you actually installed">
             AWS publishes an MD5 and a SHA256 for every installer release and states that if the
             checksums do not match you should not run the installation script{' '}
             <SourceRef provenance="documented" doc={docs.installerCheck} />, which makes step 4 the
@@ -1178,8 +1186,7 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
             level 1 and above the printed libfabric version is suffixed with impi when the internal
             one is in use{' '}
             <SourceRef provenance="documented" doc={docs.start} />. Container images that carry a
-            second libfabric fail the same way. Resolve it with ldd, not with assumptions about the
-            install path.
+            second libfabric fail the same way. Resolve it with ldd.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -1211,8 +1218,8 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
                 <li>rdma_read_wr_err and rdma_write_wr_err, operations with a local or remote error</li>
                 <li>rx_drops, packets received and then dropped</li>
                 <li>
-                  On the ENA side of the same interface, the allowance counters, which explain slowdowns
-                  that have nothing to do with the fabric
+                  On the ENA side of the same interface, the allowance counters, which explain
+                  slowdowns that come from instance networking
                 </li>
               </ul>
               <Box variant="p">
@@ -1226,8 +1233,8 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
               <Box variant="h3">These are noise as alerts</Box>
               <ul>
                 <li>
-                  tx_bytes, rx_bytes, tx_pkts, rx_pkts, send_wrs, recv_wrs and the RDMA byte counters.
-                  They are volume. A threshold on volume alerts on the workload, not on a fault
+                  tx_bytes, rx_bytes, tx_pkts, rx_pkts, send_wrs, recv_wrs and the RDMA byte
+                  counters. They are volume, so a threshold on them alerts on the workload
                 </li>
                 <li>
                   retrans_bytes and retrans_pkts on their own. Retransmission is how a multi-path
@@ -1250,7 +1257,7 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
           </ColumnLayout>
 
           <Box variant="p">
-            One more path worth knowing about and not over-trusting. You can create a VPC (Virtual
+            One more path, and what it answers. You can create a VPC (Virtual
             Private Cloud) Flow Log for an EFA, and AWS states that in the flow log entries EFA
             traffic is identified by a source and destination address that are both formatted as MAC
             addresses{' '}

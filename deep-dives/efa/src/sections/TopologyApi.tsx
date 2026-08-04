@@ -416,7 +416,7 @@ function CapacityReservationPrefixDiagram() {
         Launch appends nodes below the reservation node set.
       </text>
       <text className="tcr-ok" x="470" y="268">
-        It never rewrites the ones already returned.
+        The nodes already returned stay unchanged.
       </text>
 
       <path d="M40,306 L860,306" stroke="#d1d5db" strokeWidth="1" fill="none" />
@@ -450,10 +450,10 @@ function DatacenterFabricHierarchy() {
     >
       <title id="efa-d11-title">
         Each network node in the response is a containment level between the Availability Zone and
-        the instance, so the array index is a depth, not a named piece of hardware. A cluster
+        the instance, so the array index is a depth in that containment hierarchy. A cluster
         placement group is a separate boundary that AWS does not align to any specific network
-        node layer, which is why placement group membership and an identical bottom network node
-        are not the same statement.
+        node layer, so placement group membership and an identical bottom network node are two
+        different statements about a fleet.
       </title>
       <style>
         {`
@@ -590,14 +590,17 @@ export function TopologyApi() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The problem:</strong> EFA (Elastic Fabric Adapter) gives every pair of nodes a
-            fast wire. It does not make every pair equally fast. A collective finishes when its
-            slowest pair finishes, so the assignment of ranks to hosts changes how long a step
-            takes. Nothing in the launch path tells you which hosts ended up next to each other.
+            <strong>The situation:</strong> EFA (Elastic Fabric Adapter) gives every pair of nodes
+            a fast wire, and some of those pairs are faster than others. A collective finishes when
+            its slowest pair finishes, so the assignment of ranks to hosts changes how long a step
+            takes. Which hosts ended up next to each other is a separate lookup.
           </Box>
           <Box variant="p">
             <strong>The answer:</strong> two EC2 APIs that return a per-account tree of network
-            nodes. DescribeInstanceTopology reads it for running instances.
+            nodes. A network node is one layer of the AWS network hierarchy, and an instance
+            topology is one node per layer, listed top down, with the bottom node connected to the
+            instance <SourceRef provenance="documented" doc={docs.topoHow} />.
+            DescribeInstanceTopology reads that tree for running instances.
             DescribeCapacityReservationTopology reads it for reserved capacity before any instance
             exists. Both are read-only. AWS is direct about the limit: while topology information
             helps you understand instance placement, you cannot use it to launch a new instance
@@ -609,15 +612,14 @@ export function TopologyApi() {
             <strong>The one rule to carry through the rest of this page:</strong> read the returned
             node array from the end. <code>nodes[-1]</code> is the node your instance is plugged
             into, <code>nodes[-2]</code> is its parent, and every consumer below is built on those
-            two. NCCL (NVIDIA Collective Communications Library) never calls either API. Topology
-            enters at the scheduler and launcher layer, above NCCL.
+            two. Topology enters at the scheduler and launcher layer, above NCCL (NVIDIA Collective
+            Communications Library), which never calls either API.
           </Box>
-          <Alert type="info" header="There is no console view and no charge">
+          <Alert type="info" header="Command line and SDK only, at no extra cost">
             AWS states that the Management Console does not support viewing topology, that each
             topology view is unique per AWS account, and that there is no additional cost for
             describing your EC2 topology{' '}
-            <SourceRef provenance="documented" doc={docs.topoOverview} />. Everything below is
-            command line or SDK only.
+            <SourceRef provenance="documented" doc={docs.topoOverview} />.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -626,7 +628,7 @@ export function TopologyApi() {
         header={
           <Header
             variant="h2"
-            description="Read the array from the end, never from the start"
+            description="Read the array from the end, and shared prefix depth gives you distance"
           >
             The network node hierarchy
           </Header>
@@ -635,12 +637,10 @@ export function TopologyApi() {
         <SpaceBetween size="m">
           <Box variant="p">
             AWS describes the network as a hierarchy of layers, with EC2 instances connecting at or
-            below the third layer depending on instance type. An instance topology is a set of
-            nodes, one per layer, presented top down, with the bottom node connected to the
-            instance <SourceRef provenance="documented" doc={docs.topoHow} />. The reading rules are
-            short: nodes are listed top to bottom, the node connected to the instance is last, and
-            to find which instances are close you look for common nodes in the bottom layer first,
-            then move up <SourceRef provenance="documented" doc={docs.topoHow} />.
+            below the third layer depending on instance type, and the bottom node in each instance
+            topology as the one connected to the instance. Finding which instances are close
+            follows from that: look for common nodes in the bottom layer first, then move up{' '}
+            <SourceRef provenance="documented" doc={docs.topoHow} />.
           </Box>
 
           <NetworkNodesHierarchyDiagram />
@@ -653,10 +653,10 @@ export function TopologyApi() {
           </Box>
 
           <Box variant="p">
-            That reading rule is a longest common prefix metric. Two node sets that agree on every
-            entry are on the same bottom node. Two that agree on all but the last entry are one
-            layer apart. Two that agree only on the first entry are as far apart as the API can
-            express within a zone. Nothing else in the response carries distance information.
+            That reading rule is a longest common prefix metric. Node sets agreeing on every entry
+            sit on the same bottom node, agreeing on all but the last entry puts them one layer
+            apart, and agreeing only on the first entry is as far apart as the API can express
+            within a zone. Nothing else in the response carries distance information.
           </Box>
 
           <ColumnLayout columns={2} variant="text-grid">
@@ -678,21 +678,30 @@ export function TopologyApi() {
               <Box variant="p">
                 p6-b200.48xlarge and p6-b300.48xlarge only{' '}
                 <SourceRef provenance="documented" doc={docs.topoPrereq} />. On these the bottom
-                layer is index 3, not index 2. Any code that indexes from the start of the array
-                reads the wrong node on exactly the newest and largest GPU instances in the list.
+                layer sits at index 3. Code that indexes from the start of the array reads the
+                wrong node on exactly the newest and largest GPU instances in the list.
               </Box>
             </div>
           </ColumnLayout>
 
           <Alert
-            type="error"
-            header="The bug you are about to copy from the AWS sample script"
+            type="warning"
+            header="How to index the node array on every supported type"
           >
             <SpaceBetween size="xs">
               <Box variant="p">
-                The topology-aware hostfile sorter AWS ships inside aws-ofi-nccl reads{' '}
-                <code>NetworkNodes[1]</code> and <code>NetworkNodes[2]</code> as its two grouping
-                keys, with an in-file comment stating that index 2 is the bottom layer{' '}
+                The generic form is <code>nodes[-1]</code> for the bottom node and{' '}
+                <code>nodes[-2]</code> for its parent, which is correct on 3-node and 4-node types
+                without a branch. The Slurm sample tool from aws-samples goes one step further and
+                reads the depth from the response: it sets the level count to the length of the
+                returned array and recurses to that depth{' '}
+                <SourceRef provenance="code-derived" code={code.slurmDepth} />.
+              </Box>
+              <Box variant="p">
+                <strong>Watch for hard-coded indexes.</strong> The topology-aware hostfile sorter
+                AWS ships inside aws-ofi-nccl reads <code>NetworkNodes[1]</code> and{' '}
+                <code>NetworkNodes[2]</code> as its two grouping keys, with an in-file comment
+                stating that index 2 is the bottom layer{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   doc={docs.topoPrereq}
@@ -700,41 +709,34 @@ export function TopologyApi() {
                   conflict="The EC2 prerequisites page states that p6-b200.48xlarge and p6-b300.48xlarge return 4 network nodes, so index 2 is not the bottom layer on those types and index 3 is."
                   label="doc vs code"
                 />
-                . On p6-b200.48xlarge and p6-b300.48xlarge that comment is wrong. Index 2 is the
-                second-to-last node and index 3 is the leaf, so the script groups by the two middle
-                layers and discards the layer that actually decides adjacency.
-              </Box>
-              <Box variant="p">
-                The correct generic form is <code>nodes[-1]</code> for the bottom node and{' '}
-                <code>nodes[-2]</code> for its parent. The Slurm sample tool from aws-samples gets
-                this right by reading the depth from the response rather than assuming it: it sets
-                the level count to the length of the returned array and recurses to that depth{' '}
-                <SourceRef provenance="code-derived" code={code.slurmDepth} />.
+                . On p6-b200.48xlarge and p6-b300.48xlarge index 2 is the second-to-last node and
+                index 3 is the leaf, so the script groups by the two middle layers and discards the
+                layer that decides adjacency.
               </Box>
               <Box variant="p">
                 <strong>Impact: unmeasured.</strong> No AWS statement and no benchmark quantifies
-                what the mis-indexed grouping costs on a real job. Treat it as a correctness
-                defect, not as a slowdown of any particular size.
+                what the mis-indexed grouping costs on a real job. Treat it as a correctness defect
+                of unmeasured cost.
               </Box>
             </SpaceBetween>
           </Alert>
 
           <ExpandableSection
-            headerText="What the layers physically are"
-            headerDescription="AWS publishes a depth for each layer, never a name"
+            headerText="How far the layer index can be read"
+            headerDescription="AWS publishes a depth for each layer, and depth is what ranking needs"
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                AWS publishes no mapping from layer index to a named datacenter construct. The
-                documentation says a hierarchy of layers, and the node that is connected to the
-                instance. It never says spine, aggregation, leaf, top of rack, or rack{' '}
-                <SourceRef provenance="documented" doc={docs.topoHow} />. Any page that tells you
-                layer iii is a top-of-rack switch is inferring it.
+                The documentation gives each layer a position in a hierarchy and identifies the
+                bottom node as the one connected to the instance{' '}
+                <SourceRef provenance="documented" doc={docs.topoHow} />. That is the whole
+                published vocabulary: AWS publishes no mapping from layer index to a named
+                datacenter construct such as spine, aggregation, leaf, top of rack or rack. Any
+                page that tells you layer iii is a top-of-rack switch is inferring it.
               </Box>
               <Box variant="p">
-                The practical consequence is that you should treat the index as a depth and
-                nothing more. Depth ordering is documented and sufficient for ranking. Physical
-                naming is not documented and adds no scheduling capability.
+                Treat the index as a depth. Depth ordering is documented and sufficient for
+                ranking, and a physical name would add no scheduling capability.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -765,8 +767,8 @@ export function TopologyApi() {
               <Box variant="p">
                 Both are AWS authored and they cannot both describe the same response. The blog may
                 be describing the general label schema rather than that instance depth, and nothing
-                located during this research settles it. Trust neither number: read the depth from
-                the array length at run time, which is correct under either answer.
+                located during this research settles it. Read the depth from the array length at
+                run time, which is correct under either answer.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -785,9 +787,9 @@ export function TopologyApi() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The published algorithm is not a graph algorithm. It is a two-level bucket sort:
-            group hosts by their parent node, then by their bottom node, then emit them in that
-            nested order. Hosts under the same bottom node come out contiguous, and bottom nodes
+            The published algorithm is a two-level bucket sort: group hosts by their parent node,
+            then by their bottom node, then emit them in that nested order. Hosts under the same
+            bottom node come out contiguous, and bottom nodes
             under the same parent come out contiguous, so adjacent ranks land on adjacent hosts{' '}
             <SourceRef provenance="code-derived" code={code.topologify} />.
           </Box>
@@ -825,14 +827,13 @@ ranked = [host
             <SourceRef provenance="code-derived" code={code.topologify} />.
           </Box>
 
-          <Alert type="warning" header="Sorting the hostfile does nothing on its own">
+          <Alert type="warning" header="Pair the sorted hostfile with the sequential mapper">
             <SpaceBetween size="xs">
               <Box variant="p">
-                Open MPI (Message Passing Interface) default mapping policies do not read the
-                hostfile in order. You have to select the sequential mapper, which reads the
-                hostfile line by line and assigns processes to nodes in whatever order the file
-                specifies{' '}
-                <SourceRef provenance="code-derived" code={code.topologifyDoc} />.
+                The sequential mapper is what makes the file order count: it reads the hostfile
+                line by line and assigns processes to nodes in whatever order the file specifies{' '}
+                <SourceRef provenance="code-derived" code={code.topologifyDoc} />. Open MPI
+                (Message Passing Interface) applies its own mapping policy by default.
               </Box>
               <Box variant="p">
                 Open MPI v4.1 uses <code>--mca rmaps seq</code>. Open MPI v5.0 uses{' '}
@@ -857,11 +858,9 @@ ranked = [host
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The response elements are instanceSet, nextToken and requestId. Each InstanceTopology
-            entry carries availabilityZone, zoneId, instanceId, instanceType, groupName,
-            capacityBlockId and NetworkNodeSet.N{' '}
-            <SourceRef provenance="documented" doc={docs.instType} />. Every one of those fields is
-            marked not required, so defensive parsing is the contract, not a style preference.
+            Every field in an InstanceTopology entry is marked optional in the API reference{' '}
+            <SourceRef provenance="documented" doc={docs.instType} />, so defensive parsing is the
+            contract. Three commands cover most of what you will ask the API for.
           </Box>
 
           <Box variant="code">
@@ -896,7 +895,7 @@ aws ec2 describe-instance-topology \
           <Box variant="p">
             Command 2 is the one to keep. It prints depth alongside the two grouping keys, so a
             fleet that silently mixes 3-layer and 4-layer instance types is visible in the output
-            rather than discovered later in a scheduler config. The group-names parameter in
+            before it reaches a scheduler config. The group-names parameter in
             command 3 accepts up to 100 names and is the join key between the placement group you
             asked for and the topology you received{' '}
             <SourceRef provenance="documented" doc={docs.instApi} />.
@@ -910,9 +909,9 @@ aws ec2 describe-instance-topology \
                 strings <SourceRef provenance="documented" doc={docs.instType} />.
               </Box>
               <Box variant="p">
-                The consequence is the part that matters. Cross-account topology correlation is not
-                possible with these IDs. A training fleet split across a workload account and a
-                capacity account cannot be co-ranked. A Capacity Reservation shared across an AWS
+                Every consequence follows from that. These IDs correlate inside one account only. A
+                training fleet split across a workload account and a capacity account cannot be
+                co-ranked. A Capacity Reservation shared across an AWS
                 Organization returns node IDs to the owner that mean nothing to the consumer. If
                 you need one topology view, every instance and every reservation in the job has to
                 be described from one account. The only account-independent locality key in the
@@ -943,10 +942,17 @@ aws ec2 describe-instance-topology \
           </ExpandableSection>
 
           <ExpandableSection
-            headerText="Gotchas in the response"
-            headerDescription="Absent Capacity Block renders as a string, fields can be empty, and consistency is eventual"
+            headerText="How to parse the response defensively"
+            headerDescription="Four response shapes to handle before the parser meets a real fleet"
           >
             <SpaceBetween size="s">
+              <Box variant="p">
+                The response elements are instanceSet, nextToken and requestId, and each
+                InstanceTopology entry carries availabilityZone, zoneId, instanceId, instanceType,
+                groupName, capacityBlockId and NetworkNodeSet.N{' '}
+                <SourceRef provenance="documented" doc={docs.instType} />. Every one is marked
+                optional, which is where the four shapes below come from.
+              </Box>
               <Box variant="p">
                 <strong>An absent Capacity Block is the literal string null.</strong> Every
                 published AWS example response, on both the how-it-works page and the examples
@@ -985,7 +991,7 @@ aws ec2 describe-instance-topology \
 
           <ExpandableSection
             headerText="IAM and throttling"
-            headerDescription="Two actions, no resource-level scoping, and no published default rate"
+            headerDescription="Two actions, a wildcard resource, and rates you read from Service Quotas"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1030,9 +1036,9 @@ aws ec2 describe-instance-topology \
             distributed parallel workloads are managing thousands of instances across tens to
             hundreds of capacity reservations, and this API describes the topology of those
             reservations as a network node set without the need to launch an instance{' '}
-            <SourceRef provenance="documented" doc={docs.crTopoGa} />. It answers the question that
-            DescribeInstanceTopology structurally cannot: are the reservations I am about to buy
-            into anywhere near each other?
+            <SourceRef provenance="documented" doc={docs.crTopoGa} />. It answers a question that
+            needs no running instance: are the reservations I am about to buy into anywhere near
+            each other?
           </Box>
 
           <CapacityReservationPrefixDiagram />
@@ -1047,9 +1053,9 @@ aws ec2 describe-instance-topology \
             DescribeInstanceTopology shows all nodes for a running instance, and that if the
             instance is in a Capacity Reservation the first nodes will match the corresponding
             Capacity Reservation topology, followed by additional nodes to connect to the instance{' '}
-            <SourceRef provenance="documented" doc={docs.topoHow} />. Pre-launch ranking is
-            therefore not invalidated by launching. The reservation node set is a prefix, and the
-            instance response only ever appends below it.
+            <SourceRef provenance="documented" doc={docs.topoHow} />. Pre-launch ranking therefore
+            survives the launch. The reservation node set is a prefix, and the instance response
+            only ever appends below it.
           </Box>
 
           <Box variant="p">
@@ -1082,30 +1088,19 @@ aws ec2 describe-capacity-reservation-topology \
   --filters Name=instance-type,Values=p5en.48xlarge`}</pre>
           </Box>
 
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">What differs from the instance API</Box>
-              <Box variant="p">
-                Ten reservation IDs instead of 100 instance IDs. MaxResults default 10 and maximum
-                10, against default 20 and maximum 100. No zone-id filter, only availability-zone
-                and instance-type. No GroupName parameter. A state field appears in the response,
-                and capacityReservationId replaces instanceId{' '}
-                <SourceRef provenance="documented" doc={docs.crApi} />.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">The field rename that breaks unions</Box>
-              <Box variant="p">
-                The Availability Zone ID is called zoneId on InstanceTopology and
-                availabilityZoneId on CapacityReservationTopology{' '}
-                <SourceRef provenance="documented" doc={docs.crType} />. Code that merges both
-                responses into one table has to handle both key names. Nothing in either response
-                signals which shape you are holding except the ID field itself.
-              </Box>
-            </div>
-          </ColumnLayout>
+          <Box variant="p">
+            <strong>The field rename that breaks unions.</strong> The Availability Zone ID is
+            called zoneId on InstanceTopology and availabilityZoneId on
+            CapacityReservationTopology{' '}
+            <SourceRef provenance="documented" doc={docs.crType} />. Code that merges both
+            responses into one table has to handle both key names, and the ID field is the only
+            signal of which shape you are holding. The diagram above carries the rest of the
+            differences: ten reservation IDs against a hundred instance IDs, a tighter MaxResults
+            range, and one filter fewer{' '}
+            <SourceRef provenance="documented" doc={docs.crApi} />.
+          </Box>
 
-          <Alert type="info" header="Two Regions do not have it">
+          <Alert type="info" header="Region coverage differs between the two APIs">
             The Capacity Reservation Topology API is not supported in Israel (Tel Aviv) or AWS
             GovCloud (US-West), even though DescribeInstanceTopology is available in both{' '}
             <SourceRef provenance="documented" doc={docs.topoPrereq} />. Planning tooling that
@@ -1175,7 +1170,7 @@ aws ec2 describe-capacity-reservation-topology \
             The bridge between EC2 and Slurm is literal string reuse. The generator walks the node
             tree and writes one SwitchName line per node, using the network node hash as the switch
             name, with child switches for internal nodes and hostnames for leaves{' '}
-            <SourceRef provenance="code-derived" code={code.slurmEmit} />. Nothing is translated.
+            <SourceRef provenance="code-derived" code={code.slurmEmit} />.
           </Box>
 
           <Box variant="code">
@@ -1292,7 +1287,7 @@ sbatch --switch=1 train.sbatch`}</pre>
         header={
           <Header
             variant="h2"
-            description="Node labels, Kueue annotations, and one capability Karpenter does not have"
+            description="Node labels, Kueue annotations, and how far each controller reaches"
           >
             Kubernetes: topology labels and topology-aware scheduling
           </Header>
@@ -1300,8 +1295,8 @@ sbatch --switch=1 train.sbatch`}</pre>
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            On the Kubernetes side the topology arrives as node labels rather than a config file.
-            HyperPod task governance applies topology.kubernetes.io/region,
+            On the Kubernetes side the topology arrives as node labels. HyperPod task governance
+            applies topology.kubernetes.io/region,
             topology.kubernetes.io/zone, topology.k8s.aws/network-node-layer-1 through -3, and
             topology.k8s.aws/ultraserver-id, the last identifying instances in the same NVLink
             domain <SourceRef provenance="documented" doc={docs.hyperpodEks} />. The aws-ofi-nccl
@@ -1341,7 +1336,7 @@ metadata:
             <SourceRef provenance="documented" doc={docs.hyperpodEks} />.
           </Box>
 
-          <Alert type="error" header="Karpenter cannot do network-node topology-aware scheduling">
+          <Alert type="warning" header="Running Karpenter: disable topology-aware scheduling first">
             <SpaceBetween size="xs">
               <Box variant="p">
                 AWS states plainly that topology-aware scheduling is not supported with Karpenter
@@ -1362,17 +1357,16 @@ metadata:
                 entry <SourceRef provenance="documented" doc={docs.eksMlPools} />.
               </Box>
               <Box variant="p">
-                What Karpenter can enforce is zonal placement through topology.kubernetes.io/zone
+                What Karpenter does enforce is zonal placement through topology.kubernetes.io/zone
                 and placement group membership through the launch template. That is a useful
-                constraint set, and it is not the same capability. Any heading that pairs Karpenter
-                with topology-aware scheduling is claiming something the product does not do.
+                constraint set, and its boundary sits one level above the network node layers.
               </Box>
             </SpaceBetween>
           </Alert>
 
           <ExpandableSection
             headerText="The portable fallback: a depth-agnostic labeler DaemonSet"
-            headerDescription="For clusters that are neither HyperPod nor P6e-GB200"
+            headerDescription="For clusters outside HyperPod task governance and P6e-GB200"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1448,8 +1442,8 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
           <DatacenterFabricHierarchy />
 
           <Box variant="small" color="text-body-secondary">
-            The layer index is a depth in a containment hierarchy, not a named piece of hardware.
-            Placement groups command, the topology APIs observe.
+            The layer index is a depth in a containment hierarchy. Placement groups command, the
+            topology APIs observe.
           </Box>
 
           <Box variant="p">
@@ -1473,38 +1467,26 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
           </Alert>
 
           <ExpandableSection
-            headerText="What no AWS source states"
-            headerDescription="Five gaps to know before you quote a number you read elsewhere"
+            headerText="Where the published evidence stops"
+            headerDescription="Three gaps to check before you quote a number you read elsewhere"
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                <strong>No speedup figure exists.</strong> No AWS benchmark quantifying the gain
-                from topology-aware ranking was located. The HyperPod task governance material
-                claims reduced latency and improved training efficiency without publishing numbers.
-                Any percentage attached to this technique elsewhere should be traced before it is
+                <strong>Speedup.</strong> No AWS benchmark quantifying the gain from
+                topology-aware ranking was located. The HyperPod task governance material claims
+                reduced latency and improved training efficiency without publishing numbers. Any
+                percentage attached to this technique elsewhere should be traced before it is
                 repeated.
               </Box>
               <Box variant="p">
-                <strong>No published throttle defaults.</strong> The token bucket mechanism and the
-                separate unfiltered bucket are documented{' '}
-                <SourceRef provenance="documented" doc={docs.throttling} />; the values for these
-                two actions are not. Read them from Service Quotas per account.
-              </Box>
-              <Box variant="p">
-                <strong>No layer to hardware mapping.</strong> AWS publishes depth, not names.
-                Nothing in the documentation binds layer i, ii or iii to a spine, aggregation or
-                leaf tier.
-              </Box>
-              <Box variant="p">
-                <strong>No measured impact for the hard-coded index defect.</strong> The
-                mis-indexing in the aws-ofi-nccl sorter on 4-layer instance types is verifiable in
-                source. Its cost on a real job is not measured by AWS and is not measured here.
+                <strong>Layer to hardware mapping.</strong> AWS publishes depth. Nothing in the
+                documentation binds layer i, ii or iii to a spine, aggregation or leaf tier.
               </Box>
               <Box variant="p">
                 <strong>Two open contradictions.</strong> The depth of p6e-gb200.36xlarge and the
-                scope of automatic EKS labelling both have AWS sources on each side. Both are
-                handled by the same defensive pattern: read the depth from the response, and verify
-                the labels on your own cluster.
+                scope of automatic EKS labelling both have AWS sources on each side. One defensive
+                pattern covers both: read the depth from the response, and verify the labels on
+                your own cluster.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1516,7 +1498,7 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
                 One job, one placement group, one Capacity Reservation, homogeneous instance type,
                 static node count. The placement group already satisfies the same Availability
                 Zone requirement EFA has, and rank order barely moves the result. Reading topology
-                here is verification, not optimisation.
+                here is verification.
               </Box>
             </div>
             <div>
@@ -1534,7 +1516,7 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
           <Box variant="p">
             Three more cases justify the call. First, intra-group ranking: even a well-placed
             cluster placement group has internal structure, and rank 0 to rank 1 traffic on the
-            same bottom node is not the same as traffic across a parent node. Second, drift: a
+            same bottom node differs from traffic across a parent node. Second, drift: a
             replaced node keeps the placement group name and changes the topology, so a stale
             topology.conf outlives the fleet it describes. Third, capacity diagnosis before the
             fact: ParallelCluster documents that zonal Reserved Instances are not placed in the
@@ -1543,6 +1525,12 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
             <SourceRef provenance="documented" doc={docs.pcOdcr} />. Checking whether reservations
             share upper-layer nodes before attaching a placement group is precisely what the
             pre-launch API is for.
+          </Box>
+
+          <Box variant="p">
+            The place to start is command 2 from earlier on this page, run against the fleet you
+            already have. It prints the depth alongside <code>nodes[-1]</code> and{' '}
+            <code>nodes[-2]</code>, which is everything the rank map needs.
           </Box>
         </SpaceBetween>
       </Container>

@@ -71,47 +71,54 @@ export function HPC() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="Can my tightly-coupled MPI simulation run in the cloud without performance degradation?">
+          <Header variant="h1" description="Which simulations the fabric changes, how to point an MPI stack at it, and which family to buy.">
             EFA for Traditional HPC
           </Header>
         }
       >
         <Box variant="p">
-          EFA was originally built for HPC. The AI/ML use case came later as distributed
-          training grew. For HPC, EFA enables <strong>tightly-coupled MPI workloads</strong> that
-          exchange boundary conditions every timestep, workloads that were historically
-          impossible in the cloud due to network latency and jitter.
+          EFA was built for HPC first, and the AI/ML use case followed as distributed training
+          grew. The HPC workloads it changes are the <strong>tightly-coupled</strong> ones, where
+          MPI (Message Passing Interface) ranks trade boundary conditions every timestep and the
+          wire sets the pace of the whole simulation.
         </Box>
       </Container>
 
       <Container
-        header={<Header variant="h2" description="How often a rank has to hear from its neighbours decides this, not how big the job is.">Which HPC workloads the fabric actually changes</Header>}
+        header={<Header variant="h2" description="Communication frequency puts your code in one column or the other, which is the first thing to settle.">Which HPC workloads the fabric actually changes</Header>}
       >
-        <ColumnLayout columns={2} variant="text-grid">
-          <div>
-            <Box variant="h3">Tightly Coupled (EFA critical)</Box>
-            <ul>
-              <li><strong>Weather/Climate:</strong> WRF (Weather Research and Forecasting), MPAS, IFS: domain decomposition, halo exchange every timestep</li>
-              <li><strong>CFD:</strong> OpenFOAM, ANSYS Fluent: mesh partitioning, neighbor communication</li>
-              <li><strong>Molecular Dynamics:</strong> GROMACS, LAMMPS, NAMD: particle domain decomposition</li>
-              <li><strong>Seismic Processing:</strong> Finite-difference wave propagation</li>
-              <li><strong>Structural Analysis:</strong> ABAQUS, LS-DYNA: implicit solvers with global coupling</li>
-            </ul>
-          </div>
-          <div>
-            <Box variant="h3">Loosely Coupled (EFA optional)</Box>
-            <ul>
-              <li><strong>Monte Carlo:</strong> Independent trajectories, minimal communication</li>
-              <li><strong>Parameter sweeps:</strong> Embarrassingly parallel, no inter-rank communication</li>
-              <li><strong>Genomics pipelines:</strong> BWA, GATK: mostly I/O bound, not network bound</li>
-              <li><strong>Rendering:</strong> Frame-independent, scatter-gather at boundaries</li>
-            </ul>
-          </div>
-        </ColumnLayout>
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Split the field by how often a rank waits on its neighbours. Every-timestep exchange
+            puts real time in the network, so the fabric moves the whole job. Ranks that run alone
+            are bounded by compute or by storage.
+          </Box>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Tightly Coupled (EFA critical)</Box>
+              <ul>
+                <li><strong>Weather/Climate:</strong> WRF (Weather Research and Forecasting), MPAS, IFS: domain decomposition, halo exchange every timestep</li>
+                <li><strong>CFD:</strong> OpenFOAM, ANSYS Fluent: mesh partitioning, neighbor communication</li>
+                <li><strong>Molecular Dynamics:</strong> GROMACS, LAMMPS, NAMD: particle domain decomposition</li>
+                <li><strong>Seismic Processing:</strong> Finite-difference wave propagation</li>
+                <li><strong>Structural Analysis:</strong> ABAQUS, LS-DYNA: implicit solvers with global coupling</li>
+              </ul>
+            </div>
+            <div>
+              <Box variant="h3">Loosely Coupled (EFA optional)</Box>
+              <ul>
+                <li><strong>Monte Carlo:</strong> Independent trajectories, minimal communication</li>
+                <li><strong>Parameter sweeps:</strong> Embarrassingly parallel, no inter-rank communication</li>
+                <li><strong>Genomics pipelines:</strong> BWA, GATK: bound by storage I/O</li>
+                <li><strong>Rendering:</strong> Frame-independent, scatter-gather at boundaries</li>
+              </ul>
+            </div>
+          </ColumnLayout>
+        </SpaceBetween>
       </Container>
 
       <Container
-        header={<Header variant="h2" description="Three published results. Each compares a different pair of things, so each one says what it measured.">Measured performance</Header>}
+        header={<Header variant="h2" description="Three published results, each naming the pair it compares, so you can tell which one speaks to your decision.">Measured performance</Header>}
       >
         <ColumnLayout columns={3} variant="text-grid">
           <div>
@@ -130,8 +137,8 @@ export function HPC() {
               WRF v4.2.2 CONUS 2.5 km on hpc7a with Intel MPI 2021.9.0. Setting{' '}
               <code>I_MPI_MULTIRAIL=1</code> gave a <strong>10% increase in speedup at 32
               instances</strong>, and at 192 instances <strong>the increase was over 30%</strong>{' '}
-              <SourceRef provenance="documented" doc={docs.multirail} />. This is EFA against EFA.
-              It is what you leave on the table by using one of two EFA devices.
+              <SourceRef provenance="documented" doc={docs.multirail} />. This is EFA against EFA:
+              what you leave on the table by using one of two EFA devices.
             </Box>
           </div>
           <div>
@@ -153,12 +160,10 @@ export function HPC() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            MPI (Message Passing Interface) is the standard for HPC communication. EFA integrates
-            via libfabric&apos;s EFA provider. AWS names two MPI implementations as supported, Open
-            MPI 4.1 and later and Intel MPI 2019 Update 5 and later{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />. MPICH works over the same
-            libfabric provider but is not on that list, so treat it as unsupported by AWS rather
-            than broken.
+            Wiring up a job means making sure your MPI loads a libfabric that has the EFA provider
+            in it. AWS names two MPI implementations as supported, Open MPI 4.1 and later and Intel
+            MPI 2019 Update 5 and later <SourceRef provenance="documented" doc={docs.efa} />. MPICH
+            runs over the same libfabric provider, and AWS support covers the two named above.
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
             <div>
@@ -185,26 +190,23 @@ export function HPC() {
             </div>
           </ColumnLayout>
 
-          <ExpandableSection headerText="HPC-specific EFA considerations">
+          <ExpandableSection
+            headerText="Memory registration and message size"
+            headerDescription="Two properties that change how you budget RAM and how you read a benchmark"
+          >
             <SpaceBetween size="s">
               <Box variant="p">
                 <strong>Memory registration:</strong> EFA requires memory registration for
-                zero-copy transfers. MPI implementations handle this automatically, but
-                be aware that registered memory is pinned and cannot be swapped. For large
-                HPC jobs, this can consume significant memory.
+                zero-copy transfers. MPI implementations do it for you, and registered pages stay
+                pinned in RAM, so large jobs have to budget for those buffers up front.
               </Box>
               <Box variant="p">
                 <strong>Message sizes:</strong> EFA helps most where per-message overhead dominates,
-                which means small messages sent at high rate. For large messages the bandwidth
-                advantage still applies but the per-message saving is a smaller share of the
-                transfer. The one sourced data point on this page agrees in direction: the allreduce
-                improvement AWS reports was 50% for small messages against 10% for large ones{' '}
+                which means small messages sent at high rate. On large messages the bandwidth
+                advantage still applies, and the per-message saving is a smaller share of the
+                transfer. The sourced figure above agrees in direction: the allreduce improvement
+                AWS reports was 50% for small messages against 10% for large ones{' '}
                 <SourceRef provenance="documented" doc={docs.gen2} />.
-              </Box>
-              <Box variant="p">
-                <strong>Collectives:</strong> EFA accelerates all MPI collectives (Allreduce,
-                Allgather, Bcast, Scatter, Gather). The benefit is proportional to how
-                frequently your application calls collectives vs. compute.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -216,14 +218,13 @@ export function HPC() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            For CPU-only HPC with EFA, the dedicated HPC families are the price-performance answer.
-            They are also the most constrained families on EC2: no Spot, no Dedicated Hosts, no
-            metal sizes, and every one of them is Linux-first{' '}
-            <SourceRef provenance="documented" doc={docs.hpc} />. The networking constraint is the
-            same one every EFA workload has, and it is the Availability Zone, not the placement
-            group: EFA traffic cannot cross Availability Zones or VPCs{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />. AWS recommends a cluster placement
-            group rather than requiring one{' '}
+            For CPU-only HPC with EFA, the dedicated HPC families are the price-performance answer,
+            and they are the most constrained families on EC2. The purchase and shape options are
+            narrow: no Spot, no Dedicated Hosts, no metal sizes, and Linux-first support{' '}
+            <SourceRef provenance="documented" doc={docs.hpc} />. The placement constraint is the
+            one every EFA workload has: traffic stays inside a single Availability Zone and a
+            single VPC <SourceRef provenance="documented" doc={docs.efa} />. AWS recommends a
+            cluster placement group and stops short of requiring one{' '}
             <SourceRef provenance="documented" doc={docs.efaStart} />.
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
@@ -232,9 +233,9 @@ export function HPC() {
               <Box variant="p">
                 Up to 192 cores of AMD EPYC 9R14, 300 Gbps EFA. Reaching 300 Gbps needs at least two
                 ENIs on separate network cards; one card tops out at 150 Gbps{' '}
-                <SourceRef provenance="documented" doc={docs.hpc} />. This is the family the
-                multi-rail result above was measured on, so leaving the second device idle is the
-                10% at 32 instances and over 30% at 192 that AWS published{' '}
+                <SourceRef provenance="documented" doc={docs.hpc} />. The multi-rail result above
+                was measured here, so an idle second device is the 10% at 32 instances and over
+                30% at 192 that AWS published{' '}
                 <SourceRef provenance="documented" doc={docs.multirail} />.
               </Box>
             </div>
@@ -242,8 +243,8 @@ export function HPC() {
               <Box variant="h3">Hpc7g (Graviton3E, Nitro v5)</Box>
               <Box variant="p">
                 Up to 64 cores, 200 Gbps EFA, one network card{' '}
-                <SourceRef provenance="documented" doc={docs.hpc} />. Note the RDMA asymmetry: every
-                hpc7g size is RDMA read only, with no RDMA write{' '}
+                <SourceRef provenance="documented" doc={docs.hpc} />. RDMA support here is
+                asymmetric: every hpc7g size is RDMA read only{' '}
                 <SourceRef provenance="documented" doc={docs.efa} />.
               </Box>
             </div>

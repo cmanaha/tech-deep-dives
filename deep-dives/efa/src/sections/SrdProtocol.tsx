@@ -18,9 +18,9 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * revamp/source-authority-standard.md):
  *
  *  1. `kernel/linux/efa/SRD.txt` is NEVER cited as evidence. It is a 2019-era
- *     specification document that the code in its own repository contradicts,
- *     and it already put one false claim on this site. It appears here only as
- *     a named example of why an in-repo text file is not a source.
+ *     specification document that the code in its own repository contradicts.
+ *     It appears on the page only as one side of a documentation-versus-code
+ *     conflict, where the driver opcodes win.
  *  2. SRD does not sit "on top of ENA". SRD lives in the Nitro card. ENA (via
  *     ENA Express) and EFA are peer consumers of it. The decisive disproof is
  *     that an EFA-only interface materializes an EFA device with no ENA device
@@ -627,52 +627,49 @@ export function SrdProtocol() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The problem:</strong> a collective operation finishes when its slowest
-            participant finishes. That makes tail latency, not median latency, the number that
-            decides how fast a distributed training step runs. Every conventional reliable transport
-            makes tail latency worse in the same way: it delivers packets in order, so one lost
-            packet holds up every packet queued behind it. AWS names this directly, calling the
-            in-order model a conga line where a single lost packet messes up the on-time arrival of
-            all the packets behind it, an effect called head of line blocking{' '}
-            <SourceRef provenance="documented" doc={docs.hpcBlog} />.
+            A collective operation finishes when its slowest participant finishes, which makes tail
+            latency the number that decides how fast a distributed training step runs. Every
+            conventional reliable transport works against that number in the same way: it delivers
+            packets in order, so one lost packet holds up every packet queued behind it. AWS names
+            this directly, calling the in-order model a conga line where a single lost packet messes
+            up the on-time arrival of all the packets behind it, an effect called head of line
+            blocking <SourceRef provenance="documented" doc={docs.hpcBlog} />.
           </Box>
           <Box variant="p">
-            <strong>The answer:</strong> SRD (Scalable Reliable Datagram) keeps reliability and
-            throws ordering away. AWS states it plainly: SRD relaxed the requirement for in-order
-            packet delivery in the belief that if it is necessary it can be reasserted in the higher
-            layers of the stack, and the p99 tail latency then fell by around a factor of ten{' '}
-            <SourceRef provenance="documented" doc={docs.hpcBlog} />. Everything else in this
+            <strong>The trade SRD makes:</strong> SRD (Scalable Reliable Datagram) keeps reliability
+            and throws ordering away. AWS states it plainly: SRD relaxed the requirement for
+            in-order packet delivery in the belief that if it is necessary it can be reasserted in
+            the higher layers of the stack, and the p99 tail latency then fell by around a factor of
+            ten <SourceRef provenance="documented" doc={docs.hpcBlog} />. Everything else in this
             section follows from that single trade.
           </Box>
           <Box variant="p">
             The design is published as Shalev, Ayoub, Bshara and Sabbag,{' '}
             <em>A Cloud-Optimized Transport Protocol for Elastic and Scalable HPC</em>, IEEE Micro
             volume 40 issue 6, November 2020{' '}
-            <SourceRef provenance="documented" doc={docs.ieeeMicro} />. It is frequently miscited as
-            an NSDI paper. It is not. Both the AWS HPC blog and the libfabric EFA (Elastic Fabric
-            Adapter) provider documentation link to the same IEEE Micro record. The paper is
-            paywalled and was not read for this page, so nothing here is attributed to it.
+            <SourceRef provenance="documented" doc={docs.ieeeMicro} />. Both the AWS HPC blog and
+            the libfabric EFA (Elastic Fabric Adapter) provider documentation link to that IEEE
+            Micro record. The paper is paywalled and was not read for this page, so nothing here is
+            attributed to it.
           </Box>
 
           <ExpandableSection
-            headerText="Why an in-repo specification file is not a source"
-            headerDescription="A 2019 text file in an official AWS repository, contradicted by the driver beside it"
+            headerText="Documentation contradicts the code: the driver defines read and write opcodes for SRD"
+            headerDescription="A 2019 specification file in the driver repository still says Send only"
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                The <code>amzn/amzn-drivers</code> repository ships a text file describing the SRD
-                queue pair type. It dates from 2019 and states that only the Send operation is
-                currently supported. The driver code in that same repository defines{' '}
-                <code>EFA_IO_RDMA_READ</code> and <code>EFA_IO_RDMA_WRITE</code> as device opcodes,
-                and the device reports both operations as capability bits in its admin-queue
-                attributes. The file was never revised.
+                The driver defines <code>EFA_IO_RDMA_READ</code> and <code>EFA_IO_RDMA_WRITE</code>{' '}
+                as device opcodes, and the device reports both operations as capability bits in its
+                admin-queue attributes. A text file shipped in the same{' '}
+                <code>amzn/amzn-drivers</code> repository describes the SRD queue pair type and
+                states that only the Send operation is currently supported. It dates from 2019 and
+                was never revised.
               </Box>
               <Box variant="p">
-                A stale specification file inside an official AWS repository reads like a primary
-                source and is not one. The rule this page follows: code at a pinned commit is the
-                authority, official documentation is a secondary check, and an in-repo README,
-                comment or specification file is a way to find your way around the code, never proof
-                of behaviour.
+                Code wins. On this page code at a pinned commit is the authority, official
+                documentation is a secondary check, and an in-repo README, comment or specification
+                file is a way to find your way around the code.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -710,8 +707,8 @@ sed -n '664,674p' kernel/linux/efa/src/efa_admin_cmds_defs.h
 grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
               </Box>
               <Box variant="p">
-                The last command returns a single getter and no setter. That absence is the whole
-                argument that SRD is not layered on ENA.
+                The last command returns a single getter and no setter: from inside the instance
+                you can read SRD counters, and the card owns everything else.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -722,29 +719,29 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
         header={
           <Header
             variant="h2"
-            description="The single most common misconception about EFA, settled from code"
+            description="Which component owns the transport, settled from code"
           >
-            SRD does not run on top of ENA
+            SRD lives in the Nitro card
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            SRD lives in the Nitro card. AWS says so for the storage case in its own words: to
-            minimize jitter and to ensure the fastest response to network congestion fluctuations,
+            AWS says so for the storage case in its own words: to minimize jitter and to ensure the
+            fastest response to network congestion fluctuations,
             SRD is implemented in the AWS custom Nitro networking card{' '}
             <SourceRef provenance="documented" doc={docs.storageBlog} />. The EBS (Elastic Block
             Store) documentation repeats it for io2 Block Express, which communicates with
             Nitro-based instances using SRD through an interface implemented in the Nitro card
             dedicated to the EBS I/O function <SourceRef provenance="documented" doc={docs.ebsIops} />
             . EFA and ENA (Elastic Network Adapter, through ENA Express) are two peer consumers of
-            that one transport. Neither is built on the other.
+            that one transport.
           </Box>
 
           <ColumnLayout columns={3} variant="text-grid">
             <div>
               <Box variant="h3">
-                An EFA-only interface has no ENA device{' '}
+                An EFA-only interface carries SRD by itself{' '}
                 <Badge color="green">decisive</Badge>
               </Box>
               <Box variant="p">
@@ -757,7 +754,7 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
               </Box>
             </div>
             <div>
-              <Box variant="h3">The ENA driver contains no SRD implementation</Box>
+              <Box variant="h3">The ENA driver only reads SRD counters</Box>
               <Box variant="p">
                 Everything the ENA driver knows about SRD is a read-only statistics structure,{' '}
                 <code>struct ena_admin_ena_srd_stats</code>{' '}
@@ -779,24 +776,19 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
                 through 0xefa4{' '}
                 <SourceRef provenance="code-derived" code={code.efaPci} />. The sets do not
                 intersect, and each driver registers its own <code>pci_driver</code> with its own
-                probe function. EFA is a separate PCI function, not a mode of the ENA device.
+                probe function. EFA is a separate PCI function.
               </Box>
             </div>
           </ColumnLayout>
 
-          <Alert type="info" header="ENA Express and EFA are both customers of SRD, not layers on each other">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                Accurate: ENA Express uses SRD. EFA uses SRD. SRD is implemented in the Nitro card.
-              </Box>
-              <Box variant="p">
-                Wrong: SRD is built on top of ENA. EFA is built on top of ENA. EFA is a mode of ENA.
-              </Box>
-            </SpaceBetween>
+          <Alert type="info" header="ENA Express and EFA are two customers of one transport">
+            ENA Express puts ordinary TCP and UDP (User Datagram Protocol) traffic onto SRD. EFA
+            puts OS-bypass traffic onto SRD. The protocol itself is implemented in the Nitro card,
+            which is what lets both of them reach it.
           </Alert>
 
           <ExpandableSection
-            headerText="What ENA Express exposes, and what it does not"
+            headerText="What ENA Express exposes, and where it is switched on"
             headerDescription="Three configuration bits and four counters, all read-only from inside the instance"
           >
             <SpaceBetween size="s">
@@ -806,9 +798,9 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
                 <code>ENA_ADMIN_ENA_SRD_UDP_ENABLED</code> and{' '}
                 <code>ENA_ADMIN_ENA_SRD_UDP_ORDERING_BYPASS_ENABLED</code>{' '}
                 <SourceRef provenance="code-derived" code={code.enaSrdFlags} />. That third bit is
-                the interesting one. It decides whether the card restores UDP (User Datagram
-                Protocol) receive ordering or hands packets up out of order, which is exactly the
-                ordering trade this whole section is about, offered as a per-attachment switch.
+                the interesting one. It decides whether the card restores UDP receive ordering or
+                hands packets up out of order, which is exactly the ordering trade this whole
+                section is about, offered as a per-attachment switch.
               </Box>
               <Box variant="p">
                 Because there is a get path and no set path{' '}
@@ -827,7 +819,7 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
         header={
           <Header
             variant="h2"
-            description="What each transport assumes about the network, and what breaks when the assumption fails"
+            description="What each transport assumes about the network, and what that assumption costs"
           >
             SRD against InfiniBand Reliable Connected and RoCEv2
           </Header>
@@ -878,7 +870,7 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="What PFC costs you is head of line blocking, not deadlock">
+          <Alert type="warning" header="What PFC costs you is head of line blocking">
             Deadlock is the charge you will hear levelled at PFC in large fabrics, and the primary
             literature is more careful than that. Zhu et al. describe routing deadlock as a commonly
             expressed concern, note that deadlock formation requires a set of flows whose buffer
@@ -896,18 +888,17 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             many network paths as possible while avoiding overloaded paths, leaving message order
             restoration to the upper layer because that layer has a better understanding of the
             required ordering semantics{' '}
-            <SourceRef provenance="documented" doc={docs.storageBlog} />. The EFA driver refuses to
-            claim membership of either family: it registers its InfiniBand device with{' '}
-            <code>node_type = RDMA_NODE_UNSPECIFIED</code>{' '}
-            <SourceRef provenance="code-derived" code={code.nodeType} />, rather than declaring
-            itself InfiniBand or RoCE.
+            <SourceRef provenance="documented" doc={docs.storageBlog} />. The EFA driver registers
+            its InfiniBand device with <code>node_type = RDMA_NODE_UNSPECIFIED</code>{' '}
+            <SourceRef provenance="code-derived" code={code.nodeType} />, a value that claims
+            membership of neither family.
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Why more nodes make the fabric better, not worse">
+          <Header variant="h2" description="Why more nodes make the fabric better">
             Packet spraying across many paths
           </Header>
         }
@@ -960,8 +951,9 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The evidence:</strong> the EFA device reports a network statistics block
-            containing <code>retrans_bytes</code>, <code>retrans_pkts</code>,{' '}
+            SRD expects the fabric to drop packets, so recovery is a routine event, and the card is
+            what performs it. <strong>The evidence:</strong> the EFA device reports a network
+            statistics block containing <code>retrans_bytes</code>, <code>retrans_pkts</code>,{' '}
             <code>retrans_timeout_events</code>, <code>unresponsive_remote_events</code> and{' '}
             <code>impaired_remote_conn_events</code>{' '}
             <SourceRef provenance="code-derived" code={code.netStats} />, and the driver surfaces
@@ -1015,9 +1007,7 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             detects and avoids congested network paths and handles some tasks directly in the
             network layer, such as packet reordering on the receiving end and most retransmits that
             are needed <SourceRef provenance="documented" doc={docs.enaExpress} />. Beyond that,
-            AWS publishes no algorithm. This page does not name one. Claims that SRD congestion
-            control resembles any specific published algorithm are inference, and none is asserted
-            here.
+            AWS publishes no algorithm, and this page names none.
           </Box>
 
           <Alert type="info" header="How to see recovery happening on a live instance">
@@ -1036,7 +1026,7 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
         header={
           <Header
             variant="h2"
-            description="The device delivers with no ordering guarantee at all. Ordering is bought in software, per peer."
+            description="The device delivers reliably in any order. Ordering is bought back in software, per peer."
           >
             Who restores order, and what it costs
           </Header>
@@ -1131,10 +1121,10 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
           </ExpandableSection>
 
           <Box variant="p">
-            This is the honest price of SRD. Ordering is not free, it is just moved. Relaxing it is
-            what dropped p99 tail latency by around a factor of ten{' '}
-            <SourceRef provenance="documented" doc={docs.hpcBlog} />, and this is where the bill for
-            it arrives. If the application asks for ordered delivery, it pays for a per-peer window,
+            This is the honest price of SRD. Relaxing ordering is what dropped p99 tail latency by
+            around a factor of ten{' '}
+            <SourceRef provenance="documented" doc={docs.hpcBlog} />, and software is where the bill
+            arrives. If the application asks for ordered delivery, it pays for a per-peer window,
             a bounce-buffer copy for every out-of-order arrival, and an overflow list when
             reordering exceeds the window. If the application does not need ordering, it pays none
             of that and takes the fabric at its native speed. Collectives and message passing are in
@@ -1155,8 +1145,8 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The mechanism, in one line:</strong> an SRD queue pair is not bound to a peer.
-            Every transmit descriptor carries its own destination. The transmit metadata descriptor
+            <strong>The mechanism, in one line:</strong> an SRD queue pair carries its destination
+            in every descriptor. The transmit metadata descriptor
             has <code>dest_qp_num</code>, an address handle index <code>ah</code>, and a{' '}
             <code>qkey</code>, all inside the per-work-request descriptor{' '}
             <SourceRef provenance="code-derived" code={code.txMeta} />. One send queue can therefore
@@ -1167,7 +1157,7 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
           </Box>
 
           <Box variant="p">
-            The negative proof is stronger. The EFA admin modify-queue-pair command has fields for
+            The absent field settles it. The EFA admin modify-queue-pair command has fields for
             state, current state, queue key, send queue packet sequence number, drain notification
             and RNR retry count, and no field for a destination at all{' '}
             <SourceRef provenance="code-derived" code={code.modifyQp} />. There is nowhere to bind a
@@ -1243,13 +1233,18 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
         header={
           <Header
             variant="h2"
-            description="The factor of ten in p99 is not free everywhere. Where the trade lands badly, and what to reach for instead."
+            description="Where the factor of ten in p99 is paid for, and what to reach for when the trade lands badly"
           >
             What SRD costs you
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            Three bills come attached to that factor of ten: a programming model, an API, and a
+            small latency charge while the fabric is quiet.
+          </Box>
+
           <ColumnLayout columns={3} variant="text-grid">
             <div>
               <Box variant="h3">Out-of-order completion</Box>
@@ -1263,7 +1258,7 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
               </Box>
             </div>
             <div>
-              <Box variant="h3">No socket API</Box>
+              <Box variant="h3">libfabric is the only way in</Box>
               <Box variant="p">
                 EFA registers an InfiniBand device, not a network device, so there is no interface,
                 no IP address and no socket to bind. AWS states the consequence directly: EFA-only
@@ -1294,7 +1289,9 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             reducing tail latency between instances during periods of high network load{' '}
             <SourceRef provenance="documented" doc={docs.enaExpress} />. You keep sockets and pay
             the uncongested median tax. EFA removes the kernel from the data path entirely and pays
-            nothing at the transport layer, but demands a different programming model.
+            nothing at the transport layer, in exchange for a different programming model. Reach for
+            ENA Express when the application has to keep its sockets, and for EFA when the library
+            underneath it already speaks libfabric.
           </Box>
         </SpaceBetween>
       </Container>

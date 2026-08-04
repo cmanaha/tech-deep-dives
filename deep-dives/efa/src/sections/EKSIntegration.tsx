@@ -227,7 +227,7 @@ function LayerCakeDiagram() {
       sub: 'EKS-optimized AMI',
       lines: [
         'efa kernel driver, efa-config, efa-nv-peermem, full rdma-core userspace.',
-        'No libfabric. No MPI. No aws-ofi-nccl. No /opt/amazon/efa profile wiring.',
+        'libfabric, MPI, aws-ofi-nccl and the /opt/amazon/efa wiring all come from row 1.',
       ],
       owner: 'The AMI build',
       tone: 'ami',
@@ -413,7 +413,7 @@ function MinimalFlagDiagram() {
       </text>
 
       <text className="mn-cap" x="450" y="492">
-        NCCL is in neither column. The EFA installer has never shipped it, so that absence has a different cause.
+        NCCL sits outside the installer in both modes, so its absence from the node has a different cause.
       </text>
       <text className="mn-cap" x="450" y="510">
         Package names and versions read from aws-efa-installer 1.49.0.
@@ -566,23 +566,23 @@ const contractRows: ContractRow[] = [
     item: 'hugepages-2Mi',
     status: 'Usually required',
     detail:
-      'Required where the instance pre-allocates huge pages. AWS states that EC2 instances with the EFA driver installed pre-allocate 5128 2MiB huge pages. The GB200 reference manifest requests none at all, so this is not universal.',
+      'Required where the instance pre-allocates huge pages. AWS states that EC2 instances with the EFA driver installed pre-allocate 5128 2MiB huge pages. The GB200 reference manifest requests none at all, which is why the status reads usually.',
   },
   {
     item: 'libfabric, aws-ofi-nccl and NCCL in the image',
     status: 'Required',
     detail:
-      'The node does not have them. This is the whole point of the layer cake above. A missing aws-ofi-nccl shows up as NCCL silently falling back to sockets, not as a failure.',
+      'The split again: the node stops at rdma-core, so the image supplies these three. A missing aws-ofi-nccl shows up as NCCL silently falling back to sockets, so the job succeeds and runs slow.',
   },
   {
     item: 'hostNetwork: true',
-    status: 'Not required',
+    status: 'Device layer only',
     detail:
-      'Required for the device plugin and aws-dranet DaemonSets, not for workload pods. Some AWS sample workloads still set it. See the note below before you copy it.',
+      'The EFA device plugin and aws-dranet DaemonSets set it. Workload pods reach EFA through injected device nodes on the pod network. Some AWS samples set it on workloads anyway; see the note below.',
   },
   {
     item: 'privileged: true',
-    status: 'Not required',
+    status: 'Skip it',
     detail:
       'AWS annotates this in its own inference sample: the device plugin injects the devices when the pod requests vpc.amazonaws.com/efa.',
   },
@@ -596,7 +596,7 @@ const contractRows: ContractRow[] = [
     item: 'NCCL_TOPO_FILE',
     status: 'Delete it',
     detail:
-      'No AWS documentation and no AWS-authored EFA manifest sets it. Topology alignment on EKS comes from the AL2023 AMI automatically, or from a DRA matchAttribute constraint.',
+      'Topology alignment on EKS comes from the AL2023 AMI automatically, or from a DRA matchAttribute constraint. No AWS documentation and no AWS-authored EFA manifest sets this variable.',
   },
 ];
 
@@ -614,11 +614,6 @@ const mechanismRows: MechanismRow[] = [
     plugin: 'EKS Auto Mode, Karpenter, managed node groups, self-managed nodes',
   },
   {
-    feature: 'How devices are advertised',
-    dra: 'ResourceSlice objects carrying device type, topology and PCIe locality',
-    plugin: 'An integer count of the vpc.amazonaws.com/efa extended resource',
-  },
-  {
     feature: 'Accelerator affinity',
     dra: 'Native, through matchAttribute constraints',
     plugin: 'Automatic, and only on EKS-optimized AL2023 AMIs',
@@ -626,7 +621,7 @@ const mechanismRows: MechanismRow[] = [
   {
     feature: 'Device sharing between pods',
     dra: 'Supported through a shared ResourceClaim',
-    plugin: 'Not supported. Each device goes to exactly one pod.',
+    plugin: 'Each device goes to exactly one pod.',
   },
 ];
 
@@ -637,7 +632,7 @@ export function EKSIntegration() {
         header={
           <Header
             variant="h1"
-            description="I am already on Amazon EKS. What do I actually change, and which of the things everyone copy-pastes are wrong?"
+            description="What you change on the node, in the image and in the pod spec, and which copied lines to drop."
           >
             EFA on EKS: the AMI, the device layer and the pod contract
           </Header>
@@ -645,20 +640,20 @@ export function EKSIntegration() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The problem:</strong> most EFA (Elastic Fabric Adapter) manifests circulating for Amazon EKS
-            (Elastic Kubernetes Service) carry three copied mistakes. They set hostNetwork with a comment claiming
-            EFA requires it, they list a cluster placement group as a hard requirement, and they assume the node
-            image already has the full EFA software stack on it.{' '}
-            <strong>The answer:</strong> the node image gives you the kernel driver and rdma-core and nothing above
-            that, the hard placement constraint is the Availability Zone, and hostNetwork is a choice with a real
-            trade-off rather than a requirement.
+            One split explains almost everything surprising about EFA (Elastic Fabric Adapter) on Amazon EKS
+            (Elastic Kubernetes Service). <strong>The node image supplies the hardware plane: the EFA kernel
+            driver and the rdma-core userspace, and it stops there. Your container image supplies the fabric
+            stack: libfabric, aws-ofi-nccl, NCCL (NVIDIA Collective Communications Library) and MPI (Message
+            Passing Interface).</strong> Everything below is a consequence: why fi_info fails on the host, why
+            Bottlerocket and AL2023 land on different driver versions, and why a job that ran at a few GB/s was
+            missing a library rather than a tuning flag.
           </Box>
           <Box variant="p">
-            Two mechanisms now exist for exposing EFA devices to Kubernetes. AWS states it plainly: Amazon EKS
-            supports two mechanisms for managing EFA devices in EKS clusters, the EFA Dynamic Resource Allocation
-            (DRA) driver, also called DRANET, and the EFA device plugin{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />. Which one you can use is decided by your
-            Kubernetes version and by how your nodes are provisioned, not by preference.
+            Two mechanisms expose EFA devices to Kubernetes. AWS states it plainly: Amazon EKS supports two
+            mechanisms for managing EFA devices in EKS clusters, the EFA Dynamic Resource Allocation (DRA) driver,
+            also called DRANET, and the EFA device plugin{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. Your Kubernetes version and your node
+            provisioning method decide which one is available to you.
           </Box>
           <Alert type="info" header="The shortest path that works, if you do nothing else">
             <SpaceBetween size="xs">
@@ -667,8 +662,8 @@ export function EKSIntegration() {
                 efaEnabled: true, install one chart, then request the resource in your pod. When efaEnabled is set
                 to true in the node group configuration, all interfaces are configured with interface type EFA, an
                 EFA-specific security group is created, and the EFA device plugin is installed on the cluster{' '}
-                <SourceRef provenance="documented" doc={docs.eksDevice} />. That covers the device layer. It does
-                not cover the container image, which is the half people forget.
+                <SourceRef provenance="documented" doc={docs.eksDevice} />. That is the whole device layer. The
+                container image is the other half of the split, and it is the half people forget.
               </Box>
               <Box variant="code">
                 {`# eksctl 0.215.0 or later is required for efaEnabled node groups.
@@ -706,23 +701,21 @@ resources:
             Read the diagram bottom to top. EC2 attaches network interfaces at launch. The node image makes those
             interfaces into working device nodes by supplying the EFA kernel driver and the rdma-core userspace. A
             DaemonSet counts the device nodes and advertises them. A pod asks for some. And then, only inside the
-            container, libfabric opens them and aws-ofi-nccl maps NCCL (NVIDIA Collective Communications Library)
-            channels onto them.
+            container, libfabric opens them and aws-ofi-nccl maps NCCL channels onto them.
           </Box>
           <Box variant="p">
-            The practical consequence catches people out on day one. Running <code>fi_info -p efa</code> on an EKS
-            node over SSH prints nothing useful, because libfabric is not installed on the host. Run it inside the
-            workload container instead. What does work on the host is{' '}
-            <code>ibv_devinfo</code>, because the full rdma-core suite, including libibverbs-utils, infiniband-diags
-            and python3-pyverbs, does land on the node{' '}
-            <SourceRef provenance="code-derived" doc={docs.installer} />.
+            The split has a diagnostic consequence on day one. <code>ibv_devinfo</code> is the tool that works over
+            SSH on an EKS node, because the full rdma-core suite, including libibverbs-utils, infiniband-diags and
+            python3-pyverbs, lands on the node{' '}
+            <SourceRef provenance="code-derived" doc={docs.installer} />. <code>fi_info -p efa</code> belongs to
+            libfabric, which lives in your image, so run that one inside the workload container.
           </Box>
-          <Alert type="info" header="What AWS documents you still have to install yourself">
-            The EKS AL2023 and Bottlerocket AMIs (Amazon Machine Images) do not include the EFA DRA driver or the EFA
-            device plugin, and these must be installed separately on your cluster before deploying workloads{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />. Separately, the EKS-optimized AL2023 NVIDIA
-            AMIs do not include the NVIDIA Kubernetes device plugin or the NVIDIA DRA driver either. Bottlerocket
-            NVIDIA does include the NVIDIA device plugin{' '}
+          <Alert type="info" header="The two device layers are cluster add-ons, on every AMI">
+            AWS states that the EFA DRA driver and the EFA device plugin must be installed separately on your
+            cluster before deploying workloads, on the EKS AL2023 and Bottlerocket AMIs (Amazon Machine Images)
+            alike <SourceRef provenance="documented" doc={docs.eksDevice} />. The NVIDIA layer splits by AMI:
+            Bottlerocket NVIDIA carries the NVIDIA device plugin in the image, and on the EKS-optimized AL2023
+            NVIDIA AMIs you install the NVIDIA Kubernetes device plugin and the NVIDIA DRA driver yourself{' '}
             <SourceRef provenance="documented" doc={docs.eksAmi} />.
           </Alert>
         </SpaceBetween>
@@ -732,7 +725,7 @@ resources:
         header={
           <Header
             variant="h2"
-            description="One line in the AMI build script decides what half of this section is about."
+            description="The one build-script line that fixes where the split falls, and the four package families it moves into your image."
           >
             The EKS AMI runs efa_installer.sh --minimal
           </Header>
@@ -753,39 +746,36 @@ resources:
 
           <MinimalFlagDiagram />
 
-          <Alert type="warning" header="The flag withholds four package families, not the two the documentation names">
+          <Alert type="warning" header="The flag withholds four package families where the documentation names two">
             <SpaceBetween size="xs">
               <Box variant="p">
                 The EC2 documentation describes the flag as installing the EFA software without Libfabric and Open
-                MPI (Message Passing Interface){' '}
-                <SourceRef provenance="documented" doc={docs.efaStart} />. The installer disagrees with its own
-                documentation by being more thorough. Its usage text reads: only install kernel module and
-                rdma-core, do not install libfabric, mpi, or the NCCL plugin. The enforcing condition skips any
-                package whose name matches libfabric, openmpi, libnccl-ofi or efa-profile{' '}
+                MPI <SourceRef provenance="documented" doc={docs.efaStart} />. The installer is more thorough than
+                its own documentation. Its usage text reads: only install kernel module and rdma-core, do not
+                install libfabric, mpi, or the NCCL plugin. The enforcing condition skips any package whose name
+                matches libfabric, openmpi, libnccl-ofi or efa-profile{' '}
                 <SourceRef provenance="code-derived" doc={docs.installer} />.
               </Box>
               <Box variant="p">
                 The efa-profile omission is the one nobody expects. That package owns the profile.d and ld.so.conf
-                entries for /opt/amazon/efa. Without it, hand-installing libfabric on the host later still leaves
-                nothing wiring it into the default library or executable search paths. The same flag also disables
-                the installer self-test, which is the direct reason fi_info cannot work on an EKS node{' '}
+                entries for /opt/amazon/efa, so a libfabric hand-installed on the host later sits outside the
+                default library and executable search paths and nothing finds it. The same flag also disables the
+                installer self-test, which is the direct reason fi_info cannot work on an EKS node{' '}
                 <SourceRef provenance="code-derived" doc={docs.installer} />.
               </Box>
               <Box variant="p">
-                Do not fold NCCL into that list. NCCL is not in the EFA installer package manifest in any mode, so
-                its absence from the node has a different cause from the four the flag excludes. What the flag
-                excludes is the aws-ofi-nccl plugin, shipped as libnccl-ofi-1.20.0{' '}
+                NCCL sits outside this list entirely. The EFA installer package manifest carries no NCCL in any
+                mode, so its absence from the node traces to a different cause than the four families the flag
+                excludes. What the flag excludes is the aws-ofi-nccl plugin, shipped as libnccl-ofi-1.20.0{' '}
                 <SourceRef provenance="code-derived" doc={docs.installer} />.
               </Box>
             </SpaceBetween>
           </Alert>
 
           <Box variant="p">
-            The node is also less spartan than kernel module plus rdma-core makes it sound. rdma-core is skipped
-            only by an explicit
-            --skip-rdma-core flag, never by --minimal, so the node receives the complete suite: ibacm,
-            infiniband-diags, libibumad, libibverbs, libibverbs-utils, librdmacm, librdmacm-utils, python3-pyverbs,
-            rdma-core and rdma-core-devel{' '}
+            The rdma-core half of the split is generous. Only an explicit --skip-rdma-core flag drops it, so
+            --minimal leaves the complete suite on the node: ibacm, infiniband-diags, libibumad, libibverbs,
+            libibverbs-utils, librdmacm, librdmacm-utils, python3-pyverbs, rdma-core and rdma-core-devel{' '}
             <SourceRef provenance="code-derived" doc={docs.installer} />. efa-config and efa-nv-peermem survive too.
             The build proves the latter by explicitly removing efa-nv-peermem again on non-NVIDIA AMIs, which it
             would have no reason to do if --minimal had not installed it{' '}
@@ -794,7 +784,7 @@ resources:
 
           <Alert
             type="error"
-            header="Bottlerocket never runs efa_installer.sh, whatever the documentation says"
+            header="Bottlerocket compiles its own EFA kernel module, and the documentation reads otherwise"
           >
             <SpaceBetween size="xs">
               <Box variant="p">
@@ -807,9 +797,9 @@ resources:
                   code={code.brKmod}
                   conflict="EKS User Guide: Bottlerocket ships the components installed by the aws-efa-installer."
                 />
-                . The Bottlerocket build never invokes that installer. It downloads a pinned installer 1.47.0
-                tarball only in order to extract the driver sources out of the RPM inside it, then compiles its own
-                kernel module against its own kernel{' '}
+                . The Bottlerocket build treats that installer as a source archive instead. It downloads a pinned
+                1.47.0 tarball, extracts the driver sources out of the RPM inside it, and compiles its own kernel
+                module against its own kernel{' '}
                 <SourceRef provenance="code-derived" code={code.brKmod} />.
               </Box>
               <Box variant="p">
@@ -862,7 +852,7 @@ make k8s=1.36 os_distro=al2023 \\
         header={
           <Header
             variant="h2"
-            description="One is recommended and newer. The other is the only one that works on half the compute types."
+            description="An integer or a set of attributes: pick the one your Kubernetes version and node provisioner allow."
           >
             Two ways to expose EFA devices to Kubernetes
           </Header>
@@ -870,12 +860,22 @@ make k8s=1.36 os_distro=al2023 \\
       >
         <SpaceBetween size="m">
           <Box variant="p">
+            Both are DaemonSets that read /dev/infiniband on the host and publish what they find. They differ in
+            what they publish. <strong>The EFA device plugin publishes one integer</strong>, the device count on
+            the node, as a Kubernetes extended resource named vpc.amazonaws.com/efa.{' '}
+            <strong>The EFA DRA driver, packaged as aws-dranet, publishes each device as its own object</strong>{' '}
+            carrying attributes: device type, topology and PCIe (Peripheral Component Interconnect Express)
+            locality <SourceRef provenance="documented" doc={docs.eksDevice} />. You count against an integer and
+            you match against attributes, which is what makes topology-aware scheduling expressible. Every row
+            below follows from that.
+          </Box>
+          <Box variant="p">
             AWS recommends the DRA driver for new deployments on clusters running Kubernetes 1.34 or later with EKS
-            managed node groups or self-managed node groups, and states in the same paragraph that the EFA DRA
-            driver is not supported with Karpenter or EKS Auto Mode, where you should use the EFA device plugin
-            instead <SourceRef provenance="documented" doc={docs.eksDevice} />. There is also a hard rule against
-            running both: do not install the EFA DRA driver on nodes where the EFA device plugin is running, because
-            the two mechanisms cannot coexist on the same node{' '}
+            managed node groups or self-managed node groups, and in the same paragraph sends Karpenter and EKS Auto
+            Mode clusters to the EFA device plugin, since the EFA DRA driver is not supported with either{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. There is also a hard rule against running
+            both: do not install the EFA DRA driver on nodes where the EFA device plugin is running, because the two
+            mechanisms cannot coexist on the same node{' '}
             <SourceRef provenance="documented" doc={docs.eksDevice} />.
           </Box>
 
@@ -894,13 +894,12 @@ make k8s=1.36 os_distro=al2023 \\
             <SourceRef provenance="documented" doc={docs.eksDevice} />.
           </Box>
 
-          <Alert type="warning" header="The Karpenter exclusion is a policy, not a guardrail">
+          <Alert type="warning" header="The Auto Mode half is enforced by the charts. The Karpenter half is a support statement.">
             Both charts carry the same node affinity clause excluding EKS Auto Mode nodes, keyed on
             eks.amazonaws.com/compute-type NotIn auto{' '}
-            <SourceRef provenance="code-derived" code={code.dranetDs} />. Nothing in the aws-dranet chart blocks a
-            Karpenter-provisioned node. A Karpenter node whose instance type appears in the chart allowlist will
-            schedule the DaemonSet quite happily. So one half of that AWS sentence is mechanically enforced and the
-            other half is a support statement. Do not assume a guardrail will stop you.
+            <SourceRef provenance="code-derived" code={code.dranetDs} />. The Karpenter case has no such clause: a
+            Karpenter node whose instance type appears in the chart allowlist schedules the aws-dranet DaemonSet
+            quite happily. Enforce that half yourself, in the NodePool or in review.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -909,7 +908,7 @@ make k8s=1.36 os_distro=al2023 \\
         header={
           <Header
             variant="h2"
-            description="An integer count on a node, an instance-type allowlist, and a version floor per instance family."
+            description="How many devices you get, and the two affinity rules that decide whether the DaemonSet lands."
           >
             The device plugin in detail
           </Header>
@@ -917,10 +916,9 @@ make k8s=1.36 os_distro=al2023 \\
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The plugin advertises EFA devices as the vpc.amazonaws.com/efa extended resource, requested in container
-            resource requests and limits{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />. As of the pinned chart commit it is at
-            version v0.5.30 with app version v0.5.20{' '}
+            That extended resource goes in both container resource requests and limits{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. As of the pinned chart commit the plugin is
+            at version v0.5.30 with app version v0.5.20{' '}
             <SourceRef provenance="code-derived" code={code.efaChart} />.
           </Box>
           <Box variant="code">
@@ -938,9 +936,9 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
             <div>
               <Box variant="h3">How many devices you get</Box>
               <Box variant="p">
-                The advertised count is the number of EFA interfaces actually attached at launch, not the maximum
-                the instance type could take. AWS states the ceiling rule: you can assign up to one EFA per network
-                card, and an EFA counts as a network interface{' '}
+                The advertised count is the number of EFA interfaces attached at launch. The instance type only
+                sets the ceiling, and AWS states that rule: you can assign up to one EFA per network card, and an
+                EFA counts as a network interface{' '}
                 <SourceRef provenance="documented" doc={docs.eksNode} />.
               </Box>
               <Box variant="p">
@@ -953,19 +951,19 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
               </Box>
             </div>
             <div>
-              <Box variant="h3">Two ways the DaemonSet quietly does not schedule</Box>
+              <Box variant="h3">Two affinity rules that keep it off your nodes</Box>
               <Box variant="p">
                 First, the chart carries an explicit allowlist of roughly 300 instance types under
                 supportedInstanceLabels.values, matched on node.kubernetes.io/instance-type{' '}
-                <SourceRef provenance="code-derived" code={code.efaValues} />. A brand new instance family does not
-                work until that list is bumped, and the failure mode is a DaemonSet that reports healthy with zero
-                pods on the nodes you care about.
+                <SourceRef provenance="code-derived" code={code.efaValues} />. A brand new instance family works
+                once that list is bumped. Until then the DaemonSet reports healthy with zero pods on the nodes you
+                care about, so check pod count per node rather than DaemonSet status.
               </Box>
               <Box variant="p">
                 Second, the same affinity block excludes EKS Auto Mode nodes with compute-type NotIn auto, and the
                 pod spec itself sets hostNetwork: true{' '}
-                <SourceRef provenance="code-derived" code={code.efaDs} />. That hostNetwork line belongs to the
-                plugin. It is the line people copy into their workloads by mistake.
+                <SourceRef provenance="code-derived" code={code.efaDs} />, which is the line people copy into their
+                workloads by mistake.
               </Box>
             </div>
           </ColumnLayout>
@@ -984,7 +982,7 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
         header={
           <Header
             variant="h2"
-            description="Rich attributes instead of an integer, which is what makes topology-aware allocation expressible at all."
+            description="How to pin each EFA device to the GPU it shares a PCIe root with, and what the packaging costs you."
           >
             The EFA DRA driver
           </Header>
@@ -992,13 +990,13 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The driver advertises EFA devices as ResourceSlice objects under the driver name dra.net and the
-            DeviceClass name efa.networking.k8s.aws, running as a DaemonSet that discovers devices automatically{' '}
+            The objects the driver publishes are ResourceSlices, under the driver name dra.net and the DeviceClass
+            name efa.networking.k8s.aws, from a DaemonSet that discovers devices automatically{' '}
             <SourceRef provenance="documented" doc={docs.eksDevice} />. The chart confirms both names, along with a
             Common Expression Language filter that keeps only devices whose dra.net/pciDevice attribute equals
             Elastic Fabric Adapter (EFA){' '}
-            <SourceRef provenance="code-derived" code={code.dranetValues} />. Its security posture is much tighter
-            than the device plugin: not privileged, read-only root filesystem, all capabilities dropped{' '}
+            <SourceRef provenance="code-derived" code={code.dranetValues} />. It runs unprivileged, with a read-only
+            root filesystem and all capabilities dropped, which is a tighter posture than the device plugin{' '}
             <SourceRef provenance="code-derived" code={code.dranetValues} />.
           </Box>
 
@@ -1021,12 +1019,12 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
           <Box variant="h3">Pinning EFA devices to the GPU they share a PCIe root with</Box>
           <Box variant="p">
             The DRA driver supports topology-aware allocation pairing EFA interfaces with GPUs or Neuron devices on
-            the same PCIe (Peripheral Component Interconnect Express) root, expressed with a matchAttribute
-            constraint <SourceRef provenance="documented" doc={docs.eksDevice} />. The attribute is not an AWS
-            invention. It is the upstream Kubernetes standard device attribute constant, the prefix
-            resource.kubernetes.io/ concatenated with pcieRoot, documented in-tree as a string in the format
-            pci-domain colon bus <SourceRef provenance="code-derived" code={code.k8sAttr} />. DRANET reuses that
-            constant rather than defining its own{' '}
+            the same PCIe root, expressed with a matchAttribute constraint{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. The attribute comes from upstream
+            Kubernetes: it is the standard device attribute constant, the prefix resource.kubernetes.io/
+            concatenated with pcieRoot, documented in-tree as a string in the format pci-domain colon bus{' '}
+            <SourceRef provenance="code-derived" code={code.k8sAttr} />. DRANET reuses that constant rather than
+            defining its own{' '}
             <SourceRef provenance="code-derived" code={code.dranetDb} />, which is precisely why the NVIDIA GPU DRA
             driver and DRANET can be constrained against each other.
           </Box>
@@ -1084,10 +1082,9 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
               bus bandwidth with GPUDirect RDMA (Remote Direct Memory Access) active. The unaligned template, same
               GPU against an EFA on pci0000:a0, reports roughly 6.04 GB/s with GPUDirect RDMA off, which the project
               summarises as degrading performance by roughly 1.9 times at the same GPU and EFA count{' '}
-              <SourceRef provenance="code-derived" code={code.dranetBench} />. This is a measurement published in an
-              upstream repository, not an AWS statement, and per this dive's sourcing rule an in-repo document is
-              orientation rather than proof. Treat the shape of the result as sound and the exact figures as
-              someone else's benchmark.
+              <SourceRef provenance="code-derived" code={code.dranetBench} />. These figures come from an upstream
+              repository rather than from AWS, and this dive treats an in-repo document as orientation rather than
+              proof. Treat the shape as sound and the numbers as someone else's benchmark.
             </Box>
           </ExpandableSection>
         </SpaceBetween>
@@ -1097,9 +1094,9 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
         header={
           <Header
             variant="h2"
-            description="Three things are required, two are not, and two more are in AWS samples without ever being documented."
+            description="The fields a working EFA pod carries, the two you can drop, and two that no AWS documentation explains."
           >
-            The pod contract: requirements against folklore
+            The pod contract
           </Header>
         }
       >
@@ -1116,7 +1113,7 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
                     color={
                       item.status === 'Required'
                         ? 'green'
-                        : item.status === 'Delete it'
+                        : item.status === 'Delete it' || item.status === 'Skip it'
                           ? 'red'
                           : item.status === 'Usually required'
                             ? 'blue'
@@ -1132,22 +1129,23 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
             items={contractRows}
           />
 
-          <Alert type="warning" header="hostNetwork: true is not required, and it is not folklore either">
+          <Alert type="warning" header="What hostNetwork is for, and why AWS samples still set it on workloads">
             <SpaceBetween size="xs">
               <Box variant="p">
-                The comment <code>hostNetwork: true # Required for EFA</code> travels with a lot of copied
-                manifests, and it is wrong. The word hostNetwork does not appear anywhere on the AWS EFA device
-                management page, including in its own workload pod example, and it does not appear on the EKS
-                machine learning training page either{' '}
-                <SourceRef provenance="documented" doc={docs.eksDevice} />. EFA reaches the container through
-                injected /dev/infiniband device nodes, regardless of network namespace. AWS multi-node inference
-                samples run EFA on the pod network and set NCCL_SOCKET_IFNAME to eth0 to prove the point.
+                hostNetwork belongs to the device layer. Both the EFA device plugin DaemonSet{' '}
+                <SourceRef provenance="code-derived" code={code.efaDs} /> and the aws-dranet DaemonSet{' '}
+                <SourceRef provenance="code-derived" code={code.dranetDs} /> set it, because they inspect the host.
+                A workload pod reaches EFA through injected /dev/infiniband device nodes, whatever its network
+                namespace, and AWS multi-node inference samples run EFA on the pod network with NCCL_SOCKET_IFNAME
+                set to eth0. The word hostNetwork appears nowhere on the AWS EFA device management page, including
+                in its own workload pod example, and nowhere on the EKS machine learning training page{' '}
+                <SourceRef provenance="documented" doc={docs.eksDevice} />. The comment{' '}
+                <code>hostNetwork: true # Required for EFA</code> that travels with copied manifests has no source
+                behind it.
               </Box>
               <Box variant="p">
-                The opposite claim, that no AWS source ever sets it on a workload, is also false and one search
-                disproves it. Three AWS-authored workload manifests set hostNetwork next to
-                vpc.amazonaws.com/efa. The HyperPod checkpointless training example hard-codes hostNetwork: True on
-                a p5 pretraining job that requests 32 EFA devices{' '}
+                AWS does set it on workloads, in three places. The HyperPod checkpointless training example
+                hard-codes hostNetwork: True on a p5 pretraining job that requests 32 EFA devices{' '}
                 <SourceRef provenance="code-derived" code={code.ckptJob} />. The HyperPod recipes expose it as a
                 first-class user-settable knob on EFA training jobs{' '}
                 <SourceRef provenance="code-derived" code={code.recipes} />. And an aws-do-eks multi-node inference
@@ -1155,13 +1153,9 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
                 <SourceRef provenance="code-derived" code={code.doEks} />.
               </Box>
               <Box variant="p">
-                The honest framing has three parts. It is not required for workload pods. It is required for the
-                device layer, since both the EFA device plugin DaemonSet{' '}
-                <SourceRef provenance="code-derived" code={code.efaDs} /> and the aws-dranet DaemonSet{' '}
-                <SourceRef provenance="code-derived" code={code.dranetDs} /> set it. And some AWS samples set it on
-                workloads anyway. No AWS source states a reason. The plausible one is rendezvous and launcher
+                No AWS source states a reason for those three. The plausible one is rendezvous and launcher
                 addressing rather than the EFA data path, but nobody has written that down, so treat it as our
-                reading.
+                reading. Start on the pod network, and reach for hostNetwork when a launcher needs a stable address.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1177,7 +1171,7 @@ kind: Pod
 metadata:
   name: efa-training-worker
 spec:
-  # No hostNetwork. No dnsPolicy override. No privileged: true.
+  # Pod network, default dnsPolicy, unprivileged. All three are deliberate.
   containers:
   - name: training
     image: your-training-image:latest   # must carry libfabric + aws-ofi-nccl + NCCL
@@ -1218,12 +1212,11 @@ spec:
             data instead <SourceRef provenance="documented" doc={docs.eksNode} />.
           </Box>
           <Box variant="p">
-            On the training operator question: there is no EFA-specific field in any operator CRD (Custom Resource
-            Definition). PyTorchJob does not support EFA natively any more than a bare Pod does. EFA works because
-            the worker pod template carries the resource request, which means MPIJob, PyTorchJob, LeaderWorkerSet
-            and RayJob all work identically. AWS uses the Kubeflow MPI Operator for its NCCL test walkthrough{' '}
-            <SourceRef provenance="documented" doc={docs.eksNode} /> and LeaderWorkerSet for its multi-node
-            inference samples.
+            Training operators need nothing special. EFA works because the worker pod template carries the resource
+            request, so MPIJob, PyTorchJob, LeaderWorkerSet and RayJob all behave identically and no operator CRD
+            (Custom Resource Definition) has an EFA-specific field. AWS uses the Kubeflow MPI Operator for its NCCL
+            test walkthrough <SourceRef provenance="documented" doc={docs.eksNode} /> and LeaderWorkerSet for its
+            multi-node inference samples.
           </Box>
         </SpaceBetween>
       </Container>
@@ -1241,22 +1234,22 @@ spec:
         <SpaceBetween size="m">
           <NodeLanesDiagram />
 
-          <Alert type="warning" header="A cluster placement group is recommended, not required">
+          <Alert type="warning" header="Two networking rules bind here, and the placement group is neither of them">
             <SpaceBetween size="xs">
               <Box variant="p">
-                AWS writes it verbatim: it is not an absolute requirement to launch your EFA-enabled instances into
-                a cluster placement group. However, AWS does recommend running EFA-enabled instances in a cluster
-                placement group, as it launches the instances into a low-latency group in a single Availability Zone{' '}
-                <SourceRef provenance="documented" doc={docs.efaStart} />.
+                The Availability Zone is the first rule, because EFA traffic cannot cross one. The security group
+                is the second: it must allow all inbound and outbound traffic to and from itself to enable EFA
+                OS-bypass <SourceRef provenance="documented" doc={docs.eksDevice} />, and when it is missing, EFA
+                traffic fails without a useful error.
               </Box>
               <Box variant="p">
-                The hard constraint is the Availability Zone, because EFA traffic cannot cross one. The placement
-                group is the documented way to satisfy that constraint and shorten the physical distance. Any
-                checklist that lists it as a flat setup requirement is stating a recommendation as a rule. The
-                genuinely non-negotiable networking item is the security group: it must allow all inbound
-                and outbound traffic to and from itself to enable EFA OS-bypass{' '}
-                <SourceRef provenance="documented" doc={docs.eksDevice} />, and when it is missing, EFA traffic
-                fails without a useful error.
+                A cluster placement group is how AWS recommends satisfying the zone rule and shortening the physical
+                distance, and it writes the status verbatim: it is not an absolute requirement to launch your
+                EFA-enabled instances into a cluster placement group. However, AWS does recommend running
+                EFA-enabled instances in a cluster placement group, as it launches the instances into a low-latency
+                group in a single Availability Zone{' '}
+                <SourceRef provenance="documented" doc={docs.efaStart} />. A checklist that lists it as a flat setup
+                requirement is stating a recommendation as a rule.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1267,10 +1260,10 @@ spec:
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                eksctl remains the shortest path and still cannot create EFA-only interfaces. AWS states both: you
-                cannot use eksctl to create nodes and node groups that use EFA-only interfaces, and if you need to
-                customize the per-device EFA configuration when using eksctl, it is recommended to use the eksctl
-                support for launch templates{' '}
+                eksctl remains the shortest path, and a launch template is where you go for efa-only interfaces.
+                AWS states both: you cannot use eksctl to create nodes and node groups that use EFA-only
+                interfaces, and if you need to customize the per-device EFA configuration when using eksctl, it is
+                recommended to use the eksctl support for launch templates{' '}
                 <SourceRef provenance="documented" doc={docs.eksDevice} />. eksctl also accepts an explicit
                 placement group name alongside efaEnabled{' '}
                 <SourceRef provenance="code-derived" code={code.eksctlDocs} />.
@@ -1316,7 +1309,7 @@ spec:
 
           <ExpandableSection
             headerText="EKS Auto Mode: static interfaces and placement group edge cases"
-            headerDescription="advancedNetworking.networkInterfaces, and four ways a placement group ruins your day"
+            headerDescription="advancedNetworking.networkInterfaces, and the four placement group behaviours to plan around"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1349,7 +1342,7 @@ spec:
         header={
           <Header
             variant="h2"
-            description="A default flipped in an unrelated project silently takes your EFA devices away."
+            description="Set mofedEnabled=false, and here is the upstream default that makes it necessary."
           >
             The NVIDIA MOFED collision
           </Header>
@@ -1445,7 +1438,7 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
               </Box>
             </div>
           </ColumnLayout>
-          <Alert type="warning" header="Address exhaustion is the failure mode nobody plans for">
+          <Alert type="warning" header="Budget the subnet addresses before you launch">
             AWS spells out the mechanism: on instances such as p5.48xlarge and p6-b200.48xlarge the VPC CNI
             allocates IP addresses across all IP-enabled attached ENIs (Elastic Network Interfaces) by default,
             which can consume a large number of subnet addresses even when pods are not using them, and on instances
@@ -1460,15 +1453,15 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
 
       <Container
         header={
-          <Header variant="h2" description="Two of the three repositories people are still sent to are stale, and one AWS API looks like it supports EFA on EKS when it cannot.">
-            Where to start from, and what not to copy
+          <Header variant="h2" description="The two repositories to clone, the one to stop cloning, and an AWS API that reads as if it supports EFA on EKS.">
+            Where to start from
           </Header>
         }
       >
         <SpaceBetween size="m">
           <ColumnLayout columns={2} variant="text-grid">
             <div>
-              <Box variant="h3">Where to get code that runs</Box>
+              <Box variant="h3">Code that runs</Box>
               <Box variant="p">
                 awslabs/ai-on-eks is the current blueprint home. Its Terraform declares the EFA instance type list
                 and generates per-instance-type network interface blocks through an
@@ -1479,19 +1472,19 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
                 <SourceRef provenance="code-derived" code={code.karpenterDesign} />. Start here rather than from a
                 blank launch template <SourceRef provenance="documented" doc={docs.aiOnEks} />.
               </Box>
+              <Box variant="p">
+                awslabs/awsome-distributed-ai is actively maintained and holds the NCCL test manifests and the
+                reference Dockerfile{' '}
+                <SourceRef provenance="code-derived" code={code.ncclTests} />. It was transferred and renamed, so
+                older links resolve to it.
+              </Box>
             </div>
             <div>
-              <Box variant="h3">Two repository links still in circulation</Box>
+              <Box variant="h3">One link still in circulation</Box>
               <Box variant="p">
                 aws-samples/aws-efa-eks is archived. Its last push was 2024-10-15, and the GitHub API reports no
                 archive date, so treat the archive date itself as unknown rather than assuming it matches the push.
                 AWS documentation still links there for the device plugin. Use the eks-charts Helm chart instead.
-              </Box>
-              <Box variant="p">
-                awslabs/awsome-distributed-ai was transferred and renamed. It now resolves to
-                awslabs/awsome-distributed-ai, which is actively maintained. The NCCL test manifests and the
-                reference Dockerfile live there{' '}
-                <SourceRef provenance="code-derived" code={code.ncclTests} />.
               </Box>
             </div>
           </ColumnLayout>
@@ -1514,12 +1507,12 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
                 <SourceRef provenance="documented" doc={docs.batchMnp} />.
               </Box>
               <Box variant="p">
-                Here is the trap that makes this worth publishing. The same API model does carry an eksProperties
-                member on the NodeRangeProperty shape, with documentation so generic it says nothing{' '}
+                Here is the trap. The same API model does carry an eksProperties member on the NodeRangeProperty
+                shape, with documentation so generic it says nothing{' '}
                 <SourceRef provenance="code-derived" code={code.batchModel} />. Anyone reading the SDK model or the
                 generated SDK types, rather than the prose documentation, would reasonably conclude that multi-node
-                parallel on EKS is supported. A field in a generated SDK is not evidence of support. Batch on EKS is
-                real, it just runs single-node jobs through an overlay model{' '}
+                parallel on EKS is supported. The shape documentation is the contract. Batch on EKS is real, it
+                just runs single-node jobs through an overlay model{' '}
                 <SourceRef provenance="documented" doc={docs.batchEks} />.
               </Box>
             </SpaceBetween>
@@ -1529,7 +1522,7 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
 
       <Container
         header={
-          <Header variant="h2" description="The two-node all_reduce that tells you whether any of this worked.">
+          <Header variant="h2" description="The two-node all_reduce to run first, and the output line that settles whether EFA carried the traffic.">
             Proving it works
           </Header>
         }
@@ -1556,14 +1549,14 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
           <Box variant="p">
             The container stack in the AWS reference image is worth copying rather than inventing: a CUDA devel
             base, GDRCopy, a full EFA installer run inside the image, NCCL, and nccl-tests{' '}
-            <SourceRef provenance="code-derived" code={code.ncclDockerfile} />. Note that the aws-ofi-nccl plugin is
-            now bundled with the EFA installer itself, so building the image with a full installer run gives you the
-            plugin without a separate build step. That is the same bundling the --minimal flag removes on the node.
+            <SourceRef provenance="code-derived" code={code.ncclDockerfile} />. The full installer run is what puts
+            the aws-ofi-nccl plugin in the image, since the plugin is bundled with the installer, which is the same
+            bundling the --minimal flag removes on the node. One Dockerfile closes the top half of the split.
           </Box>
           <Box variant="p">
-            Read NCCL_DEBUG=INFO output for the transport line rather than the bandwidth number. If the plugin did
-            not load, NCCL falls back to sockets and the job still completes, just slowly. A run that finishes at a
-            few GB/s on a p5 is not a tuning problem, it is a missing plugin.
+            Then read NCCL_DEBUG=INFO output for the transport line before the bandwidth number. NCCL falls back to
+            sockets when the plugin fails to load, and the job still completes, just slowly. A run finishing at a
+            few GB/s on a p5 has fallen back, and the transport line says so in the first hundred lines.
           </Box>
         </SpaceBetween>
       </Container>

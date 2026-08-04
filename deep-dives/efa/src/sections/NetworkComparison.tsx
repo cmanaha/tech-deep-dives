@@ -16,17 +16,13 @@ import type { DocRef } from '@tech-deep-dives/shared';
  * Sourcing rule for this file (revamp/source-authority-standard.md): every
  * load-bearing cell in the table carries a SourceRef, or it carries no number.
  *
- * Corrections applied on 2026-08-02:
- *  - The latency row held four microsecond figures, none of them sourced. The
- *    only comparative latency figure AWS publishes is p99 falling by around a
- *    factor of ten, and it now appears once, in the tail-latency row.
- *  - The old "P99.9, 85% reduction" cell had the wrong percentile and a
- *    magnitude no source gives.
- *  - RDMA write is Nitro v4 and later, not Nitro v6.
- *  - The single-flow row put an ENA Express figure in the EFA column. EFA has
- *    no 5-tuple flow to cap.
- *  - Per-port InfiniBand rates and sub-microsecond fabric latencies were
- *    removed. We could not fetch a first-party page stating them.
+ * Figures held out on purpose, so a later pass does not put them back:
+ * per-column microsecond latencies (no citable source for these four
+ * transports), "P99.9" and an "85% reduction" (wrong percentile, magnitude no
+ * source gives), per-port InfiniBand rates and sub-microsecond fabric
+ * latencies (no first-party page stating them was located), and an ENA Express
+ * figure in the EFA single-flow cell (EFA has no 5-tuple flow to cap).
+ * RDMA write support starts at Nitro v4.
  */
 
 const ACCESSED = '2026-08-02';
@@ -108,6 +104,18 @@ const comparisonData: ComparisonRow[] = [
     nvlink: 'NVLink / NVSwitch',
   },
   {
+    feature: 'What it assumes about the network',
+    efa: (
+      <>
+        Loss happens. SRD retransmits selectively{' '}
+        <SourceRef provenance="documented" doc={docs.hpcBlog} />
+      </>
+    ),
+    tcp: 'Loss happens, and recovery is in order',
+    rdma: 'RoCE v2 needs a lossless fabric held up by PFC. InfiniBand is lossless by design',
+    nvlink: 'A switch inside the box',
+  },
+  {
     feature: 'OS Bypass',
     efa: (
       <>
@@ -128,13 +136,13 @@ const comparisonData: ComparisonRow[] = [
     ),
     tcp: (
       <>
-        Set by the instance, not the protocol{' '}
+        Set by the instance allowance{' '}
         <SourceRef provenance="documented" doc={docs.bandwidth} />
       </>
     ),
     rdma: (
       <>
-        Set by the adapter generation. Not offered as a fabric on AWS{' '}
+        Set by the adapter generation{' '}
         <SourceRef provenance="documented" doc={docs.nvidiaIb} />
       </>
     ),
@@ -158,61 +166,37 @@ const comparisonData: ComparisonRow[] = [
     nvlink: 'Lowest overall, and intra-node only',
   },
   {
-    feature: 'Multi-path',
+    feature: 'Multi-path and congestion',
     efa: (
       <>
-        Yes. SRD sprays over 64 paths at a time{' '}
+        SRD sprays over 64 paths at a time, under its own congestion control{' '}
         <SourceRef provenance="documented" doc={docs.hpcBlog} />
       </>
     ),
-    tcp: 'ECMP, hashed per flow',
+    tcp: 'ECMP hashed per flow, with CUBIC or BBR tuned for the WAN',
     rdma: (
       <>
-        Adaptive routing, switch-side{' '}
+        Adaptive routing switch-side, PFC on RoCE, credit-based on InfiniBand{' '}
         <SourceRef provenance="documented" doc={docs.nvidiaIb} />
       </>
     ),
     nvlink: 'N/A',
   },
   {
-    feature: 'Congestion handling',
-    efa: (
-      <>
-        Packet-level spraying plus SRD congestion control{' '}
-        <SourceRef provenance="documented" doc={docs.hpcBlog} />
-      </>
-    ),
-    tcp: 'CUBIC / BBR, tuned for the WAN',
-    rdma: 'PFC on RoCE, credit-based on InfiniBand',
-    nvlink: 'N/A',
-  },
-  {
-    feature: 'Requires lossless fabric',
-    efa: (
-      <>
-        No. SRD handles loss with selective retransmission{' '}
-        <SourceRef provenance="documented" doc={docs.hpcBlog} />
-      </>
-    ),
-    tcp: 'No',
-    rdma: 'Yes for RoCE v2 (PFC). InfiniBand is lossless by design',
-    nvlink: 'N/A',
-  },
-  {
     feature: 'RDMA support',
     efa: (
       <>
-        Read on all instances with Nitro v4 and later, write on most of them. Device operations, not
-        emulation <SourceRef provenance="documented" doc={docs.efa} />
+        Read on all instances with Nitro v4 and later, write on most of them, as device operations{' '}
+        <SourceRef provenance="documented" doc={docs.efa} />
       </>
     ),
     tcp: 'No',
-    rdma: 'Native, and not offered as a RoCE or InfiniBand fabric on EC2',
+    rdma: 'Native, on a dedicated fabric',
     nvlink: 'N/A',
   },
   {
     feature: 'Single-flow ceiling',
-    efa: 'No 5-tuple flow to cap. SRD sprays per packet',
+    efa: 'SRD sprays per packet, so a single flow uses many paths at once',
     tcp: (
       <>
         5 Gbps, or 10 Gbps inside a cluster placement group{' '}
@@ -220,7 +204,7 @@ const comparisonData: ComparisonRow[] = [
         Gbps <SourceRef provenance="documented" doc={docs.enaExpress} />
       </>
     ),
-    rdma: 'N/A on AWS',
+    rdma: 'N/A',
     nvlink: 'N/A',
   },
   {
@@ -256,7 +240,7 @@ const comparisonData: ComparisonRow[] = [
       </>
     ),
     tcp: 'No additional cost',
-    rdma: 'N/A as a standalone fabric on AWS',
+    rdma: 'N/A on EC2',
     nvlink: 'Included in the instance',
   },
 ];
@@ -266,24 +250,30 @@ export function NetworkComparison() {
     <SpaceBetween size="l">
       <Container
         header={
-          <Header variant="h1" description="Given my workload, which networking approach minimizes cost and maximizes throughput?">
+          <Header variant="h1" description="What each transport assumes about the network underneath it, and which one those assumptions point you to.">
             EFA vs Alternatives
           </Header>
         }
       >
         <Box variant="p">
-          <strong>The question isn&apos;t &quot;which protocol is fastest&quot;</strong>.
-          It&apos;s &quot;given my workload&apos;s communication pattern, node count, and
-          budget, which networking approach gives the best outcome?&quot; NVLink wins
-          intra-node. EFA is the inter-node option on AWS, and on AWS it is the only one:
-          RoCE and InfiniBand are not offered as fabrics on EC2. A dedicated InfiniBand
-          fabric on-premises still wins on point-to-point latency. TCP is fine when the
-          network is not the bottleneck.
+          <strong>Each of these four transports is built on an assumption about the network
+          underneath it</strong>, and that assumption decides where it fits: a switch inside the box
+          for NVLink, a fabric that never drops a packet for RoCE v2, a shared network with
+          in-order recovery for TCP, and a wide, lossy, many-path fabric for SRD. On EC2 that leaves
+          EFA or TCP, since EC2 offers no RoCE or InfiniBand fabric, and on-premises InfiniBand
+          still wins on point-to-point latency.
         </Box>
       </Container>
 
       <Table
-        header={<Header variant="h2">Feature Comparison</Header>}
+        header={
+          <Header
+            variant="h2"
+            description="Read down a column for one transport, across a row for what changes when you switch."
+          >
+            The four transports, row by row
+          </Header>
+        }
         columnDefinitions={[
           { id: 'feature', header: 'Feature', cell: (item) => <strong>{item.feature}</strong> },
           { id: 'efa', header: 'EFA (SRD)', cell: (item) => item.efa },
@@ -296,28 +286,36 @@ export function NetworkComparison() {
         variant="embedded"
       />
 
-      <Alert type="info" header="Numbers this table does not carry">
-        There is no latency row: no per-column microsecond figure for these four fabrics traces to a
-        source that can be cited. The tail-latency figures p99.9 and 85% are not what AWS states;
-        the AWS statement is p99 and around a factor of ten{' '}
-        <SourceRef provenance="documented" doc={docs.hpcBlog} />. RDMA write did not arrive at Nitro
-        v6; it is Nitro v4 and later <SourceRef provenance="documented" doc={docs.efa} />. Per-port
-        InfiniBand rates are absent because no NVIDIA page stating them was located.
+      <Alert type="info" header="Where the numbers in this table stop">
+        Every comparative figure here comes from a first-party source. For tail latency that is p99
+        falling by around a factor of ten, in the tail-latency row{' '}
+        <SourceRef provenance="documented" doc={docs.hpcBlog} />. Per-column microsecond latencies
+        stay out because no citable source gives them for these four transports, and per-port
+        InfiniBand rates because no NVIDIA page stating them was located.
       </Alert>
 
-      <Container header={<Header variant="h2">Where SRD Wins, and Where It Does Not</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="The trade in both directions, including where a dedicated fabric is still ahead."
+          >
+            What SRD buys, and what it costs
+          </Header>
+        }
+      >
         <ColumnLayout columns={2} variant="text-grid">
           <div>
-            <Box variant="h3">RoCE&apos;s problem at scale</Box>
+            <Box variant="h3">What RoCE asks of the network</Box>
             <Box variant="p">
               RoCE v2 expects a <strong>lossless network fabric</strong>, which in practice means
-              Priority Flow Control enabled on every switch. PFC pauses traffic when buffers fill,
-              and that pause creates head-of-line blocking that can cascade. SRD does not need a
-              lossless fabric: it absorbs loss with selective retransmission and avoids congestion
-              by spraying packets across many paths rather than hashing a flow onto one{' '}
-              <SourceRef provenance="documented" doc={docs.hpcBlog} />. AWS also points out that
-              path diversity grows with the job, because a bigger job spans a bigger slice of the
-              network <SourceRef provenance="documented" doc={docs.hpcBlog} />.
+              Priority Flow Control on every switch. PFC pauses traffic when buffers fill, and that
+              pause creates head-of-line blocking that can cascade. SRD takes the other side of the
+              trade: it absorbs loss with selective retransmission and sprays packets across many
+              paths, where TCP hashes a whole flow onto one{' '}
+              <SourceRef provenance="documented" doc={docs.hpcBlog} />. Path diversity then grows
+              with the job, because a bigger job spans a bigger slice of the network{' '}
+              <SourceRef provenance="documented" doc={docs.hpcBlog} />.
             </Box>
           </div>
           <div>
@@ -325,11 +323,11 @@ export function NetworkComparison() {
             <Box variant="p">
               Point-to-point latency. A dedicated InfiniBand fabric is lower, and nothing about SRD
               closes that gap. NVIDIA also offers in-network reduction through SHARP, which runs
-              part of a collective in the switch, and self-healing link recovery{' '}
+              part of a collective in the switch, plus self-healing link recovery{' '}
               <SourceRef provenance="documented" doc={docs.nvidiaIb} />. EFA has no switch-side
-              collective offload. There is a documented cost to SRD on the uncongested case too:
-              AWS says median packet latency may rise slightly, by tens of microseconds, on the ENA
-              Express path when the network is quiet{' '}
+              collective offload. SRD costs something in the quiet case too: AWS says median packet
+              latency may rise slightly, by tens of microseconds, on the ENA Express path when the
+              network is uncongested{' '}
               <SourceRef provenance="documented" doc={docs.enaExpress} />. SRD is tuned for the bad
               case, and you pay for that tuning in the good one.
             </Box>
@@ -337,7 +335,16 @@ export function NetworkComparison() {
         </ColumnLayout>
       </Container>
 
-      <Container header={<Header variant="h2">When to Use What</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Four patterns that point at EFA, and four where standard networking clears the bar."
+          >
+            Where each one belongs
+          </Header>
+        }
+      >
         <ColumnLayout columns={2} variant="text-grid">
           <div>
             <Box variant="h3">
@@ -352,12 +359,12 @@ export function NetworkComparison() {
           </div>
           <div>
             <Box variant="h3">
-              <StatusIndicator type="stopped">Don&apos;t bother with EFA when:</StatusIndicator>
+              <StatusIndicator type="info">Standard networking is enough when:</StatusIndicator>
             </Box>
             <ul>
-              <li>Single-node training or inference (NVLink handles it)</li>
+              <li>Single-node training or inference, where NVLink carries it</li>
               <li>Loosely-coupled workloads (batch, map-reduce)</li>
-              <li>Data transfer/streaming (S3, standard networking is fine)</li>
+              <li>Data transfer and streaming to S3</li>
               <li>Web services, APIs, microservices</li>
             </ul>
           </div>
