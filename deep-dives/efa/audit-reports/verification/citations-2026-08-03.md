@@ -1,7 +1,7 @@
 # Citation re-verification: efa
 
 Run date: 2026-08-03  
-Tree: `398ef60`  
+Tree: `0d90b47`  
 Check: `scripts/audit/verify-citations.sh` (Tier 1.5, deterministic, networked, no LLM)  
 Scope: `deep-dives/efa/src/**/*.tsx` and `*.ts`, excluding tests
 Also: `deep-dives/efa/research/**/*.md`, GitHub blob and tree URLs only (`pinned-refs-research`)
@@ -10,7 +10,7 @@ Also: `deep-dives/efa/research/**/*.md`, GitHub blob and tree URLs only (`pinned
 
 | Metric | Count |
 |---|---|
-| Documentation citations extracted | 253 |
+| Documentation citations extracted | 259 |
 | Unique documentation URLs checked | 158 |
 | URLs resolving cleanly | 157 |
 | URLs redirecting to the same page | 1 |
@@ -38,16 +38,16 @@ None. Every documentation URL resolved and every pinned code reference exists at
 
 | Status | HTTP | URL | Cited at | Citations | Final URL |
 |---|---|---|---|---|---|
-| OK | 200 | `https://aws-ia.github.io/terraform-aws-eks-blueprints/patterns/machine-learning/multi-node-vllm/` | src/sections/Sources.tsx:38 | 1 | - |
+| OK | 200 | `https://aws-ia.github.io/terraform-aws-eks-blueprints/patterns/machine-learning/multi-node-vllm/` | src/sections/Sources.tsx:44 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2024/10/aws-efa-updates-scalability-ai-ml-applications/` | src/sections/EfaDevice.tsx:72 | 1 | - |
-| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-ec2-p5en-instances-generative-ai-hpc-generally-available/` | src/sections/Sources.tsx:33 | 1 | - |
-| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-ec2-trn2-instances-available/` | src/sections/Sources.tsx:36 | 1 | - |
-| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/03/amazon-ec2-p5en-instances-n-virginia-jakarta/` | src/sections/Sources.tsx:34 | 1 | - |
-| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/05/amazon-ec2-p5en-instances-aws-us-west-n-california-region/` | src/sections/Sources.tsx:35 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-ec2-p5en-instances-generative-ai-hpc-generally-available/` | src/sections/Sources.tsx:39 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2024/12/amazon-ec2-trn2-instances-available/` | src/sections/Sources.tsx:42 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/03/amazon-ec2-p5en-instances-n-virginia-jakarta/` | src/sections/Sources.tsx:40 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/05/amazon-ec2-p5en-instances-aws-us-west-n-california-region/` | src/sections/Sources.tsx:41 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/10/capacity-reservation-topology-api-ai-ml-hpc-instance-type/` | src/sections/TopologyApi.tsx:145 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/` | src/data/instances.ts:86 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-g7e-instances-generally-available/` | src/data/instances.ts:74 | 2 | - |
-| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/02/announcing-amazon-ec2-hpc8a-instances/` | src/sections/HPC.tsx:43 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/02/announcing-amazon-ec2-hpc8a-instances/` | src/sections/HPC.tsx:43 | 2 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/04/amazon-sagemaker-ai-inf-auto-inst/` | src/sections/SageMaker.tsx:168 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/04/amazon-sagemaker-hyperpod-automatic-slurm-topology/` | src/sections/SageMaker.tsx:158 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/about-aws/whats-new/2026/04/sagemaker-hyperpod-flexible-instance-groups/` | src/sections/SageMaker.tsx:163 | 1 | - |
@@ -69,10 +69,10 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://aws.amazon.com/blogs/storage/improving-amazon-s3-throughput-for-the-aws-cli-and-boto3-with-the-aws-common-runtime/` | src/sections/StorageDataPaths.tsx:126 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/blogs/storage/storage-for-i-o-intensive-sql-server-using-amazon-ebs-io2-block-express/` | src/sections/SrdProtocol.tsx:128 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/ec2/capacityblocks/pricing/` | src/data/pricing.ts:94 | 1 | - |
-| OK | 200 | `https://aws.amazon.com/ec2/instance-types/p5/` | src/sections/Sources.tsx:29 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/ec2/instance-types/p5/` | src/sections/Sources.tsx:35 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/ec2/instance-types/trn2/` | src/sections/AIMLTraining.tsx:99 | 3 | - |
 | OK | 200 | `https://aws.amazon.com/ec2/ultraservers/` | src/data/instances.ts:92 | 2 | - |
-| OK | 200 | `https://aws.amazon.com/hpc/efa/` | src/sections/Sources.tsx:32 | 1 | - |
+| OK | 200 | `https://aws.amazon.com/hpc/efa/` | src/sections/Sources.tsx:38 | 1 | - |
 | OK | 200 | `https://aws.amazon.com/new/` | src/sections/SageMaker.tsx:36 | 1 | - |
 | OK | 200 | `https://aws.github.io/eks-charts` | src/sections/EKSIntegration.tsx:925 | 1 | `https://aws.github.io/eks-charts/` |
 | OK | 200 | `https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/faq/training/neuron-training.html` | src/sections/Sources.tsx:16 | 1 | - |
@@ -80,7 +80,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://awslabs.github.io/ai-on-eks/` | src/sections/EKSIntegration.tsx:119 | 1 | - |
 | OK | 200 | `https://cfd.direct/cloud/openfoam-hpc-aws-efa/` | src/sections/HPC.tsx:63 | 2 | - |
 | OK | 200 | `https://conferences.sigcomm.org/sigcomm/2015/pdf/papers/p523.pdf` | src/sections/SrdProtocol.tsx:142 | 1 | - |
-| OK | 200 | `https://d1.awsstatic.com/whitepapers/benchmarking-aws-and-hpc-services.pdf` | src/sections/Sources.tsx:41 | 1 | - |
+| OK | 200 | `https://d1.awsstatic.com/whitepapers/benchmarking-aws-and-hpc-services.pdf` | src/sections/Sources.tsx:47 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CapacityReservationTopology.html` | src/sections/TopologyApi.tsx:85 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeCapacityReservationTopology.html` | src/sections/TopologyApi.tsx:79 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstanceTopology.html` | src/sections/Sources.tsx:19 | 2 | - |
@@ -119,7 +119,7 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html` | src/data/instances.ts:44 | 4 | - |
 | OK | 200 | `https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html` | src/data/instances.ts:56 | 2 | - |
 | OK | 200 | `https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html` | src/data/instances.ts:62 | 2 | - |
-| OK | 200 | `https://docs.aws.amazon.com/ec2/latest/instancetypes/hpc.html` | src/data/instances.ts:50 | 4 | - |
+| OK | 200 | `https://docs.aws.amazon.com/ec2/latest/instancetypes/hpc.html` | src/data/instances.ts:50 | 5 | - |
 | OK | 200 | `https://docs.aws.amazon.com/eks/latest/best-practices/aiml-networking.html` | src/sections/DecisionGuide.tsx:109 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/eks/latest/userguide/create-node-class.html` | src/sections/DecisionGuide.tsx:61 | 2 | - |
 | OK | 200 | `https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html` | src/sections/EKSIntegration.tsx:67 | 4 | - |
@@ -170,30 +170,30 @@ None. Every documentation URL resolved and every pinned code reference exists at
 | OK | 200 | `https://docs.aws.amazon.com/sagemaker/latest/dg/train-encrypt.html` | src/sections/SageMaker.tsx:82 | 1 | - |
 | OK | 200 | `https://docs.aws.amazon.com/sagemaker/latest/dg/train-get-capacity.html` | src/sections/DecisionGuide.tsx:79 | 2 | - |
 | OK | 200 | `https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-efa.html` | src/sections/DecisionGuide.tsx:85 | 2 | - |
-| OK | 200 | `https://docs.aws.amazon.com/wellarchitected/latest/high-performance-computing-lens/data-protection.html` | src/sections/NetworkComparison.tsx:58 | 2 | - |
+| OK | 200 | `https://docs.aws.amazon.com/wellarchitected/latest/high-performance-computing-lens/data-protection.html` | src/sections/NetworkComparison.tsx:58 | 3 | - |
 | OK | 200 | `https://efa-installer.amazonaws.com/aws-efa-installer-1.49.0.tar.gz` | src/sections/EKSIntegration.tsx:115 | 1 | - |
-| OK | 200 | `https://github.com/NVIDIA/nccl/blob/v2.30.7-1/src/graph/search.cc` | src/sections/Sources.tsx:25 | 1 | - |
-| OK | 200 | `https://github.com/ai-dynamo/nixl` | src/sections/Sources.tsx:46 | 1 | - |
-| OK | 200 | `https://github.com/ai-dynamo/nixl/blob/v1.3.2/src/plugins/libfabric/README.md` | src/sections/Sources.tsx:48 | 1 | - |
-| OK | 200 | `https://github.com/ai-dynamo/nixl/tree/v1.3.2` | src/sections/Sources.tsx:47 | 1 | - |
+| OK | 200 | `https://github.com/NVIDIA/nccl/blob/v2.30.7-1/src/graph/search.cc` | src/sections/Sources.tsx:31 | 1 | - |
+| OK | 200 | `https://github.com/ai-dynamo/nixl` | src/sections/Sources.tsx:56 | 1 | - |
+| OK | 200 | `https://github.com/ai-dynamo/nixl/blob/v1.3.2/src/plugins/libfabric/README.md` | src/sections/Sources.tsx:58 | 1 | - |
+| OK | 200 | `https://github.com/ai-dynamo/nixl/tree/v1.3.2` | src/sections/Sources.tsx:57 | 1 | - |
 | OK | 200 | `https://github.com/amzn/amzn-drivers.git` | src/sections/SrdProtocol.tsx:690 | 1 | `https://github.com/amzn/amzn-drivers` |
-| OK | 200 | `https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/README.md` | src/sections/Sources.tsx:23 | 1 | - |
-| OK | 200 | `https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/src/tuner/nccl_ofi_tuner.cpp` | src/sections/Sources.tsx:26 | 1 | - |
-| OK | 200 | `https://github.com/aws/aws-ofi-nccl/releases` | src/sections/Sources.tsx:24 | 1 | - |
-| OK | 200 | `https://github.com/aws/aws-ofi-nccl/tree/v1.20.0/topology` | src/sections/Sources.tsx:27 | 1 | - |
+| OK | 200 | `https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/README.md` | src/sections/Sources.tsx:29 | 1 | - |
+| OK | 200 | `https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/src/tuner/nccl_ofi_tuner.cpp` | src/sections/Sources.tsx:32 | 1 | - |
+| OK | 200 | `https://github.com/aws/aws-ofi-nccl/releases` | src/sections/Sources.tsx:30 | 1 | - |
+| OK | 200 | `https://github.com/aws/aws-ofi-nccl/tree/v1.20.0/topology` | src/sections/Sources.tsx:33 | 1 | - |
 | OK | 200 | `https://github.com/awslabs/amazon-eks-ami/releases/tag/v20260728` | src/sections/EKSIntegration.tsx:110 | 1 | - |
-| OK | 200 | `https://github.com/uccl-project/uccl/tree/v0.1.1/p2p/benchmarks` | src/sections/Sources.tsx:50 | 1 | - |
-| OK | 200 | `https://github.com/vllm-project/vllm/tree/v0.26.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl` | src/sections/Sources.tsx:49 | 1 | - |
+| OK | 200 | `https://github.com/uccl-project/uccl/tree/v0.1.1/p2p/benchmarks` | src/sections/Sources.tsx:60 | 1 | - |
+| OK | 200 | `https://github.com/vllm-project/vllm/tree/v0.26.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl` | src/sections/Sources.tsx:59 | 1 | - |
 | OK | 200 | `https://karpenter.sh/docs/concepts/disruption/` | src/sections/DecisionGuide.tsx:73 | 1 | - |
 | OK | 200 | `https://karpenter.sh/docs/concepts/nodeclasses/` | src/sections/DecisionGuide.tsx:67 | 2 | - |
 | OK | 200 | `https://man7.org/linux/man-pages/man3/ibv_modify_qp.3.html` | src/sections/SrdProtocol.tsx:116 | 1 | - |
-| OK | 200 | `https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-1/index.csv` | src/data/pricing.ts:17 | 1 | - |
-| OK | 200 | `https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-2/index.csv` | src/data/pricing.ts:24 | 1 | - |
+| OK | 200 | `https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-1/index.csv` | src/data/pricing.ts:17 | 2 | - |
+| OK | 200 | `https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-2/index.csv` | src/data/pricing.ts:24 | 2 | - |
 | OK | 200 | `https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/index.json` | src/data/pricing.ts:31 | 1 | - |
 | OK | 200 | `https://repost.aws/knowledge-center/s3-upload-large-files` | src/sections/StorageDataPaths.tsx:121 | 1 | - |
-| OK | 200 | `https://www.amazonaws.cn/en/new/2024/elastic-fabric-adapter-supports-cross-subnet-communication/` | src/sections/Sources.tsx:37 | 1 | - |
-| OK | 200 | `https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/` | src/sections/Sources.tsx:44 | 1 | - |
-| OK | 200 | `https://www.nvidia.com/en-us/data-center/nvlink/` | src/sections/AIMLTraining.tsx:93 | 2 | - |
+| OK | 200 | `https://www.amazonaws.cn/en/new/2024/elastic-fabric-adapter-supports-cross-subnet-communication/` | src/sections/Sources.tsx:43 | 1 | - |
+| OK | 200 | `https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/` | src/sections/Sources.tsx:51 | 1 | - |
+| OK | 200 | `https://www.nvidia.com/en-us/data-center/nvlink/` | src/sections/AIMLTraining.tsx:93 | 3 | - |
 | OK | 200 | `https://www.nvidia.com/en-us/networking/products/infiniband/` | src/sections/NetworkComparison.tsx:77 | 1 | - |
 | REDIRECT | 202 | `https://doi.org/10.1109/MM.2020.3016891` | src/sections/SrdProtocol.tsx:135 | 1 | `https://ieeexplore.ieee.org/document/9167399/` |
 

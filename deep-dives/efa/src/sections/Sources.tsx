@@ -19,6 +19,12 @@ const sources: Source[] = [
   { id: 29, title: 'EC2 DescribeInstanceTopology API Reference', url: 'https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstanceTopology.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 30, title: 'EC2 Capacity Blocks for ML', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 31, title: 'EC2 On-Demand Capacity Reservations', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 42, title: 'AWS Well-Architected HPC Lens: Data protection', url: 'https://docs.aws.amazon.com/wellarchitected/latest/high-performance-computing-lens/data-protection.html', tier: 1, type: 'official-docs', accessDate: '2026-08-02' },
+  { id: 43, title: 'EC2 instance types: Specifications for high-performance computing instances', url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/hpc.html', tier: 1, type: 'official-docs', accessDate: '2026-08-02' },
+  // Tier 1: Price List bulk API. The Pricing section pins every rate to a
+  // publication version, so the version travels in the title.
+  { id: 40, title: 'AWS Price List bulk API, Amazon EC2, us-east-1 (version 20260728175247)', url: 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-1/index.csv', tier: 1, type: 'api-reference', accessDate: '2026-08-01' },
+  { id: 41, title: 'AWS Price List bulk API, Amazon EC2, us-east-2 (version 20260728175247)', url: 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-2/index.csv', tier: 1, type: 'api-reference', accessDate: '2026-08-01' },
   // Tier 1: Source code
   { id: 17, title: 'aws/aws-ofi-nccl GitHub README (v1.20.0)', url: 'https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/README.md', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
   { id: 18, title: 'aws/aws-ofi-nccl Releases', url: 'https://github.com/aws/aws-ofi-nccl/releases', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
@@ -39,9 +45,13 @@ const sources: Source[] = [
   { id: 26, title: 'AWS HPC Blog: Second Generation EFA', url: 'https://aws.amazon.com/blogs/hpc/second-generation-efa-improving-hpc-and-ml-application-performance-in-the-cloud/', tier: 2, type: 'aws-blog', accessDate: '2026-03-22' },
   { id: 27, title: 'AWS HPC Blog: hpc7a MPI Multi-Rail EFA', url: 'https://aws.amazon.com/blogs/hpc/optimizing-mpi-application-performance-on-hpc7a-by-effectively-using-both-efa-devices/', tier: 2, type: 'aws-blog', accessDate: '2026-03-22' },
   { id: 28, title: 'AWS HPC Benchmarking Whitepaper', url: 'https://d1.awsstatic.com/whitepapers/benchmarking-aws-and-hpc-services.pdf', tier: 2, type: 'whitepaper', accessDate: '2026-03-22' },
+  { id: 44, title: 'AWS What\'s New: Announcing new high performance computing Amazon EC2 Hpc8a instances (Feb 2026)', url: 'https://aws.amazon.com/about-aws/whats-new/2026/02/announcing-amazon-ec2-hpc8a-instances/', tier: 2, type: 'announcement', accessDate: '2026-08-02' },
   // Tier 3: Third-party analysis, benchmarks, academic papers
   { id: 24, title: 'CFD Direct: OpenFOAM HPC with AWS EFA', url: 'https://cfd.direct/cloud/openfoam-hpc-aws-efa/', tier: 3, type: 'third-party-benchmark', accessDate: '2026-03-22' },
   { id: 25, title: 'Ernest Chiang: AWS SRD Protocol Deep Dive', url: 'https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/', tier: 3, type: 'third-party-analysis', accessDate: '2026-03-22' },
+  // Tier 3 because NVIDIA is a third party to AWS. The comparison sections
+  // label the same page tier 2 under the vendor-neutral SourceRef scale.
+  { id: 45, title: 'NVIDIA NVLink and NVLink Switch', url: 'https://www.nvidia.com/en-us/data-center/nvlink/', tier: 3, type: 'product-page', accessDate: '2026-08-02' },
   // NIXL sources
   { id: 35, title: 'NVIDIA NIXL GitHub Repository', url: 'https://github.com/ai-dynamo/nixl', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
   { id: 36, title: 'NIXL Repository at v1.3.2 (docs/architecture.md no longer exists upstream; no equivalent document published)', url: 'https://github.com/ai-dynamo/nixl/tree/v1.3.2', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
@@ -68,8 +78,8 @@ const sources: Source[] = [
  */
 const factChecks: FactCheckItem[] = [
   // What is EFA?
-  { claim: 'Up to 3,200 Gbps aggregate bandwidth on P5', section: 'What is EFA?', sourceId: 8 },
-  { claim: 'EFA traffic encrypted in transit by Nitro with zero performance penalty', section: 'What is EFA?', sourceId: 1 },
+  { claim: 'Up to 3,200 Gbps aggregate bandwidth on P5', section: 'What is EFA?', sourceId: 4 },
+  { claim: 'EFA traffic encrypted in transit by Nitro with zero performance penalty', section: 'What is EFA?', sourceId: 42 },
 
   // The EFA Device
   { claim: 'p5.48xlarge: 32 network cards, 33 interfaces in the AWS launch example, 32 EFA devices', section: 'The EFA Device: Attachment, Cards and Rails', sourceId: 4 },
@@ -78,29 +88,29 @@ const factChecks: FactCheckItem[] = [
   { claim: 'Topology enters above NCCL, which never calls either topology API', section: 'The EC2 Instance Topology API', sourceId: 32 },
 
   // Instance Support Matrix
-  { claim: '6,400 Gbps on P6-B300: 17 network cards, 16 of them EFA-capable at 400 Gbps each', section: 'Instance Support Matrix', sourceId: 5 },
-  { claim: '3,200 Gbps bandwidth on P5 with 32 EFA interfaces', section: 'Instance Support Matrix', sourceId: 8 },
-  { claim: '400 Gbps bandwidth on P4d with 4 EFA interfaces', section: 'Instance Support Matrix', sourceId: 4 },
-  { claim: '3,200 Gbps bandwidth on Trn2 with 16 EFA interfaces', section: 'Instance Support Matrix', sourceId: 9 },
-  { claim: 'P5en has 16 network cards = 16 EFA but same 3,200 Gbps total', section: 'Instance Support Matrix', sourceId: 12 },
+  { claim: '6,400 Gbps on P6-B300: 17 network cards, 16 of them EFA-capable at 400 Gbps each', section: 'Instance Support Matrix', sourceId: 4 },
+  { claim: '3,200 Gbps bandwidth on P5 with 32 EFA interfaces', section: 'Instance Support Matrix', sourceId: 5 },
+  { claim: '400 Gbps bandwidth on P4d with 4 EFA interfaces', section: 'Instance Support Matrix', sourceId: 1 },
+  { claim: '3,200 Gbps bandwidth on Trn2 with 16 EFA interfaces', section: 'Instance Support Matrix', sourceId: 1 },
+  { claim: 'P5en has 16 network cards = 16 EFA but same 3,200 Gbps total', section: 'Instance Support Matrix', sourceId: 5 },
   { claim: 'Up to 28.8 Tbps per P6e-GB200 UltraServer, on a product page that also says EFAv4', section: 'Instance Support Matrix', sourceId: 10 },
-  { claim: 'Inf2 does NOT have EFA; only inf1.24xlarge has single 100 Gbps EFA', section: 'Instance Support Matrix', sourceId: 4 },
+  { claim: 'Inf2 does NOT have EFA; only inf1.24xlarge has single 100 Gbps EFA', section: 'Instance Support Matrix', sourceId: 1 },
 
   // NCCL over EFA
   { claim: 'P5 and P5en ship no static topology XML; the plugin generates one at run time', section: 'NCCL over EFA: the aws-ofi-nccl Plugin', sourceId: 34 },
   { claim: 'NCCL_ALGO and NCCL_PROTO switch the tuner off only in the v2 entry point (NCCL 2.21.x); v3 and v6 run it either way', section: 'NCCL over EFA: the aws-ofi-nccl Plugin', sourceId: 33 },
 
   // AI/ML Training
-  { claim: '7B model allreduce: about 2.2s at 100 Gbps against about 70ms at 3,200 Gbps', section: 'AI/ML Training', sourceId: 8 },
-  { claim: 'Trn1n has 16 EFA interfaces (1,600 Gbps) vs Trn1 8 EFA (800 Gbps)', section: 'AI/ML Training', sourceId: 4 },
+  { claim: '7B model allreduce: about 2.2s at 100 Gbps against about 70ms at 3,200 Gbps', section: 'AI/ML Training', sourceId: 4 },
+  { claim: 'Trn1n has 16 EFA interfaces (1,600 Gbps) vs Trn1 8 EFA (800 Gbps)', section: 'AI/ML Training', sourceId: 1 },
   { claim: 'Trn2: 30 to 40% better price performance than P5e and P5en', section: 'AI/ML Training', sourceId: 9 },
   { claim: 'Trn2 UltraServers: 4 nodes = 64 chips, 12.8 Tbps EFA', section: 'AI/ML Training', sourceId: 9 },
-  { claim: '900 GB/s per GPU on fourth-generation NVLink, which is what P5 carries', section: 'AI/ML Training', sourceId: 8 },
+  { claim: '900 GB/s per GPU on fourth-generation NVLink, which is what P5 carries', section: 'AI/ML Training', sourceId: 45 },
 
   // AI/ML Inference
   { claim: '405B parameters at fp16 = ~810GB model size', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'P5 has 640GB total GPU memory (8x H100 80GB)', section: 'AI/ML Inference', sourceId: 8 },
-  { claim: 'NIXL requires libfabric 1.21.0+', section: 'AI/ML Inference', sourceId: 37 },
+  { claim: 'NIXL requires libfabric 1.21.0+', section: 'AI/ML Inference', sourceId: 1 },
   { claim: 'NCCL launches a GPU kernel even for point-to-point send/recv', section: 'AI/ML Inference', sourceId: 36 },
   { claim: 'NIXL performs transfers with zero SM consumption (no GPU kernel launch)', section: 'AI/ML Inference', sourceId: 36 },
   { claim: 'vLLM NixlConnector: prefiller as producer, decoder as consumer', section: 'AI/ML Inference', sourceId: 38 },
@@ -109,24 +119,24 @@ const factChecks: FactCheckItem[] = [
   { claim: '98.4% parallel efficiency at 1,008 cores (28 c5n instances) for CFD', section: 'Traditional HPC', sourceId: 24 },
   { claim: '10% speedup at 32 instances with multi-rail EFA on hpc7a', section: 'Traditional HPC', sourceId: 27 },
   { claim: '30%+ improvement at 192 instances with multi-rail EFA', section: 'Traditional HPC', sourceId: 27 },
-  { claim: 'Hpc7a: up to 192 AMD EPYC cores, 300 Gbps EFA', section: 'Traditional HPC', sourceId: 5 },
-  { claim: 'Hpc8a: up to 40% higher performance than Hpc7a', section: 'Traditional HPC', sourceId: 5 },
+  { claim: 'Hpc7a: up to 192 AMD EPYC cores, 300 Gbps EFA', section: 'Traditional HPC', sourceId: 43 },
+  { claim: 'Hpc8a: up to 40% higher performance than Hpc7a', section: 'Traditional HPC', sourceId: 44 },
 
   // EFA vs Alternatives
-  { claim: 'Up to 6,400 Gbps per instance on P6-B300, the EFA row of the transport comparison', section: 'EFA vs Alternatives', sourceId: 5 },
+  { claim: 'Up to 6,400 Gbps per instance on P6-B300, the EFA row of the transport comparison', section: 'EFA vs Alternatives', sourceId: 4 },
 
   // Pricing Analysis
-  { claim: 'EFA is free (no per-interface charge, no data transfer fee)', section: 'Pricing Analysis', sourceId: 11 },
-  { claim: 'p5.48xlarge On-Demand: $55.04/hr, us-east-1, price list 20260728175247', section: 'Pricing Analysis', sourceId: 8 },
-  { claim: 'p4d.24xlarge On-Demand: $21.957642/hr, us-east-1, price list 20260728175247', section: 'Pricing Analysis', sourceId: 8 },
-  { claim: 'trn1.32xlarge On-Demand: $21.50/hr', section: 'Pricing Analysis', sourceId: 9 },
-  { claim: 'trn1n.32xlarge On-Demand: $24.78/hr', section: 'Pricing Analysis', sourceId: 9 },
-  { claim: 'hpc7a.96xlarge On-Demand: $7.20/hr in us-east-2. There is no us-east-1 SKU', section: 'Pricing Analysis', sourceId: 5 },
+  { claim: 'EFA is free (no per-interface charge, no data transfer fee)', section: 'Pricing Analysis', sourceId: 1 },
+  { claim: 'p5.48xlarge On-Demand: $55.04/hr, us-east-1, price list 20260728175247', section: 'Pricing Analysis', sourceId: 40 },
+  { claim: 'p4d.24xlarge On-Demand: $21.957642/hr, us-east-1, price list 20260728175247', section: 'Pricing Analysis', sourceId: 40 },
+  { claim: 'trn1.32xlarge On-Demand: $21.50/hr', section: 'Pricing Analysis', sourceId: 40 },
+  { claim: 'trn1n.32xlarge On-Demand: $24.78/hr', section: 'Pricing Analysis', sourceId: 40 },
+  { claim: 'hpc7a.96xlarge On-Demand: $7.20/hr in us-east-2. There is no us-east-1 SKU', section: 'Pricing Analysis', sourceId: 41 },
 
   // Decision Guide
   { claim: '30 to 40% better price performance on Trn2 vs P5e at scale', section: 'Decision Guide', sourceId: 9 },
   { claim: 'SMDDP AllGather reduces GPU SM usage from 24 to under 9, on P4 only', section: 'Decision Guide', sourceId: 21 },
-  { claim: 'The placement group for an ODCR is chosen when the reservation is created', section: 'Decision Guide', sourceId: 31 },
+  { claim: 'The placement group for an ODCR is chosen when the reservation is created', section: 'Decision Guide', sourceId: 2 },
 
   // EFA on Amazon EKS
   { claim: 'VPC CNI v1.7.10+ for multi-EFA, v1.18.5+ for EFA-only', section: 'EFA on Amazon EKS', sourceId: 7 },
