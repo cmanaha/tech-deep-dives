@@ -722,25 +722,15 @@ export function StorageDataPaths() {
       >
         <SpaceBetween size="m">
           <Alert type="info" header="Start here: the file system configuration that reaches the fabric">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                AWS scopes EFA (Elastic Fabric Adapter) support for FSx for Lustre positively: EFA
-                is supported on Persistent 2 file systems with a metadata configuration specified,
-                including file systems using the Intelligent-Tiering storage class{' '}
-                <SourceRef provenance="documented" doc={docs.fsxEfa} />. That is the file system to
-                create if the cluster will ever want the fabric, and it is the thing to get right
-                first, because EFA cannot be enabled on an existing file system{' '}
-                <SourceRef provenance="documented" doc={docs.fsxEfa} />.
-              </Box>
-              <Box variant="p">
-                Scratch 1, Scratch 2, Persistent 1 and HDD sit outside that statement, so they run
-                over ENA (Elastic Network Adapter) and get no GPUDirect Storage (GDS). Because AWS
-                states which configurations are supported and stops there, the omission is our
-                inference rather than an AWS denial. The practical guidance is the same either way:
-                a scratch file system chosen for cost or for ephemerality is off the fabric for its
-                whole life.
-              </Box>
-            </SpaceBetween>
+            <Box variant="p">
+              AWS scopes EFA (Elastic Fabric Adapter) support for FSx for Lustre positively: EFA
+              is supported on Persistent 2 file systems with a metadata configuration specified,
+              including file systems using the Intelligent-Tiering storage class{' '}
+              <SourceRef provenance="documented" doc={docs.fsxEfa} />. That is the file system to
+              create if the cluster will ever want the fabric, and it is the thing to get right
+              first, because EFA cannot be enabled on an existing file system{' '}
+              <SourceRef provenance="documented" doc={docs.fsxEfa} />.
+            </Box>
           </Alert>
 
           <Box variant="p">
