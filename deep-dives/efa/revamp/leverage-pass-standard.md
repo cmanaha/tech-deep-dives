@@ -75,6 +75,54 @@ Rigor for reach, deliberately and visibly:
 What this pass never trades: a sourced number, a documentation-versus-code
 conflict, a hedge scope, or an UNKNOWN.
 
+## The four verbs, and the one this pass does not have
+
+The pass may **delete**, **reorder**, **demote** and **re-express**. It may not
+**assert**.
+
+Every sentence it produces must trace to something already published in the
+section, or to a source it fetched and cited during the pass itself. Making a
+block leverageable means connecting facts that are already there to an action a
+reader would take. It does not mean adding facts that make the action sound
+better founded.
+
+This rule exists because the first run of this pass broke it. Told to raise
+practical leverage on the SRD section, the pass produced "no retransmission
+logic exists anywhere in the EFA driver", cited to a twenty-three line function
+that copies statistics out of an admin-queue response, and "no matching set
+function anywhere in the tree", cited to the getter itself. It also wrote
+"reporting a retransmission count is only possible for a party that performs
+retransmissions", which is an inference used as evidence, and an unsound one.
+Rigor on that section fell from five to three while every other axis held or
+improved. An agent asked to make something actionable reaches for stronger
+phrasing, because stronger phrasing feels more useful.
+
+**Three checks, applied to every sentence the pass writes:**
+
+1. **Scope may weaken, never strengthen.** If the page said "was found" or "was
+   located during this research", it may not become "exists" or "does not
+   exist". If it named a tree that was searched, the new sentence may not drop
+   the tree. Weakening a claim is always permitted; strengthening never is.
+
+2. **A citation must be able to bear its claim.** A function that reports a
+   value cannot evidence the absence of logic elsewhere in the tree. A getter
+   cannot evidence the absence of a setter. Before attaching a reference, state
+   what that specific artifact can prove, and check the sentence asks no more of
+   it. This is the same misattribution rule the source-authority standard
+   applies to research; the pass does not get an exemption because it is only
+   editing.
+
+3. **Reasoning from design is inference, not evidence.** "Only a party that does
+   X would report Y" is an argument, and arguments belong in prose that is
+   labelled as our reading. They may not sit between a claim and a citation as
+   though they were part of the evidence.
+
+## Self-check before the pass reports done
+
+Diff the claim set, not just the text. List every assertion in the after that is
+not in the before. Each one must name the source it came from, or it comes out.
+A pass that cannot produce that list has not finished.
+
 ## How it is measured
 
 The pass is evaluated, not assumed. Before and after, each section is scored as

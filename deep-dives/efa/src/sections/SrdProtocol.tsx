@@ -18,8 +18,8 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  *
  *  1. `kernel/linux/efa/SRD.txt` is NEVER cited as evidence. It is a 2019-era
  *     specification document that the code in its own repository contradicts.
- *     It appears on the page only as one side of a documentation-versus-code
- *     conflict, where the driver opcodes win.
+ *     The documentation-versus-code conflict it creates over the RDMA read and
+ *     write opcodes is carried in DataPath.tsx, not on this page.
  *  2. SRD does not sit "on top of ENA". SRD lives in the Nitro card. ENA (via
  *     ENA Express) and EFA are peer consumers of it. The decisive disproof is
  *     that an EFA-only interface materializes an EFA device with no ENA device
@@ -45,16 +45,18 @@ function libfabricRef(path: string, lines: string): CodeRef {
 }
 
 const code = {
-  qpType: driversRef('kernel/linux/efa/src/efa-abi.h', 'L89-L91'),
   txMeta: driversRef('kernel/linux/efa/src/efa_io_defs.h', 'L87-L151'),
   modifyQp: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L215-L250'),
   netStats: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L664-L674'),
   portStats: driversRef('kernel/linux/efa/src/efa_verbs.c', 'L74-L96'),
   compStatus: driversRef('kernel/linux/efa/src/efa_io_defs.h', 'L36-L70'),
-  nodeType: driversRef('kernel/linux/efa/src/efa_main.c', 'L616'),
   enaSrdStats: driversRef('kernel/linux/common/ena_com/ena_admin_defs.h', 'L512-L536'),
   enaSrdFlags: driversRef('kernel/linux/common/ena_com/ena_admin_defs.h', 'L163-L170'),
   enaSrdGet: driversRef('kernel/linux/common/ena_com/ena_com.c', 'L2645-L2661'),
+  enaSrdDecl: driversRef('kernel/linux/common/ena_com/ena_com.h', 'L794-L801'),
+  // Where the ENA driver hands the SRD counter names to ethtool.
+  enaSrdEthtool: driversRef('kernel/linux/ena/ena_ethtool.c', 'L130-L136'),
+  enaEthtoolOps: driversRef('kernel/linux/ena/ena_ethtool.c', 'L2020-L2022'),
   maxAh: driversRef('kernel/linux/efa/src/efa_com_cmd.h', 'L127-L136'),
   // The provider's own error vocabulary, and where it prints it.
   compStatuses: libfabricRef('prov/efa/src/efa_errno.h', 'L58-L75'),
@@ -89,7 +91,9 @@ const code = {
     path: 'prov/efa/src/rdm/efa_rdm_peer.h',
     read: CODE_READ,
   } as CodeRef,
-  envOoo: libfabricRef('prov/efa/src/efa_env.c', 'L208-L209'),
+  // The compiled default for the out-of-order bounce-buffer copy, in the
+  // initialiser rather than in the fi_param_define help string.
+  envOooDefault: libfabricRef('prov/efa/src/efa_env.c', 'L28'),
 };
 
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
@@ -105,6 +109,11 @@ const docs: Record<string, DocRef> = {
   efa: doc('EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads', `${EC2_DOC}efa.html`, 1),
   enaExpress: doc('EC2 User Guide: Improve network performance with ENA Express', `${EC2_DOC}ena-express.html`, 1),
   monitor: doc('EC2 User Guide: Monitor an Elastic Fabric Adapter on Amazon EC2', `${EC2_DOC}efa-working-monitor.html`, 1),
+  instanceId: doc(
+    'EC2 User Guide: Detect whether a host is an EC2 instance',
+    `${EC2_DOC}identify_ec2_instances.html`,
+    1,
+  ),
   bandwidth: doc('EC2 User Guide: Amazon EC2 instance network bandwidth', `${EC2_DOC}ec2-instance-network-bandwidth.html`, 1),
   ebsIops: doc(
     'Amazon EBS User Guide: Provisioned IOPS SSD volumes (io2 Block Express)',
@@ -125,11 +134,6 @@ const docs: Record<string, DocRef> = {
     'AWS Storage Blog: Storage for I/O intensive SQL Server using Amazon EBS io2 Block Express',
     'https://aws.amazon.com/blogs/storage/storage-for-i-o-intensive-sql-server-using-amazon-ebs-io2-block-express/',
     2,
-  ),
-  ieeeMicro: doc(
-    'Shalev, Ayoub, Bshara, Sabbag. A Cloud-Optimized Transport Protocol for Elastic and Scalable HPC. IEEE Micro 40(6), pp. 67-73, November 2020',
-    'https://doi.org/10.1109/MM.2020.3016891',
-    3,
   ),
   dcqcn: doc(
     'Zhu et al. Congestion Control for Large-Scale RDMA Deployments. ACM SIGCOMM 2015 (Microsoft and Mellanox)',
@@ -683,36 +687,6 @@ export function SrdProtocol() {
             delivery costs per peer. Those readings come first below. The mechanism that produces
             them follows.
           </Box>
-          <Box variant="p">
-            The design is published as Shalev, Ayoub, Bshara and Sabbag,{' '}
-            <em>A Cloud-Optimized Transport Protocol for Elastic and Scalable HPC</em>, IEEE Micro
-            volume 40 issue 6, November 2020{' '}
-            <SourceRef provenance="documented" doc={docs.ieeeMicro} />. Both the AWS HPC blog and
-            the libfabric EFA (Elastic Fabric Adapter) provider documentation link to that IEEE
-            Micro record. The paper is paywalled and was not read for this page, so nothing here is
-            attributed to it.
-          </Box>
-
-          <ExpandableSection
-            headerText="Documentation contradicts the code: the driver defines read and write opcodes for SRD"
-            headerDescription="A 2019 specification file in the driver repository still says Send only"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                The driver defines <code>EFA_IO_RDMA_READ</code> and <code>EFA_IO_RDMA_WRITE</code>{' '}
-                as device opcodes, and the device reports both operations as capability bits in its
-                admin-queue attributes. A text file shipped in the same{' '}
-                <code>amzn/amzn-drivers</code> repository describes the SRD queue pair type and
-                states that only the Send operation is currently supported. It dates from 2019 and
-                was never revised.
-              </Box>
-              <Box variant="p">
-                Code wins. On this page code at a pinned commit is the authority, official
-                documentation is a secondary check, and an in-repo README, comment or specification
-                file is a way to find your way around the code.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -734,9 +708,10 @@ export function SrdProtocol() {
             the AWS custom Nitro networking card{' '}
             <SourceRef provenance="documented" doc={docs.storageBlog} />, and the EBS (Elastic Block
             Store) documentation repeats it for io2 Block Express{' '}
-            <SourceRef provenance="documented" doc={docs.ebsIops} />. EFA and ENA (Elastic Network
-            Adapter, through ENA Express) are peer consumers of that one transport. It reaches you
-            in two forms: completion errors libfabric surfaces, and five counters the device keeps.
+            <SourceRef provenance="documented" doc={docs.ebsIops} />. EFA (Elastic Fabric Adapter)
+            and ENA (Elastic Network Adapter, through ENA Express) are peer consumers of that one
+            transport. It reaches you in two forms: completion errors libfabric surfaces, and five
+            counters the device keeps.
           </Box>
 
           <Box variant="h3">Completion errors, and what each one sends you to check</Box>
@@ -774,11 +749,14 @@ export function SrdProtocol() {
             <strong>Where you see it, and why the useful half is usually hidden.</strong> On failure
             the provider builds one error string per completion, carrying the message above plus
             both endpoints, and hands it to the application as error data{' '}
-            <SourceRef provenance="code-derived" code={code.errMsg} />. Both host id fields come
-            from the board asset tag, which on an EC2 instance is its instance id{' '}
-            <SourceRef provenance="code-derived" code={code.hostIdFile} />, so the error names the
-            machine to go and look at. The long-form help, including the security group hint, is an
-            info-level message{' '}
+            <SourceRef provenance="code-derived" code={code.errMsg} />. Both host id fields are read
+            from one default path, <code>/sys/devices/virtual/dmi/id/board_asset_tag</code>, which
+            the provider's own comment marks as available on EC2 instances and containers{' '}
+            <SourceRef provenance="code-derived" code={code.hostIdFile} />. AWS documents that on an
+            instance built on the Nitro system, that file reads back the instance id{' '}
+            <SourceRef provenance="documented" doc={docs.instanceId} />, so on those instances the
+            error names the machine to go and look at. The long-form help, including the security
+            group hint, is an info-level message{' '}
             <SourceRef provenance="code-derived" code={code.showHelp} />{' '}
             <SourceRef provenance="code-derived" code={code.opeErr} />{' '}
             <SourceRef provenance="code-derived" code={code.infoLevel} />, so it appears only on a
@@ -831,11 +809,17 @@ a peer process is no longer present.`}</pre>
             five, states they are available on Nitro v4 and later instance types only, and states
             they are cumulative since instance launch or the last driver reset{' '}
             <SourceRef provenance="documented" doc={docs.monitor} />, so only the rate of change
-            means anything. The operations section covers how to read them off a node. On the ENA
-            Express side the equivalent ground truth is the ratio of <code>ena_srd_tx_pkts</code> to{' '}
-            <code>ena_srd_eligible_tx_pkts</code> under <code>ethtool -S</code>, which reveals
-            whether traffic is riding SRD or silently falling back{' '}
-            <SourceRef provenance="code-derived" code={code.enaSrdStats} />.
+            means anything. That same page gives one command which prints all five at once,{' '}
+            <code>rdma -p statistic show</code>, and the operations section covers reading them in
+            context. On the ENA Express side the counter names to reach for are{' '}
+            <code>ena_srd_tx_pkts</code> and <code>ena_srd_eligible_tx_pkts</code>, defined in the
+            admin-queue statistics struct as packets transmitted over ENA SRD, and packets that were
+            or could have been transmitted over it{' '}
+            <SourceRef provenance="code-derived" code={code.enaSrdStats} />. Both are among the five
+            strings the ENA driver publishes to <code>ethtool -S</code>{' '}
+            <SourceRef provenance="code-derived" code={code.enaSrdEthtool} />{' '}
+            <SourceRef provenance="code-derived" code={code.enaEthtoolOps} />. Reading a gap between
+            the two as traffic falling back to standard ENA is our interpretation of that pair.
           </Box>
 
           <Table
@@ -848,6 +832,17 @@ a peer process is no longer present.`}</pre>
             ]}
             items={counterRows}
           />
+
+          <Box variant="small" color="text-body-secondary">
+            Worth knowing before a Kubernetes dashboard gets built on these: AWS states that
+            CloudWatch Container Insights supports all of the EFA driver metrics except{' '}
+            <code>retrans_bytes</code>, <code>retrans_pkts</code>,{' '}
+            <code>retrans_timeout_events</code>, <code>unresponsive_remote_events</code> and{' '}
+            <code>impaired_remote_conn_events</code>{' '}
+            <SourceRef provenance="documented" doc={docs.monitor} />, which is this table. On an EKS
+            (Elastic Kubernetes Service) cluster the fault signal has to be collected off the node
+            itself.
+          </Box>
 
           <Alert type="info" header="Baseline these on your own cluster">
             No AWS source stating a numeric threshold for any of these counters was located during
@@ -929,10 +924,7 @@ a peer process is no longer present.`}</pre>
             many network paths as possible while avoiding overloaded paths, leaving message order
             restoration to the upper layer because that layer has a better understanding of the
             required ordering semantics{' '}
-            <SourceRef provenance="documented" doc={docs.storageBlog} />. The EFA driver registers
-            its InfiniBand device with <code>node_type = RDMA_NODE_UNSPECIFIED</code>{' '}
-            <SourceRef provenance="code-derived" code={code.nodeType} />, a value that claims
-            membership of neither family.
+            <SourceRef provenance="documented" doc={docs.storageBlog} />.
           </Box>
         </SpaceBetween>
       </Container>
@@ -986,10 +978,11 @@ a peer process is no longer present.`}</pre>
             <SourceRef provenance="code-derived" code={code.portStats} />. A search of the driver
             tree for retransmission logic during this research found none, which is consistent with
             the device doing the work, though an absence found by searching is weaker evidence than
-            the presence of the stats path. There is no host-side
-            retry policy, which is why the counters are a monitoring surface and not a control
-            surface. The application never blocks for it either: it keeps posting work and polling
-            completions while the card resends the packet on a different path.
+            the presence of the stats path. That same search turned up no host-side policy governing
+            loss retransmission, which is why these five counters read as a monitoring surface
+            rather than a control surface. The application never blocks for it either: it keeps
+            posting work and polling completions while the card resends the packet on a different
+            path.
           </Box>
 
           <Box variant="p">
@@ -1006,13 +999,12 @@ a peer process is no longer present.`}</pre>
 
           <Box variant="p">
             Congestion control is the part with the least public detail. AWS states that the EFA
-            device provides capabilities like built-in OS-bypass and congestion control through the
-            SRD protocol <SourceRef provenance="documented" doc={docs.efa} />, and that ENA Express
-            detects and avoids congested network paths and handles some tasks directly in the
-            network layer, such as packet reordering on the receiving end and most retransmits that
-            are needed <SourceRef provenance="documented" doc={docs.enaExpress} />. Beyond that, AWS
-            publishes no algorithm, and this page names none. There is nothing to configure: watch
-            the response through <code>retrans_timeout_events</code> rather than trying to steer it.
+            device provides congestion control through the SRD protocol{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />, and that ENA Express detects and
+            avoids congested network paths{' '}
+            <SourceRef provenance="documented" doc={docs.enaExpress} />. No published algorithm was
+            located during this research, and there is nothing to configure: watch the response
+            through <code>retrans_timeout_events</code> rather than trying to steer it.
           </Box>
         </SpaceBetween>
       </Container>
@@ -1051,8 +1043,9 @@ a peer process is no longer present.`}</pre>
             The slot is the message id modulo the window size{' '}
             <SourceRef provenance="code-derived" code={code.recvwinModulo} />, and out-of-order
             arrivals are copied out of the pre-posted receive buffers into a separate bounce-buffer
-            pool, which is on by default{' '}
-            <SourceRef provenance="code-derived" code={code.envOoo} />.
+            pool. That copy is on in a default build: the provider's environment structure is
+            initialised with <code>.rx_copy_ooo = 1</code>{' '}
+            <SourceRef provenance="code-derived" code={code.envOooDefault} />.
           </Box>
 
           <ReorderWindowDiagram />
@@ -1156,27 +1149,17 @@ a peer process is no longer present.`}</pre>
             every descriptor. The transmit metadata descriptor has <code>dest_qp_num</code>, an
             address handle index <code>ah</code> and a <code>qkey</code>, all inside the
             per-work-request descriptor{' '}
-            <SourceRef provenance="code-derived" code={code.txMeta} />, so one send queue can
-            address every peer in the cluster. The device reports <code>max_ah</code> as a limit
+            <SourceRef provenance="code-derived" code={code.txMeta} />, and the EFA admin
+            modify-queue-pair command has no field for a destination at all{' '}
+            <SourceRef provenance="code-derived" code={code.modifyQp} />. One send queue can
+            address every peer in the cluster, and the device reports <code>max_ah</code> as a limit
             separate from <code>max_qp</code>{' '}
-            <SourceRef provenance="code-derived" code={code.maxAh} />, which is the same fact from
-            the resource-accounting side: peers are cheap, queue pairs are not.
-          </Box>
-
-          <Box variant="p">
-            The absent field settles it. The EFA admin modify-queue-pair command has fields for
-            state, current state, queue key, send queue packet sequence number, drain notification
-            and RNR retry count, and no field for a destination at all{' '}
-            <SourceRef provenance="code-derived" code={code.modifyQp} />. There is nowhere to bind a
-            remote queue pair, because SRD never does, and{' '}
-            <code>EFA_QP_DRIVER_TYPE_SRD</code> is the only driver queue-pair type the user ABI
-            defines <SourceRef provenance="code-derived" code={code.qpType} />. On InfiniBand
-            Reliable Connected the opposite holds: <code>dest_qp_num</code> and{' '}
-            <code>ah_attr</code> are valid only for RC and UC queue pairs, and moving an RC queue
-            pair to ready-to-receive requires <code>IBV_QP_AV</code> and{' '}
-            <code>IBV_QP_DEST_QPN</code> among its mandatory attributes{' '}
-            <SourceRef provenance="documented" doc={docs.ibvModifyQp} />. The destination is part of
-            the queue pair, so full connectivity needs one queue pair per process pair.
+            <SourceRef provenance="code-derived" code={code.maxAh} />: peers are cheap, queue pairs
+            are not. On InfiniBand Reliable Connected the opposite holds. Moving an RC queue pair to
+            ready-to-receive requires <code>IBV_QP_AV</code> and <code>IBV_QP_DEST_QPN</code> among
+            its mandatory attributes{' '}
+            <SourceRef provenance="documented" doc={docs.ibvModifyQp} />, so the destination is part
+            of the queue pair and full connectivity needs one queue pair per process pair.
           </Box>
 
           <Alert type="warning" header="The commonly quoted form of this argument mixes units">
@@ -1263,20 +1246,29 @@ a peer process is no longer present.`}</pre>
             ENA Express is the middle option worth knowing about. It puts ordinary TCP and UDP
             traffic onto SRD without any application change, raising the single-flow ceiling from 5
             Gbps to up to 25 Gbps within the same Region, up to the aggregate instance limit, and
-            reducing tail latency between instances during periods of high network load{' '}
-            <SourceRef provenance="documented" doc={docs.enaExpress} />. You keep sockets and pay
-            the uncongested median tax. EFA removes the kernel from the data path entirely and pays
-            nothing at the transport layer, in exchange for a different programming model. Reach for
-            ENA Express when the application has to keep its sockets, and for EFA when the library
-            underneath it already speaks libfabric.
+            reducing tail latency of network traffic between EC2 instances in the same Availability
+            Zone, especially during periods of high network load{' '}
+            <SourceRef provenance="documented" doc={docs.enaExpress} />. Note which of those two
+            carries which scope: the bandwidth figure is stated for the Region, the tail-latency
+            claim for a single Availability Zone. You keep sockets and pay the uncongested median
+            tax. EFA takes the other route. AWS states that the libfabric API bypasses the operating
+            system kernel and communicates directly with the EFA device to put packets on the
+            network <SourceRef provenance="documented" doc={docs.efa} />, and the price of that is
+            the programming model in the first column above. The tens-of-microseconds median figure
+            is stated for the ENA Express path; no equivalent figure for the EFA path was located in
+            AWS documentation during this research. Reach for ENA Express when the application has
+            to keep its sockets, and for EFA when the library underneath it already speaks
+            libfabric.
           </Box>
 
           <Alert type="info" header="ENA Express is switched on outside the instance">
             <SpaceBetween size="xs">
               <Box variant="p">
-                Everything the ENA driver holds for SRD is read-only. The only accessor is{' '}
-                <code>ena_com_get_ena_srd_info()</code>, a getter{' '}
-                <SourceRef provenance="code-derived" code={code.enaSrdGet} />. No matching set
+                What the ENA driver declares for SRD is one accessor. Its common header exports{' '}
+                <code>ena_com_get_ena_srd_info()</code> and nothing else naming SRD{' '}
+                <SourceRef provenance="code-derived" code={code.enaSrdDecl} />, and the definition
+                is a getter that issues an admin-queue statistics request and copies the response
+                out <SourceRef provenance="code-derived" code={code.enaSrdGet} />. No matching set
                 function was found in the tree during this research. ENA Express
                 is configured on the network interface attachment through the EC2 control plane, and
                 the driver only observes the result. Any guide showing an in-instance command to
