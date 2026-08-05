@@ -706,8 +706,8 @@ resources:
             workload container.
           </Box>
           <Alert type="info" header="The two device layers are cluster add-ons, on every AMI">
-            AWS states that the EFA DRA driver and the EFA device plugin must be installed separately on your
-            cluster before deploying workloads, on the EKS AL2023 and Bottlerocket AMIs (Amazon Machine Images)
+            The EFA DRA driver and the EFA device plugin must be installed separately on your cluster before
+            deploying workloads, on the EKS AL2023 and Bottlerocket AMIs (Amazon Machine Images)
             alike <SourceRef provenance="documented" doc={docs.eksDevice} />. The NVIDIA layer splits by AMI:
             Bottlerocket NVIDIA carries the NVIDIA device plugin in the image, and on the EKS-optimized AL2023
             NVIDIA AMIs you install the NVIDIA Kubernetes device plugin and the NVIDIA DRA driver yourself{' '}
@@ -815,8 +815,8 @@ resources:
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                On a running node, AWS points at the package database directly: you can find the list of installed
-                packages and their versions on a running EC2 instance with the dnf list installed command{' '}
+                On a running node, the dnf list installed command gives the installed packages and their
+                versions{' '}
                 <SourceRef provenance="documented" doc={docs.eksAmi} />. Off the node, each AMI release publishes a
                 package version table per AMI type{' '}
                 <SourceRef provenance="documented" doc={docs.amiRelease} />.
@@ -881,7 +881,7 @@ make k8s=1.36 os_distro=al2023 \\
             <SpaceBetween size="s">
               <Box variant="p">
                 eksctl remains the shortest path, and a launch template is where you go for efa-only interfaces.
-                AWS states both: you cannot use eksctl to create nodes and node groups that use EFA-only
+                You cannot use eksctl to create nodes and node groups that use EFA-only
                 interfaces, and if you need to customize the per-device EFA configuration when using eksctl, it is
                 recommended to use the eksctl support for launch templates{' '}
                 <SourceRef provenance="documented" doc={docs.eksDevice} />. eksctl also accepts an explicit
@@ -890,7 +890,7 @@ make k8s=1.36 os_distro=al2023 \\
               </Box>
               <Box variant="p">
                 For managed node groups with a hand-written launch template, one line will cost you an afternoon.
-                AWS states it as an Important callout: do not specify SubnetId in the launch template when using EKS
+                Do not specify SubnetId in the launch template when using EKS
                 managed node groups, because EKS requires all subnets to be specified through the CreateNodegroup
                 API and rejects launch templates that include subnet configuration{' '}
                 <SourceRef provenance="documented" doc={docs.eksDevice} />. Note also that you cannot make network
@@ -969,7 +969,7 @@ make k8s=1.36 os_distro=al2023 \\
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            AWS states the headline numbers: p5.48xlarge and p5e.48xlarge support 32 network cards with a total
+            p5.48xlarge and p5e.48xlarge support 32 network cards with a total
             network bandwidth capacity of 3,200 Gbps, of which up to 800 Gbps can be used for IP network traffic,
             and because EFA and IP traffic share the same underlying resources, bandwidth used by one reduces what
             is available to the other <SourceRef provenance="documented" doc={docs.efaAcc} />. The two figures are
@@ -982,7 +982,7 @@ make k8s=1.36 os_distro=al2023 \\
               </Box>
               <Box variant="p">
                 One ENA interface on network card 0 device index 0, one efa-only on network card 0 device index 1,
-                and one efa-only on each of cards 1 through 31. AWS quotes the result as up to 3,200 Gbps of EFA
+                and one efa-only on each of cards 1 through 31. The result is up to 3,200 Gbps of EFA
                 bandwidth and up to 100 Gbps of IP bandwidth with one private IP address{' '}
                 <SourceRef provenance="documented" doc={docs.efaAcc} />. That is 32 EFA devices from 32 cards, with
                 somewhere left to put the IP stack.
@@ -1000,11 +1000,11 @@ make k8s=1.36 os_distro=al2023 \\
             </div>
           </ColumnLayout>
           <Alert type="warning" header="Budget the subnet addresses before you launch">
-            AWS spells out the mechanism: on instances such as p5.48xlarge and p6-b200.48xlarge the Amazon VPC
+            On instances such as p5.48xlarge and p6-b200.48xlarge the Amazon VPC
             (Virtual Private Cloud) CNI (Container Network Interface) allocates IP addresses across all IP-enabled
             attached ENIs by default, which can consume a large number of subnet addresses even when pods are not
             using them, and on instances with dozens of interfaces this can quickly exhaust the subnet. The two
-            fixes AWS gives are using efa-only for every interface except the primary, and tuning WARM_IP_TARGET and
+            fixes are using efa-only for every interface except the primary, and tuning WARM_IP_TARGET and
             WARM_ENI_TARGET on the aws-node DaemonSet. The caveat on the second one matters: those settings are
             cluster-wide and apply to every node the VPC CNI manages, with no way to set them per node group or
             instance type{' '}
@@ -1100,7 +1100,7 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
               <Box variant="h3">How many devices you get</Box>
               <Box variant="p">
                 The advertised count is the number of EFA interfaces attached at launch. The instance type only
-                sets the ceiling, and AWS states that rule: you can assign up to one EFA per network card, and an
+                sets the ceiling: you can assign up to one EFA per network card, and an
                 EFA counts as a network interface{' '}
                 <SourceRef provenance="documented" doc={docs.eksNode} />.
               </Box>
@@ -1204,7 +1204,7 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
           </Box>
 
           <Box variant="p">
-            allocationMode exists so you do not have to know the group size. AWS gives the motivating case: on
+            allocationMode exists so you do not have to know the group size. On
             p5.48xlarge instances there are four EFA devices that share the same PCIe root with one GPU, and to
             allocate those groups alongside aligned GPUs even without knowing the exact mapping and count, you
             configure the ResourceClaimTemplate with allocationMode: All{' '}
@@ -1364,7 +1364,7 @@ spec:
           </ExpandableSection>
 
           <Box variant="p">
-            On huge pages, hold two numbers apart. AWS states that EC2 instances with the EFA driver installed
+            On huge pages, hold two numbers apart. EC2 instances with the EFA driver installed
             pre-allocate 5128 2MiB huge pages, requestable as a resource in your job specifications{' '}
             <SourceRef provenance="documented" doc={docs.eksNode} />. The AWS manifests then request 5120Mi, which
             is 2,560 pages, roughly half of what was pre-allocated: different quantities, easily confused.
@@ -1413,8 +1413,8 @@ spec:
           <Box variant="p">
             The reason this breaks partial allocations is in that glob. The discoverer has no notion of which EFA
             devices the pod was allocated, so a workload asking for fewer than all the EFA devices on a node still
-            receives all of them, colliding with the exclusive allocation model of the EFA device plugin. AWS
-            confirms EKS Auto Mode does not enable MOFED by default and is unaffected{' '}
+            receives all of them, colliding with the exclusive allocation model of the EFA device plugin. EKS Auto
+            Mode does not enable MOFED by default and is unaffected{' '}
             <SourceRef provenance="documented" doc={docs.eksNvidia} />.
           </Box>
           <Box variant="code">

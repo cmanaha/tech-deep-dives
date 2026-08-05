@@ -149,7 +149,7 @@ export function AIMLTraining() {
               <Box variant="p">
                 Worked as arithmetic: a 7B parameter model is 14 GB in fp16, so one step moves roughly
                 28 GB of allreduce traffic. Divide that by 100 Gbps and you get about 2.2 seconds on the
-                wire. Divide it by the 3,200 Gbps of EFA bandwidth AWS documents for a P5 layout{' '}
+                wire. Divide it by the 3,200 Gbps of EFA bandwidth a P5 layout carries{' '}
                 <SourceRef provenance="documented" doc={docs.efaAcc} /> and you get about 70
                 milliseconds. Treat the ratio as illustrative: line-rate division that ignores
                 collective algorithm, message size and overlap with compute. The method is what
@@ -246,10 +246,11 @@ export function AIMLTraining() {
               <Box variant="h3">Trn2</Box>
               <Box variant="p">
                 16 Trainium2 chips interconnected with NeuronLink, and 16 EFA interfaces at 200 Gbps
-                each for 3.2 Tbps of EFAv3 networking. AWS states 30 to 40% better price performance
-                than the GPU-based P5e and P5en instances. A Trn2 UltraServer connects 64 Trainium2
+                each for 3.2 Tbps of EFAv3 networking. Trn2 is marketed at 30 to 40% better price
+                performance than the GPU-based P5e and P5en instances, a product-page figure rather
+                than a published benchmark. A Trn2 UltraServer connects 64 Trainium2
                 chips across four Trn2 instances for 12.8 Tbps of EFAv3 networking{' '}
-                <SourceRef provenance="documented" doc={docs.trn2} />. Instance rates are in the
+                <SourceRef provenance="documented" doc={docs.trn2} label="tier 2: product page" />. Instance rates are in the
                 Pricing section.
               </Box>
             </div>

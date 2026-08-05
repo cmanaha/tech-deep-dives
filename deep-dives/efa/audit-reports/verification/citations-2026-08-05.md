@@ -1,7 +1,7 @@
 # Citation re-verification: efa
 
 Run date: 2026-08-05  
-Tree: `d2810cf`  
+Tree: `db148a6`  
 Check: `scripts/audit/verify-citations.sh` (Tier 1.5, deterministic, networked, no LLM)  
 Scope: `deep-dives/efa/src/**/*.tsx` and `*.ts`, excluding tests
 Also: `deep-dives/efa/research/**/*.md`, GitHub blob and tree URLs only (`pinned-refs-research`)

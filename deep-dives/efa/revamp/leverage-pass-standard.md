@@ -117,6 +117,68 @@ phrasing, because stronger phrasing feels more useful.
    labelled as our reading. They may not sit between a claim and a citation as
    though they were part of the evidence.
 
+## Attribution belongs in the link, not in the sentence
+
+The citation already says who the source is. Repeating it in the prose spends
+the reader's first clause on provenance instead of on the fact, and it does that
+several times per section until the page reads like a literature review.
+
+Write: EFA traffic is encrypted in transit by the Nitro hardware, using
+authenticated encryption with associated data [link].
+
+Not: AWS states that the encryption uses authenticated encryption with
+associated data [link].
+
+**The test.** Delete the attribution and read the sentence again. If it says the
+same thing, the attribution was narration, and it stays deleted. If deleting it
+changes what is being claimed, it was load-bearing, and it stays.
+
+Three constructions where it is load-bearing, so this is not a blanket
+search-and-replace:
+
+1. **The silence is the claim.** "AWS publishes no figure for the resulting
+   speedup" cannot be written without naming who is silent. Delete the
+   attribution and it becomes "there is no figure", a claim about the world the
+   research cannot support. These are the hedge scopes the rest of this standard
+   already protects.
+
+2. **Two sources disagree.** "The driver's PCI table carries five device IDs
+   while AWS documents four" needs both parties named or the conflict is
+   illegible. Documentation-versus-code conflicts are content, and in them the
+   attribution is the content.
+
+3. **The verb carries strength rather than provenance.** "AWS recommends a
+   cluster placement group" is not reporting a fact about placement groups. It
+   is reporting that this is advice and not a requirement, which is exactly what
+   a reader sizing a cluster needs. Recommends, requires, supports and caps
+   describe what AWS does. States, documents, publishes, says, names and lists
+   describe only that AWS wrote it down, and the link already said that.
+
+4. **The attribution grades the source, or is the only provenance marker
+   present.** The rule rests on the citation carrying the attribution. Where
+   there is no citation to carry it, stripping the attribution does not move
+   provenance into the link, it deletes provenance. Glossary entries and
+   summary tables that carry no SourceRef are the common case.
+
+   The sharper version: a vendor performance claim is not the same kind of
+   statement as a documented mechanism, and flattening it into declarative
+   prose launders a marketing number into a measurement. "Trn2 delivers 30 to
+   40% better price performance" reads as a benchmark. It is a product page.
+   Either the attribution stays, or the sentence says plainly what kind of
+   figure it is. This is the source-authority rule reaching into prose style:
+   tier 2 may not be dressed as tier 1 for readability.
+
+**The rewrite is not a deletion.** Striking "AWS states that" off the front
+usually leaves a subject-less fragment, so the fact has to be promoted into the
+subject position, which is the direction the reader was travelling anyway. "AWS
+documents a P5 layout that provides up to 3,200 Gbps" becomes "A P5 instance
+carries 3,200 Gbps across 32 network cards [link]".
+
+This is a **re-express** under the four verbs. It may not change the claim,
+weaken or strengthen a scope, or leave a citation attached to a sentence it can
+no longer bear. If promoting the fact into the subject would require a detail
+the section does not have, the sentence keeps its shape and the pass moves on.
+
 ## Self-check before the pass reports done
 
 Diff the claim set, not just the text. List every assertion in the after that is

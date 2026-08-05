@@ -387,10 +387,10 @@ export function EfaDevice() {
             and the collectives plugin invents the rail index on top of all three.
           </Box>
           <Box variant="p">
-            AWS states the top of that stack plainly: an EFA device attaches to an EC2 instance in
-            two ways, using a traditional EFA interface, also called EFA with ENA (Elastic Network
-            Adapter), which creates both an EFA device and an ENA device, or using an EFA-only
-            interface, which creates just the EFA device{' '}
+            An EFA device attaches to an EC2 instance in two ways: using a traditional EFA
+            interface, also called EFA with ENA (Elastic Network Adapter), which creates both an EFA
+            device and an ENA device, or using an EFA-only interface, which creates just the EFA
+            device{' '}
             <SourceRef provenance="documented" doc={docs.efa} />.
           </Box>
         </SpaceBetween>
@@ -418,10 +418,8 @@ export function EfaDevice() {
           <AttachmentModesDiagram />
 
           <Box variant="p">
-            The EFA device is addressed at the MAC layer, which is why it holds no IP address. AWS
-            gives the reason in the announcement that introduced EFA-only interfaces: the EFA
-            device is not
-            assigned an IP address because it uses the Scalable Reliable Datagram (SRD) protocol,
+            The EFA device is addressed at the MAC layer. It is not assigned an IP address because
+            it uses the Scalable Reliable Datagram (SRD) protocol,
             which operates over MAC addresses, and EFA-only interfaces can only be configured as a
             secondary interface, with the primary interface being either EFA coupled with ENA or
             just ENA, since ENA is required for TCP/IP VPC (Virtual Private Cloud) routing{' '}
@@ -456,7 +454,7 @@ export function EfaDevice() {
                 difference between fitting and not fitting.
               </Box>
               <Box variant="p">
-                The second is the guest operating system. AWS names the failure modes it avoids:
+                The second is the guest operating system. The failure modes it avoids are
                 disallowed auto-assignment of public IP addresses, and IP routing challenges such as
                 hostname to IP address mapping issues and source IP address mismatches, that can
                 arise if an instance has multiple network interfaces{' '}
@@ -498,19 +496,19 @@ export function EfaDevice() {
           <CountingLayersDiagram />
 
           <Box variant="p">
-            Start with what AWS states. The p5.48xlarge and p5e.48xlarge instances support 32
-            network cards and have a total network bandwidth capacity of 3,200 Gbps, of which up to
+            The p5.48xlarge and p5e.48xlarge instances support 32 network cards and have a total
+            network bandwidth capacity of 3,200 Gbps, of which up to
             800 Gbps can be utilized for IP network traffic{' '}
             <SourceRef provenance="documented" doc={docs.efaAcc} />. The rule that ties cards to
-            interfaces is also stated: instance types that support multiple network cards can be
-            configured with one EFA per network card, and all other supported instance types
+            interfaces: instance types that support multiple network cards can be configured with
+            one EFA per network card, and all other supported instance types
             support only one EFA per instance{' '}
             <SourceRef provenance="documented" doc={docs.efa} />.
           </Box>
 
           <Box variant="p">
-            Now read the AWS launch example, where the naive arithmetic
-            breaks. AWS introduces it as a request with 32 EFA devices and one ENA device, and the
+            Now read the AWS launch example, where the naive arithmetic breaks. It is a request
+            with 32 EFA devices and one ENA device, and the
             command attaches 33 interfaces across 32 cards: an ENA interface on network card index
             0 device index 0, an EFA-only interface on network card index 0 device index 1, and one
             EFA-only interface on each of network card index 1 through 31{' '}
@@ -592,8 +590,8 @@ export function EfaDevice() {
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                AWS states it directly: P6-B300 instances have a total network bandwidth capacity of
-                up to 6400 Gbps for EFA traffic and up to 3870 Gbps for ENA traffic, they have 8
+                P6-B300 instances have a total network bandwidth capacity of up to 6400 Gbps for
+                EFA traffic and up to 3870 Gbps for ENA traffic, they have 8
                 GPUs and 17 network cards, where the primary network card supports only an ENA
                 network interface with up to 350 Gbps of bandwidth, and the secondary network cards
                 support up to 400 Gbps EFA and up to 220 Gbps of ENA bandwidth{' '}
@@ -646,11 +644,11 @@ export function EfaDevice() {
 
           <Box variant="h3">Huge pages</Box>
           <Box variant="p">
-            AWS states that Amazon EC2 instances with the EFA driver installed pre-allocate 5128
-            huge pages of 2 MiB each, which you can request as resources to consume in your job
+            Amazon EC2 instances with the EFA driver installed pre-allocate 5128 huge pages of
+            2 MiB each, which you can request as resources to consume in your job
             specifications{' '}
             <SourceRef provenance="documented" doc={docs.eksNode} />. That number is worth holding
-            on to, because AWS's own p5 manifests on the same page request 5120Mi of hugepages-2Mi{' '}
+            on to, because the p5 manifests on the same page request 5120Mi of hugepages-2Mi{' '}
             <SourceRef provenance="documented" doc={docs.eksNode} />, which is 2,560 pages, roughly
             half of what was pre-allocated. The two figures are easy to confuse.
           </Box>
@@ -827,8 +825,8 @@ export function EfaDevice() {
         <SpaceBetween size="m">
           <Box variant="h3">The self-referencing security group rule</Box>
           <Box variant="p">
-            AWS states the requirement in one sentence: an EFA requires a security group that allows
-            all inbound and outbound traffic to and from the security group itself{' '}
+            An EFA requires a security group that allows all inbound and outbound traffic to and
+            from the security group itself{' '}
             <SourceRef provenance="documented" doc={docs.efaStart} />. All traffic, in both
             directions, with the group as both the target and the source.
           </Box>
@@ -845,8 +843,8 @@ export function EfaDevice() {
           <Alert type="info" header="Scope the group, not the rule">
             Since the rule cannot be narrowed, the security boundary is membership. Put only the
             cluster's instances in that security group, and put SSH and any other administrative
-            access in a separate group attached alongside. AWS's own walkthrough does exactly that
-            and labels its combined example as intended for testing purposes only{' '}
+            access in a separate group attached alongside. The getting-started walkthrough does
+            exactly that and labels its combined example as intended for testing purposes only{' '}
             <SourceRef provenance="documented" doc={docs.efaStart} />.
           </Alert>
 
@@ -893,8 +891,8 @@ export function EfaDevice() {
                 recommendation as a rule.
               </Box>
               <Box variant="p">
-                The practical follow-on is capacity. AWS's answer for that is on the same page: to
-                ensure that capacity is available as you scale your cluster's instances, you can
+                The practical follow-on is capacity. To ensure that capacity is available as you
+                scale your cluster's instances, you can
                 create a Capacity Reservation for your cluster placement group{' '}
                 <SourceRef provenance="documented" doc={docs.efaStart} />.
               </Box>

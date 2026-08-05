@@ -723,9 +723,9 @@ export function StorageDataPaths() {
         <SpaceBetween size="m">
           <Alert type="info" header="Start here: the file system configuration that reaches the fabric">
             <Box variant="p">
-              AWS scopes EFA (Elastic Fabric Adapter) support for FSx for Lustre positively: EFA
-              is supported on Persistent 2 file systems with a metadata configuration specified,
-              including file systems using the Intelligent-Tiering storage class{' '}
+              EFA (Elastic Fabric Adapter) is supported on Persistent 2 file systems with a
+              metadata configuration specified, including file systems using the
+              Intelligent-Tiering storage class{' '}
               <SourceRef provenance="documented" doc={docs.fsxEfa} />. That is the file system to
               create if the cluster will ever want the fabric, and it is the thing to get right
               first, because EFA cannot be enabled on an existing file system{' '}
@@ -853,10 +853,10 @@ export function StorageDataPaths() {
           <Alert type="warning" header="Write the security group rules by group ID, on both sides">
             <SpaceBetween size="xs">
               <Box variant="p">
-                AWS states the requirement flatly. For EFA-enabled FSx for Lustre file systems, the
-                file system and client security groups must allow all traffic to and from each
-                other, and the file system security group must also allow all traffic to and from
-                itself. You must explicitly specify a security group ID as the source or destination
+                For EFA-enabled FSx for Lustre file systems, the file system and client security
+                groups must allow all traffic to and from each other, and the file system
+                security group must also allow all traffic to and from itself. You must
+                explicitly specify a security group ID as the source or destination
                 for all EFA traffic rules. CIDR-based rules, including 0.0.0.0/0, do not satisfy EFA
                 requirements even if they allow all traffic on all ports{' '}
                 <SourceRef provenance="documented" doc={docs.fsxSecGroups} />.
@@ -906,7 +906,7 @@ export function StorageDataPaths() {
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                For an EFA-enabled, Persistent, SSD deployment type, AWS states that storage capacity
+                For an EFA-enabled, Persistent, SSD deployment type, storage capacity
                 is set in increments of 4.8 TiB, 9.6 TiB, 19.2 TiB and 38.4 TiB for the 1000, 500,
                 250 and 125 MBps per TiB throughput tiers respectively{' '}
                 <SourceRef provenance="documented" doc={docs.fsxStart} />. Non-EFA Persistent SSD

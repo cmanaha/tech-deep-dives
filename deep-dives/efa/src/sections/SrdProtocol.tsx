@@ -667,9 +667,9 @@ export function SrdProtocol() {
             A collective operation finishes when its slowest participant finishes, which makes tail
             latency the number that decides how fast a distributed training step runs. Every
             conventional reliable transport works against that number in the same way: it delivers
-            packets in order, so one lost packet holds up every packet queued behind it. AWS names
-            this directly, calling the in-order model a conga line where a single lost packet messes
-            up the on-time arrival of all the packets behind it, an effect called head of line
+            packets in order, so one lost packet holds up every packet queued behind it. That
+            in-order model is a conga line: a single lost packet messes up the on-time arrival of
+            all the packets behind it, an effect called head of line
             blocking <SourceRef provenance="documented" doc={docs.hpcBlog} />.
           </Box>
           <Box variant="p">
@@ -752,8 +752,8 @@ export function SrdProtocol() {
             <SourceRef provenance="code-derived" code={code.errMsg} />. Both host id fields are read
             from one default path, <code>/sys/devices/virtual/dmi/id/board_asset_tag</code>, which
             the provider's own comment marks as available on EC2 instances and containers{' '}
-            <SourceRef provenance="code-derived" code={code.hostIdFile} />. AWS documents that on an
-            instance built on the Nitro system, that file reads back the instance id{' '}
+            <SourceRef provenance="code-derived" code={code.hostIdFile} />. On an instance built on
+            the Nitro system, that file reads back the instance id{' '}
             <SourceRef provenance="documented" doc={docs.instanceId} />, so on those instances the
             error names the machine to go and look at. The long-form help, including the security
             group hint, is an info-level message{' '}
@@ -805,9 +805,9 @@ a peer process is no longer present.`}</pre>
             <code>unresponsive_remote_events</code> and <code>impaired_remote_conn_events</code>{' '}
             <SourceRef provenance="code-derived" code={code.netStats} />, and the driver publishes
             them as RDMA (Remote Direct Memory Access) hardware counters{' '}
-            <SourceRef provenance="code-derived" code={code.portStats} />. AWS documents the same
-            five, states they are available on Nitro v4 and later instance types only, and states
-            they are cumulative since instance launch or the last driver reset{' '}
+            <SourceRef provenance="code-derived" code={code.portStats} />. The same five are
+            available on Nitro v4 and later instance types only, and are cumulative since
+            instance launch or the last driver reset{' '}
             <SourceRef provenance="documented" doc={docs.monitor} />, so only the rate of change
             means anything. That same page gives one command which prints all five at once,{' '}
             <code>rdma -p statistic show</code>, and the operations section covers reading them in
@@ -834,8 +834,8 @@ a peer process is no longer present.`}</pre>
           />
 
           <Box variant="small" color="text-body-secondary">
-            Worth knowing before a Kubernetes dashboard gets built on these: AWS states that
-            CloudWatch Container Insights supports all of the EFA driver metrics except{' '}
+            Worth knowing before a Kubernetes dashboard gets built on these: CloudWatch Container
+            Insights supports all of the EFA driver metrics except{' '}
             <code>retrans_bytes</code>, <code>retrans_pkts</code>,{' '}
             <code>retrans_timeout_events</code>, <code>unresponsive_remote_events</code> and{' '}
             <code>impaired_remote_conn_events</code>{' '}
@@ -943,8 +943,8 @@ a peer process is no longer present.`}</pre>
           <Box variant="p">
             <strong>The mechanism:</strong> without the in-order constraint, SRD can push all the
             packets making up a block of data all at once, over all the possible pathways in the
-            fabric, and AWS states that for memory reasons it chooses 64 paths at a time from the
-            hundreds or even thousands available{' '}
+            fabric, and for memory reasons it chooses 64 paths at a time from the hundreds or even
+            thousands available{' '}
             <SourceRef provenance="documented" doc={docs.hpcBlog} />.
           </Box>
 
@@ -963,8 +963,8 @@ a peer process is no longer present.`}</pre>
             policy and part is physics: a hashed flow follows one path, so its throughput is bounded
             by the most congested link on that path. Spraying removes the second constraint, which
             is why a single-socket benchmark will never show you what this fabric does. Scale helps
-            as well: AWS states that as a job grows to consume more nodes, SRD has more paths to
-            choose from, because the perimeter of that network gets bigger{' '}
+            as well: as a job grows to consume more nodes, SRD has more paths to choose from,
+            because the perimeter of that network gets bigger{' '}
             <SourceRef provenance="documented" doc={docs.hpcBlog} />. Most fabric properties degrade
             with cluster size. Path diversity improves with it.
           </Box>
@@ -998,9 +998,9 @@ a peer process is no longer present.`}</pre>
           </Box>
 
           <Box variant="p">
-            Congestion control is the part with the least public detail. AWS states that the EFA
-            device provides congestion control through the SRD protocol{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />, and that ENA Express detects and
+            Congestion control is the part with the least public detail. The EFA device provides
+            congestion control through the SRD protocol{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />, and ENA Express detects and
             avoids congested network paths{' '}
             <SourceRef provenance="documented" doc={docs.enaExpress} />. No published algorithm was
             located during this research, and there is nothing to configure: watch the response
@@ -1222,8 +1222,8 @@ a peer process is no longer present.`}</pre>
               <Box variant="h3">libfabric is the only way in</Box>
               <Box variant="p">
                 EFA registers an InfiniBand device, not a network device, so there is no interface,
-                no IP address and no socket to bind. AWS states the consequence directly: EFA-only
-                interfaces cannot be assigned IPv4 or IPv6 addresses and cannot be the primary
+                no IP address and no socket to bind. EFA-only interfaces cannot be assigned IPv4 or
+                IPv6 addresses and cannot be the primary
                 network interface <SourceRef provenance="documented" doc={docs.efa} />. Reaching SRD
                 means adopting libfabric, or something built on it.
               </Box>
@@ -1251,8 +1251,8 @@ a peer process is no longer present.`}</pre>
             <SourceRef provenance="documented" doc={docs.enaExpress} />. Note which of those two
             carries which scope: the bandwidth figure is stated for the Region, the tail-latency
             claim for a single Availability Zone. You keep sockets and pay the uncongested median
-            tax. EFA takes the other route. AWS states that the libfabric API bypasses the operating
-            system kernel and communicates directly with the EFA device to put packets on the
+            tax. EFA takes the other route. The libfabric API bypasses the operating system kernel
+            and communicates directly with the EFA device to put packets on the
             network <SourceRef provenance="documented" doc={docs.efa} />, and the price of that is
             the programming model in the first column above. The tens-of-microseconds median figure
             is stated for the ENA Express path; no equivalent figure for the EFA path was located in

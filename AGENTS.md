@@ -136,6 +136,16 @@ is material that passes neither test.
   breaks.
 - **Cite evidence for authority or for conflict**, and say where it comes from.
   Citations on undisputed claims add weight without adding trust.
+- **Attribution belongs in the link, not in the sentence.** Do not open with
+  "AWS states that" or "AWS documents". State the fact, attach the source. The
+  test: delete the attribution, and if the sentence still says the same thing it
+  stays deleted. It is load-bearing in exactly four cases, where it stays: the
+  source's silence is the claim ("AWS publishes no figure for it"), two sources
+  disagree (documentation versus code), the verb carries strength rather than
+  provenance ("AWS recommends" marks advice, not a requirement), or the
+  attribution grades the source and no citation is present to carry it. Never
+  flatten a vendor performance claim into declarative prose: a product-page
+  number dressed as a measurement is tier laundering, not readability.
 - **Every h2 description states the payoff**, naming the reader's moment or the
   result rather than restating the topic.
 - **Repeat the section's strongest number.** One figure, landed more than once.

@@ -829,8 +829,8 @@ export function DataPath() {
             <SourceRef provenance="code-derived" code={code.dmabuf} />.
           </Box>
           <Alert type="info" header="Which RDMA operations you get is an instance-type question">
-            AWS documents RDMA write on most supported instance types with Nitro version 4 and
-            later, and RDMA read on all instances with Nitro version 4 and later{' '}
+            Most supported instance types with Nitro version 4 and later have RDMA write, and all
+            instances with Nitro version 4 and later have RDMA read{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. Two documented exceptions cut
             both ways: p4d.24xlarge and p4de.24xlarge are Nitro v3 and still have RDMA read, and
             c7gn and hpc7g are Nitro v5 and are read only. Those exceptions are why the instance

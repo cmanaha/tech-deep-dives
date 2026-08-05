@@ -69,9 +69,9 @@ export function Overview() {
             enables applications to communicate at the{' '}
             <strong>scale and performance of on-premises HPC clusters</strong>, but in the cloud. It achieves
             this through <strong>OS-bypass</strong>: applications talk directly to the network hardware,
-            skipping the kernel network stack entirely. AWS states the outcome: EFA provides lower and more
-            consistent latency and higher throughput than the TCP transport traditionally used in cloud-based
-            HPC systems <SourceRef provenance="documented" doc={docs.efa} />.
+            skipping the kernel network stack entirely. EFA provides lower and more consistent latency
+            and higher throughput than the TCP transport traditionally used in cloud-based HPC systems{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />.
           </Box>
           <Box variant="p">
             The one comparative latency figure AWS publishes is about the tail: relaxing
@@ -82,10 +82,10 @@ export function Overview() {
           </Box>
           <Box variant="p">
             Two questions get settled before any of the mechanism matters. Encryption: EFA traffic is{' '}
-            <strong>encrypted in transit</strong> by the Nitro hardware, and AWS states that the encryption
-            uses AEAD (Authenticated Encryption with Associated Data) algorithms with 256-bit encryption,
-            that there is no impact on network performance, and that EFA traffic is automatically encrypted
-            between cluster members <SourceRef provenance="documented" doc={docs.hpcLens} />. There is
+            <strong>encrypted in transit</strong> by the Nitro hardware, using AEAD (Authenticated
+            Encryption with Associated Data) algorithms with 256-bit encryption, with no impact on network
+            performance, and it is applied automatically between cluster members{' '}
+            <SourceRef provenance="documented" doc={docs.hpcLens} />. There is
             nothing to switch on for it. Cost: EFA is an optional EC2 networking feature you can enable on
             any supported instance at no additional cost{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. The instance type is the line item, and
@@ -107,8 +107,8 @@ export function Overview() {
             <Box variant="p">
               Multi-node distributed training synchronizes gradients through allreduce on every
               step, so the fabric sets the wall clock. EFA + NCCL (NVIDIA Collective Communications
-              Library) runs on the full EFA fabric of the instance: AWS documents a P5 layout that
-              provides <strong>up to 3,200 Gbps</strong> of EFA networking bandwidth{' '}
+              Library) runs on the full EFA fabric of the instance: a P5 layout provides{' '}
+              <strong>up to 3,200 Gbps</strong> of EFA networking bandwidth{' '}
               <SourceRef provenance="documented" doc={docs.efaAcc} />.
             </Box>
             <StatusIndicator type="success">Critical for multi-node GPU training</StatusIndicator>

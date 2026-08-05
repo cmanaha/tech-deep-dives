@@ -34,7 +34,7 @@ interface CostItem {
 }
 
 const costBreakdown: CostItem[] = [
-  { component: 'EFA interface', cost: 'Free', notes: 'AWS states EFA can be enabled "on any supported instance at no additional cost".' },
+  { component: 'EFA interface', cost: 'Free', notes: 'EFA can be enabled "on any supported instance at no additional cost".' },
   { component: 'EFA data transfer', cost: 'Free', notes: 'EFA traffic stays inside one Availability Zone, and it is billed at nothing per GB either way.' },
   { component: 'Instance premium', cost: 'None', notes: 'The same SKU is billed whether or not you attach an EFA.' },
   { component: 'Cluster placement group', cost: 'Free', notes: 'A placement group is a scheduling constraint with no line item.' },
@@ -62,7 +62,7 @@ export function Pricing() {
         <SpaceBetween size="m">
           <Alert type="success" header="EFA (Elastic Fabric Adapter) carries no additional charge">
             <Box variant="p">
-              The EC2 User Guide states it plainly: "EFA is available as an optional Amazon EC2
+              EFA "is available as an optional Amazon EC2
               networking feature that you can enable on any supported instance at no additional
               cost."{' '}
               <SourceRef
@@ -466,8 +466,8 @@ export function Pricing() {
               <Box variant="h3">Pick the capacity path, then price it</Box>
               <Box variant="p">
                 Large accelerated fleets are capacity-constrained, and there is more than one way
-                to secure them. AWS documents On-Demand Capacity Reservations against a cluster
-                placement group directly in the EFA setup guide: "To ensure that capacity is
+                to secure them. An On-Demand Capacity Reservation can be created for a cluster
+                placement group: "To ensure that capacity is
                 available as you scale your cluster's instances, you can create a Capacity
                 Reservation for your cluster placement group."{' '}
                 <SourceRef provenance="documented" doc={EFA_START_DOC} />

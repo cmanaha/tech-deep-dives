@@ -405,7 +405,7 @@ const counterRows: CounterRow[] = [
     group: 'Basic',
     counters: 'tx_bytes, tx_pkts, rx_bytes, rx_pkts, rx_drops',
     meaning:
-      'Raw volume across the device since instance launch or the last driver reset. AWS describes rx_drops as packets that were received and then dropped.',
+      'Raw volume across the device since instance launch or the last driver reset. rx_drops counts packets that were received and then dropped.',
     problem:
       'Only rx_drops. The other four are the liveness check during bring-up: if they do not move while the job runs, something other than EFA is carrying the traffic.',
   },
@@ -433,7 +433,7 @@ const counterRows: CounterRow[] = [
     counters:
       'retrans_bytes, retrans_pkts, retrans_timeout_events, unresponsive_remote_events, impaired_remote_conn_events',
     meaning:
-      'AWS states these are Nitro v4 and later only. retrans_timeout_events counts times SRD traffic timed out and resulted in a network path change. impaired_remote_conn_events counts times a connection entered an impaired state, resulting in a reduced throughput rate limit.',
+      'Available on Nitro v4 and later only. retrans_timeout_events counts times SRD traffic timed out and resulted in a network path change. impaired_remote_conn_events counts times a connection entered an impaired state, resulting in a reduced throughput rate limit.',
     problem:
       'Yes, this is the group that matters. Alert on the rate of change of the three event counters.',
   },
@@ -484,7 +484,7 @@ const failureRows: FailureRow[] = [
     mode: 'Huge page starvation',
     symptom: 'Init fails, or a pod is admitted and then dies inside libfabric init.',
     detect:
-      'AWS states EC2 instances with the EFA driver installed pre-allocate 5128 huge pages of 2 MiB each. On Kubernetes they are a schedulable resource the pod must request.',
+      'EC2 instances with the EFA driver installed pre-allocate 5128 huge pages of 2 MiB each. On Kubernetes they are a schedulable resource the pod must request.',
     fix: 'Request hugepages-2Mi in the pod spec and watch fork-heavy data loaders. Setting FI_EFA_USE_HUGE_PAGE together with fork safety aborts the process.',
     src: <SourceRef provenance="documented" doc={docs.eksNode} />,
   },
@@ -493,7 +493,7 @@ const failureRows: FailureRow[] = [
     mode: 'Security group rule missing or too narrow',
     symptom: 'The cluster hangs at the first collective rather than failing at launch.',
     detect:
-      'AWS states an EFA requires a security group that allows all inbound and outbound traffic to and from the security group itself. Any rule scoped to a port or a CIDR range is too narrow.',
+      'An EFA requires a security group that allows all inbound and outbound traffic to and from the security group itself. Any rule scoped to a port or a CIDR range is too narrow.',
     fix: 'Self-reference the group with protocol all, both directions. Scope the blast radius by group membership, and keep administrative access in a separate group.',
     src: <SourceRef provenance="documented" doc={docs.start} />,
   },
@@ -502,7 +502,7 @@ const failureRows: FailureRow[] = [
     mode: 'Instances in different Availability Zones',
     symptom: 'Some rank pairs never connect. Partial hang that looks like a slow node.',
     detect:
-      'AWS states EFA traffic cannot cross Availability Zones or VPCs and is not routable. There is no documented subnet restriction, so check the Availability Zone rather than the subnet.',
+      'EFA traffic cannot cross Availability Zones or VPCs and is not routable. There is no documented subnet restriction, so check the Availability Zone rather than the subnet.',
     fix: 'Pin the fleet to one Availability Zone. A cluster placement group is the documented way to get that, and AWS is explicit that it is a recommendation rather than a requirement.',
     src: <SourceRef provenance="documented" doc={docs.efa} />,
   },
@@ -529,7 +529,7 @@ const failureRows: FailureRow[] = [
     mode: 'lib versus lib64 install path',
     symptom: 'A script that works on Amazon Linux fails to find libfabric on Ubuntu, or the reverse.',
     detect:
-      'AWS documents both paths in the same walkthrough: /opt/amazon/efa/lib64 for Amazon Linux 2023 and /opt/amazon/efa/lib for Ubuntu 24.04 and 22.04.',
+      'Both paths appear in the same walkthrough: /opt/amazon/efa/lib64 for Amazon Linux 2023 and /opt/amazon/efa/lib for Ubuntu 24.04 and 22.04.',
     fix: 'Resolve the path at runtime instead of hard coding it. This is the trap that survives longest because both halves of the script look correct in isolation.',
     src: <SourceRef provenance="documented" doc={docs.startNccl} />,
   },
@@ -538,8 +538,8 @@ const failureRows: FailureRow[] = [
     mode: 'NVIDIA device plugin mofed default in containers',
     symptom: 'A pod that asked for a subset of the EFA devices gets the wrong ones, or gets all of them.',
     detect:
-      'AWS states that from NVIDIA k8s-device-plugin v0.19.0 the mofed-enabled flag defaults to true, which mounts all /dev/infiniband/uverbs devices into containers requesting GPUs, conflicting with the EFA device plugin.',
-    fix: 'Set mofedEnabled to false on the NVIDIA device plugin chart, or MOFED_ENABLED to false on the GPU operator. AWS states EKS Auto Mode does not enable it by default.',
+      'From NVIDIA k8s-device-plugin v0.19.0 the mofed-enabled flag defaults to true, which mounts all /dev/infiniband/uverbs devices into containers requesting GPUs, conflicting with the EFA device plugin.',
+    fix: 'Set mofedEnabled to false on the NVIDIA device plugin chart, or MOFED_ENABLED to false on the GPU operator. EKS Auto Mode does not enable it by default.',
     src: <SourceRef provenance="documented" doc={docs.eksDevice} />,
   },
 ];
@@ -662,7 +662,7 @@ cat /sys/class/infiniband/rdmap0s31/device/p2p
 
           <Box variant="h3">3. libfabric sees the provider</Box>
           <Box variant="p">
-            This is the check AWS documents, in both the MPI (Message Passing Interface) and the NCCL
+            This check appears in both the MPI (Message Passing Interface) and the NCCL
             getting-started walkthroughs. The command is fi_info with the provider and endpoint type
             pinned, and the documented output shows one block per EFA device{' '}
             <SourceRef provenance="documented" doc={docs.start} />.
@@ -830,10 +830,10 @@ rdma -p statistic show > /tmp/after
 diff /tmp/before /tmp/after`}</pre>
           </Box>
 
-          <Alert type="info" header="The same check exists for Intel MPI, and AWS documents it">
+          <Alert type="info" header="The same check exists for Intel MPI">
             Setting I_MPI_DEBUG to 1 or higher prints the libfabric version and the libfabric
-            provider. AWS states plainly what the values mean: if it is using EFA the value is efa,
-            and if it is using TCP/IP the value is tcp;ofi_rxm{' '}
+            provider. The value is efa when it is using EFA,
+            and tcp;ofi_rxm when it is using TCP/IP{' '}
             <SourceRef provenance="documented" doc={docs.start} />. Same failure, same shape, a
             different log line.
           </Alert>
@@ -863,8 +863,8 @@ diff /tmp/before /tmp/after`}</pre>
             basic, messages, RDMA read, RDMA write and network{' '}
             <SourceRef provenance="code-derived" code={code.statsTypes} />. Those five responses are
             flattened into a single list of twenty-two port-scope counters{' '}
-            <SourceRef provenance="code-derived" code={code.portStats} />. AWS documents that list,
-            with a description and a unit for each one, and states that the five network counters are
+            <SourceRef provenance="code-derived" code={code.portStats} />. Each of the twenty-two is
+            documented with a description and a unit, and the five network counters are
             available on Nitro v4 and later instance types only{' '}
             <SourceRef provenance="documented" doc={docs.monitor} />.
           </Box>
@@ -885,9 +885,9 @@ diff /tmp/before /tmp/after`}</pre>
           <Box variant="p">
             The five network counters arrive together, in one structure shared between the device and
             the driver{' '}
-            <SourceRef provenance="code-derived" code={code.netStatsStruct} />. AWS documents both
-            retrieval paths: the rdma tool, which prints every counter for every EFA link on the
-            instance, and sysfs, one file per counter{' '}
+            <SourceRef provenance="code-derived" code={code.netStatsStruct} />. Two documented
+            retrieval paths reach them: the rdma tool, which prints every counter for every EFA link
+            on the instance, and sysfs, one file per counter{' '}
             <SourceRef provenance="documented" doc={docs.monitor} />.
           </Box>
           <Box variant="code">
@@ -1073,8 +1073,8 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
           </ExpandableSection>
 
           <Alert type="info" header="Two placement constraints that shape every failure above">
-            EFA interfaces cannot be detached from a running instance. AWS states you must first stop
-            the instance, and that you cannot detach an EFA from an instance in the running state{' '}
+            EFA interfaces cannot be detached from a running instance. You must stop the instance
+            first{' '}
             <SourceRef provenance="documented" doc={docs.detach} />. And instance types that support
             multiple network cards can be configured with one EFA per network card, while all other
             supported types support one EFA per instance{' '}
@@ -1157,11 +1157,11 @@ NCCL_DEBUG=INFO ... 2>&1 | grep -i 'NET/OFI.*version'
 sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
           </Box>
           <Alert type="info" header="Two checks that identify what you actually installed">
-            AWS publishes an MD5 and a SHA256 for every installer release and states that if the
+            Every installer release carries an MD5 and a SHA256, and if the
             checksums do not match you should not run the installation script{' '}
             <SourceRef provenance="documented" doc={docs.installerCheck} />, which makes step 4 the
             only check that identifies the installer rather than its output. Step 2 matters for the
-            same reason: Intel MPI ships its own libfabric, and AWS documents the tell, since at debug
+            same reason: Intel MPI ships its own libfabric, and at debug
             level 1 and above the printed libfabric version is suffixed with impi when the internal
             one is in use{' '}
             <SourceRef provenance="documented" doc={docs.start} />. Container images that carry a
@@ -1186,7 +1186,7 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
               <Box variant="h3">Alert on these</Box>
               <ul>
                 <li>
-                  retrans_timeout_events, which AWS describes as times SRD (Scalable Reliable
+                  retrans_timeout_events, times SRD (Scalable Reliable
                   Datagram) traffic timed out and resulted in a network path change
                 </li>
                 <li>
@@ -1202,7 +1202,7 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
                 </li>
               </ul>
               <Box variant="p">
-                All descriptions above are AWS's own{' '}
+                All descriptions above come from the monitoring documentation{' '}
                 <SourceRef provenance="documented" doc={docs.monitor} />, except the ENA allowance
                 counters, which come from the driver's ethtool table{' '}
                 <SourceRef provenance="code-derived" code={code.enaEthtool} />.
@@ -1237,7 +1237,7 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
 
           <Box variant="p">
             One more path, and what it answers. You can create a VPC (Virtual Private Cloud) Flow Log
-            for an EFA, and AWS states that in the flow log entries EFA traffic is identified by a
+            for an EFA, and in the flow log entries EFA traffic is identified by a
             source and destination address that are both formatted as MAC addresses, with the
             documented example showing the port and protocol fields empty{' '}
             <SourceRef provenance="documented" doc={docs.monitor} />. Flow logs will tell you that
@@ -1251,7 +1251,7 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
           >
             <SpaceBetween size="xs">
               <Box variant="p">
-                AWS states that CloudWatch Container Insights supports all of the EFA driver metrics
+                CloudWatch Container Insights supports all of the EFA driver metrics
                 except retrans_bytes, retrans_pkts, retrans_timeout_events, unresponsive_remote_events
                 and impaired_remote_conn_events{' '}
                 <SourceRef provenance="documented" doc={docs.monitor} />. That exclusion list is the

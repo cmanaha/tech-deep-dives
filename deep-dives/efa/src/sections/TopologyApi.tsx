@@ -342,7 +342,7 @@ function CapacityReservationPrefixDiagram() {
     >
       <title id="efa-d10b-title">
         DescribeCapacityReservationTopology returns a partial node set for a reservation that has
-        no instances yet, and AWS states that once instances launch the first nodes returned by
+        no instances yet, and once instances launch the first nodes returned by
         DescribeInstanceTopology match that reservation node set, with extra nodes appended below
         it. Capacity ranking done before launch therefore stays valid after launch, but the two
         APIs carry different limits and a different name for the Availability Zone ID field.
@@ -390,10 +390,10 @@ function CapacityReservationPrefixDiagram() {
       <text className="tcr-sub" x="56" y="218">State: active, no instances launched yet</text>
 
       <text className="tcr-warn" x="40" y="252">
-        Different node at layer ii. AWS states that traffic
+        Different node at layer ii. Traffic between these
       </text>
       <text className="tcr-warn" x="40" y="268">
-        between these two reservations will be inefficient.
+        two reservations will be inefficient.
       </text>
 
       <path className="tcr-arr" d="M436,94 L464,94" />
@@ -545,7 +545,7 @@ export function TopologyApi() {
             instance <SourceRef provenance="documented" doc={docs.topoHow} />.
             DescribeInstanceTopology reads that tree for running instances.
             DescribeCapacityReservationTopology reads it for reserved capacity before any instance
-            exists. Both are read-only. AWS is direct about the limit: while topology information
+            exists. Both are read-only. The limit is explicit: while topology information
             helps you understand instance placement, you cannot use it to launch a new instance
             physically close to an existing instance, and to influence placement you create
             Capacity Reservations in cluster placement groups{' '}
@@ -559,8 +559,8 @@ export function TopologyApi() {
             Communications Library), which never calls either API.
           </Box>
           <Alert type="info" header="Command line and SDK only, at no extra cost">
-            AWS states that the Management Console does not support viewing topology and that there
-            is no additional cost for describing your EC2 topology{' '}
+            The Management Console does not support viewing topology, and there is no additional
+            cost for describing your EC2 topology{' '}
             <SourceRef provenance="documented" doc={docs.topoOverview} />.
           </Alert>
         </SpaceBetween>
@@ -578,9 +578,9 @@ export function TopologyApi() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            AWS describes the network as a hierarchy of layers, with EC2 instances connecting at or
-            below the third layer depending on instance type, and the bottom node in each instance
-            topology as the one connected to the instance. Finding which instances are close
+            The network is a hierarchy of layers, EC2 instances connect at or below the third layer
+            depending on instance type, and the bottom node in each instance topology is the one
+            connected to the instance. Finding which instances are close
             follows from that: look for common nodes in the bottom layer first, then move up{' '}
             <SourceRef provenance="documented" doc={docs.topoHow} />.
           </Box>
@@ -589,8 +589,8 @@ export function TopologyApi() {
 
           <Box variant="small" color="text-body-secondary">
             Redrawn from the NN1 to NN7 worked example in the EC2 User Guide. The response is a
-            projection of the physical tree restricted to your running instances: AWS states that
-            because no instances run under NN7 in that example, the API output will not include
+            projection of the physical tree restricted to your running instances: because no
+            instances run under NN7 in that example, the API output will not include
             NN7 <SourceRef provenance="documented" doc={docs.topoHow} />.
           </Box>
 
@@ -759,7 +759,7 @@ ranked = [host
           </Box>
 
           <Box variant="p">
-            The full pipeline AWS publishes runs inside a Slurm allocation: dump the allocated
+            The full published pipeline runs inside a Slurm allocation: dump the allocated
             hostnames, reorder them with the sorter, expand each host into one line per task, then
             hand that file to mpirun{' '}
             <SourceRef provenance="code-derived" code={code.topologifyDoc} />. The hostname to
@@ -846,7 +846,7 @@ aws ec2 describe-instance-topology \
           <Alert type="warning" header="Network node IDs are per-account hashes">
             <SpaceBetween size="xs">
               <Box variant="p">
-                AWS states that the nodes are hashed based on your account, and that instances from
+                The nodes are hashed based on your account, and instances from
                 different accounts running under the same server return a different hashed list of
                 strings <SourceRef provenance="documented" doc={docs.instType} />.
               </Box>
@@ -877,16 +877,16 @@ aws ec2 describe-instance-topology \
                 normalise it, before branching on UltraServer membership.
               </Box>
               <Box variant="p">
-                <strong>NetworkNodes can be null or empty.</strong> AWS states the value is null or
+                <strong>NetworkNodes can be null or empty.</strong> The value is null or
                 empty when the instance type is not supported or the instance is in a state other
                 than running <SourceRef provenance="documented" doc={docs.instType} />. A fleet
                 that mixes an EFA-capable p5 with a non-topology login node returns a partial
                 answer with no error.
               </Box>
               <Box variant="p">
-                <strong>capacityBlockId is UltraServer only, and lags.</strong> AWS scopes the
-                field to UltraServer instances, identifying instances within the UltraServer
-                domain, and warns that calling the API immediately after launching instances might
+                <strong>capacityBlockId is UltraServer only, and lags.</strong> The field is scoped
+                to UltraServer instances, identifying instances within the UltraServer
+                domain, and calling the API immediately after launching instances might
                 return null for capacityBlockId because the data might not have fully propagated{' '}
                 <SourceRef provenance="documented" doc={docs.instApi} />. Post-launch automation
                 that reads it once and caches the answer will cache a wrong answer{' '}
@@ -894,8 +894,8 @@ aws ec2 describe-instance-topology \
               </Box>
               <Box variant="p">
                 <strong>Pagination is the normal case at cluster scale.</strong> MaxResults caps at
-                100 and InstanceId.N caps at 100, so a 2,000 node fleet is at least 20 calls. AWS
-                own Slurm sample chunks the instance list 100 at a time before calling the API{' '}
+                100 and InstanceId.N caps at 100, so a 2,000 node fleet is at least 20 calls. The
+                aws-samples Slurm tool chunks the instance list 100 at a time before calling the API{' '}
                 <SourceRef provenance="code-derived" code={code.slurmDepth} />, and the
                 aws-ofi-nccl sorter paginates in batches of 64{' '}
                 <SourceRef provenance="code-derived" code={code.topologify} />.
@@ -958,13 +958,13 @@ aws ec2 describe-instance-topology \
           <CapacityReservationPrefixDiagram />
 
           <Box variant="small" color="text-body-secondary">
-            Node values follow the worked example AWS publishes for both APIs. The appended bottom
+            Node values follow the documented worked example for both APIs. The appended bottom
             node on the right is illustrative, not measured.
           </Box>
 
           <Box variant="p">
-            <strong>The prefix guarantee is the load-bearing fact.</strong> AWS states that
-            DescribeInstanceTopology shows all nodes for a running instance, and that if the
+            <strong>The prefix guarantee is the load-bearing fact.</strong>{' '}
+            DescribeInstanceTopology shows all nodes for a running instance, and if the
             instance is in a Capacity Reservation the first nodes will match the corresponding
             Capacity Reservation topology, followed by additional nodes to connect to the instance{' '}
             <SourceRef provenance="documented" doc={docs.topoHow} />. Pre-launch ranking therefore
@@ -974,8 +974,8 @@ aws ec2 describe-instance-topology \
 
           <Box variant="p">
             The pre-launch view is partial by design, and the reservation has to be pending or
-            active to appear at all <SourceRef provenance="documented" doc={docs.topoPrereq} />. AWS
-            states the response contains 1, 2, or 3 network nodes depending on the type of Capacity
+            active to appear at all <SourceRef provenance="documented" doc={docs.topoPrereq} />. The
+            response contains 1, 2, or 3 network nodes depending on the type of Capacity
             Reservation, and the published example carries an inline comment saying that visibility
             of additional nodes requires an instance launch and the DescribeInstanceTopology API{' '}
             <SourceRef provenance="documented" doc={docs.topoHow} />. One exception is documented:
@@ -1138,8 +1138,8 @@ sbatch --switch=1 train.sbatch`}</pre>
           </ColumnLayout>
 
           <Box variant="p">
-            AWS PCS states the reason block topology matters on NVLink hardware in one sentence:
-            it places jobs within the same UltraServer so GPU to GPU communication uses NVLink
+            Block topology matters on NVLink hardware because it places jobs
+            within the same UltraServer so GPU to GPU communication uses NVLink
             instead of falling back to EFA networking{' '}
             <SourceRef provenance="documented" doc={docs.pcsUltra} />. On that hardware, correct
             topology placement is what keeps traffic off the fabric entirely.
@@ -1244,7 +1244,7 @@ metadata:
             constraint and the job waits rather than scheduling wide. The preferred form tries to
             place the pods within one layer before trying the next{' '}
             <SourceRef provenance="documented" doc={docs.hyperpodEks} />. They are mutually
-            exclusive with nodeSelector: AWS states you can use either an annotation or
+            exclusive with nodeSelector: you can use either an annotation or
             nodeSelector, but not both at the same time. For PyTorchJob, AWS recommends applying
             topology to worker pods rather than the master, since there is always exactly one
             master node{' '}
@@ -1254,8 +1254,8 @@ metadata:
           <Alert type="warning" header="Running Karpenter: disable topology-aware scheduling first">
             <SpaceBetween size="xs">
               <Box variant="p">
-                AWS states plainly that topology-aware scheduling is not supported with Karpenter
-                autoscaling, that it is enabled by default in HyperPod task governance, and that
+                Topology-aware scheduling is not supported with Karpenter
+                autoscaling, it is enabled by default in HyperPod task governance, and
                 anyone planning to use Karpenter for node provisioning must disable it{' '}
                 <SourceRef provenance="documented" doc={docs.hyperpodEks} />. The documented
                 procedure is to edit the kueue-manager-config ConfigMap, set
@@ -1367,7 +1367,7 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
             Capacity Reservations at all{' '}
             <SourceRef provenance="documented" doc={docs.crCpg} />. For EFA the practical set is
             therefore cluster placement groups plus Capacity Reservations inside them, which is
-            exactly the control path AWS points at when it says topology cannot be used to place
+            exactly the control path that remains once topology cannot be used to place
             an instance <SourceRef provenance="documented" doc={docs.topoOverview} />.
           </Box>
 
@@ -1434,7 +1434,7 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
             same bottom node differs from traffic across a parent node. Second, drift: a
             replaced node keeps the placement group name and changes the topology, so a stale
             topology.conf outlives the fleet it describes. Third, capacity diagnosis before the
-            fact: ParallelCluster documents that zonal Reserved Instances are not placed in the
+            fact: zonal Reserved Instances are not placed in the
             same spine, which can cause insufficient capacity errors when a placement group is
             attached{' '}
             <SourceRef provenance="documented" doc={docs.pcOdcr} />. Checking whether reservations

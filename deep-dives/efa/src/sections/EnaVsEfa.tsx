@@ -767,7 +767,7 @@ export function EnaVsEfa() {
               ENA Express puts TCP and UDP (User Datagram Protocol) flows onto SRD with no
               application change.
             </strong>{' '}
-            AWS states it increases the maximum bandwidth a single flow can use from 5 Gbps up to
+            It increases the maximum bandwidth a single flow can use from 5 Gbps up to
             25 Gbps, reduces tail latency between instances in the same Availability Zone,
             detects and avoids congested network paths, and handles packet reordering on the
             receiving end plus most retransmits in the network layer{' '}
@@ -857,8 +857,8 @@ export function EnaVsEfa() {
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                AWS states that if ENA Express is not operating on both the sending and receiving
-                instance, the communication falls back to standard ENA transmission{' '}
+                If ENA Express is not operating on both the sending and receiving instance, the
+                communication falls back to standard ENA transmission{' '}
                 <SourceRef provenance="documented" doc={docs.enaExpress} />. The fallback is
                 silent: standard TCP, no error and no log line, and bandwidth that stays where it
                 was. Asymmetric configuration is subtler still: two instances can both use ENA
@@ -904,7 +904,7 @@ ethtool -S eth0 | grep ena_srd
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            AWS defines a single flow as a unique 5-tuple TCP or UDP flow, and for protocols such
+            A single flow is a unique 5-tuple TCP or UDP flow, and for protocols such
             as GRE or IPsec, the 3-tuple of source IP, destination IP and next protocol{' '}
             <SourceRef provenance="documented" doc={docs.bandwidth} />. The per-flow ceiling is the
             number that surprises people, because it is unrelated to the instance aggregate.

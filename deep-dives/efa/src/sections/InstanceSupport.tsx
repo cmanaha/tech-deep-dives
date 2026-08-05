@@ -302,7 +302,7 @@ aws ec2 describe-instance-types \
           </Box>
 
           <Box variant="p">
-            The <code>network-info.efa-supported</code> filter is the one AWS documents{' '}
+            <code>network-info.efa-supported</code> is the documented filter name{' '}
             <SourceRef provenance="documented" doc={docs.efa} />, and the field names in command 3
             come from the DescribeInstanceTypes response shape{' '}
             <SourceRef provenance="documented" doc={docs.api} />. Command 3 is the fastest way to
@@ -349,13 +349,13 @@ aws ec2 describe-instance-types \
         <SpaceBetween size="m">
           <GenerationMappingDiagram />
           <Box variant="p">
-            The pairing comes straight from the headings. AWS titles its four
-            supported-instance-type tables verbatim as <em>Using Nitro v6 (EFA v4)</em>,{' '}
+            The pairing comes straight from the headings. All four supported-instance-type
+            tables are titled verbatim: <em>Using Nitro v6 (EFA v4)</em>,{' '}
             <em>Using Nitro v5 (EFA v3)</em>, <em>Using Nitro v4 (EFA v2)</em> and{' '}
             <em>Using Nitro v3 (EFA v1)</em> <SourceRef provenance="documented" doc={docs.efa} />.
-            RDMA follows the same ladder: AWS states that EFA supports RDMA write on most
-            supported instance types with Nitro version 4 and later, and RDMA read on all
-            instances with Nitro version 4 and later{' '}
+            RDMA follows the same ladder: EFA supports RDMA write on most supported instance
+            types with Nitro version 4 and later, and RDMA read on all instances with Nitro
+            version 4 and later{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. Each rung below carries its peak,
             its named RDMA exceptions and its family list.
           </Box>
@@ -431,7 +431,7 @@ aws ec2 describe-instance-types \
             headerDescription="The primary card carries ENA only, so 16 x 400 Gbps is the 6,400 Gbps headline"
           >
             <Box variant="p">
-              AWS states that P6-B300 instances have 8 GPUs and 17 network cards, where the primary
+              P6-B300 instances have 8 GPUs and 17 network cards, where the primary
               network card supports only an ENA interface with up to 350 Gbps, and the secondary
               cards support up to 400 Gbps EFA and up to 220 Gbps ENA each{' '}
               <SourceRef provenance="documented" doc={docs.efaAcc} />. So the EFA-capable count is
@@ -506,8 +506,8 @@ aws ec2 describe-instance-types \
             [9,11] and [13,15], share a GPU that itself supports up to 400 Gbps of EFA{' '}
             <SourceRef provenance="documented" doc={docs.efaAcc} />. That is two independent
             sharing axes. Saturating one index reduces what its partner can reach on both. Neither
-            axis is visible from the headline 1,600 Gbps figure, which is why AWS documents two
-            valid layouts for it: 4 interfaces at 400 Gbps, or 8 interfaces at 200 Gbps.
+            axis is visible from the headline 1,600 Gbps figure, which is why two valid layouts
+            are documented for it: 4 interfaces at 400 Gbps, or 8 interfaces at 200 Gbps.
           </Alert>
 
           <Alert type="warning" header="AWS recommends a cluster placement group, and the hard requirement is the Availability Zone">

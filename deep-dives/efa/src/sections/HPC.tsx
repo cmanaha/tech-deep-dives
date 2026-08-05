@@ -162,7 +162,7 @@ export function HPC() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            AWS names two MPI implementations as supported, Open MPI 4.1 and later and Intel MPI
+            AWS supports two MPI implementations, Open MPI 4.1 and later and Intel MPI
             2019 Update 5 and later <SourceRef provenance="documented" doc={docs.efa} />. MPICH runs
             over the same libfabric provider, and AWS support covers the two named above.
           </Box>
@@ -260,9 +260,9 @@ export function HPC() {
               <Box variant="h3">Hpc8a (AMD, Nitro v6, newest)</Box>
               <Box variant="p">
                 192 cores of AMD EPYC 9R45, 768 GiB, 300 Gbps EFA{' '}
-                <SourceRef provenance="documented" doc={docs.hpc} />. AWS states up to 40% higher
-                performance, up to 25% better price performance and up to 42% higher memory
-                bandwidth than Hpc7a <SourceRef provenance="documented" doc={docs.hpc8a} />. Nitro
+                <SourceRef provenance="documented" doc={docs.hpc} />. The gain over Hpc7a is up to
+                40% in performance, up to 25% in price performance and up to 42% in memory
+                bandwidth <SourceRef provenance="documented" doc={docs.hpc8a} />. Nitro
                 v6 pairs with EFA v4.
               </Box>
             </div>

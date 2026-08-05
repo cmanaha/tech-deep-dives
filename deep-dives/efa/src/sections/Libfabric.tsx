@@ -467,15 +467,13 @@ export function Libfabric() {
               libfabric is the API to the EFA (Elastic Fabric Adapter) device.
             </strong>{' '}
             It is a portable fabric API with a provider per transport, and the EFA provider is how
-            an application reaches this one. AWS states the shape directly: EFA integrates with
-            Libfabric, and it supports NCCL (NVIDIA Collective Communications Library) and NIXL
-            (NVIDIA Inference Xfer Library) for AI and ML applications, and Open MPI (Message
-            Passing Interface) 4.1 and later and Intel MPI 2019 Update 5 and later for HPC
-            applications{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />. AWS also states what that buys:
-            those libraries interface directly with the Libfabric API, and the Libfabric API
-            bypasses the operating system kernel and communicates directly with the EFA device to
-            put packets on the network{' '}
+            an application reaches this one. EFA integrates with Libfabric, and it supports NCCL
+            (NVIDIA Collective Communications Library) and NIXL (NVIDIA Inference Xfer Library) for
+            AI and ML applications, and Open MPI (Message Passing Interface) 4.1 and later and Intel
+            MPI 2019 Update 5 and later for HPC applications{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />. Those libraries interface directly
+            with the Libfabric API, and the Libfabric API bypasses the operating system kernel and
+            communicates directly with the EFA device to put packets on the network{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. The bypass is a property of the
             provider, so it is reached by going through libfabric.
           </Box>

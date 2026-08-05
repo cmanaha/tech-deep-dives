@@ -316,9 +316,9 @@ export function NetworkComparison() {
               closes that gap. NVIDIA also offers in-network reduction through SHARP, which runs
               part of a collective in the switch, plus self-healing link recovery{' '}
               <SourceRef provenance="documented" doc={docs.nvidiaIb} />. EFA has no switch-side
-              collective offload. SRD costs something in the quiet case too: AWS says median packet
-              latency may rise slightly, by tens of microseconds, on the ENA Express path when the
-              network is uncongested{' '}
+              collective offload. SRD costs something in the quiet case too: on the ENA Express path,
+              median packet latency may rise slightly, by tens of microseconds, when the network is
+              uncongested{' '}
               <SourceRef provenance="documented" doc={docs.enaExpress} />. SRD is tuned for the bad
               case, and you pay for that tuning in the good one.
             </Box>

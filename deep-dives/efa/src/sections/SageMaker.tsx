@@ -400,7 +400,7 @@ function ThreeContractsDiagram() {
       </text>
 
       <text className="tc-cap" x="480" y="384">
-        The third lane is empty because AWS publishes no control there, not because AWS states that EFA is unsupported.
+        The third lane is empty because AWS publishes no control there, not because EFA is documented as unsupported.
       </text>
     </svg>
   );
@@ -765,7 +765,7 @@ export function SageMaker() {
             <SourceRef provenance="documented" doc={docs.resourceConfig} />. The instance type is the
             whole fabric request: there is no EFA field and no fabric field anywhere on the API. The
             placement member, InstancePlacementConfig, configures allocation within UltraServers and
-            AWS states that it is only applicable for UltraServer capacity{' '}
+            applies only to UltraServer capacity{' '}
             <SourceRef provenance="documented" doc={docs.resourceConfig} />.
           </Box>
 
@@ -921,13 +921,13 @@ SM_EFA_RDMA_INSTANCES = [
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                AWS states that SageMaker AI will attempt to repair the cluster up to 10 times, that
-                a successful repair automatically restarts the training job from the previous
-                checkpoint, that you are not billed for the cluster repair process, and that repairs
-                do not initiate unless your training job fails{' '}
-                <SourceRef provenance="documented" doc={docs.repair} />. Before a job starts, AWS
-                describes GPU health checks that verify NCCL communication on GPU instances and
-                replace faulty instances, enabled for P and G GPU-based instance types{' '}
+                SageMaker AI attempts to repair the cluster up to 10 times, a successful repair
+                automatically restarts the training job from the previous checkpoint, you are not
+                billed for the cluster repair process, and repairs do not initiate unless your
+                training job fails{' '}
+                <SourceRef provenance="documented" doc={docs.repair} />. Before a job starts, GPU
+                health checks verify NCCL communication on GPU instances and replace faulty
+                instances, enabled for P and G GPU-based instance types{' '}
                 <SourceRef provenance="documented" doc={docs.llmBest} />. No source found states
                 whether that pre-flight check exercises the EFA path specifically, or whether it
                 would pass over TCP. Do not assume either way.
@@ -1069,8 +1069,8 @@ SM_EFA_RDMA_INSTANCES = [
 
           <Box variant="h3">Step 2: does the NCCL log say the transport is EFA</Box>
           <Box variant="p">
-            AWS wrote this check. The Deep Learning Containers repository gates its own EFA test on
-            four log signatures, plus two more on P4d and P5{' '}
+            The Deep Learning Containers repository gates its own EFA test on four log signatures,
+            plus two more on P4d and P5{' '}
             <SourceRef provenance="code-derived" code={code.dlcValidate} />.
           </Box>
           <Box variant="code">
@@ -1094,7 +1094,7 @@ SM_EFA_RDMA_INSTANCES = [
 
           <ExpandableSection
             headerText="The diagnostics the AWS script collects when the check fails"
-            headerDescription="A ready-made troubleshooting checklist, copied from AWS's own EFA test"
+            headerDescription="A ready-made troubleshooting checklist: six commands covering three failure classes"
           >
             <Box variant="p">
               The script collects nvidia-smi -L, ldconfig -p filtered for libnccl, ldd against the
@@ -1167,7 +1167,7 @@ SM_EFA_RDMA_INSTANCES = [
                 that stopped at P4de.
               </Box>
               <Box variant="p">
-                SMDDP still rides EFA, and AWS describes its AllGather in three parts. It transfers
+                SMDDP still rides EFA, and its AllGather has three parts. It transfers
                 data between instances through EFA with a mesh topology, and compared to the NCCL
                 ring or tree topology that involves multiple packet hops, it avoids accumulating
                 latency because it only needs one hop, with a network rate control algorithm
@@ -1244,19 +1244,17 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             <SourceRef provenance="documented" doc={docs.clusterNic} />. The device-level difference
             is in the EFA device section of this dive. EC2 introduced the interface type in October
             2024; what HyperPod adds is the choice, per instance group, on CreateCluster and
-            UpdateCluster since June 2026, and AWS gives the reason to take efa-only directly in that
-            launch: it maximizes the number of EFA interfaces dedicated to inter-node communication
-            without encountering IP exhaustion{' '}
+            UpdateCluster since June 2026, and efa-only maximizes the number of EFA interfaces
+            dedicated to inter-node communication without encountering IP exhaustion{' '}
             <SourceRef provenance="documented" doc={docs.efaOnlyNews} />.
           </Box>
           <Box variant="h3">The AMI (Amazon Machine Image) contract</Box>
           <Box variant="p">
             EFA is one of five components covered by a published AMI support policy, alongside the
-            NVIDIA driver, NCCL through aws-ofi-nccl, CUDA and the OS kernel. AWS states that major
-            AMI releases involve upgrading those core components to new major versions and may
-            introduce breaking changes that require workload validation, and it publishes the support
-            windows: 12 months for a major version, 6 months for a minor version, and until the next
-            patch for a patch version{' '}
+            NVIDIA driver, NCCL through aws-ofi-nccl, CUDA and the OS kernel. Major AMI releases
+            upgrade those core components to new major versions and may introduce breaking changes
+            that require workload validation, and the support windows are 12 months for a major
+            version, 6 months for a minor version, and until the next patch for a patch version{' '}
             <SourceRef provenance="documented" doc={docs.amiPolicy} />.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
@@ -1282,8 +1280,7 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             </div>
           </ColumnLayout>
           <Alert type="warning" header="A custom AMI puts the EFA installer version back in your hands">
-            AWS answers the question directly on the policy page: does this policy apply to custom
-            AMIs, no{' '}
+            The support policy does not apply to custom AMIs{' '}
             <SourceRef provenance="documented" doc={docs.amiPolicy} />. Build one and you own the
             EFA installer version, the NCCL build, the driver, and keeping all three consistent with
             the cluster software.
@@ -1332,10 +1329,10 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             <SourceRef provenance="documented" doc={docs.deepHealth} />.
           </Box>
           <Alert type="warning" header="The check costs about two hours per new instance">
-            AWS states that a new instance goes through the deep health check process, which is
-            instance-level stress testing, for about a couple of hours, and recommends disabling deep
-            health checks after cluster creation when you have no spare capacity, because that delay
-            slows node replacement{' '}
+            A new instance goes through the deep health check process, which is instance-level stress
+            testing, for about a couple of hours, and AWS recommends disabling deep health checks
+            after cluster creation when you have no spare capacity, because that delay slows node
+            replacement{' '}
             <SourceRef provenance="documented" doc={docs.configTips} />. The trade is verified
             fabric health against faster recovery.
           </Alert>
@@ -1357,14 +1354,13 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             ml.p5e.48xlarge and ml.p5en.48xlarge; the block plugin covers UltraServer types such as
             ml.p6e-gb200.36xlarge; and the file format follows the Slurm version, topology.yaml on
             25.11 and later, topology.conf on 24.x{' '}
-            <SourceRef provenance="documented" doc={docs.topology} />. The launch says the same:
-            enabled by default, requires no configuration{' '}
+            <SourceRef provenance="documented" doc={docs.topology} />. It is enabled by default and
+            requires no configuration{' '}
             <SourceRef provenance="documented" doc={docs.topoNews} />. The generated file formats
             and the EC2 network node identifiers behind them are in the topology section.
           </Box>
           <Alert type="warning" header="One non-topology instance group demotes the whole cluster">
-            AWS states the resolution rule plainly: if any non-topology compute group is present,
-            flat is the default{' '}
+            If any non-topology compute group is present, flat is the default{' '}
             <SourceRef provenance="documented" doc={docs.topology} />. One instance group of a type
             without network topology support silently removes topology-aware placement from the
             cluster default. Nothing fails. Jobs stop being placed with fabric locality in mind.
@@ -1384,9 +1380,8 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             when a job fails, removes a faulty node, replaces it and restarts the job; on EKS it is
             an extension to the Kubeflow Training Operator for PyTorch that makes the job wait and
             restart after the node is replaced{' '}
-            <SourceRef provenance="documented" doc={docs.eksHpBlog} />. The Slurm idiom AWS publishes
-            in its own batch scripts is short: it tests for a directory and only adds the flag when
-            the test succeeds{' '}
+            <SourceRef provenance="documented" doc={docs.eksHpBlog} />. The Slurm idiom is short: it
+            tests for a directory and only adds the flag when the test succeeds{' '}
             <SourceRef provenance="documented" doc={docs.mathstral} />.
           </Box>
           <Box variant="code">
@@ -1396,9 +1391,9 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
           <Alert type="error" header="Live known issue: auto-resume on Slurm 25.11">
             <SpaceBetween size="xs">
               <Box variant="p">
-                AWS publishes this, dated May 27, 2026 and still live on the release notes page as of
-                August 1, 2026: auto-resume has known issues on HyperPod clusters running Slurm
-                25.11, jobs submitted with auto-resume enabled are not guaranteed to resume on the
+                Dated May 27, 2026 and still live on the release notes page as of August 1, 2026:
+                auto-resume has known issues on HyperPod clusters running Slurm 25.11, jobs
+                submitted with auto-resume enabled are not guaranteed to resume on the
                 node that is replaced after a node fault, the affected jobs are requeued instead, and
                 a fix is under investigation{' '}
                 <SourceRef provenance="documented" doc={docs.amiSlurm} />.
@@ -1426,9 +1421,9 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             <SpaceBetween size="s">
               <Box variant="p">
                 HyperPod on EKS requires the Amazon VPC (Virtual Private Cloud) CNI (Container
-                Network Interface) plug-in version 1.18.3 or later, states that the AWS VPC CNI is
-                the only CNI supported, and requires the subnets in your VPC to be private. Supported
-                Kubernetes versions run 1.30 through 1.35{' '}
+                Network Interface) plug-in version 1.18.3 or later, which is the only supported CNI,
+                and requires the subnets in your VPC to be private. Supported Kubernetes versions run
+                1.30 through 1.35{' '}
                 <SourceRef provenance="documented" doc={docs.eksPrereq} />.
               </Box>
               <Box variant="p">
@@ -1468,9 +1463,9 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
           <DpdStackDiagram />
 
           <Box variant="p">
-            AWS states the hardware requirement without hedging: disaggregated prefill and decode
-            requires EFA-capable instances with GPUDirect RDMA support, and the supported instance
-            types are ml.p5.48xlarge, ml.p5e.48xlarge, ml.p5en.48xlarge, ml.p6-b200.48xlarge and
+            Disaggregated prefill and decode requires EFA-capable instances with GPUDirect RDMA
+            support, and the supported instance types are ml.p5.48xlarge, ml.p5e.48xlarge,
+            ml.p5en.48xlarge, ml.p6-b200.48xlarge and
             ml.p6-b300.48xlarge. Other instance types are not supported. The worker image must
             include vLLM, LMCache, NVIDIA NIXL and the EFA libfabric provider, and the feature needs
             HyperPod Inference Operator version 3.2 or later{' '}
@@ -1506,9 +1501,8 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             <div>
               <Box variant="h3">The G family caveat</Box>
               <Box variant="p">
-                AWS is explicit that although G6, G6e and G7e do support EFA with RDMA read and write,
-                performance on those multi-GPU instances is bottlenecked by GPU-to-GPU communication
-                over PCIe{' '}
+                Although G6, G6e and G7e do support EFA with RDMA read and write, performance on
+                those multi-GPU instances is bottlenecked by GPU-to-GPU communication over PCIe{' '}
                 <SourceRef provenance="documented" doc={docs.dpdBlog} />. EFA capability alone does
                 not make an instance a candidate here.
               </Box>
@@ -1516,9 +1510,9 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
           </ColumnLayout>
 
           <Alert type="info" header="The router sends small requests straight to a decoder">
-            The blog states the trade directly: below the routing threshold, the fixed cost of
-            transferring the key value cache over EFA RDMA outweighs the benefit of isolating decode,
-            so the router sends those requests straight to a decoder{' '}
+            Below the routing threshold, the fixed cost of transferring the key value cache over EFA
+            RDMA outweighs the benefit of isolating decode, so the router sends those requests
+            straight to a decoder{' '}
             <SourceRef provenance="documented" doc={docs.dpdBlog} />. Routing strategies are
             prefixaware, kvaware, session and roundrobin. The fabric is used only when the transfer
             is large enough to pay for itself.
@@ -1591,8 +1585,8 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             headerDescription="The pattern exists at Amazon scale, outside the managed endpoint product"
           >
             <Box variant="p">
-              AWS describes Rufus running multi-node inference on Trainium where cross-node
-              collectives such as all gather and all reduce are managed by the Neuron Distributed
+              Rufus runs multi-node inference on Trainium where cross-node collectives such as all
+              gather and all reduce are managed by the Neuron Distributed
               Inference library, which uses EFA to deliver high-bandwidth, low-latency inter-node
               communication, with model inputs broadcast separately on CPU over standard TCP
               connections using the Gloo backend{' '}

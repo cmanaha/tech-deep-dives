@@ -76,10 +76,10 @@ export function AIMLInference() {
                 GPU that is already compute-bound, those SMs come straight out of throughput.
               </Box>
               <Box variant="p">
-                NIXL uses EFA via the libfabric backend. AWS documents the pairing directly: EFA
-                supports NIXL for AI and ML applications, and NIXL integrates with Libfabric 1.21.0
-                and later <SourceRef provenance="documented" doc={docs.efa} />, with its own
-                getting-started page <SourceRef provenance="documented" doc={docs.efaNixl} />.
+                NIXL uses EFA via the libfabric backend. EFA supports NIXL for AI and ML
+                applications, and NIXL integrates with Libfabric 1.21.0 and later{' '}
+                <SourceRef provenance="documented" doc={docs.efa} />, with its own getting-started
+                page <SourceRef provenance="documented" doc={docs.efaNixl} />.
               </Box>
               <StatusIndicator type="success">EFA critical for NIXL</StatusIndicator>
             </div>

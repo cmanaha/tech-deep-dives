@@ -207,11 +207,11 @@ export function DecisionGuide() {
             constraints.
           </Box>
           <Box variant="p">
-            The single-AZ rule is the hard one. AWS states that EFA traffic cannot cross
+            The single-AZ rule is the hard one. EFA traffic cannot cross
             Availability Zones or VPCs (Virtual Private Clouds){' '}
             <SourceRef provenance="documented" doc={docs.efa} />. A cluster placement group is
-            the recommended way to satisfy that rule and keep latency low, and AWS says in as
-            many words that it is not an absolute requirement{' '}
+            the recommended way to satisfy that rule and keep latency low, and it is not an
+            absolute requirement{' '}
             <SourceRef provenance="documented" doc={docs.efaStart} />. Skipping it is legal and
             usually a mistake.
           </Box>
@@ -249,8 +249,8 @@ export function DecisionGuide() {
           <div>
             <Box variant="h3">3. Can every node live in one Availability Zone?</Box>
             <Box variant="p">
-              The Availability Zone is the gate. AWS states that EFA traffic cannot
-              cross Availability Zones or VPCs{' '}
+              The Availability Zone is the gate. EFA traffic cannot cross
+              Availability Zones or VPCs{' '}
               <SourceRef provenance="documented" doc={docs.efa} />, so a job that has to span
               zones cannot use EFA at all. Design training and HPC jobs to checkpoint
               frequently and tolerate AZ-level failure.
@@ -282,8 +282,8 @@ export function DecisionGuide() {
         variant="full-page"
         footer={
           <Box variant="small" color="text-body-secondary">
-            The Availability Zone constraint in every recommendation is what AWS documents,
-            in place of a placement group requirement{' '}
+            Every recommendation above carries the Availability Zone constraint rather than
+            a placement group requirement{' '}
             <SourceRef provenance="documented" doc={docs.efa} />{' '}
             <SourceRef provenance="documented" doc={docs.efaStart} label="doc: efa-start" />.
             Spot eligibility per family comes from the instance specification tables{' '}
@@ -370,11 +370,10 @@ export function DecisionGuide() {
           >
             <SpaceBetween size="xs">
               <Box variant="p">
-                AWS states that topology-aware scheduling is not supported with Karpenter
-                autoscaling, that it is on by default in HyperPod task governance, and that
-                anyone using Karpenter for node provisioning has to disable it by setting
-                TopologyAwareScheduling to false in the kueue-manager-config ConfigMap and
-                restarting the Kueue controller{' '}
+                Topology-aware scheduling is not supported with Karpenter autoscaling. It is
+                on by default in HyperPod task governance, and anyone using Karpenter for node
+                provisioning has to disable it by setting TopologyAwareScheduling to false in
+                the kueue-manager-config ConfigMap and restarting the Kueue controller{' '}
                 <SourceRef provenance="documented" doc={docs.hyperpodEks} />.
               </Box>
               <Box variant="p">
@@ -399,8 +398,8 @@ export function DecisionGuide() {
                 interruption, the entire job stops.
               </Box>
               <Box variant="p">
-                AWS states it in the EKS best practices guide. EFA requires all communicating
-                nodes to reside in the same Availability Zone, and that co-location introduces
+                EFA requires all communicating nodes to reside in the same Availability Zone,
+                and that co-location introduces
                 correlated interruption
                 risk: instances share underlying physical infrastructure within the same AZ, and
                 even more so within a placement group, so a single capacity reclamation event
@@ -464,11 +463,10 @@ export function DecisionGuide() {
         <SpaceBetween size="m">
           <Alert type="info" header="Both paths are documented for EFA fleets">
             Capacity Blocks are the better-known option, and On-Demand Capacity Reservations cover
-            the same need. AWS documents them against a cluster placement group in the EFA
-            setup guide itself: to ensure that capacity is available as you scale your
-            cluster&apos;s instances, you can create a Capacity Reservation for your cluster
-            placement group <SourceRef provenance="documented" doc={docs.efaStart} />. Pick on
-            duration.
+            the same need. Both are documented against a cluster placement group: to ensure
+            that capacity is available as you scale your cluster&apos;s instances, you can
+            create a Capacity Reservation for your cluster placement group{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} />. Pick on duration.
           </Alert>
           <Box variant="p">
             <strong>Capacity Blocks:</strong> reserve a start time up to 8 weeks ahead, for 1 to
@@ -586,9 +584,9 @@ export function DecisionGuide() {
                 <SourceRef provenance="documented" doc={docs.efaStart} label="doc: efa-start" />.
               </Box>
               <Box variant="p">
-                NCCL is yours to configure. AWS states that your container must download
-                and install the EFA software, and that tools like MPI and NCCL must be installed and
-                managed inside the container{' '}
+                NCCL is yours to configure. Your container must download and install the EFA
+                software, and tools like MPI and NCCL must be installed and managed inside the
+                container{' '}
                 <SourceRef provenance="documented" doc={docs.smTrainEfa} />. That is the work the
                 platform name hides. Build the EFA stack into the image, then confirm the provider
                 line on the first run.
