@@ -7,7 +7,6 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
-import Badge from '@cloudscape-design/components/badge';
 import { SourceRef } from '@tech-deep-dives/shared';
 import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 
@@ -31,7 +30,8 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 const CODE_READ = '2026-08-01';
 const DOC_ACCESSED = '2026-08-01';
 
-/** amzn/amzn-drivers at the r3.3.0 release tag commit. */
+/** amzn/amzn-drivers at the efa_linux_3.3.0 release tag. There is no bare
+ *  r3.3.0 tag; the driver tags are named efa_linux_*. */
 const DRIVERS = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
 /** ofiwg/libfabric at the v2.6.0 release tag. */
 const LIBFABRIC = 'v2.6.0';
@@ -52,13 +52,19 @@ const code = {
   portStats: driversRef('kernel/linux/efa/src/efa_verbs.c', 'L74-L96'),
   compStatus: driversRef('kernel/linux/efa/src/efa_io_defs.h', 'L36-L70'),
   nodeType: driversRef('kernel/linux/efa/src/efa_main.c', 'L616'),
-  efaPci: driversRef('kernel/linux/efa/src/efa_main.c', 'L24-L38'),
-  enaPci: driversRef('kernel/linux/ena/ena_pci_id_tbl.h', 'L9-L43'),
   enaSrdStats: driversRef('kernel/linux/common/ena_com/ena_admin_defs.h', 'L512-L536'),
   enaSrdFlags: driversRef('kernel/linux/common/ena_com/ena_admin_defs.h', 'L163-L170'),
-  enaStatsType: driversRef('kernel/linux/common/ena_com/ena_admin_defs.h', 'L137-L144'),
   enaSrdGet: driversRef('kernel/linux/common/ena_com/ena_com.c', 'L2645-L2661'),
   maxAh: driversRef('kernel/linux/efa/src/efa_com_cmd.h', 'L127-L136'),
+  // The provider's own error vocabulary, and where it prints it.
+  compStatuses: libfabricRef('prov/efa/src/efa_errno.h', 'L58-L75'),
+  provErrnos: libfabricRef('prov/efa/src/efa_errno.h', 'L109-L111'),
+  showHelp: libfabricRef('prov/efa/src/efa_strerror.c', 'L63-L105'),
+  errMsg: libfabricRef('prov/efa/src/rdm/efa_rdm_util.c', 'L111-L144'),
+  opeErr: libfabricRef('prov/efa/src/rdm/efa_rdm_ope.c', 'L649-L655'),
+  infoLevel: libfabricRef('prov/efa/src/efa_prov.h', 'L13'),
+  logEnv: libfabricRef('man/fabric.7.md', 'L174-L221'),
+  hostIdFile: libfabricRef('prov/efa/src/efa_env.c', 'L36'),
   msgOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L26'),
   rdmOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L633-L640'),
   rdmRxOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L677-L680'),
@@ -86,63 +92,50 @@ const code = {
   envOoo: libfabricRef('prov/efa/src/efa_env.c', 'L208-L209'),
 };
 
+const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
+
+const doc = (title: string, url: string, tier: 1 | 2 | 3): DocRef => ({
+  title,
+  url,
+  tier,
+  accessed: DOC_ACCESSED,
+});
+
 const docs: Record<string, DocRef> = {
-  efa: {
-    title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
-    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html',
-    tier: 1,
-    accessed: DOC_ACCESSED,
-  },
-  enaExpress: {
-    title: 'EC2 User Guide: Improve network performance with ENA Express',
-    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ena-express.html',
-    tier: 1,
-    accessed: DOC_ACCESSED,
-  },
-  bandwidth: {
-    title: 'EC2 User Guide: Amazon EC2 instance network bandwidth',
-    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html',
-    tier: 1,
-    accessed: DOC_ACCESSED,
-  },
-  ebsIops: {
-    title: 'Amazon EBS User Guide: Provisioned IOPS SSD volumes (io2 Block Express)',
-    url: 'https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html',
-    tier: 1,
-    accessed: DOC_ACCESSED,
-  },
-  ibvModifyQp: {
-    title: 'rdma-core man page: ibv_modify_qp(3)',
-    url: 'https://man7.org/linux/man-pages/man3/ibv_modify_qp.3.html',
-    tier: 1,
-    accessed: DOC_ACCESSED,
-  },
-  hpcBlog: {
-    title: 'AWS HPC Blog: In the search for performance, there is more than one way to build a network',
-    url: 'https://aws.amazon.com/blogs/hpc/in-the-search-for-performance-theres-more-than-one-way-to-build-a-network/',
-    tier: 2,
-    accessed: DOC_ACCESSED,
-  },
-  storageBlog: {
-    title: 'AWS Storage Blog: Storage for I/O intensive SQL Server using Amazon EBS io2 Block Express',
-    url: 'https://aws.amazon.com/blogs/storage/storage-for-i-o-intensive-sql-server-using-amazon-ebs-io2-block-express/',
-    tier: 2,
-    accessed: DOC_ACCESSED,
-  },
-  ieeeMicro: {
-    title:
-      'Shalev, Ayoub, Bshara, Sabbag. A Cloud-Optimized Transport Protocol for Elastic and Scalable HPC. IEEE Micro 40(6), pp. 67-73, November 2020',
-    url: 'https://doi.org/10.1109/MM.2020.3016891',
-    tier: 3,
-    accessed: DOC_ACCESSED,
-  },
-  dcqcn: {
-    title:
-      'Zhu et al. Congestion Control for Large-Scale RDMA Deployments. ACM SIGCOMM 2015 (Microsoft and Mellanox)',
-    url: 'https://conferences.sigcomm.org/sigcomm/2015/pdf/papers/p523.pdf',
-    tier: 3,
-    accessed: DOC_ACCESSED,
-  },
+  efa: doc('EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads', `${EC2_DOC}efa.html`, 1),
+  enaExpress: doc('EC2 User Guide: Improve network performance with ENA Express', `${EC2_DOC}ena-express.html`, 1),
+  monitor: doc('EC2 User Guide: Monitor an Elastic Fabric Adapter on Amazon EC2', `${EC2_DOC}efa-working-monitor.html`, 1),
+  bandwidth: doc('EC2 User Guide: Amazon EC2 instance network bandwidth', `${EC2_DOC}ec2-instance-network-bandwidth.html`, 1),
+  ebsIops: doc(
+    'Amazon EBS User Guide: Provisioned IOPS SSD volumes (io2 Block Express)',
+    'https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html',
+    1,
+  ),
+  ibvModifyQp: doc(
+    'rdma-core man page: ibv_modify_qp(3)',
+    'https://man7.org/linux/man-pages/man3/ibv_modify_qp.3.html',
+    1,
+  ),
+  hpcBlog: doc(
+    'AWS HPC Blog: In the search for performance, there is more than one way to build a network',
+    'https://aws.amazon.com/blogs/hpc/in-the-search-for-performance-theres-more-than-one-way-to-build-a-network/',
+    2,
+  ),
+  storageBlog: doc(
+    'AWS Storage Blog: Storage for I/O intensive SQL Server using Amazon EBS io2 Block Express',
+    'https://aws.amazon.com/blogs/storage/storage-for-i-o-intensive-sql-server-using-amazon-ebs-io2-block-express/',
+    2,
+  ),
+  ieeeMicro: doc(
+    'Shalev, Ayoub, Bshara, Sabbag. A Cloud-Optimized Transport Protocol for Elastic and Scalable HPC. IEEE Micro 40(6), pp. 67-73, November 2020',
+    'https://doi.org/10.1109/MM.2020.3016891',
+    3,
+  ),
+  dcqcn: doc(
+    'Zhu et al. Congestion Control for Large-Scale RDMA Deployments. ACM SIGCOMM 2015 (Microsoft and Mellanox)',
+    'https://conferences.sigcomm.org/sigcomm/2015/pdf/papers/p523.pdf',
+    3,
+  ),
 };
 
 /* ------------------------------------------------------------------ */
@@ -461,154 +454,194 @@ function MultipathSprayDiagram() {
 }
 
 /* ------------------------------------------------------------------ */
-/* efa-d07  SrdLossRecoveryTimeline                                    */
+/* efa-d31  ReorderWindowDiagram                                       */
 /* ------------------------------------------------------------------ */
 
 /**
- * A drop on one path, recovered on another, with the application lane
- * showing that nothing upstream stalled.
- * Idiom A (class-name block), prefix `slr-`.
+ * The per-peer reorder window as a bounded resource: sixteen slots, the
+ * expected message id at slot zero, early arrivals parked, the overflow list
+ * underneath. Idiom A (class-name block), prefix `row-`.
  */
-function SrdLossRecoveryTimeline() {
-  const laneY = [77, 125, 173];
-  const pktW = 26;
-  const pktH = 18;
-  const lanes = [
-    { label: 'Path A', blue: [170, 208, 246, 284, 322, 360, 398], amber: [] as number[] },
-    { label: 'Path B', blue: [170, 208], amber: [] as number[] },
-    { label: 'Path C', blue: [170, 208, 246, 284, 470, 508], amber: [430] },
-  ];
+function ReorderWindowDiagram() {
+  const slot0 = 128;
+  const pitch = 46;
+  const slotW = 42;
+  const slotY = 96;
+  const slotH = 40;
+  /** Message ids parked in the window while the expected one is still missing. */
+  const held: Record<number, string> = { 1: '101', 2: '102', 5: '105' };
 
   return (
     <svg
-      viewBox="0 0 900 312"
+      viewBox="0 0 900 268"
       role="img"
-      aria-labelledby="efa-d07-loss-title"
+      aria-labelledby="efa-d31-reorder-title"
       style={{ width: '100%', height: 'auto' }}
     >
-      <title id="efa-d07-loss-title">
-        When SRD loses a packet, the EFA device retransmits it on a different fabric path, and the
-        application never stops making forward progress. Recovery is a device level event: the
-        driver only reads the counters afterwards, it does not perform the retransmission.
+      <title id="efa-d31-reorder-title">
+        The libfabric reliable datagram endpoint keeps one reorder window per peer, sixteen message
+        slots by default. The first slot holds the message id the endpoint expects next. While that
+        message is missing, later messages from the same peer are parked in the slots behind it and
+        are not handed to the application. Arrivals further ahead than the window is deep spill into
+        an overflow list. The window bounds how far ahead one peer may run, and because it is per
+        peer, a gap in one peer's stream stalls no other peer.
       </title>
       <style>
         {`
-          .slr-bg   { fill: #ffffff; }
-          .slr-trk  { stroke: #d1d5db; stroke-width: 1; }
-          .slr-pkt  { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.2; }
-          .slr-pka  { fill: #fdf3ec; stroke: #ec7211; stroke-width: 1.5; }
-          .slr-pkd  { fill: #fdf3ec; stroke: #ec7211; stroke-width: 1.5; }
-          .slr-x    { stroke: #d13212; stroke-width: 2; }
-          .slr-lab  { fill: #0f1b2a; font: 600 11px sans-serif; }
-          .slr-grp  { fill: #5f6b7a; font: 600 10px sans-serif; letter-spacing: 1px; }
-          .slr-note { fill: #8b6c00; font: 11px sans-serif; text-anchor: middle; }
-          .slr-time { fill: #5f6b7a; font: 600 10px sans-serif; letter-spacing: 1px; }
-          .slr-axis { stroke: #5f6b7a; stroke-width: 1.5; fill: none; marker-end: url(#slr-head); }
-          .slr-rtx  { stroke: #ec7211; stroke-width: 2; fill: none; stroke-dasharray: 5 4; marker-end: url(#slr-ah2); }
-          .slr-app  { fill: #ecf7ec; stroke: #037f0c; stroke-width: 1.5; }
-          .slr-appt { fill: #0f1b2a; font: 11px sans-serif; text-anchor: middle; }
-          .slr-div  { stroke: #d1d5db; stroke-width: 1; stroke-dasharray: 5 4; }
+          .row-bg   { fill: #ffffff; }
+          .row-slot { fill: #ffffff; stroke: #879596; stroke-width: 1; }
+          .row-fill { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; }
+          .row-wait { fill: #fbf3d5; stroke: #8b6c00; stroke-width: 1.5; }
+          .row-ovf  { fill: #fdf3ec; stroke: #ec7211; stroke-width: 1.5; }
+          .row-h    { fill: #0f1b2a; font: 600 13px sans-serif; }
+          .row-hc   { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: middle; }
+          .row-s    { fill: #5f6b7a; font: 11px sans-serif; }
+          .row-sc   { fill: #5f6b7a; font: 10px sans-serif; text-anchor: middle; }
+          .row-id   { fill: #16191f; font: 600 12px sans-serif; text-anchor: middle; }
+          .row-note { fill: #8b6c00; font: 11px sans-serif; }
+          .row-dash { stroke: #ec7211; stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+          .row-cap  { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
         `}
       </style>
-      <defs>
-        <marker id="slr-head" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-          <path d="M0,0 L8,4 L0,8 z" fill="#5f6b7a" />
-        </marker>
-        <marker id="slr-ah2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-          <path d="M0,0 L8,4 L0,8 z" fill="#ec7211" />
-        </marker>
-      </defs>
 
-      <rect className="slr-bg" x="0" y="0" width="900" height="312" rx="8" />
+      <rect className="row-bg" x="0" y="0" width="900" height="268" rx="8" />
 
-      <text className="slr-time" x="140" y="26">
-        TIME
+      <text className="row-hc" x="450" y="34">
+        One reorder window per peer, 16 message slots
       </text>
-      <path className="slr-axis" d="M140,40 L856,40" />
-
-      <text className="slr-grp" x="16" y="62">
-        FABRIC PATHS
+      <text className="row-s" x="128" y="56">
+        In from the device: reliable, any order. Out to the application: in order, per peer.
+      </text>
+      <text className="row-note" x="128" y="84">
+        waiting for message 100
       </text>
 
-      {lanes.map((lane, i) => (
-        <g key={lane.label}>
-          <text className="slr-lab" x="16" y={laneY[i] + 13}>
-            {lane.label}
-          </text>
-          <path className="slr-trk" d={`M140,${laneY[i] + 9} L856,${laneY[i] + 9}`} />
-          {lane.blue.map((x) => (
-            <rect
-              key={`b-${x}`}
-              className="slr-pkt"
-              x={x}
-              y={laneY[i]}
-              width={pktW}
-              height={pktH}
-              rx="3"
-            />
-          ))}
-          {lane.amber.map((x) => (
-            <rect
-              key={`a-${x}`}
-              className="slr-pka"
-              x={x}
-              y={laneY[i]}
-              width={pktW}
-              height={pktH}
-              rx="3"
-            />
-          ))}
-        </g>
-      ))}
+      {Array.from({ length: 16 }, (_, i) => i).map((i) => {
+        const x = slot0 + i * pitch;
+        const cls = i === 0 ? 'row-wait' : held[i] ? 'row-fill' : 'row-slot';
+        return (
+          <g key={i}>
+            <rect className={cls} x={x} y={slotY} width={slotW} height={slotH} rx="4" />
+            {held[i] ? (
+              <text className="row-id" x={x + slotW / 2} y={slotY + 25}>
+                {held[i]}
+              </text>
+            ) : null}
+            <text className="row-sc" x={x + slotW / 2} y={slotY + slotH + 15}>
+              {i === 0 ? 'next' : `+${i}`}
+            </text>
+          </g>
+        );
+      })}
 
-      <rect className="slr-pkd" x="246" y="125" width={pktW} height={pktH} rx="3" />
-      <path className="slr-x" d="M249,128 L269,140" />
-      <path className="slr-x" d="M269,128 L249,140" />
-      <text className="slr-note" x="259" y="114">
-        packet dropped
+      <path className="row-dash" d="M860,140 C888,162 880,186 788,198" />
+      <rect className="row-ovf" x="128" y="176" width="652" height="44" rx="6" />
+      <text className="row-h" x="144" y="196">
+        overflow_pke_list
+      </text>
+      <text className="row-s" x="144" y="212">
+        Anything more than 16 messages ahead of 100 waits here instead
       </text>
 
-      <path className="slr-rtx" d="M274,134 C330,150 372,176 422,182" />
-      <text className="slr-note" x="352" y="210">
-        retransmitted on a different path
-      </text>
-
-      <path className="slr-div" d="M140,224 L856,224" />
-
-      <text className="slr-grp" x="16" y="262">
-        APPLICATION
-      </text>
-      <rect className="slr-app" x="140" y="242" width="716" height="32" rx="6" />
-      <text className="slr-appt" x="498" y="262">
-        The application never blocks. It keeps posting work and polling completions while the device
-        recovers the packet.
+      <text className="row-cap" x="450" y="250">
+        Nothing behind a gap reaches the application until the gap fills, and only this peer waits.
       </text>
     </svg>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* Section                                                             */
+/* Section data                                                        */
 /* ------------------------------------------------------------------ */
 
-const scalingRows = [
+/**
+ * Completion errors the reader will actually see, in the provider's own
+ * words, with the check each one points at. Text column is verbatim from
+ * efa_errno.h; the next-step column is ours except where marked.
+ */
+const triageRows = [
   {
-    unit: 'Per process',
-    connected: 'N x p, one per peer process',
-    srd: '1',
-    why: 'A connected queue pair is bound to exactly one remote queue pair.',
+    id: 'unreach',
+    codeName: 'LOCAL_ERROR_UNREACH_REMOTE (15)',
+    text: 'Unreachable remote - never received a response',
+    means: 'Nothing was ever established with this peer. Detected locally.',
+    next:
+      'Configuration, not hardware. The provider prints its own long-form hint for this code, naming inbound and outbound security group rules first. Check the self-referencing security group, then that both instances are in one Availability Zone.',
   },
   {
-    unit: 'Per instance',
-    connected: 'N x p x p',
-    srd: 'p',
-    why: 'Multiply the per-process figure by the p processes running on the node.',
+    id: 'unresp',
+    codeName: 'LOCAL_ERROR_UNRESP_REMOTE (13)',
+    text: 'Unresponsive remote (was previously responsive)',
+    means: 'It worked and then stopped. A node or a peer process died mid-job.',
+    next:
+      'Read the peer host id out of the error string and go straight to that instance. Expect unresponsive_remote_events on this node to have moved at the same time.',
   },
   {
-    unit: 'Whole cluster',
-    connected: 'N x N x p x p',
-    srd: 'N x p',
-    why: 'Multiply the per-instance figure by the N instances in the cluster.',
+    id: 'estab',
+    codeName: 'FI_EFA_ERR_ESTABLISHED_RECV_UNRESP (4124)',
+    text: 'Unresponsive receiver (connection previously established)',
+    means:
+      'The handshake had completed earlier. The provider reads this as likely hardware failure on the remote peer, or the peer process no longer being present.',
+    next: 'Treat the named instance as a node to drain and replace, not a setting to change.',
+  },
+  {
+    id: 'unestab',
+    codeName: 'FI_EFA_ERR_UNESTABLISHED_RECV_UNRESP (4126)',
+    text: 'Unresponsive receiver (reachable by EFA device but handshake failed)',
+    means:
+      'The device can reach the peer, so the network is fine. libfabric could not finish a handshake. The provider reads this as the peer process no longer being present.',
+    next:
+      'Look at the peer rank, not the fabric. A rank that exited early, was never launched, or crashed during startup produces this.',
+  },
+  {
+    id: 'rnr',
+    codeName: 'REMOTE_ERROR_RNR (10)',
+    text: 'Destination resource not ready (no work queue entries posted on receive queue)',
+    means: 'The message arrived and the receiver had no buffer posted for it.',
+    next:
+      'Occasional RNR under load is the receiver being outrun, not a fault. Sustained RNR points at a receiving process that is not posting receives fast enough, so profile the receiver rather than the fabric.',
+  },
+];
+
+/**
+ * The five network counters, read as shapes rather than thresholds. The
+ * description column is AWS's wording; the shape and action columns are ours.
+ */
+const counterRows = [
+  {
+    id: 'retrans',
+    counter: 'retrans_pkts, retrans_bytes',
+    aws: 'The number of EFA SRD packets, and bytes, retransmitted.',
+    healthy:
+      'Rises smoothly with traffic and is not expected to be zero on a busy fabric. Retransmission is how this transport works, so the absolute number carries almost no information.',
+    action:
+      'Compare the ratio against tx_pkts, node by node, over the same window. One node whose ratio sits well above its peers is the signal. The number on its own is not.',
+  },
+  {
+    id: 'timeout',
+    counter: 'retrans_timeout_events',
+    aws: 'The number of times EFA SRD traffic timed out and resulted in a network path change.',
+    healthy:
+      'Flat or nearly flat, moving in occasional single steps. Each step is recovery working and evidence that a path went bad.',
+    action:
+      'Watch for steps that cluster in time or on one instance. Line the steps up against the slow rank in the collective: a repeatedly re-pathing node is a node to drain.',
+  },
+  {
+    id: 'unresp',
+    counter: 'unresponsive_remote_events',
+    aws: 'The number of times an EFA SRD remote connection was unresponsive.',
+    healthy: 'Flat for the whole run. Any movement means a peer stopped answering.',
+    action:
+      'This is the counter half of LOCAL_ERROR_UNRESP_REMOTE. When it moves, go looking for a dead rank or a failed instance rather than tuning anything.',
+  },
+  {
+    id: 'impaired',
+    counter: 'impaired_remote_conn_events',
+    aws:
+      'The number of times EFA SRD connections entered an impaired state, resulting in a reduced throughput rate limit.',
+    healthy: 'Flat for the whole run.',
+    action:
+      'This is the one that explains a job which got slower and never errored, because AWS states the impaired state carries a reduced throughput rate limit. Movement here plus stable error counters means degraded, not broken.',
   },
 ];
 
@@ -619,7 +652,7 @@ export function SrdProtocol() {
         header={
           <Header
             variant="h1"
-            description="What does SRD actually do differently, and what do I give up to get it?"
+            description="One transport trade, and the three places it reaches you: tail latency, counters, error codes."
           >
             SRD: The Transport Protocol
           </Header>
@@ -642,6 +675,13 @@ export function SrdProtocol() {
             the higher layers of the stack, and the p99 tail latency then fell by around a factor of
             ten <SourceRef provenance="documented" doc={docs.hpcBlog} />. Everything else in this
             section follows from that single trade.
+          </Box>
+          <Box variant="p">
+            The trade stops being abstract the moment a cluster is running. It decides which error
+            code you get when a rank goes quiet, why a retransmission counter climbing through a
+            healthy run is normal here and an incident on an InfiniBand fabric, and what ordered
+            delivery costs per peer. Those readings come first below. The mechanism that produces
+            them follows.
           </Box>
           <Box variant="p">
             The design is published as Shalev, Ayoub, Bshara and Sabbag,{' '}
@@ -673,45 +713,6 @@ export function SrdProtocol() {
               </Box>
             </SpaceBetween>
           </ExpandableSection>
-
-          <ExpandableSection
-            headerText="How to check any claim on this page yourself"
-            headerDescription="Every code citation resolves to an immutable ref"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                Every code badge below links to a file at a pinned reference, never a branch. The
-                two references used here are <code>amzn/amzn-drivers</code> at commit{' '}
-                <code>b99452b70756b1b394b1e7ff238d4efbdca44c5b</code>, which is the r3.3.0 release
-                point, and <code>ofiwg/libfabric</code> at tag <code>v2.6.0</code>. Both were read on
-                2026-08-01.
-              </Box>
-              <Box variant="code">
-                <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`git clone https://github.com/amzn/amzn-drivers.git
-cd amzn-drivers
-git checkout b99452b70756b1b394b1e7ff238d4efbdca44c5b
-
-# SRD is the only driver queue-pair type
-grep -n "EFA_QP_DRIVER_TYPE" kernel/linux/efa/src/efa-abi.h
-
-# Every transmit descriptor carries its own destination
-sed -n '87,151p' kernel/linux/efa/src/efa_io_defs.h
-
-# The modify-QP command has no destination field
-sed -n '215,250p' kernel/linux/efa/src/efa_admin_cmds_defs.h
-
-# The device counts its own retransmissions
-sed -n '664,674p' kernel/linux/efa/src/efa_admin_cmds_defs.h
-
-# The ENA driver knows SRD only as a read-only stats blob
-grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
-              </Box>
-              <Box variant="p">
-                The last command returns a single getter and no setter: from inside the instance
-                you can read SRD counters, and the card owns everything else.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -719,99 +720,141 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
         header={
           <Header
             variant="h2"
-            description="Which component owns the transport, settled from code"
+            description="The error code and the counter shape that say whether the transport is your problem, and what to check next."
           >
-            SRD lives in the Nitro card
+            Reading SRD on a running cluster
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            AWS says so for the storage case in its own words: to minimize jitter and to ensure the
-            fastest response to network congestion fluctuations,
-            SRD is implemented in the AWS custom Nitro networking card{' '}
-            <SourceRef provenance="documented" doc={docs.storageBlog} />. The EBS (Elastic Block
-            Store) documentation repeats it for io2 Block Express, which communicates with
-            Nitro-based instances using SRD through an interface implemented in the Nitro card
-            dedicated to the EBS I/O function <SourceRef provenance="documented" doc={docs.ebsIops} />
-            . EFA and ENA (Elastic Network Adapter, through ENA Express) are two peer consumers of
-            that one transport.
+            SRD runs in the Nitro card, which is why everything you see of it is a report rather
+            than a knob. AWS states it for the storage case in its own words: to minimize jitter and
+            to ensure the fastest response to network congestion fluctuations, SRD is implemented in
+            the AWS custom Nitro networking card{' '}
+            <SourceRef provenance="documented" doc={docs.storageBlog} />, and the EBS (Elastic Block
+            Store) documentation repeats it for io2 Block Express{' '}
+            <SourceRef provenance="documented" doc={docs.ebsIops} />. EFA and ENA (Elastic Network
+            Adapter, through ENA Express) are peer consumers of that one transport. It reaches you
+            in two forms: completion errors libfabric surfaces, and five counters the device keeps.
           </Box>
 
-          <ColumnLayout columns={3} variant="text-grid">
-            <div>
-              <Box variant="h3">
-                An EFA-only interface carries SRD by itself{' '}
-                <Badge color="green">decisive</Badge>
-              </Box>
-              <Box variant="p">
-                AWS documents two attachment shapes: a traditional EFA interface, also called EFA
-                with ENA, which creates both an EFA device and an ENA device, and an EFA-only
-                interface, which creates just the EFA device{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />. An EFA-only interface carries
-                SRD traffic with no ENA device present anywhere on it. If SRD were layered on ENA,
-                EFA-only could not work at all.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">The ENA driver only reads SRD counters</Box>
-              <Box variant="p">
-                Everything the ENA driver knows about SRD is a read-only statistics structure,{' '}
-                <code>struct ena_admin_ena_srd_stats</code>{' '}
-                <SourceRef provenance="code-derived" code={code.enaSrdStats} />, fetched through the
-                statistics admin command as{' '}
-                <code>ENA_ADMIN_GET_STATS_TYPE_ENA_SRD</code>{' '}
-                <SourceRef provenance="code-derived" code={code.enaStatsType} />. The only accessor
-                is <code>ena_com_get_ena_srd_info()</code>{' '}
-                <SourceRef provenance="code-derived" code={code.enaSrdGet} />. There is no matching
-                set function anywhere in the tree. No retransmission logic, no reordering, no path
-                selection. The driver reads counters that the card maintains.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">Two devices, two drivers, disjoint identities</Box>
-              <Box variant="p">
-                ENA claims PCI device IDs 0x0051, 0x0ec2, 0x1ec2, 0xec20 and 0xec21{' '}
-                <SourceRef provenance="code-derived" code={code.enaPci} />. EFA claims 0xefa0
-                through 0xefa4{' '}
-                <SourceRef provenance="code-derived" code={code.efaPci} />. The sets do not
-                intersect, and each driver registers its own <code>pci_driver</code> with its own
-                probe function. EFA is a separate PCI function.
-              </Box>
-            </div>
-          </ColumnLayout>
+          <Box variant="h3">Completion errors, and what each one sends you to check</Box>
+          <Box variant="p">
+            The device separates a peer that stopped answering from one that never answered, and
+            libfabric carries that distinction up with a printable string per code. The difference
+            is worth knowing at three in the morning: one of them is a dead node, the other is
+            almost always a security group.
+          </Box>
 
-          <Alert type="info" header="ENA Express and EFA are two customers of one transport">
-            ENA Express puts ordinary TCP and UDP (User Datagram Protocol) traffic onto SRD. EFA
-            puts OS-bypass traffic onto SRD. The protocol itself is implemented in the Nitro card,
-            which is what lets both of them reach it.
+          <Table
+            variant="embedded"
+            columnDefinitions={[
+              { id: 'code', header: 'Code', cell: (item) => <Box variant="code">{item.codeName}</Box> },
+              { id: 'text', header: 'What the provider prints', cell: (item) => <em>{item.text}</em> },
+              { id: 'means', header: 'What it means', cell: (item) => item.means },
+              { id: 'next', header: 'What to check next', cell: (item) => <strong>{item.next}</strong> },
+            ]}
+            items={triageRows}
+          />
+
+          <Box variant="small" color="text-body-secondary">
+            Codes 10 to 15 are device completion statuses{' '}
+            <SourceRef provenance="code-derived" code={code.compStatus} />, and the printed strings
+            are the provider's table for them{' '}
+            <SourceRef provenance="code-derived" code={code.compStatuses} />. Codes 4124 and 4126
+            are libfabric's own, defined to tell an unresponsive receiver that completed a handshake
+            from one that never did{' '}
+            <SourceRef provenance="code-derived" code={code.provErrnos} />. Readings attributed to
+            the provider are quoted from its help text{' '}
+            <SourceRef provenance="code-derived" code={code.showHelp} />; the check column is ours.
+          </Box>
+
+          <Box variant="p">
+            <strong>Where you see it, and why the useful half is usually hidden.</strong> On failure
+            the provider builds one error string per completion, carrying the message above plus
+            both endpoints, and hands it to the application as error data{' '}
+            <SourceRef provenance="code-derived" code={code.errMsg} />. Both host id fields come
+            from the board asset tag, which on an EC2 instance is its instance id{' '}
+            <SourceRef provenance="code-derived" code={code.hostIdFile} />, so the error names the
+            machine to go and look at. The long-form help, including the security group hint, is an
+            info-level message{' '}
+            <SourceRef provenance="code-derived" code={code.showHelp} />{' '}
+            <SourceRef provenance="code-derived" code={code.opeErr} />{' '}
+            <SourceRef provenance="code-derived" code={code.infoLevel} />, so it appears only on a
+            run that asked for info logging. A run that did not gets the code without the
+            diagnosis.
+          </Box>
+
+          <Box variant="code">
+            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# The error string the provider builds per failed completion, addresses elided.
+# Peer host id reads N/A until a handshake with that peer has completed.
+
+Unreachable remote - never received a response My EFA addr: <raw addr> \
+My host id: i-0123456789abcdef0 Peer EFA addr: <raw addr> \
+Peer host id: i-0abcdef1234567890
+
+# Its own diagnosis of that code is info level, and info is high traffic.
+# Turn it on for the failing run, not for the fleet.
+
+FI_LOG_LEVEL=info FI_LOG_PROV=efa <your launch command>
+
+# What it then prints, verbatim:
+
+This error is detected locally. The peer is not reachable by the EFA device.
+This typically indicates one or more misconfigured EC2 instances; most often
+due to incorrect inbound/outbound security group rules and/or instances placed
+in different subnets. Refer to the public AWS documentation for EFA for
+up-to-date configuration requirements. This error can also be encountered when
+a peer process is no longer present.`}</pre>
+          </Box>
+
+          <Box variant="small" color="text-body-secondary">
+            Error string format{' '}
+            <SourceRef provenance="code-derived" code={code.errMsg} />, help text{' '}
+            <SourceRef provenance="code-derived" code={code.showHelp} />, logging variables and the
+            statement that info is high traffic{' '}
+            <SourceRef provenance="code-derived" code={code.logEnv} />. The hint names subnets,
+            while AWS documents the Availability Zone as the boundary EFA traffic does not cross{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />, so check the security group first
+            and the Availability Zone second.
+          </Box>
+
+          <Box variant="h3">The five counters, read as shapes</Box>
+          <Box variant="p">
+            The device reports a network statistics block with <code>retrans_bytes</code>,{' '}
+            <code>retrans_pkts</code>, <code>retrans_timeout_events</code>,{' '}
+            <code>unresponsive_remote_events</code> and <code>impaired_remote_conn_events</code>{' '}
+            <SourceRef provenance="code-derived" code={code.netStats} />, and the driver publishes
+            them as RDMA (Remote Direct Memory Access) hardware counters{' '}
+            <SourceRef provenance="code-derived" code={code.portStats} />. AWS documents the same
+            five, states they are available on Nitro v4 and later instance types only, and states
+            they are cumulative since instance launch or the last driver reset{' '}
+            <SourceRef provenance="documented" doc={docs.monitor} />, so only the rate of change
+            means anything. The operations section covers how to read them off a node. On the ENA
+            Express side the equivalent ground truth is the ratio of <code>ena_srd_tx_pkts</code> to{' '}
+            <code>ena_srd_eligible_tx_pkts</code> under <code>ethtool -S</code>, which reveals
+            whether traffic is riding SRD or silently falling back{' '}
+            <SourceRef provenance="code-derived" code={code.enaSrdStats} />.
+          </Box>
+
+          <Table
+            variant="embedded"
+            columnDefinitions={[
+              { id: 'counter', header: 'Counter', cell: (item) => <Box variant="code">{item.counter}</Box> },
+              { id: 'aws', header: 'What AWS says it counts', cell: (item) => item.aws },
+              { id: 'healthy', header: 'Healthy shape', cell: (item) => item.healthy },
+              { id: 'action', header: 'When it is not', cell: (item) => <strong>{item.action}</strong> },
+            ]}
+            items={counterRows}
+          />
+
+          <Alert type="info" header="Baseline these on your own cluster">
+            No AWS source stating a numeric threshold for any of these counters was located during
+            this research. Take a healthy run on your own instance type and job shape as the
+            baseline, alert on deviation from it, and say so when you hand the runbook over. A
+            number invented here would be worse than none, because you would size an alert to it.
           </Alert>
-
-          <ExpandableSection
-            headerText="What ENA Express exposes, and where it is switched on"
-            headerDescription="Three configuration bits and four counters, all read-only from inside the instance"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                The SRD configuration bitmap the ENA device reports has exactly three bits:{' '}
-                <code>ENA_ADMIN_ENA_SRD_ENABLED</code>,{' '}
-                <code>ENA_ADMIN_ENA_SRD_UDP_ENABLED</code> and{' '}
-                <code>ENA_ADMIN_ENA_SRD_UDP_ORDERING_BYPASS_ENABLED</code>{' '}
-                <SourceRef provenance="code-derived" code={code.enaSrdFlags} />. That third bit is
-                the interesting one. It decides whether the card restores UDP receive ordering or
-                hands packets up out of order, which is exactly the ordering trade this whole
-                section is about, offered as a per-attachment switch.
-              </Box>
-              <Box variant="p">
-                Because there is a get path and no set path{' '}
-                <SourceRef provenance="code-derived" code={code.enaSrdGet} />, ENA Express cannot be
-                turned on from inside the instance. It is configured on the network interface
-                attachment through the EC2 control plane, and the driver only observes the result.
-                Any guide showing an in-instance command to enable ENA Express is describing tuning,
-                not enablement.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -819,7 +862,7 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
         header={
           <Header
             variant="h2"
-            description="What each transport assumes about the network, and what that assumption costs"
+            description="Why a retransmission counter that moves is routine here and an incident on an InfiniBand or RoCEv2 fabric."
           >
             SRD against InfiniBand Reliable Connected and RoCEv2
           </Header>
@@ -861,11 +904,10 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
               <Box variant="p">
                 RoCEv2 needs PFC (Priority Flow Control) to build a drop-free Ethernet fabric, and
                 PFC can lead to poor application performance because of head of line blocking and
-                unfairness{' '}
-                <SourceRef provenance="documented" doc={docs.dcqcn} />. The mechanism is the reason:
-                PAUSE operates per port and priority class, not per flow, so pausing one congested
-                flow pauses everything sharing that port. The same paper reports congestion
-                spreading as the practical consequence at scale.
+                unfairness <SourceRef provenance="documented" doc={docs.dcqcn} />. The mechanism is
+                the reason: PAUSE operates per port and priority class, not per flow, so pausing one
+                congested flow pauses everything sharing that port. The same paper reports
+                congestion spreading as the practical consequence at scale.
               </Box>
             </div>
           </ColumnLayout>
@@ -876,10 +918,9 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             expressed concern, note that deadlock formation requires a set of flows whose buffer
             dependencies form a cycle, and argue that in a clos-structured network where servers
             connect only to top of rack switches such a cycle cannot arise without malfunctioning or
-            misconfigured equipment{' '}
-            <SourceRef provenance="documented" doc={docs.dcqcn} />. The sound criticism of PFC is
-            head of line blocking, unfairness and congestion spreading, not deadlock as a routine
-            outcome.
+            misconfigured equipment <SourceRef provenance="documented" doc={docs.dcqcn} />. The
+            sound criticism of PFC is head of line blocking, unfairness and congestion spreading,
+            not deadlock as a routine outcome.
           </Alert>
 
           <Box variant="p">
@@ -898,8 +939,11 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
 
       <Container
         header={
-          <Header variant="h2" description="Why more nodes make the fabric better">
-            Packet spraying across many paths
+          <Header
+            variant="h2"
+            description="Spray across 64 paths, recover the losses in the card, and the host gets counters instead of a retry policy."
+          >
+            Spraying, and where recovery happens
           </Header>
         }
       >
@@ -920,85 +964,45 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
           </Box>
 
           <Box variant="p">
-            The contrast with a conventional flow is the point. A single TCP or UDP flow is a unique
-            5-tuple, and AWS caps single-flow traffic at 5 Gbps outside a cluster placement group
-            and 10 Gbps inside one{' '}
+            The contrast with a conventional flow is the point. A single TCP or UDP (User Datagram
+            Protocol) flow is a unique 5-tuple, and AWS caps single-flow traffic at 5 Gbps outside a
+            cluster placement group and 10 Gbps inside one{' '}
             <SourceRef provenance="documented" doc={docs.bandwidth} />. Part of that ceiling is
             policy and part is physics: a hashed flow follows one path, so its throughput is bounded
-            by the most congested link on that one path. Spraying removes the second constraint
-            outright.
-          </Box>
-
-          <Box variant="p">
-            Spraying also scales the right way. AWS states that as a customer job grows to consume
-            more nodes on the network, SRD consequently has more paths to choose from, because the
-            perimeter of that network gets bigger{' '}
+            by the most congested link on that path. Spraying removes the second constraint, which
+            is why a single-socket benchmark will never show you what this fabric does. Scale helps
+            as well: AWS states that as a job grows to consume more nodes, SRD has more paths to
+            choose from, because the perimeter of that network gets bigger{' '}
             <SourceRef provenance="documented" doc={docs.hpcBlog} />. Most fabric properties degrade
             with cluster size. Path diversity improves with it.
           </Box>
-        </SpaceBetween>
-      </Container>
 
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Retransmission happens in the card, and the driver can only count it"
-          >
-            Loss recovery and congestion control
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
           <Box variant="p">
-            SRD expects the fabric to drop packets, so recovery is a routine event, and the card is
-            what performs it. <strong>The evidence:</strong> the EFA device reports a network
-            statistics block containing <code>retrans_bytes</code>, <code>retrans_pkts</code>,{' '}
-            <code>retrans_timeout_events</code>, <code>unresponsive_remote_events</code> and{' '}
-            <code>impaired_remote_conn_events</code>{' '}
-            <SourceRef provenance="code-derived" code={code.netStats} />, and the driver surfaces
-            those five as RDMA (Remote Direct Memory Access) hardware counters alongside the byte
-            and packet counts{' '}
-            <SourceRef provenance="code-derived" code={code.portStats} />. Reporting a
-            retransmission count is only possible for a party that performs retransmissions. The
-            host does not: no retransmission logic exists anywhere in the EFA driver, only the code
-            that copies these values out of an admin-queue response.
+            Because drops are expected, recovery is routine, and the card is what performs it. The
+            device reports the five network counters above{' '}
+            <SourceRef provenance="code-derived" code={code.netStats} />. The driver code that
+            surfaces them copies the values out of an admin-queue response rather than computing
+            them{' '}
+            <SourceRef provenance="code-derived" code={code.portStats} />. A search of the driver
+            tree for retransmission logic during this research found none, which is consistent with
+            the device doing the work, though an absence found by searching is weaker evidence than
+            the presence of the stats path. There is no host-side
+            retry policy, which is why the counters are a monitoring surface and not a control
+            surface. The application never blocks for it either: it keeps posting work and polling
+            completions while the card resends the packet on a different path.
           </Box>
 
-          <SrdLossRecoveryTimeline />
-
-          <Box variant="small" color="text-body-secondary">
-            Diagram efa-d07. Schematic. Packet counts and spacing are illustrative; the counters
-            named above are the observable evidence that recovery is a device-level event.
+          <Box variant="p">
+            One retry behaviour does reach the queue pair. The admin modify-queue-pair command
+            carries an <code>rnr_retry</code> field commented as the number of RNR (Receiver Not
+            Ready) retries, valid only for SRD queue pairs{' '}
+            <SourceRef provenance="code-derived" code={code.modifyQp} />. On the libfabric side,{' '}
+            <code>resource_mgmt</code> is set to enabled on the efa-direct path with the comment
+            that the direct path retries indefinitely when receiver not ready{' '}
+            <SourceRef provenance="code-derived" code={code.directRnr} />. That is what stands
+            behind the RNR row in the triage table: a receiver that stops posting does not fail
+            fast, it stalls.
           </Box>
-
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">Failures the device distinguishes</Box>
-              <Box variant="p">
-                The completion status enum separates local from remote faults and, more usefully,
-                separates a peer that stopped answering from one that never answered:{' '}
-                <code>LOCAL_ERROR_UNRESP_REMOTE</code> is commented as an unresponsive remote that
-                was previously responsive, while{' '}
-                <code>LOCAL_ERROR_UNREACH_REMOTE</code> is an unreachable remote that never returned
-                a response{' '}
-                <SourceRef provenance="code-derived" code={code.compStatus} />. That distinction is
-                a transport-level judgement, made in hardware.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">RNR retry is an SRD-only property</Box>
-              <Box variant="p">
-                The admin modify-queue-pair command carries an <code>rnr_retry</code> field
-                commented as the number of RNR (Receiver Not Ready) retries, valid only for SRD
-                queue pairs{' '}
-                <SourceRef provenance="code-derived" code={code.modifyQp} />. Above it, libfabric
-                sets <code>resource_mgmt</code> to enabled on the efa-direct path with the comment
-                that the direct path retries indefinitely when receiver not ready{' '}
-                <SourceRef provenance="code-derived" code={code.directRnr} />.
-              </Box>
-            </div>
-          </ColumnLayout>
 
           <Box variant="p">
             Congestion control is the part with the least public detail. AWS states that the EFA
@@ -1006,19 +1010,10 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             SRD protocol <SourceRef provenance="documented" doc={docs.efa} />, and that ENA Express
             detects and avoids congested network paths and handles some tasks directly in the
             network layer, such as packet reordering on the receiving end and most retransmits that
-            are needed <SourceRef provenance="documented" doc={docs.enaExpress} />. Beyond that,
-            AWS publishes no algorithm, and this page names none.
+            are needed <SourceRef provenance="documented" doc={docs.enaExpress} />. Beyond that, AWS
+            publishes no algorithm, and this page names none. There is nothing to configure: watch
+            the response through <code>retrans_timeout_events</code> rather than trying to steer it.
           </Box>
-
-          <Alert type="info" header="How to see recovery happening on a live instance">
-            The five network counters above are readable per device through the RDMA hardware
-            counter interface{' '}
-            <SourceRef provenance="code-derived" code={code.portStats} />. On the ENA side, ENA
-            Express exposes its own set through <code>ethtool -S</code>, and the ratio of{' '}
-            <code>ena_srd_tx_pkts</code> to <code>ena_srd_eligible_tx_pkts</code> is what reveals
-            whether traffic is actually riding SRD or silently falling back{' '}
-            <SourceRef provenance="code-derived" code={code.enaSrdStats} />.
-          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -1026,7 +1021,7 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
         header={
           <Header
             variant="h2"
-            description="The device delivers reliably in any order. Ordering is bought back in software, per peer."
+            description="What ordered delivery costs per peer, and the one setting an old tuning script gets wrong."
           >
             Who restores order, and what it costs
           </Header>
@@ -1042,9 +1037,8 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             separate RDM (reliable datagram) info does it override the value to{' '}
             <code>FI_ORDER_SAS</code>, with a comment stating why: the EFA RDM endpoint supports
             ordered two-sided and atomic operations by putting messages through a software reorder
-            buffer{' '}
-            <SourceRef provenance="code-derived" code={code.rdmOrder} />, and the receive attributes
-            get the same override a few lines later{' '}
+            buffer <SourceRef provenance="code-derived" code={code.rdmOrder} />, and the receive
+            attributes get the same override a few lines later{' '}
             <SourceRef provenance="code-derived" code={code.rdmRxOrder} />.
           </Box>
 
@@ -1053,11 +1047,21 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             <code>robuf</code> documented as a reorder buffer that temporarily holds packets that
             are out of order, whose message identifier is larger than the one the endpoint expects
             from that peer, plus an <code>overflow_pke_list</code> for out-of-order packets that do
-            not fit the current window{' '}
-            <SourceRef provenance="code-derived" code={code.robuf} />. Out-of-order arrivals are
-            copied out of the pre-posted receive buffers into a separate bounce-buffer pool, which
-            is on by default{' '}
+            not fit the current window <SourceRef provenance="code-derived" code={code.robuf} />.
+            The slot is the message id modulo the window size{' '}
+            <SourceRef provenance="code-derived" code={code.recvwinModulo} />, and out-of-order
+            arrivals are copied out of the pre-posted receive buffers into a separate bounce-buffer
+            pool, which is on by default{' '}
             <SourceRef provenance="code-derived" code={code.envOoo} />.
+          </Box>
+
+          <ReorderWindowDiagram />
+
+          <Box variant="small" color="text-body-secondary">
+            Diagram efa-d31. Schematic. The window is 16 message slots by default{' '}
+            <SourceRef provenance="code-derived" code={code.robufDefault} />, one per peer. Head of
+            line blocking did not disappear with the ordering guarantee. It moved out of the fabric
+            and into one peer's buffer, where it stalls that peer and nothing else.
           </Box>
 
           <ExpandableSection
@@ -1072,24 +1076,14 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
                 constant is what the environment structure is initialised with.
               </Box>
               <Box variant="p">
-                <strong>The unit is messages, not bytes.</strong> This is worth stating because a
-                jump from 16384 to 16 looks like a units error, and it is not. The value is passed
-                to the allocator unscaled{' '}
+                <strong>The unit is messages, not bytes.</strong> A jump from 16384 to 16 looks like
+                a units error, and it is not. The value is passed to the allocator unscaled{' '}
                 <SourceRef provenance="code-derived" code={code.recvwinUse} />, which sizes the
                 pending queue as <code>sizeof(struct efa_rdm_pke*) * size</code>: one pointer slot
                 per held message, with a power-of-two assertion on the count{' '}
-                <SourceRef provenance="code-derived" code={code.recvwinAlloc} />. The window index
-                is then taken modulo that same value against the message id{' '}
-                <SourceRef provenance="code-derived" code={code.recvwinModulo} />. Nothing anywhere
-                multiplies it by a page, a packet size or a kilobyte. Both numbers count messages,
-                so the two really do disagree.
-              </Box>
-              <Box variant="p">
-                <strong>What the window is for.</strong> SRD delivers out of order by design, so the
-                provider keeps a per-peer buffer of messages that arrived early and cannot be handed
-                up yet. The window is how many such messages a single peer may hold pending before
-                the excess spills to an overflow list. A window of 16 is a bet that reordering
-                depth stays shallow, which is the normal case on a healthy fabric.
+                <SourceRef provenance="code-derived" code={code.recvwinAlloc} />. Nothing anywhere
+                multiplies it by a page, a packet size or a kilobyte, so the two numbers really do
+                disagree.
               </Box>
               <Box variant="p">
                 <strong>The help text is two tuning rounds stale, not one.</strong> The default was
@@ -1098,10 +1092,9 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
                 <SourceRef provenance="code-derived" code={code.tune16kTo8k} label="commit" />. In
                 November 2025 the window itself was cut to 16 to match the pool, on the reasoning
                 that a differently sized pool and buffer make no sense when every peer needs one
-                buffer{' '}
-                <SourceRef provenance="code-derived" code={code.tune8kTo16} label="commit" />. Both
-                changes were made to hold performance without the memory overhead. The help string
-                was updated in neither.
+                buffer <SourceRef provenance="code-derived" code={code.tune8kTo16} label="commit" />
+                . Both changes were made to hold performance without the memory overhead. The help
+                string was updated in neither.
               </Box>
               <Box variant="p">
                 Code wins. Treat the per-peer reorder window as 16 outstanding messages unless you
@@ -1120,15 +1113,23 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             </SpaceBetween>
           </ExpandableSection>
 
+          <Alert type="warning" header="Grep your launch scripts for FI_EFA_RECVWIN_SIZE">
+            A script that copied 16384 out of the help text asks for a 16,384-slot pointer array for
+            every peer the process talks to, which is the memory the two tuning commits were
+            removing. Unset is the supported answer on current libfabric. If a run genuinely needs a
+            deeper window, the evidence for it is arrivals spilling to{' '}
+            <code>overflow_pke_list</code>, not a number carried over from an older guide.
+          </Alert>
+
           <Box variant="p">
             This is the honest price of SRD. Relaxing ordering is what dropped p99 tail latency by
-            around a factor of ten{' '}
-            <SourceRef provenance="documented" doc={docs.hpcBlog} />, and software is where the bill
-            arrives. If the application asks for ordered delivery, it pays for a per-peer window,
-            a bounce-buffer copy for every out-of-order arrival, and an overflow list when
-            reordering exceeds the window. If the application does not need ordering, it pays none
-            of that and takes the fabric at its native speed. Collectives and message passing are in
-            the second group, which is why they are the workloads EFA targets.
+            around a factor of ten <SourceRef provenance="documented" doc={docs.hpcBlog} />, and
+            software is where the bill arrives. An application that asks for ordered delivery pays
+            for a per-peer window, a bounce-buffer copy on every out-of-order arrival, and an
+            overflow list when reordering exceeds the window. An application that does not need
+            ordering pays none of it and takes the fabric at its native speed. Collectives and
+            message passing are in the second group, which is why they are the workloads EFA
+            targets.
           </Box>
         </SpaceBetween>
       </Container>
@@ -1137,21 +1138,27 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
         header={
           <Header
             variant="h2"
-            description="The reason SRD scales, expressed as arithmetic and proved from the descriptor layout"
+            description="Why nobody sizes a queue pair on EFA, and what that is worth at 512 nodes."
           >
             Queue-pair scaling
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <Alert type="info" header="This block is model, not a knob">
+            Nothing here is configurable. It is the reason peer count stops being a resource
+            question on EFA, which is what makes the address-vector behaviour and the flat scaling
+            in the practical sections make sense.
+          </Alert>
+
           <Box variant="p">
-            <strong>The mechanism, in one line:</strong> an SRD queue pair carries its destination
-            in every descriptor. The transmit metadata descriptor
-            has <code>dest_qp_num</code>, an address handle index <code>ah</code>, and a{' '}
-            <code>qkey</code>, all inside the per-work-request descriptor{' '}
-            <SourceRef provenance="code-derived" code={code.txMeta} />. One send queue can therefore
-            address every peer in the cluster. The device reports <code>max_ah</code> as a separate
-            limit from <code>max_qp</code>{' '}
+            <strong>The mechanism, in one line:</strong> an SRD queue pair carries its destination in
+            every descriptor. The transmit metadata descriptor has <code>dest_qp_num</code>, an
+            address handle index <code>ah</code> and a <code>qkey</code>, all inside the
+            per-work-request descriptor{' '}
+            <SourceRef provenance="code-derived" code={code.txMeta} />, so one send queue can
+            address every peer in the cluster. The device reports <code>max_ah</code> as a limit
+            separate from <code>max_qp</code>{' '}
             <SourceRef provenance="code-derived" code={code.maxAh} />, which is the same fact from
             the resource-accounting side: peers are cheap, queue pairs are not.
           </Box>
@@ -1161,46 +1168,16 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             state, current state, queue key, send queue packet sequence number, drain notification
             and RNR retry count, and no field for a destination at all{' '}
             <SourceRef provenance="code-derived" code={code.modifyQp} />. There is nowhere to bind a
-            remote queue pair, because SRD never does.{' '}
+            remote queue pair, because SRD never does, and{' '}
             <code>EFA_QP_DRIVER_TYPE_SRD</code> is the only driver queue-pair type the user ABI
-            defines <SourceRef provenance="code-derived" code={code.qpType} />.
-          </Box>
-
-          <Box variant="p">
-            Compare the InfiniBand Reliable Connected service. In libibverbs, the{' '}
-            <code>dest_qp_num</code> and <code>ah_attr</code> fields are documented as valid only
-            for RC and UC queue pairs, and moving an RC queue pair to ready-to-receive requires{' '}
-            <code>IBV_QP_AV</code> and <code>IBV_QP_DEST_QPN</code> among its mandatory attributes{' '}
+            defines <SourceRef provenance="code-derived" code={code.qpType} />. On InfiniBand
+            Reliable Connected the opposite holds: <code>dest_qp_num</code> and{' '}
+            <code>ah_attr</code> are valid only for RC and UC queue pairs, and moving an RC queue
+            pair to ready-to-receive requires <code>IBV_QP_AV</code> and{' '}
+            <code>IBV_QP_DEST_QPN</code> among its mandatory attributes{' '}
             <SourceRef provenance="documented" doc={docs.ibvModifyQp} />. The destination is part of
             the queue pair, so full connectivity needs one queue pair per process pair.
           </Box>
-
-          <Table
-            variant="embedded"
-            header={
-              <Header
-                variant="h3"
-                description="N instances, p processes per instance, full all-to-all process connectivity"
-              >
-                Queue pairs needed for full connectivity
-              </Header>
-            }
-            columnDefinitions={[
-              { id: 'unit', header: 'Counted', cell: (item) => <strong>{item.unit}</strong> },
-              {
-                id: 'connected',
-                header: 'Connected transport (InfiniBand RC)',
-                cell: (item) => <Badge color="severity-medium">{item.connected}</Badge>,
-              },
-              {
-                id: 'srd',
-                header: 'SRD',
-                cell: (item) => <Badge color="green">{item.srd}</Badge>,
-              },
-              { id: 'why', header: 'Why', cell: (item) => item.why },
-            ]}
-            items={scalingRows}
-          />
 
           <Alert type="warning" header="The commonly quoted form of this argument mixes units">
             <SpaceBetween size="xs">
@@ -1211,9 +1188,10 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
                 them understates the connected-transport cost by a factor of N.
               </Box>
               <Box variant="p">
-                Counted consistently, the table above holds. At 512 instances running 8 processes
-                each, SRD needs 4,096 queue pairs cluster-wide, and a connected transport needs
-                16,777,216. That is the difference between a resource you can allocate and one you
+                Counted consistently, for N instances running p processes each: per process, 1
+                against N x p. Per instance, p against N x p x p. Cluster-wide, N x p against N x N
+                x p x p. At 512 instances of 8 processes that is 4,096 queue pairs against
+                16,777,216, which is the difference between a resource you can allocate and one you
                 cannot.
               </Box>
               <Box variant="p">
@@ -1233,7 +1211,7 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
         header={
           <Header
             variant="h2"
-            description="Where the factor of ten in p99 is paid for, and what to reach for when the trade lands badly"
+            description="What the factor of ten costs, and how to choose between ENA Express and EFA."
           >
             What SRD costs you
           </Header>
@@ -1263,9 +1241,8 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
                 EFA registers an InfiniBand device, not a network device, so there is no interface,
                 no IP address and no socket to bind. AWS states the consequence directly: EFA-only
                 interfaces cannot be assigned IPv4 or IPv6 addresses and cannot be the primary
-                network interface{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />. Reaching SRD means adopting
-                libfabric, or something built on it.
+                network interface <SourceRef provenance="documented" doc={docs.efa} />. Reaching SRD
+                means adopting libfabric, or something built on it.
               </Box>
             </div>
             <div>
@@ -1293,6 +1270,30 @@ grep -rn "ena_srd" kernel/linux/common/ena_com/ena_com.c`}</pre>
             ENA Express when the application has to keep its sockets, and for EFA when the library
             underneath it already speaks libfabric.
           </Box>
+
+          <Alert type="info" header="ENA Express is switched on outside the instance">
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                Everything the ENA driver holds for SRD is read-only. The only accessor is{' '}
+                <code>ena_com_get_ena_srd_info()</code>, a getter{' '}
+                <SourceRef provenance="code-derived" code={code.enaSrdGet} />. No matching set
+                function was found in the tree during this research. ENA Express
+                is configured on the network interface attachment through the EC2 control plane, and
+                the driver only observes the result. Any guide showing an in-instance command to
+                enable it is describing tuning, not enablement.
+              </Box>
+              <Box variant="p">
+                What the attachment carries is three bits:{' '}
+                <code>ENA_ADMIN_ENA_SRD_ENABLED</code>,{' '}
+                <code>ENA_ADMIN_ENA_SRD_UDP_ENABLED</code> and{' '}
+                <code>ENA_ADMIN_ENA_SRD_UDP_ORDERING_BYPASS_ENABLED</code>{' '}
+                <SourceRef provenance="code-derived" code={code.enaSrdFlags} />. The third decides
+                whether the card restores UDP receive ordering or hands packets up out of order,
+                which is this section's whole trade offered as a per-attachment switch. Turn it on
+                only for a receiver written to tolerate reordering.
+              </Box>
+            </SpaceBetween>
+          </Alert>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

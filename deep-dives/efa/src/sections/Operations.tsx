@@ -28,7 +28,8 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 const ACCESSED = '2026-08-02';
 const READ = '2026-08-02';
 
-/** amzn-drivers master HEAD at the time of reading: driver r3.3.0. */
+/** amzn/amzn-drivers at the efa_linux_3.3.0 release tag, the commit that
+ *  bumps the driver to 3.3.0. Master has since moved past it. */
 const DRIVER_SHA = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
 const PLUGIN_TAG = 'v1.20.0';
 const LIBFABRIC_TAG = 'v2.6.0';

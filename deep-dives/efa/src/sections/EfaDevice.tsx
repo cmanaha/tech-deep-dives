@@ -24,7 +24,11 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 const ACCESSED = '2026-08-01';
 const READ = '2026-08-01';
 
-/** amzn-drivers master HEAD at the time of reading: driver r3.3.0. */
+/**
+ * amzn/amzn-drivers at the commit the efa_linux_3.3.0 release tag points to:
+ * driver r3.3.0. Verified against the tag rather than described as a branch
+ * head, so the pin stays true after master advances.
+ */
 const DRIVER_SHA = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
 const PLUGIN_TAG = 'v1.20.0';
 const LIBFABRIC_TAG = 'v2.6.0';
@@ -76,12 +80,8 @@ const docs = {
 
 const code = {
   pciIds: drv('src/efa_main.c', 'L27-L39'),
-  msix: drv('src/efa_main.c', 'L757-L785'),
-  vectorIdx: drv('src/efa.h', 'L25-L26'),
-  eqClamp: drv('src/efa_main.c', 'L380-L392'),
   queryDevice: drv('src/efa_verbs.c', 'L350-L359'),
   registerMr: drv('src/efa_verbs.c', 'L2628-L2636'),
-  inlinePbl: drv('src/efa_com_cmd.h', 'L183-L188'),
   dkms: drv('conf/dkms.conf'),
   releaseNotes: drv('RELEASENOTES.md'),
   railContract: plugin('include/nccl_ofi_platform.h', 'L82-L97'),
@@ -186,79 +186,90 @@ function AttachmentModesDiagram() {
 }
 
 /**
- * Diagram 2. The four counts readers conflate, walked down one instance type.
+ * Diagram 2. The counting model: four layers, four owners, one count each.
+ * This carries the spine of the section, so it holds the owner, the worked
+ * p5.48xlarge count and the read-it-yourself command for every layer. It
+ * replaces the prose-plus-table pairing that used to say the same thing twice.
  * Idiom A (class-name prefix "cr-").
  */
-function CardsInterfacesRailsDiagram() {
-  const lanes = [
+function CountingLayersDiagram() {
+  const layers = [
     {
       label: 'Network cards',
-      sub: 'hardware slot',
+      owner: ['Owned by EC2.', 'Fixed by the instance type.'],
       count: '32',
       unit: 'p5.48xlarge',
       lines: [
-        'AWS states p5.48xlarge and p5e.48xlarge support 32 network cards, indexed',
-        '0 through 31. DescribeInstanceTypes returns this as MaximumNetworkCards.',
-        'It is the slot count, and it bounds every row below.',
+        'Read it: MaximumNetworkCards in DescribeInstanceTypes.',
+        'It is the slot count, and it bounds every layer below.',
       ],
+      relation: 'bounds',
     },
     {
       label: 'Network interfaces',
-      sub: 'what you attach',
+      owner: ['Owned by you.', 'Decided in the launch request.'],
       count: '33',
       unit: 'AWS example',
       lines: [
-        'The AWS launch example attaches 33 interfaces across those 32 cards: an ENA',
-        'on card 0 device index 0, an EFA-only on card 0 device index 1, and one',
-        'EFA-only on each of card 1 through card 31.',
+        'Read it: the --network-interfaces list you pass to run-instances.',
+        'Card 0 can carry two, which is how 32 cards took 33 interfaces.',
       ],
+      relation: 'materialise',
     },
     {
       label: 'EFA devices',
-      sub: 'what libfabric sees',
+      owner: ['Follows from the EFA', 'interfaces you attached.'],
       count: '32',
       unit: 'EFA devices',
       lines: [
-        'AWS calls that same example a request with 32 EFA devices and one ENA',
-        'device. This is what fi_info lists, and what a collectives library',
-        'divides its traffic across.',
+        'Read it: fi_info entries, one per device per fabric.',
+        'Size a Kubernetes resource claim from this layer, not the one above.',
       ],
+      relation: 'grouped into',
     },
     {
       label: 'Rails',
-      sub: 'software grouping',
-      count: 'N',
+      owner: ['Owned by the collectives', 'plugin, invented at runtime.'],
+      count: 'index',
       unit: 'per group',
       lines: [
-        'A rail is a software index. The NCCL plugin sorts the provider list',
-        'so the Nth device here talks to the Nth device on remote nodes, then splits',
-        'it into one group per accelerator. No AWS document defines the term.',
+        'Read it: nowhere. No AWS API exposes it. It is plugin internal.',
+        'The plugin sorts devices so index N here pairs with index N remotely.',
       ],
+      relation: null,
     },
   ];
 
   return (
     <svg
-      viewBox="0 0 900 430"
+      viewBox="0 0 900 490"
       role="img"
-      aria-labelledby="efa-cards-rails-title"
+      aria-labelledby="efa-counting-layers-title"
       style={{ width: '100%', height: 'auto' }}
     >
-      <title id="efa-cards-rails-title">
-        Network cards, network interfaces, EFA devices and rails are four different counts. A
-        p5.48xlarge has 32 network cards, AWS attaches 33 interfaces to them in its own maximum
-        bandwidth example, that yields 32 EFA devices, and rails are a software index the NCCL
-        plugin assigns on top of those devices rather than anything the hardware exposes.
+      <title id="efa-counting-layers-title">
+        Counting EFA is four layers with four owners, and each layer is counted by a different
+        party. EC2 fixes the network card count and it bounds everything below, read from
+        MaximumNetworkCards. You decide the network interface count in the launch request, read
+        from the network-interfaces list you pass to run-instances. The EFA device count follows
+        from the EFA interfaces you attached and is what libfabric lists in fi_info, which is the
+        layer a Kubernetes resource claim is sized from. Rails are an index the collectives plugin
+        invents on top of the devices, exposed by no AWS API. On p5.48xlarge those counts are 32
+        cards, 33 interfaces in the AWS example, 32 EFA devices, and a per-group rail index.
       </title>
       <style>
         {`
           .cr-lbl { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; }
           .cr-body { fill: #ffffff; stroke: #879596; stroke-width: 1.5; }
-          .cr-lt { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: end; }
-          .cr-ls { fill: #5f6b7a; font: 11px sans-serif; text-anchor: end; }
+          .cr-cnt { fill: #ffffff; stroke: #879596; stroke-width: 1.5; }
+          .cr-hd { fill: #5f6b7a; font: 600 11px sans-serif; }
+          .cr-hdc { fill: #5f6b7a; font: 600 11px sans-serif; text-anchor: middle; }
+          .cr-lt { fill: #0f1b2a; font: 600 13px sans-serif; }
+          .cr-ls { fill: #5f6b7a; font: 11px sans-serif; }
           .cr-num { fill: #0972d3; font: 600 22px sans-serif; text-anchor: middle; }
           .cr-unit { fill: #5f6b7a; font: 10px sans-serif; text-anchor: middle; }
           .cr-txt { fill: #0f1b2a; font: 11px sans-serif; }
+          .cr-rel { fill: #5f6b7a; font: italic 10px sans-serif; }
           .cr-arr { stroke: #5f6b7a; stroke-width: 2; fill: none; marker-end: url(#cr-head); }
           .cr-cap { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
         `}
@@ -268,80 +279,66 @@ function CardsInterfacesRailsDiagram() {
           <path d="M0,0 L8,4 L0,8 z" fill="#5f6b7a" />
         </marker>
       </defs>
-      <rect x="0" y="0" width="900" height="430" rx="8" fill="#ffffff" />
+      <rect x="0" y="0" width="900" height="490" rx="8" fill="#ffffff" />
 
-      {lanes.map((lane, index) => {
-        const y = 50 + index * 95;
+      <text className="cr-hd" x="46" y="34">
+        Layer, and who owns the count
+      </text>
+      <text className="cr-hdc" x="342" y="34">
+        p5.48xlarge
+      </text>
+      <text className="cr-hd" x="420" y="34">
+        How you read it on any instance, and what to do with it
+      </text>
+
+      {layers.map((layer, index) => {
+        const y = 48 + index * 102;
         return (
-          <g key={lane.label}>
-            <rect className="cr-lbl" x="30" y={y} width="180" height="72" rx="6" />
-            <text className="cr-lt" x="196" y={y + 32}>
-              {lane.label}
+          <g key={layer.label}>
+            <rect className="cr-lbl" x="30" y={y} width="250" height="76" rx="6" />
+            <text className="cr-lt" x="46" y={y + 26}>
+              {layer.label}
             </text>
-            <text className="cr-ls" x="196" y={y + 50}>
-              {lane.sub}
+            {layer.owner.map((ownerLine, ownerIndex) => (
+              <text className="cr-ls" key={ownerLine} x="46" y={y + 46 + ownerIndex * 16}>
+                {ownerLine}
+              </text>
+            ))}
+
+            <rect className="cr-cnt" x="292" y={y} width="100" height="76" rx="6" />
+            <text className="cr-num" x="342" y={y + 38}>
+              {layer.count}
+            </text>
+            <text className="cr-unit" x="342" y={y + 58}>
+              {layer.unit}
             </text>
 
-            <rect className="cr-body" x="230" y={y} width="640" height="72" rx="6" />
-            <text className="cr-num" x="290" y={y + 36}>
-              {lane.count}
-            </text>
-            <text className="cr-unit" x="290" y={y + 54}>
-              {lane.unit}
-            </text>
-            {lane.lines.map((line, lineIndex) => (
-              <text className="cr-txt" key={line} x="352" y={y + 24 + lineIndex * 18}>
+            <rect className="cr-body" x="404" y={y} width="466" height="76" rx="6" />
+            {layer.lines.map((line, lineIndex) => (
+              <text className="cr-txt" key={line} x="420" y={y + 30 + lineIndex * 22}>
                 {line}
               </text>
             ))}
 
-            {index < lanes.length - 1 && <path className="cr-arr" d={`M550,${y + 72} L550,${y + 90}`} />}
+            {layer.relation && (
+              <>
+                <path className="cr-arr" d={`M155,${y + 76} L155,${y + 96}`} />
+                <text className="cr-rel" x="166" y={y + 92}>
+                  {layer.relation}
+                </text>
+              </>
+            )}
           </g>
         );
       })}
 
-      <text className="cr-cap" x="450" y="422">
+      <text className="cr-cap" x="450" y="472">
         Counts for p5.48xlarge. Rail behaviour is read from the aws-ofi-nccl plugin source, not from
         AWS documentation.
       </text>
     </svg>
   );
 }
-
-interface CountRow {
-  term: string;
-  owner: string;
-  p5: string;
-  how: string;
-}
-
-/** The four counts that get conflated, and who decides each one. */
-const countRows: CountRow[] = [
-  {
-    term: 'Network card',
-    owner: 'EC2 instance type',
-    p5: '32',
-    how: 'MaximumNetworkCards in DescribeInstanceTypes',
-  },
-  {
-    term: 'Network interface',
-    owner: 'You, at launch',
-    p5: '33 in the AWS example',
-    how: 'The --network-interfaces list you pass to run-instances',
-  },
-  {
-    term: 'EFA device',
-    owner: 'How many EFA or EFA-only interfaces you attached',
-    p5: '32',
-    how: 'fi_info entries, one per device per fabric',
-  },
-  {
-    term: 'Rail',
-    owner: 'The collectives plugin at runtime',
-    p5: 'a per-group index',
-    how: 'Not exposed by any AWS API. Plugin internal.',
-  },
-];
 
 interface HostRequirement {
   id: string;
@@ -351,13 +348,6 @@ interface HostRequirement {
 }
 
 const hostRequirements: HostRequirement[] = [
-  {
-    id: 'msix',
-    item: 'MSI-X interrupt vectors',
-    what:
-      'The driver asks for one vector plus one per online CPU, capped by what the device advertises. Vector 0 is the admin queue. Completion event queues start at vector 1, and the number of event queues is clamped to the vectors actually granted.',
-    fails: 'Fewer vectors means fewer completion event queues. The device still works, the interrupt-driven paths just get narrower.',
-  },
   {
     id: 'hugepages',
     item: 'Huge pages',
@@ -489,14 +479,23 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="32, 33, 32, and a rail index the software invents. Four numbers, four owners, worked on p5.48xlarge."
+            description="Four layers, four owners, one count each. Hold the layering and you can work out the counts on an instance type this page never mentions."
           >
             Network cards, EFA interfaces and rails
           </Header>
         }
       >
         <SpaceBetween size="m">
-          <CardsInterfacesRailsDiagram />
+          <Box variant="p">
+            The 32, 33, 32 result on p5.48xlarge is worth less than the reason for it. Each count
+            belongs to a different layer, and each layer has a different owner deciding it. Work
+            down the layers in order and every instance type falls out the same way: ask EC2 for the
+            card count, ask your own launch request for the interface count, ask libfabric for the
+            device count, and accept that the rail index belongs to software that no AWS API
+            reports.
+          </Box>
+
+          <CountingLayersDiagram />
 
           <Box variant="p">
             Start with what AWS states. The p5.48xlarge and p5e.48xlarge instances support 32
@@ -521,18 +520,6 @@ export function EfaDevice() {
             the device count, which is 32 here. A claim written from the interface count asks for
             33 of something the instance has 32 of.
           </Box>
-
-          <Table
-            variant="embedded"
-            header={<Header variant="h3">The four counts, and who decides each one</Header>}
-            columnDefinitions={[
-              { id: 'term', header: 'Term', cell: (item) => <strong>{item.term}</strong> },
-              { id: 'owner', header: 'Decided by', cell: (item) => item.owner },
-              { id: 'p5', header: 'p5.48xlarge', cell: (item) => item.p5 },
-              { id: 'how', header: 'How you read it', cell: (item) => item.how },
-            ]}
-            items={countRows}
-          />
 
           <ExpandableSection
             headerText="What a rail actually is, read from the plugin source"
@@ -589,24 +576,19 @@ export function EfaDevice() {
               </Box>
               <Box variant="p">
                 Multiply that ratio by the 8 GPUs on the instance and you get eight groups of one
-                GPU plus four EFA devices, totalling 32. That multiplication is ours. It is
-                consistent with the documented 32-device count and it is very likely correct, but no
-                AWS source enumerates the groups, so treat the grouping as inferred{' '}
-                <SourceRef
-                  provenance="code-derived"
-                  doc={docs.eksDevice}
-                  code={code.railContract}
-                  label="inference"
-                />
-                . If your placement decision depends on the exact grouping, read it off the running
-                instance from the PCIe topology rather than from this page.
+                GPU plus four EFA devices, totalling 32. That multiplication is ours, and it carries
+                no citation because there is nothing to cite: the two inputs are the documented 4:1
+                ratio above and the documented 32-device count, and no AWS source enumerates the
+                groups. It is consistent with both and very likely correct, but treat the grouping
+                as inferred. If your placement decision depends on the exact grouping, read it off
+                the running instance from the PCIe topology rather than from this page.
               </Box>
             </SpaceBetween>
           </Alert>
 
           <ExpandableSection
-            headerText="P6-B300: 17 network cards, 16 of them EFA-capable"
-            headerDescription="The primary card carries ENA only, so 16 of the 17 cards carry the fabric"
+            headerText="Run the layers down a second instance type: P6-B300"
+            headerDescription="17 cards, 16 EFA devices. The layering gives the answer, and the bandwidth arithmetic checks it."
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -639,7 +621,7 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="Interrupt vectors, huge pages and registration limits are negotiated per instance. Read them off the instance you have."
+            description="Huge pages and registration limits are settled per instance, not by the instance type. Read both off the instance you have, because both fail late."
           >
             What the host owes the device
           </Header>
@@ -647,10 +629,9 @@ export function EfaDevice() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The device draws three things from the host it attaches to: interrupt vectors, huge
-            pages and memory registration budget. Each is settled at attach time from what the
-            device advertises and what the instance has, so the working numbers belong to the
-            instance in front of you.
+            The device draws two things from the host it attaches to: huge pages and a memory
+            registration budget. Both are settled at attach time from what the device advertises and
+            what the instance has, so the working numbers belong to the instance in front of you.
           </Box>
 
           <Table
@@ -663,31 +644,15 @@ export function EfaDevice() {
             items={hostRequirements}
           />
 
-          <Box variant="h3">MSI-X vectors</Box>
-          <Box variant="p">
-            The driver asks for the smaller of the device advertised vector count and the number of
-            online CPUs plus one, then allocates them as MSI-X (Message Signaled Interrupts
-            Extended){' '}
-            <SourceRef provenance="code-derived" code={code.msix} />. The split is fixed in a
-            header: the management vector index is 0 and the completion event queue vector base is 1{' '}
-            <SourceRef provenance="code-derived" code={code.vectorIdx} />. The number of event
-            queues the driver creates is then clamped to the vectors it actually received, minus the
-            one spent on admin{' '}
-            <SourceRef provenance="code-derived" code={code.eqClamp} />.
-          </Box>
-          <Box variant="p">
-            AWS documents none of this. It matters because it is the one place where host CPU count
-            feeds back into EFA resources.
-          </Box>
-
           <Box variant="h3">Huge pages</Box>
           <Box variant="p">
             AWS states that Amazon EC2 instances with the EFA driver installed pre-allocate 5128
             huge pages of 2 MiB each, which you can request as resources to consume in your job
             specifications{' '}
             <SourceRef provenance="documented" doc={docs.eksNode} />. That number is worth holding
-            on to, because AWS's own p5 manifests request 5120Mi of hugepages-2Mi, which is 2,560
-            pages, roughly half of what was pre-allocated. The two figures are easy to confuse.
+            on to, because AWS's own p5 manifests on the same page request 5120Mi of hugepages-2Mi{' '}
+            <SourceRef provenance="documented" doc={docs.eksNode} />, which is 2,560 pages, roughly
+            half of what was pre-allocated. The two figures are easy to confuse.
           </Box>
           <Alert type="info" header="Huge pages are also a libfabric setting, and the two interact">
             The EFA provider uses huge page memory for its own internal buffers by default, and
@@ -709,16 +674,10 @@ export function EfaDevice() {
           <Box variant="p">
             Registration itself picks the largest page size the device advertises that fits the
             region, and fails with a not-supported error when nothing in page_size_cap fits{' '}
-            <SourceRef provenance="code-derived" code={code.registerMr} />. Small registrations get
-            a fast path: if the page list fits in the four-entry inline array carried in the admin
-            command, the driver sends it inline instead of building an indirect page list{' '}
-            <SourceRef provenance="code-derived" code={code.inlinePbl} />.
-          </Box>
-          <Box variant="p">
-            Reading those two together suggests why larger pages help registration cost, since a
-            larger page size means fewer entries in the page list for the same buffer. AWS does not
-            state that as the reason huge pages are pre-allocated, so treat the causal link as our
-            reading of the code.
+            <SourceRef provenance="code-derived" code={code.registerMr} />. That is what ties this
+            resource back to huge pages: a larger page size means fewer entries in the page list for
+            the same buffer, so registration costs less. AWS does not state that as the reason huge
+            pages are pre-allocated, so treat the causal link as our reading of the code.
           </Box>
           <Box variant="p">
             Driver r3.3.0 moved this ceiling: its release notes list adding driver support for
@@ -770,19 +729,12 @@ export function EfaDevice() {
           </ColumnLayout>
 
           <Alert type="warning" header="The current EFA driver version has two different right answers">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                Installer 1.49.0 ships driver 3.1.0. The repository is at r3.3.0. Those are two
-                different answers to the same question, and the gap is not cosmetic: the 0xefa4
-                device id landed in r3.3.0, so a host installed from 1.49.0 does not carry it.
-              </Box>
-              <Box variant="p">
-                The same rule applies to the userspace half. Installer 1.49.0 ships libfabric
-                2.4.0amzn5.0, which is an AWS fork with backports, while upstream ofiwg has released
-                v2.6.0. The version strings are not comparable across the two channels. Name the
-                channel before you quote a version.
-              </Box>
-            </SpaceBetween>
+            Installer 1.49.0 ships driver 3.1.0. The repository is at r3.3.0. Those are two
+            different answers to the same question, and the gap is not cosmetic: the 0xefa4 device
+            id landed in r3.3.0, so a host installed from 1.49.0 does not carry it. Name the channel
+            before you quote a version. The userspace half skews the same way and by a wider margin,
+            2.4.0amzn5.0 from the installer against upstream v2.6.0, which the libfabric section of
+            this dive works through in full.
           </Alert>
 
           <Box variant="p">
@@ -834,51 +786,32 @@ export function EfaDevice() {
             </SpaceBetween>
           </Alert>
 
+          <Box variant="h3">Where the generation actually changes behaviour</Box>
           <Box variant="p">
-            Device ids are still a real runtime discriminator, and two independent code paths
-            branch on them. libfabric turns off its direct data path on
-            0xefa0 parts, using a helper whose entire body compares the vendor part id against
-            0xefa0{' '}
-            <SourceRef provenance="code-derived" code={code.subCq} />. The NCCL plugin computes
-            device identifiers differently for 0xefa0, 0xefa1 and 0xefa2 than for newer parts,
-            falling back to a node id and device index instead of the per-card PCI domain and bus{' '}
-            <SourceRef provenance="code-derived" code={code.guidByDeviceId} />.
+            Device ids are a real runtime discriminator, and two independent code paths branch on
+            them. First: libfabric's Data Path Direct feature, which moves work queue entry
+            construction and completion parsing into libfabric itself, is disabled on 0xefa0 devices
+            because those parts use a sub completion queue implementation{' '}
+            <SourceRef provenance="code-derived" code={code.subCq} />. The oldest EFA hardware does
+            not get the newest fast path, regardless of which libfabric you install.
           </Box>
           <Box variant="p">
-            Both of those group the first three ids together and treat later ones as one newer
-            class. Neither draws a four-way generation boundary. If you need to know which EFA
-            generation an instance is, read the User Guide table heading for its instance type. If
-            you need to know how the software will behave on it, read the device id.
+            Second: the NCCL plugin's device identifier is what lets it recognise that two EFA
+            devices sit on the same physical card. On 0xefa0, 0xefa1 and 0xefa2 it cannot use the
+            per-card PCI domain and bus fields and falls back to a plain node and device index{' '}
+            <SourceRef provenance="code-derived" code={code.guidByDeviceId} />. That is the same
+            information rail sorting depends on, which is consistent with rail sorting being a
+            P5-era concern.
           </Box>
-
-          <ExpandableSection
-            headerText="Where the generation actually changes behaviour"
-            headerDescription="Two concrete branches, both code-derived"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                First: libfabric's Data Path Direct feature, which moves work queue entry
-                construction and completion parsing into libfabric itself, is disabled on 0xefa0
-                devices because those parts use a sub completion queue implementation{' '}
-                <SourceRef provenance="code-derived" code={code.subCq} />. The oldest EFA hardware
-                therefore does not get the newest fast path, regardless of which libfabric you
-                install.
-              </Box>
-              <Box variant="p">
-                Second: the NCCL plugin's device identifier is what lets it recognise that two EFA
-                devices sit on the same physical card. On 0xefa0, 0xefa1 and 0xefa2 it cannot use
-                the per-card PCI domain and bus fields and falls back to a plain node and device
-                index{' '}
-                <SourceRef provenance="code-derived" code={code.guidByDeviceId} />. That is the same
-                information rail sorting depends on, which is consistent with rail sorting being a
-                P5-era concern.
-              </Box>
-              <Box variant="p">
-                Neither of these is documented by AWS. Both explain a performance difference
-                between two instance families that otherwise look identical on paper.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
+          <Box variant="p">
+            AWS documents neither branch, and both explain a performance difference between two
+            instance families that otherwise look identical on paper. Both draw the same line: the
+            first three ids on one side, everything later on the other. That is a two-way split in
+            the software against a four-way split in the User Guide headings, which is why the two
+            questions take two different sources. If you need to know which EFA generation an
+            instance is, read the User Guide table heading for its instance type. If you need to
+            know how the software will behave on it, read the device id.
+          </Box>
         </SpaceBetween>
       </Container>
       <Container
