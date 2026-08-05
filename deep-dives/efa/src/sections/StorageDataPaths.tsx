@@ -188,7 +188,7 @@ function ThreeDataPathsDiagram() {
     },
     {
       path: 'FSx for Lustre',
-      sub: 'Scratch 2, TCP over ENA',
+      sub: 'without EFA, TCP over ENA',
       fabric: false,
       traverses: [
         'LNet runs over TCP on the ENA device. Same service, same',
@@ -225,7 +225,7 @@ function ThreeDataPathsDiagram() {
         A single GPU instance has four data paths available to it here, and only two of them touch
         the fabric. EFA with SRD reaches line rate by bypassing the kernel entirely. An EFA-enabled
         Persistent 2 FSx for Lustre file system reaches 700 Gbps per client, or 1,200 Gbps with
-        GPUDirect Storage. The same service in Scratch 2 is capped at 100 Gbps because it runs over
+        GPUDirect Storage. The same service without EFA is capped at 100 Gbps because it runs over
         ENA, and S3 through the Common Runtime is capped by what userspace TCP can pull through the
         CPU, which the runtime's own instance table records as about 400 Gbps on a p5.48xlarge.
       </title>
