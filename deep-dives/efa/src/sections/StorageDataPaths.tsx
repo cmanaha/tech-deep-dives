@@ -328,7 +328,7 @@ function CreateTimeDoorsDiagram() {
       fabric: false,
       lines: [
         'Cheapest per TiB, ephemeral, unreplicated.',
-        'EFA: no. GPUDirect Storage: no.',
+        'EFA: documented only on Persistent 2.',
         'S3 data repository association: yes,',
         'except on Scratch 1.',
       ],
@@ -591,7 +591,7 @@ const efaScope: ScopeRow[] = [
   {
     dimension: 'Deployment type',
     requirement:
-      'Persistent 2 only, with a metadata configuration specified. Scratch 1, Scratch 2, Persistent 1 and HDD are all outside the supported scope.',
+      'Persistent 2, with a metadata configuration specified. That is the only deployment type AWS names in connection with EFA. HDD is a storage class on Persistent 1 rather than a deployment type.',
   },
   {
     dimension: 'Storage class',
