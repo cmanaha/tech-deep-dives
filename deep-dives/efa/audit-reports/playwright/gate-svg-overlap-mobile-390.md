@@ -4,11 +4,11 @@ Status: **PASS** (0 finding(s))
 
 | field | value |
 | --- | --- |
-| generated | 2026-08-04T06:40:20.267Z |
+| generated | 2026-08-05T15:42:40.700Z |
 | viewport | 390 x 844 |
 | base URL | http://127.0.0.1:4173/ |
 | sections visited | 20 |
-| diagrams checked | 31 |
+| diagrams checked | 30 |
 
 ## Scope
 
@@ -51,9 +51,9 @@ These do not change the verdict above. They are a human judgement call.
 
 - smallest label renders at 3.4px (16 of 16 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
 
-**efa-d07-loss-title - When SRD loses a packet, the EFA device retransmits it on a different fabric path, and the application never s...**
+**efa-d31-reorder-title - The libfabric reliable datagram endpoint keeps one reorder window per peer, sixteen message slots by default. ...**
 
-- smallest label renders at 3.4px (9 of 9 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
+- smallest label renders at 3.4px (25 of 25 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
 
 ### device (2)
 
@@ -61,9 +61,9 @@ These do not change the verdict above. They are a human judgement call.
 
 - smallest label renders at 3.8px (22 of 22 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
 
-**efa-cards-rails-title - Network cards, network interfaces, EFA devices and rails are four different counts. A p5.48xlarge has 32 netwo...**
+**efa-counting-layers-title - Counting EFA is four layers with four owners, and each layer is counted by a different party. EC2 fixes the ne...**
 
-- smallest label renders at 3.4px (29 of 29 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
+- smallest label renders at 3.4px (35 of 35 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
 
 ### libfabric (2)
 
@@ -73,7 +73,7 @@ These do not change the verdict above. They are a human judgement call.
 
 **efa-protocol-ladder-title - The efa fabric picks a two-sided protocol by message size, and the ladder is different for host memory and for...**
 
-- smallest label renders at 3.4px (21 of 21 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
+- smallest label renders at 3.4px (20 of 20 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
 
 ### ena (3)
 
@@ -147,7 +147,7 @@ These do not change the verdict above. They are a human judgement call.
 
 - smallest label renders at 3.3px (31 of 31 labels below 8px). The diagram is 308px wide here against a 900-unit viewBox.
 
-### sagemaker (4)
+### sagemaker (3)
 
 **sm-contracts-title - Training jobs and HyperPod answer all four EFA ownership questions, with different owners at every stage. Mana...**
 
@@ -156,10 +156,6 @@ These do not change the verdict above. They are a human judgement call.
 **sm-gates-title - A SageMaker training job runs NCCL over EFA after passing four gates: an EFA-capable instance type, a containe...**
 
 - smallest label renders at 3.2px (32 of 32 labels below 8px). The diagram is 308px wide here against a 960-unit viewBox.
-
-**sm-smddp-title - SMDDP supports three instance types, ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, with its optimize...**
-
-- smallest label renders at 3.2px (21 of 21 labels below 8px). The diagram is 308px wide here against a 960-unit viewBox.
 
 **sm-dpd-title - HyperPod disaggregated prefill and decode moves the key-value cache from a prefiller pod to a decoder pod on a...**
 

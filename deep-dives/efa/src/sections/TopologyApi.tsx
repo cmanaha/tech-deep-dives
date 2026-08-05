@@ -4,7 +4,6 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import Alert from '@cloudscape-design/components/alert';
-import Table from '@cloudscape-design/components/table';
 import Badge from '@cloudscape-design/components/badge';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
@@ -519,62 +518,6 @@ function DatacenterFabricHierarchy() {
   );
 }
 
-interface RequestRow {
-  name: string;
-  inst: string;
-  cr: string;
-}
-
-interface RequestColumn {
-  id: string;
-  header: string;
-  cell: (row: RequestRow) => React.ReactNode;
-}
-
-const requestColumns: RequestColumn[] = [
-  { id: 'p', header: 'Parameter', cell: (row) => <strong>{row.name}</strong> },
-  { id: 'i', header: 'DescribeInstanceTopology', cell: (row) => row.inst },
-  { id: 'c', header: 'DescribeCapacityReservationTopology', cell: (row) => row.cr },
-];
-
-const requestRows: RequestRow[] = [
-  {
-    name: 'Resource IDs',
-    inst: 'InstanceId.N, maximum 100 explicitly specified IDs',
-    cr: 'CapacityReservationId.N, maximum 10 explicitly specified IDs',
-  },
-  {
-    name: 'GroupName.N',
-    inst: 'Maximum 100 placement group names',
-    cr: 'Not accepted',
-  },
-  {
-    name: 'Filter.N',
-    inst: 'availability-zone, instance-type, zone-id',
-    cr: 'availability-zone, instance-type only',
-  },
-  {
-    name: 'MaxResults',
-    inst: 'Default 20, valid range 1 to 100',
-    cr: 'Default 10, valid range 1 to 10',
-  },
-  {
-    name: 'NextToken',
-    inst: 'Standard EC2 pagination token',
-    cr: 'Standard EC2 pagination token',
-  },
-  {
-    name: 'DryRun',
-    inst: 'DryRunOperation if permitted, UnauthorizedOperation if not',
-    cr: 'DryRunOperation if permitted, UnauthorizedOperation if not',
-  },
-  {
-    name: 'Required state',
-    inst: 'Instances must be running',
-    cr: 'Reservations must be pending or active',
-  },
-];
-
 export function TopologyApi() {
   return (
     <SpaceBetween size="l">
@@ -616,9 +559,8 @@ export function TopologyApi() {
             Communications Library), which never calls either API.
           </Box>
           <Alert type="info" header="Command line and SDK only, at no extra cost">
-            AWS states that the Management Console does not support viewing topology, that each
-            topology view is unique per AWS account, and that there is no additional cost for
-            describing your EC2 topology{' '}
+            AWS states that the Management Console does not support viewing topology and that there
+            is no additional cost for describing your EC2 topology{' '}
             <SourceRef provenance="documented" doc={docs.topoOverview} />.
           </Alert>
         </SpaceBetween>
@@ -850,7 +792,7 @@ ranked = [host
         header={
           <Header
             variant="h2"
-            description="Every field in the response is marked optional, so defensive parsing is the contract"
+            description="Three commands, and the one that shows a fleet quietly mixing 3-layer and 4-layer types"
           >
             DescribeInstanceTopology in practice
           </Header>
@@ -921,38 +863,10 @@ aws ec2 describe-instance-topology \
           </Alert>
 
           <ExpandableSection
-            headerText="Request parameters, both APIs side by side"
-            headerDescription="ID caps, filters, MaxResults ranges and the state each API requires"
-          >
-            <SpaceBetween size="s">
-              <Table
-                variant="embedded"
-                columnDefinitions={requestColumns}
-                items={requestRows}
-                empty={<Box variant="p">No rows.</Box>}
-              />
-              <Box variant="small" color="text-body-secondary">
-                Instance API limits and defaults{' '}
-                <SourceRef provenance="documented" doc={docs.instApi} />. Capacity Reservation API
-                limits and defaults <SourceRef provenance="documented" doc={docs.crApi} />. State
-                requirements and IAM (Identity and Access Management) actions{' '}
-                <SourceRef provenance="documented" doc={docs.topoPrereq} />.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
-
-          <ExpandableSection
             headerText="How to parse the response defensively"
             headerDescription="Four response shapes to handle before the parser meets a real fleet"
           >
             <SpaceBetween size="s">
-              <Box variant="p">
-                The response elements are instanceSet, nextToken and requestId, and each
-                InstanceTopology entry carries availabilityZone, zoneId, instanceId, instanceType,
-                groupName, capacityBlockId and NetworkNodeSet.N{' '}
-                <SourceRef provenance="documented" doc={docs.instType} />. Every one is marked
-                optional, which is where the four shapes below come from.
-              </Box>
               <Box variant="p">
                 <strong>An absent Capacity Block is the literal string null.</strong> Every
                 published AWS example response, on both the how-it-works page and the examples
@@ -990,13 +904,13 @@ aws ec2 describe-instance-topology \
           </ExpandableSection>
 
           <ExpandableSection
-            headerText="IAM and throttling"
+            headerText="Permissions and throttling"
             headerDescription="Two actions, a wildcard resource, and rates you read from Service Quotas"
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                The required actions are ec2:DescribeInstanceTopology and
-                ec2:DescribeCapacityReservationTopology{' '}
+                The required IAM (Identity and Access Management) actions are
+                ec2:DescribeInstanceTopology and ec2:DescribeCapacityReservationTopology{' '}
                 <SourceRef provenance="documented" doc={docs.topoPrereq} />. Like all EC2 describe
                 actions they do not support resource-level permissions, so the resource is a
                 wildcard. Anything that resolves hostnames to instance IDs also needs
@@ -1059,10 +973,11 @@ aws ec2 describe-instance-topology \
           </Box>
 
           <Box variant="p">
-            The pre-launch view is partial by design. AWS states the response contains 1, 2, or 3
-            network nodes depending on the type of Capacity Reservation, and the published example
-            carries an inline comment saying that visibility of additional nodes requires an
-            instance launch and the DescribeInstanceTopology API{' '}
+            The pre-launch view is partial by design, and the reservation has to be pending or
+            active to appear at all <SourceRef provenance="documented" doc={docs.topoPrereq} />. AWS
+            states the response contains 1, 2, or 3 network nodes depending on the type of Capacity
+            Reservation, and the published example carries an inline comment saying that visibility
+            of additional nodes requires an instance launch and the DescribeInstanceTopology API{' '}
             <SourceRef provenance="documented" doc={docs.topoHow} />. One exception is documented:
             for Capacity Blocks for UltraServers, the node set is the same for an active Capacity
             Reservation and for its running instance{' '}
@@ -1287,7 +1202,7 @@ sbatch --switch=1 train.sbatch`}</pre>
         header={
           <Header
             variant="h2"
-            description="Node labels, Kueue annotations, and how far each controller reaches"
+            description="One kubectl command tells you whether the labels are there, and Karpenter needs the scheduler turned off"
           >
             Kubernetes: topology labels and topology-aware scheduling
           </Header>
@@ -1350,9 +1265,9 @@ metadata:
                 The source tree agrees. A search of the full aws/karpenter-provider-aws v1.14.0
                 release for network-node-layer returns zero occurrences, and so does a search for
                 DescribeInstanceTopology{' '}
-                <SourceRef provenance="code-derived" code={code.karpenter} />. Karpenter never
-                calls the topology API and never emits these labels. The EKS well-known label
-                tables for Auto Mode and self-managed Karpenter list instance family, category,
+                <SourceRef provenance="code-derived" code={code.karpenter} />. In that release
+                Karpenter neither calls the topology API nor emits these labels. The EKS well-known
+                label tables for Auto Mode and self-managed Karpenter list instance family, category,
                 generation, GPU attributes, capacity type and zone, with no network node layer
                 entry <SourceRef provenance="documented" doc={docs.eksMlPools} />.
               </Box>

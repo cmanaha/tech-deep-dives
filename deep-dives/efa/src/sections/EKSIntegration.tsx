@@ -566,7 +566,7 @@ const contractRows: ContractRow[] = [
     item: 'hugepages-2Mi',
     status: 'Usually required',
     detail:
-      'Required where the instance pre-allocates huge pages. AWS states that EC2 instances with the EFA driver installed pre-allocate 5128 2MiB huge pages. The GB200 reference manifest requests none at all, which is why the status reads usually.',
+      'Required where the instance pre-allocates huge pages. The GB200 reference manifest requests none at all, which is why the status reads usually.',
   },
   {
     item: 'libfabric, aws-ofi-nccl and NCCL in the image',
@@ -649,8 +649,7 @@ export function EKSIntegration() {
             missing a library rather than a tuning flag.
           </Box>
           <Box variant="p">
-            Two mechanisms expose EFA devices to Kubernetes. AWS states it plainly: Amazon EKS supports two
-            mechanisms for managing EFA devices in EKS clusters, the EFA Dynamic Resource Allocation (DRA) driver,
+            Two mechanisms expose those devices to Kubernetes: the EFA Dynamic Resource Allocation (DRA) driver,
             also called DRANET, and the EFA device plugin{' '}
             <SourceRef provenance="documented" doc={docs.eksDevice} />. Your Kubernetes version and your node
             provisioning method decide which one is available to you.
@@ -698,17 +697,13 @@ resources:
           <LayerCakeDiagram />
 
           <Box variant="p">
-            Read the diagram bottom to top. EC2 attaches network interfaces at launch. The node image makes those
-            interfaces into working device nodes by supplying the EFA kernel driver and the rdma-core userspace. A
-            DaemonSet counts the device nodes and advertises them. A pod asks for some. And then, only inside the
-            container, libfabric opens them and aws-ofi-nccl maps NCCL channels onto them.
-          </Box>
-          <Box variant="p">
-            The split has a diagnostic consequence on day one. <code>ibv_devinfo</code> is the tool that works over
-            SSH on an EKS node, because the full rdma-core suite, including libibverbs-utils, infiniband-diags and
-            python3-pyverbs, lands on the node{' '}
-            <SourceRef provenance="code-derived" doc={docs.installer} />. <code>fi_info -p efa</code> belongs to
-            libfabric, which lives in your image, so run that one inside the workload container.
+            Read the diagram bottom to top: EC2 attaches the interfaces at launch, the node image turns them into
+            working device nodes, a DaemonSet counts and advertises them, a pod asks for some, and only inside the
+            container does libfabric open them and aws-ofi-nccl map NCCL channels onto them. The split decides which
+            side of an SSH session a tool works on: <code>ibv_devinfo</code> runs on the node, where the rdma-core
+            suite lands <SourceRef provenance="code-derived" doc={docs.installer} />, and{' '}
+            <code>fi_info -p efa</code> belongs to libfabric, which lives in your image, so it only works inside the
+            workload container.
           </Box>
           <Alert type="info" header="The two device layers are cluster add-ons, on every AMI">
             AWS states that the EFA DRA driver and the EFA device plugin must be installed separately on your
@@ -736,9 +731,8 @@ resources:
             The AL2023 EKS AMI build runs the standard AWS EFA installer with one flag. The literal line is{' '}
             <code>sudo ./efa_installer.sh --minimal -y</code>, at line 53 of the Packer provisioner{' '}
             <SourceRef provenance="code-derived" code={code.installEfa} />. The script is gated only on the
-            ENABLE_EFA variable{' '}
-            <SourceRef provenance="code-derived" code={code.installEfaGuard} />, and the default template sets
-            enable_efa to true with no per-Kubernetes-version override{' '}
+            ENABLE_EFA variable <SourceRef provenance="code-derived" code={code.installEfaGuard} />, and the default
+            template sets enable_efa to true with no per-Kubernetes-version override{' '}
             <SourceRef provenance="code-derived" code={code.amiVars} />. Release v20260728 confirms the artifact:
             the efa package row reads 3.1.0-1.amzn2023 across all five AL2023 variants, standard ones included{' '}
             <SourceRef provenance="documented" doc={docs.amiRelease} />.
@@ -809,8 +803,8 @@ resources:
                 <SourceRef provenance="code-derived" code={code.brKmod} />. Second, the host debugging tools differ.
                 Bottlerocket builds its own rdma-core and strips every provider except libefa{' '}
                 <SourceRef provenance="code-derived" code={code.brRdma} />, where AL2023 gets the stock suite with
-                pyverbs, diags and headers. The end states are similar. The build paths are independent, and so are
-                the versions.
+                pyverbs, diags and headers. Both differences sit on the node side of the split. The end states are
+                similar, the build paths are independent, and so are the versions.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -835,16 +829,187 @@ make k8s=1.36 os_distro=al2023 \\
   enable_efa=true`}
               </Box>
               <Box variant="p">
-                Two AWS rules go with that <SourceRef provenance="documented" doc={docs.eksAmiBuild} />. When
-                building custom AMIs on top of the EKS-optimized ones, AWS states that running an operating system
-                upgrade or upgrading any of the Kubernetes or GPU packages is neither recommended nor supported,
-                because it risks breaking component compatibility. And for GPU instances, AWS recommends building
-                separate custom AMIs per instance type generation and family, because the accelerated AMIs install
-                drivers and packages selectively at runtime based on the underlying instance type{' '}
+                Two AWS rules go with that. On top of an EKS-optimized AMI, running an operating system upgrade or
+                upgrading any of the Kubernetes or GPU packages is neither recommended nor supported, because it
+                risks breaking component compatibility{' '}
+                <SourceRef provenance="documented" doc={docs.eksAmiBuild} />. And for GPU instances, AWS recommends
+                building separate custom AMIs per instance type generation and family, because the accelerated AMIs
+                install drivers and packages selectively at runtime based on the underlying instance type{' '}
                 <SourceRef provenance="documented" doc={docs.eksAmi} />.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Four mechanisms, four sets of limitations, one node-level result."
+          >
+            Getting EFA interfaces onto the nodes
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <NodeLanesDiagram />
+
+          <Alert type="warning" header="Two networking rules bind here, and the placement group is neither of them">
+            <SpaceBetween size="xs">
+              <Box variant="p">
+                The Availability Zone is the first rule, because EFA traffic cannot cross one. The security group
+                is the second: it must allow all inbound and outbound traffic to and from itself to enable EFA
+                OS-bypass <SourceRef provenance="documented" doc={docs.eksDevice} />, and when it is missing, EFA
+                traffic fails without a useful error.
+              </Box>
+              <Box variant="p">
+                A cluster placement group is how AWS recommends satisfying the zone rule, and it writes the status
+                verbatim: it is not an absolute requirement to launch your EFA-enabled instances into a cluster
+                placement group. However, AWS does recommend running EFA-enabled instances in a cluster placement
+                group, as it launches the instances into a low-latency group in a single Availability Zone{' '}
+                <SourceRef provenance="documented" doc={docs.efaStart} />. A checklist that lists it as a flat setup
+                requirement is stating a recommendation as a rule.
+              </Box>
+            </SpaceBetween>
+          </Alert>
+
+          <ExpandableSection
+            headerText="eksctl and managed node groups"
+            headerDescription="The efa-only gap and the SubnetId trap"
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                eksctl remains the shortest path, and a launch template is where you go for efa-only interfaces.
+                AWS states both: you cannot use eksctl to create nodes and node groups that use EFA-only
+                interfaces, and if you need to customize the per-device EFA configuration when using eksctl, it is
+                recommended to use the eksctl support for launch templates{' '}
+                <SourceRef provenance="documented" doc={docs.eksDevice} />. eksctl also accepts an explicit
+                placement group name alongside efaEnabled{' '}
+                <SourceRef provenance="code-derived" code={code.eksctlDocs} />.
+              </Box>
+              <Box variant="p">
+                For managed node groups with a hand-written launch template, one line will cost you an afternoon.
+                AWS states it as an Important callout: do not specify SubnetId in the launch template when using EKS
+                managed node groups, because EKS requires all subnets to be specified through the CreateNodegroup
+                API and rejects launch templates that include subnet configuration{' '}
+                <SourceRef provenance="documented" doc={docs.eksDevice} />. Note also that you cannot make network
+                card 0 an efa-only interface, since it is the primary interface{' '}
+                <SourceRef provenance="documented" doc={docs.eksNode} />.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+
+          <ExpandableSection
+            headerText="Karpenter: dynamic and static, and what changes when you go static"
+            headerDescription="EC2NodeClass.spec.networkInterfaces, added in v1.11"
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                Two modes. Without networkInterfaces in the NodeClass, instances created for pods requesting
+                vpc.amazonaws.com/efa have all interfaces configured with interface type EFA. With networkInterfaces
+                configured, instances launched by the referencing NodePool use that configuration whether or not
+                pods request EFA at all{' '}
+                <SourceRef provenance="documented" doc={docs.eksDevice} />.
+              </Box>
+              <Box variant="p">
+                The Karpenter design document records what static mode gives up{' '}
+                <SourceRef provenance="code-derived" code={code.karpenterDesign} />. The EFA resource is not
+                injected into the NodeClaim as a resource requirement, so nodes initialize even if the plugin has
+                not registered the extended resource yet, where dynamic provisioning waits. The max pods
+                calculation changes, because the ENI (Elastic Network Interface) count is computed only for network
+                card 0 and an efa-only interface there reduces it by one. efa-only interfaces cannot carry an IP
+                prefix count, so Karpenter does not set prefix counts on them. And changing networkInterfaces drifts
+                every existing node. The design also confirms only ENA and efa-only types are supported.
+                EC2NodeClass separately offers placementGroupSelector{' '}
+                <SourceRef provenance="documented" doc={docs.karpenterNodeClass} />.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+
+          <ExpandableSection
+            headerText="EKS Auto Mode: static interfaces and placement group edge cases"
+            headerDescription="advancedNetworking.networkInterfaces, and the four placement group behaviours to plan around"
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                In Auto Mode you configure EFA interfaces through advancedNetworking.networkInterfaces on the
+                NodeClass <SourceRef provenance="documented" doc={docs.eksDevice} />. The constraints are strict:
+                the primary interface must be interface type interface; secondary IP and prefix counts are only
+                supported on network card 0 and never on efa-only interfaces; when networkInterfaces is configured
+                Auto Mode attaches no additional IPs, prefixes or ENIs after launch, so pod density has to be
+                planned at launch; IPv6 is unsupported with static interfaces; and public IP association is
+                incompatible with more than one interface.
+              </Box>
+              <Box variant="p">
+                The placement group behaviour is the part that is hard to find and easy to hit{' '}
+                <SourceRef provenance="documented" doc={docs.eksNodeClass} />. Once the first instance launches into
+                a cluster placement group, the group pins to that Availability Zone, so parallel launches during
+                initial scale-up can race, one winning and the rest failing on capacity. Pin the zone in the
+                NodePool requirements. A spread placement group caps at 7 instances per zone, and there is no
+                fallback outside the group, so a replacement launch fails and the drifted node stays running.
+                Consolidation can move pods out of a placement group unless they carry a nodeSelector on
+                eks.amazonaws.com/placement-group-id. And if a referenced placement group is deleted, running nodes
+                are marked drifted and remain indefinitely.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Thirty-two interfaces on one instance, one shared bandwidth budget, and a subnet you can exhaust."
+          >
+            Multi-NIC reality on p5
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            AWS states the headline numbers: p5.48xlarge and p5e.48xlarge support 32 network cards with a total
+            network bandwidth capacity of 3,200 Gbps, of which up to 800 Gbps can be used for IP network traffic,
+            and because EFA and IP traffic share the same underlying resources, bandwidth used by one reduces what
+            is available to the other <SourceRef provenance="documented" doc={docs.efaAcc} />. The two figures are
+            not additive. Use 400 Gbps for IP and you have up to 2,800 Gbps of EFA left.
+          </Box>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">
+                Layout one: conserve addresses <Badge color="blue">default choice on EKS</Badge>
+              </Box>
+              <Box variant="p">
+                One ENA interface on network card 0 device index 0, one efa-only on network card 0 device index 1,
+                and one efa-only on each of cards 1 through 31. AWS quotes the result as up to 3,200 Gbps of EFA
+                bandwidth and up to 100 Gbps of IP bandwidth with one private IP address{' '}
+                <SourceRef provenance="documented" doc={docs.efaAcc} />. That is 32 EFA devices from 32 cards, with
+                somewhere left to put the IP stack.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Layout two: keep the IP bandwidth</Box>
+              <Box variant="p">
+                Spread eight ENA interfaces across the card range and you reach up to 3,200 Gbps of EFA bandwidth
+                and up to 800 Gbps of IP bandwidth with 8 private IP addresses, at the cost of being unable to
+                auto-assign public IP addresses{' '}
+                <SourceRef provenance="documented" doc={docs.efaAcc} />. On EKS this is usually the wrong trade,
+                because those addresses come out of the same subnet your pods use.
+              </Box>
+            </div>
+          </ColumnLayout>
+          <Alert type="warning" header="Budget the subnet addresses before you launch">
+            AWS spells out the mechanism: on instances such as p5.48xlarge and p6-b200.48xlarge the Amazon VPC
+            (Virtual Private Cloud) CNI (Container Network Interface) allocates IP addresses across all IP-enabled
+            attached ENIs by default, which can consume a large number of subnet addresses even when pods are not
+            using them, and on instances with dozens of interfaces this can quickly exhaust the subnet. The two
+            fixes AWS gives are using efa-only for every interface except the primary, and tuning WARM_IP_TARGET and
+            WARM_ENI_TARGET on the aws-node DaemonSet. The caveat on the second one matters: those settings are
+            cluster-wide and apply to every node the VPC CNI manages, with no way to set them per node group or
+            instance type{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />.
+          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -872,10 +1037,8 @@ make k8s=1.36 os_distro=al2023 \\
           <Box variant="p">
             AWS recommends the DRA driver for new deployments on clusters running Kubernetes 1.34 or later with EKS
             managed node groups or self-managed node groups, and in the same paragraph sends Karpenter and EKS Auto
-            Mode clusters to the EFA device plugin, since the EFA DRA driver is not supported with either{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />. There is also a hard rule against running
-            both: do not install the EFA DRA driver on nodes where the EFA device plugin is running, because the two
-            mechanisms cannot coexist on the same node{' '}
+            Mode clusters to the EFA device plugin, since the EFA DRA driver is not supported with either. The two
+            cannot coexist: do not install the EFA DRA driver on nodes where the EFA device plugin is running{' '}
             <SourceRef provenance="documented" doc={docs.eksDevice} />.
           </Box>
 
@@ -917,8 +1080,8 @@ make k8s=1.36 os_distro=al2023 \\
         <SpaceBetween size="m">
           <Box variant="p">
             That extended resource goes in both container resource requests and limits{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />. As of the pinned chart commit the plugin is
-            at version v0.5.30 with app version v0.5.20{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />, and as of the pinned chart commit the
+            plugin is at version v0.5.30 with app version v0.5.20{' '}
             <SourceRef provenance="code-derived" code={code.efaChart} />.
           </Box>
           <Box variant="code">
@@ -942,9 +1105,8 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
                 <SourceRef provenance="documented" doc={docs.eksNode} />.
               </Box>
               <Box variant="p">
-                So the number is per instance type and per launch configuration. A p5.48xlarge configured for
-                maximum fabric bandwidth yields 32. A p6-b200.48xlarge has 8 network cards and yields 8. A
-                p6-b300.48xlarge has 17 cards but the primary one is ENA-only, so 16{' '}
+                A p5.48xlarge configured for maximum fabric bandwidth yields 32. A p6-b200.48xlarge has 8 network
+                cards and yields 8. A p6-b300.48xlarge has 17 cards but the primary one is ENA-only, so 16{' '}
                 <SourceRef provenance="documented" doc={docs.efaAcc} />. The AWS GB200 reference manifest requests
                 only 4 <SourceRef provenance="code-derived" code={code.ncclGb200} />. Any manifest that hardcodes 32
                 is a p5 manifest, whatever its filename says.
@@ -960,8 +1122,8 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
                 care about, so check pod count per node rather than DaemonSet status.
               </Box>
               <Box variant="p">
-                Second, the same affinity block excludes EKS Auto Mode nodes with compute-type NotIn auto, and the
-                pod spec itself sets hostNetwork: true{' '}
+                Second, the same affinity block excludes EKS Auto Mode nodes, and the pod spec itself sets
+                hostNetwork: true{' '}
                 <SourceRef provenance="code-derived" code={code.efaDs} />, which is the line people copy into their
                 workloads by mistake.
               </Box>
@@ -969,10 +1131,10 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
           </ColumnLayout>
 
           <Alert type="info" header="Version floors that bite">
-            EFA device plugin v0.5.6 or later is needed for P6-B200 instances. Amazon VPC (Virtual Private Cloud)
-            CNI (Container Network Interface) 1.7.10 or later is needed before launching nodes with multiple EFAs
-            such as p4d or p5, and 1.18.5 or later for efa-only interfaces. eksctl 0.215.0 or later is needed for
-            efaEnabled node groups. Bottlerocket 1.28.0 or later includes official EFA support{' '}
+            EFA device plugin v0.5.6 or later is needed for P6-B200 instances. Amazon VPC CNI 1.7.10 or later is
+            needed before launching nodes with multiple EFAs such as p4d or p5, and 1.18.5 or later for efa-only
+            interfaces. eksctl 0.215.0 or later is needed for efaEnabled node groups. Bottlerocket 1.28.0 or later
+            includes official EFA support{' '}
             <SourceRef provenance="documented" doc={docs.eksNode} />.
           </Alert>
         </SpaceBetween>
@@ -992,11 +1154,9 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
           <Box variant="p">
             The objects the driver publishes are ResourceSlices, under the driver name dra.net and the DeviceClass
             name efa.networking.k8s.aws, from a DaemonSet that discovers devices automatically{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />. The chart confirms both names, along with a
-            Common Expression Language filter that keeps only devices whose dra.net/pciDevice attribute equals
-            Elastic Fabric Adapter (EFA){' '}
-            <SourceRef provenance="code-derived" code={code.dranetValues} />. It runs unprivileged, with a read-only
-            root filesystem and all capabilities dropped, which is a tighter posture than the device plugin{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. The chart confirms both names, and it runs
+            unprivileged, with a read-only root filesystem and all capabilities dropped, which is a tighter posture
+            than the device plugin{' '}
             <SourceRef provenance="code-derived" code={code.dranetValues} />.
           </Box>
 
@@ -1146,9 +1306,9 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
               <Box variant="p">
                 AWS does set it on workloads, in three places. The HyperPod checkpointless training example
                 hard-codes hostNetwork: True on a p5 pretraining job that requests 32 EFA devices{' '}
-                <SourceRef provenance="code-derived" code={code.ckptJob} />. The HyperPod recipes expose it as a
-                first-class user-settable knob on EFA training jobs{' '}
-                <SourceRef provenance="code-derived" code={code.recipes} />. And an aws-do-eks multi-node inference
+                <SourceRef provenance="code-derived" code={code.ckptJob} />, the HyperPod recipes expose it as a
+                user-settable knob on EFA training jobs{' '}
+                <SourceRef provenance="code-derived" code={code.recipes} />, and an aws-do-eks multi-node inference
                 template pairs it with dnsPolicy: ClusterFirstWithHostNet{' '}
                 <SourceRef provenance="code-derived" code={code.doEks} />.
               </Box>
@@ -1207,9 +1367,9 @@ spec:
             On huge pages, hold two numbers apart. AWS states that EC2 instances with the EFA driver installed
             pre-allocate 5128 2MiB huge pages, requestable as a resource in your job specifications{' '}
             <SourceRef provenance="documented" doc={docs.eksNode} />. The AWS manifests then request 5120Mi, which
-            is 2,560 pages, roughly half of what was pre-allocated. The two figures are different quantities and are
-            easy to confuse. Bottlerocket pre-allocates nothing, so you set vm.nr_hugepages by sysctl in node user
-            data instead <SourceRef provenance="documented" doc={docs.eksNode} />.
+            is 2,560 pages, roughly half of what was pre-allocated: different quantities, easily confused.
+            Bottlerocket pre-allocates nothing, so you set vm.nr_hugepages by sysctl in node user data instead{' '}
+            <SourceRef provenance="documented" doc={docs.eksNode} />.
           </Box>
           <Box variant="p">
             Training operators need nothing special. EFA works because the worker pod template carries the resource
@@ -1218,123 +1378,6 @@ spec:
             test walkthrough <SourceRef provenance="documented" doc={docs.eksNode} /> and LeaderWorkerSet for its
             multi-node inference samples.
           </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Four mechanisms, four sets of limitations, one node-level result."
-          >
-            Getting EFA interfaces onto the nodes
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <NodeLanesDiagram />
-
-          <Alert type="warning" header="Two networking rules bind here, and the placement group is neither of them">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                The Availability Zone is the first rule, because EFA traffic cannot cross one. The security group
-                is the second: it must allow all inbound and outbound traffic to and from itself to enable EFA
-                OS-bypass <SourceRef provenance="documented" doc={docs.eksDevice} />, and when it is missing, EFA
-                traffic fails without a useful error.
-              </Box>
-              <Box variant="p">
-                A cluster placement group is how AWS recommends satisfying the zone rule and shortening the physical
-                distance, and it writes the status verbatim: it is not an absolute requirement to launch your
-                EFA-enabled instances into a cluster placement group. However, AWS does recommend running
-                EFA-enabled instances in a cluster placement group, as it launches the instances into a low-latency
-                group in a single Availability Zone{' '}
-                <SourceRef provenance="documented" doc={docs.efaStart} />. A checklist that lists it as a flat setup
-                requirement is stating a recommendation as a rule.
-              </Box>
-            </SpaceBetween>
-          </Alert>
-
-          <ExpandableSection
-            headerText="eksctl and managed node groups"
-            headerDescription="The efa-only gap and the SubnetId trap"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                eksctl remains the shortest path, and a launch template is where you go for efa-only interfaces.
-                AWS states both: you cannot use eksctl to create nodes and node groups that use EFA-only
-                interfaces, and if you need to customize the per-device EFA configuration when using eksctl, it is
-                recommended to use the eksctl support for launch templates{' '}
-                <SourceRef provenance="documented" doc={docs.eksDevice} />. eksctl also accepts an explicit
-                placement group name alongside efaEnabled{' '}
-                <SourceRef provenance="code-derived" code={code.eksctlDocs} />.
-              </Box>
-              <Box variant="p">
-                For managed node groups with a hand-written launch template, one line will cost you an afternoon.
-                AWS states it as an Important callout: do not specify SubnetId in the launch template when using EKS
-                managed node groups, because EKS requires all subnets to be specified through the CreateNodegroup
-                API and rejects launch templates that include subnet configuration{' '}
-                <SourceRef provenance="documented" doc={docs.eksDevice} />. Note also that you cannot make network
-                card 0 an efa-only interface, since it is the primary interface{' '}
-                <SourceRef provenance="documented" doc={docs.eksNode} />.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
-
-          <ExpandableSection
-            headerText="Karpenter: dynamic and static, and what changes when you go static"
-            headerDescription="EC2NodeClass.spec.networkInterfaces, added in v1.11"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                Two modes. Without networkInterfaces in the NodeClass, instances created for pods requesting
-                vpc.amazonaws.com/efa have all interfaces configured with interface type EFA. With networkInterfaces
-                configured, instances launched by the referencing NodePool use that configuration whether or not
-                pods request EFA at all{' '}
-                <SourceRef provenance="documented" doc={docs.eksDevice} />.
-              </Box>
-              <Box variant="p">
-                The Karpenter design document records what static mode gives up{' '}
-                <SourceRef provenance="code-derived" code={code.karpenterDesign} />. The EFA resource is not
-                injected into the NodeClaim as a resource requirement, so nodes initialize even if the plugin has
-                not registered the extended resource yet, where dynamic provisioning waits. The max pods
-                calculation changes, because the ENI count is computed only for network card 0 and an efa-only
-                interface there reduces it by one. efa-only interfaces cannot carry an IP prefix count, so Karpenter
-                does not set prefix counts on them. And changing networkInterfaces drifts every existing node. The
-                design also confirms only ENA and efa-only types are supported, with no use case identified for the
-                combined EFA interface type. EC2NodeClass separately offers placementGroupSelector{' '}
-                <SourceRef provenance="documented" doc={docs.karpenterNodeClass} />.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
-
-          <ExpandableSection
-            headerText="EKS Auto Mode: static interfaces and placement group edge cases"
-            headerDescription="advancedNetworking.networkInterfaces, and the four placement group behaviours to plan around"
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                In Auto Mode you configure EFA interfaces through advancedNetworking.networkInterfaces on the
-                NodeClass <SourceRef provenance="documented" doc={docs.eksDevice} />. The constraints are strict:
-                the primary interface must be interface type interface; secondary IP and prefix counts are only
-                supported on network card 0 and never on efa-only interfaces; when networkInterfaces is configured
-                Auto Mode attaches no additional IPs, prefixes or ENIs after launch, so pod density has to be
-                planned at launch; IPv6 is unsupported with static interfaces; and public IP association is
-                incompatible with more than one interface{' '}
-                <SourceRef provenance="documented" doc={docs.eksNodeClass} />.
-              </Box>
-              <Box variant="p">
-                The placement group behaviour is the part that is hard to find and easy to hit{' '}
-                <SourceRef provenance="documented" doc={docs.eksNodeClass} />. Once the first instance launches into
-                a cluster placement group, the group pins to that Availability Zone, so parallel launches during
-                initial scale-up can race, one winning and the rest failing on capacity. Pin the zone in the
-                NodePool requirements. A spread placement group caps at 7 instances per zone, and there is no
-                fallback outside the group, so a replacement launch fails and the drifted node stays running.
-                Consolidation can move pods out of a placement group unless they carry a nodeSelector on
-                eks.amazonaws.com/placement-group-id. And if a referenced placement group is deleted, running nodes
-                are marked drifted and remain indefinitely.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -1397,62 +1440,6 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
 
       <Container
         header={
-          <Header
-            variant="h2"
-            description="Thirty-two interfaces on one instance, one shared bandwidth budget, and a subnet you can exhaust."
-          >
-            Multi-NIC reality on p5
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            AWS states the headline numbers: p5.48xlarge and p5e.48xlarge support 32 network cards with a total
-            network bandwidth capacity of 3,200 Gbps, of which up to 800 Gbps can be used for IP network traffic,
-            and because EFA and IP traffic share the same underlying resources, bandwidth used by one reduces what
-            is available to the other{' '}
-            <SourceRef provenance="documented" doc={docs.efaAcc} />. The two figures are not additive. Use 400 Gbps
-            for IP and you have up to 2,800 Gbps of EFA left.
-          </Box>
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">
-                Layout one: conserve addresses <Badge color="blue">default choice on EKS</Badge>
-              </Box>
-              <Box variant="p">
-                One ENA interface on network card 0 device index 0, one efa-only on network card 0 device index 1,
-                and one efa-only on each of cards 1 through 31. AWS quotes the result as up to 3,200 Gbps of EFA
-                bandwidth and up to 100 Gbps of IP bandwidth with one private IP address{' '}
-                <SourceRef provenance="documented" doc={docs.efaAcc} />. That is 32 EFA devices from 32 cards, with
-                somewhere left to put the IP stack.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">Layout two: keep the IP bandwidth</Box>
-              <Box variant="p">
-                Spread eight ENA interfaces across the card range and you reach up to 3,200 Gbps of EFA bandwidth
-                and up to 800 Gbps of IP bandwidth with 8 private IP addresses, at the cost of being unable to
-                auto-assign public IP addresses{' '}
-                <SourceRef provenance="documented" doc={docs.efaAcc} />. On EKS this is usually the wrong trade,
-                because those addresses come out of the same subnet your pods use.
-              </Box>
-            </div>
-          </ColumnLayout>
-          <Alert type="warning" header="Budget the subnet addresses before you launch">
-            AWS spells out the mechanism: on instances such as p5.48xlarge and p6-b200.48xlarge the VPC CNI
-            allocates IP addresses across all IP-enabled attached ENIs (Elastic Network Interfaces) by default,
-            which can consume a large number of subnet addresses even when pods are not using them, and on instances
-            with dozens of interfaces this can quickly exhaust the subnet. The two fixes AWS gives are using
-            efa-only for every interface except the primary, and tuning WARM_IP_TARGET and WARM_ENI_TARGET on the
-            aws-node DaemonSet. The caveat on the second one matters: those settings are cluster-wide and apply to
-            every node the VPC CNI manages, with no way to set them per node group or instance type{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />.
-          </Alert>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
           <Header variant="h2" description="The two repositories to clone, the one to stop cloning, and an AWS API that reads as if it supports EFA on EKS.">
             Where to start from
           </Header>
@@ -1466,17 +1453,14 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
                 awslabs/ai-on-eks is the current blueprint home. Its Terraform declares the EFA instance type list
                 and generates per-instance-type network interface blocks through an
                 efa-networkinterfaces-generator module with a bandwidth-optimized against IP-optimized policy
-                switch{' '}
-                <SourceRef provenance="code-derived" code={code.aiOnEksTf} />. That policy split is the same one the
-                Karpenter design document considered and did not ship{' '}
-                <SourceRef provenance="code-derived" code={code.karpenterDesign} />. Start here rather than from a
-                blank launch template <SourceRef provenance="documented" doc={docs.aiOnEks} />.
+                switch, which is the bandwidth against IP layout choice made into a module{' '}
+                <SourceRef provenance="code-derived" code={code.aiOnEksTf} />. Start here rather than from a blank
+                launch template <SourceRef provenance="documented" doc={docs.aiOnEks} />.
               </Box>
               <Box variant="p">
                 awslabs/awsome-distributed-ai is actively maintained and holds the NCCL test manifests and the
-                reference Dockerfile{' '}
-                <SourceRef provenance="code-derived" code={code.ncclTests} />. It was transferred and renamed, so
-                older links resolve to it.
+                reference Dockerfile <SourceRef provenance="code-derived" code={code.ncclTests} />. It was
+                transferred and renamed, so older links resolve to it.
               </Box>
             </div>
             <div>
@@ -1498,10 +1482,10 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
                 The Batch API model states it affirmatively rather than by omission. The NodeProperties shape
                 documentation reads: an object that represents the node properties of a multi-node parallel job,
                 with the note that node properties cannot be specified for Amazon EKS based job definitions{' '}
-                <SourceRef provenance="code-derived" code={code.batchModel} />. Since a multi-node parallel job is
-                defined by the presence of nodeProperties, and nodeProperties is mutually exclusive with
-                eksProperties, the combination is not expressible in the API at all. The Batch documentation agrees:
-                multi-node parallel jobs use the Amazon ECS (Elastic Container Service) awsvpc network mode{' '}
+                <SourceRef provenance="code-derived" code={code.batchModel} />. A multi-node parallel job is defined
+                by the presence of nodeProperties, and nodeProperties is mutually exclusive with eksProperties, so
+                the combination is not expressible in the API. The Batch documentation agrees: multi-node parallel
+                jobs use the Amazon ECS (Elastic Container Service) awsvpc network mode{' '}
                 <SourceRef provenance="documented" doc={docs.batchMnpCe} />, and neither multi-node parallel page
                 mentions EFA, EKS or Kubernetes{' '}
                 <SourceRef provenance="documented" doc={docs.batchMnp} />.
@@ -1509,11 +1493,10 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
               <Box variant="p">
                 Here is the trap. The same API model does carry an eksProperties member on the NodeRangeProperty
                 shape, with documentation so generic it says nothing{' '}
-                <SourceRef provenance="code-derived" code={code.batchModel} />. Anyone reading the SDK model or the
-                generated SDK types, rather than the prose documentation, would reasonably conclude that multi-node
-                parallel on EKS is supported. The shape documentation is the contract. Batch on EKS is real, it
-                just runs single-node jobs through an overlay model{' '}
-                <SourceRef provenance="documented" doc={docs.batchEks} />.
+                <SourceRef provenance="code-derived" code={code.batchModel} />. Read the generated SDK types rather
+                than the prose and you would reasonably conclude multi-node parallel on EKS is supported. The shape
+                documentation is the contract. Batch on EKS is real, it just runs single-node jobs through an
+                overlay model <SourceRef provenance="documented" doc={docs.batchEks} />.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1530,10 +1513,9 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
         <SpaceBetween size="m">
           <Box variant="p">
             AWS recommends the Kubeflow MPI Operator for NCCL tests, since it makes allreduce-style distributed
-            training straightforward on Kubernetes{' '}
-            <SourceRef provenance="documented" doc={docs.eksNode} />. The reference manifest is one launcher pod
-            plus N worker pods, slotsPerWorker: 8, and mpirun -np 16 -N 8 across two p5.48xlarge nodes running
-            all_reduce_perf from 8 bytes to 16 GB{' '}
+            training straightforward on Kubernetes <SourceRef provenance="documented" doc={docs.eksNode} />. The
+            reference manifest is one launcher pod plus N worker pods, slotsPerWorker: 8, and mpirun -np 16 -N 8
+            across two p5.48xlarge nodes running all_reduce_perf from 8 bytes to 16 GB{' '}
             <SourceRef provenance="code-derived" code={code.ncclTests} />.
           </Box>
           <Box variant="code">
@@ -1553,11 +1535,28 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
             the aws-ofi-nccl plugin in the image, since the plugin is bundled with the installer, which is the same
             bundling the --minimal flag removes on the node. One Dockerfile closes the top half of the split.
           </Box>
-          <Box variant="p">
-            Then read NCCL_DEBUG=INFO output for the transport line before the bandwidth number. NCCL falls back to
-            sockets when the plugin fails to load, and the job still completes, just slowly. A run finishing at a
-            few GB/s on a p5 has fallen back, and the transport line says so in the first hundred lines.
-          </Box>
+          <Alert type="info" header="Triage in the order of the split, so the first failing check names its own half">
+            <ul>
+              <li>
+                <code>ibv_devinfo</code> over SSH on the node. The node half, and it works there because the AMI put
+                the kernel driver and rdma-core there.
+              </li>
+              <li>
+                The node allocatable count for vpc.amazonaws.com/efa, or the ResourceSlices under driver dra.net.
+                Zero usually means no EFA interfaces attached at launch, an instance type missing from the chart
+                allowlist, or the Auto Mode affinity rule.
+              </li>
+              <li>
+                <code>fi_info -p efa</code> inside the workload container. The image half, since the AMI does not
+                install libfabric.
+              </li>
+              <li>
+                The NCCL_DEBUG=INFO transport line, read before the bandwidth number. A run finishing at a few GB/s
+                on a p5 has fallen back to sockets because the plugin did not load, and the transport line says so
+                in the first hundred lines.
+              </li>
+            </ul>
+          </Alert>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

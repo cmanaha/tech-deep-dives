@@ -6,7 +6,6 @@ import Box from '@cloudscape-design/components/box';
 import Table from '@cloudscape-design/components/table';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
-import Alert from '@cloudscape-design/components/alert';
 import { SourceRef } from '@tech-deep-dives/shared';
 import type { DocRef } from '@tech-deep-dives/shared';
 
@@ -90,20 +89,6 @@ interface ComparisonRow {
 
 const comparisonData: ComparisonRow[] = [
   {
-    feature: 'Scope',
-    efa: 'Inter-node (across instances)',
-    tcp: 'Inter-node',
-    rdma: 'Inter-node',
-    nvlink: 'Intra-node (within instance)',
-  },
-  {
-    feature: 'Protocol',
-    efa: 'SRD (AWS proprietary)',
-    tcp: 'TCP/IP',
-    rdma: 'RoCE v2 / InfiniBand',
-    nvlink: 'NVLink / NVSwitch',
-  },
-  {
     feature: 'What it assumes about the network',
     efa: (
       <>
@@ -116,6 +101,13 @@ const comparisonData: ComparisonRow[] = [
     nvlink: 'A switch inside the box',
   },
   {
+    feature: 'Scope',
+    efa: 'Inter-node (across instances)',
+    tcp: 'Inter-node',
+    rdma: 'Inter-node',
+    nvlink: 'Intra-node (within instance)',
+  },
+  {
     feature: 'OS Bypass',
     efa: (
       <>
@@ -125,6 +117,47 @@ const comparisonData: ComparisonRow[] = [
     tcp: 'No',
     rdma: 'Yes',
     nvlink: 'N/A (direct GPU-GPU)',
+  },
+  {
+    feature: 'Multi-path and congestion',
+    efa: (
+      <>
+        SRD sprays over 64 paths at a time, under its own congestion control{' '}
+        <SourceRef provenance="documented" doc={docs.hpcBlog} />
+      </>
+    ),
+    tcp: 'ECMP hashed per flow, with CUBIC or BBR tuned for the WAN',
+    rdma: (
+      <>
+        Adaptive routing switch-side, PFC on RoCE, credit-based on InfiniBand{' '}
+        <SourceRef provenance="documented" doc={docs.nvidiaIb} />
+      </>
+    ),
+    nvlink: 'N/A',
+  },
+  {
+    feature: 'Tail latency',
+    efa: (
+      <>
+        Dropping in-order delivery cut p99 by around a factor of ten{' '}
+        <SourceRef provenance="documented" doc={docs.hpcBlog} />
+      </>
+    ),
+    tcp: 'Baseline. Head-of-line blocking on any loss',
+    rdma: 'Strong, and PFC pauses can cascade on RoCE',
+    nvlink: 'N/A',
+  },
+  {
+    feature: 'Latency',
+    efa: (
+      <>
+        Lower and more consistent than TCP. AWS publishes no per-message figure{' '}
+        <SourceRef provenance="documented" doc={docs.efa} />
+      </>
+    ),
+    tcp: 'Baseline. Every message crosses the kernel stack',
+    rdma: 'Lowest of the inter-node options. No first-party number cited here',
+    nvlink: 'Lowest overall, and intra-node only',
   },
   {
     feature: 'Bandwidth (max)',
@@ -154,47 +187,6 @@ const comparisonData: ComparisonRow[] = [
     ),
   },
   {
-    feature: 'Latency',
-    efa: (
-      <>
-        Lower and more consistent than TCP. AWS publishes no per-message figure{' '}
-        <SourceRef provenance="documented" doc={docs.efa} />
-      </>
-    ),
-    tcp: 'Baseline. Every message crosses the kernel stack',
-    rdma: 'Lowest of the inter-node options. No first-party number cited here',
-    nvlink: 'Lowest overall, and intra-node only',
-  },
-  {
-    feature: 'Multi-path and congestion',
-    efa: (
-      <>
-        SRD sprays over 64 paths at a time, under its own congestion control{' '}
-        <SourceRef provenance="documented" doc={docs.hpcBlog} />
-      </>
-    ),
-    tcp: 'ECMP hashed per flow, with CUBIC or BBR tuned for the WAN',
-    rdma: (
-      <>
-        Adaptive routing switch-side, PFC on RoCE, credit-based on InfiniBand{' '}
-        <SourceRef provenance="documented" doc={docs.nvidiaIb} />
-      </>
-    ),
-    nvlink: 'N/A',
-  },
-  {
-    feature: 'RDMA support',
-    efa: (
-      <>
-        Read on all instances with Nitro v4 and later, write on most of them, as device operations{' '}
-        <SourceRef provenance="documented" doc={docs.efa} />
-      </>
-    ),
-    tcp: 'No',
-    rdma: 'Native, on a dedicated fabric',
-    nvlink: 'N/A',
-  },
-  {
     feature: 'Single-flow ceiling',
     efa: 'SRD sprays per packet, so a single flow uses many paths at once',
     tcp: (
@@ -208,15 +200,15 @@ const comparisonData: ComparisonRow[] = [
     nvlink: 'N/A',
   },
   {
-    feature: 'Tail latency',
+    feature: 'RDMA support',
     efa: (
       <>
-        Dropping in-order delivery cut p99 by around a factor of ten{' '}
-        <SourceRef provenance="documented" doc={docs.hpcBlog} />
+        Read on all instances with Nitro v4 and later, write on most of them, as device operations{' '}
+        <SourceRef provenance="documented" doc={docs.efa} />
       </>
     ),
-    tcp: 'Baseline. Head-of-line blocking on any loss',
-    rdma: 'Strong, and PFC pauses can cascade on RoCE',
+    tcp: 'No',
+    rdma: 'Native, on a dedicated fabric',
     nvlink: 'N/A',
   },
   {
@@ -284,15 +276,14 @@ export function NetworkComparison() {
         items={comparisonData}
         sortingDisabled
         variant="embedded"
+        footer={
+          <Box variant="small" color="text-body-secondary">
+            Every comparative figure here comes from a first-party source. Per-column microsecond
+            latencies stay out because no citable source giving them for these four transports was
+            located, and per-port InfiniBand rates because no NVIDIA page stating them was located.
+          </Box>
+        }
       />
-
-      <Alert type="info" header="Where the numbers in this table stop">
-        Every comparative figure here comes from a first-party source. For tail latency that is p99
-        falling by around a factor of ten, in the tail-latency row{' '}
-        <SourceRef provenance="documented" doc={docs.hpcBlog} />. Per-column microsecond latencies
-        stay out because no citable source gives them for these four transports, and per-port
-        InfiniBand rates because no NVIDIA page stating them was located.
-      </Alert>
 
       <Container
         header={

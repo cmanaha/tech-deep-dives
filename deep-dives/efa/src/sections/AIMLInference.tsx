@@ -51,7 +51,9 @@ export function AIMLInference() {
           model fits in one instance. The test that decides your architecture is what crosses the
           network on the critical path of a request. Disaggregated prefill and decode, cross-node
           speculative decoding and KV-cache (Key-Value cache) migration each move bytes between
-          instances while every node holds a full copy of the model.
+          instances while every node holds a full copy of the model. So the figure to work out for
+          your own deployment is not the model size. It is how many bytes leave the instance per
+          request, and how many times that happens per response.
         </Box>
       </Container>
 
@@ -77,9 +79,7 @@ export function AIMLInference() {
                 NIXL uses EFA via the libfabric backend. AWS documents the pairing directly: EFA
                 supports NIXL for AI and ML applications, and NIXL integrates with Libfabric 1.21.0
                 and later <SourceRef provenance="documented" doc={docs.efa} />, with its own
-                getting-started page <SourceRef provenance="documented" doc={docs.efaNixl} />. NIXL
-                stripes transfers across the available EFA devices and routes NUMA-aware to keep
-                host-side latency down.
+                getting-started page <SourceRef provenance="documented" doc={docs.efaNixl} />.
               </Box>
               <StatusIndicator type="success">EFA critical for NIXL</StatusIndicator>
             </div>
@@ -112,8 +112,9 @@ export function AIMLInference() {
         <SpaceBetween size="m">
           <Box variant="p">
             405B parameters at fp16 is about 810 GB, more than the 640 GB of total GPU memory in a
-            P5 instance. Two strategies split a model across nodes, and they load the fabric
-            differently.
+            P5 instance. Run that same comparison for your own weights against your own instance
+            first, because it is what decides whether either of the next two strategies is in play
+            at all. They split a model across nodes, and they load the fabric differently.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -122,7 +123,9 @@ export function AIMLInference() {
                 Every token generation step needs communication between all tensor-parallel ranks,
                 and autoregressive generation repeats that <strong>per token</strong>. One extra
                 millisecond of network latency across a 1,000-token response is a full second added
-                to the answer, which makes this the latency-critical case for EFA.
+                to the answer, which makes this the latency-critical case for EFA. Multiply your own
+                per-token network cost by your typical output length to get what it adds to one
+                response.
               </Box>
               <StatusIndicator type="success">EFA critical</StatusIndicator>
             </div>
@@ -161,11 +164,6 @@ export function AIMLInference() {
             <StatusIndicator type="info">EFA beneficial (NIXL)</StatusIndicator>
           </div>
         </ColumnLayout>
-        <Box variant="p" padding={{ top: 'm' }}>
-          Both are point-to-point transfers between two named nodes at an unpredictable moment. A
-          library tuned for a predictable allreduce every step is the wrong shape for that, which is
-          the whole reason NIXL exists alongside NCCL.
-        </Box>
       </Container>
 
       <Container header={<Header variant="h2" description="Two serving shapes where the intra-node links carry everything, and the single-zone constraint you sidestep by staying there.">Where NVLink already covers it</Header>}>
@@ -175,8 +173,7 @@ export function AIMLInference() {
             <Box variant="p">
               One node holds the model, one node serves the request, and all GPU-to-GPU
               communication travels over NVLink and NVSwitch inside the instance. Roughly 300B
-              parameters at fp16, or roughly 600B at fp8 and int8, fit on a single P5, and
-              quantization raises that further.
+              parameters at fp16, or roughly 600B at fp8 and int8, fit on a single P5.
             </Box>
             <StatusIndicator type="stopped">EFA irrelevant</StatusIndicator>
           </div>
@@ -198,13 +195,11 @@ export function AIMLInference() {
         <SpaceBetween size="s">
           <Box variant="p">
             <strong>1. Does one node serve a whole request, prefill and decode together?</strong>{' '}
-            Skip EFA. NVLink handles all intra-node GPU communication, and most fine-tuning and
-            inference workloads stop here.
+            Skip EFA. NVLink carries it, and most fine-tuning and inference workloads stop here.
           </Box>
           <Box variant="p">
             <strong>2. Is serving disaggregated, prefill split from decode?</strong> EFA is
-            critical. KV-cache transfers between prefill and decode nodes need low-latency
-            networking. Use NIXL over EFA.
+            critical, and NIXL over EFA is the transfer library for it.
           </Box>
           <Box variant="p">
             <strong>3. Does the model need more than one node?</strong> EFA is critical. Tensor
@@ -216,11 +211,11 @@ export function AIMLInference() {
           </Box>
           <Box variant="p">
             <strong>4. Are you running speculative decoding across nodes?</strong> EFA is
-            beneficial. The verification loop is latency-sensitive and it runs per token.
+            beneficial. The verification loop runs per token and lands in time-to-first-token.
           </Box>
           <Box variant="p">
             <strong>5. Do you need KV-cache migration for autoscaling or rebalancing?</strong> EFA
-            is beneficial. NIXL again, for the same bursty point-to-point reason.
+            is beneficial, and NIXL again.
           </Box>
         </SpaceBetween>
       </Container>

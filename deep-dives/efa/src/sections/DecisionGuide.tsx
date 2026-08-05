@@ -50,12 +50,6 @@ const docs: Record<string, DocRef> = {
     tier: 1,
     accessed: ACCESSED,
   },
-  eksMlPools: {
-    title: 'EKS User Guide: manage compute for AI/ML with EKS Auto Mode and Karpenter',
-    url: 'https://docs.aws.amazon.com/eks/latest/userguide/ml-node-pools.html',
-    tier: 1,
-    accessed: ACCESSED,
-  },
   eksNodeClass: {
     title: 'EKS User Guide: create a NodeClass, static network interface configuration',
     url: 'https://docs.aws.amazon.com/eks/latest/userguide/create-node-class.html',
@@ -124,12 +118,6 @@ const code: Record<string, CodeRef> = {
     ref: 'v1.14.0',
     path: 'pkg/apis/v1/ec2nodeclass.go',
     lines: 'L56-L60',
-    read: READ,
-  },
-  karpenterPkg: {
-    repo: 'aws/karpenter-provider-aws',
-    ref: 'v1.14.0',
-    path: 'pkg',
     read: READ,
   },
   eksBpSpot: {
@@ -230,39 +218,6 @@ export function DecisionGuide() {
         </SpaceBetween>
       </Container>
 
-      <Table
-        header={<Header variant="h2" description="Eight workloads, and the answer is No about as often as it is Yes.">Scenario-Based Recommendations</Header>}
-        columnDefinitions={[
-          { id: 'scenario', header: 'Scenario', cell: (item) => <strong>{item.scenario}</strong> },
-          {
-            id: 'efaNeeded',
-            header: 'EFA?',
-            cell: (item) => {
-              const type = item.efaNeeded === 'Critical' ? 'success' : item.efaNeeded === 'Yes' ? 'info' : 'stopped';
-              return <StatusIndicator type={type}>{item.efaNeeded}</StatusIndicator>;
-            },
-          },
-          { id: 'reason', header: 'Why', cell: (item) => item.reason },
-          { id: 'recommendation', header: 'Recommendation', cell: (item) => item.recommendation },
-        ]}
-        items={decisions}
-        sortingDisabled
-        variant="full-page"
-        footer={
-          <Box variant="small" color="text-body-secondary">
-            Every recommendation above states the Availability Zone constraint rather than a
-            placement group requirement, because that is what AWS documents{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />{' '}
-            <SourceRef provenance="documented" doc={docs.efaStart} label="doc: efa-start" />.
-            Spot eligibility per family comes from the instance specification tables{' '}
-            <SourceRef provenance="documented" doc={docs.ac} />{' '}
-            <SourceRef provenance="documented" doc={docs.hpc} label="doc: hpc" />. Instance
-            rates live in the Pricing Analysis section, which pins every figure to a price list
-            version. No rate is restated here.
-          </Box>
-        }
-      />
-
       <Container
         header={<Header variant="h2" description="Answer these in order. Two of them can end the conversation before EFA is ever configured.">The Three Questions</Header>}
       >
@@ -287,7 +242,8 @@ export function DecisionGuide() {
               messages move the total very little.
             </Box>
             <Alert type="info">
-              Profile your workload. If &gt;10% of time is in NCCL/MPI, EFA will help.
+              Profile first, then check which fabric the job used: a job can run, return
+              correct results and quietly use TCP. The Operations section covers that check.
             </Alert>
           </div>
           <div>
@@ -296,11 +252,8 @@ export function DecisionGuide() {
               The Availability Zone is the gate. AWS states that EFA traffic cannot
               cross Availability Zones or VPCs{' '}
               <SourceRef provenance="documented" doc={docs.efa} />, so a job that has to span
-              zones cannot use EFA at all. A cluster placement group is the recommended way to
-              land inside one zone with low latency, and AWS states it is not an absolute
-              requirement{' '}
-              <SourceRef provenance="documented" doc={docs.efaStart} />. Design training and HPC
-              jobs to checkpoint frequently and tolerate AZ-level failure.
+              zones cannot use EFA at all. Design training and HPC jobs to checkpoint
+              frequently and tolerate AZ-level failure.
             </Box>
             <Alert type="info">
               For training: always checkpoint. For inference: consider failover to another AZ cluster.
@@ -309,6 +262,38 @@ export function DecisionGuide() {
         </ColumnLayout>
       </Container>
 
+      <Table
+        header={<Header variant="h2" description="Eight workloads, and the answer is No about as often as it is Yes.">Scenario-Based Recommendations</Header>}
+        columnDefinitions={[
+          { id: 'scenario', header: 'Scenario', cell: (item) => <strong>{item.scenario}</strong> },
+          {
+            id: 'efaNeeded',
+            header: 'EFA?',
+            cell: (item) => {
+              const type = item.efaNeeded === 'Critical' ? 'success' : item.efaNeeded === 'Yes' ? 'info' : 'stopped';
+              return <StatusIndicator type={type}>{item.efaNeeded}</StatusIndicator>;
+            },
+          },
+          { id: 'reason', header: 'Why', cell: (item) => item.reason },
+          { id: 'recommendation', header: 'Recommendation', cell: (item) => item.recommendation },
+        ]}
+        items={decisions}
+        sortingDisabled
+        variant="full-page"
+        footer={
+          <Box variant="small" color="text-body-secondary">
+            The Availability Zone constraint in every recommendation is what AWS documents,
+            in place of a placement group requirement{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} label="doc: efa-start" />.
+            Spot eligibility per family comes from the instance specification tables{' '}
+            <SourceRef provenance="documented" doc={docs.ac} />{' '}
+            <SourceRef provenance="documented" doc={docs.hpc} label="doc: hpc" />. Instance
+            rates live in the Pricing Analysis section, pinned to a price list version.
+          </Box>
+        }
+      />
+
       <Container
         header={<Header variant="h2" description="Three layers know about topology and none of them talks to the other two. Assembling them is the opportunity.">Topology-Aware Rank Assignment</Header>}
       >
@@ -316,34 +301,23 @@ export function DecisionGuide() {
           <Box variant="p">
             <strong>What it is:</strong> the mapping from rank to GPU to EFA interface. Get it
             right and every rank sends through the interface physically closest to its GPU, which
-            is what minimizes PCIe (Peripheral Component Interconnect Express) hops. Get it wrong
-            and the same job runs 2-3x slower.
-          </Box>
-          <Box variant="p">
-            <strong>How it works:</strong> <code>NCCL_TOPO_FILE</code> tells NCCL the physical
-            topology: which GPUs connect to which NVSwitch, which NIC connects via which
-            PCIe root complex. The <code>aws-ofi-nccl</code> plugin auto-detects this for
-            known platforms (P4d, P5, P5en) and sets the topology file automatically. For
-            custom AMIs or new instance types, verify with <code>NCCL_DEBUG=INFO</code> that
-            the correct topology is detected.
-          </Box>
-          <Box variant="p">
-            <strong>The tuner plugin:</strong> Beyond topology detection, the aws-ofi-nccl
-            tuner (<code>libnccl-ofi-tuner.so</code>) dynamically selects the optimal NCCL
-            algorithm and protocol for your specific topology. This replaces manual tuning
-            of <code>NCCL_ALGO</code> and <code>NCCL_PROTO</code>. Always prefer the tuner
-            over manual env vars.
+            is what minimizes PCIe (Peripheral Component Interconnect Express) hops.
           </Box>
           <Box variant="p">
             <strong>Three independent layers:</strong> (1) <strong>NCCL topology graph:</strong>
             intra-node, from XML or sysfs auto-detect. (2) <strong>aws-ofi-nccl platform
             detection:</strong> instance-type matching, NIC reordering. (3) <strong>EC2{' '}
-            <code>DescribeInstanceTopology</code></strong>: inter-node physical hierarchy
-            (3-4 layers of hashed network node IDs). These layers don&apos;t communicate with
-            each other. The optimization opportunity is assembling them: use{' '}
-            <code>DescribeInstanceTopology</code> to group instances by physical proximity,
-            assign NCCL ranks so that communicating pairs are on the same network node, and
-            let the tuner handle algorithm selection.
+            <code>DescribeInstanceTopology</code></strong>: inter-node physical hierarchy. These
+            layers don&apos;t communicate with each other. The optimization opportunity is
+            assembling them: use <code>DescribeInstanceTopology</code> to group instances by
+            physical proximity, and assign NCCL ranks so that communicating pairs are on the same
+            network node.
+          </Box>
+          <Box variant="p">
+            That assembly is work you own, and two sections carry the mechanism. The EC2 Instance
+            Topology API section has the ranking code, the API limits and the labeling paths on
+            Kubernetes. The NCCL over EFA section has the plugin&apos;s platform detection, the
+            tuner and the environment variables worth setting.
           </Box>
         </SpaceBetween>
       </Container>
@@ -404,16 +378,9 @@ export function DecisionGuide() {
                 <SourceRef provenance="documented" doc={docs.hyperpodEks} />.
               </Box>
               <Box variant="p">
-                The source tree agrees. A search of the aws/karpenter-provider-aws v1.14.0
-                release for network-node-layer returns zero occurrences, and so does a search
-                for DescribeInstanceTopology{' '}
-                <SourceRef provenance="code-derived" code={code.karpenterPkg} />. Karpenter
-                never calls the topology API and never emits those labels. The EKS well-known
-                label tables for Auto Mode and self-managed Karpenter list instance family,
-                category, generation, GPU attributes, capacity type and zone, with no network
-                node layer entry <SourceRef provenance="documented" doc={docs.eksMlPools} />.
-                Karpenter sets zone and placement group; ranking by network node comes from the
-                EC2 Instance Topology API section.
+                So Karpenter sets zone and placement group, and the network node labels come from
+                somewhere else. The EC2 Instance Topology API section carries the label sources,
+                the labeler DaemonSet and the source-tree search behind this.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -432,8 +399,9 @@ export function DecisionGuide() {
                 interruption, the entire job stops.
               </Box>
               <Box variant="p">
-                AWS states it directly. EFA requires all communicating nodes to reside in the
-                same Availability Zone, and that co-location introduces correlated interruption
+                AWS states it in the EKS best practices guide. EFA requires all communicating
+                nodes to reside in the same Availability Zone, and that co-location introduces
+                correlated interruption
                 risk: instances share underlying physical infrastructure within the same AZ, and
                 even more so within a placement group, so a single capacity reclamation event
                 can affect multiple instances at once rather than a single node. Without EFA
@@ -476,9 +444,9 @@ export function DecisionGuide() {
             </div>
           </ColumnLayout>
           <Box variant="p">
-            <strong>Spot Placement Score API:</strong> Before launching Spot in a placement
-            group, query the Spot Placement Score to estimate likelihood of getting and
-            keeping your desired instance count. Low scores = high interruption risk.
+            <strong>Spot Placement Score API:</strong> before launching Spot in a placement
+            group, query the Spot Placement Score to estimate the likelihood of getting and
+            keeping the instance count you want.
           </Box>
           <Box variant="p">
             <strong>Where a Spot savings percentage would come from.</strong> Spot rates
@@ -491,13 +459,12 @@ export function DecisionGuide() {
       </Container>
 
       <Container
-        header={<Header variant="h2" description="Two guaranteed-capacity paths, not one. The choice is duration, and it is decided before the fleet exists.">Capacity planning: Blocks against ODCRs</Header>}
+        header={<Header variant="h2" description="Two guaranteed-capacity paths. The choice is duration, and it is decided before the fleet exists.">Capacity planning: Blocks against ODCRs</Header>}
       >
         <SpaceBetween size="m">
           <Alert type="info" header="Both paths are documented for EFA fleets">
             Capacity Blocks are the better-known option, and On-Demand Capacity Reservations cover
-            the same need. AWS
-            documents them against a cluster placement group in the EFA
+            the same need. AWS documents them against a cluster placement group in the EFA
             setup guide itself: to ensure that capacity is available as you scale your
             cluster&apos;s instances, you can create a Capacity Reservation for your cluster
             placement group <SourceRef provenance="documented" doc={docs.efaStart} />. Pick on
@@ -589,11 +556,9 @@ export function DecisionGuide() {
                 library is exactly ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, and the
                 optimized AllGather collective is available on P4 only{' '}
                 <SourceRef provenance="documented" doc={docs.ddpSupport} />. No P5, P5e, P5en,
-                P6 or Trn2 size is supported.
-              </Box>
-              <Box variant="p">
-                The library is frozen rather than deprecated. AWS has not announced a
-                deprecation, and the latest release is v2.5.0, dated October 17, 2024{' '}
+                P6 or Trn2 size is supported. The library is frozen rather than deprecated: AWS
+                has not announced a deprecation, and the latest release is v2.5.0, dated
+                October 17, 2024{' '}
                 <SourceRef provenance="documented" doc={docs.ddpRelease} />.
               </Box>
               <Box variant="p">

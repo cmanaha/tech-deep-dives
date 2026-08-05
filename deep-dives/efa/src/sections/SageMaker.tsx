@@ -124,7 +124,6 @@ const docs = {
   ),
   topology: doc('SageMaker Developer Guide: topology-aware scheduling in HyperPod', `${SM_DG}sagemaker-hyperpod-topology.html`, 1),
   observability: doc('SageMaker Developer Guide: HyperPod cluster metrics', `${SM_DG}hyperpod-observability-cluster-metrics.html`, 1),
-  faqSlurm: doc('SageMaker Developer Guide: HyperPod FAQs for Slurm', `${SM_DG}sagemaker-hyperpod-faq-slurm.html`, 1),
   eksPrereq: doc(
     'SageMaker Developer Guide: HyperPod on EKS prerequisites',
     `${SM_DG}sagemaker-hyperpod-eks-prerequisites.html`,
@@ -532,129 +531,7 @@ function FourGatesDiagram() {
   );
 }
 
-/**
- * Diagram 3. SMDDP scope: the three supported instance types, the release
- * history, and the streaming-multiprocessor figure with its A100 scope attached.
- */
-function SmddpScopeDiagram() {
-  const grid = (originX: number, originY: number, shaded: number, cls: string) =>
-    Array.from({ length: 108 }, (_, i) => {
-      const col = i % 12;
-      const row = Math.floor(i / 12);
-      return (
-        <rect
-          key={i}
-          className={i < shaded ? cls : 'sd-idle'}
-          x={originX + col * 15}
-          y={originY + row * 15}
-          width="13"
-          height="13"
-          rx="2"
-        />
-      );
-    });
-
-  const supported = [
-    ['ml.p3dn.24xlarge', 'AllReduce only. Optimization discontinued.'],
-    ['ml.p4d.24xlarge', 'AllReduce and AllGather.'],
-    ['ml.p4de.24xlarge', 'AllReduce and AllGather.'],
-  ];
-
-  return (
-    <svg viewBox="0 0 960 400" role="img" aria-labelledby="sm-smddp-title" style={{ width: '100%', height: 'auto' }}>
-      <title id="sm-smddp-title">
-        SMDDP supports three instance types, ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge,
-        with its optimized AllGather on P4 only, and its last release was v2.5.0 in October 2024. The
-        streaming-multiprocessor saving AWS publishes, 24 down to fewer than 9 out of 108 on an A100,
-        was measured on those P4 instances and is scoped to them.
-      </title>
-      <style>
-        {`
-          .sd-band { fill: #fdf3f1; stroke: #d13212; stroke-width: 1.8; }
-          .sd-bandt { fill: #d13212; font: 600 13px sans-serif; text-anchor: middle; }
-          .sd-panel { fill: #ffffff; stroke: #879596; stroke-width: 1.5; }
-          .sd-h { fill: #0f1b2a; font: 600 13px sans-serif; }
-          .sd-hc { fill: #0f1b2a; font: 600 12px sans-serif; text-anchor: middle; }
-          .sd-mono { fill: #0f1b2a; font: 11px monospace; }
-          .sd-txt { fill: #5f6b7a; font: 11px sans-serif; }
-          .sd-idle { fill: #eaeded; }
-          .sd-nccl { fill: #d13212; }
-          .sd-smddp { fill: #037f0c; }
-          .sd-lbl { fill: #0f1b2a; font: 600 11px sans-serif; text-anchor: middle; }
-          .sd-sub { fill: #5f6b7a; font: 10px sans-serif; text-anchor: middle; }
-          .sd-cap { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
-        `}
-      </style>
-      <rect x="0" y="0" width="960" height="400" rx="8" fill="#ffffff" />
-
-      <rect className="sd-band" x="20" y="16" width="920" height="38" rx="6" />
-      <text className="sd-bandt" x="480" y="40">
-        SMDDP supports ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge. AllGather is P4 only.
-      </text>
-
-      <rect className="sd-panel" x="20" y="70" width="470" height="280" rx="6" />
-      <text className="sd-h" x="40" y="100">
-        Supported instance types
-      </text>
-      {supported.map(([type, note], index) => (
-        <g key={type}>
-          <text className="sd-mono" x="40" y={128 + index * 22}>
-            {type}
-          </text>
-          <text className="sd-txt" x="185" y={128 + index * 22}>
-            {note}
-          </text>
-        </g>
-      ))}
-      <text className="sd-h" x="40" y="216">
-        Release history
-      </text>
-      <text className="sd-txt" x="40" y="240">
-        SMDDP v2.5.0, October 17, 2024. The latest release.
-      </text>
-      <text className="sd-txt" x="40" y="260">
-        Model parallelism library v2.6.0, the same day.
-      </text>
-      <text className="sd-txt" x="40" y="280">
-        TensorFlow support ended after TensorFlow 2.11.0.
-      </text>
-      <text className="sd-txt" x="40" y="312">
-        That list is the whole scope. P5, P6, Trn2 and the G family
-      </text>
-      <text className="sd-txt" x="40" y="330">
-        run plain NCCL over aws-ofi-nccl over EFA instead.
-      </text>
-
-      <rect className="sd-panel" x="505" y="70" width="435" height="280" rx="6" />
-      <text className="sd-hc" x="722" y="100">
-        One NVIDIA A100: 108 streaming multiprocessors
-      </text>
-      {grid(530, 118, 24, 'sd-nccl')}
-      {grid(740, 118, 9, 'sd-smddp')}
-      <text className="sd-lbl" x="620" y="278">
-        NCCL: up to 24
-      </text>
-      <text className="sd-sub" x="620" y="294">
-        collectives
-      </text>
-      <text className="sd-lbl" x="830" y="278">
-        SMDDP: fewer than 9
-      </text>
-      <text className="sd-sub" x="830" y="294">
-        collectives
-      </text>
-      <text className="sd-cap" x="722" y="326">
-        Measured by AWS on P4d and P4de. The figure is scoped to those instances.
-      </text>
-
-      <text className="sd-cap" x="480" y="382">
-        On P5 and later the answer is plain NCCL over aws-ofi-nccl over EFA.
-      </text>
-    </svg>
-  );
-}
-
-/** Diagram 4. The four-layer KV cache transport HyperPod composes for DPD. */
+/** Diagram 3. The four-layer KV cache transport HyperPod composes for DPD. */
 function DpdStackDiagram() {
   const bands = [
     ['LMCache PD', 'splits prefill from decode'],
@@ -807,11 +684,6 @@ const decisionRows: DecisionRow[] = [
     hyperpod: 'An explicit choice: ClusterNetworkInterface set to efa or efa-only.',
   },
   {
-    dimension: 'Fabric health checking',
-    trainingJob: 'A pre-job NCCL check on P and G types. Whether it reaches EFA is unstated.',
-    hyperpod: 'Deep health checks run an EFA latency and bandwidth benchmark plus a cluster NCCL test.',
-  },
-  {
     dimension: 'Fabric observability',
     trainingJob: 'CloudWatch job logs. Grep for the NCCL provider lines yourself.',
     hyperpod: 'Cluster metrics include an EFA Exporter category, off by default.',
@@ -853,13 +725,13 @@ export function SageMaker() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            People say SageMaker AI handles EFA (Elastic Fabric Adapter) for you. That is true on
-            one surface, partly true on a second, and describes nothing on the third. Treat SageMaker
-            AI as three products and it resolves. Training jobs get EFA implicitly from the instance
-            type, through a software layer gated by a hardcoded allowlist that stopped growing at P5.
-            HyperPod treats EFA as a managed, versioned, health-checked component you configure by
-            name. Managed real-time inference endpoints expose instance type, image version,
-            capacity, routing and scale, and no EFA control appears within that surface{' '}
+            People say SageMaker AI handles EFA (Elastic Fabric Adapter) for you. Treat SageMaker AI
+            as three products and that resolves into three different answers. Training jobs get EFA
+            implicitly from the instance type, through a software layer gated by a hardcoded
+            allowlist that stopped growing at P5. HyperPod treats EFA as a managed, versioned,
+            health-checked component you configure by name. Managed real-time inference endpoints
+            expose instance type, image version, capacity, routing and scale, and no EFA control
+            appears within that surface{' '}
             <SourceRef provenance="documented" doc={docs.productionVariant} />.
           </Box>
 
@@ -887,15 +759,13 @@ export function SageMaker() {
 
           <Box variant="h3">What ResourceConfig controls</Box>
           <Box variant="p">
-            ResourceConfig is the compute block of CreateTrainingJob. Its members are InstanceCount,
-            InstanceGroups, InstancePlacementConfig, InstanceType, KeepAlivePeriodInSeconds,
-            TrainingPlanArn, VolumeKmsKeyId and VolumeSizeInGB{' '}
+            ResourceConfig is the compute block of CreateTrainingJob. Its members cover instance
+            count, instance groups, instance placement, instance type, keep-alive period, training
+            plan and volume settings{' '}
             <SourceRef provenance="documented" doc={docs.resourceConfig} />. The instance type is the
-            whole fabric request: there is no EFA field and no fabric field anywhere on the API.
-          </Box>
-          <Box variant="p">
-            InstancePlacementConfig configures how training job instances are placed and allocated
-            within UltraServers, and AWS states that it is only applicable for UltraServer capacity{' '}
+            whole fabric request: there is no EFA field and no fabric field anywhere on the API. The
+            placement member, InstancePlacementConfig, configures allocation within UltraServers and
+            AWS states that it is only applicable for UltraServer capacity{' '}
             <SourceRef provenance="documented" doc={docs.resourceConfig} />.
           </Box>
 
@@ -915,13 +785,11 @@ export function SageMaker() {
 
           <Box variant="p">
             Gate 2 is the one AWS documents at length, written for a container you bring. That
-            container must download and install the EFA software, and any tools like MPI (Message
-            Passing Interface) and NCCL must be installed and managed inside it. The EFA device is
-            mounted as /dev/infiniband/uverbs0, and on P4d instances the container has four of them,
-            uverbs0 through uverbs3. Regular TCP traffic among peers goes through the default Elastic
-            Network Interfaces while kernel-bypass traffic goes through the EFA device. And the NCCL
-            version of your container should match the NCCL version of your PyTorch installation,
-            which you check with torch.cuda.nccl.version(){' '}
+            container must download and install the EFA software, with MPI (Message Passing
+            Interface) and NCCL installed and managed inside it. The EFA device is mounted as
+            /dev/infiniband/uverbs0, and on P4d instances the container has four of them, uverbs0
+            through uverbs3. And the NCCL version of your container should match the NCCL version of
+            your PyTorch installation, which you check with torch.cuda.nccl.version(){' '}
             <SourceRef provenance="documented" doc={docs.trainEfa} />.
           </Box>
 
@@ -966,22 +834,6 @@ SM_EFA_RDMA_INSTANCES = [
             <SourceRef provenance="code-derived" code={code.torchrun} />. The mpirun path builds the
             same settings as -x flags{' '}
             <SourceRef provenance="code-derived" code={code.mpi} />.
-          </Box>
-
-          <Box variant="code">
-            <pre style={preStyle}>{String.raw`def setup_env():
-    """Setup the environment variables for PyTorch distributed training"""
-    instance_type = os.environ["SM_CURRENT_INSTANCE_TYPE"]
-    network_interface_name = os.environ.get("SM_NETWORK_INTERFACE_NAME", "eth0")
-    if instance_type in SM_EFA_NCCL_INSTANCES:
-        # Enable EFA use
-        os.environ["FI_PROVIDER"] = "efa"
-    if instance_type in SM_EFA_RDMA_INSTANCES:
-        # Use EFA's RDMA functionality for one-sided and two-sided transfer
-        os.environ["FI_EFA_USE_DEVICE_RDMA"] = "1"
-        os.environ["RDMAV_FORK_SAFE"] = "1"
-    os.environ["NCCL_SOCKET_IFNAME"] = str(network_interface_name)
-    os.environ["NCCL_PROTO"] = "simple"`}</pre>
           </Box>
 
           <Table
@@ -1053,12 +905,9 @@ SM_EFA_RDMA_INSTANCES = [
                 NCCL_NET_SHARED_COMMS set to 0. The same post states plainly that in their
                 experience, using EFA is a requirement to get satisfactory multi-node LLM training
                 performance{' '}
-                <SourceRef provenance="documented" doc={docs.llmBest} />.
-              </Box>
-              <Box variant="p">
-                The SDK driver sets FI_PROVIDER, FI_EFA_USE_DEVICE_RDMA, RDMAV_FORK_SAFE,
-                NCCL_SOCKET_IFNAME and NCCL_PROTO, and leaves NCCL_LAUNCH_MODE and
-                NCCL_NET_SHARED_COMMS to you{' '}
+                <SourceRef provenance="documented" doc={docs.llmBest} />. The SDK driver sets
+                FI_PROVIDER, FI_EFA_USE_DEVICE_RDMA, RDMAV_FORK_SAFE, NCCL_SOCKET_IFNAME and
+                NCCL_PROTO, and leaves NCCL_LAUNCH_MODE and NCCL_NET_SHARED_COMMS to you{' '}
                 <SourceRef provenance="code-derived" code={code.torchrun} />. Pass those two yourself
                 for the blog's full set, and treat NCCL_PROTO=simple as mandatory: the stated reason
                 is data corruption.
@@ -1076,9 +925,7 @@ SM_EFA_RDMA_INSTANCES = [
                 a successful repair automatically restarts the training job from the previous
                 checkpoint, that you are not billed for the cluster repair process, and that repairs
                 do not initiate unless your training job fails{' '}
-                <SourceRef provenance="documented" doc={docs.repair} />. The status string you will
-                see is a message about repairing the training cluster due to hardware failure.
-                Before a job starts, AWS
+                <SourceRef provenance="documented" doc={docs.repair} />. Before a job starts, AWS
                 describes GPU health checks that verify NCCL communication on GPU instances and
                 replace faulty instances, enabled for P and G GPU-based instance types{' '}
                 <SourceRef provenance="documented" doc={docs.llmBest} />. No source found states
@@ -1134,8 +981,7 @@ SM_EFA_RDMA_INSTANCES = [
                 CUDA 13.3.0, torch 2.13.0, NCCL 2.30.7-1, EFA installer 1.49.0, GDRCopy 2.6,
                 DeepSpeed 0.19.2, Transformer Engine 2.17.0{' '}
                 <SourceRef provenance="code-derived" code={code.dlcPytorch} />. The EC2 variant of
-                the same image carries identical NCCL, EFA and GDRCopy pins. Only the build target
-                and the entrypoint differ.
+                the same image carries identical NCCL, EFA and GDRCopy pins.
               </Box>
             </div>
           </ColumnLayout>
@@ -1180,16 +1026,13 @@ SM_EFA_RDMA_INSTANCES = [
                 <SourceRef provenance="code-derived" code={code.dlcNcclConf} />. FI_PROVIDER comes
                 from the launcher instead, at job start, which is why the container layer and the
                 launcher layer can disagree with each other. The runtime search path puts the EFA
-                stack first, with /opt/amazon/ofi-nccl/lib64, /opt/amazon/openmpi/lib,
-                /opt/amazon/efa/lib and /opt/amazon/efa/lib64 all on LD_LIBRARY_PATH{' '}
-                <SourceRef provenance="code-derived" code={code.dlcLdPath} />.
-              </Box>
-              <Box variant="p">
-                The image also builds all_reduce_perf from NVIDIA nccl-tests into /usr/local/bin,
-                described in the Dockerfile as used by CI EFA tests and available to customers for
-                verifying EFA and NCCL connectivity before training{' '}
+                stack first on LD_LIBRARY_PATH{' '}
+                <SourceRef provenance="code-derived" code={code.dlcLdPath} />, and the image builds
+                all_reduce_perf from NVIDIA nccl-tests into /usr/local/bin, described in the
+                Dockerfile as used by CI EFA tests and available to customers for verifying EFA and
+                NCCL connectivity before training{' '}
                 <SourceRef provenance="code-derived" code={code.dlcNcclTests} />. The benchmark is
-                already in the image.
+                already in the image, which is what the next section verifies with.
               </Box>
               <Box variant="p">
                 One repair the Dockerfile performs is worth copying. The CUDA runtime base ships a
@@ -1234,11 +1077,9 @@ SM_EFA_RDMA_INSTANCES = [
             <pre style={preStyle}>{VALIDATE_SNIPPET}</pre>
           </Box>
           <Box variant="p">
-            Grep your CloudWatch job log for the same four strings: aws-ofi-nccl anywhere at all,
-            then NET/OFI Selected provider is efa, then Using network Libfabric or Using network AWS
-            Libfabric, then NET/Libfabric/0/GDRDMA or NET/AWS Libfabric/0/GDRDMA. The fourth is the
-            GPUDirect RDMA (Remote Direct Memory Access) confirmation, and the AWS script only checks
-            it on P4d and P5. The first three without the fourth means EFA is carrying traffic
+            Run those same greps against your CloudWatch job log. The GDRDMA line is the GPUDirect
+            RDMA (Remote Direct Memory Access) confirmation, and the AWS script only checks it on P4d
+            and P5. The first three signatures without the fourth mean EFA is carrying traffic
             through host memory.
           </Box>
 
@@ -1280,20 +1121,17 @@ SM_EFA_RDMA_INSTANCES = [
         <SpaceBetween size="m">
           <Box variant="p">
             SMDDP, the SageMaker Distributed Data Parallel library, replaces NCCL as the collective
-            backend for data-parallel training while still riding EFA underneath. Three AWS sources
-            give its instance requirement and all three agree. The support page lists
-            ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, adds that support for optimizing
-            collective communication on P3 has been discontinued, and states that the optimized
-            AllGather collective is only available for P4 instances{' '}
+            backend for data-parallel training while still riding EFA underneath. The support page
+            lists ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, adds that support for
+            optimizing collective communication on P3 has been discontinued, and states that the
+            optimized AllGather collective is only available for P4 instances{' '}
             <SourceRef provenance="documented" doc={docs.ddpSupport} />. The FAQ says the library
             only supports GPU instances, specifically P4d and P4de with NVIDIA A100 GPUs and EFA{' '}
-            <SourceRef provenance="documented" doc={docs.ddpFaq} />. The SDK source agrees{' '}
+            <SourceRef provenance="documented" doc={docs.ddpFaq} />, and the SDK source agrees{' '}
             <SourceRef provenance="code-confirmed" doc={docs.ddpSupport} code={code.smddpTypes} />.
             That list is the whole scope, so P5, P6, Trn2 and the G family run plain NCCL over
             aws-ofi-nccl over EFA instead.
           </Box>
-
-          <SmddpScopeDiagram />
 
           <Box variant="p">
             The release cadence tells the rest. The latest SMDDP release is v2.5.0, dated October 17,
@@ -1316,19 +1154,18 @@ SM_EFA_RDMA_INSTANCES = [
             instance types AWS currently markets for frontier training.
           </Alert>
 
-          <Box variant="p">
-            AWS is blunt about why the library exists. Its model parallel blog says NCCL is a general
-            purpose collective communications library not designed for AWS infrastructure, which
-            leads to sub-optimal performance even with EFA enabled{' '}
-            <SourceRef provenance="documented" doc={docs.smpPerf} />. The answer AWS shipped for
-            that stopped at P4de.
-          </Box>
-
           <ExpandableSection
-            headerText="How SMDDP relates to EFA: it replaces the collective library above it"
-            headerDescription="Mesh topology, GDRCopy pipelining, and a smaller SM budget"
+            headerText="Why AWS built it, and how it relates to EFA"
+            headerDescription="It replaces the collective library above EFA: mesh topology, GDRCopy pipelining, a smaller SM budget"
           >
             <SpaceBetween size="s">
+              <Box variant="p">
+                AWS is blunt about the motivation. Its model parallel blog says NCCL is a general
+                purpose collective communications library not designed for AWS infrastructure, which
+                leads to sub-optimal performance even with EFA enabled{' '}
+                <SourceRef provenance="documented" doc={docs.smpPerf} />. The answer AWS shipped for
+                that stopped at P4de.
+              </Box>
               <Box variant="p">
                 SMDDP still rides EFA, and AWS describes its AllGather in three parts. It transfers
                 data between instances through EFA with a mesh topology, and compared to the NCCL
@@ -1401,31 +1238,17 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
 
           <Box variant="h3">efa or efa-only, chosen per instance group</Box>
           <Box variant="p">
-            ClusterNetworkInterface takes an InterfaceType of efa or efa-only. AWS defines efa as an
-            EFA with ENA interface, providing both the EFA device for low-latency, high-throughput
-            communication and the ENA device for IP networking, and efa-only as an EFA-only
-            interface, providing only the EFA device capabilities without the ENA device for
-            traditional IP networking. The field is optional{' '}
-            <SourceRef provenance="documented" doc={docs.clusterNic} />.
+            ClusterNetworkInterface takes an optional InterfaceType of efa, which is an EFA with an
+            ENA device for IP networking alongside it, or efa-only, which is the EFA device without
+            the ENA device{' '}
+            <SourceRef provenance="documented" doc={docs.clusterNic} />. The device-level difference
+            is in the EFA device section of this dive. EC2 introduced the interface type in October
+            2024; what HyperPod adds is the choice, per instance group, on CreateCluster and
+            UpdateCluster since June 2026, and AWS gives the reason to take efa-only directly in that
+            launch: it maximizes the number of EFA interfaces dedicated to inter-node communication
+            without encountering IP exhaustion{' '}
+            <SourceRef provenance="documented" doc={docs.efaOnlyNews} />.
           </Box>
-          <Box variant="p">
-            The reason to pick efa-only is address pressure. AWS states it directly in the June 2026
-            launch: with EFA-only, users can maximize the number of EFA interfaces dedicated to
-            low-latency, high-throughput inter-node communication without encountering IP exhaustion,
-            and to enable it you specify efa-only in the ClusterNetworkInterface configuration when
-            creating or updating the cluster. EC2 introduced the interface type in October 2024;
-            HyperPod surfaced it on CreateCluster and UpdateCluster in June 2026{' '}
-            <SourceRef provenance="documented" doc={docs.efaOnlyNews} />. The device-level difference
-            between the two types is in the EFA device section of this dive. What HyperPod adds is
-            the choice per instance group.
-          </Box>
-          <Box variant="p">
-            The security group rule is the one every EFA cluster needs, and HyperPod restates it: to
-            create a HyperPod cluster with EFA-enabled instances, set up a security group to allow
-            all inbound and outbound traffic to and from the security group itself{' '}
-            <SourceRef provenance="documented" doc={docs.faqSlurm} />.
-          </Box>
-
           <Box variant="h3">The AMI (Amazon Machine Image) contract</Box>
           <Box variant="p">
             EFA is one of five components covered by a published AMI support policy, alongside the
@@ -1487,12 +1310,12 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
 
           <Box variant="h3">Deep health checks reach the fabric</Box>
           <Box variant="p">
-            HyperPod publishes an inventory of what its deep health checks run. Instance-level checks
-            cover GPU and NVLink counts, DCGM (Data Center GPU Manager) diagnostics at level 4
-            including additional memory tests, Neuron sysfs counters and a Neuron hardware check on
-            Trainium, and one network check: EFA, on both GPU and Trainium instances, which runs
-            latency and bandwidth benchmarking on the attached EFA device. Cluster-level checks run
-            an NCCL test across multiple GPUs, and an NCCOM test across multiple Trainium nodes{' '}
+            HyperPod publishes an inventory of what its deep health checks run. Alongside GPU and
+            NVLink counts, DCGM (Data Center GPU Manager) diagnostics at level 4 and the Neuron
+            checks, one
+            instance-level check is EFA, on both GPU and Trainium instances, running latency and
+            bandwidth benchmarking on the attached device; at cluster level an NCCL test runs across
+            multiple GPUs and an NCCOM test across multiple Trainium nodes{' '}
             <SourceRef provenance="documented" doc={docs.deepHealth} />. AWS benchmarks the device
             before your work lands on it, and publishes what both outcomes look like.
           </Box>
@@ -1557,13 +1380,13 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             include the EFA benchmark, a bad fabric device is inside the recovery loop.
           </Box>
           <Box variant="p">
-            On Slurm the mechanism is a SageMaker plugin built on the SPANK framework, which inspects
-            cluster health when a job fails, removes a faulty node, replaces it and restarts the job{' '}
-            <SourceRef provenance="documented" doc={docs.eksHpBlog} />. On EKS it is a job auto-resume
-            capability built on the Kubeflow Training Operator for PyTorch, where the extension makes
-            the job wait and restart after the node is replaced{' '}
+            On Slurm it is a SageMaker plugin on the SPANK framework that inspects cluster health
+            when a job fails, removes a faulty node, replaces it and restarts the job; on EKS it is
+            an extension to the Kubeflow Training Operator for PyTorch that makes the job wait and
+            restart after the node is replaced{' '}
             <SourceRef provenance="documented" doc={docs.eksHpBlog} />. The Slurm idiom AWS publishes
-            in its own batch scripts is short{' '}
+            in its own batch scripts is short: it tests for a directory and only adds the flag when
+            the test succeeds{' '}
             <SourceRef provenance="documented" doc={docs.mathstral} />.
           </Box>
           <Box variant="code">
@@ -1609,16 +1432,14 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
                 <SourceRef provenance="documented" doc={docs.eksPrereq} />.
               </Box>
               <Box variant="p">
-                EFA reaches pods through one of two models. The EFA device plugin advertises an
-                integer count of vpc.amazonaws.com/efa extended resources, works on all EKS-supported
-                versions, and allocates each device exclusively to one pod. The EFA DRA (Dynamic
-                Resource Allocation) driver requires Kubernetes 1.34, advertises rich attributes
-                through a ResourceSlice including device type, topology and PCIe locality, lets
-                multiple pods share a device through a shared ResourceClaim, and is the model that
-                pins an EFA device to the same PCIe root as the GPU it serves, using a matchAttribute
-                constraint on resource.kubernetes.io/pcieRoot{' '}
-                <SourceRef provenance="documented" doc={docs.eksEfa} />. The EKS integration
-                section covers both models in detail.
+                EFA reaches pods through one of two models: the EFA device plugin, which advertises
+                an integer count of vpc.amazonaws.com/efa extended resources and allocates each
+                device exclusively to one pod, or the EFA DRA (Dynamic Resource Allocation) driver,
+                which requires Kubernetes 1.34 and can pin an EFA device to the same PCIe root as the
+                GPU it serves{' '}
+                <SourceRef provenance="documented" doc={docs.eksEfa} />. Check that requirement
+                against the supported Kubernetes range above before you plan on the DRA model. The
+                EKS integration section covers both in detail.
               </Box>
               <Box variant="p">
                 Flexible instance groups, added April 2026, let you define an ordered list of
@@ -1662,11 +1483,9 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             <SourceRef provenance="documented" doc={docs.hpDeploy} />.
           </Box>
           <Box variant="p">
-            The AWS blog describes the transport as a four-layer stack that HyperPod composes end to
-            end, LMCache PD then NIXL then libfabric then EFA, where NIXL provides a unified memory
-            abstraction across GPU, CPU and remote peers and selects the right RDMA operation, and the
-            libfabric provider exposes EFA as kernel-bypass GPUDirect RDMA, keeping the host CPU off
-            the data path{' '}
+            The four bands in the diagram are the AWS blog's own description of the transport, with
+            NIXL selecting the RDMA operation and the libfabric provider exposing EFA as kernel-bypass
+            GPUDirect RDMA that keeps the host CPU off the data path{' '}
             <SourceRef provenance="documented" doc={docs.dpdBlog} />. Same post, the quantified
             claim: on ml.p5.48xlarge with 3,200 Gbps of EFA, an 8,000-token transfer for Llama 3.3
             70B takes single-digit milliseconds{' '}
@@ -1719,32 +1538,26 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            ProductionVariant is the compute block of CreateEndpointConfig. Its members are
-            VariantName, AcceleratorType which is deprecated, CapacityReservationConfig,
-            ContainerStartupHealthCheckTimeoutInSeconds, CoreDumpConfig, EnableSSMAccess,
-            InferenceAmiVersion, InitialInstanceCount, InitialVariantWeight, InstancePools,
-            InstanceType, plus routing and scaling fields. InferenceAmiVersion enumerates the managed
-            inference images by NVIDIA driver, CUDA and container toolkit version, and those three
-            components are the whole image specification{' '}
+            ProductionVariant is the compute block of CreateEndpointConfig. Its members cover the
+            variant name and weight, instance type and count, capacity reservation, container startup
+            health check timeout, core dumps, SSM access, InferenceAmiVersion, InstancePools, and
+            routing and scaling fields. InferenceAmiVersion enumerates the managed inference images by
+            NVIDIA driver, CUDA and container toolkit version, and those three components are the
+            whole image specification{' '}
             <SourceRef provenance="documented" doc={docs.productionVariant} />. That is the surface:
             instance type, image version, capacity, routing and scale. No EFA field appears within
             it, no field for sharding one model across instances, and no EFA, libfabric or
-            aws-ofi-nccl stack in any image description.
-          </Box>
-          <Box variant="p">
-            InstancePools is a capacity fallback list: instance pools, each specifying an instance
-            type and its priority for provisioning, capped at five entries, used to configure
-            heterogeneous endpoints that deploy models across multiple instance types{' '}
-            <SourceRef provenance="documented" doc={docs.productionVariant} />. The launch note makes
-            the intent unambiguous: when preferred instance types have insufficient capacity,
-            SageMaker AI automatically provisions from the next available option in the list{' '}
+            aws-ofi-nccl stack in any image description. InstancePools is a capacity fallback list,
+            each entry naming an instance type and its provisioning priority, capped at five{' '}
+            <SourceRef provenance="documented" doc={docs.productionVariant} />, from which SageMaker
+            AI provisions the next available option when preferred instance types have insufficient
+            capacity{' '}
             <SourceRef provenance="documented" doc={docs.instFallback} />.
           </Box>
           <Box variant="p">
             Scale happens within one instance or by whole replicas of it. Inference components
-            allocate accelerators inside an instance through ComputeResourceRequirements, which takes
-            MinMemoryRequiredInMb, NumberOfCpuCoresRequired and NumberOfAcceleratorDevicesRequired,
-            and scaling happens by copies, which are independent replicas of the whole model{' '}
+            allocate accelerators inside an instance through ComputeResourceRequirements, and scaling
+            happens by copies, which are independent replicas of the whole model{' '}
             <SourceRef provenance="documented" doc={docs.realtime} />. The AWS guidance for large
             foundation models says the same: it is suitable for models that cannot fit into a single
             accelerator's memory and therefore need multiple accelerators in an instance{' '}
@@ -1883,14 +1696,14 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             <SourceRef provenance="documented" doc={docs.trainEfa} />.
           </Box>
           <Box variant="p">
-            <strong>Step 3. Get the network right before you submit.</strong> Two rules. The
-            security group must allow all inbound and outbound traffic to and from itself{' '}
-            <SourceRef provenance="documented" doc={docs.ddpSupport} />. And keep instances, subnet
-            and data in the same Region and Availability Zone to reduce communication overhead{' '}
-            <SourceRef provenance="documented" doc={docs.distStart} />. SageMaker chooses the
-            placement for you, putting one job's instances in a single subnet, therefore a single
+            <strong>Step 3. Get the network right before you submit.</strong> The security group
+            must allow all inbound and outbound traffic to and from itself{' '}
+            <SourceRef provenance="documented" doc={docs.ddpSupport} />. Placement is not yours to
+            set: SageMaker puts one job's instances in a single subnet, therefore a single
             Availability Zone{' '}
-            <SourceRef provenance="documented" doc={docs.capacity} />.
+            <SourceRef provenance="documented" doc={docs.capacity} />, so keep the data in that same
+            Region and Availability Zone{' '}
+            <SourceRef provenance="documented" doc={docs.distStart} />.
           </Box>
           <Box variant="p">
             <strong>Step 4. Submit with at least two instances, then read the log.</strong> A fabric

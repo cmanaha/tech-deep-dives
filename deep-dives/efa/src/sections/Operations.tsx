@@ -566,11 +566,11 @@ export function Operations() {
           </Box>
           <Box variant="p">
             That is the model for everything below. A healthy run and a silent fallback to TCP look
-            identical from the outside, which puts verification in the bring-up
-            checklist alongside the checks that stop a job outright, and again after every AMI
-            rebuild or container change. Work from the bottom of the stack upward, then watch a
-            small number of counters that move only when something is wrong. Everything here is a
-            command you can run and an output shape you can compare against.
+            identical from the outside, so verification is not a troubleshooting step you reach for
+            when something looks wrong. It belongs in the bring-up checklist alongside the checks
+            that stop a job outright, and it runs again after every AMI rebuild or container change.
+            Work from the bottom of the stack upward, then watch a small number of counters that move
+            only when something is wrong.
           </Box>
           <Alert type="info" header="Baseline every threshold on your own cluster">
             No AWS page stating a numeric threshold for any EFA counter was located during this
@@ -628,11 +628,12 @@ ibv_devinfo -d rdmap0s31 | grep -E 'vendor_part_id|phys_state|state'
           <Box variant="p">
             The module version string is assembled in the driver from three constants plus a literal
             g suffix, unless the build defines DRV_MODULE_VERSION itself{' '}
-            <SourceRef provenance="code-derived" code={code.modVersion} />. The installer builds the
-            module through DKMS (Dynamic Kernel Module Support), and the package version lives in the
-            DKMS configuration{' '}
-            <SourceRef provenance="code-derived" code={code.dkms} />, so dkms status and modinfo are
-            two views of the same build.
+            <SourceRef provenance="code-derived" code={code.modVersion} />, which is why modinfo
+            prints 2.17.3g below where dkms status prints 2.17.3. The installer builds the module
+            through DKMS (Dynamic Kernel Module Support) and the package version lives in the DKMS
+            configuration{' '}
+            <SourceRef provenance="code-derived" code={code.dkms} />, so the two are views of the
+            same build rather than a mismatch to chase.
           </Box>
           <Box variant="code">
             <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`modinfo efa | grep -E '^(version|filename)'
@@ -649,9 +650,9 @@ cat /sys/class/infiniband/rdmap0s31/device/p2p
     NVIDIA`}</pre>
           </Box>
           <Box variant="p">
-            That last file is worth knowing about. The driver creates a single sysfs attribute named
-            p2p on the PCI device{' '}
-            <SourceRef provenance="code-derived" code={code.sysfsP2p} />, and it returns the first
+            That last file is the one worth adding to a bring-up script. The driver creates a single
+            sysfs attribute named p2p on the PCI device{' '}
+            <SourceRef provenance="code-derived" code={code.sysfsP2p} /> that returns the first
             available peer-to-peer provider string: NVIDIA peermem or NVIDIA{' '}
             <SourceRef provenance="code-derived" code={code.nvP2pString} />, or NEURON{' '}
             <SourceRef provenance="code-derived" code={code.neuronP2pString} />, or an empty line
@@ -737,13 +738,11 @@ fi_pingpong -p efa -e rdm -I 1000 -S all 10.0.1.42
     fi_getinfo(): -61 (No data available)`}</pre>
           </Box>
           <Box variant="p">
-            The reported columns are fixed: bytes, messages sent, replies received, total exchanged,
-            elapsed time, throughput, average microseconds per outbound transfer, and transfers per
-            second{' '}
-            <SourceRef provenance="code-derived" code={code.pingpong} />. What counts as a good
-            number for any of them is UNKNOWN. No AWS source publishes an expected fi_pingpong result
-            for any instance type, so treat the first successful run as your baseline and compare
-            later runs against it.
+            The usec/xfer column is the average microseconds per outbound transfer{' '}
+            <SourceRef provenance="code-derived" code={code.pingpong} />, and what counts as a good
+            number for it is UNKNOWN. No AWS source publishes an expected fi_pingpong result for any
+            instance type, so treat the first successful run as your baseline, keep it per instance
+            type, and compare later runs against it.
           </Box>
         </SpaceBetween>
       </Container>
@@ -882,31 +881,13 @@ diff /tmp/before /tmp/after`}</pre>
             items={counterRows}
           />
 
-          <Box variant="h3">The network stats struct</Box>
-          <Box variant="p">
-            The five counters that matter arrive in one structure shared between the device and the
-            driver. Reading it is the fastest way to see that the device reports these quantities
-            directly{' '}
-            <SourceRef provenance="code-derived" code={code.netStatsStruct} />.
-          </Box>
-          <Box variant="code">
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`struct efa_admin_network_stats {
-	u64 retrans_bytes;
-
-	u64 retrans_pkts;
-
-	u64 retrans_timeout_events;
-
-	u64 unresponsive_remote_events;
-
-	u64 impaired_remote_conn_events;
-};`}</pre>
-          </Box>
-
           <Box variant="h3">How to read them</Box>
           <Box variant="p">
-            AWS documents both retrieval paths: the rdma tool, which prints every counter for every
-            EFA link on the instance, and sysfs, one file per counter{' '}
+            The five network counters arrive together, in one structure shared between the device and
+            the driver{' '}
+            <SourceRef provenance="code-derived" code={code.netStatsStruct} />. AWS documents both
+            retrieval paths: the rdma tool, which prints every counter for every EFA link on the
+            instance, and sysfs, one file per counter{' '}
             <SourceRef provenance="documented" doc={docs.monitor} />.
           </Box>
           <Box variant="code">
@@ -1025,9 +1006,9 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
             <SpaceBetween size="s">
               <Box variant="p">
                 The EFA provider caches memory registrations so that a buffer used repeatedly is
-                registered once. The limits are device-derived. When neither is set explicitly, the
-                provider takes the maximum cached count from the device reported max_mr and the
-                maximum cached size from the device reported max_mr_size, each multiplied by 0.9{' '}
+                registered once. When neither limit is set explicitly, the provider takes the maximum
+                cached count from the device reported max_mr and the maximum cached size from the
+                device reported max_mr_size, each multiplied by 0.9{' '}
                 <SourceRef provenance="code-derived" code={code.mrCacheLimits} />. Two instance types
                 with different registration budgets therefore get different cache sizes for the same
                 code.
@@ -1064,11 +1045,8 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                <strong>Huge pages and fork safety.</strong> AWS states that EC2 instances with the
-                EFA driver installed pre-allocate 5128 huge pages of 2 MiB each, and that on
-                Kubernetes these are a resource a job requests{' '}
-                <SourceRef provenance="documented" doc={docs.eksNode} />. Asking for huge pages and
-                fork safety together aborts the process. If fork support is requested through
+                <strong>Huge pages and fork safety.</strong> Asking for huge pages and fork safety
+                together aborts the process. If fork support is requested through
                 FI_EFA_FORK_SAFE, RDMAV_FORK_SAFE or IBV_FORK_SAFE while FI_EFA_USE_HUGE_PAGE is on,
                 the provider prints a multi-line explanation ending in Your application will now abort
                 and calls abort; if huge pages were not explicitly requested, it silently turns them
@@ -1258,14 +1236,13 @@ sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
           </ColumnLayout>
 
           <Box variant="p">
-            One more path, and what it answers. You can create a VPC (Virtual
-            Private Cloud) Flow Log for an EFA, and AWS states that in the flow log entries EFA
-            traffic is identified by a source and destination address that are both formatted as MAC
-            addresses{' '}
-            <SourceRef provenance="documented" doc={docs.monitor} />. The documented example shows the
-            port and protocol fields empty, which follows from EFA traffic not being IP traffic. Flow
-            logs will tell you that two instances exchanged EFA packets. They will not tell you
-            anything about retransmission, impairment, or whether the run was fast.
+            One more path, and what it answers. You can create a VPC (Virtual Private Cloud) Flow Log
+            for an EFA, and AWS states that in the flow log entries EFA traffic is identified by a
+            source and destination address that are both formatted as MAC addresses, with the
+            documented example showing the port and protocol fields empty{' '}
+            <SourceRef provenance="documented" doc={docs.monitor} />. Flow logs will tell you that
+            two instances exchanged EFA packets. They will not tell you anything about
+            retransmission, impairment, or whether the run was fast.
           </Box>
 
           <Alert

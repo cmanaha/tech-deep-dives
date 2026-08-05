@@ -463,16 +463,16 @@ export function EnaVsEfa() {
               (Peripheral Component Interconnect) devices, each bound by its own driver into its
               own kernel subsystem.
             </strong>{' '}
-            You tell them apart by device ID and by the driver that claims them. ENA claims
-            0x0ec2, 0x1ec2, 0xec20, 0xec21 and 0x0051, a mix of PF (Physical Function) and VF
-            (Virtual Function) entries{' '}
+            You tell them apart by device ID and by the driver that claims them. The ENA table is a
+            mix of PF (Physical Function) and VF (Virtual Function) entries{' '}
             <SourceRef provenance="code-derived" code={code.enaPciIds} />, and ena.ko binds them
-            into netdev. EFA claims 0xefa0 through 0xefa4, every one of them a VF entry{' '}
+            into netdev. The EFA table is all VF entries{' '}
             <SourceRef provenance="code-derived" code={code.efaPciIds} />, and efa.ko binds them
             into the RDMA (Remote Direct Memory Access) subsystem. Each identifier belongs to
-            exactly one of the two sets. The word doing the damage is attachment: one network
-            interface attachment can create two PCI functions, so people reason backward from one
-            attachment to one device.
+            exactly one of the two sets, so lspci with numeric IDs on a running instance tells you
+            which of the two devices an attachment gave you. The word doing the damage is
+            attachment: one network interface attachment can create two PCI functions, so people
+            reason backward from one attachment to one device.
           </Box>
 
           <OneAttachmentTwoDevicesDiagram />
@@ -499,49 +499,54 @@ export function EnaVsEfa() {
             items={deviceRows}
           />
 
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">Four independent proofs</Box>
+          <Box variant="p">
+            The subsystem boundary is the part you feel while operating. EFA registers an ib_device
+            and sets node_type to RDMA_NODE_UNSPECIFIED, declining to claim it is InfiniBand or
+            RoCE{' '}
+            <SourceRef provenance="code-derived" code={code.efaIbDevice} />, and grepping the EFA
+            sources for net_device, register_netdev and netdev_ops returns zero hits. The EFA device
+            exists purely as an ib_device, so everything that hangs off a network interface, a MAC
+            address, an IP address, ethtool, belongs to the ENA side of the attachment. An EFA-only
+            interface creates no ENA device{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />, so on that attachment those tools
+            have no netdev to read.
+          </Box>
+
+          <ExpandableSection
+            headerText="The evidence that these are two independent devices"
+            headerDescription="Separate registration, independent builds, and AWS stating the same device count"
+          >
+            <SpaceBetween size="s">
               <Box variant="p">
-                The ID tables are the first. The second is registration: each driver calls
-                pci_register_driver with its own struct pci_driver and its own probe function,
-                ena_probe{' '}
+                Registration: each driver calls pci_register_driver with its own struct pci_driver
+                and its own probe function, ena_probe{' '}
                 <SourceRef provenance="code-derived" code={code.enaDriver} /> and efa_probe{' '}
-                <SourceRef provenance="code-derived" code={code.efaDriver} />. The third is code
-                sharing, tested in both directions: grepping the EFA sources for includes naming
-                ena and the ENA sources for includes naming efa each returns zero hits. The EFA
-                build is self-contained{' '}
+                <SourceRef provenance="code-derived" code={code.efaDriver} />. Code sharing, tested
+                in both directions: grepping the EFA sources for includes naming ena and the ENA
+                sources for includes naming efa each returns zero hits, and the EFA build is
+                self-contained{' '}
                 <SourceRef provenance="code-derived" code={code.efaKbuild} />.
               </Box>
               <Box variant="p">
-                The fourth is the subsystem boundary. EFA registers an ib_device and sets
-                node_type to RDMA_NODE_UNSPECIFIED, declining to claim it is InfiniBand or RoCE{' '}
-                <SourceRef provenance="code-derived" code={code.efaIbDevice} />. Grepping the EFA
-                sources for net_device, register_netdev and netdev_ops returns zero hits. The EFA
-                device exists purely as an ib_device, so everything that hangs off a network
-                interface, a MAC address, an IP address, ethtool, belongs to the ENA side of the
-                attachment.
+                The directory kernel/linux/common/ena_com is common across the ENA ports for Linux,
+                FreeBSD and DPDK. Only the ENA Makefile references it, through ENA_COM_PATH{' '}
+                <SourceRef provenance="code-derived" code={code.enaMakefile} />, while the EFA build
+                carries its own efa_com, structurally parallel and textually independent{' '}
+                <SourceRef provenance="code-derived" code={code.efaKbuild} />.
               </Box>
-            </div>
-            <div>
-              <Box variant="h3">AWS agrees, in its own words</Box>
               <Box variant="p">
                 The EC2 User Guide states that an EFA device can be attached in two ways: using a
                 traditional EFA interface, also called EFA with ENA, which creates both an EFA
-                device and an ENA device, or using an EFA-only interface, which creates just the
-                EFA device{' '}
+                device and an ENA device, or using an EFA-only interface, which creates just the EFA
+                device{' '}
                 <SourceRef provenance="code-confirmed" doc={docs.efa} code={code.efaPciIds} />. The
-                documentation and the ID table say the same thing, down to the count of devices.
+                same page separates EFA traffic from normal IP traffic from the ENA device of an EFA
+                interface when it lists limitations{' '}
+                <SourceRef provenance="documented" doc={docs.efa} />. Documentation and driver
+                tables agree down to the count of devices, so the conflation starts with the reader.
               </Box>
-              <Box variant="p">
-                The same page separates EFA traffic from normal IP traffic from the ENA device of
-                an EFA interface when it lists limitations{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />. That phrasing only makes
-                sense if there are two devices. Documentation and driver tables agree, so the
-                conflation starts with the reader.
-              </Box>
-            </div>
-          </ColumnLayout>
+            </SpaceBetween>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -611,11 +616,9 @@ export function EnaVsEfa() {
 
           <Alert type="success" header="OS bypass, read straight out of the driver sources">
             EFA exposes to userspace what ENA keeps in the kernel: a character device, a verbs
-            interface, and a mappable doorbell and descriptor ring. A grep across the ENA driver
-            sources for .mmap, remap_pfn_range and vm_ops returns zero hits{' '}
-            <SourceRef provenance="code-derived" code={code.enaWcMap} />. That single asymmetry is
-            what OS bypass means. The two share a house design language, admin queue abstraction,
-            phase bits, BAR 2 push region, write-combining, as separate implementations of it.
+            interface, and a mappable doorbell and descriptor ring. That single asymmetry is what
+            OS bypass means. The two share a house design language, admin queue abstraction, phase
+            bits, BAR 2 push region, write-combining, as separate implementations of it.
           </Alert>
 
           <ExpandableSection
@@ -671,36 +674,18 @@ export function EnaVsEfa() {
 
           <SrdSubstrateDiagram />
 
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">EFA-only, with no ENA device present</Box>
-              <Box variant="p">
-                An EFA-only interface creates an EFA device and no ENA device{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />, and it still carries SRD
-                traffic. SRD therefore reaches the wire with the ENA device absent, in a
-                configuration AWS ships and documents.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">What the ENA driver knows about SRD</Box>
-              <Box variant="p">
-                Its entire knowledge of SRD is a read-only statistics structure, struct
-                ena_admin_ena_srd_stats, holding four counters{' '}
-                <SourceRef provenance="code-derived" code={code.srdStats} />. Retransmission, the
-                reliability state machine, congestion control and reordering all live below the
-                PCI boundary, in the card.
-              </Box>
-            </div>
-          </ColumnLayout>
-
-          <Alert type="warning" header="What common means in kernel/linux/common/ena_com">
-            The ENA build pulls a directory named kernel/linux/common/ena_com. Common there means
-            shared across the ENA ports for Linux, FreeBSD and DPDK. Only the ENA Makefile
-            references it, through ENA_COM_PATH{' '}
-            <SourceRef provenance="code-derived" code={code.enaMakefile} />, while the EFA build
-            carries its own efa_com, structurally parallel and textually independent{' '}
-            <SourceRef provenance="code-derived" code={code.efaKbuild} />.
-          </Alert>
+          <Box variant="p">
+            Two shipping facts fix SRD below both devices. An EFA-only interface creates an EFA
+            device and no ENA device{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />, and it still carries SRD traffic,
+            so SRD reaches the wire with the ENA device absent in a configuration AWS ships and
+            documents. And the ENA driver's entire knowledge of SRD is a read-only statistics
+            structure, struct ena_admin_ena_srd_stats, holding four counters{' '}
+            <SourceRef provenance="code-derived" code={code.srdStats} />. Retransmission, the
+            reliability state machine, congestion control and reordering all live below the PCI
+            boundary, in the card. That is why the ethtool counters later in this section are the
+            whole of the in-instance view of SRD.
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -744,12 +729,12 @@ export function EnaVsEfa() {
             <div>
               <Box variant="h3">Offloads</Box>
               <Box variant="p">
-                IPv4 and IPv6 checksum, TSO (TCP Segmentation Offload) including the ECN variant,
-                receive checksum, scatter-gather, RSS (Receive Side Scaling) receive hashing, and
-                n-tuple flow steering{' '}
-                <SourceRef provenance="code-derived" code={code.enaOffloads} />. All stateless and
-                per-packet. XDP (eXpress Data Path) is supported: an eBPF hook that runs inside
-                the kernel, with the kernel still in the path.
+                All stateless and per-packet: IPv4 and IPv6 checksum, TSO (TCP Segmentation
+                Offload), scatter-gather, RSS (Receive Side Scaling) receive hashing, and n-tuple
+                flow steering{' '}
+                <SourceRef provenance="code-derived" code={code.enaOffloads} />. RSS is the one that
+                comes back below, as a cap on a single flow. XDP (eXpress Data Path) is supported:
+                an eBPF hook that runs inside the kernel, with the kernel still in the path.
               </Box>
             </div>
           </ColumnLayout>
@@ -1098,9 +1083,11 @@ ethtool -S eth0 | grep ena_srd
                 Plain ENA <Badge color="blue">default</Badge>
               </Box>
               <Box variant="p">
-                <strong>Latency:</strong> best of the three when the network is quiet and the work
-                is packets-per-second bound. Worst under congestion, because one path plus TCP
-                backoff.
+                <strong>Latency:</strong> better median than ENA Express while the network is
+                quiet, which is why AWS points packets-per-second workloads back to plain enhanced
+                networking{' '}
+                <SourceRef provenance="documented" doc={docs.enaExpress} />. Worst under
+                congestion, because one path plus TCP backoff.
               </Box>
               <Box variant="p">
                 <strong>CPU cost:</strong> full kernel stack per packet, amortized by GRO.

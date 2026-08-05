@@ -182,13 +182,6 @@ export function Pricing() {
               terrible here and is still the right choice for a workload that is mostly compute.
             </Box>
           </Alert>
-          <Alert type="warning" header="Re-pull before the business case">
-            <Box variant="p">
-              A price list version is a snapshot. Re-pull the bulk API before you build a business
-              case on any number here, and check the region: several EFA-capable families are sold
-              outside us-east-1 only.
-            </Box>
-          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -286,8 +279,9 @@ export function Pricing() {
           />
           <Alert type="info" header="The practical rule">
             <Box variant="p">
-              A price is a claim with an expiry date. Cite the version you read alongside the URL,
-              so the next reader can tell staleness from a real change. Every rate on this page is
+              A price is a claim with an expiry date. Re-pull the bulk API before you build a
+              business case on any rate here, and cite the version you read alongside the URL, so
+              the next reader can tell staleness from a real change. Every rate on this page is
               pinned to version 20260728175247.
             </Box>
           </Alert>
@@ -309,10 +303,10 @@ export function Pricing() {
             <Box variant="p">
               The instance specification tables carry Spot eligibility as a plain column, so
               eligibility is citable. The rate is a different matter: Spot rates do not appear in
-              the EC2 Price List bulk API or in any credential-free first-party AWS endpoint. Treat
-              any Spot number on a page like this one as a stale observation from someone's account
-              or an invented discount. An identical "60 percent savings" applied to four different
-              instance families is the shape of a number nobody measured.
+              the EC2 Price List bulk API or in any credential-free first-party AWS endpoint. So a
+              Spot rate cannot be pinned to a price list version the way every other rate here is,
+              and any Spot figure you carry into a business case has to arrive with its own
+              provenance and its own date.
             </Box>
           </Alert>
           <ColumnLayout columns={2} variant="text-grid">
@@ -326,9 +320,8 @@ export function Pricing() {
                 <SourceRef provenance="documented" doc={HPC_DOC} />
               </Box>
               <Box variant="p">
-                Both exclusions follow from how the capacity is sold. The UltraServer types are
-                reserved as a unit through Capacity Blocks, and the HPC families are built around
-                whole-cluster tenancy.
+                Our reading of both exclusions: the UltraServer types are reserved as a unit through
+                Capacity Blocks, and the HPC families are built around whole-cluster tenancy.
               </Box>
             </div>
             <div>
@@ -371,7 +364,8 @@ export function Pricing() {
                 <li>
                   Instances are terminated starting 30 minutes before the block ends for instance
                   types, or 60 minutes for UltraServer types, with an EventBridge event 10 minutes
-                  before termination begins.
+                  before termination begins. That event is what a checkpoint or drain hook subscribes
+                  to.
                 </li>
               </ul>
               <SourceRef provenance="documented" doc={CAPACITY_BLOCK_DOC} label="doc: capacity blocks" />

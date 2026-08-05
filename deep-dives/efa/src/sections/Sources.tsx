@@ -61,20 +61,19 @@ const sources: Source[] = [
 ];
 
 /**
- * Fact-check register.
+ * Fact-check register: a spot-check on the figures that travel, and the place a
+ * reader tests whether a number in the dive holds.
  *
- * Every row's `section` field must name a title that exists in the live nav in
- * App.tsx, and the claim must appear in that section's prose at that value.
- * The register is a spot-check on figures that travel, not a mirror of the
- * roughly 400 inline SourceRef citations the sections now carry: several
- * sections deliberately hold no rows here because their citations are inline.
+ * Adding a row: the `section` field names a title in the live nav in App.tsx,
+ * the claim appears in that section's prose at that value, and the cited source
+ * supports it. The roughly 400 inline SourceRef citations carry everything else,
+ * so a section with no row here is sourced inline.
  *
- * Two rules learned the hard way. Do not carry a figure the sections removed
- * as unsourceable (the per-message microsecond latencies and the single-flow
- * SRD numbers came out for that reason, and the ENA Express 25 Gbps figure
- * describes ENA Express rather than EFA). Do not restate a number the dive
- * corrected: prices are pinned to a price list version in the Pricing section,
- * and the pre-June-2025 p5 and p4d rates read as a fresh price cut if quoted.
+ * Keeping a row out: figures the sections removed as unsourceable (the
+ * per-message microsecond latencies, the single-flow SRD numbers, and the ENA
+ * Express 25 Gbps figure, which describes ENA Express rather than EFA), and
+ * numbers the dive corrected (prices are pinned to a price list version in the
+ * Pricing section, so the pre-June-2025 p5 and p4d rates read as a price cut).
  */
 const factChecks: FactCheckItem[] = [
   // What is EFA?
@@ -145,7 +144,7 @@ const factChecks: FactCheckItem[] = [
 ];
 
 const glossary: GlossaryEntry[] = [
-  { acronym: 'EFA', fullForm: 'Elastic Fabric Adapter', description: 'AWS network interface enabling OS-bypass networking for EC2 instances' },
+  { acronym: 'EFA', fullForm: 'Elastic Fabric Adapter', description: 'AWS network interface enabling OS-bypass networking for EC2 instances. It carries no charge of its own, and its traffic stays inside one Availability Zone' },
   { acronym: 'SRD', fullForm: 'Scalable Reliable Datagram', description: 'AWS proprietary transport protocol for datacenter networks, purpose-built for lossy fabrics' },
   { acronym: 'NCCL', fullForm: 'NVIDIA Collective Communications Library', description: 'Standard library for GPU-to-GPU collective operations in distributed training' },
   { acronym: 'RDMA', fullForm: 'Remote Direct Memory Access', description: 'Technology allowing direct memory access between computers without OS involvement' },
@@ -177,7 +176,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'WRF', fullForm: 'Weather Research and Forecasting', description: 'Mesoscale numerical weather prediction system used in atmospheric research' },
   { acronym: 'AMI', fullForm: 'Amazon Machine Image', description: 'Template for EC2 instance root volumes containing OS, application server, and applications' },
   { acronym: 'NIXL', fullForm: 'NVIDIA Inference Xfer Library', description: 'NVIDIA library for point-to-point inference transfers, including KV cache migration and disaggregated prefill and decode. Reaches EFA through its libfabric backend plugin, which requires libfabric 1.21.0 or later' },
-  { acronym: 'SM', fullForm: 'Streaming Multiprocessor', description: 'GPU compute unit containing CUDA cores; NIXL avoids consuming SMs during transfers unlike NCCL' },
+  { acronym: 'SM', fullForm: 'Streaming Multiprocessor', description: 'GPU compute unit containing CUDA cores. NCCL runs its collectives in SMs, and a NIXL transfer runs in none' },
   { acronym: 'KV', fullForm: 'Key-Value', description: 'As in KV-cache: stores computed attention keys and values for autoregressive inference' },
   { acronym: 'CC', fullForm: 'Collective Compute', description: 'Dedicated engine on Trainium chips orchestrating collective operations independently from NeuronCores' },
   { acronym: 'RDM', fullForm: 'Reliable Datagram Message', description: 'Libfabric endpoint type adding software reliability and message tagging over unreliable datagrams' },
@@ -188,7 +187,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'CNI', fullForm: 'Container Network Interface', description: 'Plugin specification for configuring network interfaces in Linux containers (used in Kubernetes)' },
   { acronym: 'OFI', fullForm: 'OpenFabrics Interfaces', description: 'Framework (libfabric) providing a portable API for high-performance fabric services' },
   { acronym: 'RCCL', fullForm: 'ROCm Communication Collectives Library', description: 'AMD equivalent of NCCL for ROCm GPU collective communications' },
-  { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'AWS mechanism to reserve EC2 capacity in a specific AZ without long-term commitment' },
+  { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'AWS mechanism to reserve EC2 capacity in a specific AZ for an open-ended duration. The placement group is chosen when the reservation is created' },
   { acronym: 'MSI-X', fullForm: 'Message Signaled Interrupts Extended', description: 'PCIe interrupt mechanism supporting per-queue interrupts for high-performance I/O' },
   { acronym: 'NCI', fullForm: 'Network Card Index', description: 'Identifier for a specific network card on a multi-NIC EC2 instance' },
   { acronym: 'UCCL', fullForm: 'Unified Collective Communication Library', description: 'Open source GPU communication library developed at the UC Berkeley Sky Computing Lab and UC Davis, covering collectives, point-to-point transfers and expert parallelism. Cited here for the NIXL versus NCCL KV cache benchmarks under p2p/benchmarks in uccl-project/uccl' },

@@ -688,22 +688,22 @@ const blogClaims: BlogClaimRow[] = [
   {
     claim: 'Tunes to the number and layout of ENA interfaces',
     reality:
-      'No interface enumeration exists. getifaddrs and if_nameindex appear nowhere in aws-c-io, and the S3 client source states that clients default to a single interface unless the caller names them.',
+      'Not found in the trees read. getifaddrs and if_nameindex appear nowhere in aws-c-io at the pinned commit, and the S3 client source states that clients default to a single interface unless the caller names them.',
   },
   {
     claim: 'Tunes to CPU topology',
     reality:
-      'Absent. The connection count is a pure function of the throughput target, computed once at construction.',
+      'The connection count is a pure function of the throughput target, computed once at construction.',
   },
   {
     claim: 'Tunes to the amount of memory',
     reality:
-      'Inverted. Host memory is never read; the memory ceiling is an output of the throughput target.',
+      'Inverted. The memory ceiling is an output of the throughput target, picked from a fixed ladder.',
   },
   {
     claim: 'Chooses the number of requests per S3 IP address',
     reality:
-      'Absent as a decision. Spreading across S3 addresses falls out of the resolver cache in aws-c-io, which vends a different cached address each time.',
+      'Emergent rather than chosen. Spreading across S3 addresses falls out of the resolver cache in aws-c-io, which vends a different cached address each time.',
   },
 ];
 
@@ -742,12 +742,6 @@ export function StorageDataPaths() {
             they need wide fan-out to reach even 100 Gbps: traffic between an individual client
             instance and an individual FSx for Lustre object storage server is limited to 5 Gbps{' '}
             <SourceRef provenance="documented" doc={docs.fsxPerf} />.
-          </Box>
-
-          <Box variant="p">
-            The second half of this section answers what a reader of an EFA dive asks next: what the
-            S3 path is made of, and where its ceiling comes from. That answer is settled in the
-            client source at pinned commits.
           </Box>
         </SpaceBetween>
       </Container>
@@ -829,10 +823,10 @@ export function StorageDataPaths() {
                 <SourceRef provenance="documented" doc={docs.fsxEfa} />.
               </Box>
               <Box variant="p">
-                The list being closed matters for anyone reading the instance matrix elsewhere in
-                this dive: it is four instance types out of the many that are EFA-capable. P4d, P4de
-                and the Trainium families are absent, and trn2 is excluded from FSx EFA support
-                outright.
+                The list being closed is what matters when you read the EFA instance matrix
+                elsewhere in this dive: four instance types, against a much longer list of
+                EFA-capable ones. The check to run is whether the clients you already plan to buy
+                are among the four.
               </Box>
             </div>
             <div>
@@ -873,7 +867,9 @@ export function StorageDataPaths() {
                 wrong and the file system still works: created with EfaEnabled true, mounted
                 successfully, running at ENA speed, with nothing in the console indicating anything
                 is wrong. A rule that looks maximally permissive is the one that silently keeps you
-                off the fabric.
+                off the fabric, so the signal to watch is per-client throughput: a file system
+                created with EFA that tops out near the 100 Gbps ENA figure rather than the 700
+                Gbps EFA one is worth re-checking against these rules.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -891,12 +887,11 @@ export function StorageDataPaths() {
             <SourceRef provenance="documented" doc={docs.fsxRepos} />.
           </Box>
           <Box variant="p">
-            Put those next to the EFA scope statement and the result is a constraint that decides a
-            lot of architectures. If you want EFA, GPUDirect Storage and lazy loading from S3 on the
-            same file system, Persistent 2 on SSD is the only configuration that gives all three.
-            Intelligent-Tiering gives the fabric and elastic capacity but no S3 link. Scratch gives
-            the S3 link and no fabric. This combination is our reading across three AWS pages rather
-            than a single AWS statement{' '}
+            Read those next to the EFA scope above and one configuration is left standing. If you
+            want EFA, GPUDirect Storage and lazy loading from S3 on the same file system, Persistent
+            2 on SSD is the only one that gives all three. Intelligent-Tiering gives the fabric and
+            elastic capacity but no S3 link; Scratch gives the S3 link and no fabric. That
+            combination is our reading across three AWS pages rather than a single AWS statement{' '}
             <SourceRef
               provenance="documented"
               doc={docs.fsxRepos}
@@ -1004,15 +999,14 @@ export function StorageDataPaths() {
             <SourceRef provenance="code-derived" code={code.nicOption} />.
           </Box>
           <Box variant="p">
-            The chain from that option to the kernel is short and complete. The connection manager
-            keeps an array of interface names and an index, advances the index once per new
-            connection, and copies the selected name into the socket options{' '}
+            What that option does is short and complete. The connection manager keeps the array of
+            names and an index, advances the index once per new connection, and copies the selected
+            name into the socket options, so the distribution strategy is round-robin and nothing
+            else{' '}
             <SourceRef provenance="code-derived" code={code.roundRobin} />. The socket layer then
-            calls setsockopt with SOL_SOCKET and SO_BINDTODEVICE on Linux, falling back to
-            if_nametoindex followed by IP_BOUND_IF on BSD-derived systems, and raising a
-            platform-not-supported error everywhere else{' '}
-            <SourceRef provenance="code-derived" code={code.bindToDevice} />. The distribution
-            strategy is round-robin and nothing else.
+            binds each connection to the named device with setsockopt, which is where the Linux
+            kernel requirement above applies{' '}
+            <SourceRef provenance="code-derived" code={code.bindToDevice} />.
           </Box>
 
           <Alert type="warning" header="Name the interfaces yourself: the client's own TODO calls auto-detection future work">
@@ -1029,9 +1023,9 @@ export function StorageDataPaths() {
                 <SourceRef provenance="code-derived" code={code.platformNic} />.
               </Box>
               <Box variant="p">
-                Absence corroborates it. Neither getifaddrs nor if_nameindex appears anywhere in
-                aws-c-io. There is no interface enumeration primitive in the I/O layer at all, and
-                if_nametoindex is used only to resolve a name the caller already supplied{' '}
+                A search of the same tree agrees. Neither getifaddrs nor if_nameindex appears
+                anywhere in aws-c-io at the pinned commit, and if_nametoindex is used only to
+                resolve a name the caller already supplied{' '}
                 <SourceRef provenance="code-derived" code={code.bindToDevice} label="code, absence" />
                 . The gap between the table's single-interface figure and an instance's aggregate ENA
                 bandwidth is exactly what manual configuration recovers.
@@ -1053,9 +1047,9 @@ export function StorageDataPaths() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A reader coming from the fabric side needs one thing from the S3 client: the throughput
-            target is a divisor. It feeds a division that picks a connection count and a lookup that
-            picks a memory budget. The constant is 100 divided by 250 Gbps per connection, which is
+            One property of the S3 client matters from the fabric side: the throughput target is a
+            divisor. It feeds a division that picks a connection count and a lookup that picks a
+            memory budget. The constant is 100 divided by 250 Gbps per connection, which is
             0.4 Gbps, and its own comment describes it as a magic value chosen
             to match the results of the previous algorithm{' '}
             <SourceRef provenance="code-derived" code={code.perConnection} />. The connection count is
@@ -1070,13 +1064,12 @@ export function StorageDataPaths() {
           <TargetFanOutDiagram />
 
           <Box variant="p">
-            The same number silently selects a memory ceiling from a fixed ladder of 2, 4, 8, 16 and
-            24 GiB{' '}
-            <SourceRef provenance="code-derived" code={code.memLadder} />, and the per-request range
-            size is that ceiling divided by the connection count divided by three, with an 8 MiB
-            floor{' '}
-            <SourceRef provenance="code-derived" code={code.rangeSize} />. The in-flight request cap
-            is the connection count multiplied by four{' '}
+            The same number picks the other three. The memory ceiling comes off a fixed ladder of 2,
+            4, 8, 16 and 24 GiB{' '}
+            <SourceRef provenance="code-derived" code={code.memLadder} />, the per-request range size
+            is that ceiling divided by the connection count and then by three, with an 8 MiB floor{' '}
+            <SourceRef provenance="code-derived" code={code.rangeSize} />, and the in-flight cap is
+            the connection count multiplied by four{' '}
             <SourceRef provenance="code-derived" code={code.inFlight} />.
           </Box>
           <Box variant="p">
@@ -1109,7 +1102,8 @@ export function StorageDataPaths() {
                 including distributing requests across multiple prefixes and reacting to 5xx rates{' '}
                 <SourceRef provenance="documented" doc={docs.s3Perf} />. The client implements the
                 two that are purely local. Key layout is the caller's job, so prefix design is the
-                binding constraint at high targets.
+                binding constraint at high targets, and the 5xx rate in that same list is what to
+                watch.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1232,30 +1226,24 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="What this section covers, and where to go for the Common Runtime mechanics it leaves alone."
+            description="What this section leaves to a storage dive, and which half of it you can check for yourself."
           >
             The boundary of this section
           </Header>
         }
       >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            Everything above earns its place by changing with the fabric: FSx deployment type,
-            GPUDirect Storage scope, per-client ceilings and interface binding. The Common Runtime's
-            other mechanics appear in the one form that changes a fabric decision. The memory ladder
-            is here because it makes range requests shrink as the target rises, the ETag parse
-            because it is the second irreversible decision, and the token bucket because it explains
-            why a throttled client fails instead of converging. Part size resolution, backoff jitter
-            modes, prefix partitioning and data repository task mechanics belong to a storage dive,
-            and the pinned commits above are where to start reading.
-          </Box>
-          <Box variant="p">
-            One provenance note before the comparison. FSx for Lustre here is documentation-sourced,
-            because the service side has no open-source artifact to read. The S3 client is
-            code-sourced at pinned commits. Both are strong, they are not the same class of evidence,
-            and the badge on each claim says which one you are looking at.
-          </Box>
-        </SpaceBetween>
+        <Box variant="p">
+          The Common Runtime appears here only where it changes a fabric decision: the memory ladder
+          because it makes range requests shrink as the target rises, the ETag parse because it is
+          the second irreversible decision, and the token bucket because it explains why a throttled
+          client fails instead of converging. Part size resolution, backoff jitter modes, prefix
+          partitioning and data repository task mechanics belong to a storage dive, and the pinned
+          commits above are where to start reading. The two halves are also different classes of
+          evidence: FSx for Lustre here is documentation-sourced, because the service side has no
+          open-source artifact to read, and the S3 client is code-sourced at pinned commits you can
+          open.
+          The badge on each claim says which one you are looking at.
+        </Box>
       </Container>
 
       <Container
@@ -1287,16 +1275,6 @@ export function StorageDataPaths() {
             <SourceRef provenance="code-derived" code={code.platformP5} />.
           </Box>
 
-          <Box variant="p">
-            The one-sentence version. EFA buys latency and CPU bypass on a fabric. FSx for Lustre buys
-            POSIX semantics, and on Persistent 2 with EFA enabled at create time it puts that
-            filesystem on the same fabric, worth 7 times per client over ENA and 12 times with
-            GPUDirect Storage{' '}
-            <SourceRef provenance="documented" doc={docs.fsxPerf} />. S3 with the CRT buys durability
-            and object semantics, and pays for throughput in connections, CPU cycles, memory and
-            request charges.
-          </Box>
-
           <Alert type="info" header="Two decisions to get right before any data is written">
             <SpaceBetween size="xs">
               <Box variant="p">
@@ -1321,7 +1299,7 @@ export function StorageDataPaths() {
             </SpaceBetween>
           </Alert>
 
-          <Box variant="h3">A short path for a reader arriving from the fabric material</Box>
+          <Box variant="h3">The order to answer these in</Box>
           <Box variant="p">
             Answer the questions in this order and most of the design falls out. What are my access
             semantics, objects or POSIX files? Is my per-client throughput target above 100 Gbps? If

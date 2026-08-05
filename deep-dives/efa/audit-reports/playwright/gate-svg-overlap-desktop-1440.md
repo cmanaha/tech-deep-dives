@@ -4,11 +4,11 @@ Status: **PASS** (0 finding(s))
 
 | field | value |
 | --- | --- |
-| generated | 2026-08-04T06:39:42.710Z |
+| generated | 2026-08-05T15:42:03.035Z |
 | viewport | 1440 x 900 |
 | base URL | http://127.0.0.1:4173/ |
 | sections visited | 20 |
-| diagrams checked | 31 |
+| diagrams checked | 30 |
 
 ## Scope
 

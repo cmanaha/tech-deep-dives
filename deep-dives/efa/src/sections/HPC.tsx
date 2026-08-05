@@ -77,10 +77,10 @@ export function HPC() {
         }
       >
         <Box variant="p">
-          EFA was built for HPC first, and the AI/ML use case followed as distributed training
-          grew. The HPC workloads it changes are the <strong>tightly-coupled</strong> ones, where
-          MPI (Message Passing Interface) ranks trade boundary conditions every timestep and the
-          wire sets the pace of the whole simulation.
+          The HPC workloads EFA changes are the <strong>tightly-coupled</strong> ones, where MPI
+          (Message Passing Interface) ranks wait on their neighbours every timestep and the wire
+          sets the pace of the whole simulation. Which side of that line your code sits on decides
+          whether the fabric is worth buying at all.
         </Box>
       </Container>
 
@@ -90,8 +90,9 @@ export function HPC() {
         <SpaceBetween size="m">
           <Box variant="p">
             Split the field by how often a rank waits on its neighbours. Every-timestep exchange
-            puts real time in the network, so the fabric moves the whole job. Ranks that run alone
-            are bounded by compute or by storage.
+            puts real time in the network, so the fabric moves the whole job; ranks that run alone
+            are bounded by compute or by storage. The equivalent check on your own code is where
+            its wall time goes, since it is the time spent inside MPI calls that the fabric acts on.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -107,8 +108,7 @@ export function HPC() {
             <div>
               <Box variant="h3">Loosely Coupled (EFA optional)</Box>
               <ul>
-                <li><strong>Monte Carlo:</strong> Independent trajectories, minimal communication</li>
-                <li><strong>Parameter sweeps:</strong> Embarrassingly parallel, no inter-rank communication</li>
+                <li><strong>Monte Carlo and parameter sweeps:</strong> Independent trajectories or cases, minimal to no inter-rank communication</li>
                 <li><strong>Genomics pipelines:</strong> BWA, GATK: bound by storage I/O</li>
                 <li><strong>Rendering:</strong> Frame-independent, scatter-gather at boundaries</li>
               </ul>
@@ -128,7 +128,8 @@ export function HPC() {
               instance. CFD Direct reports linear scaling at 1,008 cores across 28 instances, which
               they put at <strong>98.4%</strong> parallel efficiency. The same report puts standard
               networking at 70 to 90% scaling at 504 cores{' '}
-              <SourceRef provenance="documented" doc={docs.cfdDirect} />.
+              <SourceRef provenance="documented" doc={docs.cfdDirect} />. Parallel efficiency is
+              what that comparison turns on, so it is the number to record on your own case.
             </Box>
           </div>
           <div>
@@ -138,7 +139,8 @@ export function HPC() {
               <code>I_MPI_MULTIRAIL=1</code> gave a <strong>10% increase in speedup at 32
               instances</strong>, and at 192 instances <strong>the increase was over 30%</strong>{' '}
               <SourceRef provenance="documented" doc={docs.multirail} />. This is EFA against EFA:
-              what you leave on the table by using one of two EFA devices.
+              what you leave on the table by using one of two EFA devices, and the only one of these
+              three results that a single environment variable turns on.
             </Box>
           </div>
           <div>
@@ -160,10 +162,9 @@ export function HPC() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Wiring up a job means making sure your MPI loads a libfabric that has the EFA provider
-            in it. AWS names two MPI implementations as supported, Open MPI 4.1 and later and Intel
-            MPI 2019 Update 5 and later <SourceRef provenance="documented" doc={docs.efa} />. MPICH
-            runs over the same libfabric provider, and AWS support covers the two named above.
+            AWS names two MPI implementations as supported, Open MPI 4.1 and later and Intel MPI
+            2019 Update 5 and later <SourceRef provenance="documented" doc={docs.efa} />. MPICH runs
+            over the same libfabric provider, and AWS support covers the two named above.
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
             <div>
@@ -177,8 +178,9 @@ export function HPC() {
               <Box variant="h3">Intel MPI</Box>
               <Box variant="p">
                 Set <code>FI_PROVIDER=efa</code>, <code>I_MPI_OFI_LIBRARY_INTERNAL=0</code>,
-                and <code>I_MPI_MULTIRAIL=1</code> (for instances with 2+ EFA interfaces).
-                Intel MPI has its own libfabric. Point it to the system libfabric with EFA support.
+                and <code>I_MPI_MULTIRAIL=1</code> on instances with two or more EFA interfaces,
+                the setting behind the WRF result above. Intel MPI has its own libfabric; point it
+                at the system libfabric with EFA support.
               </Box>
             </div>
             <div>
@@ -202,10 +204,10 @@ export function HPC() {
               </Box>
               <Box variant="p">
                 <strong>Message sizes:</strong> EFA helps most where per-message overhead dominates,
-                which means small messages sent at high rate. On large messages the bandwidth
-                advantage still applies, and the per-message saving is a smaller share of the
-                transfer. The sourced figure above agrees in direction: the allreduce improvement
-                AWS reports was 50% for small messages against 10% for large ones{' '}
+                which means small messages sent at high rate. Large messages still get the
+                bandwidth advantage, with the per-message saving a smaller share of the transfer.
+                The sourced figure above agrees in direction: the allreduce improvement AWS reports
+                was 50% for small messages against 10% for large ones{' '}
                 <SourceRef provenance="documented" doc={docs.gen2} />.
               </Box>
             </SpaceBetween>
@@ -218,9 +220,8 @@ export function HPC() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            For CPU-only HPC with EFA, the dedicated HPC families are the price-performance answer,
-            and they are the most constrained families on EC2. The purchase and shape options are
-            narrow: no Spot, no Dedicated Hosts, no metal sizes, and Linux-first support{' '}
+            For CPU-only HPC with EFA, the dedicated HPC families are narrow on purchase and shape
+            options: no Spot, no Dedicated Hosts, no metal sizes, and Linux-first support{' '}
             <SourceRef provenance="documented" doc={docs.hpc} />. The placement constraint is the
             one every EFA workload has: traffic stays inside a single Availability Zone and a
             single VPC <SourceRef provenance="documented" doc={docs.efa} />. AWS recommends a
@@ -243,9 +244,8 @@ export function HPC() {
               <Box variant="h3">Hpc7g (Graviton3E, Nitro v5)</Box>
               <Box variant="p">
                 Up to 64 cores, 200 Gbps EFA, one network card{' '}
-                <SourceRef provenance="documented" doc={docs.hpc} />. RDMA support here is
-                asymmetric: every hpc7g size is RDMA read only{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />.
+                <SourceRef provenance="documented" doc={docs.hpc} />. Every hpc7g size is RDMA read
+                only <SourceRef provenance="documented" doc={docs.efa} />.
               </Box>
             </div>
             <div>

@@ -73,7 +73,6 @@ const code = {
   // Where the plugin sits.
   netSymbols: plugin('src/nccl_ofi_interface_nvidia.cpp', 'L661-L830'),
   neuronSymbols: plugin('src/nccl_ofi_interface_neuron.cpp', 'L323-L390'),
-  nameFixup: plugin('src/nccl_ofi_interface_nvidia.cpp', 'L830-L858'),
   tunerPackaging: plugin('src/Makefile.am', 'L160-L190'),
   xmlDir: plugin('src/Makefile.am', 'L11'),
   banner: plugin('src/nccl_ofi_net.cpp', 'L188-L195'),
@@ -97,7 +96,6 @@ const code = {
   sortRailsCall: plugin('src/nccl_ofi_topo.cpp', 'L998-L1005'),
   sortRails: plugin('src/platform-aws.cpp', 'L959-L991'),
   railContract: plugin('include/nccl_ofi_platform.h', 'L75-L97'),
-  topoXml: plugin('topology/p4d-24xl-topo.xml', 'L1-L26'),
   // Environment handling.
   envManager: plugin('include/nccl_ofi_environ.h', 'L36-L58'),
   envSkipLog: plugin('include/nccl_ofi_environ.h', 'L101-L110'),
@@ -460,34 +458,6 @@ function KnobLayersDiagram() {
   );
 }
 
-interface TunerRow {
-  iface: string;
-  nccl: string;
-  entry: string;
-  bailout: string;
-}
-
-const tunerRows: TunerRow[] = [
-  {
-    iface: 'ncclTunerPlugin_v2',
-    nccl: 'NCCL 2.21.x',
-    entry: 'nccl_ofi_tuner_init_v2',
-    bailout: 'Yes. Returns a null context when NCCL_ALGO or NCCL_PROTO is set.',
-  },
-  {
-    iface: 'ncclTunerPlugin_v3',
-    nccl: 'NCCL 2.22.3 and later',
-    entry: 'nccl_ofi_tuner_init',
-    bailout: 'None, back to plugin v1.13.0-aws.',
-  },
-  {
-    iface: 'ncclTunerPlugin_v6',
-    nccl: 'NCCL 2.30.3 and later',
-    entry: 'nccl_ofi_tuner_init_v6',
-    bailout: 'None in any shipped release. One was added and removed inside v1.20.0.',
-  },
-];
-
 interface StaleRow {
   advice: string;
   verdict: string;
@@ -662,11 +632,7 @@ export function NcclOverEfa() {
             so one binary serves NCCL 2.17.1 through 2.30.x{' '}
             <SourceRef provenance="code-derived" code={code.netSymbols} />. A separate file exports
             the Neuron interface at versions 4 through 6 for Trainium and Inferentia
-            <SourceRef provenance="code-derived" code={code.neuronSymbols} />. The library reports
-            itself as OFI by default, and renames itself to AWS Libfabric when you set NCCL_NET to
-            that string, which the code comment describes as backwards compatibility for scripts
-            written against plugin 1.11.0 and earlier{' '}
-            <SourceRef provenance="code-derived" code={code.nameFixup} />.
+            <SourceRef provenance="code-derived" code={code.neuronSymbols} />.
           </Box>
 
           <ColumnLayout columns={2} variant="text-grid">
@@ -693,13 +659,12 @@ export function NcclOverEfa() {
           </ColumnLayout>
 
           <Alert type="success" header="On NCCL 2.21 or later, the tuner loads itself">
-            The plugin build system spells out the version history in its own comment: NCCL 2.19
-            through 2.20 loaded a tuner only when NCCL_TUNER_PLUGIN named a file, and from NCCL 2.21
-            onward NCCL first checks NCCL_TUNER_PLUGIN and then looks for the tuner interface inside
-            the network plugin. Bundling the tuner into the network plugin is a deliberate choice so
-            that it loads by default on NCCL 2.21 or later{' '}
-            <SourceRef provenance="code-derived" code={code.tunerPackaging} />. Pointing
-            NCCL_TUNER_PLUGIN at a path is a 2024 workaround, scoped to NCCL 2.19 and 2.20.
+            The build system spells out the version history in its own comment: NCCL 2.19 and 2.20
+            loaded a tuner only when NCCL_TUNER_PLUGIN named a file, and from NCCL 2.21 onward NCCL
+            first checks NCCL_TUNER_PLUGIN and then looks inside the network plugin. Bundling the
+            tuner into the network plugin is deliberate, so that it loads by default on NCCL 2.21 or
+            later <SourceRef provenance="code-derived" code={code.tunerPackaging} />. Pointing
+            NCCL_TUNER_PLUGIN at a path is scoped to NCCL 2.19 and 2.20.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -835,15 +800,13 @@ export function NcclOverEfa() {
                 <SourceRef provenance="code-derived" code={code.platformTable} />.
               </Box>
               <Box variant="p">
-                A catch-all p-series entry picks up whichever p5 and later families the earlier
-                rows leave, and the comment says it is expected to apply to P6e-GB200 and later{' '}
+                A catch-all p-series entry picks up whichever p5 and later families the earlier rows
+                leave, and the comment says it is expected to apply to P6e-GB200 and later{' '}
                 <SourceRef provenance="code-derived" code={code.platformTable} />. Trainium and
-                Inferentia have their own entries, each with an empty injection map.
-              </Box>
-              <Box variant="p">
-                Where no row matches, the latency fall-through is 75 microseconds, with a comment
-                saying that value came from empirical testing on P5 and needs revisiting for newer
-                EFA generations <SourceRef provenance="code-derived" code={code.latency} />. An
+                Inferentia have their own entries, each with an empty injection map. Where no row
+                matches at all, the latency fall-through is 75 microseconds, with a comment saying
+                that value came from empirical testing on P5 and needs revisiting for newer EFA
+                generations <SourceRef provenance="code-derived" code={code.latency} />. An
                 unrecognised instance type still runs, on P5-era assumptions.
               </Box>
             </SpaceBetween>
@@ -887,15 +850,6 @@ export function NcclOverEfa() {
             which case it logs the value you set and leaves it alone{' '}
             <SourceRef provenance="code-derived" code={code.topoEnv} />.
           </Box>
-          <Box variant="p">
-            What is in one of those files is a hand-written PCIe tree: a system element, a CPU
-            element per NUMA node, a synthetic switch element per PCIe hierarchy, and under each
-            switch the GPUs and the EFA device that sit behind it, each with a bus address, a class
-            code, a vendor and device ID, a link speed and a link width. The p4d file's own header
-            describes the shape as two groups of PCIe hierarchy under each socket, each group with
-            two GPUs and one network device behind a switch{' '}
-            <SourceRef provenance="code-derived" code={code.topoXml} />.
-          </Box>
 
           <Alert type="warning" header="On p5 and later the topology file is generated at run time">
             <SpaceBetween size="xs">
@@ -918,33 +872,30 @@ export function NcclOverEfa() {
 
           <Box variant="h3">How the plugin maps GPUs to EFA devices</Box>
           <Box variant="p">
-            The grouping runs in four passes over an hwloc topology. First it marks every topology
-            node that has libfabric device information in its subtree. Then it walks up from each
-            accelerator and increases a group count on the closest marked ancestor. Then it lifts
-            device lists up to nodes with a non-zero group count. Then it splits each list into that
-            many groups and prints the result{' '}
-            <SourceRef provenance="code-derived" code={code.topoGroup} />. The print is the log line
-            worth knowing: one line per device, giving the group index, the device index within the
-            group and the PCI bus address{' '}
-            <SourceRef provenance="code-derived" code={code.nicGroupLog} />.
+            The plugin walks an hwloc topology, finds for each accelerator the closest ancestor with
+            libfabric devices beneath it, and splits that ancestor's device list into one group per
+            accelerator that resolved to it{' '}
+            <SourceRef provenance="code-derived" code={code.topoGroup} />. It then prints the result,
+            one line per device, giving the group index, the device index within the group and the
+            PCI bus address <SourceRef provenance="code-derived" code={code.nicGroupLog} />. Those
+            lines are the ones to read in a slow job.
           </Box>
           <Box variant="p">
-            sort_rails runs inside that split, on the device list of a single group, with the group
-            size passed in <SourceRef provenance="code-derived" code={code.sortRailsCall} />. The
-            platform interface states the contract in its own comment: implementations should sort
-            the list so that the Nth provider on this node is assumed to talk to the Nth provider on
-            remote nodes <SourceRef provenance="code-derived" code={code.railContract} />. A rail is
-            an ordinal that both ends agree on, held in software.
+            sort_rails runs inside that split, on the device list of a single group{' '}
+            <SourceRef provenance="code-derived" code={code.sortRailsCall} />. The platform interface
+            states the contract in its own comment: implementations should sort the list so that the
+            Nth provider on this node is assumed to talk to the Nth provider on remote nodes{' '}
+            <SourceRef provenance="code-derived" code={code.railContract} />. A rail is an ordinal
+            that both ends agree on, held in software.
           </Box>
           <Box variant="p">
             The AWS implementation explains why it reorders. On P5 and P5e there are up to 32 EFA
             devices, each pair shares Nitro card resources, and there is a marginal gain if the 0th
             device of a pair only talks to 0th devices remotely. The hypervisor varies in how it
             maps bus, device and function numbers across the two devices that share resources, so
-            the code reorders the list to force the pairing{' '}
-            <SourceRef provenance="code-derived" code={code.sortRails} />. It returns immediately
-            when there is at most one device per group, with the comment that on P4d or Trainium the
-            topology ordering is assumed sufficient{' '}
+            the code reorders the list to force the pairing. It returns immediately when there is at
+            most one device per group, with the comment that on P4d or Trainium the topology
+            ordering is assumed sufficient{' '}
             <SourceRef provenance="code-derived" code={code.sortRails} />.
           </Box>
           <Box variant="p">
@@ -1012,100 +963,66 @@ export function NcclOverEfa() {
             headerText="Which entry point your NCCL binds to"
             headerDescription="Evidence for the version mapping above: the symbol NCCL looks for decides it"
           >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                NCCL 2.21.5 defines the tuner plugin symbol as ncclTunerPlugin_v2{' '}
-                <SourceRef provenance="code-derived" code={code.ncclSymbol221} />, NCCL 2.22.3 moved
-                it to v3 <SourceRef provenance="code-derived" code={code.ncclSymbol222} />, and NCCL
-                2.30.4 uses v6 <SourceRef provenance="code-derived" code={code.ncclSymbol} />. The
-                plugin exports all three, so the NCCL you are running makes the choice{' '}
-                <SourceRef provenance="code-derived" code={code.tunerV2Symbol} />. The v1 interface
-                was removed entirely in plugin v1.20.0{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />, and the commit that
-                introduced the guard scopes it in its own subject line: updating tuner v1/v2 to fall
-                back on internal when algo or proto is set{' '}
-                <SourceRef provenance="code-derived" code={code.v2Guard} />.
-              </Box>
-              <Table
-                variant="embedded"
-                header={<Header variant="h3">Which tuner interface your NCCL binds to</Header>}
-                columnDefinitions={[
-                  { id: 'iface', header: 'Exported symbol', cell: (item) => <code>{item.iface}</code> },
-                  { id: 'nccl', header: 'NCCL versions', cell: (item) => item.nccl },
-                  { id: 'entry', header: 'Plugin entry point', cell: (item) => <code>{item.entry}</code> },
-                  { id: 'bailout', header: 'NCCL_ALGO / NCCL_PROTO bailout', cell: (item) => item.bailout },
-                ]}
-                items={tunerRows}
-              />
-            </SpaceBetween>
+            <Box variant="p">
+              NCCL 2.21.5 defines the tuner plugin symbol as ncclTunerPlugin_v2{' '}
+              <SourceRef provenance="code-derived" code={code.ncclSymbol221} />, NCCL 2.22.3 moved it
+              to v3 <SourceRef provenance="code-derived" code={code.ncclSymbol222} />, and NCCL
+              2.30.4 uses v6 <SourceRef provenance="code-derived" code={code.ncclSymbol} />. The
+              plugin exports all three, so the NCCL you are running makes the choice{' '}
+              <SourceRef provenance="code-derived" code={code.tunerV2Symbol} />. The v1 interface was
+              removed entirely in plugin v1.20.0{' '}
+              <SourceRef provenance="code-derived" code={code.releaseNotes} />, and the commit that
+              introduced the guard scopes it in its own subject line: updating tuner v1/v2 to fall
+              back on internal when algo or proto is set{' '}
+              <SourceRef provenance="code-derived" code={code.v2Guard} />.
+            </Box>
           </ExpandableSection>
 
           <ExpandableSection
             headerText="Where NCCL applies your NCCL_ALGO filter"
             headerDescription="NCCL marks the cells you excluded before the tuner is ever called"
           >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                The order is visible in one function in NCCL. It initialises every cell of the table
-                to NCCL_ALGO_PROTO_IGNORE{' '}
-                <SourceRef provenance="code-derived" code={code.ncclInitTable} />, fills in modelled
-                times only for combinations the communicator allows{' '}
-                <SourceRef provenance="code-derived" code={code.ncclUpdateTable} />, then calls the
-                tuner, then picks the minimum{' '}
-                <SourceRef provenance="code-derived" code={code.ncclCallOrder} />.
-              </Box>
-              <Box variant="p">
-                The user's filter is applied earlier still. NCCL parses NCCL_ALGO and NCCL_PROTO
-                into per-function enable arrays at tuning time{' '}
-                <SourceRef provenance="code-derived" code={code.ncclEnvParse} />, and zeroes the
-                modelled bandwidth for every disabled combination{' '}
-                <SourceRef provenance="code-derived" code={code.ncclZeroBw} />. A zero bandwidth
-                makes the time lookup return -1.0{' '}
-                <SourceRef provenance="code-derived" code={code.ncclAlgoTime} />, which is the exact
-                value of NCCL_ALGO_PROTO_IGNORE{' '}
-                <SourceRef provenance="code-derived" code={code.ncclIgnore} />.
-              </Box>
-              <Box variant="p">
-                So by the time the tuner is called, the cells you excluded are already marked, and
-                the tuner skips any cell equal to NCCL_ALGO_PROTO_IGNORE{' '}
-                <SourceRef provenance="code-derived" code={code.regionSkip} />. Your filter and the
-                tuner compose: the filter narrows the table, the tuner votes inside what is left,
-                and NCCL takes the minimum of that.
-              </Box>
-            </SpaceBetween>
+            <Box variant="p">
+              Your filter is applied first. NCCL parses NCCL_ALGO and NCCL_PROTO into per-function
+              enable arrays at tuning time{' '}
+              <SourceRef provenance="code-derived" code={code.ncclEnvParse} /> and zeroes the
+              modelled bandwidth for every disabled combination{' '}
+              <SourceRef provenance="code-derived" code={code.ncclZeroBw} />, which makes the time
+              lookup return -1.0 <SourceRef provenance="code-derived" code={code.ncclAlgoTime} />,
+              the exact value of NCCL_ALGO_PROTO_IGNORE{' '}
+              <SourceRef provenance="code-derived" code={code.ncclIgnore} />. Only then does NCCL
+              initialise the table <SourceRef provenance="code-derived" code={code.ncclInitTable} />,
+              fill in modelled times for the combinations the communicator allows{' '}
+              <SourceRef provenance="code-derived" code={code.ncclUpdateTable} />, call the tuner and
+              pick the minimum <SourceRef provenance="code-derived" code={code.ncclCallOrder} />, and
+              the tuner skips any cell already equal to NCCL_ALGO_PROTO_IGNORE{' '}
+              <SourceRef provenance="code-derived" code={code.regionSkip} />. Your filter and the
+              tuner compose: the filter narrows the table, the tuner votes inside what is left, and
+              NCCL takes the minimum of that.
+            </Box>
           </ExpandableSection>
 
           <ExpandableSection
             headerText="What the v1.20.0 tuner segfault fix actually changed"
             headerDescription="The release-note line reads like evidence the tuner ran anyway; the commit says otherwise"
           >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                The v1.20.0 release notes list a fix for a tuner segfault when NCCL_ALGO or
-                NCCL_PROTO is explicitly set{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />. Since a crash needs
-                code to be executing, that line invites the reading that the tuner ran despite those
-                variables. The commit places the crash somewhere else.
-              </Box>
-              <Box variant="p">
-                The crash was inside the bailout. The v2 initialiser logged an informational message
-                on the early-return path before the log function pointer had been assigned, and the
-                logging macro dereferenced a null pointer. The fix assigns the log function inside
-                the early-return path before the log call{' '}
-                <SourceRef provenance="code-derived" code={code.segfaultFix} />. The segfault
-                happened precisely when the tuner was declining to run.
-              </Box>
-              <Box variant="p">
-                The same commit removed an identical bailout from the v6 initialiser, with the
-                commit message stating that NCCL 2.30 and later handle algorithm and protocol
-                filtering internally, leaving the tuner nothing to opt out of{' '}
-                <SourceRef provenance="code-derived" code={code.segfaultFix} />. That v6 block had
-                arrived only two months earlier, when the v5 and v6 API headers were imported{' '}
-                <SourceRef provenance="code-derived" code={code.v6HeadersImport} />, and both
-                commits land only in v1.20.0, so the v6 bailout existed only between those two
-                commits and shipped in no release.
-              </Box>
-            </SpaceBetween>
+            <Box variant="p">
+              The v1.20.0 release notes list a fix for a tuner segfault when NCCL_ALGO or NCCL_PROTO
+              is explicitly set <SourceRef provenance="code-derived" code={code.releaseNotes} />, and
+              since a crash needs code to be executing, that line invites the reading that the tuner
+              ran despite those variables. The commit places the crash inside the bailout instead:
+              the v2 initialiser logged on the early-return path before the log function pointer had
+              been assigned, and the logging macro dereferenced a null pointer. The fix assigns the
+              log function inside that path before the log call{' '}
+              <SourceRef provenance="code-derived" code={code.segfaultFix} />. The segfault happened
+              precisely when the tuner was declining to run. The same commit removed an identical
+              bailout from the v6 initialiser, with the commit message stating that NCCL 2.30 and
+              later handle algorithm and protocol filtering internally{' '}
+              <SourceRef provenance="code-derived" code={code.segfaultFix} />; that block had arrived
+              two months earlier with the v5 and v6 API headers{' '}
+              <SourceRef provenance="code-derived" code={code.v6HeadersImport} />, and both commits
+              land only in v1.20.0, so the v6 bailout shipped in no release.
+            </Box>
           </ExpandableSection>
 
           <ExpandableSection
@@ -1131,24 +1048,20 @@ export function NcclOverEfa() {
             headerText="What cmpScore actually sorts"
             headerDescription="A function widely cited as the algorithm chooser, and the job it really does"
           >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                cmpScore is the comparison function for a sort over candidate GPUs, used while NCCL
-                searches for the next GPU to add to a ring or tree channel. The scores are filled in
-                from path hop counts and bandwidths between GPUs and between a GPU and the network
-                device, then sorted, and the comment above the structure says the sort exists so the
-                search converges quickly even if it times out{' '}
-                <SourceRef provenance="code-derived" code={code.ncclSearchSort} />. Algorithm and
-                protocol selection is the cost-table path described above, in enqueue.cc.
-              </Box>
-              <Box variant="p">
-                Guides that cite it as the place algorithms get chosen quote its ordering correctly:
-                interBw, then interPciBw, then interNhops, then intraBw, then intraNhops{' '}
-                <SourceRef provenance="code-derived" code={code.ncclCmpScore} />. The path is worth
-                copying carefully too. The file is src/graph/search.cc, and has been since at least
-                NCCL 2.21.5.
-              </Box>
-            </SpaceBetween>
+            <Box variant="p">
+              cmpScore is the comparison function for a sort over candidate GPUs, used while NCCL
+              searches for the next GPU to add to a ring or tree channel. The scores come from path
+              hop counts and bandwidths between GPUs and between a GPU and the network device, and
+              the comment above the structure says the sort exists so the search converges quickly
+              even if it times out{' '}
+              <SourceRef provenance="code-derived" code={code.ncclSearchSort} />. Guides that cite it
+              as the place algorithms get chosen quote its ordering correctly, interBw then
+              interPciBw then interNhops then intraBw then intraNhops{' '}
+              <SourceRef provenance="code-derived" code={code.ncclCmpScore} />, but algorithm and
+              protocol selection is the cost-table path described above, in enqueue.cc. The path is
+              worth copying carefully too: the file is src/graph/search.cc, and has been since at
+              least NCCL 2.21.5.
+            </Box>
           </ExpandableSection>
           <ExpandableSection
             headerText="One case where the plugin sets NCCL_PROTO for you"
@@ -1173,8 +1086,6 @@ export function NcclOverEfa() {
                 NCCL's tuner load was not traced during this research, so treat the consequence as
                 inference{' '}
                 <SourceRef provenance="code-derived" code={code.protoSimple} label="inference" />.
-                The mechanism on each side is code-confirmed; the interaction between them remains
-                untraced.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1217,22 +1128,16 @@ export function NcclOverEfa() {
               <Box variant="h3">Where to read the truth</Box>
               <Box variant="p">
                 Read it from the init banner, the one source that reports what the running process
-                loaded <SourceRef provenance="code-derived" code={code.banner} />. The plugin, the
-                NCCL in the process and the libfabric that was actually dynamically linked can all
-                differ from what the package manager installed on disk, especially inside a
-                container that inherits libraries from the host.
+                loaded <SourceRef provenance="code-derived" code={code.banner} />. Under
+                NCCL_DEBUG=INFO the NET/OFI Initializing line carries the plugin version and the
+                NET/OFI Using Libfabric version line carries the major and minor actually linked
+                against; NCCL prints its own version in its own startup banner. Those three plus the
+                instance type are the whole compatibility picture. All three versions can differ
+                from what the package manager installed on disk, especially inside a container that
+                inherits libraries from the host.
               </Box>
             </div>
           </ColumnLayout>
-
-          <Alert type="info" header="The two lines to grep for">
-            Run with NCCL_DEBUG=INFO and look for the line beginning NET/OFI Initializing, which
-            carries the plugin package name and version, and the line beginning NET/OFI Using
-            Libfabric version, which carries the major and minor of the libfabric the process linked
-            against <SourceRef provenance="code-derived" code={code.banner} />. NCCL prints its own
-            version in its startup banner. Those three, plus the instance type, are the full
-            compatibility picture.
-          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -1297,18 +1202,17 @@ export function NcclOverEfa() {
             of the libfabric feature at release tag v1.20.0.
           </Box>
           <Box variant="p">
-            The sequence is explicit in the code. It reuses the libfabric domain the proxy plugin
-            already opened, with an in-file comment stating that on libfabric 2.4 and later the
-            proxy selects the efa-direct fabric and that domain is the one exposing the GPUDirect
-            Async operations. It opens a libfabric endpoint on that domain, then opens
-            FI_EFA_GDA_OPS on it and queries the send and receive work-queue attributes and the
-            completion-queue attributes needed to populate GPU-resident queue-pair and
-            completion-queue descriptors{' '}
+            It reuses the libfabric domain the proxy plugin already opened, with an in-file comment
+            stating that on libfabric 2.4 and later the proxy selects the efa-direct fabric and that
+            domain is the one exposing the GPUDirect Async operations. It opens FI_EFA_GDA_OPS on an
+            endpoint of that domain and queries the work-queue and completion-queue attributes
+            needed to populate GPU-resident queue-pair and completion-queue descriptors{' '}
             <SourceRef provenance="code-derived" code={code.ginOpen} />
             <SourceRef provenance="code-derived" code={code.gdaOps} />. A failed open throws with a
-            message naming the two likely causes: libfabric too old, or a proxy-selected fabric
-            other than efa-direct{' '}
-            <SourceRef provenance="code-derived" code={code.ginOpen} />.
+            message naming the two likely causes, and they are the two to check first: libfabric too
+            old, or a proxy-selected fabric other than efa-direct{' '}
+            <SourceRef provenance="code-derived" code={code.ginOpen} />. The libfabric section covers
+            that operations table and the efa-direct gate in detail.
           </Box>
           <Box variant="p">
             The result is exported against NCCL's GPU-initiated networking interface at version 13{' '}
@@ -1319,15 +1223,8 @@ export function NcclOverEfa() {
             without it fails init deliberately, on the stated grounds that GDAKI was an explicit
             opt-in <SourceRef provenance="code-derived" code={code.ginSwitch} />
             <SourceRef provenance="code-derived" code={code.paramGin} />. The default remains the
-            proxy path.
+            proxy path, so a job that does not ask for GDAKI on both counts does not get it.
           </Box>
-          <Alert type="info" header="What the libfabric side actually exposes">
-            The operations table behind FI_EFA_GDA_OPS holds queries and extended opens: remote
-            addressing fields, work-queue and completion-queue buffers with their doorbells and
-            entry sizes, and a memory-registration local key. The data path itself stays where it
-            was. The libfabric section covers that table and the efa-direct gate in detail{' '}
-            <SourceRef provenance="code-derived" code={code.gdaOps} />.
-          </Alert>
         </SpaceBetween>
       </Container>
 

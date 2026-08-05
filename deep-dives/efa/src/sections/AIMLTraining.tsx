@@ -152,7 +152,9 @@ export function AIMLTraining() {
                 wire. Divide it by the 3,200 Gbps of EFA bandwidth AWS documents for a P5 layout{' '}
                 <SourceRef provenance="documented" doc={docs.efaAcc} /> and you get about 70
                 milliseconds. Treat the ratio as illustrative: line-rate division that ignores
-                collective algorithm, message size and overlap with compute.
+                collective algorithm, message size and overlap with compute. The method is what
+                transfers: bytes on the wire per step, divided by the documented bandwidth of the
+                instance you are sizing.
               </Box>
               <StatusIndicator type="success">
                 EFA critical: allreduce is the bottleneck
@@ -265,11 +267,6 @@ export function AIMLTraining() {
                 streaming multiprocessors. AWS publishes no figure for the resulting speedup, and it
                 is workload-dependent.
               </Box>
-              <Box variant="p">
-                <strong>Hierarchical communication:</strong> Neuron reduces locally within a node
-                over NeuronLink, coordinates between designated processes over EFA, then broadcasts
-                the result. That keeps EFA traffic to a minimum.
-              </Box>
             </SpaceBetween>
           </ExpandableSection>
         </SpaceBetween>
@@ -285,27 +282,13 @@ export function AIMLTraining() {
         <SpaceBetween size="m">
           <Box variant="p">
             NVIDIA NCCL (Collective Communications Library) is the standard for GPU-to-GPU
-            communication. The <code>aws-ofi-nccl</code> plugin bridges NCCL to EFA via libfabric.
+            communication. The <code>aws-ofi-nccl</code> plugin bridges NCCL to EFA via libfabric:
+            PyTorch calls NCCL for allreduce, allgather and reduce-scatter; NCCL decides which GPU
+            talks to which and in what order, then hands each send and receive to the plugin; the
+            plugin turns those into libfabric operations and registers the memory; libfabric maps
+            them to EFA hardware commands; and the device moves the bytes. The NCCL over EFA section
+            draws that stack and says which layer owns which environment variables.
           </Box>
-          <ExpandableSection headerText="How the stack works">
-            <SpaceBetween size="s">
-              <Box variant="p">
-                <strong>1. Framework layer (PyTorch):</strong> calls NCCL for allreduce, allgather and reduce-scatter.
-              </Box>
-              <Box variant="p">
-                <strong>2. NCCL:</strong> implements ring, tree and recursive halving-doubling, and decides which GPU talks to which, in what order.
-              </Box>
-              <Box variant="p">
-                <strong>3. aws-ofi-nccl plugin:</strong> translates NCCL send and receive on channels into libfabric operations, registers memory, uses GDR (GPUDirect RDMA) where available.
-              </Box>
-              <Box variant="p">
-                <strong>4. libfabric EFA provider:</strong> maps those operations to EFA hardware commands, managing queue pairs and completion queues.
-              </Box>
-              <Box variant="p">
-                <strong>5. EFA hardware and SRD:</strong> moves the bytes, with multi-path routing, packet spraying and hardware reliability.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
 
           <ExpandableSection headerText="NCCL environment variables for EFA: the two worth setting">
             <SpaceBetween size="s">
@@ -383,18 +366,6 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 per pointer and stages through host memory when it is unavailable.
               </Box>
               <Box variant="p">
-                <strong>NCCL topology XML schema:</strong> The XML describes a tree of{' '}
-                <code>&lt;system&gt;</code> → <code>&lt;cpu&gt;</code> → <code>&lt;pci&gt;</code> →{' '}
-                <code>&lt;gpu&gt;</code>/<code>&lt;nic&gt;</code> nodes. Each NIC is placed under
-                the same PCIe switch as its paired GPUs. This is how NCCL knows which NIC to use
-                for each GPU&apos;s inter-node traffic. <code>aws-ofi-nccl</code> ships three such
-                files at v1.20.0, for p4d, p4de and g5.48xlarge{' '}
-                <SourceRef provenance="code-derived" code={code.topoP4d} />
-                <SourceRef provenance="code-derived" code={code.topoG5} />. For P5 and later the
-                plugin reorders the rail assignment in software instead{' '}
-                <SourceRef provenance="code-derived" code={code.sortRails} />.
-              </Box>
-              <Box variant="p">
                 <strong>Algorithm selection:</strong> the <code>aws-ofi-nccl</code> tuner writes
                 into <code>collCostTable</code>, the algorithm by protocol cost matrix, making the
                 combinations it prefers cheaper. NCCL then picks the minimum, so the tuner biases a
@@ -407,7 +378,8 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 <SourceRef provenance="code-derived" code={code.tunerV2} />; v3 for NCCL 2.22.3 and
                 later <SourceRef provenance="code-derived" code={code.tunerV3} /> and v6 for NCCL
                 2.30.3 and later <SourceRef provenance="code-derived" code={code.tunerV6} /> run the
-                tuner either way, with NCCL applying your filter on top of the cost table.
+                tuner either way. So on anything past NCCL 2.21.x, setting{' '}
+                <code>NCCL_ALGO</code> narrows the table rather than disabling the tuner.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -441,7 +413,9 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
           </ExpandableSection>
 
           <Alert type="success" header="Getting NCCL_TOPO_FILE right: leave it unset on P5 and later">
-            The plugin ships exactly three topology XML files at v1.20.0, for p4d, p4de and
+            A topology XML places each network device under the same PCIe switch as its paired GPUs,
+            which is how NCCL knows which device to use for a given GPU&apos;s inter-node traffic.
+            The plugin ships exactly three of those files at v1.20.0, for p4d, p4de and
             g5.48xlarge <SourceRef provenance="code-derived" code={code.topoP4d} />
             <SourceRef provenance="code-derived" code={code.topoG5} />. On P5 and later the plugin
             discovers the topology on the running instance and reorders the NIC-to-GPU rail

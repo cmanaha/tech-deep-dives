@@ -46,7 +46,6 @@ const code = {
   // amzn-drivers, the out-of-tree module the EFA installer builds.
   kverbs: amzn('src/efa_data_verbs.c', 'L324-L756'),
   devOps: amzn('src/efa_main.c', 'L551-L559'),
-  devOpsLegacy: amzn('src/efa_main.c', 'L680-L687'),
   controlOps: amzn('src/efa_main.c', 'L474-L547'),
   kverbsOn: amzn('CMakeLists.txt', 'L36'),
   dkms: amzn('conf/configure-dkms.sh'),
@@ -57,7 +56,6 @@ const code = {
   mmapQueue: amzn('src/efa_verbs.c', 'L879-L923'),
   mmapCq: amzn('src/efa_verbs.c', 'L1763-L1775'),
   mmapProt: amzn('src/efa_verbs.c', 'L3343-L3382'),
-  llqCap: amzn('src/efa_verbs.c', 'L959-L962'),
   uarn: amzn('src/efa.h', 'L89-L99'),
   uarnScope: amzn('src/efa_verbs.c', 'L1333'),
   p2p: amzn('src/efa_verbs.c', 'L2814'),
@@ -429,7 +427,6 @@ function PostSendDoorbellSequence() {
 interface VerbsObject {
   name: string;
   what: string;
-  created: string;
   hot: string;
 }
 
@@ -437,31 +434,26 @@ const verbsObjects: VerbsObject[] = [
   {
     name: 'Protection domain (PD)',
     what: 'The isolation boundary. Every queue pair and every memory region belongs to one.',
-    created: 'Kernel, at setup',
     hot: 'Never touched',
   },
   {
     name: 'Memory region (MR)',
     what: 'A pinned, device-addressable range of your memory, with a local key and a remote key.',
-    created: 'Kernel, at registration',
     hot: 'Its local key is copied into every work queue entry',
   },
   {
     name: 'Queue pair (QP)',
     what: 'A send queue and a receive queue. The send queue is the ring the application writes into.',
-    created: 'Kernel, at setup',
     hot: 'Written directly, through the mapping',
   },
   {
     name: 'Completion queue (CQ)',
     what: 'The ring the device writes completion entries into, with a phase bit the reader watches.',
-    created: 'Kernel, at setup',
     hot: 'Read directly, through the mapping',
   },
   {
     name: 'Address handle (AH)',
     what: 'The resolved destination. SRD carries one on every send instead of holding a connection.',
-    created: 'Kernel, at address resolution',
     hot: 'Its handle number is copied into the descriptor',
   },
 ];
@@ -507,7 +499,7 @@ export function DataPath() {
 
       <Container
         header={
-          <Header variant="h2" description="Control plane in the kernel, data plane out of it">
+          <Header variant="h2" description="Which work costs a system call, and which work never does">
             What the kernel is still on the path for
           </Header>
         }
@@ -524,10 +516,9 @@ export function DataPath() {
               <Box variant="p">
                 Allocating a protection domain, creating a queue pair and a completion queue,
                 registering memory, creating an address handle, and mapping the device registers
-                into the process. Every one of these is an entry in the driver operations table
-                and every one of them is a real transition into the kernel{' '}
-                <SourceRef provenance="code-derived" code={code.controlOps} />. Teardown runs the
-                same way in reverse.
+                into the process. Each of these is a real transition into the kernel{' '}
+                <SourceRef provenance="code-derived" code={code.controlOps} />, and teardown runs
+                the same way in reverse.
               </Box>
             </div>
             <div>
@@ -543,11 +534,12 @@ export function DataPath() {
           <Alert type="info" header="OS bypass is a property of the data plane">
             Setup is expensive by design: registering a large buffer pins pages and programs the
             device page tables. Paying that once per resource is what leaves the per-message path
-            as a handful of stores.
+            as a handful of stores, which is also why registration is the one setup cost worth
+            engineering around. The registration container below is where that gets done.
           </Alert>
           <ExpandableSection
             headerText="Which EFA kernel driver you are running changes the answer"
-            headerDescription="The out-of-tree module AWS ships implements the hot-path verbs; the mainline Linux driver stops at the control plane."
+            headerDescription="Nothing here changes what a libfabric application does. Open it before quoting EFA driver source, because two different drivers answer this differently."
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -558,9 +550,7 @@ export function DataPath() {
                 notify, and has done since driver r2.12.0{' '}
                 <SourceRef provenance="code-derived" code={code.kverbs} />, and registers all four in
                 the device operations table behind a kernel-verbs build guard{' '}
-                <SourceRef provenance="code-derived" code={code.devOps} />, with a second
-                registration site for older kernels that lack the newer registration helper{' '}
-                <SourceRef provenance="code-derived" code={code.devOpsLegacy} />. That guard is on by
+                <SourceRef provenance="code-derived" code={code.devOps} />. That guard is on by
                 default: the build sets the kernel-verbs option to ON in its own cache{' '}
                 <SourceRef provenance="code-derived" code={code.kverbsOn} />, and the DKMS (Dynamic
                 Kernel Module Support) configure script that the EFA installer actually runs leaves it
@@ -568,17 +558,15 @@ export function DataPath() {
                 that installed the driver the normal way, those operations are live.
               </Box>
               <Box variant="p">
-                The driver inside mainline Linux is a separate driver, and its device operations table
-                stops at the control plane: no post send, no post receive, no poll completion queue,
-                no request notify, and the tree carries no EFA data-path source file{' '}
+                The driver inside mainline Linux is a separate driver. Its device operations table
+                stops at the control plane, and the tree carries no EFA data-path source file{' '}
                 <SourceRef provenance="code-derived" code={code.mainlineOps} />. Any sentence about
                 the EFA kernel driver has to say which one it means.
               </Box>
               <Box variant="p">
                 Both answers leave OS bypass intact. These are the in-kernel verbs entry points,
                 reachable only by other kernel modules, and a libfabric application reaches the device
-                through the mapping instead. That mapping, which you can watch the driver create, is
-                the proof of the bypass.
+                through the mapping instead.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -595,7 +583,10 @@ export function DataPath() {
         <SpaceBetween size="m">
           <Box variant="p">
             Verbs is the RDMA (Remote Direct Memory Access) object model EFA is programmed
-            through, and five of its objects stand behind every send.
+            through, and five of its objects stand behind every send. All five are created through
+            the kernel, once per resource. None of them is a setting you tune: this table is the
+            vocabulary the registration, mapping and completion material below is written in, and
+            its last column is the lifetime split made concrete.
           </Box>
           <Table
             columnDefinitions={[
@@ -605,7 +596,6 @@ export function DataPath() {
                 cell: (item) => <strong>{item.name}</strong>,
               },
               { id: 'what', header: 'What it is', cell: (item) => item.what },
-              { id: 'created', header: 'Created by', cell: (item) => item.created },
               { id: 'hot', header: 'On the send path', cell: (item) => item.hot },
             ]}
             items={verbsObjects}
@@ -676,13 +666,13 @@ export function DataPath() {
                 <SourceRef provenance="code-derived" code={code.dpdDefault} />.
               </Box>
               <Box variant="p">
-                rdma-core still owns setup. The
-                queue-pair initialiser calls the rdma-core device-specific query that returns the
-                send-queue and receive-queue buffers, doorbells, entry sizes and depths{' '}
-                <SourceRef provenance="code-derived" code={code.dpdQp} />, and the
-                completion-queue initialiser calls the matching query for the completion ring{' '}
-                <SourceRef provenance="code-derived" code={code.dpdCq} />. rdma-core still owns
-                and unmaps those buffers{' '}
+                rdma-core still owns setup. The queue-pair initialiser calls the rdma-core
+                device-specific query that returns the send-queue and receive-queue buffers,
+                doorbells, entry sizes and depths{' '}
+                <SourceRef provenance="code-derived" code={code.dpdQp} />, the completion-queue
+                initialiser calls the matching query for the completion ring{' '}
+                <SourceRef provenance="code-derived" code={code.dpdCq} />, and rdma-core owns and
+                unmaps those buffers{' '}
                 <SourceRef provenance="code-derived" code={code.dpdOwner} />. The build gate makes
                 the dependency explicit: the feature is compiled in only when rdma-core provides
                 both of those queries{' '}
@@ -704,11 +694,14 @@ export function DataPath() {
                 .
               </Alert>
               <Box variant="p">
-                Two gates decide whether it is live on a given host. The feature turns
-                itself off on first-generation devices, which the provider detects by vendor part
-                identifier <SourceRef provenance="code-derived" code={code.subCq} />, and it declines
+                Two gates decide whether it is live on a given host, and neither is a switch you
+                throw. The feature turns itself off on first-generation devices, which the provider
+                detects by vendor part identifier{' '}
+                <SourceRef provenance="code-derived" code={code.subCq} />, and it declines
                 completion queues that carry a wait object when the installed rdma-core lacks a
-                doorbell field in its completion-queue attributes.
+                doorbell field in its completion-queue attributes. So which of the two descriptor
+                paths a job runs on follows from the device generation and from the rdma-core in
+                the image, and it changes when either of those changes.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -717,58 +710,20 @@ export function DataPath() {
 
       <Container
         header={
-          <Header variant="h2" description="The one expensive thing on the setup path, and how libfabric avoids repeating it">
-            Memory registration and the MR cache
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            The device reads exactly the memory that has been registered with it. Registration pins
-            the buffer and returns a local key and a remote key that the hardware validates on
-            every access. It is a kernel call and an expensive one, so the shape that works is to
-            register buffers once and reuse them; registering inside the send loop gives back
-            everything OS bypass earned.
-          </Box>
-          <Box variant="p">
-            libfabric does that reuse for you with a registration cache on the domain. It opens the cache when
-            the application has not asked to manage registrations itself{' '}
-            <SourceRef provenance="code-derived" code={code.mrCacheOpen} />, and the cache is on
-            by default outside of address-sanitizer builds{' '}
-            <SourceRef provenance="code-derived" code={code.mrCacheDefault} />. The provider
-            describes the trade in its own parameter help text: the cache plus inline registration
-            replaces a bounce buffer for scatter-gather entries larger than a threshold, and with
-            the cache off the provider only ever uses a bounce buffer{' '}
-            <SourceRef provenance="code-derived" code={code.mrCacheHelp} />. That threshold
-            defaults to 4096 bytes{' '}
-            <SourceRef provenance="code-derived" code={code.memcpyThreshold} />.
-          </Box>
-          <Alert type="warning" header="Keeping the cache honest">
-            A cached registration is keyed on an address range, so the provider hooks memory
-            monitors and flushes the cache across a fork to keep those keys pointing at pages the
-            process still owns. Watch for allocators that free and remap a range behind libfabric,
-            which is the case those hooks exist to catch. Bound the cache through the maximum
-            cached count and maximum cached size parameters{' '}
-            <SourceRef provenance="code-derived" code={code.mrCacheHelp} />.
-          </Alert>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Three mappings, three different memory attributes, one per job">
+          <Header variant="h2" description="Why steps 2 and 3 are as cheap as they are, and what is fixed rather than tunable">
             Doorbells, the low-latency queue, and write-combining
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The driver hands userspace three kinds of mapping, and it names them in an enumeration
-            with exactly three members{' '}
-            <SourceRef provenance="code-derived" code={code.mmapKinds} />. Which kind a region
-            gets is a correctness decision, fixed by the driver per region
-            when it creates the queue pair{' '}
-            <SourceRef provenance="code-derived" code={code.mmapQueue} />.
+            Steps 2 and 3 are cheap because the regions the driver maps into the process do not all
+            carry the same memory attributes. The driver hands userspace three kinds of mapping{' '}
+            <SourceRef provenance="code-derived" code={code.mmapKinds} />, and which kind a region
+            gets is a correctness decision, fixed by the driver per region when it creates the queue
+            pair <SourceRef provenance="code-derived" code={code.mmapQueue} />. There is nothing to
+            configure here, so this container is model rather than knobs: it is what makes the
+            registration and completion behaviour further down predictable.
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
             <div>
@@ -790,9 +745,7 @@ export function DataPath() {
                 <SourceRef provenance="code-derived" code={code.mmapQueue} />. This is the LLQ
                 (Low-Latency Queue): the descriptor, and for small messages the payload with it,
                 is pushed to the device by MMIO (Memory-Mapped I/O) instead of waiting for the
-                device to DMA it back. The device reports its own limit on how large that ring may
-                be, and the driver rejects anything past it{' '}
-                <SourceRef provenance="code-derived" code={code.llqCap} />.
+                device to DMA it back.
               </Box>
             </div>
             <div>
@@ -806,14 +759,54 @@ export function DataPath() {
             </div>
           </ColumnLayout>
           <Box variant="p">
-            Isolation between processes is enforced by the device itself. Each user
-            context is allocated a UARN (User Access Region Number) that the driver records on the
-            context and on every queue pair{' '}
-            <SourceRef provenance="code-derived" code={code.uarn} />, and it passes that number to
-            the device when it creates the queue pair{' '}
+            The kernel is off the data path, and the device is what keeps one process out of
+            another&apos;s queues. Each user context is allocated a UARN (User Access Region Number)
+            that the driver records on the context and on every queue pair{' '}
+            <SourceRef provenance="code-derived" code={code.uarn} /> and passes to the device when
+            it creates the queue pair{' '}
             <SourceRef provenance="code-derived" code={code.uarnScope} />. A process can only ring
             doorbells inside its own region.
           </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header variant="h2" description="The one expensive thing on the setup path, and how libfabric avoids repeating it">
+            Memory registration and the MR cache
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            The device reads exactly the memory that has been registered with it. Registration pins
+            the buffer and returns a local key and a remote key that the hardware validates on
+            every access. It is a kernel call and an expensive one, so the shape that works is to
+            register buffers once and reuse them; registering inside the send loop gives back
+            everything OS bypass earned.
+          </Box>
+          <Box variant="p">
+            libfabric does that reuse for you with a registration cache on the domain. It opens the
+            cache when the application has not asked to manage registrations itself{' '}
+            <SourceRef provenance="code-derived" code={code.mrCacheOpen} />, and the cache is on
+            by default outside of address-sanitizer builds{' '}
+            <SourceRef provenance="code-derived" code={code.mrCacheDefault} />. The provider
+            describes the trade in its own parameter help text: the cache plus inline registration
+            replaces a bounce buffer for scatter-gather entries larger than a threshold, and with
+            the cache off the provider only ever uses a bounce buffer{' '}
+            <SourceRef provenance="code-derived" code={code.mrCacheHelp} />. That threshold
+            defaults to 4096 bytes{' '}
+            <SourceRef provenance="code-derived" code={code.memcpyThreshold} />, so it is the size
+            to compare your scatter-gather entries against before turning the cache off.
+          </Box>
+          <Alert type="warning" header="Keeping the cache honest">
+            A cached registration is keyed on an address range, so the provider hooks memory
+            monitors and flushes the cache across a fork to keep those keys pointing at pages the
+            process still owns. Watch for allocators that free and remap a range behind libfabric,
+            which is the case those hooks exist to catch. Bound the cache through the maximum
+            cached count and maximum cached size parameters{' '}
+            <SourceRef provenance="code-derived" code={code.mrCacheHelp} />.
+          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -835,9 +828,18 @@ export function DataPath() {
             registers the buffer from a shared file descriptor{' '}
             <SourceRef provenance="code-derived" code={code.dmabuf} />.
           </Box>
+          <Alert type="info" header="Which RDMA operations you get is an instance-type question">
+            AWS documents RDMA write on most supported instance types with Nitro version 4 and
+            later, and RDMA read on all instances with Nitro version 4 and later{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />. Two documented exceptions cut
+            both ways: p4d.24xlarge and p4de.24xlarge are Nitro v3 and still have RDMA read, and
+            c7gn and hpc7g are Nitro v5 and are read only. Those exceptions are why the instance
+            type is the thing to check, rather than the Nitro version alone, and it is worth
+            checking before designing around RDMA write.
+          </Alert>
           <ExpandableSection
-            headerText="RDMA read and write are device operations, and the device says which it has"
-            headerDescription="Capability bits reported over the admin queue, so the answer is per device"
+            headerText="Why the answer is per device: the capability bits it reports"
+            headerDescription="The code evidence that these are operations of the device, reported over the admin queue"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -853,15 +855,6 @@ export function DataPath() {
                 masks for both bits defined further down the same header{' '}
                 <SourceRef provenance="code-derived" code={code.capMasks} />.
               </Box>
-              <Alert type="info" header="Because it is device-reported, it is negotiated per device">
-                The answer is per instance type. AWS documents
-                RDMA write on most supported instance types with Nitro version 4 and later, and
-                RDMA read on all instances with Nitro version 4 and later{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />. Two documented exceptions cut
-                both ways: p4d.24xlarge and
-                p4de.24xlarge are Nitro v3 and still have RDMA read, and c7gn and hpc7g are Nitro
-                v5 and are read only.
-              </Alert>
               <Alert type="error" header="A file in the same repository still says only Send is supported">
                 That file is a specification document written in 2019 and never revised. It sits
                 next to the driver that contradicts it, inside an official AWS repository, which is

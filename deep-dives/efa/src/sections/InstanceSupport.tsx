@@ -338,7 +338,10 @@ aws ec2 describe-instance-types \
 
       <Container
         header={
-          <Header variant="h2" description="AWS states the pairing in its own table headings">
+          <Header
+            variant="h2"
+            description="Find the Nitro version and the ceiling, the RDMA answer and the family list all follow"
+          >
             EFA generation to Nitro version
           </Header>
         }
@@ -350,45 +353,31 @@ aws ec2 describe-instance-types \
             supported-instance-type tables verbatim as <em>Using Nitro v6 (EFA v4)</em>,{' '}
             <em>Using Nitro v5 (EFA v3)</em>, <em>Using Nitro v4 (EFA v2)</em> and{' '}
             <em>Using Nitro v3 (EFA v1)</em> <SourceRef provenance="documented" doc={docs.efa} />.
-            EFA v4 spans a broad Nitro v6 family: P6-B200, P6-B300, Hpc8a, C8i and M8i are all in
-            it.
-          </Box>
-          <Box variant="p">
-            RDMA follows the same ladder. AWS states that EFA supports RDMA write on most
+            RDMA follows the same ladder: AWS states that EFA supports RDMA write on most
             supported instance types with Nitro version 4 and later, and RDMA read on all
             instances with Nitro version 4 and later{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />. Five types break the write rule
-            despite being Nitro v5: c7gn.16xlarge, c7gn.metal, hpc7g.4xlarge, hpc7g.8xlarge and
-            hpc7g.16xlarge are read only. On Nitro v3 only p4d.24xlarge and p4de.24xlarge have
-            RDMA read at all.
+            <SourceRef provenance="documented" doc={docs.efa} />. Each rung below carries its peak,
+            its named RDMA exceptions and its family list.
           </Box>
+          <ColumnLayout columns={4} variant="text-grid">
+            {generations.map((gen) => (
+              <div key={gen.efaVersion}>
+                <Box variant="h3">
+                  {gen.efaVersion}{' '}
+                  <Badge color={efaBadgeColor(gen.efaVersion)}>Nitro {gen.nitroVersion}</Badge>
+                </Box>
+                <Box variant="p">
+                  <strong>{gen.maxBandwidthGbps.toLocaleString()} Gbps peak</strong> on{' '}
+                  {gen.maxBandwidthType}.
+                </Box>
+                <Box variant="p">{gen.rdma}</Box>
+                <Box variant="small" color="text-body-secondary">
+                  Families: {gen.examples}.
+                </Box>
+              </div>
+            ))}
+          </ColumnLayout>
         </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Pick a rung and the ceiling, the RDMA answer and the family list all follow">
-            What each generation covers
-          </Header>
-        }
-      >
-        <ColumnLayout columns={4} variant="text-grid">
-          {generations.map((gen) => (
-            <div key={gen.efaVersion}>
-              <Box variant="h3">
-                {gen.efaVersion} <Badge color={efaBadgeColor(gen.efaVersion)}>Nitro {gen.nitroVersion}</Badge>
-              </Box>
-              <Box variant="p">
-                <strong>{gen.maxBandwidthGbps.toLocaleString()} Gbps peak</strong> on{' '}
-                {gen.maxBandwidthType}.
-              </Box>
-              <Box variant="p">{gen.rdma}</Box>
-              <Box variant="small" color="text-body-secondary">
-                Families: {gen.examples}.
-              </Box>
-            </div>
-          ))}
-        </ColumnLayout>
       </Container>
 
       <Container
@@ -448,21 +437,6 @@ aws ec2 describe-instance-types \
               <SourceRef provenance="documented" doc={docs.efaAcc} />. So the EFA-capable count is
               16, and 16 x 400 Gbps is exactly the 6,400 Gbps headline. Quoting 17 EFA interfaces
               overstates the fabric by one card and makes the arithmetic stop working.
-            </Box>
-          </ExpandableSection>
-
-          <ExpandableSection
-            headerText="Trn2 accelerator memory: an AWS-internal contradiction"
-            headerDescription="512 GiB per chip in the docs, 1.5 TB total on the product page"
-          >
-            <Box variant="p">
-              The accelerated computing page gives trn2.48xlarge as 16 AWS Trainium2 accelerators
-              with 8,192 GiB, expressed as 16 x 512 GiB. The Trn2 product page gives 1.5 TB total
-              for the same instance, which works out near 96 GB per chip. The two cannot both
-              hold, so accelerator memory is left off the Trn2 rows, and the same split applies to
-              trn2.3xlarge (512 GiB against 96 GB). Every EFA-relevant field on those rows, 16
-              cards and 3,200 Gbps at EFA v3 on Nitro v5, is consistent across sources{' '}
-              <SourceRef provenance="documented" doc={docs.efa} />.
             </Box>
           </ExpandableSection>
 
