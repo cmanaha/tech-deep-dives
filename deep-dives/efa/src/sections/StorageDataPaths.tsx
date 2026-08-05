@@ -210,7 +210,7 @@ function ThreeDataPathsDiagram() {
       ],
       endpoint: ['Many S3 front-end IP', 'addresses'],
       ceiling: 'About 400 Gbps',
-      unit: 'CPU-bound, p5.48xlarge',
+      unit: 'p5.48xlarge, code comment',
     },
   ];
 
@@ -226,8 +226,8 @@ function ThreeDataPathsDiagram() {
         the fabric. EFA with SRD reaches line rate by bypassing the kernel entirely. An EFA-enabled
         Persistent 2 FSx for Lustre file system reaches 700 Gbps per client, or 1,200 Gbps with
         GPUDirect Storage. The same service without EFA is capped at 100 Gbps because it runs over
-        ENA, and S3 through the Common Runtime is capped by what userspace TCP can pull through the
-        CPU, which the runtime's own instance table records as about 400 Gbps on a p5.48xlarge.
+        ENA, and S3 through the Common Runtime is limited by what userspace TCP can pull through the
+        CPU, which the runtime's own code comments put at about 400 Gbps on a p5.48xlarge.
       </title>
       <style>
         {`
