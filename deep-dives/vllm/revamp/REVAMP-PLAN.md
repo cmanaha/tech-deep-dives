@@ -66,7 +66,14 @@ CORRECT / STALE / WRONG / NEW / UNKNOWN per file.
 | DistributedInference | 15 | 1 | 2 | 4 | 0 | EDIT |
 | DisaggregatedServing | 10 | 5 | 1 | 5 | 0 | EDIT (heavy; connector subsection rewrite) |
 | InsideCodebase | 3 | 1 | 0 | 0 | 0 | KEEP (pin bump, orchestrator) |
-| _07, 08 rows added when those registers land_ | | | | | | |
+| ThesisAndFraming | 16 | 5 | 0 | 1 | 0 | EDIT |
+| InferenceWorkload | 10 | 2 | 0 | 0 | 0 | KEEP + small EDIT |
+| OperationsFailureModes | 15 | 6 | 1 | 8 | 0 | EDIT (heavy; cold-start block) |
+| DecisionGuide | 15 | 6 | 1 | 2 | 2 | EDIT (tree branch fixes) |
+| GlossaryAndSources (sources) | 2 | 14 | 1 | 1 | 0 | EDIT (orchestrator; 2 dead links) |
+| GlossaryAndSources (glossary) | 7 | 2 | 1 | 16 | 1 | EDIT (orchestrator) |
+| App.tsx (nav, subtitle) | 6 | 2 | 0 | 0 | 0 | KEEP + small EDIT (orchestrator) |
+| _07 (AWS) rows added when that register lands_ | | | | | | |
 
 ## The headline: the execution layer was replaced underneath the dive
 
@@ -112,7 +119,56 @@ CORRECT / STALE / WRONG / NEW / UNKNOWN per file.
 
 ## New section decision
 
-_Filled in when registers 06-08 land._
+**No new section.** Every capability added between the pins has a natural home in an existing
+section, and a standalone section would either duplicate that home or read thin:
+
+| Capability | Home |
+| --- | --- |
+| Model Runner V2 default, V1 fallback list | CodebaseExecution (rewrite), one paragraph in V1Architecture |
+| Native multi-tier KV offload, HiSparse | KVOffloadingLMCache (rewrite) |
+| Admission control, active-seq cap, watermark, adaptive long-prefill threshold | SchedulerBatching, CodebaseConfig, OperationsFailureModes |
+| Fast restart (`vllm preload`, `ipc_cache`, `vllm snapshot`), startup KV-capacity log | OperationsFailureModes (new block + restart-ladder diagram), DecisionGuide sizing note |
+| NIXL push mode, E/P/D | DisaggregatedServing, CodebaseDistributed |
+| New spec-decode family, runner split by method | SpeculativeDecoding, CodebaseAdvanced |
+| Rust gRPC control plane, DP supervisor | CodebaseRust (rewrite) |
+| Watermarking, diffusion LLMs | WhenNotVllm (one line each); no section (neither changes a serving decision for most readers) |
+
+Navigation titles that change with the new scope (orchestrator, App.tsx): section 5 becomes
+"Paged KV Cache & Block Tables" (the kernel is gone, the memory model stays) and section 7
+"KV-Cache Offloading & Tiers" (LMCache is one backend of a native stack).
+
+## Cross-file facts every author uses the same way
+
+Read this block whatever file you own. Wording and numbers here are settled by the registers;
+do not re-derive them differently in one section.
+
+- **Naming.** "V1 engine" = the process architecture (frontend, EngineCore, workers). "Model
+  Runner V2" (MRv2) = the GPU execution layer inside each worker, default for every model since
+  v0.29.0; the older runner is "the V1 model runner", deprecated, removal targeted for v0.32.
+  Never write "V2 engine". (02 E-rows.)
+- **Paged KV.** Use "paged KV cache" for the memory model (block pool, block tables, hash-chained
+  prefix blocks), which is unchanged. The CUDA PagedAttention kernels were deleted in v0.25.0
+  (#47361); attention backends (FlashAttention, FlashInfer, Triton, MLA backends) read the paged
+  KV cache. Do not describe a current vLLM component as "PagedAttention kernels". (04 PA-rows.)
+- **`vllm serve` scheduler defaults** depend on usage context and GPU memory: 16384 batched
+  tokens / 1024 sequences on GPUs with at least 160 GiB, 8192 / 1024 on H100-class, 2048 / 256
+  otherwise; 2048 / 128 are class fallbacks. Cite `vllm/engine/arg_utils.py` per 01 C15-C16.
+- **Multi-node executor.** On CUDA the default executor is multiprocessing (`mp`, multi-node with
+  `--nnodes`); vLLM picks Ray only inside a Ray placement group or with
+  `--distributed-executor-backend ray`. vLLM's own docs say otherwise; code wins, state the
+  conflict once where it matters (RayServeLLM). (05, 06 D-17.)
+- **Admission control** rejects with HTTP **503** (`--max-num-queued-reqs`,
+  `--max-num-queued-tokens`, v0.29.0). No 429 is produced in the vLLM tree. (06 O33, 08.)
+- **Preemption** is recompute-only in V1. Signals: the "Preemptions:" field in the stats log and
+  `vllm:num_preemptions`; the `PreemptionMode.RECOMPUTE` warning is a V0 message. (04 SB13, 08 O1.)
+- **Prefix-cache hash seed** is deterministic for the default sha256 since v0.29.0 (#51875);
+  xxhash variants still need `PYTHONHASHSEED`. (04 PC16-PC18.)
+- **KV offload** stores completed blocks down as they are produced and loads on a prefix hit.
+- **NIXL** has pull (`NixlConnector`) and push (`NixlPushConnector`) modes; `kv_both` is
+  deprecated for NIXL; `P2pNcclConnector` was removed in v0.24.0. (03, 06 X-rows.)
+- **Orchestrator pins**: Dynamo 1.5.1 pins vLLM 0.28.0, Ray 2.59.0 pins 0.27.0, llm-d 0.10.0 ships
+  the v0.30.0 image. TGI's repository is archived. TensorRT-LLM's default backend is PyTorch. (05.)
+- **Section numbers** in cross-references stay as they are: no section is added or removed.
 
 ## Diagram inventory
 
@@ -156,7 +212,11 @@ and clipping check at 1440 and 390, plus PNG review) before its wave commits.
 | DistributedInference | inline TP x PP SVG | Keep; title/aria pattern | 06 |
 | DisaggregatedServing | `DisaggDiagram` | Drop P2pNccl, transport label | 06 X5, X6 |
 | DisaggregatedServing | `NixlPullPushDiagram` | **NEW**: pull vs push sequence (who registers, who initiates, what the proxy forwards) | 06 X9, X15, X17 |
-| _07, 08 diagrams added when those registers land_ | | | |
+| ThesisAndFraming | `StackDiagram` (flex boxes) | Optional "Python or Rust frontend" sub-label | 08 |
+| InferenceWorkload | `PrefillDecodeTimeline` | Fix the ITL label collision | 08 W-rows |
+| OperationsFailureModes | `RestartLadderDiagram` | **NEW**: cold boot, compile-cache reuse, `--kv-cache-memory-bytes`, `vllm preload` + `ipc_cache`, `vllm snapshot`: what each rung skips | 08 O8, O9, O20, O21 |
+| DecisionGuide | `StartHereTree` | Fix the Ray branch (`vllm serve --nnodes` runs multi-node without Ray), disaggregation not llm-d-only, two geometry defects | 08 D1, D5, D6 |
+| _07 (AWS) diagrams added when that register lands_ | | | |
 
 ## Authoring waves
 
@@ -164,7 +224,21 @@ Three agents per wave (the stream's concurrency cap), one section file per agent
 register, this plan and `revamp/authoring-brief.md`. After every wave: package typecheck, lint,
 test, build, the five static gates, rendered-diagram audit of every changed diagram, commit.
 
-_Wave list filled in when registers 06-08 land._
+| Wave | Files | Why this order |
+| --- | --- | --- |
+| 1 | CodebaseExecution (REWRITE), KVOffloadingLMCache (REWRITE), CodebaseRust (REWRITE) | The three inverted frames; other sections link to them |
+| 2 | CodebaseAdvanced, CodebaseConfig, CodebaseScheduler | Codebase tabs with defaults other sections quote |
+| 3 | CodebaseArchitecture, CodebaseDistributed, CodebaseModelLayer | Remaining codebase tabs |
+| 4 | V1Architecture, SchedulerBatching, PagedAttentionKV | Core engine concepts |
+| 5 | PrefixCaching, Quantization, SpeculativeDecoding | Core engine features |
+| 6 | OpenAICompatServer, DisaggregatedServing, DistributedInference | Serving surface and scale-out |
+| 7 | LoRAServing, RayServeLLM, WhenNotVllm | Ray default fix and alternatives |
+| 8 | ProductionStack, LlmdKServe, NvidiaDynamo | Kubernetes and orchestrators |
+| 9 | OperationsFailureModes, ObservabilityBench, GatewaysAppLayer | Operations |
+| 10 | AwsEks, AwsSageMakerBedrock, AwsGpuEfaNixl | AWS (needs register 07) |
+| 11 | AwsNeuron, Ec2TopologyPlacement, DecisionGuide | AWS; DecisionGuide last of the guides because it summarises the rest |
+| 12 | ThesisAndFraming, InferenceWorkload | Framing reads the finished dive |
+| Orchestrator | InsideCodebase, App.tsx, GlossaryAndSources, sources.md, README.md, .gates.json | Shared files, single writer |
 
 ## Shared files (orchestrator only)
 
