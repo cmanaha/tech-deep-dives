@@ -6,8 +6,20 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
-import Link from '@cloudscape-design/components/link';
 import Badge from '@cloudscape-design/components/badge';
+import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
+
+/** Ray source pinned to the newest stable release, ray-2.59.0 (commit dd83c3a7). */
+const RAY = 'https://github.com/ray-project/ray/blob/ray-2.59.0';
+/** Ray Serve LLM docs for the same release. */
+const RAY_DOCS = 'https://docs.ray.io/en/releases-2.59.0/serve/llm';
+const RAY_OVERVIEW = `${RAY_DOCS}/index.html`;
+const RAY_COMPAT = `${RAY_DOCS}/user-guides/vllm-compatibility.html`;
+const RAY_LLM_CONFIG = `${RAY}/python/ray/llm/_internal/serve/core/configs/llm_config.py`;
+const RAY_VLLM_MODELS = `${RAY}/python/ray/llm/_internal/serve/engines/vllm/vllm_models.py`;
+const RAY_PD_SERVER = `${RAY}/python/ray/llm/_internal/serve/serving_patterns/prefill_decode/pd_server.py`;
+const RAY_INIT = `${RAY}/python/ray/serve/llm/__init__.py`;
+const PARALLEL = 'vllm/config/parallel.py';
 
 interface DivisionRow {
   concern: string;
@@ -18,13 +30,13 @@ interface DivisionRow {
 const divisionRows: DivisionRow[] = [
   {
     concern: 'Running the model on a GPU',
-    vllm: 'The engine itself: PagedAttention, continuous batching, the scheduler, the CUDA/HIP kernels. One process group, one model.',
-    rayServe: 'Nothing. It does not replace the engine; it embeds it. vLLM stays the thing that does inference.',
+    vllm: 'The engine itself: the paged KV (key-value) cache, continuous batching, the scheduler, the kernels. One process group, one model.',
+    rayServe: 'It embeds the engine and leaves inference to it: vLLM by default, or SGLang through a different server class.',
   },
   {
     concern: 'OpenAI-compatible HTTP API',
     vllm: 'vllm serve exposes /v1/chat/completions, /v1/completions, etc. for one engine on one endpoint.',
-    rayServe: 'Re-exposes the same OpenAI surface in front of many engines, behind one route. "An OpenAI-compatible API that aligns with vLLM’s."',
+    rayServe: 'Re-exposes the same OpenAI surface in front of many engines, behind one route. "An OpenAI-compatible API that aligns with vLLM\'s OpenAI-compatible server."',
   },
   {
     concern: 'Engine configuration',
@@ -33,18 +45,18 @@ const divisionRows: DivisionRow[] = [
   },
   {
     concern: 'Multi-node placement of one model',
-    vllm: 'Uses Ray as its distributed executor backend when TP/PP spans nodes (Section 9). Ray is already underneath.',
-    rayServe: 'Owns the cluster Ray runs on. It places the engine’s workers across nodes via placement groups and accelerator types.',
+    vllm: 'Two executors (Section 9): multiprocessing, the CUDA default, started on each node with --nnodes; or Ray, set with --distributed-executor-backend ray.',
+    rayServe: 'Owns the cluster. Runs each GPU replica in a Ray placement group sized from accelerator_type or placement_group_config, and sets vLLM\'s executor to Ray.',
   },
   {
     concern: 'Running many models / replicas',
     vllm: 'Out of scope. One vllm serve = one model on one endpoint.',
-    rayServe: 'Multiple LLMConfigs behind one OpenAI app; the client picks by model name. Multi-LoRA over shared base models too.',
+    rayServe: 'Multiple LLMConfigs behind one OpenAI app; the client picks by model name. Multi-LoRA (Low-Rank Adaptation) adapters on a shared base model too.',
   },
   {
-    concern: 'Autoscaling',
+    concern: 'Autoscaling & replica choice',
     vllm: 'None. The engine serves whatever traffic it is given.',
-    rayServe: 'Per-deployment autoscaling (min/max replicas) driven by load, plus load balancing across replicas.',
+    rayServe: 'Per-deployment autoscaling (min/max replicas) driven by load. Replica selection by load, or by prefix-cache and KV-cache overlap with the prefix-aware and KV-aware routers.',
   },
   {
     concern: 'Fault tolerance & health',
@@ -54,7 +66,7 @@ const divisionRows: DivisionRow[] = [
   {
     concern: 'Kubernetes-native operation',
     vllm: 'Provides a container image; deployment is your problem.',
-    rayServe: 'Runs as a RayService via KubeRay, with declarative CRDs, autoscaling, blue/green upgrades (Sections 16-17).',
+    rayServe: 'Runs as a RayService via KubeRay, with declarative CRDs (Custom Resource Definitions), autoscaling, blue/green upgrades (Sections 16-17).',
   },
 ];
 
@@ -66,11 +78,19 @@ interface BuilderRow {
 const builderRows: BuilderRow[] = [
   {
     api: 'LLMConfig',
-    role: 'Declares one model: model_loading_config (id + source), deployment_config (autoscaling min/max replicas), accelerator_type, and engine_kwargs (the vLLM flags). One LLMConfig per model you serve.',
+    role: 'Declares one model: model_loading_config (id + source), deployment_config (autoscaling min/max replicas, request router), accelerator_type or placement_group_config, engine_kwargs (the vLLM flags), and server_cls, the engine wrapper (LLMServer for vLLM, SGLangServer for SGLang). One LLMConfig per model you serve.',
   },
   {
     api: 'build_openai_app',
-    role: 'The main entry point. Takes a list of LLMConfigs and returns a deployable Serve app that exposes the OpenAI-compatible API in front of them. This is the 90% path.',
+    role: 'The main entry point. Takes LLMServingArgs (a list of LLMConfigs plus ingress options) and returns a deployable Serve app with the OpenAI-compatible front door in front of them. The usual path.',
+  },
+  {
+    api: 'OpenAiIngress',
+    role: 'The front door itself, in ray.serve.llm.ingress: the OpenAI routes (/v1/chat/completions, /v1/completions, /v1/models, /v1/embeddings and others) that send each request to the deployment serving its model.',
+  },
+  {
+    api: 'PrefixCacheAffinityRouter, KVAwareRouter',
+    role: 'Request routers in ray.serve.llm.request_router, set through request_router_config in deployment_config. PrefixCacheAffinityRouter (stable) sends a prompt to the replica that served its prefix while load is balanced, and falls back to power-of-two-choices when it is not. KVAwareRouter (alpha) routes by KV-cache overlap through a KV router actor.',
   },
   {
     api: 'build_llm_deployment',
@@ -82,6 +102,160 @@ const builderRows: BuilderRow[] = [
   },
 ];
 
+function RayServeTopologyDiagram() {
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg
+        viewBox="0 0 760 440"
+        role="img"
+        aria-labelledby="ray-serve-topology-title"
+        style={{ width: '100%', minWidth: 640, height: 'auto' }}
+      >
+        <title id="ray-serve-topology-title">
+          Clients send OpenAI-compatible requests to one Ray Serve LLM ingress, OpenAiIngress,
+          which routes each request by model name and then picks a replica by load, prefix or
+          KV-cache overlap. Each LLM server replica embeds one vLLM engine; a replica with tensor
+          parallelism of 2 runs one vLLM worker per GPU. Ray Serve LLM places every replica in a
+          Ray placement group and sets vLLM's executor to Ray, so those workers run on Ray.
+        </title>
+        <style>
+          {`
+            .rl-bg { fill: #ffffff; }
+            .rl-lbl { font: 600 13px sans-serif; fill: #16191f; }
+            .rl-sub { font: 400 11px sans-serif; fill: #414d5c; }
+            .rl-title { font: 700 14px sans-serif; fill: #16191f; }
+            .rl-node { fill: none; stroke: #7d8998; stroke-width: 1.5; stroke-dasharray: 5 4; }
+            .rl-router { fill: #f2f8fd; stroke: #539fe5; stroke-width: 1.5; }
+            .rl-rep { fill: #f2faf5; stroke: #1d8102; stroke-width: 1.5; }
+            .rl-eng { fill: #fbf3ef; stroke: #bf4f1f; stroke-width: 1.5; }
+            .rl-cli { fill: #f4f4f4; stroke: #7d8998; stroke-width: 1.5; }
+            .rl-flow { stroke: #539fe5; stroke-width: 2; fill: none; }
+          `}
+        </style>
+        <defs>
+          <marker
+            id="rlArrow"
+            markerWidth="8"
+            markerHeight="8"
+            refX="7"
+            refY="4"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L8,4 L0,8 Z" fill="#539fe5" />
+          </marker>
+        </defs>
+
+        <rect x="0" y="0" width="760" height="440" rx="8" className="rl-bg" />
+
+        <text x="16" y="26" className="rl-title">
+          One endpoint, many engines: Ray Serve LLM in front of vLLM
+        </text>
+
+        {/* Clients */}
+        <rect x="20" y="50" width="170" height="76" rx="8" className="rl-cli" />
+        <text x="105" y="76" textAnchor="middle" className="rl-lbl">
+          Clients
+        </text>
+        <text x="105" y="96" textAnchor="middle" className="rl-sub">
+          OpenAI client / cURL
+        </text>
+        <text x="105" y="112" textAnchor="middle" className="rl-sub">
+          POST /v1/chat/completions
+        </text>
+
+        {/* Ingress */}
+        <rect x="250" y="44" width="300" height="90" rx="8" className="rl-router" />
+        <text x="400" y="68" textAnchor="middle" className="rl-lbl">
+          Ray Serve LLM ingress
+        </text>
+        <text x="400" y="88" textAnchor="middle" className="rl-sub">
+          OpenAiIngress: OpenAI-compatible API
+        </text>
+        <text x="400" y="104" textAnchor="middle" className="rl-sub">
+          routes by model name, then picks a replica:
+        </text>
+        <text x="400" y="120" textAnchor="middle" className="rl-sub">
+          by load, prefix match or KV overlap
+        </text>
+
+        <line x1="190" y1="88" x2="248" y2="88" className="rl-flow" markerEnd="url(#rlArrow)" />
+
+        {/* Node A */}
+        <rect x="20" y="170" width="350" height="180" rx="10" className="rl-node" />
+        <text x="36" y="190" className="rl-lbl">
+          Node A
+        </text>
+
+        <rect x="40" y="204" width="310" height="130" rx="8" className="rl-rep" />
+        <text x="195" y="226" textAnchor="middle" className="rl-lbl">
+          LLM server replica (model X)
+        </text>
+        <text x="195" y="243" textAnchor="middle" className="rl-sub">
+          one vLLM engine, TP=2, Ray executor
+        </text>
+        <rect x="58" y="254" width="130" height="68" rx="6" className="rl-eng" />
+        <text x="123" y="276" textAnchor="middle" className="rl-sub">
+          vLLM worker
+        </text>
+        <text x="123" y="292" textAnchor="middle" className="rl-sub">
+          GPU 0 (TP rank 0)
+        </text>
+        <text x="123" y="308" textAnchor="middle" className="rl-sub">
+          paged KV cache
+        </text>
+        <rect x="202" y="254" width="130" height="68" rx="6" className="rl-eng" />
+        <text x="267" y="276" textAnchor="middle" className="rl-sub">
+          vLLM worker
+        </text>
+        <text x="267" y="292" textAnchor="middle" className="rl-sub">
+          GPU 1 (TP rank 1)
+        </text>
+        <text x="267" y="308" textAnchor="middle" className="rl-sub">
+          paged KV cache
+        </text>
+
+        {/* Node B */}
+        <rect x="400" y="170" width="330" height="180" rx="10" className="rl-node" />
+        <text x="416" y="190" className="rl-lbl">
+          Node B
+        </text>
+
+        <rect x="420" y="204" width="290" height="58" rx="8" className="rl-rep" />
+        <text x="565" y="226" textAnchor="middle" className="rl-lbl">
+          LLM server replica (model X) #2
+        </text>
+        <text x="565" y="246" textAnchor="middle" className="rl-sub">
+          autoscaled copy of model X
+        </text>
+
+        <rect x="420" y="276" width="290" height="58" rx="8" className="rl-rep" />
+        <text x="565" y="298" textAnchor="middle" className="rl-lbl">
+          LLM server replica (model Y)
+        </text>
+        <text x="565" y="318" textAnchor="middle" className="rl-sub">
+          different model, same endpoint
+        </text>
+
+        {/* ingress to replicas */}
+        <line x1="330" y1="134" x2="200" y2="202" className="rl-flow" markerEnd="url(#rlArrow)" />
+        <line x1="470" y1="134" x2="560" y2="202" className="rl-flow" markerEnd="url(#rlArrow)" />
+        <path d="M550,104 H745 V305 H712" className="rl-flow" markerEnd="url(#rlArrow)" />
+
+        <text x="380" y="380" textAnchor="middle" className="rl-sub">
+          Ray Serve owns placement, autoscaling, health and routing across nodes.
+        </text>
+        <text x="380" y="400" textAnchor="middle" className="rl-sub">
+          vLLM owns what happens inside each engine (Sections 3-9).
+        </text>
+        <text x="380" y="420" textAnchor="middle" className="rl-sub">
+          Ray Serve LLM puts each replica in a Ray placement group and sets vLLM's Ray executor
+          (Section 9).
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 export function RayServeLLM() {
   return (
     <SpaceBetween size="l">
@@ -89,7 +263,7 @@ export function RayServeLLM() {
         header={
           <Header
             variant="h1"
-            description="What Ray adds on top of the vLLM engine, and the clean line between the two: vLLM does inference, Ray Serve LLM does orchestration."
+            description="What Ray adds on top of the vLLM engine, and the clean line between the two: vLLM does inference, Ray Serve LLM does orchestration (verified against vLLM v0.31.0, commit db9527a4, and Ray 2.59.0, 2026-10-16)"
           >
             15. Orchestration: Ray &amp; Ray Serve LLM
           </Header>
@@ -99,56 +273,75 @@ export function RayServeLLM() {
           <Box variant="p">
             <strong>The division of labor is the whole point.</strong> vLLM is an{' '}
             <em>inference engine</em>: it makes one model run fast on a set of GPUs.
-            It deliberately does not solve the operational problems that surround a
-            production endpoint: deploying across many nodes, scaling replicas up
-            and down with load, restarting a crashed worker, serving several models
-            behind one URL. <strong>Ray Serve LLM is the orchestration layer that
-            adds exactly those things</strong>, and it does so without reimplementing
-            inference: it embeds vLLM as the engine and wraps it.
+            It deliberately leaves the operational work around a production endpoint to
+            another layer: deploying across many nodes, scaling replicas up and down with
+            load, restarting a crashed worker, serving several models behind one URL.{' '}
+            <strong>Ray Serve LLM is the orchestration layer that adds exactly those
+            things</strong> (its controller health-checks every replica and restarts one that
+            fails{' '}
+            <Cite
+              tier={1}
+              href="https://docs.ray.io/en/releases-2.59.0/serve/production-guide/fault-tolerance.html"
+            >
+              Ray Serve: fault tolerance, replica health-checking
+            </Cite>
+            ), and it does so without reimplementing inference: it embeds the
+            engine and wraps it. The engine is pluggable, vLLM by default and SGLang as a
+            second backend{' '}
+            <Cite tier={1} href={RAY_OVERVIEW}>
+              Ray Serve LLM overview, key features
+            </Cite>{' '}
+            <Cite tier={1} href={`${RAY_LLM_CONFIG}#L164-L228`} kind="code">
+              llm_config.py L164-L228
+            </Cite>
+            , which makes Ray Serve LLM the same kind of layer as NVIDIA Dynamo (Section 18):
+            an orchestrator over engines.
           </Box>
           <Box variant="p">
-            That makes this the most common Python-native multi-node pairing. If your
-            team already lives in Ray (or just wants multi-node serving, autoscaling,
-            and an OpenAI endpoint without standing up a separate Kubernetes operator),
-            Ray Serve LLM is the path that keeps everything in one Python framework.
-            The OpenAI surface it exposes is deliberately the same one vLLM exposes:{' '}
-            &ldquo;an OpenAI-compatible API that aligns with vLLM&rsquo;s OpenAI-compatible
-            server,&rdquo; so the client code does not change when you move from a single{' '}
-            <code>vllm serve</code> to an orchestrated fleet.{' '}
-            <Link external href="https://docs.ray.io/en/latest/serve/llm/index.html">
-              Ray Serve LLM overview (accessed 2026-06-07)
-            </Link>{' '}
-            &middot;{' '}
-            <Link
-              external
-              href="https://docs.ray.io/en/latest/serve/llm/user-guides/vllm-compatibility.html"
-            >
-              Ray Serve LLM vLLM compatibility (accessed 2026-06-07)
-            </Link>
+            If your team already lives in Ray, or wants multi-node serving, autoscaling, and
+            an OpenAI endpoint without standing up a separate Kubernetes operator, Ray Serve
+            LLM keeps everything in one Python framework. The OpenAI surface it exposes is
+            deliberately the one vLLM exposes: "an OpenAI-compatible API that aligns with
+            vLLM's OpenAI-compatible server," so the client code does not change when you
+            move from a single <code>vllm serve</code> to an orchestrated fleet{' '}
+            <Cite tier={1} href={RAY_COMPAT}>
+              Ray Serve LLM: vLLM compatibility
+            </Cite>
+            .
           </Box>
           <Alert type="info">
-            <strong>Two cross-links anchor this section.</strong> The reason Ray shows
-            up at all underneath vLLM is the executor backend: when tensor/pipeline
-            parallelism spans nodes, vLLM defaults to Ray to place and supervise its
-            workers, and that mechanism is covered in{' '}
-            <strong>Section 9, Distributed Inference</strong> and realized in{' '}
+            <strong>Where Ray sits under vLLM.</strong> A plain <code>vllm serve</code> runs
+            multi-node without Ray: on CUDA the default executor is multiprocessing, started on
+            each node with <code>--nnodes</code>{' '}
+            <Cite tier={1} href={vllmUrl(PARALLEL, 'L989-L1031')} kind="code">
+              config/parallel.py L989-L1031
+            </Cite>
+            . Ray Serve LLM is what puts vLLM on its Ray executor: it runs every GPU replica in
+            a Ray placement group and sets the executor to Ray (the two hats, below). Executor
+            mechanics are in <strong>Section 9, Distributed Inference</strong>, and{' '}
             <strong>Inside the Codebase &rarr; Distributed &amp; KV Transfer</strong>{' '}
-            (vLLM&rsquo;s Ray executor backend). This section is the layer{' '}
-            <em>above</em> that: what Ray Serve adds once the engine can already run
-            multi-node. The Kubernetes-operator alternatives (Production-Stack and
-            llm-d / KServe) are <strong>Sections 16</strong> and{' '}
-            <strong>17</strong>.
+            (Executor backends). The Kubernetes-operator alternatives (Production-Stack and
+            llm-d / KServe) are <strong>Sections 16</strong> and <strong>17</strong>.
           </Alert>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">What vLLM gives you vs what Ray Serve LLM adds</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Which production concern each project owns, so you know exactly what adopting Ray Serve LLM adds"
+          >
+            What vLLM gives you vs what Ray Serve LLM adds
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             Read this table as the contract between the two projects. Every row is a
             production concern; the engine owns the left column, the orchestrator owns
-            the right. The orchestrator never reaches into the engine&rsquo;s job;
-            it manages copies of it.
+            the right. The orchestrator stays out of the engine's job; it manages copies
+            of it.
           </Box>
           <Table
             items={divisionRows}
@@ -176,230 +369,182 @@ export function RayServeLLM() {
             ]}
           />
           <Box variant="small">
-            Feature list (multi-node serving, autoscaling, fault tolerance/monitoring,
-            multi-LoRA, OpenAI-compatible API) from the{' '}
-            <Link external href="https://docs.ray.io/en/latest/serve/llm/index.html">
+            Feature list from the{' '}
+            <Cite tier={1} href={RAY_OVERVIEW}>
               Ray Serve LLM overview
-            </Link>
-            ; the engine_kwargs pass-through and API alignment from the{' '}
-            <Link
-              external
-              href="https://docs.ray.io/en/latest/serve/llm/user-guides/vllm-compatibility.html"
-            >
+            </Cite>
+            ; engine_kwargs pass-through and API alignment from the{' '}
+            <Cite tier={1} href={RAY_COMPAT}>
               vLLM compatibility guide
-            </Link>{' '}
-            (both accessed 2026-06-07). The Ray-as-executor-backend row is from the{' '}
-            <Link external href="https://docs.vllm.ai/en/latest/serving/parallelism_scaling/">
-              vLLM parallelism &amp; scaling guide (accessed 2026-06-07)
-            </Link>{' '}
-            and Section 9.
+            </Cite>
+            ; the multi-node row from source{' '}
+            <Cite tier={1} href={vllmUrl(PARALLEL, 'L989-L1031')} kind="code">
+              config/parallel.py L989-L1031
+            </Cite>{' '}
+            <Cite tier={1} href={`${RAY_VLLM_MODELS}#L147-L162`} kind="code">
+              vllm_models.py L147-L162
+            </Cite>
+            .
           </Box>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">The shape of a deployment: clients &rarr; router &rarr; engines</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="How a request finds its model and then a replica, and where vLLM's own parallelism sits inside that"
+          >
+            The shape of a deployment: clients &rarr; router &rarr; engines
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             A Ray Serve LLM app has the same topology whether it serves one model or
-            many: <strong>one OpenAI-compatible ingress</strong> that load-balances
-            across <strong>a pool of LLM server replicas</strong>, each replica an
-            embedded vLLM engine that may itself be tensor/pipeline-parallel across
-            GPUs and nodes. The client speaks plain OpenAI; Ray decides which replica
-            answers and on which node it runs.
-          </Box>
-
-          <Box textAlign="center">
-            <svg
-              viewBox="0 0 760 420"
-              width="100%"
-              style={{ maxWidth: 760, height: 'auto' }}
-              role="img"
-              aria-label="Clients send OpenAI-compatible requests to a Ray Serve LLM ingress/router, which load-balances across LLM server replicas spread over multiple nodes; each replica embeds a vLLM engine that may span GPUs via tensor or pipeline parallelism"
+            many: <strong>one OpenAI-compatible ingress</strong>, <code>OpenAiIngress</code>
+            {' '}
+            <Cite tier={1} href={`${RAY}/python/ray/serve/llm/ingress.py#L8-L20`} kind="code">
+              ray/serve/llm/ingress.py L8-L20
+            </Cite>{' '}
+            <Cite
+              tier={1}
+              href={`${RAY}/python/ray/llm/_internal/serve/core/ingress/ingress.py#L120-L130`}
+              kind="code"
             >
-              <style>
-                {
-                  '.rl-lbl{font:600 13px sans-serif;fill:#16191f}.rl-sub{font:400 11px sans-serif;fill:#414d5c}.rl-title{font:700 14px sans-serif;fill:#16191f}.rl-node{fill:none;stroke:#7d8998;stroke-width:1.5;stroke-dasharray:5 4}.rl-router{fill:#f2f8fd;stroke:#539fe5;stroke-width:1.5}.rl-rep{fill:#f2faf5;stroke:#1d8102;stroke-width:1.5}.rl-eng{fill:#fbf3ef;stroke:#bf4f1f;stroke-width:1.5}.rl-cli{fill:#f4f4f4;stroke:#7d8998;stroke-width:1.5}.rl-flow{stroke:#539fe5;stroke-width:2;fill:none}.rl-tag{font:700 11px sans-serif}'
-                }
-              </style>
-              <defs>
-                <marker id="rlArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                  <path d="M0,0 L8,4 L0,8 Z" fill="#539fe5" />
-                </marker>
-              </defs>
-
-              <text x="12" y="22" className="rl-title">
-                One endpoint, many engines: Ray Serve LLM in front of vLLM
-              </text>
-
-              {/* Clients */}
-              <rect x="20" y="44" width="150" height="64" rx="8" className="rl-cli" />
-              <text x="95" y="70" textAnchor="middle" className="rl-lbl">
-                Clients
-              </text>
-              <text x="95" y="88" textAnchor="middle" className="rl-sub">
-                OpenAI client / cURL
-              </text>
-              <text x="95" y="102" textAnchor="middle" className="rl-sub">
-                POST /v1/chat/completions
-              </text>
-
-              {/* Router / ingress */}
-              <rect x="270" y="40" width="220" height="72" rx="8" className="rl-router" />
-              <text x="380" y="66" textAnchor="middle" className="rl-lbl">
-                Ray Serve LLM ingress
-              </text>
-              <text x="380" y="84" textAnchor="middle" className="rl-sub">
-                OpenAI-compatible API + router
-              </text>
-              <text x="380" y="100" textAnchor="middle" className="rl-sub">
-                routes by model name &middot; load-balances
-              </text>
-
-              <line x1="170" y1="76" x2="270" y2="76" className="rl-flow" markerEnd="url(#rlArrow)" />
-
-              {/* Node A */}
-              <rect x="20" y="150" width="350" height="170" rx="10" className="rl-node" />
-              <text x="36" y="170" className="rl-lbl">
-                Node A
-              </text>
-
-              <rect x="40" y="184" width="310" height="120" rx="8" className="rl-rep" />
-              <text x="195" y="206" textAnchor="middle" className="rl-lbl">
-                LLM server replica (model X)
-              </text>
-              <rect x="58" y="220" width="130" height="68" rx="6" className="rl-eng" />
-              <text x="123" y="244" textAnchor="middle" className="rl-sub">
-                vLLM engine
-              </text>
-              <text x="123" y="260" textAnchor="middle" className="rl-sub">
-                GPU 0 (TP rank 0)
-              </text>
-              <text x="123" y="276" textAnchor="middle" className="rl-sub">
-                PagedAttention
-              </text>
-              <rect x="202" y="220" width="130" height="68" rx="6" className="rl-eng" />
-              <text x="267" y="244" textAnchor="middle" className="rl-sub">
-                vLLM engine
-              </text>
-              <text x="267" y="260" textAnchor="middle" className="rl-sub">
-                GPU 1 (TP rank 1)
-              </text>
-              <text x="267" y="276" textAnchor="middle" className="rl-sub">
-                same model, TP=2
-              </text>
-
-              {/* Node B */}
-              <rect x="410" y="150" width="330" height="170" rx="10" className="rl-node" />
-              <text x="426" y="170" className="rl-lbl">
-                Node B
-              </text>
-
-              <rect x="430" y="184" width="290" height="54" rx="8" className="rl-rep" />
-              <text x="575" y="206" textAnchor="middle" className="rl-lbl">
-                LLM server replica (model X) #2
-              </text>
-              <text x="575" y="224" textAnchor="middle" className="rl-sub">
-                autoscaled copy &middot; load-balanced
-              </text>
-
-              <rect x="430" y="250" width="290" height="54" rx="8" className="rl-rep" />
-              <text x="575" y="272" textAnchor="middle" className="rl-lbl">
-                LLM server replica (model Y)
-              </text>
-              <text x="575" y="290" textAnchor="middle" className="rl-sub">
-                different model, same endpoint
-              </text>
-
-              {/* router to replicas */}
-              <line x1="340" y1="112" x2="195" y2="184" className="rl-flow" markerEnd="url(#rlArrow)" />
-              <line x1="420" y1="112" x2="560" y2="184" className="rl-flow" markerEnd="url(#rlArrow)" />
-              <line x1="430" y1="112" x2="560" y2="250" className="rl-flow" markerEnd="url(#rlArrow)" />
-
-              <text x="380" y="346" textAnchor="middle" className="rl-sub">
-                Ray Serve owns placement, autoscaling, health, and routing across nodes.
-              </text>
-              <text x="380" y="366" textAnchor="middle" className="rl-sub">
-                vLLM owns what happens inside each engine box (Sections 5-9).
-              </text>
-              <text x="380" y="386" textAnchor="middle" className="rl-sub">
-                A replica that itself spans nodes uses Ray as vLLM&rsquo;s executor backend (Section 9).
-              </text>
-            </svg>
+              core/ingress/ingress.py L120-L130
+            </Cite>
+            , that routes by model name to <strong>a pool of LLM server replicas</strong>.
+            Within a model, the replica is picked by load, or by prefix-cache or KV-cache
+            overlap when you configure <code>PrefixCacheAffinityRouter</code> or the alpha{' '}
+            <code>KVAwareRouter</code>{' '}
+            <Cite tier={1} href={`${RAY}/python/ray/serve/llm/request_router.py#L10-L52`} kind="code">
+              request_router.py L10-L52
+            </Cite>
+            . Each replica is an embedded vLLM engine that may itself be tensor-parallel (TP)
+            or pipeline-parallel (PP) across GPUs and nodes. The client speaks plain OpenAI;
+            Ray decides which replica answers and on which node it runs.
           </Box>
-          <Box variant="small" textAlign="center">
-            Conceptual topology. The router / replica model and the OpenAI-compatible
-            front door are described in the{' '}
-            <Link external href="https://docs.ray.io/en/latest/serve/llm/index.html">
-              Ray Serve LLM overview (accessed 2026-06-07)
-            </Link>
-            . Note: in recent Ray, the old <code>LLMRouter</code> class is deprecated in
-            favor of an OpenAI ingress class. The diagram shows the role, not a specific
-            class name.
+
+          <RayServeTopologyDiagram />
+          <Box variant="small" color="text-body-secondary">
+            Illustrative, not measured. The replica count, TP=2 and node layout are an
+            example; the router and replica roles follow the{' '}
+            <Cite tier={1} href={RAY_OVERVIEW}>
+              Ray Serve LLM overview
+            </Cite>{' '}
+            and the Ray 2.59.0 classes cited above.
           </Box>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Two hats Ray wears: executor backend vs orchestration layer</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="A plain vllm serve goes multi-node without Ray; Ray Serve LLM is what switches vLLM onto its Ray executor"
+          >
+            Two hats Ray wears: executor backend vs orchestration layer
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
-            It is easy to conflate the two ways Ray touches vLLM. They sit at different
-            altitudes and the distinction is worth pinning down before reaching for
-            either.
+            Ray touches vLLM at two altitudes, and they answer different questions: how one
+            model's workers get spawned, and how a fleet of models gets served.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
-              <Box variant="h3">Ray as vLLM&rsquo;s distributed runtime (below)</Box>
+              <Box variant="h3">Ray as one of vLLM's executors (below)</Box>
               <Box variant="p">
-                This is the executor backend from Section 9. When a single model&rsquo;s
-                tensor/pipeline parallelism spans more than one node, vLLM uses Ray to
-                spawn and supervise the worker processes (one per GPU rank) across
-                the cluster. The model is laid out as{' '}
-                <code>world_size = TP &times; PP</code> ranks, and Ray places those ranks.
-                You get this whether or not you ever use Ray Serve; it is how{' '}
-                <code>vllm serve</code> goes multi-node in the first place.{' '}
-                <Link
-                  external
-                  href="https://docs.vllm.ai/en/latest/serving/parallelism_scaling/"
-                >
-                  vLLM parallelism &amp; scaling guide (accessed 2026-06-07)
-                </Link>
+                When one model's TP and PP span more than one node, vLLM needs an executor
+                to spawn and supervise a worker process per GPU rank, laid out as{' '}
+                <code>world_size = TP &times; PP</code>. It has two. Multiprocessing (
+                <code>mp</code>) is the CUDA default: start <code>vllm serve</code> on every
+                node with the same <code>--nnodes</code> and a distinct{' '}
+                <code>--node-rank</code>. Ray runs the workers when you pass{' '}
+                <code>--distributed-executor-backend ray</code>. Without the flag, vLLM
+                selects Ray itself only when <code>data_parallel_backend</code> is{' '}
+                <code>ray</code> or the process already sits in a Ray placement group, and
+                only for a world that fits the node{' '}
+                <Cite tier={1} href={vllmUrl(PARALLEL, 'L989-L1031')} kind="code">
+                  config/parallel.py L989-L1031
+                </Cite>
+                . A world larger than one node's GPUs with neither <code>--nnodes</code> nor
+                the flag stops at startup, and the error names both fixes.
               </Box>
             </div>
             <div>
               <Box variant="h3">Ray Serve LLM as the orchestration layer (above)</Box>
               <Box variant="p">
-                This is the serving framework: it wraps each engine as a Serve
-                deployment, gives the fleet an OpenAI endpoint, autoscales replicas,
-                health-checks them, and balances load. It <em>uses</em> the runtime
-                below to place a replica that itself spans nodes, then manages many such
-                replicas. The mental model: the executor backend makes one model
-                multi-node; Ray Serve LLM makes a whole <em>service</em> multi-node and
-                elastic.{' '}
-                <Link external href="https://docs.ray.io/en/latest/serve/llm/index.html">
-                  Ray Serve LLM overview (accessed 2026-06-07)
-                </Link>
+                This is the serving framework: it wraps each engine as a Serve deployment,
+                gives the fleet an OpenAI endpoint, autoscales replicas, health-checks them,
+                and routes across them. It runs each GPU replica in a placement group sized
+                from <code>accelerator_type</code> or <code>placement_group_config</code>,
+                sets <code>distributed_executor_backend</code> to <code>"ray"</code> and
+                rejects any other value{' '}
+                <Cite tier={1} href={`${RAY_VLLM_MODELS}#L147-L162`} kind="code">
+                  vllm_models.py L147-L162
+                </Cite>
+                , then hands vLLM the placement group{' '}
+                <Cite
+                  tier={1}
+                  href={`${RAY}/python/ray/llm/_internal/serve/engines/vllm/vllm_engine.py#L634`}
+                  kind="code"
+                >
+                  vllm_engine.py L634
+                </Cite>
+                . The mental model: the executor makes one model multi-node; Ray Serve LLM
+                makes a whole <em>service</em> multi-node and elastic.
               </Box>
             </div>
           </ColumnLayout>
+          <Alert type="info" header="vLLM's parallelism guide and its code disagree on the multi-node default">
+            The guide says "the default distributed runtimes are Ray for multi-node inference
+            and native Python multiprocessing for single-node inference"{' '}
+            <Cite
+              tier={1}
+              href={vllmUrl('docs/serving/parallelism_scaling.md', 'L33')}
+              kind="doc-code-conflict"
+            >
+              vLLM docs, Parallelism and Scaling: parallelism_scaling.md L33
+            </Cite>
+            . The selection code picks <code>mp</code> for a CUDA run with{' '}
+            <code>--nnodes</code> greater than 1 and never auto-selects Ray for a world that
+            outgrows one node{' '}
+            <Cite tier={1} href={vllmUrl(PARALLEL, 'L999-L1012')} kind="code">
+              config/parallel.py L999-L1012
+            </Cite>
+            . The code is what runs: plan a multi-node <code>vllm serve</code> around{' '}
+            <code>--nnodes</code>, and treat Ray as a choice you make, or one Ray Serve LLM
+            makes for you.
+          </Alert>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">The API surface: it really is just vLLM flags</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Your vllm serve flags carry over as engine_kwargs; check them against vLLM 0.27.0, the version ray[llm] 2.59.0 installs"
+          >
+            The API surface: it really is just vLLM flags
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             The reason adoption is cheap for a vLLM shop is that the configuration is
             almost a one-to-one mapping. Your <code>vllm serve</code> flags become{' '}
             <code>engine_kwargs</code> on an <code>LLMConfig</code>, and the compatibility
-            guide states the relationship plainly: &ldquo;Most of the{' '}
+            guide states the relationship plainly: "Most of the{' '}
             <code>engine_kwargs</code> that work with <code>vllm serve</code> work with
-            Ray Serve LLM.&rdquo; It also confirms you keep vLLM&rsquo;s latest features
-            (multimodal, structured output, reasoning models) through the same path.{' '}
-            <Link
-              external
-              href="https://docs.ray.io/en/latest/serve/llm/user-guides/vllm-compatibility.html"
-            >
-              Ray Serve LLM vLLM compatibility (accessed 2026-06-07)
-            </Link>
+            Ray Serve LLM." It also confirms you keep vLLM features such as multimodal,
+            structured output, and reasoning models through the same path{' '}
+            <Cite tier={1} href={RAY_COMPAT}>
+              Ray Serve LLM: vLLM compatibility
+            </Cite>
+            .
           </Box>
           <Table
             items={builderRows}
@@ -416,80 +561,125 @@ export function RayServeLLM() {
             ]}
           />
           <Box variant="small">
-            Builder / config names and the &ldquo;most engine_kwargs pass through&rdquo;
-            quote from the{' '}
-            <Link
-              external
-              href="https://docs.ray.io/en/latest/serve/llm/user-guides/vllm-compatibility.html"
+            Names and signatures read from Ray 2.59.0 source: the public{' '}
+            <code>ray.serve.llm</code> exports and <code>build_openai_app</code>{' '}
+            <Cite tier={1} href={`${RAY_INIT}#L149-L196`} kind="code">
+              ray/serve/llm/__init__.py L149-L196
+            </Cite>{' '}
+            <Cite tier={1} href={`${RAY_INIT}#L397-L409`} kind="code">
+              __init__.py L397-L409
+            </Cite>
+            , <code>LLMServingArgs</code>{' '}
+            <Cite
+              tier={1}
+              href={`${RAY}/python/ray/llm/_internal/serve/core/ingress/builder.py#L146-L158`}
+              kind="code"
             >
-              vLLM compatibility guide
-            </Link>{' '}
-            and the{' '}
-            <Link external href="https://docs.ray.io/en/latest/serve/llm/index.html">
-              Ray Serve LLM overview
-            </Link>{' '}
-            (both accessed 2026-06-07). The exact import surface evolves between Ray
-            releases (for example, <code>LLMRouter</code> is being superseded by an OpenAI
-            ingress class), so confirm names against the docs for your pinned Ray
-            version.
+              builder.py L146-L158
+            </Cite>
+            , the <code>LLMConfig</code> fields{' '}
+            <Cite tier={1} href={`${RAY_LLM_CONFIG}#L150-L228`} kind="code">
+              llm_config.py L150-L228
+            </Cite>
+            , and the prefix router's load check and power-of-two fallback{' '}
+            <Cite
+              tier={1}
+              href={`${RAY}/python/ray/llm/_internal/serve/routing_policies/prefix_aware/prefix_aware_router.py#L253-L258`}
+              kind="code"
+            >
+              prefix_aware_router.py L253-L258
+            </Cite>{' '}
+            <Cite
+              tier={1}
+              href={`${RAY}/python/ray/llm/_internal/serve/routing_policies/prefix_aware/prefix_aware_router.py#L351-L356`}
+              kind="code"
+            >
+              L351-L356
+            </Cite>
+            .
           </Box>
           <Alert type="warning">
-            <strong>&ldquo;Most,&rdquo; not &ldquo;all.&rdquo;</strong> The compatibility
+            <strong>"Most," not "all," and against vLLM 0.27.0.</strong> The compatibility
             guide hedges deliberately: a flag that works under <code>vllm serve</code> is
             <em> very likely</em> to work as an <code>engine_kwarg</code>, but the two
-            projects move fast and the surface is not guaranteed identical. Treat the
-            pass-through as the default expectation, not a contract: validate the
-            specific flags your deployment depends on against your pinned versions.
+            projects move fast and the surface is not guaranteed identical. Validate the
+            specific flags your deployment depends on against the vLLM that Ray installs:{' '}
+            <code>pip install "ray[llm]"</code> at Ray 2.59.0 pins{' '}
+            <code>vllm[audio]==0.27.0</code>{' '}
+            <Cite tier={1} href={`${RAY}/python/requirements/llm/llm-requirements.txt#L2`}>
+              llm-requirements.txt L2
+            </Cite>{' '}
+            <Cite tier={1} href={`${RAY}/python/setup.py#L387`}>
+              setup.py L387
+            </Cite>
+            , four minor releases behind the v0.31.0 this dive describes, so a flag or
+            default that arrived after 0.27.0 is absent from that install. The other
+            orchestrators lag too: Dynamo 1.5.1 pins vLLM 0.28.0{' '}
+            <Cite tier={1} href="https://github.com/ai-dynamo/dynamo/blob/v1.5.1/pyproject.toml#L61-L64">
+              dynamo pyproject.toml L61-L64
+            </Cite>{' '}
+            and llm-d 0.10.0 ships the v0.30.0 image{' '}
+            <Cite tier={1} href="https://github.com/llm-d/llm-d/releases/tag/v0.10.0">
+              llm-d v0.10.0 release notes
+            </Cite>
+            . None of the three pins v0.31.0.
           </Alert>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">KubeRay: the Kubernetes-native way to run it</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Run the same app on Kubernetes as declarative RayCluster and RayService resources, with autoscaling and blue/green upgrades"
+          >
+            KubeRay: the Kubernetes-native way to run it
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             Ray Serve LLM is a Python framework, but you rarely run it bare in
             production. <strong>KubeRay</strong> is the operator that makes it
-            Kubernetes-native: per the vLLM docs, it &ldquo;provides a Kubernetes-native
-            way to run vLLM workloads on Ray clusters.&rdquo; You describe the cluster
-            and the service as <strong>declarative CRDs</strong> (the docs reference{' '}
-            <code>RayCluster</code> and <code>RayService</code>), then apply them like any
-            other Kubernetes resource (&ldquo;one command to create or update the whole
-            cluster: <code>kubectl apply -f cluster.yaml</code>&rdquo;).{' '}
-            <Link external href="https://docs.vllm.ai/en/latest/deployment/integrations/kuberay/">
-              vLLM KubeRay integration (accessed 2026-06-07)
-            </Link>
+            Kubernetes-native: it "provides a Kubernetes-native way to run vLLM workloads on
+            Ray clusters." You describe the cluster and the service as{' '}
+            <strong>declarative CRDs</strong> (the docs reference <code>RayCluster</code> and{' '}
+            <code>RayService</code>), then apply them like any other Kubernetes resource ("one
+            command to create or update the whole cluster:{' '}
+            <code>kubectl apply -f cluster.yaml</code>"){' '}
+            <Cite tier={1} href={vllmDocsUrl('deployment/integrations/kuberay/')}>
+              vLLM docs: KubeRay
+            </Cite>
+            .
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
             <div>
               <Box variant="h3">Declarative CRDs</Box>
               <Box variant="p">
-                &ldquo;Git-ops-friendly YAML CRDs (RayCluster/RayService).&rdquo; The
-                cluster and the served app are version-controlled config, not imperative
-                scripts.
+                "Git-ops-friendly YAML CRDs (RayCluster/RayService)." The cluster and the
+                served app are version-controlled config, not imperative scripts.
               </Box>
             </div>
             <div>
               <Box variant="h3">Autoscaling</Box>
               <Box variant="p">
-                The operator &ldquo;automatically patches CRDs for adjusting cluster
-                size,&rdquo; so the Ray cluster grows and shrinks under load without
-                hand-editing node counts.
+                The operator "automatically patches CRDs for adjusting cluster size," so the
+                Ray cluster grows and shrinks under load without hand-editing node counts.
               </Box>
             </div>
             <div>
               <Box variant="h3">Rolling upgrades</Box>
               <Box variant="p">
-                &ldquo;Blue/green deployment updates supported.&rdquo; A{' '}
-                <code>RayService</code> can roll to a new version without dropping the
-                live endpoint.
+                "Blue/green deployment updates supported." A <code>RayService</code> can
+                roll to a new version without dropping the live endpoint.
               </Box>
             </div>
           </ColumnLayout>
           <Box variant="small">
             All quotes from the{' '}
-            <Link external href="https://docs.vllm.ai/en/latest/deployment/integrations/kuberay/">
-              vLLM KubeRay integration page (accessed 2026-06-07)
-            </Link>
+            <Cite tier={1} href={vllmDocsUrl('deployment/integrations/kuberay/')}>
+              vLLM KubeRay integration page
+            </Cite>
             .
           </Box>
           <Alert type="info">
@@ -497,16 +687,126 @@ export function RayServeLLM() {
             KubeRay keeps you inside the Ray ecosystem and is the natural choice when you
             are already using Ray Serve LLM. The operator-centric alternatives (the
             vLLM Production-Stack and router, <strong>Section 16</strong>, and llm-d /
-            KServe / Gateway API, <strong>Section 17</strong>) trade Ray&rsquo;s
-            Python-native model for closer alignment with Kubernetes-native and
-            inference-gateway conventions. Pick KubeRay when the team is Python- and
-            Ray-centric; reach for the operators when the org standard is a Kubernetes
-            operator pattern.
+            KServe / Gateway API, <strong>Section 17</strong>) trade Ray's Python-native
+            model for closer alignment with Kubernetes-native and inference-gateway
+            conventions. Pick KubeRay when the team is Python- and Ray-centric; reach for
+            the operators when the org standard is a Kubernetes operator pattern.
           </Alert>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">When to choose Ray Serve LLM</Header>}>
+      <ExpandableSection
+        headerText="Evolving: prefill/decode disaggregation and Wide-EP (wide expert parallelism) for MoE (mixture-of-experts) models"
+        headerActions={<Badge color="blue">moving target</Badge>}
+      >
+        <SpaceBetween size="s">
+          <Alert type="warning">
+            The patterns in this panel are <strong>recent and evolving</strong>. The case for
+            them comes from <strong>Anyscale's blog (Tier 2)</strong>; the builder and class
+            names are read from Ray 2.59.0 source. Verify both against your pinned Ray and
+            vLLM versions before depending on them.
+          </Alert>
+          <Box variant="p">
+            <strong>Why orchestration is getting harder.</strong> Anyscale's argument for
+            putting these patterns in Ray Serve is that, in the sparse-MoE era, engine
+            replicas are no longer independent: optimal serving couples them. In their words:
+            "Traditional Kubernetes primitives, designed for stateless microservices, are not
+            optimized to express these tightly coupled, stateful serving patterns that
+            require topology-aware placement and synchronized rank assignment." That
+            coordination challenge is the case for a Ray-native orchestrator.
+          </Box>
+          <Box variant="p">
+            <strong>Prefill/decode disaggregation, orchestrated by the decode server.</strong>{' '}
+            This separates the compute-bound prefill phase from the memory-bound decode phase
+            onto different deployments. <code>build_pd_openai_app</code>{' '}
+            <Cite tier={1} href={`${RAY_INIT}#L254`} kind="code">
+              __init__.py L254
+            </Cite>{' '}
+            wires a three-tier graph: ingress, then <code>PDDecodeServer</code>, then{' '}
+            <code>PDPrefillServer</code>. The decode server owns a real engine and runs the
+            request: it sends the prefill server a copy with <code>max_tokens=1</code> and{' '}
+            <code>kv_transfer_params</code>, takes the <code>kv_transfer_params</code> that
+            come back with the first prefill chunk, and decodes on its own engine{' '}
+            <Cite tier={1} href={`${RAY_PD_SERVER}#L1-L4`} kind="code">
+              pd_server.py L1-L4
+            </Cite>{' '}
+            <Cite tier={1} href={`${RAY_PD_SERVER}#L99-L106`} kind="code">
+              pd_server.py L99-L106
+            </Cite>
+            . The decode server plays the part of the proxy in{' '}
+            <strong>Section 10, Disaggregated Prefill / Decode</strong>, whose NIXL (NVIDIA
+            Inference Xfer Library) pull and push sequences show how the KV cache then moves
+            between the two engines.
+          </Box>
+          <Box variant="p">
+            <strong>Wide-EP for large MoE models.</strong> Expert parallelism distributes
+            an MoE model's experts across GPUs alongside data-parallel attention
+            (Section 9). Anyscale describes what "wide" adds: "Wide-EP adds expert load
+            balancing, expert replication, and optimized communication kernels to further
+            improve throughput and latency SLAs." The Ray Serve LLM piece for it is the
+            data-parallel builder, <code>build_dp_openai_app</code> over{' '}
+            <code>DPServer</code>{' '}
+            <Cite tier={1} href={`${RAY_INIT}#L379`} kind="code">
+              __init__.py L379
+            </Cite>
+            , which in Anyscale's account coordinates the engine replicas into one
+            expert-parallel group and scales the ingress servers: orchestration that ordinary
+            horizontal scaling cannot express.
+          </Box>
+          <Box variant="small">
+            Anyscale quotes:{' '}
+            <Cite
+              tier={2}
+              href="https://www.anyscale.com/blog/ray-serve-llm-anyscale-apis-wide-ep-disaggregated-serving-vllm"
+            >
+              "Ray Serve LLM on Anyscale: APIs for Wide-EP and Disaggregated Serving with
+              vLLM" (Anyscale blog)
+            </Cite>
+            . Anyscale is the company behind Ray, so this is first-party commentary rather
+            than reference documentation.
+          </Box>
+        </SpaceBetween>
+      </ExpandableSection>
+
+      <ExpandableSection headerText="Cross-links: where the related layers live">
+        <SpaceBetween size="s">
+          <Box variant="p">
+            <strong>Section 9, Distributed Inference:</strong> the four parallelism
+            axes and vLLM's two executors: multiprocessing by default, with{' '}
+            <code>--nnodes</code> across nodes, and Ray when you or Ray Serve LLM select it.
+            That is the runtime <em>beneath</em> Ray Serve LLM.
+          </Box>
+          <Box variant="p">
+            <strong>Inside the Codebase &rarr; Distributed &amp; KV Transfer:</strong> the
+            in-tree machinery (process groups, <code>parallel_state</code>, the{' '}
+            <code>GroupCoordinator</code>, and the KV-transfer connectors), including how{' '}
+            <code>distributed_executor_backend</code> resolves and the Ray executors that
+            Ray Serve LLM's replicas run.
+          </Box>
+          <Box variant="p">
+            <strong>Section 10, Disaggregated Prefill / Decode:</strong> the case for
+            splitting prefill from decode and the NIXL pull and push transfers that the
+            decode-orchestrated pattern above relies on.
+          </Box>
+          <Box variant="p">
+            <strong>Sections 16 &amp; 17, the Kubernetes-operator alternatives:</strong>{' '}
+            Production-Stack &amp; router (16) and llm-d / KServe / Gateway API (17) are
+            the operator-centric counterparts to KubeRay for teams whose standard is a
+            Kubernetes-native inference platform rather than a Ray-native one.
+          </Box>
+        </SpaceBetween>
+      </ExpandableSection>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Decide on team and topology: when Ray Serve LLM pays for itself, and when a plain vllm serve or an operator fits better"
+          >
+            When to choose Ray Serve LLM
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             Work backward from the team and the topology, not from the framework.
@@ -526,10 +826,11 @@ export function RayServeLLM() {
                 </li>
                 <li>
                   You need <strong>several models or many LoRA adapters</strong> behind
-                  one endpoint, with per-model autoscaling.
+                  one endpoint, with per-model autoscaling and prefix-aware or KV-aware
+                  replica selection.
                 </li>
                 <li>
-                  You want to keep using <strong>vLLM&rsquo;s engine features</strong>{' '}
+                  You want to keep using <strong>vLLM's engine features</strong>{' '}
                   unchanged, since the engine_kwargs and OpenAI API carry straight over.
                 </li>
               </ul>
@@ -538,9 +839,14 @@ export function RayServeLLM() {
               <Box variant="h3">Look elsewhere when…</Box>
               <ul>
                 <li>
-                  A single <code>vllm serve</code> (optionally multi-node via the Ray
-                  executor backend, Section 9) already meets your needs, so the
+                  A single <code>vllm serve</code> (multi-node with <code>--nnodes</code>,
+                  or on the Ray executor, Section 9) already meets your needs, so the
                   orchestration layer is overhead you do not need.
+                </li>
+                <li>
+                  You depend on a vLLM feature newer than <strong>0.27.0</strong>, the
+                  version <code>ray[llm]</code> 2.59.0 pins, and do not want to run an
+                  untested pairing.
                 </li>
                 <li>
                   Your org standardizes on a <strong>Kubernetes-operator</strong> and
@@ -549,101 +855,13 @@ export function RayServeLLM() {
                 </li>
                 <li>
                   You want a fully managed endpoint and are willing to give up
-                  framework control (SageMaker / Bedrock, later sections).
+                  framework control (SageMaker / Bedrock, Section 25).
                 </li>
               </ul>
             </div>
           </ColumnLayout>
         </SpaceBetween>
       </Container>
-
-      <ExpandableSection
-        headerText="Evolving: disaggregated prefill/decode and Wide-EP for MoE"
-        headerActions={<Badge color="blue">Tier-2 / moving target</Badge>}
-      >
-        <SpaceBetween size="s">
-          <Alert type="warning">
-            The features in this panel are <strong>recent and evolving</strong>, and the
-            detail below is sourced primarily from <strong>Anyscale&rsquo;s blog
-            (Tier-2)</strong> rather than first-party reference docs. Treat names and
-            APIs as a moving target; verify against the docs for your pinned Ray and
-            vLLM versions before depending on them.
-          </Alert>
-          <Box variant="p">
-            <strong>Why orchestration is getting harder.</strong> Anyscale&rsquo;s
-            argument for putting these patterns in Ray Serve is that, in the sparse-MoE
-            era, engine replicas are no longer independent: optimal serving couples them.
-            They frame it directly. [Tier-2: Anyscale] &ldquo;Traditional Kubernetes
-            primitives, designed for stateless microservices, are not optimized to express
-            these tightly coupled, stateful serving patterns that require topology-aware
-            placement and synchronized rank assignment.&rdquo; That coordination problem
-            is the case for a Ray-native orchestrator.
-          </Box>
-          <Box variant="p">
-            <strong>Disaggregated prefill/decode via a PDProxyServer.</strong> This
-            separates the compute-bound prefill phase from the memory-bound decode phase
-            onto different deployments (the conceptual rationale is{' '}
-            <strong>Section 10, Disaggregated Prefill / Decode</strong>). Ray Serve
-            LLM orchestrates it with a proxy: [Tier-2: Anyscale] &ldquo;The PDProxyServer
-            routes inputs to the prefill deployment with <code>max_tokens=1</code> to fill
-            the KV cache. The KV cache metadata is then passed to the decode
-            deployment.&rdquo; A corresponding <code>build_pd_openai_app</code>-style
-            builder wires the two deployments behind one OpenAI endpoint.
-          </Box>
-          <Box variant="p">
-            <strong>Wide-EP for large MoE models.</strong> Expert parallelism distributes
-            an MoE model&rsquo;s experts across GPUs alongside data-parallel attention
-            (Section 9). &ldquo;Wide-EP&rdquo; pushes that wide: [Tier-2: Anyscale]
-            &ldquo;Wide-EP adds expert load balancing, expert replication, and optimized
-            communication kernels to further improve throughput and latency SLAs.&rdquo;
-            Ray Serve LLM&rsquo;s data-parallel + expert-parallel builder coordinates the
-            engine replicas into one expert-parallel group and scales the ingress
-            servers, which is the orchestration that ordinary horizontal scaling cannot
-            express.
-          </Box>
-          <Box variant="small">
-            Source: [Tier-2: Anyscale]{' '}
-            <Link
-              external
-              href="https://www.anyscale.com/blog/ray-serve-llm-anyscale-apis-wide-ep-disaggregated-serving-vllm"
-            >
-              &ldquo;Ray Serve LLM on Anyscale: APIs for Wide-EP and Disaggregated Serving
-              with vLLM&rdquo; (Anyscale blog, accessed 2026-06-07)
-            </Link>
-            . Anyscale is the company behind Ray, so this is first-party <em>commentary</em>{' '}
-            but not first-party reference documentation, graded Tier-2. The conceptual
-            mechanics of PD disaggregation and EP live in Sections 10 and 9 respectively.
-          </Box>
-        </SpaceBetween>
-      </ExpandableSection>
-
-      <ExpandableSection headerText="Cross-links: where the related layers live">
-        <SpaceBetween size="s">
-          <Box variant="p">
-            <strong>Section 9, Distributed Inference:</strong> the four parallelism
-            axes and why vLLM defaults to Ray as the executor backend for multi-node
-            TP/PP. That is the runtime <em>beneath</em> Ray Serve LLM.
-          </Box>
-          <Box variant="p">
-            <strong>Inside the Codebase &rarr; Distributed &amp; KV Transfer:</strong> the
-            in-tree machinery (process groups, <code>parallel_state</code>, the{' '}
-            <code>GroupCoordinator</code>, and the KV-transfer connectors), including
-            vLLM&rsquo;s Ray executor backend, the concrete code Ray Serve LLM places and
-            supervises.
-          </Box>
-          <Box variant="p">
-            <strong>Section 10, Disaggregated Prefill / Decode:</strong> the
-            conceptual case for splitting prefill from decode, which the evolving
-            PDProxyServer pattern above orchestrates.
-          </Box>
-          <Box variant="p">
-            <strong>Sections 16 &amp; 17, the Kubernetes-operator alternatives:</strong>{' '}
-            Production-Stack &amp; router (16) and llm-d / KServe / Gateway API (17) are
-            the operator-centric counterparts to KubeRay for teams whose standard is a
-            Kubernetes-native inference platform rather than a Ray-native one.
-          </Box>
-        </SpaceBetween>
-      </ExpandableSection>
     </SpaceBetween>
   );
 }
