@@ -78,6 +78,17 @@ Evidence URLs:
 5. **Recommended treatment per section file**: KEEP (pin bump only), EDIT (list the edits), or
    REWRITE (why), with an estimate of the claims that change.
 
+### Execution rules (a previous run lost all work to a session stop)
+
+- **Do not use `run_in_background` for any tool or agent. Do not spawn subagents.**
+- **Write incrementally.** Within your first few tool calls, create your register file with a
+  header and an empty table per section file. Each time you finish one section file, write its
+  table into the file immediately (rewrite the whole file with Write, or append with a Bash
+  heredoc). Never hold more than one section file's findings only in memory. If you are stopped,
+  what is on disk must be usable.
+- Be economical: batch checks into combined shell commands (one `grep -n` over several patterns,
+  one `wc -l` over many files). Aim for well under 120 tool calls in total.
+
 ### Rules
 
 - Preserve hedge scope. "Not found in `vllm/v1/core` at v0.31.0" is a finding; "does not exist" is
