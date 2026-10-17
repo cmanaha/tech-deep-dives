@@ -1,5 +1,7 @@
 # Authoring wave prompts (orchestrator working file)
 
+Waves 3 to 12.
+
 Every prompt starts with the COMMON block, then the file block. Slugs and ports are unique per
 agent so parallel harness runs do not collide.
 
@@ -232,6 +234,137 @@ kind="doc-code-conflict"); separate EPLB from `--all2all-backend` (D-16, D-6); D
 modes (D-12); one-liners for the FlashInfer all-reduce, sequence parallelism (forces the V1 runner
 with TP > 1), DBO and fault tolerance (D-3, D-20, D-22, D-21). Diagram: the inline TP x PP SVG
 (keep; title/aria pattern). Harness: slug `distinf`, port 4845, `--sections distributed`.
+
+## Wave 7
+
+### LoRAServing (slug lora, port 4846)
+
+You own exactly one file: deep-dives/vllm/src/sections/LoRAServing.tsx. Treatment: EDIT (medium).
+Register: deep-dives/vllm/research/2026-10-refresh/06-core-features.md, the "LoRAServing.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: a defaults column and the `--max-loras 3` note on the diagram, since the default is 1 (L9); fix the docs quote verb (L6); route registration is gated, not a no-op (L12); runtime constraints, `load_inplace`, resolver plugins (L14, L15); the LoRA ID enters the prefix-cache block hash (L19); one MRv2 line (L20); kernel naming (L3); adapter size as the formula, or cut (L1 is UNKNOWN: no range ships); gateway protocol pinned to GIE v1.6.2; L16 (DP fan-out of runtime LoRA load) is untraced: do not claim it. Diagram: `MixedBatchDiagram` (show `--max-loras 3` in the picture and say the default is 1). Harness: slug `lora`, port 4846,
+`--sections lora`.
+
+### RayServeLLM (slug ray, port 4847)
+
+You own exactly one file: deep-dives/vllm/src/sections/RayServeLLM.tsx. Treatment: EDIT (one conceptual fix).
+Register: deep-dives/vllm/research/2026-10-refresh/05-ecosystem.md, the "RayServeLLM.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: rewrite every "vLLM defaults to Ray for multi-node" passage (five places) to the code behaviour: the multi-node executor default is `mp` with `--nnodes`; Ray is used inside a Ray placement group or with `--distributed-executor-backend ray`; vLLM's docs say otherwise, so cite them with kind="doc-code-conflict" and the code as the authority. Replace the PDProxyServer paragraph with the decode-orchestrated PD flow; `build_openai_app(LLMServingArgs)`; `OpenAiIngress` replaces the LLMRouter story; add that `ray[llm]` 2.59.0 pins vLLM 0.27.0 (no orchestrator pins v0.31.0), the SGLang backend, prefix/KV-aware routers; re-pin docs to `releases-2.59.0`. Replace any "PagedAttention" capability phrase with paged KV wording (the legacy kernel was removed in v0.25.0). Diagram: the inline SVG (engine box; footer: Ray inside a placement group). Harness: slug `ray`, port 4847,
+`--sections ray`.
+
+### WhenNotVllm (slug alt, port 4848)
+
+You own exactly one file: deep-dives/vllm/src/sections/WhenNotVllm.tsx. Treatment: EDIT (heavy on two engines).
+Register: deep-dives/vllm/research/2026-10-refresh/05-ecosystem.md, the "WhenNotVllm.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: TensorRT-LLM: the default backend is PyTorch (no compile step); rewrite its row, the "Pick TensorRT-LLM" box, the deep-dive note and the tree branch. TGI: the repository is archived (last release v3.3.7). Dynamo and llm-d wrap vLLM, SGLang and TensorRT-LLM, not TGI. Add Moore Threads MUSA (SGLang) and Apple Silicon via vLLM-Metal if the register sources it. One line each for vLLM's new counterweights (diffusion LLMs, watermarking, preload/snapshot) only where they change a choice. Consider a local-engine branch (llama.cpp, Ollama, MLX) only if the register sources it. Drop the comparative UNKNOWNs. Paged KV wording instead of "PagedAttention" as a capability. Diagram: `DecisionTreeDiagram` (TensorRT-LLM branch, TGI archived). Harness: slug `alt`, port 4848,
+`--sections alternatives`.
+
+## Wave 8
+
+### ProductionStack (slug pstack, port 4849)
+
+You own exactly one file: deep-dives/vllm/src/sections/ProductionStack.tsx. Treatment: EDIT (heavy).
+Register: deep-dives/vllm/research/2026-10-refresh/05-ecosystem.md, the "ProductionStack.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: rewrite the routing-strategies table and the "Two routers" alert around code: production-stack `vllm-stack-0.1.13` ships eight routing logics (roundrobin, session, prefixaware, kvaware, loadaware, priority, disaggregated_prefill, disaggregated_prefill_orchestrated); the bundled router is Python; the README "WIP" label is a docs-vs-code conflict. Split KV-aware (LMCache controller) from the Rust router's consistent hashing / cache_aware. Observability is opt-in. Note the optional Go operator. Fix the production-stack vs llm-d comparison rows. The router blog is Tier 2. Practical warning: its scraper reads the pre-rename `vllm:gpu_cache_usage_perc` and its bundled hit-rate panel queries `vllm:gpu_prefix_cache_*_total`, neither emitted by v0.31.0 (state this as inference from code, not run). Diagram: `DeploymentShapeDiagram` (relabel the eight routing logics). Harness: slug `pstack`, port 4849,
+`--sections prod-stack`.
+
+### LlmdKServe (slug llmd, port 4850)
+
+You own exactly one file: deep-dives/vllm/src/sections/LlmdKServe.tsx. Treatment: EDIT (heavy).
+Register: deep-dives/vllm/research/2026-10-refresh/05-ecosystem.md, the "LlmdKServe.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: the EPP lives in llm-d Router v1.0.0 (renamed from llm-d-inference-scheduler; moved out of GIE at v1.6.0); GIE is GA since v1.0.0, current v1.6.2; EPP metric names `llm_d_epp_*`; the disaggregation flow is decode-first with a sidecar beside the decoder; `LLMInferenceServiceConfig` (not LLMInferenceConfig), API `serving.kserve.io/v1alpha2`; fix the production-stack vs EPP shared-metrics claim (row 21); refresh GIE quotes; drop "PagedAttention" as a capability; add standalone mode, InferenceObjective, new scorers, the KServe KV-offload spec; llm-d v0.10.0 ships the vLLM v0.30.0 image and runs upstream vLLM images. Diagram: `GatewayRoutingDiagram` (EPP in llm-d Router; decode-first sidecar). Harness: slug `llmd`, port 4850,
+`--sections llm-d`.
+
+### NvidiaDynamo (slug dynamo, port 4851)
+
+You own exactly one file: deep-dives/vllm/src/sections/NvidiaDynamo.tsx. Treatment: EDIT (moderate).
+Register: deep-dives/vllm/research/2026-10-refresh/05-ecosystem.md, the "NvidiaDynamo.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: pin to v1.5.1; current component names (KV-Aware Router, SLA Planner, KVBM, ModelExpress, Grove); fix the kv_role claim (Dynamo does not assign roles; the phase comes from `--disaggregation-mode`, the role from the `--kv-transfer-config` you pass; its examples use `kv_both`, which vLLM v0.31.0 deprecates for NIXL); state that `ai-dynamo[vllm]` 1.5.1 installs vLLM 0.28.0; add the Dynamo GAIE EPP integration; KV row: vLLM's in-tree tiered OffloadingConnector or LMCache; date the May-2025 llm-d plans as planned and unverified; paged KV wording. Diagram: `DynamoDiagram` (current component names). Harness: slug `dynamo`, port 4851,
+`--sections dynamo`.
+
+## Wave 9
+
+### OperationsFailureModes (slug ops, port 4852)
+
+You own exactly one file: deep-dives/vllm/src/sections/OperationsFailureModes.tsx. Treatment: EDIT (heavy; cold-start block).
+Register: deep-dives/vllm/research/2026-10-refresh/08-framing-ops-decision.md, the "OperationsFailureModes.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: replace the V0 preemption log line with the V1 signals (the "Preemptions:" stats log field and `vllm:num_preemptions`; preemption is recompute-only) (O1, O3); watermark and active-seqs levers (O4); a cold-start block with a NEW `RestartLadderDiagram`: cold boot, compile-cache reuse, `--kv-cache-memory-bytes`, `vllm preload` + `--load-format ipc_cache`, `vllm snapshot` (CRIU), the ready timeout, and what each rung skips (O8, O9, O20, O21); fix the `graph.replay()` path (O11); client disconnect is code-cited, detected via `finished_reason="abort"` (O16); LiteLLM incident tier (O17); rows for admission-control HTTP 503 (O22), `--device-ids` and the env cache frozen at engine start (O24, O25); reword the "The problem:" opener; fix the dead conserving-memory URL and re-pin every DOCS constant (O30). Diagram: NEW `RestartLadderDiagram` (inline SVG; every time or count on it must be cited in the prose; otherwise label it "Illustrative, not measured"). Harness: slug `ops`, port 4852,
+`--sections ops`.
+
+### ObservabilityBench (slug obs, port 4853)
+
+You own exactly one file: deep-dives/vllm/src/sections/ObservabilityBench.tsx. Treatment: EDIT (moderate).
+Register: deep-dives/vllm/research/2026-10-refresh/05-ecosystem.md, the "ObservabilityBench.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: all ten metric names hold; fix the ITL-as-TPOT gloss (two places) using the v0.31.0 metrics design doc; replace the in-repo `benchmarks/` claim with `vllm bench serve|latency|throughput|sweep|startup`; update the GuideLLM command to `guidellm run --backend kind=openai_http,...` (v0.8.1); add rows for `num_requests_waiting_by_reason`, `request_num_preemptions`, `tool_call_parser_invocations_total`, KV-offload/tiering metrics, per-request spec-decode metrics, `vllm-bench`; re-pin the examples and bump `ACCESSED` to 2026-10-16. Diagram: `MetricsPipelineDiagram` (load-generator labels). Harness: slug `obs`, port 4853,
+`--sections observability`.
+
+### GatewaysAppLayer (slug gw, port 4854)
+
+You own exactly one file: deep-dives/vllm/src/sections/GatewaysAppLayer.tsx. Treatment: KEEP + small EDIT.
+Register: deep-dives/vllm/research/2026-10-refresh/05-ecosystem.md, the "GatewaysAppLayer.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: pin docs links to v0.31.0; tighten the LiteLLM incident box with first-party facts from the register (affected versions, window, Docker image unaffected, clean version) and fix its tier label; optional paragraph on `/v1/messages` and `/v1/responses`; name the LangChain / LlamaIndex vLLM wrappers only if the register sources the class names (otherwise leave them unnamed). Diagram: none expected; fix the title/aria pattern if any SVG exists. Harness: slug `gw`, port 4854,
+`--sections gateways`.
+
+## Wave 10
+
+### AwsEks (slug eks, port 4855)
+
+You own exactly one file: deep-dives/vllm/src/sections/AwsEks.tsx. Treatment: EDIT (heavy).
+Register: deep-dives/vllm/research/2026-10-refresh/07-aws.md, the "AwsEks.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: (1) replace the "Karpenter cannot do placement groups" story everywhere with Karpenter `placementGroupSelector` (v1.11.0+) (E1-E6, D1); (2) EKS URL x5 to `ml-inference-load-serve-model.html` (E7); (3) "throughput gauges" become counters (E14); (4) `consolidateAfter` 60m (E16); (5) the llm-d benchmark hardware is `ml.p6-b200.48xlarge` only (E20); do not attribute DisaggregatedSet to the llm-d blog (E22); (6) DisaggregatedSet shipped in LWS v1.0.0 (E21); (7) Spot "up to 90%" as an AWS claim (E25) and `ipc_cache` / `vllm preload` for cold start (E26). EKS topology labels enablement is UNKNOWN: do not claim it. Diagram: `EksRequestProvisioningDiagram` (the Karpenter `placementGroupSelector` path replaces the managed-node-group-only branch). Harness: slug `eks`, port 4855,
+`--sections eks`.
+
+### AwsSageMakerBedrock (slug sm, port 4856)
+
+You own exactly one file: deep-dives/vllm/src/sections/AwsSageMakerBedrock.tsx. Treatment: EDIT (heavy; two subsections rewritten).
+Register: deep-dives/vllm/research/2026-10-refresh/07-aws.md, the "AwsSageMakerBedrock.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: follow the register's treatment list exactly: detailed observability scrapes vLLM metrics and LMI V30 serves `/metrics` (S36); LMI V30 = vLLM 0.31.0, rewrite the version table and the "lags upstream" claims (S12, S13, S41); async mode as the Path A default everywhere (S4, S5, S55); 25 MB payload (S18, S22); the in-tree SageMaker router with stateful sessions replaces the "open RFC" paragraph (S24, S25); `sagemaker-entrypoint.sh` lives in vLLM, and model-hosting-container-standards is the Python library its route imports (S42); HyperPod: no Karpenter, native `pdSpec` P/D, Inference Gateway (S30, S32, D7); Spot cell, drop the unsourced 15-40% premium (S37, S38); Custom Model Import in the decision tree (S46, D5); cite the AWS decision guide (S45); fused_moe_lora on H200 (S52); cross-ref "13, 10, 4" (S54); hedge or drop the Trainium-for-Amazon-models claim (S44); OpenAI-compatible path and prefix-aware routing (S47, S48); fix the DLC link (S7). The 10 s metric resolution (S28) and "multi-node requires EFA" (S30) are UNKNOWN: drop them. Diagram: `SageMakerPathsDiagram`, `BedrockVsSelfHostDiagram`, `SageMakerHostingSurfaceDiagram` per the diagram audit; `LmiConfigToEngineDiagram` keep. Harness: slug `sm`, port 4856,
+`--sections sagemaker`.
+
+### AwsGpuEfaNixl (slug gpuefa, port 4857)
+
+You own exactly one file: deep-dives/vllm/src/sections/AwsGpuEfaNixl.tsx. Treatment: EDIT.
+Register: deep-dives/vllm/research/2026-10-refresh/07-aws.md, the "AwsGpuEfaNixl.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: (1) "push" becomes decoder pull / RDMA READ by default; add `NixlPushConnector` (G9, G28, D2); read the already rewritten DisaggregatedServing and CodebaseDistributed NIXL blocks so the three agree; (2) `kv_both` is deprecated, use `kv_producer` / `kv_consumer` (G11); (3) the connector is a package (G13); (4) add AL2023 (G16); unpin the EFA installer version (G17, G29); (5) tier labels (G8) and the misquote (G24); (6) P5e, P6e-GB200, P6e-GB300 rows (G4), holding the P6e-GB200 EFA figure (UNKNOWN); (7) drop the "not re-verified" warning (G6). Do not ship UCX vs LIBFABRIC performance on AWS as fact (UNKNOWN). Fabric internals belong to the EFA dive: cross-link `../efa/` (G27). Diagram: `KvDataPathDiagram` (roles `kv_producer` / `kv_consumer`; pull by default, decoder issues RDMA READs). Harness: slug `gpuefa`, port 4857,
+`--sections gpu-efa`.
+
+## Wave 11
+
+### AwsNeuron (slug neuron, port 4858)
+
+You own exactly one file: deep-dives/vllm/src/sections/AwsNeuron.tsx. Treatment: REWRITE.
+Register: deep-dives/vllm/research/2026-10-refresh/07-aws.md, the "AwsNeuron.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: rebuild around "vllm-neuron 1.x plugin (current) vs 0.5.x + NxD Inference (maintenance)": the 1.x plugin ships its own model code with no NxD Inference dependency, and NxDI is in maintenance mode (N1-N4, D3). The feature matrix flips: LoRA off; EAGLE3 on; MTP off; P/D, multimodal and the new quantization keys on (N14, N15, N17, N18, N20). Versions: Neuron 2.32.0; the plugin (tag v0.24.0.1.1.0) pins vLLM 0.24.0 (N7, N10). The legacy fork is archived and the v0.10.1 install page has no successor (N21, N22, N26). Keep the Rufus proof point (N23) and the instance guidance that holds (N11-N13, N16, N19). Resolve or drop N9 and N24. Silicon details belong to the Silicon, Memory & Inference dive: link it. Diagram: `NeuronStackDiagram` (delete the NxD Inference layer for the 1.x plugin; show the 0.5.x path as maintenance). Harness: slug `neuron`, port 4858,
+`--sections neuron`.
+
+### Ec2TopologyPlacement (slug topo, port 4859)
+
+You own exactly one file: deep-dives/vllm/src/sections/Ec2TopologyPlacement.tsx. Treatment: EDIT (light).
+Register: deep-dives/vllm/research/2026-10-refresh/07-aws.md, the "Ec2TopologyPlacement.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: (1) two read-only APIs: add `DescribeCapacityReservationTopology` to the table and the diagram (T1); (2) node IDs are per-account hashes (T22); (3) rework the Kubernetes scheduler gotcha: the llm-d EPP has topology affinity at host, rack and zone level from pod labels, while proximity between nodes is still a launch-time decision (T27); (4) the leaf-index and layer-label warning (T26, D9), the `topology.k8s.aws/network-node-layer-<n>` node labels (T28) and Karpenter `placementGroupSelector` in the playbook (T29); (5) one line on `capacityBlockId` / UltraServer Capacity Blocks, cross-linking the EFA dive's topology section (T30). Refresh the accessed dates. Diagram: `ControlVsObserveDiagram` (add the node-label / EPP topology-scorer consumer boxes); `NetworkNodesDiagram` caption (P6-B200 / P6-B300 report four layers). Harness: slug `topo`, port 4859,
+`--sections topology`.
+
+### DecisionGuide (slug decision, port 4860)
+
+You own exactly one file: deep-dives/vllm/src/sections/DecisionGuide.tsx. Treatment: EDIT (tree branch fixes).
+Register: deep-dives/vllm/research/2026-10-refresh/08-framing-ops-decision.md, the "DecisionGuide.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: read every section the guide summarises (all are rewritten by now) so the guide agrees with them. Fix the tree's Ray branch (`vllm serve --nnodes` runs multi-node without Ray) (D1) and disaggregation exclusivity (not llm-d-only) (D5, D6) plus two geometry defects; KV-offload row (vLLM's native tiers; LMCache is one backend) (D11); spec-decode row with dynamic speculative decoding (D9); DP dense-only qualifier (D12); label the Neuron price claim as a vendor claim or drop it (D15); Karpenter placement-group note (D17); tiered `vllm serve` defaults for batched tokens and sequences, block-size caveat (D18, D20, D21); preemption signal (D22); re-pin links. Diagram: `StartHereTree` (fix the Ray branch, the disaggregation branch and the two geometry defects). Harness: slug `decision`, port 4860,
+`--sections decision`.
+
+## Wave 12
+
+### ThesisAndFraming (slug thesis, port 4861)
+
+You own exactly one file: deep-dives/vllm/src/sections/ThesisAndFraming.tsx. Treatment: EDIT.
+Register: deep-dives/vllm/research/2026-10-refresh/08-framing-ops-decision.md, the "ThesisAndFraming.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: read the finished dive first (App.tsx nav plus the h1 and first paragraph of every section) so the framing matches it. Paged KV wording (T2); class names `AsyncLLM` / MRv2 (T7); qualify "de-facto" or drop it (T8 is UNKNOWN); add the MRv2 shift beside V0 -> V1 (T14, T15); release-tag pin wording ("pinned to the v0.31.0 release tag") (T18); one sentence on the replaceable API server (Python or Rust frontend) (T22); re-pin links and dates (T21). The "Virtual Large Language Model" expansion is unsourced: do not use it. Diagram: `StackDiagram` (flex boxes; optional "Python or Rust frontend" sub-label). Harness: slug `thesis`, port 4861,
+`--sections thesis`.
+
+### InferenceWorkload (slug workload, port 4862)
+
+You own exactly one file: deep-dives/vllm/src/sections/InferenceWorkload.tsx. Treatment: KEEP + small EDIT.
+Register: deep-dives/vllm/research/2026-10-refresh/08-framing-ops-decision.md, the "InferenceWorkload.tsx" table and the sections after it (pin and link audit, diagram audit,
+recommended treatment). Must-dos: paged KV wording (W6, W8); the startup KV-capacity log line (W5); optional token-budget default (W4, tiered per the cross-file fact); re-pin links; fix the ITL label overlap in `PrefillDecodeTimeline`. Cross-references to section 5 use its new title "Paged KV Cache & Block Tables". Diagram: `PrefillDecodeTimeline` (fix the ITL label collision). Harness: slug `workload`, port 4862,
+`--sections workload`.
 
 ## FOOTER (every prompt)
 
