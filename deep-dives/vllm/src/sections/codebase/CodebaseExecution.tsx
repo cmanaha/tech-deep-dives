@@ -22,7 +22,7 @@ const backendRows: BackendRow[] = [
     backend: 'FLASH_ATTN',
     module: 'backends/flash_attn.py',
     chosenWhen:
-      'First choice for dense (non-MLA) attention, except causal attention on compute capability 10.x. Requires compute capability >= 8.0. Runs FA3 on Hopper and FA4 on 10.x when that version is available, FA2 otherwise.',
+      'First choice for dense (non-MLA) attention, except causal attention on compute capability 10.x. Requires compute capability >= 8.0. Runs FA3 (FlashAttention 3) on Hopper and FA4 on 10.x when that version is available, FA2 otherwise.',
   },
   {
     backend: 'FLASHINFER',
@@ -75,7 +75,7 @@ const backendRows: BackendRow[] = [
     backend: 'TRITON_MLA',
     module: 'backends/mla/triton_mla.py',
     chosenWhen:
-      'Triton MLA fallback that validates on any capability; first on compute capability 12.x.',
+      'Triton MLA fallback with no compute-capability gate; first on compute capability 12.x.',
   },
 ];
 
@@ -116,10 +116,10 @@ const graphModeRows: GraphModeRow[] = [
 
 const xrsFallback = [
   'stock torch.compile mode',
-  'sequence parallelism with TP > 1',
-  'PP with the external_launcher executor',
+  'sequence parallelism with tensor parallel > 1',
+  'pipeline parallel with the external_launcher executor',
   'spec decode: ngram, ngram_gpu, suffix,',
-  '    medusa, mlp_speculator, custom_class',
+  ' medusa, mlp_speculator, custom_class',
   'EAGLE parallel drafting',
   'dual-batch overlap, unless VLLM_USE_V2_MODEL_RUNNER=1',
   'elastic expert parallelism',
@@ -128,13 +128,26 @@ const xrsFallback = [
 
 const xrsNeedsV2 = [
   'prefill context parallel',
-  'PP together with async scheduling',
+  'pipeline parallel with async scheduling',
   'DSpark, adaptive draft verification',
   'DFlash: mixed sliding/full drafts,',
-  '    candidate-head drafts (DFlash2, LiLiCorr)',
+  ' candidate-head drafts (DFlash2, LiLiCorr)',
   'diffusion models',
   'batch-sharded sampling',
 ];
+
+/** One line of a RunnerSelectionDiagram feature panel; a leading-space line continues the item above. */
+function XrsItem({ text, y, dot }: { text: string; y: number; dot: string }) {
+  const cont = text.startsWith(' ');
+  return (
+    <>
+      {cont ? null : <circle cx={488} cy={y - 4} r={2.5} fill={dot} />}
+      <text x={cont ? 508 : 498} y={y} className="xrs-li">
+        {text.trim()}
+      </text>
+    </>
+  );
+}
 
 /**
  * How VllmConfig.use_v2_model_runner decides, top to bottom, with the two
@@ -294,9 +307,7 @@ function RunnerSelectionDiagram() {
           V2 lacks these, so vLLM falls back to V1
         </text>
         {xrsFallback.map((t, i) => (
-          <text key={t} x={484} y={86 + i * 19} className="xrs-li">
-            {t}
-          </text>
+          <XrsItem key={t} text={t} y={86 + i * 19} dot="#8b6c00" />
         ))}
 
         <rect x={468} y={272} width={396} height={180} rx={8} fill="#f2f8fd" stroke="#0972d3" />
@@ -304,9 +315,7 @@ function RunnerSelectionDiagram() {
           V1 lacks these, so they need V2 (V1 raises)
         </text>
         {xrsNeedsV2.map((t, i) => (
-          <text key={t} x={484} y={318 + i * 19} className="xrs-li">
-            {t}
-          </text>
+          <XrsItem key={t} text={t} y={318 + i * 19} dot="#0972d3" />
         ))}
       </svg>
     </div>
@@ -326,143 +335,145 @@ function ForwardPipelineDiagram() {
     { x: 518, t: 'forward', s: ['graph replay or eager', 'KV write, attention'] },
   ];
   return (
-    <svg
-      viewBox="0 0 900 262"
-      role="img"
-      aria-labelledby="exec-fwd-pipe-title"
-      style={{ width: '100%', height: 'auto' }}
-    >
-      <title id="exec-fwd-pipe-title">
-        One Model Runner V2 step. EngineCore schedules, then calls execute_model without
-        blocking. On the GPU side the runner updates its fixed request slots, builds positions
-        and sequence lengths with Triton kernels, gathers block tables and computes the
-        slot_mapping, and runs the forward pass, which writes each layer&apos;s new keys and
-        values before attention. Meanwhile the CPU builds the structured-output grammar bitmask.
-        execute_model returns None; EngineCore then calls sample_tokens with the bitmask, and the
-        runner computes logits, applies the bitmask with a Triton kernel and samples.
-      </title>
-      <style>{`
-        .xfp-lane { fill: #414d5c; font: 600 11px sans-serif; }
-        .xfp-div  { fill: #5f6b7a; font: 600 11px sans-serif; text-anchor: middle; }
-        .xfp-t    { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: middle; }
-        .xfp-tw   { fill: #ffffff; font: 600 13px sans-serif; text-anchor: middle; }
-        .xfp-s    { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
-        .xfp-sw   { fill: #e6f0fb; font: 11px sans-serif; text-anchor: middle; }
-        .xfp-e    { fill: #5f6b7a; font: 11px sans-serif; }
-        .xfp-arr  { stroke: #0972d3; stroke-width: 1.5; fill: none; marker-end: url(#xfp-ah); }
-      `}</style>
-      <defs>
-        <marker
-          id="xfp-ah"
-          markerWidth="8"
-          markerHeight="8"
-          refX="7"
-          refY="4"
-          orient="auto-start-reverse"
-        >
-          <path d="M0,0 L8,4 L0,8 Z" fill="#0972d3" />
-        </marker>
-      </defs>
-      <rect x={0} y={0} width={900} height={262} rx={8} fill="#ffffff" />
+    <div style={{ overflowX: 'auto' }}>
+      <svg
+        viewBox="0 0 900 262"
+        role="img"
+        aria-labelledby="exec-fwd-pipe-title"
+        style={{ width: '100%', minWidth: 680, height: 'auto' }}
+      >
+        <title id="exec-fwd-pipe-title">
+          One Model Runner V2 step. EngineCore schedules, then calls execute_model without
+          blocking. On the GPU side the runner updates its fixed request slots, builds positions
+          and sequence lengths with Triton kernels, gathers block tables and computes the
+          slot_mapping, and runs the forward pass, which writes each layer&apos;s new keys and
+          values before attention. Meanwhile the CPU builds the structured-output grammar bitmask.
+          execute_model returns None; EngineCore then calls sample_tokens with the bitmask, and the
+          runner computes logits, applies the bitmask with a Triton kernel and samples.
+        </title>
+        <style>{`
+          .xfp-lane { fill: #414d5c; font: 600 11px sans-serif; }
+          .xfp-div  { fill: #5f6b7a; font: 600 11px sans-serif; text-anchor: middle; }
+          .xfp-t    { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: middle; }
+          .xfp-tw   { fill: #ffffff; font: 600 13px sans-serif; text-anchor: middle; }
+          .xfp-s    { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .xfp-sw   { fill: #e6f0fb; font: 11px sans-serif; text-anchor: middle; }
+          .xfp-e    { fill: #5f6b7a; font: 11px sans-serif; }
+          .xfp-arr  { stroke: #0972d3; stroke-width: 1.5; fill: none; marker-end: url(#xfp-ah); }
+        `}</style>
+        <defs>
+          <marker
+            id="xfp-ah"
+            markerWidth="8"
+            markerHeight="8"
+            refX="7"
+            refY="4"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L8,4 L0,8 Z" fill="#0972d3" />
+          </marker>
+        </defs>
+        <rect x={0} y={0} width={900} height={262} rx={8} fill="#ffffff" />
 
-      <text x={20} y={20} className="xfp-lane">
-        EngineCore (CPU)
-      </text>
-      <text x={690} y={20} className="xfp-div">
-        execute_model() returns None
-      </text>
+        <text x={20} y={20} className="xfp-lane">
+          EngineCore (CPU)
+        </text>
+        <text x={690} y={20} className="xfp-div">
+          execute_model() returns None
+        </text>
 
-      <rect x={20} y={30} width={150} height={60} rx={6} fill="#f2f3f3" stroke="#879596" />
-      <text x={95} y={55} className="xfp-t">
-        schedule()
-      </text>
-      <text x={95} y={74} className="xfp-s">
-        builds SchedulerOutput
-      </text>
+        <rect x={20} y={30} width={150} height={60} rx={6} fill="#f2f3f3" stroke="#879596" />
+        <text x={95} y={55} className="xfp-t">
+          schedule()
+        </text>
+        <text x={95} y={74} className="xfp-s">
+          builds SchedulerOutput
+        </text>
 
-      <rect x={186} y={30} width={482} height={60} rx={6} fill="#e6f4f2" stroke="#1f7a70" />
-      <text x={427} y={55} className="xfp-t">
-        get_grammar_bitmask()
-      </text>
-      <text x={427} y={74} className="xfp-s">
-        structured-output bitmask, built on the CPU while the GPU works
-      </text>
+        <rect x={186} y={30} width={482} height={60} rx={6} fill="#e6f4f2" stroke="#1f7a70" />
+        <text x={427} y={55} className="xfp-t">
+          get_grammar_bitmask()
+        </text>
+        <text x={427} y={74} className="xfp-s">
+          structured-output bitmask, built on the CPU while the GPU works
+        </text>
 
-      <rect x={712} y={30} width={172} height={60} rx={6} fill="#f2f3f3" stroke="#879596" />
-      <text x={798} y={55} className="xfp-t">
-        sample_tokens()
-      </text>
-      <text x={798} y={74} className="xfp-s">
-        then update_from_output()
-      </text>
+        <rect x={712} y={30} width={172} height={60} rx={6} fill="#f2f3f3" stroke="#879596" />
+        <text x={798} y={55} className="xfp-t">
+          sample_tokens()
+        </text>
+        <text x={798} y={74} className="xfp-s">
+          then update_from_output()
+        </text>
 
-      <line x1={95} y1={90} x2={95} y2={154} className="xfp-arr" />
-      <text x={103} y={126} className="xfp-e">
-        execute_model(non_block=True)
-      </text>
-      <line x1={740} y1={90} x2={740} y2={154} className="xfp-arr" />
-      <text x={748} y={126} className="xfp-e">
-        passes the bitmask
-      </text>
+        <line x1={95} y1={90} x2={95} y2={154} className="xfp-arr" />
+        <text x={103} y={126} className="xfp-e">
+          execute_model(non_block=True)
+        </text>
+        <line x1={740} y1={90} x2={740} y2={154} className="xfp-arr" />
+        <text x={748} y={126} className="xfp-e">
+          passes the bitmask
+        </text>
 
-      <line
-        x1={690}
-        y1={28}
-        x2={690}
-        y2={232}
-        stroke="#d1d5db"
-        strokeWidth={1.5}
-        strokeDasharray="5 4"
-      />
+        <line
+          x1={690}
+          y1={28}
+          x2={690}
+          y2={232}
+          stroke="#d1d5db"
+          strokeWidth={1.5}
+          strokeDasharray="5 4"
+        />
 
-      {gpu.map((b, i) => {
-        const solid = i === 3;
-        return (
-          <g key={b.t}>
-            <rect
-              x={b.x}
-              y={156}
-              width={150}
-              height={70}
-              rx={6}
-              fill={solid ? '#0972d3' : '#f2f8fd'}
-              stroke="#0972d3"
-              strokeWidth={1.5}
-            />
-            <text x={b.x + 75} y={178} className={solid ? 'xfp-tw' : 'xfp-t'}>
-              {b.t}
-            </text>
-            <text x={b.x + 75} y={197} className={solid ? 'xfp-sw' : 'xfp-s'}>
-              {b.s[0]}
-            </text>
-            <text x={b.x + 75} y={213} className={solid ? 'xfp-sw' : 'xfp-s'}>
-              {b.s[1]}
-            </text>
-            {i < 3 ? (
-              <line x1={b.x + 150} y1={191} x2={b.x + 165} y2={191} className="xfp-arr" />
-            ) : null}
-          </g>
-        );
-      })}
+        {gpu.map((b, i) => {
+          const solid = i === 3;
+          return (
+            <g key={b.t}>
+              <rect
+                x={b.x}
+                y={156}
+                width={150}
+                height={70}
+                rx={6}
+                fill={solid ? '#0972d3' : '#f2f8fd'}
+                stroke="#0972d3"
+                strokeWidth={1.5}
+              />
+              <text x={b.x + 75} y={178} className={solid ? 'xfp-tw' : 'xfp-t'}>
+                {b.t}
+              </text>
+              <text x={b.x + 75} y={197} className={solid ? 'xfp-sw' : 'xfp-s'}>
+                {b.s[0]}
+              </text>
+              <text x={b.x + 75} y={213} className={solid ? 'xfp-sw' : 'xfp-s'}>
+                {b.s[1]}
+              </text>
+              {i < 3 ? (
+                <line x1={b.x + 150} y1={191} x2={b.x + 165} y2={191} className="xfp-arr" />
+              ) : null}
+            </g>
+          );
+        })}
 
-      <rect x={712} y={156} width={172} height={70} rx={6} fill="#f2f8fd" stroke="#0972d3" strokeWidth={1.5} />
-      <text x={798} y={178} className="xfp-t">
-        sample
-      </text>
-      <text x={798} y={197} className="xfp-s">
-        logits + bitmask (Triton)
-      </text>
-      <text x={798} y={213} className="xfp-s">
-        sampler, draft tokens
-      </text>
+        <rect x={712} y={156} width={172} height={70} rx={6} fill="#f2f8fd" stroke="#0972d3" strokeWidth={1.5} />
+        <text x={798} y={178} className="xfp-t">
+          sample
+        </text>
+        <text x={798} y={197} className="xfp-s">
+          logits + bitmask (Triton)
+        </text>
+        <text x={798} y={213} className="xfp-s">
+          sampler, draft tokens
+        </text>
 
-      <text x={20} y={250} className="xfp-lane">
-        Worker: Model Runner V2 (GPU)
-      </text>
-      <text x={690} y={250} className="xfp-div">
-        sample_tokens() drains the stash
-      </text>
-    </svg>
+        <text x={20} y={250} className="xfp-lane">
+          Worker: Model Runner V2 (GPU)
+        </text>
+        <text x={690} y={250} className="xfp-div">
+          sample_tokens() drains the stash
+        </text>
+      </svg>
+    </div>
   );
 }
 
@@ -655,18 +666,19 @@ export function CodebaseExecution() {
             <em>what</em> runs each step; the execution layer runs it on the GPU.
             Two objects carry the weight. The <code>Worker</code> (
             <code>vllm/v1/worker/gpu_worker.py</code>) owns the device: it picks and
-            sets the GPU, loads weights, profiles free memory, and on
-            pipeline-parallel deployments sends and receives intermediate tensors{' '}
+            sets the GPU, loads weights, profiles free memory, and under PP (pipeline
+            parallelism) sends and receives intermediate tensors between stages{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_worker.py', 'L397-L462')}>
               gpu_worker.py L397-L462
             </Cite>
             . The model runner it builds turns a <code>SchedulerOutput</code> into
-            input tensors and attention metadata, runs the forward pass, and samples
-            tokens.
+            input tensors and attention metadata, runs the forward pass that writes new
+            entries into the KV (key-value) cache, and samples tokens.
           </Box>
           <Box variant="p">
             <strong>Model Runner V2 is the runner.</strong> The default for every
-            model is Model Runner V2 (MRv2), the <code>GPUModelRunner</code> class in{' '}
+            model since v0.29.0 is Model Runner V2 (MRv2), the{' '}
+            <code>GPUModelRunner</code> class in{' '}
             <code>vllm/v1/worker/gpu/model_runner.py</code>{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_worker.py', 'L507-L526')}>
               gpu_worker.py L507-L526
@@ -678,8 +690,8 @@ export function CodebaseExecution() {
             <Cite tier={1} href="https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/v1/worker/gpu">
               vllm/v1/worker/gpu/
             </Cite>
-            . The 7,531-line <code>vllm/v1/worker/gpu_model_runner.py</code> is Model
-            Runner V1: deprecated, with removal targeted for v0.32, and chosen only
+            . The 7,531-line <code>vllm/v1/worker/gpu_model_runner.py</code> is the V1
+            model runner: deprecated, with removal targeted for v0.32, and chosen only
             when a configuration needs something MRv2 lacks{' '}
             <Cite tier={1} href={`${RELEASE_NOTES}v0.29.0`}>
               vLLM v0.29.0 release notes
@@ -693,8 +705,8 @@ export function CodebaseExecution() {
             <Cite tier={1} href={vllmUrl('vllm/v1/engine/core.py', 'L111')}>
               core.py L111
             </Cite>
-            . <strong>Model Runner V2</strong> is the GPU execution layer inside that
-            engine&apos;s workers, and its code sits at{' '}
+            . <strong>Model Runner V2</strong> is the GPU execution layer inside each
+            of that engine&apos;s workers, and its code sits at{' '}
             <code>vllm/v1/worker/gpu/</code>, a path that itself contains{' '}
             <code>v1</code>. A v0.31.0 deployment runs the V1 engine with Model Runner
             V2. A log line about the &quot;V1 model runner&quot; refers to the
@@ -806,7 +818,7 @@ export function CodebaseExecution() {
           <ExpandableSection headerText="What gpu_model_runner.py still does in the tree">
             <SpaceBetween size="s">
               <Box variant="p">
-                Besides the GPU fallback, Model Runner V1 is the base class of the CPU
+                Besides the GPU fallback, the V1 model runner is the base class of the CPU
                 runner and of the V1 XPU (Intel GPU) runner, which sits next to an{' '}
                 <code>XPUModelRunnerV2</code>{' '}
                 <Cite tier={1} href={vllmUrl('vllm/v1/worker/cpu_model_runner.py', 'L18-L23')}>
@@ -823,13 +835,13 @@ export function CodebaseExecution() {
                 . An instance that runs only a multimodal encoder gets a third class,{' '}
                 <code>MMEncoderModelRunner</code>, on the V2 branch of the same{' '}
                 <code>if</code>{' '}
-                <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_worker.py', 'L507-L516')}>
-                  gpu_worker.py L507-L516
+                <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_worker.py', 'L507-L515')}>
+                  gpu_worker.py L507-L515
                 </Cite>
                 .
               </Box>
               <Box variant="p">
-                The directory&apos;s README still opens with &quot;[Experimental] Model
+                The directory&apos;s README opens with &quot;[Experimental] Model
                 Runner V2 ... under active development&quot;{' '}
                 <Cite
                   tier={1}
@@ -854,7 +866,7 @@ export function CodebaseExecution() {
         header={
           <Header
             variant="h3"
-            description="Where the CPU and GPU overlap inside one step, and why MRv2 needs Triton"
+            description="Where the CPU and GPU overlap inside one step, and which parts MRv2 builds on the GPU with Triton"
           >
             One step through Model Runner V2
           </Header>
@@ -874,7 +886,8 @@ export function CodebaseExecution() {
             <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/model_runner.py', 'L1556-L1591')}>
               model_runner.py L1556-L1591
             </Cite>
-            . The split exists for that bitmask. <code>EngineCore</code> issues{' '}
+            . The split lets the CPU build that bitmask during the forward pass:{' '}
+            <code>EngineCore</code> issues{' '}
             <code>execute_model(..., non_block=True)</code>, builds the grammar bitmask
             on the CPU while the GPU runs the forward, and then hands it to{' '}
             <code>sample_tokens()</code>{' '}
@@ -889,9 +902,13 @@ export function CodebaseExecution() {
             measured.
           </Box>
           <Box variant="p">
-            <strong>Async scheduling is on by default.</strong> The scheduler prepares
-            step N+1 while the GPU runs step N, and under that batch queue sampling can
-            wait a step when a structured-output token is still pending{' '}
+            <strong>Async scheduling is on by default.</strong> The scheduler and worker
+            prepare step N+1 while the GPU runs step N{' '}
+            <Cite tier={1} href={vllmDocsUrl('design/model_runner_v2.html')}>
+              vLLM docs: Model Runner V2 design
+            </Cite>
+            , and under that batch queue sampling can wait a step when a
+            structured-output token is still pending{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/engine/core.py', 'L699-L725')}>
               core.py L699-L725
             </Cite>
@@ -900,17 +917,14 @@ export function CodebaseExecution() {
             draft-model and <code>ngram_gpu</code> families,{' '}
             <code>disable_padded_drafter_batch</code> is set, the executor backend lacks
             support, ROCm DeepEP high-throughput DBO (dual-batch overlap) is in use, or
-            PP (pipeline parallelism) is above 1 on the V1 runner. The flag{' '}
+            PP is above 1 on the V1 runner. The flag{' '}
             <code>--no-async-scheduling</code> turns it off{' '}
             <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L1575-L1635')}>
               vllm.py L1575-L1635
             </Cite>
-            . MRv2 was designed around this mode: its execution loop is a CUDA stream
-            with no CPU synchronization points, and CPU entrypoints queue work onto it{' '}
-            <Cite tier={1} href={vllmDocsUrl('design/model_runner_v2.html')}>
-              vLLM docs: Model Runner V2 design
-            </Cite>
-            .
+            . MRv2 is built around this mode: its design treats the execution loop as a
+            CUDA stream with no CPU synchronization points, onto which CPU entrypoints
+            queue work.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -921,8 +935,12 @@ export function CodebaseExecution() {
                 <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/states.py', 'L27-L29')}>
                   states.py L27-L29
                 </Cite>
-                . Requests that join or leave never force a reorder of the persistent
-                tensors, and a preempted request comes back as fresh state. Triton
+                . A request joining or leaving changes only its own row, and a preempted
+                request comes back as fresh state{' '}
+                <Cite tier={1} href={vllmDocsUrl('design/model_runner_v2.html')}>
+                  vLLM docs: Model Runner V2 design
+                </Cite>
+                . Triton
                 kernels build input IDs, positions and sequence lengths on the GPU{' '}
                 <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/input_batch.py', 'L269-L400')}>
                   input_batch.py L269-L400
@@ -932,12 +950,21 @@ export function CodebaseExecution() {
                 <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/buffer_utils.py', 'L132-L225')}>
                   buffer_utils.py L132-L225
                 </Cite>
-                . The CPU contributes small per-request arrays, such as the slot mapping
-                and query start offsets, copied asynchronously{' '}
+                . The CPU contributes small per-request arrays, such as{' '}
+                <code>idx_mapping</code> and the query start offsets, copied
+                asynchronously{' '}
                 <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/model_runner.py', 'L1333-L1430')}>
                   model_runner.py L1333-L1430
                 </Cite>
-                . This is why MRv2 needs Triton.
+                . Input preparation and most of the sampler are Triton kernels{' '}
+                <Cite tier={1} href={vllmDocsUrl('design/model_runner_v2.html')}>
+                  vLLM docs: Model Runner V2 design
+                </Cite>
+                , and the selector requires Triton before it picks MRv2{' '}
+                <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L746-L750')}>
+                  vllm.py L746-L750
+                </Cite>
+                .
               </Box>
             </div>
             <div>
@@ -945,7 +972,7 @@ export function CodebaseExecution() {
               <Box variant="p">
                 <code>prepare_attn()</code> gathers each KV-cache group&apos;s block
                 table for the batch and computes the <code>slot_mapping</code>, the
-                physical KV (key-value) cache slot for each new token, with Triton
+                physical KV-cache slot for each new token, with Triton
                 kernels{' '}
                 <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/model_runner.py', 'L1520-L1538')}>
                   model_runner.py L1520-L1538
@@ -1084,8 +1111,8 @@ export function CodebaseExecution() {
             <Cite tier={1} href={vllmUrl('vllm/v1/attention/backends/flash_attn.py', 'L451-L452')}>
               flash_attn.py L451-L452
             </Cite>
-            . FlashAttention defaults to FA3 (FlashAttention 3) on Hopper and FA4 on
-            10.x when installed, FA2 otherwise{' '}
+            . FlashAttention defaults to FA3 on Hopper and FA4 on 10.x when that
+            version is supported, FA2 otherwise{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/attention/backends/fa_utils.py', 'L99-L107')}>
               fa_utils.py L99-L107
             </Cite>
@@ -1213,11 +1240,15 @@ export function CodebaseExecution() {
               </Box>
               <Box variant="p">
                 FA3 reports <code>ALWAYS</code>: one captured graph can serve a mixed
-                prefill-plus-decode batch, so <code>cudagraph_mode=FULL</code> survives
-                validation on Hopper with FA3. Under the default{' '}
-                <code>FULL_AND_PIECEWISE</code>, mixed batches run piecewise whatever the
-                backend grade, so the difference appears only when you ask for FULL.
-                The version is detected at import through{' '}
+                prefill-plus-decode batch, so a model whose attention runs entirely on
+                FA3 keeps <code>cudagraph_mode=FULL</code>. Under the default{' '}
+                <code>FULL_AND_PIECEWISE</code>, MRv2 captures the mixed-batch sizes as
+                piecewise graphs on either grade, so the FA3 advantage shows when you
+                request FULL{' '}
+                <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/cudagraph_utils.py', 'L344-L362')}>
+                  cudagraph_utils.py L344-L362
+                </Cite>
+                . The version is detected at import through{' '}
                 <code>get_flash_attn_version()</code>.
               </Box>
             </div>
@@ -1241,8 +1272,8 @@ export function CodebaseExecution() {
           </ExpandableSection>
           <Box variant="p">
             <strong>Capture sizes.</strong> When <code>max_cudagraph_capture_size</code>{' '}
-            is unset, vLLM captures sizes 1, 2 and 4, every 8 up to 256, then every 16
-            up to the smaller of 2 x <code>max_num_seqs</code> x decode query length
+            is unset, vLLM captures sizes 1, 2 and 4, every 8 below 256, then every 16
+            from 256 up to the smaller of 2 x <code>max_num_seqs</code> x decode query length
             and 512, or 1024 on data-centre Blackwell (device-capability family 100){' '}
             <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L2453-L2460')}>
               vllm.py L2453-L2460
@@ -1310,21 +1341,21 @@ export function CodebaseExecution() {
             variant="h3"
             description="Where each step's keys and values are written, and how attention reads them back without a copy"
           >
-            Paged KV at execution time
+            The paged KV cache at execution time
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The KV cache is a pool of fixed-size blocks, and each request&apos;s block
-            table lists the blocks it owns. vLLM&apos;s original PagedAttention kernels
-            were removed in v0.25.0{' '}
+            The paged KV cache is a pool of fixed-size blocks, and each request&apos;s
+            block table lists the blocks it owns. The CUDA PagedAttention kernels were
+            deleted in v0.25.0{' '}
             <Cite tier={1} href={`${RELEASE_NOTES}v0.25.0`}>
               vLLM v0.25.0 release notes
             </Cite>
-            ; &quot;paged&quot; names the memory layout, which the attention backends
-            read through block tables. In the FlashAttention backend that layout shows
-            up in two kernel calls.
+            ; the attention backends (FlashAttention, FlashInfer, Triton and the MLA
+            backends) read the paged KV cache through block tables. In the
+            FlashAttention backend that shows up in two kernel calls.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -1463,7 +1494,7 @@ export function CodebaseExecution() {
                 gpu_worker.py L1238-L1251
               </Cite>
               . Sequence parallelism with TP (tensor parallelism) above 1 is on the
-              amber list above for the same reason.
+              amber list, which keeps such deployments on V1.
             </Box>
           </ExpandableSection>
         </SpaceBetween>
@@ -1511,13 +1542,18 @@ export function CodebaseExecution() {
           </Box>
           <Box variant="p">
             <strong>CUDA graphs.</strong> A downgrade logs &quot;CUDAGraphMode.X is not
-            supported with B backend&quot; followed by the mode it chose instead.{' '}
+            supported with B backend&quot; followed by the mode it chose instead{' '}
+            <Cite tier={1} href={vllmUrl('vllm/config/compilation.py', 'L1389-L1415')}>
+              compilation.py L1389-L1415
+            </Cite>
+            .{' '}
             <code>--enforce-eager</code> or <code>-O0</code> removes graphs entirely
             when you need to rule them out.
           </Box>
           <Box variant="p">
-            <strong>Async scheduling.</strong> It is on unless a startup warning says
-            otherwise; <code>--no-async-scheduling</code> turns it off.
+            <strong>Async scheduling.</strong> It is on unless the model is a pooling
+            model or a startup warning says otherwise; <code>--no-async-scheduling</code>{' '}
+            turns it off.
           </Box>
           <Box variant="p">
             <strong>GPU selection.</strong> <code>--device-ids 2,3</code> picks physical
