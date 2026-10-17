@@ -103,7 +103,8 @@ Rules:
   a source yourself, use the date you fetched it.
 - `kind` marks what the figure is: `vendor-claim` for a vendor performance
   figure ("up to 4x"), `roadmap` for a product that is not shipping,
-  `measured` for a measurement (the source named made it), `derived` for our
+  `measured` for a measurement (the source named made it), `simulated` for a
+  simulation or model result, `derived` for our
   own arithmetic on cited inputs. Default `spec`.
 - A vendor performance claim never reads as a measurement. Keep the
   attribution in the sentence or mark it `vendor-claim`, and preferably both.

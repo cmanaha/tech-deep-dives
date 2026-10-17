@@ -41,9 +41,16 @@ export interface Source {
  *   vendor-claim  a vendor performance figure, not independently measured
  *   roadmap       a figure for a product that is not shipping
  *   measured      a measurement, by the source named
+ *   simulated     a simulation or model result, by the source named
  *   derived       our arithmetic on the cited inputs, not a source statement
  */
-export type ClaimKind = 'spec' | 'vendor-claim' | 'roadmap' | 'measured' | 'derived';
+export type ClaimKind =
+  | 'spec'
+  | 'vendor-claim'
+  | 'roadmap'
+  | 'measured'
+  | 'simulated'
+  | 'derived';
 
 const tierColor: Record<Tier, 'green' | 'blue' | 'grey' | 'severity-medium'> = {
   0: 'green',
@@ -64,6 +71,7 @@ const kindSuffix: Record<ClaimKind, string> = {
   'vendor-claim': ' claim',
   roadmap: ' roadmap',
   measured: ' measured',
+  simulated: ' simulated',
   derived: ' derived',
 };
 
@@ -73,6 +81,7 @@ const kindNote: Record<ClaimKind, string> = {
     'Vendor performance claim. The vendor states it; no independent measurement is attached.',
   roadmap: 'Roadmap figure for a product that is not shipping. It can change before launch.',
   measured: 'Measured result, reported by the source named below.',
+  simulated: 'Simulated or modelled result, reported by the source named below. No hardware measurement is attached.',
   derived: 'Our arithmetic on the figures in the source below, not a statement the source makes.',
 };
 
