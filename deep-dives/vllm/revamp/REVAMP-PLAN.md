@@ -73,7 +73,11 @@ CORRECT / STALE / WRONG / NEW / UNKNOWN per file.
 | GlossaryAndSources (sources) | 2 | 14 | 1 | 1 | 0 | EDIT (orchestrator; 2 dead links) |
 | GlossaryAndSources (glossary) | 7 | 2 | 1 | 16 | 1 | EDIT (orchestrator) |
 | App.tsx (nav, subtitle) | 6 | 2 | 0 | 0 | 0 | KEEP + small EDIT (orchestrator) |
-| _07 (AWS) rows added when that register lands_ | | | | | | |
+| AwsEks | 12 | 2 | 10 | 2 | 0 | EDIT (heavy; Karpenter placement groups) |
+| AwsGpuEfaNixl | 18 | 4 | 4 | 3 | 0 | EDIT |
+| AwsNeuron | 10 | 13 | 1 | 3 | 2 | REWRITE (vllm-neuron 1.x, NxD Inference maintenance) |
+| AwsSageMakerBedrock | 28 | 11 | 9 | 3 | 4 | EDIT (heavy; LMI V30, observability, 25 MB) |
+| Ec2TopologyPlacement | 23 | 1 | 2 | 4 | 0 | EDIT (light) |
 
 ## The headline: the execution layer was replaced underneath the dive
 
@@ -113,7 +117,12 @@ CORRECT / STALE / WRONG / NEW / UNKNOWN per file.
     `mm_processor_kwargs` need `--trust-request-mm-kwargs`; `rejection_sample_method` values are
     `standard`, `synthetic`, `block`. Six speculative methods (ngram, ngram_gpu, suffix, medusa,
     mlp_speculator, custom_class) run on the deprecated V1 runner. (06.)
-11. **Ecosystem drift**: TGI's repository is archived; TensorRT-LLM's default backend is PyTorch
+11. **AWS drift**: Karpenter launches into placement groups via `placementGroupSelector`
+    (v1.11.0+), which inverts the EKS managed-node-group-only recommendation; the vllm-neuron 1.x
+    plugin has no NxD Inference dependency (NxD Inference is in maintenance mode); SageMaker LMI
+    V30 bundles vLLM 0.31.0 and SageMaker's 2026-06-18 observability exposes vLLM metrics; the
+    real-time payload limit is 25 MB. All 12 open P2 findings are still open in the text. (07.)
+12. **Ecosystem drift**: TGI's repository is archived; TensorRT-LLM's default backend is PyTorch
     (no compile step); llm-d's Endpoint Picker moved into llm-d Router v1.0.0; no orchestrator pins
     v0.31.0 (Dynamo 1.5.1 pins vLLM 0.28.0, Ray 2.59.0 pins 0.27.0, llm-d 0.10.0 ships 0.30.0).
 
@@ -216,7 +225,15 @@ and clipping check at 1440 and 390, plus PNG review) before its wave commits.
 | InferenceWorkload | `PrefillDecodeTimeline` | Fix the ITL label collision | 08 W-rows |
 | OperationsFailureModes | `RestartLadderDiagram` | **NEW**: cold boot, compile-cache reuse, `--kv-cache-memory-bytes`, `vllm preload` + `ipc_cache`, `vllm snapshot`: what each rung skips | 08 O8, O9, O20, O21 |
 | DecisionGuide | `StartHereTree` | Fix the Ray branch (`vllm serve --nnodes` runs multi-node without Ray), disaggregation not llm-d-only, two geometry defects | 08 D1, D5, D6 |
-| _07 (AWS) diagrams added when that register lands_ | | | |
+| AwsEks | `EksRequestProvisioningDiagram` | Karpenter `placementGroupSelector` path replaces the managed-node-group-only branch | 07 D1, E1 |
+| AwsGpuEfaNixl | `KvDataPathDiagram` | Roles `kv_producer` / `kv_consumer`; pull by default (decoder issues RDMA READs) | 07 D2, G9 |
+| AwsNeuron | `NeuronStackDiagram` | Delete the NxD Inference layer for the vllm-neuron 1.x plugin | 07 D3, N2, N3 |
+| AwsSageMakerBedrock | `SageMakerPathsDiagram` | Path A card: LMI async mode, vLLM 0.31.0 in LMI V30 | 07 D4, S4 |
+| AwsSageMakerBedrock | `BedrockVsSelfHostDiagram` | Insert the Custom Model Import branch | 07 D5, S46 |
+| AwsSageMakerBedrock | `SageMakerHostingSurfaceDiagram` | HyperPod box labels | 07 D7, S32 |
+| AwsSageMakerBedrock | `LmiConfigToEngineDiagram` | Keep | 07 D6 |
+| Ec2TopologyPlacement | `ControlVsObserveDiagram` | Add the node-label / EPP topology-scorer consumer boxes | 07 D8, T27, T28 |
+| Ec2TopologyPlacement | `NetworkNodesDiagram` | Caption: P6-B200 / P6-B300 report four layers | 07 D9 |
 
 ## Authoring waves
 
