@@ -2,11 +2,11 @@
 
 - **Area:** High Bandwidth Flash (HBF), a stacked-NAND memory device placed on the accelerator package beside (or in place of) HBM, for the new section `hbf` of the Silicon, Memory & Modern Inference dive.
 - **Date:** 2026-10-17 (all sources fetched in this pass accessed 2026-10-17; HBM, DDR5 and LPDDR5X baseline figures reused from `01-memory.md`, accessed 2026-10-16, not re-fetched).
-- **Sources fetched:** (filled in at the end)
-- **Counts by label:** (filled in at the end)
-- **Sibling register reused:** `01-memory.md` section 2 (HBM3E, HBM4, HBM4E per-stack and per-GPU figures) and section 3 (DDR5, LPDDR5X, SOCAMM2, CXL). Those rows carry the sibling's source IDs, prefixed `M:` (for example `M:T1-10`), and keep its accessed date.
+- **Sources fetched:** 41 in this pass (Tier 1: 17, two of them abstract only; Tier 2: 16; Tier 3: 8), plus 3 seen only as search-engine extracts and not used as evidence, plus 14 reused from `01-memory.md` without re-fetching.
+- **Counts by label:** over 174 numbered claim rows in sections 1 to 8 (a row carrying several labels counts under each; the academic-study rows 4.7 to 4.14 count as SIMULATED; the dated-event, comparison-baseline and placement tables are not counted): SPEC 47, VENDOR CLAIM 39, ROADMAP 13, MEASURED 0, SIMULATED 26, [derived] 31, UNKNOWN 21, Tier 3 16, author statement or assumption 18, absence finding 10, SEC FILING 1, [SPECULATIVE] 1. Separate UNKNOWN register: 26 entries.
+- **Sibling register reused:** `01-memory.md` section 2 (HBM3E, HBM4, HBM4E per-stack and per-GPU figures), section 3 (DDR5, LPDDR5X, SOCAMM2, CXL) and the KV-cache rows K7 and K14 (bytes per token). Those rows carry the sibling's source IDs, prefixed `M:` (for example `M:T1-10`), and keep its accessed date.
 
-Conventions. Tier 1 = official specification or standard, vendor technical documentation or datasheet, SEC filing or official investor materials published by the company, peer-reviewed or arXiv paper for its own method and results. Tier 2 = vendor press release, vendor blog, vendor keynote or conference talk. Tier 3 = trade press and third-party analysis (never accepted as a vendor spec; written "[SECONDARY: publisher] reports the vendor said ..."). Labels: **SPEC** (a published standard), **VENDOR CLAIM** (a vendor's own number for its own product), **ROADMAP** (announced, not shipping), **MEASURED** (silicon measured by the named party), **SIMULATED** (a model or simulator result, author-simulated), **[derived]** (arithmetic done in this pass from cited inputs, inputs stated), **UNKNOWN**.
+Conventions. Tier 1 = official specification or standard, vendor technical documentation or datasheet, SEC filing or official investor materials published by the company, peer-reviewed or arXiv paper for its own method and results. Tier 2 = vendor press release, vendor blog, vendor keynote or conference talk. Tier 3 = trade press and third-party analysis (never accepted as a vendor spec; written "[SECONDARY: publisher] reports the vendor said ..."). Labels: **SPEC** (a published standard), **VENDOR CLAIM** (a vendor's own number for its own product), **ROADMAP** (announced, not shipping), **MEASURED** (silicon measured by the named party), **SIMULATED** (a model or simulator result, author-simulated), **[derived]** (arithmetic done in this pass from cited inputs, inputs stated), **UNKNOWN**. Quotations are verbatim except that typographic dashes and quotes are normalised to ASCII, and superscripts lost in PDF extraction are written as 10^n.
 
 ---
 
@@ -37,7 +37,7 @@ Conventions. Tier 1 = official specification or standard, vendor technical docum
 | 1.17 | Optional SRAM scratchpad on the base die | optional per product; "in the order of L3 cache" latency; suggested for activations and layer-to-layer buffers | SPEC (optional) | [S1-1] s4.1, s11.3 | "latency is in the order of L3 cache read/write"; "intermediate activations and layer to layer buffers are held in the SRAM" |
 | 1.18 | Address model | each UCIe channel has its own linear local address space; host maps global to local addresses and interleaves; HBF and HBM managed as separate memories | SPEC | [S1-1] s4.6, s11.1.2 | "Due to the large difference in memory capacity for HBF and HBM, memory management shall be performed separately if used together" |
 | 1.19 | Persistence, per the specification | power-on data retention guaranteed 24 h at 85 C; power-off retention not guaranteed ("equivalent to HBM"); SSDs recommended for permanent storage | SPEC | [S1-1] s9 | "Power On data retention is guaranteed for 24 hours at 85 oC"; "In Power Off, HBF may not retain data after the specific duration, equivalent to HBM. For permanent data storage, persistent storage devices such as SSDs are recommended" |
-| 1.20 | Periodic refresh is the host's job | refresh "typically every 24-48 hours", plus after a product-specific number of reads per block (read disturb) | SPEC | [S1-1] s11.5 | "periodic data refresh is required at intervals specified in the reliability specification (typically every 24–48 hours)"; "It is the host's responsibility to refresh the NAND block's data after reading NAND block data X (product-specific) times" |
+| 1.20 | Periodic refresh is the host's job | refresh "typically every 24-48 hours", plus after a product-specific number of reads per block (read disturb) | SPEC | [S1-1] s11.5 | "periodic data refresh is required at intervals specified in the reliability specification (typically every 24-48 hours)"; "It is the host's responsibility to refresh the NAND block's data after reading NAND block data X (product-specific) times" |
 | 1.21 | Optional power-on erase | when implemented, contents are obfuscated at every power-on and must be rewritten before use | SPEC (optional) | [S1-1] s12, s12.1 | "The data needs to be written before use by the xPU after power-on"; "All the security features in this chapter are optional" |
 | 1.22 | Persistence, per Sandisk marketing (2025) | "Non-volatile, no refresh power needed" | VENDOR CLAIM | [S2-1] p2 | "HBF retains its data even when a power source is removed and it requires no refresh power" |
 | 1.23 | **Conflict 1.19-1.22** | The July 2025 fact sheet sells HBF as non-volatile; the August 2026 OCP specification guarantees only 24 h power-on retention, requires host-driven refresh every 24-48 h and recommends SSDs for persistence. The specification is the authority. Practical reading: treat HBF as a capacity tier that is reloaded from storage, not as storage. | [derived] | [S1-1] vs [S2-1] | - |
@@ -128,7 +128,7 @@ Conventions. Tier 1 = official specification or standard, vendor technical docum
 | 3.21 | **Conflict 3.20 vs spec** | "Unlimited read cycles" contradicts the specification, which requires the host to refresh a block after a product-specific read count (read disturb) and every 24-48 h | SPEC wins | [S1-1] s11.5 | "It is the host's responsibility to refresh the NAND block's data after reading NAND block data X (product-specific) times" |
 | 3.22 | Retention, reliability | power-on retention 24 h at 85 C; UBER 10^-16; MTBF 20M h / AFR 0.04%; junction 0 to 105 C | SPEC | [S1-1] s9 Table 33, s9.1 | "Power On data retention is guaranteed for 24 hours at 85 oC"; "operating junction temperature range of 0 oC to 105oC" |
 | 3.23 | Power | no spec figure. Sandisk: matches HBM4's "power profile". Google ballpark: "<80" W per HBF stack vs 40 W per HBM4-6400 stack. "HBF Sucks?" cites another study assuming ~160 W per cube; its own thermal model of a write-heavy KV stream hits 80 C at 202 GB/s and 53.7 W | VENDOR CLAIM; author estimate; SIMULATED | [S2-1]; [S1-6] Table 3; [S1-7] s2, s8.1 | [S2-1]: "closely matching the physical footprint, power profile, and stack height of HBM4"; [S1-7]: "the stack hits the 80° C limit at only 202.27 GB/s and 53.72 W" |
-| 3.24 | UCIe link power | 0.5-0.6 pJ/bit, 6.4-7.7 W per fully used direction at 1.6 TB/s (author calculation from the UCIe specification) | author estimate | [S1-13] | "At 1.6 TB/s, 6.4–7.7 W of link power per fully utilized direction" |
+| 3.24 | UCIe link power | 0.5-0.6 pJ/bit, 6.4-7.7 W per fully used direction at 1.6 TB/s (author calculation from the UCIe specification) | author estimate | [S1-13] | "At 1.6 TB/s, 6.4-7.7 W of link power per fully utilized direction" |
 | 3.25 | Cost, as stated | "8-16x the capacity of HBM at a similar cost"; "one of the lowest cost per bit of any memory technology". No $/GB, ASP or price ratio published | VENDOR CLAIM; UNKNOWN (number) | [S2-5]; [S2-1] | "up to 8-16x the capacity of HBM at a similar cost" |
 | 3.26 | Exact ratio quotes, in order | Feb 2025 deck: "Match HBM Bandwidth", "Deliver 8-16X Capacity at Similar Cost"; Jul 2025: "up to 8x the capacity at a similar cost"; Aug 2025: "up to 8-16x the capacity of HBM at a similar cost"; OCP spec: "8x to 16x of the capacity of HBM, while delivering the same read bandwidth"; Aug 2026 (Ilkbahar): "the same read bandwidth as HBM, yet with 8- 16 times the capacity"; Google: "10X memory capacity" | VENDOR CLAIM; SPEC (spec intro text); author estimate | [S1-5]; [S2-3]; [S2-5]; [S1-1] s3; [S2-10]; [S1-6] | as given |
 | 3.27 | Which HBM the "8-16x" ratio is against | not stated by any vendor. [derived]: 512 GB is 8x a 64 GB stack (JEDEC HBM4 maximum), 10.7x a 48 GB stack (HBM4 16-high, HBM4E 12-high), 14.2x a 36 GB stack (HBM3E or HBM4 12-high), 16x a 32 GB stack. Sandisk's own Feb 2025 slide compares against 24 GB stacks (192 GB / 8), which is 21x | UNKNOWN (baseline) + [derived] | inputs [S2-1]; M:T1-10; M:T2-13; M:T2-12; [S1-5] | - |
@@ -227,7 +227,7 @@ HBFSim's Table 1 [S1-8] (author-compiled, each cell cited by the authors) sets f
 | 5.11 | HBF-Sim's access classes | weights: sequential, read-only, 100s GB (bandwidth); precomputed KV: reuse reads, 100s GB to TB (page reuse); ephemeral KV: append writes, 10s GB (write ordering); RAG vectors: random gathers, 100s GB (read amplification) | author classification | [S1-10] Table 3 | "ephemeral KV append-writes 10s GB write ordering" |
 | 5.12 | "HBF Sucks?" placement map | weights and shared prefixes in the "strong HBF regime"; session KV "conditional"; private KV "poor fit". Three conditions: restore delay is the bottleneck, reads outweigh writes, needed bandwidth fits the power and endurance budget | SIMULATED (placement derived from the authors' findings) | [S1-7] s9.1, Fig. 12 | "An object belongs in HBF only when its restore delay is the serving bottleneck (C1), its reads outweigh its writes ... and the bandwidth it needs ... is sustainable under the package's power and endurance budget (C3)" |
 | 5.13 | KV cache bytes written per generated token, by attention type | Llama 3.1 405B (GQA) 502 KB; Qwen3-Coder-480B (GQA) 248 KB; Qwen3-235B (GQA) 188 KB; DeepSeek-V3 (MLA) 70 KB, a 7.2x spread [derived]. The sibling register gives DeepSeek-V3 70,272 B/token and Llama 3 70B 320 KiB/token | author configuration (per the paper's parallelism) + [derived] | [S1-9] Table II; 01-memory.md K7, K14 (from M:T1-33) | "DeepSeekV3-671B [33] MLA / DP @ 70KB/token" |
-| 5.14 | FlashAccel's case for KV on HBF | SLC gives about 100K P/E cycles, about 55 P/E per day over 5 years, so a 1 TB device absorbs about 55 TB of writes a day; the authors estimate a DeepSeek decode GPU writes 26.9 TB of KV a day. The passage read does not show how 26.9 TB is computed. Relaxed retention "can extend endurance by up to 50x" (cited prior work) | author assumption + author calculation; [derived] check: 10^5 / (5 x 365) = 54.8 | [S1-9] s2 | "a 1TB HBF device can sustain about 55TB of data writes per day"; "recent advances in attention mechanisms make storing KV cache in Flash feasible" |
+| 5.14 | FlashAccel's case for KV on HBF | SLC gives about 100K P/E cycles, about 55 P/E per day over 5 years, so a 1 TB device absorbs about 55 TB of writes a day; the authors estimate a DeepSeek decode GPU writes 26.9 TB of KV a day. The passage read does not show how 26.9 TB is computed. Relaxed retention "can extend endurance by up to 50×" (cited prior work) | author assumption + author calculation; [derived] check: 10^5 / (5 x 365) = 54.8 | [S1-9] s2 | "a 1TB HBF device can sustain about 55TB of data writes per day"; "recent advances in attention mechanisms make storing KV cache in Flash feasible" |
 | 5.15 | "HBF Sucks?" case against KV pooling on HBF | each production trace writes 48-140 TB/day; a TLC HBF tier with unit write amplification and a five-year target has a 21.7 TB/day budget, against 38.4 TB/day for a capacity-matched pool of four 3-DWPD SSDs; the HBF tier lasts 0.56x the SSD pool's life on all four traces. Coarser KV blocks (16 to 512 tokens) raise HBF write volume 1.38x | SIMULATED | [S1-7] s8.2, Finding 6 | "the nominal HBF tier lasts a constant 0.56× the SSD pool's life across all four traces" |
 | 5.16 | Why 5.14 and 5.15 disagree | different cell type (SLC 10^5 vs TLC), different KV bytes per token (MLA vs GQA traces) and different organisation (KV in HBF beside HBM vs HBF replacing the SSD pool behind a shrunken near tier). The deciding inputs, HBF cell type and rated P/E, are unpublished (rows 3.19, 3.29) | [derived] | [S1-9]; [S1-7] | - |
 | 5.17 | Sparse long-context KV | fits when sparse attention reads whole flash pages: SPLASH co-designs the selection unit to page granularity | SIMULATED | [S1-12]; see row 4.12 | - |
@@ -282,6 +282,141 @@ HBFSim's Table 1 [S1-8] (author-compiled, each cell cited by the authors) sets f
 | 6.15 | Two attach paths studied | HBF wired directly to the GPU, or relayed through the HBM base die; using both gives 1.90x throughput over relay-only | SIMULATED | [S1-13]; row 4.13 | - |
 | 6.16 | Relation to an NVMe KV-cache tier | used as a drop-in replacement for the SSD KV pool, HBF lost to the SSD baseline in the "HBF Sucks?" simulation (row 4.8), because the organisations studied paid for HBF with near-tier HBM capacity and bandwidth. The NVMe tier itself belongs to the sibling flash-cache register | SIMULATED + pointer | [S1-7] | "HBF sucks as an SSD replacement for transient KV" |
 
+## 7. Timeline: announced versus achieved, and status on 2026-10-16
+
+**Summary for the author.** HBF went from announcement (February 2025) to a published two-vendor specification (August 2026) in 18 months, on schedule for the standards work. The silicon is behind the paper. Sandisk's August 2025 target was "first samples of its HBF memory in the second half of calendar 2026"; on 2026-10-16 the latest company statement is a taped-out die (2026-08-13) "going through the fab", with samples of inference devices "next year". No source located in this search reports HBF memory samples shipped. At the October 2026 OCP Global Summit, SK hynix showed a structural model and "internal simulations", not silicon. No company has given a mass-production year; 2028 comes from brokerage notes reported by trade press and from a KAIST academic roadmap. No accelerator vendor has announced an HBF product. Write the section as a ROADMAP technology with a published interface specification.
+
+### Dated events
+
+| Date | Event | What was announced or claimed | Label | Source |
+| --- | --- | --- | --- | --- |
+| 2025-02-11 | Sandisk Investor Day | HBF introduced; "Same Electrical Interface With Minor Protocol Changes"; "8-16X Capacity at Similar Cost" | VENDOR CLAIM; ROADMAP (interface superseded) | [S1-5]; [S2-3] |
+| 2025-07-24 | Technical Advisory Board formed | David Patterson leads; Raja Koduri joins | VENDOR CLAIM | [S2-3] |
+| 2025-07 (fact sheet) | Gen 1 to Gen 3 roadmap | Gen 1 512 GB, 1.6 TB/s; Gen 2 above 2 TB/s, up to 1 TB; Gen 3 3.2 TB/s, up to 1.5 TB; no dates per generation | ROADMAP | [S2-1] |
+| 2025-08-06 | Sandisk and SK hynix MoU | memory samples in the second half of 2026; samples of AI-inference devices with HBF in early 2027 | ROADMAP | [S2-5] |
+| 2025-10-14 | "HBF Night", SK hynix and Sandisk | ecosystem event at the 2025 OCP Global Summit; SK hynix names its HBF line AIN B, no dates | VENDOR CLAIM | [S2-6] |
+| 2026-02-25 | OCP standardisation kick-off | dedicated OCP workstream | VENDOR CLAIM | [S2-7] |
+| 2026-03-20 | Kioxia comments | [SECONDARY: Blocks & Files] reports a Kioxia CTO describing a stacked-flash concept for edge inference; no date | Tier 3 | [S3-2] |
+| 2026-08-03 | Specification v0.7.0 published | Sandisk and SK hynix authors; Google and Tenstorrent joined | SPEC | [S1-1]; [S2-8]; [S2-9] |
+| 2026-08-04 | FMS 2026 | Sandisk booth lists "technology demonstrations, including HBF"; keynote performance shown as simulation | VENDOR CLAIM | [S2-13]; [S2-12] |
+| 2026-08-05 | Sandisk Q4 FY2026 earnings call | asked "Are we 1, 2, 3 years away?" for samples, the CEO gave no date | VENDOR CLAIM | [S2-12] |
+| 2026-08-13 | Sandisk Investor Day | first HBF memory die taped out; samples of inference devices with HBF "next year"; Meta joins the consortium; Jim Keller joins the advisory board; HBF excluded from revenue projections | VENDOR CLAIM; ROADMAP | [S2-10] |
+| 2026-08-14 | Production-year estimate | [SECONDARY: TrendForce] reports, citing Mizuho Securities and Goldman Sachs notes, samples in 2027 and "mass production expected to begin in 2028" | Tier 3 (brokerage estimate) | [S3-5] |
+| 2026-08-23 | Hot Chips 2026 tutorial | OXMIQ and PRAXMATI system-architect view (modelled, not measured) | Tier 2 programme; Tier 3 content | [S2-14]; [S3-4]; [S3-7] |
+| 2026-08-27 | Samsung | [SECONDARY: DIGITIMES] reports a "zHBF" concept shown at FMS 2026; no product or date | Tier 3 | [S3-3] |
+| 2026-10-12 to 15 | OCP Global Summit 2026 | SK hynix shows "a model showing the structure of HBF" and performance graphs "based on internal simulations"; no specification, product or date | VENDOR CLAIM | [S2-16] |
+| 2026-10-29 (scheduled) | Sandisk Q1 FY2027 earnings call | next scheduled company update after this register's date | VENDOR CLAIM (dated event) | [S2-15] |
+
+### Announced versus achieved (as of 2026-10-16)
+
+| # | Item | Announced | Achieved, as far as this search found | Label | Source |
+| --- | --- | --- | --- | --- | --- |
+| 7.1 | HBF memory samples | "second half of calendar 2026" (2025-08-06) | die taped out 2026-08-13 and "going through the fab"; no shipment of memory samples announced or reported. The target window has not closed (ends 2026-12-31). The latest company statement names only the inference-device sampling milestone ("next year") and does not restate the 2026 memory-sample target | ROADMAP; UNKNOWN (outcome) | [S2-5]; [S2-10] |
+| 7.2 | Samples of AI-inference devices with HBF | "early 2027" (2025-08-06); "next year" (2026-08-13) | pending; the two statements agree | ROADMAP | [S2-5]; [S2-10] |
+| 7.3 | Standard | MoU to "establish the specification" (2025-08-06) | v0.7.0 published 2026-08-03; dimensions and bump map preliminary; further revisions "over the next two years"; no v1.0 date | SPEC; ROADMAP (v1.0) | [S1-1]; [S2-10] |
+| 7.4 | Interface | HBM electrical interface with minor protocol changes (2025-02-11) | UCIe-A with AXI (2026-08-03) | SPEC | [S1-5]; [S1-1] |
+| 7.5 | Mass production | no year from Sandisk or SK hynix | a Wells Fargo analyst's "2028 or even 2029 volume" at Investor Day drew no date in reply. Tier 3 estimates only: 2028 (brokers via TrendForce), late 2027 to early 2028 GPU integration (KAIST professor via TrendForce), HBF1 in 2028 (KAIST roadmap) | absence finding; Tier 3 | [S2-10]; [S3-5]; [S3-6]; [S3-1] |
+| 7.6 | Gen 2 and Gen 3 | above 2 TB/s and 3.2 TB/s per stack, up to 1 TB and 1.5 TB | no dates given; not restated in the 2026 sources read | ROADMAP | [S2-1] |
+| 7.7 | Accelerator adoption | none announced by any accelerator vendor | none located; consortium members are Google, Meta and Tenstorrent (standard participation, not products) | absence finding | [S2-8]; [S2-10]; row 2.25 |
+| 7.8 | SK hynix product (AIN B) | named at the 2025 OCP Global Summit | no specification, sample date or product page located; October 2026 showing was a model and simulations | VENDOR CLAIM; UNKNOWN (date) | [S2-6]; [S2-16] |
+| 7.9 | Edge variant | "HBF for the Edge", in development with multiple customers | no date | ROADMAP | [S2-10] |
+
+### Status on 2026-10-16, in one paragraph
+
+HBF is a published interface specification (OCP v0.7.0) with two NAND vendors behind it and one taped-out memory die (Sandisk). No HBF device has been sampled, measured or priced in any source this search located. All performance evidence is simulation: vendor, academic or third-party. The next scheduled vendor update is Sandisk's Q1 FY2027 call on 2026-10-29.
+
+## 8. Open questions
+
+**Summary for the author.** Every number that decides where HBF fits, beyond the interface, is unpublished: read latency, rated endurance, the read-disturb threshold, write bandwidth, power and price. The specification marks them "product specific", and no product datasheet exists. The most consequential is the read-disturb threshold, because for data read continuously the device's read rate becomes a write rate: a Sandisk Gen 1 stack read flat out, with FLINT's assumed block geometry, would rewrite every block every 31 to 312 s and could wear out in 36 days to 99 years depending on two unpublished numbers [derived]. The hedges below are scoped to this search (vendor newsrooms and investor materials, the OCP specification, arXiv, Hot Chips and FMS coverage, trade press), run 2026-10-17.
+
+### Claim register
+
+| # | Open question | Why it matters to the reader | Best evidence in hand | Label | Source | What would settle it |
+| --- | --- | --- | --- | --- | --- | --- |
+| 8.1 | Read latency (array tR and end-to-end through the base die and UCIe) | sets how much data must be in flight per stack (Little's law, row 3.17) and whether a GPU's prefetch window hides it (row 4.14) | none published; researchers assume 1 to 20 us; Google's ballpark "1,000s" ns | UNKNOWN; author assumptions | rows 3.15-3.16 | a vendor datasheet or a silicon measurement |
+| 8.2 | Rated endurance (MAXPEC) and cell type | decides whether anything written per request (KV cache) can live on HBF; the KV papers split on exactly this input | spec exposes MAXPEC but gives no value; cell type unstated; papers assume SLC at 10^5 or TLC | UNKNOWN | rows 3.19, 3.29, 5.14-5.16 | the product datasheet |
+| 8.3 | Read-disturb threshold X and pages per block | for read-hot data, X sets the refresh interval and so the device's wear rate; see the sensitivity table below | spec: "X (product-specific)"; FLINT assumes 10^6 reads and 1,024 pages per block, and cites 10^5 to 10^6 for SLC | UNKNOWN; author assumption | [S1-1] s11.5; [S1-11] | the product datasheet |
+| 8.4 | Write (program) bandwidth | sets the time to load a model into an empty stack after power-on, and the headroom for refresh. Retention refresh is cheap: rewriting 512 GiB every 24-48 h averages 3.2-6.4 MB/s [derived]. Read-disturb refresh on a stack read flat out needs 1.6-16.4 GB/s of writes (table below) [derived] | none published; FlashAccel assumes tPROG 75 us, FLINT 50 us | UNKNOWN; author assumptions | rows 3.13-3.14; [S1-9]; [S1-11] | the product datasheet |
+| 8.5 | Power per stack | decides how many stacks fit a package power budget beside HBM | Sandisk: matches HBM4's power profile; Google ballpark "<80" W vs 40 W per HBM4 stack; "HBF Sucks?" thermal model throttles at 53.7 W on a write-heavy stream | VENDOR CLAIM; author estimate; SIMULATED | row 3.23 | the product datasheet and a thermal measurement |
+| 8.6 | Price | "similar cost" for 8-16x capacity is the whole economic case | no $/GB, ASP or ratio published; OXMIQ's rack model assumes equal cost and power (Tier 3) | VENDOR CLAIM (qualitative); UNKNOWN (number) | rows 3.25, 4.15 | a price list or a disclosed ASP |
+| 8.7 | Which HBM the "8-16x" is measured against | 8x and 16x correspond to different HBM generations | not stated; 512 GB is 8x a 64 GB stack, 16x a 32 GB stack | UNKNOWN + [derived] | row 3.27 | a vendor footnote |
+| 8.8 | Which accelerator will carry it | an xPU must expose UCIe-A x64 ports at the HBF sites, so adoption needs new accelerator silicon [derived from the specified interface]; relaying through a custom HBM base die is a studied alternative | no accelerator vendor has announced a product; Google, Meta and Tenstorrent are consortium members | absence finding; [derived]; SIMULATED | rows 1.8-1.11, 2.25, 4.13, 7.7 | an accelerator product announcement |
+| 8.9 | Software support in serving engines | the spec makes the host responsible for placement, write order, wear levelling and refresh, so HBF is usable only once a runtime does that work | no HBF support located in vLLM, SGLang or TensorRT-LLM (one web search, 2026-10-17, returned only research papers); research simulators exist (TokenSim branch for "HBF Sucks?", HBF-Sim, HBFSim) | absence finding (scoped) | [S1-7]; [S1-8]; [S1-10] | a merged feature or a vendor SDK |
+| 8.10 | Can per-request KV cache live on HBF? | the largest and fastest-growing inference memory consumer | contested: FlashAccel feasible with SLC and MLA; "HBF Sucks?" drop-in pool lasts 0.56x an SSD pool; HBFlex (full-HBF with KV-aware placement, write aggregation and lifetime-guided packing) reports up to 1.58x over FlashAccel and 3.30x over H3 in trace-driven simulation; Son et al. conclude the benefits depend on "HBM-comparable read bandwidth" and "significant endurance improvements" (abstract read only for the last two) | SIMULATED | [S1-9]; [S1-7]; [S1-17]; [S1-16] | an endurance rating, then silicon running a serving trace |
+| 8.11 | How long data survives power-off | decides restart time: whether a reboot means reloading every stack from storage | spec: not guaranteed ("equivalent to HBM"); optional power-on erase | SPEC | rows 1.19, 1.21 | the product datasheet |
+| 8.12 | Who else ships it | second sources decide whether a buyer commits | Samsung: concept only (Tier 3); Kioxia: concept for edge inference (Tier 3); Micron: no statement located; JEDEC: no HBF work located | absence findings; Tier 3 | rows 2.21-2.24 | product announcements |
+| 8.13 | Was working HBF silicon shown at FMS 2026 or OCP 2026? | the line between a paper device and a real one | FMS: "technology demonstrations, including HBF", nature not stated; OCP 2026 (SK hynix): a structural model and internal simulations | VENDOR CLAIM; UNKNOWN | [S2-13]; [S2-16] | a vendor statement or photographs of a running device |
+| 8.14 | The model in Sandisk's agentic-coding simulation | needed to reproduce the "8 GPUs vs 1" claim (row 4.6) | the transcript reads "490 billion parameter Qwen 3"; no 490B Qwen3 model was located in this pass. [SPECULATIVE] a transcription of Qwen3-Coder-480B, which FlashAccel evaluates | UNKNOWN; [SPECULATIVE] | [S2-10]; [S1-9] | the Investor Day slides (investor.sandisk.com returned HTTP 403) |
+
+### Read-disturb sensitivity (worst case: a stack read flat out)
+
+[derived] Inputs: Sandisk Gen 1, 1.6 TB/s over 512 GB, 3.125 sweeps per second [S2-1]; 1,024 pages per block (FLINT's assumption [S1-11]); the read counter is per block [S1-1] s4.4. Every block then collects 3,125 x 1.024 = 3,200 page reads a second, and is due for refresh after X / 3,200 seconds. Lifetime from read-disturb refresh alone = rated P/E x refresh interval. Real workloads read less than flat out, so these are lower bounds for the stated inputs; retention refresh (once per 24-48 h) adds 0.5 to 1 P/E per day on top.
+
+| Read-disturb threshold X | Refresh interval per block | Write rate to keep up (whole stack) | Lifetime at 10^5 P/E | at 10^6 P/E | at 10^7 P/E |
+| --- | --- | --- | --- | --- | --- |
+| 10^5 reads | 31 s | 16.4 GB/s | 36 days | 0.99 years | 9.9 years |
+| 10^6 reads | 312 s | 1.6 GB/s | 0.99 years | 9.9 years | 99 years |
+
+The P/E columns follow FLINT's sweep (10^5 "commodity-SLC floor" to a "projected" 10^7); the X rows follow the 10^5 to 10^6 range FLINT cites for SLC. HBF's actual values for all three inputs are unpublished.
+
+## Author guidance
+
+**Strongest mental model, in one line.** An HBF stack is a 512 GB read-mostly shelf on the accelerator package that can be read end to end about 3 times a second (an HBM4 stack: about 80), so it pays off for data that is large, rarely rewritten, and only partly touched per token.
+
+**Facts a reader can act on.**
+1. **Size placement by sweeps per second, not by bandwidth.** Bandwidth divided by capacity is 3.1 per second for a Sandisk Gen 1 stack (1.6 TB/s over 512 GB, VENDOR CLAIM [S2-1]) and 78 to 92 for shipping HBM4 (VENDOR CLAIM + [derived], M:T2-9, M:T2-13). A decode step cannot finish faster than the bytes it reads divided by the bandwidth: a dense 405B model at FP8 on eight Gen 1 stacks caps at about 32 tokens a second per sequence at batch 1 [derived] (row 6.13). Put MoE expert pools there, where each token reads a few percent of the weights (DeepSeek-V3: 37B of 671B, M:T2-29).
+2. **Treat HBF as a cache that is reloaded from storage.** The specification guarantees 24 h of power-on retention at 85 C, makes the host refresh data every 24-48 h, does not guarantee retention without power and recommends SSDs for persistence (SPEC [S1-1] s9, s11.5). Keep the SSD load path and budget its reload time.
+3. **Keep per-token KV cache and activations off it.** Google calls HBF "infeasible for KV Cache data updated for every query or generation token" [S1-6]; a simulated drop-in HBF KV pool wore out at 0.56x the life of the SSD pool it replaced (SIMULATED [S1-7]). The specification puts activations in the optional base-die SRAM and recommends separate channel groups for weights and KV (SPEC [S1-1] s11.3, s13.3.3).
+4. **Ask for three datasheet numbers before committing: read latency, rated P/E (MAXPEC) and the read-disturb threshold.** None is published (UNKNOWN). For a stack read flat out, the read-disturb threshold and P/E rating alone move device life from 36 days to 99 years [derived] (section 8).
+5. **There is nothing to buy in 2026.** As of 2026-10-16 there is a v0.7.0 specification and one taped-out die; Sandisk targets samples of inference devices with HBF in 2027 (ROADMAP [S2-10]); no accelerator vendor has announced an HBF product (absence finding); 2028 production is a brokerage estimate (Tier 3 [S3-5]).
+
+**Suggested h2 headings, each with its payoff.**
+1. **"A NAND stack wired like HBM"**: how 16 NAND dies on a controller base die deliver 0.4 to 3 TB/s and 512 GiB per stack, and which jobs (write order, wear levelling, refresh) move from the drive to your software.
+2. **"Sweeps per second decides what belongs on it"**: one division (bandwidth over capacity) separates HBF at about 3 a second from HBM4 at about 80, and predicts which data fits.
+3. **"What to put on it and what to keep in HBM"**: MoE expert pools, resident models and shared context go on HBF; per-token KV cache and activations stay in HBM or SRAM.
+4. **"Reading wears flash too"**: why retention and read-disturb refresh turn reads into writes, and the three datasheet numbers to ask a vendor for.
+5. **"Each HBF site trades HBM bandwidth for capacity"**: swapping one HBM4 stack for one HBF stack adds about 476 GB and gives up 1.2 to 1.7 TB/s, and where that leaves host DRAM, CXL and NVMe.
+6. **"What exists today and the dates to watch"**: a published interface, a taped-out die, device samples targeted for 2027, and the next vendor update on 2026-10-29. This ends the section on the reader's next action.
+
+**Diagram ideas (exact numbers and sources).**
+1. **Sweeps per second, log-scale bar chart (D3 + SVG).** HBF grade 1: 1.4; grade 2: 2.8; grade 3: 5.6 (SPEC + [derived], [S1-1] Tables 3-4); Sandisk Gen 1: 3.1 (VENDOR CLAIM + [derived], [S2-1]); HBM3E 12-high: 34 (M:T2-9); HBM4 JEDEC bin: 57 (M:T1-10); HBM4 shipping 12-high: 78-92 (M:T2-9, M:T2-13, M:T2-11); HBM4E 12-high samples: 85 (M:T2-12); Vera LPDDR5X: 0.8 (M:T2-21). One bar group per tier; the log axis shows the 6x (grade 3 against HBM3E) to 66x (grade 1 against shipping HBM4) gap.
+2. **Stack cross-section (inline SVG).** Base die: UCIe PHY and controller, ECC, NAND scheduling, bad-block and TSV repair, per-block read counter, optional SRAM scratchpad. Above it 16 NAND core dies joined by TSVs. Sixteen UCIe-A x64 channels to the xPU, 45 um bump pitch, reach of 2 mm or less. Labels: 512 GiB per 16-high stack; 3.072 TB/s at grade 3 (32 GT/s x 64 bits x 16 channels x 75% AXI efficiency); footprint about 10.975 x 16 mm x 775 um. Source: [S1-1] s4.1, s4.3-s4.5, s5.1.1, s10.1, Tables 2-4.
+3. **Three packages, top-down (inline SVG).** Eight HBM stacks: 192 GB; eight HBF stacks: 4,096 GB; six HBF + two HBM: 3,120 GB (VENDOR CLAIM, [S1-5]). Add the OCP specification's own layout: two 512 GiB HBF + four 36 GiB HBM, 1,168 GiB, with HBF and HBM as separate address spaces (SPEC + [derived], [S1-1] s11.1.2). Bandwidth labels for the HBF-only package: 12.8 TB/s [derived from S2-1], beside Rubin's 288 GB and 22 TB/s (M:T2-6).
+4. **Placement map (inline SVG).** x-axis: reads per write; y-axis: share of the object read per decode step. Points: MoE expert weights (high reads per write, low share per step: best fit); dense weights (high, all per step: fits, speed capped by sweeps per second); shared prefixes and precomputed KV (high reads per write); session KV (conditional); per-request decode KV (writes outnumber reads: poor fit); activations (rewritten every layer: SRAM or HBM). Sources: [S1-7] Fig. 12 and s9.1, [S1-6], [S1-1] s11.3 and s13.3, rows 5.1-5.22.
+
+## UNKNOWN register
+
+Scope for every entry: vendor newsrooms and investor materials (Sandisk, SK hynix, Kioxia), the OCP HBF specification v0.7.0, SEC EDGAR (Sandisk FY2026 10-K), arXiv HBF papers to 2026-09, Hot Chips 2026 and FMS 2026 coverage, and trade press, searched 2026-10-16 to 2026-10-17. "Not located" means not found in that scope.
+
+| # | Unknown | Status | Nearest figure in circulation (labelled) | Rows |
+| --- | --- | --- | --- | --- |
+| U1 | Read latency (tR, end-to-end) | not published | researchers assume 1-20 us (author assumptions); Google "1,000s" ns (author estimate) | 3.15, 3.16, 8.1 |
+| U2 | Write (program) bandwidth | not published | papers assume tPROG 50-75 us (author assumptions) | 3.14, 8.4 |
+| U3 | Rated endurance (MAXPEC, P/E, DWPD) | not published; spec field exists without a value | 10^5 P/E assumed for SLC (author assumptions); "approximately 100,000 write cycles" ([SECONDARY: TrendForce] reporting a KAIST professor) | 3.19, 3.20, 8.2 |
+| U4 | Read-disturb threshold X | "product-specific" in the spec | 10^5-10^6 reads per block for SLC (FLINT, citing literature) | 5.24-5.26, 8.3 |
+| U5 | NAND block size (pages per block) | not stated | 1,024 x 4 kB pages (FLINT assumption); 192 pages (FlashAccel assumption) | 5.25, 8.3 |
+| U6 | Cell type (SLC, TLC, QLC) | not stated by Sandisk, SK hynix or the spec | SLC or TLC in papers; Kioxia "TLC" or XL-FLASH (Tier 3) | 1.26, 3.29 |
+| U7 | Power per stack | not published | "matching ... power profile ... of HBM4" (VENDOR CLAIM); "<80" W (Google estimate) | 3.23, 8.5 |
+| U8 | Price ($/GB, ASP, ratio to HBM) | not published | "similar cost" for 8-16x capacity (VENDOR CLAIM) | 3.25, 8.6 |
+| U9 | HBM baseline behind "8-16x" | not stated | 8x of 64 GB, 16x of 32 GB [derived] | 3.27, 8.7 |
+| U10 | Power-off retention duration | "not guaranteed" | none | 1.19, 8.11 |
+| U11 | Read latency and size of the optional base-die SRAM | latency "in the order of L3 cache"; capacity not stated | none | 1.17 |
+| U12 | Whether HBF silicon was shown working at FMS 2026 or OCP 2026 | not stated | OCP 2026: structural model and internal simulations (VENDOR CLAIM) | 4.4, 8.13 |
+| U13 | Shipment of HBF memory samples (2H 2026 target) | not announced or reported as of 2026-10-16 | die taped out 2026-08-13 (VENDOR CLAIM) | 7.1 |
+| U14 | Mass-production year from a vendor | not given | 2028 (brokerage notes via [SECONDARY: TrendForce]) | 7.5 |
+| U15 | Specification v1.0 date | not given | revisions "over the next two years" (ROADMAP) | 2.15, 7.3 |
+| U16 | Dates for Sandisk Gen 2 and Gen 3 | not given | none | 3.9, 7.6 |
+| U17 | SK hynix AIN B specification and date | not given | none | 2.9, 7.8 |
+| U18 | Samsung plan and figures | concept only | "zHBF" concept ([SECONDARY: DIGITIMES]) | 2.21 |
+| U19 | Micron position | no statement located | secondhand mention in HBFSim | 2.23 |
+| U20 | JEDEC involvement | none located | none | 2.24 |
+| U21 | Accelerator adoption (NVIDIA, AMD, Intel, AWS, Google TPU) | none announced | late 2027 to early 2028 ([SECONDARY: TrendForce] reporting a KAIST professor) | 2.25, 2.26, 7.7, 8.8 |
+| U22 | Serving-engine support (vLLM, SGLang, TensorRT-LLM) | none located | research simulators only | 8.9 |
+| U23 | HBF for embedding tables | no source located | none | 5.20 |
+| U24 | Model in Sandisk's agentic-coding simulation | transcript says "490 billion parameter Qwen 3" | [SPECULATIVE] Qwen3-Coder-480B | 4.6, 8.14 |
+| U25 | OXMIQ Hot Chips slides | not located; content known only from trade press | Tier 3 reports | 4.15-4.17 |
+| U26 | First-hand measurement of any HBF device | none located | none | 4.3 |
+
 ## Sources
 
 ### Tier 1 (specifications, vendor technical documents and datasheets, SEC filings, peer-reviewed and arXiv papers for their own results)
@@ -300,6 +435,8 @@ HBFSim's Table 1 [S1-8] (author-compiled, each cell cited by the authors) sets f
 - [S1-13] "Beyond Capacity: Scalable MoE LLM Inference via High-Bandwidth Flash with Direct GPU and HBM Paths", arXiv:2608.14333v1 (2026-08-14): https://arxiv.org/abs/2608.14333 (accessed 2026-10-17)
 - [S1-14] Y. Yin et al. (Peking University, Alibaba DAMO Academy, Alibaba Cloud), "Potential Applications of HBF in LLM Serving Systems", arXiv:2608.13127v2 (2026-08-14): https://arxiv.org/abs/2608.13127 (accessed 2026-10-17)
 - [S1-15] P.-K. Hsu, W. Xu, Q. Liu, T. Rosing, S. Yu (Georgia Tech, EPFL, UC San Diego), "HAVEN: High-Bandwidth Flash Augmented Vector ENgine for Large-Scale Approximate Nearest-Neighbor Search Acceleration", arXiv:2603.01175v1 (2026-03-01): https://arxiv.org/abs/2603.01175 (accessed 2026-10-17; results author-simulated)
+- [S1-16] D. Son, Y. Park, H. Cho, H. Ham, O. Mutlu, S. Lee, G. Kim, J. Park, "Exploring High-Bandwidth Flash for Modern LLM Inference: Opportunities and Challenges", arXiv:2608.13868v1 (2026-08-14): https://arxiv.org/abs/2608.13868 (accessed 2026-10-17; abstract read only)
+- [S1-17] S. Zhong et al., "HBFlex: A Flexible Memory System for Bridging Fine-Grained LLM States and Coarse-Grained HBF Parallel Execution", arXiv:2609.18675v1 (2026-09-16): https://arxiv.org/abs/2609.18675 (accessed 2026-10-17; abstract read only; results trace-driven simulation)
 
 ### Tier 2 (vendor press releases, vendor blogs, keynotes; vendor numbers are VENDOR CLAIM or ROADMAP)
 - [S2-1] Sandisk, "HBF Fact Sheet" (Tech Brief, July 2025; PDF created 2025-07-28): https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/sandisk/collateral/company/Sandisk-HBF-Fact-Sheet.pdf (accessed 2026-10-17)
@@ -316,6 +453,8 @@ HBFSim's Table 1 [S1-8] (author-compiled, each cell cited by the authors) sets f
 - [S2-12] Sandisk Q4 FY2026 earnings call, 2026-08-05, transcript published by The Motley Fool: https://www.fool.com/earnings/call-transcripts/2026/08/12/sandisk-sndk-q4-2026-earnings-call-transcript/ (accessed 2026-10-17; vendor statements, third-party transcription)
 - [S2-13] Sandisk press release, "Sandisk Showcases NAND Innovation for the Era of AI Inference at FMS 2026" (2026-08-04): https://www.sandisk.com/company/newsroom/press-releases/2026/sandisk-nand-innovation-for-era-of-ai-inference-at-fms-2026 (accessed 2026-10-17)
 - [S2-14] Hot Chips 2026 program, Tutorial 1 (Sunday 2026-08-23), "HBF in AI Compute - A System Architect's view", Anurag Agrawal (Oxmiq Labs) and Radhakrishna Giduthuri (PRAXMATI): https://hotchips.org/ (accessed 2026-10-17; slides not located; content known only from [S3-4], [S3-7])
+- [S2-15] Sandisk press release, "Sandisk to Report First Quarter Fiscal Year 2027 Results on October 29, 2026" (2026-09-29): https://www.sandisk.com/company/newsroom/press-releases/2026/2026-09-29-sandisk-to-report-first-quarter-fiscal-year-2027-results-on-october-29-2026 (accessed 2026-10-17)
+- [S2-16] SK hynix Newsroom, ""Memory-Centric Server Systems Are the Future": SK hynix Presents Its Next-Generation AI Infrastructure Vision at OCP Global Summit 2026" (2026-10-16): https://news.skhynix.com/en/ocp-global-summit-2026/ (accessed 2026-10-17)
 
 ### Tier 3 (trade press and third-party analysis; never used as a vendor spec)
 - [S3-1] J. Kim and KAIST TeraLab, "HBF Technology, Workload Analysis and Roadmap" (slide deck, 95 pp., presented 2026-02-10; PDF modified 2026-06-17), linked from https://tera.kaist.ac.kr/ (Google Drive file id 19u0ZpS1gWqXtpQ3uzqcoiW9UeSUPWiJA) (accessed 2026-10-17; academic, not peer-reviewed)
@@ -331,3 +470,22 @@ HBFSim's Table 1 [S1-8] (author-compiled, each cell cited by the authors) sets f
 - Digitimes, "Samsung joins HBF development race, leveraging NAND dominance to reshape market" (2025-10-07): https://www.digitimes.com/news/a20251007PD233/samsung-market-development-nand-flash-nand.html
 - Wccftech, "NVIDIA Not Interested In HBF Memory Despite 4TB Stacks Dwarfing HBM ..." (about 2026-04): https://wccftech.com/nvidia-not-interested-in-hbf-memory-despite-4tb-stacks-dwarfing-hbm/
 - Forbes (T. Coughlin), "High Bandwidth Flash Advances At The 2026 FMS Conference" (2026-08-21; HTTP 403): https://www.forbes.com/sites/tomcoughlin/2026/08/21/high-bandwidth-flash-advances-at-the-2026-fms-conference/
+
+### Reused from 01-memory.md (sibling register; not re-fetched; accessed 2026-10-16; tiers as graded there; cited here with the prefix M:)
+Tier 1:
+- [M:T1-10] JEDEC press release, "JEDEC and Industry Leaders Collaborate to Release JESD270-4 HBM4 Standard" (2025-04-16): https://www.jedec.org/news/pressreleases/jedec%C2%AE-and-industry-leaders-collaborate-release-jesd270-4-hbm4-standard-advancing (accessed 2026-10-16)
+- [M:T1-11] JEDEC press release, "JEDEC Publishes HBM3 Update to High Bandwidth Memory (HBM) Standard" (JESD238, 2022-01-27): https://www.jedec.org/news/pressreleases/jedec-publishes-hbm3-update-high-bandwidth-memory-hbm-standard (accessed 2026-10-16)
+- [M:T1-13] JEDEC, JC-42.2 High Bandwidth Memory committee page (document list; no HBF entry): https://www.jedec.org/committees/jc-422 (accessed 2026-10-16)
+- [M:T1-26] CXL Consortium press release, CXL 4.0 specification (2025-11-18): https://computeexpresslink.org/wp-content/uploads/2025/11/CXL_4.0-Specification-Release_FINAL_Website-Copy.pdf (accessed 2026-10-16)
+- [M:T1-27] CXL Consortium press release, CXL 3.0 specification (2022-08-02): https://computeexpresslink.org/wp-content/uploads/2024/01/CXL_3.0-Specification-Release_FINAL-1.pdf (accessed 2026-10-16)
+- [M:T1-33] Hugging Face, deepseek-ai/DeepSeek-V3 config.json at revision e815299b0bcbac849fa540c768ef21845365c9eb: https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/config.json (accessed 2026-10-16)
+
+Tier 2:
+- [M:T2-6] NVIDIA, HGX page (HGX Rubin NVL8 288 GB HBM4, 22 TB/s): https://www.nvidia.com/en-us/data-center/hgx/ (accessed 2026-10-16; the sibling register notes the Vera Rubin NVL72 page gives 19.2 TB/s per GPU)
+- [M:T2-9] Samsung Newsroom, "Samsung Ships Industry-First Commercial HBM4 With Ultimate Performance for AI Computing" (2026-02-12): https://news.samsung.com/global/samsung-ships-industry-first-commercial-hbm4-with-ultimate-performance-for-ai-computing (accessed 2026-10-16)
+- [M:T2-11] SK hynix, HBM4 product page: https://product.skhynix.com/products/dram/hbm/hbm4.go (accessed 2026-10-16)
+- [M:T2-12] SK hynix Newsroom, "SK hynix Ships Samples of 12-Layer Next-Gen HBM4E" (2026-06-18): https://news.skhynix.com/en/sk-hynix-ships-samples-of-12-layer-next-gen-hbm4e-2/ (accessed 2026-10-16)
+- [M:T2-13] Micron press release, "Micron in High-Volume Production of HBM4 Designed for NVIDIA Vera Rubin, PCIe Gen6 SSD and SOCAMM2" (2026-03-16): https://investors.micron.com/news/press-release/2026/Micron-in-High-Volume-Production-of-HBM4-Designed-for-NVIDIA-Vera-Rubin-PCIe-Gen6-SSD-and-SOCAMM2-03-16-2026/default.aspx (accessed 2026-10-16)
+- [M:T2-18] AMD, EPYC 9996 product page (MRDIMM 12800, 1638 GB/s per socket): https://www.amd.com/en/products/processors/server/epyc/9006-series/amd-epyc-9996.html (accessed 2026-10-16)
+- [M:T2-21] NVIDIA, Grace CPU page (Vera: SOCAMM, 1.2 TB/s, 1.5 TB per CPU): https://www.nvidia.com/en-us/data-center/grace-cpu/ (accessed 2026-10-16)
+- [M:T2-29] DeepSeek-AI, "DeepSeek-V3 Technical Report", arXiv:2412.19437 (vendor-authored): https://arxiv.org/abs/2412.19437 (accessed 2026-10-16)
