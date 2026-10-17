@@ -60,7 +60,13 @@ CORRECT / STALE / WRONG / NEW / UNKNOWN per file.
 | GatewaysAppLayer | 14 | 1 | 0 | 0 | 2 | KEEP + small EDIT |
 | ObservabilityBench | 17 | 4 | 1 | 10 | 1 | EDIT |
 | WhenNotVllm | 9 | 3 | 3 | 4 | 4 | EDIT (heavy) |
-| _06, 07, 08 rows added when those registers land_ | | | | | | |
+| SpeculativeDecoding | 16 | 4 | 1 | 5 | 1 | EDIT (heavy) |
+| LoRAServing | 14 | 0 | 1 | 6 | 1 | EDIT (medium) |
+| OpenAICompatServer | 22 | 5 | 3 | 4 | 1 | EDIT (heavy) |
+| DistributedInference | 15 | 1 | 2 | 4 | 0 | EDIT |
+| DisaggregatedServing | 10 | 5 | 1 | 5 | 0 | EDIT (heavy; connector subsection rewrite) |
+| InsideCodebase | 3 | 1 | 0 | 0 | 0 | KEEP (pin bump, orchestrator) |
+| _07, 08 rows added when those registers land_ | | | | | | |
 
 ## The headline: the execution layer was replaced underneath the dive
 
@@ -95,7 +101,12 @@ CORRECT / STALE / WRONG / NEW / UNKNOWN per file.
 9. **New scheduling controls**: API-server admission control (`--max-num-queued-reqs`,
    `--max-num-queued-tokens`), `--max-num-active-seqs`, adaptive `--long-prefill-token-threshold`,
    KV watermark, KV-holding waiting queue.
-10. **Ecosystem drift**: TGI's repository is archived; TensorRT-LLM's default backend is PyTorch
+10. **Server surface**: tool `strict` is honoured (`--tool-strict-level`); `--api-key` guards only
+    `/v1`, `/v2`, `/inference` and `/cohere`; admission control returns HTTP 503; per-request
+    `mm_processor_kwargs` need `--trust-request-mm-kwargs`; `rejection_sample_method` values are
+    `standard`, `synthetic`, `block`. Six speculative methods (ngram, ngram_gpu, suffix, medusa,
+    mlp_speculator, custom_class) run on the deprecated V1 runner. (06.)
+11. **Ecosystem drift**: TGI's repository is archived; TensorRT-LLM's default backend is PyTorch
     (no compile step); llm-d's Endpoint Picker moved into llm-d Router v1.0.0; no orchestrator pins
     v0.31.0 (Dynamo 1.5.1 pins vLLM 0.28.0, Ray 2.59.0 pins 0.27.0, llm-d 0.10.0 ships 0.30.0).
 
@@ -139,7 +150,13 @@ and clipping check at 1440 and 390, plus PNG review) before its wave commits.
 | RayServeLLM | inline SVG | Engine box; footer (Ray inside placement group) | 05 |
 | WhenNotVllm | `DecisionTreeDiagram` | TensorRT-LLM branch, TGI archived | 05 |
 | ObservabilityBench | `MetricsPipelineDiagram` | Load-generator labels | 05 |
-| _06, 07, 08 diagrams added when those registers land_ | | | |
+| SpeculativeDecoding | `ProposeVerifyAcceptDiagram` | Keep (standard rejection sampling); methods table gains a "Runs on" column | 06 S4, S27 |
+| LoRAServing | `MixedBatchDiagram` | Note `--max-loras 3` in the picture (default is 1) | 06 L9 |
+| OpenAICompatServer | `EndpointSurfaceDiagram` | Add Responses retrieve/cancel, batch and scale-out routes; `--api-key` scope | 06 O7, O10, O3 |
+| DistributedInference | inline TP x PP SVG | Keep; title/aria pattern | 06 |
+| DisaggregatedServing | `DisaggDiagram` | Drop P2pNccl, transport label | 06 X5, X6 |
+| DisaggregatedServing | `NixlPullPushDiagram` | **NEW**: pull vs push sequence (who registers, who initiates, what the proxy forwards) | 06 X9, X15, X17 |
+| _07, 08 diagrams added when those registers land_ | | | |
 
 ## Authoring waves
 
