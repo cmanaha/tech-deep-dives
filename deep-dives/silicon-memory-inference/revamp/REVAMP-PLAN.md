@@ -266,3 +266,19 @@ Updated at each gate.
 | Research agents dispatched | 5 area (3 resumed after a usage stop) |
 | Sections modified | 0 |
 | Commits | see git log |
+
+## Cross-section notes for later authors
+
+Collected from change reports so a later section does not contradict an
+earlier one.
+
+- Grace-Blackwell: two AWS pages give different EFA bandwidth per GPU for
+  P6e-GB200 (400 vs 800 Gbps); the section shows both. Any section quoting EFA
+  per GPU for GB200 (Disaggregated Serving, Communication and Scale-Out) must
+  use the same pair, not one number.
+- Grace-Blackwell: large-scale expert parallelism in TensorRT-LLM is from
+  v0.21.0 and EP=64 is NVIDIA's DeepSeek-R1 layout. MoeAndSparseActivation
+  still carries the old Wide-EP wording.
+- Hopper: P5 = H100; P5e and P5en = H200; p5.4xlarge exists.
+- Blackwell: B200 is compute capability 10.0, B300 10.3, Rubin 10.7;
+  `compute_100f` builds run on all three.
