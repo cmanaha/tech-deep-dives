@@ -275,3 +275,11 @@ P2 has no finding on these files (`grep -cE Codebase docs/verification/2026-08-0
 - A33 (Architecture): why `RayExecutorV2` became the default Ray backend. No code or doc read states the reason.
 - R4 (Rust): the GIL-contention rationale for the Rust frontend. Searched `rust/README.md`, `rust/AGENTS.md`, `docs/` at v0.31.0; no statement found.
 - Not a dive claim, left open: whether the official v0.31.0 wheels ship the `vllm-rs` binary and `vllm._rust_tool_parser`. `setup.py:1518-1521` builds both as optional unless `VLLM_REQUIRE_RUST_FRONTEND` is set; no wheel was inspected.
+
+## Errata found during authoring (2026-10-17)
+
+- R32, R40: `--data-parallel-rank`, `--data-parallel-external-lb` and `--data-parallel-hybrid-lb`
+  hard-error only in standalone `vllm-rs serve`. Under `vllm serve` the Python launcher strips
+  them before the Rust argument check (`vllm/v1/utils.py#L384-L392` at v0.31.0), so they are not
+  blockers for the default launch path.
+- The Rust gRPC Control service defines 20 RPCs, not 21 (`rust/proto/control.proto` at v0.31.0).
