@@ -14,7 +14,8 @@ spawn subagents.
    `deep-dives/efa/revamp/leverage-pass-standard.md` (the four verbs; never assert).
 3. `deep-dives/efa/revamp/source-authority-standard.md` (code is the authority).
 4. `deep-dives/efa/revamp/diagram-plan.md`, section 1 only (lines 15-216): the SVG contract.
-5. `deep-dives/vllm/revamp/REVAMP-PLAN.md`: your file's entry (treatment, required edits, diagrams).
+5. `deep-dives/vllm/revamp/REVAMP-PLAN.md`: the "Cross-file facts every author uses the same way"
+   block (mandatory), then your file's rows (verdicts, treatment, diagram inventory).
 6. Your file's claim register under `deep-dives/vllm/research/2026-10-refresh/` (named in your
    task). Every STALE and WRONG verdict gets fixed. Every NEW item the plan assigns to your file
    gets added. UNKNOWN items do not ship as fact.
