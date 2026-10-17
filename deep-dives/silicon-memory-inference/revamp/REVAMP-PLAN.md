@@ -169,8 +169,36 @@ GlossaryAndSources, README.md, sources.md (generated), `.gates.json`.
 
 ## New sections (outline completed after hbf.md and flash-cache-tier.md)
 
-### High Bandwidth Flash (nav id `hbf`)
-Outline: to be written from `research/2026-10-refresh/hbf.md`.
+### High Bandwidth Flash (nav id `hbf`, file `HighBandwidthFlash.tsx`)
+
+Register: `research/2026-10-refresh/hbf.md` (8 topics, 26 UNKNOWNs).
+Mental model: an HBF stack is a 512 GB read-mostly shelf on the accelerator
+package that can be read end to end about 3 times a second (an HBM4 stack:
+about 80), so it pays off for data that is large, rarely rewritten and only
+partly touched per token.
+
+h2 outline (payoff in each description):
+1. A NAND stack wired like HBM: 16 NAND dies on a controller base die, 0.4 to
+   3 TB/s and 512 GiB per stack, and which jobs (write order, wear levelling,
+   refresh) move from the drive to the host software.
+2. Sweeps per second decides what belongs on it: bandwidth over capacity puts
+   HBF near 3 per second and HBM4 near 80.
+3. What to put on it and what to keep in HBM: MoE expert pools, resident
+   models and shared context on HBF; per-token KV cache and activations in HBM
+   or SRAM (Google: "infeasible for KV Cache data updated for every query or
+   generation token"; a simulated drop-in KV pool wore out at 0.56x the SSD
+   pool's life).
+4. Reading wears flash too: 24 h power-on retention, host refresh every 24 to
+   48 h, read-disturb refresh, and the three datasheet numbers to ask for.
+5. Each HBF site trades HBM bandwidth for capacity: one HBM4 stack swapped for
+   one HBF stack adds about 476 GB and gives up 1.2 to 1.7 TB/s.
+6. What exists and what to plan for: a v0.7.0 specification, one taped-out die,
+   device samples targeted for 2027 (roadmap), no accelerator product
+   announcement located.
+
+Diagrams: stack cross-section; sweeps-per-second log bars; package comparison
+(eight HBM, eight HBF, six HBF plus two HBM); optional placement map (reads per
+write against share read per step).
 
 ### Flash as a Cache Tier for Inference (nav id `flash-cache-tier`)
 Outline: to be written from `research/2026-10-refresh/flash-cache-tier.md`.
