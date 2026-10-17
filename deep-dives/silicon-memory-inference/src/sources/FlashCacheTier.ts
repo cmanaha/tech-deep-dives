@@ -168,7 +168,7 @@ export const S = {
       'GPU-Initiated On-Demand High-Throughput Storage Access in the BaM System Architecture (Qureshi et al., ASPLOS 2023, arXiv:2203.04910)',
     publisher: 'arXiv',
     url: 'https://arxiv.org/abs/2203.04910',
-    tier: 1,
+    tier: 3,
     accessed: '2026-10-17',
   },
   cmmH: {
@@ -176,7 +176,7 @@ export const S = {
       'Performance Characterizations and Usage Guidelines of Samsung CXL Memory Module Hybrid Prototype (Zeng et al., arXiv:2503.22017)',
     publisher: 'arXiv',
     url: 'https://arxiv.org/abs/2503.22017',
-    tier: 1,
+    tier: 3,
     accessed: '2026-10-17',
   },
   mooncakeFast: {
@@ -184,14 +184,14 @@ export const S = {
       'Mooncake: Trading More Storage for Less Computation, a KVCache-centric Architecture for Serving LLM Chatbot (Qin et al., USENIX FAST 2025)',
     publisher: 'USENIX',
     url: 'https://www.usenix.org/system/files/fast25-qin.pdf',
-    tier: 1,
+    tier: 3,
     accessed: '2026-10-17',
   },
   mooncakeArxiv: {
     title: 'Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving (arXiv:2407.00079v4)',
     publisher: 'arXiv',
     url: 'https://arxiv.org/abs/2407.00079',
-    tier: 1,
+    tier: 3,
     accessed: '2026-10-17',
   },
   deepseekCaching: {
@@ -278,7 +278,7 @@ export const S = {
       'Challenges and Research Directions for Large Language Model Inference Hardware (X. Ma and D. Patterson, Google; arXiv:2601.05047)',
     publisher: 'arXiv',
     url: 'https://arxiv.org/abs/2601.05047',
-    tier: 1,
+    tier: 3,
     accessed: '2026-10-17',
   },
 

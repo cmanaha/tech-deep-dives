@@ -98,7 +98,11 @@ Rules:
   vendor press releases, blogs, product pages and keynotes. Tier 3 is
   third-party analysis, papers and trade press. Tier 0 is our own experiment.
   The same URL must carry the same tier in every file, so reuse the register's
-  tier exactly.
+  tier exactly, with one exception: academic papers (arXiv, ACM, IEEE,
+  USENIX, conference proceedings) are Tier 3 under CLAUDE.md even when a
+  register graded them Tier 1 as the primary source for their own method.
+  Mark their results `measured` or `simulated` so the reader still sees what
+  kind of evidence it is.
 - `accessed` is `2026-10-16` for anything taken from the register. If you fetch
   a source yourself, use the date you fetched it.
 - `kind` marks what the figure is: `vendor-claim` for a vendor performance
