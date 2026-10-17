@@ -55,9 +55,22 @@ Infrastructure added in this stream:
 - The rendered probe already finds text running out of boxes in the memory
   hierarchy tower, the HBM stack diagram and the memory technology grid.
 
-## Headline findings
+## Verdict counts
 
-Verdict counts are filled in per register as each completes (section below).
+| Register | Rows | CORRECT | WRONG | STALE | UNKNOWN | NEW |
+| --- | --- | --- | --- | --- | --- | --- |
+| 01 memory | 197 | 88 | 41 | 27 | 26 | 15 |
+| 02 NVIDIA | 175 | 72 | 36 | 10 | 36 | 21 |
+| 03 AWS and CPUs | 240 | 110 | 51 | 11 | 42 | 26 |
+| 04 other architectures | 229 | 114 | 38 | 17 | 36 | 24 |
+| 05 workloads | 194 | 78 | 37 | 33 | 19 | 27 |
+| **Total** | **1,035** | **462** | **203** | **98** | **159** | **113** |
+
+Rows with a compound verdict are counted under the first verdict listed.
+Fewer than half of the dive's checked claims (45%) were still correct and
+sourced; 29% were wrong or stale.
+
+## Headline findings
 
 1. **Sparse figures read as dense in the dive's anchor numbers.** The thesis,
    the roofline table and the Blackwell spec table use NVIDIA's sparse FP8 and
@@ -87,7 +100,24 @@ Verdict counts are filled in per register as each completes (section below).
 7. **Neuron moved**: Neuron 2.32.0 is current, NKI left beta in 2.29.0, NxD
    Inference is in maintenance and vLLM Neuron is the serving path; Inf2 and
    Trn1 lost NxD Inference support.
-8. **Section numbers in prose are already off by one family** in several
+8. **AWS and CPUs** (03): the Nitro Isolation Engine proof excludes cache side
+   channels and scheduling (AWS white paper, June 2026) and covers about
+   330,000 lines, not 250,000; confidential computing assigns a whole GPU to
+   one confidential VM, not one MIG instance; Graviton5 is DDR5-8800 at
+   3.3 GHz with NUMA still present, and M9g/C9g/R9g went GA June to August
+   2026; Trainium3 is GA with published specs.
+9. **Memory** (01): the KV-cache worked example is 2.68 GB per 8K request and
+   85.9 GB at batch 32 (the page says 5 GB and 160 GB); the "no published MoE
+   benchmark" PIM warning is false (Samsung, Hot Chips 2023); HyperCIM has no
+   in-memory compute product and comes out; the hierarchy tower and the tech
+   grid stop at CXL with no flash tier.
+10. **Other architectures** (04): batch composition is the main source of
+   serving nondeterminism and three GPU "determinism modes" in the diagram do
+   not exist as stated; SR 26-2 (2026-04-17) superseded SR 11-7; NVIDIA
+   publishes GB10's CPU-GPU link (about 600 GB/s, Hot Chips 2025); DGX Spark
+   and Jetson prices moved and Jetson AGX Thor is missing; two SLM arguments
+   fail their own arithmetic.
+11. **Section numbers in prose are already off by one family** in several
    sections and would break again when two sections are inserted. Prose
    cross-references move to section names.
 
