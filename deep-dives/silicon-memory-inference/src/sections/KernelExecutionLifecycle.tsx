@@ -3,106 +3,208 @@ import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
-import ColumnLayout from '@cloudscape-design/components/column-layout';
-import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
-import Link from '@cloudscape-design/components/link';
-import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { KernelLifecycleDiagram } from '../components/KernelLifecycleDiagram';
+import { Cite } from '../components/Cite';
+import { S } from '../sources/KernelExecutionLifecycle';
+
+const gapNote = '478.8 cycles (global memory) / 29.0 cycles (shared memory) = 16.5, both from Table IV.';
 
 interface LatencyRow {
-  tier: string;
-  cycles: string;
-  ns: string;
-  who: string;
-  notes: string;
+  level: string;
+  size: React.ReactNode;
+  latency: React.ReactNode;
+  fill: React.ReactNode;
 }
 
 const latencyRows: LatencyRow[] = [
   {
-    tier: 'Register file',
-    cycles: '1 cycle',
-    ns: '~0.5 ns at 2 GHz',
-    who: 'Warp / thread / tile register',
-    notes: 'Effectively free; one operand per clock per lane',
+    level: 'Registers',
+    size: (
+      <>
+        64K 32-bit registers per SM on Hopper and B200
+        <Cite s={S.hopperTuningGuide} />
+        <Cite s={S.blackwellTuningGuide} />
+      </>
+    ),
+    latency: 'None located',
+    fill: (
+      <>
+        Loads from SMEM; <code>wgmma</code> keeps its accumulator here
+        <Cite s={S.ptxIsa} />
+      </>
+    ),
   },
   {
-    tier: 'L1 / SMEM (warp-local)',
-    cycles: '~20-30 cycles',
-    ns: '~10-15 ns',
-    who: 'Async copy / TMA / cooperative groups',
-    notes: 'On Hopper SMEM is up to 228 KB per SM, sharing 256 KB with L1',
+    level: 'TMEM (Blackwell)',
+    size: (
+      <>
+        256 KB per SM
+        <Cite s={S.blackwellUltraBlog} />
+      </>
+    ),
+    latency: 'None located',
+    fill: (
+      <>
+        <code>tcgen05.mma</code> accumulates here; operand A may come from here
+        <Cite s={S.ptxIsa} />
+      </>
+    ),
   },
   {
-    tier: 'TMEM (Blackwell)',
-    cycles: 'Few cycles to tensor core',
-    ns: '~ns class',
-    who: 'tcgen05 operand staging',
-    notes: '256 KB per SM; dedicated tensor-core operand storage',
+    level: 'Shared memory (SMEM)',
+    size: (
+      <>
+        Up to 228 KB per SM on Hopper and B200
+        <Cite s={S.hopperTuningGuide} />
+        <Cite s={S.blackwellTuningGuide} />; up to 328 KB on Rubin
+        <Cite s={S.computeCapabilities} />
+      </>
+    ),
+    latency: (
+      <>
+        About 29 cycles
+        <Cite s={S.luoHopperBench} kind="measured" />
+      </>
+    ),
+    fill: (
+      <>
+        Async copy (compute capability 8.0 and later), TMA (9.0 and later)
+        <Cite s={S.cudaAsyncCopies} />
+      </>
+    ),
   },
   {
-    tier: 'L2 (device-wide)',
-    cycles: '~150-300 cycles',
-    ns: '~75-150 ns',
-    who: 'L2 cache controller',
-    notes: 'H100 L2 is 50 MB. Shared across all SMs',
+    level: 'L1 cache',
+    size: (
+      <>
+        Shares one 256 KB array per SM with SMEM on Hopper and B200
+        <Cite s={S.hopperTuningGuide} />
+        <Cite s={S.blackwellTuningGuide} />
+      </>
+    ),
+    latency: (
+      <>
+        About 41 cycles
+        <Cite s={S.luoHopperBench} kind="measured" />
+      </>
+    ),
+    fill: 'Hardware-managed cache',
   },
   {
-    tier: 'HBM (tier 6)',
-    cycles: '~300-600 cycles',
-    ns: '~150-300 ns',
-    who: 'HBM PHY across the interposer',
-    notes: 'H200 reads at 4.8 TB/s aggregate; per-access latency stays in this band',
+    level: 'L2 cache',
+    size: (
+      <>
+        50 MB on H100, 126 MB on GB200
+        <Cite s={S.hopperTuningGuide} />
+        <Cite s={S.blackwellTuningGuide} />
+      </>
+    ),
+    latency: (
+      <>
+        About 263 cycles
+        <Cite s={S.luoHopperBench} kind="measured" />
+      </>
+    ),
+    fill: 'Hardware-managed cache shared by every SM',
   },
   {
-    tier: 'Host DRAM via PCIe',
-    cycles: 'Thousands of cycles',
-    ns: '~1-3 µs',
-    who: 'PCIe Gen5 / NVLink-C2C',
-    notes: 'Crossing PCIe is dominated by protocol setup, not raw bandwidth',
-  },
-  {
-    tier: 'Cross-host (NCCL / NIXL / EFA)',
-    cycles: 'Tens of thousands of cycles',
-    ns: '~10-50 µs',
-    who: 'NCCL kernel + EFA / NVLink fabric',
-    notes: 'Tail-sensitive; SRD spraying and topology aware',
+    level: 'HBM',
+    size: (
+      <>
+        80 GB at 3.35 TB/s on H100 SXM, 141 GB at 4.8 TB/s on H200
+        <Cite s={S.h100Page} />
+        <Cite s={S.h200Page} />
+      </>
+    ),
+    latency: (
+      <>
+        About 479 cycles (global memory; HBM2e on the H800)
+        <Cite s={S.luoHopperBench} kind="measured" />
+      </>
+    ),
+    fill: 'Loads, async copy or TMA, through L2',
   },
 ];
 
-interface SiliconLaneRow {
+interface LaneRow {
   silicon: string;
-  hostStage: string;
-  dispatchStage: string;
-  unitStage: string;
-  citationLabel: string;
-  url: string;
+  host: React.ReactNode;
+  dispatch: React.ReactNode;
+  unit: React.ReactNode;
 }
 
-const siliconLanes: SiliconLaneRow[] = [
+const lanes: LaneRow[] = [
   {
-    silicon: 'NVIDIA Hopper / Blackwell SIMT GPU',
-    hostStage: 'PyTorch → CUDA driver → cudaLaunchKernel; command queue submitted to device',
-    dispatchStage: 'GPU front-end accepts grid; warp scheduler allocates blocks to SMs (max 32 blocks / SM, 64 concurrent warps / SM on Hopper)',
-    unitStage: 'Async copy → SMEM → tensor core via wgmma (Hopper) or tcgen05.mma over TMEM (Blackwell)',
-    citationLabel: 'NVIDIA Hopper Tuning Guide',
-    url: 'https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html',
+    silicon: 'NVIDIA Hopper and Blackwell',
+    host: 'PyTorch picks a cuBLAS, cuDNN or Triton kernel; the CUDA driver queues it across PCIe or NVLink-C2C.',
+    dispatch: (
+      <>
+        The GigaThread engine places blocks on SMs; warp schedulers pick ready warps. Up to 32
+        blocks and 64 warps per SM on Hopper and B200.
+        <Cite s={S.cudaHardwareMultithreading} />
+        <Cite s={S.hopperTuningGuide} />
+        <Cite s={S.blackwellTuningGuide} />
+      </>
+    ),
+    unit: (
+      <>
+        TMA or async copy fills SMEM; <code>wgmma</code> accumulates in registers (Hopper),{' '}
+        <code>tcgen05.mma</code> in TMEM (Blackwell).
+        <Cite s={S.cudaAsyncCopies} />
+        <Cite s={S.ptxIsa} />
+      </>
+    ),
   },
   {
-    silicon: 'AWS Trainium2 / Inferentia2',
-    hostStage: 'PyTorch → torch-neuronx → XLA HLO → Neuron compiler emits NEFF (ahead of time)',
-    dispatchStage: 'Neuron runtime binds NEFF to NeuronCores; dispatch is descriptor-driven, not warp-scheduled',
-    unitStage: 'SBUF / PSUM staged by compiler; systolic array consumes pre-tiled operands; CC-Cores carry collectives',
-    citationLabel: 'AWS Neuron SDK documentation',
-    url: 'https://awsdocs-neuron.readthedocs-hosted.com/',
+    silicon: 'AWS Trainium2',
+    host: (
+      <>
+        torch-neuronx traces the model into an XLA (Accelerated Linear Algebra) graph;
+        neuronx-cc compiles it ahead of time into a NEFF, which the Neuron Runtime loads.
+        <Cite s={S.neuronCompiler} />
+      </>
+    ),
+    dispatch: (
+      <>
+        The compiler back end fixes memory allocation and instruction order inside the NEFF
+        <Cite s={S.nkiOverview} />, so there is no warp scheduler to tune. NeuronCore-v3 still
+        supports dynamic shapes and control flow.
+        <Cite s={S.trn2Arch} />
+      </>
+    ),
+    unit: (
+      <>
+        DMA (direct memory access) engines fill SBUF (State Buffer, 28 MiB per NeuronCore-v3)
+        from HBM; the Tensor engine reads SBUF and writes PSUM (Partial Sum Buffer, 2 MiB),
+        which accumulates near memory.
+        <Cite s={S.nkiTrn2Arch} />
+        <Cite s={S.nkiTrnInf2Arch} />
+      </>
+    ),
   },
   {
-    silicon: 'Intel Xeon 6 with AMX',
-    hostStage: 'PyTorch → oneDNN → AMX kernel; in-process call (no PCIe boundary)',
-    dispatchStage: 'OS / OpenMP scheduler places thread; AMX state managed by XSAVE/XRSTOR',
-    unitStage: 'Tile registers loaded from L1; TDPBF16PS / TDPFP16PS executes 16×16 tile matmul',
-    citationLabel: 'Intel AMX technical overview',
-    url: 'https://www.intel.com/content/www/us/en/developer/articles/technical/advanced-matrix-extensions-overview.html',
+    silicon: 'Intel Xeon 6 with AMX (Advanced Matrix Extensions)',
+    host: 'PyTorch calls a oneDNN kernel in the same process. The launch is a function call: no device queue, no host link.',
+    dispatch: (
+      <>
+        The OS schedules the calling thread. On Linux a process must request AMX permission
+        with <code>arch_prctl(ARCH_REQ_XCOMP_PERM)</code> before using it
+        <Cite s={S.linuxXstate} />; oneDNN makes that request itself.
+        <Cite s={S.oneDnnAmxPermission} />
+      </>
+    ),
+    unit: (
+      <>
+        <code>LDTILECFG</code> configures eight tile registers of up to 16 rows of 64 bytes
+        (1 KB); <code>TILELOADD</code> fills them from memory
+        <Cite s={S.llvmAmxIntrin} />
+        <Cite s={S.llvmX86Registers} />; <code>TDPBF16PS</code> multiplies BF16 (bfloat16)
+        tiles, and <code>TDPFP16PS</code> adds FP16 from Granite Rapids.
+        <Cite s={S.llvmAmxFp16Intrin} />
+        <Cite s={S.llvmX86Td} />
+      </>
+    ),
   },
 ];
 
@@ -113,32 +215,29 @@ export function KernelExecutionLifecycle() {
         header={
           <Header
             variant="h1"
-            description="From host code to functional-unit retire — where the memory hierarchy plays in inference"
+            description="Follow one kernel call from Python to the Tensor Core and back, and find which stage a fusion, a CUDA Graph or an occupancy change would shorten"
           >
-            Anatomy of a kernel execution
+            Anatomy of a Kernel Execution
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Why this section.</strong> Section 4 laid out the memory hierarchy as a
-            static map — seven tiers, capacities, bandwidths. That map is necessary but
-            not sufficient. The interesting question is dynamic: when a Python program
-            calls a kernel, which tier gets touched at which moment, and how many cycles
-            does the silicon spend in each? That is what this section walks through. The
-            same vocabulary applies later, in the vendor-specific chapters; here we
-            establish the sequence so the bandwidth numbers in Sections 6-18 read against
-            a clear flow.
+            <strong>What a kernel is.</strong> A kernel is one function the host CPU launches to
+            run on an accelerator. Every operator a model executes (a matrix multiply, a softmax,
+            a fused attention block) reaches the silicon as one or more kernel launches. The{' '}
+            <em>Memory Hierarchy Primer</em> maps the memory levels; this section follows a
+            single kernel through them in seven stages, two on the host and five on the device,
+            inside the GPU&apos;s streaming multiprocessors (SMs).
           </Box>
           <Box variant="p">
-            <strong>The high-level claim.</strong> A single kernel invocation is a
-            seven-stage pipeline. Stages 1-2 happen on the host CPU, stages 3-7 happen on
-            the device. The memory tier touched at each stage rises and falls — host DRAM
-            for stage 1, on-device queue SRAM for stage 3, register file for stage 4,
-            scratchpad SMEM/TMEM/SBUF for stage 5, register tier again at the unit, then
-            on the way out a write-back path that may stop at SMEM, may flush to HBM, or
-            may cross PCIe back to the host depending on where the result is consumed.
-            The cycles the silicon spends in each stage span four orders of magnitude.
+            <strong>Why the stages matter.</strong> On the device the challenge is distance. On a
+            Hopper-class H800, a microbenchmark measured about 479 cycles to load from HBM (High
+            Bandwidth Memory) and about 29 cycles from shared memory (SMEM)
+            <Cite s={S.luoHopperBench} kind="measured" />, a gap of about 16 times.
+            <Cite s={S.luoHopperBench} kind="derived" note={gapNote} /> Each device stage
+            either hides that distance or avoids it, and the host stages add a cost to every
+            launch. The last block names the lever for each.
           </Box>
         </SpaceBetween>
       </Container>
@@ -147,80 +246,88 @@ export function KernelExecutionLifecycle() {
         header={
           <Header
             variant="h2"
-            description="The seven stages — what happens in order"
+            description="What runs where between the Python call and the result, and why a GPU decides placement twice: once per grid, once per issue cycle"
           >
-            The kernel lifecycle, visualized
+            Seven stages, two schedulers
           </Header>
         }
       >
         <SpaceBetween size="m">
           <KernelLifecycleDiagram />
-          <Box variant="p">
-            Stage 1 — host issue — is the framework stack. PyTorch resolves the operator,
-            picks a kernel from cuBLAS / cuDNN / Triton (NVIDIA), torch-neuronx /
-            NEFF cache (Trainium), or oneDNN / AMX (Xeon). The operator may already be
-            fused (FlashAttention, fused MoE, fused activation+gemm) or may be a single
-            primitive. The choice happens in microseconds and does not yet touch device
-            memory.
+          <Box variant="small" color="text-body-secondary">
+            Scheduler levels
+            <Cite s={S.cudaProgrammingModel} />
+            <Cite s={S.cudaHardwareMultithreading} />
+            <Cite s={S.blackwellUltraBlog} />; SM count
+            <Cite s={S.hopperArchBlog} />; host links
+            <Cite s={S.hopperArchBlog} />
+            <Cite s={S.blackwellUltraBlog} />; TMA (Tensor Memory Accelerator) and async copy
+            <Cite s={S.cudaAsyncCopies} />; Tensor Core instructions
+            <Cite s={S.ptxIsa} />. Latencies come from a third-party microbenchmark on an H800
+            PCIe (Hopper with HBM2e).
+            <Cite s={S.luoHopperBench} kind="measured" /> Stage 2 as drawn is our model of the
+            driver path. Trainium and Xeon follow the same stages in the lanes below.
           </Box>
           <Box variant="p">
-            Stage 2 — driver submit — is where the host writes a launch descriptor into a
-            command queue and signals the device. On NVIDIA this is the CUDA driver
-            translating <code>cudaLaunchKernel</code> into a host-pinned command buffer
-            and ringing a doorbell across PCIe (or NVLink-C2C on Grace-Blackwell). On
-            Trainium the Neuron runtime places a NEFF dispatch descriptor onto a
-            NeuronCore queue. On Xeon AMX the &ldquo;launch&rdquo; is a function call —
-            the AMX instructions execute in the same thread as the rest of the program,
-            so there is no host/device boundary at this stage.
+            <strong>Stages 1 and 2: the host.</strong> The framework resolves the operator and
+            picks a kernel: cuBLAS, cuDNN or a Triton kernel on NVIDIA, a compiled NEFF (Neuron
+            Executable File Format) on Trainium, a oneDNN primitive on Xeon. The driver then
+            submits the launch. How the CUDA driver does this is our model, since no NVIDIA
+            document checked for this page describes it: it writes the launch into a queue the
+            GPU reads and signals the GPU across the host link. That link is PCIe Gen5 on H100
+            <Cite s={S.hopperArchBlog} />, PCIe Gen6 on Blackwell Ultra, or NVLink-C2C to a
+            Grace CPU.
+            <Cite s={S.blackwellUltraBlog} />
           </Box>
           <Box variant="p">
-            Stage 3 — device dispatch — is the device front-end accepting the launch.
-            The GPU&apos;s grid scheduler partitions the kernel grid across SMs; the
-            NeuronCore dispatcher matches the descriptor to the right NeuronCore. This
-            stage lives in on-device SRAM queues; latency is tens of nanoseconds, mostly
-            invisible at workload time scales.
+            <strong>Stages 3 and 4: two schedulers at two levels.</strong> A GPU decides where
+            work runs twice. First, the GigaThread engine, NVIDIA&apos;s GPU-wide work scheduler
+            <Cite s={S.blackwellUltraBlog} />, spreads the grid&apos;s thread blocks across the
+            SMs in no guaranteed order, and every thread of a block runs on the same SM.
+            <Cite s={S.cudaProgrammingModel} /> Second, each SM splits its blocks into warps of
+            32 threads, and at each instruction issue cycle a warp scheduler picks a warp whose
+            threads are ready and issues its next instruction. Switching warps costs nothing, so
+            the SM hides a warp waiting on memory by issuing from another.
+            <Cite s={S.cudaHardwareMultithreading} />
           </Box>
           <Box variant="p">
-            Stage 4 — SM / core scheduling — is the warp or wave allocator. On Hopper an
-            SM holds up to 64 concurrent warps with 32 threads each
-            {' ('}
-            <Link external href="https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html">
-              Hopper Tuning Guide
-            </Link>
-            , accessed 2026-04-24); the scheduler picks warps that are ready (operands
-            staged, no outstanding stalls) and issues them to the functional units. On
-            Trainium there is no warp scheduler — the NEFF descriptor already encodes
-            the schedule, and the runtime simply walks it. This is the architecture
-            choice that makes Trainium deterministic at runtime.
+            <strong>Getting both levels right.</strong> The first scheduler spreads whatever the
+            launch hands it: the grid and block sizes. The second can only choose among warps
+            resident on the SM, and residency is capped: up to 32 blocks and 64 warps per SM on
+            Hopper and B200
+            <Cite s={S.hopperTuningGuide} />
+            <Cite s={S.blackwellTuningGuide} />, fewer when each block uses more registers or
+            shared memory, and a kernel whose single block exceeds the SM&apos;s resources fails
+            to launch.
+            <Cite s={S.cudaHardwareMultithreading} /> When a kernel stalls on memory, check
+            resident warps per SM first (occupancy, worked through in <em>NVIDIA Hopper</em>).
           </Box>
           <Box variant="p">
-            Stage 5 — operand staging — is where the memory hierarchy earns its place.
-            The functional unit reads operands from the register file at one cycle of
-            latency; the register file in turn was filled from SMEM / TMEM / SBUF with
-            10s of nanoseconds of latency; SMEM was filled from L2 with 100s of
-            nanoseconds; L2 was filled from HBM with 100s of nanoseconds more. Async copy
-            (Hopper), TMA (Hopper), tcgen05 (Blackwell), and SBUF DMA (Trainium) are the
-            primitives that hide these tiers in software pipelines. When they fail to
-            hide a tier — when the operand is not ready when the warp is — the warp
-            stalls. The cost of that stall is what Section 2 called &ldquo;not portable
-            between architecture classes.&rdquo;
+            <strong>Stage 5: operand staging.</strong> The Tensor Core reads its operands from
+            SMEM, registers or, on Blackwell, Tensor Memory (TMEM), so a tile in HBM is about 479
+            cycles from use. Async copy (compute capability 8.0 and later) and the TMA bulk
+            tensor copy (9.0, Hopper, and later) let the issuing thread keep computing while the
+            hardware moves the data.
+            <Cite s={S.cudaAsyncCopies} /> Pipelined kernels copy the next tile while they
+            multiply the current one, so the trip overlaps with math.
           </Box>
           <Box variant="p">
-            Stage 6 — functional unit fires — is the actual matmul. On Hopper this is
-            wgmma operating on a tile staged through SMEM. On Blackwell it is
-            tcgen05.mma operating on a tile resident in TMEM. On Trainium it is the
-            systolic array consuming SBUF-resident operands and writing partial sums
-            into PSUM. On Xeon 6 it is TDPBF16PS or TDPFP16PS executing on AMX tile
-            registers loaded from L1. This is the only stage that produces FLOPs; every
-            other stage is overhead.
+            <strong>Stage 6: the Tensor Core fires.</strong> This is the only stage that does the
+            math. On Hopper, <code>wgmma</code> reads operand B from SMEM and A from SMEM or
+            registers, and keeps the accumulator in registers. On Blackwell,{' '}
+            <code>tcgen05.mma</code> reads B from SMEM and A from SMEM or TMEM, and accumulates
+            into TMEM
+            <Cite s={S.ptxIsa} />, 256 KB per SM.
+            <Cite s={S.blackwellUltraBlog} />
           </Box>
           <Box variant="p">
-            Stage 7 — retire and return — is the write-back path. Results land in the
-            register tier, may write back to SMEM if a downstream kernel will consume
-            them on the same SM, may flush to HBM if a different SM or device will read
-            them, and may cross PCIe back to the host if the result is consumed by the
-            framework. Each &ldquo;may&rdquo; is a tier-six or tier-seven traversal —
-            another 100s of nanoseconds, often more than the matmul itself.
+            <strong>Stage 7: write back.</strong> The result leaves from where it accumulated: to
+            SMEM if the same block uses it next, to HBM if another kernel will read it, across
+            the host link if the CPU needs it. Shared memory is allocated per thread block, so a
+            value handed from one kernel to the next goes through global memory, the HBM every
+            SM can reach.
+            <Cite s={S.cudaProgrammingModel} /> That round trip at every kernel boundary is what
+            fusion removes.
           </Box>
         </SpaceBetween>
       </Container>
@@ -229,7 +336,7 @@ export function KernelExecutionLifecycle() {
         header={
           <Header
             variant="h2"
-            description="Cycles and nanoseconds per memory tier — the dynamic counterpart to the static hierarchy in Section 4"
+            description="How far each memory level sits from the Tensor Core in measured cycles: the distance every staging and fusion decision works against"
           >
             Where the cycles go
           </Header>
@@ -239,25 +346,25 @@ export function KernelExecutionLifecycle() {
           <Table
             items={latencyRows}
             columnDefinitions={[
-              { id: 'tier', header: 'Memory tier', cell: (r) => r.tier, minWidth: 180 },
-              { id: 'cycles', header: 'Approx cycles', cell: (r) => r.cycles },
-              { id: 'ns', header: 'Approx nanoseconds', cell: (r) => r.ns },
-              { id: 'who', header: 'Who reads from it', cell: (r) => r.who },
-              { id: 'notes', header: 'Notes', cell: (r) => r.notes },
+              { id: 'level', header: 'Level', cell: (r) => r.level, minWidth: 120 },
+              { id: 'size', header: 'Size', cell: (r) => r.size, minWidth: 190 },
+              {
+                id: 'latency',
+                header: 'Load latency, H800 PCIe',
+                cell: (r) => r.latency,
+                minWidth: 150,
+              },
+              { id: 'fill', header: 'How data gets there', cell: (r) => r.fill, minWidth: 190 },
             ]}
             variant="embedded"
             wrapLines
           />
-          <Alert type="info">
-            Cycle and nanosecond figures above are typical industry ranges for modern
-            accelerator and host-CPU silicon. They are intended as orientation, not
-            vendor-specific receipts. Verified Tier 1 sourcing for the architectural
-            facts (Hopper L2 = 50 MB, Hopper SMEM = 228 KB, H200 HBM = 4.8 TB/s, AMX
-            tile registers = 16×64 bytes) lives in Section 4 (Memory Hierarchy Primer)
-            and Section 6 (HBM and the Bandwidth Wall). Specific cycle counts per
-            architecture remain UNKNOWN here pending the per-vendor sections, where
-            tuning-guide citations land directly.
-          </Alert>
+          <Box variant="small" color="text-body-secondary">
+            Latencies are microbenchmark measurements by Luo et al. on an H800 PCIe, not vendor
+            specifications. NVIDIA&apos;s Hopper and Blackwell tuning guides give no per-level
+            latency, and no figure for registers or TMEM was located for this page.
+            <Cite s={S.luoHopperBench} kind="measured" />
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -265,63 +372,45 @@ export function KernelExecutionLifecycle() {
         header={
           <Header
             variant="h2"
-            description="The same seven stages, three different silicon classes"
+            description="Who fixes the instruction order: the GPU's hardware at run time, the Neuron compiler before the run, or the calling CPU thread"
           >
-            Three lanes — NVIDIA SIMT, AWS Trainium AOT, Xeon AMX
+            One lifecycle, three kinds of silicon
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Table
-            items={siliconLanes}
+            items={lanes}
             columnDefinitions={[
-              { id: 'sil', header: 'Silicon class', cell: (r) => r.silicon, minWidth: 220 },
-              { id: 'host', header: 'Stages 1-2 (host)', cell: (r) => r.hostStage },
-              { id: 'disp', header: 'Stages 3-4 (dispatch)', cell: (r) => r.dispatchStage },
-              { id: 'unit', header: 'Stages 5-6 (operand + unit)', cell: (r) => r.unitStage },
+              { id: 'sil', header: 'Silicon', cell: (r) => r.silicon, minWidth: 140 },
+              { id: 'host', header: 'Stages 1-2 (host)', cell: (r) => r.host, minWidth: 200 },
               {
-                id: 'src',
-                header: 'Source',
-                cell: (r) => (
-                  <Link external href={r.url}>
-                    {r.citationLabel}
-                  </Link>
-                ),
+                id: 'disp',
+                header: 'Stages 3-4 (dispatch)',
+                cell: (r) => r.dispatch,
+                minWidth: 220,
+              },
+              {
+                id: 'unit',
+                header: 'Stages 5-6 (operands and math)',
+                cell: (r) => r.unit,
+                minWidth: 240,
               },
             ]}
             variant="embedded"
             wrapLines
           />
-          <Box variant="small">All vendor-cited rows accessed 2026-04-24.</Box>
-          <ColumnLayout columns={3} variant="text-grid">
-            <div>
-              <Box variant="h3">SIMT (NVIDIA)</Box>
-              <Box variant="p">
-                Lots of dynamic scheduling. Warps are picked at runtime, operand
-                staging is software-managed (CUTLASS, Triton, Inductor) but eviction
-                is hardware-cached. The cost of a missed schedule is a pipeline bubble
-                visible only to the profiler.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">AOT (AWS Trainium)</Box>
-              <Box variant="p">
-                No runtime scheduling. The Neuron compiler emits the entire schedule
-                into the NEFF; the runtime walks it deterministically. The cost of a
-                missed schedule is a slip visible at compile time, not at runtime.
-                This is the property that makes Trainium reproducible per-call.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">In-process (Xeon AMX)</Box>
-              <Box variant="p">
-                No host/device boundary. The launch is an instruction, not a kernel.
-                AMX tile registers live in the same architectural state as the rest of
-                the thread, so the lifecycle is shorter — but front-end mispredict and
-                cache miss costs replace the GPU&apos;s warp stall as the dominant loss.
-              </Box>
-            </div>
-          </ColumnLayout>
+          <Box variant="p">
+            <strong>Where the order is decided.</strong> A GPU decides at run time, in hardware,
+            at both scheduler levels, with no guarantee about which SM runs which block.
+            <Cite s={S.cudaProgrammingModel} /> Trainium fixes the instruction order at compile
+            time in the NEFF
+            <Cite s={S.nkiOverview} />, and still runs control flow and dynamic shapes.
+            <Cite s={S.trn2Arch} /> A Xeon runs AMX
+            inside the calling thread, so there is no device queue and no host link to cross.{' '}
+            <em>Determinism: NEFF and GPU Reproducibility</em> covers what each model means for
+            reproducible output.
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -329,75 +418,51 @@ export function KernelExecutionLifecycle() {
         header={
           <Header
             variant="h2"
-            description="What changes when the kernel is fused vs unfused"
+            description="Fusion removes the HBM round trip between kernels, CUDA Graphs and PDL remove the launch gap, and a profile tells you which one to reach for"
           >
-            Fused kernels collapse stages
+            Shortening the lifecycle
           </Header>
         }
       >
-        <ExpandableSection
-          headerText="Why FlashAttention is faster than the naïve attention chain"
-          defaultExpanded
-        >
-          <SpaceBetween size="s">
-            <Box variant="p">
-              The naïve attention pipeline is three operators: a Q × K matmul, a
-              softmax, and a softmax × V matmul. Three operators means three kernel
-              invocations, three lifecycles, and — most importantly — three
-              round-trips to HBM. The intermediate (the attention scores tensor)
-              has to land in HBM after operator 1 and be re-read at operator 2,
-              because the softmax kernel cannot assume the previous kernel&apos;s
-              SMEM is still resident.
-            </Box>
-            <Box variant="p">
-              FlashAttention fuses the three operators into a single kernel. The
-              tile resident in SMEM (or TMEM on Blackwell) survives across the
-              matmul, softmax, and second matmul. Stages 5 and 6 of the lifecycle
-              run in a tight loop with no detour through HBM. Section 4&apos;s
-              point about &ldquo;round trips to HBM&rdquo; being the cost of
-              missing the scratchpad tier shows up here as the concrete payoff
-              for kernel fusion. Section 22 covers FlashAttention-class techniques
-              in detail; the lifecycle here is what fusion is actually changing.
-            </Box>
-          </SpaceBetween>
-        </ExpandableSection>
-        <ExpandableSection headerText="Why operator fusion is a compiler problem, not a hardware problem">
+        <SpaceBetween size="m">
           <Box variant="p">
-            The hardware does not know that two operators belong together. The
-            compiler — torch.compile / Inductor on the NVIDIA side, the Neuron
-            compiler on the AWS side, oneDNN on the Xeon side — has to decide that
-            two adjacent operators in the IR can be lowered into a single kernel
-            with shared SMEM/SBUF residency. This is why Sections 14 (NVIDIA
-            Compilers and Kernel Tooling) and 16 (AWS Compilers and Kernel Tooling)
-            are first-class entries in this deep dive: they own the lever that
-            controls how many lifecycles a model has to walk per token.
+            <strong>Fusion removes the round trip.</strong> Unfused attention is three kernels: Q
+            times K transposed, a softmax, then a multiply by V. The score matrix between them is
+            written to HBM and read back twice, because shared memory belongs to one thread
+            block.
+            <Cite s={S.cudaProgrammingModel} /> FlashAttention fuses the three into one kernel,
+            so each tile stays in SMEM through stages 5 and 6 and only the output is written
+            back. <em>KV Cache and FlashAttention</em> covers the technique.
           </Box>
-        </ExpandableSection>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="What this section sets up for the rest of the deep dive"
-          >
-            Connecting threads
-          </Header>
-        }
-      >
-        <Box variant="p">
-          The lifecycle is the through-line for the next twenty sections. The HBM
-          tier (Section 6) is where stage 5 stalls when SMEM does not catch the load
-          in time. Chiplet topology (Section 8) determines how many extra
-          nanoseconds stage 5 has to absorb when the working set crosses a
-          chiplet boundary. NVIDIA Hopper / Blackwell (Sections 12-13) and AWS
-          Trainium (Section 17) implement stages 4-6 differently and the
-          differences directly affect the cycle counts in this section&apos;s
-          table. Communication and scale-out (Section 27) is what stage 7 looks
-          like when the result has to leave the device. Every per-vendor number
-          you see later in the deep dive is, ultimately, an answer to &ldquo;how
-          many cycles does this stage cost on this silicon for this workload.&rdquo;
-        </Box>
+          <Box variant="p">
+            <strong>The compiler decides what fuses.</strong> The hardware cannot tell that two
+            operators belong together. The graph compiler decides which adjacent operators
+            become one kernel: torch.compile with Inductor on NVIDIA, and on Trainium the XLA
+            front end of neuronx-cc, which performs operator fusion.
+            <Cite s={S.nkiOverview} /> <em>NVIDIA Compilers and Kernel Tooling</em> and{' '}
+            <em>AWS Compilers and Kernel Tooling</em> cover the compilers that set how many
+            kernels a token costs.
+          </Box>
+          <Box variant="p">
+            <strong>Graphs and PDL remove the launch gap.</strong> Kernels that cannot be fused
+            still pay stages 1 to 3 each time. A CUDA Graph is defined once and launched
+            repeatedly; much of the setup is paid once, at instantiation, so each launch costs
+            the CPU less than it would through a stream.
+            <Cite s={S.cudaGraphs} /> PDL (Programmatic Dependent Launch), available from compute
+            capability 9.0, lets a kernel launch before the kernel it depends on in the same
+            stream has finished, hiding its launch latency behind the first kernel&apos;s
+            execution.
+            <Cite s={S.cudaPdl} />
+          </Box>
+          <Box variant="p">
+            <strong>Which lever to pull.</strong> If a profile shows the GPU idle between short
+            kernels, the cost sits in stages 1 to 3: capture the sequence in a CUDA Graph, or
+            use PDL for dependent pairs. If it shows an intermediate written to HBM by one kernel
+            and read back by the next, the cost sits in stage 7 and the next stage 5: fuse them.
+            If a single kernel stalls inside the SM, check resident warps per SM before
+            rewriting its staging.
+          </Box>
+        </SpaceBetween>
       </Container>
     </SpaceBetween>
   );
