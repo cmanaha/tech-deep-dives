@@ -189,9 +189,17 @@ try {
           await el.screenshot({ path: `${out}/${id}-${width}-svg${i}.png` });
         }
       }
+      // React Flow diagrams draw node labels as HTML, which the SVG probe
+      // cannot measure, so they get a screenshot each for a visual read.
+      const flows = page.locator('main .react-flow');
+      const nf = await flows.count();
+      for (let i = 0; i < nf; i += 1) {
+        await flows.nth(i).scrollIntoViewIfNeeded();
+        await flows.nth(i).screenshot({ path: `${out}/${id}-${width}-flow${i}.png` });
+      }
       const res = await probe(page);
       const status = res.findings.length || res.overflow ? 'FINDINGS' : 'ok';
-      console.log(`${id} @${width}: ${res.count} diagram(s), ${status}${res.overflow ? ', page overflows horizontally' : ''}`);
+      console.log(`${id} @${width}: ${res.count} SVG diagram(s), ${nf} React Flow, ${status}${res.overflow ? ', page overflows horizontally' : ''}`);
       for (const f of res.findings) {
         console.log(`  [${f.kind}] svg${f.index} "${f.title}": "${f.a}"${f.b ? ` x "${f.b}"` : ''}`);
       }

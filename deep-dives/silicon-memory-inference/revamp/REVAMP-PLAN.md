@@ -282,3 +282,7 @@ earlier one.
 - Hopper: P5 = H100; P5e and P5en = H200; p5.4xlarge exists.
 - Blackwell: B200 is compute capability 10.0, B300 10.3, Rubin 10.7;
   `compute_100f` builds run on all three.
+- Thesis and Framing: anchor is H200 FP8 1,979 TFLOPS dense, ridge about 412
+  FLOP/byte [derived]; sparse only as a labelled aside. Branch mispredict
+  penalty uses LLVM's 10 to 14 cycles. Groq 3 LPX keeps DRAM behind its SRAM
+  (never "SRAM-only") and is in full production since August 2026.

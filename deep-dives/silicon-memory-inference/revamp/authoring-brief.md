@@ -175,7 +175,9 @@ For each SVG component you own:
 - No em-dashes or curly quotes in SVG text either.
 
 React Flow diagrams (`@xyflow/react`) may stay React Flow; fix their labels and
-numbers. Do not add new dependencies.
+numbers. Do not add new dependencies. The probe below cannot measure React
+Flow's HTML labels; it writes `<section>-<width>-flow<N>.png` for each React
+Flow diagram, and you must read those images.
 
 Verify on the rendered output, never on arithmetic. From the dive root:
 
