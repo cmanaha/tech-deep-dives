@@ -154,7 +154,10 @@ but Y", cadence triads).
 - Expand every acronym at its first occurrence in your section, unless it is a
   common computing acronym (CPU, GPU, RAM, API, HTTP).
 - Hold length flat or bring it down, except where the register requires NEW
-  content.
+  content. Count visible words before and after (strip tags and code) and put
+  both numbers in the change report. Growth above about 20% needs a reason per
+  added block; prefer demoting detail into an `ExpandableSection` or cutting a
+  CUT candidate over adding prose.
 
 ### 5. Diagrams
 
