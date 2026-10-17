@@ -294,3 +294,10 @@ Release attribution is from `/tmp/vllm-release-notes/v0.23.0.md` to `v0.31.0.md`
 | InsideCodebase.tsx | KEEP (pin bump) | Header pin to v0.31.0 / accessed 2026-10-16 after registers 01-03 land (I1); optional "14." on the h1 (I4) | 1 of 4 |
 
 Unresolved UNKNOWNs: S5 (n-gram "strong for repetitive output": no source located in v0.31.0 docs), L1 (adapter size range: no source), O28 (priority ordering only under `--scheduling-policy priority`: docstring only, not executed). Untraced scope: L16 (DP fan-out of runtime LoRA load), S20 (TLI on MRv2, register 03 B29). Docs-vs-code or notes-vs-docs conflicts to state, not smooth: D-17 (executor default), S2 (old docs enum), X10 (disagg docs still show `kv_both`), X17 (v0.27 notes vs v0.31 matrix on hybrid block sizes), S18 / register 03 B27 (adaptive verification scope).
+
+## Errata found during authoring (2026-10-17)
+
+- DistributedInference all2all row: `naive` and `pplx` are not accepted `--all2all-backend` values
+  at v0.31.0; the config removes them (`vllm/config/parallel.py` L507-L513).
+- D-21 (fault tolerance): `--enable-fault-tolerance` also requires external data-parallel load
+  balancing mode (`vllm/engine/arg_utils.py` L2344-L2349).
