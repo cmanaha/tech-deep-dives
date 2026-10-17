@@ -46,9 +46,9 @@ export function InsideCodebase() {
         header={
           <Header
             variant="h1"
-            description="How vLLM is actually built: module map, process model, and the call paths through the real source (pinned to commit 15652a6b, accessed 2026-06-07)"
+            description="How vLLM is actually built: module map, process model, and the call paths through the real source (pinned to vLLM v0.31.0, commit db9527a4, accessed 2026-10-16)"
           >
-            Inside the Codebase
+            14. Inside the Codebase
           </Header>
         }
       >
