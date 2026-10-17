@@ -5,7 +5,10 @@
 // Usage (after `pnpm build`; the script serves dist/ itself with Vite's
 // preview server unless --url points at one already running):
 //   node scripts/shoot.mjs --sections hbm,hbf --widths 1440,390 \
-//     --out /tmp/silicon-shots
+//     --out /tmp/silicon-shots [--dist /tmp/my-dist]
+//
+// --dist serves a build from another directory, so parallel authors can each
+// run `pnpm exec vite build --outDir /tmp/my-dist` without clobbering dist/.
 //
 // Writes <out>/<section>-<width>.png (full page) and
 // <out>/<section>-<width>-svg<N>.png (one per diagram), then prints any text
@@ -35,7 +38,11 @@ let server = null;
 if (!url) {
   const viteRequire = createRequire(path.resolve(here, '../package.json'));
   const { preview } = await import(viteRequire.resolve('vite'));
-  server = await preview({ root: path.resolve(here, '..'), preview: { port: 4317, strictPort: false } });
+  server = await preview({
+    root: path.resolve(here, '..'),
+    build: args.dist ? { outDir: path.resolve(args.dist) } : undefined,
+    preview: { port: 4317, strictPort: false },
+  });
   url = server.resolvedUrls.local[0];
 }
 const sections = (args.sections ?? '').split(',').filter(Boolean);
