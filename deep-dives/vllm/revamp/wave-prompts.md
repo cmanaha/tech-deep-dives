@@ -220,7 +220,8 @@ is deprecated for NIXL: `kv_producer` / `kv_consumer` (X10; the disagg docs stil
 kind="doc-code-conflict"); layout names LBHNC / LBNHC (X13); move the reasoning hazard to
 bidirectional transfer (X14, X18); compatibility matrix (X17; the v0.27 notes and the v0.31
 matrix disagree on hybrid block sizes: state it); E/P/D pointer (X19); transport label scope
-(X8, X11). The fabric belongs to the EFA dive: link `../efa/`. Harness: slug `disagg`, port 4844,
+(X8, X11). The fabric belongs to the EFA dive: link `../efa/`. Section 7 is titled "7. KV-Cache
+Offloading & Tiers": update the cross-reference near line 314. Harness: slug `disagg`, port 4844,
 `--sections disagg`.
 
 ### DistributedInference (slug distinf, port 4845)
