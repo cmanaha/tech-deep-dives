@@ -207,3 +207,9 @@ Command: `grep -n "http\|15652a6b\|accessed\|/blob/\|/tree/\|docs.vllm" Codebase
 3. Compilation: fix the decorator count (B41), add clone elimination to the diagram (B44), state the `FULL_AND_PIECEWISE` default, the capture-size rule with the Blackwell ceiling, the optimization levels and breakable CUDA graphs (B46-B49); update the IR op set (B52) and the TODO badge (B53).
 4. Replace the pin note (B54).
 5. Do not ship B16 (`mlp_speculator`) or B29 (TLI on MRv2) as fact without a run.
+
+## Errata found during authoring (2026-10-17)
+
+- B27 (adaptive verification scope): the docs and the `SpeculativeConfig` validation message say
+  DSpark only, while the MRv2 code builds adaptive verification into every draft-model speculator.
+  The Advanced tab states this as a docs-vs-code conflict. B16 and B29 ship as untested, not as fact.
