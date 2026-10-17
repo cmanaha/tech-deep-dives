@@ -7,6 +7,7 @@
 // page itself is the source of truth for what is cited. This script reads it
 // back out: tier, URL, visible title and accessed date, grouped by tier and
 // deduplicated by URL (line fragments on code links collapse to the file).
+// The curated Sources appendix array is merged in as well.
 // Same tree in, same file out.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -130,10 +131,34 @@ for (const file of walk(SRC)) {
   }
 }
 
+// The in-app Sources appendix (GlossaryAndSources.tsx) is a curated bibliography kept as a
+// `Source[]` array. Its entries join the table so sources.md lists everything the app cites.
+{
+  const file = path.join(SRC, 'sections/GlossaryAndSources.tsx');
+  const text = fs.readFileSync(file, 'utf8');
+  const unq = (v) => v.replace(/\\'/g, "'");
+  const re = /\{ id: \d+, title: '((?:[^'\\]|\\.)*)', url: '([^']+)', tier: (\d), type: '[^']+', accessDate: '([^']+)' \}/g;
+  let m;
+  let n = 0;
+  while ((m = re.exec(text))) {
+    n += 1;
+    const tier = Number(m[3]);
+    const url = m[2];
+    const key = `${tier} ${url}`;
+    const e = entries.get(key) ?? { url, tier, titles: new Set(), accessed: new Set(), files: new Set() };
+    e.titles.add(unq(m[1]));
+    e.accessed.add(m[4]);
+    e.files.add('Sources appendix');
+    entries.set(key, e);
+  }
+  if (n === 0) unresolved.push('sections/GlossaryAndSources.tsx: no Source[] entries matched');
+}
+
 const tierHead = {
   1: 'Tier 1: source code at a pinned ref, official documentation, API reference, release notes',
   2: 'Tier 2: vendor and project blogs, talks, product pages (vendor figures are vendor claims)',
   3: 'Tier 3: third-party analysis, papers, press',
+  4: 'Tier 4: tutorials and unverified posts (orientation only, never cited as fact)',
 };
 
 const lines = [
@@ -146,7 +171,7 @@ const lines = [
   'the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & Sources Standard".',
   '',
 ];
-for (const tier of [1, 2, 3]) {
+for (const tier of [1, 2, 3, 4]) {
   const rows = [...entries.values()].filter((e) => e.tier === tier).sort((a, b) => a.url.localeCompare(b.url));
   if (rows.length === 0) continue;
   lines.push(`## ${tierHead[tier]}`, '', `${rows.length} sources.`, '');
