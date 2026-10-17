@@ -283,3 +283,9 @@ P2 has no finding on these files (`grep -cE Codebase docs/verification/2026-08-0
   them before the Rust argument check (`vllm/v1/utils.py#L384-L392` at v0.31.0), so they are not
   blockers for the default launch path.
 - The Rust gRPC Control service defines 20 RPCs, not 21 (`rust/proto/control.proto` at v0.31.0).
+- C38: the cited line is `L2189`, not the line given in the row. C50: the line is `L197`.
+- C44: the count of 25 dotted / JSON-capable flags includes flags that do not accept JSON; the Config
+  tab ships no count.
+- Two further docs-vs-code conflicts found in the Config tab: `--help` calls optimization level O3
+  the best level although O3 behaves exactly like O2 in code (C20), and `--performance-mode` help
+  text promises kernel choices that no code path located at v0.31.0 acts on.
