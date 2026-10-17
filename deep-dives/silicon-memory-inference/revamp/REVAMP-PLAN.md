@@ -200,8 +200,37 @@ Diagrams: stack cross-section; sweeps-per-second log bars; package comparison
 (eight HBM, eight HBF, six HBF plus two HBM); optional placement map (reads per
 write against share read per step).
 
-### Flash as a Cache Tier for Inference (nav id `flash-cache-tier`)
-Outline: to be written from `research/2026-10-refresh/flash-cache-tier.md`.
+### Flash as a Cache Tier for Inference (nav id `flash-cache-tier`, file `FlashCacheTier.tsx`)
+
+Register: `research/2026-10-refresh/flash-cache-tier.md` (160 rows, 59
+sources). Mental model: reading a prefix's KV from a tier beats recomputing it
+once the tier delivers more than GPU FLOPS x KV bytes per token / prefill FLOPs
+per token. For a dense 70B on an 8x H100 node that is about 17 GB/s per node
+(about 2 GB/s per GPU) [derived], so the NVMe already in every P5 and P6 is
+fast enough; what flash adds is memory time (about an hour of a busy node's
+prefixes against about 100 seconds in HBM, [derived]).
+
+h2 outline (payoff in each description):
+1. When reading KV beats recomputing it: one ratio and one number decide
+   whether any tier is fast enough before you buy it.
+2. How long each tier remembers: match the tier to the gap between a user's
+   turns or an agent's tool calls.
+3. The flash you already pay for on P5 and P6: 8 x 3,800 GB instance store,
+   4.4M random-read IOPS, and the setting that turns it into a KV tier; EBS
+   (12,500 MB/s cap) sits below the break-even.
+4. Sharing context across nodes: FSx for Lustre with EFA and GDS (1,200 Gb/s
+   per client, not Trn2), storage vendors' context-memory products (every TTFT
+   multiplier a vendor claim), HyperPod's managed tiered KV cache.
+5. Who moves the bytes: GDS or a host bounce, small-block drives and
+   GPU-initiated I/O, block layout against I/O size.
+6. Flash on the package: the contrast with High Bandwidth Flash.
+7. Close on the order of operations (host DRAM tier, local flash with an
+   admission filter, shared flash) and what to monitor.
+
+Diagrams: break-even chart (bandwidth needed against prefix length for four
+model and GPU pairs, with tier bands); tier ladder (bandwidth and capacity per
+GPU); memory clock (how long each tier holds a busy node's prefixes, with
+reuse events); block-to-I/O-size diagram.
 
 ## Authoring waves
 
