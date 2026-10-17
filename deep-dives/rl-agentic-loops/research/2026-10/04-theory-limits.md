@@ -47,7 +47,7 @@ Papers (arXiv ID with version, venue):
 - 2209.15189v1 Learning by Distilling Context (preprint)
 - 2509.04259v1 RL's Razor (preprint)
 - 2501.17161v2 SFT Memorizes, RL Generalizes (ICML 2025)
-- 2504.13837v5 Does RL Really Incentivize Reasoning Capacity Beyond the Base Model? (preprint per arXiv record; venue not confirmed here)
+- 2504.13837v5 Does RL Really Incentivize Reasoning Capacity Beyond the Base Model? (NeurIPS 2025 Oral, per the arXiv journal reference, checked 2026-10-17)
 - 2505.24864v1 ProRL (preprint)
 - 2404.10859v2 Forcing Diffuse Distributions out of Language Models (COLM 2024)
 - 2303.08774v6 GPT-4 Technical Report (first-party lab report)
@@ -407,7 +407,7 @@ Docs and posts:
 - Claim: One study finds RL with verifiable rewards (RLVR) beats the base model at pass@1 but the base model wins at large k, so abilities are bounded by the base; distillation from a stronger teacher does add new patterns. A second study finds prolonged RL with KL control and reference resets reaches problems the base model fails at any k.
 - Location: arXiv 2504.13837v5, abstract; arXiv 2505.24864v1, abstract.
 - Verdict: NEW (contested; see section 6).
-- Evidence: https://arxiv.org/abs/2504.13837v5 | Tier 3 (preprint per arXiv record) | benchmark claim | "While RLVR-trained models outperform their base models at small k (e.g., k = 1), the base models achieve a higher pass@k score when k is large." "distillation can introduce new reasoning patterns from the teacher and genuinely expand the model's reasoning capabilities." Counter: https://arxiv.org/abs/2505.24864v1 | Tier 3 (preprint) | benchmark claim | "RL-trained models consistently outperform base models across a wide range of pass@k evaluations, including scenarios where base models fail entirely regardless of the number of attempts."
+- Evidence: https://arxiv.org/abs/2504.13837v5 | Tier 3 (peer-reviewed: the arXiv record's journal reference reads "NeurIPS 2025 Oral", checked 2026-10-17) | benchmark claim | "While RLVR-trained models outperform their base models at small k (e.g., k = 1), the base models achieve a higher pass@k score when k is large." "distillation can introduce new reasoning patterns from the teacher and genuinely expand the model's reasoning capabilities." Counter: https://arxiv.org/abs/2505.24864v1 | Tier 3 (preprint) | benchmark claim | "RL-trained models consistently outperform base models across a wide range of pass@k evaluations, including scenarios where base models fail entirely regardless of the number of attempts."
 - Use in dive: If RLVR mostly sharpens, then best-of-k plus a verifier in a text loop recovers much of the effect at higher inference cost. That is the bridge to the dive's "which parts can a loop reproduce" question. Present both sides.
 
 **F04-50. Diffuse or calibrated sampling distributions are set in weights; prompts do not fix them.**
@@ -700,7 +700,7 @@ Each row: the improvement type, where the best evidence says it lives, and the r
 - **U-8.** Reflexion with larger memory bounds (Ω above 3). No ablation located in the paper.
 - **U-9.** Huntley's "approximately 170k of context window" and the embedded preview from his linked post ("the quality of output clips at the 147k-152k mark") are practitioner observations without a method; no measurement located.
 - **U-10.** What changed in ghuntley.com/ralph between publication (2025-07-14) and the 2026-02-19 modification. A Wayback snapshot from 2026-01-01 exists; a diff was not made.
-- **U-11.** Venues for 2312.05934 (Ovadia et al.), 2310.08540 (Shen et al.) and 2504.13837 (Yue et al.). The arXiv copies read here do not state one; listed as preprints.
+- **U-11.** Venues for 2312.05934 (Ovadia et al.) and 2310.08540 (Shen et al.). The arXiv copies read here do not state one; listed as preprints. Yue et al. (2504.13837v5) is closed: its arXiv journal reference reads "NeurIPS 2025 Oral" (checked 2026-10-17), and F04-49 now grades it peer-reviewed.
 
 ---
 
@@ -756,6 +756,7 @@ Peer-reviewed:
 - von Oswald et al., Transformers learn in-context by gradient descent, ICML 2023. https://arxiv.org/abs/2212.07677v2 (accessed 2026-10-16)
 - Dai et al., Why Can GPT Learn In-Context?, ACL 2023 Findings. https://arxiv.org/abs/2212.10559v3 (accessed 2026-10-16)
 - Lampinen et al., Generalization from ICL and finetuning, NeurIPS 2025 FoRLM workshop. https://arxiv.org/abs/2505.00661v3 (accessed 2026-10-16)
+- Yue et al., Does RL Really Incentivize Reasoning Capacity Beyond the Base Model?. https://arxiv.org/abs/2504.13837v5 NeurIPS 2025 Oral per the arXiv journal reference (accessed 2026-10-16; venue checked 2026-10-17)
 
 Preprints:
 - Schmied et al., LLMs are Greedy Agents. https://arxiv.org/abs/2504.16078v1 (accessed 2026-10-16)
@@ -768,7 +769,6 @@ Preprints:
 - Ovadia et al., Fine-Tuning or Retrieval?. https://arxiv.org/abs/2312.05934v3 (accessed 2026-10-16)
 - Snell et al., Learning by Distilling Context. https://arxiv.org/abs/2209.15189v1 (accessed 2026-10-16)
 - Shenfeld et al., RL's Razor. https://arxiv.org/abs/2509.04259v1 (accessed 2026-10-16)
-- Yue et al., Does RL Really Incentivize Reasoning Capacity Beyond the Base Model?. https://arxiv.org/abs/2504.13837v5 (accessed 2026-10-16)
 - Liu et al., ProRL. https://arxiv.org/abs/2505.24864v1 (accessed 2026-10-16)
 - Zhang et al., Revisiting OPRO. https://arxiv.org/abs/2405.10276v2 (accessed 2026-10-16)
 - Shen et al., Do pretrained Transformers Learn In-Context by Gradient Descent?. https://arxiv.org/abs/2310.08540v5 (accessed 2026-10-16)

@@ -141,6 +141,7 @@ Code citations are pinned to a release tag or a 40-character commit SHA. Papers 
 - von Oswald et al., Transformers learn in-context by gradient descent, ICML 2023. https://arxiv.org/abs/2212.07677v2 (accessed 2026-10-16) (register 04)
 - Dai et al., Why Can GPT Learn In-Context?, ACL 2023 Findings. https://arxiv.org/abs/2212.10559v3 (accessed 2026-10-16) (register 04)
 - Lampinen et al., Generalization from ICL and finetuning, NeurIPS 2025 FoRLM workshop. https://arxiv.org/abs/2505.00661v3 (accessed 2026-10-16) (register 04)
+- Yue et al., Does RL Really Incentivize Reasoning Capacity Beyond the Base Model?. https://arxiv.org/abs/2504.13837v5 NeurIPS 2025 Oral per the arXiv journal reference (accessed 2026-10-16; venue checked 2026-10-17) (register 04)
 - Peer-reviewed: HybridFlow 2409.19256v2 (https://arxiv.org/abs/2409.19256v2) (EuroSys '25); AReaL 2505.24298v5 (https://arxiv.org/abs/2505.24298v5) (NeurIPS 2025); DeepSeek-R1 2501.12948v2 (https://arxiv.org/abs/2501.12948v2) with Nature Supplementary Information (Nature 645, 2025). Accessed 2026-10-17. (register 05)
 
 ## Tier 3: preprints, other papers and third-party technical reports
@@ -169,7 +170,6 @@ Code citations are pinned to a release tag or a 40-character commit SHA. Papers 
 - Ovadia et al., Fine-Tuning or Retrieval?. https://arxiv.org/abs/2312.05934v3 (accessed 2026-10-16) (register 04)
 - Snell et al., Learning by Distilling Context. https://arxiv.org/abs/2209.15189v1 (accessed 2026-10-16) (register 04)
 - Shenfeld et al., RL's Razor. https://arxiv.org/abs/2509.04259v1 (accessed 2026-10-16) (register 04)
-- Yue et al., Does RL Really Incentivize Reasoning Capacity Beyond the Base Model?. https://arxiv.org/abs/2504.13837v5 (accessed 2026-10-16) (register 04)
 - Liu et al., ProRL. https://arxiv.org/abs/2505.24864v1 (accessed 2026-10-16) (register 04)
 - Zhang et al., Revisiting OPRO. https://arxiv.org/abs/2405.10276v2 (accessed 2026-10-16) (register 04)
 - Shen et al., Do pretrained Transformers Learn In-Context by Gradient Descent?. https://arxiv.org/abs/2310.08540v5 (accessed 2026-10-16) (register 04)

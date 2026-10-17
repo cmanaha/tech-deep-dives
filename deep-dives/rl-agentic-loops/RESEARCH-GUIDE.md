@@ -36,7 +36,7 @@ Answered: what each method's state, update rule and feedback signal are; which s
 Purpose: make every load-bearing claim in `SCOPE.md` survive an attempt to refute it, and close the UNKNOWNs that a section depends on.
 
 Questions:
-1. Do the twelve numbers the scope leans on hardest hold against their sources at the pinned version? The list: GEPA 54.85 against GRPO 48.91 and the rollout budgets (F03-61, F03-62); Training-Free GRPO's $18 against $10,000 and $0.02 against $0.005 (F03-91); the 32B AIME comparison (F03-90); Advisor 38.98 against direct RL 42.38 (F03-108); Reflexion 0.52, 0.60, 0.68 (F04-21); 14.2% step-level blame accuracy (F04-26); RULER effective lengths (F04-32); R1-Zero 15.6% to 77.9% (F02-9); 68.5% to 96.0% unchanged parameters (F02-84); rank-1 LoRA and the bits-per-episode argument (F02-86); AReaL 14.8 hours against 33.6 (F05-10); Bedrock RFT's three models and Regions (F06-2).
+1. Do the numbers the scope leans on hardest hold against their sources at the pinned version? Review R2 (`reviews/2026-10/R2-factual-grounding.md`) checked 25 claims at the primary source on 2026-10-17 and every fetched number matched its register: GEPA against GRPO and the rollout budgets (F03-61, F03-62), Training-Free GRPO's costs with the model behind each (F03-90, F03-91), Advisor Models (F03-108), the Reflexion ablation (F04-21), R1-Zero and R1's cost (F02-9, F05-37), LoRA Without Regret (F02-86), RL's Razor (F02-87), AReaL, whose verl baseline hours are the authors' estimates (F05-10), Skywork-OR1's rollout scaling (F05-42), the prompt-format sensitivity figure (F04-52), the TRL and OpenRLHF correction defaults (F05-16, F05-22), and the Bedrock RFT model table and pricing (F06-2, F06-16). Still to check at the source: the 14.2% step-level blame accuracy (F04-26); RULER effective lengths (F04-32); 68.5% to 96.0% unchanged parameters (F02-84); and the numbers v2 added to section 8, power sampling's MATH500 scores and 8.84x token multiplier (F02-58), the trigger-prompt gains (F02-55) and the PRM best-of-1860 result (F02-64).
 2. Does RL-trained self-correction (SCoRe, arXiv 2409.12917) show RL adding an ability prompting lacks, and by how much on which model? (03 U4)
 3. Would a GRPO configuration tuned for 100 to 300 training examples close GEPA's gap? Is there any ablation of GRPO budget at small data? (03 U2)
 4. Which reflection model did GEPA's Qwen3 8B runs use: the same 8B model or a stronger one? Check the gepa repo's experiment configs at a pinned SHA. (03 U1)
@@ -55,7 +55,7 @@ Purpose: let the reader see RL and a word loop side by side on one task, and clo
 
 ### Wave 4. Pre-build design
 
-Purpose: turn the scope into a buildable plan. Questions: which diagrams carry which mental models (a diagram plan following `deep-dives/efa/revamp/diagram-plan.md`); which claims each section cites (a section architecture with citation lists, following `deep-dives/efa/revamp/section-architecture.md`); which interactive elements are worth their weight (the breakeven calculator in section 21 is the only one proposed). Output: `revamp/diagram-plan.md` and `revamp/section-architecture.md` inside this dive.
+Purpose: turn the scope into a buildable plan. Questions: which diagrams carry which mental models (a diagram plan following `deep-dives/efa/revamp/diagram-plan.md`); which claims each section cites (a section architecture with citation lists, following `deep-dives/efa/revamp/section-architecture.md`); which interactive elements are worth their weight (the breakeven calculator in section 20 is the only one proposed). Output: `revamp/diagram-plan.md` and `revamp/section-architecture.md` inside this dive.
 
 ---
 
@@ -64,29 +64,32 @@ Purpose: turn the scope into a buildable plan. Questions: which diagrams carry w
 Read in this order. Each stage builds the vocabulary the next one assumes. Sections named are the parts of each source that carry the idea; the rest can wait.
 
 **Stage 1. RL as a procedure you can read**
-1. **InstructGPT**, Ouyang et al., arXiv 2203.02155v1 (NeurIPS 2022), sections 3.1 and 3.5 and appendix C. The whole RLHF pipeline in one place: SFT, a reward model from comparisons, PPO with a per-token KL to the SFT model, and real hyperparameters. Every later method modifies this one.
-2. **Sutton and Barto**, *Reinforcement Learning: An Introduction*, 2nd edition, chapter 13 (policy gradient methods). The policy gradient theorem, REINFORCE, baselines and actor-critic in plain notation. Read after InstructGPT so the maths has a concrete target.
+1. **InstructGPT**, Ouyang et al., arXiv 2203.02155v1 (NeurIPS 2022), sections 3.1 and 3.5, for the pipeline only: SFT, a reward model from comparisons, then PPO with a per-token KL to the SFT model. Every later method modifies this one.
+2. **Sutton and Barto**, *Reinforcement Learning: An Introduction*, 2nd edition, chapter 3 (the sections on returns, episodes and value functions), then chapter 13 (policy gradient methods). Chapter 3 supplies the notation chapter 13 relies on; chapter 13 gives the policy gradient theorem, REINFORCE, baselines and actor-critic.
+3. **PPO**, Schulman et al., arXiv 1707.06347, section 3. The clipped objective that InstructGPT and GRPO both use, which the book predates.
+4. **InstructGPT appendix C**, last, once its hyperparameters (clip, KL coefficient, value function) have names.
 
 **Stage 2. RL with verifiable rewards, and what it actually does**
-3. **DeepSeek-R1**, arXiv 2501.12948v2 and the Nature 2025 version, section 2, then supplementary F.1 (distillation against RL) and G.2 (why process rewards and tree search were dropped). It defines the object the rest of the field argues about.
-4. **Yue et al.**, "Does reinforcement learning really incentivize reasoning capacity beyond the base model?", arXiv 2504.13837v5 (NeurIPS 2025), sections 3.1 and 4.1 to 4.4 and the limitations. Teaches how to read a pass@k curve and makes the strongest case for sharpening.
-5. **Zhang, Neubig and Yue**, arXiv 2512.07783v1, the four findings in section 1. The controlled reconciliation: when RL adds capability and when it only sharpens.
-6. **"LoRA Without Regret"**, Thinking Machines blog, 2025-09-29, the reinforcement learning section. The one-bit-per-episode argument, which explains why RL moves the model so little.
+5. **DeepSeek-R1**, arXiv 2501.12948v2 and the Nature 2025 version, section 2, then supplementary F.1 (distillation against RL). G.2 (why process rewards and tree search were dropped) is optional; a process reward model scores each reasoning step rather than only the final answer. It defines the object the rest of the field argues about.
+6. **Yue et al.**, "Does reinforcement learning really incentivize reasoning capacity beyond the base model?", arXiv 2504.13837v5 (NeurIPS 2025 Oral), sections 3.1 and 4.1 to 4.4 and the limitations. Teaches how to read a pass@k curve and makes the strongest case for sharpening.
+7. **Zhang, Neubig and Yue**, arXiv 2512.07783v1, the four findings in section 1. The controlled reconciliation: when RL adds capability and when it only sharpens.
+8. **"LoRA Without Regret"**, Thinking Machines blog (Tier 2), 2025-09-29, the reinforcement learning section. The one-bit-per-episode argument, which explains why RL moves the model so little.
+9. **"Reasoning with Sampling"**, arXiv 2510.14901v1, Table 1 and section 5.3. What a frozen model buys back at inference time, and the token multiplier it costs.
 
 **Stage 3. Learning in words**
-7. **Reflexion**, arXiv 2303.11366v4, section 3 for the actor, evaluator and reflector split, section 4.2 for where the HotPotQA signal comes from, and the code ablation (Table 3). The base pattern of every text loop.
-8. **Huang et al.**, "Large language models cannot self-correct reasoning yet", arXiv 2310.01798v2, Tables 2 and 3 side by side. The shortest demonstration that the feedback signal does the work.
-9. **GEPA**, arXiv 2507.19457v2, Table 1 including the AIME row, appendix E.4 for the GRPO configuration, section 3 for the reflective mutation and Pareto selection. The most direct head-to-head with GRPO.
-10. **Advisor Models**, arXiv 2510.02453v3, sections 4.3, 4.4.3 and 4.4.4. RL on a small model whose output is words for a frozen large one; what a static prompt cannot learn; the same-model comparison with direct RL.
+10. **Reflexion**, arXiv 2303.11366v4, section 3 for the actor, evaluator and reflector split, section 4.2 for where the HotPotQA signal comes from, and the code ablation (Table 3). The base pattern of every text loop.
+11. **Retroformer**, arXiv 2308.02151v3 (ICLR 2024), introduction and section 4. It builds on Reflexion, and its paragraph that folds the frozen model into the environment makes "a text loop is RL" precise for the rest of this stage.
+12. **Huang et al.**, "Large language models cannot self-correct reasoning yet", arXiv 2310.01798v2, Tables 2 and 3 side by side. The shortest demonstration that the feedback signal does the work.
+13. **GEPA**, arXiv 2507.19457v2, Table 1 including the AIME row, appendix E.4 for the GRPO configuration, section 3 for the reflective mutation and Pareto selection. The most direct head-to-head with GRPO.
+14. **Advisor Models**, arXiv 2510.02453v3, sections 4.3, 4.4.3 and 4.4.4. RL on a small model whose output is words for a frozen large one; what a static prompt cannot learn; the same-model comparison with direct RL.
 
 **Stage 4. Limits, and the reader's own loops**
-11. **Krishnamurthy et al.**, "Can large language models explore in-context?", arXiv 2403.15371v3 (NeurIPS 2024). One bandit, many prompt designs, one success, and the reason (an externally summarised history).
-12. **Retroformer**, arXiv 2308.02151v3 (ICLR 2024), introduction and section 4. The paragraph that folds the frozen model into the environment makes "a text loop is RL" precise.
-13. **Huntley's Ralph post** (ghuntley.com/ralph) side by side with **autoresearch's program.md** at SHA 228791fb499afffb54b46200aca536f79142f117. Read both against the RL vocabulary: what is the action, the reward, the state, and the hack surface.
-14. **Baker et al.**, "Monitoring reasoning models for misbehavior", arXiv 2503.11926v1. What reward hacking looks like in agentic coding, why monitors catch it, and why training against them hides it.
+15. **Krishnamurthy et al.**, "Can large language models explore in-context?", arXiv 2403.15371v3 (NeurIPS 2024). One bandit, many prompt designs, one success, and the reason (an externally summarised history).
+16. **Baker et al.**, "Monitoring reasoning models for misbehavior", arXiv 2503.11926v1. What reward hacking looks like in agentic coding, why monitors catch it, and why training against them hides it. Read before item 17 so the hack surface has an example.
+17. **Huntley's Ralph post** (ghuntley.com/ralph) side by side with **autoresearch's program.md** at SHA 228791fb499afffb54b46200aca536f79142f117. Read both against the RL vocabulary: what is the action, the reward, the state, and the hack surface.
 
 **Stage 5. Systems**
-15. **HybridFlow**, arXiv 2409.19256, then **AReaL**, arXiv 2505.24298. The RL step as generation, preparation, training and weight sync, and why asynchronous designs trade staleness for throughput.
+18. **HybridFlow**, arXiv 2409.19256, then **AReaL**, arXiv 2505.24298v5. The RL step as generation, preparation, training and weight sync, and why asynchronous designs trade staleness for throughput.
 
 ---
 
@@ -120,18 +123,18 @@ What is documented for the Spark (research 05, section 4): vLLM `v0.28.0` ships 
 
 ### E0. Smoke test: does the stack run on the Spark?
 
-Question: can TRL's GRPO trainer with vLLM in colocate mode train a 0.5B to 1.5B model on the DGX Spark? Steps: build a clean environment with TRL `v1.16.0` and vLLM `0.28.0` rather than NVIDIA's older Unsloth container, because of the `datasets` pin conflict; run 20 GRPO steps on a rule-checked reward with `use_vllm=True` and the colocate default; record per-step wall-clock by stage (rollout, scoring, training, weight sync), peak unified-memory use and the response-length distribution. Pass condition: 20 steps complete with logged metrics. If it fails, record the failure and fall back to TRL without vLLM (`use_vllm=False`, F05-18), accepting slower generation. Tear the environment down afterwards. This gates E1 and section 23 of the scope.
+Question: can TRL's GRPO trainer with vLLM in colocate mode train a 0.5B to 1.5B model on the DGX Spark? Steps: build a clean environment with TRL `v1.16.0` and vLLM `0.28.0` rather than NVIDIA's older Unsloth container, because of the `datasets` pin conflict; run 20 GRPO steps on a rule-checked reward with `use_vllm=True` and the colocate default; record per-step wall-clock by stage (rollout, scoring, training, weight sync), peak unified-memory use and the response-length distribution. Pass condition: 20 steps complete with logged metrics. If it fails, record the failure and fall back to TRL without vLLM (`use_vllm=False`, F05-18), accepting slower generation. Tear the environment down afterwards. This gates E1 and section 21 of the scope.
 
 ### E1. One task, three learners (the side-by-side the reader asked for)
 
 Question: on one task with a programmatic verifier, how do the base model, a GRPO-trained model and a frozen model with a learned prompt or playbook compare, at pass@1 and at large k?
 
-- **Task.** A synthetic task generated fresh for the experiment, so no model has seen it: Countdown-style arithmetic (reach a target number from given numbers) or the composed string-transform task of F02-50. Fresh synthetic data avoids the benchmark contamination that confounds Qwen math results (F02-56). Exact-match verifier in plain Python, outside any agent's write path.
-- **Models.** One small Qwen-family instruct model (0.5B to 1.5B) and one non-Qwen control of similar size, because spurious-reward and contamination effects differ by family (F02-53).
-- **Arms.** (a) Base model, no training. (b) GRPO with TRL at the pinned tag, LoRA, `loss_type` and `beta` stated, rollouts counted. (c) GEPA through DSPy 3.4.1 with the same model as task model; the reflection model is recorded, since which model reflects changes the reading (03 U1). (d) A playbook loop in the ACE pattern (delta updates, de-duplication) with the same model. (e) Best-of-n with the verifier at inference on the base model, the inference-time version of sharpening (F02-78).
+- **Task.** A synthetic task generated fresh for the experiment, so no model has seen it: Countdown-style arithmetic (reach a target number from given numbers) or the composed string-transform task of F02-50. Fresh synthetic data avoids the benchmark contamination that confounds Qwen math results (F02-56). The task carries both kinds of gap: the skill itself, plus an unstated rule the verifier enforces (an output convention or a domain rule absent from the prompt), so a text loop has something to learn. Without the second component the chart would show RL ahead for reasons of task type alone (review R3, finding 12). Exact-match verifier in plain Python, outside any agent's write path.
+- **Models.** One small Qwen-family instruct model (0.5B to 1.5B) and one non-Qwen control of similar size, because spurious-reward and contamination effects differ by family (F02-53). If E0's step times allow, one added point at 7B to 8B, the regime where GEPA beat GRPO (F03-61); NVIDIA's Spark playbook already runs GRPO with LoRA on a 7B model (F05-44). Small models make poor prompt optimisers (F04-53), so the small-model result alone would understate the text loop.
+- **Arms.** (a) Base model, no training. (b) GRPO with TRL at the pinned tag, LoRA, `loss_type` and `beta` stated, rollouts counted. (c) GEPA through DSPy 3.4.1 with the same model as task model; the reflection model is recorded, since which model reflects changes the reading (03 U1), and an optional run with a larger local reflector is labelled as such. (d) A playbook loop in the ACE pattern (delta updates, de-duplication) with the same model. (e) Best-of-n with the verifier at inference on the base model, the inference-time version of sharpening (F02-78, F02-58), plotted on the same chart as the other arms.
 - **Budget.** Arms (b), (c) and (d) get the same number of training rollouts, chosen after E0 from measured step time. Held-out test set of at least 500 problems.
 - **Metrics.** pass@1 and pass@k for k in 1, 4, 16, 64 and 256 on the test set; tokens per test query including the learned prompt or playbook; training wall-clock; rollouts used; for (b) the fraction of zero-advantage groups per step (F02-22) and policy entropy (F02-89).
-- **What the research predicts**, to be confirmed or refuted: (b) beats (c) and (d) on pass@1 if the gap is skill rather than instructions (F03-62, F03-90); (a) matches or beats (b) at pass@256 (F02-40); (c) and (d) cost more tokens per query than (b) (F03-91); (e) recovers part of (b)'s pass@1 gain at n times the inference cost.
+- **What the research predicts**, to be confirmed or refuted: (b) beats (c) and (d) on pass@1 if the gap is skill rather than instructions (F03-62, F03-90); (a) matches or beats (b) at pass@256 (F02-40); (c) and (d) close more of the unstated-rule gap than (b) per rollout (F03-61); (c) and (d) cost more tokens per query than (b) (F03-35); (e) recovers part of (b)'s pass@1 gain at n times the inference cost.
 - **Size check.** A 1.5B model in bf16 is about 3 GB of weights [derived: 1.5 billion parameters at 2 bytes], small against 128 GB of unified memory; generation speed on 273 GB/s memory bandwidth is the expected bottleneck, measured in E0.
 
 ### E2. Noise floor of a keep-or-revert loop
@@ -160,20 +163,23 @@ Consolidated from the six registers. Each item names its source register, why it
 | U4 | Whether R1's "aha" marks new capability: word-frequency evidence on both sides | 02 U12 | 7 | Accept as open |
 | U5 | GEPA's reflection model in the Qwen3 8B runs | 03 U1 | 14 | Wave 2: pinned gepa repo configs |
 | U6 | Whether a small-data-tuned GRPO closes GEPA's gap | 03 U2 | 14 | Wave 2 search; E1 gives one local data point |
-| U7 | Same-model, same-budget comparisons with RL for Reflexion, ExpeL, ACE, ReasoningBank, Dynamic Cheatsheet, Training-Free GRPO: none located | 03 U3 | 13, 24 | E1 arm (d) |
-| U8 | SCoRe, RL-trained self-correction | 03 U4 | 12, 17 | Wave 2 read |
+| U7 | Same-model, same-budget comparisons with RL for Reflexion, ExpeL, ACE, ReasoningBank, Dynamic Cheatsheet, Training-Free GRPO: none located | 03 U3 | 13, 22 | E1 arm (d) |
+| U8 | SCoRe, RL-trained self-correction | 03 U4 | 12, 16 | Wave 2 read |
 | U9 | Long-run growth of append-only memories over thousands of tasks | 03 U5 | 13 | Accept as open; scoped hedge |
-| U10 | Prefix-cache hit rate for a context that evolves during adaptation | 04 U-1 | 13, 18, 21 | E3 |
-| U11 | Run-to-run noise of autoresearch's metric | 04 U-2 | 16 | E2 |
-| U12 | How prompt-optimisation gains scale with the target model's size, optimiser held fixed | 04 U-4 | 14, 19 | Wave 2 search; otherwise open |
-| U13 | Fresh-context loop against one long compacted session on the same coding task | 04 U-5 | 16, 18 | Accept as open; candidate for a later Tier 0 experiment |
-| U14 | Blame-attribution accuracy of self-reflection in single-agent coding loops with test feedback | 04 U-6 | 18 | Wave 2 search |
-| U15 | Whether 2026 reasoning models close the explore-exploit gap in the original bandit protocol | 04 U-7 | 18 | Wave 2 search; E4 gives a small-model data point |
-| U16 | Measured memory in GB for PPO's four models at a given size | 01 U3 | 6, 20 | E0 measures the GRPO case on the Spark |
+| U10 | Prefix-cache hit rate for a context that evolves during adaptation | 04 U-1 | 13, 17, 20 | E3 |
+| U11 | Run-to-run noise of autoresearch's metric | 04 U-2 | 15 | E2 |
+| U12 | How prompt-optimisation gains scale with the target model's size, optimiser held fixed | 04 U-4 | 14, 18 | Wave 2 search; otherwise open |
+| U13 | Fresh-context loop against one long compacted session on the same coding task | 04 U-5 | 15, 17 | Accept as open; candidate for a later Tier 0 experiment |
+| U14 | Blame-attribution accuracy of self-reflection in single-agent coding loops with test feedback | 04 U-6 | 17 | Wave 2 search |
+| U15 | Whether 2026 reasoning models close the explore-exploit gap in the original bandit protocol | 04 U-7 | 17 | Wave 2 search; E4 gives a small-model data point |
+| U16 | Measured memory in GB for PPO's four models at a given size | 01 U3 | 6, 19 | E0 measures the GRPO case on the Spark |
 | U17 | Which algorithms frontier labs use in production post-training, from first-party sources | 01 U4 | 6, 7 | Accept as open unless a first-party source appears |
 | U18 | Whether reward over-optimisation's functional forms hold at frontier scale | 01 U6 | 10 | Accept as open |
 | U19 | Weight-update sparsity at full precision, including optimiser state | 02 U7 | 8 | Accept as an open debate |
-| U20 | Remaining systems and AWS UNKNOWNs | 05, 06 | 20, 21, 22 | Listed in those registers after their completion |
+| U20 | Remaining systems and AWS UNKNOWNs | 05, 06 | 19, 20, 23 | Listed in those registers after their completion |
+| U21 | FunSearch's own sample count; the "millions" figure is AlphaEvolve's description of it | 03 U11 | 15 | Wave 2 read of the FunSearch paper |
+| U22 | Typical job length, and so total cost, for a Bedrock RFT run billed at $80.00 per training hour | 06 | 20 | Wave 2 search; otherwise the calculator takes hours as an input |
+| U23 | Acronym expansions for DAPO, GSPO, IPO, KTO, SimPO, MIPROv2, ProTeGi and OPRO are taken from the paper titles, not from register quotes | 01, 02, 03 | 6, 7, 14, 24 | Wave 2 glossary pass against each paper's first page |
 
 ---
 
@@ -181,16 +187,16 @@ Consolidated from the six registers. Each item names its source register, why it
 
 The iteration flywheel (ADR-003) puts Gate 1 between research and build. For this dive Gate 1 has five checks, and all five must pass before any `package.json` or `src/` exists.
 
-1. **Scope held.** `SCOPE.md` has passed its three adversarial reviews (newcomer path, factual grounding, outcome fit) and records what changed. Every section passes the mental-model-or-practical test of `deep-dives/efa/revamp/section-shape-standard.md`.
+1. **Scope held.** `SCOPE.md` has passed its three adversarial reviews (newcomer path, factual grounding, outcome fit) and records what changed. Every section passes the mental-model-or-practical test of `deep-dives/efa/revamp/section-shape-standard.md`. State on 2026-10-17: the reviews ran on v1, v2 applies their fixes and records them in its "Adversarial review notes", and a re-check of the revised sections closes the factual-grounding verdict (`reviews/2026-10/R2b-recheck.md`).
 2. **Load-bearing claims verified.** Wave 2's refutation pass has a verdict for every number in the scope's thesis and section paragraphs; anything WRONG is fixed in the scope, anything SCOPE NARROWER is re-hedged.
 3. **UNKNOWNs triaged.** Every UNKNOWN in section 6 is marked close-in-wave-2, close-by-experiment, accept-as-hedge, or cut-the-claim. None is left untriaged.
-4. **Tier 0 decision.** E0 has run. If it passed, E1 is scheduled and section 23 stays; if it failed and the fallback also failed, section 23 is cut from the scope.
-5. **Human approval.** Carlos reads `SCOPE.md` and this guide and approves the section list, or names cuts. The candidate cuts if scope must shrink: section 15 (search loops), whose core idea also appears in section 16, then section 23 if the experiment is not ready.
+4. **Tier 0 decision.** E0 has run. If it passed, E1 is scheduled and section 21 stays; if it failed and the fallback also failed, section 21 is cut from the scope.
+5. **Human approval.** Carlos reads `SCOPE.md` and this guide and approves the section list, or names cuts. The v1 search-loop section is already merged into section 15. The candidate cuts if scope must shrink further: (1) fold section 19 (the RL step as a system) into its measurement list and its straggler figure; (2) reduce section 6 to the RLHF pipeline and the DPO decision. Section 21 (the lab) stays conditional on E0 and E1 only, because it is the dive's one source of Tier 0 evidence.
 
 After Gate 1, the build starts from `deep-dives/_template/`, with `.gates.json` opting the dive into every Tier 1 gate from the first commit of `src/` (no-ai-tells, svg-a11y, pinned-refs, pinned-refs-research, required-files, pre-overflow), so the ratchet holds from day one. Gates 2 (human review on device) and 3 (no section below 7 of 10, average at least 8) follow the flywheel unchanged.
 
 ---
 
-## 8. Budget record for wave 1
+## 8. Budget record
 
-Wave 1 used 9 research-agent dispatches: 5 in the first fan-out, 2 re-dispatches of area 05 after a usage stop (split into systems and AWS), and 2 completion agents for those two files. Three agents in the first fan-out and both re-dispatches were cut off by account usage limits; every file they had written to disk was kept and committed, and only unwritten work was re-dispatched. Wave 2 is budgeted at 6 agents, at most 3 at a time, each writing to disk as it goes.
+Wave 1 used 9 research-agent dispatches: 5 in the first fan-out, 2 re-dispatches of area 05 after a usage stop (split into systems and AWS), and 2 completion agents for those two files. Three agents in the first fan-out and both re-dispatches were cut off by account usage limits; every file they had written to disk was kept and committed, and only unwritten work was re-dispatched. The scope review used 3 reviewer agents (newcomer path, factual grounding, outcome fit) and 1 re-check agent. Wave 2 is budgeted at 6 agents, at most 3 at a time, each writing to disk as it goes.
