@@ -246,3 +246,12 @@ lists from E8/E9 as two side panels. No other new diagram is needed; the CUDA-gr
 
 Unresolved UNKNOWN: M5 ("cost seconds of startup"); no source or measurement found. Every other row was
 checked against `/tmp/vllm-new` (or the old tree where a comparison was needed).
+
+## Errata found during authoring (2026-10-17)
+
+- S15 / S25 / S48 (sub-block copy-on-write on a prefix hit): the sub-block hit path is reachable only
+  for hybrid models with a Mamba KV group in align mode
+  (`vllm/v1/core/kv_cache_coordinator.py` L687-L704 at v0.31.0). Full-attention-only models hit on
+  whole blocks.
+- `evict_blocks()` in the block pool runs only for failed KV-connector loads, not as part of normal
+  free-queue eviction.
