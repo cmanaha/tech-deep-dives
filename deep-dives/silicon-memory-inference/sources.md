@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 164.
+Total distinct sources: 150.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
@@ -23,11 +23,7 @@ Total distinct sources: 164.
 | AWS | [Amazon FSx for Lustre: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon FSx for Lustre: working with EFA-enabled file systems](https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon S3 Express One Zone: high performance with directory buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html) | 2026-10-17 | FlashCacheTier |
-| AWS | [AWS Neuron: Neuron Graph Compiler overview (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/index.html) | 2026-10-16 | KernelExecutionLifecycle |
-| AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-16 | KernelExecutionLifecycle |
-| AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-17 | KernelExecutionLifecycle |
-| AWS | [AWS Neuron: NKI Trainium2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium2_arch.html) | 2026-10-17 | KernelExecutionLifecycle |
-| AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-16 | KernelExecutionLifecycle, ThesisAndFraming |
+| AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-16 | ThesisAndFraming |
 | AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-16 | ThesisAndFraming |
 | AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | GraceBlackwellUltraServer |
 | AWS | [Capacity Blocks for ML: supported instance types and Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaHopper |
@@ -46,25 +42,16 @@ Total distinct sources: 164.
 | Hugging Face | [Qwen/Qwen3-235B-A22B README at revision 8efa617 (22B activated)](https://huggingface.co/Qwen/Qwen3-235B-A22B/blob/8efa61729e24bd65b1d152b5ab5409052aa80e65/README.md) | 2026-10-17 | FlashCacheTier |
 | Intel | [Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)](https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html) | 2026-10-16 | FlashCacheTier |
 | JEDEC | [JEDEC and Industry Leaders Collaborate to Release JESD270-4 HBM4 Standard (2025-04-16)](https://www.jedec.org/news/pressreleases/jedec%C2%AE-and-industry-leaders-collaborate-release-jesd270-4-hbm4-standard-advancing) | 2026-10-16 | HighBandwidthFlash |
-| Linux kernel | [Linux kernel Documentation/arch/x86/xstate.rst at tag v6.19 (AMX TILE_DATA, ARCH_REQ_XCOMP_PERM)](https://github.com/torvalds/linux/blob/v6.19/Documentation/arch/x86/xstate.rst) | 2026-10-17 | KernelExecutionLifecycle |
 | llm-d | [llm-d tiered prefix cache guides and metrics docs at tag v0.10.0](https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/README.md) | 2026-10-17 | FlashCacheTier |
 | LLVM | [AArch64SchedNeoverseV2.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/AArch64/AArch64SchedNeoverseV2.td) | 2026-10-17 | ThesisAndFraming |
-| LLVM | [Clang amxfp16intrin.h at tag llvmorg-23.1.3 (TDPFP16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxfp16intrin.h) | 2026-10-17 | KernelExecutionLifecycle |
-| LLVM | [Clang amxintrin.h at tag llvmorg-23.1.3 (tile size, LDTILECFG, TILELOADD, TDPBF16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxintrin.h) | 2026-10-17 | KernelExecutionLifecycle, ThesisAndFraming |
-| LLVM | [LLVM X86.td at tag llvmorg-23.1.3 (per-generation feature lists: SPR, GNR, DMR)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/X86/X86.td#L1243-L1310) | 2026-10-16 | KernelExecutionLifecycle |
-| LLVM | [LLVM X86RegisterInfo.td at tag llvmorg-23.1.3 (tile registers TMM0 to TMM7)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/X86/X86RegisterInfo.td) | 2026-10-17 | KernelExecutionLifecycle |
+| LLVM | [Clang amxintrin.h at tag llvmorg-23.1.3 (tile size, LDTILECFG, TILELOADD, TDPBF16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxintrin.h) | 2026-10-17 | ThesisAndFraming |
 | LLVM | [X86SchedSapphireRapids.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/X86/X86SchedSapphireRapids.td) | 2026-10-17 | ThesisAndFraming |
 | LLVM | [X86ScheduleZnver4.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/X86/X86ScheduleZnver4.td) | 2026-10-17 | ThesisAndFraming |
 | LMCache | [LMCache local storage backend docs at tag v0.5.6 (per-GPU disk paths, O_DIRECT, example chunk size)](https://github.com/LMCache/LMCache/blob/v0.5.6/docs/source/kv_cache/storage_backends/local_storage.rst) | 2026-10-17 | FlashCacheTier |
 | Micron | [Micron 9650 NVMe SSD product brief (key specifications and test conditions)](https://www.micron.com/content/dam/micron/global/public/products/storage/ssds/data-center/9650/9650-nvme-ssd-product-brief.pdf) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [CUDA C++ Best Practices Guide (CUDA 13.4): Occupancy](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html) | 2026-10-17 | NvidiaHopper, ThesisAndFraming |
 | NVIDIA | [CUDA GPU compute capability list](https://developer.nvidia.com/cuda-gpus) | 2026-10-16 | NvidiaBlackwell, NvidiaCompilersAndTooling, NvidiaHopper |
-| NVIDIA | [CUDA Programming Guide v13.4.2: Advanced Kernel Programming (Hardware Multithreading)](https://docs.nvidia.com/cuda/cuda-programming-guide/03-advanced/advanced-kernel-programming.html) | 2026-10-17 | KernelExecutionLifecycle |
-| NVIDIA | [CUDA Programming Guide v13.4.2: Asynchronous Data Copies](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/async-copies.html) | 2026-10-17 | KernelExecutionLifecycle |
-| NVIDIA | [CUDA Programming Guide v13.4.2: Compute Capabilities](https://docs.nvidia.com/cuda/cuda-programming-guide/05-appendices/compute-capabilities.html) | 2026-10-17 | KernelExecutionLifecycle, NvidiaBlackwell, NvidiaCompilersAndTooling, NvidiaHopper |
-| NVIDIA | [CUDA Programming Guide v13.4.2: CUDA Graphs](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/cuda-graphs.html) | 2026-10-17 | KernelExecutionLifecycle |
-| NVIDIA | [CUDA Programming Guide v13.4.2: Programmatic Dependent Launch and Synchronization](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/programmatic-dependent-launch.html) | 2026-10-17 | KernelExecutionLifecycle |
-| NVIDIA | [CUDA Programming Guide v13.4.2: Programming Model (thread blocks, warps, on-chip memory)](https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/programming-model.html) | 2026-10-17 | KernelExecutionLifecycle |
+| NVIDIA | [CUDA Programming Guide v13.4.2: Compute Capabilities](https://docs.nvidia.com/cuda/cuda-programming-guide/05-appendices/compute-capabilities.html) | 2026-10-17 | NvidiaBlackwell, NvidiaCompilersAndTooling, NvidiaHopper |
 | NVIDIA | [CUDA Programming Guide v13.4.2: Writing Tile Kernels](https://docs.nvidia.com/cuda/cuda-programming-guide/02-basics/writing-tile-kernels.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [CuTe DSL: JIT compilation options (keep-ptx, ptxas-options)](https://docs.nvidia.com/cutlass/latest/media/docs/pythonDSL/cute_dsl_general/dsl_jit_compilation_options.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [cuTile Python quickstart and release notes (1.6.0, 2026-09-09)](https://docs.nvidia.com/cuda/cutile-python/quickstart.html) | 2026-10-17 | NvidiaCompilersAndTooling |
@@ -73,13 +60,13 @@ Total distinct sources: 164.
 | NVIDIA | [CUTLASS README at tag v4.8.0](https://github.com/NVIDIA/cutlass/blob/v4.8.0/README.md) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [Nsight Compute Profiling Guide](https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [Nsight Systems User Guide](https://docs.nvidia.com/nsight-systems/UserGuide/index.html) | 2026-10-17 | NvidiaCompilersAndTooling |
-| NVIDIA | [NVIDIA Blackwell Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/blackwell-tuning-guide/index.html) | 2026-10-17 | KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper |
+| NVIDIA | [NVIDIA Blackwell Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/blackwell-tuning-guide/index.html) | 2026-10-16 | NvidiaBlackwell, NvidiaHopper |
 | NVIDIA | [NVIDIA Form 8-K exhibit 99.1, Q2 fiscal 2027 results (2026-08-26)](https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27pr.htm) | 2026-10-16 | GraceBlackwellUltraServer, NvidiaBlackwell |
 | NVIDIA | [NVIDIA GPUDirect Storage Overview Guide v1.19.1](https://docs.nvidia.com/gpudirect-storage/overview-guide/index.html) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA GPUDirect Storage Release Notes v1.19.1](https://docs.nvidia.com/gpudirect-storage/release-notes/index.html) | 2026-10-17 | FlashCacheTier |
-| NVIDIA | [NVIDIA Hopper Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) | 2026-10-17 | KernelExecutionLifecycle, NvidiaHopper |
+| NVIDIA | [NVIDIA Hopper Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) | 2026-10-17 | NvidiaHopper |
 | NVIDIA | [NVIDIA/storage-lender README at commit 1630d17 (SCADA control path)](https://github.com/NVIDIA/storage-lender/blob/1630d17b50b7130dee27c1f71361ad5af4e434bb/README.md) | 2026-10-17 | FlashCacheTier |
-| NVIDIA | [PTX ISA 9.4: wgmma (9.7.17) and tcgen05 / Tensor Memory (9.7.18)](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html) | 2026-10-16 | KernelExecutionLifecycle, NvidiaBlackwell, NvidiaCompilersAndTooling, NvidiaHopper, ThesisAndFraming |
+| NVIDIA | [PTX ISA 9.4: wgmma (9.7.17) and tcgen05 / Tensor Memory (9.7.18)](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html) | 2026-10-16 | NvidiaBlackwell, NvidiaHopper, ThesisAndFraming |
 | NVIDIA | [TensorRT Quick Start Guide: What Is TensorRT?](https://docs.nvidia.com/deeplearning/tensorrt/latest/getting-started/quick-start-guide.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [TensorRT-LLM examples/wide_ep at tag v1.2.1](https://github.com/NVIDIA/TensorRT-LLM/tree/v1.2.1/examples/wide_ep) | 2026-10-16 | NvidiaCompilersAndTooling |
 | NVIDIA | [TensorRT-LLM examples/wide_ep README at tag v1.2.1](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/examples/wide_ep/README.md) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaCompilersAndTooling |
@@ -108,7 +95,6 @@ Total distinct sources: 164.
 | Triton | [Introduction to Gluon tutorial at Triton tag v3.8.0](https://github.com/triton-lang/triton/blob/v3.8.0/python/tutorials/gluon/01-intro.py) | 2026-10-17 | NvidiaCompilersAndTooling |
 | Triton | [Triton 3.8.0 release notes (2026-08-28)](https://github.com/triton-lang/triton/releases/tag/v3.8.0) | 2026-10-17 | NvidiaCompilersAndTooling |
 | Triton | [Triton tutorial: Matrix Multiplication (triton.autotune and triton.Config)](https://triton-lang.org/main/getting-started/tutorials/03-matrix-multiplication.html) | 2026-10-17 | NvidiaCompilersAndTooling |
-| UXL Foundation | [oneDNN src/cpu/x64/cpu_isa_traits.cpp at tag v3.13.4, lines 357-374 (AMX permission request)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/cpu/x64/cpu_isa_traits.cpp#L357-L374) | 2026-10-17 | KernelExecutionLifecycle |
 | vLLM | [vLLM kv_offload metrics (offloading/metrics.py) at tag v0.31.0](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/offloading/metrics.py) | 2026-10-17 | FlashCacheTier |
 | vLLM | [vLLM vllm/config/cache.py at tag v0.31.0 (DEFAULT_BLOCK_SIZE)](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/cache.py) | 2026-10-17 | FlashCacheTier |
 
@@ -137,7 +123,7 @@ Total distinct sources: 164.
 | NVIDIA | [Full-Stack Optimizations for Agentic Inference with Dynamo (in-repo blog at Dynamo tag v1.5.1)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/blog/2026/agentic-inference-optimizations.mdx) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [GTC 2026 live updates (Feynman, Rosa, Kyber)](https://blogs.nvidia.com/blog/gtc-2026-news/) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [How NVIDIA GB200 NVL72 and NVIDIA Dynamo Boost Inference Performance for MoE Models](https://developer.nvidia.com/blog/how-nvidia-gb200-nvl72-and-nvidia-dynamo-boost-inference-performance-for-moe-models/) | 2026-10-17 | GraceBlackwellUltraServer |
-| NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | GraceBlackwellUltraServer, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper |
+| NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell, NvidiaHopper |
 | NVIDIA | [Inside NVIDIA Groq 3 LPX: The Low-Latency Inference Accelerator for the NVIDIA Vera Rubin Platform (2026-03-16)](https://developer.nvidia.com/blog/inside-nvidia-groq-3-lpx-the-low-latency-inference-accelerator-for-the-nvidia-vera-rubin-platform/) | 2026-10-17 | ThesisAndFraming |
 | NVIDIA | [Introducing NVFP4 for Efficient and Accurate Low-Precision Inference](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [Introducing NVIDIA BlueField-4-Powered Inference Context Memory Storage Platform (G1 to G4 tiers, G3.5)](https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/) | 2026-10-17 | FlashCacheTier |
@@ -150,10 +136,10 @@ Total distinct sources: 164.
 | NVIDIA | [NVIDIA Grace CPU page (Vera CPU: SOCAMM LPDDR5X, 1.2 TB/s, 1.5 TB per CPU)](https://www.nvidia.com/en-us/data-center/grace-cpu/) | 2026-10-16 | HighBandwidthFlash |
 | NVIDIA | [NVIDIA Grace CPU Superchip (Grace CPU C1 and Superchip specifications)](https://www.nvidia.com/en-us/data-center/grace-cpu-superchip/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Groq 3 LPX Now in Full Production With World-Class Speed for Agentic AI (2026-08-24)](https://nvidianews.nvidia.com/news/nvidia-groq-3-lpx-now-in-full-production-with-world-class-speed-for-agentic-ai) | 2026-10-17 | ThesisAndFraming |
-| NVIDIA | [NVIDIA H100 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h100/) | 2026-10-16 | FlashCacheTier, KernelExecutionLifecycle, NvidiaHopper |
-| NVIDIA | [NVIDIA H200 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h200/) | 2026-10-17 | FlashCacheTier, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper, ThesisAndFraming |
+| NVIDIA | [NVIDIA H100 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h100/) | 2026-10-16 | FlashCacheTier, NvidiaHopper |
+| NVIDIA | [NVIDIA H200 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h200/) | 2026-10-17 | FlashCacheTier, NvidiaBlackwell, NvidiaHopper, ThesisAndFraming |
 | NVIDIA | [NVIDIA HGX platform (HGX B300, HGX B200 and HGX Rubin NVL8 specifications)](https://www.nvidia.com/en-us/data-center/hgx/) | 2026-10-17 | HighBandwidthFlash, NvidiaBlackwell |
-| NVIDIA | [NVIDIA Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | 2026-10-17 | KernelExecutionLifecycle, NvidiaHopper, ThesisAndFraming |
+| NVIDIA | [NVIDIA Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | 2026-10-17 | NvidiaHopper, ThesisAndFraming |
 | NVIDIA | [NVIDIA Hopper in Full Production (2022-09-20)](https://nvidianews.nvidia.com/news/nvidia-hopper-in-full-production) | 2026-10-16 | NvidiaHopper |
 | NVIDIA | [NVIDIA NVLink-C2C](https://www.nvidia.com/en-us/data-center/nvlink-c2c/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Supercharges Hopper, the World's Leading AI Computing Platform (2023-11-13)](https://nvidianews.nvidia.com/news/nvidia-supercharges-hopper-the-worlds-leading-ai-computing-platform) | 2026-10-16 | NvidiaHopper |
@@ -175,7 +161,7 @@ Total distinct sources: 164.
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
 | ACM | [Roofline: An Insightful Visual Performance Model for Multicore Architectures (Williams, Waterman, Patterson, CACM 52(4), 2009), Crossref record](https://api.crossref.org/works/10.1145/1498765.1498785) | 2026-10-16 | ThesisAndFraming |
-| arXiv | [Benchmarking and Dissecting the Nvidia Hopper GPU Architecture (Luo et al., arXiv:2402.13499v1), Table IV](https://arxiv.org/pdf/2402.13499) | 2026-10-17 | KernelExecutionLifecycle, NvidiaHopper |
+| arXiv | [Benchmarking and Dissecting the Nvidia Hopper GPU Architecture (Luo et al., arXiv:2402.13499v1), Table IV](https://arxiv.org/pdf/2402.13499) | 2026-10-17 | NvidiaHopper |
 | arXiv | [Challenges and Research Directions for Large Language Model Inference Hardware (X. Ma and D. Patterson, Google; arXiv:2601.05047)](https://arxiv.org/abs/2601.05047) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
 | arXiv | [FlashAccel: Leveraging High-Bandwidth Flash (HBF) for High-Throughput LLM Inference (arXiv:2607.10186v2)](https://arxiv.org/abs/2607.10186) | 2026-10-17 | HighBandwidthFlash |
 | arXiv | [FLINT: Efficiently Leveraging High Bandwidth Flash for Capacity-Scalable LLM Inference Acceleration (G. F. Oliveira et al.; arXiv:2608.25062v1)](https://arxiv.org/abs/2608.25062) | 2026-10-17 | HighBandwidthFlash |

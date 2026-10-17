@@ -94,9 +94,12 @@ sourced; 29% were wrong or stale.
    figures, the KV-cache worked example that is 2x too large, and the
    DeepSeek-V3.2 415/690 GB figure cited to the wrong source.
 6. **Inductor and CUTLASS**: the compiler section routes large matmuls from
-   Inductor to CUTLASS. In PyTorch v2.14.1 every matmul goes to ATen
-   (cuBLAS/cuBLASLt) unless max-autotune is on, and CUTLASS templates also need
-   `"CUTLASS"` in `max_autotune_gemm_backends` (code-confirmed, 02 C3).
+   Inductor to CUTLASS. In PyTorch v2.14.1 linear-layer matmuls (`aten.mm`,
+   `aten.addmm`) go to ATen (cuBLAS/cuBLASLt) unless max-autotune is on;
+   batched, INT8 and FP8 matmuls can still pick a Triton template without it.
+   CUTLASS templates also need `"CUTLASS"` in `max_autotune_gemm_backends`
+   (code-confirmed by the compiler author; the register's 02 C3 "every matmul"
+   is too broad).
 7. **Neuron moved**: Neuron 2.32.0 is current, NKI left beta in 2.29.0, NxD
    Inference is in maintenance and vLLM Neuron is the serving path; Inf2 and
    Trn1 lost NxD Inference support.
@@ -286,3 +289,8 @@ earlier one.
   FLOP/byte [derived]; sparse only as a labelled aside. Branch mispredict
   penalty uses LLVM's 10 to 14 cycles. Groq 3 LPX keeps DRAM behind its SRAM
   (never "SRAM-only") and is in full production since August 2026.
+- NVIDIA Compilers and Tooling: Inductor sends linear-layer matmuls to ATen
+  (cuBLAS/cuBLASLt) by default; batched, INT8 and FP8 matmuls can still pick
+  Triton; CUTLASS is opt-in through `max_autotune_gemm_backends`. Sizes never
+  route a matmul to CUTLASS. Kernel Execution Lifecycle and AWS Compilers and
+  Tooling must not say "Inductor emits Triton for everything".
