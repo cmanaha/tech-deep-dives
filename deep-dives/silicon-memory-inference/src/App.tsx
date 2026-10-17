@@ -30,6 +30,12 @@ const HbmAndBandwidthWall = React.lazy(() =>
 const MainMemoryAndCxl = React.lazy(() =>
   import('./sections/MainMemoryAndCxl').then((m) => ({ default: m.MainMemoryAndCxl }))
 );
+const HighBandwidthFlash = React.lazy(() =>
+  import('./sections/HighBandwidthFlash').then((m) => ({ default: m.HighBandwidthFlash }))
+);
+const FlashCacheTier = React.lazy(() =>
+  import('./sections/FlashCacheTier').then((m) => ({ default: m.FlashCacheTier }))
+);
 
 // Topology
 const ChipletAndInterconnect = React.lazy(() =>
@@ -146,31 +152,33 @@ const sections = [
   { id: 'memory-hierarchy', title: '4. Memory Hierarchy Primer' },
   { id: 'kernel-lifecycle', title: '5. Anatomy of a Kernel Execution' },
   { id: 'hbm', title: '6. HBM and the Bandwidth Wall' },
-  { id: 'main-memory-cxl', title: '7. DDR5, MRDIMM, LPDDR5X, CXL' },
-  { id: 'chiplet-interconnect', title: '8. Chiplet and Interconnect' },
-  { id: 'graviton', title: '9. Graviton Deep Dive' },
-  { id: 'epyc-turin', title: '10. AMD EPYC Turin' },
-  { id: 'xeon-6', title: '11. Intel Xeon 6 Granite Rapids' },
-  { id: 'hopper', title: '12. NVIDIA Hopper — H100 / H200' },
-  { id: 'blackwell', title: '13. NVIDIA Blackwell — B200 / B300' },
-  { id: 'grace-blackwell', title: '14. Grace-Blackwell and UltraServer' },
-  { id: 'edge-shared-memory', title: '15. Edge Shared-Memory Silicon — DGX Spark and Jetson Orin Nano' },
-  { id: 'nvidia-compilers', title: '16. NVIDIA Compilers and Kernel Tooling' },
-  { id: 'aws-custom', title: '17. AWS Trainium, Inferentia, Neuron' },
-  { id: 'aws-compilers', title: '18. AWS Compilers and Kernel Tooling' },
-  { id: 'cerebras', title: '19. Cerebras WSE-3' },
-  { id: 'groq-sambanova', title: '20. Groq, SambaNova, Dataflow' },
-  { id: 'compute-in-memory', title: '21. Compute-in-Memory (PIM, HyperCIM)' },
-  { id: 'kv-cache', title: '22. KV Cache and FlashAttention' },
-  { id: 'moe', title: '23. Mixture of Experts and Sparse Activation' },
-  { id: 'slm', title: '24. Small Language Models' },
-  { id: 'quantization', title: '25. Quantization and Precision' },
-  { id: 'disaggregated', title: '26. Disaggregated Serving and Speculative Decoding' },
-  { id: 'communication', title: '27. Communication and Scale-Out' },
-  { id: 'isolation', title: '28. Isolation — NIE and MIG' },
-  { id: 'determinism', title: '29. Determinism — NEFF and GPU Reproducibility' },
-  { id: 'capital-markets', title: '30. Capital Markets Lens' },
-  { id: 'glossary-sources', title: '31. Glossary and Sources' },
+  { id: 'main-memory-cxl', title: '7. DDR5, MRDIMM, LPDDR5X and CXL' },
+  { id: 'hbf', title: '8. High Bandwidth Flash' },
+  { id: 'flash-cache-tier', title: '9. Flash as a Cache Tier for Inference' },
+  { id: 'chiplet-interconnect', title: '10. Chiplet and Interconnect' },
+  { id: 'graviton', title: '11. Graviton Deep Dive' },
+  { id: 'epyc-turin', title: '12. AMD EPYC Turin' },
+  { id: 'xeon-6', title: '13. Intel Xeon 6' },
+  { id: 'hopper', title: '14. NVIDIA Hopper: H100 and H200' },
+  { id: 'blackwell', title: '15. NVIDIA Blackwell: B200 and B300' },
+  { id: 'grace-blackwell', title: '16. Grace-Blackwell and UltraServer' },
+  { id: 'edge-shared-memory', title: '17. Edge Shared-Memory Silicon: DGX Spark and Jetson' },
+  { id: 'nvidia-compilers', title: '18. NVIDIA Compilers and Kernel Tooling' },
+  { id: 'aws-custom', title: '19. AWS Trainium, Inferentia and Neuron' },
+  { id: 'aws-compilers', title: '20. AWS Compilers and Kernel Tooling' },
+  { id: 'cerebras', title: '21. Cerebras Wafer-Scale' },
+  { id: 'groq-sambanova', title: '22. Groq, SambaNova and Dataflow' },
+  { id: 'compute-in-memory', title: '23. Compute-in-Memory' },
+  { id: 'kv-cache', title: '24. KV Cache and FlashAttention' },
+  { id: 'moe', title: '25. Mixture of Experts and Sparse Activation' },
+  { id: 'slm', title: '26. Small Language Models' },
+  { id: 'quantization', title: '27. Quantization and Precision' },
+  { id: 'disaggregated', title: '28. Disaggregated Serving and Speculative Decoding' },
+  { id: 'communication', title: '29. Communication and Scale-Out' },
+  { id: 'isolation', title: '30. Isolation: NIE and MIG' },
+  { id: 'determinism', title: '31. Determinism: NEFF and GPU Reproducibility' },
+  { id: 'capital-markets', title: '32. Capital Markets Lens' },
+  { id: 'glossary-sources', title: '33. Glossary and Sources' },
 ];
 
 const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
@@ -181,6 +189,8 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   'kernel-lifecycle': KernelExecutionLifecycle,
   hbm: HbmAndBandwidthWall,
   'main-memory-cxl': MainMemoryAndCxl,
+  hbf: HighBandwidthFlash,
+  'flash-cache-tier': FlashCacheTier,
   'chiplet-interconnect': ChipletAndInterconnect,
   graviton: GravitonDeepDive,
   'epyc-turin': AmdEpycTurin,
@@ -214,7 +224,7 @@ export function App() {
   return (
     <DeepDiveLayout
       title="Silicon, Memory, and Modern Inference"
-      subtitle="A field manual for heterogeneous silicon and the memory-bandwidth-vs-FLOPs tradeoff in modern inference"
+      subtitle="A field manual for heterogeneous silicon and the trade between memory bandwidth and FLOPs in modern inference"
       sections={sections}
       activeSection={activeSection}
       onSectionChange={setActiveSection}
