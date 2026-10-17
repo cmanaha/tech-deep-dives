@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 115.
+Total distinct sources: 112.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
@@ -88,7 +88,6 @@ Total distinct sources: 115.
 | AWS | [Announcing up to 45% price reduction for Amazon EC2 NVIDIA GPU-accelerated instances](https://aws.amazon.com/blogs/aws/announcing-up-to-45-price-reduction-for-amazon-ec2-nvidia-gpu-accelerated-instances/) | 2026-10-17 | NvidiaBlackwell, NvidiaHopper |
 | AWS | [Managed Tiered KV Cache and Intelligent Routing for Amazon SageMaker HyperPod (2025-11-26)](https://aws.amazon.com/blogs/machine-learning/managed-tiered-kv-cache-and-intelligent-routing-for-amazon-sagemaker-hyperpod/) | 2026-10-17 | FlashCacheTier |
 | AWS | [SageMaker HyperPod now supports Managed tiered KV cache and intelligent routing (2025-11-26)](https://aws.amazon.com/about-aws/whats-new/2025/11/sagemaker-hyperpod-managed-tiered-kv-cache) | 2026-10-17 | FlashCacheTier |
-| DDN | [DDN Eliminates GPU Waste Spiral with Industry-Leading KV Cache Performance for AI Reasoning (2025-07-18)](https://www.ddn.com/press-releases/ddn-eliminates-gpu-waste-spiral-with-industry-leading-kv-cache-performance-for-ai-reasoning/) | 2026-10-17 | FlashCacheTier |
 | DeepSeek-AI | [DeepSeek-V3 Technical Report (arXiv:2412.19437)](https://arxiv.org/abs/2412.19437) | 2026-10-16 | FlashCacheTier, HighBandwidthFlash |
 | Kioxia | [Kioxia Announces KIOXIA GP1 Series Super High IOPS SSDs for AI Applications (2026-08-03)](https://americas.kioxia.com/en-us/business/news/2026/ssd-20260803-1.html) | 2026-10-17 | FlashCacheTier |
 | Kioxia | [KIOXIA Announces New SSD Model Optimized for AI GPU-Initiated Workloads (2026-03-16)](https://americas.kioxia.com/en-us/business/news/2026/ssd-20260316-1.html) | 2026-10-17 | FlashCacheTier |
@@ -119,19 +118,17 @@ Total distinct sources: 115.
 | NVIDIA | [NVIDIA NVLink-C2C](https://www.nvidia.com/en-us/data-center/nvlink-c2c/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Supercharges Hopper, the World's Leading AI Computing Platform (2023-11-13)](https://nvidianews.nvidia.com/news/nvidia-supercharges-hopper-the-worlds-leading-ai-computing-platform) | 2026-10-16 | NvidiaHopper |
 | NVIDIA | [NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell |
-| Pure Storage (Everpure) | [Breaking Enterprise AI Bottlenecks: 20X Faster Inference with the First KV Cache for S3 and NFS (2025-07-31)](https://blog.everpuredata.com/purely-technical/20x-faster-inference-first-kv-cache-for-s3-and-nfs/) | 2026-10-17 | FlashCacheTier |
 | Samsung | [Samsung Ships Industry-First Commercial HBM4 With Ultimate Performance for AI Computing (2026-02-12)](https://news.samsung.com/global/samsung-ships-industry-first-commercial-hbm4-with-ultimate-performance-for-ai-computing) | 2026-10-16 | HighBandwidthFlash |
 | Sandisk | [HBF Fact Sheet (Tech Brief, July 2025)](https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/sandisk/collateral/company/Sandisk-HBF-Fact-Sheet.pdf) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
 | Sandisk | [Sandisk 2026 Investor Day (2026-08-13), transcript of company presentations published by Stock Analysis](https://stockanalysis.com/stocks/sndk/transcripts/708061-investor-day-2026/) | 2026-10-17 | HighBandwidthFlash |
 | Sandisk | [Sandisk and SK hynix Advance Global Standardization of High Bandwidth Flash with Release of First OCP Technical Specification (2026-08-03)](https://www.sandisk.com/company/newsroom/press-releases/2026/2026-08-03-Sandisk-and-sk-hynix-advance-global-standardization-of-hbf) | 2026-10-17 | HighBandwidthFlash |
-| Sandisk | [Sandisk to Collaborate with SK hynix to Drive Standardization of High-Bandwidth Flash Memory Technology (2025-08-06)](https://www.sandisk.com/company/newsroom/press-releases/2025/2025-08-06-sandisk-to-collaborate-with-sk-hynix-to-drive-standardization-of-high-bandwidth-flash-memory-technology) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
+| Sandisk | [Sandisk to Collaborate with SK hynix to Drive Standardization of High-Bandwidth Flash Memory Technology (2025-08-06)](https://www.sandisk.com/company/newsroom/press-releases/2025/2025-08-06-sandisk-to-collaborate-with-sk-hynix-to-drive-standardization-of-high-bandwidth-flash-memory-technology) | 2026-10-17 | HighBandwidthFlash |
 | SK hynix | ["Memory-Centric Server Systems Are the Future": SK hynix Presents Its Next-Generation AI Infrastructure Vision at OCP Global Summit 2026 (2026-10-16)](https://news.skhynix.com/en/ocp-global-summit-2026/) | 2026-10-17 | HighBandwidthFlash |
 | SK hynix | [SK AI Summit 2025: SK hynix Unveils AI Memory Creator Vision (AI-N P, 2025-11-20)](https://news.skhynix.com/sk-hynix-redefines-its-vision-at-sk-ai-summit-2025-from-ai-memory-provider-to-creator/) | 2026-10-17 | FlashCacheTier |
 | SK hynix | [SK hynix HBM4 product page](https://product.skhynix.com/products/dram/hbm/hbm4.go) | 2026-10-16 | HighBandwidthFlash |
 | SK hynix | [SK hynix Presents Next Generation NAND Storage Product Strategy at OCP 2025 (2025-10-27)](https://news.skhynix.com/en/sk-hynix-presents-next-generation-nand-storage-product-strategy-at-ocp-2025/) | 2026-10-17 | HighBandwidthFlash |
 | SK hynix | [SK hynix Ships Samples of 12-Layer Next-Gen HBM4E (2026-06-18)](https://news.skhynix.com/en/sk-hynix-ships-samples-of-12-layer-next-gen-hbm4e-2/) | 2026-10-16 | HighBandwidthFlash |
 | VAST Data | [NVIDIA Dynamo + VAST = Scalable, Optimized Inference (2025-12-16, with CoreWeave)](https://www.vastdata.com/blog/nvidia-dynamo-vast-scalable-optimized-inference) | 2026-10-17 | FlashCacheTier |
-| WEKA | [WEKA Augmented Memory Grid product page](https://www.weka.io/product/augmented-memory-grid/) | 2026-10-17 | FlashCacheTier |
 
 ## Tier 3: third-party analysis, academic paper or trade press
 

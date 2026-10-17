@@ -1,0 +1,412 @@
+import type { Source } from '../components/Cite';
+
+/**
+ * Sources for src/sections/FlashCacheTier.tsx and src/components/Flash*.tsx.
+ * Tiers and URLs follow research/2026-10-refresh/flash-cache-tier.md (Sources),
+ * with rows reused from 01-memory.md, 02-nvidia.md, 05-workloads.md and hbf.md.
+ * Records shared with another section file reuse its URL, title, publisher and
+ * tier. Records for the two instance store pages, the Llama 3 paper and the LMCache
+ * local storage page were fetched during authoring on 2026-10-17.
+ */
+export const S = {
+  // AWS documentation (Tier 1)
+  ec2AcceleratedSpecs: {
+    title: 'Amazon EC2 accelerated computing instance specifications',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  instanceStore: {
+    title: 'Instance store temporary block storage for EC2 instances',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  instanceStoreLifetime: {
+    title: 'Data persistence for Amazon EC2 instance store volumes',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  fsxPerformance: {
+    title: 'Amazon FSx for Lustre performance: throughput to individual client instances',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  fsxEfa: {
+    title: 'Amazon FSx for Lustre: working with EFA-enabled file systems',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  fsxSsd: {
+    title: 'Amazon FSx for Lustre: SSD storage performance',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  s3Express: {
+    title: 'Amazon S3 Express One Zone: high performance with directory buckets',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  hyperpodKvDocs: {
+    title: 'SageMaker HyperPod: managed tiered KV cache and routing',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-ray-kv-cache.html',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+
+  // Pinned code and in-repo docs (Tier 1)
+  dynamoKvbmDocs: {
+    title: 'ai-dynamo/dynamo KVBM configuration and KV cache offloading docs at tag v1.5.1',
+    publisher: 'NVIDIA Dynamo',
+    url: 'https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/reference/components/kvbm-configuration.mdx',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  dynamoKvbmCode: {
+    title: 'ai-dynamo/dynamo lib/bindings/kvbm/src/block_manager.rs at tag v1.5.1 (disk offload filter, page_size)',
+    publisher: 'NVIDIA Dynamo',
+    url: 'https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/bindings/kvbm/src/block_manager.rs',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  dynamoRouterCode: {
+    title: 'ai-dynamo/dynamo lib/kv-router/src/scheduling/config.rs at tag v1.5.1 (cache hit weights)',
+    publisher: 'NVIDIA Dynamo',
+    url: 'https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/kv-router/src/scheduling/config.rs',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  nixl: {
+    title: 'ai-dynamo/nixl storage and network plugins at tag v1.5.0',
+    publisher: 'NVIDIA Dynamo',
+    url: 'https://github.com/ai-dynamo/nixl/tree/v1.5.0/src/plugins',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  sglangHicache: {
+    title: 'SGLang HiCache design and best practices at tag v0.5.21',
+    publisher: 'SGLang',
+    url: 'https://github.com/sgl-project/sglang/blob/v0.5.21/docs/docs/advanced_features/hicache_design.mdx',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  lmcache: {
+    title: 'LMCache local storage backend docs at tag v0.5.6 (per-GPU disk paths, O_DIRECT, example chunk size)',
+    publisher: 'LMCache',
+    url: 'https://github.com/LMCache/LMCache/blob/v0.5.6/docs/source/kv_cache/storage_backends/local_storage.rst',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  vllmOffloadMetrics: {
+    title: 'vLLM kv_offload metrics (offloading/metrics.py) at tag v0.31.0',
+    publisher: 'vLLM',
+    url: 'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/offloading/metrics.py',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  vllmCacheConfig: {
+    title: 'vLLM vllm/config/cache.py at tag v0.31.0 (DEFAULT_BLOCK_SIZE)',
+    publisher: 'vLLM',
+    url: 'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/cache.py',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  llmd: {
+    title: 'llm-d tiered prefix cache guides and metrics docs at tag v0.10.0',
+    publisher: 'llm-d',
+    url: 'https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/README.md',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+
+  // NVIDIA and device documentation (Tier 1)
+  gdsOverview: {
+    title: 'NVIDIA GPUDirect Storage Overview Guide v1.19.1',
+    publisher: 'NVIDIA',
+    url: 'https://docs.nvidia.com/gpudirect-storage/overview-guide/index.html',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  gdsReleaseNotes: {
+    title: 'NVIDIA GPUDirect Storage Release Notes v1.19.1',
+    publisher: 'NVIDIA',
+    url: 'https://docs.nvidia.com/gpudirect-storage/release-notes/index.html',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  micron9650: {
+    title: 'Micron 9650 NVMe SSD product brief (key specifications and test conditions)',
+    publisher: 'Micron',
+    url: 'https://www.micron.com/content/dam/micron/global/public/products/storage/ssds/data-center/9650/9650-nvme-ssd-product-brief.pdf',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  storageLender: {
+    title: 'NVIDIA/storage-lender README at commit 1630d17 (SCADA control path)',
+    publisher: 'NVIDIA',
+    url: 'https://github.com/NVIDIA/storage-lender/blob/1630d17b50b7130dee27c1f71361ad5af4e434bb/README.md',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+
+  // Papers and provider docs (Tier 1)
+  bam: {
+    title:
+      'GPU-Initiated On-Demand High-Throughput Storage Access in the BaM System Architecture (Qureshi et al., ASPLOS 2023, arXiv:2203.04910)',
+    publisher: 'arXiv',
+    url: 'https://arxiv.org/abs/2203.04910',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  cmmH: {
+    title:
+      'Performance Characterizations and Usage Guidelines of Samsung CXL Memory Module Hybrid Prototype (Zeng et al., arXiv:2503.22017)',
+    publisher: 'arXiv',
+    url: 'https://arxiv.org/abs/2503.22017',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  mooncakeFast: {
+    title:
+      'Mooncake: Trading More Storage for Less Computation, a KVCache-centric Architecture for Serving LLM Chatbot (Qin et al., USENIX FAST 2025)',
+    publisher: 'USENIX',
+    url: 'https://www.usenix.org/system/files/fast25-qin.pdf',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  mooncakeArxiv: {
+    title: 'Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving (arXiv:2407.00079v4)',
+    publisher: 'arXiv',
+    url: 'https://arxiv.org/abs/2407.00079',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  deepseekCaching: {
+    title: 'DeepSeek API docs: Context Caching',
+    publisher: 'DeepSeek',
+    url: 'https://api-docs.deepseek.com/guides/kv_cache',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  deepseekPricing: {
+    title: 'DeepSeek API docs: Models and Pricing',
+    publisher: 'DeepSeek',
+    url: 'https://api-docs.deepseek.com/quick_start/pricing',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+
+  // Model shapes (Tier 1 configs; Tier 2 vendor-authored reports)
+  llama70bApi: {
+    title: 'meta-llama/Llama-3.1-70B model metadata at sha 349b2dd (70,553,706,496 parameters)',
+    publisher: 'Hugging Face',
+    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B',
+    tier: 1,
+    accessed: '2026-10-16',
+  },
+  llama3Herd: {
+    title: 'The Llama 3 Herd of Models (arXiv:2407.21783), Table 3: layers, heads and key/value heads',
+    publisher: 'Meta',
+    url: 'https://arxiv.org/abs/2407.21783',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  qwen3Config: {
+    title: 'Qwen/Qwen3-235B-A22B config.json at revision 8efa617',
+    publisher: 'Hugging Face',
+    url: 'https://huggingface.co/Qwen/Qwen3-235B-A22B/blob/8efa61729e24bd65b1d152b5ab5409052aa80e65/config.json',
+    tier: 1,
+    accessed: '2026-10-16',
+  },
+  qwen3Readme: {
+    title: 'Qwen/Qwen3-235B-A22B README at revision 8efa617 (22B activated)',
+    publisher: 'Hugging Face',
+    url: 'https://huggingface.co/Qwen/Qwen3-235B-A22B/blob/8efa61729e24bd65b1d152b5ab5409052aa80e65/README.md',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  deepseekV3Config: {
+    title: 'deepseek-ai/DeepSeek-V3 config.json at revision e815299',
+    publisher: 'Hugging Face',
+    url: 'https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/config.json',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  deepseekV3Report: {
+    title: 'DeepSeek-V3 Technical Report (arXiv:2412.19437)',
+    publisher: 'DeepSeek-AI',
+    url: 'https://arxiv.org/abs/2412.19437',
+    tier: 2,
+    accessed: '2026-10-16',
+  },
+  deepseekV41Flash: {
+    title: 'deepseek-ai/DeepSeek-V4.1-Flash README at revision 314113f (890 bytes per token)',
+    publisher: 'Hugging Face',
+    url: 'https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/314113f8a7dadb388215396ba5fbee2c610a04d6/README.md',
+    tier: 1,
+    accessed: '2026-10-16',
+  },
+  xeon6Brief: {
+    title: 'Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)',
+    publisher: 'Intel',
+    url: 'https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html',
+    tier: 1,
+    accessed: '2026-10-16',
+  },
+  ocpHbfSpec: {
+    title: 'High Bandwidth Flash (HBF) High-Level Base Die Specification, Version 0.7.0 (2026-08-03)',
+    publisher: 'Open Compute Project',
+    url: 'https://www.opencompute.org/documents/ocp-hbf-architecture-specification-v0-7-0-final-pdf',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+  maPatterson: {
+    title:
+      'Challenges and Research Directions for Large Language Model Inference Hardware (X. Ma and D. Patterson, Google; arXiv:2601.05047)',
+    publisher: 'arXiv',
+    url: 'https://arxiv.org/abs/2601.05047',
+    tier: 1,
+    accessed: '2026-10-17',
+  },
+
+  // Vendor pages, blogs and releases (Tier 2)
+  h100Page: {
+    title: 'NVIDIA H100 Tensor Core GPU',
+    publisher: 'NVIDIA',
+    url: 'https://www.nvidia.com/en-us/data-center/h100/',
+    tier: 2,
+    accessed: '2026-10-16',
+  },
+  h200Page: {
+    title: 'NVIDIA H200 Tensor Core GPU',
+    publisher: 'NVIDIA',
+    url: 'https://www.nvidia.com/en-us/data-center/h200/',
+    tier: 2,
+    accessed: '2026-10-16',
+  },
+  dgxB200: {
+    title: 'NVIDIA DGX B200',
+    publisher: 'NVIDIA',
+    url: 'https://www.nvidia.com/en-us/data-center/dgx-b200/',
+    tier: 2,
+    accessed: '2026-10-16',
+  },
+  p6Page: {
+    title: 'Amazon EC2 P6 instances',
+    publisher: 'AWS',
+    url: 'https://aws.amazon.com/ec2/instance-types/p6/',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  trn3Page: {
+    title: 'Amazon EC2 Trn3 instances',
+    publisher: 'AWS',
+    url: 'https://aws.amazon.com/ec2/instance-types/trn3/',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  hyperpodWhatsNew: {
+    title: 'SageMaker HyperPod now supports Managed tiered KV cache and intelligent routing (2025-11-26)',
+    publisher: 'AWS',
+    url: 'https://aws.amazon.com/about-aws/whats-new/2025/11/sagemaker-hyperpod-managed-tiered-kv-cache',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  hyperpodBlog: {
+    title: 'Managed Tiered KV Cache and Intelligent Routing for Amazon SageMaker HyperPod (2025-11-26)',
+    publisher: 'AWS',
+    url: 'https://aws.amazon.com/blogs/machine-learning/managed-tiered-kv-cache-and-intelligent-routing-for-amazon-sagemaker-hyperpod/',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  dynamoAgenticBlog: {
+    title: 'Full-Stack Optimizations for Agentic Inference with Dynamo (in-repo blog at Dynamo tag v1.5.1)',
+    publisher: 'NVIDIA',
+    url: 'https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/blog/2026/agentic-inference-optimizations.mdx',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  nvidiaStorageBlog: {
+    title: 'As AI Increases Demands on Memory, Storage Steps Up (2026-08-04; Storage-Next, SCADA)',
+    publisher: 'NVIDIA',
+    url: 'https://blogs.nvidia.com/blog/ai-storage-fms/',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  cmxBlog: {
+    title: 'Introducing NVIDIA BlueField-4-Powered Inference Context Memory Storage Platform (G1 to G4 tiers, G3.5)',
+    publisher: 'NVIDIA',
+    url: 'https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  cesRelease: {
+    title: 'NVIDIA BlueField-4 Powers New Class of AI-Native Storage Infrastructure (CES, January 2026)',
+    publisher: 'NVIDIA',
+    url: 'https://nvidianews.nvidia.com/_gallery/download_pdf/695c3d883d6332559a6a627d/',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  dpuPage: {
+    title: 'NVIDIA BlueField data processing units (BlueField-4 800 Gb/s, BlueField-3 400 Gb/s)',
+    publisher: 'NVIDIA',
+    url: 'https://www.nvidia.com/en-us/networking/products/data-processing-unit/',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  kioxiaGp1: {
+    title: 'Kioxia Announces KIOXIA GP1 Series Super High IOPS SSDs for AI Applications (2026-08-03)',
+    publisher: 'Kioxia',
+    url: 'https://americas.kioxia.com/en-us/business/news/2026/ssd-20260803-1.html',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  kioxiaStorageNext: {
+    title: 'KIOXIA Announces New SSD Model Optimized for AI GPU-Initiated Workloads (2026-03-16)',
+    publisher: 'Kioxia',
+    url: 'https://americas.kioxia.com/en-us/business/news/2026/ssd-20260316-1.html',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  skhynixAin: {
+    title: 'SK AI Summit 2025: SK hynix Unveils AI Memory Creator Vision (AI-N P, 2025-11-20)',
+    publisher: 'SK hynix',
+    url: 'https://news.skhynix.com/sk-hynix-redefines-its-vision-at-sk-ai-summit-2025-from-ai-memory-provider-to-creator/',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  sandiskHbf: {
+    title: 'HBF Fact Sheet (Tech Brief, July 2025)',
+    publisher: 'Sandisk',
+    url: 'https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/sandisk/collateral/company/Sandisk-HBF-Fact-Sheet.pdf',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  vastBlog: {
+    title: 'NVIDIA Dynamo + VAST = Scalable, Optimized Inference (2025-12-16, with CoreWeave)',
+    publisher: 'VAST Data',
+    url: 'https://www.vastdata.com/blog/nvidia-dynamo-vast-scalable-optimized-inference',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+  nebiusWeka: {
+    title: 'Nebius and WEKA benchmark shared KV cache for agentic inference on NVIDIA HGX B300 (2026-09-24)',
+    publisher: 'Nebius',
+    url: 'https://nebius.com/blog/posts/nebius-weka-shared-kv-cache-benchmark-hgx-b300',
+    tier: 2,
+    accessed: '2026-10-17',
+  },
+} satisfies Record<string, Source>;
