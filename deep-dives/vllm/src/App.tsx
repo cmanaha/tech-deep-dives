@@ -110,7 +110,7 @@ const sections = [
   { id: 'scheduler', title: '4. Scheduler & Continuous Batching' },
   { id: 'paged', title: '5. PagedAttention & KV-Cache' },
   { id: 'prefix', title: '6. Automatic Prefix Caching' },
-  { id: 'offload', title: '7. KV-Cache Offloading & LMCache' },
+  { id: 'offload', title: '7. KV-Cache Offloading & Tiers' },
   { id: 'quant', title: '8. Quantization & Precision' },
   { id: 'distributed', title: '9. Distributed Inference' },
   { id: 'disagg', title: '10. Disaggregated Prefill / Decode' },
