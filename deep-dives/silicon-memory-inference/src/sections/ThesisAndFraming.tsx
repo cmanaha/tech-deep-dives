@@ -111,8 +111,10 @@ export function ThesisAndFraming() {
                 GPU SM (Streaming Multiprocessor) issues from a warp scheduler and hides a stalled
                 warp&apos;s latency by running other warps.
                 <Cite s={S.cudaBestPractices} /> On Trainium the Neuron compiler fixes most of the
-                schedule ahead of time in a NEFF (Neuron Executable File Format); Trainium3 adds
-                ISA (instruction set architecture) support for dynamic shapes and control flow.
+                schedule ahead of time in a NEFF (Neuron Executable File Format); Trainium2 and
+                Trainium3 add ISA (instruction set architecture) support for dynamic shapes and
+                control flow.
+                <Cite s={S.trainium2Arch} />
                 <Cite s={S.trainium3Arch} /> On a Cerebras WSE-3 (Wafer-Scale Engine 3), each of
                 900,000 cores runs its own program from 48 kB of local SRAM and fires a task when
                 its data arrives, with no global scheduler.
