@@ -10,7 +10,9 @@ import type { Source, Tier } from '../components/Cite';
  */
 type SourceModule = { S: Record<string, Source> };
 
-const modules = import.meta.glob<SourceModule>(['./*.ts', '!./index.ts'], { eager: true });
+const modules = import.meta.glob<SourceModule>(['./*.ts', '!./index.ts', '!./markdown.ts'], {
+  eager: true,
+});
 
 export interface CitedSource extends Source {
   /** Section files that cite this URL, e.g. ['HbmAndBandwidthWall']. */
