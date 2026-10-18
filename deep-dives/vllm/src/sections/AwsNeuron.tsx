@@ -13,8 +13,8 @@ import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
 
 // ---------------------------------------------------------------------------
 // Sources. vllm-neuron is pinned to tag v0.24.0.1.1.0 (commit ed3580d0), the
-// latest plugin release on 2026-10-16. AWS Neuron documentation publishes no
-// versioned URLs, so those citations carry the accessed date only.
+// latest plugin release on 2026-10-16. AWS Neuron documentation is pinned to
+// its versioned /en/v2.32.0/ URLs.
 // ---------------------------------------------------------------------------
 const VN_TAG = 'v0.24.0.1.1.0';
 const VN = `https://github.com/vllm-project/vllm-neuron/blob/${VN_TAG}`;
@@ -124,7 +124,7 @@ const featureRows: FeatureRow[] = [
   {
     feature: 'Multimodal: images or video with text',
     status: 'Supported',
-    notes: 'Tested on Qwen3-VL 32B. The vision encoder can also run disaggregated (EPD: encode, prefill and decode on separate servers).',
+    notes: 'Tested on Qwen3-VL 32B. The vision encoder can also run on its own server pool (EPD, encoder disaggregation), with prefill and decode together on a second pool.',
   },
   {
     feature: 'Multimodal: audio',
@@ -608,6 +608,10 @@ export function AwsNeuron() {
             <Cite tier={1} href={VN_REL_024}>
               vllm-neuron v0.24.0.1.1.0 release notes
             </Cite>
+            . EPD keeps prefill and decode in one engine{' '}
+            <Cite tier={1} href={`${VN_FEATURES}#L828-L837`}>
+              features guide L828-L837
+            </Cite>
             . The LoRA fallback is from the v0.21.0.1.0.0 known issues{' '}
             <Cite tier={1} href={VN_REL_021}>
               v0.21.0.1.0.0 release notes
@@ -757,34 +761,38 @@ export function AwsNeuron() {
             .
           </Box>
 
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">Leader node</Box>
-              <Box variant="p">
-                &quot;Runs the Triton Inference Server and vLLM engine, serving as the primary
-                orchestration unit for inference.&quot; After scheduling, requests go to &quot;the
-                NeuronWorker component in vLLM, which handles broadcasting model inputs&quot;.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">Follower nodes</Box>
-              <Box variant="p">
-                Each follower &quot;operates as an independent process and acts as a wrapper around
-                the vLLM NeuronWorker component&quot;, listening for the inputs the leader broadcasts.
-              </Box>
-            </div>
-          </ColumnLayout>
+          <ExpandableSection headerText="How the Rufus deployment is built: leader, followers, collectives">
+            <SpaceBetween size="s">
+              <ColumnLayout columns={2} variant="text-grid">
+                <div>
+                  <Box variant="h3">Leader node</Box>
+                  <Box variant="p">
+                    &quot;Runs the Triton Inference Server and vLLM engine, serving as the primary
+                    orchestration unit for inference.&quot; After scheduling, requests go to &quot;the
+                    NeuronWorker component in vLLM, which handles broadcasting model inputs&quot;.
+                  </Box>
+                </div>
+                <div>
+                  <Box variant="h3">Follower nodes</Box>
+                  <Box variant="p">
+                    Each follower &quot;operates as an independent process and acts as a wrapper around
+                    the vLLM NeuronWorker component&quot;, listening for the inputs the leader broadcasts.
+                  </Box>
+                </div>
+              </ColumnLayout>
 
-          <Box variant="p">
-            Cross-node collectives &quot;are managed by the Neuron Distributed Inference (NxDI)
-            library, which uses EFA to deliver high-bandwidth, low-latency inter-node
-            communication.&quot; The deployment pairs nodes with the EC2 DescribeInstanceTopology API
-            and runs each multi-node unit on Amazon ECS (Elastic Container Service){' '}
-            <Cite tier={2} href={RUFUS}>
-              AWS ML blog: How Amazon scaled Rufus
-            </Cite>
-            . Section 23 (EC2 Topology &amp; Placement Groups) covers the topology API.
-          </Box>
+              <Box variant="p">
+                Cross-node collectives &quot;are managed by the Neuron Distributed Inference (NxDI)
+                library, which uses EFA to deliver high-bandwidth, low-latency inter-node
+                communication.&quot; The deployment pairs nodes with the EC2 DescribeInstanceTopology API
+                and runs each multi-node unit on Amazon ECS (Elastic Container Service){' '}
+                <Cite tier={2} href={RUFUS}>
+                  AWS ML blog: How Amazon scaled Rufus
+                </Cite>
+                . Section 23 (EC2 Topology &amp; Placement Groups) covers the topology API.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
 
           <Alert type="info" header="What carries over to a new design">
             The blog is AWS&apos;s account of a leader/follower vLLM deployment running on Trainium

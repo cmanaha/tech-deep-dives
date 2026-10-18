@@ -47,7 +47,7 @@ const mechanismRows: MechanismRow[] = [
     kind: 'Control (placement directive)',
     effect:
       'Packs instances into one Availability Zone (AZ) on the same high-bisection-bandwidth segment; raises the single-flow TCP limit from 5 Gbps to 10 Gbps between members.',
-    use: 'Default lever for any multi-node job where the nodes talk to each other constantly: TP/PP (tensor/pipeline parallel) collectives, and (by inference) disaggregated KV transfer.',
+    use: 'Default lever for any multi-node job where the nodes talk to each other constantly: TP/PP (tensor/pipeline parallel) traffic, and (by inference) disaggregated KV transfer.',
   },
   {
     mechanism: 'ODCR inside a cluster placement group',
@@ -320,9 +320,8 @@ export function Ec2TopologyPlacement() {
             Blocks for ML. The other holds two read-only APIs that <em>observe</em> placement:{' '}
             <code>DescribeCapacityReservationTopology</code> for pending or active reservations
             before launch, and <code>DescribeInstanceTopology</code> for running instances after
-            it. A pre-launch read still places nothing. The most common mistake an SA (Solutions
-            Architect) sees is asking a topology API to &quot;launch my instances close
-            together.&quot; It cannot. It describes capacity that already exists.
+            it. A pre-launch read still places nothing. A topology API cannot &quot;launch my
+            instances close together&quot;: it describes capacity that already exists.
           </Box>
           <Box variant="p">
             <strong>Why a vLLM section cares about racks at all.</strong> Two of vLLM&apos;s
@@ -337,8 +336,9 @@ export function Ec2TopologyPlacement() {
             <Cite tier={1} href={vllmUrl(`${NIXL}/connector.py`, 'L367-L368')} kind="code">
               connector.py L367-L368
             </Cite>
-            . In multi-node tensor- and pipeline-parallel serving the engine runs NCCL (NVIDIA
-            Collective Communications Library) collectives every layer. Both ride the same
+            . In multi-node tensor-parallel serving the engine runs NCCL (NVIDIA Collective
+            Communications Library) collectives every layer, and pipeline-parallel serving passes
+            activations between nodes at each stage boundary. Both ride the same
             OS-bypass fabric covered in{' '}
             <strong>section 22 (vLLM on AWS GPUs, EFA &amp; NIXL)</strong> and in the sibling{' '}
             <Link external href="../efa/">
@@ -406,7 +406,7 @@ export function Ec2TopologyPlacement() {
         header={
           <Header
             variant="h2"
-            description="Where each mechanism sits relative to launch, and where the topology you read ends up: rank assignment, Kubernetes node labels and the llm-d scheduler."
+            description="Where each mechanism, from a cluster placement group (PG) to a Capacity Block, sits relative to launch, and where the topology you read ends up: rank assignment, Kubernetes node labels and the llm-d Endpoint Picker (EPP)."
           >
             Diagram 1: control levers vs the read-only observers
           </Header>
@@ -456,8 +456,10 @@ export function Ec2TopologyPlacement() {
             . Instances inside one{' '}
             <em>&quot;can use up to 10 Gbps for single-flow traffic&quot;</em> while instances
             outside one get <em>&quot;up to 5 Gbps for single-flow traffic&quot;</em> (same
-            source). That 2x single-flow headroom is the headline reason it is the default lever
-            for tightly-coupled jobs.
+            source). AWS recommends cluster placement groups for applications that{' '}
+            <em>&quot;benefit from low network latency, high network throughput, or both&quot;</em>{' '}
+            and where <em>&quot;the majority of the network traffic is between the instances in
+            the group&quot;</em> (same source), which is the profile of a multi-node vLLM replica.
           </Box>
           <ColumnLayout columns={3} variant="text-grid">
             <div>
@@ -504,8 +506,8 @@ export function Ec2TopologyPlacement() {
                   an On-Demand Capacity Reservation in the cluster placement group&quot;
                 </em>
                 . Zonal Reserved Instances cannot do this, because they can&apos;t reserve
-                capacity in a placement group (same source). That is the ODCR-in-PG
-                (placement group) pattern in the next panel.
+                capacity in a placement group (same source). That is the ODCR-in-PG pattern in
+                the next panel.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -639,8 +641,9 @@ export function Ec2TopologyPlacement() {
             <div>
               <Box variant="h3">3 network nodes (3 layers)</Box>
               <Box variant="p">
-                P3dn, P4d, P4de, <strong>P5, P5e, P5en</strong>, P6e-GB200, Trn1, Trn1n,{' '}
-                <strong>Trn2</strong>, Trn2u, plus the G6e/G7e and HPC families{' '}
+                P3dn, P4d, P4de, <strong>P5, P5e, P5en</strong> (48xlarge only; p5.4xlarge is not
+                listed), P6e-GB200, Trn1, Trn1n, <strong>Trn2</strong>, Trn2u, plus the G6e/G7e and
+                HPC families{' '}
                 <Cite tier={1} href={TOPO_PREREQ}>
                   EC2 User Guide: Topology prerequisites
                 </Cite>
@@ -849,8 +852,8 @@ export function Ec2TopologyPlacement() {
                 dense collective AllReduce across many ranks, where the slowest path gates every
                 step. AWS does not state this. Until it does, keep prefiller and decoder pools in
                 the same proximity domain (a cluster placement group, ODCR-in-PG, or Capacity
-                Block): the cost of doing so is near zero and the cost of being wrong is paid on
-                every token.
+                Block): the cost of doing so is the capacity planning in the panels above, and the
+                cost of being wrong is paid on every token.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -917,7 +920,7 @@ export function Ec2TopologyPlacement() {
             variant="h2"
             description="The whole section as a recipe you can hand to a team."
           >
-            Putting it together: the SA playbook
+            Putting it together: the SA (Solutions Architect) playbook
           </Header>
         }
       >

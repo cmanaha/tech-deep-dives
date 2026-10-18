@@ -19,6 +19,7 @@ const EC2_P6_PAGE = 'https://aws.amazon.com/ec2/instance-types/p6/';
 const P6E_GB300_NEWS =
   'https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available/';
 const EFA_CHANGELOG = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-changelog.html';
+const EFA_TYPES = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html';
 const EKS_EFA = 'https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html';
 const DLC_BLOG =
   'https://aws.amazon.com/blogs/machine-learning/deploy-llms-on-amazon-eks-using-vllm-deep-learning-containers/';
@@ -49,8 +50,8 @@ const instanceRows: InstanceRow[] = [
   {
     family: 'P5en (p5en.48xlarge)',
     gpu: '8x NVIDIA H200, 141 GiB each',
-    net: '3,200 Gbps across 16 network cards (200 Gbps per card by division, against 100 on P5)',
-    use: 'P5e GPUs; the same bandwidth on half the network cards',
+    net: '3,200 Gbps across 16 network cards',
+    use: 'P5e GPUs and the same 3,200 Gbps, on 16 network cards rather than 32',
   },
   {
     family: 'P6-B200 (p6-b200.48xlarge)',
@@ -62,12 +63,12 @@ const instanceRows: InstanceRow[] = [
     family: 'P6-B300 (p6-b300.48xlarge)',
     gpu: '8x NVIDIA B300, 268 GiB each',
     net: '6,400 Gbps across 17 network cards',
-    use: 'Twice the network bandwidth of P6-B200 (6,400 vs 3,200 Gbps) for KV transfer',
+    use: '6,400 Gbps against the 3,200 of P6-B200 for KV transfer',
   },
   {
     family: 'P6e-GB200 (p6e-gb200.36xlarge, UltraServers only)',
     gpu: '4x NVIDIA B200 per instance, 185 GiB each; an UltraServer puts up to 72 Blackwell GPUs in one NVLink domain',
-    net: '17 network cards; per-instance EFA bandwidth not confirmed in a first-party source during this research',
+    net: '3,200 Gbps across 17 network cards',
     use: 'NVLink reaches across the instances of an UltraServer, so the domain that bounds TP is larger than one instance',
   },
   {
@@ -288,8 +289,14 @@ export function AwsGpuEfaNixl() {
             <Cite tier={1} href={AWS_NIXL_GUIDE}>
               AWS EC2 User Guide: EFA and NIXL
             </Cite>
-            , and EFA moves the blocks by <strong>GPUDirect RDMA</strong>: GPU HBM to GPU HBM,
-            without staging through host memory and without the kernel on the data path.
+            . On the P5, P5e, P5en, P6-B200, P6-B300 and P6e-GB200 sizes in the table below,
+            EFA moves the blocks by <strong>GPUDirect RDMA</strong>: GPU HBM to GPU HBM, without
+            staging through host memory and without the kernel on the data path. G6e has EFA
+            but no GPUDirect RDMA{' '}
+            <Cite tier={1} href={EFA_TYPES}>
+              AWS EC2 User Guide: EFA supported instance types
+            </Cite>
+            .
           </Box>
 
           <KvDataPathDiagram />
@@ -548,7 +555,8 @@ vllm serve <your-model> \\
                 <Cite tier={1} href={vllmUrl(USAGE_DOC, 'L39-L52')}>
                   nixl_connector_usage.md L39-L52
                 </Cite>
-                . With <code>kv_buffer_device: cuda</code> the transfer is GPU to GPU over EFA.
+                . With <code>kv_buffer_device: cuda</code> the transfer runs GPU to GPU over EFA
+                on the instance types with GPUDirect RDMA (the data path above).
               </Box>
             </div>
           </ColumnLayout>
@@ -807,13 +815,13 @@ vllm serve <your-model> \\
             </li>
             <li>
               <strong>Validate the fabric before vLLM.</strong> Run{' '}
-              <code>nixlbench --backend LIBFABRIC --initiator_seg_type VRAM --target_seg_type VRAM</code>{' '}
-              between two hosts, coordinated through an etcd server{' '}
+              <code>nixlbench --backend LIBFABRIC --initiator_seg_type VRAM</code> on two hosts,
+              with an etcd server on the first host coordinating them{' '}
               <Cite tier={1} href={AWS_NIXL_GUIDE}>
                 AWS EC2 User Guide: EFA and NIXL
               </Cite>
-              . If that GPU-to-GPU transfer does not run clean, <code>NixlConnector</code> will not
-              either.
+              . If that cross-host transfer from GPU memory does not run clean,{' '}
+              <code>NixlConnector</code> will not either.
             </li>
             <li>
               <strong>Start the prefiller and the decoder</strong> with the two commands above, in
