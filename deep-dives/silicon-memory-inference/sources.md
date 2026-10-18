@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 343.
+Total distinct sources: 356.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
@@ -35,28 +35,30 @@ Total distinct sources: 343.
 | AWS | [AWS Neuron: Amazon EC2 Trn2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn2-arch.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut, HeterogeneityFact, MoeAndSparseActivation |
 | AWS | [AWS Neuron: Amazon EC2 Trn3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn3-arch.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut, MoeAndSparseActivation |
 | AWS | [AWS Neuron: Component Release Notes for Neuron Developer Tools (Neuron Explorer)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/dev-tools.html) | 2026-10-17 | AwsCompilersAndTooling |
-| AWS | [AWS Neuron: Component Release Notes for Neuron Graph Compiler](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/compiler.html) | 2026-10-16 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron: Component Release Notes for Neuron Graph Compiler](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/compiler.html) | 2026-10-16 | AwsCompilersAndTooling, DeterminismAOT |
 | AWS | [AWS Neuron: Component Release Notes for Neuron PyTorch Framework](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/pytorch.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: Data Types](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/data-types.html) | 2026-10-17 | QuantizationAndPrecision |
 | AWS | [AWS Neuron: Inferentia2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/inferentia2.html) | 2026-10-16 | AwsCustomSilicon |
-| AWS | [AWS Neuron: Intra-node Collective Communications with AWS Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/explore/intranode-collective-comm.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon |
-| AWS | [AWS Neuron: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/jax/api-reference-guide/neuron-envvars.html) | 2026-10-16 | AwsCustomSilicon, CapitalMarketsLens |
+| AWS | [AWS Neuron: Intra-node Collective Communications with AWS Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/explore/intranode-collective-comm.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, DeterminismAOT |
+| AWS | [AWS Neuron: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/jax/api-reference-guide/neuron-envvars.html) | 2026-10-17 | AwsCustomSilicon, CapitalMarketsLens, DeterminismAOT |
 | AWS | [AWS Neuron: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/pytorch-native-overview.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, CommunicationAndScaleOut |
 | AWS | [AWS Neuron: Neuron Compiler CLI Reference Guide (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/neuronx-cc/api-reference-guide/index.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: Neuron Graph Compiler overview (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/index.html) | 2026-10-17 | AwsCompilersAndTooling, KernelExecutionLifecycle |
-| AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, IsolationNie, KernelExecutionLifecycle |
+| AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, DeterminismAOT, IsolationNie, KernelExecutionLifecycle |
 | AWS | [AWS Neuron: Neuron Persistent Cache](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/neuron-caching.html) | 2026-10-17 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron: Neuron Rounding Modes (RNE and stochastic rounding)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/rounding-modes.html) | 2026-10-17 | DeterminismAOT |
 | AWS | [AWS Neuron: Neuron Runtime configuration guide (NeuronCore reservation, NEURON_RT_VISIBLE_CORES)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/guides/configuration-guide.html) | 2026-10-17 | IsolationNie |
 | AWS | [AWS Neuron: neuron-top User Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/tools/neuron-sys-tools/neuron-top-user-guide.html) | 2026-10-17 | AwsCompilersAndTooling |
-| AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | AwsCustomSilicon, GroqSambanovaDataflow, HeterogeneityFact, IsolationNie |
+| AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | AwsCustomSilicon, DeterminismAOT, GroqSambanovaDataflow, HeterogeneityFact, IsolationNie |
 | AWS | [AWS Neuron: NKI API reference, nki.isa.nc_matmul](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/api/generated/nki.isa.nc_matmul.html) | 2026-10-16 | AwsCompilersAndTooling, AwsCustomSilicon |
-| AWS | [AWS Neuron: NKI Library release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nki-lib.html) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
+| AWS | [AWS Neuron: NKI Library release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nki-lib.html) | 2026-10-17 | DeterminismAOT, MoeAndSparseActivation, QuantizationAndPrecision |
 | AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-17 | AwsCustomSilicon, KernelExecutionLifecycle |
 | AWS | [AWS Neuron: NKI Trainium2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium2_arch.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, KernelExecutionLifecycle |
 | AWS | [AWS Neuron: NKI Trainium3 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium3_arch.html) | 2026-10-16 | AwsCustomSilicon |
 | AWS | [AWS Neuron: Release Notes (Neuron 2.32.0 component versions)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/index.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, CommunicationAndScaleOut, HeterogeneityFact, IsolationNie, KernelExecutionLifecycle, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, HeterogeneityFact, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| AWS | [AWS Neuron: vLLM Neuron design, Decode Context-Length Bucketing](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/vllm-neuron/docs/design/vllm/decode-context-length-bucketing.html) | 2026-10-17 | DeterminismAOT |
 | AWS | [AWS Neuron: What is Neuron Collective Communication?](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut |
 | AWS | [AWS Neuron: What's New in the AWS Neuron SDK (releases 2.27.0 to 2.32.0)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/whats-new.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, CommunicationAndScaleOut, MoeAndSparseActivation |
 | AWS | [aws-graviton-getting-started machinelearning/llama.cpp.md at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/machinelearning/llama.cpp.md) | 2026-10-16 | GravitonDeepDive |
@@ -82,7 +84,12 @@ Total distinct sources: 343.
 | DeepSeek | [DeepSeek API docs: Context Caching](https://api-docs.deepseek.com/guides/kv_cache) | 2026-10-17 | FlashCacheTier |
 | DeepSeek | [DeepSeek API docs: Models and Pricing](https://api-docs.deepseek.com/quick_start/pricing) | 2026-10-17 | FlashCacheTier |
 | DeepSeek-AI | [DeepEP README at tag v1.2.1 (V1 kernel performance tables)](https://github.com/deepseek-ai/DeepEP/blob/v1.2.1/README.md) | 2026-10-17 | CommunicationAndScaleOut, MoeAndSparseActivation |
+| eCFR | [17 CFR 240.17a-4, Records to be preserved by certain exchange members, brokers and dealers, paragraph (e)(8)](https://www.ecfr.gov/current/title-17/section-240.17a-4) | 2026-10-17 | DeterminismAOT |
+| EUR-Lex | [Commission Delegated Regulation (EU) 2017/589 (RTS 6), Articles 5, 9 and 28](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32017R0589) | 2026-10-17 | DeterminismAOT |
+| EUR-Lex | [Regulation (EU) 2022/2554 (DORA), Article 17: ICT-related incident management process](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32022R2554) | 2026-10-17 | DeterminismAOT |
 | European Commission | [Commission Delegated Regulation C(2026) 3647 of 4 June 2026: temporary relief measures and multipliers for own funds requirements for market risk](https://finance.ec.europa.eu/document/download/d7962418-d7d8-4d03-a999-ec760637a67c_en?filename=crr-delegated-act-2026-3647_en.pdf) | 2026-10-17 | CapitalMarketsLens |
+| Federal Reserve Board | [SR 26-2 attachment: Revised Guidance on Model Risk Management (footnote 3, scope; section V, validation)](https://www.federalreserve.gov/supervisionreg/srletters/SR2602a1.pdf) | 2026-10-17 | DeterminismAOT |
+| Federal Reserve Board | [SR 26-2: Revised Guidance on Model Risk Management (2026-04-17)](https://www.federalreserve.gov/supervisionreg/srletters/SR2602.htm) | 2026-10-17 | DeterminismAOT |
 | Huge and Savine (GitHub) | [differential-machine-learning/appendices at commit 585675e](https://github.com/differential-machine-learning/appendices/tree/585675ef05debbb9bb727d43f26ffb29e32ff25f) | 2026-10-16 | CapitalMarketsLens |
 | Huge and Savine (GitHub) | [differential-machine-learning/notebooks at commit 155055e](https://github.com/differential-machine-learning/notebooks/tree/155055eb891d151533530b70d039ad636ffeaf4b) | 2026-10-17 | CapitalMarketsLens |
 | Hugging Face | [deepseek-ai/DeepSeek-V3 config.json at revision e815299](https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/config.json) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash, MoeAndSparseActivation, QuantizationAndPrecision |
@@ -151,18 +158,21 @@ Total distinct sources: 343.
 | NVIDIA | [Nsight Compute Profiling Guide](https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [Nsight Systems User Guide](https://docs.nvidia.com/nsight-systems/UserGuide/index.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [NVIDIA Blackwell Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/blackwell-tuning-guide/index.html) | 2026-10-17 | KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper |
+| NVIDIA | [NVIDIA cuBLAS documentation, section 2.1.4 "Results Reproducibility"](https://docs.nvidia.com/cuda/cublas/index.html) | 2026-10-17 | DeterminismAOT |
+| NVIDIA | [NVIDIA cuDNN backend documentation, "Odds and Ends: Reproducibility (Determinism)"](https://docs.nvidia.com/deeplearning/cudnn/backend/latest/developer/misc.html) | 2026-10-16 | DeterminismAOT |
 | NVIDIA | [NVIDIA Dynamo README at tag v1.5.1](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/README.md) | 2026-10-16 | DisaggregatedServingAndSpeculative, MoeAndSparseActivation |
 | NVIDIA | [NVIDIA Form 8-K exhibit 99.1, Q2 fiscal 2027 results (2026-08-26)](https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27pr.htm) | 2026-10-16 | GraceBlackwellUltraServer, NvidiaBlackwell |
 | NVIDIA | [NVIDIA GPUDirect Storage Overview Guide v1.19.1](https://docs.nvidia.com/gpudirect-storage/overview-guide/index.html) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA GPUDirect Storage Release Notes v1.19.1](https://docs.nvidia.com/gpudirect-storage/release-notes/index.html) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA Hopper Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) | 2026-10-17 | AwsCustomSilicon, KernelExecutionLifecycle, NvidiaHopper |
-| NVIDIA | [NVIDIA Multi-Instance GPU User Guide: Concepts](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/concepts.html) | 2026-10-17 | CapitalMarketsLens, IsolationNie |
+| NVIDIA | [NVIDIA Multi-Instance GPU User Guide: Concepts](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/concepts.html) | 2026-10-17 | CapitalMarketsLens, DeterminismAOT, IsolationNie |
 | NVIDIA | [NVIDIA Multi-Instance GPU User Guide: Deployment Considerations](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/deployment-considerations.html) | 2026-10-17 | IsolationNie |
 | NVIDIA | [NVIDIA Multi-Instance GPU User Guide: Getting Started with MIG](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/getting-started-with-mig.html) | 2026-10-17 | IsolationNie |
 | NVIDIA | [NVIDIA Multi-Instance GPU User Guide: MIG Device Names](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/mig-device-names.html) | 2026-10-17 | IsolationNie |
 | NVIDIA | [NVIDIA Multi-Instance GPU User Guide: Supported GPUs](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/supported-gpus.html) | 2026-10-17 | IsolationNie |
 | NVIDIA | [NVIDIA Multi-Instance GPU User Guide: Supported MIG Profiles (updated 2026-10-13)](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/supported-mig-profiles.html) | 2026-10-16 | IsolationNie |
 | NVIDIA | [NVIDIA Secure AI with Blackwell and Hopper GPUs (whitepaper WP-12554-001 v1.3, August 2025)](https://docs.nvidia.com/nvidia-secure-ai-with-blackwell-and-hopper-gpus-whitepaper.pdf) | 2026-10-17 | IsolationNie |
+| NVIDIA | [NVIDIA/cccl release v3.1.0 (2025-10-14): deterministic reductions in cub::DeviceReduce](https://github.com/NVIDIA/cccl/releases/tag/v3.1.0) | 2026-10-16 | DeterminismAOT |
 | NVIDIA | [NVIDIA/nccl release nccl-ep-v0.1.0 (NCCL EP, MoE dispatch and combine, 2026-06-08)](https://github.com/NVIDIA/nccl/releases/tag/nccl-ep-v0.1.0) | 2026-10-17 | CommunicationAndScaleOut |
 | NVIDIA | [NVIDIA/nccl release v2.28.3-1](https://github.com/NVIDIA/nccl/releases/tag/v2.28.3-1) | 2026-10-16 | AwsCustomSilicon, CommunicationAndScaleOut |
 | NVIDIA | [NVIDIA/nccl release v2.32.3-1 (2026-09-17)](https://github.com/NVIDIA/nccl/releases/tag/v2.32.3-1) | 2026-10-17 | CommunicationAndScaleOut |
@@ -192,6 +202,7 @@ Total distinct sources: 343.
 | Open Compute Project | [High Bandwidth Flash (HBF) High-Level Base Die Specification, Version 0.7.0 (2026-08-03)](https://www.opencompute.org/documents/ocp-hbf-architecture-specification-v0-7-0-final-pdf) | 2026-10-17 | ChipletAndInterconnect, FlashCacheTier, HighBandwidthFlash |
 | Open Compute Project | [OCP Microscaling Formats (MX) Specification v1.0](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf) | 2026-10-17 | CerebrasWaferScale, QuantizationAndPrecision |
 | OpenFabrics Interfaces Working Group | [libfabric fi_efa(7) man page at commit 24fa1dc (EFA provider capabilities)](https://github.com/ofiwg/libfabric/blob/24fa1dcfaa5cd10fc3d5ca5ea94690e9925c6848/man/fi_efa.7.md) | 2026-10-16 | CapitalMarketsLens |
+| PyTorch | [PyTorch docs/source/notes/randomness.md at tag v2.14.1 ("Reproducibility")](https://github.com/pytorch/pytorch/blob/v2.14.1/docs/source/notes/randomness.md) | 2026-10-17 | DeterminismAOT |
 | PyTorch | [PyTorch torch/csrc/distributed/c10d/symm_mem/nvshmem_extension.hpp at tag v2.14.1 (all_to_all_vdev_2d)](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/csrc/distributed/c10d/symm_mem/nvshmem_extension.hpp#L64) | 2026-10-16 | CommunicationAndScaleOut |
 | PyTorch | [PyTorch v2.14.1 aten/src/ATen/cuda/CUDABlas.cpp: cublasGemmEx and cublasLtMatmul calls](https://github.com/pytorch/pytorch/blob/v2.14.1/aten/src/ATen/cuda/CUDABlas.cpp) | 2026-10-17 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 aten/src/ATen/native/Linear.cpp: linear lowers to addmm](https://github.com/pytorch/pytorch/blob/v2.14.1/aten/src/ATen/native/Linear.cpp#L106-L129) | 2026-10-17 | NvidiaCompilersAndTooling |
@@ -207,6 +218,7 @@ Total distinct sources: 343.
 | SGLang | [SGLang arg_groups/choices.py at tag v0.5.21 (DISAGG_TRANSFER_BACKEND_CHOICES)](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/arg_groups/choices.py#L120-L127) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | SGLang | [SGLang arg_groups/fields/disagg.py at tag v0.5.21 (disaggregation_mode; transfer backend default mooncake)](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/arg_groups/fields/disagg.py#L55-L65) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | SGLang | [SGLang arg_groups/fields/spec.py at tag v0.5.21 (speculative_algorithm builtins)](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/arg_groups/fields/spec.py#L30-L33) | 2026-10-17 | DisaggregatedServingAndSpeculative |
+| SGLang | [SGLang docs/docs/advanced_features/deterministic_inference.mdx at tag v0.5.21](https://github.com/sgl-project/sglang/blob/v0.5.21/docs/docs/advanced_features/deterministic_inference.mdx) | 2026-10-17 | DeterminismAOT |
 | SGLang | [SGLang HiCache design and best practices at tag v0.5.21](https://github.com/sgl-project/sglang/blob/v0.5.21/docs/docs/advanced_features/hicache_design.mdx) | 2026-10-17 | FlashCacheTier |
 | SGLang | [SGLang python/sglang/srt/arg_groups/fields/exec_.py at tag v0.5.21 (--moe-a2a-backend choices)](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/arg_groups/fields/exec_.py) | 2026-10-16 | CommunicationAndScaleOut, MoeAndSparseActivation |
 | SGLang | [SGLang srt/environ.py at tag v0.5.21 (SGLANG_DISAGGREGATION_NIXL_BACKEND default "UCX")](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/environ.py#L711) | 2026-10-17 | DisaggregatedServingAndSpeculative |
@@ -231,7 +243,7 @@ Total distinct sources: 343.
 | vLLM | [vLLM vllm/engine/arg_utils.py at tag v0.31.0 (--enable-expert-parallel)](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/arg_utils.py) | 2026-10-16 | MoeAndSparseActivation |
 | vLLM | [vLLM vllm/v1/spec_decode/metrics.py at tag v0.31.0 (acceptance rate and mean acceptance length)](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/spec_decode/metrics.py#L177-L196) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | vLLM | [vllm-project/vllm-neuron release v0.24.0.1.1.0 (Apache-2.0)](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.24.0.1.1.0) | 2026-10-17 | AwsCompilersAndTooling |
-| vLLM project | [vLLM docs/features/batch_invariance.md at tag v0.31.0](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/batch_invariance.md) | 2026-10-16 | CapitalMarketsLens |
+| vLLM project | [vLLM docs/features/batch_invariance.md at tag v0.31.0](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/batch_invariance.md) | 2026-10-17 | CapitalMarketsLens, DeterminismAOT |
 
 ## Tier 2: vendor press release, blog, product page or keynote
 
@@ -291,6 +303,7 @@ Total distinct sources: 343.
 | Nebius | [Nebius and WEKA benchmark shared KV cache for agentic inference on NVIDIA HGX B300 (2026-09-24)](https://nebius.com/blog/posts/nebius-weka-shared-kv-cache-benchmark-hgx-b300) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [As AI Increases Demands on Memory, Storage Steps Up (2026-08-04; Storage-Next, SCADA)](https://blogs.nvidia.com/blog/ai-storage-fms/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [AWS and NVIDIA to Deliver 2 Million Additional GPUs (2026-08-26)](https://nvidianews.nvidia.com/news/aws-and-nvidia-to-deliver-2-million-additional-gpus-and-next-generation-infrastructure-for-agentic-and-physical-ai) | 2026-10-16 | NvidiaBlackwell |
+| NVIDIA | [Controlling Floating-Point Determinism in NVIDIA CCCL](https://developer.nvidia.com/blog/controlling-floating-point-determinism-in-nvidia-cccl/) | 2026-10-16 | DeterminismAOT |
 | NVIDIA | [Full-Stack Optimizations for Agentic Inference with Dynamo (in-repo blog at Dynamo tag v1.5.1)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/blog/2026/agentic-inference-optimizations.mdx) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [GTC 2026 live updates (Feynman, Rosa, Kyber)](https://blogs.nvidia.com/blog/gtc-2026-news/) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [How NVIDIA GB200 NVL72 and NVIDIA Dynamo Boost Inference Performance for MoE Models](https://developer.nvidia.com/blog/how-nvidia-gb200-nvl72-and-nvidia-dynamo-boost-inference-performance-for-moe-models/) | 2026-10-17 | GraceBlackwellUltraServer, MoeAndSparseActivation |
