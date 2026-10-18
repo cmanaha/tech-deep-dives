@@ -193,3 +193,46 @@ pnpm --filter @tech-deep-dives/vllm typecheck  ->  tsc --noEmit, exit 0
 pnpm --filter @tech-deep-dives/vllm lint       ->  eslint src --ext .ts,.tsx --max-warnings 0, exit 0
 bash scripts/gates/no-ai-tells.sh              ->  [PASS] no-ai-tells: no AI tells in 2 opted-in deep dive(s)
 ```
+
+## Leverage pass: LlmdKServe.tsx (2026-10-18)
+
+Verbs used: demote, reorder, delete (repetition only), re-express. No claim, scope or citation
+changed; 72 Cites before, 71 after (the one removed went with a deleted duplicate, below).
+Prose words (body text, table cells, headers; Cite labels and the SVG excluded): 2779 to 2694.
+Visible prose outside ExpandableSections: 2282 to 2026 (-11%). `wc -w` on the file: 4970 to 4878.
+Diagram not moved; harness run anyway: 2 diagrams, 0 overlaps/clipping, 0 console errors.
+
+**Moved.**
+- Scoring section: the "Past these six" scorer inventory is now an ExpandableSection ("Other
+  scorers in llm-d Router v1.0.0") right after the six signal boxes, so the section ends on the
+  approximate-versus-precise prefix paragraph and its `--kv-events-config` knob.
+- "Where the EPP code lives" alert moved out of the scoring section into the GIE deep-dive
+  expandable (header and the Deep dives h2 description now name it), as a paragraph with
+  unchanged text and citations.
+- Composition section: the engine-level versus cluster-level grid moved from last to first (model
+  before mechanism); the topology-affinity scorer and E/P/D proof of concept demoted into an
+  ExpandableSection; the KServe `kvCacheOffloading` paragraph now lands last. Title is now "How the
+  engine optimizations compose with routing", since the prefix-routing sentence it named was cut.
+- Closing block reordered so it ends on "go to section 24".
+
+**Cut as repetition.**
+- Intro: KServe-operator/Helm-guides detail (kept in the request path, with "without an
+  operator") and the "section 24 runs this stack on AWS" clause (kept in the closing block).
+- Request path: "the gateway forwards there" (the paragraph's first sentence says it).
+- Components table: GIE "Current release v1.6.2" (kept in the GIE expandable with its release
+  citation, and in the pin block) and the EPP row's scorer list (intro and the six boxes carry it).
+- Scoring intro: the llm-d Router "brain" quote and its README L27 Cite (KV-cache locality, load
+  and priority are stated by the intro, the boxes and the InferenceObjective row).
+- Composition: "Prefix-cache-aware routing is the cluster-scale version of automatic prefix
+  caching" (said in the prefix-hit box and the grid); the second naming of section 10's title.
+- Comparison: the paragraph's "Pick by how much Kubernetes machinery ..." sentence (folded into
+  the h2 description, which already said half of it).
+- Session-affinity box: the trailing "an expensive routing mistake for chat workloads".
+- Closing: "Read this section for the shape of the operator path" (meta).
+
+h2 descriptions rewritten to state the payoff (request path, components, scoring, composition,
+pin block); each new phrase re-expresses text already in its section.
+
+**Score: 8/10.** Each section now reads model first and ends on something the reader sets or
+checks (`--kv-events-config`, `kvCacheOffloading`, the metric-name alert, the v0.30.0 pin).
+Still not 9: total prose is about 2694 words against 1868 at `145314b`, because no verified fact was cut.

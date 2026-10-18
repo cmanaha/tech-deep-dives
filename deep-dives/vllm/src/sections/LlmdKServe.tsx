@@ -54,12 +54,12 @@ const componentRows: ComponentRow[] = [
   {
     component: 'Gateway API Inference Extension (GIE)',
     layer: 'Inference-routing API',
-    role: 'Turns a gateway that supports ext-proc and the Gateway API into an inference gateway. Defines the InferencePool resource (inference.networking.k8s.io/v1, GA since v1.0.0 in September 2025) and the Endpoint Picker protocol. Current release v1.6.2.',
+    role: 'Turns a gateway that supports ext-proc and the Gateway API into an inference gateway. Defines the InferencePool resource (inference.networking.k8s.io/v1, GA since v1.0.0 in September 2025) and the Endpoint Picker protocol.',
   },
   {
     component: 'Endpoint Picker (EPP), in llm-d Router',
     layer: 'Scheduler / scorer',
-    role: 'The routing engine the gateway calls per request over ext-proc: filters, then weighted scorers (prefix-cache hit, queue depth, session affinity, predicted latency, LoRA residency, KV-cache utilization and more), then a picker that returns one endpoint.',
+    role: 'The routing engine the gateway calls per request over ext-proc: filters, then weighted scorers, then a picker that returns one endpoint.',
   },
   {
     component: 'InferenceObjective, InferenceModelRewrite',
@@ -276,17 +276,14 @@ export function LlmdKServe() {
           </Box>
           <Box variant="p">
             Three layers meet that challenge. An <strong>engine</strong> (vLLM) runs the model in
-            each pod. A <strong>control plane</strong> declares the fleet: KServe&apos;s operator
-            reconciles it from one custom resource, and llm-d&apos;s Helm guides install the same
-            pieces without an operator. An <strong>inference-aware
-            router</strong> picks the pod for every request: the Endpoint Picker (EPP), which lives
-            in llm-d Router and sits behind a Gateway API gateway or a standalone Envoy, scores
-            each pod on prefix-cache hits, queue depth, session affinity, predicted latency and
-            LoRA residency. The Gateway API Inference Extension (GIE) supplies the{' '}
-            <code>InferencePool</code> resource that ties the gateway to the pods. This is the
-            enterprise-operator path; the lighter all-in-one alternative is the vLLM
-            production-stack in <strong>section 16</strong>, and <strong>section 24 (vLLM on Amazon
-            EKS)</strong> runs this stack on AWS.
+            each pod. A <strong>control plane</strong> (KServe&apos;s operator, or llm-d&apos;s Helm
+            guides) declares the fleet. An <strong>inference-aware router</strong> picks the pod
+            for every request: the Endpoint Picker (EPP), which lives in llm-d Router and sits
+            behind a Gateway API gateway or a standalone Envoy, scores each pod on prefix-cache
+            hits, queue depth, session affinity, predicted latency and LoRA residency. The Gateway
+            API Inference Extension (GIE) supplies the <code>InferencePool</code> resource that
+            ties the gateway to the pods. This is the enterprise-operator path; the lighter
+            all-in-one alternative is the vLLM production-stack in <strong>section 16</strong>.
           </Box>
         </SpaceBetween>
       </Container>
@@ -295,7 +292,7 @@ export function LlmdKServe() {
         header={
           <Header
             variant="h2"
-            description="Who decides where a request lands, who only forwards it, and which components never see a request at all"
+            description="The EPP decides where a request lands, the gateway only forwards it and the control plane never sees it: where to look when traffic lands on the wrong pod"
           >
             Request path: gateway, EPP, then the pod
           </Header>
@@ -308,14 +305,13 @@ export function LlmdKServe() {
             <Cite tier={1} href={`${LR}/README.md#L17`}>
               llm-d Router README L17
             </Cite>
-            ; the EPP ranks the pods in the <code>InferencePool</code> using metrics it scrapes from
-            every vLLM replica, returns one endpoint, and the gateway forwards there. KServe and
-            llm-d&apos;s installers sit on the <em>control plane</em>: KServe reconciles the custom
-            resource into the Deployments, the <code>InferencePool</code>, the EPP and autoscaling,
-            llm-d&apos;s Helm guides install the same pieces, and neither is in the per-request
-            path. One llm-d component does sit in that path: with prefill/decode
-            (P/D) disaggregation, a sidecar in the decode pod receives the request and calls the
-            prefill pod itself{' '}
+            ; the EPP ranks the pods in the <code>InferencePool</code> on metrics it scrapes from
+            every vLLM replica and returns one endpoint. The control plane stays out of that path:
+            KServe&apos;s operator reconciles one custom resource into the Deployments, the{' '}
+            <code>InferencePool</code>, the EPP and autoscaling, and llm-d&apos;s Helm guides
+            install the same pieces without an operator. One llm-d component does sit in the
+            path: with prefill/decode (P/D) disaggregation, a sidecar in the decode pod receives
+            the request and calls the prefill pod itself{' '}
             <Cite tier={1} href={`${LR}/README.md#L31`}>
               llm-d Router README L31
             </Cite>{' '}
@@ -354,7 +350,7 @@ export function LlmdKServe() {
         header={
           <Header
             variant="h2"
-            description="Seven pieces, each owning one decision: what runs the model, what declares the fleet, and what picks the pod"
+            description="Seven pieces, each owning one decision, so you know where to change the engine, the fleet, the routing policy or the proxy"
           >
             The components
           </Header>
@@ -411,7 +407,7 @@ export function LlmdKServe() {
         header={
           <Header
             variant="h2"
-            description="The signals that decide which pod gets a request, and the metric each one reads, so Prometheus can tell you why traffic went where it did"
+            description="The signals that pick a pod, the metric each one reads so Prometheus can tell you why traffic went where it did, and the vLLM flag that precise prefix scoring depends on"
           >
             What the Endpoint Picker scores on
           </Header>
@@ -419,19 +415,8 @@ export function LlmdKServe() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            llm-d Router calls the EPP the "brain" of the router: it "evaluates incoming requests
-            against the current state of the InferencePool, considering factors like KV-cache
-            locality, current load, and priority"{' '}
-            <Cite tier={1} href={`${LR}/README.md#L27`}>
-              llm-d Router README L27
-            </Cite>
-            . The goal is a scheduler that is "kv-cache and request cost aware, avoiding evictions
-            or queueing as load increases"{' '}
-            <Cite tier={1} href={`${GIE}/README.md#L79`}>
-              GIE README L79
-            </Cite>
-            . Mechanically, each scheduling profile runs filters that drop ineligible pods, then
-            scorers whose results are summed by weight (1.0 unless configured), then a picker (by default, the
+            Each scheduling profile runs filters that drop ineligible pods, then scorers whose
+            results are summed by weight (1.0 unless configured), then a picker (by default, the
             highest score){' '}
             <Cite tier={1} href={`${LR}/pkg/epp/scheduling/scheduler_profile.go#L134-L146`} kind="code">
               scheduler_profile.go L134-L146
@@ -441,6 +426,11 @@ export function LlmdKServe() {
             </Cite>{' '}
             <Cite tier={1} href={`${LR_ARCH}#L247-L258`}>
               architecture.md L247-L258
+            </Cite>
+            . The goal is a scheduler that is "kv-cache and request cost aware, avoiding evictions
+            or queueing as load increases"{' '}
+            <Cite tier={1} href={`${GIE}/README.md#L79`}>
+              GIE README L79
             </Cite>
             . The core signals:
           </Box>
@@ -479,8 +469,7 @@ export function LlmdKServe() {
               <Box variant="h3">Session affinity</Box>
               <Box variant="p">
                 Pin a multi-turn conversation to the pod that already holds its KV cache. Without
-                affinity, turn 2 lands on a cold pod and re-prefills the entire history, an
-                expensive routing mistake for chat workloads.
+                affinity, turn 2 lands on a cold pod and re-prefills the entire history.
               </Box>
             </div>
             <div>
@@ -531,6 +520,25 @@ export function LlmdKServe() {
               </Box>
             </div>
           </ColumnLayout>
+          <ExpandableSection headerText="Other scorers in llm-d Router v1.0.0">
+            <Box variant="p">
+              Past these six, llm-d Router v1.0.0 ships context-length, token-load, running-request
+              and header-label scorers among others, and a multimodal scorer that prefers pods likely
+              to hold the request&apos;s image or audio encodings{' '}
+              <Cite tier={1} href="https://github.com/llm-d/llm-d-router/tree/v1.0.0/pkg/epp/framework/plugins/scheduling/scorer">
+                scorer/ directory
+              </Cite>{' '}
+              <Cite tier={1} href={`${LR_PLUGINS}/scheduling/scorer/mmcacheaffinity/README.md#L1-L26`}>
+                mmcacheaffinity README
+              </Cite>
+              . Each is a plugin listed with a weight in the EPP&apos;s{' '}
+              <code>EndpointPickerConfig</code>{' '}
+              <Cite tier={1} href={`${LR_ARCH}#L205-L237`}>
+                architecture.md L205-L237
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             <strong>Prefix scoring is approximate by default.</strong> The default producer
             records which pods it sent each prefix to, so it tracks routing history rather than
@@ -552,41 +560,6 @@ export function LlmdKServe() {
             </Cite>
             .
           </Box>
-          <Box variant="p">
-            Past these six, llm-d Router v1.0.0 ships context-length, token-load, running-request
-            and header-label scorers among others, and a multimodal scorer that prefers pods likely
-            to hold the request&apos;s image or audio encodings{' '}
-            <Cite tier={1} href="https://github.com/llm-d/llm-d-router/tree/v1.0.0/pkg/epp/framework/plugins/scheduling/scorer">
-              scorer/ directory
-            </Cite>{' '}
-            <Cite tier={1} href={`${LR_PLUGINS}/scheduling/scorer/mmcacheaffinity/README.md#L1-L26`}>
-              mmcacheaffinity README
-            </Cite>
-            . Each is a plugin listed with a weight in the EPP&apos;s{' '}
-            <code>EndpointPickerConfig</code>{' '}
-            <Cite tier={1} href={`${LR_ARCH}#L205-L237`}>
-              architecture.md L205-L237
-            </Cite>
-            .
-          </Box>
-          <Alert type="info" header="Where the EPP code lives">
-            GIE releases up to v1.5.0 carry the EPP{' '}
-            <Cite tier={1} href="https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/v1.5.0/README.md#L31">
-              GIE v1.5.0 README L31
-            </Cite>
-            . From v1.6.0 the EPP and the <code>InferenceObjective</code> and{' '}
-            <code>InferenceModelRewrite</code> APIs live in <code>llm-d/llm-d-router</code>, which
-            older guides call the inference scheduler (<code>llm-d-inference-scheduler</code>), and
-            GIE keeps the <code>InferencePool</code> API, the EPP protocol, a lightweight EPP and
-            the conformance tests{' '}
-            <Cite tier={1} href={`${GIE}/README.md#L16-L23`}>
-              GIE README L16-L23
-            </Cite>{' '}
-            <Cite tier={1} href={`${LR}/README.md#L10-L13`}>
-              llm-d Router README L10-L13
-            </Cite>
-            .
-          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -594,21 +567,38 @@ export function LlmdKServe() {
         header={
           <Header
             variant="h2"
-            description="The engine optimizations of sections 6, 7 and 10 become routing inputs: what the EPP decides, what the decode-pod sidecar does, and where the KV moves"
+            description="Engine optimizations from sections 6, 7 and 10 pay only when the router sends each request where they fire: how llm-d does it for disaggregation, and how KServe declares the offload tiers"
           >
-            How disaggregation and prefix-cache routing compose here
+            How the engine optimizations compose with routing
           </Header>
         }
       >
         <SpaceBetween size="m">
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Engine-level (sections 6, 7, 10)</Box>
+              <Box variant="p">
+                Prefix caching, KV offload, and disaggregation are <em>local</em> decisions
+                inside one engine: reuse what is already in this pod&apos;s cache, spill to CPU,
+                split this request&apos;s phases.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Cluster-level (this section)</Box>
+              <Box variant="p">
+                The EPP makes them <em>global</em>: which pod across the fleet should this
+                request go to so that the local optimization fires. The engine wins are only
+                realized if the router knows about them.
+              </Box>
+            </div>
+          </ColumnLayout>
           <Box variant="p">
-            The engine-level optimizations from earlier sections become routing inputs at the
-            cluster layer. <strong>Disaggregated prefill/decode (section 10)</strong> turns one
-            pool into two: prefill pods that own TTFT and decode pods that own ITL. In llm-d the
-            EPP schedules the decode stage first and picks a decode pod; a decider then weighs the
-            prompt length and the prefix-cache hit on that pod, and only when a separate prefill
-            pays does the EPP pick a prefill pod and pass it in the{' '}
-            <code>x-llm-d-prefiller-host-port</code> header{' '}
+            <strong>Disaggregated prefill/decode (section 10)</strong> turns one pool into two:
+            prefill pods that own TTFT and decode pods that own ITL. In llm-d the EPP schedules
+            the decode stage first and picks a decode pod; a decider then weighs the prompt length
+            and the prefix-cache hit on that pod, and only when a separate prefill pays does the
+            EPP pick a prefill pod and pass it in the <code>x-llm-d-prefiller-host-port</code>{' '}
+            header{' '}
             <Cite tier={1} href={`${LR_DISAGG}#L19`}>
               disaggregation.md L19
             </Cite>{' '}
@@ -621,36 +611,36 @@ export function LlmdKServe() {
             <Cite tier={1} href={`${LR_DISAGG}#L128-L148`}>
               disaggregation.md L128-L148
             </Cite>
-            . Without the header the decode pod runs both phases itself.
-          </Box>
-          <Box variant="p">
-            The KV moves through vLLM&apos;s own connectors: the sidecar&apos;s default{' '}
+            . Without the header the decode pod runs both phases itself. The KV moves through
+            vLLM&apos;s own connectors: the sidecar&apos;s default{' '}
             <code>--kv-connector nixlv2</code> corresponds to vLLM&apos;s{' '}
             <code>NixlConnector</code>{' '}
             <Cite tier={1} href={`${LR_DISAGG}#L604-L618`}>
               disaggregation.md L604-L618
             </Cite>
-            , whose pull and push modes are in <strong>section 10 (Disaggregated Prefill /
-            Decode)</strong>. For the prefill pick, a topology-affinity scorer can prefer
-            candidates that share a host, rack, zone or region with the chosen decode pod, with
-            scores shaped by the KV-transfer bandwidth at each level{' '}
-            <Cite tier={1} href={`${LR_PLUGINS}/scheduling/scorer/topologyaffinity/README.md#L7-L29`}>
-              topologyaffinity README L7-L29
-            </Cite>{' '}
-            <Cite tier={1} href={`${LR_PLUGINS}/scheduling/scorer/topologyaffinity/scorer.go#L37-L48`} kind="code">
-              scorer.go L37-L48
-            </Cite>
-            . The same sidecar coordinates E/P/D (encode, prefill, decode), which moves multimodal
-            encoding to its own workers and is marked a proof of concept{' '}
-            <Cite tier={1} href={`${LR_DISAGG}#L5-L17`}>
-              disaggregation.md L5-L17
-            </Cite>
-            .
+            , whose pull and push modes are in section 10.
           </Box>
+          <ExpandableSection headerText="Placing the prefill near the decode pod, and E/P/D">
+            <Box variant="p">
+              For the prefill pick, a topology-affinity scorer can prefer candidates that share a
+              host, rack, zone or region with the chosen decode pod, with scores shaped by the
+              KV-transfer bandwidth at each level{' '}
+              <Cite tier={1} href={`${LR_PLUGINS}/scheduling/scorer/topologyaffinity/README.md#L7-L29`}>
+                topologyaffinity README L7-L29
+              </Cite>{' '}
+              <Cite tier={1} href={`${LR_PLUGINS}/scheduling/scorer/topologyaffinity/scorer.go#L37-L48`} kind="code">
+                scorer.go L37-L48
+              </Cite>
+              . The same sidecar coordinates E/P/D (encode, prefill, decode), which moves
+              multimodal encoding to its own workers and is marked a proof of concept{' '}
+              <Cite tier={1} href={`${LR_DISAGG}#L5-L17`}>
+                disaggregation.md L5-L17
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
-            <strong>Prefix-cache-aware routing</strong> is the cluster-scale version of automatic
-            prefix caching (<strong>section 6</strong>): the EPP sends the request to the pod that
-            holds the prefix. llm-d&apos;s "tiered offloading to CPU or disk"{' '}
+            For <strong>KV offload</strong>, llm-d&apos;s "tiered offloading to CPU or disk"{' '}
             <Cite tier={1} href={`${LD}/README.md#L27`}>
               llm-d README L27
             </Cite>{' '}
@@ -672,24 +662,6 @@ export function LlmdKServe() {
             </Cite>
             .
           </Box>
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">Engine-level (sections 6, 7, 10)</Box>
-              <Box variant="p">
-                Prefix caching, KV offload, and disaggregation are <em>local</em> decisions
-                inside one engine: reuse what is already in this pod&apos;s cache, spill to CPU,
-                split this request&apos;s phases.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">Cluster-level (this section)</Box>
-              <Box variant="p">
-                The EPP makes them <em>global</em>: which pod across the fleet should this
-                request go to so that the local optimization fires. The engine wins are only
-                realized if the router knows about them.
-              </Box>
-            </div>
-          </ColumnLayout>
         </SpaceBetween>
       </Container>
 
@@ -697,7 +669,7 @@ export function LlmdKServe() {
         header={
           <Header
             variant="h2"
-            description="Pick by how much Kubernetes machinery you already run, and know which vLLM metrics each router actually reads"
+            description="Pick by how much Kubernetes machinery you already run and how much resource-driven control you need, and know which vLLM metrics each router actually reads"
           >
             vs production-stack (section 16): operator path vs all-in-one
           </Header>
@@ -706,8 +678,7 @@ export function LlmdKServe() {
         <SpaceBetween size="m">
           <Box variant="p">
             Both stacks route inference traffic to vLLM replicas by what the replicas report, at
-            different weights. Pick by how much Kubernetes machinery you already run and how much
-            resource-driven control you need.
+            different weights.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -753,7 +724,7 @@ export function LlmdKServe() {
         header={
           <Header
             variant="h2"
-            description="The resource you write, the project claims behind llm-d, and the API status of the routing layer, for when you need the detail"
+            description="The resource you write, the project claims behind llm-d, the API status of the routing layer and the repository that holds the EPP, for when you need the detail"
           >
             Deep dives
           </Header>
@@ -876,7 +847,7 @@ export function LlmdKServe() {
             </SpaceBetween>
           </ExpandableSection>
 
-          <ExpandableSection headerText="Gateway API Inference Extension: status and the InferencePool model">
+          <ExpandableSection headerText="Gateway API Inference Extension: status, the InferencePool model and where the EPP code lives">
             <SpaceBetween size="s">
               <Box variant="p">
                 "Gateway API Inference Extension optimizes self-hosting Generative Models on
@@ -911,6 +882,24 @@ export function LlmdKServe() {
                 </Cite>
                 .
               </Box>
+              <Box variant="p">
+                <strong>Where the EPP code lives.</strong> GIE releases up to v1.5.0 carry the EPP{' '}
+                <Cite tier={1} href="https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/v1.5.0/README.md#L31">
+                  GIE v1.5.0 README L31
+                </Cite>
+                . From v1.6.0 the EPP and the <code>InferenceObjective</code> and{' '}
+                <code>InferenceModelRewrite</code> APIs live in <code>llm-d/llm-d-router</code>, which
+                older guides call the inference scheduler (<code>llm-d-inference-scheduler</code>), and
+                GIE keeps the <code>InferencePool</code> API, the EPP protocol, a lightweight EPP and
+                the conformance tests{' '}
+                <Cite tier={1} href={`${GIE}/README.md#L16-L23`}>
+                  GIE README L16-L23
+                </Cite>{' '}
+                <Cite tier={1} href={`${LR}/README.md#L10-L13`}>
+                  llm-d Router README L10-L13
+                </Cite>
+                .
+              </Box>
             </SpaceBetween>
           </ExpandableSection>
         </SpaceBetween>
@@ -920,7 +909,7 @@ export function LlmdKServe() {
         header={
           <Header
             variant="h2"
-            description="The versions that ship together, the vLLM you actually get inside an llm-d pod, and where the AWS wiring lives"
+            description="Take the EPP, sidecar and CRDs from one llm-d release, check flags against the vLLM v0.30.0 image it pairs with, then go to section 24 for the AWS wiring"
           >
             Pin the set, then deploy it on EKS
           </Header>
@@ -952,13 +941,12 @@ export function LlmdKServe() {
             .
           </Box>
           <Box variant="p">
-            <strong>Section 24 (vLLM on Amazon EKS)</strong> runs this stack on AWS: the same
-            resources and gateway on managed Kubernetes, with GPU and EFA node groups under the
-            vLLM pods. <strong>Section 22 (vLLM on AWS GPUs, EFA &amp; NIXL)</strong> covers the
-            fabric the KV transfer rides, and <strong>section 23 (EC2 Topology &amp; Placement
-            Groups)</strong> how close instances can be placed. Read this section for the shape of
-            the operator path, then go to section 24 for the node, networking and autoscaling
-            wiring.
+            <strong>Section 22 (vLLM on AWS GPUs, EFA &amp; NIXL)</strong> covers the fabric the
+            KV transfer rides, and <strong>section 23 (EC2 Topology &amp; Placement
+            Groups)</strong> how close instances can be placed. <strong>Section 24 (vLLM on Amazon
+            EKS)</strong> runs this stack on AWS: the same resources and gateway on managed
+            Kubernetes, with GPU and EFA node groups under the vLLM pods. Go there next for the
+            node, networking and autoscaling wiring.
           </Box>
         </SpaceBetween>
       </Container>
