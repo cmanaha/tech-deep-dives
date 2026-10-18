@@ -1,7 +1,7 @@
 # ADR-0001: Section Structure and Invariants
 
 Date: 2026-04-23
-Status: Accepted (revised from 12 → 25 → 27 sections — see Revision History)
+Status: Accepted (revised from 12 → 25 → 27 → 31 → 33 sections; see Revision History)
 
 ## Context
 
@@ -87,6 +87,7 @@ Every section ships:
 - 2026-04-23 (revised again): expanded to 27 sections. Added NVIDIA Compilers and Kernel Tooling (14) — CUDA, CUTLASS, CuTe, Triton, cuDNN, Nsight — and AWS Compilers and Kernel Tooling (16) — torch-neuronx, JAX on Neuron, NKI (Neuron Kernel Interface), Neuron profiler. Rationale: the compiler and kernel-DSL layer is how silicon peak becomes realized throughput; omitting it would have forced those details to clutter the hardware sections. Sourcing policy in sources.md tightened to require Tier 1 vendor documentation for all compiler and tooling claims — academic papers demoted to context.
 - Retroactive record (written 2026-07-18): between the 27-section revision and 2026-07 the app grew to 30 sections — Anatomy of a Kernel Execution (inserted at 5), Mixture of Experts and Sparse Activation, and Small Language Models (inserted into the software-techniques layer). These insertions were not recorded here at the time, and in-prose cross-references ("Section N") across many sections were not renumbered, leaving references stale by one or two positions depending on which era each section was written in.
 - 2026-07-18: expanded to 31 sections. Added Edge Shared-Memory Silicon — DGX Spark and Jetson Orin Nano (inserted at 15, after Grace-Blackwell); sections 15-30 renumbered to 16-31. Rationale: DGX Spark (GB10) is the Grace-Blackwell NVLink-C2C unified-memory architecture at desk scale, and Jetson Orin Nano is the single-SoC shared-DRAM variant at edge scale; together they close the memory continuum (NVL72 rack, desk, edge) that the deep dive reasons over. The section carries Tier 0 evidence captured from a physical DGX Spark (lstopo topology SVG plus lscpu/nvidia-smi/lspci bundle in research/dgx-spark/). As part of the renumber, ALL in-prose cross-references were audited topic-by-topic and repaired, fixing both this insertion's shift and the pre-existing drift noted above.
+- 2026-10-18: expanded to 33 sections. Added High Bandwidth Flash (8) and Flash as a Cache Tier for Inference (9) to the memory layer, after DDR5, MRDIMM, LPDDR5X and CXL; former sections 8-31 renumbered to 10-33. Rationale: by 2026 the memory continuum runs past DRAM. HBF puts stacked NAND beside the accelerator as a roadmap tier, and local NVMe, network file systems and object storage already hold KV cache in shipping serving stacks, so the hierarchy diagram and the memory technology grid stop at the wrong tier without them. The same revamp replaced in-prose section numbers with section names, so a future insertion does not leave stale cross-references, and retired the TLDR invariant in favour of the repo's section-shape standard (no key-takeaways boxes; the payoff lands last).
 
 ## Alternatives considered
 
