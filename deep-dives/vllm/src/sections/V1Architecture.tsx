@@ -94,14 +94,20 @@ const removedRows: RemovedRow[] = [
     ),
     impact: (
       <>
-        A request that names a different backend is rejected with a validation error{' '}
+        The request fields carry no backend choice: the backend slot on the structured-output
+        parameters is internal{' '}
+        <Cite tier={1} href={vllmUrl('vllm/sampling_params.py', 'L88-L104')}>
+          sampling_params.py L88-L104
+        </Cite>
+        , and the engine rejects one that differs from the server&apos;s with a validation
+        error{' '}
         <Cite tier={1} href={vllmUrl('vllm/sampling_params.py', 'L1165-L1181')}>
           sampling_params.py L1165-L1181
         </Cite>
         . The quiet case is older clients: the removed <code>guided_json</code>,{' '}
-        <code>guided_regex</code>, <code>guided_choice</code> and <code>guided_grammar</code>{' '}
-        fields are ignored, the request returns HTTP 200 with unconstrained output, and the
-        server logs a warning{' '}
+        <code>guided_regex</code>, <code>guided_choice</code>, <code>guided_grammar</code> and{' '}
+        <code>guided_decoding_backend</code> fields are ignored, the request returns HTTP 200
+        with unconstrained output, and the server logs a warning{' '}
         <Cite tier={1} href={vllmUrl('vllm/entrypoints/serve/engine/protocol.py', 'L21-L71')}>
           protocol.py L21-L71
         </Cite>
@@ -122,8 +128,9 @@ function ProcessSplitDiagram() {
         style={{ width: '100%', minWidth: 640, height: 'auto' }}
       >
         <title id="v1a-split-title">
-          In the removed V0 engine, scheduling, input preparation, the GPU step and
-          de-tokenization ran one after another, so the GPU waited on CPU work every step.
+          In the removed V0 engine, scheduling and input preparation ran before each GPU
+          step, so the GPU waited on CPU work every step, and de-tokenization ran inside the
+          engine process.
           The V1 engine moves HTTP, tokenization, multimodal input processing and
           de-tokenization into a frontend process that exchanges msgpack messages over ZMQ
           with a separate EngineCore process, which runs only the scheduler and the model
@@ -157,7 +164,7 @@ function ProcessSplitDiagram() {
 
         {/* V0 lane: removed code, drawn in neutral grey */}
         <text x="16" y="26" className="v1a-ttl">
-          V0 (removed): CPU work in series with each GPU step
+          V0 (removed): CPU work on the engine&apos;s critical path
         </text>
         <rect x="16" y="40" width="150" height="46" rx="6" className="v1a-old" />
         <text x="91" y="59" textAnchor="middle" className="v1a-lbl">
@@ -185,10 +192,10 @@ function ProcessSplitDiagram() {
         <line x1="530" y1="63" x2="560" y2="63" className="v1a-flow" markerEnd="url(#v1a-arrow)" />
         <rect x="562" y="40" width="182" height="46" rx="6" className="v1a-old" />
         <text x="653" y="59" textAnchor="middle" className="v1a-lbl">
-          de-tokenize + stream
+          de-tokenize
         </text>
         <text x="653" y="76" textAnchor="middle" className="v1a-sub">
-          blocks next step
+          in the engine process
         </text>
 
         <line x1="16" y1="108" x2="744" y2="108" stroke="#d1d5db" strokeDasharray="5 4" />
@@ -351,9 +358,9 @@ export function V1Architecture() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The contrast below shows where the work lives. In V0 the CPU work of each step (scheduling, preparing
-            inputs, de-tokenizing and streaming) effectively ran in series with the GPU
-            step. In V1 the frontend (HTTP, tokenization, multimodal input processing,
+            The contrast below shows where the work lives. In V0, scheduling and input
+            preparation ran in series with each GPU step, and de-tokenization ran inside the
+            engine process. In V1 the frontend (HTTP, tokenization, multimodal input processing,
             de-tokenization, streaming) runs in its own process and talks to an isolated{' '}
             <code>EngineCore</code> loop over ZeroMQ (ZMQ) sockets{' '}
             <Cite tier={1} href={`${ARCH}#api-server-process`}>
@@ -413,7 +420,7 @@ export function V1Architecture() {
             <Cite tier={1} href={vllmUrl('vllm/entrypoints/cli/serve.py', 'L344-L357')}>
               serve.py L344-L357
             </Cite>
-            ; the Rust Frontend tab covers it.
+            ; <strong>Inside the Codebase &rarr; The Rust Frontend</strong> covers it.
           </Box>
 
           <Alert type="info">
@@ -471,8 +478,8 @@ export function V1Architecture() {
           <Box variant="p">
             <strong>How it schedules:</strong> V0 carried an explicit prefill-vs-decode split
             in the scheduler, with chunked prefill bolted on conditionally. V1 treats both
-            kinds of token the same way. A scheduling decision is &quot;a simple dictionary,
-            e.g. <code>{'{request_id: num_tokens}'}</code>&quot;: the scheduler decides how
+            kinds of token the same way. A scheduling decision is &quot;a simple dictionary
+            (e.g., <code>{'{request_id: num_tokens}'}</code>)&quot;: the scheduler decides how
             many tokens to process for each active request this step, whether those tokens
             are prompt or freshly generated.{' '}
             <Cite tier={1} href={`${GUIDE}#feature-support`}>
@@ -565,8 +572,8 @@ export function V1Architecture() {
             <Cite tier={1} href={`${GUIDE}#removed-features`}>
               vLLM docs: V1 user guide, removed features
             </Cite>
-            . The ones to hunt for before an upgrade are request fields the server no longer
-            knows: it accepts the request, ignores the field and returns HTTP 200 without the
+            . The ones to hunt for before an upgrade are request fields the V1 server does not
+            recognize: it accepts the request, ignores the field and returns HTTP 200 without the
             behavior. <code>best_of</code> and the legacy <code>guided_*</code> fields fail
             this way.
           </Box>
@@ -607,10 +614,12 @@ export function V1Architecture() {
               loggers.py L676-L680
             </Cite>
             : latency bumps, not host-memory growth, are the symptom of an over-subscribed
-            KV cache. With a KV offloading connector, a re-admitted request can load its
-            prefix back from the offload tier as an external cache hit{' '}
-            <Cite tier={1} href={vllmUrl('vllm/v1/core/sched/scheduler.py', 'L939-L952')}>
-              scheduler.py L939-L952
+            KV cache. A re-admitted request gets a fresh prefix-cache lookup, so its blocks
+            that were not evicted in the meantime count as hits, and with a KV offloading
+            connector it can load its prefix back from the offload tier as an external cache
+            hit{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/core/sched/scheduler.py', 'L929-L952')}>
+              scheduler.py L929-L952
             </Cite>
             .
           </Alert>

@@ -92,8 +92,9 @@ pinned-refs-research, required-files and pre-overflow gates.
 
 ## Sourcing standard
 
-Code is the authority. Every code-level claim links to a file and line range at the
-`v0.31.0` tag. Documentation links use the versioned `/en/v0.31.0/` docs. Where the
+Code is the authority. Code-level claims link to a file and line range at the
+`v0.31.0` tag. Where a section describes an older release (configs copied from v0.27.0
+docs, or the vLLM 0.24.0 that vllm-neuron pins), it cites that release instead. Documentation links use the versioned `/en/v0.31.0/` docs. Where the
 docs and the code disagree, the section says so and marks the citation as a
 documentation-versus-code conflict.
 

@@ -11,6 +11,7 @@ import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
 
 const DOCS_HOME = vllmDocsUrl('');
 const V1_GUIDE = vllmDocsUrl('usage/v1_guide/');
+const QUICKSTART = vllmDocsUrl('getting_started/quickstart/');
 const RELEASES = 'https://github.com/vllm-project/vllm/releases';
 const RELEASE_NOTES = 'https://github.com/vllm-project/vllm/releases/tag/';
 const PLATFORMS = 'https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/platforms';
@@ -67,10 +68,14 @@ export function ThesisAndFraming() {
             <strong>paged KV cache</strong> that allocates KV memory in fixed-size blocks so it does not
             fragment (the idea the 2023 PagedAttention paper introduced), continuous batching so new
             requests join the running batch at every step, prefix caching to reuse shared prompts, and
-            chunked prefill, all fronted by an <strong>OpenAI-compatible API server</strong> so existing
-            client code points at it with only a base-URL change{' '}
+            chunked prefill, all fronted by an <strong>OpenAI-compatible API server</strong>{' '}
             <Cite tier={1} href={DOCS_HOME}>
               vLLM docs: home page
+            </Cite>
+            , so a client written for the OpenAI API points at it by changing the base URL, the API
+            key and the model name{' '}
+            <Cite tier={1} href={QUICKSTART}>
+              vLLM docs: Quickstart
             </Cite>
             . Those mechanisms get their own sections; here we only frame why they matter.
           </Box>
@@ -176,8 +181,8 @@ export function ThesisAndFraming() {
             <Box variant="h3">Self-hosting control</Box>
             <Box variant="p">
               Run any open-weight model in your own VPC (virtual private cloud), on your own accelerators,
-              with your own data never leaving the boundary. No per-token vendor pricing, no rate limits you
-              do not set, no model deprecation imposed on your schedule. The OpenAI-compatible surface means
+              with your own data never leaving the boundary. You pay for accelerator time rather than per
+              token, and you set the rate limits and the date a model retires. The OpenAI-compatible surface means
               migrating <em>off</em> a hosted API is largely a base-URL change.
             </Box>
             <Badge color="green">Data residency &amp; sovereignty</Badge>
@@ -185,7 +190,7 @@ export function ThesisAndFraming() {
           <div>
             <Box variant="h3">Throughput economics</Box>
             <Box variant="p">
-              GPU hours are the dominant cost of serving. Continuous batching and the paged KV cache raise
+              A self-hosted endpoint pays by the accelerator hour. Continuous batching and the paged KV cache raise
               the number of concurrent requests a single accelerator can serve, which directly lowers cost
               per million tokens. The framing thesis (memory and batching, not FLOPs) is what makes this
               lever exist.
@@ -323,17 +328,18 @@ export function ThesisAndFraming() {
                 <Cite tier={1} href={V1_GUIDE}>
                   vLLM docs: V1 user guide
                 </Cite>
-                . This deep dive quotes no single speedup multiplier: the guide&apos;s performance
-                benchmark is marked &quot;To be added&quot;, and the gain depends heavily on workload shape
+                . The guide publishes no speedup multiplier: its performance benchmark is marked
+                &quot;To be added&quot;, and the gain depends heavily on workload shape
                 (context length, batch size, prefix sharing). Treat throughput numbers as workload-specific
                 and measure on your own traffic; benchmarking is covered in{' '}
                 <strong>Section 20, Observability &amp; Benchmarking</strong>.
               </Box>
               <Box variant="p">
                 Because the codebase changes often, the <strong>Inside the Codebase</strong> section, like
-                every code link in this dive, is pinned to the v0.31.0 release tag (commit{' '}
-                <code>db9527a4</code>), so the file-and-class walkthrough stays falsifiable against a known
-                tree rather than drifting with <code>main</code>.
+                every code link in this dive, is pinned to a release tag: v0.31.0 (commit{' '}
+                <code>db9527a4</code>) unless the citation names an older release, so the file-and-class
+                walkthrough stays falsifiable against a known tree rather than drifting with{' '}
+                <code>main</code>.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -345,7 +351,7 @@ export function ThesisAndFraming() {
               vLLM v0.25.0 release notes
             </Cite>
             , or pinning <code>PYTHONHASHSEED</code> so prefix-cache hashes match across instances, which
-            the default <code>sha256</code> hash no longer needs from v0.29.0 (the <code>xxhash</code>{' '}
+            the default <code>sha256</code> hash does not need from v0.29.0 on (the <code>xxhash</code>{' '}
             variants still do){' '}
             <Cite tier={1} href="https://github.com/vllm-project/vllm/pull/51875">
               vLLM PR #51875

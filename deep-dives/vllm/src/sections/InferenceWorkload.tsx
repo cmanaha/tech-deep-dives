@@ -24,14 +24,14 @@ const sloRows: SloRow[] = [
     bound: 'Prefill',
     phase: 'compute-bound',
     meaning: 'Time from request arrival until the first output token is streamed. Dominated by prompt length and queue wait.',
-    lever: 'Chunked prefill, prefix caching, more compute, shorter queue.',
+    lever: 'Prefix caching, a larger per-step token budget, more compute, shorter queue.',
   },
   {
     metric: 'ITL / TPOT (inter-token latency, time per output token)',
     bound: 'Decode',
     phase: 'memory-bandwidth-bound',
     meaning: 'Steady-state gap between successive output tokens once generation has started. Sets the "typing speed" the user feels.',
-    lever: 'Higher HBM bandwidth, larger batch (amortize weight reads), speculative decoding.',
+    lever: 'Higher HBM bandwidth, chunked prefill with a smaller per-step token budget, speculative decoding.',
   },
   {
     metric: 'E2E latency (end-to-end)',
@@ -228,7 +228,15 @@ export function InferenceWorkload() {
           <Box variant="small">
             End-to-end latency is well approximated by{' '}
             <code>TTFT + (output_len &minus; 1) &times; ITL</code> for a streaming response:
-            one prefill cost plus one ITL per subsequent token.
+            one prefill cost plus one ITL per subsequent token. The per-step token budget trades
+            the two latency SLOs: smaller values give better ITL, larger values better TTFT{' '}
+            <Cite
+              tier={1}
+              href={vllmDocsUrl('configuration/optimization/#performance-tuning-with-chunked-prefill')}
+            >
+              vLLM docs: Optimization and tuning
+            </Cite>
+            .
           </Box>
           <Box variant="p">
             vLLM exports the latency SLOs as Prometheus histograms:{' '}
@@ -323,8 +331,15 @@ export function InferenceWorkload() {
             usual answer is <strong>KV-cache memory</strong>, ahead of compute or the configured
             maximum. Every request in flight holds its own KV cache, and
             that cache <em>grows by one token&apos;s worth of keys and values on every decode
-            step</em>. The HBM not occupied by model weights and activations is the KV-cache
-            budget, and that budget divided by the per-request cache footprint is the real
+            step</em>. The share of HBM vLLM may use (<code>gpu_memory_utilization</code>),
+            less the model weights and peak activations, is the KV-cache budget{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_worker.py', 'L673-L677')}>
+              gpu_worker.py L673-L677
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/worker/utils.py', 'L539-L545')}>
+              worker/utils.py L539-L545
+            </Cite>
+            , and that budget divided by the per-request cache footprint is the real
             ceiling on concurrency. vLLM prints that ceiling at startup:{' '}
             <code>
               GPU KV cache size: N tokens, Maximum concurrency for M tokens per request: X.XXx
@@ -506,7 +521,7 @@ function PrefillDecodeTimeline() {
             <g key={i}>
               <rect x={x} y={barTop} width={decodeStep - 8} height={barH} rx={4} fill={green} />
               <text x={x + (decodeStep - 8) / 2} y={barTop + barH / 2 + 4} fontSize="12" fill="#ffffff" textAnchor="middle" fontFamily={font}>
-                tok {i + 1}
+                tok {i + 2}
               </text>
             </g>
           ))}

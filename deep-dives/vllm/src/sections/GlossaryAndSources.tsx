@@ -299,10 +299,12 @@ export function GlossaryAndSources() {
         <SpaceBetween size="m">
           <Box variant="p">
             This deep dive describes vLLM <strong>v0.31.0</strong>. Documentation
-            claims are dated <strong>accessed 2026-10-16</strong>, and every
-            code-level claim links to the <code>v0.31.0</code> release tag (commit{' '}
+            claims are dated <strong>accessed 2026-10-16</strong>, and code-level
+            claims link to the <code>v0.31.0</code> release tag (commit{' '}
             <code>db9527a4</code>), so each one can be checked against the exact
-            source it describes. Source quality is graded by
+            source it describes. Where a section describes an older release (configs
+            copied from v0.27.0 docs, or the vLLM 0.24.0 that vllm-neuron pins), it
+            cites that release instead. Source quality is graded by
             tier: Tier 1 (official documentation, API reference, source code) is
             ground truth; Tier 2 is vendor blogs, announcements, and product pages;
             Tier 3 is peer-reviewed papers and third-party analysis. Performance
