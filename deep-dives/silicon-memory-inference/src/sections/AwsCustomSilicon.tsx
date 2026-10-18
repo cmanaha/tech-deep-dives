@@ -116,8 +116,9 @@ export function AwsCustomSilicon() {
             extensions on Trainium2 and Trainium3.
             <Cite s={S.trainium2Arch} />
             <Cite s={S.trainium3Arch} /> The two on-chip scratchpads, SBUF (State Buffer) and
-            PSUM (Partial Sum buffer), have no cache in front: the compiler or an NKI (Neuron
+            PSUM (Partial Sum buffer), are software-managed: the compiler or an NKI (Neuron
             Kernel Interface) kernel decides what sits in them.
+            <Cite s={S.nkiTrnInf2Arch} />
             <Cite s={S.neuronCoreV3} /> <em>AWS Compilers and Kernel Tooling</em> covers both.
           </Box>
         </SpaceBetween>
@@ -177,7 +178,7 @@ export function AwsCustomSilicon() {
                 Library) collectives mostly run on the SMs that also run the model.
                 <Cite
                   s={S.ncclV2283}
-                  note="NCCL 2.28 moved some all-to-all and all-gather paths inside an NVLink domain onto copy engines to reduce SM use."
+                  note="NCCL 2.28 added copy-engine collectives for all-to-all, all-gather, gather and scatter inside one (MN)NVLink domain to reduce SM use. They are opt-in: register buffers into symmetric windows and set NCCL_CTA_POLICY_ZERO."
                 />
               </Box>
             </div>
@@ -271,10 +272,11 @@ export function AwsCustomSilicon() {
           </Box>
           <Box variant="p">
             <strong>Trn3 is switched.</strong> A PCIe switch-based interconnect (NeuronSwitch-v1)
-            carries all chip-to-chip traffic, replacing Trn2&apos;s point-to-point NeuronLink. In the layout
-            the Trn3 page describes, four chips share a switch in their server (256 GB/s per
-            chip), switches join a rack&apos;s servers (320 GB/s), and a direct link reaches the
-            same-position chip in another rack (128 GB/s), all bidirectional.
+            carries all chip-to-chip traffic, replacing Trn2&apos;s point-to-point NeuronLink
+            topology. In the layout the Trn3 page describes, four chips share a switch in their
+            server (256 GB/s per chip), switches join a rack&apos;s servers (320 GB/s), and a
+            direct link reaches the same-position chip in another rack (128 GB/s), all
+            bidirectional.
             <Cite s={S.trn3Arch} /> AWS describes this all-to-all topology as optimized for MoE
             models.
             <Cite s={S.trn3Arch} />
@@ -356,8 +358,8 @@ export function AwsCustomSilicon() {
               <Box variant="p">
                 Both remain on EC2.
                 <Cite s={S.ec2AcceleratedSpecs} /> NxD Inference (NeuronX Distributed Inference)
-                dropped them in Neuron 2.29.0 and
-                vLLM Neuron serves Trn2 and Trn3, so serving on either pins to Neuron 2.28.
+                dropped them in Neuron 2.29.0, so serving either with it pins to Neuron 2.28;
+                vLLM Neuron serves Trn2 and Trn3.
                 <Cite s={S.neuronWhatsNew} /> This research found no announced Inferentia
                 successor.
               </Box>

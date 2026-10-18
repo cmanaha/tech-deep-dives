@@ -65,7 +65,7 @@ export const S = {
     publisher: 'AWS',
     url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html',
     tier: 1,
-    accessed: '2026-10-16',
+    accessed: '2026-10-18',
   },
   nkiTrn3Arch: {
     title: 'AWS Neuron: NKI Trainium3 Architecture Guide',
