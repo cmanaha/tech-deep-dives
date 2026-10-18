@@ -18,6 +18,9 @@ const ridgeNote =
 const decodeNote =
   'A decode step multiplies every weight once per sequence in the batch: one multiply-add, 2 FLOPs. With 8-bit weights each weight is 1 byte, so a batch of B gives about 2B FLOP per byte of weights read: 2 to 10 at batch 1 to 5. 412 / 10 = 41 and 412 / 2 = 206. KV-cache reads add bytes, so real decode sits at or below this.';
 
+const sparseRidgeNote =
+  'The H200 page marks FP8 Tensor Core 3,958 TFLOPS "With sparsity". 3,958 / 4.8 = 825 FLOP per byte.';
+
 const rooflineNote =
   'Roofline: attainable FLOP/s = min(peak FLOP/s, bandwidth x operational intensity). Below the ridge the bandwidth term is the smaller one, so attainable throughput moves with bandwidth and ignores peak.';
 
@@ -69,7 +72,7 @@ export function ThesisAndFraming() {
             compute: about 412 FLOP per byte.
             <Cite s={S.h200Page} kind="derived" note={ridgeNote} /> Each weight feeds one
             multiply-add per sequence in the batch, so with 8-bit weights at batch 1 to 5, decode
-            sits at 2 to 10 FLOP per byte, 40 to 200 times below the ridge.
+            sits at 2 to 10 FLOP per byte, about 40 to 200 times below the ridge.
             <Cite s={S.roofline} kind="derived" note={decodeNote} /> Doubling peak FLOPS does
             nothing for it; doubling bandwidth roughly doubles tokens per second until a fixed
             latency floor sets the step time.
@@ -78,8 +81,10 @@ export function ThesisAndFraming() {
           <Box variant="small" color="text-body-secondary">
             Sparse aside: NVIDIA&apos;s 3,958 TFLOPS FP8 headline is &quot;With sparsity&quot;, a
             rate that applies only to weights pruned to the 2:4 structured pattern, and it gives a
-            ridge of 825. Place workloads with the dense figure.
-            <Cite s={S.h200Page} />
+            ridge of 825.
+            <Cite s={S.h200Page} kind="derived" note={sparseRidgeNote} />
+            <Cite s={S.sparsityBlog} />{' '}
+            Place workloads with the dense figure.
           </Box>
         </SpaceBetween>
       </Container>
@@ -117,9 +122,10 @@ export function ThesisAndFraming() {
                 <Cite s={S.trainium2Arch} />
                 <Cite s={S.trainium3Arch} /> On a Cerebras WSE-3 (Wafer-Scale Engine 3), each of
                 900,000 cores runs its own program from 48 kB of local SRAM and fires a task when
-                its data arrives, with no global scheduler.
+                its data arrives; each core&apos;s own task picker chooses what runs next.
                 <Cite s={S.cerebrasS1} />
                 <Cite s={S.cerebrasSdkBlog} />
+                <Cite s={S.cerebrasSdkDocs} />
               </Box>
             </div>
             <div>
@@ -130,7 +136,8 @@ export function ThesisAndFraming() {
                 SMEM (shared memory) and, on Blackwell, TMEM (Tensor Memory).
                 <Cite s={S.ptxIsa} /> On Trainium it is SBUF (State Buffer) and PSUM (Partial Sum
                 buffer).
-                <Cite s={S.trainium2Arch} /> A miss upstream becomes a pipeline stall or a slip in
+                <Cite s={S.trainium2Arch} />
+                <Cite s={S.nkiTrnInf2Arch} /> A miss upstream becomes a pipeline stall or a slip in
                 the compiled schedule.
               </Box>
             </div>
@@ -161,7 +168,7 @@ export function ThesisAndFraming() {
         header={
           <Header
             variant="h2"
-            description="The workload decides which delivery binds, which is why a 2026 GPU rack carries a second kind of chip for decode"
+            description="The workload decides which delivery binds, which is why NVIDIA's Vera Rubin platform pairs its GPU racks with a rack of a second kind of chip for decode"
           >
             Heterogeneity is the organizing fact
           </Header>
@@ -188,8 +195,9 @@ export function ThesisAndFraming() {
             that NVIDIA licenses, in full production since August 2026.
             <Cite s={S.groqNvidiaLicense} />
             <Cite s={S.lpxProduction} /> Each LPU&apos;s primary working storage is 500 MB of
-            on-chip SRAM. Within decode, LPX runs the MoE expert FFNs (feed-forward networks)
-            while Rubin GPUs keep prefill and decode attention over the KV (key-value) cache.
+            on-chip SRAM. Within decode, LPX runs latency-sensitive work such as the MoE expert
+            FFNs (feed-forward networks), while Rubin GPUs keep prefill and decode attention over
+            the KV (key-value) cache.
             <Cite s={S.lpxBlog} /> One decode step crosses two kinds of silicon.
           </Box>
           <Box variant="p">
@@ -207,8 +215,9 @@ export function ThesisAndFraming() {
             <Cite s={S.llvmSapphireRapids} note={mispredictNote} /> A tensor-core pipeline bubble
             costs the matrix FLOPs that did not retire that cycle. On Trainium most of the
             schedule is fixed at compile time, so stalls are largely visible in the compiled
-            schedule. On WSE-3 the compiler fixes the routes, and a model larger than one wafer is
-            split at layer boundaries across several CS-3 systems.
+            schedule. On WSE-3 the compiler fixes the routes.
+            <Cite s={S.cerebrasSdkDocs} /> A model larger than one wafer is split at layer
+            boundaries across several CS-3 systems.
             <Cite s={S.cerebrasInferenceBlog} /> &quot;We cut p99 by raising speculation
             depth&quot; gives a systolic array nothing to act on: it has no speculation depth.
           </Alert>

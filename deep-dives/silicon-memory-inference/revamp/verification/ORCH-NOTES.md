@@ -28,3 +28,7 @@
   figure elsewhere is sparse.
 - NVIDIA Blackwell: NVIDIA's B300 page conflicts on HBM stack count (8 or 12); the section must
   name which page it follows or state the conflict.
+- Groq, SambaNova and Dataflow; Disaggregated Serving; MoE; Heterogeneity: NVIDIA describes
+  Groq 3 LPX as its own rack "deployed alongside Vera Rubin NVL72", in full production since
+  2026-08-24 with customer deployment unconfirmed (Thesis verification). "Inside Vera Rubin" or
+  "a GPU rack carries LPX" wording must match that.

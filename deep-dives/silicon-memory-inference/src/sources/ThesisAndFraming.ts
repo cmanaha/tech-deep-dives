@@ -22,6 +22,13 @@ export const S = {
     tier: 2,
     accessed: '2026-10-17',
   },
+  sparsityBlog: {
+    title: 'Structured Sparsity in the NVIDIA Ampere Architecture and Applications in Search Engines (2023-07-03)',
+    publisher: 'NVIDIA',
+    url: 'https://developer.nvidia.com/blog/structured-sparsity-in-the-nvidia-ampere-architecture-and-applications-in-search-engines/',
+    tier: 2,
+    accessed: '2026-10-18',
+  },
   gb300Nvl72: {
     title: 'NVIDIA GB300 NVL72',
     publisher: 'NVIDIA',
@@ -72,6 +79,13 @@ export const S = {
     tier: 1,
     accessed: '2026-10-16',
   },
+  nkiTrnInf2Arch: {
+    title: 'AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html',
+    tier: 1,
+    accessed: '2026-10-18',
+  },
   cerebrasS1: {
     title: 'Cerebras Systems, Form S-1 (filed 2026-04-17)',
     publisher: 'Cerebras Systems (SEC EDGAR)',
@@ -85,6 +99,13 @@ export const S = {
     url: 'https://www.cerebras.ai/blog/supercharge-your-hpc-research-with-the-cerebras-sdk',
     tier: 2,
     accessed: '2026-10-16',
+  },
+  cerebrasSdkDocs: {
+    title: 'Cerebras SDK docs: Wafer-Scale Engine Architecture',
+    publisher: 'Cerebras',
+    url: 'https://sdk.cerebras.ai/computing-with-cerebras',
+    tier: 1,
+    accessed: '2026-10-18',
   },
   cerebrasInferenceBlog: {
     title: 'Introducing Cerebras Inference: AI at Instant Speed (2024-08-27)',
