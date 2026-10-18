@@ -241,7 +241,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'DCGM', fullForm: 'Data Center GPU Manager', description: 'NVIDIA GPU health and utilization telemetry, usually scraped through its Prometheus exporter.' },
   { acronym: 'TGI', fullForm: 'Text Generation Inference', description: 'Hugging Face\'s LLM server; its repository is archived.' },
   { acronym: 'KVBM', fullForm: 'KV Block Manager', description: 'NVIDIA Dynamo\'s component that offloads KV blocks from GPU to CPU, SSD and remote storage.' },
-  { acronym: 'WVA', fullForm: 'Workload Variant Autoscaler', description: 'The llm-d autoscaling project, renamed llm-d-autoscaling in llm-d v0.10.0, which marks its WVA guides deprecated.' },
+  { acronym: 'WVA', fullForm: 'Workload Variant Autoscaler', description: 'The llm-d Variant Autoscaler component. llm-d v0.10.0 renamed the project llm-d-autoscaling and marks its WVA guides deprecated.' },
   { acronym: 'KEDA / HPA', fullForm: 'Kubernetes Event-Driven Autoscaling / Horizontal Pod Autoscaler', description: 'Kubernetes autoscalers that scale replicas on external or custom metrics; KEDA can scale to zero.' },
   { acronym: 'CNCF', fullForm: 'Cloud Native Computing Foundation', description: 'The foundation that hosts Kubernetes and accepted llm-d as a sandbox project.' },
   { acronym: 'FSM', fullForm: 'Finite-State Machine', description: 'The structure some structured-output backends compile a grammar into to mask invalid tokens.' },
