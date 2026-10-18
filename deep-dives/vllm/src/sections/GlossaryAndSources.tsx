@@ -162,6 +162,9 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'TTFT', fullForm: 'Time To First Token', description: 'Latency from request arrival to the first output token; dominated by the compute-bound prefill phase.' },
   { acronym: 'ITL / TPOT', fullForm: 'Inter-Token Latency / Time Per Output Token', description: 'Average time between successive output tokens during the memory-bandwidth-bound decode phase.' },
   { acronym: 'ZMQ', fullForm: 'ZeroMQ', description: 'The message-passing sockets (ROUTER/PULL/DEALER/PUSH) carrying msgpack-encoded requests between the vLLM frontend and EngineCore.' },
+  { acronym: 'MRv2', fullForm: 'Model Runner V2', description: 'The default GPU model runner since v0.29 (vllm/v1/worker/gpu/). The older V1 runner (gpu_model_runner.py) is deprecated, with removal planned for v0.32; a few features still fall back to it.' },
+  { acronym: 'HMA', fullForm: 'Hybrid Memory Allocator (hybrid KV cache manager)', description: 'The KV cache manager for models that mix attention types (sliding window, Mamba, chunked local, full): each layer type gets its own slot allocation and prefix-cache rule. Turned off with --disable-hybrid-kv-cache-manager.' },
+  { acronym: 'Admission control', fullForm: 'API-server request admission control', description: 'Queue caps (--max-num-queued-reqs, --max-num-queued-tokens) that reject overload with HTTP 503 instead of letting the queue grow.' },
 
   // Parallelism & distribution
   { acronym: 'TP', fullForm: 'Tensor Parallelism', description: 'Sharding tensors within a layer across devices; needs a fast intra-node interconnect.' },
@@ -169,13 +172,19 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'EP', fullForm: 'Expert Parallelism', description: 'Sharding Mixture-of-Experts experts across devices; "Wide-EP" spreads experts across many nodes.' },
   { acronym: 'DP', fullForm: 'Data Parallelism', description: 'Replicating the model for throughput; for MoE, DP-attention composes with EP.' },
   { acronym: 'EPLB', fullForm: 'Expert-Parallel Load Balancing', description: 'Rebalancing MoE expert placement across devices to even out load.' },
+  { acronym: 'DCP / PCP', fullForm: 'Decode / Prefill Context Parallelism', description: 'Splitting one long sequence\'s attention across GPUs during decode (DCP) or prefill (PCP).' },
+  { acronym: 'DBO', fullForm: 'Dual-Batch Overlap', description: 'Splits each batch into two micro-batches so one computes while the other waits on the expert-parallel all-to-all (--enable-dbo).' },
+  { acronym: 'MoonEP', fullForm: 'MoonEP all-to-all backend', description: 'An expert-parallel all-to-all backend with dynamic redundant experts over NVLink, selected with --all2all-backend moonep.' },
   { acronym: 'MoE', fullForm: 'Mixture of Experts', description: 'Sparse-activation architecture where the top-k of N experts fire per token.' },
   { acronym: 'GQA / MQA / MLA', fullForm: 'Grouped / Multi-Query / Multi-head Latent Attention', description: 'Attention variants that shrink the KV cache by reducing or compressing KV heads.' },
 
   // KV transfer & networking
   { acronym: 'P/D disaggregation', fullForm: 'Prefill / Decode Disaggregation', description: 'Running prefill and decode on separate instances to tune TTFT and ITL independently. A latency/SLO-isolation optimization. It does not raise throughput.' },
   { acronym: 'NIXL', fullForm: 'NVIDIA Inference Xfer Library', description: 'Point-to-point library for asynchronous KV-cache transfer over UCX / libfabric / RDMA; vLLM\'s NixlConnector wraps it.' },
+  { acronym: 'NIXL pull / push', fullForm: 'NixlConnector (pull) / NixlPushConnector (push)', description: 'Pull, the default: the decode instance reads KV from the prefill instance. Push: the prefill instance writes KV into the decode instance.' },
   { acronym: 'LMCache', fullForm: 'LM Cache', description: 'External KV-cache layer (CPU/disk/Redis/S3) integrated via a vLLM KV connector; enables cross-instance KV reuse.' },
+  { acronym: 'KV offload tiers', fullForm: 'vLLM native KV offloading', description: 'vLLM\'s built-in multi-tier KV offload: a CPU primary tier plus fs (filesystem), obj (object store) and p2p (peer instance) secondary tiers. The shared tiers give cross-instance KV reuse without an external cache layer.' },
+  { acronym: 'HiSparse', fullForm: 'HiSparse host KV tier', description: 'A host-memory KV tier for DeepSeek Sparse Attention models (HiSparseConnector): KV lives in a host pool and the GPU keeps a hot buffer of the rows decode reads. Requires Model Runner V2.' },
   { acronym: 'EFA', fullForm: 'Elastic Fabric Adapter', description: 'AWS OS-bypass network interface for HPC/ML; the LIBFABRIC backend lets vLLM\'s NixlConnector move KV cache over EFA.' },
   { acronym: 'RDMA', fullForm: 'Remote Direct Memory Access', description: 'Network primitive that writes directly to remote memory without CPU involvement; GPUDirect RDMA sources directly from GPU HBM.' },
   { acronym: 'NCCL', fullForm: 'NVIDIA Collective Communications Library', description: 'GPU collective library used for TP/PP/EP all-reduce / all-gather / all-to-all.' },
@@ -190,6 +199,9 @@ const glossary: GlossaryEntry[] = [
   // Decoding techniques
   { acronym: 'EAGLE', fullForm: 'Extrapolation Algorithm for Greater Language-model Efficiency', description: 'A speculative-decoding draft method (EAGLE / EAGLE-3) supported in vLLM.' },
   { acronym: 'MTP', fullForm: 'Multi-Token Prediction', description: 'Speculative-decoding method using a model\'s native multi-token-prediction heads.' },
+  { acronym: 'DFlash / DFlash2', fullForm: 'DFlash block drafting', description: 'Speculative methods that draft a whole block in one pass from the target model\'s hidden states. DFlash2 adds a candidate head and needs Model Runner V2.' },
+  { acronym: 'DSpark', fullForm: 'DSpark speculative decoding', description: 'A DFlash-derived speculative method; the one method the docs support for adaptive verification.' },
+  { acronym: 'TLI', fullForm: 'Token-Level Intersection', description: 'Lets a draft model with a different tokenizer serve a target model by constraining draft logits to the tokens both vocabularies share (use_heterogeneous_vocab).' },
   { acronym: 'LoRA', fullForm: 'Low-Rank Adaptation', description: 'Cheap fine-tuning adapters served on a shared base model; vLLM batches many adapters via Punica-style kernels.' },
   { acronym: 'Punica', fullForm: 'Punica (multi-LoRA kernels)', description: 'The batched shrink/expand kernel scheme that lets many LoRA adapters run in one batch.' },
 
@@ -204,6 +216,8 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'KubeRay', fullForm: 'Kubernetes Ray', description: 'The Kubernetes operator that runs Ray clusters (RayService/RayCluster CRDs) for Ray Serve LLM + vLLM.' },
   { acronym: 'GuideLLM', fullForm: 'Guide LLM', description: 'The vLLM-project benchmarking tool that sweeps load to map the throughput/latency curve.' },
   { acronym: 'OTLP', fullForm: 'OpenTelemetry Protocol', description: 'Tracing export protocol vLLM supports via --otlp-traces-endpoint (carries a performance cost).' },
+  { acronym: 'Weight cache daemon', fullForm: 'vllm preload weight cache daemon', description: 'One process per GPU that loads its weight shard once, runs quantization post-processing and holds the result in GPU memory, so an engine started with --load-format ipc_cache maps the weights over CUDA IPC instead of reloading them.' },
+  { acronym: 'CRIU', fullForm: 'Checkpoint/Restore In Userspace', description: 'Linux process checkpoint tool. vllm snapshot uses it with its CUDA plugin to capture an initialized engine and restore it on the same host.' },
 
   // AWS
   { acronym: 'Trainium / Inferentia', fullForm: 'AWS Trainium / Inferentia', description: 'AWS custom AI accelerators; vLLM runs on them through the vllm-neuron hardware plugin.' },
