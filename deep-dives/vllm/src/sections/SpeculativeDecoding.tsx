@@ -261,7 +261,7 @@ const methodRows: MethodRow[] = [
     runner: 'v1',
     gain: 'Medium to high / medium',
     notes:
-      'Not run during this research; the V1 runner dispatch it lands on has no mlp_speculator branch (Codebase tab). Test before relying on it.',
+      'Expect startup to fail at v0.31.0: the model registry entry is commented out as temporarily disabled, and the V1 runner dispatch it lands on raises "Unknown speculative decoding method" (Codebase tab). Not run during this research.',
   },
   {
     method: 'N-gram (prompt lookup)',

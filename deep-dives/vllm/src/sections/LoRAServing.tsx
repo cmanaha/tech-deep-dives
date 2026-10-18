@@ -699,8 +699,15 @@ export function LoRAServing() {
                     <Cite tier={1} href={vllmUrl(SERVE_CLI, 'L105-L127')} kind="code">
                       serve.py L105-L127
                     </Cite>
-                    , then confirm on your deployment that a runtime load reaches every
-                    data-parallel rank.
+                    . A runtime load then reaches every data-parallel engine: the client sends{' '}
+                    <code>add_lora</code> to each engine and returns the first result{' '}
+                    <Cite tier={1} href={vllmUrl('vllm/v1/engine/core_client.py', 'L1318-L1319')} kind="code">
+                      core_client.py L1318-L1319
+                    </Cite>{' '}
+                    <Cite tier={1} href={vllmUrl('vllm/v1/engine/core_client.py', 'L1642-L1651')} kind="code">
+                      core_client.py L1642-L1651
+                    </Cite>
+                    .
                   </>
                 ),
               },
@@ -771,7 +778,11 @@ export function LoRAServing() {
             <Cite tier={1} href={vllmUrl(LORA_MD, 'L163-L212')}>
               lora.md L163-L212
             </Cite>
-            . With <code>VLLM_PLUGINS</code> unset vLLM loads every installed plugin, so the
+            . The docs say to name the filesystem resolver in <code>VLLM_PLUGINS</code>{' '}
+            <Cite tier={1} href={vllmUrl(LORA_MD, 'L166')} kind="doc-code-conflict">
+              lora.md L166
+            </Cite>
+            , but with <code>VLLM_PLUGINS</code> unset vLLM loads every installed plugin, so the
             filesystem resolver arms as soon as its directory is set; the Hub resolver, which
             downloads remotely, must also be named in <code>VLLM_PLUGINS</code>{' '}
             <Cite tier={1} href={vllmUrl('vllm/plugins/lora_resolvers/filesystem_resolver.py', 'L49-L61')} kind="code">
