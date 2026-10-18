@@ -300,7 +300,7 @@ export function NvidiaDynamo() {
             <Cite tier={2} href={BLOG_INTRO}>
               NVIDIA blog: Introducing NVIDIA Dynamo
             </Cite>
-            . At v1.5.1 its core capabilities are <strong>Disaggregated Prefill/Decode</strong>,{' '}
+            . At v1.5.1 its core capabilities include <strong>Disaggregated Prefill/Decode</strong>,{' '}
             <strong>KV-Aware Routing</strong>, <strong>KVBM</strong> (KV Block Manager),{' '}
             <strong>ModelExpress</strong>, the <strong>SLA Planner</strong> (SLA:
             service-level agreement) and <strong>Grove</strong>{' '}
@@ -369,7 +369,12 @@ export function NvidiaDynamo() {
             adds across the fleet. Dynamo never owns the forward pass: vLLM keeps its paged KV
             cache, continuous batching, prefix caching, quantization and LoRA (low-rank adaptation)
             adapters exactly as the earlier
-            sections describe. That is why the same components work over SGLang and TensorRT-LLM.
+            sections describe. That is why the same components also run over SGLang and
+            TensorRT-LLM, with KVBM still marked in progress for SGLang{' '}
+            <Cite tier={1} href={`${DY_README}#L64-L69`}>
+              Dynamo README L64-L69
+            </Cite>
+            .
           </Box>
           <Table
             variant="embedded"
@@ -662,19 +667,27 @@ export function NvidiaDynamo() {
                   You want the KServe ecosystem, where llm-d (section 17) may be the more idiomatic
                   fit.
                 </li>
-                <li>You are on non-NVIDIA accelerators; see the hardware caveat below.</li>
+                <li>
+                  You are on an accelerator Dynamo does not target, such as AWS Neuron; see the
+                  hardware caveat below.
+                </li>
               </ul>
             </div>
           </ColumnLayout>
-          <Alert type="warning" header="Hardware caveat: Dynamo is written for NVIDIA GPUs">
-            Dynamo is an NVIDIA project (<code>ai-dynamo/dynamo</code>), and its value (NIXL
-            transport, NVLink-class KV movement, GPU-capacity planning) is written for NVIDIA
-            GPUs: its vLLM extra installs the CUDA 13 build of NIXL, <code>nixl[cu13]</code>{' '}
+          <Alert type="warning" header="Hardware caveat: the default install targets NVIDIA GPUs">
+            Dynamo is an NVIDIA project (<code>ai-dynamo/dynamo</code>), and its pip install
+            targets NVIDIA GPUs: its vLLM extra installs the CUDA 13 build of NIXL,{' '}
+            <code>nixl[cu13]</code>{' '}
             <Cite tier={1} href={`${DY}/pyproject.toml#L61-L64`}>
               dynamo pyproject.toml L61-L64
             </Cite>{' '}
             <Cite tier={1} href="https://pypi.org/project/nixl/1.3.2/">
               PyPI: nixl 1.3.2
+            </Cite>
+            . For Intel XPU, v1.5.1 ships vLLM deployment templates (aggregated, disaggregated,
+            KV router, planner) that need a custom-built XPU runtime image{' '}
+            <Cite tier={1} href={`${DY}/examples/backends/vllm/deploy/xpu/README.md#L6-L33`}>
+              Dynamo XPU deployment examples L6-L33
             </Cite>
             . On AWS it documents EFA on Amazon EKS (Elastic Kubernetes Service) for GPU-direct
             RDMA (remote direct memory access)

@@ -10,6 +10,7 @@ import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
 
 const LITELLM_PAGE = 'docs/deployment/frameworks/litellm.md';
 const LITELLM_ADVISORY = 'https://docs.litellm.ai/blog/security-update-march-2026';
+const LITELLM_GATEWAY = 'https://docs.litellm.ai/docs/simple_proxy';
 const DATADOG_ANALYSIS =
   'https://securitylabs.datadoghq.com/articles/litellm-compromised-pypi-teampcp-supply-chain-campaign/';
 
@@ -146,8 +147,8 @@ export function GatewaysAppLayer() {
           <Box variant="p">
             <strong>The architectural point in one sentence:</strong> because vLLM exposes an
             OpenAI-compatible HTTP API (see{' '}
-            <strong>12. The OpenAI-Compatible Server</strong>), the entire OpenAI-ecosystem tooling
-            stack snaps in front of it with no code changes: you swap a base URL and an API
+            <strong>12. The OpenAI-Compatible Server</strong>), OpenAI-ecosystem tooling snaps in
+            front of it with no code changes: you swap a base URL and an API
             key, and the gateway, the chat UI, and the RAG (retrieval-augmented generation) or agent
             framework all believe they are talking to OpenAI. vLLM owns the <em>engine tier</em> (the
             GPU, the KV (key-value) cache, the scheduler); these tools own the{' '}
@@ -166,8 +167,8 @@ export function GatewaysAppLayer() {
             , but it has no concept of per-team rate limits, spend caps, multi-provider fallback, or
             a human-facing UI. In production you almost never expose that process directly. You
             front it with a gateway for control-plane concerns and point apps at the gateway.
-            Everything below bolts on through the OpenAI wire contract, with no rewrite of your call
-            sites.
+            Everything below bolts on through a wire contract vLLM already serves (OpenAI&apos;s, or
+            Anthropic Messages for Claude Code), with no rewrite of your call sites.
           </Box>
         </SpaceBetween>
       </Container>
@@ -208,7 +209,17 @@ export function GatewaysAppLayer() {
               {
                 layer: 'LLM gateway / proxy',
                 tools: 'LiteLLM',
-                adds: 'Retries & fallbacks, spend budgets, rate limits, virtual API keys, request logging, and multi-provider unification (one endpoint that fronts vLLM plus OpenAI/Bedrock/Anthropic/etc.), as LiteLLM describes its proxy.',
+                adds: (
+                  <span>
+                    Retries &amp; fallbacks, spend budgets, rate limits, virtual API keys, request
+                    logging, and multi-provider unification (one endpoint that fronts vLLM plus
+                    OpenAI/Bedrock/Anthropic/etc.){' '}
+                    <Cite tier={1} href={LITELLM_GATEWAY}>
+                      LiteLLM docs: AI Gateway
+                    </Cite>
+                    .
+                  </span>
+                ),
                 connects: (
                   <span>
                     Calls vLLM with model <code>hosted_vllm/&lt;name&gt;</code> and{' '}
@@ -383,7 +394,7 @@ response = litellm.completion(
                 of an agent framework or MCP (Model Context Protocol) server. Look for{' '}
                 <code>litellm_init.pth</code> in site-packages. If you are on 1.82.6 or earlier and did
                 not upgrade in that window, you are not affected. The first clean release after the
-                incident is v1.83.0 (March 30, 2026){' '}
+                incident is v1.83.0, announced in the advisory&apos;s March 30 update{' '}
                 <Cite tier={2} href={LITELLM_ADVISORY}>
                   LiteLLM security update
                 </Cite>

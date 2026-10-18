@@ -29,8 +29,9 @@ function MetricsPipelineDiagram() {
           A load generator (vllm bench serve, the Rust vllm-bench client, GuideLLM or
           inference-perf) sends requests to the vLLM server, whose GET /metrics endpoint exposes
           every vllm: series. Prometheus scrapes that endpoint and Grafana draws dashboards and
-          fires alerts from it, so a benchmark run and the live dashboard read the same numbers.
-          vllm bench serve also reads /metrics itself to report speculative-decoding acceptance.
+          fires alerts from it, so the dashboard shows the server side of the run the benchmark
+          times at the client. vllm bench serve also reads /metrics itself to report
+          speculative-decoding acceptance.
           Optionally, --otlp-traces-endpoint sends per-request OpenTelemetry spans to an OTLP
           collector and on to Jaeger or Tempo.
         </title>
@@ -82,7 +83,7 @@ function MetricsPipelineDiagram() {
         <text className="obs-t" x={394} y={66}>vLLM server</text>
         <text className="obs-s" x={394} y={90}>API server + EngineCore</text>
         <text className="obs-code" x={394} y={114}>GET /metrics</text>
-        <text className="obs-s" x={394} y={136}>every series prefixed vllm:</text>
+        <text className="obs-s" x={394} y={136}>vllm: and http_* series</text>
 
         {/* scrape */}
         <path className="obs-arr" d="M496,84 L554,84" />
@@ -417,7 +418,7 @@ export function ObservabilityBench() {
         header={
           <Header
             variant="h2"
-            description="One /metrics endpoint feeds both the benchmark report and the live dashboard, which is why the two agree."
+            description="Point the load generator and Prometheus at the same server, so the client-side benchmark report and the server-side dashboard describe one run."
           >
             The telemetry pipeline
           </Header>
@@ -426,15 +427,21 @@ export function ObservabilityBench() {
         <SpaceBetween size="m">
           <Box variant="p">
             vLLM serves Prometheus metrics at <code>/metrics</code> on the API server, mounted by
-            default, with every series prefixed <code>vllm:</code>{' '}
+            default: its own series, prefixed <code>vllm:</code>, next to the HTTP layer&apos;s{' '}
+            <code>http_*</code> series{' '}
             <Cite tier={1} href={vllmUrl('vllm/entrypoints/serve/instrumentator/metrics.py', 'L64-L77')}>
               instrumentator/metrics.py L64-L77
             </Cite>
             . Prometheus scrapes that endpoint on an interval; Grafana renders dashboards and fires
             alerts. During a benchmark the load generator drives the same server whose metrics you
-            are watching, so a benchmark run and the live dashboard read from one source of truth.{' '}
-            <code>vllm bench serve</code> reads <code>/metrics</code> itself before and after a run
-            and reports speculative-decoding acceptance rate and length from the difference{' '}
+            are watching, so the dashboard shows the server side of the run the benchmark times
+            at the client. <code>vllm bench serve</code> computes its latency statistics from its
+            own request timings{' '}
+            <Cite tier={1} href={vllmUrl('vllm/benchmarks/serve.py', 'L603-L633')}>
+              benchmarks/serve.py L603-L633
+            </Cite>
+            , and reads <code>/metrics</code> before and after a run to report
+            speculative-decoding acceptance rate and length from the difference{' '}
             <Cite tier={1} href={vllmUrl('vllm/benchmarks/serve.py', 'L1103-L1142')}>
               benchmarks/serve.py L1103-L1142
             </Cite>
@@ -470,7 +477,7 @@ export function ObservabilityBench() {
             <Cite tier={1} href={vllmUrl(LOGGERS, 'L576-L614')}>
               loggers.py L576-L614
             </Cite>
-            . A search of the v0.31.0 tree finds no <code>vllm:gpu_cache_usage_perc</code>,{' '}
+            . A search of the v0.31.0 code finds no <code>vllm:gpu_cache_usage_perc</code>,{' '}
             <code>vllm:gpu_prefix_cache_*</code>, <code>vllm:num_requests_swapped</code> or{' '}
             <code>vllm:cpu_cache_usage_perc</code>; the design doc lists the last two as legacy
             metrics of a swap mode V1 does not have{' '}
@@ -759,7 +766,7 @@ export function ObservabilityBench() {
             <div>
               <Box variant="h3">inference-perf</Box>
               <Box variant="p">
-                A kubernetes-sigs tool for cluster-scale benchmarking. It lists verified support for
+                A kubernetes-sigs tool for production-scale benchmarking. It lists verified support for
                 vLLM, SGLang and TGI (Text Generation Inference) and extends to any
                 OpenAI-compatible endpoint, runs multi-stage load (constant rate, Poisson arrival,
                 concurrent users) to find saturation points, and measures goodput, the rate of
@@ -767,8 +774,7 @@ export function ObservabilityBench() {
                 <Cite tier={1} href={`${INFERENCE_PERF_README}#L29-L49`}>
                   inference-perf v0.7.0 README L29-L49
                 </Cite>
-                . It is the right tool when you benchmark a fleet behind a router rather than one
-                replica.
+                . Our reading: it fits a fleet behind a router better than a single replica.
               </Box>
             </div>
           </ColumnLayout>
