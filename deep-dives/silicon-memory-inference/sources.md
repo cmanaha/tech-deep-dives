@@ -12,13 +12,16 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 261.
+Total distinct sources: 278.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
 | AWS | [Amazon EC2 accelerated computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html) | 2026-10-17 | AwsCustomSilicon, CapitalMarketsLens, DisaggregatedServingAndSpeculative, FlashCacheTier, GraceBlackwellUltraServer, HeterogeneityFact, NvidiaBlackwell, NvidiaHopper |
+| AWS | [Amazon EC2 compute optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html) | 2026-10-17 | GravitonDeepDive |
+| AWS | [Amazon EC2 general purpose instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html) | 2026-10-17 | GravitonDeepDive |
+| AWS | [Amazon EC2 memory optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/mo.html) | 2026-10-17 | GravitonDeepDive |
 | AWS | [Amazon FSx for Lustre performance: throughput to individual client instances](https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon FSx for Lustre: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon FSx for Lustre: working with EFA-enabled file systems](https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html) | 2026-10-17 | FlashCacheTier |
@@ -43,7 +46,10 @@ Total distinct sources: 261.
 | AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-17 | AwsCustomSilicon, HeterogeneityFact, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | AWS | [AWS Neuron: What is Neuron Collective Communication?](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html) | 2026-10-17 | AwsCustomSilicon |
 | AWS | [AWS Neuron: What's New in the AWS Neuron SDK (releases 2.27.0 to 2.32.0)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/whats-new.html) | 2026-10-17 | AwsCustomSilicon, MoeAndSparseActivation |
-| AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | CapitalMarketsLens, GraceBlackwellUltraServer, HeterogeneityFact |
+| AWS | [aws-graviton-getting-started machinelearning/llama.cpp.md at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/machinelearning/llama.cpp.md) | 2026-10-16 | GravitonDeepDive |
+| AWS | [aws-graviton-getting-started machinelearning/onnx.md at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/machinelearning/onnx.md) | 2026-10-16 | GravitonDeepDive |
+| AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | CapitalMarketsLens, GraceBlackwellUltraServer, GravitonDeepDive, HeterogeneityFact |
+| AWS | [aws-graviton-getting-started repository at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/tree/8b322a4160b827be202beedaf35ce21b4c635603) | 2026-10-16 | GravitonDeepDive |
 | AWS | [Capacity Blocks for ML: supported instance types and Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaHopper |
 | AWS | [Data persistence for Amazon EC2 instance store volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Elastic Fabric Adapter for AI/ML and HPC workloads on Amazon EC2 (EFA limitations)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html) | 2026-10-17 | CapitalMarketsLens |
@@ -92,6 +98,8 @@ Total distinct sources: 261.
 | Linux kernel | [Linux kernel Documentation/arch/x86/xstate.rst at tag v6.19 (AMX TILE_DATA, ARCH_REQ_XCOMP_PERM)](https://github.com/torvalds/linux/blob/v6.19/Documentation/arch/x86/xstate.rst) | 2026-10-17 | KernelExecutionLifecycle |
 | llm-d | [llm-d README at tag v0.10.0](https://github.com/llm-d/llm-d/blob/v0.10.0/README.md) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | llm-d | [llm-d tiered prefix cache guides and metrics docs at tag v0.10.0](https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/README.md) | 2026-10-17 | FlashCacheTier |
+| LLVM | [AArch64InstrFormats.td at tag llvmorg-23.1.3 (SIMDThreeSameVectorMatMul, lines 9259-9265)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/AArch64/AArch64InstrFormats.td#L9259-L9265) | 2026-10-16 | GravitonDeepDive |
+| LLVM | [AArch64InstrInfo.td at tag llvmorg-23.1.3 (BFMMLA under HasBF16; SMMLA, UMMLA, USMMLA under HasMatMulInt8)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/AArch64/AArch64InstrInfo.td#L1727-L1755) | 2026-10-17 | GravitonDeepDive |
 | LLVM | [AArch64SchedNeoverseV2.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/AArch64/AArch64SchedNeoverseV2.td) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
 | LLVM | [Clang amxfp16intrin.h at tag llvmorg-23.1.3 (TDPFP16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxfp16intrin.h) | 2026-10-17 | KernelExecutionLifecycle |
 | LLVM | [Clang amxintrin.h at tag llvmorg-23.1.3 (tile size, LDTILECFG, TILELOADD, TDPBF16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxintrin.h) | 2026-10-17 | KernelExecutionLifecycle, QuantizationAndPrecision, ThesisAndFraming |
@@ -102,6 +110,7 @@ Total distinct sources: 261.
 | LLVM | [X86ScheduleZnver4.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/X86/X86ScheduleZnver4.td) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
 | LMCache | [LMCache local storage backend docs at tag v0.5.6 (per-GPU disk paths, O_DIRECT, example chunk size)](https://github.com/LMCache/LMCache/blob/v0.5.6/docs/source/kv_cache/storage_backends/local_storage.rst) | 2026-10-17 | FlashCacheTier |
 | Micron | [Micron 9650 NVMe SSD product brief (key specifications and test conditions)](https://www.micron.com/content/dam/micron/global/public/products/storage/ssds/data-center/9650/9650-nvme-ssd-product-brief.pdf) | 2026-10-17 | FlashCacheTier |
+| Microsoft | [ONNX Runtime v1.17.0 release (published 2024-02-03)](https://github.com/microsoft/onnxruntime/releases/tag/v1.17.0) | 2026-10-17 | GravitonDeepDive |
 | NVIDIA | [CUDA C++ Best Practices Guide (CUDA 13.4): Occupancy](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html) | 2026-10-17 | HeterogeneityFact, NvidiaHopper, ThesisAndFraming |
 | NVIDIA | [CUDA GPU compute capability list](https://developer.nvidia.com/cuda-gpus) | 2026-10-16 | NvidiaBlackwell, NvidiaCompilersAndTooling, NvidiaHopper |
 | NVIDIA | [CUDA Programming Guide v13.4.2: Advanced Kernel Programming (Hardware Multithreading)](https://docs.nvidia.com/cuda/cuda-programming-guide/03-advanced/advanced-kernel-programming.html) | 2026-10-17 | KernelExecutionLifecycle |
@@ -190,6 +199,8 @@ Total distinct sources: 261.
 | Amazon | [Trainium3 UltraServers now available (Trainium4 roadmap)](https://www.aboutamazon.com/news/aws/trainium-3-ultraserver-faster-ai-training-lower-cost) | 2026-10-16 | AwsCustomSilicon |
 | AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-17 | QuantizationAndPrecision, RooflineAndArithmeticIntensity |
 | AMD | [AMD Solarflare X4 Low Latency Using SDCI (white paper, October 2025, Rev 1)](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/white-papers/x4-sdci-whitepaper.pdf) | 2026-10-17 | CapitalMarketsLens |
+| Arm | [Arm Neoverse V3 product page](https://www.arm.com/products/silicon-ip-cpu/neoverse/neoverse-v3) | 2026-10-16 | GravitonDeepDive |
+| AWS | [About Amazon: AWS Graviton5 (2025-12-04, updated 2026-06-10 for GA)](https://www.aboutamazon.com/news/aws/aws-graviton-5-cpu-amazon-ec2) | 2026-10-16 | GravitonDeepDive |
 | AWS | [Amazon EC2 M8a instances](https://aws.amazon.com/ec2/instance-types/m8a/) | 2026-10-17 | HeterogeneityFact |
 | AWS | [Amazon EC2 M8i instances](https://aws.amazon.com/ec2/instance-types/m8i/) | 2026-10-17 | HeterogeneityFact |
 | AWS | [Amazon EC2 P5 instances](https://aws.amazon.com/ec2/instance-types/p5/) | 2026-10-17 | NvidiaHopper |
@@ -198,6 +209,11 @@ Total distinct sources: 261.
 | AWS | [Amazon EC2 Trn3 instances](https://aws.amazon.com/ec2/instance-types/trn3/) | 2026-10-17 | AwsCustomSilicon, FlashCacheTier, HeterogeneityFact, MoeAndSparseActivation, QuantizationAndPrecision |
 | AWS | [Announcing Amazon EC2 Trn3 UltraServers (2025-12-02)](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/) | 2026-10-16 | AwsCustomSilicon |
 | AWS | [Announcing up to 45% price reduction for Amazon EC2 NVIDIA GPU-accelerated instances](https://aws.amazon.com/blogs/aws/announcing-up-to-45-price-reduction-for-amazon-ec2-nvidia-gpu-accelerated-instances/) | 2026-10-17 | NvidiaBlackwell, NvidiaHopper |
+| AWS | [AWS News Blog: Amazon EC2 C9g and C9gd instances powered by AWS Graviton5 processors are now available (2026-06-30)](https://aws.amazon.com/blogs/aws/amazon-ec2-c9g-and-c9gd-instances-powered-by-aws-graviton5-processors-are-now-available/) | 2026-10-16 | GravitonDeepDive |
+| AWS | [AWS News Blog: Amazon EC2 R9g and R9gd instances powered by AWS Graviton5 processors are now generally available (2026-08-31)](https://aws.amazon.com/blogs/aws/amazon-ec2-r9g-and-r9gd-instances-powered-by-aws-graviton5-processors-are-now-generally-available/) | 2026-10-16 | GravitonDeepDive |
+| AWS | [AWS News Blog: AWS Graviton4-based Amazon EC2 R8g instances: best price performance in Amazon EC2 (2024-07-09)](https://aws.amazon.com/blogs/aws/aws-graviton4-based-amazon-ec2-r8g-instances-best-price-performance-in-amazon-ec2/) | 2026-10-17 | GravitonDeepDive |
+| AWS | [AWS News Blog: Join the preview for new memory-optimized, AWS Graviton4-powered Amazon EC2 instances (R8g) (2023-11-28)](https://aws.amazon.com/blogs/aws/join-the-preview-for-new-memory-optimized-aws-graviton4-powered-amazon-ec2-instances-r8g/) | 2026-10-16 | GravitonDeepDive |
+| AWS | [AWS News Blog: Now available: Amazon EC2 M9g and M9gd instances powered by new AWS Graviton5 processors (2026-06-10)](https://aws.amazon.com/blogs/aws/now-available-amazon-ec2-m9g-and-m9gd-instances-powered-by-new-aws-graviton5-processors/) | 2026-10-16 | GravitonDeepDive |
 | AWS | [AWS Nitro Isolation Engine: Formally verifying the hypervisor in the AWS Nitro System (2026-06-11)](https://aws.amazon.com/blogs/compute/aws-nitro-isolation-engine-formally-verifying-the-hypervisor-in-the-aws-nitro-system/) | 2026-10-16 | CapitalMarketsLens |
 | AWS | [Introducing Disaggregated Inference on AWS powered by llm-d (2026-03-16)](https://aws.amazon.com/blogs/machine-learning/introducing-disaggregated-inference-on-aws-powered-by-llm-d/) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | AWS | [Managed Tiered KV Cache and Intelligent Routing for Amazon SageMaker HyperPod (2025-11-26)](https://aws.amazon.com/blogs/machine-learning/managed-tiered-kv-cache-and-intelligent-routing-for-amazon-sagemaker-hyperpod/) | 2026-10-17 | FlashCacheTier |
@@ -283,6 +299,7 @@ Total distinct sources: 261.
 | arXiv | [SPLASH: Co-Designing Sparse Attention with High-Bandwidth Flash for Efficient Long-Context Inference (arXiv:2609.23816)](https://arxiv.org/abs/2609.23816) | 2026-10-17 | HighBandwidthFlash |
 | Blocks & Files | [Kioxia eyes GPU memory stack with high-bandwidth flash push (2026-03-20)](https://www.blocksandfiles.com/flash/2026/03/20/kioxia-eyes-gpu-memory-stack-with-high-bandwidth-flash-push/5210520) | 2026-10-17 | HighBandwidthFlash |
 | Chips and Cheese | [AMD's Turin: 5th Gen EPYC Launched (core-to-core latency on EPYC 9575F)](https://chipsandcheese.com/p/amds-turin-5th-gen-epyc-launched) | 2026-10-16 | CapitalMarketsLens |
+| Chips and Cheese | [Chips and Cheese: Arm's Neoverse V2 in AWS's Graviton 4](https://chipsandcheese.com/p/arms-neoverse-v2-in-awss-graviton-4) | 2026-10-16 | GravitonDeepDive |
 | DIGITIMES | [Samsung signals zHBF push as memory race moves beyond HBM (2026-08-27)](https://www.digitimes.com/news/a20260827VL229/samsung-hbm-bandwidth-capacity-2026.html) | 2026-10-17 | HighBandwidthFlash |
 | Risk.net | [Giles and Glasserman, Smoking adjoints: fast Monte Carlo Greeks (Risk, January 2006)](https://www.risk.net/derivatives/interest-rate-derivatives/1500261/smoking-adjoints-fast-monte-carlo-greeks) | 2026-10-16 | CapitalMarketsLens |
 | ServeTheHome | [Oxmiq Labs HBF in AI Compute at Hot Chips 2026 (2026-08-27)](https://www.servethehome.com/oxmiq-labs-hbf-in-ai-compute-at-hot-chips-2026/) | 2026-10-17 | HighBandwidthFlash |
