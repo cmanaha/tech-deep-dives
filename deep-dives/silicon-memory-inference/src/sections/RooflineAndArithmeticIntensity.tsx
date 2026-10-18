@@ -167,7 +167,12 @@ const ridgeRows: RidgeRow[] = [
         <Cite s={S.amdMi355x} />
       </>
     ),
-    bf16: '-',
+    bf16: (
+      <>
+        313
+        <Cite s={S.amdMi355x} kind="derived" note="Peak BF16 matrix 2.5 PFLOPS (5 with structured sparsity). 2,500 / 8 = 312.5." />
+      </>
+    ),
     fp8: (
       <>
         625
@@ -305,6 +310,7 @@ const inputRows: InputRow[] = [
   { id: 'rubin-bf16', chip: 'Rubin, BF16', dense: '4 PFLOPS', sparse: '-', bw: '22 TB/s', source: <Cite s={S.hgxPage} /> },
   { id: 'rubin-fp8', chip: 'Rubin, FP8', dense: '17.5 PFLOPS', sparse: '-', bw: '22 TB/s', source: <Cite s={S.hgxPage} /> },
   { id: 'rubin-fp4', chip: 'Rubin, NVFP4', dense: '35 PFLOPS', sparse: '50 PFLOPS', bw: '22 TB/s', source: <Cite s={S.hgxPage} /> },
+  { id: 'mi355x-bf16', chip: 'MI355X, BF16', dense: '2.5 PFLOPS', sparse: '5 PFLOPS', bw: '8 TB/s', source: <Cite s={S.amdMi355x} /> },
   { id: 'mi355x-fp8', chip: 'MI355X, OCP FP8', dense: '5 PFLOPS', sparse: '10.1 PFLOPS', bw: '8 TB/s', source: <Cite s={S.amdMi355x} /> },
   { id: 'mi355x-fp4', chip: 'MI355X, MXFP4', dense: '10.1 PFLOPS', sparse: '-', bw: '8 TB/s', source: <Cite s={S.amdMi355x} /> },
   { id: 'trn2-bf16', chip: 'Trainium2, BF16', dense: '667 TFLOPS', sparse: '-', bw: '2.9 TB/s', source: <Cite s={S.trainium2Arch} /> },
@@ -417,7 +423,7 @@ export function RooflineAndArithmeticIntensity() {
             First, the spec sheet gives a ceiling on batch-1 decode speed: HBM bandwidth divided by
             the bytes read per token, the active parameter bytes plus the KV-cache bytes. A
             70-billion-parameter dense model in FP8 reads about 70 GB per token, so one H200 tops
-            out near 68 tokens per second.
+            out near 69 tokens per second.
             <Cite s={S.h200Page} kind="derived" note="4.8 TB/s / 70 GB = 68.6 tokens per second, weights only; KV-cache reads lower it." />{' '}
             Second, GQA (grouped-query attention), KV-cache quantization, FlashAttention-class
             fusion and speculative decoding speed up decode by cutting the bytes moved per useful
@@ -460,8 +466,9 @@ export function RooflineAndArithmeticIntensity() {
           <RidgeMapChart />
           <Box variant="p">
             <strong>The precision step moves the ridge more than the generation does.</strong> At
-            a fixed precision the ridge stays flat or falls: BF16 runs 295 on H100, 281 on B200
-            and 182 on Rubin, whose HBM4 grew faster than its BF16 rate. A precision step on one
+            a fixed precision the ridge stays within a factor of 2 from H100 to Rubin, and at BF16
+            it falls: 295 on H100, 281 on B200 and 182 on Rubin, whose HBM4 grew faster than its
+            BF16 rate. A precision step on one
             chip moves it 2x on H200 (206 to 412) and almost 9x on Rubin (182 at BF16 to 1,591 at
             NVFP4). Your precision choice decides where the ridge sits more than your chip choice
             does.
@@ -503,6 +510,7 @@ export function RooflineAndArithmeticIntensity() {
                 Sparse rates apply only to weights pruned to the 2:4 structured pattern, so every
                 ridge on this page uses the dense rate. With sparse rates the H200 FP8 ridge would
                 be 825 and the Rubin NVFP4 ridge 2,273.
+                <Cite s={S.sparsityBlog} />
                 <Cite s={S.h200Page} kind="derived" note="3,958 / 4.8 = 825." />
                 <Cite s={S.hgxPage} kind="derived" note="50,000 / 22 = 2,273." />
               </Box>
@@ -516,9 +524,9 @@ export function RooflineAndArithmeticIntensity() {
                 FLOPS and bandwidth there come from one table. At 19.2 TB/s the Rubin ridges are
                 208 (BF16), 911 (FP8) and 1,823 (NVFP4); on the NVL8 board&apos;s own figures the
                 FP8 ridge is 1,000.
-                <Cite s={S.hgxPage} kind="derived" note="4,000, 17,500 and 35,000 / 19,200; NVL8 board 130 PFLOPS / 130 TB/s." />{' '}
+                <Cite s={S.hgxPage} kind="derived" note="4,000, 17,500 and 35,000 / 19,200; NVL8 board 130 PFLOPS / 130 TB/s for FP8 and 32 PFLOPS / 130 TB/s = 246 for BF16." />{' '}
                 Compute the ridge from the system you are buying. On all three the BF16 ridge stays
-                inside the range of earlier generations.
+                below H100&apos;s 295.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -556,7 +564,8 @@ export function RooflineAndArithmeticIntensity() {
             working tile on chip, which cuts HBM traffic and raises intensity. The current kernels
             are FlashAttention-3 on Hopper
             <Cite s={S.flashAttentionReadme} /> and FlashAttention-4, in beta, on Blackwell.
-            <Cite s={S.fa4Release} /> CUTLASS, CuTe and Triton on NVIDIA and NKI (Neuron Kernel
+            <Cite s={S.fa4Release} />
+            <Cite s={S.fa4Readme} /> CUTLASS, CuTe and Triton on NVIDIA and NKI (Neuron Kernel
             Interface) on Trainium emit fused kernels; <em>NVIDIA Compilers and Kernel Tooling</em>{' '}
             and <em>AWS Compilers and Kernel Tooling</em> cover them.
           </Box>

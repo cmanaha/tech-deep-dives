@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 454.
+Total distinct sources: 455.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -93,7 +93,7 @@ Total distinct sources: 454.
 | CXL Consortium | [CXL Consortium press release, CXL 3.1 specification (2023-11-14)](https://computeexpresslink.org/wp-content/uploads/2024/01/CXL_3.1-Specification-Release_FINAL.pdf) | 2026-10-16 | MainMemoryAndCxl |
 | CXL Consortium | [CXL Consortium press release, CXL 3.2 specification (2024-12-03)](https://computeexpresslink.org/wp-content/uploads/2024/12/CXL_3.2-Spec-Announcement_FINAL-1.pdf) | 2026-10-16 | MainMemoryAndCxl |
 | CXL Consortium | [CXL Consortium press release, CXL 4.0 specification (2025-11-18)](https://computeexpresslink.org/wp-content/uploads/2025/11/CXL_4.0-Specification-Release_FINAL_Website-Copy.pdf) | 2026-10-16 | MainMemoryAndCxl |
-| Dao-AILab | [FlashAttention README at tag fa4-v4.0.0.beta35 (FlashAttention-4 in CuTeDSL for Hopper and Blackwell)](https://github.com/Dao-AILab/flash-attention/blob/fa4-v4.0.0.beta35/README.md) | 2026-10-18 | KvCacheAndFlashAttention |
+| Dao-AILab | [FlashAttention README at tag fa4-v4.0.0.beta35 (FlashAttention-4 in CuTeDSL for Hopper and Blackwell)](https://github.com/Dao-AILab/flash-attention/blob/fa4-v4.0.0.beta35/README.md) | 2026-10-18 | KvCacheAndFlashAttention, RooflineAndArithmeticIntensity |
 | Dao-AILab | [FlashAttention README at tag v2.8.3.post2 (FlashAttention-3 beta)](https://github.com/Dao-AILab/flash-attention/blob/v2.8.3.post2/README.md) | 2026-10-18 | KvCacheAndFlashAttention, NvidiaHopper, RooflineAndArithmeticIntensity |
 | Dao-AILab | [FlashAttention release fa4-v4.0.0.beta35 (FlashAttention-4 beta, 2026-10-14)](https://github.com/Dao-AILab/flash-attention/releases/tag/fa4-v4.0.0.beta35) | 2026-10-18 | KvCacheAndFlashAttention, RooflineAndArithmeticIntensity |
 | DeepSeek | [DeepSeek API docs: Context Caching](https://api-docs.deepseek.com/guides/kv_cache) | 2026-10-17 | FlashCacheTier |
@@ -318,7 +318,7 @@ Total distinct sources: 454.
 | Amazon | [Trainium3 UltraServers now available (Trainium4 roadmap)](https://www.aboutamazon.com/news/aws/trainium-3-ultraserver-faster-ai-training-lower-cost) | 2026-10-16 | AwsCustomSilicon |
 | AMD | [AMD blog: Agentic AI: AMD EPYC 9005 CPUs Wins Today, EPYC 9006, formerly code-named "Venice", Takes It to a New Level (2026-07-23)](https://www.amd.com/en/blogs/2026/agentic-ai-amd-epyc-9005-cpus-wins-today-epyc-9006.html) | 2026-10-17 | AmdEpycTurin, MainMemoryAndCxl |
 | AMD | [AMD EPYC 9996 product page (16 channels; RDIMM up to 8000 MT/s, MRDIMM up to 12800 MT/s; 1024 / 1638 GB/s per socket)](https://www.amd.com/en/products/processors/server/epyc/9006-series/amd-epyc-9996.html) | 2026-10-16 | MainMemoryAndCxl |
-| AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-17 | HbmAndBandwidthWall, QuantizationAndPrecision, RooflineAndArithmeticIntensity |
+| AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-18 | HbmAndBandwidthWall, QuantizationAndPrecision, RooflineAndArithmeticIntensity |
 | AMD | [AMD Instinct MI455X GPU (432 GB HBM4, 12 stacks, 23.3 TB/s, launch date 7/23/2026)](https://www.amd.com/en/products/accelerators/instinct/mi400/mi455x.html) | 2026-10-16 | HbmAndBandwidthWall |
 | AMD | [AMD Solarflare X4 Low Latency Using SDCI (white paper, October 2025, Rev 1)](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/white-papers/x4-sdci-whitepaper.pdf) | 2026-10-17 | AmdEpycTurin, CapitalMarketsLens |
 | Arm | [Arm Neoverse V3 product page](https://www.arm.com/products/silicon-ip-cpu/neoverse/neoverse-v3) | 2026-10-16 | GravitonDeepDive |
@@ -419,6 +419,7 @@ Total distinct sources: 454.
 | NVIDIA | [NVIDIA Technical Blog: AWS Integrates AI Infrastructure with NVIDIA NVLink Fusion for Trainium4 Deployment (2025-12-02)](https://developer.nvidia.com/blog/aws-integrates-ai-infrastructure-with-nvidia-nvlink-fusion-for-trainium4-deployment/) | 2026-10-17 | ChipletAndInterconnect, CommunicationAndScaleOut |
 | NVIDIA | [NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, GroqSambanovaDataflow, HbmAndBandwidthWall, MemoryHierarchyPrimer, NvidiaBlackwell, RooflineAndArithmeticIntensity |
 | NVIDIA | [Sparks Fly: NVIDIA Accelerates Local AI at IFA 2026 (RTX Spark, 2026-09-03)](https://blogs.nvidia.com/blog/local-ai-ifa-next-gen-agents-nv-pair-rtx-spark/) | 2026-10-17 | EdgeSharedMemorySilicon |
+| NVIDIA | [Structured Sparsity in the NVIDIA Ampere Architecture and Applications in Search Engines (2023-07-03)](https://developer.nvidia.com/blog/structured-sparsity-in-the-nvidia-ampere-architecture-and-applications-in-search-engines/) | 2026-10-18 | RooflineAndArithmeticIntensity |
 | SambaNova | [Introducing the SN50 RDU: Purpose-Built for Agentic Inference (2026-02-24)](https://sambanova.ai/blog/introducing-the-sn50-rdu-purpose-built-for-agentic-inference) | 2026-10-17 | GroqSambanovaDataflow, MoeAndSparseActivation |
 | SambaNova | [SambaNova Unveils Fastest Chip for Agentic AI, Collaborates with Intel, and Raises $350M+ (2026-02-24)](https://sambanova.ai/press/sambanova-unveils-fastest-chip-for-agentic-ai-collaborates-with-intel-and-raises-350m) | 2026-10-17 | GroqSambanovaDataflow |
 | Samsung | [Aquabolt-XL: Samsung HBM2-PIM with in-memory processing for ML accelerators and beyond (Hot Chips 33 slides, 2021-08-13)](https://www.hc33.hotchips.org/assets/program/conference/day1/20210813_HC33_Aquabolt-XL_PIM_Jin_Kim_slide.pdf) | 2026-10-16 | ComputeInMemory, HbmAndBandwidthWall |

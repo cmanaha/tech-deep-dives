@@ -8,7 +8,9 @@ import type { Source } from '../components/Cite';
  * 03-aws-cpus.md (sections 0 and 1). Records shared with other sections reuse
  * their URL, title, publisher and tier. The HGX page was re-fetched during
  * authoring (accessed 2026-10-17) for the B200 and B300 BF16 and FP8 rows and
- * the HGX Rubin NVL8 board figures.
+ * the HGX Rubin NVL8 board figures. The AMD MI355X page, the FlashAttention-4
+ * README and the NVIDIA structured-sparsity blog were fetched in the
+ * verification pass (accessed 2026-10-18).
  */
 export const S = {
   roofline: {
@@ -40,6 +42,13 @@ export const S = {
     tier: 1,
     accessed: '2026-10-16',
   },
+  fa4Readme: {
+    title: 'FlashAttention README at tag fa4-v4.0.0.beta35 (FlashAttention-4 in CuTeDSL for Hopper and Blackwell)',
+    publisher: 'Dao-AILab',
+    url: 'https://github.com/Dao-AILab/flash-attention/blob/fa4-v4.0.0.beta35/README.md',
+    tier: 1,
+    accessed: '2026-10-18',
+  },
   fa4Release: {
     title: 'FlashAttention release fa4-v4.0.0.beta35 (FlashAttention-4 beta, 2026-10-14)',
     publisher: 'Dao-AILab',
@@ -67,6 +76,13 @@ export const S = {
     url: 'https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/',
     tier: 2,
     accessed: '2026-10-16',
+  },
+  sparsityBlog: {
+    title: 'Structured Sparsity in the NVIDIA Ampere Architecture and Applications in Search Engines (2023-07-03)',
+    publisher: 'NVIDIA',
+    url: 'https://developer.nvidia.com/blog/structured-sparsity-in-the-nvidia-ampere-architecture-and-applications-in-search-engines/',
+    tier: 2,
+    accessed: '2026-10-18',
   },
   dgxB200: {
     title: 'NVIDIA DGX B200',
@@ -116,7 +132,7 @@ export const S = {
     publisher: 'AMD',
     url: 'https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html',
     tier: 2,
-    accessed: '2026-10-16',
+    accessed: '2026-10-18',
   },
   distServe: {
     title:

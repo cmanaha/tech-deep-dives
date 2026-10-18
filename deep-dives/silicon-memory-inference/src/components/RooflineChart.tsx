@@ -201,7 +201,7 @@ const ridgeChips: RidgeChip[] = [
   { chip: 'B200', bf16: 281, fp8: 562, fp4: 1125 },
   { chip: 'B300 (HGX)', bf16: 281, fp8: 562, fp4: 1688 },
   { chip: 'Rubin', bf16: 182, fp8: 795, fp4: 1591 },
-  { chip: 'AMD MI355X', fp8: 625, fp4: 1262 },
+  { chip: 'AMD MI355X', bf16: 313, fp8: 625, fp4: 1262 },
   { chip: 'AWS Trainium2', bf16: 230, fp8: 448 },
   { chip: 'AWS Trainium3', bf16: 137, fp8: 514, fp4: 514 },
 ];
@@ -210,7 +210,8 @@ export function RidgeMapChart() {
   const W = 760;
   const rowTop = 72;
   const rowStep = 36;
-  const plotBottom = rowTop + rowStep * (ridgeChips.length - 1) + 22;
+  // 30 below the last row leaves room for a value label under a shared FP8/FP4 point.
+  const plotBottom = rowTop + rowStep * (ridgeChips.length - 1) + 30;
   const H = plotBottom + 52;
   const x0 = 170;
   const x1 = 736;
@@ -222,7 +223,7 @@ export function RidgeMapChart() {
   const bandTop = 46;
   const pad = 16;
   const bands = [
-    { from: 137, to: 295, fill: '#f2f8fd' },
+    { from: 137, to: 313, fill: '#f2f8fd' },
     { from: 412, to: 795, fill: '#fdf3ec' },
     { from: 1125, to: 1688, fill: '#ecf7ec' },
   ];
@@ -234,7 +235,7 @@ export function RidgeMapChart() {
     <div style={{ overflowX: 'auto' }}>
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="ridge-map-title" style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}>
       <title id="ridge-map-title">
-        Dense ridge points group by precision more than by chip. BF16 ridges fall between 137 and 295
+        Dense ridge points group by precision more than by chip. BF16 ridges fall between 137 and 313
         FLOP per byte on every chip shown, FP8 ridges between 412 and 795, and NVFP4 and MXFP4 ridges
         between 1,125 and 1,688, while one chip&apos;s ridge moves 2 to 9 times across its precisions.
         Trainium3 rates MXFP4 at its MXFP8 rate, so its FP4 ridge stays at 514.
@@ -280,7 +281,10 @@ export function RidgeMapChart() {
 
       {ridgeChips.map((c, i) => {
         const y = rowTop + i * rowStep;
+        // When FP8 and FP4 share a ridge (Trainium3), the two markers sit side by
+        // side, 8 units either way of the value; FP8 is labelled above, FP4 below.
         const same = c.fp8 !== undefined && c.fp8 === c.fp4;
+        const split = same ? 8 : 0;
         return (
           <g key={c.chip}>
             <text x={16} y={y + 4} fontSize={13} fontWeight={600} fontFamily="sans-serif" fill={ink}>
@@ -297,20 +301,25 @@ export function RidgeMapChart() {
             )}
             {c.fp8 !== undefined && (
               <>
-                <rect x={sx(c.fp8) - 6 - (same ? 6 : 0)} y={y - 6} width={12} height={12} fill={orange} />
-                <text x={sx(c.fp8)} y={y - 10} fontSize={11} fontFamily="sans-serif" fill={ink} textAnchor="middle">
+                <rect x={sx(c.fp8) - 6 - split} y={y - 6} width={12} height={12} fill={orange} />
+                <text x={sx(c.fp8) - split} y={y - 10} fontSize={11} fontFamily="sans-serif" fill={ink} textAnchor="middle">
                   {fmt(c.fp8)}
                 </text>
               </>
             )}
             {c.fp4 !== undefined && (
               <>
-                <polygon points={diamond(sx(c.fp4) + (same ? 6 : 0), y, 7)} fill={green} />
-                {!same && (
-                  <text x={sx(c.fp4)} y={y - 10} fontSize={11} fontFamily="sans-serif" fill={ink} textAnchor="middle">
-                    {fmt(c.fp4)}
-                  </text>
-                )}
+                <polygon points={diamond(sx(c.fp4) + split, y, 7)} fill={green} />
+                <text
+                  x={sx(c.fp4) + split}
+                  y={same ? y + 21 : y - 10}
+                  fontSize={11}
+                  fontFamily="sans-serif"
+                  fill={ink}
+                  textAnchor="middle"
+                >
+                  {fmt(c.fp4)}
+                </text>
               </>
             )}
           </g>
