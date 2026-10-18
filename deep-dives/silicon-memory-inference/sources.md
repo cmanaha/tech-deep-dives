@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 457.
+Total distinct sources: 458.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -55,7 +55,7 @@ Total distinct sources: 457.
 | AWS | [AWS Neuron: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/pytorch-native-overview.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, CommunicationAndScaleOut |
 | AWS | [AWS Neuron: Neuron Compiler CLI Reference Guide (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/neuronx-cc/api-reference-guide/index.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: Neuron Graph Compiler overview (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/index.html) | 2026-10-17 | AwsCompilersAndTooling, KernelExecutionLifecycle |
-| AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-18 | AwsCompilersAndTooling, AwsCustomSilicon, DeterminismAOT, HeterogeneityFact, IsolationNie, KernelExecutionLifecycle |
+| AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-18 | AwsCompilersAndTooling, AwsCustomSilicon, DeterminismAOT, GroqSambanovaDataflow, HeterogeneityFact, IsolationNie, KernelExecutionLifecycle |
 | AWS | [AWS Neuron: Neuron Persistent Cache](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/neuron-caching.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: Neuron Rounding Modes (RNE and stochastic rounding)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/rounding-modes.html) | 2026-10-17 | DeterminismAOT |
 | AWS | [AWS Neuron: Neuron Runtime configuration guide (NeuronCore reservation, NEURON_RT_VISIBLE_CORES)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/guides/configuration-guide.html) | 2026-10-17 | IsolationNie |
@@ -421,6 +421,7 @@ Total distinct sources: 457.
 | NVIDIA | [NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, GroqSambanovaDataflow, HbmAndBandwidthWall, MemoryHierarchyPrimer, NvidiaBlackwell, RooflineAndArithmeticIntensity |
 | NVIDIA | [Sparks Fly: NVIDIA Accelerates Local AI at IFA 2026 (RTX Spark, 2026-09-03)](https://blogs.nvidia.com/blog/local-ai-ifa-next-gen-agents-nv-pair-rtx-spark/) | 2026-10-17 | EdgeSharedMemorySilicon |
 | NVIDIA | [Structured Sparsity in the NVIDIA Ampere Architecture and Applications in Search Engines (2023-07-03)](https://developer.nvidia.com/blog/structured-sparsity-in-the-nvidia-ampere-architecture-and-applications-in-search-engines/) | 2026-10-18 | RooflineAndArithmeticIntensity, ThesisAndFraming |
+| SambaNova | [Inference Speed or Throughput? With RDUs, You Don't Have to Choose (2026-01-15)](https://sambanova.ai/blog/inference-speed-or-throughput-with-rdus-you-dont-have-to-choose) | 2026-10-18 | GroqSambanovaDataflow |
 | SambaNova | [Introducing the SN50 RDU: Purpose-Built for Agentic Inference (2026-02-24)](https://sambanova.ai/blog/introducing-the-sn50-rdu-purpose-built-for-agentic-inference) | 2026-10-17 | GroqSambanovaDataflow, MoeAndSparseActivation |
 | SambaNova | [SambaNova Unveils Fastest Chip for Agentic AI, Collaborates with Intel, and Raises $350M+ (2026-02-24)](https://sambanova.ai/press/sambanova-unveils-fastest-chip-for-agentic-ai-collaborates-with-intel-and-raises-350m) | 2026-10-17 | GroqSambanovaDataflow |
 | Samsung | [Aquabolt-XL: Samsung HBM2-PIM with in-memory processing for ML accelerators and beyond (Hot Chips 33 slides, 2021-08-13)](https://www.hc33.hotchips.org/assets/program/conference/day1/20210813_HC33_Aquabolt-XL_PIM_Jin_Kim_slide.pdf) | 2026-10-16 | ComputeInMemory, HbmAndBandwidthWall |

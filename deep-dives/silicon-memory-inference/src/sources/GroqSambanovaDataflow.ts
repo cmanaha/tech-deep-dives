@@ -8,8 +8,9 @@ import type { Source } from '../components/Cite';
  * Records shared with other sections reuse their URL, title, publisher and tier:
  * lpxBlog, lpxProduction, groqNvidiaLicense (ThesisAndFraming.ts, HeterogeneityFact.ts),
  * groqModels, sn40lPaper, sn50Blog (MoeAndSparseActivation.ts), neuronCoreV3
- * (AwsCustomSilicon.ts), veraRubinNvl72 (NvidiaBlackwell.ts). Records re-read for this
- * section carry 2026-10-17.
+ * (AwsCustomSilicon.ts), nkiOverview (AwsCustomSilicon.ts, AwsCompilersAndTooling.ts),
+ * veraRubinNvl72 (NvidiaBlackwell.ts). Records re-read for this section carry 2026-10-17;
+ * records added in verification carry 2026-10-18.
  */
 export const S = {
   // Groq and NVIDIA Groq 3 LPX (Tier 2: vendor blog, newsroom, product brief, docs).
@@ -67,6 +68,13 @@ export const S = {
     tier: 1,
     accessed: '2026-10-16',
   },
+  nkiOverview: {
+    title: 'AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html',
+    tier: 1,
+    accessed: '2026-10-18',
+  },
 
   // SambaNova. The SN40L paper is vendor-authored and author-measured; academic
   // papers are Tier 3 under CLAUDE.md.
@@ -77,6 +85,13 @@ export const S = {
     url: 'https://arxiv.org/abs/2405.07518',
     tier: 3,
     accessed: '2026-10-17',
+  },
+  sn40lGenBlog: {
+    title: "Inference Speed or Throughput? With RDUs, You Don't Have to Choose (2026-01-15)",
+    publisher: 'SambaNova',
+    url: 'https://sambanova.ai/blog/inference-speed-or-throughput-with-rdus-you-dont-have-to-choose',
+    tier: 2,
+    accessed: '2026-10-18',
   },
   sn50Blog: {
     title: 'Introducing the SN50 RDU: Purpose-Built for Agentic Inference (2026-02-24)',

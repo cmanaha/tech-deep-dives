@@ -44,8 +44,9 @@ export function DataflowSiliconDiagram() {
         <title id="dataflow-silicon-title">
           Two dataflow chips keep the working set in different places. A Groq 3 LPU holds it
           in 500 MB of on-chip SRAM at 150 TB/s, with up to 512 GB of DRAM per 16-LPU tray
-          behind the fabric, and on the Vera Rubin platform it runs decode&apos;s FFN and MoE expert
-          layers while Rubin GPUs keep attention over the KV cache. A SambaNova SN40L socket
+          behind the fabric. In a Groq 3 LPX rack deployed alongside Vera Rubin NVL72, LPUs
+          accelerate latency-sensitive decode work such as the FFN and MoE expert layers, while
+          Rubin GPUs keep attention over the KV cache. A SambaNova SN40L socket
           spreads it across three tiers, 520 MiB of SRAM at hundreds of TB/s, 64 GiB of HBM at
           1.8 to 2 TB/s and up to 1.5 TiB of DDR at over 200 GB/s, and loads whole expert
           models from DDR into HBM as requests need them.
@@ -141,7 +142,7 @@ export function DataflowSiliconDiagram() {
           On the Vera Rubin platform
         </text>
         <text className="dfs-body" x={lx + 16} y={341}>
-          LPUs run decode&apos;s FFN and MoE expert layers;
+          LPUs accelerate decode work such as FFN and MoE experts;
         </text>
         <text className="dfs-body" x={lx + 16} y={357}>
           Rubin GPUs keep attention over the KV cache.

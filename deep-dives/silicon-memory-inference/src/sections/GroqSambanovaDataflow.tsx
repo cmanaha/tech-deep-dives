@@ -29,20 +29,23 @@ export function GroqSambanovaDataflow() {
             fixed at compile time.
             <Cite s={S.lpxBlog} />
             <Cite s={S.sn40lPaper} /> A GPU picks ready warps at runtime; AWS Trainium also
-            schedules at compile time, around a systolic array.
+            schedules at compile time
+            <Cite s={S.nkiOverview} />, around a systolic array.
             <Cite s={S.neuronCoreV3} />
           </Box>
           <Box variant="p">
             <strong>Two bets on where the working set lives.</strong> Groq keeps it, weights
             included, in on-chip SRAM (static RAM) with DRAM (dynamic RAM) behind the chip.
             SambaNova spreads it across SRAM, HBM (High Bandwidth Memory) and DDR (double data
-            rate) DRAM. Groq&apos;s bet ships inside NVIDIA&apos;s Vera Rubin platform as the NVIDIA
-            Groq 3 LPX, a rack of LPUs (Language Processing Units) built on licensed Groq
-            technology and in full production since August 2026.
+            rate) DRAM. Groq&apos;s bet ships in NVIDIA&apos;s Vera Rubin platform as the NVIDIA
+            Groq 3 LPX, its own rack of LPUs (Language Processing Units) deployed alongside the
+            Vera Rubin NVL72 GPU racks, built on licensed Groq technology and in full production
+            since August 2026.
             <Cite s={S.groqNvidiaLicense} />
-            <Cite s={S.lpxProduction} /> In decode, LPX runs the FFN (feed-forward network) and MoE
-            (mixture of experts) expert layers while Rubin GPUs keep attention over the KV
-            (key-value) cache.
+            <Cite s={S.lpxBlog} />
+            <Cite s={S.lpxProduction} /> In decode, LPX takes latency-sensitive work such as the
+            FFN (feed-forward network) and MoE (mixture of experts) expert layers, while Rubin GPUs
+            keep attention over the KV (key-value) cache.
             <Cite s={S.lpxBlog} /> The whole rack holds 128 GB of SRAM, less than half the HBM on
             one Rubin GPU: the SRAM-first chip is a decode engine paired with GPUs.
             <Cite s={S.lpxBlog} />
@@ -72,9 +75,9 @@ export function GroqSambanovaDataflow() {
             and 1.8 TB/s in its table.
           </Box>
           <Box variant="p">
-            Both chips carry about 500 MB of SRAM. They differ in where a larger model goes: Groq
+            Both chips carry about half a gigabyte of SRAM. They differ in where a larger model goes: Groq
             spreads it across more LPUs, 256 of which act as one system in an LPX rack
-            <Cite s={S.lpxBlog} />; SambaNova pages it from the HBM and DDR behind each socket.
+            <Cite s={S.lpxBlog} />; SambaNova holds it in the HBM and DDR behind each socket.
             <Cite s={S.sn40lPaper} />
           </Box>
         </SpaceBetween>
@@ -110,7 +113,8 @@ export function GroqSambanovaDataflow() {
             decode work that needs large memory capacity, such as full-context attention over the
             accumulated KV cache. LPX can also draft tokens for speculative decoding that the GPUs
             verify, and NVIDIA Dynamo routes work between the two.
-            <Cite s={S.lpxBlog} /> Nebius is the first AI cloud to adopt LPX.
+            <Cite s={S.lpxBlog} /> Nebius is the first AI cloud to adopt LPX and plans to offer it
+            through its Token Factory inference platform.
             <Cite s={S.lpxProduction} /> <em>Disaggregated Serving and Speculative Decoding</em>{' '}
             covers both loops.
           </Box>
@@ -137,7 +141,7 @@ export function GroqSambanovaDataflow() {
         header={
           <Header
             variant="h2"
-            description="Why DDR behind HBM lets one node serve 150 models, and what SN50 promises for late 2026"
+            description="Why DDR behind HBM lets one node serve 150 models, and what SN50 promises for the second half of 2026"
           >
             SambaNova: three memory tiers and whole-model switching
           </Header>
@@ -147,7 +151,7 @@ export function GroqSambanovaDataflow() {
           <Box variant="p">
             <strong>What an SN40L is.</strong> SambaNova&apos;s fourth-generation RDU
             (Reconfigurable Dataflow Unit).
-            <Cite s={S.sn50Blog} kind="derived" note="SambaNova calls SN50 its fifth-generation chip; SN40L is the generation before it." />{' '}
+            <Cite s={S.sn40lGenBlog} />{' '}
             Each socket carries 520 MiB of on-chip SRAM at hundreds of
             TB/s, 64 GiB of HBM at about 1.8 to 2 TB/s and up to 1.5 TiB of DDR at over 200 GB/s;
             software manages the HBM and DDR tiers.
@@ -159,15 +163,15 @@ export function GroqSambanovaDataflow() {
             and load into HBM at over 1 TB/s per node, so one node hosts more models than its HBM
             holds.
             <Cite s={S.sn40lPaper} /> An 8-socket SN40L node measured 3.7x a DGX H100, with model
-            switching 15x to 31x faster.
-            <Cite s={S.sn40lPaper} kind="measured" note="Vendor-authored paper (MICRO 2024), author-measured. The 8 sockets are the SambaNova node; the baseline is one DGX H100." />{' '}
+            switching 15x faster.
+            <Cite s={S.sn40lPaper} kind="measured" note="Vendor-authored paper (MICRO 2024), author-measured on Samba-CoE. The 8 sockets are the SambaNova node; the baseline is one DGX H100. 3.7x is the batch-8, 20-output-token case; Table V gives 2.6x to 3.7x against DGX H100 across its cases, and model switching 15x against DGX H100 (31x against DGX A100)." />{' '}
             <em>Mixture of Experts and Sparse Activation</em> contrasts this with token-level MoE.
           </Box>
           <Box variant="p">
             <strong>SN50.</strong> The fifth-generation RDU keeps tiered memory and claims five
             times the compute per accelerator of the previous generation.
-            <Cite s={S.sn50Blog} kind="vendor-claim" /> A SambaRack holds 16 SN50 chips at about
-            20 kW, and shipping is planned for the second half of 2026.
+            <Cite s={S.sn50Blog} kind="vendor-claim" /> A SambaRack holds 16 SN50 chips and
+            averages 20 kW, and shipping is planned for the second half of 2026.
             <Cite s={S.sn50Blog} kind="roadmap" /> No shipment confirmation was located during
             this research, and the announcement gives no memory capacity or bandwidth, so the
             SN40L paper stays the architectural reference.
@@ -215,7 +219,8 @@ export function GroqSambanovaDataflow() {
               </Box>
               <Box variant="p">
                 <strong>Availability.</strong> GroqCloud sells inference through an API
-                <Cite s={S.groqModels} />, and Groq hardware reaches other clouds as LPX.
+                <Cite s={S.groqModels} />, and LPX is set to bring the architecture to other
+                clouds.
                 <Cite s={S.lpxProduction} /> SambaNova sells SambaRack systems
                 <Cite s={S.sn50Blog} /> and is expanding its own cloud capacity.
                 <Cite s={S.sambanovaSeriesE} /> No AWS deployment of either was located during

@@ -45,12 +45,13 @@ const siliconRows: SiliconRow[] = [
     ),
   },
   {
-    silicon: 'NVIDIA Vera Rubin NVL72 with Groq 3 LPX',
+    silicon: 'NVIDIA Vera Rubin NVL72 alongside a Groq 3 LPX rack',
     software: (
       <>
         LPX is in full production
-        <Cite s={S.lpxProduction} />. In decode, LPX runs the FFN and MoE experts while Rubin
-        GPUs keep prefill and decode attention, a loop NVIDIA Dynamo orchestrates.
+        <Cite s={S.lpxProduction} />. In decode, LPX accelerates latency-sensitive work such as
+        FFN and MoE expert execution while Rubin GPUs keep prefill and decode attention, a loop
+        NVIDIA Dynamo orchestrates.
         <Cite s={S.lpxBlog} />
       </>
     ),
