@@ -12,15 +12,15 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 332.
+Total distinct sources: 335.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
-| AMD | [5th Gen AMD EPYC Processor Architecture (Data Center Solutions white paper, March 2025)](https://docs.amd.com/api/khub/documents/UIqhAbjRhgnzgzzdVU4pUw/content) | 2026-10-17 | AmdEpycTurin |
+| AMD | [5th Gen AMD EPYC Processor Architecture (Data Center Solutions white paper, March 2025)](https://docs.amd.com/api/khub/documents/UIqhAbjRhgnzgzzdVU4pUw/content) | 2026-10-17 | AmdEpycTurin, ChipletAndInterconnect |
 | AMD | [AMD EPYC 9005 Series Server CPUs data sheet (per-SKU cores, clocks, L3, memory)](https://www.amd.com/content/dam/amd/en/documents/epyc-business-docs/datasheets/amd-epyc-9005-series-processor-datasheet.pdf) | 2026-10-17 | AmdEpycTurin |
-| AMD | [AMD EPYC 9755 product page (memory type, DDR5-6400 qualifier, per-socket memory bandwidth)](https://www.amd.com/en/products/processors/server/epyc/9005-series/amd-epyc-9755.html) | 2026-10-17 | AmdEpycTurin |
+| AMD | [AMD EPYC 9755 product page (memory type, DDR5-6400 qualifier, per-socket memory bandwidth)](https://www.amd.com/en/products/processors/server/epyc/9005-series/amd-epyc-9755.html) | 2026-10-17 | AmdEpycTurin, ChipletAndInterconnect |
 | AWS | [Amazon EC2 accelerated computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html) | 2026-10-17 | AwsCustomSilicon, CapitalMarketsLens, DisaggregatedServingAndSpeculative, FlashCacheTier, GraceBlackwellUltraServer, HeterogeneityFact, NvidiaBlackwell, NvidiaHopper |
 | AWS | [Amazon EC2 compute optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive, IntelXeon6 |
 | AWS | [Amazon EC2 general purpose instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive, IntelXeon6 |
@@ -61,7 +61,7 @@ Total distinct sources: 332.
 | AWS | [AWS Neuron: What's New in the AWS Neuron SDK (releases 2.27.0 to 2.32.0)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/whats-new.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, MoeAndSparseActivation |
 | AWS | [aws-graviton-getting-started machinelearning/llama.cpp.md at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/machinelearning/llama.cpp.md) | 2026-10-16 | GravitonDeepDive |
 | AWS | [aws-graviton-getting-started machinelearning/onnx.md at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/machinelearning/onnx.md) | 2026-10-16 | GravitonDeepDive |
-| AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | CapitalMarketsLens, GraceBlackwellUltraServer, GravitonDeepDive, HeterogeneityFact |
+| AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | CapitalMarketsLens, ChipletAndInterconnect, GraceBlackwellUltraServer, GravitonDeepDive, HeterogeneityFact |
 | AWS | [aws-graviton-getting-started repository at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/tree/8b322a4160b827be202beedaf35ce21b4c635603) | 2026-10-16 | GravitonDeepDive |
 | AWS | [aws-neuron/nki-library at release tag 2.32 (Apache-2.0)](https://github.com/aws-neuron/nki-library/tree/2.32) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [Capacity Blocks for ML: supported instance types and Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaHopper |
@@ -185,7 +185,7 @@ Total distinct sources: 332.
 | NVIDIA Dynamo | [Dynamo recipe at tag v1.5.1: DeepSeek-R1, TensorRT-LLM disaggregated wide EP on GB200 (deploy.yaml)](https://github.com/ai-dynamo/dynamo/tree/v1.5.1/recipes/deepseek-r1/trtllm/disagg/wide_ep/gb200) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | NVIDIA Dynamo | [Dynamo recipe at tag v1.5.1: GLM-5 NVFP4 disaggregated prefill/decode on GB200 over AWS EFA (README and deploy.yaml)](https://github.com/ai-dynamo/dynamo/tree/v1.5.1/recipes/glm-5-nvfp4/sglang/disagg/efa) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | OCC | [News Release 2026-16: Agencies Request Comment on Proposals to Modernize the Regulatory Capital Framework (19 March 2026)](https://www.occ.gov/news-issuances/news-releases/2026/nr-ia-2026-16.html) | 2026-10-17 | CapitalMarketsLens |
-| Open Compute Project | [High Bandwidth Flash (HBF) High-Level Base Die Specification, Version 0.7.0 (2026-08-03)](https://www.opencompute.org/documents/ocp-hbf-architecture-specification-v0-7-0-final-pdf) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
+| Open Compute Project | [High Bandwidth Flash (HBF) High-Level Base Die Specification, Version 0.7.0 (2026-08-03)](https://www.opencompute.org/documents/ocp-hbf-architecture-specification-v0-7-0-final-pdf) | 2026-10-17 | ChipletAndInterconnect, FlashCacheTier, HighBandwidthFlash |
 | Open Compute Project | [OCP Microscaling Formats (MX) Specification v1.0](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf) | 2026-10-17 | CerebrasWaferScale, QuantizationAndPrecision |
 | OpenFabrics Interfaces Working Group | [libfabric fi_efa(7) man page at commit 24fa1dc (EFA provider capabilities)](https://github.com/ofiwg/libfabric/blob/24fa1dcfaa5cd10fc3d5ca5ea94690e9925c6848/man/fi_efa.7.md) | 2026-10-16 | CapitalMarketsLens |
 | PyTorch | [PyTorch v2.14.1 aten/src/ATen/cuda/CUDABlas.cpp: cublasGemmEx and cublasLtMatmul calls](https://github.com/pytorch/pytorch/blob/v2.14.1/aten/src/ATen/cuda/CUDABlas.cpp) | 2026-10-17 | NvidiaCompilersAndTooling |
@@ -208,6 +208,8 @@ Total distinct sources: 332.
 | Triton | [Introduction to Gluon tutorial at Triton tag v3.8.0](https://github.com/triton-lang/triton/blob/v3.8.0/python/tutorials/gluon/01-intro.py) | 2026-10-17 | AwsCompilersAndTooling, NvidiaCompilersAndTooling |
 | Triton | [Triton 3.8.0 release notes (2026-08-28)](https://github.com/triton-lang/triton/releases/tag/v3.8.0) | 2026-10-17 | NvidiaCompilersAndTooling |
 | Triton | [Triton tutorial: Matrix Multiplication (triton.autotune and triton.Config)](https://triton-lang.org/main/getting-started/tutorials/03-matrix-multiplication.html) | 2026-10-17 | NvidiaCompilersAndTooling |
+| UALink Consortium | [UALink Consortium press release: UALink Consortium Publishes Four Specifications (2026-04-07, PDF)](https://ualinkconsortium.org/wp-content/uploads/2026/04/UALink-2.0-Specification-PR_FINAL.pdf) | 2026-10-17 | ChipletAndInterconnect |
+| UCIe Consortium | [UCIe Consortium: Specifications (UCIe 1.0, 1.1, 2.0, 3.0)](https://www.uciexpress.org/specifications) | 2026-10-17 | ChipletAndInterconnect |
 | UXL Foundation | [oneDNN cmake/options.cmake at tag v3.13.4, lines 333-335 (ENABLE_MAX_CPU_ISA defaults to ON)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/cmake/options.cmake#L333-L335) | 2026-10-17 | IntelXeon6 |
 | UXL Foundation | [oneDNN src/common/utils.cpp at tag v3.13.4, lines 112-126 (ONEDNN_ and DNNL_ environment prefixes)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/common/utils.cpp#L112-L126) | 2026-10-17 | IntelXeon6 |
 | UXL Foundation | [oneDNN src/common/verbose.cpp at tag v3.13.4, lines 100-190 (VERBOSE header with the ISA line)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/common/verbose.cpp#L100-L190) | 2026-10-17 | IntelXeon6 |
@@ -235,7 +237,7 @@ Total distinct sources: 332.
 | AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-17 | QuantizationAndPrecision, RooflineAndArithmeticIntensity |
 | AMD | [AMD Solarflare X4 Low Latency Using SDCI (white paper, October 2025, Rev 1)](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/white-papers/x4-sdci-whitepaper.pdf) | 2026-10-17 | AmdEpycTurin, CapitalMarketsLens |
 | Arm | [Arm Neoverse V3 product page](https://www.arm.com/products/silicon-ip-cpu/neoverse/neoverse-v3) | 2026-10-16 | GravitonDeepDive |
-| AWS | [About Amazon: AWS Graviton5 (2025-12-04, updated 2026-06-10 for GA)](https://www.aboutamazon.com/news/aws/aws-graviton-5-cpu-amazon-ec2) | 2026-10-16 | GravitonDeepDive |
+| AWS | [About Amazon: AWS Graviton5 (2025-12-04, updated 2026-06-10 for GA)](https://www.aboutamazon.com/news/aws/aws-graviton-5-cpu-amazon-ec2) | 2026-10-16 | ChipletAndInterconnect, GravitonDeepDive |
 | AWS | [Amazon EC2 M8a instances](https://aws.amazon.com/ec2/instance-types/m8a/) | 2026-10-17 | HeterogeneityFact |
 | AWS | [Amazon EC2 M8i instances](https://aws.amazon.com/ec2/instance-types/m8i/) | 2026-10-17 | AmdEpycTurin, HeterogeneityFact, IntelXeon6 |
 | AWS | [Amazon EC2 P5 instances](https://aws.amazon.com/ec2/instance-types/p5/) | 2026-10-17 | NvidiaHopper |
@@ -285,11 +287,11 @@ Total distinct sources: 332.
 | NVIDIA | [Full-Stack Optimizations for Agentic Inference with Dynamo (in-repo blog at Dynamo tag v1.5.1)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/blog/2026/agentic-inference-optimizations.mdx) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [GTC 2026 live updates (Feynman, Rosa, Kyber)](https://blogs.nvidia.com/blog/gtc-2026-news/) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [How NVIDIA GB200 NVL72 and NVIDIA Dynamo Boost Inference Performance for MoE Models](https://developer.nvidia.com/blog/how-nvidia-gb200-nvl72-and-nvidia-dynamo-boost-inference-performance-for-moe-models/) | 2026-10-17 | GraceBlackwellUltraServer, MoeAndSparseActivation |
-| NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | CerebrasWaferScale, DisaggregatedServingAndSpeculative, GraceBlackwellUltraServer, IsolationNie, KernelExecutionLifecycle, MoeAndSparseActivation, NvidiaBlackwell, NvidiaHopper, RooflineAndArithmeticIntensity |
+| NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | CerebrasWaferScale, ChipletAndInterconnect, DisaggregatedServingAndSpeculative, GraceBlackwellUltraServer, IsolationNie, KernelExecutionLifecycle, MoeAndSparseActivation, NvidiaBlackwell, NvidiaHopper, RooflineAndArithmeticIntensity |
 | NVIDIA | [Inside NVIDIA Groq 3 LPX: The Low-Latency Inference Accelerator for the NVIDIA Vera Rubin Platform (2026-03-16)](https://developer.nvidia.com/blog/inside-nvidia-groq-3-lpx-the-low-latency-inference-accelerator-for-the-nvidia-vera-rubin-platform/) | 2026-10-17 | DisaggregatedServingAndSpeculative, GroqSambanovaDataflow, HeterogeneityFact, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [Introducing NVFP4 for Efficient and Accurate Low-Precision Inference](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/) | 2026-10-17 | HeterogeneityFact, MoeAndSparseActivation, NvidiaBlackwell, QuantizationAndPrecision |
 | NVIDIA | [Introducing NVIDIA BlueField-4-Powered Inference Context Memory Storage Platform (G1 to G4 tiers, G3.5)](https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/) | 2026-10-17 | FlashCacheTier |
-| NVIDIA | [NVIDIA Blackwell architecture](https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/) | 2026-10-16 | CapitalMarketsLens, GraceBlackwellUltraServer, NvidiaBlackwell |
+| NVIDIA | [NVIDIA Blackwell architecture](https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/) | 2026-10-16 | CapitalMarketsLens, ChipletAndInterconnect, GraceBlackwellUltraServer, NvidiaBlackwell |
 | NVIDIA | [NVIDIA Blackwell Raises Bar in New InferenceMAX Benchmarks (2025-10-09)](https://blogs.nvidia.com/blog/blackwell-inferencemax-benchmark-results/) | 2026-10-17 | CerebrasWaferScale |
 | NVIDIA | [NVIDIA BlueField data processing units (BlueField-4 800 Gb/s, BlueField-3 400 Gb/s)](https://www.nvidia.com/en-us/networking/products/data-processing-unit/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA BlueField-4 Powers New Class of AI-Native Storage Infrastructure (CES, January 2026)](https://nvidianews.nvidia.com/_gallery/download_pdf/695c3d883d6332559a6a627d/) | 2026-10-17 | FlashCacheTier |
@@ -302,10 +304,11 @@ Total distinct sources: 332.
 | NVIDIA | [NVIDIA H100 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h100/) | 2026-10-16 | CerebrasWaferScale, DisaggregatedServingAndSpeculative, FlashCacheTier, KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity |
 | NVIDIA | [NVIDIA H200 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h200/) | 2026-10-17 | CerebrasWaferScale, FlashCacheTier, KernelExecutionLifecycle, MoeAndSparseActivation, NvidiaBlackwell, NvidiaHopper, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA HGX platform (HGX B300, HGX B200 and HGX Rubin NVL8 specifications)](https://www.nvidia.com/en-us/data-center/hgx/) | 2026-10-17 | HeterogeneityFact, HighBandwidthFlash, NvidiaBlackwell, QuantizationAndPrecision, RooflineAndArithmeticIntensity |
-| NVIDIA | [NVIDIA Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | 2026-10-17 | CerebrasWaferScale, KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| NVIDIA | [NVIDIA Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | 2026-10-17 | CerebrasWaferScale, ChipletAndInterconnect, KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA Hopper in Full Production (2022-09-20)](https://nvidianews.nvidia.com/news/nvidia-hopper-in-full-production) | 2026-10-16 | NvidiaHopper |
 | NVIDIA | [NVIDIA NVLink-C2C](https://www.nvidia.com/en-us/data-center/nvlink-c2c/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Supercharges Hopper, the World's Leading AI Computing Platform (2023-11-13)](https://nvidianews.nvidia.com/news/nvidia-supercharges-hopper-the-worlds-leading-ai-computing-platform) | 2026-10-16 | NvidiaHopper |
+| NVIDIA | [NVIDIA Technical Blog: AWS Integrates AI Infrastructure with NVIDIA NVLink Fusion for Trainium4 Deployment (2025-12-02)](https://developer.nvidia.com/blog/aws-integrates-ai-infrastructure-with-nvidia-nvlink-fusion-for-trainium4-deployment/) | 2026-10-17 | ChipletAndInterconnect |
 | NVIDIA | [NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, GroqSambanovaDataflow, NvidiaBlackwell, RooflineAndArithmeticIntensity |
 | SambaNova | [Introducing the SN50 RDU: Purpose-Built for Agentic Inference (2026-02-24)](https://sambanova.ai/blog/introducing-the-sn50-rdu-purpose-built-for-agentic-inference) | 2026-10-17 | GroqSambanovaDataflow, MoeAndSparseActivation |
 | SambaNova | [SambaNova Unveils Fastest Chip for Agentic AI, Collaborates with Intel, and Raises $350M+ (2026-02-24)](https://sambanova.ai/press/sambanova-unveils-fastest-chip-for-agentic-ai-collaborates-with-intel-and-raises-350m) | 2026-10-17 | GroqSambanovaDataflow |
@@ -348,12 +351,12 @@ Total distinct sources: 332.
 | arXiv | [SPLASH: Co-Designing Sparse Attention with High-Bandwidth Flash for Efficient Long-Context Inference (arXiv:2609.23816)](https://arxiv.org/abs/2609.23816) | 2026-10-17 | HighBandwidthFlash |
 | Bitget News | [Summary of the Cerebras Q2 2026 earnings call (2026-08-12)](https://www.bitget.com/news/detail/12560605668861) | 2026-10-17 | CerebrasWaferScale |
 | Blocks & Files | [Kioxia eyes GPU memory stack with high-bandwidth flash push (2026-03-20)](https://www.blocksandfiles.com/flash/2026/03/20/kioxia-eyes-gpu-memory-stack-with-high-bandwidth-flash-push/5210520) | 2026-10-17 | HighBandwidthFlash |
-| Chips and Cheese | [A Look into Intel Xeon 6's Memory Subsystem (AWS r8i, Xeon 6 6985P-C)](https://chipsandcheese.com/p/a-look-into-intel-xeon-6s-memory) | 2026-10-17 | IntelXeon6 |
+| Chips and Cheese | [A Look into Intel Xeon 6's Memory Subsystem (AWS r8i, Xeon 6 6985P-C)](https://chipsandcheese.com/p/a-look-into-intel-xeon-6s-memory) | 2026-10-17 | ChipletAndInterconnect, IntelXeon6 |
 | Chips and Cheese | [AMD's Strix Point: Zen 5 Hits Mobile (Zen 5 L2 associativity and latency)](https://chipsandcheese.com/p/amds-strix-point-zen-5-hits-mobile) | 2026-10-17 | AmdEpycTurin |
-| Chips and Cheese | [AMD's Turin: 5th Gen EPYC Launched (core-to-core latency on EPYC 9575F)](https://chipsandcheese.com/p/amds-turin-5th-gen-epyc-launched) | 2026-10-16 | AmdEpycTurin, CapitalMarketsLens |
-| Chips and Cheese | [Chips and Cheese: Arm's Neoverse V2 in AWS's Graviton 4](https://chipsandcheese.com/p/arms-neoverse-v2-in-awss-graviton-4) | 2026-10-16 | GravitonDeepDive |
-| Chips and Cheese | [Discussing AMD's Zen 5 at Hot Chips 2024](https://chipsandcheese.com/p/discussing-amds-zen-5-at-hot-chips-2024) | 2026-10-17 | AmdEpycTurin |
-| Chips and Cheese | [Evaluating Uniform Memory Access (NPS0 on a two-socket EPYC 9575F)](https://chipsandcheese.com/p/evaluating-uniform-memory-access) | 2026-10-17 | AmdEpycTurin |
+| Chips and Cheese | [AMD's Turin: 5th Gen EPYC Launched (core-to-core latency on EPYC 9575F)](https://chipsandcheese.com/p/amds-turin-5th-gen-epyc-launched) | 2026-10-16 | AmdEpycTurin, CapitalMarketsLens, ChipletAndInterconnect |
+| Chips and Cheese | [Chips and Cheese: Arm's Neoverse V2 in AWS's Graviton 4](https://chipsandcheese.com/p/arms-neoverse-v2-in-awss-graviton-4) | 2026-10-16 | ChipletAndInterconnect, GravitonDeepDive |
+| Chips and Cheese | [Discussing AMD's Zen 5 at Hot Chips 2024](https://chipsandcheese.com/p/discussing-amds-zen-5-at-hot-chips-2024) | 2026-10-17 | AmdEpycTurin, ChipletAndInterconnect |
+| Chips and Cheese | [Evaluating Uniform Memory Access (NPS0 on a two-socket EPYC 9575F)](https://chipsandcheese.com/p/evaluating-uniform-memory-access) | 2026-10-17 | AmdEpycTurin, ChipletAndInterconnect |
 | DIGITIMES | [Samsung signals zHBF push as memory race moves beyond HBM (2026-08-27)](https://www.digitimes.com/news/a20260827VL229/samsung-hbm-bandwidth-capacity-2026.html) | 2026-10-17 | HighBandwidthFlash |
 | Risk.net | [Giles and Glasserman, Smoking adjoints: fast Monte Carlo Greeks (Risk, January 2006)](https://www.risk.net/derivatives/interest-rate-derivatives/1500261/smoking-adjoints-fast-monte-carlo-greeks) | 2026-10-16 | CapitalMarketsLens |
 | ServeTheHome | [Oxmiq Labs HBF in AI Compute at Hot Chips 2026 (2026-08-27)](https://www.servethehome.com/oxmiq-labs-hbf-in-ai-compute-at-hot-chips-2026/) | 2026-10-17 | HighBandwidthFlash |
