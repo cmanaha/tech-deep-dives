@@ -165,7 +165,7 @@ const useCaseRows: UseCaseRow[] = [
     tier: (
       <>
         Reusable only when the chunk sits after an identical prefix, because block hashes chain
-        their parent. Reuse at any position needs LMCache&apos;s CacheBlend, which recomputes some
+        their parent. LMCache&apos;s CacheBlend reuses a chunk at any position and recomputes some
         tokens.
       </>
     ),
@@ -472,7 +472,7 @@ export function KVOffloadingLMCache() {
             >
               kv_connector/factory.py L153-L248
             </Cite>
-            ; the diagram shows the ones that store or move KV for reuse.
+            ; the diagram shows the seven this section discusses.
           </Box>
           <Table
             variant="embedded"
@@ -498,10 +498,10 @@ export function KVOffloadingLMCache() {
                 worker maps it so the kernel reclaims it when the last worker exits{' '}
                 <Cite
                   tier={1}
-                  href={vllmUrl('vllm/v1/kv_offload/cpu/shared_offload_region.py', 'L71-L84')}
+                  href={vllmUrl('vllm/v1/kv_offload/cpu/shared_offload_region.py', 'L183-L202')}
                   kind="code"
                 >
-                  shared_offload_region.py L71-L84
+                  shared_offload_region.py L183-L202
                 </Cite>{' '}
                 <Cite
                   tier={1}
@@ -700,12 +700,12 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
           </Box>
           <Box variant="p">
             <strong>Per-request controls</strong> ride in the request&apos;s{' '}
-            <code>kv_transfer_params</code> and are all marked experimental.{' '}
-            <code>max_offload_tokens</code> stores only the first N tokens, which caches a shared
-            system prompt and skips the per-user tail (<code>0</code> disables storing).{' '}
-            <code>max_load_tokens</code> caps how many tokens load from the tiers (<code>0</code>{' '}
-            disables loading for that request). <code>kv_load_tiers</code> picks which secondary
-            tiers to query; the CPU tier is always included{' '}
+            <code>kv_transfer_params</code>. <code>max_offload_tokens</code> stores only the first
+            N tokens, which caches a shared system prompt and skips the per-user tail (
+            <code>0</code> disables storing). <code>max_load_tokens</code> caps how many tokens
+            load from the tiers (<code>0</code> disables loading for that request); both caps are
+            marked experimental. <code>kv_load_tiers</code> picks which secondary tiers to query;
+            the CPU tier is always included{' '}
             <Cite tier={1} href={vllmUrl(OFFLOAD_DOCS, 'L25-L52')}>
               Usage Guide L25-L52
             </Cite>{' '}
@@ -824,8 +824,8 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
             </Cite>
             . Sharing across instances is something the native <code>fs</code>, <code>obj</code>{' '}
             and <code>p2p</code> tiers also do, so it alone is no reason to add LMCache.{' '}
-            <code>MultiConnector</code> composes LMCache with other connectors, for example an
-            LMCache tier and a NIXL transfer path on one engine{' '}
+            <code>MultiConnector</code> runs an ordered list of connectors on one engine, for
+            example a NIXL transfer path next to a storage connector{' '}
             <Cite tier={1} href={vllmUrl('docs/features/disagg_prefill.md', 'L32-L35')}>
               disagg_prefill.md L32-L35
             </Cite>
@@ -885,6 +885,9 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
             <Cite tier={1} href={vllmUrl('vllm/config/attention.py', 'L18-L33')} kind="code">
               config/attention.py L18-L33
             </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/hisparse/runtime.py', 'L116-L124')} kind="code">
+              hisparse/runtime.py L116-L124
+            </Cite>{' '}
             <Cite tier={1} href={vllmUrl('docs/design/hisparse.md', 'L28-L33')}>
               hisparse.md L28-L33
             </Cite>
@@ -942,30 +945,32 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
             ]}
             items={useCaseRows}
           />
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">Offloading helps when</Box>
-              <ul>
-                <li>Prefixes are long and recomputing them is the bottleneck</li>
-                <li>The same prefix is hit many times</li>
-                <li>Reuse spans turns, sessions, replicas or restarts</li>
-                <li>HBM pressure evicts warm prefixes early</li>
-              </ul>
-            </div>
-            <div>
-              <Box variant="h3">Offloading hurts when</Box>
-              <ul>
-                <li>Prefixes are short, so recompute is cheaper than a load</li>
-                <li>Hit rate is low: you pay to store KV that is never read back</li>
-                <li>The store is slow or congested, so a load takes longer than a recompute</li>
-                <li>
-                  Back-pressure drops stores to a slow tier: the GPU path stays fast and that
-                  tier&apos;s hit rate falls
-                </li>
-                <li>Stored KV comes from different weights or quantization (a correctness hazard)</li>
-              </ul>
-            </div>
-          </ColumnLayout>
+          <ExpandableSection headerText="Checklist: when offloading helps and when it hurts">
+            <ColumnLayout columns={2} variant="text-grid">
+              <div>
+                <Box variant="h3">Offloading helps when</Box>
+                <ul>
+                  <li>Prefixes are long and recomputing them is the bottleneck</li>
+                  <li>The same prefix is hit many times</li>
+                  <li>Reuse spans turns, sessions, replicas or restarts</li>
+                  <li>HBM pressure evicts warm prefixes early</li>
+                </ul>
+              </div>
+              <div>
+                <Box variant="h3">Offloading hurts when</Box>
+                <ul>
+                  <li>Prefixes are short, so recompute is cheaper than a load</li>
+                  <li>Hit rate is low: you pay to store KV that is never read back</li>
+                  <li>The store is slow or congested, so a load takes longer than a recompute</li>
+                  <li>
+                    Back-pressure drops stores to a slow tier: the GPU path stays fast and that
+                    tier&apos;s hit rate falls
+                  </li>
+                  <li>Stored KV comes from different weights or quantization (a correctness hazard)</li>
+                </ul>
+              </div>
+            </ColumnLayout>
+          </ExpandableSection>
           <ExpandableSection headerText="Load failures, consistency, capacity and routing">
             <SpaceBetween size="s">
               <Box variant="p">
@@ -994,7 +999,7 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
                 <code>root_dir</code> or bucket <code>prefix</code>.
               </Box>
               <Box variant="p">
-                <strong>Capacity moves, it does not vanish.</strong> Offloading trades HBM pressure
+                <strong>Capacity moves down a tier.</strong> Offloading trades HBM pressure
                 for host RAM, disk or network pressure, so leave host headroom beyond the CPU tier{' '}
                 <Cite tier={1} href={vllmUrl(OFFLOAD_DOCS, 'L354')}>
                   Usage Guide L354
@@ -1026,23 +1031,25 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
                 <Cite tier={1} href={vllmUrl(OFFLOAD_DOCS, 'L269')}>
                   Usage Guide L269
                 </Cite>
-                . On the router side, Dynamo&apos;s vLLM worker turns on vLLM&apos;s KV event
-                publishing over ZeroMQ for its KV-aware router{' '}
+                . On the router side, Dynamo&apos;s KV-aware router reads vLLM&apos;s KV events
+                over ZeroMQ, and its vLLM worker publishes them only when you pass a{' '}
+                <code>--kv-events-config</code> with <code>enable_kv_cache_events</code> true; it
+                creates none by default{' '}
                 <Cite
                   tier={1}
-                  href="https://github.com/ai-dynamo/dynamo/blob/v1.5.1/components/src/dynamo/vllm/args.py#L347-L352"
+                  href="https://github.com/ai-dynamo/dynamo/blob/v1.5.1/components/src/dynamo/vllm/args.py#L465-L484"
                   kind="code"
                 >
-                  Dynamo v1.5.1 vllm/args.py L347-L352
+                  Dynamo v1.5.1 vllm/args.py L465-L484
                 </Cite>
-                , and production-stack&apos;s <code>kvaware</code> routing asks the LMCache
+                . Production-stack&apos;s <code>kvaware</code> routing asks the LMCache
                 controller where the longest cached prefix lives{' '}
                 <Cite
                   tier={1}
-                  href="https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/src/vllm_router/routers/routing_logic.py#L282-L299"
+                  href="https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/src/vllm_router/routers/routing_logic.py#L413-L415"
                   kind="code"
                 >
-                  production-stack 0.1.13 routing_logic.py L282-L299
+                  production-stack 0.1.13 routing_logic.py L413-L415
                 </Cite>
                 . Disaggregated serving (section 10) is the case where a prefill tier fills the
                 cache that a decode tier reads.

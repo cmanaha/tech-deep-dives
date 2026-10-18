@@ -41,7 +41,11 @@ const formatRows: FormatRow[] = [
     notes: (
       <>
         Activation-aware weight quantization. Prequantized checkpoints (AutoAWQ or llm-compressor).
-        Dequantizes to FP16 for the matmul and runs on Marlin kernels where available.{' '}
+        Dequantizes to FP16 or BF16 for the matmul{' '}
+        <Cite tier={1} href={vllmUrl(`${QUANT}/auto_awq.py`, 'L229-L230')}>
+          auto_awq.py L229-L230
+        </Cite>{' '}
+        and runs on Marlin kernels where available.{' '}
         <code>awq</code>, <code>awq_marlin</code> and <code>auto_awq</code> are three names for one
         config class{' '}
         <Cite tier={1} href={vllmUrl(QUANT_INIT, 'L156-L159')}>
@@ -57,8 +61,12 @@ const formatRows: FormatRow[] = [
     family: 'Weight-only',
     notes: (
       <>
-        Per-group post-training quantization, with the widest checkpoint ecosystem on the Hub.
-        GPTQModel is the maintained successor to AutoGPTQ. A checkpoint quantized with group
+        Per-group post-training quantization. GPTQModel produces new 4-bit or 8-bit GPTQ
+        checkpoints{' '}
+        <Cite tier={1} href={vllmDocsUrl('features/quantization/gptqmodel/')}>
+          vLLM docs: GPTQModel
+        </Cite>
+        . A checkpoint quantized with group
         activation ordering (<code>desc_act=True</code> plus a group size) fails to load: pick one
         with static ordering or <code>desc_act=False</code>{' '}
         <Cite tier={1} href={vllmUrl(`${QUANT}/utils/gptq_utils.py`, 'L23-L50')}>
@@ -74,11 +82,17 @@ const formatRows: FormatRow[] = [
     family: 'Kernel backend',
     notes: (
       <>
-        Mixed-precision GEMM kernels that AWQ, GPTQ, FP8 and FP4 checkpoints dispatch onto.
-        Marlin repacks the weights at load time, so it is a kernel path for other formats to run
-        on rather than a format of its own{' '}
+        Mixed-precision GEMM kernels that AWQ, GPTQ, FP8 and FP4 checkpoints dispatch onto{' '}
         <Cite tier={1} href={QUANT_DOCS}>
           vLLM docs: hardware matrix, Marlin row
+        </Cite>
+        . Marlin repacks the weights at load time, so it is a kernel path for other formats to run
+        on rather than a format of its own{' '}
+        <Cite
+          tier={1}
+          href={vllmUrl('vllm/model_executor/kernels/linear/mixed_precision/marlin.py', 'L74-L110')}
+        >
+          mixed_precision/marlin.py L74-L110
         </Cite>
         .
       </>
@@ -97,10 +111,14 @@ const formatRows: FormatRow[] = [
     family: 'W8A8',
     notes: (
       <>
-        The default 8-bit serving path on Ada and Hopper. Per-tensor, per-channel or per-block
-        weight scales, with dynamic or calibrated static activation scales{' '}
-        <Cite tier={1} href={vllmUrl(`${QUANT}/fp8.py`, 'L89')}>
-          fp8.py L89
+        The 8-bit path with native FP8 compute on Ada, Hopper and Blackwell{' '}
+        <Cite tier={1} href={FP8_DOCS}>
+          vLLM docs: FP8 W8A8
+        </Cite>
+        . Per-tensor, per-channel or per-block weight scales, with dynamic or calibrated static
+        activation scales{' '}
+        <Cite tier={1} href={vllmUrl(`${QUANT}/fp8.py`, 'L89-L100')}>
+          fp8.py L89-L100
         </Cite>
         . From a prequantized checkpoint, or online from a BF16 checkpoint with{' '}
         <code>--quantization fp8_per_tensor</code> (no calibration){' '}
@@ -448,9 +466,19 @@ const upgradeRows: UpgradeRow[] = [
   },
   {
     release: (
-      <Cite tier={1} href={vllmUrl(QUANT_INIT, 'L52-L55')}>
-        Deprecated at v0.31.0
-      </Cite>
+      <>
+        Deprecated by June 2026{' '}
+        <Cite
+          tier={1}
+          href="https://github.com/vllm-project/vllm/blob/15652a6b703f059767d75e5a511c4a5accf969ad/vllm/model_executor/layers/quantization/__init__.py#L48-L51"
+        >
+          15652a6b __init__.py L48-L51
+        </Cite>{' '}
+        and still at v0.31.0{' '}
+        <Cite tier={1} href={vllmUrl(QUANT_INIT, 'L52-L55')}>
+          __init__.py L52-L55
+        </Cite>
+      </>
     ),
     change: (
       <>
@@ -526,7 +554,7 @@ function DecisionDiagram() {
           Start from the GPU generation. Volta has no FP8 path, so it runs GPTQ weight-only or a
           plugin format. Ampere and Turing run AWQ or GPTQ 4-bit weights on Marlin and run FP8
           checkpoints weight-only. Ada and Hopper run FP8 W8A8, prequantized or online with
-          fp8_per_tensor, plus an FP8 KV cache. Blackwell adds NVFP4, MXFP4 and MXFP8, prequantized
+          fp8_per_tensor, plus an FP8 KV cache. Blackwell runs NVFP4, MXFP4 and MXFP8, prequantized
           or online. bitsandbytes and GGUF load through plugins on Volta to Hopper.
         </title>
         <style>{`
@@ -816,23 +844,27 @@ export function Quantization() {
             , where Volta is SM 7.0, Turing SM 7.5, Ampere SM 8.0/8.6, Ada SM 8.9 and Hopper SM
             9.0. The published table also has Intel GPU and CPU columns (omitted here for width).
             Turing carries a caveat: it does not support Marlin MXFP4. On AMD GPUs the matrix marks
-            FP8 W8A8 and GGUF (a plugin) as supported. The docs table still lists bitsandbytes and
-            GGUF without noting the plugins, and lists a DeepSpeedFP row that has no code in the
+            FP8 W8A8 and GGUF (a plugin) as supported. The docs table lists bitsandbytes and GGUF
+            without noting the plugins, and lists a DeepSpeedFP row that has no code in the
             v0.31.0 tree and no entry in the accepted method names, so that row is left out here{' '}
             <Cite tier={1} href={vllmUrl(QUANT_INIT, 'L15-L49')} kind="doc-code-conflict">
               __init__.py L15-L49
             </Cite>
-            . Blackwell-class low-bit float formats (NVFP4, MXFP4, MXFP8) are documented on their
-            own method pages rather than in this grid; treat Blackwell support as additive to the
-            Hopper column and confirm against the per-method page.
+            . The grid has no Blackwell column. Blackwell runs the low-bit float formats (NVFP4,
+            MXFP4, MXFP8), documented on their own method pages, and FP8 W8A8; INT8 W8A8 does not
+            run on compute capability 10.0 or newer{' '}
+            <Cite tier={1} href={vllmDocsUrl('features/quantization/llm_compressor/int8_w8a8/')}>
+              vLLM docs: INT8 W8A8
+            </Cite>
+            . Confirm each format against its method page before planning on Blackwell.
           </Box>
           <Alert type="warning">
             <strong>Read the caveats along with the checkmarks.</strong> A green cell means vLLM
             has a kernel path for this format on this generation; speed depends on whether the
             silicon has tensor cores for it. On Ampere and Turing, FP8 checkpoints fall back to
-            weight-only W8A16 through Marlin, with correct output and no FP8 compute speedup{' '}
-            <Cite tier={1} href={vllmUrl(`${QUANT}/fp8.py`, 'L247-L250')}>
-              fp8.py L247-L250
+            weight-only W8A16 through Marlin, with no FP8 compute speedup{' '}
+            <Cite tier={1} href={FP8_DOCS}>
+              vLLM docs: FP8 W8A8
             </Cite>
             . Match the format to silicon that has native tensor-core support for it.
           </Alert>
@@ -902,8 +934,8 @@ export function Quantization() {
                 <Cite tier={1} href={ONLINE_DOCS}>
                   vLLM docs: Online quantization
                 </Cite>
-                . It is the zero-friction way to get FP8 from a BF16 model; the docs note latency
-                improvements are limited in this mode{' '}
+                . It is the zero-friction way to get FP8 from a BF16 model, with limited latency
+                improvement in this mode{' '}
                 <Cite tier={1} href={FP8_DOCS}>
                   vLLM docs: FP8 W8A8
                 </Cite>
@@ -968,8 +1000,21 @@ export function Quantization() {
           </Box>
           <Box variant="p">
             <strong>KV cache is enabled separately.</strong> <code>--kv-cache-dtype fp8</code>{' '}
-            (engine arg <code>kv_cache_dtype=&quot;fp8&quot;</code>) stores KV entries in FP8, and{' '}
-            <code>auto</code>, the default, keeps the model&apos;s dtype. Scales are either 1.0 (no
+            (engine arg <code>kv_cache_dtype=&quot;fp8&quot;</code>) stores KV entries in FP8.{' '}
+            <code>auto</code>, the default, keeps the model&apos;s dtype, with one exception the
+            docs leave out: a ModelOpt checkpoint that declares a KV cache scheme gets that scheme,
+            for example FP8{' '}
+            <Cite
+              tier={1}
+              href={vllmUrl('vllm/utils/torch_utils.py', 'L448-L521')}
+              kind="doc-code-conflict"
+            >
+              torch_utils.py L448-L521
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/engine/arg_utils.py', 'L2199-L2212')} kind="code">
+              arg_utils.py L2199-L2212
+            </Cite>
+            . Scales are either 1.0 (no
             calibration) or calibrated offline with llm-compressor, which the docs recommend for
             accuracy.{' '}
             <code>--kv-cache-dtype-skip-layers</code> keeps chosen layers, by index or by type such
@@ -986,15 +1031,20 @@ export function Quantization() {
             <strong>Online vs prequantized, in one line.</strong> Online quantization needs no
             separate artifact: weight scales come from the weights alone (per tensor, per channel
             or per block) and activation scales are computed at runtime, with no calibration data.
-            Prequantized checkpoints carry scales chosen offline against calibration data, so they
-            win on accuracy, at the cost of producing the checkpoint once. For production, prefer prequantized; for a quick
+            A prequantized checkpoint carries scales chosen offline, against a calibration dataset
+            when the recipe uses one (AWQ, GPTQ, static activation scales); llm-compressor&apos;s
+            FP8_DYNAMIC recipe needs none{' '}
+            <Cite tier={1} href={FP8_DOCS}>
+              vLLM docs: FP8 W8A8
+            </Cite>
+            . For production, prefer a calibrated prequantized checkpoint; for a quick
             fit-it-on-the-GPU experiment, online is fine.
           </Alert>
           <ExpandableSection headerText="Prequantized vs online: what differs in the checkpoint">
             <SpaceBetween size="s">
               <Box variant="p">
                 A prequantized checkpoint ships the low-precision weights <em>plus</em> the scale
-                tensors computed offline. Tools like llm-compressor and AutoAWQ run a calibration
+                tensors computed offline. Calibrated recipes in llm-compressor and AutoAWQ run a
                 pass over a small dataset to choose per-channel or per-group scales that minimise
                 the quantization error where it matters most. vLLM loads those weights and scales
                 directly. No weight quantization happens at serve time.
@@ -1008,8 +1058,8 @@ export function Quantization() {
                 </Cite>
                 . Per-tensor FP8 gives each weight tensor one scale; the per-block and per-channel
                 shorthands give finer ones. The mental model: online buys you the memory shrink
-                immediately; prequantized buys you the memory shrink with the best accuracy the
-                format allows, at the cost of producing the artifact.
+                immediately; a calibrated prequantized checkpoint buys the same shrink with scales
+                tuned against data, at the cost of producing the artifact.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1043,7 +1093,7 @@ export function Quantization() {
         header={
           <Header
             variant="h2"
-            description="Seven quantization changes between v0.24 and v0.31 that stop a working deployment or change its flags, with the fix for each"
+            description="Six quantization changes between v0.24 and v0.31, and one older deprecation, that stop a working deployment or change its flags, with the fix for each"
           >
             Upgrading a quantized deployment
           </Header>
@@ -1068,7 +1118,7 @@ export function Quantization() {
           />
           <Box variant="small">
             Release rows from the GitHub release notes for each version (pull request numbers in
-            parentheses).
+            parentheses); the deprecation row from the source tree at both commits.
           </Box>
         </SpaceBetween>
       </Container>

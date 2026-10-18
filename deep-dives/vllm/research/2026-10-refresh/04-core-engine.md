@@ -397,3 +397,7 @@ Search for findings that name the owned files: `grep -n -i "V1Architecture\|Sche
 | Quantization.tsx | EDIT | about 13 | Move the bitsandbytes and GGUF rows to "plugins" (Q8, Q9, Q15). Add the GPTQ `desc_act` caveat (Q6). Replace `fp8` with `fp8_per_tensor` online and note the deprecation (Q11, Q20, Q22). Volta has no FP8 (Q16). Fix the AMD caption (Q17). `calculate_kv_scales` is removed (Q21). FP4/MX can also run online (Q13). Fix the diagram leaves (Q24). Fix the 1.6x link and project-claim label (Q23). Add the online path (Q-N1), the upgrade-removals list (Q-N2), deprecations (Q-N3) and plugins (Q-N4). Repin links and 7 accessed lines |
 
 Unresolved: KO24, external half. The claim that Production-Stack, llm-d and Dynamo consume vLLM KV events was not verified, because it lies outside the vLLM tree. Take it from the ecosystem register (05) or drop it.
+
+## Errata (phase 6 fact-check, 2026-10-17)
+
+- KO-N4: of the three per-request offload keys, only the two token caps are marked experimental in code and docs; `kv_load_tiers` is not. See `factcheck/fc03-offload-quant.md`.
