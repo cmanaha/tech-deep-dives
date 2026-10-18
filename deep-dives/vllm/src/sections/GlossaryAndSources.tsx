@@ -264,6 +264,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'Reserved EC2 capacity; created inside a cluster placement group to control co-location.' },
   { acronym: 'Cluster placement group (PG)', fullForm: 'Cluster Placement Group', description: 'Packs instances into one AZ on a high-bisection-bandwidth segment (up to 10 Gbps single-flow) for low-latency multi-node work.' },
   { acronym: 'DescribeInstanceTopology', fullForm: 'DescribeInstanceTopology API', description: 'A diagnostic EC2 API returning a relative NetworkNodes proximity hierarchy for running instances, used to assign ranks, not to place instances.' },
+  { acronym: 'DescribeCapacityReservationTopology', fullForm: 'DescribeCapacityReservationTopology API', description: 'The read-only EC2 API that reports the network topology of capacity reservations before launch; it observes placement and places nothing.' },
   { acronym: 'UltraCluster', fullForm: 'EC2 UltraCluster', description: 'Co-located accelerated EC2 instances on a petabit-scale EFA network; Capacity Blocks auto-place inside one.' },
   { acronym: 'Bedrock', fullForm: 'Amazon Bedrock', description: 'AWS managed foundation-model API; the lower-ops alternative to self-hosting vLLM.' },
   { acronym: 'Custom Model Import', fullForm: 'Amazon Bedrock Custom Model Import', description: 'Bedrock feature that serves supported open-weight architectures from your own weights behind the Bedrock API.' },
