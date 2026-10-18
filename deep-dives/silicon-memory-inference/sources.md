@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 173.
+Total distinct sources: 188.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
@@ -24,13 +24,15 @@ Total distinct sources: 173.
 | AWS | [Amazon FSx for Lustre: working with EFA-enabled file systems](https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon S3 Express One Zone: high performance with directory buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [AWS Neuron: Amazon EC2 Trn2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn2-arch.html) | 2026-10-16 | HeterogeneityFact |
+| AWS | [AWS Neuron: Data Types](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/data-types.html) | 2026-10-17 | QuantizationAndPrecision |
 | AWS | [AWS Neuron: Neuron Graph Compiler overview (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/index.html) | 2026-10-16 | KernelExecutionLifecycle |
 | AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-16 | KernelExecutionLifecycle |
 | AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | HeterogeneityFact |
+| AWS | [AWS Neuron: NKI Library release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nki-lib.html) | 2026-10-17 | QuantizationAndPrecision |
 | AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-17 | KernelExecutionLifecycle |
 | AWS | [AWS Neuron: NKI Trainium2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium2_arch.html) | 2026-10-17 | KernelExecutionLifecycle |
 | AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-17 | HeterogeneityFact, KernelExecutionLifecycle, RooflineAndArithmeticIntensity, ThesisAndFraming |
-| AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-16 | HeterogeneityFact, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-17 | HeterogeneityFact, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | GraceBlackwellUltraServer, HeterogeneityFact |
 | AWS | [Capacity Blocks for ML: supported instance types and Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaHopper |
 | AWS | [Data persistence for Amazon EC2 instance store volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html) | 2026-10-17 | FlashCacheTier |
@@ -42,9 +44,17 @@ Total distinct sources: 173.
 | Dao-AILab | [FlashAttention release fa4-v4.0.0.beta35 (FlashAttention-4 beta, 2026-10-14)](https://github.com/Dao-AILab/flash-attention/releases/tag/fa4-v4.0.0.beta35) | 2026-10-16 | RooflineAndArithmeticIntensity |
 | DeepSeek | [DeepSeek API docs: Context Caching](https://api-docs.deepseek.com/guides/kv_cache) | 2026-10-17 | FlashCacheTier |
 | DeepSeek | [DeepSeek API docs: Models and Pricing](https://api-docs.deepseek.com/quick_start/pricing) | 2026-10-17 | FlashCacheTier |
-| Hugging Face | [deepseek-ai/DeepSeek-V3 config.json at revision e815299](https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/config.json) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
-| Hugging Face | [deepseek-ai/DeepSeek-V4.1-Flash README at revision 314113f (890 bytes per token)](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/314113f8a7dadb388215396ba5fbee2c610a04d6/README.md) | 2026-10-16 | FlashCacheTier |
+| Hugging Face | [deepseek-ai/DeepSeek-V3 config.json at revision e815299](https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/config.json) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash, QuantizationAndPrecision |
+| Hugging Face | [deepseek-ai/DeepSeek-V3.2 files at revision a7e62ac (689.5 GB of safetensors)](https://huggingface.co/deepseek-ai/DeepSeek-V3.2/tree/a7e62ac04ecb2c0a54d736dc46601c5606cf10a6) | 2026-10-17 | QuantizationAndPrecision |
+| Hugging Face | [deepseek-ai/DeepSeek-V4-Pro-0813 config.json at revision 72e1d32 (expert_dtype)](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-0813/blob/72e1d3230f6c080a530b0a1d46f8eb4602340597/config.json) | 2026-10-17 | QuantizationAndPrecision |
+| Hugging Face | [deepseek-ai/DeepSeek-V4-Pro-0813 README at revision 72e1d32 (vLLM serve command)](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-0813/blob/72e1d3230f6c080a530b0a1d46f8eb4602340597/README.md) | 2026-10-17 | QuantizationAndPrecision |
+| Hugging Face | [deepseek-ai/DeepSeek-V4.1-Flash README at revision 314113f (890 bytes per token)](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/314113f8a7dadb388215396ba5fbee2c610a04d6/README.md) | 2026-10-17 | FlashCacheTier, QuantizationAndPrecision |
 | Hugging Face | [meta-llama/Llama-3.1-70B model metadata at sha 349b2dd (70,553,706,496 parameters)](https://huggingface.co/api/models/meta-llama/Llama-3.1-70B) | 2026-10-16 | FlashCacheTier |
+| Hugging Face | [MiniMaxAI/MiniMax-M3-MXFP8 config.json at revision c5454eb (mxfp8, weight_block_size [1, 32])](https://huggingface.co/MiniMaxAI/MiniMax-M3-MXFP8/blob/c5454eb03678d8710e54a4e0fc681b9f3b4a3dba/config.json) | 2026-10-17 | QuantizationAndPrecision |
+| Hugging Face | [moonshotai/Kimi-K2.5 README at revision 4d01dfe (native INT4 quantization)](https://huggingface.co/moonshotai/Kimi-K2.5/blob/4d01dfe0332d63057c186e0b262165819efb6611/README.md) | 2026-10-17 | QuantizationAndPrecision |
+| Hugging Face | [moonshotai/Kimi-K3 README at revision f831ab6 (native MXFP4 quantization)](https://huggingface.co/moonshotai/Kimi-K3/blob/f831ab66814297da540d832a5235f8e904f29d06/README.md) | 2026-10-17 | QuantizationAndPrecision |
+| Hugging Face | [nvidia/DeepSeek-V3.2-NVFP4 files at revision 7c0f62c (415.1 GB of safetensors)](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4/tree/7c0f62c6da1da0c81c6e097010cc55854d206812) | 2026-10-17 | QuantizationAndPrecision |
+| Hugging Face | [openai/gpt-oss-120b config.json at revision b5c939d (quantization_config)](https://huggingface.co/openai/gpt-oss-120b/blob/b5c939de8f754692c1647ca79fbf85e8c1e70f8a/config.json) | 2026-10-17 | QuantizationAndPrecision |
 | Hugging Face | [Qwen/Qwen3-235B-A22B config.json at revision 8efa617](https://huggingface.co/Qwen/Qwen3-235B-A22B/blob/8efa61729e24bd65b1d152b5ab5409052aa80e65/config.json) | 2026-10-16 | FlashCacheTier |
 | Hugging Face | [Qwen/Qwen3-235B-A22B README at revision 8efa617 (22B activated)](https://huggingface.co/Qwen/Qwen3-235B-A22B/blob/8efa61729e24bd65b1d152b5ab5409052aa80e65/README.md) | 2026-10-17 | FlashCacheTier |
 | Intel | [Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)](https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html) | 2026-10-16 | FlashCacheTier |
@@ -53,7 +63,8 @@ Total distinct sources: 173.
 | llm-d | [llm-d tiered prefix cache guides and metrics docs at tag v0.10.0](https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/README.md) | 2026-10-17 | FlashCacheTier |
 | LLVM | [AArch64SchedNeoverseV2.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/AArch64/AArch64SchedNeoverseV2.td) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
 | LLVM | [Clang amxfp16intrin.h at tag llvmorg-23.1.3 (TDPFP16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxfp16intrin.h) | 2026-10-17 | KernelExecutionLifecycle |
-| LLVM | [Clang amxintrin.h at tag llvmorg-23.1.3 (tile size, LDTILECFG, TILELOADD, TDPBF16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxintrin.h) | 2026-10-17 | KernelExecutionLifecycle, ThesisAndFraming |
+| LLVM | [Clang amxintrin.h at tag llvmorg-23.1.3 (tile size, LDTILECFG, TILELOADD, TDPBF16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxintrin.h) | 2026-10-17 | KernelExecutionLifecycle, QuantizationAndPrecision, ThesisAndFraming |
+| LLVM | [LLVM APFloat.cpp at tag llvmorg-23.1.3: fltSemantics (max exponent, precision, size) for IEEE, BF16, TF32, FP8 and FP4](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Support/APFloat.cpp#L71-L105) | 2026-10-17 | QuantizationAndPrecision |
 | LLVM | [LLVM X86.td at tag llvmorg-23.1.3 (per-generation feature lists: SPR, GNR, DMR)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/X86/X86.td#L1243-L1310) | 2026-10-16 | KernelExecutionLifecycle |
 | LLVM | [LLVM X86RegisterInfo.td at tag llvmorg-23.1.3 (tile registers TMM0 to TMM7)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/X86/X86RegisterInfo.td) | 2026-10-17 | KernelExecutionLifecycle |
 | LLVM | [X86SchedSapphireRapids.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/X86/X86SchedSapphireRapids.td) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
@@ -64,7 +75,7 @@ Total distinct sources: 173.
 | NVIDIA | [CUDA GPU compute capability list](https://developer.nvidia.com/cuda-gpus) | 2026-10-16 | NvidiaBlackwell, NvidiaCompilersAndTooling, NvidiaHopper |
 | NVIDIA | [CUDA Programming Guide v13.4.2: Advanced Kernel Programming (Hardware Multithreading)](https://docs.nvidia.com/cuda/cuda-programming-guide/03-advanced/advanced-kernel-programming.html) | 2026-10-17 | KernelExecutionLifecycle |
 | NVIDIA | [CUDA Programming Guide v13.4.2: Asynchronous Data Copies](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/async-copies.html) | 2026-10-17 | KernelExecutionLifecycle |
-| NVIDIA | [CUDA Programming Guide v13.4.2: Compute Capabilities](https://docs.nvidia.com/cuda/cuda-programming-guide/05-appendices/compute-capabilities.html) | 2026-10-17 | KernelExecutionLifecycle, NvidiaBlackwell, NvidiaCompilersAndTooling, NvidiaHopper |
+| NVIDIA | [CUDA Programming Guide v13.4.2: Compute Capabilities](https://docs.nvidia.com/cuda/cuda-programming-guide/05-appendices/compute-capabilities.html) | 2026-10-17 | KernelExecutionLifecycle, NvidiaBlackwell, NvidiaCompilersAndTooling, NvidiaHopper, QuantizationAndPrecision |
 | NVIDIA | [CUDA Programming Guide v13.4.2: CUDA Graphs](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/cuda-graphs.html) | 2026-10-17 | KernelExecutionLifecycle |
 | NVIDIA | [CUDA Programming Guide v13.4.2: Programmatic Dependent Launch and Synchronization](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/programmatic-dependent-launch.html) | 2026-10-17 | KernelExecutionLifecycle |
 | NVIDIA | [CUDA Programming Guide v13.4.2: Programming Model (thread blocks, warps, on-chip memory)](https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/programming-model.html) | 2026-10-17 | KernelExecutionLifecycle |
@@ -74,6 +85,7 @@ Total distinct sources: 173.
 | NVIDIA | [CUTLASS CHANGELOG at tag v4.8.0](https://github.com/NVIDIA/cutlass/blob/v4.8.0/CHANGELOG.md) | 2026-10-17 | NvidiaBlackwell, NvidiaCompilersAndTooling |
 | NVIDIA | [CUTLASS example 92_blackwell_moe_gemm at tag v4.8.0](https://github.com/NVIDIA/cutlass/tree/v4.8.0/examples/92_blackwell_moe_gemm) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [CUTLASS README at tag v4.8.0](https://github.com/NVIDIA/cutlass/blob/v4.8.0/README.md) | 2026-10-17 | NvidiaCompilersAndTooling |
+| NVIDIA | [DeepSeek-V3.2-NVFP4 model card at revision 7c0f62c (post-training quantization, evaluation)](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4/blob/7c0f62c6da1da0c81c6e097010cc55854d206812/README.md) | 2026-10-17 | QuantizationAndPrecision |
 | NVIDIA | [Nsight Compute Profiling Guide](https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [Nsight Systems User Guide](https://docs.nvidia.com/nsight-systems/UserGuide/index.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [NVIDIA Blackwell Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/blackwell-tuning-guide/index.html) | 2026-10-17 | KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper |
@@ -82,20 +94,21 @@ Total distinct sources: 173.
 | NVIDIA | [NVIDIA GPUDirect Storage Release Notes v1.19.1](https://docs.nvidia.com/gpudirect-storage/release-notes/index.html) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA Hopper Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) | 2026-10-17 | KernelExecutionLifecycle, NvidiaHopper |
 | NVIDIA | [NVIDIA/storage-lender README at commit 1630d17 (SCADA control path)](https://github.com/NVIDIA/storage-lender/blob/1630d17b50b7130dee27c1f71361ad5af4e434bb/README.md) | 2026-10-17 | FlashCacheTier |
-| NVIDIA | [PTX ISA 9.4: wgmma (9.7.17) and tcgen05 / Tensor Memory (9.7.18)](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html) | 2026-10-16 | HeterogeneityFact, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper, ThesisAndFraming |
+| NVIDIA | [PTX ISA 9.4: wgmma (9.7.17) and tcgen05 / Tensor Memory (9.7.18)](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html) | 2026-10-17 | HeterogeneityFact, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper, QuantizationAndPrecision, ThesisAndFraming |
 | NVIDIA | [TensorRT Quick Start Guide: What Is TensorRT?](https://docs.nvidia.com/deeplearning/tensorrt/latest/getting-started/quick-start-guide.html) | 2026-10-17 | NvidiaCompilersAndTooling |
-| NVIDIA | [TensorRT-LLM examples/wide_ep at tag v1.2.1](https://github.com/NVIDIA/TensorRT-LLM/tree/v1.2.1/examples/wide_ep) | 2026-10-16 | NvidiaCompilersAndTooling |
+| NVIDIA | [TensorRT-LLM examples/wide_ep at tag v1.2.1](https://github.com/NVIDIA/TensorRT-LLM/tree/v1.2.1/examples/wide_ep) | 2026-10-16 | NvidiaCompilersAndTooling, QuantizationAndPrecision |
 | NVIDIA | [TensorRT-LLM examples/wide_ep README at tag v1.2.1](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/examples/wide_ep/README.md) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaCompilersAndTooling |
 | NVIDIA | [TensorRT-LLM README at tag v1.2.1](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/README.md) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [TensorRT-LLM release v0.12.0 notes (2024-08-29)](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v0.12.0) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [TensorRT-LLM release v0.21.0 notes](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v0.21.0) | 2026-10-17 | GraceBlackwellUltraServer |
-| NVIDIA | [TensorRT-LLM release v1.0.0 notes (2025-09-24)](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v1.0.0) | 2026-10-17 | NvidiaCompilersAndTooling |
+| NVIDIA | [TensorRT-LLM release v1.0.0 notes (2025-09-24)](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v1.0.0) | 2026-10-17 | NvidiaCompilersAndTooling, QuantizationAndPrecision |
 | NVIDIA | [TensorRT-LLM release v1.2.1 (2026-04-20)](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v1.2.1) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA Dynamo | [ai-dynamo/dynamo KVBM configuration and KV cache offloading docs at tag v1.5.1](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/reference/components/kvbm-configuration.mdx) | 2026-10-17 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/dynamo lib/bindings/kvbm/src/block_manager.rs at tag v1.5.1 (disk offload filter, page_size)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/bindings/kvbm/src/block_manager.rs) | 2026-10-17 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/dynamo lib/kv-router/src/scheduling/config.rs at tag v1.5.1 (cache hit weights)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/kv-router/src/scheduling/config.rs) | 2026-10-17 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/nixl storage and network plugins at tag v1.5.0](https://github.com/ai-dynamo/nixl/tree/v1.5.0/src/plugins) | 2026-10-17 | FlashCacheTier |
 | Open Compute Project | [High Bandwidth Flash (HBF) High-Level Base Die Specification, Version 0.7.0 (2026-08-03)](https://www.opencompute.org/documents/ocp-hbf-architecture-specification-v0-7-0-final-pdf) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
+| Open Compute Project | [OCP Microscaling Formats (MX) Specification v1.0](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf) | 2026-10-17 | QuantizationAndPrecision |
 | PyTorch | [PyTorch v2.14.1 aten/src/ATen/cuda/CUDABlas.cpp: cublasGemmEx and cublasLtMatmul calls](https://github.com/pytorch/pytorch/blob/v2.14.1/aten/src/ATen/cuda/CUDABlas.cpp) | 2026-10-17 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 aten/src/ATen/native/Linear.cpp: linear lowers to addmm](https://github.com/pytorch/pytorch/blob/v2.14.1/aten/src/ATen/native/Linear.cpp#L106-L129) | 2026-10-17 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 torch/__init__.py: torch.compile signature, backend="inductor"](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/__init__.py#L3019) | 2026-10-17 | NvidiaCompilersAndTooling |
@@ -114,25 +127,26 @@ Total distinct sources: 173.
 | UXL Foundation | [oneDNN src/cpu/x64/cpu_isa_traits.cpp at tag v3.13.4, lines 357-374 (AMX permission request)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/cpu/x64/cpu_isa_traits.cpp#L357-L374) | 2026-10-17 | KernelExecutionLifecycle |
 | vLLM | [vLLM kv_offload metrics (offloading/metrics.py) at tag v0.31.0](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/offloading/metrics.py) | 2026-10-17 | FlashCacheTier |
 | vLLM | [vLLM vllm/config/cache.py at tag v0.31.0 (DEFAULT_BLOCK_SIZE)](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/cache.py) | 2026-10-17 | FlashCacheTier |
+| vLLM | [vLLM vllm/config/kernel.py at tag v0.31.0 (MoEBackend values)](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/kernel.py#L118-L141) | 2026-10-17 | QuantizationAndPrecision |
 
 ## Tier 2: vendor press release, blog, product page or keynote
 
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
-| AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-16 | RooflineAndArithmeticIntensity |
+| AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-17 | QuantizationAndPrecision, RooflineAndArithmeticIntensity |
 | AWS | [Amazon EC2 M8a instances](https://aws.amazon.com/ec2/instance-types/m8a/) | 2026-10-17 | HeterogeneityFact |
 | AWS | [Amazon EC2 M8i instances](https://aws.amazon.com/ec2/instance-types/m8i/) | 2026-10-17 | HeterogeneityFact |
 | AWS | [Amazon EC2 P5 instances](https://aws.amazon.com/ec2/instance-types/p5/) | 2026-10-17 | NvidiaHopper |
 | AWS | [Amazon EC2 P6 instances](https://aws.amazon.com/ec2/instance-types/p6/) | 2026-10-17 | FlashCacheTier, GraceBlackwellUltraServer, NvidiaBlackwell |
 | AWS | [Amazon EC2 P6e-GB300 UltraServers (NVIDIA GB300 NVL72) generally available](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell |
-| AWS | [Amazon EC2 Trn3 instances](https://aws.amazon.com/ec2/instance-types/trn3/) | 2026-10-17 | FlashCacheTier, HeterogeneityFact |
+| AWS | [Amazon EC2 Trn3 instances](https://aws.amazon.com/ec2/instance-types/trn3/) | 2026-10-17 | FlashCacheTier, HeterogeneityFact, QuantizationAndPrecision |
 | AWS | [Announcing up to 45% price reduction for Amazon EC2 NVIDIA GPU-accelerated instances](https://aws.amazon.com/blogs/aws/announcing-up-to-45-price-reduction-for-amazon-ec2-nvidia-gpu-accelerated-instances/) | 2026-10-17 | NvidiaBlackwell, NvidiaHopper |
 | AWS | [Managed Tiered KV Cache and Intelligent Routing for Amazon SageMaker HyperPod (2025-11-26)](https://aws.amazon.com/blogs/machine-learning/managed-tiered-kv-cache-and-intelligent-routing-for-amazon-sagemaker-hyperpod/) | 2026-10-17 | FlashCacheTier |
 | AWS | [SageMaker HyperPod now supports Managed tiered KV cache and intelligent routing (2025-11-26)](https://aws.amazon.com/about-aws/whats-new/2025/11/sagemaker-hyperpod-managed-tiered-kv-cache) | 2026-10-17 | FlashCacheTier |
 | Cerebras | [Cerebras Systems Unveils World's Fastest AI Chip with Whopping 4 Trillion Transistors (WSE-3, 2024-03-13)](https://www.cerebras.ai/press-release/cerebras-announces-third-generation-wafer-scale-engine) | 2026-10-17 | HeterogeneityFact |
 | Cerebras | [Introducing Cerebras Inference: AI at Instant Speed (2024-08-27)](https://www.cerebras.ai/blog/introducing-cerebras-inference-ai-at-instant-speed) | 2026-10-16 | HeterogeneityFact, ThesisAndFraming |
 | Cerebras | [Supercharge your HPC Research with the Cerebras SDK](https://www.cerebras.ai/blog/supercharge-your-hpc-research-with-the-cerebras-sdk) | 2026-10-16 | HeterogeneityFact, ThesisAndFraming |
-| DeepSeek-AI | [DeepSeek-V3 Technical Report (arXiv:2412.19437)](https://arxiv.org/abs/2412.19437) | 2026-10-16 | FlashCacheTier, HighBandwidthFlash, ThesisAndFraming |
+| DeepSeek-AI | [DeepSeek-V3 Technical Report (arXiv:2412.19437)](https://arxiv.org/abs/2412.19437) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash, QuantizationAndPrecision, ThesisAndFraming |
 | Groq | [Groq and Nvidia Enter Non-Exclusive Inference Technology Licensing Agreement (2025-12-24)](https://groq.com/newsroom/groq-and-nvidia-enter-non-exclusive-inference-technology-licensing-agreement-to-accelerate-ai-inference-at-global-scale) | 2026-10-16 | HeterogeneityFact, ThesisAndFraming |
 | Kioxia | [Kioxia Announces KIOXIA GP1 Series Super High IOPS SSDs for AI Applications (2026-08-03)](https://americas.kioxia.com/en-us/business/news/2026/ssd-20260803-1.html) | 2026-10-17 | FlashCacheTier |
 | Kioxia | [KIOXIA Announces New SSD Model Optimized for AI GPU-Initiated Workloads (2026-03-16)](https://americas.kioxia.com/en-us/business/news/2026/ssd-20260316-1.html) | 2026-10-17 | FlashCacheTier |
@@ -146,7 +160,7 @@ Total distinct sources: 173.
 | NVIDIA | [How NVIDIA GB200 NVL72 and NVIDIA Dynamo Boost Inference Performance for MoE Models](https://developer.nvidia.com/blog/how-nvidia-gb200-nvl72-and-nvidia-dynamo-boost-inference-performance-for-moe-models/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | GraceBlackwellUltraServer, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper, RooflineAndArithmeticIntensity |
 | NVIDIA | [Inside NVIDIA Groq 3 LPX: The Low-Latency Inference Accelerator for the NVIDIA Vera Rubin Platform (2026-03-16)](https://developer.nvidia.com/blog/inside-nvidia-groq-3-lpx-the-low-latency-inference-accelerator-for-the-nvidia-vera-rubin-platform/) | 2026-10-17 | HeterogeneityFact, RooflineAndArithmeticIntensity, ThesisAndFraming |
-| NVIDIA | [Introducing NVFP4 for Efficient and Accurate Low-Precision Inference](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/) | 2026-10-16 | HeterogeneityFact, NvidiaBlackwell |
+| NVIDIA | [Introducing NVFP4 for Efficient and Accurate Low-Precision Inference](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/) | 2026-10-17 | HeterogeneityFact, NvidiaBlackwell, QuantizationAndPrecision |
 | NVIDIA | [Introducing NVIDIA BlueField-4-Powered Inference Context Memory Storage Platform (G1 to G4 tiers, G3.5)](https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA Blackwell architecture](https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/) | 2026-10-16 | GraceBlackwellUltraServer, NvidiaBlackwell |
 | NVIDIA | [NVIDIA BlueField data processing units (BlueField-4 800 Gb/s, BlueField-3 400 Gb/s)](https://www.nvidia.com/en-us/networking/products/data-processing-unit/) | 2026-10-17 | FlashCacheTier |
@@ -158,8 +172,8 @@ Total distinct sources: 173.
 | NVIDIA | [NVIDIA Grace CPU Superchip (Grace CPU C1 and Superchip specifications)](https://www.nvidia.com/en-us/data-center/grace-cpu-superchip/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Groq 3 LPX Now in Full Production With World-Class Speed for Agentic AI (2026-08-24)](https://nvidianews.nvidia.com/news/nvidia-groq-3-lpx-now-in-full-production-with-world-class-speed-for-agentic-ai) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
 | NVIDIA | [NVIDIA H100 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h100/) | 2026-10-16 | FlashCacheTier, KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity |
-| NVIDIA | [NVIDIA H200 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h200/) | 2026-10-17 | FlashCacheTier, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper, RooflineAndArithmeticIntensity, ThesisAndFraming |
-| NVIDIA | [NVIDIA HGX platform (HGX B300, HGX B200 and HGX Rubin NVL8 specifications)](https://www.nvidia.com/en-us/data-center/hgx/) | 2026-10-17 | HeterogeneityFact, HighBandwidthFlash, NvidiaBlackwell, RooflineAndArithmeticIntensity |
+| NVIDIA | [NVIDIA H200 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h200/) | 2026-10-17 | FlashCacheTier, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| NVIDIA | [NVIDIA HGX platform (HGX B300, HGX B200 and HGX Rubin NVL8 specifications)](https://www.nvidia.com/en-us/data-center/hgx/) | 2026-10-17 | HeterogeneityFact, HighBandwidthFlash, NvidiaBlackwell, QuantizationAndPrecision, RooflineAndArithmeticIntensity |
 | NVIDIA | [NVIDIA Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | 2026-10-17 | KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA Hopper in Full Production (2022-09-20)](https://nvidianews.nvidia.com/news/nvidia-hopper-in-full-production) | 2026-10-16 | NvidiaHopper |
 | NVIDIA | [NVIDIA NVLink-C2C](https://www.nvidia.com/en-us/data-center/nvlink-c2c/) | 2026-10-17 | GraceBlackwellUltraServer |
@@ -194,6 +208,7 @@ Total distinct sources: 173.
 | arXiv | [Performance Characterizations and Usage Guidelines of Samsung CXL Memory Module Hybrid Prototype (Zeng et al., arXiv:2503.22017)](https://arxiv.org/abs/2503.22017) | 2026-10-17 | FlashCacheTier |
 | arXiv | [Pond: CXL-Based Memory Pooling Systems for Cloud Platforms (arXiv:2203.00241), Figure 4](https://arxiv.org/abs/2203.00241) | 2026-10-17 | HeterogeneityFact |
 | arXiv | [Potential Applications of HBF in LLM Serving Systems (Y. Yin et al.; arXiv:2608.13127v2)](https://arxiv.org/abs/2608.13127) | 2026-10-17 | HighBandwidthFlash |
+| arXiv | [Pretraining Large Language Models with NVFP4 (arXiv:2509.25149)](https://arxiv.org/abs/2509.25149) | 2026-10-17 | QuantizationAndPrecision |
 | arXiv | [SPLASH: Co-Designing Sparse Attention with High-Bandwidth Flash for Efficient Long-Context Inference (arXiv:2609.23816)](https://arxiv.org/abs/2609.23816) | 2026-10-17 | HighBandwidthFlash |
 | Blocks & Files | [Kioxia eyes GPU memory stack with high-bandwidth flash push (2026-03-20)](https://www.blocksandfiles.com/flash/2026/03/20/kioxia-eyes-gpu-memory-stack-with-high-bandwidth-flash-push/5210520) | 2026-10-17 | HighBandwidthFlash |
 | DIGITIMES | [Samsung signals zHBF push as memory race moves beyond HBM (2026-08-27)](https://www.digitimes.com/news/a20260827VL229/samsung-hbm-bandwidth-capacity-2026.html) | 2026-10-17 | HighBandwidthFlash |
