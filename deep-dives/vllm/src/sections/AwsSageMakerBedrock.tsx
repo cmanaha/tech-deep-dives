@@ -10,9 +10,13 @@ import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
 
 // LMI V30 = DJL-Serving branch 0.38.0-lmi30-dlc at this commit.
 const DJL = 'https://github.com/deepjavalibrary/djl-serving/blob';
-const LMI30 = `${DJL}/8a99e6e56562bcdff4ef230e2a81b201cb61fe09/serving`;
+const DJL30 = `${DJL}/8a99e6e56562bcdff4ef230e2a81b201cb61fe09`;
+const LMI30 = `${DJL30}/serving`;
 const LMI_GUIDE = `${LMI30}/docs/lmi/user_guides/vllm_user_guide.md`;
 const LMI_CONFIG = `${LMI30}/docs/lmi/deployment_guide/configurations.md`;
+const LMI_PROPS = `${DJL30}/engines/python/setup/djl_python/properties_manager/vllm_rb_properties.py`;
+const LMI_RECOMMENDER = `${DJL30}/wlm/src/main/java/ai/djl/serving/wlm/LmiConfigRecommender.java`;
+const LMI_DOCKERFILE = `${LMI30}/docker/lmi.Dockerfile`;
 const lmiReqs = (sha: string) => `${DJL}/${sha}/serving/docker/lmi-container-requirements.txt#L12`;
 const DJL_DOCS = 'https://docs.djl.ai/master/docs/serving/serving/docs/lmi';
 const SM = 'https://docs.aws.amazon.com/sagemaker/latest/dg';
@@ -256,8 +260,8 @@ function LmiConfigToEngineDiagram() {
         LMI: serving.properties using option.* keys, and environment variables using OPTION_*
         keys, where serving.properties overrides env. LMI then splits every key into one of
         two classes: LMI-native keys, which LMI translates into engine settings, and pass-through keys,
-        which LMI forwards opaquely to vLLM EngineArgs without validating them, so a typo fails at
-        container startup rather than at parse time. Both classes converge on vLLM&apos;s AsyncLLMEngine,
+        which LMI forwards to vLLM EngineArgs without validating them; a key that names no EngineArgs
+        field is dropped without an error. Both classes converge on vLLM&apos;s AsyncLLMEngine,
         which exposes the OpenAI-compatible API serving the chat completions and completions routes.
       </title>
       <style>
@@ -465,7 +469,8 @@ export function AwsSageMakerBedrock() {
         <SpaceBetween size="m">
           <Box variant="p">
             SageMaker hosts vLLM at three points on a spectrum of how much of the container and
-            serving stack AWS owns. The diagram orients them; the expandable sections walk each.
+            serving stack AWS owns: LMI, the AWS vLLM Deep Learning Container (DLC), and your own
+            container. The diagram orients them; the expandable sections walk each.
           </Box>
 
           <div style={{ overflowX: 'auto' }}>
@@ -507,7 +512,7 @@ export function AwsSageMakerBedrock() {
                 mode (<code>OPTION_ROLLING_BATCH=vllm</code>) still ships, but async mode{' '}
                 <em>&quot;will become the default, and only supported mode, in an upcoming
                 release&quot;</em>{' '}
-                <Cite tier={1} href={`${LMI_GUIDE}#L99-L120`}>L99-L120</Cite>, so build new deploys
+                <Cite tier={1} href={`${LMI_GUIDE}#L81-L120`}>L81-L120</Cite>, so build new deploys
                 on async mode.
               </Box>
               <Alert type="info">
@@ -557,8 +562,9 @@ export function AwsSageMakerBedrock() {
                 server that answers the endpoint runtime contract, <code>/invocations</code> and{' '}
                 <code>/ping</code> on port 8080{' '}
                 <Cite tier={1} href={`${SM}/hosting-faqs.html`}>SageMaker hosting FAQs</Cite>. Stock
-                vLLM already speaks that contract: every API server <code>vllm serve</code> builds
-                registers <code>/ping</code> (GET and POST) and <code>/invocations</code>{' '}
+                vLLM already speaks that contract: the Python API server that{' '}
+                <code>vllm serve</code> builds by default registers <code>/ping</code> (GET and POST)
+                and <code>/invocations</code>{' '}
                 <Cite tier={1} href={vllmUrl('vllm/entrypoints/serve/sagemaker/api_router.py', 'L91-L113')} kind="code">sagemaker/api_router.py L91-L113</Cite>{' '}
                 <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/app.py', 'L45')} kind="code">launchers/app.py L45</Cite>.
                 The repository&apos;s <code>vllm-sagemaker</code> Docker target{' '}
@@ -573,9 +579,8 @@ export function AwsSageMakerBedrock() {
                 For other servers, the AWS Labs <strong>ml-container-creator</strong> CLI generates
                 SageMaker BYOC images for vLLM, SGLang, TensorRT-LLM and DJL/LMI, for real-time and
                 async endpoints{' '}
-                <Cite tier={1} href="https://github.com/awslabs/ml-container-creator/tree/bb89cf9de839f0b6e027f011d2264f326138fb0c">awslabs/ml-container-creator</Cite>;
-                it is an AWS-owned repository, not a supported product. Path C fits a specific vLLM
-                or SGLang version, a custom patch, or a dependency neither LMI nor the DLC ships. You
+                <Cite tier={1} href="https://github.com/awslabs/ml-container-creator/tree/bb89cf9de839f0b6e027f011d2264f326138fb0c">awslabs/ml-container-creator</Cite>.
+                Path C fits a specific vLLM or SGLang version, a custom patch, or a dependency neither LMI nor the DLC ships. You
                 own the Dockerfile, and with it the upgrade and security burden.
               </Box>
             </SpaceBetween>
@@ -631,10 +636,13 @@ export function AwsSageMakerBedrock() {
             <strong><code>serving.properties</code> overrides the environment</strong>{' '}
             <Cite tier={1} href={`${LMI_CONFIG}#L13-L14`}>LMI configurations.md L13-L14</Cite>.{' '}
             <strong>LMI-native</strong> keys are ones LMI <em>translates</em> into engine settings.{' '}
-            <strong>Pass-through</strong> keys go opaquely to vLLM&apos;s <code>EngineArgs</code>{' '}
-            and <em>&quot;are not processed or validated by LMI&quot;</em>, so a typo in one fails
-            at container startup, when vLLM rejects the argument, rather than at parse time{' '}
+            <strong>Pass-through</strong> keys go to vLLM&apos;s <code>EngineArgs</code> and{' '}
+            <em>&quot;are not processed or validated by LMI&quot;</em>{' '}
             <Cite tier={1} href={`${LMI_GUIDE}#L157-L158`}>LMI vLLM user guide L157-L158</Cite>.
+            The code forwards only keys that name an <code>EngineArgs</code> field, so a misspelled
+            key is dropped without an error, and a valid key with a bad value fails when the engine
+            starts{' '}
+            <Cite tier={1} href={`${LMI_PROPS}#L247-L272`} kind="doc-code-conflict">vllm_rb_properties.py L247-L272 (V30 branch)</Cite>.
           </Box>
 
           <div style={{ overflowX: 'auto' }}>
@@ -654,22 +662,30 @@ export function AwsSageMakerBedrock() {
               { id: 'what', header: 'What it does', cell: (i) => i.what },
             ]}
             items={[
-              { key: 'OPTION_TENSOR_PARALLEL_DEGREE', def: '1 ("max" = all GPUs)', what: 'Tensor-parallel degree across the instance GPUs.' },
-              { key: 'OPTION_MAX_ROLLING_BATCH_SIZE', def: '256', what: 'Max concurrent sequences in the continuous batch.' },
+              { key: 'OPTION_TENSOR_PARALLEL_DEGREE', def: 'unset: all GPUs ("max")', what: 'Tensor-parallel degree across the instance GPUs.' },
+              { key: 'OPTION_MAX_ROLLING_BATCH_SIZE', def: '32 in async mode (256 with rolling batch)', what: 'Max concurrent sequences in the continuous batch (vLLM max_num_seqs).' },
               { key: 'OPTION_QUANTIZE', def: 'awq / fp8 / bitsandbytes', what: 'Weight quantization scheme.' },
-              { key: 'OPTION_DTYPE', def: 'fp16', what: 'Compute dtype for activations/weights.' },
+              { key: 'OPTION_DTYPE', def: 'auto (from the model config)', what: 'Compute dtype for activations/weights.' },
               { key: 'OPTION_MAX_MODEL_LEN', def: 'e.g. 8192', what: 'Max context length the engine will allocate for.' },
               { key: 'OPTION_GPU_MEMORY_UTILIZATION', def: 'e.g. 0.9', what: 'Fraction of GPU memory vLLM may claim for weights + KV (key-value) cache.' },
               { key: 'OPTION_ENABLE_PREFIX_CACHING', def: 'true / false', what: 'Turns on automatic prefix caching (see section 6).' },
               { key: 'OPTION_ENABLE_LORA / OPTION_MAX_LORAS', def: 'false / e.g. 4', what: 'Enables multi-LoRA (Low-Rank Adaptation) serving and caps simultaneously loaded adapters (section 13).' },
               { key: 'OPTION_TRUST_REMOTE_CODE', def: 'false', what: 'Allows custom modeling code from the model repo.' },
-              { key: 'OPTION_MODEL_LOADING_TIMEOUT', def: '1800 (s)', what: 'How long LMI waits for the model to load before failing.' },
+              { key: 'OPTION_MODEL_LOADING_TIMEOUT', def: '1200 (s) in the V30 image', what: 'How long LMI waits for the model to load before failing.' },
               { key: 'HF_MODEL_ID', def: 'org/model | s3://... | /opt/ml/model', what: 'Hugging Face Hub id (needs HF_TOKEN for gated models), an S3 URI, or a model_data S3DataSource mounted at /opt/ml/model.' },
             ]}
           />
           <Box variant="small">
-            Numeric defaults from <Cite tier={1} href={`${LMI_CONFIG}#L91-L96`}>LMI configurations.md L91-L96</Cite>;
-            other rows are examples. LMI&apos;s defaults for <code>max_num_seqs</code>,{' '}
+            The defaults are what the V30 code sets, and four differ from{' '}
+            <Cite tier={1} href={`${LMI_CONFIG}#L91-L96`} kind="doc-code-conflict">LMI configurations.md L91-L96</Cite>,
+            which lists 1, 256, fp16 and 1800 s. An unset tensor-parallel degree becomes every GPU,
+            and in async mode the batch cap is 32{' '}
+            <Cite tier={1} href={`${LMI_RECOMMENDER}#L88-L136`} kind="code">LmiConfigRecommender.java L88-L136</Cite>;
+            the dtype default is <code>auto</code>{' '}
+            <Cite tier={1} href={`${LMI_PROPS}#L70`} kind="code">vllm_rb_properties.py L70</Cite>;
+            the image sets <code>MODEL_LOADING_TIMEOUT=1200</code>{' '}
+            <Cite tier={1} href={`${LMI_DOCKERFILE}#L33`} kind="code">lmi.Dockerfile L33</Cite>.
+            Other rows are examples. LMI&apos;s defaults for <code>max_num_seqs</code>,{' '}
             <code>max_num_batched_tokens</code> and <code>max_loras</code> differ from{' '}
             <code>vllm serve</code>{' '}
             <Cite tier={1} href={`${LMI_GUIDE}#L229-L231`}>LMI vLLM user guide L229-L231</Cite>, so
@@ -713,7 +729,8 @@ export function AwsSageMakerBedrock() {
               <code>deploy()</code> to a GPU instance. Async mode needs no flag, and passing the URI
               directly avoids depending on the SDK&apos;s image map for a new LMI release:
             </Box>
-            <pre style={{ overflowX: 'auto', fontSize: '12px', lineHeight: 1.5 }}>{`import sagemaker
+            <pre style={{ overflowX: 'auto', fontSize: '12px', lineHeight: 1.5 }}>{`# SageMaker Python SDK v2 API
+import sagemaker
 
 # LMI V30 image as published in its release (us-west-2)
 container_uri = (
@@ -737,7 +754,7 @@ predictor = model.deploy(
             <Box variant="p">
               A higher-level <code>sagemaker.djl_inference.model.DJLModel</code> wrapper takes the
               same <code>OPTION_*</code> config and infers an image{' '}
-              <Cite tier={1} href={`${DJL_DOCS}/deployment_guide/deploying-your-endpoint.html`}>DJL docs: Deploying your endpoint</Cite>.
+              <Cite tier={1} href="https://github.com/aws/sagemaker-python-sdk/blob/v2.257.7/src/sagemaker/djl_inference/model.py#L39-L135" kind="code">sagemaker-python-sdk v2.257.7: djl_inference/model.py L39-L135</Cite>.
             </Box>
           </Box>
 
@@ -747,9 +764,11 @@ predictor = model.deploy(
             <code>{'{"messages": [...]}'}</code> schema: the presence of a <code>messages</code>{' '}
             field triggers a <code>chat.completion</code> response. Streaming uses SageMaker&apos;s{' '}
             <code>/invocations-response-stream</code> with <code>{'"stream": true'}</code> (JSON-lines{' '}
-            <code>chat.completion.chunk</code> events). In async mode the schemas follow upstream
-            vLLM&apos;s OpenAI API (section 12){' '}
-            <Cite tier={1} href={`${DJL_DOCS}/user_guides/chat_input_output_schema.html`}>DJL docs: Chat input/output schema</Cite>.
+            <code>chat.completion.chunk</code> events){' '}
+            <Cite tier={1} href={`${DJL_DOCS}/user_guides/chat_input_output_schema.html`}>DJL docs: Chat input/output schema</Cite>{' '}
+            <Cite tier={1} href="https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_runtime_InvokeEndpointWithResponseStream.html" accessed="2026-10-18">SageMaker API: InvokeEndpointWithResponseStream</Cite>.
+            In async mode the schemas follow upstream vLLM&apos;s OpenAI API (section 12){' '}
+            <Cite tier={1} href={`${LMI_GUIDE}#L78-L81`}>LMI vLLM user guide L78-L81</Cite>.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -780,7 +799,7 @@ predictor = model.deploy(
               { id: 'use', header: 'Use it for', cell: (i) => i.use },
             ]}
             items={[
-              { type: 'Real-time', gpu: 'Yes', lim: '25 MB payload; 60 s (8 min streaming)', use: 'The PRIMARY choice: interactive, low-latency, streaming serving.' },
+              { type: 'Real-time', gpu: 'Yes', lim: '25 MB payload (6 MB in the API reference); 60 s (8 min streaming)', use: 'The PRIMARY choice: interactive, low-latency, streaming serving.' },
               { type: 'Asynchronous', gpu: 'Yes', lim: '1 GB payload; 60 min timeout', use: 'Long / large / batch-like requests; supports scale-to-zero.' },
               { type: 'Batch Transform', gpu: 'Yes (job)', lim: 'Job-based, offline', use: 'Niche offline eval / bulk generation.' },
               { type: 'Serverless', gpu: 'No', lim: '4 MB payload', use: 'INCOMPATIBLE with vLLM: no GPU.' },
@@ -789,17 +808,23 @@ predictor = model.deploy(
           <Box variant="small">
             Limits from <Cite tier={1} href={`${SM}/hosting-faqs.html`}>SageMaker hosting FAQs</Cite>;
             endpoint types from{' '}
-            <Cite tier={1} href={`${SM}/model-deploy-feature-matrix.html`} accessed="2026-10-17">SageMaker deploy feature matrix</Cite>.
+            <Cite tier={1} href={`${SM}/model-deploy-feature-matrix.html`} accessed="2026-10-18">SageMaker deploy feature matrix</Cite>.
+            AWS&apos;s pages disagree on the real-time payload: the FAQs say 25 MB, while the
+            feature matrix lists under 6 MB and the InvokeEndpoint API reference caps the body at
+            6,291,456 bytes{' '}
+            <Cite tier={1} href="https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_runtime_InvokeEndpoint.html" accessed="2026-10-18">SageMaker API: InvokeEndpoint</Cite>.
+            Test a payload above 6 MB before you design around it.
           </Box>
 
           <Alert type="warning">
             <strong>The streaming-timeout footgun.</strong> A real-time <em>non-streaming</em> request
-            hard-caps at <strong>60 seconds</strong> (non-adjustable). Streaming via{' '}
+            hard-caps at <strong>60 seconds</strong>. Streaming via{' '}
             <code>/invocations-response-stream</code> extends that to <strong>8 minutes</strong>. A
             long generation that does <em>not</em> stream fails at 60 s, so for very long jobs,
             either stream or move to an <strong>Asynchronous</strong> endpoint (60 min / 1 GB). The
-            payload ceiling is <strong>25 MB</strong> for a real-time endpoint, streaming or not{' '}
-            <Cite tier={1} href={`${SM}/hosting-faqs.html`}>SageMaker hosting FAQs</Cite>.
+            FAQs put the real-time payload ceiling at <strong>25 MB</strong>, streaming or not{' '}
+            <Cite tier={1} href={`${SM}/hosting-faqs.html`}>SageMaker hosting FAQs</Cite>; the API
+            reference still says 6 MB.
           </Alert>
 
           <Alert type="warning">
@@ -807,8 +832,8 @@ predictor = model.deploy(
             load, so the SageMaker defaults work against you:
             <ul>
               <li>
-                <code>VolumeSizeInGB</code>: raise it for models over 30 GB, to slightly more than
-                the model&apos;s size. By our arithmetic a 70B model in FP16 (16-bit floating point,
+                <code>VolumeSizeInGB</code>: raise it for models over 30 GB on an instance without a
+                local disk, to slightly more than the model&apos;s size. By our arithmetic a 70B model in FP16 (16-bit floating point,
                 about 140 GB of weights) wants roughly 180 GB.
               </li>
               <li>
@@ -817,13 +842,13 @@ predictor = model.deploy(
               </li>
               <li>
                 <code>ContainerStartupHealthCheckTimeoutInSeconds</code>: AWS&apos;s example uses
-                1800. Keep it at least <code>OPTION_MODEL_LOADING_TIMEOUT</code> (1800 s by
-                default), or vLLM&apos;s slow load trips the <code>/ping</code> health check into a
-                restart loop.
+                1800. Keep it at least <code>OPTION_MODEL_LOADING_TIMEOUT</code> (1200 s in the
+                V30 image), or the startup health check times out while vLLM is still loading.
               </li>
             </ul>
             <Cite tier={1} href={`${SM}/large-model-inference-hosting.html`}>SageMaker large-model inference hosting</Cite>{' '}
-            <Cite tier={1} href={`${LMI_CONFIG}#L96`}>LMI configurations.md L96</Cite>
+            <Cite tier={1} href={`${LMI_CONFIG}#L96`}>LMI configurations.md L96</Cite>{' '}
+            <Cite tier={1} href={`${LMI_DOCKERFILE}#L33`} kind="code">lmi.Dockerfile L33</Cite>
           </Alert>
 
           <Box variant="div">
@@ -884,7 +909,10 @@ predictor = model.deploy(
           <Box variant="p">
             <strong>Inference Components (ICs)</strong> are the modern hosting object on a
             real-time endpoint: a container plus a model that reserves a slice of accelerators and
-            memory and carries its own <code>MinCopyCount</code>/<code>MaxCopyCount</code>. Several
+            memory and carries its own copy count (<code>RuntimeConfig.CopyCount</code>), which
+            autoscaling moves between the minimum and maximum capacity you register for{' '}
+            <code>sagemaker:inference-component:DesiredCopyCount</code>{' '}
+            <Cite tier={1} href={`${SM}/endpoint-auto-scaling-zero-instances.html`} accessed="2026-10-18">SageMaker: scale an endpoint to zero instances</Cite>. Several
             ICs can share one endpoint, which is the shape the multi-LoRA pattern wants: one IC holds
             a vLLM or LMI base model that swaps LoRA adapters per request (section 13), capped by{' '}
             <code>OPTION_MAX_LORAS</code>, next to other base-model ICs{' '}
@@ -893,8 +921,9 @@ predictor = model.deploy(
           </Box>
 
           <Alert type="info">
-            <strong>Scale-to-zero is an Inference-Component feature only.</strong> Plain variant
-            endpoints cannot scale to zero; ICs can, via <code>MinInstanceCount: 0</code> +{' '}
+            <strong>On a real-time endpoint, scale-to-zero is an Inference-Component feature.</strong>{' '}
+            Plain variant real-time endpoints cannot scale to zero; ICs can, via{' '}
+            <code>MinInstanceCount: 0</code> +{' '}
             <code>ManagedInstanceScaling</code>. Scale-out from zero is driven by the{' '}
             <code>NoCapacityInvocationFailures</code> step policy, and provisioning back up{' '}
             <em>&quot;takes several minutes&quot;</em>, during which invocations return an error{' '}
@@ -912,11 +941,11 @@ predictor = model.deploy(
             items={[
               {
                 metric: 'SageMakerVariantInvocationsPerInstance',
-                note: 'Legacy, not LLM-aware: counts invocations, blind to in-flight concurrency and streaming.',
+                note: 'Standard one-minute metric, not LLM-aware: counts invocations, blind to in-flight concurrency and streaming.',
               },
               {
                 metric: 'SageMakerVariantConcurrentRequestsPerModelHighResolution',
-                note: 'Streaming-aware (ConcurrentRequestsPerModel): counts a request until its LAST streamed token. AWS reports up to 6x faster scale-out with it.',
+                note: 'Streaming-aware (ConcurrentRequestsPerModel): counts a request until its LAST streamed token. AWS reports up to 6x faster scale-up detection with it.',
               },
               {
                 metric: 'SageMakerInferenceComponentConcurrentRequestsPerCopyHighResolution',
@@ -943,14 +972,16 @@ predictor = model.deploy(
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>SageMaker HyperPod</strong> inference runs on <strong>EKS only</strong> (the
-            Slurm flavor of HyperPod is training-only). The docs show the{' '}
-            <code>vllm/vllm-openai</code> image with <code>--tensor-parallel-size</code>, loading
-            weights from S3, FSx or the Hugging Face Hub{' '}
+            <strong>SageMaker HyperPod</strong> inference needs a HyperPod cluster orchestrated by{' '}
+            <strong>EKS</strong>{' '}
+            <Cite tier={1} href={`${HP}-setup.html`} accessed="2026-10-18">HyperPod: set up inference</Cite>.
+            The docs show the <code>vllm/vllm-openai</code> image with{' '}
+            <code>--tensor-parallel-size</code>, loading weights from S3, FSx or the Hugging Face Hub,
+            with an init container that downloads the model first when{' '}
+            <code>prefetchEnabled</code> is set{' '}
             <Cite tier={1} href={`${HP}-deploy-ftm.html`}>HyperPod: deploy a foundation model</Cite>.
-            An <strong>Inference Operator</strong> manages the model download, the pods, an ALB
-            (Application Load Balancer), TLS and metrics, single-node or multi-node, and adds a
-            managed <strong>tiered KV cache</strong> (L1 CPU, L2 in Redis or HyperPod&apos;s tiered
+            An <strong>Inference Operator</strong> runs the deployment, single-node or multi-node,
+            and adds a managed <strong>tiered KV cache</strong> (L1 CPU, L2 in Redis or HyperPod&apos;s tiered
             storage) with the routing strategies <code>prefixaware</code>, <code>kvaware</code>,{' '}
             <code>session</code> and <code>roundrobin</code>{' '}
             <Cite tier={1} href={`${HP}.html`}>HyperPod model deployment</Cite>. Autoscaling runs on
@@ -963,7 +994,7 @@ predictor = model.deploy(
             <strong>Disaggregated prefill and decode</strong> (section 10) is a <code>pdSpec</code>{' '}
             block on the same <code>InferenceEndpointConfig</code>: the operator provisions the
             router and wires prefill and decode pods together through LMCache and NIXL (NVIDIA
-            Inference Transfer Library), moving KV over EFA (Elastic Fabric Adapter) with GPUDirect
+            Inference Xfer Library), moving KV over EFA (Elastic Fabric Adapter) with GPUDirect
             RDMA (Remote Direct Memory Access), on ml.p5.48xlarge, ml.p5e.48xlarge, ml.p5en.48xlarge,
             ml.p6-b200.48xlarge and ml.p6-b300.48xlarge only{' '}
             <Cite tier={1} href={`${HP}-dpd.html`}>HyperPod: disaggregated prefill and decode</Cite>.
@@ -984,8 +1015,9 @@ predictor = model.deploy(
           <Box variant="p">
             <strong>JumpStart</strong> is the one-click, few-line front door:{' '}
             <code>JumpStartModel(model_id=...).deploy()</code> puts a catalog model on a real-time
-            endpoint in the container JumpStart selects for that model. Check which image, and
-            which vLLM version, it selects before you depend on a v0.31.0 feature. A{' '}
+            endpoint in the container JumpStart selects for that model. Check which image it
+            selects, whether that image runs vLLM at all, and at which version, before you depend
+            on a v0.31.0 feature. A{' '}
             <code>JumpStartModel</code> CRD also deploys
             to HyperPod (via <code>modelHubName</code> <code>SageMakerPublicHub</code>){' '}
             <Cite tier={1} href={`${HP}-autoscaling.html`}>HyperPod inference autoscaling (JumpStartModel CRD)</Cite>.
@@ -1056,8 +1088,8 @@ predictor = model.deploy(
               <Cite tier={1} href={`${LMI_GUIDE}#L190-L246`}>LMI vLLM user guide L190-L246</Cite>.
             </li>
             <li>
-              <strong>Paths B and C.</strong> The <code>vllm-sagemaker</code> entrypoint puts
-              vLLM&apos;s API server, and with it the <code>/metrics</code> mount{' '}
+              <strong>Paths B and C.</strong> The AWS vLLM DLC and the <code>vllm-sagemaker</code>{' '}
+              entrypoint both put vLLM&apos;s API server, and with it the <code>/metrics</code> mount{' '}
               <Cite tier={1} href={vllmUrl('vllm/entrypoints/serve/instrumentator/metrics.py', 'L76-L81')} kind="code">instrumentator/metrics.py L76-L81</Cite>,
               on port 8080. For a custom container the getting-started page asks you to name the
               metrics path in <code>ContainerMetricsConfig</code>; the container must serve
@@ -1253,7 +1285,7 @@ predictor = model.deploy(
                 models share the same GPU, with only the adapters swapped in and out per
                 request.&quot;</em> The blog reports, for GPT-OSS 20B,{' '}
                 <strong>&quot;454% OTPS [output tokens per second] improvements and 87% lower TTFT
-                [time to first token]&quot;</strong> across the optimization arc, and that AWS-specific
+                [time to first token]&quot;</strong> for vLLM 0.15.0 against 0.11.1rc3, and that AWS-specific
                 tuning on top of upstream delivered{' '}
                 <strong>&quot;19% higher Output Tokens Per Second&quot;</strong> and{' '}
                 <strong>&quot;8% lower Time To First Token&quot;</strong> versus vLLM 0.15.0{' '}
@@ -1281,8 +1313,9 @@ predictor = model.deploy(
           <Alert type="warning">
             <strong>Read the numbers as AWS&apos;s benchmarks.</strong> Every percentage and
             multiplier above is AWS&apos;s own, on configurations AWS chose: fused_moe_lora on
-            GPT-OSS 20B on a single NVIDIA H200 (input length 1600, output length 600, concurrency
-            16), P-EAGLE on NVIDIA B200 with GPT-OSS 20B and 120B and Qwen3-Coder 30B. They are not
+            GPT-OSS 20B with 1600 input and 600 output tokens, LoRA rank 32 and 8 adapters loaded
+            (the post names no GPU for these figures), P-EAGLE on one NVIDIA B200 with GPT-OSS 20B.
+            They are not
             independently reproduced here. Do not turn them into &quot;vLLM is 454% faster&quot;:
             they are deltas across specific optimization versions on specific configurations,
             evidence that Amazon&apos;s upstream work is material, not guarantees for your workload.
@@ -1290,8 +1323,8 @@ predictor = model.deploy(
 
           <Box variant="p">
             <strong>Why this matters for the decision.</strong> Self-hosted vLLM inherits{' '}
-            <code>fused_moe_lora</code> and P-EAGLE directly; SageMaker (Path A or B) and Bedrock add
-            service-side tuning on top (the &quot;19% higher OTPS&quot; layer). Choose self-hosting
+            <code>fused_moe_lora</code> and P-EAGLE directly; SageMaker AI and Bedrock add
+            Amazon-specific tuning on top (the &quot;19% higher OTPS&quot; layer). Choose self-hosting
             for <em>control and specificity</em>; the engine is the same either way.
           </Box>
         </SpaceBetween>

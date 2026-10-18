@@ -12,6 +12,7 @@ import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
 // AWS documentation is unversioned; every page below was read on 2026-10-16.
 const EKS_QS = 'https://docs.aws.amazon.com/eks/latest/userguide/ml-inference-load-serve-model.html';
 const EKS_BP = 'https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html';
+const EKS_NODECLASS = 'https://docs.aws.amazon.com/eks/latest/userguide/create-node-class.html';
 const DLC_BLOG =
   'https://aws.amazon.com/blogs/machine-learning/deploy-llms-on-amazon-eks-using-vllm-deep-learning-containers/';
 const LLMD_BLOG =
@@ -225,7 +226,9 @@ export function AwsEks() {
           <Box variant="p">
             Read both columns top down. On the left, a request passes the ALB (Application Load
             Balancer) or gateway and LiteLLM to a single-replica pod or to a multi-node
-            LeaderWorkerSet split by TP (tensor parallel) and PP (pipeline parallel). On the right,
+            LeaderWorkerSet split by TP (tensor parallel) and PP (pipeline parallel), on EFA nodes
+            that carry NCCL (NVIDIA Collective Communications Library) and NIXL (NVIDIA Inference
+            Xfer Library) traffic. On the right,
             Karpenter launches the nodes under both. The multi-node pool gets its own EC2NodeClass,
             whose <code>placementGroupSelector</code> names one cluster placement group you created
             beforehand and whose <code>networkInterfaces</code> add the EFA interfaces{' '}
@@ -237,8 +240,13 @@ export function AwsEks() {
             <Cite tier={1} href={KARP_1110}>
               Karpenter v1.11.0 release notes: Placement Group Support
             </Cite>
-            . These fields belong to self-managed Karpenter&apos;s EC2NodeClass; no EKS Auto Mode
-            equivalent was located during this research.
+            . EKS Auto Mode&apos;s NodeClass carries the same two fields,{' '}
+            <code>placementGroupSelector</code> and <code>networkInterfaces</code> with{' '}
+            <code>efa-only</code>{' '}
+            <Cite tier={1} href={EKS_NODECLASS} accessed="2026-10-18">
+              EKS User Guide: Create a Node Class
+            </Cite>
+            .
           </Box>
 
           <div style={{ overflowX: 'auto' }}>
@@ -319,8 +327,8 @@ export function AwsEks() {
                   eksctl <strong>managed node group</strong>.
                 </li>
                 <li>
-                  <strong>Weights:</strong> an FSx for Lustre file system, populated at pod init
-                  (DeepSeek-R1-Distill-Qwen-32B).
+                  <strong>Weights:</strong> an FSx for Lustre file system, filled when the pod
+                  first starts (DeepSeek-R1-Distill-Qwen-32B).
                 </li>
                 <li>
                   <strong>Multi-node / front door:</strong> LeaderWorkerSet for distributed serving;
@@ -426,7 +434,7 @@ export function AwsEks() {
               concern: 'Multi-node tensor/pipeline parallel',
               mech: (
                 <span>
-                  LeaderWorkerSet groups a leader and worker pods into one logical replica spanning
+                  LeaderWorkerSet (LWS) groups a leader and worker pods into one logical replica spanning
                   nodes; vLLM&apos;s default <code>mp</code> executor spans them with{' '}
                   <code>--nnodes</code> (<strong>section 9 (Distributed Inference)</strong>).
                   DisaggregatedSet (LWS v1.0.0) runs one LeaderWorkerSet per role for separate
@@ -441,8 +449,8 @@ export function AwsEks() {
                 <span>
                   EFA nodes inside one cluster placement group: a Karpenter EC2NodeClass with{' '}
                   <code>placementGroupSelector</code> autoscales them, a managed node group is the
-                  static option. NIXL (NVIDIA Inference Xfer Library) and NCCL (NVIDIA Collective
-                  Communications Library) ride EFA for KV (key-value) cache and collective transfer:{' '}
+                  static option. NIXL and NCCL ride EFA for KV (key-value) cache and collective
+                  transfer:{' '}
                   <strong>section 22 (vLLM on AWS GPUs, EFA &amp; NIXL)</strong> and{' '}
                   <strong>section 23 (EC2 Topology &amp; Placement Groups)</strong>.
                 </span>
@@ -539,7 +547,7 @@ spec:
         - key: nvidia.com/gpu                          # keep non-GPU pods off
           effect: NoSchedule
   disruption:
-    consolidationPolicy: WhenEmpty                     # never evict a busy node
+    consolidationPolicy: WhenEmpty                     # consolidate only empty nodes
     consolidateAfter: 60m                              # keep empty nodes through a traffic dip
 
 # vLLM Deployment pod targets the pool, tolerates the taint, requests a GPU:
@@ -669,7 +677,7 @@ spec:
             <code>--node-rank $(LWS_WORKER_INDEX)</code> and{' '}
             <code>--master-addr $(LWS_LEADER_ADDRESS)</code>, and the workers add{' '}
             <code>--headless</code>{' '}
-            <Cite tier={1} href={`${LWS_VLLM_EXAMPLE}#L37-L42`}>
+            <Cite tier={1} href={`${LWS_VLLM_EXAMPLE}#L37-L85`}>
               LWS v1.0.0 example: leaderworkerset/basic/vllm.yaml
             </Cite>
             . That is vLLM&apos;s default <code>mp</code> executor, described in{' '}
