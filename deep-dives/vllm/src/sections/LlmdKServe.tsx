@@ -89,7 +89,7 @@ function GatewayRoutingDiagram() {
           InferencePool on prefix-cache hits, queue depth, adapter residency and load. For
           aggregated serving the gateway forwards to the chosen pod. For prefill/decode
           disaggregation the EPP picks the decode pod first, the sidecar in that pod sends the
-          prefill to a prefill pod, and the decoder reads the KV cache over NIXL. KServe and llm-d
+          prefill to a prefill pod, and the decoder reads the KV cache over NIXL (NVIDIA Inference Xfer Library). KServe and llm-d
           reconcile the fleet from an LLMInferenceService and stay out of the request path.
         </title>
         <style>
@@ -276,8 +276,9 @@ export function LlmdKServe() {
           </Box>
           <Box variant="p">
             Three layers meet that challenge. An <strong>engine</strong> (vLLM) runs the model in
-            each pod. <strong>Operators</strong> (KServe and llm-d) turn a declarative custom
-            resource into the fleet and keep it reconciled. An <strong>inference-aware
+            each pod. A <strong>control plane</strong> declares the fleet: KServe&apos;s operator
+            reconciles it from one custom resource, and llm-d&apos;s Helm guides install the same
+            pieces without an operator. An <strong>inference-aware
             router</strong> picks the pod for every request: the Endpoint Picker (EPP), which lives
             in llm-d Router and sits behind a Gateway API gateway or a standalone Envoy, scores
             each pod on prefix-cache hits, queue depth, session affinity, predicted latency and
@@ -309,9 +310,10 @@ export function LlmdKServe() {
             </Cite>
             ; the EPP ranks the pods in the <code>InferencePool</code> using metrics it scrapes from
             every vLLM replica, returns one endpoint, and the gateway forwards there. KServe and
-            llm-d sit on the <em>control plane</em>: they reconcile the custom resource into the
-            Deployments, the <code>InferencePool</code>, the EPP and autoscaling, and stay out of
-            the per-request path. One llm-d component does sit in that path: with prefill/decode
+            llm-d&apos;s installers sit on the <em>control plane</em>: KServe reconciles the custom
+            resource into the Deployments, the <code>InferencePool</code>, the EPP and autoscaling,
+            llm-d&apos;s Helm guides install the same pieces, and neither is in the per-request
+            path. One llm-d component does sit in that path: with prefill/decode
             (P/D) disaggregation, a sidecar in the decode pod receives the request and calls the
             prefill pod itself{' '}
             <Cite tier={1} href={`${LR}/README.md#L31`}>
@@ -802,15 +804,14 @@ export function LlmdKServe() {
               <Box variant="p">
                 Engineers from Red Hat and Tesla describe the payoff of that layering as exposing
                 "the standard Kubernetes API, allowing us to override the spec precisely where
-                needed": the operator owns the boilerplate (Deployments, Services, InferencePool,
-                autoscaling) while <code>LLMInferenceService</code> and{' '}
-                <code>LLMInferenceServiceConfig</code> carry granular overrides for specialized
-                hardware{' '}
+                needed", control the authors call crucial "for tailoring vLLM to specialized
+                hardware or quickly implementing flag changes"{' '}
                 <Cite tier={2} href={LLMD_BLOG}>
                   llm-d blog: Production-grade LLM inference at scale (Red Hat and Tesla authors,
                   April 2026)
                 </Cite>
-                . The blog writes the second kind as "LLMInferenceConfig"; the KServe kind is{' '}
+                . The blog credits that to the <code>LLMInferenceService</code> and
+                "LLMInferenceConfig" objects; the KServe kind for the second is{' '}
                 <code>LLMInferenceServiceConfig</code>.
               </Box>
             </SpaceBetween>
@@ -937,8 +938,9 @@ export function LlmdKServe() {
             sidecar and the <code>InferencePool</code> CRDs from one llm-d release.
           </Box>
           <Box variant="p">
-            That makes the vLLM inside an llm-d v0.10.0 pod <strong>v0.30.0</strong>, one minor
-            release behind this dive&apos;s v0.31.0: check any flag or default from sections 4-13
+            That makes the vLLM inside an llm-d v0.10.0 pod on that image <strong>v0.30.0</strong>{' '}
+            (the release pins its TPU image at v0.29.0), one minor release behind this dive&apos;s
+            v0.31.0: check any flag or default from sections 4-13
             against v0.30.0 before you rely on it. The release also deprecates llm-d&apos;s own
             CUDA and AWS (EFA, Elastic Fabric Adapter) images in favour of{' '}
             <code>docker.io/vllm/vllm-openai</code> and{' '}

@@ -17,6 +17,7 @@ const ROUTING = `${PS}/src/vllm_router/routers/routing_logic.py`;
 const PARSER = `${PS}/src/vllm_router/parsers/parser.py`;
 const ENGINE_STATS = `${PS}/src/vllm_router/stats/engine_stats.py`;
 const ROUTER_METRICS = `${PS}/src/vllm_router/services/metrics_service/__init__.py`;
+const REQUEST_SERVICE = `${PS}/src/vllm_router/services/request_service/request.py`;
 const VALUES = `${PS}/helm/values.yaml`;
 const SCHEMA = `${PS}/helm/values.schema.json`;
 const CHART = `${PS}/helm/Chart.yaml`;
@@ -263,9 +264,14 @@ const routingRows: RoutingRow[] = [
     picks: 'One client request: the router sends it to a prefill engine with kv_transfer_params, passes the returned KV metadata to a decode engine and streams the decode back. Round-robin within each pool.',
     when: 'Split prefill and decode pools with clients that should not know about the split.',
     source: (
-      <Cite tier={1} href={`${ROUTING}#L1010-L1023`} kind="code">
-        routing_logic.py L1010-L1023
-      </Cite>
+      <>
+        <Cite tier={1} href={`${ROUTING}#L1010-L1023`} kind="code">
+          routing_logic.py L1010-L1023
+        </Cite>{' '}
+        <Cite tier={1} href={`${REQUEST_SERVICE}#L805-L916`} kind="code">
+          request.py L805-L916
+        </Cite>
+      </>
     ),
   },
 ];
@@ -605,10 +611,19 @@ export function ProductionStack() {
             <Cite tier={1} href={`${ROUTER_METRICS}#L16-L25`} kind="code">
               metrics_service L16-L25
             </Cite>
-            . vLLM v0.31.0 emits <code>vllm:kv_cache_usage_perc</code> and{' '}
-            <code>vllm:prefix_cache_hits</code> / <code>vllm:prefix_cache_queries</code> instead{' '}
+            . vLLM v0.31.0 emits <code>vllm:kv_cache_usage_perc</code> and the counters{' '}
+            <code>vllm:prefix_cache_hits</code> / <code>vllm:prefix_cache_queries</code>, which a
+            scrape reads as <code>vllm:prefix_cache_hits_total</code> /{' '}
+            <code>vllm:prefix_cache_queries_total</code>{' '}
             <Cite tier={1} href={vllmUrl(LOGGERS, 'L576-L615')} kind="code">
               loggers.py L576-L615
+            </Cite>{' '}
+            <Cite
+              tier={1}
+              href={vllmUrl('tests/v1/core/prefix_cache/test_hybrid_prefix_cache_hit_rate.py', 'L67')}
+              kind="code"
+            >
+              test_hybrid_prefix_cache_hit_rate.py L67
             </Cite>
             . Inferred from the code, not from a run: against v0.31.0 engines the router&apos;s
             KV-usage and prefix-hit stats stay at zero, and the bundled &quot;GPU KV Cache Hit
@@ -626,8 +641,9 @@ export function ProductionStack() {
             <Cite tier={1} href={`${DASHBOARD}#L372-L378`} kind="code">
               vllm-dashboard.json L372
             </Cite>
-            . Build the hit rate from <code>vllm:prefix_cache_hits</code> over{' '}
-            <code>vllm:prefix_cache_queries</code>; section 20 defines both, and ITL versus TPOT.
+            . Build the hit rate from the rate of <code>vllm:prefix_cache_hits_total</code> over
+            the rate of <code>vllm:prefix_cache_queries_total</code>; section 20 defines both
+            counters, and ITL versus TPOT.
           </Alert>
 
           <ColumnLayout columns={2} variant="text-grid">
@@ -661,7 +677,7 @@ export function ProductionStack() {
         header={
           <Header
             variant="h2"
-            description="The install is two commands; the values you set decide routing, observability and the router version you run"
+            description="The install is one helm install against a values file; the values you set decide routing, observability and the router version you run"
           >
             Deployment: one Helm chart
           </Header>
@@ -669,15 +685,18 @@ export function ProductionStack() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            One release carries all three parts. The README&apos;s quickstart adds the chart repo and
-            runs one <code>helm install</code> against a <code>values.yaml</code>{' '}
-            <Cite tier={1} href={`${PS_README}#L73-L74`}>
-              production-stack README L73-L74
+            One release carries all three parts. The README&apos;s quickstart clones the repository
+            for its example values file, adds the chart repo and runs one <code>helm install</code>{' '}
+            against that <code>values.yaml</code>{' '}
+            <Cite tier={1} href={`${PS_README}#L70-L75`}>
+              production-stack README L70-L75
             </Cite>
             :
           </Box>
           <pre style={{ overflowX: 'auto' }}>
-            <code>{`helm repo add vllm https://vllm-project.github.io/production-stack
+            <code>{`git clone https://github.com/vllm-project/production-stack.git
+cd production-stack/
+helm repo add vllm https://vllm-project.github.io/production-stack
 helm install vllm vllm/vllm-stack -f tutorials/assets/values-01-minimal-example.yaml`}</code>
           </pre>
           <Box variant="p">
@@ -722,7 +741,7 @@ helm install vllm vllm/vllm-stack -f tutorials/assets/values-01-minimal-example.
               {
                 dim: 'Routing',
                 ps: 'Python router: round-robin, session, prefix-aware, KV-aware (LMCache), load-aware, priority and two P/D modes',
-                llmd: "llm-d Router's Endpoint Picker, called by a Gateway API gateway",
+                llmd: "llm-d Router's Endpoint Picker, called by a Gateway API gateway or by llm-d Router's standalone Envoy",
               },
               {
                 dim: 'Best fit',

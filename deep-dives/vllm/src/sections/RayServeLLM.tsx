@@ -18,6 +18,7 @@ const RAY_COMPAT = `${RAY_DOCS}/user-guides/vllm-compatibility.html`;
 const RAY_LLM_CONFIG = `${RAY}/python/ray/llm/_internal/serve/core/configs/llm_config.py`;
 const RAY_VLLM_MODELS = `${RAY}/python/ray/llm/_internal/serve/engines/vllm/vllm_models.py`;
 const RAY_PD_SERVER = `${RAY}/python/ray/llm/_internal/serve/serving_patterns/prefill_decode/pd_server.py`;
+const RAY_KV_BASE = `${RAY}/python/ray/llm/_internal/serve/engines/vllm/kv_transfer/base.py`;
 const RAY_INIT = `${RAY}/python/ray/serve/llm/__init__.py`;
 const PARALLEL = 'vllm/config/parallel.py';
 
@@ -61,12 +62,12 @@ const divisionRows: DivisionRow[] = [
   {
     concern: 'Fault tolerance & health',
     vllm: 'A crashed engine process is a crashed endpoint.',
-    rayServe: 'Supervises replicas: health checks, restart-on-failure, monitoring. A dead replica is replaced, not a dead endpoint.',
+    rayServe: 'Supervises replicas: health checks, restart-on-failure, monitoring. A dead replica is replaced while the endpoint keeps serving.',
   },
   {
     concern: 'Kubernetes-native operation',
     vllm: 'Provides a container image; deployment is your problem.',
-    rayServe: 'Runs as a RayService via KubeRay, with declarative CRDs (Custom Resource Definitions), autoscaling, blue/green upgrades (Sections 16-17).',
+    rayServe: 'Runs as a RayService via KubeRay, with declarative CRDs (Custom Resource Definitions), autoscaling, blue/green upgrades (KubeRay, below).',
   },
 ];
 
@@ -708,8 +709,8 @@ export function RayServeLLM() {
           </Alert>
           <Box variant="p">
             <strong>Why orchestration is getting harder.</strong> Anyscale's argument for
-            putting these patterns in Ray Serve is that, in the sparse-MoE era, engine
-            replicas are no longer independent: optimal serving couples them. In their words:
+            putting these patterns in Ray Serve is that, in the sparse-MoE era, optimal serving
+            couples engine replicas to each other. In their words:
             "Traditional Kubernetes primitives, designed for stateless microservices, are not
             optimized to express these tightly coupled, stateful serving patterns that
             require topology-aware placement and synchronized rank assignment." That
@@ -732,6 +733,9 @@ export function RayServeLLM() {
             </Cite>{' '}
             <Cite tier={1} href={`${RAY_PD_SERVER}#L99-L106`} kind="code">
               pd_server.py L99-L106
+            </Cite>{' '}
+            <Cite tier={1} href={`${RAY_KV_BASE}#L213-L252`} kind="code">
+              kv_transfer/base.py L213-L252
             </Cite>
             . The decode server plays the part of the proxy in{' '}
             <strong>Section 10, Disaggregated Prefill / Decode</strong>, whose NIXL (NVIDIA
@@ -809,7 +813,7 @@ export function RayServeLLM() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Work backward from the team and the topology, not from the framework.
+            Work backward from the team and the topology.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -831,7 +835,8 @@ export function RayServeLLM() {
                 </li>
                 <li>
                   You want to keep using <strong>vLLM's engine features</strong>{' '}
-                  unchanged, since the engine_kwargs and OpenAI API carry straight over.
+                  at the vLLM version Ray pins, since most engine_kwargs and the OpenAI API
+                  carry straight over.
                 </li>
               </ul>
             </div>
