@@ -1054,8 +1054,10 @@ export function CodebaseConfig() {
             <code>VLLM_PP_LAYER_PARTITION</code> overrides how transformer layers are split across
             pipeline stages <Src path="vllm/distributed/utils.py" lines="L144" label="distributed/utils.py L144" />.{' '}
             <code>VLLM_CPU_KVCACHE_SPACE</code> sets the CPU KV-cache size on the CPU backend{' '}
-            <Src path="vllm/platforms/cpu.py" lines="L307" />. None of them appears in a{' '}
-            <code>VllmConfig</code> dump.
+            <Src path="vllm/platforms/cpu.py" lines="L306-L310" />. The first two never appear in a{' '}
+            <code>VllmConfig</code> dump; the CPU platform copies the third into{' '}
+            <code>CacheConfig.kv_cache_memory_bytes</code>, so a dump shows its value under that field
+            name rather than the variable&apos;s.
           </Alert>
           <Box variant="p">
             Names also change between releases. <code>VLLM_PREFIX_CACHE_RETENTION_INTERVAL</code> is not in

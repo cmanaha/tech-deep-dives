@@ -481,8 +481,8 @@ export function CodebaseArchitecture() {
                 </Cite>
                 . This process owns the scheduler and KV-cache (key-value cache)
                 manager{' '}
-                <Cite tier={1} href={vllmUrl('vllm/v1/engine/core.py', 'L140-L151')}>
-                  core.py L140-L151
+                <Cite tier={1} href={vllmUrl('vllm/v1/engine/core.py', 'L150-L176')}>
+                  core.py L150-L176
                 </Cite>
                 .
               </Box>
@@ -508,8 +508,9 @@ export function CodebaseArchitecture() {
                 </Cite>
                 . Workers reach the frontend only through the EngineCore, as far as
                 our search of <code>vllm/v1/worker/</code> and{' '}
-                <code>vllm/v1/executor/</code> at v0.31.0 shows: neither opens a ZMQ
-                socket.
+                <code>vllm/v1/executor/</code> at v0.31.0 shows: neither opens a socket
+                to the frontend, and their only ZMQ traffic is the message queue&apos;s
+                overflow and cross-node path to the EngineCore.
               </Box>
             </div>
           </ColumnLayout>
@@ -824,23 +825,32 @@ export function CodebaseArchitecture() {
                 interval of dummy steps before the ranks agree to pause.{' '}
                 <code>--dp-sync-interval</code> tunes it, and the value must match
                 across ranks{' '}
-                <Cite tier={1} href={vllmUrl('vllm/engine/arg_utils.py', 'L556')}>
-                  arg_utils.py L556
+                <Cite tier={1} href={vllmUrl('vllm/engine/arg_utils.py', 'L1277-L1280')}>
+                  arg_utils.py L1277-L1280
                 </Cite>
                 .
               </Box>
               <Box variant="p">
-                Once paused, the ranks stop stepping. When a new request arrives at
-                any rank, that rank notifies the coordinator, which broadcasts a{' '}
-                <code>START_DP_WAVE</code> message to wake every rank back into the
-                running state so they step in lockstep{' '}
-                <Cite tier={1} href={vllmUrl('vllm/v1/engine/core.py', 'L2207-L2214')}>
-                  core.py L2207-L2214
+                Once paused, the ranks stop stepping. When a frontend sends a request
+                while the ranks are paused, it also notifies the coordinator, which
+                broadcasts a <code>START_DP_WAVE</code> message to wake the other ranks
+                back into the running state so they step in lockstep{' '}
+                <Cite tier={1} href={vllmUrl('vllm/v1/engine/core_client.py', 'L1537-L1540')}>
+                  core_client.py L1537-L1540
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/v1/engine/coordinator.py', 'L355-L375')}>
+                  coordinator.py L355-L375
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/v1/engine/core.py', 'L2207-L2220')}>
+                  core.py L2207-L2220
                 </Cite>
                 . The coordinator also collects per-rank queue lengths and publishes
                 them to the frontends for load balancing{' '}
-                <Cite tier={1} href={vllmUrl('vllm/v1/engine/coordinator.py', 'L98-L132')}>
-                  coordinator.py L98-L132
+                <Cite tier={1} href={vllmUrl('vllm/v1/engine/coordinator.py', 'L424-L427')}>
+                  coordinator.py L424-L427
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/v1/engine/coordinator.py', 'L279-L290')}>
+                  L279-L290
                 </Cite>
                 . The <code>request_wave</code> tag travels with each request so a
                 rank can detect a request aimed at an already-completed wave and

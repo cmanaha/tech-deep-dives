@@ -257,7 +257,7 @@ function BlockPoolDiagram() {
             head
           </text>
           <text x="86" y="34" fontSize="10" fontFamily="sans-serif" textAnchor="middle" fill="#5f6b7a">
-            LRU end: popped first
+            oldest: popped first
           </text>
           {queue.map((q) => (
             <g key={q.id} transform={`translate(${q.x}, 0)`}>
@@ -414,7 +414,7 @@ function SchedulerStateDiagram() {
           The WAITING side holds two queues scanned in order: kv_holding_waiting, for requests
           that already hold KV blocks, then waiting, in FCFS or priority order. Admission into
           RUNNING is bounded by the token budget, max_num_active_seqs, and free KV blocks plus
-          the watermark. RUNNING requests reach FINISHED on EOS or max_tokens. When
+          the watermark. RUNNING requests reach FINISHED on EOS (end of sequence) or max_tokens. When
           allocate_slots finds no free blocks, a RUNNING request is preempted: its blocks are
           freed now or deferred, num_computed_tokens is reset to zero, and it is prepended to
           the waiting queue with status PREEMPTED.
@@ -553,8 +553,11 @@ export function CodebaseScheduler() {
             <code>token_budget = self.max_num_scheduled_tokens</code>, which defaults to{' '}
             <code>max_num_batched_tokens</code>; a second cap, <code>input_budget</code>,
             reserves room for draft tokens under speculative decoding{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/core/sched/scheduler.py', 'L132-L136')}>
+              scheduler.py L132-L136
+            </Cite>{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/core/sched/scheduler.py', 'L582-L585')}>
-              scheduler.py L582-L585
+              L582-L585
             </Cite>
             . The loop first walks RUNNING, decrementing the budget per request, then admits
             waiting requests against whatever remains. The waiting side is two queues:{' '}
@@ -709,8 +712,8 @@ export function CodebaseScheduler() {
           . Underneath, a <code>KVCacheCoordinator</code> fans each call out to one{' '}
           <code>SingleTypeKVCacheManager</code> per KV cache group, so a hybrid model (full
           plus sliding-window attention, or Mamba layers) keeps one block table per group{' '}
-          <Cite tier={1} href={vllmUrl('vllm/v1/core/kv_cache_coordinator.py', 'L66-L1072')}>
-            kv_cache_coordinator.py L66-L1072
+          <Cite tier={1} href={vllmUrl('vllm/v1/core/kv_cache_coordinator.py', 'L134-L149')}>
+            kv_cache_coordinator.py L134-L149
           </Cite>
           .
         </Box>
@@ -853,6 +856,9 @@ export function CodebaseScheduler() {
             computed at a finer unit than the large physical block: the GCD (greatest common
             divisor) of the KV cache group block sizes, or <code>--prefix-match-unit</code>{' '}
             when set{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/core/kv_cache_utils.py', 'L750-L755')}>
+              kv_cache_utils.py L750-L755
+            </Cite>{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/core/kv_cache_coordinator.py', 'L687-L704')}>
               kv_cache_coordinator.py L687-L704
             </Cite>
@@ -901,7 +907,7 @@ export function CodebaseScheduler() {
           <SchedulerStateDiagram />
           <Box variant="small" color="text-body-secondary">
             States and queues read from <code>vllm/v1/core/sched/scheduler.py</code> at
-            v0.31.0. Illustrative, not measured.
+            v0.31.0. EOS is the end-of-sequence token. Illustrative, not measured.
           </Box>
           <Box variant="p">
             <code>_preempt_request()</code> calls <code>_free_request_blocks()</code>, which
