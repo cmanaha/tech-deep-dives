@@ -1,166 +1,223 @@
 import React from 'react';
 
-// Schematic of compute-in-memory: arithmetic units placed inside DRAM banks (Samsung HBM-PIM)
-// or memory arrays (HyperCIM-class). Contrasts with conventional von Neumann path.
+// Conventional path versus compute-in-memory, with the energy per multiply-accumulate by
+// operand source (Samsung, Hot Chips 35, slide 3) and the in-stack versus host bandwidth of
+// Samsung's HBM2-PIM (Hot Chips 33). Every figure is cited in the text of
+// ComputeInMemory.tsx around the diagram and in its d-Matrix and SK hynix paragraphs.
+
+const VB_W = 880;
+const VB_H = 440;
+
+const ink = '#16191f';
+const sub = '#5f6b7a';
+const amber = '#ec7211';
+const amberFill = '#fdf3ec';
+const green = '#037f0c';
+const greenFill = '#ecf7ec';
+const red = '#d91515';
+const blueFill = '#f2f8fd';
+const blue = '#0972d3';
+
+// Energy per MAC by where the operand comes from, normalized to the MAC itself.
+const energy = [
+  { label: 'Register file', x: 1, value: '1x' },
+  { label: 'On-chip buffer', x: 6, value: '6x' },
+  { label: 'DRAM', x: 200, value: '200x' },
+];
+const BAR_X = 160;
+const BAR_MAX = 210; // 200x
+
+// Four banks inside the PIM stack box.
+const BANK_X0 = 478;
+const BANK_W = 81;
+const BANK_GAP = 10;
+const banks = [0, 1, 2, 3].map((i) => BANK_X0 + i * (BANK_W + BANK_GAP));
 
 export function CimDiagram() {
-  const width = 880;
-  const height = 380;
-  const colW = (width - 60) / 2;
-
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ overflowX: 'auto' }}>
       <svg
-        width="100%"
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="xMidYMid meet"
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
         role="img"
-        aria-label="Conventional von Neumann path versus compute-in-memory path; arithmetic units inside the DRAM bank or memory array eliminate bus traversal"
-        style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
+        aria-labelledby="cim-diagram-title"
+        style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
       >
-        <text x={20} y={24} fontSize={13} fontWeight={700} fill="#16191f">
-          Compute-in-Memory — moving compute to where the data lives
-        </text>
-
-        {/* Left: conventional path. Panel spans x=20..(20+colW). All inner shapes
-            sized to fit inside that panel — DRAM box stays well within the panel
-            right edge so it does not clip into the right (CIM) panel. */}
-        <rect x={20} y={50} width={colW} height={310} rx={8} fill="#fce7e7" stroke="#d91515" strokeWidth={2} />
-        <text x={36} y={78} fontSize={13} fontWeight={700} fill="#d91515">
-          Conventional von Neumann
-        </text>
-        <text x={36} y={96} fontSize={11} fill="#687078">
-          Compute and memory are separated by the bus
-        </text>
-
-        {/* Compute box */}
-        <rect x={36} y={120} width={120} height={60} rx={6} fill="#ffffff" stroke="#d91515" strokeWidth={1.5} />
-        <text x={96} y={144} fontSize={12} fontWeight={700} fill="#d91515" textAnchor="middle">CPU / GPU</text>
-        <text x={96} y={162} fontSize={10} fill="#16191f" textAnchor="middle">Functional units</text>
-
-        {/* Bus */}
-        <rect x={170} y={138} width={80} height={28} rx={4} fill="#fdf3ec" stroke="#ec7211" strokeWidth={1.5} />
-        <text x={210} y={156} fontSize={11} fontWeight={700} fill="#ec7211" textAnchor="middle">DDR / HBM bus</text>
-
-        {/* Memory box — fits within the left panel (right edge at x=384 vs panel right edge ~430) */}
-        <rect x={264} y={120} width={120} height={60} rx={6} fill="#ffffff" stroke="#d91515" strokeWidth={1.5} />
-        <text x={324} y={144} fontSize={12} fontWeight={700} fill="#d91515" textAnchor="middle">DRAM array</text>
-        <text x={324} y={162} fontSize={10} fill="#16191f" textAnchor="middle">Bytes</text>
-
-        {/* Arrows — recoordinated to match the new shape positions */}
-        <line x1={156} y1={150} x2={169} y2={150} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowR1)" />
-        <line x1={250} y1={150} x2={263} y2={150} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowR1)" />
-        <line x1={263} y1={170} x2={251} y2={170} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowL1)" />
-        <line x1={169} y1={170} x2={157} y2={170} stroke="#16191f" strokeWidth={2} markerEnd="url(#arrowL1)" />
-
-        <text x={36} y={210} fontSize={12} fontWeight={600} fill="#16191f">
-          Energy cost
-        </text>
-        <text x={36} y={226} fontSize={11} fill="#16191f">
-          Moving a byte across the bus: dominant per-op cost
-        </text>
-        <text x={36} y={242} fontSize={11} fill="#16191f">
-          Per-op energy is mostly transport, not arithmetic
-        </text>
-
-        <text x={36} y={272} fontSize={12} fontWeight={600} fill="#16191f">
-          What we live with
-        </text>
-        <text x={36} y={288} fontSize={11} fill="#16191f">
-          The bandwidth wall (Section 6) is a transport limit
-        </text>
-        <text x={36} y={304} fontSize={11} fill="#16191f">
-          Every architecture so far has been some flavor of this
-        </text>
-
-        {/* Right: CIM */}
-        <rect x={40 + colW} y={50} width={colW} height={310} rx={8} fill="#ecf7ec" stroke="#037f0c" strokeWidth={2} />
-        <text x={56 + colW} y={78} fontSize={13} fontWeight={700} fill="#037f0c">
-          Compute-in-Memory
-        </text>
-        <text x={56 + colW} y={96} fontSize={11} fill="#687078">
-          Arithmetic units inside the memory array
-        </text>
-
-        {/* Memory array with embedded compute */}
-        <rect x={56 + colW} y={120} width={colW - 32} height={110} rx={6} fill="#ffffff" stroke="#037f0c" strokeWidth={1.5} />
-        <text x={56 + colW + (colW - 32) / 2} y={140} fontSize={12} fontWeight={700} fill="#037f0c" textAnchor="middle">
-          DRAM bank (or SRAM array)
-        </text>
-        {/* Bank cells with embedded compute units */}
-        {Array.from({ length: 4 }).map((_, i) => (
-          <g key={`bank-${i}`}>
-            <rect
-              x={70 + colW + i * (colW - 60) / 4}
-              y={154}
-              width={(colW - 60) / 4 - 4}
-              height={32}
-              fill="#e1f0fb"
-              stroke="#037f0c"
-              strokeWidth={1}
-            />
-            <text
-              x={70 + colW + i * (colW - 60) / 4 + ((colW - 60) / 4 - 4) / 2}
-              y={174}
-              fontSize={10}
-              fontWeight={700}
-              fill="#037f0c"
-              textAnchor="middle"
-            >
-              cells
-            </text>
-            {/* embedded compute unit indicator */}
-            <rect
-              x={70 + colW + i * (colW - 60) / 4 + 6}
-              y={194}
-              width={(colW - 60) / 4 - 16}
-              height={20}
-              fill="#fdf3ec"
-              stroke="#ec7211"
-              strokeWidth={1}
-            />
-            <text
-              x={70 + colW + i * (colW - 60) / 4 + ((colW - 60) / 4 - 4) / 2}
-              y={208}
-              fontSize={9}
-              fontWeight={700}
-              fill="#ec7211"
-              textAnchor="middle"
-            >
-              ALU
-            </text>
-          </g>
-        ))}
-
-        <text x={56 + colW} y={252} fontSize={12} fontWeight={600} fill="#16191f">
-          Production examples
-        </text>
-        <text x={56 + colW} y={268} fontSize={11} fill="#16191f">
-          Samsung HBM-PIM — Aquabolt-XL: GEMV 8.9× speedup
-        </text>
-        <text x={56 + colW} y={284} fontSize={11} fill="#16191f">
-          HyperCIM — multi-database / data-fabric LPU
-        </text>
-
-        <text x={56 + colW} y={310} fontSize={12} fontWeight={600} fill="#16191f">
-          Trade-off
-        </text>
-        <text x={56 + colW} y={326} fontSize={11} fill="#16191f">
-          Constrained operator set; analog or digital cells
-        </text>
-        <text x={56 + colW} y={342} fontSize={11} fontStyle="italic" fill="#037f0c">
-          Bet: eliminate the dominant cost (data movement)
-        </text>
-
+        <title id="cim-diagram-title">
+          Compute-in-memory moves the arithmetic to the data. On the conventional path every
+          operand crosses the bus, and fetching one from DRAM costs about 200 times the energy of
+          the multiply-accumulate that uses it. With a unit beside each DRAM bank, as on
+          Samsung&apos;s HBM2-PIM, operands are read at 4.92 TB/s inside the stack against 1.23
+          TB/s over the host link, so the bandwidth wall moves out by 4x and does not disappear.
+        </title>
         <defs>
-          <marker id="arrowR1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#16191f" />
-          </marker>
-          <marker id="arrowL1" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 10 0 L 0 5 L 10 10 z" fill="#16191f" />
+          <marker
+            id="cim-ah"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" fill={ink} />
           </marker>
         </defs>
+        <rect x={0} y={0} width={VB_W} height={VB_H} rx={8} fill="#ffffff" />
+
+        <g fontFamily="sans-serif">
+          <text x={20} y={30} fontSize={14} fontWeight={700} fill={ink}>
+            Compute-in-memory: do the arithmetic where the bytes live
+          </text>
+
+          {/* Left: conventional path */}
+          <rect x={20} y={48} width={410} height={376} rx={8} fill={amberFill} stroke={amber} strokeWidth={1.5} />
+          <text x={36} y={74} fontSize={13} fontWeight={700} fill={ink}>
+            Conventional path
+          </text>
+          <text x={36} y={92} fontSize={11} fill={sub}>
+            Every operand crosses the bus, and the result crosses back
+          </text>
+
+          <rect x={36} y={108} width={104} height={56} rx={6} fill="#ffffff" stroke={amber} strokeWidth={1.5} />
+          <text x={88} y={132} fontSize={12} fontWeight={600} fill={ink} textAnchor="middle">
+            CPU / GPU
+          </text>
+          <text x={88} y={150} fontSize={11} fill={sub} textAnchor="middle">
+            MAC units
+          </text>
+
+          <rect x={164} y={108} width={112} height={56} rx={6} fill="#ffffff" stroke={amber} strokeWidth={1.5} />
+          <text x={220} y={132} fontSize={12} fontWeight={600} fill={ink} textAnchor="middle">
+            DDR / HBM
+          </text>
+          <text x={220} y={150} fontSize={11} fill={sub} textAnchor="middle">
+            bus
+          </text>
+
+          <rect x={300} y={108} width={114} height={56} rx={6} fill="#ffffff" stroke={amber} strokeWidth={1.5} />
+          <text x={357} y={132} fontSize={12} fontWeight={600} fill={ink} textAnchor="middle">
+            DRAM array
+          </text>
+          <text x={357} y={150} fontSize={11} fill={sub} textAnchor="middle">
+            weights
+          </text>
+
+          {/* operands travel left, results travel right */}
+          <line x1={162} y1={126} x2={143} y2={126} stroke={ink} strokeWidth={1.5} markerEnd="url(#cim-ah)" />
+          <line x1={298} y1={126} x2={279} y2={126} stroke={ink} strokeWidth={1.5} markerEnd="url(#cim-ah)" />
+          <line x1={142} y1={146} x2={161} y2={146} stroke={ink} strokeWidth={1.5} markerEnd="url(#cim-ah)" />
+          <line x1={278} y1={146} x2={297} y2={146} stroke={ink} strokeWidth={1.5} markerEnd="url(#cim-ah)" />
+
+          <text x={36} y={198} fontSize={12} fontWeight={600} fill={ink}>
+            Energy per MAC, by where the operand comes from
+          </text>
+          {energy.map((e, i) => {
+            const cy = 222 + i * 26;
+            const w = Math.max(2, (e.x / 200) * BAR_MAX);
+            const isDram = e.x === 200;
+            return (
+              <g key={e.label}>
+                <text x={36} y={cy + 4} fontSize={11} fill={ink}>
+                  {e.label}
+                </text>
+                <rect x={BAR_X} y={cy - 7} width={w} height={14} fill={isDram ? red : amber} />
+                <text
+                  x={BAR_X + w + 6}
+                  y={cy + 4}
+                  fontSize={isDram ? 12 : 11}
+                  fontWeight={isDram ? 700 : 400}
+                  fill={isDram ? red : ink}
+                >
+                  {e.value}
+                </text>
+              </g>
+            );
+          })}
+          <text x={36} y={302} fontSize={10} fill={sub}>
+            Bars to scale; the MAC itself is 1x
+          </text>
+
+          <text x={36} y={336} fontSize={12} fontWeight={700} fill={red}>
+            A DRAM fetch costs about 200x the MAC that uses it
+          </text>
+          <text x={36} y={358} fontSize={11} fill={ink}>
+            The energy of each operation is mostly the trip
+          </text>
+          <text x={36} y={384} fontSize={11} fill={ink}>
+            Faster pins and wider buses move the bandwidth wall
+          </text>
+          <text x={36} y={400} fontSize={11} fill={ink}>
+            out; they do not shorten the trip
+          </text>
+
+          {/* Right: compute-in-memory */}
+          <rect x={450} y={48} width={410} height={376} rx={8} fill={greenFill} stroke={green} strokeWidth={1.5} />
+          <text x={466} y={74} fontSize={13} fontWeight={700} fill={ink}>
+            Compute-in-memory
+          </text>
+          <text x={466} y={92} fontSize={11} fill={sub}>
+            A unit beside each bank; only results leave the memory
+          </text>
+
+          <rect x={466} y={108} width={378} height={34} rx={6} fill="#ffffff" stroke={green} strokeWidth={1.5} />
+          <text x={655} y={130} fontSize={11} fontWeight={600} fill={ink} textAnchor="middle">
+            Host GPU or FPGA, unmodified HBM controller
+          </text>
+
+          <line
+            x1={560}
+            y1={145}
+            x2={560}
+            y2={165}
+            stroke={ink}
+            strokeWidth={1.5}
+            markerStart="url(#cim-ah)"
+            markerEnd="url(#cim-ah)"
+          />
+          <text x={574} y={159} fontSize={11} fontWeight={600} fill={ink}>
+            host link: 1.23 TB/s
+          </text>
+
+          <rect x={466} y={168} width={378} height={96} rx={6} fill="#ffffff" stroke={green} strokeWidth={1.5} />
+          <text x={655} y={186} fontSize={12} fontWeight={700} fill={green} textAnchor="middle">
+            HBM2-PIM stack (Aquabolt-XL)
+          </text>
+          {banks.map((x) => (
+            <g key={x}>
+              <rect x={x} y={196} width={BANK_W} height={26} fill={blueFill} stroke={blue} strokeWidth={1} />
+              <text x={x + BANK_W / 2} y={213} fontSize={11} fill={ink} textAnchor="middle">
+                bank
+              </text>
+              <rect x={x} y={228} width={BANK_W} height={26} fill={amberFill} stroke={amber} strokeWidth={1} />
+              <text x={x + BANK_W / 2} y={245} fontSize={11} fontWeight={600} fill={ink} textAnchor="middle">
+                PIM unit
+              </text>
+            </g>
+          ))}
+
+          <text x={466} y={288} fontSize={12} fontWeight={700} fill={green}>
+            Bank-level units see 4.92 TB/s, 4x the host link
+          </text>
+
+          <text x={466} y={316} fontSize={12} fontWeight={600} fill={ink}>
+            Built examples
+          </text>
+          <text x={466} y={336} fontSize={11} fill={ink}>
+            Samsung HBM2-PIM (Aquabolt-XL): demonstrator
+          </text>
+          <text x={466} y={354} fontSize={11} fill={ink}>
+            d-Matrix Corsair: 2 GB at 150 TB/s for compute,
+          </text>
+          <text x={478} y={370} fontSize={11} fill={ink}>
+            up to 256 GB at 400 GB/s for capacity
+          </text>
+          <text x={466} y={388} fontSize={11} fill={ink}>
+            SK hynix AiMX (GDDR6-AiM): prototype, CES 2026
+          </text>
+          <text x={466} y={412} fontSize={12} fontStyle="italic" fontWeight={600} fill={green}>
+            Bet: cut the dominant cost, data movement
+          </text>
+        </g>
       </svg>
     </div>
   );

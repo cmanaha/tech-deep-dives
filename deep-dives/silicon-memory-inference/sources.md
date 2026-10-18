@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 434.
+Total distinct sources: 442.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -111,7 +111,7 @@ Total distinct sources: 434.
 | Google Cloud | [Google Cloud TPU documentation: TPU7x (Ironwood)](https://cloud.google.com/tpu/docs/tpu7x) | 2026-10-17 | HbmAndBandwidthWall |
 | Huge and Savine (GitHub) | [differential-machine-learning/appendices at commit 585675e](https://github.com/differential-machine-learning/appendices/tree/585675ef05debbb9bb727d43f26ffb29e32ff25f) | 2026-10-16 | CapitalMarketsLens |
 | Huge and Savine (GitHub) | [differential-machine-learning/notebooks at commit 155055e](https://github.com/differential-machine-learning/notebooks/tree/155055eb891d151533530b70d039ad636ffeaf4b) | 2026-10-17 | CapitalMarketsLens |
-| Hugging Face | [deepseek-ai/DeepSeek-V3 config.json at revision e815299](https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/config.json) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash, MoeAndSparseActivation, QuantizationAndPrecision |
+| Hugging Face | [deepseek-ai/DeepSeek-V3 config.json at revision e815299](https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/config.json) | 2026-10-17 | ComputeInMemory, FlashCacheTier, HighBandwidthFlash, MoeAndSparseActivation, QuantizationAndPrecision |
 | Hugging Face | [deepseek-ai/DeepSeek-V3 README at revision e815299](https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/README.md) | 2026-10-17 | MoeAndSparseActivation |
 | Hugging Face | [deepseek-ai/DeepSeek-V3.2 files at revision a7e62ac (689.5 GB of safetensors)](https://huggingface.co/deepseek-ai/DeepSeek-V3.2/tree/a7e62ac04ecb2c0a54d736dc46601c5606cf10a6) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
 | Hugging Face | [deepseek-ai/DeepSeek-V4-Flash-0731 config.json at revision 7872f01](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash-0731/blob/7872f01b1d1fe23eabc4c98b48bffcef5a386062/config.json) | 2026-10-17 | MoeAndSparseActivation |
@@ -147,8 +147,10 @@ Total distinct sources: 434.
 | JEDEC | [JEDEC and Industry Leaders Collaborate to Release JESD270-4 HBM4 Standard (2025-04-16)](https://www.jedec.org/news/pressreleases/jedec%C2%AE-and-industry-leaders-collaborate-release-jesd270-4-hbm4-standard-advancing) | 2026-10-16 | HbmAndBandwidthWall, HighBandwidthFlash |
 | JEDEC | [JEDEC JC-40 committee page (JESD82-542 DDR5MRCD02 and JESD82-552 DDR5MDB02 device standards, 2026)](https://www.jedec.org/committees/jc-40) | 2026-10-16 | MainMemoryAndCxl |
 | JEDEC | [JEDEC JC-42.2 High Bandwidth Memory committee page (published document list)](https://www.jedec.org/committees/jc-422) | 2026-10-16 | HbmAndBandwidthWall |
+| JEDEC | [JEDEC JC-42.6 Low Power Memories committee page (published document list)](https://www.jedec.org/committees/jc-426) | 2026-10-16 | ComputeInMemory |
 | JEDEC | [JEDEC JC-45 DRAM Modules committee page (JESD328 SOCAMM2, Jun 2026)](https://www.jedec.org/committees/jc-45) | 2026-10-16 | MainMemoryAndCxl |
 | JEDEC | [JEDEC Prepares SPHBM4 Standard to Deliver HBM4-Level Throughput with Reduced Pin Count (2025-12-11)](https://www.jedec.org/news/pressreleases/jedec%C2%AE-prepares-sphbm4-standard-deliver-hbm4-level-throughput-reduced-pin-count) | 2026-10-16 | HbmAndBandwidthWall |
+| JEDEC | [JEDEC Previews LPDDR6 Roadmap Expanding LPDDR into Data Centers and Processing-in-Memory (2026-04-22)](https://www.jedec.org/news/pressreleases/jedec%C2%AE-previews-lpddr6-roadmap-expanding-lpddr-data-centers-and-processing-memory) | 2026-10-16 | ComputeInMemory |
 | JEDEC | [JEDEC Publishes HBM3 Update to High Bandwidth Memory (HBM) Standard (JESD238, 2022-01-27)](https://www.jedec.org/news/pressreleases/jedec-publishes-hbm3-update-high-bandwidth-memory-hbm-standard) | 2026-10-16 | HbmAndBandwidthWall |
 | JEDEC | [JEDEC Publishes New DDR5 Standard for Advancing Next-Generation High Performance Computing Systems (JESD79-5, 2020-07-14)](https://www.jedec.org/news/pressreleases/jedec-publishes-new-ddr5-standard-advancing-next-generation-high-performance) | 2026-10-16 | MainMemoryAndCxl |
 | JEDEC | [JEDEC Releases New LPDDR6 Standard to Enhance Mobile and AI Memory Performance (JESD209-6, 2025-07-09)](https://www.jedec.org/news/pressreleases/jedec%C2%AE-releases-new-lpddr6-standard-enhance-mobile-and-ai-memory-performance) | 2026-10-16 | MainMemoryAndCxl |
@@ -349,6 +351,8 @@ Total distinct sources: 434.
 | Cerebras | [Introducing Cerebras CS-4 (2026-08-18)](https://www.cerebras.ai/blog/introducing-cerebras-cs-4) | 2026-10-17 | CerebrasWaferScale |
 | Cerebras | [Introducing Cerebras Inference: AI at Instant Speed (2024-08-27)](https://www.cerebras.ai/blog/introducing-cerebras-inference-ai-at-instant-speed) | 2026-10-17 | CerebrasWaferScale, HbmAndBandwidthWall, HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
 | Cerebras | [Supercharge your HPC Research with the Cerebras SDK](https://www.cerebras.ai/blog/supercharge-your-hpc-research-with-the-cerebras-sdk) | 2026-10-16 | CerebrasWaferScale, HeterogeneityFact, ThesisAndFraming |
+| d-Matrix | [d-Matrix Corsair product brief (PDF)](https://d-matrix.ai/pdf/d-Matrix-Corsair-Product-Brief-FINAL.pdf) | 2026-10-16 | ComputeInMemory |
+| d-Matrix | [d-Matrix Corsair product page: In-Memory Computing for AI](https://www.d-matrix.ai/product/) | 2026-10-16 | ComputeInMemory |
 | DeepSeek-AI | [DeepSeek-V3 Technical Report (arXiv:2412.19437)](https://arxiv.org/abs/2412.19437) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier, HighBandwidthFlash, MoeAndSparseActivation, QuantizationAndPrecision, ThesisAndFraming |
 | Groq | [Groq and Nvidia Enter Non-Exclusive Inference Technology Licensing Agreement (2025-12-24)](https://groq.com/newsroom/groq-and-nvidia-enter-non-exclusive-inference-technology-licensing-agreement-to-accelerate-ai-inference-at-global-scale) | 2026-10-17 | GroqSambanovaDataflow, HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
 | Groq | [GroqChip Processor product spec sheet (v1.5)](https://groq.com/product-spec-sheet-groqchip-processor/) | 2026-10-17 | GroqSambanovaDataflow |
@@ -410,9 +414,11 @@ Total distinct sources: 434.
 | NVIDIA | [Sparks Fly: NVIDIA Accelerates Local AI at IFA 2026 (RTX Spark, 2026-09-03)](https://blogs.nvidia.com/blog/local-ai-ifa-next-gen-agents-nv-pair-rtx-spark/) | 2026-10-17 | EdgeSharedMemorySilicon |
 | SambaNova | [Introducing the SN50 RDU: Purpose-Built for Agentic Inference (2026-02-24)](https://sambanova.ai/blog/introducing-the-sn50-rdu-purpose-built-for-agentic-inference) | 2026-10-17 | GroqSambanovaDataflow, MoeAndSparseActivation |
 | SambaNova | [SambaNova Unveils Fastest Chip for Agentic AI, Collaborates with Intel, and Raises $350M+ (2026-02-24)](https://sambanova.ai/press/sambanova-unveils-fastest-chip-for-agentic-ai-collaborates-with-intel-and-raises-350m) | 2026-10-17 | GroqSambanovaDataflow |
-| Samsung | [Aquabolt-XL: Samsung HBM2-PIM with in-memory processing for ML accelerators and beyond (Hot Chips 33 slides, 2021-08-13)](https://www.hc33.hotchips.org/assets/program/conference/day1/20210813_HC33_Aquabolt-XL_PIM_Jin_Kim_slide.pdf) | 2026-10-16 | HbmAndBandwidthWall |
+| Samsung | [Aquabolt-XL: Samsung HBM2-PIM with in-memory processing for ML accelerators and beyond (Hot Chips 33 slides, 2021-08-13)](https://www.hc33.hotchips.org/assets/program/conference/day1/20210813_HC33_Aquabolt-XL_PIM_Jin_Kim_slide.pdf) | 2026-10-16 | ComputeInMemory, HbmAndBandwidthWall |
 | Samsung | [Optimizing KV Cache Offloading to CMM-D in a CXL Switch-based Memory Pool (white paper, June 2026)](https://download.semiconductor.samsung.com/resources/white-paper/Optimizing_KV_Cache_Offloading_to_CMM-D_in_a_CXL_Switch-based_Memory_Pool.pdf) | 2026-10-16 | MainMemoryAndCxl |
 | Samsung | [Samsung CMM-D Utilization in IMDB Applications (white paper, March 2026)](https://download.semiconductor.samsung.com/resources/white-paper/Samsung_CMM-D_Utilization_in_IMDB_Applications.pdf) | 2026-10-16 | MainMemoryAndCxl, MemoryHierarchyPrimer |
+| Samsung | [Samsung Develops Industry's First High Bandwidth Memory with AI Processing Power (2021-02-17)](https://news.samsung.com/global/samsung-develops-industrys-first-high-bandwidth-memory-with-ai-processing-power) | 2026-10-16 | ComputeInMemory |
+| Samsung | [Samsung PIM/PNM for Transformer based AI: Energy Efficiency on PIM/PNM Cluster (Hot Chips 35 slides, August 2023)](https://www.hc2023.hotchips.org/assets/program/conference/day1/PIM/23_HC35_PIM_PNM_Samsung_final.pdf) | 2026-10-18 | ComputeInMemory |
 | Samsung | [Samsung Ships Industry-First Commercial HBM4 With Ultimate Performance for AI Computing (2026-02-12)](https://news.samsung.com/global/samsung-ships-industry-first-commercial-hbm4-with-ultimate-performance-for-ai-computing) | 2026-10-17 | HbmAndBandwidthWall, HighBandwidthFlash |
 | Sandisk | [HBF Fact Sheet (Tech Brief, July 2025)](https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/sandisk/collateral/company/Sandisk-HBF-Fact-Sheet.pdf) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash, MainMemoryAndCxl, MemoryHierarchyPrimer |
 | Sandisk | [Sandisk 2026 Investor Day (2026-08-13), transcript of company presentations published by Stock Analysis](https://stockanalysis.com/stocks/sndk/transcripts/708061-investor-day-2026/) | 2026-10-17 | HighBandwidthFlash, MainMemoryAndCxl, MemoryHierarchyPrimer |
@@ -424,6 +430,7 @@ Total distinct sources: 434.
 | SK hynix | [SK hynix HBM4 product page](https://product.skhynix.com/products/dram/hbm/hbm4.go) | 2026-10-17 | HbmAndBandwidthWall, HighBandwidthFlash |
 | SK hynix | [SK hynix Presents Next Generation NAND Storage Product Strategy at OCP 2025 (2025-10-27)](https://news.skhynix.com/en/sk-hynix-presents-next-generation-nand-storage-product-strategy-at-ocp-2025/) | 2026-10-17 | HighBandwidthFlash |
 | SK hynix | [SK hynix Ships Samples of 12-Layer Next-Gen HBM4E (2026-06-18)](https://news.skhynix.com/en/sk-hynix-ships-samples-of-12-layer-next-gen-hbm4e-2/) | 2026-10-16 | HbmAndBandwidthWall, HighBandwidthFlash |
+| SK hynix | [SK hynix Showcases Next-Generation AI Memory Innovations at CES 2026 (2026-01-06)](https://news.skhynix.com/en/sk-hynix-showcases-next-generation-ai-memory-innovations-at-ces-2026/) | 2026-10-18 | ComputeInMemory |
 | Ultra Ethernet Consortium | [Ultra Ethernet Consortium: UEC Launches Specification 1.0 (2025-06-11)](https://ultraethernet.org/ultra-ethernet-consortium-uec-launches-specification-1-0-transforming-ethernet-for-ai-and-hpc-at-scale/) | 2026-10-17 | CommunicationAndScaleOut |
 | VAST Data | [NVIDIA Dynamo + VAST = Scalable, Optimized Inference (2025-12-16, with CoreWeave)](https://www.vastdata.com/blog/nvidia-dynamo-vast-scalable-optimized-inference) | 2026-10-17 | FlashCacheTier |
 
@@ -461,6 +468,7 @@ Total distinct sources: 434.
 | Chips and Cheese | [Discussing AMD's Zen 5 at Hot Chips 2024](https://chipsandcheese.com/p/discussing-amds-zen-5-at-hot-chips-2024) | 2026-10-17 | AmdEpycTurin, ChipletAndInterconnect |
 | Chips and Cheese | [Evaluating Uniform Memory Access (NPS0 on a two-socket EPYC 9575F)](https://chipsandcheese.com/p/evaluating-uniform-memory-access) | 2026-10-17 | AmdEpycTurin, ChipletAndInterconnect |
 | DIGITIMES | [Samsung signals zHBF push as memory race moves beyond HBM (2026-08-27)](https://www.digitimes.com/news/a20260827VL229/samsung-hbm-bandwidth-capacity-2026.html) | 2026-10-17 | HighBandwidthFlash |
+| IEEE Micro | [Kim et al., Aquabolt-XL HBM2-PIM, LPDDR5-PIM With In-Memory Processing, and AXDIMM With Acceleration Buffer (IEEE Micro 42(3), 2022, DOI 10.1109/MM.2022.3164651)](https://experts.illinois.edu/en/publications/aquabolt-xl-hbm2-pim-lpddr5-pim-with-in-memory-processing-and-axd/) | 2026-10-16 | ComputeInMemory |
 | LMSYS | [NVIDIA DGX Spark in-depth review (LMSYS Org blog, J. Zhou and R. Chen, 2025-10-13)](https://www.lmsys.org/blog/2025-10-13-nvidia-dgx-spark/) | 2026-10-17 | EdgeSharedMemorySilicon |
 | Risk.net | [Giles and Glasserman, Smoking adjoints: fast Monte Carlo Greeks (Risk, January 2006)](https://www.risk.net/derivatives/interest-rate-derivatives/1500261/smoking-adjoints-fast-monte-carlo-greeks) | 2026-10-16 | CapitalMarketsLens |
 | ServeTheHome | [Oxmiq Labs HBF in AI Compute at Hot Chips 2026 (2026-08-27)](https://www.servethehome.com/oxmiq-labs-hbf-in-ai-compute-at-hot-chips-2026/) | 2026-10-17 | HighBandwidthFlash |
