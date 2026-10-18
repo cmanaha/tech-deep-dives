@@ -194,6 +194,13 @@ collisions the probe cannot see (text crossing lines, labels on arrows,
 cramped spacing, unreadable text at 390). Fix and re-shoot until clean. Report
 what you saw.
 
+Wide diagrams follow the dive's phone convention: wrap the svg in
+`<div style={{ overflowX: 'auto' }}>` and give the svg
+`style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}`, so
+on a phone the reader scrolls sideways and the labels keep their size instead
+of shrinking to about 5 px. A diagram narrow enough to stay legible at 390
+without it (a vertical stack, a small panel) needs no wrapper.
+
 ### 6. Leverage pass
 
 After the facts are settled, run the leverage pass on every substantial block:
