@@ -25,9 +25,10 @@ export function DisaggregatedServingDiagram() {
           Disaggregated serving runs prefill in a compute-bound pool sized for time to first token
           and decode in a memory-bound pool sized for time per output token. The KV cache crosses
           from prefill to decode once per request: through NIXL over NVLink or EFA on GPUs, and
-          through the Neuron runtime over EFA on Trainium. On Vera Rubin with Groq 3 LPX, decode
-          splits again: attention stays on Rubin GPUs, FFN and MoE layers run on LPUs, and
-          activations cross between them every token.
+          through the Neuron runtime over EFA on Trainium. With a Groq 3 LPX rack deployed alongside
+          Vera Rubin NVL72, decode splits again: attention stays on Rubin GPUs, LPUs accelerate
+          latency-sensitive work such as FFN and MoE expert execution, and activations cross
+          between them every token.
         </title>
         <style>{`
           .dsd-bg { fill: #ffffff; }

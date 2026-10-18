@@ -42,3 +42,9 @@
   request; the running verifiers were told. Goes in the final report.
 - NVIDIA Hopper: repeats the HBM section's 1.9x decomposition almost word for word (HBM
   verification); judge economy there and consider a cross-link by name instead.
+- Flash as a Cache Tier (and Disaggregated): the Mooncake arXiv record's title says v4 but the
+  unversioned abs URL now serves v5; pin the URL to the version whose figures are quoted.
+- Communication and Scale-Out, Grace-Blackwell: the P6 page's own instance table gives 800 Gbps
+  of EFA per GPU against 400 Gbps in its prose (Disaggregated verification).
+- Disaggregated scored 7/10 on economy (+63%); ~150 words of cut candidates in its Backlog. If
+  the Gate 3 average falls under 8, apply those cuts as section-shape corrections.

@@ -38,7 +38,7 @@ const transferRows: TransferRow[] = [
     rate: (
       <>
         900 GB/s each way
-        <Cite s={S.blackwellUltraBlog} />
+        <Cite s={S.blackwellUltraBlog} kind="derived" note="1.8 TB/s bidirectional per GPU / 2." />
       </>
     ),
     perGb: '1.1 ms',
@@ -78,7 +78,7 @@ const transferRows: TransferRow[] = [
     short: '27 ms',
   },
   {
-    path: 'EFA, one P6e-GB200 GPU',
+    path: 'EFA, one P6e-GB200 GPU; the two AWS pages disagree',
     rate: (
       <>
         400 Gbps
@@ -121,11 +121,12 @@ export function DisaggregatedServingAndSpeculative() {
             <Cite s={S.leviathan} />
           </Box>
           <Box variant="p">
-            <strong>The split reaches silicon.</strong> On NVIDIA&apos;s Vera Rubin platform,
-            Rubin GPUs run prefill and decode attention while the Groq 3 LPX, a rack of LPUs
-            (Language Processing Units), runs decode&apos;s FFN (feed-forward network) and MoE
-            (mixture of experts) layers and can draft for speculative decoding. Activations then
-            cross between the two chips every token.
+            <strong>The split reaches silicon.</strong> On NVIDIA&apos;s Vera Rubin platform, the
+            Groq 3 LPX, its own rack of LPUs (Language Processing Units) deployed alongside Vera
+            Rubin NVL72, accelerates the latency-sensitive portions of the decode loop, including
+            FFN (feed-forward network) and MoE (mixture of experts) expert execution, while Rubin
+            GPUs handle prefill and decode attention. LPX can also draft for speculative decoding.
+            Activations cross between GPUs and LPUs every token.
             <Cite s={S.lpxBlog} />
           </Box>
         </SpaceBetween>
@@ -150,7 +151,7 @@ export function DisaggregatedServingAndSpeculative() {
             decode worker&apos;s over NVLink or EFA (Elastic Fabric Adapter), without blocking
             other requests&apos; forward passes.
             <Cite s={S.dynamoDisaggDoc} />
-            <Cite s={S.nixl} /> DistServe served 7.4x more requests within latency targets than
+            <Cite s={S.nixl} /> DistServe served up to 7.4x more requests within latency targets than
             colocated systems.
             <Cite s={S.distServe} kind="measured" />
           </Box>
@@ -168,7 +169,7 @@ export function DisaggregatedServingAndSpeculative() {
           <Box variant="p">
             The handoff carries prompt tokens times the model&apos;s KV bytes per token. Llama 3.1
             70B in BF16 (bfloat16), with GQA (grouped-query attention) over 8 KV heads and 80
-            layers, stores 327,680 bytes per token: 2.7 GB at 8K tokens, 42 GB at 128K.
+            layers, stores 327,680 bytes per token: 2.68 GB at 8K tokens, 41.9 GB at 128,000.
             <Cite s={S.llama3Herd} kind="derived" note={kvNote} /> DeepSeek-V4.1-Flash compresses
             its global KV cache, with sparse attention and FP4 (4-bit floating point) entries, to
             890 bytes per token
@@ -189,7 +190,7 @@ export function DisaggregatedServingAndSpeculative() {
               { id: 'path', header: 'Path', cell: (r) => r.path, minWidth: 150 },
               { id: 'rate', header: 'Rate', cell: (r) => r.rate, minWidth: 130 },
               { id: 'gb', header: 'Per GB', cell: (r) => r.perGb, minWidth: 80 },
-              { id: 'short', header: '8K, 2.7 GB', cell: (r) => r.short, minWidth: 90 },
+              { id: 'short', header: '8K, 2.68 GB', cell: (r) => r.short, minWidth: 90 },
             ]}
           />
           <Box variant="p">
@@ -275,11 +276,17 @@ export function DisaggregatedServingAndSpeculative() {
             </Box>
           </div>
           <div>
-            <Box variant="h3">Trainium and Inferentia</Box>
+            <Box variant="h3">Trainium</Box>
             <Box variant="p">
               NxD Inference (NeuronX Distributed Inference) runs disaggregated inference in Beta
-              on Inf2, Trn1 and Trn2, moving the KV cache over EFA device to device with no copy
-              through host memory. Automatic prefix caching is not supported with it.
+              on Trn1 and Trn2 instances with EFA
+              <Cite
+                s={S.ec2AcceleratedSpecs}
+                kind="derived"
+                note="The Neuron page is tagged Inf2, Trn1, Trn2 and moves the KV cache over EFA. The instance specification lists EFA for trn1.32xlarge, trn1n.32xlarge, trn2.3xlarge and trn2.48xlarge, and for no Inf2 size."
+              />
+              , moving the KV cache over EFA device to device with no copy through host memory.
+              Automatic prefix caching is not supported with it.
               <Cite s={S.neuronDisagg} />
             </Box>
           </div>
@@ -328,9 +335,9 @@ export function DisaggregatedServingAndSpeculative() {
             <strong>Acceptance decides the gain.</strong> Draft models a couple of orders of
             magnitude smaller than the target reached α of 0.5 to 0.9 in Leviathan et al.&apos;s
             tests.
-            <Cite s={S.leviathan} kind="measured" /> DeepSeek-V3&apos;s MTP module had its second
-            token accepted 85 to 90% of the time, for 1.8 times the tokens per second.
-            <Cite s={S.deepseekV3Report} kind="measured" /> In vLLM, one plus{' '}
+            <Cite s={S.leviathan} kind="measured" /> DeepSeek reports its V3 MTP module&apos;s
+            second token accepted 85 to 90% of the time, for 1.8 times the tokens per second.
+            <Cite s={S.deepseekV3Report} kind="vendor-claim" /> In vLLM, one plus{' '}
             <code>vllm:spec_decode_num_accepted_tokens_total</code> over{' '}
             <code>vllm:spec_decode_num_drafts_total</code> is the mean acceptance length, the E
             above, on your own traffic.
