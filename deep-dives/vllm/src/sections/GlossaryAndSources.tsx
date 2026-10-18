@@ -79,9 +79,9 @@ const sources: Source[] = [
   { id: 57, title: 'AWS EKS: Load and serve models on Amazon EKS (vLLM inference guide)', url: 'https://docs.aws.amazon.com/eks/latest/userguide/ml-inference-load-serve-model.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
   { id: 58, title: 'AWS EKS: AI/ML compute best practices', url: 'https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
   { id: 59, title: 'AWS Deep Learning Containers: vLLM on SageMaker', url: 'https://aws.github.io/deep-learning-containers/vllm/deployment/sagemaker/', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
-  { id: 60, title: 'AWS Neuron: What\'s New', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/whats-new.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
-  { id: 61, title: 'AWS Neuron: NxD Inference vLLM guide', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/libraries/nxd-inference/vllm/index.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
-  { id: 62, title: 'AWS Neuron: NxD Inference release notes', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nxd-inference.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
+  { id: 60, title: 'AWS Neuron: What\'s New', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/about-neuron/whats-new.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
+  { id: 61, title: 'AWS Neuron: NxD Inference vLLM guide', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/libraries/nxd-inference/vllm/index.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
+  { id: 62, title: 'AWS Neuron: NxD Inference release notes', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/components/nxd-inference.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
   { id: 63, title: 'awslabs/ml-container-creator (SageMaker BYOC)', url: 'https://github.com/awslabs/ml-container-creator/tree/bb89cf9de839f0b6e027f011d2264f326138fb0c', tier: 1, type: 'aws-open-source', accessDate: '2026-10-16' },
 
   // AWS: blogs / announcements / product pages (Tier 2)
