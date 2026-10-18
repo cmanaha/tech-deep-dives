@@ -16,7 +16,6 @@ const README = 'docs/serving/online_serving/README.md';
 const SECURITY_MD = 'docs/usage/security.md';
 const TOOL_MD = 'docs/features/tool_calling.md';
 const CHAT_PROTOCOL = 'vllm/entrypoints/openai/chat_completion/protocol.py';
-const SERVER_DOCS = vllmDocsUrl('serving/online_serving/openai_compatible_server/');
 const SO_DOCS = vllmDocsUrl('features/structured_outputs/');
 const TOOL_DOCS = vllmDocsUrl('features/tool_calling/');
 const MM_DOCS = vllmDocsUrl('features/multimodal_inputs/');
@@ -480,11 +479,13 @@ client = OpenAI(base_url="http://localhost:8000/v1",
                 api_key="token-abc123")`}</pre>
           </Box>
           <Box variant="p">
-            Because the contract is OpenAI&apos;s, clients built on it work without adapters: the
-            official OpenAI Python and JavaScript clients, LangChain, LlamaIndex, LiteLLM, and
-            anything that already speaks <code>/v1/chat/completions</code>. vLLM competes on
-            throughput and cost per token while your call sites stay as they are{' '}
-            <Cite tier={1} href={SERVER_DOCS}>vLLM docs: OpenAI-Compatible Server</Cite>.
+            Because the contract is OpenAI&apos;s, the official OpenAI Python client talks to it
+            unchanged{' '}
+            <Cite tier={1} href={vllmUrl('docs/serving/online_serving/openai_compatible_server.md', 'L166-L167')}>
+              openai_compatible_server.md L166-L167
+            </Cite>
+            , and so does other client code that already speaks <code>/v1/chat/completions</code>:
+            your call sites stay as they are.
           </Box>
           <Box variant="p">
             <code>vllm serve</code> is the launch command to use. The older{' '}
@@ -544,16 +545,21 @@ client = OpenAI(base_url="http://localhost:8000/v1",
 
           <EndpointSurfaceDiagram />
           <Box variant="small" color="text-body-secondary">
-            Route map read from the route decorators under <code>vllm/entrypoints</code> at v0.31.0.
-            The profiler and runtime LoRA (low-rank adaptation) routes are left out; both register
-            only when enabled{' '}
+            Main routes, read from the route decorators under <code>vllm/entrypoints</code> at
+            v0.31.0. The profiler, runtime LoRA (low-rank adaptation) and fault-tolerance routes are
+            left out; each registers only when enabled{' '}
             <Cite tier={1} href={vllmUrl('vllm/entrypoints/serve/profile/api_router.py', 'L37-L46')} kind="code">
               profile/api_router.py L37-L46
             </Cite>{' '}
             <Cite tier={1} href={vllmUrl('vllm/entrypoints/serve/lora/api_router.py', 'L23-L32')} kind="code">
               lora/api_router.py L23-L32
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl(ROUTERS, 'L69-L74')} kind="code">
+              routers.py L69-L74
             </Cite>
-            . Schematic. Illustrative, not measured.
+            . Small status routes such as <code>/kv_event_sources</code> and{' '}
+            <code>/is_scaling_elastic_ep</code> are left out too. Schematic. Illustrative, not
+            measured.
           </Box>
 
           <Table
@@ -828,8 +834,9 @@ client = OpenAI(base_url="http://localhost:8000/v1",
             The server speaks OpenAI&apos;s tools schema, and model-driven tool calls are configured
             per model. Automatic tool choice requires two launch flags together:{' '}
             <code>--enable-auto-tool-choice</code> plus a <code>--tool-call-parser</code> matched to
-            the model family (the parser knows how that specific model emits tool-call syntax). A
-            chat template is usually needed too{' '}
+            the model family (the parser knows how that specific model emits tool-call syntax).{' '}
+            <code>--chat-template</code> is optional: pass one when the model&apos;s own template
+            does not handle tool-role messages and earlier tool calls{' '}
             <Cite tier={1} href={vllmUrl(TOOL_MD, 'L159-L170')}>tool_calling.md L159-L170</Cite>.
           </Box>
 
@@ -845,7 +852,7 @@ client = OpenAI(base_url="http://localhost:8000/v1",
               <Box variant="h3">tool_choice modes</Box>
               <Box variant="p">
                 vLLM supports named function calling plus <code>auto</code>,{' '}
-                <code>required</code> (as of vllm&nbsp;&ge;&nbsp;0.8.3), and <code>none</code>. With{' '}
+                <code>required</code> and <code>none</code>. With{' '}
                 <code>required</code>, &quot;the model is guaranteed to generate one or more tool
                 calls&quot; from the supplied tool list. The docs phrase the limit bluntly: &quot;You
                 are guaranteed a validly-parsable function call - not a high-quality one.&quot;{' '}
@@ -1141,7 +1148,11 @@ client = OpenAI(base_url="http://localhost:8000/v1",
               <Box variant="p">
                 The docs name specific OpenAI parameters the server does not honor. Design around
                 them rather than assuming OpenAI-identical behavior{' '}
-                <Cite tier={1} href={vllmUrl(README, 'L9-L14')}>README.md L9-L14</Cite>:
+                <Cite tier={1} href={vllmUrl(README, 'L9-L14')}>README.md L9-L14</Cite>{' '}
+                <Cite tier={1} href={vllmUrl('docs/serving/online_serving/openai_compatible_server.md', 'L173')}>
+                  openai_compatible_server.md L173
+                </Cite>
+                :
               </Box>
               <Table
                 variant="embedded"

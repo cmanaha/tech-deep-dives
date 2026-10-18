@@ -351,18 +351,20 @@ export function LoRAServing() {
             (least recently used) cache in host RAM.
           </Box>
 
-          <Alert type="info" header="The kernels behind the mixed batch">
-            On CUDA, <code>PunicaWrapperGPU</code> drives Triton <code>lora_shrink</code> and{' '}
-            <code>lora_expand</code> kernels (plus <code>fused_moe_lora</code> for
-            mixture-of-experts layers), following the Punica design for multi-tenant LoRA serving{' '}
-            <Cite tier={1} href={vllmUrl('vllm/lora/punica_wrapper/punica_gpu.py', 'L1-L37')} kind="code">
-              punica_gpu.py L1-L37
-            </Cite>
-            . A per-token index picks each row&apos;s adapter slot, so one launch covers rows for
-            different adapters. <strong>Inside the Codebase &rarr; Model Layer, Quant &amp; LoRA</strong>{' '}
-            walks the default <code>add_lora_linear</code> path and the{' '}
-            <code>--fully-sharded-loras</code> path against the source.
-          </Alert>
+          <ExpandableSection headerText="The kernels behind the mixed batch">
+            <Box variant="p">
+              On CUDA, <code>PunicaWrapperGPU</code> drives Triton <code>lora_shrink</code> and{' '}
+              <code>lora_expand</code> kernels (plus <code>fused_moe_lora</code> for
+              mixture-of-experts layers), following the Punica design for multi-tenant LoRA serving{' '}
+              <Cite tier={1} href={vllmUrl('vllm/lora/punica_wrapper/punica_gpu.py', 'L1-L37')} kind="code">
+                punica_gpu.py L1-L37
+              </Cite>
+              . A per-token index picks each row&apos;s adapter slot, so one launch covers rows for
+              different adapters. <strong>Inside the Codebase &rarr; Model Layer, Quant &amp; LoRA</strong>{' '}
+              walks the default <code>add_lora_linear</code> path and the{' '}
+              <code>--fully-sharded-loras</code> path against the source.
+            </Box>
+          </ExpandableSection>
 
           <Alert type="info" header="Why base requests share the batch">
             A base-only row has adapter index -1, so the LoRA term is skipped for that row, and a step
@@ -427,10 +429,17 @@ export function LoRAServing() {
           <Box variant="p">
             The production path is <strong>static registration</strong>. You name adapters at
             server startup and they become &quot;models&quot; the OpenAI-compatible endpoint can route
-            to. The flag is <code>--lora-modules {'{name}={path}'}</code>, repeated per adapter; a
-            JSON form adds a <code>base_model_name</code> per adapter{' '}
+            to. The flag is <code>--lora-modules {'{name}={path} {name}={path}'}</code>: one flag,
+            then one entry per adapter, because a repeated <code>--lora-modules</code> replaces the
+            list the earlier one built. A JSON form adds a <code>base_model_name</code> per adapter{' '}
+            <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/cli_args.py', 'L35-L66')} kind="code">
+              cli_args.py L35-L66
+            </Cite>{' '}
             <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/cli_args.py', 'L78-L82')} kind="code">
-              cli_args.py L78-L82
+              L78-L82
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl(LORA_MD, 'L55')}>
+              lora.md L55
             </Cite>{' '}
             <Cite tier={1} href={vllmUrl(LORA_MD, 'L234-L249')}>
               lora.md L234-L249
@@ -690,8 +699,8 @@ export function LoRAServing() {
                     <Cite tier={1} href={vllmUrl(SERVE_CLI, 'L105-L127')} kind="code">
                       serve.py L105-L127
                     </Cite>
-                    . How a load then reaches each data-parallel rank was not traced for this page;
-                    verify it on your deployment.
+                    , then confirm on your deployment that a runtime load reaches every
+                    data-parallel rank.
                   </>
                 ),
               },

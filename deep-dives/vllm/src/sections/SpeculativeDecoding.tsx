@@ -376,7 +376,7 @@ export function SpeculativeDecoding() {
           </div>
           <Box variant="small" color="text-body-secondary">
             Illustrative, not measured. Shows the default <code>standard</code> verification. With
-            adaptive verification on, K is a ceiling, not a constant: each step verifies only the
+            adaptive verification on, K is a ceiling: each step verifies only the
             draft positions its budget admits, so a request can have fewer than K checked.
           </Box>
 
@@ -488,11 +488,11 @@ export function SpeculativeDecoding() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Model-based methods, EAGLE (Extrapolation Algorithm for Greater Language-model
-            Efficiency), MTP (Multi-Token Prediction), draft models, PARD (Parallel Draft Model)
-            and MLP (Multi-Layer Perceptron) speculators, give the largest latency reduction.
-            N-gram and suffix decoding need no extra model and give modest speedups{' '}
-            <em>&quot;without increasing workload during peak traffic&quot;</em>{' '}
+            The docs rate model-based methods, EAGLE (Extrapolation Algorithm for Greater
+            Language-model Efficiency), MTP (Multi-Token Prediction), draft models, PARD (Parallel
+            Draft Model) and MLP (Multi-Layer Perceptron) speculators, as giving the best latency
+            reduction, and n-gram and suffix decoding, which need no extra model, as giving modest
+            speedups <em>&quot;without increasing workload during peak traffic&quot;</em>{' '}
             <Cite tier={1} href={SPEC_DOCS}>
               vLLM docs: Speculation Methods
             </Cite>
@@ -631,9 +631,13 @@ export function SpeculativeDecoding() {
                   concurrency. The GPU has idle arithmetic to fill.
                 </li>
                 <li>
-                  <strong>Acceptance is high.</strong> Code, structured or JSON output, and
-                  repetitive or templated text are predictable, so the drafter is right often and
-                  each pass yields several tokens.
+                  <strong>Acceptance is high.</strong> Repetitive output is predictable, so the
+                  drafter is right often and each pass yields several tokens. The docs name code
+                  editing, agentic loops and RL rollouts as high-repetition work{' '}
+                  <Cite tier={1} href={vllmDocsUrl('features/speculative_decoding/suffix/')}>
+                    vLLM docs: Suffix Decoding
+                  </Cite>
+                  .
                 </li>
                 <li>
                   <strong>The drafter is well matched</strong> to the target: a same-family small
@@ -661,8 +665,7 @@ export function SpeculativeDecoding() {
           </ColumnLayout>
 
           <Box variant="p">
-            The docs&apos; method table still rates every method&apos;s high-QPS gain medium or
-            better{' '}
+            The docs&apos; method table still rates no method&apos;s high-QPS gain below medium{' '}
             <Cite tier={1} href={SPEC_DOCS}>
               vLLM docs: Method Selection at a Glance
             </Cite>
@@ -713,8 +716,8 @@ export function SpeculativeDecoding() {
                 </Cite>
                 . It needs MRv2, full CUDA graphs, no LoRA (low-rank adaptation) and a PP (pipeline
                 parallelism) size of 1{' '}
-                <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L3151-L3178')}>
-                  vllm.py L3151-L3178
+                <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L3127-L3178')}>
+                  vllm.py L3127-L3178
                 </Cite>
                 . The field docstring supports it only for <code>dspark</code>{' '}
                 <Cite tier={1} href={vllmUrl('vllm/config/speculative.py', 'L552-L554')}>
