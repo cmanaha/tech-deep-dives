@@ -46,7 +46,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'CCD', fullForm: 'Core Complex Die', description: 'An AMD compute chiplet carrying CPU cores and their L3 cache.' },
   { acronym: 'CCX', fullForm: 'Core Complex', description: 'A group of AMD cores sharing one L3 cache.' },
   { acronym: 'IOD', fullForm: 'I/O Die', description: 'The AMD central die holding the memory controllers, PCIe and the Infinity Fabric.' },
-  { acronym: 'GMI', fullForm: 'Global Memory Interconnect', description: 'The AMD link between each CCD and the I/O die.' },
+  { acronym: 'GMI', fullForm: 'Global Memory Interface', description: 'The AMD link between each CCD and the I/O die.' },
   { acronym: 'UMC', fullForm: 'Unified Memory Controller', description: 'The AMD DDR5 memory controller, one per channel, in the I/O die.' },
   { acronym: 'CMN', fullForm: 'Coherent Mesh Network', description: 'The Arm on-chip mesh interconnect family (CMN-700, CMN S3) that Neoverse server chips use.' },
   { acronym: 'CHA', fullForm: 'Caching and Home Agent', description: 'The Intel mesh stop that owns an L3 slice and its snoop filter.' },

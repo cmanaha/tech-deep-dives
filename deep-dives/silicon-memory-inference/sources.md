@@ -12,16 +12,20 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 295.
+Total distinct sources: 310.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
+| AMD | [5th Gen AMD EPYC Processor Architecture (Data Center Solutions white paper, March 2025)](https://docs.amd.com/api/khub/documents/UIqhAbjRhgnzgzzdVU4pUw/content) | 2026-10-17 | AmdEpycTurin |
+| AMD | [AMD EPYC 9005 Series Server CPUs data sheet (per-SKU cores, clocks, L3, memory)](https://www.amd.com/content/dam/amd/en/documents/epyc-business-docs/datasheets/amd-epyc-9005-series-processor-datasheet.pdf) | 2026-10-17 | AmdEpycTurin |
+| AMD | [AMD EPYC 9755 product page (memory type, DDR5-6400 qualifier, per-socket memory bandwidth)](https://www.amd.com/en/products/processors/server/epyc/9005-series/amd-epyc-9755.html) | 2026-10-17 | AmdEpycTurin |
 | AWS | [Amazon EC2 accelerated computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html) | 2026-10-17 | AwsCustomSilicon, CapitalMarketsLens, DisaggregatedServingAndSpeculative, FlashCacheTier, GraceBlackwellUltraServer, HeterogeneityFact, NvidiaBlackwell, NvidiaHopper |
-| AWS | [Amazon EC2 compute optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html) | 2026-10-17 | GravitonDeepDive |
-| AWS | [Amazon EC2 general purpose instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html) | 2026-10-17 | GravitonDeepDive |
-| AWS | [Amazon EC2 memory optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/mo.html) | 2026-10-17 | GravitonDeepDive |
+| AWS | [Amazon EC2 compute optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive |
+| AWS | [Amazon EC2 general purpose instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive |
+| AWS | [Amazon EC2 high performance computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/hpc.html) | 2026-10-17 | AmdEpycTurin |
+| AWS | [Amazon EC2 memory optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/mo.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive |
 | AWS | [Amazon EC2 User Guide: Data protection in Amazon EC2 (encryption in transit)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html) | 2026-10-17 | IsolationNie |
 | AWS | [Amazon FSx for Lustre performance: throughput to individual client instances](https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon FSx for Lustre: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-17 | FlashCacheTier |
@@ -102,10 +106,15 @@ Total distinct sources: 295.
 | Hugging Face | [Qwen/Qwen3-Next-80B-A3B-Instruct README at revision 9c7f2fb](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct/blob/9c7f2fbe84465e40164a94cc16cd30b6999b0cc7/README.md) | 2026-10-17 | MoeAndSparseActivation |
 | Hugging Face | [Qwen/Qwen3.8-2.4T-A95B README at revision 207bd68](https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B/blob/207bd685a7e3696cfaff12ded7c6a7ea0f88c996/README.md) | 2026-10-17 | MoeAndSparseActivation |
 | Intel | [Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)](https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html) | 2026-10-16 | CapitalMarketsLens, FlashCacheTier |
+| Intel | [The Intel Xeon 6 Processor Family Product Brief](https://cdrdv2-public.intel.com/845771/Intel-Xeon6-ProductBrief.pdf) | 2026-10-16 | AmdEpycTurin |
 | ISDA | [ISDA Publishes ISDA SIMM Methodology, Version 2.8+2512 (12 June 2026)](https://www.isda.org/2026/06/12/isda-publishes-isda-simm-methodology-version-2-8-2512/) | 2026-10-16 | CapitalMarketsLens |
 | ISDA | [ISDA SIMM Methodology, version 2.8+2512 (public PDF)](https://www.isda.org/a/hhkiE/ISDA-SIMM_v2.82512_PUBLIC.pdf) | 2026-10-16 | CapitalMarketsLens |
 | JEDEC | [JEDEC and Industry Leaders Collaborate to Release JESD270-4 HBM4 Standard (2025-04-16)](https://www.jedec.org/news/pressreleases/jedec%C2%AE-and-industry-leaders-collaborate-release-jesd270-4-hbm4-standard-advancing) | 2026-10-16 | HighBandwidthFlash |
+| Linux kernel | [Linux kernel Documentation/admin-guide/kernel-parameters.txt at tag v6.13 (pci=notph)](https://github.com/torvalds/linux/blob/v6.13/Documentation/admin-guide/kernel-parameters.txt#L4689-L4692) | 2026-10-17 | AmdEpycTurin |
 | Linux kernel | [Linux kernel Documentation/arch/x86/xstate.rst at tag v6.19 (AMX TILE_DATA, ARCH_REQ_XCOMP_PERM)](https://github.com/torvalds/linux/blob/v6.19/Documentation/arch/x86/xstate.rst) | 2026-10-17 | KernelExecutionLifecycle |
+| Linux kernel | [Linux kernel Documentation/filesystems/resctrl.rst at tag v6.19 (io_alloc, io_alloc_cbm, SDCIAE)](https://github.com/torvalds/linux/blob/v6.19/Documentation/filesystems/resctrl.rst) | 2026-10-17 | AmdEpycTurin |
+| Linux kernel | [Linux kernel drivers/net/ethernet/broadcom/bnxt/bnxt.c at tag v6.19 (pcie_enable_tph and steering-tag entries)](https://github.com/torvalds/linux/blob/v6.19/drivers/net/ethernet/broadcom/bnxt/bnxt.c#L11698) | 2026-10-17 | AmdEpycTurin |
+| Linux kernel | [Linux kernel drivers/pci/tph.c at tag v6.13 (PCIe TLP Processing Hints; file absent at v6.12)](https://github.com/torvalds/linux/blob/v6.13/drivers/pci/tph.c) | 2026-10-17 | AmdEpycTurin |
 | llm-d | [llm-d README at tag v0.10.0](https://github.com/llm-d/llm-d/blob/v0.10.0/README.md) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | llm-d | [llm-d tiered prefix cache guides and metrics docs at tag v0.10.0](https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/README.md) | 2026-10-17 | FlashCacheTier |
 | LLVM | [AArch64InstrFormats.td at tag llvmorg-23.1.3 (SIMDThreeSameVectorMatMul, lines 9259-9265)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/AArch64/AArch64InstrFormats.td#L9259-L9265) | 2026-10-16 | GravitonDeepDive |
@@ -214,22 +223,25 @@ Total distinct sources: 295.
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
 | Amazon | [Trainium3 UltraServers now available (Trainium4 roadmap)](https://www.aboutamazon.com/news/aws/trainium-3-ultraserver-faster-ai-training-lower-cost) | 2026-10-16 | AwsCustomSilicon |
+| AMD | [AMD blog: Agentic AI: AMD EPYC 9005 CPUs Wins Today, EPYC 9006, formerly code-named "Venice", Takes It to a New Level (2026-07-23)](https://www.amd.com/en/blogs/2026/agentic-ai-amd-epyc-9005-cpus-wins-today-epyc-9006.html) | 2026-10-17 | AmdEpycTurin |
 | AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-17 | QuantizationAndPrecision, RooflineAndArithmeticIntensity |
-| AMD | [AMD Solarflare X4 Low Latency Using SDCI (white paper, October 2025, Rev 1)](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/white-papers/x4-sdci-whitepaper.pdf) | 2026-10-17 | CapitalMarketsLens |
+| AMD | [AMD Solarflare X4 Low Latency Using SDCI (white paper, October 2025, Rev 1)](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/white-papers/x4-sdci-whitepaper.pdf) | 2026-10-17 | AmdEpycTurin, CapitalMarketsLens |
 | Arm | [Arm Neoverse V3 product page](https://www.arm.com/products/silicon-ip-cpu/neoverse/neoverse-v3) | 2026-10-16 | GravitonDeepDive |
 | AWS | [About Amazon: AWS Graviton5 (2025-12-04, updated 2026-06-10 for GA)](https://www.aboutamazon.com/news/aws/aws-graviton-5-cpu-amazon-ec2) | 2026-10-16 | GravitonDeepDive |
 | AWS | [Amazon EC2 M8a instances](https://aws.amazon.com/ec2/instance-types/m8a/) | 2026-10-17 | HeterogeneityFact |
-| AWS | [Amazon EC2 M8i instances](https://aws.amazon.com/ec2/instance-types/m8i/) | 2026-10-17 | HeterogeneityFact |
+| AWS | [Amazon EC2 M8i instances](https://aws.amazon.com/ec2/instance-types/m8i/) | 2026-10-17 | AmdEpycTurin, HeterogeneityFact |
 | AWS | [Amazon EC2 P5 instances](https://aws.amazon.com/ec2/instance-types/p5/) | 2026-10-17 | NvidiaHopper |
 | AWS | [Amazon EC2 P6 instances](https://aws.amazon.com/ec2/instance-types/p6/) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier, GraceBlackwellUltraServer, NvidiaBlackwell |
 | AWS | [Amazon EC2 P6e-GB300 UltraServers (NVIDIA GB300 NVL72) generally available](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell |
 | AWS | [Amazon EC2 Trn3 instances](https://aws.amazon.com/ec2/instance-types/trn3/) | 2026-10-17 | AwsCustomSilicon, FlashCacheTier, HeterogeneityFact, MoeAndSparseActivation, QuantizationAndPrecision |
 | AWS | [Announcing Amazon EC2 Trn3 UltraServers (2025-12-02)](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/) | 2026-10-16 | AwsCustomSilicon |
 | AWS | [Announcing up to 45% price reduction for Amazon EC2 NVIDIA GPU-accelerated instances](https://aws.amazon.com/blogs/aws/announcing-up-to-45-price-reduction-for-amazon-ec2-nvidia-gpu-accelerated-instances/) | 2026-10-17 | NvidiaBlackwell, NvidiaHopper |
+| AWS | [AWS and AMD: Amazon EC2 instances powered by AMD processors (M8a, C8a, R8a, M8azn, X8aedz, Hpc8a)](https://aws.amazon.com/ec2/amd/) | 2026-10-17 | AmdEpycTurin |
 | AWS | [AWS News Blog: Amazon EC2 C9g and C9gd instances powered by AWS Graviton5 processors are now available (2026-06-30)](https://aws.amazon.com/blogs/aws/amazon-ec2-c9g-and-c9gd-instances-powered-by-aws-graviton5-processors-are-now-available/) | 2026-10-16 | GravitonDeepDive |
 | AWS | [AWS News Blog: Amazon EC2 R9g and R9gd instances powered by AWS Graviton5 processors are now generally available (2026-08-31)](https://aws.amazon.com/blogs/aws/amazon-ec2-r9g-and-r9gd-instances-powered-by-aws-graviton5-processors-are-now-generally-available/) | 2026-10-16 | GravitonDeepDive |
 | AWS | [AWS News Blog: AWS Graviton4-based Amazon EC2 R8g instances: best price performance in Amazon EC2 (2024-07-09)](https://aws.amazon.com/blogs/aws/aws-graviton4-based-amazon-ec2-r8g-instances-best-price-performance-in-amazon-ec2/) | 2026-10-17 | GravitonDeepDive |
 | AWS | [AWS News Blog: Join the preview for new memory-optimized, AWS Graviton4-powered Amazon EC2 instances (R8g) (2023-11-28)](https://aws.amazon.com/blogs/aws/join-the-preview-for-new-memory-optimized-aws-graviton4-powered-amazon-ec2-instances-r8g/) | 2026-10-16 | GravitonDeepDive |
+| AWS | [AWS News Blog: New general-purpose Amazon EC2 M8a instances are now available (2025-10-08)](https://aws.amazon.com/blogs/aws/new-general-purpose-amazon-ec2-m8a-instances-are-now-available/) | 2026-10-17 | AmdEpycTurin |
 | AWS | [AWS News Blog: Now available: Amazon EC2 M9g and M9gd instances powered by new AWS Graviton5 processors (2026-06-10)](https://aws.amazon.com/blogs/aws/now-available-amazon-ec2-m9g-and-m9gd-instances-powered-by-new-aws-graviton5-processors/) | 2026-10-16 | GravitonDeepDive |
 | AWS | [AWS Nitro Isolation Engine: Formally verifying the hypervisor in the AWS Nitro System (2026-06-11)](https://aws.amazon.com/blogs/compute/aws-nitro-isolation-engine-formally-verifying-the-hypervisor-in-the-aws-nitro-system/) | 2026-10-17 | CapitalMarketsLens, IsolationNie |
 | AWS | [Introducing Disaggregated Inference on AWS powered by llm-d (2026-03-16)](https://aws.amazon.com/blogs/machine-learning/introducing-disaggregated-inference-on-aws-powered-by-llm-d/) | 2026-10-17 | DisaggregatedServingAndSpeculative |
@@ -315,8 +327,11 @@ Total distinct sources: 295.
 | arXiv | [SambaNova SN40L: Scaling the AI Memory Wall with Dataflow and Composition of Experts (arXiv:2405.07518, MICRO 2024)](https://arxiv.org/abs/2405.07518) | 2026-10-16 | MoeAndSparseActivation |
 | arXiv | [SPLASH: Co-Designing Sparse Attention with High-Bandwidth Flash for Efficient Long-Context Inference (arXiv:2609.23816)](https://arxiv.org/abs/2609.23816) | 2026-10-17 | HighBandwidthFlash |
 | Blocks & Files | [Kioxia eyes GPU memory stack with high-bandwidth flash push (2026-03-20)](https://www.blocksandfiles.com/flash/2026/03/20/kioxia-eyes-gpu-memory-stack-with-high-bandwidth-flash-push/5210520) | 2026-10-17 | HighBandwidthFlash |
-| Chips and Cheese | [AMD's Turin: 5th Gen EPYC Launched (core-to-core latency on EPYC 9575F)](https://chipsandcheese.com/p/amds-turin-5th-gen-epyc-launched) | 2026-10-16 | CapitalMarketsLens |
+| Chips and Cheese | [AMD's Strix Point: Zen 5 Hits Mobile (Zen 5 L2 associativity and latency)](https://chipsandcheese.com/p/amds-strix-point-zen-5-hits-mobile) | 2026-10-17 | AmdEpycTurin |
+| Chips and Cheese | [AMD's Turin: 5th Gen EPYC Launched (core-to-core latency on EPYC 9575F)](https://chipsandcheese.com/p/amds-turin-5th-gen-epyc-launched) | 2026-10-16 | AmdEpycTurin, CapitalMarketsLens |
 | Chips and Cheese | [Chips and Cheese: Arm's Neoverse V2 in AWS's Graviton 4](https://chipsandcheese.com/p/arms-neoverse-v2-in-awss-graviton-4) | 2026-10-16 | GravitonDeepDive |
+| Chips and Cheese | [Discussing AMD's Zen 5 at Hot Chips 2024](https://chipsandcheese.com/p/discussing-amds-zen-5-at-hot-chips-2024) | 2026-10-17 | AmdEpycTurin |
+| Chips and Cheese | [Evaluating Uniform Memory Access (NPS0 on a two-socket EPYC 9575F)](https://chipsandcheese.com/p/evaluating-uniform-memory-access) | 2026-10-17 | AmdEpycTurin |
 | DIGITIMES | [Samsung signals zHBF push as memory race moves beyond HBM (2026-08-27)](https://www.digitimes.com/news/a20260827VL229/samsung-hbm-bandwidth-capacity-2026.html) | 2026-10-17 | HighBandwidthFlash |
 | Risk.net | [Giles and Glasserman, Smoking adjoints: fast Monte Carlo Greeks (Risk, January 2006)](https://www.risk.net/derivatives/interest-rate-derivatives/1500261/smoking-adjoints-fast-monte-carlo-greeks) | 2026-10-16 | CapitalMarketsLens |
 | ServeTheHome | [Oxmiq Labs HBF in AI Compute at Hot Chips 2026 (2026-08-27)](https://www.servethehome.com/oxmiq-labs-hbf-in-ai-compute-at-hot-chips-2026/) | 2026-10-17 | HighBandwidthFlash |
