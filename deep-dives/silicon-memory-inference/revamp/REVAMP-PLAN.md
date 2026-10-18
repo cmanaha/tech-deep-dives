@@ -300,3 +300,10 @@ earlier one.
   ridge names which figure it uses.
 - Heterogeneity Fact: Trainium2 already has ISA support for dynamic shapes and control
   flow (Trainium2 architecture page); never write that Trainium3 "adds" them alone.
+- AWS Trainium: Trn2 is a 4x4 2D torus per trn2.48xlarge (each chip links to 4
+  neighbours; 6 of the other 63 in a Trn2 UltraServer); Trn3 links chips to switches:
+  256 GB/s intra-server, 320 GB/s inter-server, 128 GB/s inter-rack, bidirectional per
+  chip. Never write "one hop to any chip" for Trn3, and NeuronLink is not a coherent
+  memory domain. Trainium3 NeuronLink-v4 per chip appears as 2.56 TB/s, 2,048 GiB/s and
+  2 TB/s on three AWS pages; quote the one used with its source. The NCCL v2.28.3-1
+  release record (`ncclV2283`) is shared with Communication and Scale-Out.

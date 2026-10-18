@@ -6,32 +6,83 @@ import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
-import Link from '@cloudscape-design/components/link';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
-import { TrainiumChipDiagram } from '../components/TrainiumChipDiagram';
+import { TrainiumChipDiagram, TrainiumFabricDiagram } from '../components/TrainiumChipDiagram';
+import { Cite } from '../components/Cite';
+import { S } from '../sources/AwsCustomSilicon';
 
 interface SiliconRow {
   silicon: string;
-  cores: string;
-  sbuf: string;
-  hbm: string;
-  notes: string;
+  cores: React.ReactNode;
+  sbuf: React.ReactNode;
+  hbm: React.ReactNode;
 }
 
 const rows: SiliconRow[] = [
   {
     silicon: 'Trainium2 (Trn2)',
-    cores: '8 NeuronCore-v3',
-    sbuf: '28 MiB / NeuronCore-v3 (224 MiB / chip)',
-    hbm: '96 GiB at 2.9 TB/s',
-    notes: 'Trn2 UltraServer = 64 chips in 3D Torus over NeuronLink-v3',
+    cores: (
+      <>
+        8 NeuronCore-v3
+        <Cite s={S.trainium2Arch} />
+      </>
+    ),
+    sbuf: (
+      <>
+        28 MiB per core, 224 MiB per chip
+        <Cite s={S.nkiTrn2Arch} />
+        <Cite s={S.trainium2Arch} />
+      </>
+    ),
+    hbm: (
+      <>
+        96 GiB at 2.9 TB/s
+        <Cite s={S.trainium2Arch} />
+      </>
+    ),
+  },
+  {
+    silicon: 'Trainium3 (Trn3)',
+    cores: (
+      <>
+        8 NeuronCore-v4
+        <Cite s={S.trainium3Arch} />
+      </>
+    ),
+    sbuf: (
+      <>
+        32 MiB per core, 256 MiB per chip
+        <Cite s={S.nkiTrn3Arch} />
+        <Cite s={S.trainium3Arch} />
+      </>
+    ),
+    hbm: (
+      <>
+        144 GiB at 4.9 TB/s
+        <Cite s={S.trainium3Arch} />
+      </>
+    ),
   },
   {
     silicon: 'Inferentia2 (Inf2)',
-    cores: '2 NeuronCore-v2 per chip',
-    sbuf: '24 MiB / NeuronCore-v2',
-    hbm: '32 GiB at 0.8 TB/s',
-    notes: 'Inference-tuned sibling; production for Mixtral-class serving',
+    cores: (
+      <>
+        2 NeuronCore-v2
+        <Cite s={S.inferentia2Arch} />
+      </>
+    ),
+    sbuf: (
+      <>
+        24 MiB per core
+        <Cite s={S.nkiTrnInf2Arch} />
+      </>
+    ),
+    hbm: (
+      <>
+        32 GiB at 820 GiB/s
+        <Cite s={S.inferentia2Arch} />
+      </>
+    ),
   },
 ];
 
@@ -42,29 +93,32 @@ export function AwsCustomSilicon() {
         header={
           <Header
             variant="h1"
-            description="Trainium and Inferentia — AWS-designed accelerators with compile-time scheduled determinism"
+            description="What a Trainium chip holds, why Trn3's switched fabric changes how mixture-of-experts (MoE) models exchange tokens, and which chips current Neuron releases serve"
           >
-            AWS Trainium, Inferentia, and Neuron silicon
+            AWS Trainium, Inferentia and Neuron
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>What AWS custom silicon is.</strong> Two product lines designed by
-            Annapurna Labs for AWS: Trainium (training-optimized) and Inferentia
-            (inference-optimized). Both share the same NeuronCore architecture
-            family — a systolic array with explicit SBUF (state buffer) and PSUM
-            (partial sum) scratchpads, plus dedicated CC-Cores (Collective
-            Communication cores) for fabric-side collectives. The execution model is
-            compile-time scheduled: the Neuron compiler emits a NEFF descriptor
-            ahead of time, and the runtime walks it deterministically.
+            <strong>What it is.</strong> Trainium and Inferentia are AWS&apos;s accelerators, both
+            built from NeuronCores: four engines (Tensor, Vector, Scalar and GPSIMD, a
+            general-purpose SIMD engine) around software-managed on-chip SRAM, with a systolic
+            array as the Tensor engine.
+            <Cite s={S.neuronCoreV3} />
           </Box>
           <Box variant="p">
-            <strong>Why this section sits where it does.</strong> Section 13 covered
-            NVIDIA at the silicon level. This section is the AWS counterpart at the
-            silicon level — the same kind of hardware deep dive, focused on what is
-            in the package and how operands flow through it. Section 18 covers the
-            compiler stack on top.
+            <strong>How it differs from a GPU.</strong> The Neuron compiler fixes memory
+            allocation and instruction order ahead of time in a NEFF (Neuron Executable File
+            Format)
+            <Cite s={S.nkiOverview} />, so no warp scheduler picks work at run time; dynamic
+            shapes and control flow still run, through ISA (instruction set architecture)
+            extensions on Trainium2 and Trainium3.
+            <Cite s={S.trainium2Arch} />
+            <Cite s={S.trainium3Arch} /> The two on-chip scratchpads, SBUF (State Buffer) and
+            PSUM (Partial Sum buffer), have no cache in front: the compiler or an NKI (Neuron
+            Kernel Interface) kernel decides what sits in them.
+            <Cite s={S.neuronCoreV3} /> <em>AWS Compilers and Kernel Tooling</em> covers both.
           </Box>
         </SpaceBetween>
       </Container>
@@ -73,7 +127,7 @@ export function AwsCustomSilicon() {
         header={
           <Header
             variant="h2"
-            description="Schematic layout of a Trainium2 chip"
+            description="Where operands live, and the buffer sizes a kernel's tiles have to fit"
           >
             Inside a Trainium2 chip
           </Header>
@@ -81,19 +135,66 @@ export function AwsCustomSilicon() {
       >
         <SpaceBetween size="m">
           <TrainiumChipDiagram />
-          <Box variant="p">
-            Each Trainium2 chip ships 8 NeuronCore-v3 engines, 16 CC-Cores for
-            collectives, and 96 GiB of HBM at 2.9 TB/s aggregate. Per NeuronCore-v3:
-            28 MiB of SBUF and 2 MiB of PSUM. A NeuronCore-v3 is built around a
-            systolic array; the Neuron compiler tiles operations to fit SBUF
-            residency and emits a NEFF that the runtime plays back without a
-            scheduler in the loop
-            ({' '}
-            <Link external href="https://awsdocs-neuron.readthedocs-hosted.com/">
-              AWS Neuron SDK documentation
-            </Link>
-            , accessed 2026-04-23).
+          <Box variant="small" color="text-body-secondary">
+            Cores, CC-Cores (Collective Communication cores) and HBM (High Bandwidth Memory)
+            <Cite s={S.trainium2Arch} />; SBUF and PSUM
+            <Cite s={S.nkiTrn2Arch} />; NeuronLink-v3
+            <Cite s={S.trn2Arch} />. The HBM blocks do not show the stack count.
           </Box>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">SBUF</Box>
+              <Box variant="p">
+                Feeds the Tensor engine: 28 MiB per NeuronCore-v3 and 32 MiB per NeuronCore-v4
+                <Cite s={S.nkiTrn2Arch} />
+                <Cite s={S.nkiTrn3Arch} />, about 126 times the 228 KB of shared memory in a
+                Hopper SM (Streaming Multiprocessor).
+                <Cite s={S.hopperTuningGuide} />
+                <Cite s={S.nkiTrn2Arch} kind="derived" note="28 MiB / 228 KB, with 1 KB = 1,024 bytes: about 126." />
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">PSUM</Box>
+              <Box variant="p">
+                The Tensor engine&apos;s accumulator, 2 MiB per NeuronCore on both chips.
+                <Cite s={S.nkiTrn2Arch} />
+                <Cite s={S.nkiTrn3Arch} /> It caps the matmul tile: the moving tile&apos;s free
+                dimension stops at 512 elements on NeuronCore-v2 and v3, and at 4,096 FP32 or
+                8,192 BF16 elements (eight PSUM banks) on NeuronCore-v4.
+                <Cite s={S.ncMatmul} /> A wider tile written for Trainium3 has to be split for
+                Trainium2.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">CC-Cores</Box>
+              <Box variant="p">
+                16 per chip on Trainium2 and Trainium3.
+                <Cite s={S.trainium2Arch} />
+                <Cite s={S.trainium3Arch} /> They are dedicated synchronization processors that
+                decide when the data movement engines transfer data at each step of a collective;
+                the engines move the bytes.
+                <Cite s={S.collectives} /> On a GPU, NCCL (NVIDIA Collective Communications
+                Library) collectives mostly run on the SMs that also run the model.
+                <Cite
+                  s={S.ncclV2283}
+                  note="NCCL 2.28 moved some all-to-all and all-gather paths inside an NVLink domain onto copy engines to reduce SM use."
+                />
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">NeuronLink-v3</Box>
+              <Box variant="p">
+                1,024 GB/s per chip to the chips in its instance, plus 256 GB/s per chip to the
+                other instances of a Trn2 UltraServer.
+                <Cite s={S.trn2Arch} /> A Ring collective hop inside an instance takes about 1 to
+                2 µs, depending on HBM load.
+                <Cite s={S.intranodeCollectives} /> Between Trn2 servers over EFA (Elastic Fabric
+                Adapter), not NeuronLink, a minimal HBM-to-HBM packet takes 15 µs in
+                ib_write_lat.
+                <Cite s={S.collectives} kind="measured" />
+              </Box>
+            </div>
+          </ColumnLayout>
         </SpaceBetween>
       </Container>
 
@@ -101,63 +202,9 @@ export function AwsCustomSilicon() {
         header={
           <Header
             variant="h2"
-            description="The four primitives that anchor Neuron silicon"
+            description="The per-chip memory and buffer sizes to fit a model against, generation by generation"
           >
-            SBUF, PSUM, CC-Cores, NeuronLink
-          </Header>
-        }
-      >
-        <ColumnLayout columns={2} variant="text-grid">
-          <div>
-            <Box variant="h3">SBUF (State Buffer)</Box>
-            <Box variant="p">
-              The compiler-managed scratchpad that holds activations and weights for
-              the systolic array. 28 MiB per NeuronCore-v3 — roughly two orders of
-              magnitude larger than NVIDIA Hopper&apos;s 228 KB SMEM, because the
-              compiler is responsible for everything that lives there and does not
-              rely on a cache to make eviction decisions. SBUF residency is the
-              first-order tuning variable for Neuron compiler output.
-            </Box>
-          </div>
-          <div>
-            <Box variant="h3">PSUM (Partial Sum)</Box>
-            <Box variant="p">
-              The output side of the systolic array. 2 MiB per NeuronCore-v3. Holds
-              accumulated partial sums before they are written back. PSUM has a
-              free-dim constraint (≤ 512) that the compiler must respect when tiling
-              — a real limit that surfaces in NKI kernel authoring.
-            </Box>
-          </div>
-          <div>
-            <Box variant="h3">CC-Cores (Collective Communication cores)</Box>
-            <Box variant="p">
-              16 per chip on Trainium2. Dedicated silicon for collectives —
-              all-reduce, all-gather, all-to-all. The CC-Cores handle the fabric
-              side of distributed training and inference without occupying
-              NeuronCore compute. The MoE all-to-all-v primitive (when it ships)
-              will run here.
-            </Box>
-          </div>
-          <div>
-            <Box variant="h3">NeuronLink-v3</Box>
-            <Box variant="p">
-              The chip-to-chip fabric. 1.28 TB/s per chip intra-node, 256 GB/s per
-              chip inter-instance. Trn2 UltraServer composes 64 chips into a 3D
-              Torus, giving a single coherent domain for tensor-parallel and
-              expert-parallel deployments. Cross-server HBM-to-HBM latency: 15 µs
-              (vendor-cited).
-            </Box>
-          </div>
-        </ColumnLayout>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Two product lines, same NeuronCore family"
-          >
-            Trainium and Inferentia
+            Trainium2, Trainium3 and Inferentia2
           </Header>
         }
       >
@@ -165,21 +212,31 @@ export function AwsCustomSilicon() {
           <Table
             items={rows}
             columnDefinitions={[
-              { id: 'sil', header: 'Silicon', cell: (r) => r.silicon, minWidth: 200 },
-              { id: 'cores', header: 'NeuronCores', cell: (r) => r.cores },
-              { id: 'sbuf', header: 'SBUF', cell: (r) => r.sbuf },
-              { id: 'hbm', header: 'HBM', cell: (r) => r.hbm },
-              { id: 'notes', header: 'Notes', cell: (r) => r.notes },
+              { id: 'sil', header: 'Silicon', cell: (r) => r.silicon, minWidth: 140 },
+              { id: 'cores', header: 'NeuronCores', cell: (r) => r.cores, minWidth: 150 },
+              { id: 'sbuf', header: 'SBUF', cell: (r) => r.sbuf, minWidth: 200 },
+              { id: 'hbm', header: 'HBM', cell: (r) => r.hbm, minWidth: 170 },
             ]}
             variant="embedded"
             wrapLines
           />
-          <Box variant="small">
-            All numbers track the AWS Neuron documentation, accessed 2026-04-23.
-            Trainium3 (Trn3) is announced; full per-chip specifications were not
-            directly verified in the pages fetched for this iteration and remain
-            UNKNOWN here pending datasheet publication.
+          <Box variant="p">
+            <em>Roofline and Arithmetic Intensity</em> sets these bandwidths against each
+            chip&apos;s compute. Trainium4 is on the roadmap: AWS claims at least 6x
+            Trainium3&apos;s FP4 performance and 4x its memory bandwidth, with NVIDIA NVLink Fusion
+            support; this research found no date or specification sheet.
+            <Cite s={S.trainium3AboutAmazon} kind="roadmap" />
           </Box>
+          <ExpandableSection headerText="Trainium3's chip-to-chip bandwidth appears three ways">
+            <Box variant="p">
+              AWS pages give Trainium3&apos;s NeuronLink-v4 as 2.56 TB/s
+              <Cite s={S.trainium3Arch} />, 2,048 GiB/s
+              <Cite s={S.trn3Arch} /> and 2 TB/s
+              <Cite s={S.trn3Page} /> per chip. The per-level figures this section uses sum to
+              704 GB/s, bidirectional per chip.
+              <Cite s={S.trn3Arch} kind="derived" note="256 + 320 + 128 = 704 GB/s, bidirectional per chip." />
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -187,47 +244,73 @@ export function AwsCustomSilicon() {
         header={
           <Header
             variant="h2"
-            description="The properties that make Trainium architecturally distinct from a GPU"
+            description="Trn2 links each chip directly to 6 of the other 63, Trn3 links it to switches, and that decides where an expert group belongs"
           >
-            What Trainium is, that a GPU is not
+            MoE on Trainium: from a torus to switches
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Compile-time scheduling.</strong> The Neuron compiler emits the
-            entire schedule into the NEFF binary. There is no warp scheduler, no
-            occupancy decision, no runtime branching among ready warps. The runtime
-            executes the NEFF deterministically — same NEFF, same input, same silicon
-            produces the same output in the same order. This is the property that
-            makes Trainium a candidate for regulated workloads where reproducibility
-            is a first-class requirement.
+            An MoE layer dispatches tokens to the chips that hold their experts and combines the
+            results back: two all-to-all exchanges
+            <Cite s={S.pytorchNative} />, in which every chip sends to every other chip.
+            <Cite s={S.intranodeCollectives} /> The path between every pair of chips counts.{' '}
+            <em>Mixture of Experts and Sparse Activation</em> covers the routing.
           </Box>
           <Box variant="p">
-            <strong>Software-managed memory throughout.</strong> No L1, L2, L3
-            caches in the conventional sense. SBUF and PSUM are scratchpads. The
-            compiler decides what is resident at each moment. There is no
-            cache-coherence protocol to participate in across NeuronCores; the
-            schedule says where everything is.
+            <strong>Trn2 is a torus.</strong> A trn2.48xlarge links 16 chips in a 4x4 2D torus,
+            each to four neighbours; a Trn2 UltraServer joins four instances and rings
+            same-position chips together, two more neighbours.
+            <Cite s={S.trn2Arch} />
+            <Cite s={S.collectives} /> A chip has direct links to 6 of the other 63 chips
+            <Cite s={S.collectives} kind="derived" note="4 torus neighbours in the instance plus 2 on the ring across instances, out of 63 other chips in a 64-chip UltraServer." />
+            ; traffic to the rest is routed through chips in between, which over-subscribes
+            links.
+            <Cite s={S.intranodeCollectives} />
           </Box>
           <Box variant="p">
-            <strong>Dedicated collective silicon.</strong> CC-Cores carry collectives
-            without contending with compute. On a GPU, NCCL collectives run as kernels
-            on the same SMs that run the model — competing for resources. On
-            Trainium, collectives run on dedicated silicon.
+            <strong>Trn3 is switched.</strong> A PCIe switch-based interconnect (NeuronSwitch-v1)
+            carries all chip-to-chip traffic, replacing Trn2&apos;s point-to-point NeuronLink. In the layout
+            the Trn3 page describes, four chips share a switch in their server (256 GB/s per
+            chip), switches join a rack&apos;s servers (320 GB/s), and a direct link reaches the
+            same-position chip in another rack (128 GB/s), all bidirectional.
+            <Cite s={S.trn3Arch} /> AWS describes this all-to-all topology as optimized for MoE
+            models.
+            <Cite s={S.trn3Arch} />
           </Box>
-          <Alert type="warning" header="The MoE all-to-all gap">
-            Trainium MoE NKI kernels (Router Top-K, MoE CTE, MoE TKG, Blockwise
-            Matmul) shipped in Neuron 2.27.0 (December 2025). Expert parallelism
-            today uses All-Gather rather than All-to-All-v. The All-to-All-v
-            primitive (<code>torch.all_to_all_vdev_2d</code>) is on the roadmap as of
-            Neuron 2.29
-            ({' '}
-            <Link external href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/">
-              Neuron release notes
-            </Link>
-            , accessed 2026-04-23). For MoE workloads in 2026 this is a real and
-            citeable gap relative to NVIDIA NCCL with MNNVL.
+          <TrainiumFabricDiagram />
+          <Box variant="small" color="text-body-secondary">
+            Trn2 topology and routing
+            <Cite s={S.collectives} />
+            <Cite s={S.trn2Arch} />
+            <Cite s={S.intranodeCollectives} />; Trn3 layouts and bandwidths
+            <Cite s={S.trn3Arch} />. Trn3 is drawn with four chips per server (the Gen2 layout);
+            the page gives no rack size. Each orange route is one example.
+          </Box>
+          <Box variant="p">
+            <strong>Placing experts</strong> (our reading of these figures). A Trn2 chip has four
+            times the NeuronLink bandwidth inside its instance as across instances, so an
+            expert-parallel group that fits on one instance&apos;s 16 chips keeps dispatch off the
+            slower links.
+            <Cite s={S.trn2Arch} kind="derived" note="1,024 GB/s inside the instance against 256 GB/s across instances, per chip." />{' '}
+            On Trn3 the narrowest path is between racks, 128 GB/s per chip against 256 or 320
+            inside one.
+            <Cite s={S.trn3Arch} kind="derived" /> The Trn3 page gives no rack chip count, so
+            confirm it with AWS before sizing a group that may span racks.
+          </Box>
+          <Alert type="info" header="How to get MoE dispatch right on Trainium">
+            Use the collectives that ship: Neuron Runtime AllToAllV on Trn2 and Trn3 from Neuron
+            2.32.0,{' '}
+            <code>nki.collectives.all_to_all_v</code> from 2.29.0, NKI Library MoE kernels such
+            as Router Top-K from 2.28.0, and Wide-EP (wide expert parallelism) in vLLM Neuron, a
+            beta.
+            <Cite s={S.neuronWhatsNew} /> The gap left is PyTorch&apos;s native dispatch and combine ops
+            (<code>torch.all_to_all_vdev_2d</code> and its <code>_offset</code> variant), which
+            TorchNeuron, a closed beta, lists for future releases; it matters only to code written
+            against TorchNeuron.
+            <Cite s={S.pytorchNative} /> <em>AWS Compilers and Kernel Tooling</em> covers vLLM
+            Neuron and NKI.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -236,7 +319,7 @@ export function AwsCustomSilicon() {
         header={
           <Header
             variant="h2"
-            description="What ships on EC2"
+            description="Which instance to ask for, and which Neuron release still serves it"
           >
             Trainium and Inferentia on AWS
           </Header>
@@ -245,46 +328,54 @@ export function AwsCustomSilicon() {
         <SpaceBetween size="m">
           <ColumnLayout columns={3} variant="text-grid">
             <div>
-              <Box variant="h3">Trn2 UltraServer</Box>
+              <Box variant="h3">Trn3 UltraServer</Box>
               <Box variant="p">
-                64 Trainium2 chips in a single coherent 3D Torus over NeuronLink-v3.
-                The headline AWS frontier-training and large-MoE-inference platform.
+                Generally available since 2 December 2025.
+                <Cite s={S.trn3WhatsNew} /> Gen1: 64 chips, 9,216 GiB of HBM at 313.6 TB/s.
+                Gen2: 144 chips, 20,736 GiB at 705.6 TB/s, 362 dense MXFP8 (microscaling FP8)
+                PFLOPS.
+                <Cite s={S.trn3Arch} /> AWS claims up to 4.4x a Trn2 UltraServer&apos;s
+                performance.
+                <Cite s={S.trn3WhatsNew} kind="vendor-claim" /> The EC2 instance specification
+                lists no Trn3 instance type.
+                <Cite s={S.ec2AcceleratedSpecs} />
               </Box>
             </div>
             <div>
-              <Box variant="h3">Trn2 / Trn1</Box>
+              <Box variant="h3">Trn2 UltraServer and Trn2</Box>
               <Box variant="p">
-                Standard 8-chip Trainium2 instance (Trn2) and the previous-gen
-                Trainium1 instance (Trn1). General training workloads at sub-frontier
-                scale.
+                The previous generation: four trn2u.48xlarge instances, 64 Trainium2 chips and
+                6,144 GiB of HBM in one NeuronLink 3D torus.
+                <Cite s={S.trn2Arch} />
+                <Cite s={S.collectives} /> A trn2.48xlarge has 16 chips, a trn2.3xlarge one.
+                <Cite s={S.ec2AcceleratedSpecs} />
               </Box>
             </div>
             <div>
-              <Box variant="h3">Inf2</Box>
+              <Box variant="h3">Trn1 and Inf2</Box>
               <Box variant="p">
-                Inferentia2 — production inference for medium-class models. The
-                fleet that handled SageMaker hosted endpoints and Bedrock inference
-                paths before Trainium2 inference matured.
+                Both remain on EC2.
+                <Cite s={S.ec2AcceleratedSpecs} /> NxD Inference (NeuronX Distributed Inference)
+                dropped them in Neuron 2.29.0 and
+                vLLM Neuron serves Trn2 and Trn3, so serving on either pins to Neuron 2.28.
+                <Cite s={S.neuronWhatsNew} /> This research found no announced Inferentia
+                successor.
               </Box>
             </div>
           </ColumnLayout>
-          <ExpandableSection headerText="Where Trainium wins, where it does not">
-            <SpaceBetween size="s">
-              <Box variant="p">
-                <strong>Wins.</strong> Reproducibility-required workloads (regulated
-                finance, healthcare audit). High-throughput training where the model
-                fits the Neuron compiler&apos;s tiling well. Cost-sensitive inference
-                serving on Mixtral / Llama / Qwen-class models with stable
-                graph shapes.
-              </Box>
-              <Box variant="p">
-                <strong>Watch out.</strong> MoE workloads that need All-to-All-v
-                today (NVIDIA NCCL is more mature). Models with highly dynamic
-                graphs that defeat NEFF caching. Workloads that depend on a CUDA-
-                specific kernel for which there is no NKI equivalent yet.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
+          <Box variant="p">
+            <strong>Before you commit a model to a target</strong>, check that vLLM Neuron serves
+            the chip, which links your expert group crosses, and, when runs must match, that{' '}
+            <code>NEURON_RT_STOCHASTIC_ROUNDING_SEED</code> is fixed
+            <Cite
+              s={S.neuronEnvVars}
+              note="NEURON_RT_STOCHASTIC_ROUNDING_SEED: set to a fixed value to ensure reproducibility between runs."
+            />
+            , because both Trainium generations let you choose stochastic rounding.
+            <Cite s={S.trainium2Arch} />
+            <Cite s={S.trainium3Arch} /> <em>Determinism: NEFF and GPU Reproducibility</em>{' '}
+            covers the rest.
+          </Box>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

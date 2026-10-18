@@ -12,31 +12,37 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 252.
+Total distinct sources: 261.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
-| AWS | [Amazon EC2 accelerated computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html) | 2026-10-17 | CapitalMarketsLens, DisaggregatedServingAndSpeculative, FlashCacheTier, GraceBlackwellUltraServer, HeterogeneityFact, NvidiaBlackwell, NvidiaHopper |
+| AWS | [Amazon EC2 accelerated computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html) | 2026-10-17 | AwsCustomSilicon, CapitalMarketsLens, DisaggregatedServingAndSpeculative, FlashCacheTier, GraceBlackwellUltraServer, HeterogeneityFact, NvidiaBlackwell, NvidiaHopper |
 | AWS | [Amazon FSx for Lustre performance: throughput to individual client instances](https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon FSx for Lustre: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon FSx for Lustre: working with EFA-enabled file systems](https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon S3 Express One Zone: high performance with directory buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [AWS Neuron 2.32.0: NxD Inference MoE architecture deep dive](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/libraries/nxd-inference/developer_guides/moe-arch-deep-dive.html) | 2026-10-16 | MoeAndSparseActivation |
-| AWS | [AWS Neuron: Amazon EC2 Trn2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn2-arch.html) | 2026-10-16 | HeterogeneityFact, MoeAndSparseActivation |
-| AWS | [AWS Neuron: Amazon EC2 Trn3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn3-arch.html) | 2026-10-16 | MoeAndSparseActivation |
+| AWS | [AWS Neuron: Amazon EC2 Trn2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn2-arch.html) | 2026-10-17 | AwsCustomSilicon, HeterogeneityFact, MoeAndSparseActivation |
+| AWS | [AWS Neuron: Amazon EC2 Trn3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn3-arch.html) | 2026-10-17 | AwsCustomSilicon, MoeAndSparseActivation |
 | AWS | [AWS Neuron: Data Types](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/data-types.html) | 2026-10-17 | QuantizationAndPrecision |
-| AWS | [AWS Neuron: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/jax/api-reference-guide/neuron-envvars.html) | 2026-10-16 | CapitalMarketsLens |
+| AWS | [AWS Neuron: Inferentia2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/inferentia2.html) | 2026-10-16 | AwsCustomSilicon |
+| AWS | [AWS Neuron: Intra-node Collective Communications with AWS Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/explore/intranode-collective-comm.html) | 2026-10-17 | AwsCustomSilicon |
+| AWS | [AWS Neuron: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/jax/api-reference-guide/neuron-envvars.html) | 2026-10-16 | AwsCustomSilicon, CapitalMarketsLens |
+| AWS | [AWS Neuron: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/pytorch-native-overview.html) | 2026-10-17 | AwsCustomSilicon |
 | AWS | [AWS Neuron: Neuron Graph Compiler overview (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/index.html) | 2026-10-16 | KernelExecutionLifecycle |
-| AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-16 | KernelExecutionLifecycle |
-| AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | HeterogeneityFact |
+| AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-16 | AwsCustomSilicon, KernelExecutionLifecycle |
+| AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | AwsCustomSilicon, HeterogeneityFact |
+| AWS | [AWS Neuron: NKI API reference, nki.isa.nc_matmul](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/api/generated/nki.isa.nc_matmul.html) | 2026-10-16 | AwsCustomSilicon |
 | AWS | [AWS Neuron: NKI Library release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nki-lib.html) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
-| AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-17 | KernelExecutionLifecycle |
-| AWS | [AWS Neuron: NKI Trainium2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium2_arch.html) | 2026-10-17 | KernelExecutionLifecycle |
-| AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-17 | HeterogeneityFact, KernelExecutionLifecycle, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
-| AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-17 | HeterogeneityFact, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
-| AWS | [AWS Neuron: What's New in the AWS Neuron SDK (releases 2.27.0 to 2.32.0)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/whats-new.html) | 2026-10-17 | MoeAndSparseActivation |
+| AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-17 | AwsCustomSilicon, KernelExecutionLifecycle |
+| AWS | [AWS Neuron: NKI Trainium2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium2_arch.html) | 2026-10-17 | AwsCustomSilicon, KernelExecutionLifecycle |
+| AWS | [AWS Neuron: NKI Trainium3 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium3_arch.html) | 2026-10-16 | AwsCustomSilicon |
+| AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-17 | AwsCustomSilicon, HeterogeneityFact, KernelExecutionLifecycle, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-17 | AwsCustomSilicon, HeterogeneityFact, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| AWS | [AWS Neuron: What is Neuron Collective Communication?](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html) | 2026-10-17 | AwsCustomSilicon |
+| AWS | [AWS Neuron: What's New in the AWS Neuron SDK (releases 2.27.0 to 2.32.0)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/whats-new.html) | 2026-10-17 | AwsCustomSilicon, MoeAndSparseActivation |
 | AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | CapitalMarketsLens, GraceBlackwellUltraServer, HeterogeneityFact |
 | AWS | [Capacity Blocks for ML: supported instance types and Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaHopper |
 | AWS | [Data persistence for Amazon EC2 instance store volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html) | 2026-10-17 | FlashCacheTier |
@@ -118,8 +124,9 @@ Total distinct sources: 252.
 | NVIDIA | [NVIDIA Form 8-K exhibit 99.1, Q2 fiscal 2027 results (2026-08-26)](https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27pr.htm) | 2026-10-16 | GraceBlackwellUltraServer, NvidiaBlackwell |
 | NVIDIA | [NVIDIA GPUDirect Storage Overview Guide v1.19.1](https://docs.nvidia.com/gpudirect-storage/overview-guide/index.html) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA GPUDirect Storage Release Notes v1.19.1](https://docs.nvidia.com/gpudirect-storage/release-notes/index.html) | 2026-10-17 | FlashCacheTier |
-| NVIDIA | [NVIDIA Hopper Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) | 2026-10-17 | KernelExecutionLifecycle, NvidiaHopper |
+| NVIDIA | [NVIDIA Hopper Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) | 2026-10-17 | AwsCustomSilicon, KernelExecutionLifecycle, NvidiaHopper |
 | NVIDIA | [NVIDIA Multi-Instance GPU User Guide: Concepts](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/concepts.html) | 2026-10-16 | CapitalMarketsLens |
+| NVIDIA | [NVIDIA/nccl release v2.28.3-1](https://github.com/NVIDIA/nccl/releases/tag/v2.28.3-1) | 2026-10-16 | AwsCustomSilicon |
 | NVIDIA | [NVIDIA/storage-lender README at commit 1630d17 (SCADA control path)](https://github.com/NVIDIA/storage-lender/blob/1630d17b50b7130dee27c1f71361ad5af4e434bb/README.md) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [PTX ISA 9.4: wgmma (9.7.17) and tcgen05 / Tensor Memory (9.7.18)](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html) | 2026-10-17 | HeterogeneityFact, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper, QuantizationAndPrecision, ThesisAndFraming |
 | NVIDIA | [TensorRT Quick Start Guide: What Is TensorRT?](https://docs.nvidia.com/deeplearning/tensorrt/latest/getting-started/quick-start-guide.html) | 2026-10-17 | NvidiaCompilersAndTooling |
@@ -180,6 +187,7 @@ Total distinct sources: 252.
 
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
+| Amazon | [Trainium3 UltraServers now available (Trainium4 roadmap)](https://www.aboutamazon.com/news/aws/trainium-3-ultraserver-faster-ai-training-lower-cost) | 2026-10-16 | AwsCustomSilicon |
 | AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-17 | QuantizationAndPrecision, RooflineAndArithmeticIntensity |
 | AMD | [AMD Solarflare X4 Low Latency Using SDCI (white paper, October 2025, Rev 1)](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/white-papers/x4-sdci-whitepaper.pdf) | 2026-10-17 | CapitalMarketsLens |
 | AWS | [Amazon EC2 M8a instances](https://aws.amazon.com/ec2/instance-types/m8a/) | 2026-10-17 | HeterogeneityFact |
@@ -187,7 +195,8 @@ Total distinct sources: 252.
 | AWS | [Amazon EC2 P5 instances](https://aws.amazon.com/ec2/instance-types/p5/) | 2026-10-17 | NvidiaHopper |
 | AWS | [Amazon EC2 P6 instances](https://aws.amazon.com/ec2/instance-types/p6/) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier, GraceBlackwellUltraServer, NvidiaBlackwell |
 | AWS | [Amazon EC2 P6e-GB300 UltraServers (NVIDIA GB300 NVL72) generally available](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell |
-| AWS | [Amazon EC2 Trn3 instances](https://aws.amazon.com/ec2/instance-types/trn3/) | 2026-10-17 | FlashCacheTier, HeterogeneityFact, MoeAndSparseActivation, QuantizationAndPrecision |
+| AWS | [Amazon EC2 Trn3 instances](https://aws.amazon.com/ec2/instance-types/trn3/) | 2026-10-17 | AwsCustomSilicon, FlashCacheTier, HeterogeneityFact, MoeAndSparseActivation, QuantizationAndPrecision |
+| AWS | [Announcing Amazon EC2 Trn3 UltraServers (2025-12-02)](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/) | 2026-10-16 | AwsCustomSilicon |
 | AWS | [Announcing up to 45% price reduction for Amazon EC2 NVIDIA GPU-accelerated instances](https://aws.amazon.com/blogs/aws/announcing-up-to-45-price-reduction-for-amazon-ec2-nvidia-gpu-accelerated-instances/) | 2026-10-17 | NvidiaBlackwell, NvidiaHopper |
 | AWS | [AWS Nitro Isolation Engine: Formally verifying the hypervisor in the AWS Nitro System (2026-06-11)](https://aws.amazon.com/blogs/compute/aws-nitro-isolation-engine-formally-verifying-the-hypervisor-in-the-aws-nitro-system/) | 2026-10-16 | CapitalMarketsLens |
 | AWS | [Introducing Disaggregated Inference on AWS powered by llm-d (2026-03-16)](https://aws.amazon.com/blogs/machine-learning/introducing-disaggregated-inference-on-aws-powered-by-llm-d/) | 2026-10-17 | DisaggregatedServingAndSpeculative |
