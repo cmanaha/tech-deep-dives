@@ -51,12 +51,26 @@ export const S = {
     tier: 2,
     accessed: '2026-10-17',
   },
-  cerebrasChip: {
-    title: 'Cerebras WSE-3 Turbo chip page',
+  cs4Datasheet: {
+    title: 'Meet CS-4: Cerebras CS-4 datasheet (CS-4 Specifications, footnoted "compute shown as sparse FP16")',
     publisher: 'Cerebras',
-    url: 'https://www.cerebras.ai/chip',
-    tier: 2,
-    accessed: '2026-10-17',
+    url: 'https://cdn.sanity.io/files/e4qjo92p/production/bb028ae2422089dfbcc9fd2455c021f3625c7a75.pdf',
+    tier: 1,
+    accessed: '2026-10-18',
+  },
+  cerebrasSdkDocs: {
+    title: 'Cerebras SDK docs: Wafer-Scale Engine Architecture',
+    publisher: 'Cerebras',
+    url: 'https://sdk.cerebras.ai/computing-with-cerebras',
+    tier: 1,
+    accessed: '2026-10-18',
+  },
+  registerCs4: {
+    title: 'Cerebras CS-4 rack systems juice chips for every last drop of AI performance (2026-08-19)',
+    publisher: 'The Register',
+    url: 'https://www.theregister.com/systems/2026/08/19/cerebras-cs-4-rack-systems-juice-chips-for-every-last-drop-of-ai-performance/5289286',
+    tier: 3,
+    accessed: '2026-10-18',
   },
 
   // Cerebras inference catalog and benchmarks.

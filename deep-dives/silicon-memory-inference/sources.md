@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 455.
+Total distinct sources: 457.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -88,6 +88,8 @@ Total distinct sources: 455.
 | AWS | [SageMaker HyperPod: managed tiered KV cache and routing](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-ray-kv-cache.html) | 2026-10-17 | FlashCacheTier |
 | Bank for International Settlements | [BCBS d457: Minimum capital requirements for market risk (January 2019)](https://www.bis.org/bcbs/publ/d457.htm) | 2026-10-16 | CapitalMarketsLens |
 | Bank of England (PRA) | [PRA sets out adjustments to its market risk internal model approach under Basel 3.1 (19 June 2026)](https://www.bankofengland.co.uk/news/2026/june/pra-adjustments-market-risk-internal-model-approach-under-basel31) | 2026-10-17 | CapitalMarketsLens |
+| Cerebras | [Cerebras SDK docs: Wafer-Scale Engine Architecture](https://sdk.cerebras.ai/computing-with-cerebras) | 2026-10-18 | CerebrasWaferScale |
+| Cerebras | [Meet CS-4: Cerebras CS-4 datasheet (CS-4 Specifications, footnoted "compute shown as sparse FP16")](https://cdn.sanity.io/files/e4qjo92p/production/bb028ae2422089dfbcc9fd2455c021f3625c7a75.pdf) | 2026-10-18 | CerebrasWaferScale |
 | Cerebras Systems (SEC EDGAR) | [Cerebras Systems, Form S-1 (filed 2026-04-17)](https://www.sec.gov/Archives/edgar/data/2021728/000162828026025762/cerebras-sx1april2026.htm) | 2026-10-16 | CerebrasWaferScale, HbmAndBandwidthWall, HeterogeneityFact, ThesisAndFraming |
 | CXL Consortium | [CXL Consortium press release, CXL 3.0 specification (2022-08-02)](https://computeexpresslink.org/wp-content/uploads/2024/01/CXL_3.0-Specification-Release_FINAL-1.pdf) | 2026-10-16 | HighBandwidthFlash, MainMemoryAndCxl, MemoryHierarchyPrimer |
 | CXL Consortium | [CXL Consortium press release, CXL 3.1 specification (2023-11-14)](https://computeexpresslink.org/wp-content/uploads/2024/01/CXL_3.1-Specification-Release_FINAL.pdf) | 2026-10-16 | MainMemoryAndCxl |
@@ -354,7 +356,6 @@ Total distinct sources: 455.
 | Cerebras | [Cerebras Is Coming to AWS Bedrock for Fast AI Inference (2026-03-13)](https://www.cerebras.ai/blog/cerebras-is-coming-to-aws) | 2026-10-17 | CerebrasWaferScale |
 | Cerebras | [Cerebras Systems Unveils World's Fastest AI Chip with Whopping 4 Trillion Transistors (WSE-3, 2024-03-13)](https://www.cerebras.ai/press-release/cerebras-announces-third-generation-wafer-scale-engine) | 2026-10-17 | CerebrasWaferScale, HeterogeneityFact |
 | Cerebras | [Cerebras Unveils CS-4: Up to 30 Times Faster than GPU-based Solutions (2026-08-18)](https://www.nasdaq.com/press-release/cerebras-unveils-cs-4-30-times-faster-gpu-based-solutions-2026-08-19) | 2026-10-16 | CerebrasWaferScale |
-| Cerebras | [Cerebras WSE-3 Turbo chip page](https://www.cerebras.ai/chip) | 2026-10-17 | CerebrasWaferScale |
 | Cerebras | [Introducing Cerebras CS-4 (2026-08-18)](https://www.cerebras.ai/blog/introducing-cerebras-cs-4) | 2026-10-17 | CerebrasWaferScale |
 | Cerebras | [Introducing Cerebras Inference: AI at Instant Speed (2024-08-27)](https://www.cerebras.ai/blog/introducing-cerebras-inference-ai-at-instant-speed) | 2026-10-17 | CerebrasWaferScale, HbmAndBandwidthWall, HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
 | Cerebras | [Supercharge your HPC Research with the Cerebras SDK](https://www.cerebras.ai/blog/supercharge-your-hpc-research-with-the-cerebras-sdk) | 2026-10-16 | CerebrasWaferScale, HeterogeneityFact, ThesisAndFraming |
@@ -485,6 +486,7 @@ Total distinct sources: 455.
 | LMSYS | [NVIDIA DGX Spark in-depth review (LMSYS Org blog, J. Zhou and R. Chen, 2025-10-13)](https://www.lmsys.org/blog/2025-10-13-nvidia-dgx-spark/) | 2026-10-17 | EdgeSharedMemorySilicon |
 | Risk.net | [Giles and Glasserman, Smoking adjoints: fast Monte Carlo Greeks (Risk, January 2006)](https://www.risk.net/derivatives/interest-rate-derivatives/1500261/smoking-adjoints-fast-monte-carlo-greeks) | 2026-10-16 | CapitalMarketsLens |
 | ServeTheHome | [Oxmiq Labs HBF in AI Compute at Hot Chips 2026 (2026-08-27)](https://www.servethehome.com/oxmiq-labs-hbf-in-ai-compute-at-hot-chips-2026/) | 2026-10-17 | HighBandwidthFlash |
+| The Register | [Cerebras CS-4 rack systems juice chips for every last drop of AI performance (2026-08-19)](https://www.theregister.com/systems/2026/08/19/cerebras-cs-4-rack-systems-juice-chips-for-every-last-drop-of-ai-performance/5289286) | 2026-10-18 | CerebrasWaferScale |
 | Tom's Hardware | [Hot Chips 2026: High Bandwidth Flash promises massive bandwidth and capacity, but its usability is extremely limited (2026-08-26)](https://www.tomshardware.com/pc-components/ssds/hot-chips-2026-high-bandwidth-flash-promises-massive-bandwidth-and-capacity-but-its-usability-is-extremely-limited-new-memory-format-strikes-a-balance-between-hbm-and-nand-flash) | 2026-10-17 | HighBandwidthFlash |
 | TrendForce | [Sandisk Reportedly Tapes Out First HBF Product, Targets 2027 Samples and 2028 Production (2026-08-14)](https://www.trendforce.com/news/2026/08/14/news-sandisk-reportedly-tapes-out-first-hbf-product-targets-2027-samples-and-2028-production/) | 2026-10-17 | HighBandwidthFlash |
 | USENIX | [Mooncake: Trading More Storage for Less Computation, a KVCache-centric Architecture for Serving LLM Chatbot (Qin et al., USENIX FAST 2025)](https://www.usenix.org/system/files/fast25-qin.pdf) | 2026-10-17 | FlashCacheTier |

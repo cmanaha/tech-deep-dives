@@ -22,3 +22,9 @@
   kernels", as the MoE verification corrected against DeepEP's README.
 - Any section quoting the MI355X: AMD lists BF16 at 2.5 PFLOPS dense (ridge 313 at 8 TB/s);
   "flat or falls" for the ridge at fixed precision was corrected to "within 2x" in Roofline.
+- Heterogeneity Fact (and Thesis): the Cerebras SDK blog is cited for compile-time routing and
+  does not say it; Cerebras Wafer-Scale now cites the Cerebras SDK documentation for it. Cerebras
+  states its PFLOPS as sparse FP16 (CS-4 datasheet footnote), so any Cerebras FLOPS or ridge
+  figure elsewhere is sparse.
+- NVIDIA Blackwell: NVIDIA's B300 page conflicts on HBM stack count (8 or 12); the section must
+  name which page it follows or state the conflict.

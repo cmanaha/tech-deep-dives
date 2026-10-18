@@ -9,10 +9,16 @@ import { Cite } from '../components/Cite';
 import { CerebrasWaferDiagram, CerebrasLayerSplitDiagram } from '../components/CerebrasWaferDiagram';
 import { S } from '../sources/CerebrasWaferScale';
 
-const denseSparseNote = 'Cerebras does not state whether this peak is dense or sparse.';
+const wse3PeakNote =
+  'The WSE-3 announcement calls this "peak AI performance" without saying dense or sparse. The CS-4 datasheet marks the WSE-3T\'s 250 PFLOPS, twice this, as sparse FP16.';
+
+const sparseNote = 'The datasheet footnotes the 250 PFLOPS: "compute shown as sparse FP16."';
 
 const ridgeNote =
-  'WSE-3: 125 PFLOPS / 21 PB/s = about 6 FLOP/byte. WSE-3T: 250 / 43.2 = about 5.8. BF16 decode at batch 1 does 2 FLOPs per 2-byte weight, 1 FLOP/byte, so the weight matmuls reach the ridge at a batch of about 6.';
+  'WSE-3: 125 PFLOPS / 21 PB/s = about 6 FLOP/byte. WSE-3T: 250 / 43.2 = about 5.8. Both peaks are sparse FP16, so the dense ridge is lower. BF16 decode does 2 FLOPs per 2-byte weight per sequence, 1 FLOP/byte at batch 1, so the weight matmuls reach a ridge of 6 at a batch of 6 and a lower dense ridge sooner.';
+
+const denseEstimateNote =
+  'The Register lists WSE-3 dense FP16 at 12.5 PFLOPS beside the 125 sparse, citing no Cerebras source ("the same 10x sparsity we saw with the WSE-3"). 12.5 / 21 PB/s = about 0.6 FLOP/byte.';
 
 const h200RidgeNote =
   'H200 FP8: 1,979 TFLOPS dense / 4.8 TB/s = about 412 FLOP/byte (Thesis and Framing). FP8 decode does 2 FLOPs per 1-byte weight per token, so the ridge falls at a batch of about 206.';
@@ -27,7 +33,7 @@ const curveNote =
   'Per-GPU throughput falls as per-user speed rises: the same post gives 30,000 tokens/s per GPU at 100 tokens/s per user, with speculative decoding.';
 
 const aaNote =
-  'Artificial Analysis figures, quoted in a Cerebras press release. The release ties the NVIDIA figure to eight Blackwell GPUs in a DGX B200.';
+  'Artificial Analysis figures, quoted in a Cerebras press release. The release does not name the Blackwell system behind the 1,038; its DGX B200 mention refers to NVIDIA\'s own claim of 1,000 tokens/s per user.';
 
 interface SpeedRow {
   id: string;
@@ -76,7 +82,7 @@ const speedRows: SpeedRow[] = [
     ),
     nvidia: (
       <>
-        NVIDIA Blackwell, DGX B200: 1,038 tokens/s
+        NVIDIA Blackwell: 1,038 tokens/s
         <Cite s={S.maverickPress} kind="measured" note={aaNote} />
       </>
     ),
@@ -113,9 +119,10 @@ export function CerebrasWaferScale() {
           <Box variant="p">
             The CS-4, announced in August 2026 with first shipments planned for that quarter, puts
             three WSE-3T wafers in a rack, each with the same cores and 44 GB at twice the compute
-            and bandwidth (250 PFLOPS, 43.2 PB/s), linked wafer to wafer at as low as 2 µs.
-            <Cite s={S.cs4Press} note={denseSparseNote} />
-            <Cite s={S.cerebrasChip} note={denseSparseNote} />
+            and bandwidth: 250 PFLOPS of sparse FP16 (16-bit floating point) and 43.2 PB/s, linked
+            wafer to wafer at as low as 2 µs.
+            <Cite s={S.cs4Press} />
+            <Cite s={S.cs4Datasheet} note={sparseNote} />
             <Cite s={S.cs4Blog} />
           </Box>
           <Box variant="p">
@@ -156,7 +163,7 @@ export function CerebrasWaferScale() {
         header={
           <Header
             variant="h2"
-            description="BF16 decode crosses the ridge at a batch of about six, and the compiler fixes where everything runs"
+            description="BF16 decode crosses the ridge by a batch of six, and the compiler fixes where everything runs"
           >
             What changes on one wafer
           </Header>
@@ -164,17 +171,21 @@ export function CerebrasWaferScale() {
       >
         <ColumnLayout columns={2} variant="text-grid">
           <div>
-            <Box variant="h3">The ridge drops to about 6 FLOP/byte</Box>
+            <Box variant="h3">The ridge drops to 6 FLOP/byte or less</Box>
             <Box variant="p">
               A WSE-3 peaks at 125 PFLOPS
-              <Cite s={S.wse3Press} note={denseSparseNote} /> over 21 PB/s
+              <Cite s={S.wse3Press} note={wse3PeakNote} /> over 21 PB/s
               <Cite s={S.cerebrasS1} />, a ridge of about 6 FLOP per byte.
-              <Cite s={S.cerebrasS1} kind="derived" note={ridgeNote} /> Batch-1 decode in BF16
-              (bfloat16) does about 1 FLOP per weight byte, so it still sits below the ridge; the
-              weight matmuls cross it at a batch of about six, where an H200 in FP8 needs about
-              200.
-              <Cite s={S.h200Page} kind="derived" note={h200RidgeNote} /> The WSE-3T doubles
-              compute and bandwidth together
+              <Cite s={S.cerebrasS1} kind="derived" note={ridgeNote} /> That peak counts
+              sparsity: the WSE-3T&apos;s 250 PFLOPS, twice the WSE-3&apos;s, is sparse FP16
+              <Cite s={S.cs4Datasheet} note={sparseNote} />, and no Cerebras dense figure was
+              located, so 6 is a ceiling. Decode in BF16 (bfloat16) does about 1 FLOP per weight
+              byte per sequence, so the weight matmuls cross the ridge by a batch of six, where an
+              H200 in FP8 needs about 200.
+              <Cite s={S.h200Page} kind="derived" note={h200RidgeNote} /> A trade-press estimate
+              puts dense FP16 at a tenth of the peak, a ridge near 0.6 that even batch 1 crosses.
+              <Cite s={S.registerCs4} kind="derived" note={denseEstimateNote} /> The WSE-3T
+              doubles compute and bandwidth together
               <Cite s={S.cs4Press} />, so its ridge stays near 6.
             </Box>
           </div>
@@ -182,7 +193,8 @@ export function CerebrasWaferScale() {
             <Box variant="h3">Compiled routes, data-triggered tasks</Box>
             <Box variant="p">
               The compiler places the program on specific cores and fixes the routes through the
-              fabric; at run time a core runs a task when its data arrives.
+              fabric
+              <Cite s={S.cerebrasSdkDocs} />; at run time a core runs a task when its data arrives.
               <Cite s={S.cerebrasSdkBlog} /> With each core&apos;s 48 kB private, there is no
               cache hierarchy to tune and no warps to keep occupied. As with a Trainium NEFF
               (Neuron Executable File Format), placement is settled before the model runs.
@@ -209,7 +221,7 @@ export function CerebrasWaferScale() {
           </Box>
           <CerebrasLayerSplitDiagram />
           <Box variant="small" color="text-body-secondary">
-            Wafer-to-wafer latency: as low as 2 µs on CS-4 and 5 µs on CS-3.
+            I/O latency between wafers: as low as 2 µs on CS-4, 5 µs on CS-3.
             <Cite s={S.cs4Press} />
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
