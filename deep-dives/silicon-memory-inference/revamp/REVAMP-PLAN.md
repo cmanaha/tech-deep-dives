@@ -307,3 +307,13 @@ earlier one.
   memory domain. Trainium3 NeuronLink-v4 per chip appears as 2.56 TB/s, 2,048 GiB/s and
   2 TB/s on three AWS pages; quote the one used with its source. The NCCL v2.28.3-1
   release record (`ncclV2283`) is shared with Communication and Scale-Out.
+- Graviton: Graviton5 is one 192-core package that runs as two NUMA nodes on 16xlarge
+  and 48xlarge; LLC is 48 MB per NUMA node up to 16xlarge and 96 MB per node on 24xlarge
+  and 48xlarge (AWS processor table, README at 8b322a4). Never "NUMA eliminated", never
+  "one 192 MB L3". The full fact list for Chiplet and Interconnect is in
+  revamp/authoring/GravitonDeepDive.md, "Graviton5 NUMA facts".
+- AWS Compilers: Trainium MoE NKI kernels shipped in Neuron 2.28.0 (not 2.27.0); NxD
+  Inference is in maintenance and vLLM Neuron is the serving path. No AWS statement
+  makes the NEFF deterministic beyond its instruction order, which is fixed at compile
+  time; collective latency still depends on HBM load. Determinism: NEFF and GPU
+  Reproducibility and Isolation keep the claim scoped to instruction order or source it.
