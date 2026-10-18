@@ -128,7 +128,8 @@ function RestartLadderDiagram() {
           previous boot logged skips memory profiling. The vllm preload weight cache daemon, with
           the ipc_cache load format, maps already processed weights over CUDA IPC instead of
           loading them from disk. An initialized snapshot restores the compiled, profiled and
-          captured process from a CRIU image and reloads only the model files.
+          captured process from a CRIU image, then reloads the model files and the KV cache before it
+          binds HTTP.
         </title>
         <style>{`
           .rl-h { fill: #16191f; font: 600 13px sans-serif; }
@@ -416,14 +417,19 @@ const ROWS: FailureRow[] = [
     ),
     detection: (
       <Box variant="p">
-        A long gap between process start and the first <code>/health</code> 200. A start that exceeds{' '}
+        A long gap between process start and the first <code>/health</code> 200. With more than one
+        API server process, the default under data parallelism, a start that exceeds{' '}
         <code>VLLM_ENGINE_READY_TIMEOUT_S</code> (default 600 seconds){' '}
         <Cite tier={1} href={vllmUrl(ENVS, 'L808-L812')}>
           envs.py L808-L812
         </Cite>{' '}
         fails with &quot;Timed out waiting for engine core processes to start&quot;{' '}
-        <Cite tier={1} href={vllmUrl('vllm/v1/engine/core_client.py', 'L731-L742')}>
-          core_client.py L731-L742
+        <Cite tier={1} href={vllmUrl('vllm/v1/engine/core_client.py', 'L727-L742')}>
+          core_client.py L727-L742
+        </Cite>
+        ; the default single Python API server waits for its engine with no deadline{' '}
+        <Cite tier={1} href={vllmUrl('vllm/v1/engine/utils.py', 'L1267-L1326')} kind="code">
+          engine/utils.py L1267-L1326
         </Cite>
         .
       </Box>
@@ -657,9 +663,9 @@ const ROWS: FailureRow[] = [
     ),
     detection: (
       <Box variant="p">
-        The GPUs <code>nvidia-smi</code> shows busy differ from the ones you meant. Under the Ray
-        executor the startup log warns &quot;--device-ids has no effect when using the Ray
-        executor&quot;{' '}
+        The GPUs <code>nvidia-smi</code> shows busy differ from the ones you meant. With{' '}
+        <code>--distributed-executor-backend ray</code> the startup log warns &quot;--device-ids has
+        no effect when using the Ray executor&quot;{' '}
         <Cite tier={1} href={vllmUrl(ARG_UTILS, 'L2064-L2071')}>
           arg_utils.py L2064-L2071
         </Cite>
@@ -965,15 +971,28 @@ export function OperationsFailureModes() {
             <Cite tier={1} href={vllmUrl(GPU_WORKER, 'L829-L883')}>
               L829-L883
             </Cite>
-            . A cold boot pays for all four, and it must finish within{' '}
-            <code>VLLM_ENGINE_READY_TIMEOUT_S</code>, 600 seconds by default{' '}
+            . A cold boot pays for all four. When the engines start outside the API server process
+            (more than one API server, which <code>vllm serve</code> defaults to under data
+            parallelism{' '}
+            <Cite tier={1} href={vllmUrl('vllm/entrypoints/cli/serve.py', 'L105-L154')} kind="code">
+              serve.py L105-L154
+            </Cite>
+            ), the boot must finish within <code>VLLM_ENGINE_READY_TIMEOUT_S</code>, 600 seconds by
+            default{' '}
             <Cite tier={1} href={vllmUrl(ENVS, 'L808-L812')}>
               envs.py L808-L812
             </Cite>
-            , or startup fails with
-            an error that names slow weight loading as the usual cause{' '}
-            <Cite tier={1} href={vllmUrl('vllm/v1/engine/core_client.py', 'L731-L742')}>
-              core_client.py L731-L742
+            , or startup fails with an error that names slow weight loading as the usual cause{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/engine/core_client.py', 'L727-L742')}>
+              core_client.py L727-L742
+            </Cite>
+            . The default single Python API server launches its engine itself and waits for it
+            without that deadline{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/engine/core_client.py', 'L651-L688')} kind="code">
+              core_client.py L651-L688
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/engine/utils.py', 'L1267-L1326')} kind="code">
+              engine/utils.py L1267-L1326
             </Cite>
             . vLLM offers four ways to skip part of that work on a restart, from a cache directory
             you keep to a daemon that holds weights over CUDA IPC (inter-process communication) and
@@ -990,8 +1009,8 @@ export function OperationsFailureModes() {
             <Cite tier={1} href={vllmUrl('docs/usage/troubleshooting.md', 'L13-L16')}>
               troubleshooting.md L13-L16
             </Cite>
-            . A big model on slow storage can hit the 600-second ready timeout; raise{' '}
-            <code>VLLM_ENGINE_READY_TIMEOUT_S</code> or move up a rung.
+            . Behind several API servers, a big model on slow storage can hit the 600-second ready
+            timeout; raise <code>VLLM_ENGINE_READY_TIMEOUT_S</code> or move up a rung.
           </Box>
           <Box variant="p">
             <strong>2. Compile cache.</strong> vLLM writes compiled artifacts under{' '}
@@ -1137,8 +1156,8 @@ export function OperationsFailureModes() {
             </SpaceBetween>
           </ExpandableSection>
           <Box variant="p">
-            <strong>To get it right:</strong> measure your cold boot first, against the 600-second
-            ready timeout. On every production restart, persist <code>VLLM_CACHE_ROOT</code> and pass
+            <strong>To get it right:</strong> measure your cold boot first; behind several API
+            servers it must fit the 600-second ready timeout. On every production restart, persist <code>VLLM_CACHE_ROOT</code> and pass
             back the logged KV size; add <code>vllm preload</code> where engines restart on the same
             node; keep snapshots for single-GPU reactivation on one host. Probe readiness on{' '}
             <code>/health</code>, which answers 200 while the engine responds and 503 once the engine

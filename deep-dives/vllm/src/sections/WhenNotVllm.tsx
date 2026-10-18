@@ -356,7 +356,7 @@ export function WhenNotVllm() {
                   Ollama v0.40.6
                 </Cite>
                 . vLLM runs there too, on CPUs in-tree and on Apple Silicon GPUs through vLLM-Metal,
-                which keeps the laptop on the same engine and flags as the server.
+                which keeps the laptop on the same engine as the server.
               </Box>
             </div>
             <div>
@@ -365,7 +365,11 @@ export function WhenNotVllm() {
                 Your traffic is dominated by <strong>shared prefixes</strong>: long fixed system
                 prompts, few-shot templates reused across requests, agent loops, multi-turn chat,
                 or structured decoding. RadixAttention keeps prior KV in a radix tree and reuses
-                it automatically, so the shared prefill is paid once. SGLang also ships P/D
+                it automatically{' '}
+                <Cite tier={1} href={`${SG}/python/sglang/srt/mem_cache/radix_cache.py#L249-L280`} kind="code">
+                  SGLang radix_cache.py L249-L280
+                </Cite>
+                , so the shared prefill is paid once. SGLang also ships P/D
                 disaggregation, speculative decoding and multi-LoRA batching, so the reason to pick
                 it is the prefix cache and scheduler rather than feature count. vLLM caches
                 prefixes too (<strong>Section 6</strong>): the edge is{' '}
@@ -482,7 +486,7 @@ export function WhenNotVllm() {
             for low-latency, high-throughput inference with RadixAttention, prefix caching, and
             multi-GPU parallelism,&quot; with hardware support &quot;including NVIDIA, AMD, Intel
             Xeon, Google TPU, Ascend NPU, and Moore Threads MUSA accelerators&quot;{' '}
-            <Cite tier={1} href="https://docs.sglang.ai/">
+            <Cite tier={1} href="https://docs.sglang.io/">
               SGLang docs
             </Cite>
             . Its README lists RadixAttention for prefix caching, a zero-overhead CPU scheduler,
@@ -589,7 +593,7 @@ export function WhenNotVllm() {
       >
         <Box variant="p">
           Head-to-head &quot;engine X is N% faster than Y&quot; figures are{' '}
-          <Badge color="red">Tier-3 / third-party</Badge> and depend on hardware, model, sequence
+          <Badge color="red">vendor or third-party</Badge> claims and depend on hardware, model, sequence
           lengths, batch size and the exact versions compared, which is why this section ranks no
           engine on speed. Shortlist with the tree, drive every finalist with the same load
           generator at your real prompt and output lengths (<strong>Section 20</strong> covers the

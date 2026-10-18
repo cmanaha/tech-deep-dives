@@ -100,7 +100,7 @@ function StartHereTree() {
         <text className="sht-el" x={632} y={34} textAnchor="middle">No</text>
         <rect className="sht-stop" x={666} y={14} width={196} height={88} rx={8} />
         <text className="sht-t" x={764} y={38}>Use Amazon Bedrock</text>
-        <text className="sht-s" x={764} y={56}>managed, pay-per-token</text>
+        <text className="sht-s" x={764} y={56}>catalog models, pay-per-token</text>
         <text className="sht-s" x={764} y={72}>Custom Model Import for</text>
         <text className="sht-s" x={764} y={88}>your own weights (§25)</text>
 
@@ -460,9 +460,9 @@ export function DecisionGuide() {
             custom quantization and kernels, full access to the engine knobs in this deep dive, and
             data that never leaves your account or VPC (virtual private cloud). The price is that you
             now own capacity planning, scaling, upgrades, and the failure modes in §27. Managed
-            inference (Amazon Bedrock, covered in §25) inverts that: you trade engine control for a
-            pay-per-token API with no servers to run, limited to the catalog and to the architectures
-            Custom Model Import accepts for your own weights{' '}
+            inference (Amazon Bedrock, covered in §25) inverts that: you trade engine control for an
+            API with no servers to run, pay-per-token for catalog models, limited to the catalog and
+            to the architectures Custom Model Import accepts for your own weights{' '}
             <Cite tier={1} href={BEDROCK_CMI}>
               Bedrock: Custom Model Import
             </Cite>
@@ -549,8 +549,8 @@ export function DecisionGuide() {
               routing_logic.py L1010-L1023
             </Cite>
             , the vLLM Rust router{' '}
-            <Cite tier={1} href={`${RUST_ROUTER_README}#L228-L238`}>
-              router v0.1.16 README L228-L238
+            <Cite tier={1} href={`${RUST_ROUTER_README}#L108-L124`}>
+              router v0.1.16 README L108-L124
             </Cite>{' '}
             and llm-d Router{' '}
             <Cite tier={1} href={`${LLMD_DISAGG}#L84-L91`}>
