@@ -142,11 +142,12 @@ export const S = {
     accessed: '2026-10-17',
   },
   llama4Blog: {
-    title: 'The Llama 4 herd (Llama 4 Scout and Maverick announcement)',
+    title:
+      'The Llama 4 herd: The beginning of a new era of natively multimodal AI innovation (2025-04-05)',
     publisher: 'Meta',
     url: 'https://ai.meta.com/blog/llama-4-multimodal-intelligence/',
     tier: 2,
-    accessed: '2026-10-16',
+    accessed: '2026-10-18',
   },
   deepseekV3Report: {
     title: 'DeepSeek-V3 Technical Report (arXiv:2412.19437)',

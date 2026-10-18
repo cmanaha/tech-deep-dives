@@ -15,3 +15,10 @@
   Quantization (+35%), Cerebras (+33%), Capital Markets (+31% visible), Roofline (+29%),
   Xeon 6 (+27%), AWS Custom Silicon (+27%), AWS Compilers (+26%), Isolation (+26%).
   Judge economy in the Gate 3 score.
+
+## Added during verification
+
+- Communication and Scale-Out: the DeepEP "V1" label (around line 386) should read "normal
+  kernels", as the MoE verification corrected against DeepEP's README.
+- Any section quoting the MI355X: AMD lists BF16 at 2.5 PFLOPS dense (ridge 313 at 8 TB/s);
+  "flat or falls" for the ridge at fixed precision was corrected to "within 2x" in Roofline.

@@ -56,7 +56,7 @@ const siliconRows: SiliconRow[] = [
     ),
     fabric: (
       <>
-        Activations pass from GPUs to LPUs (Language Processing Units) every layer. Each LPU
+        Activations pass between GPUs and LPUs (Language Processing Units) for each token. Each LPU
         works from 500 MB of on-chip SRAM, with up to 512 GB of DRAM per tray behind it.
         <Cite s={S.lpxBlog} />
       </>
@@ -67,7 +67,9 @@ const siliconRows: SiliconRow[] = [
     software: (
       <>
         NKI (Neuron Kernel Interface) Library MoE kernels, Router Top-K among them, from Neuron
-        2.28.0 (February 2026); Blockwise MM Forward in MXFP8 (microscaling FP8) from 2.32.0.
+        2.28.0 (February 2026)
+        <Cite s={S.neuronWhatsNew} />; Blockwise MM Forward in MXFP8 (microscaling FP8) from
+        2.32.0.
         <Cite s={S.nkiLibNotes} />
       </>
     ),
@@ -104,8 +106,8 @@ const siliconRows: SiliconRow[] = [
     software: (
       <>
         Shared inference serves gpt-oss-120b at about 3,000 tokens/s
-        <Cite s={S.cerebrasModels} kind="vendor-claim" />; other models run as dedicated
-        deployments.
+        <Cite s={S.cerebrasModels} kind="vendor-claim" />; more model families run as
+        dedicated deployments.
         <Cite s={S.cerebrasModels} />
       </>
     ),
@@ -341,7 +343,7 @@ export function MoeAndSparseActivation() {
             <Cite
               s={S.h200Page}
               kind="derived"
-              note="Dense FP8 1,979 TFLOPS / 4.8 TB/s = 412 FLOP per byte; 2 FLOPs per 1-byte weight per token reaches it at 206 tokens; 206 x 256 / 8 = 6,592."
+              note="FP8 3,958 TFLOPS with sparsity, so 1,979 dense; 1,979 TFLOPS / 4.8 TB/s = 412 FLOP per byte; 2 FLOPs per 1-byte weight per token reaches it at 206 tokens; 206 x 256 / 8 = 6,592."
             />
           </Box>
           <Box variant="p">
@@ -400,7 +402,7 @@ export function MoeAndSparseActivation() {
                 <code>moe_expert_parallel_size</code>, <code>moe_tensor_parallel_size</code> and{' '}
                 <code>moe_cluster_parallel_size</code>
                 <Cite s={S.trtllmLlmArgs} />, whose product must equal the MoE world size.
-                <Cite s={S.trtllmMapping} /> DeepSeek&apos;s DeepEP V1 kernels measured 153 GB/s
+                <Cite s={S.trtllmMapping} /> DeepSeek&apos;s DeepEP normal (high-throughput) kernels measured 153 GB/s
                 for EP8 dispatch over NVLink and 51 GB/s for EP64 over RDMA (remote direct memory
                 access) on H800 GPUs with 400 Gb/s ConnectX-7 cards, close to each link&apos;s
                 maximum of about 160 and 50 GB/s.
@@ -416,7 +418,8 @@ export function MoeAndSparseActivation() {
                 replaces the torus with switches that connect every chip to every other.
                 <Cite s={S.trn3Arch} /> Serve MoE with vLLM Neuron, which ships Wide-EP.
                 <Cite s={S.neuronWhatsNew} /> NxD Inference (NeuronX Distributed Inference), now
-                in maintenance mode, still documents EP over All-Gather.
+                in maintenance mode
+                <Cite s={S.neuronWhatsNew} />, still documents EP over All-Gather.
                 <Cite s={S.nxdiMoe} />
               </Box>
             </div>
