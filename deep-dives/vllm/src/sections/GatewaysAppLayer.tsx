@@ -6,108 +6,127 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
-import Link from '@cloudscape-design/components/link';
+import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
+
+const LITELLM_PAGE = 'docs/deployment/frameworks/litellm.md';
+const LITELLM_ADVISORY = 'https://docs.litellm.ai/blog/security-update-march-2026';
+const LITELLM_GATEWAY = 'https://docs.litellm.ai/docs/simple_proxy';
+const DATADOG_ANALYSIS =
+  'https://securitylabs.datadoghq.com/articles/litellm-compromised-pypi-teampcp-supply-chain-campaign/';
 
 function DataPathDiagram() {
   return (
-    <svg
-      viewBox="0 0 860 470"
-      role="img"
-      aria-labelledby="datapath-title"
-      style={{ width: '100%', height: 'auto' }}
-    >
-      <title id="datapath-title">
-        Request data path: web/chat, agent, and RAG applications all speak the OpenAI wire
-        format to a single LiteLLM gateway, which applies control-plane policy and re-issues each
-        call to one or more OpenAI-compatible vLLM endpoints.
-      </title>
-      <style>
-        {`
-          .app { fill: #0972d3; stroke: #065299; stroke-width: 1.5; }
-          .gw { fill: #2ea597; stroke: #1f7a70; stroke-width: 1.5; }
-          .eng { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; }
-          .engalt { fill: #f9f9fa; stroke: #879596; stroke-width: 1.5; }
-          .at { fill: #ffffff; font: 600 14px sans-serif; text-anchor: middle; }
-          .as { fill: #ffffff; font: 11px sans-serif; text-anchor: middle; }
-          .gt { fill: #ffffff; font: 600 14px sans-serif; text-anchor: middle; }
-          .gs { fill: #d6f2ee; font: 11px sans-serif; text-anchor: middle; }
-          .et { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: middle; }
-          .es { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
-          .tier { fill: #5f6b7a; font: 600 12px sans-serif; letter-spacing: 0.5px; }
-          .tiersub { fill: #879596; font: 11px sans-serif; }
-          .wire { fill: #414d5c; font: 600 12px sans-serif; text-anchor: middle; }
-          .note { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
-          .arr { stroke: #5f6b7a; stroke-width: 2; fill: none; marker-end: url(#dah); }
-          .baseline { stroke: #879596; stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
-        `}
-      </style>
-      <defs>
-        <marker id="dah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" fill="#5f6b7a" />
-        </marker>
-      </defs>
+    <div style={{ overflowX: 'auto' }}>
+      <svg
+        viewBox="0 0 860 470"
+        role="img"
+        aria-labelledby="gw-datapath-title"
+        style={{ width: '100%', minWidth: 640, height: 'auto' }}
+      >
+        <title id="gw-datapath-title">
+          Request data path: web/chat, agent, and RAG applications all speak the OpenAI wire
+          format to a single LiteLLM gateway, which applies control-plane policy and re-issues each
+          call to one or more OpenAI-compatible vLLM endpoints.
+        </title>
+        <style>
+          {`
+            .gw-app { fill: #0972d3; stroke: #065299; stroke-width: 1.5; }
+            .gw-gate { fill: #2ea597; stroke: #1f7a70; stroke-width: 1.5; }
+            .gw-eng { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; }
+            .gw-engalt { fill: #f9f9fa; stroke: #879596; stroke-width: 1.5; }
+            .gw-at { fill: #ffffff; font: 600 14px sans-serif; text-anchor: middle; }
+            .gw-as { fill: #ffffff; font: 11px sans-serif; text-anchor: middle; }
+            .gw-gt { fill: #ffffff; font: 600 14px sans-serif; text-anchor: middle; }
+            .gw-gs { fill: #d6f2ee; font: 11px sans-serif; text-anchor: middle; }
+            .gw-et { fill: #0f1b2a; font: 600 13px sans-serif; text-anchor: middle; }
+            .gw-es { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+            .gw-tier { fill: #5f6b7a; font: 600 12px sans-serif; letter-spacing: 0.5px; }
+            .gw-tiersub { fill: #5f6b7a; font: 11px sans-serif; }
+            .gw-wire { fill: #414d5c; font: 600 12px sans-serif; text-anchor: middle; }
+            .gw-note { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+            .gw-arr { stroke: #5f6b7a; stroke-width: 2; fill: none; marker-end: url(#gw-ah); }
+            .gw-base { stroke: #879596; stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
+          `}
+        </style>
+        <defs>
+          <marker
+            id="gw-ah"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L10,5 L0,10 z" fill="#5f6b7a" />
+          </marker>
+        </defs>
 
-      {/* Tier labels */}
-      <text className="tier" x={30} y={26}>PRODUCT / CONTROL TIER</text>
-      <text className="tiersub" x={30} y={42}>own auth, budgets, routing, UX</text>
-      <text className="tier" x={830} y={26} textAnchor="end">ENGINE TIER</text>
-      <text className="tiersub" x={830} y={42} textAnchor="end">own GPU, KV cache, scheduler</text>
+        <rect x={0} y={0} width={860} height={470} rx={8} fill="#ffffff" />
 
-      {/* App tier: three boxes */}
-      <rect className="app" x={40} y={60} width={220} height={64} rx={8} />
-      <text className="at" x={150} y={88}>Web / chat UI</text>
-      <text className="as" x={150} y={108}>(Open WebUI)</text>
+        {/* Tier labels */}
+        <text className="gw-tier" x={30} y={26}>PRODUCT / CONTROL TIER</text>
+        <text className="gw-tiersub" x={30} y={42}>own auth, budgets, routing, UX</text>
+        <text className="gw-tier" x={830} y={26} textAnchor="end">ENGINE TIER</text>
+        <text className="gw-tiersub" x={830} y={42} textAnchor="end">own GPU, KV cache, scheduler</text>
 
-      <rect className="app" x={320} y={60} width={220} height={64} rx={8} />
-      <text className="at" x={430} y={88}>Agents</text>
-      <text className="as" x={430} y={108}>(LangChain)</text>
+        {/* App tier: three boxes */}
+        <rect className="gw-app" x={40} y={60} width={220} height={64} rx={8} />
+        <text className="gw-at" x={150} y={88}>Web / chat UI</text>
+        <text className="gw-as" x={150} y={108}>(Open WebUI)</text>
 
-      <rect className="app" x={600} y={60} width={220} height={64} rx={8} />
-      <text className="at" x={710} y={88}>RAG pipeline</text>
-      <text className="as" x={710} y={108}>(LlamaIndex)</text>
+        <rect className="gw-app" x={320} y={60} width={220} height={64} rx={8} />
+        <text className="gw-at" x={430} y={88}>Agents</text>
+        <text className="gw-as" x={430} y={108}>(LangChain)</text>
 
-      {/* Wire-format annotation */}
-      <text className="wire" x={430} y={150}>
-        all speak POST /v1/chat/completions (OpenAI wire format)
-      </text>
+        <rect className="gw-app" x={600} y={60} width={220} height={64} rx={8} />
+        <text className="gw-at" x={710} y={88}>RAG pipeline</text>
+        <text className="gw-as" x={710} y={108}>(LlamaIndex)</text>
 
-      {/* Arrows from each app down to the gateway */}
-      <path className="arr" d="M150,124 C150,170 380,170 425,185" />
-      <path className="arr" d="M430,124 L430,185" />
-      <path className="arr" d="M710,124 C710,170 480,170 435,185" />
+        {/* Wire-format annotation */}
+        <text className="gw-wire" x={430} y={150}>
+          all speak POST /v1/chat/completions (OpenAI wire format)
+        </text>
 
-      {/* Gateway tier */}
-      <rect className="gw" x={250} y={190} width={360} height={92} rx={8} />
-      <text className="gt" x={430} y={218}>LLM gateway / proxy (LiteLLM)</text>
-      <text className="gs" x={430} y={240}>retries · fallbacks · budgets · rate limits</text>
-      <text className="gs" x={430} y={258}>virtual keys · logging · multi-provider unification</text>
-      <text className="gs" x={430} y={276}>model = hosted_vllm/...</text>
+        {/* Arrows from each app down to the gateway */}
+        <path className="gw-arr" d="M150,124 C150,170 380,170 425,185" />
+        <path className="gw-arr" d="M430,124 L430,185" />
+        <path className="gw-arr" d="M710,124 C710,170 480,170 435,185" />
 
-      {/* Re-issue annotation */}
-      <text className="note" x={430} y={306}>re-issues OpenAI-format request to api_base</text>
+        {/* Gateway tier */}
+        <rect className="gw-gate" x={250} y={190} width={360} height={92} rx={8} />
+        <text className="gw-gt" x={430} y={218}>LLM gateway / proxy (LiteLLM)</text>
+        <text className="gw-gs" x={430} y={240}>retries · fallbacks · budgets · rate limits</text>
+        <text className="gw-gs" x={430} y={258}>virtual keys · logging · multi-provider unification</text>
+        <text className="gw-gs" x={430} y={276}>model = hosted_vllm/...</text>
 
-      {/* Arrows fanning out to the three engine endpoints */}
-      <path className="arr" d="M430,282 C430,310 170,316 150,330" />
-      <path className="arr" d="M430,282 L430,330" />
-      <path className="arr" d="M430,282 C430,310 690,316 710,330" />
+        {/* Re-issue annotation, beside the gateway so the fan-out arrows stay clear of it */}
+        <text className="gw-note" x={735} y={232}>re-issues OpenAI-format</text>
+        <text className="gw-note" x={735} y={248}>request to api_base</text>
 
-      {/* Engine tier: vLLM endpoints + other compat/SaaS */}
-      <rect className="eng" x={40} y={334} width={220} height={72} rx={8} />
-      <text className="et" x={150} y={362}>vLLM endpoint</text>
-      <text className="es" x={150} y={382}>/v1 (model A)</text>
+        {/* Arrows fanning out to the three engine endpoints */}
+        <path className="gw-arr" d="M430,282 C430,310 170,316 150,330" />
+        <path className="gw-arr" d="M430,282 L430,330" />
+        <path className="gw-arr" d="M430,282 C430,310 690,316 710,330" />
 
-      <rect className="eng" x={320} y={334} width={220} height={72} rx={8} />
-      <text className="et" x={430} y={362}>vLLM endpoint</text>
-      <text className="es" x={430} y={382}>/v1 (model B)</text>
+        {/* Engine tier: vLLM endpoints + other compat/SaaS */}
+        <rect className="gw-eng" x={40} y={334} width={220} height={72} rx={8} />
+        <text className="gw-et" x={150} y={362}>vLLM endpoint</text>
+        <text className="gw-es" x={150} y={382}>/v1 (model A)</text>
 
-      <rect className="engalt" x={600} y={334} width={220} height={72} rx={8} />
-      <text className="et" x={710} y={362}>other OpenAI-</text>
-      <text className="es" x={710} y={382}>compat / SaaS</text>
+        <rect className="gw-eng" x={320} y={334} width={220} height={72} rx={8} />
+        <text className="gw-et" x={430} y={362}>vLLM endpoint</text>
+        <text className="gw-es" x={430} y={382}>/v1 (model B)</text>
 
-      {/* Shared baseline under the vLLM endpoints */}
-      <path className="baseline" d="M150,422 L430,422" />
-      <text className="note" x={290} y={440}>vllm serve · OpenAI-compatible (§12)</text>
-    </svg>
+        <rect className="gw-engalt" x={600} y={334} width={220} height={72} rx={8} />
+        <text className="gw-et" x={710} y={362}>Other provider</text>
+        <text className="gw-es" x={710} y={382}>OpenAI-compatible / SaaS</text>
+
+        {/* Shared baseline under the vLLM endpoints */}
+        <path className="gw-base" d="M150,422 L430,422" />
+        <text className="gw-note" x={290} y={440}>vllm serve · OpenAI-compatible (§12)</text>
+      </svg>
+    </div>
   );
 }
 
@@ -118,7 +137,7 @@ export function GatewaysAppLayer() {
         header={
           <Header
             variant="h1"
-            description="What teams put in front of vLLM (gateways, UIs, and RAG/agent frameworks), and why none of it requires touching the engine."
+            description="Put a gateway, a chat UI and an agent framework in front of vLLM by changing one base URL, and keep budgets and keys out of the engine (verified against vLLM v0.31.0, commit db9527a4, 2026-10-16)"
           >
             19. Gateways &amp; Application Layer
           </Header>
@@ -128,28 +147,42 @@ export function GatewaysAppLayer() {
           <Box variant="p">
             <strong>The architectural point in one sentence:</strong> because vLLM exposes an
             OpenAI-compatible HTTP API (see{' '}
-            <strong>12. The OpenAI-Compatible Server</strong>), the entire OpenAI-ecosystem tooling
-            stack snaps in front of it with no code changes: you swap a base URL and an API
-            key, and the gateway, the chat UI, and the RAG/agent framework all believe they are
-            talking to OpenAI. vLLM owns the <em>engine tier</em> (the GPU, the KV cache, the
-            scheduler); these tools own the <em>product / control tier</em> (auth, budgets, routing,
-            UX, retrieval). The discipline that keeps a deployment maintainable is keeping those two
-            tiers decoupled: the engine should not know about your billing plan, and your billing
-            plan should not be pinned to one engine.
+            <strong>12. The OpenAI-Compatible Server</strong>), OpenAI-ecosystem tooling snaps in
+            front of it with no code changes: you swap a base URL and an API
+            key, and the gateway, the chat UI, and the RAG (retrieval-augmented generation) or agent
+            framework all believe they are talking to OpenAI. vLLM owns the <em>engine tier</em> (the
+            GPU, the KV (key-value) cache, the scheduler); these tools own the{' '}
+            <em>product / control tier</em> (auth, budgets, routing, UX, retrieval). The discipline
+            that keeps a deployment maintainable is keeping those two tiers decoupled: the engine
+            should not know about your billing plan, and your billing plan should not be pinned to
+            one engine.
           </Box>
           <Box variant="p">
-            <strong>Why this is a tier and not an afterthought:</strong> a raw <code>vllm serve</code>{' '}
-            process is a single model on a single endpoint with no concept of per-team rate limits,
-            spend caps, multi-provider fallback, or a human-facing UI. In production you almost never
-            expose that process directly. You front it with a gateway for control-plane concerns and
-            point apps at the gateway, not the engine. Everything below is something the OpenAI wire
-            contract lets you bolt on for free. The cost vLLM deliberately avoided imposing on
-            you was a rewrite of your call sites.
+            <strong>Why this is its own tier:</strong> a raw <code>vllm serve</code> process is a
+            single model on a single endpoint. It can cap its own queue (past{' '}
+            <code>--max-num-queued-reqs</code> it answers HTTP 503){' '}
+            <Cite tier={1} href={vllmUrl('vllm/config/scheduler.py', 'L93-L120')} kind="code">
+              config/scheduler.py L93-L120
+            </Cite>
+            , but it has no concept of per-team rate limits, spend caps, multi-provider fallback, or
+            a human-facing UI. In production you almost never expose that process directly. You
+            front it with a gateway for control-plane concerns and point apps at the gateway.
+            Everything below bolts on through a wire contract vLLM already serves (OpenAI&apos;s, or
+            Anthropic Messages for Claude Code), with no rewrite of your call sites.
           </Box>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">The layers in front of the engine</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Where each tool sits on the request path, and the one setting that connects it to vLLM"
+          >
+            The layers in front of the engine
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             Read the diagram top-down as the request path. Applications and agents never address a
@@ -159,6 +192,9 @@ export function GatewaysAppLayer() {
           </Box>
 
           <DataPathDiagram />
+          <Box variant="small" color="text-body-secondary">
+            Schematic. Illustrative, not measured.
+          </Box>
 
           <Table
             variant="embedded"
@@ -173,7 +209,17 @@ export function GatewaysAppLayer() {
               {
                 layer: 'LLM gateway / proxy',
                 tools: 'LiteLLM',
-                adds: 'Retries & fallbacks, spend budgets, rate limits, virtual API keys, request logging, and multi-provider unification (one endpoint that fronts vLLM plus OpenAI/Bedrock/Anthropic/etc.).',
+                adds: (
+                  <span>
+                    Retries &amp; fallbacks, spend budgets, rate limits, virtual API keys, request
+                    logging, and multi-provider unification (one endpoint that fronts vLLM plus
+                    OpenAI/Bedrock/Anthropic/etc.){' '}
+                    <Cite tier={1} href={LITELLM_GATEWAY}>
+                      LiteLLM docs: AI Gateway
+                    </Cite>
+                    .
+                  </span>
+                ),
                 connects: (
                   <span>
                     Calls vLLM with model <code>hosted_vllm/&lt;name&gt;</code> and{' '}
@@ -206,29 +252,40 @@ export function GatewaysAppLayer() {
             ]}
           />
           <Box variant="small">
-            LiteLLM and Open WebUI integration details verified against vLLM&apos;s own deployment
-            docs:{' '}
-            <Link external href="https://docs.vllm.ai/en/latest/deployment/frameworks/litellm/">
-              vLLM Docs: LiteLLM, accessed 2026-06-07
-            </Link>{' '}
+            Integration details:{' '}
+            <Cite tier={1} href={vllmDocsUrl('deployment/frameworks/litellm/')}>
+              vLLM docs: LiteLLM
+            </Cite>{' '}
             and{' '}
-            <Link external href="https://docs.vllm.ai/en/latest/deployment/frameworks/open-webui/">
-              vLLM Docs: Open WebUI, accessed 2026-06-07
-            </Link>
+            <Cite tier={1} href={vllmDocsUrl('deployment/frameworks/open-webui/')}>
+              vLLM docs: Open WebUI
+            </Cite>
             .
           </Box>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">The gateway tier (LiteLLM)</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Retries, budgets and rate limits for a vLLM fleet from one model prefix and one URL, and the version pin that keeps the gateway itself safe"
+          >
+            The gateway tier (LiteLLM)
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
-            A gateway is the seam where control-plane concerns live. LiteLLM (in its own
-            framing a unified interface to many providers) sits between your apps and the
-            engines and gives you the things <code>vllm serve</code> deliberately does not: retries
-            and fallbacks across endpoints, per-key and per-team spend budgets, rate limits, and a
-            single OpenAI-shaped URL that can fan out to vLLM <em>and</em> hosted providers behind one
-            contract. The integration is the same base-URL-and-prefix move as the rest of this tier.
+            A gateway is the seam where control-plane concerns live. LiteLLM (in its own framing a
+            unified interface to many providers) sits between your apps and the engines and adds
+            what <code>vllm serve</code> leaves out: retry and fallback logic across deployments,
+            budgets and rate limits per project, API key or model{' '}
+            <Cite tier={1} href={vllmUrl(LITELLM_PAGE, 'L3-L12')}>
+              litellm.md L3-L12
+            </Cite>
+            , and a single OpenAI-shaped URL that can fan out to vLLM <em>and</em> hosted providers
+            behind one contract.
           </Box>
 
           <Box variant="code">
@@ -245,17 +302,19 @@ response = litellm.completion(
           </Box>
 
           <Box variant="p">
-            Two things to internalize. First, the <code>hosted_vllm/</code> prefix is{' '}
-            <strong>not optional</strong>. The docs state plainly that{' '}
-            &quot;<code>hosted_vllm</code> is prefix key word and necessary.&quot; It is what tells
-            LiteLLM to route to a self-hosted OpenAI-compatible vLLM server (at your{' '}
-            <code>api_base</code>) rather than to a hosted vendor. Second, the same call shape works
-            for embeddings, and you can set <code>HOSTED_VLLM_API_BASE</code> as an environment
-            variable instead of passing <code>api_base</code> per call (
-            <Link external href="https://docs.vllm.ai/en/latest/deployment/frameworks/litellm/">
-              vLLM Docs: LiteLLM, accessed 2026-06-07
-            </Link>
-            ).
+            Two details matter. First, the <code>hosted_vllm/</code> prefix is required (&quot;
+            <code>hosted_vllm</code> is prefix key word and necessary&quot;){' '}
+            <Cite tier={1} href={vllmUrl(LITELLM_PAGE, 'L41-L48')}>
+              litellm.md L41-L48
+            </Cite>
+            . It is what tells LiteLLM to route to a self-hosted OpenAI-compatible vLLM server (at
+            your <code>api_base</code>) rather than to a hosted vendor. Second, the same call shape
+            works for embeddings, and you can set <code>HOSTED_VLLM_API_BASE</code> as an environment
+            variable instead of passing <code>api_base</code> per call{' '}
+            <Cite tier={1} href={vllmUrl(LITELLM_PAGE, 'L63-L71')}>
+              litellm.md L63-L71
+            </Cite>
+            .
           </Box>
 
           <ColumnLayout columns={2} variant="text-grid">
@@ -276,7 +335,7 @@ response = litellm.completion(
                 </li>
                 <li>
                   <strong>Observability:</strong> centralized request logging and spend tracking at
-                  the seam, not scattered across apps.
+                  the seam, instead of scattered across apps.
                 </li>
               </ul>
             </div>
@@ -291,8 +350,14 @@ response = litellm.completion(
                   <strong>Model placement:</strong> which GPU, tensor/pipeline parallelism, quantization.
                 </li>
                 <li>
-                  <strong>Decode features:</strong> structured outputs, tool-call parsing, prefix
-                  caching, configured on <code>vllm serve</code> (§12), not the gateway.
+                  <strong>Decode features:</strong> structured outputs, tool-call parsing (
+                  <code>--enable-auto-tool-choice</code> with the model&apos;s{' '}
+                  <code>--tool-call-parser</code>) and prefix caching (on by default for models that
+                  support it{' '}
+                  <Cite tier={1} href={vllmUrl('vllm/engine/arg_utils.py', 'L2926-L2962')} kind="code">
+                    arg_utils.py L2926-L2962
+                  </Cite>
+                  ) are set on <code>vllm serve</code> (§12); the gateway passes them through.
                 </li>
                 <li>
                   <strong>Don&apos;t leak tiers:</strong> keep budgets/keys in the gateway and engine
@@ -302,40 +367,54 @@ response = litellm.completion(
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="Operational caution: LiteLLM PyPI supply-chain compromise (March 2026)">
+          <Alert type="warning" header="Pin the gateway: the LiteLLM PyPI compromise of March 24, 2026">
             <SpaceBetween size="s">
               <Box variant="p">
-                <strong>[Tier-3 / security reporting]</strong>: this is an operational
-                caution about the <em>LiteLLM package</em>, not a statement about vLLM. In late March
-                2026, malicious versions of the <code>litellm</code> package were published to PyPI
-                outside the normal release process and quarantined after a short window. Multiple
-                security vendors reported that the malicious versions attempted to harvest and
-                exfiltrate credentials and establish persistence. Treat the specifics below as
-                third-party reporting, confirm against LiteLLM&apos;s own advisory before acting, and
-                do not infer anything about vLLM&apos;s security posture from it.
+                This concerns the <code>litellm</code> package, and says nothing about vLLM. On
+                March 24, 2026, <code>litellm==1.82.7</code> and <code>litellm==1.82.8</code> were
+                uploaded to PyPI outside LiteLLM&apos;s release pipeline and were live from 10:39 UTC
+                for about 40 minutes before PyPI quarantined them. They appear to have carried a
+                credential stealer that harvested environment variables, SSH keys, cloud credentials
+                and Kubernetes tokens and sent them to a domain LiteLLM does not own. The official
+                LiteLLM Proxy Docker image was not affected, because it pins its dependencies{' '}
+                <Cite tier={2} href={LITELLM_ADVISORY}>
+                  LiteLLM security update (vendor advisory)
+                </Cite>
+                . Datadog&apos;s analysis adds that the payload installed persistence as a user
+                systemd service{' '}
+                <Cite tier={3} href={DATADOG_ANALYSIS}>
+                  Datadog Security Labs: LiteLLM and Telnyx compromised on PyPI
+                </Cite>
+                .
               </Box>
               <Box variant="p">
-                <strong>Practical guardrails (apply to any third-party tool in this tier):</strong>{' '}
-                pin exact versions in <code>requirements.txt</code> / lockfiles and audit before
-                upgrading; do not auto-upgrade gateway dependencies in CI; per LiteLLM&apos;s advisory
-                the last release flagged as known-good before the incident was <code>1.82.6</code>,
-                and the official LiteLLM Proxy Docker image (which pins its dependencies) was reported
-                as not impacted by the compromised PyPI wheels. If you may have installed an affected
-                version, follow the vendor advisory&apos;s remediation (remove, purge caches, rotate
-                credentials) rather than assuming removal alone is sufficient.
+                <strong>Check your exposure:</strong> the advisory counts you as possibly affected
+                if you installed or upgraded <code>litellm</code> with pip, or built an image that did,
+                between 10:39 and 16:00 UTC that day, including as an unpinned transitive dependency
+                of an agent framework or MCP (Model Context Protocol) server. Look for{' '}
+                <code>litellm_init.pth</code> in site-packages. If you are on 1.82.6 or earlier and did
+                not upgrade in that window, you are not affected. The first clean release after the
+                incident is v1.83.0, announced in the advisory&apos;s March 30 update{' '}
+                <Cite tier={2} href={LITELLM_ADVISORY}>
+                  LiteLLM security update
+                </Cite>
+                , and the latest on 2026-10-16 is{' '}
+                <Cite tier={1} href="https://github.com/BerriAI/litellm/releases/tag/v1.105.1">
+                  LiteLLM v1.105.1 release
+                </Cite>
+                .
               </Box>
-              <Box variant="small">
-                Sources (third-party / vendor advisories):{' '}
-                <Link external href="https://docs.litellm.ai/blog/security-update-march-2026">
-                  LiteLLM Security Update (vendor advisory), accessed 2026-06-07
-                </Link>
-                ;{' '}
-                <Link
-                  external
-                  href="https://securitylabs.datadoghq.com/articles/litellm-compromised-pypi-teampcp-supply-chain-campaign/"
-                >
-                  Datadog Security Labs, accessed 2026-06-07
-                </Link>
+              <Box variant="p">
+                <strong>To get it right in this tier:</strong> pin exact versions, transitive ones
+                included, in lockfiles and audit before upgrading; do not auto-upgrade gateway
+                dependencies in CI (continuous integration). If an affected version ran anywhere, the
+                advisory&apos;s first action is &quot;Rotate all secrets&quot; that were present on that
+                system. Removing the package is not a complete remediation: Datadog recommends checking
+                the host for persistence and outbound traffic and rebuilding critical systems from a
+                known-good state{' '}
+                <Cite tier={3} href={DATADOG_ANALYSIS}>
+                  Datadog Security Labs
+                </Cite>
                 .
               </Box>
             </SpaceBetween>
@@ -343,11 +422,19 @@ response = litellm.completion(
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">The UI tier (Open WebUI)</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="A chat interface for a self-hosted model from one environment variable"
+          >
+            The UI tier (Open WebUI)
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
-            When you want a chat interface in front of a self-hosted model (for an internal
-            team, a demo, or a private deployment), you do not build one. You point an existing
+            When you want a chat interface in front of a self-hosted model, you point an existing
             OpenAI-client UI at the vLLM endpoint. Open WebUI connects by treating vLLM as its OpenAI
             backend: start the server with a reachable host, then set one environment variable on the
             UI container.
@@ -362,34 +449,51 @@ OPENAI_API_BASE_URL=http://0.0.0.0:8000/v1`}</pre>
           </Box>
           <Box variant="p">
             Once <code>OPENAI_API_BASE_URL</code> points at the vLLM <code>/v1</code> path, the served
-            model appears in the UI and is ready for chat. In a production layout you would typically
-            point the UI at the <em>gateway</em> URL instead of the engine directly, so the UI&apos;s
-            traffic also picks up the gateway&apos;s auth, budgets, and logging (
-            <Link external href="https://docs.vllm.ai/en/latest/deployment/frameworks/open-webui/">
-              vLLM Docs: Open WebUI, accessed 2026-06-07
-            </Link>
-            ).
+            model appears in the UI and is ready for chat{' '}
+            <Cite tier={1} href={vllmUrl('docs/deployment/frameworks/open-webui.md', 'L19-L40')}>
+              open-webui.md L19-L40
+            </Cite>
+            . In a production layout you would typically point the UI at the <em>gateway</em> URL
+            instead of the engine directly, so the UI&apos;s traffic also picks up the gateway&apos;s
+            auth, budgets, and logging.
           </Box>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">The RAG / agent tier (LangChain, LlamaIndex)</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Which framework class to use against a served fleet, and how coding agents reach vLLM through Messages and Responses"
+          >
+            The RAG / agent tier (LangChain, LlamaIndex)
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
             RAG and agent frameworks need a chat/completions endpoint and embeddings, both of
-            which the vLLM server already speaks (§12). The integration pattern is the same as
-            everything else in this tier: use the framework&apos;s OpenAI client and override the base
-            URL.
+            which the vLLM server already speaks (§12). Against a served model the integration
+            pattern is the same as everything else in this tier: use the framework&apos;s OpenAI
+            client and override the base URL.
           </Box>
-          <Alert type="info" header="Integrate via the OpenAI-compatible API, not a dedicated connector">
-            The reliable, documented path is to treat vLLM as an <em>OpenAI endpoint</em>:
-            instantiate the framework&apos;s OpenAI-style client (chat model and/or embeddings) and set
-            its base URL to the vLLM <code>/v1</code> path. This works precisely because vLLM
-            implements the OpenAI wire contract. Do not assume a first-party &quot;vLLM connector&quot;
-            exists in a given framework version; the OpenAI-compatible route is what the compatibility
-            guarantee from §12 actually buys you, and it does not depend on any framework shipping
-            vLLM-specific code. (Some frameworks do offer local/self-hosted wrappers, but the
-            base-URL-override path is the one that is stable across versions.)
+          <Alert type="info" header="Against a fleet, use the OpenAI client; the vLLM classes embed the engine">
+            Both frameworks also ship a class named for vLLM: LangChain&apos;s <code>VLLM</code>{' '}
+            (<code>from langchain_community.llms import VLLM</code>) and LlamaIndex&apos;s{' '}
+            <code>Vllm</code> (<code>from llama_index.llms.vllm import Vllm</code>). Each is built
+            from a model name and engine arguments such as <code>tensor_parallel_size</code>, with
+            no server URL, and runs inference on GPUs from the framework&apos;s own process{' '}
+            <Cite tier={1} href={vllmUrl('docs/serving/integrations/langchain.md', 'L11-L27')}>
+              langchain.md L11-L27
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('docs/serving/integrations/llamaindex.md', 'L11-L21')}>
+              llamaindex.md L11-L21
+            </Cite>
+            . That fits local, single-process use, and it puts the engine tier inside the
+            application, past any gateway. For a served fleet, instantiate the
+            framework&apos;s OpenAI-style client (chat model and/or embeddings) and set its base URL
+            to the vLLM or gateway <code>/v1</code> path. That route depends only on the OpenAI
+            wire contract, so it stays stable across framework versions.
           </Alert>
           <Box variant="code">
             <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# Pattern (illustrative): point the framework's OpenAI client at vLLM.
@@ -404,26 +508,55 @@ OPENAI_API_BASE_URL=http://0.0.0.0:8000/v1`}</pre>
 #              api_key="token-abc123", is_chat_model=True)`}</pre>
           </Box>
           <Box variant="small">
-            The base-URL-override mechanism is the same swap shown in{' '}
-            <strong>12. The OpenAI-Compatible Server</strong>:{' '}
-            <code>base_url=&quot;http://localhost:8000/v1&quot;</code> on the OpenAI client. Confirm the
-            exact client class and parameter names against your installed framework version; the
-            load-bearing fact is that vLLM is addressed as an OpenAI provider, verified by vLLM&apos;s
-            serving docs (
-            <Link external href="https://docs.vllm.ai/en/latest/serving/openai_compatible_server/">
-              vLLM Docs: OpenAI-Compatible Server, accessed 2026-06-07
-            </Link>
-            ).
+            Confirm the exact client class and parameter names against your installed framework
+            version; the load-bearing fact is that vLLM is addressed as an OpenAI provider{' '}
+            <Cite tier={1} href={vllmDocsUrl('serving/openai_compatible_server/')}>
+              vLLM docs: OpenAI-Compatible Server
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            <strong>Coding agents use two more contracts.</strong> Claude Code speaks the Anthropic
+            Messages API: set <code>ANTHROPIC_BASE_URL</code> to the vLLM server and its requests
+            land on <code>/v1/messages</code>{' '}
+            <Cite tier={1} href={vllmDocsUrl('serving/integrations/claude_code/')}>
+              vLLM docs: Claude Code
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/entrypoints/anthropic/api_router.py', 'L51-L52')} kind="code">
+              anthropic/api_router.py L51-L52
+            </Cite>
+            . Codex speaks the OpenAI Responses API: a provider entry with{' '}
+            <code>wire_api = &quot;responses&quot;</code> and <code>base_url</code> at the vLLM{' '}
+            <code>/v1</code> path sends it to <code>/v1/responses</code>{' '}
+            <Cite tier={1} href={vllmDocsUrl('serving/integrations/codex/')}>
+              vLLM docs: Codex
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/entrypoints/openai/responses/api_router.py', 'L48-L49')} kind="code">
+              responses/api_router.py L48-L49
+            </Cite>
+            . Both need a model served with tool calling on (<code>--enable-auto-tool-choice</code>{' '}
+            plus the model&apos;s <code>--tool-call-parser</code>). If a gateway sits in that path,
+            confirm it forwards the contract the agent speaks; <strong>12. The OpenAI-Compatible
+            Server</strong> lists every route vLLM registers and which ones <code>--api-key</code>{' '}
+            guards.
           </Box>
         </SpaceBetween>
       </Container>
 
-      <Container header={<Header variant="h2">Keeping the tiers decoupled</Header>}>
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Four placement rules that let you swap the engine or the gateway without touching the other"
+          >
+            Keeping the tiers decoupled
+          </Header>
+        }
+      >
         <SpaceBetween size="m">
           <Box variant="p">
-            The recurring failure mode is letting control-plane logic leak into the engine, or pinning
-            the control plane to one engine. The OpenAI contract is the decoupling boundary:
-            respect it and you can swap either side independently.
+            The wire contract is the decoupling boundary. Keep control-plane logic in the gateway
+            and engine tuning in vLLM, and you can swap either side independently.
           </Box>
           <ExpandableSection headerText="Decoupling rules of thumb">
             <SpaceBetween size="s">
@@ -438,16 +571,17 @@ OPENAI_API_BASE_URL=http://0.0.0.0:8000/v1`}</pre>
                 every engine you ever run.
               </Box>
               <Box variant="p">
-                <strong>Throughput and decode features live in the engine.</strong> Continuous
-                batching, KV cache, structured outputs, tool-call parsing, prefix caching: these
-                are <code>vllm serve</code> flags (§12). A gateway cannot add them; it can only pass
-                them through.
+                <strong>Throughput and decode features live in the engine.</strong> Batching, KV
+                cache, structured outputs, tool-call parsing and prefix caching are{' '}
+                <code>vllm serve</code> settings (§12); a gateway can only pass them through.
               </Box>
               <Box variant="p">
                 <strong>The wire format is the contract.</strong> Everything in this section works
-                because each layer speaks OpenAI&apos;s <code>/v1/chat/completions</code> (and
-                <code>/v1/embeddings</code>). That single fact is why a UI, a gateway, and a RAG
-                framework written for OpenAI all run in front of your GPU with a base-URL swap.
+                because each layer speaks a contract vLLM serves: OpenAI&apos;s{' '}
+                <code>/v1/chat/completions</code> and <code>/v1/embeddings</code> for UIs and
+                frameworks, Responses and Anthropic Messages for coding agents. That is why a UI, a
+                gateway, and a RAG framework written for OpenAI all run in front of your GPU with a
+                base-URL swap.
               </Box>
             </SpaceBetween>
           </ExpandableSection>

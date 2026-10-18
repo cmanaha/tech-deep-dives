@@ -108,9 +108,9 @@ const sections = [
   { id: 'workload', title: '2. The Inference Workload' },
   { id: 'v1-arch', title: '3. The V1 Engine Architecture' },
   { id: 'scheduler', title: '4. Scheduler & Continuous Batching' },
-  { id: 'paged', title: '5. PagedAttention & KV-Cache' },
+  { id: 'paged', title: '5. Paged KV Cache & Block Tables' },
   { id: 'prefix', title: '6. Automatic Prefix Caching' },
-  { id: 'offload', title: '7. KV-Cache Offloading & LMCache' },
+  { id: 'offload', title: '7. KV-Cache Offloading & Tiers' },
   { id: 'quant', title: '8. Quantization & Precision' },
   { id: 'distributed', title: '9. Distributed Inference' },
   { id: 'disagg', title: '10. Disaggregated Prefill / Decode' },
@@ -174,7 +174,7 @@ export function App() {
   return (
     <DeepDiveLayout
       title="vLLM: The LLM Inference Serving Engine"
-      subtitle="A field manual for high-throughput LLM serving: engine internals, distributed and disaggregated serving, the ecosystem, and the AWS deployment paths"
+      subtitle="A field manual for high-throughput LLM serving with vLLM v0.31.0: engine internals, distributed and disaggregated serving, the ecosystem, and the AWS deployment paths"
       sections={sections}
       activeSection={activeSection}
       onSectionChange={setActiveSection}
