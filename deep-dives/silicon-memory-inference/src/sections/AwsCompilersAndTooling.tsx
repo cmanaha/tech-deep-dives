@@ -4,28 +4,112 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
-import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
-import Link from '@cloudscape-design/components/link';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { AwsCompilerStack } from '../components/AwsCompilerStack';
+import { Cite } from '../components/Cite';
+import { S } from '../sources/AwsCompilersAndTooling';
 
-interface ToolRow {
-  layer: string;
-  what: string;
-  consumed: string;
+interface ComponentRow {
+  component: string;
+  version: React.ReactNode;
 }
 
-const toolRows: ToolRow[] = [
-  { layer: 'PyTorch / JAX model', what: 'Model authoring; the application layer', consumed: 'Application code' },
-  { layer: 'torch-neuronx / jax-neuron', what: 'Framework integration; graph capture and partitioning for the Neuron compiler', consumed: 'PyTorch or JAX graph' },
-  { layer: 'XLA HLO', what: 'OpenXLA intermediate representation; layout normalization and standard XLA passes', consumed: 'Captured graph' },
-  { layer: 'NKI (Neuron Kernel Interface)', what: 'Python DSL for hand-authored kernels against SBUF / PSUM / systolic array', consumed: 'NKI kernels in Python' },
-  { layer: 'Neuron HLO', what: 'AWS-specific operator fusion, SBUF tiling, schedule construction', consumed: 'XLA HLO and NKI output' },
-  { layer: 'NEFF', what: 'Neuron Executable File Format — ahead-of-time binary; the fixed schedule', consumed: 'Neuron HLO' },
-  { layer: 'Neuron runtime', what: 'Loads NEFF, dispatches to NeuronCores, manages CC-Cores for collectives', consumed: 'NEFF binary' },
-  { layer: 'Neuron profiler', what: 'neuron-ls, neuron-top, neuron-profile, TensorBoard plugin — closes the feedback loop', consumed: 'Compiled and running model' },
-  { layer: 'Neuron Distributed', what: 'Tensor parallel, pipeline parallel, sequence parallel, optimizer partitioning', consumed: 'Single-device model' },
+const componentRows: ComponentRow[] = [
+  {
+    component: 'torch-neuronx (PyTorch NeuronX)',
+    version: (
+      <>
+        2.9.0.2.15, released with Neuron 2.31.0
+        <Cite s={S.pytorchNotes} />
+      </>
+    ),
+  },
+  {
+    component: 'JAX NeuronX (jax-neuronx)',
+    version: (
+      <>
+        0.10.0, supports up to JAX 0.9.0
+        <Cite s={S.neuronReleaseNotes} />
+      </>
+    ),
+  },
+  {
+    component: 'neuronx-cc',
+    version: (
+      <>
+        2.27.5334.0
+        <Cite
+          s={S.neuronReleaseNotes}
+          note="The compiler's own release-notes page lists 2.27.4747.0 for the same release."
+        />
+        <Cite s={S.compilerNotes} />
+      </>
+    ),
+  },
+  {
+    component: 'NKI',
+    version: (
+      <>
+        0.6.0
+        <Cite s={S.neuronReleaseNotes} />
+      </>
+    ),
+  },
+  {
+    component: 'Neuron Runtime',
+    version: (
+      <>
+        2.34.10.0
+        <Cite s={S.neuronReleaseNotes} />
+      </>
+    ),
+  },
+  {
+    component: 'nrtpy (beta)',
+    version: (
+      <>
+        2.34.10
+        <Cite s={S.neuronReleaseNotes} />
+      </>
+    ),
+  },
+  {
+    component: 'vLLM Neuron (beta)',
+    version: (
+      <>
+        0.24.0.1.1.0
+        <Cite s={S.neuronReleaseNotes} />
+      </>
+    ),
+  },
+  {
+    component: 'NxD Inference (maintenance)',
+    version: (
+      <>
+        0.10.18399
+        <Cite s={S.neuronReleaseNotes} />
+      </>
+    ),
+  },
+  {
+    component: 'Neuron Developer Tools',
+    version: (
+      <>
+        2.32.28.0
+        <Cite s={S.neuronReleaseNotes} />
+      </>
+    ),
+  },
+  {
+    component: 'TorchNeuron',
+    version: (
+      <>
+        Closed beta
+        <Cite s={S.pytorchNative} />
+      </>
+    ),
+  },
 ];
 
 export function AwsCompilersAndTooling() {
@@ -35,30 +119,34 @@ export function AwsCompilersAndTooling() {
         header={
           <Header
             variant="h1"
-            description="The path from Python code to a NEFF binary running on Trainium NeuronCores"
+            description="Which path a model takes to a NEFF, the compiler default since Neuron 2.27.0 that sets your matmul precision, and which library, profiler and kernel path to reach for"
           >
-            AWS compilers and kernel tooling
+            AWS Compilers and Kernel Tooling
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Why this section.</strong> Section 17 covered Trainium and
-            Inferentia at the silicon level. This section covers the toolchain that
-            targets that silicon — the AWS counterpart to the NVIDIA compiler stack
-            in Section 16. The two stacks make different bets, and most of those
-            differences trace back to one architectural choice: Trainium uses
-            ahead-of-time compilation. The NEFF binary <em>is</em> the schedule.
+            <strong>What the stack is.</strong> A PyTorch or JAX model reaches Trainium through the
+            Neuron SDK. A framework integration captures the model as an XLA (Accelerated Linear
+            Algebra) graph; neuronx-cc, the Neuron Graph Compiler, compiles it ahead of time into a
+            NEFF (Neuron Executable File Format); and the Neuron Runtime loads the NEFF and runs
+            it.
+            <Cite s={S.neuronCompiler} /> This is the AWS counterpart to{' '}
+            <em>NVIDIA Compilers and Kernel Tooling</em>; <em>AWS Trainium, Inferentia and Neuron</em>{' '}
+            covers the NeuronCore it targets.
           </Box>
           <Box variant="p">
-            <strong>What &ldquo;Neuron&rdquo; is at this level.</strong> Not one
-            tool — an SDK that owns everything from PyTorch / JAX integration through
-            the operator-fusion compiler down to the runtime that dispatches to
-            NeuronCores. NKI sits beside the standard graph path as a hand-authoring
-            escape hatch when the compiler&apos;s default kernel choice is not enough.
-            Neuron Distributed sits on top, providing tensor-parallel, pipeline-
-            parallel, and sequence-parallel patterns. The Neuron profiler closes the
-            loop.
+            <strong>The NEFF is the schedule.</strong> The compiler back end allocates memory and
+            fixes the instruction order before the model runs
+            <Cite s={S.nkiOverview} />, so no warp scheduler makes those choices at run time.
+            Trainium2 and Trainium3 still support dynamic shapes and control flow in their ISA
+            (instruction set architecture)
+            <Cite s={S.trainium2Arch} />
+            <Cite s={S.trainium3Arch} />, and NKI (Neuron Kernel Interface) 0.6.0 adds
+            data-dependent loops at run time.
+            <Cite s={S.neuronWhatsNew} /> Most tuning therefore happens before the run: the compiler
+            flags, the graph you hand the compiler, and the kernels you write in NKI.
           </Box>
         </SpaceBetween>
       </Container>
@@ -67,28 +155,51 @@ export function AwsCompilersAndTooling() {
         header={
           <Header
             variant="h2"
-            description="The lowering path from Python through XLA to NEFF"
+            description="The graph compiler runs four stages before it emits the NEFF; an NKI kernel skips the first three and hands you what they would decide"
           >
-            The stack, visualized
+            The default path, and where NKI enters
           </Header>
         }
       >
         <SpaceBetween size="m">
           <AwsCompilerStack />
           <Box variant="p">
-            Most workloads enter through PyTorch eager or torch.compile and hand off
-            to torch-neuronx, which captures the graph as XLA HLO. The Neuron
-            compiler runs its own passes — operator fusion, SBUF tiling, schedule
-            construction — and emits a NEFF binary. JAX takes the same path through
-            jax-neuron and XLA. NKI is the second entry point: a Python DSL for
-            hand-written kernels that lower into the same Neuron HLO and join the
-            standard graph path
-            ({' '}
-            <Link external href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/general/nki/">
-              NKI documentation
-            </Link>
-            , accessed 2026-04-23).
+            torch-neuronx captures a PyTorch model through PyTorch/XLA, and JAX NeuronX does the
+            same for JAX.
+            <Cite s={S.neuronCompiler} /> neuronx-cc then runs four stages: graph-level optimization
+            in the XLA front end, including operator fusion; loop-level optimization, which sets
+            layout, tiling and loop fusion; intrinsics mapping to hardware instructions; and the back
+            end, which allocates memory and schedules instructions.
+            <Cite s={S.nkiOverview} />
           </Box>
+          <Box variant="p">
+            <strong>NKI enters at the back end.</strong> An NKI kernel skips the first three stages:
+            it compiles into an IR (intermediate representation) the back end consumes directly, and
+            direct allocation lets it skip some back-end passes as well.
+            <Cite s={S.nkiOverview} /> That is the source of NKI&apos;s instruction-level control:
+            the tiling and instruction choices of stages 2 and 3 are yours.
+          </Box>
+          <Box variant="p">
+            <strong>The PyTorch path is moving.</strong> PyTorch 2.9 is the last version on
+            PyTorch/XLA; from PyTorch 2.10, in a future Neuron release, Neuron uses TorchNeuron and
+            scripts need updating.
+            <Cite s={S.pytorchNotes} /> TorchNeuron is a native PyTorch backend that runs eager mode
+            and torch.compile, without Inductor. AWS describes it both as open source at
+            aws-neuron/torch-neuronx and as a closed beta
+            <Cite s={S.pytorchNative} />; that repository was not public when this research checked
+            it in October 2026.
+          </Box>
+          <ExpandableSection headerText="Components and versions in Neuron 2.32.0 (August 2026)">
+            <Table
+              items={componentRows}
+              columnDefinitions={[
+                { id: 'component', header: 'Component', cell: (r) => r.component, minWidth: 170 },
+                { id: 'version', header: 'Version', cell: (r) => r.version, minWidth: 150 },
+              ]}
+              variant="embedded"
+              wrapLines
+            />
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -96,64 +207,46 @@ export function AwsCompilersAndTooling() {
         header={
           <Header
             variant="h2"
-            description="Each layer, what it does, and what it consumes"
+            description="Since Neuron 2.27.0 an FP32 model's matmuls stay FP32 unless you ask for BF16, and an S3 compile cache stops every machine recompiling the same graph"
           >
-            The nine layers
-          </Header>
-        }
-      >
-        <Table
-          items={toolRows}
-          columnDefinitions={[
-            { id: 'layer', header: 'Layer', cell: (r) => r.layer, minWidth: 220 },
-            { id: 'what', header: 'What it does', cell: (r) => r.what },
-            { id: 'cons', header: 'Consumes', cell: (r) => r.consumed },
-          ]}
-          variant="embedded"
-          wrapLines
-        />
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="The single architectural choice that drives most of Neuron's properties"
-          >
-            Ahead-of-time compilation as the discipline
+            Two settings to choose before the first compile
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The Neuron compiler emits the entire schedule into a NEFF before the
-            workload runs. The runtime loads the NEFF and walks it. There is no
-            warp scheduler, no operand-staging heuristic, no cache-eviction policy
-            in the loop. Every byte that lives in SBUF at any given clock was put
-            there by the compiler, and every operation that fires on the systolic
-            array was fired because the NEFF said it should fire that clock.
+            <strong>Matmul precision.</strong> neuronx-cc compiles matrix multiplications in the
+            model&apos;s own data type by default (<code>--auto-cast=none</code>), a default since
+            neuronx-cc 2.22.12471.0 (Neuron SDK 2.27.0); earlier versions cast FP32 (32-bit floating
+            point) matmuls to BF16 (bfloat16). An FP32 model compiled without an explicit{' '}
+            <code>--auto-cast</code> runs its matmuls in FP32, which can reduce inference throughput
+            and increase compiled model size.
+            <Cite s={S.neuronCompiler} /> For BF16 matmuls, pass{' '}
+            <code>--auto-cast=matmult --auto-cast-type=bf16</code> (<code>all</code> casts every FP32
+            operation and can lower accuracy); inside a framework, compiler options go in{' '}
+            <code>NEURON_CC_FLAGS</code>.
+            <Cite s={S.compilerCli} />
           </Box>
-          <Alert type="info" header="The properties that fall out">
-            <strong>Determinism.</strong> Same NEFF, same input, same silicon
-            produces the same output in the same order. This is the property
-            regulated workloads point to. Section 29 (Determinism) covers it in
-            depth.{' '}
-            <strong>Compile-time-visible misses.</strong> A schedule slip is
-            detectable in the NEFF, not at runtime. The optimizer fix is a
-            re-tile, not a profiler-driven kernel rewrite.{' '}
-            <strong>Predictable wall-clock.</strong> No runtime variance from
-            warp-scheduling decisions or cache contention.
-          </Alert>
-          <Alert type="warning" header="The compile-cost dial">
-            AOT compilation costs time at compile time. For a training loop the
-            cost amortizes — compile once, run many epochs — and the persistent
-            NEFF cache makes repeat builds fast. For inference serving with
-            stable graphs the cost is paid at deployment. For workloads with
-            highly dynamic graph shapes (variable shapes, conditional control
-            flow), recompiles can become a real operational concern. The
-            compiler caching strategy and partial recompilation are first-class
-            in Neuron docs precisely because of this.
-          </Alert>
+          <Box variant="p">
+            <strong>The compile cache.</strong> Compiled graphs are cached under a hash of the
+            compiler flags and the XLA graph; a new compiler version or a changed graph compiles
+            again
+            <Cite s={S.neuronCache} />, so changing <code>--auto-cast</code> recompiles, and each
+            distinct graph pays its own compile. The default cache,{' '}
+            <code>/var/tmp/neuron-compile-cache</code>, is local; point{' '}
+            <code>NEURON_COMPILE_CACHE_URL</code> at a read-write <code>s3://</code> bucket and
+            machines such as CI (continuous integration) runners reuse each other&apos;s compiled
+            graphs. Graphs traced with frozen weights through <code>torch_neuronx.trace</code> are
+            not cached.
+            <Cite s={S.neuronCache} />
+          </Box>
+          <Box variant="code">
+            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# The default is --auto-cast=none: FP32 matmuls stay FP32. Ask for BF16 explicitly.
+export NEURON_CC_FLAGS="--auto-cast=matmult --auto-cast-type=bf16"
+
+# Share compiled graphs across machines. The bucket must exist and be read-write.
+export NEURON_COMPILE_CACHE_URL="s3://your-bucket/neuron-compile-cache"`}</pre>
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -161,9 +254,96 @@ export function AwsCompilersAndTooling() {
         header={
           <Header
             variant="h2"
-            description="The Python kernel-authoring DSL — the AWS counterpart to Triton"
+            description="Start new serving work on vLLM Neuron and new training work on TorchNeuron; the NeuronX Distributed libraries are in maintenance"
           >
-            NKI in detail
+            Which library to serve and train on
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>Serving.</strong> vLLM Neuron, in beta since July 2026, implements models inside
+            the vLLM plugin with no dependency on NxD Inference (NeuronX Distributed Inference), and
+            runs on Trn2 and Trn3. NxD Inference is in maintenance mode from Neuron 2.32.0, and AWS
+            directs its users to vLLM Neuron.
+            <Cite s={S.neuronWhatsNew} /> Pin vLLM Neuron by release tag.
+            <Cite s={S.vllmNeuronRepo} />
+          </Box>
+          <Box variant="p">
+            <strong>Training.</strong> NeuronX Distributed Training and the NxD Core training APIs
+            are in maintenance mode, with security fixes only.
+            <Cite s={S.neuronWhatsNew} /> Training moves to TorchNeuron, which supports
+            PyTorch&apos;s native FSDP (Fully Sharded Data Parallel) and DTensor (Distributed Tensor)
+            APIs and runs TorchTitan with minimal code changes.
+            <Cite s={S.pytorchNative} />
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="The NEFF fixes the instruction order while the timing still varies; three tools show where the time goes, from device inventory to a full profile"
+          >
+            Profiling: neuron-ls, neuron-top and Neuron Explorer
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>The order is fixed; the timing varies.</strong> Per-hop latency of the
+            intra-node ring collectives is about 1 to 2 microseconds and depends on HBM (high
+            bandwidth memory) load
+            <Cite s={S.intranodeCollectives} />, and on Trn2 the Tensor Engine can throttle under
+            dI/dt current limits.
+            <Cite s={S.devToolsNotes} /> Run time can therefore differ between runs of the same
+            NEFF; a profile of the real run shows where it went.{' '}
+            <em>Determinism: NEFF and GPU Reproducibility</em> covers what a fixed order means for
+            reproducible output.
+          </Box>
+          <ColumnLayout columns={3} variant="text-grid">
+            <div>
+              <Box variant="h3">neuron-ls</Box>
+              <Box variant="p">
+                Lists the Neuron devices, the NeuronCore IDs on each, and their CPU and NUMA
+                (Non-Uniform Memory Access) node affinity.
+                <Cite s={S.devToolsNotes} />
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">neuron-top</Box>
+              <Box variant="p">
+                Shows live NeuronCore and vCPU utilization and memory usage.
+                <Cite s={S.neuronTopGuide} />
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Neuron Explorer</Box>
+              <Box variant="p">
+                The profiling suite that replaces Neuron Profiler and Profiler 2.0; its System
+                Timeline shows device HBM usage.
+                <Cite s={S.devToolsNotes} /> Capture with <code>neuron-explorer capture</code>, which
+                replaces <code>neuron-profile capture</code> in Neuron 2.32.0; the old
+                profiler&apos;s TensorBoard plugin is out of support.
+                <Cite s={S.neuronWhatsNew} />
+              </Box>
+            </div>
+          </ColumnLayout>
+          <Box variant="p">
+            Start with neuron-ls for the devices and their NUMA nodes, watch neuron-top while the
+            job runs, and capture with Neuron Explorer when utilization is lower than you expect.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Check the NKI Library first; if you still need a kernel, write it, test it on a CPU, and time the NEFF it compiles to"
+          >
+            Writing a kernel in NKI
           </Header>
         }
       >
@@ -172,105 +352,41 @@ export function AwsCompilersAndTooling() {
             <div>
               <Box variant="h3">What NKI is</Box>
               <Box variant="p">
-                A Python DSL for authoring kernels directly against the Trainium
-                / Inferentia substrate. The author writes Python code that
-                operates on tile-shaped operands; NKI compiles it into Neuron HLO
-                and joins the standard schedule. NKI exposes SBUF and PSUM
-                explicitly — unlike Triton on a GPU, where the compiler manages
-                SMEM with cache-style heuristics, NKI puts that decision in
-                the kernel author&apos;s hands.
+                A bare-metal language and compiler for Trainium and Inferentia, written in Python,
+                with syntax and tile-level semantics similar to Triton and NumPy.
+                <Cite s={S.nkiOverview} /> The author places tiles in SBUF (State Buffer) and PSUM
+                (Partial Sum buffer) explicitly
+                <Cite s={S.nkiTrn2Arch} />
+                <Cite s={S.ncMatmul} />; in Triton, the compiler manages memory allocation and data
+                movement.
+                <Cite s={S.gluonIntro} /> NKI is stable from NKI 0.3.0 (Neuron 2.29.0).
+                <Cite s={S.neuronWhatsNew} />
               </Box>
             </div>
             <div>
-              <Box variant="h3">When to reach for NKI</Box>
+              <Box variant="h3">When to reach for it</Box>
               <Box variant="p">
-                Most Trainium workloads do not need NKI — torch-neuronx with
-                stock operators handles the common cases. NKI matters when the
-                compiler&apos;s default tiling does not hit peak, when the
-                workload uses an operator the compiler does not fuse well, or
-                when the model needs a kernel shape (custom attention,
-                domain-specific accelerator) that no standard operator
-                expresses. The MoE NKI kernels (Router Top-K, MoE CTE, MoE TKG,
-                Blockwise Matmul) shipped in Neuron 2.27.0 are an example of
-                NKI-authored kernels graduating into first-class library code.
+                Check the NKI Library first: AWS&apos;s open-source (Apache 2.0) collection of
+                optimized kernels
+                <Cite s={S.neuronWhatsNew} />, here at its 2.32 tag.
+                <Cite s={S.nkiLibraryRepo} /> Its MoE (mixture of experts) kernels, Router Top-K
+                among them, shipped in Neuron 2.28.0.
+                <Cite s={S.neuronWhatsNew} /> Write your own when the profile shows the
+                compiler&apos;s kernel for an operator is the bottleneck, or when no standard
+                operator expresses the kernel you need, such as a custom attention variant.
               </Box>
             </div>
           </ColumnLayout>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="The library that handles distributed-training patterns"
-          >
-            Neuron Distributed
-          </Header>
-        }
-      >
-        <Box variant="p">
-          Neuron Distributed is the AWS-maintained library for distributed-training
-          patterns on Trainium clusters: tensor parallel (split a layer across
-          NeuronCores), pipeline parallel (split layers across stages), sequence
-          parallel (shard along the sequence dimension), expert parallel (shard
-          experts across chips), and ZeRO-style optimizer-state partitioning. The
-          library composes with SageMaker HyperPod for large-cluster orchestration
-          ({' '}
-          <Link
-            external
-            href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/libraries/neuronx-distributed/"
-          >
-            Neuron Distributed docs
-          </Link>
-          , accessed 2026-04-23).
-        </Box>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Closing the feedback loop"
-          >
-            Profiling — the Neuron toolset
-          </Header>
-        }
-      >
-        <ColumnLayout columns={2} variant="text-grid">
-          <div>
-            <Box variant="h3">neuron-ls and neuron-top</Box>
-            <Box variant="p">
-              Real-time inventory and counter views. <code>neuron-ls</code>
-              enumerates devices, NeuronCores, and topology;{' '}
-              <code>neuron-top</code> shows live utilization, SBUF residency,
-              memory pressure, and CC-Core activity per chip. The first tools
-              you reach for when something is wrong.
-            </Box>
-          </div>
-          <div>
-            <Box variant="h3">neuron-profile + TensorBoard</Box>
-            <Box variant="p">
-              <code>neuron-profile</code> captures per-instruction traces from a
-              run; the TensorBoard plugin renders them as a timeline showing
-              SBUF residency, collective timing, and host-device interaction.
-              The Trainium analog of NVIDIA Nsight Compute / Systems —
-              difference is that Trainium traces are deterministic, so two
-              runs of the same NEFF on the same input produce identical traces.
-            </Box>
-          </div>
-        </ColumnLayout>
-        <ExpandableSection headerText="Compiler caching strategy">
           <Box variant="p">
-            The Neuron compiler maintains a persistent NEFF cache keyed on the
-            graph hash. A training loop compiles each unique graph shape once
-            and reuses the NEFF across epochs. For models with mostly-static
-            shapes the steady-state cost is zero. For models with shape
-            polymorphism, partial recompilation paths re-emit only the changed
-            subgraphs. CI integration uses the cache to make NEFF builds
-            reproducible across runners.
+            <strong>Develop on a CPU, then time the NEFF.</strong> NKI&apos;s experimental CPU
+            simulator runs a kernel without Trainium hardware: set <code>NKI_SIMULATOR=1</code> or
+            call <code>nki.simulate(kernel)</code>.
+            <Cite s={S.neuronWhatsNew} /> nrtpy (beta) then loads and runs the NEFF your kernel
+            compiles to directly from Python, without PyTorch or JAX
+            <Cite s={S.nkiOverview} />, so you can time the kernel on its own before it goes into a
+            model.
           </Box>
-        </ExpandableSection>
+        </SpaceBetween>
       </Container>
     </SpaceBetween>
   );

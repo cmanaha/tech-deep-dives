@@ -539,7 +539,7 @@ export function RooflineAndArithmeticIntensity() {
           <Box variant="p">
             <strong>Batching.</strong> Each extra decode sequence reuses the same weight bytes, so
             N sequences raise the intensity of the weight GEMMs (general matrix multiplies) N
-            times. That is why vLLM, TensorRT-LLM, SGLang and NxD Inference on Trainium
+            times. That is why vLLM (including vLLM Neuron on Trainium), TensorRT-LLM and SGLang
             spend so much code on continuous batching. On H200 the weight GEMMs reach the ridge
             near 200 sequences, with BF16 or FP8 weights alike.
             <Cite s={S.h200Page} kind="derived" note="2B FLOP per byte = 412 with FP8 weights gives B = 206; B FLOP per byte = 206 with BF16 weights gives the same B." />{' '}

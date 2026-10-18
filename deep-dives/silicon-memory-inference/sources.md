@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 278.
+Total distinct sources: 287.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
@@ -29,27 +29,35 @@ Total distinct sources: 278.
 | AWS | [AWS Neuron 2.32.0: NxD Inference MoE architecture deep dive](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/libraries/nxd-inference/developer_guides/moe-arch-deep-dive.html) | 2026-10-16 | MoeAndSparseActivation |
 | AWS | [AWS Neuron: Amazon EC2 Trn2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn2-arch.html) | 2026-10-17 | AwsCustomSilicon, HeterogeneityFact, MoeAndSparseActivation |
 | AWS | [AWS Neuron: Amazon EC2 Trn3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn3-arch.html) | 2026-10-17 | AwsCustomSilicon, MoeAndSparseActivation |
+| AWS | [AWS Neuron: Component Release Notes for Neuron Developer Tools (Neuron Explorer)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/dev-tools.html) | 2026-10-17 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron: Component Release Notes for Neuron Graph Compiler](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/compiler.html) | 2026-10-16 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron: Component Release Notes for Neuron PyTorch Framework](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/pytorch.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: Data Types](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/data-types.html) | 2026-10-17 | QuantizationAndPrecision |
 | AWS | [AWS Neuron: Inferentia2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/inferentia2.html) | 2026-10-16 | AwsCustomSilicon |
-| AWS | [AWS Neuron: Intra-node Collective Communications with AWS Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/explore/intranode-collective-comm.html) | 2026-10-17 | AwsCustomSilicon |
+| AWS | [AWS Neuron: Intra-node Collective Communications with AWS Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/explore/intranode-collective-comm.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon |
 | AWS | [AWS Neuron: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/jax/api-reference-guide/neuron-envvars.html) | 2026-10-16 | AwsCustomSilicon, CapitalMarketsLens |
-| AWS | [AWS Neuron: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/pytorch-native-overview.html) | 2026-10-17 | AwsCustomSilicon |
-| AWS | [AWS Neuron: Neuron Graph Compiler overview (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/index.html) | 2026-10-16 | KernelExecutionLifecycle |
-| AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-16 | AwsCustomSilicon, KernelExecutionLifecycle |
+| AWS | [AWS Neuron: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/pytorch-native-overview.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon |
+| AWS | [AWS Neuron: Neuron Compiler CLI Reference Guide (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/neuronx-cc/api-reference-guide/index.html) | 2026-10-17 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron: Neuron Graph Compiler overview (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/index.html) | 2026-10-17 | AwsCompilersAndTooling, KernelExecutionLifecycle |
+| AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, KernelExecutionLifecycle |
+| AWS | [AWS Neuron: Neuron Persistent Cache](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/neuron-caching.html) | 2026-10-17 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron: neuron-top User Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/tools/neuron-sys-tools/neuron-top-user-guide.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | AwsCustomSilicon, HeterogeneityFact |
-| AWS | [AWS Neuron: NKI API reference, nki.isa.nc_matmul](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/api/generated/nki.isa.nc_matmul.html) | 2026-10-16 | AwsCustomSilicon |
+| AWS | [AWS Neuron: NKI API reference, nki.isa.nc_matmul](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/api/generated/nki.isa.nc_matmul.html) | 2026-10-16 | AwsCompilersAndTooling, AwsCustomSilicon |
 | AWS | [AWS Neuron: NKI Library release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nki-lib.html) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
 | AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-17 | AwsCustomSilicon, KernelExecutionLifecycle |
-| AWS | [AWS Neuron: NKI Trainium2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium2_arch.html) | 2026-10-17 | AwsCustomSilicon, KernelExecutionLifecycle |
+| AWS | [AWS Neuron: NKI Trainium2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium2_arch.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, KernelExecutionLifecycle |
 | AWS | [AWS Neuron: NKI Trainium3 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium3_arch.html) | 2026-10-16 | AwsCustomSilicon |
-| AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-17 | AwsCustomSilicon, HeterogeneityFact, KernelExecutionLifecycle, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
-| AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-17 | AwsCustomSilicon, HeterogeneityFact, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| AWS | [AWS Neuron: Release Notes (Neuron 2.32.0 component versions)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/index.html) | 2026-10-17 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, HeterogeneityFact, KernelExecutionLifecycle, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, HeterogeneityFact, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | AWS | [AWS Neuron: What is Neuron Collective Communication?](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html) | 2026-10-17 | AwsCustomSilicon |
-| AWS | [AWS Neuron: What's New in the AWS Neuron SDK (releases 2.27.0 to 2.32.0)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/whats-new.html) | 2026-10-17 | AwsCustomSilicon, MoeAndSparseActivation |
+| AWS | [AWS Neuron: What's New in the AWS Neuron SDK (releases 2.27.0 to 2.32.0)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/whats-new.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, MoeAndSparseActivation |
 | AWS | [aws-graviton-getting-started machinelearning/llama.cpp.md at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/machinelearning/llama.cpp.md) | 2026-10-16 | GravitonDeepDive |
 | AWS | [aws-graviton-getting-started machinelearning/onnx.md at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/machinelearning/onnx.md) | 2026-10-16 | GravitonDeepDive |
 | AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | CapitalMarketsLens, GraceBlackwellUltraServer, GravitonDeepDive, HeterogeneityFact |
 | AWS | [aws-graviton-getting-started repository at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/tree/8b322a4160b827be202beedaf35ce21b4c635603) | 2026-10-16 | GravitonDeepDive |
+| AWS | [aws-neuron/nki-library at release tag 2.32 (Apache-2.0)](https://github.com/aws-neuron/nki-library/tree/2.32) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [Capacity Blocks for ML: supported instance types and Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaHopper |
 | AWS | [Data persistence for Amazon EC2 instance store volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Elastic Fabric Adapter for AI/ML and HPC workloads on Amazon EC2 (EFA limitations)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html) | 2026-10-17 | CapitalMarketsLens |
@@ -178,7 +186,7 @@ Total distinct sources: 278.
 | SGLang | [SGLang HiCache design and best practices at tag v0.5.21](https://github.com/sgl-project/sglang/blob/v0.5.21/docs/docs/advanced_features/hicache_design.mdx) | 2026-10-17 | FlashCacheTier |
 | SGLang | [SGLang python/sglang/srt/arg_groups/fields/exec_.py at tag v0.5.21 (--moe-a2a-backend choices)](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/arg_groups/fields/exec_.py) | 2026-10-16 | MoeAndSparseActivation |
 | SGLang | [SGLang srt/environ.py at tag v0.5.21 (SGLANG_DISAGGREGATION_NIXL_BACKEND default "UCX")](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/environ.py#L711) | 2026-10-17 | DisaggregatedServingAndSpeculative |
-| Triton | [Introduction to Gluon tutorial at Triton tag v3.8.0](https://github.com/triton-lang/triton/blob/v3.8.0/python/tutorials/gluon/01-intro.py) | 2026-10-17 | NvidiaCompilersAndTooling |
+| Triton | [Introduction to Gluon tutorial at Triton tag v3.8.0](https://github.com/triton-lang/triton/blob/v3.8.0/python/tutorials/gluon/01-intro.py) | 2026-10-17 | AwsCompilersAndTooling, NvidiaCompilersAndTooling |
 | Triton | [Triton 3.8.0 release notes (2026-08-28)](https://github.com/triton-lang/triton/releases/tag/v3.8.0) | 2026-10-17 | NvidiaCompilersAndTooling |
 | Triton | [Triton tutorial: Matrix Multiplication (triton.autotune and triton.Config)](https://triton-lang.org/main/getting-started/tutorials/03-matrix-multiplication.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | UXL Foundation | [oneDNN src/cpu/x64/cpu_isa_traits.cpp at tag v3.13.4, lines 357-374 (AMX permission request)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/cpu/x64/cpu_isa_traits.cpp#L357-L374) | 2026-10-17 | KernelExecutionLifecycle |
@@ -190,6 +198,7 @@ Total distinct sources: 278.
 | vLLM | [vLLM vllm/config/speculative.py at tag v0.31.0 (SpeculativeMethod)](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/speculative.py#L39-L84) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | vLLM | [vLLM vllm/engine/arg_utils.py at tag v0.31.0 (--enable-expert-parallel)](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/arg_utils.py) | 2026-10-16 | MoeAndSparseActivation |
 | vLLM | [vLLM vllm/v1/spec_decode/metrics.py at tag v0.31.0 (acceptance rate and mean acceptance length)](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/spec_decode/metrics.py#L177-L196) | 2026-10-17 | DisaggregatedServingAndSpeculative |
+| vLLM | [vllm-project/vllm-neuron release v0.24.0.1.1.0 (Apache-2.0)](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.24.0.1.1.0) | 2026-10-17 | AwsCompilersAndTooling |
 | vLLM project | [vLLM docs/features/batch_invariance.md at tag v0.31.0](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/batch_invariance.md) | 2026-10-16 | CapitalMarketsLens |
 
 ## Tier 2: vendor press release, blog, product page or keynote
