@@ -317,7 +317,9 @@ const capabilityRows: CapabilityRow[] = [
     detail: (
       <>
         The gRPC port reuses the same TLS settings. Certificate hot reload (--enable-ssl-refresh) is a hard error.{' '}
-        <Cite tier={1} href={vllmUrl('rust/src/cmd/src/cli/ssl.rs', 'L14-L41')}>ssl.rs L14-L41</Cite>
+        <Cite tier={1} href={vllmUrl('rust/src/cmd/src/cli/ssl.rs', 'L14-L41')}>ssl.rs L14-L41</Cite>{' '}
+        <Cite tier={1} href={vllmUrl('rust/src/server/src/lib.rs', 'L238-L244')}>lib.rs L238-L244</Cite>{' '}
+        <Cite tier={1} href={vllmUrl(UNSUPPORTED, 'L596-L602')}>unsupported.rs L596-L602</Cite>
       </>
     ),
   },
@@ -350,7 +352,8 @@ const capabilityRows: CapabilityRow[] = [
       <>
         --lora-modules load at startup; the HTTP load and unload routes need VLLM_ALLOW_RUNTIME_LORA_UPDATING=1.
         --default-mm-loras is a hard error.{' '}
-        <Cite tier={1} href={vllmUrl('rust/src/server/src/routes.rs', 'L110-L114')}>routes.rs L110-L114</Cite>
+        <Cite tier={1} href={vllmUrl('rust/src/server/src/routes.rs', 'L44-L48')}>routes.rs L44-L48</Cite>{' '}
+        <Cite tier={1} href={vllmUrl('rust/src/server/src/routes.rs', 'L110-L114')}>L110-L114</Cite>
       </>
     ),
   },
@@ -361,7 +364,7 @@ const capabilityRows: CapabilityRow[] = [
       <>
         Hugging Face minijinja renderer by default (Auto), plus native DeepSeek-V3.2, V4 and V4.1, Harmony (gpt-oss),
         Inkling and Kimi-K3 renderers.{' '}
-        <Cite tier={1} href={vllmUrl('rust/src/chat/src/renderer/selection.rs', 'L14-L33')}>selection.rs L14-L33</Cite>
+        <Cite tier={1} href={vllmUrl('rust/src/chat/src/renderer/selection.rs', 'L14-L60')}>selection.rs L14-L60</Cite>
       </>
     ),
   },
@@ -393,7 +396,8 @@ const capabilityRows: CapabilityRow[] = [
     detail: (
       <>
         Registered only with VLLM_SERVER_DEV_MODE=1; the gRPC Control service offers the same operations.{' '}
-        <Cite tier={1} href={vllmUrl('rust/src/server/src/routes.rs', 'L116-L158')}>routes.rs L116-L158</Cite>
+        <Cite tier={1} href={vllmUrl('rust/src/server/src/routes.rs', 'L37-L42')}>routes.rs L37-L42</Cite>{' '}
+        <Cite tier={1} href={vllmUrl('rust/src/server/src/routes.rs', 'L116-L158')}>L116-L158</Cite>
       </>
     ),
   },
@@ -415,7 +419,8 @@ const capabilityRows: CapabilityRow[] = [
       <>
         Under vllm serve, Python strips --data-parallel-rank, --data-parallel-external-lb and
         --data-parallel-hybrid-lb and passes the engine range itself. Standalone vllm-rs serve rejects those three.{' '}
-        <Cite tier={1} href={vllmUrl('vllm/v1/utils.py', 'L384-L392')}>utils.py L384-L392</Cite>
+        <Cite tier={1} href={vllmUrl('vllm/v1/utils.py', 'L384-L392')}>utils.py L384-L392</Cite>{' '}
+        <Cite tier={1} href={vllmUrl(UNSUPPORTED, 'L261-L289')}>unsupported.rs L261-L289</Cite>
       </>
     ),
   },
@@ -531,8 +536,11 @@ export function CodebaseRust() {
             exchange the same ZMQ (ZeroMQ) and MessagePack messages the Python API server sends. Python hands{' '}
             <code>vllm-rs</code> the same engine input and output addresses it would give its own server{' '}
             <Cite tier={1} href={vllmUrl('vllm/entrypoints/cli/serve.py', 'L344-L375')}>serve.py L344-L375</Cite>,
-            so there is no FFI (foreign function interface) on the frontend-to-engine hop, and the engine cannot tell
-            which frontend it is serving. The in-repo README describes the goal as rebuilding &quot;the northbound
+            so there is no FFI (foreign function interface) on the frontend-to-engine hop. The engine code is the
+            same either way; the one engine-side switch is that <code>ModelConfig</code> forces{' '}
+            <code>mm_device_do_normalize</code> off when the variable is set{' '}
+            <Cite tier={1} href={vllmUrl('vllm/config/model.py', 'L1037-L1063')}>model.py L1037-L1063</Cite>.
+            The in-repo README describes the goal as rebuilding &quot;the northbound
             serving layer in Rust while still talking to the core Python vLLM engine process(es) via ZMQ over the
             existing engine boundary&quot;, and calls it experimental and not feature-complete{' '}
             <Cite tier={1} href={vllmUrl('rust/README.md', 'L3-L5')}>rust/README.md L3-L5</Cite>.
@@ -583,6 +591,7 @@ export function CodebaseRust() {
             <Cite tier={1} href={vllmUrl('rust/src/engine-core-client/src/transport.rs', 'L15-L29')}>
               transport.rs L15-L29
             </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('rust/src/engine-core-client/src/transport.rs', 'L54-L72')}>L54-L72</Cite>{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/engine/utils.py', 'L78-L80')}>utils.py L78-L80</Cite>.
           </Box>
           <RequestPathDiagram />
@@ -694,14 +703,17 @@ export function CodebaseRust() {
                 <code>Auto</code> (default), <code>Hf</code>, <code>DeepSeekV32</code>, <code>DeepSeekV4</code>,{' '}
                 <code>DeepSeekV41</code>, <code>Harmony</code>, <code>Inkling</code> and <code>KimiK3</code>;{' '}
                 <code>Auto</code> resolves by model type{' '}
-                <Cite tier={1} href={vllmUrl('rust/src/chat/src/renderer/selection.rs', 'L14-L33')}>
-                  selection.rs L14-L33
+                <Cite tier={1} href={vllmUrl('rust/src/chat/src/renderer/selection.rs', 'L14-L60')}>
+                  selection.rs L14-L60
                 </Cite>
                 .
               </Box>
               <Box variant="p">
                 <strong>The wire client.</strong> Beyond the socket types and identity encoding, it recognizes the
                 literal <code>ENGINE_CORE_DEAD</code> frame the Python engine sends when it dies{' '}
+                <Cite tier={1} href={vllmUrl('rust/src/engine-core-client/src/transport.rs', 'L27-L29')}>
+                  transport.rs L27-L29
+                </Cite>{' '}
                 <Cite tier={1} href={vllmUrl('vllm/v1/engine/core.py', 'L1088')}>core.py L1088</Cite>, and under
                 data parallelism (DP) it subscribes to the DP coordinator&apos;s stats over an <code>XSUB</code> socket{' '}
                 <Cite tier={1} href={vllmUrl('rust/src/engine-core-client/src/coordinator/handle.rs', 'L111')}>

@@ -183,7 +183,7 @@ const nixlModeRows: ModeRow[] = [
   {
     q: 'Supported only in this mode',
     pull: 'Bidirectional KV transfer (bidirectional_kv_xfer) and decode context parallel > 1.',
-    push: 'A pipeline-parallel prefiller with a hybrid KV cache. D also arms a registration watchdog (push_registration_timeout).',
+    push: 'A pipeline-parallel prefiller with a hybrid attention KV cache (Mamba/SSM hybrids are rejected under PP in both modes). D also arms a registration watchdog (push_registration_timeout).',
   },
 ];
 
@@ -490,8 +490,8 @@ export function CodebaseDistributed() {
             <code>_PCP</code>, <code>_DCP</code>, plus <code>_INNER_DP_WORLD</code> and two groups for
             DeepSeek V4.1&apos;s Engram layers, <code>_ETP</code> and <code>_ENGRAM_DP</code>), each
             with a <code>get_*_group()</code> accessor{' '}
-            <Cite tier={1} href={vllmUrl(PS, 'L1544-L1641')}>
-              parallel_state.py L1544-L1641
+            <Cite tier={1} href={vllmUrl(PS, 'L1446-L1641')}>
+              parallel_state.py L1446-L1641
             </Cite>
             .
           </Box>
@@ -841,6 +841,9 @@ export function CodebaseDistributed() {
             <Cite tier={1} href={vllmUrl(`${NIXL}/connector.py`, 'L377-L380')} kind="code">
               connector.py L377-L380
             </Cite>{' '}
+            <Cite tier={1} href={vllmUrl(`${NIXL}/base_worker.py`, 'L784-L805')} kind="code">
+              base_worker.py L784-L805
+            </Cite>{' '}
             <Cite
               tier={1}
               href={vllmUrl('examples/disaggregated/disaggregated_serving/disagg_proxy_pushconnector_demo.py', 'L1-L14')}
@@ -882,8 +885,8 @@ export function CodebaseDistributed() {
                 <code>(GET_META_MSG, remote_pp_rank, remote_rank)</code>. The reply is a{' '}
                 <code>NixlHandshakePayload</code>: agent metadata plus the compatibility hash. A
                 5-second receive timeout guards against a dead peer{' '}
-                <Cite tier={1} href={vllmUrl(`${NIXL}/base_worker.py`, 'L1049-L1068')}>
-                  base_worker.py L1049-L1068
+                <Cite tier={1} href={vllmUrl(`${NIXL}/base_worker.py`, 'L1049-L1087')}>
+                  base_worker.py L1049-L1087
                 </Cite>
                 .
               </Box>
@@ -934,8 +937,13 @@ export function CodebaseDistributed() {
               from one prefiller rank. When P-TP &gt; D-TP, one decoder rank reads from several
               prefiller ranks, with a GQA (grouped-query attention) dedup through{' '}
               <code>np.unique</code> so it skips ranks that hold the same KV head. MLA
-              (multi-head latent attention) caches are duplicated across ranks, so a single
-              remote rank suffices, including when the remote side runs DCP &gt; 1.
+              (multi-head latent attention) caches are duplicated across TP ranks, so a single
+              remote rank suffices. When the remote side runs DCP &gt; 1 the sequence is sharded,
+              and a decoder rank reads from every remote rank whose DCP slice overlaps its own{' '}
+              <Cite tier={1} href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/utils.py', 'L534-L552')}>
+                kv_connector/utils.py L534-L552
+              </Cite>
+              .
             </Box>
           </ExpandableSection>
           <Alert type="warning" header="Set kv_producer on prefillers and kv_consumer on decoders">
@@ -1120,8 +1128,8 @@ export function CodebaseDistributed() {
                 . Rebalancing is asynchronous by default (<code>use_async=True</code>); async
                 accepts only the <code>default</code> policy (the only one defined) and refuses the{' '}
                 <code>torch_nccl</code> and <code>pynccl</code> communicators. Left unset, the
-                communicator is NIXL when the package is installed, else <code>torch_gloo</code>{' '}
-                (<code>pynccl</code> under elastic EP). Other
+                communicator is <code>torch_xccl</code> on XPU; elsewhere it is NIXL when the package
+                is installed, else <code>torch_gloo</code> (<code>pynccl</code> under elastic EP). Other
                 defaults: <code>window_size</code> 1000, <code>step_interval</code> 3000,{' '}
                 <code>num_redundant_experts</code> 0{' '}
                 <Cite tier={1} href={vllmUrl(PARALLEL, 'L62-L120')}>
@@ -1153,7 +1161,12 @@ export function CodebaseDistributed() {
                 <Cite tier={1} href={vllmUrl('vllm/entrypoints/cli/serve.py', 'L136-L143')}>
                   cli/serve.py L136-L143
                 </Cite>
-                , and it runs on the V1 model runner (Execution &amp; Attention tab).
+                , and it runs on the V1 model runner, because Model Runner V2 lists it as
+                unsupported{' '}
+                <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L3051-L3098')}>
+                  config/vllm.py L3051-L3098
+                </Cite>{' '}
+                (Execution &amp; Attention tab).
               </Box>
             </div>
           </ColumnLayout>

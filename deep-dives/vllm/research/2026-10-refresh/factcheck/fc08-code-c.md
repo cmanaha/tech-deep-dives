@@ -53,7 +53,7 @@ accurate after R1).
 
 ## CodebaseDistributed.tsx
 
-About 95 claims checked: 88 CONFIRMED, 4 UNSUPPORTED, 2 WRONG, 1 OVERREACH.
+About 95 claims checked: 89 CONFIRMED, 3 UNSUPPORTED, 2 WRONG, 1 OVERREACH.
 
 Cross-file check: executor default (`mp`, multi-node with `--nnodes`, Ray only with
 `data_parallel_backend=ray` or inside a placement group, `config/parallel.py#L989-L1034`) and the

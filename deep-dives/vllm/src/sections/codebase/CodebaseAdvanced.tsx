@@ -19,7 +19,7 @@ interface SpecRow {
   method: string;
   runner: Runner;
   cls: string;
-  notes: string;
+  notes: ReactNode;
 }
 
 const specRows: SpecRow[] = [
@@ -94,8 +94,21 @@ const specRows: SpecRow[] = [
     method: 'mlp_speculator',
     runner: 'v1',
     cls: 'none in the V1 runner dispatch',
-    notes:
-      'Accepted by the config and sent to the V1 runner, whose dispatch has no mlp_speculator branch at v0.31.0. Not run during this research: test before relying on it.',
+    notes: (
+      <>
+        Expect startup to fail at v0.31.0. The config lists the method and sends it to the V1 runner, but the
+        model registry entry for MLPSpeculatorPreTrainedModel is commented out as &quot;Temporarily disabled&quot;{' '}
+        <Cite tier={1} href={vllmUrl('vllm/model_executor/models/registry.py', 'L705-L707')}>
+          registry.py L705-L707
+        </Cite>
+        , and the V1 runner dispatch has no mlp_speculator branch, so it raises &quot;Unknown speculative decoding
+        method&quot;{' '}
+        <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_model_runner.py', 'L672-L676')}>
+          gpu_model_runner.py L672-L676
+        </Cite>
+        . Not run during this research.
+      </>
+    ),
   },
   {
     method: 'custom_class',
@@ -166,7 +179,8 @@ const levelRows: LevelRow[] = [
     level: '-O2 (default)',
     compile: 'As -O1',
     graphs: 'FULL_AND_PIECEWISE',
-    fusions: 'Adds all-reduce + RMSNorm and RoPE + KV-cache fusions, where their conditions hold',
+    fusions:
+      'Adds all-reduce + RMSNorm where its conditions hold. The RoPE + KV-cache fusions are also wired in, but need Inductor graph partition or splitting ops that leave out the KV-cache update (and, for the non-MLA one, AITER, AMD\'s kernel library), so they stay off by default',
   },
   { level: '-O3', compile: 'As -O2', graphs: 'FULL_AND_PIECEWISE', fusions: 'Identical to -O2' },
 ];
@@ -1278,8 +1292,8 @@ export function CodebaseAdvanced() {
             </Cite>
             , by default the <code>_attention_ops</code> list: standard and MLA (multi-head latent
             attention) attention, Mamba mixers, short convolutions, linear attention, GDN attention,
-            sparse attention indexers and DeepSeek V4 attention, plus the KV-cache
-            update ops when Inductor graph partition is off{' '}
+            sparse attention indexers, DeepSeek V4 attention and a few model-specific ops, plus
+            the KV-cache update ops when Inductor graph partition is off{' '}
             <Cite tier={1} href={vllmUrl('vllm/config/compilation.py', 'L762-L782')}>
               compilation.py L762-L782
             </Cite>{' '}
@@ -1294,8 +1308,8 @@ export function CodebaseAdvanced() {
             on each sub-graph: the enabled fusions, <code>post_cleanup</code>,{' '}
             <code>VllmIRLoweringPass</code> (binds <code>vllm_ir</code> ops to kernels),{' '}
             <code>UnsafeCloneEliminationPass</code> (removes clones left after lowering),{' '}
-            <code>post_cleanup</code> again, and <code>FixFunctionalizationPass</code>, &quot;always
-            run last&quot;{' '}
+            <code>post_cleanup</code> again, and <code>FixFunctionalizationPass</code>, which always
+            runs last{' '}
             <Cite tier={1} href={vllmUrl('vllm/compilation/passes/pass_manager.py', 'L108-L139')}>
               pass_manager.py L108-L139
             </Cite>{' '}
@@ -1382,8 +1396,11 @@ export function CodebaseAdvanced() {
             <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L442')}>
               vllm.py L442
             </Cite>{' '}
-            <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L254-L346')}>
-              L254-L346
+            <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L205-L346')}>
+              L205-L346
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/config/compilation.py', 'L1280-L1292')}>
+              compilation.py L1280-L1292
             </Cite>
             . The Configuration tab covers the flag itself. RoPE: rotary position embedding.
           </Box>
