@@ -415,7 +415,7 @@ export function HbmAndBandwidthWall() {
             share each read of the weights.
             <Cite s={S.h200Page} kind="derived" note="141 GB - 80 GB = 61 GB; batch 32 / 8 = 4x." />{' '}
             The Llama run used 2K input and 128 output tokens, so prefill is in the measurement too.
-            <Cite s={S.h200Page} /> <em>NVIDIA Hopper</em> takes the result apart further.
+            <Cite s={S.h200Page} />
           </Box>
           <Box variant="p">
             <strong>Compare chips at the batch each one holds.</strong> A benchmark at one shared

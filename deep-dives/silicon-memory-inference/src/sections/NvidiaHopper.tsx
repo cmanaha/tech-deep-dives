@@ -127,6 +127,7 @@ const specRows: SpecRow[] = [
       <>
         80 GB of HBM3
         <Cite s={S.h100Page} />
+        <Cite s={S.hopperArchBlog} />
       </>
     ),
     h200: (
@@ -280,18 +281,19 @@ export function NvidiaHopper() {
             tensors between global and shared memory, and thread block clusters whose blocks can
             read, write and run atomics on each other&apos;s shared memory (Distributed Shared
             Memory).
-            <Cite s={S.hopperTuningGuide} /> H100 (HBM3, High Bandwidth Memory) reached full
-            production in September 2022
+            <Cite s={S.hopperTuningGuide} /> H100 (HBM3, High Bandwidth Memory)
+            <Cite s={S.hopperArchBlog} /> reached full production in September 2022
             <Cite s={S.hopperFullProduction} />; H200 (HBM3e) was announced in November 2023,
             with systems expected from the second quarter of 2024.
             <Cite s={S.h200Announcement} />
           </Box>
           <Box variant="p">
             <strong>Why the pair matters.</strong> The compute stays fixed and the memory
-            changes. H200 carries 141 GB of HBM3e at 4.8 TB/s against H100&apos;s 80 GB of HBM3
-            at 3.35 TB/s
+            changes. H200 carries 141 GB of HBM3e at 4.8 TB/s against H100 SXM&apos;s 80 GB of
+            HBM3 at 3.35 TB/s
             <Cite s={S.h200Page} />
-            <Cite s={S.h100Page} />, and NVIDIA rates it 1.9x faster on Llama 2 70B inference,
+            <Cite s={S.h100Page} />
+            <Cite s={S.hopperArchBlog} />, and NVIDIA rates it 1.9x faster on Llama 2 70B inference,
             run at 4x the batch size.
             <Cite s={S.h200Page} kind="vendor-claim" /> That makes the pair the cleanest view
             in this dive of what memory buys an inference workload: bandwidth sets the step
@@ -321,6 +323,7 @@ export function NvidiaHopper() {
             <Cite s={S.h100Page} />
             <Cite s={S.hopperArchBlog} kind="derived" note={sparseNote} />; HBM
             <Cite s={S.h100Page} />
+            <Cite s={S.hopperArchBlog} />
             <Cite s={S.h200Page} />
             <Cite s={S.h200Page} kind="derived" note={ratioNote} />. Cycle counts come from a
             third-party microbenchmark on an H800 PCIe (Hopper with HBM2e, 1,755 MHz maximum
@@ -393,32 +396,16 @@ export function NvidiaHopper() {
             <Cite s={S.h200Page} kind="vendor-claim" /> The footnote changes the batch size
             along with the GPU: Llama 2 70B ran at batch size 8 on one H100 and 32 on one H200,
             and GPT-3 175B at 64 on eight H100s and 128 on eight H200s.
-            <Cite s={S.h200Page} /> With the compute identical, both memory changes are at work
-            in the result.
+            <Cite s={S.h200Page} /> With the compute identical, a fixed batch gains at most
+            the 1.43x bandwidth ratio, and the rest is the larger batch that H200&apos;s extra 61
+            GB holds.
+            <Cite
+              s={S.h200Page}
+              kind="derived"
+              note="4.8 / 3.35 = 1.43; 141 GB - 80 GB = 61 GB; batch 32 / 8 = 4x."
+            />{' '}
+            <em>HBM and the Bandwidth Wall</em> takes the two levers apart.
           </Box>
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">Bandwidth sets the step time</Box>
-              <Box variant="p">
-                A decode step reads the weights and the KV (key-value) cache from HBM, so at a
-                fixed batch it runs faster by at most the bandwidth ratio: 4.8 / 3.35 = 1.43x.
-                <Cite s={S.h200Page} kind="derived" note={ratioNote} /> Bandwidth alone stops
-                short of 1.9x. <em>Roofline and Arithmetic Intensity</em> shows why decode sits
-                on the bandwidth side of the roofline.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">Capacity sets the batch</Box>
-              <Box variant="p">
-                Our reading of the footnote: the weights take the same space on both GPUs, so
-                H200&apos;s extra 61 GB is free for KV cache, and four times as many sequences
-                share each read of the weights.
-                <Cite s={S.h200Page} kind="derived" note="141 GB - 80 GB = 61 GB; batch 32 / 8 = 4x." />{' '}
-                The 1.9x is both effects together. GPT-3 175B fits the same reading with a
-                smaller step: 2x the batch, 1.6x the throughput.
-              </Box>
-            </div>
-          </ColumnLayout>
           <ExpandableSection headerText="The rest of NVIDIA's benchmark footnote">
             <Box variant="p">
               Llama 2 70B ran 2K input and 128 output tokens in throughput mode; GPT-3 175B ran
@@ -428,10 +415,9 @@ export function NvidiaHopper() {
             </Box>
           </ExpandableSection>
           <Box variant="p">
-            <strong>Sizing with both halves.</strong> Compare GPUs for decode-heavy serving at
-            the largest batch each one&apos;s memory holds; a benchmark at one shared batch size
-            measures the bandwidth ratio alone. Two numbers size the deployment: HBM bandwidth
-            for the step time, and the capacity left after the weights for the batch.
+            <strong>Choosing between H100 and H200.</strong> For decode-heavy serving, benchmark
+            each at the largest batch its memory holds after the weights; at one shared batch
+            size the comparison tops out at the 1.43x bandwidth ratio.
           </Box>
         </SpaceBetween>
       </Container>

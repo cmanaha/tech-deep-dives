@@ -154,7 +154,7 @@ export function HopperSmDiagram() {
           Device-wide, outside the SM
         </text>
         <text className="hsm-s" x="620" y="54">
-          Shared by all 132 SMs on H100
+          Shared by all 132 SMs on H100 SXM
         </text>
 
         <rect className="hsm-mem" x="620" y="70" width="248" height="136" rx="6" />
@@ -162,7 +162,7 @@ export function HopperSmDiagram() {
           HBM, per GPU
         </text>
         <text className="hsm-b" x="632" y="112">
-          H100: 80 GB HBM3 at 3.35 TB/s
+          H100 SXM: 80 GB HBM3 at 3.35 TB/s
         </text>
         <text className="hsm-b" x="632" y="130">
           H200: 141 GB HBM3e at 4.8 TB/s
