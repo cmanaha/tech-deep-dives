@@ -364,3 +364,8 @@ Verdict counts (rows in each table; "CORRECT (x)" rows counted as CORRECT): Prod
 | WhenNotVllm.tsx | EDIT (heavy on two engines) | TensorRT-LLM: default backend is PyTorch (no compile step) since before the old pin; rewrite its row, the "Pick TensorRT-LLM" box, the deep-dive note and the tree branch. TGI: archived, not just maintenance. Dynamo/llm-d wrap vLLM, SGLang, TRT-LLM, not TGI. Add Moore Threads (SGLang) and Apple Silicon via vLLM-Metal. Add vLLM's new counterweights (dLLMs, watermarking, preload/snapshot). Consider a local-engine branch (llama.cpp, Ollama, MLX). Drop or source the comparative UNKNOWNs. | 9-11 |
 
 Cross-file: every "PagedAttention" capability phrase in LlmdKServe, NvidiaDynamo, RayServeLLM and WhenNotVllm needs the same wording change (legacy kernel removed v0.25.0).
+
+## Errata found during authoring (2026-10-17)
+
+- ObservabilityBench: the `vllm bench sweep` sub-modes are `serve_workload` and `plot_pareto`
+  (underscores) in the v0.31.0 code, not `serve-workload` / `plot-pareto`.
