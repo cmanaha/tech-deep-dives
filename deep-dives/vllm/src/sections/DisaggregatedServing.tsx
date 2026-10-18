@@ -829,7 +829,7 @@ export function DisaggregatedServing() {
             The EFA data path (GPUs, EFA and the NIXL <code>LIBFABRIC</code> plugin) is{' '}
             <strong>section 22 (vLLM on AWS GPUs, EFA &amp; NIXL)</strong>, and the placement that
             keeps prefiller and decoder pools close enough for the transfer to be cheap is{' '}
-            <strong>section 23 (EC2 Topology, Placement Groups &amp; KV Locality)</strong>. The
+            <strong>section 23 (EC2 Topology &amp; Placement Groups)</strong>. The
             fabric itself is the subject of the{' '}
             <Link external href="../efa/">
               EFA deep dive
