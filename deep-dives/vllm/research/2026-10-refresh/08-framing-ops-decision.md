@@ -311,3 +311,13 @@ Counted by the first verdict word of each row. Split rows: T8 (CORRECT for the n
 | App.tsx (N1-N8) | 8 | 6 | 2 | 0 | 0 | 0 | 0 |
 
 UNKNOWNs that do not ship as fact: D4 (production-stack "one model family per stack"), D15 (Neuron "best price/token", unlabelled vendor positioning), G1 ("Virtual Large Language Model" expansion, absent from project docs), G-N8 (KVCR expansion, absent from code, docs and notes), and the "de-facto" half of T8.
+
+## Errata found during authoring (2026-10-17)
+
+- O16 (client disconnect): an abort from the frontend pops the request state before any finished
+  stats are recorded (`vllm/v1/engine/output_processor.py` L549-L579; later outputs for the request
+  are ignored, L674-L679), so a disconnect does not increment
+  `vllm:request_success_total{finished_reason="abort"}`. The Operations section detects disconnect
+  storms from the running / waiting / KV gauges instead.
+- O26 and O27 were left out of the Operations section (did not pass the section-shape test there);
+  O23 (sleep-mode endpoints) is one sentence.
