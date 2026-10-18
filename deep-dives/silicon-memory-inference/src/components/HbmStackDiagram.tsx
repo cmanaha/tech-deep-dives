@@ -52,7 +52,7 @@ export function HbmStackDiagram() {
         style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
       >
         <title id="hbm-stack-title">
-          An HBM stack is twelve DRAM dies on a base logic die, wired by through-silicon vias and
+          An HBM stack is DRAM dies, twelve in this one, on a base logic die, wired by through-silicon vias and
           placed beside the accelerator die on a silicon interposer. Its bandwidth is data width
           times pin rate: HBM3 and HBM3e drive 1,024 bits per stack, sixteen times a DDR5 channel,
           and HBM4 doubles that to 2,048 bits.
@@ -141,7 +141,7 @@ export function HbmStackDiagram() {
         </text>
         <rect x={40} y={398} width={580} height={26} fill="#687078" stroke="#414d5c" strokeWidth={1} />
         <text className="hbm-w" x={330} y={415} textAnchor="middle">
-          Silicon interposer: a B300 routes 8,192 HBM data wires through it
+          Silicon interposer: an HBM4 stack&apos;s 2,048 data wires cross it
         </text>
 
         {/* Accelerator die */}

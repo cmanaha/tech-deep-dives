@@ -33,7 +33,12 @@ const rows: HbmRow[] = [
   {
     id: 'h100',
     chip: 'NVIDIA H100 SXM',
-    gen: 'HBM3',
+    gen: (
+      <>
+        HBM3
+        <Cite s={S.hopperArchBlog} />
+      </>
+    ),
     capacity: (
       <>
         80 GB
@@ -56,7 +61,12 @@ const rows: HbmRow[] = [
   {
     id: 'h200',
     chip: 'NVIDIA H200 SXM',
-    gen: 'HBM3e',
+    gen: (
+      <>
+        HBM3e
+        <Cite s={S.h200Page} />
+      </>
+    ),
     capacity: (
       <>
         141 GB
@@ -114,7 +124,10 @@ const rows: HbmRow[] = [
     gen: (
       <>
         HBM3e, eight 12-high stacks
-        <Cite s={S.blackwellUltraBlog} />
+        <Cite
+          s={S.blackwellUltraBlog}
+          note="HBM configuration bullet: eight 12-Hi stacks, 16 x 512-bit controllers (8,192-bit total width). The post's 9/24/25 update note says it was corrected to show 12 HBM stacks instead of 8; the bullet still reads eight, and 8,192 bits is eight 1,024-bit stacks. This table follows the bullet."
+        />
       </>
     ),
     capacity: (
@@ -139,7 +152,12 @@ const rows: HbmRow[] = [
   {
     id: 'rubin',
     chip: 'NVIDIA Rubin',
-    gen: 'HBM4',
+    gen: (
+      <>
+        HBM4
+        <Cite s={S.hgxPage} />
+      </>
+    ),
     capacity: (
       <>
         288 GB
@@ -283,7 +301,7 @@ const rows: HbmRow[] = [
         <Cite
           s={S.tpu7x}
           kind="derived"
-          note={`${sweepNote} 192 GiB = 206.2 GB; 7,380 GB/s / 206.2 GB = 35.8.`}
+          note={`${sweepNote} The page's table gives 192 GiB (its prose says 192 GB, which would give 38). 192 GiB = 206.2 GB; 7,380 GB/s / 206.2 GB = 35.8.`}
         />
       </>
     ),
@@ -329,8 +347,8 @@ export function HbmAndBandwidthWall() {
               s={S.blackwellUltraBlog}
               note="HBM configuration: eight 12-Hi stacks, 16 x 512-bit controllers (8,192-bit total width)."
             />{' '}
-            Capacity means taller stacks, or more of them around the die. SK hynix reports
-            &quot;customer demand exceeds supply capabilities&quot;.
+            Capacity means taller stacks, or more of them around the die. SK hynix describes a
+            memory market in which &quot;customer demand exceeds supply capabilities&quot;.
             <Cite s={S.skhynixQ2} />
           </Box>
         </SpaceBetween>
@@ -373,7 +391,11 @@ export function HbmAndBandwidthWall() {
             <div>
               <Box variant="h3">What changed</Box>
               <ul>
-                <li>HBM3 to HBM3e</li>
+                <li>
+                  HBM3 to HBM3e
+                  <Cite s={S.hopperArchBlog} />
+                  <Cite s={S.h200Page} />
+                </li>
                 <li>
                   80 GB to 141 GB (1.76x)
                   <Cite s={S.h200Page} kind="derived" note={ratioNote} />
@@ -442,7 +464,11 @@ export function HbmAndBandwidthWall() {
             weights and KV cache, it caps decode steps per second, and so each sequence&apos;s
             tokens per second. Capacity raises the batch and lowers that cap: a full B300, 1.6x
             B200&apos;s memory at the same 8 TB/s, sweeps 28 times a second to B200&apos;s 44.
-            <Cite s={S.blackwellUltraBlog} kind="derived" note="288 GB / 180 GB = 1.6; 8 TB/s / 288 GB = 27.8; 8 TB/s / 180 GB = 44.4." />{' '}
+            <Cite
+              s={S.blackwellUltraBlog}
+              kind="derived"
+              note="288 GB (this blog) / 180 GB (the B200 row: Blackwell tuning guide, DGX B200) = 1.6; 8 TB/s / 288 GB = 27.8; 8 TB/s / 180 GB = 44.4. The blog's own '50% more than Blackwell' compares against a 192 GB Blackwell."
+            />{' '}
             MI455X and Rubin set the levers apart: bandwidth within 6%, capacity 1.5x.
             <Cite s={S.amdMi455x} kind="derived" note="23.3 / 22 TB/s = 1.06; 432 / 288 GB = 1.5. MI455X has a 7/23/2026 launch date and no located shipment confirmation." />
             <Cite s={S.hgxPage} />
@@ -473,8 +499,9 @@ export function HbmAndBandwidthWall() {
             <Cite s={S.samsungHbm4} kind="vendor-claim" />
             <Cite s={S.micronHbm4} kind="vendor-claim" />; stack height and capacity
             <Cite s={S.samsungHbm4} />
-            <Cite s={S.micronHbm4} />; B300 wires
-            <Cite s={S.blackwellUltraBlog} />.
+            <Cite s={S.micronHbm4} />; HBM4 data wires on a silicon interposer
+            <Cite s={S.jedecHbm4} />
+            <Cite s={S.jedecSphbm4} />.
           </Box>
           <Box variant="p">
             An HBM3 stack drives 1,024 data bits through 16 channels at up to 6.4 Gb/s per pin,
@@ -495,7 +522,8 @@ export function HbmAndBandwidthWall() {
             <Cite s={S.jedecDdr5c} />, so width is the difference: an HBM4 stack is 32 DDR5
             channels wide.
             <Cite s={S.jedecHbm4} kind="derived" note="2,048 / 64 = 32." /> Wires that dense need
-            silicon under them rather than an organic substrate, which keeps HBM on the package.
+            silicon under them rather than an organic substrate, and silicon supports only a short
+            channel, which keeps HBM next to the die.
             <Cite s={S.jedecSphbm4} />
           </Box>
         </SpaceBetween>
@@ -539,7 +567,7 @@ export function HbmAndBandwidthWall() {
             <Cite
               s={S.amdMi455x}
               kind="derived"
-              note="23.3 / 12 = 1.94 TB/s and 432 / 12 = 36 GB per stack; 1.94 TB/s x 8 / 2,048 = 7.6 Gb/s per pin."
+              note="23.3 / 12 = 1.94 TB/s and 432 / 12 = 36 GB per stack; 1.94 TB/s x 8 / 2,048 = 7.6 Gb/s per pin. MI455X has a 7/23/2026 launch date and no located shipment confirmation."
             />{' '}
             A memory maker&apos;s per-stack figure is a ceiling, never the accelerator&apos;s number.
           </Box>
@@ -573,7 +601,8 @@ export function HbmAndBandwidthWall() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Prefill reuses each weight read across every prompt token, so it runs above the ridge,
+            Prefill reuses each weight read across every prompt token, so on all but short prompts
+            it runs above the ridge,
             is compute-bound on H100- and H200-class chips (<em>Roofline and Arithmetic
             Intensity</em>) and gains less than proportionally from extra bandwidth.
             <Cite s={S.distServe} /> Training mixes compute-bound and bandwidth-bound phases, and

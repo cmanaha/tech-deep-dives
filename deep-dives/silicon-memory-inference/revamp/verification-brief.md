@@ -40,6 +40,14 @@ it in the report under "For the orchestrator" and do not make it.
    `git diff b39b4d377b00ac0267cdb69ff66f84951640a22e -- src/sections/<Section>.tsx`
    (plus its components). b39b4d3 is the commit before the revamp.
 
+## Network requests
+
+Never put personal data in a request: no names, email addresses or account details in a
+header, URL, query or body, even when a site asks for a contact address (SEC EDGAR asks for
+one in the User-Agent). Use WebFetch, or curl with its default User-Agent. If a site refuses
+without contact details, find the same document elsewhere (an archived copy, the company's
+investor-relations page) or mark the claim UNVERIFIABLE.
+
 ## The job, in order
 
 Write the report skeleton to disk first, then save it after every step. You

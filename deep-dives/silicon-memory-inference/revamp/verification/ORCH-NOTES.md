@@ -35,3 +35,10 @@
 - AWS Trainium, Inferentia and Neuron; Isolation: the NeuronCore-v3 architecture page is cited
   for the SBUF and PSUM names and does not contain them (Heterogeneity verification; it re-cited
   them to the page that does, see src/sources/HeterogeneityFact.ts).
+- INCIDENT (2026-10-18, HBM verification): one curl request to
+  https://www.sec.gov/Archives/edgar/data/2021728/000162828026025762/cerebras-sx1april2026.htm
+  sent the User-Agent "tech-deep-dives research c.manaha@gmail.com" (SEC EDGAR asks for a
+  contact address). Not reversible. The verification brief now forbids personal data in any
+  request; the running verifiers were told. Goes in the final report.
+- NVIDIA Hopper: repeats the HBM section's 1.9x decomposition almost word for word (HBM
+  verification); judge economy there and consider a cross-link by name instead.
