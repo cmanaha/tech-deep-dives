@@ -308,7 +308,7 @@ export function Ec2TopologyPlacement() {
             variant="h1"
             description="Get the nodes of a multi-node vLLM replica physically close with a launch-time lever, then read where they landed with two read-only topology APIs and feed that to rank assignment and the Kubernetes scheduler (verified against vLLM v0.31.0, commit db9527a4, cloud-provider-aws v1.37.0, llm-d Router v1.0.0 and the AWS documentation, 2026-10-16)"
           >
-            {'23. EC2 Topology, Placement Groups & KV Locality'}
+            23. EC2 Topology &amp; Placement Groups
           </Header>
         }
       >

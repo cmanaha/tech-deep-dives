@@ -83,7 +83,7 @@ interface CompatRow {
 const compatRows: CompatRow[] = [
   {
     setting: 'Tensor parallel size',
-    rule: 'May differ for dense and MoE models. MLA reads a single rank because its KV is replicated across TP workers, so there is no head split. Hybrid SSM / Mamba models need P TP == D TP.',
+    rule: 'May differ for dense and MoE models. MLA KV is replicated across TP workers, so there is no head split, and with P TP > D TP only a single read runs. Hybrid SSM / Mamba models need P TP == D TP.',
     src: (
       <Cite tier={1} href={vllmUrl(COMPAT_DOC, 'L50-L72')}>
         compatibility matrix L50-L72
@@ -92,11 +92,21 @@ const compatRows: CompatRow[] = [
   },
   {
     setting: 'Block size',
-    rule: 'May differ only for models that do not need HMA (non-hybrid), and only with the P block smaller than the D block. Hybrid models need identical block sizes; the push worker raises on a mismatch.',
+    rule: 'The P block must be smaller than the D block and divide it. The matrix limits this to models that do not need HMA (non-hybrid); the pull code also maps a hybrid model\'s blocks at the ratio. Push raises on a mismatch for hybrid attention models.',
     src: (
       <>
-        <Cite tier={1} href={vllmUrl(COMPAT_DOC, 'L66-L72')}>
+        <Cite tier={1} href={vllmUrl(COMPAT_DOC, 'L66-L72')} kind="doc-code-conflict">
           compatibility matrix L66-L72
+        </Cite>{' '}
+        <Cite
+          tier={1}
+          href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/utils.py', 'L504-L510')}
+          kind="code"
+        >
+          kv_connector/utils.py L504-L510
+        </Cite>{' '}
+        <Cite tier={1} href={vllmUrl(`${NIXL}/base_worker.py`, 'L3266-L3303')} kind="code">
+          base_worker.py L3266-L3303
         </Cite>{' '}
         <Cite tier={1} href={vllmUrl(`${NIXL}/base_worker.py`, 'L2264-L2268')} kind="code">
           base_worker.py L2264-L2268
@@ -106,7 +116,7 @@ const compatRows: CompatRow[] = [
   },
   {
     setting: 'KV cache layout',
-    rule: 'LBHNC (head-major, formerly HND) is the NIXL default for non-MLA models. LBNHC (token-major, formerly NHD) works but rules out heterogeneous-TP head splitting. LBHNC on P with LBNHC on D is experimental, behind enable_permute_local_kv, and not supported with HMA.',
+    rule: 'LBHNC (head-major, the HND layout) is the NIXL default for non-MLA models. LBNHC (token-major, the NHD layout) works but rules out heterogeneous-TP head splitting. LBHNC on P with LBNHC on D is experimental, behind enable_permute_local_kv, and not supported with HMA.',
     src: (
       <>
         <Cite tier={1} href={vllmUrl(COMPAT_DOC, 'L101-L105')}>
@@ -489,7 +499,7 @@ export function DisaggregatedServing() {
             prefill, a <strong>decoder pool</strong> runs decode, and a{' '}
             <strong>KV connector</strong> ships each prompt&apos;s KV cache from the prefiller to
             the decoder that generates from it. Each pool then scales to its own load and tunes to
-            its own bottleneck, and a prefill burst can no longer reach the decode latency budget{' '}
+            its own bottleneck, and a prefill burst cannot reach the decode latency budget{' '}
             <Cite tier={1} href={vllmUrl(DISAGG_DOC, 'L12-L13')}>
               disagg_prefill.md L12-L13
             </Cite>
@@ -625,7 +635,7 @@ export function DisaggregatedServing() {
             <Cite tier={1} href={vllmUrl('vllm/config/kv_transfer.py', 'L60-L127')}>
               config/kv_transfer.py L60-L127
             </Cite>
-            . These are the connectors for the cross-instance path at v0.31.0; the full list of
+            . These are the main connectors for the cross-instance path at v0.31.0; the full list of
             registered names is in the <strong>Inside the Codebase &rarr; Distributed &amp; KV
             Transfer</strong> tab{' '}
             <Cite tier={1} href={vllmUrl(DISAGG_DOC, 'L20-L50')}>
@@ -816,9 +826,7 @@ export function DisaggregatedServing() {
             through in <strong>Inside the Codebase &rarr; Distributed &amp; KV Transfer</strong>.
           </Box>
           <Alert type="info" header="On AWS">
-            NIXL transfers KV over <strong>EFA</strong> through the{' '}
-            <code>LIBFABRIC</code> backend, which a config has to select because the default is
-            UCX. That data path (GPUs, EFA and the NIXL plugin) is{' '}
+            The EFA data path (GPUs, EFA and the NIXL <code>LIBFABRIC</code> plugin) is{' '}
             <strong>section 22 (vLLM on AWS GPUs, EFA &amp; NIXL)</strong>, and the placement that
             keeps prefiller and decoder pools close enough for the transfer to be cheap is{' '}
             <strong>section 23 (EC2 Topology, Placement Groups &amp; KV Locality)</strong>. The
@@ -849,7 +857,7 @@ export function DisaggregatedServing() {
                 <strong>Watch for reasoning models whose thinking traces get stripped.</strong>{' '}
                 D&apos;s blocks cover the full sequence, thinking tokens included. If the client
                 drops the <code>&lt;think&gt;</code> trace from the history before the next turn,
-                P&apos;s prompt is no longer a prefix of D&apos;s sequence, the pulled blocks map to
+                P&apos;s prompt stops being a prefix of D&apos;s sequence, the pulled blocks map to
                 the wrong token positions, and the output is incorrect. The docs leave detecting
                 that mismatch to the router{' '}
                 <Cite tier={1} href={vllmUrl(USAGE_DOC, 'L313-L323')}>
@@ -900,14 +908,34 @@ export function DisaggregatedServing() {
             items={compatRows}
           />
           <Box variant="p">
-            <strong>Hybrid models and block size.</strong> The v0.27.0 release notes list{' '}
+            <strong>Hybrid models and block size.</strong> The v0.31.0 matrix says HMA does not
+            support different remote block sizes{' '}
+            <Cite tier={1} href={vllmUrl(COMPAT_DOC, 'L72')} kind="doc-code-conflict">
+              compatibility matrix L72
+            </Cite>
+            , while the v0.27.0 release notes list{' '}
             <em>&quot;heterogeneous P/D block sizes for hybrid models (#49612)&quot;</em>{' '}
-            <Cite tier={1} href={`${RELEASE_NOTES}v0.27.0`} kind="doc-code-conflict">
+            <Cite tier={1} href={`${RELEASE_NOTES}v0.27.0`}>
               vLLM v0.27.0 release notes
             </Cite>
-            , while the v0.31.0 matrix says HMA does not support different remote block sizes and
-            the push worker raises on a mismatch. The matrix and the code agree, so plan for equal
-            block sizes on P and D for a hybrid model.
+            . The pull code sides with the release notes: D splits each attention block into
+            sub-blocks that pair with P&apos;s smaller blocks and moves Mamba state blocks 1:1{' '}
+            <Cite tier={1} href={vllmUrl(`${NIXL}/pull_worker.py`, 'L424-L436')} kind="code">
+              pull_worker.py L424-L436
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl(`${NIXL}/base_worker.py`, 'L3266-L3303')} kind="code">
+              base_worker.py L3266-L3303
+            </Cite>
+            , with the remaining limits checked at handshake{' '}
+            <Cite tier={1} href={vllmUrl(`${NIXL}/base_worker.py`, 'L2527-L2548')} kind="code">
+              base_worker.py L2527-L2548
+            </Cite>
+            . Push raises on a mismatch for hybrid attention models{' '}
+            <Cite tier={1} href={vllmUrl(`${NIXL}/base_worker.py`, 'L2264-L2268')} kind="code">
+              base_worker.py L2264-L2268
+            </Cite>
+            . For a hybrid model, keep P and D block sizes equal on push; on pull, a P block that
+            divides D&apos;s is accepted.
           </Box>
         </SpaceBetween>
       </Container>
@@ -980,8 +1008,8 @@ export function DisaggregatedServing() {
           <Box variant="p">
             <strong>The transfer tax is real and fabric-dependent.</strong> Every disaggregated
             request pays a KV hand-off that a unified engine never does. On a fast RDMA fabric
-            (EFA through NIXL&apos;s <code>LIBFABRIC</code> backend, or NVLink-class intra-node
-            links) that tax is small relative to the prefill it isolates; on a slow link it can
+            (section 22 covers EFA on AWS) the tax can stay small next to the prefill it
+            isolates; on a slow link it can
             exceed the prefill stall you were trying to avoid, which is why &quot;no fast
             fabric&quot; is a do-not-use signal below. The KV cache moved per request scales
             with prompt length, layer count, and head dimension, so long-context workloads move
@@ -1065,7 +1093,7 @@ export function DisaggregatedServing() {
           <Alert type="info" header="Where to start">
             If you cannot name a latency SLO that a unified engine is violating, you do not yet
             have a reason to disaggregate. Chunked prefill inside one engine is the simpler first
-            move. When chunking can no longer hold the tail ITL line, start with{' '}
+            move. When chunking cannot hold the tail ITL line, start with{' '}
             <code>NixlConnector</code> (pull), <code>kv_producer</code> on prefillers and{' '}
             <code>kv_consumer</code> on decoders, and the in-tree proxy; reach for{' '}
             <code>NixlPushConnector</code> when the compatibility table sends you there.

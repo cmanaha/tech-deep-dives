@@ -43,7 +43,7 @@ const axisRows: AxisRow[] = [
     axis: 'Pipeline parallelism (PP)',
     splits: 'Layers are split into contiguous stages; each GPU or node holds whole layers.',
     flag: '--pipeline-parallel-size, -pp',
-    comms: 'Point-to-point activation hand-off between adjacent stages. Low volume, but it introduces pipeline bubbles.',
+    comms: 'Point-to-point activation hand-off between adjacent stages. Low volume, paid for in latency.',
     reach: 'Across nodes, where the inter-node link is the bottleneck.',
   },
   {
@@ -58,7 +58,7 @@ const axisRows: AxisRow[] = [
     splits: 'MoE experts are distributed across GPUs, so each rank owns a subset of the experts.',
     flag: '--enable-expert-parallel, -ep',
     comms: 'All-to-all dispatch and combine, routing each token to the GPU that owns its expert. The kernel is set by --all2all-backend.',
-    reach: 'Within and across nodes; the all-to-all is the dominant cost at scale.',
+    reach: 'Within and across nodes; at scale the all-to-all is the cost dual-batch overlap exists to hide.',
   },
   {
     axis: 'Prefill context parallelism (PCP)',
@@ -567,15 +567,20 @@ export function DistributedInference() {
                 assigns whole contiguous layers to each stage and only hands activations across
                 stage boundaries (cheap traffic), which is why PP is the axis you stretch{' '}
                 <strong>across nodes</strong>. Two practical edges: it "supports uneven splits"
-                (use it when your GPU count does not evenly divide the model), and it introduces
-                pipeline bubbles, so the docs flag "latency penalties." It also reduces per-GPU
-                weight memory, "indirectly leaving more memory available for KV cache."{' '}
+                (use it when your GPU count does not evenly divide the model), and raising it "may
+                cause latency penalties." It also reduces per-GPU weight memory, "indirectly
+                leaving more memory available for KV cache."{' '}
                 <Cite tier={1} href={OPT_DOCS}>
                   vLLM docs: Optimization and Tuning
                 </Cite>{' '}
                 <Cite tier={1} href={SCALING}>
                   vLLM docs: Parallelism and Scaling
+                </Cite>{' '}
+                vLLM keeps a batch in flight for every stage to fill the pipeline{' '}
+                <Cite tier={1} href={vllmUrl(VCFG, 'L592-L602')} kind="code">
+                  config/vllm.py L592-L602
                 </Cite>
+                .
               </Box>
             </div>
           </ColumnLayout>
@@ -762,8 +767,8 @@ export function DistributedInference() {
                 <Cite tier={1} href={vllmUrl('vllm/distributed/device_communicators/all2all.py', 'L917-L927')}>
                   all2all.py L917-L927
                 </Cite>
-                . Two names in the type are gone: <code>naive</code> and <code>pplx</code> log a
-                warning and run <code>allgather_reducescatter</code>{' '}
+                . Two names in the type map to the default: <code>naive</code> and{' '}
+                <code>pplx</code> log a removal warning and run <code>allgather_reducescatter</code>{' '}
                 <Cite tier={1} href={vllmUrl(PARALLEL, 'L507-L513')} kind="code">
                   config/parallel.py L507-L513
                 </Cite>
