@@ -16,7 +16,7 @@ export const S = {
     accessed: '2026-10-17',
   },
   efaUserGuide: {
-    title: 'Elastic Fabric Adapter for AI/ML and HPC workloads on Amazon EC2 (EFA limitations)',
+    title: 'Elastic Fabric Adapter for AI/ML and HPC workloads on Amazon EC2',
     publisher: 'AWS',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html',
     tier: 1,
