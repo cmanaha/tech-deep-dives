@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 322.
+Total distinct sources: 332.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
@@ -74,7 +74,7 @@ Total distinct sources: 322.
 | AWS | [SageMaker HyperPod: managed tiered KV cache and routing](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-ray-kv-cache.html) | 2026-10-17 | FlashCacheTier |
 | Bank for International Settlements | [BCBS d457: Minimum capital requirements for market risk (January 2019)](https://www.bis.org/bcbs/publ/d457.htm) | 2026-10-16 | CapitalMarketsLens |
 | Bank of England (PRA) | [PRA sets out adjustments to its market risk internal model approach under Basel 3.1 (19 June 2026)](https://www.bankofengland.co.uk/news/2026/june/pra-adjustments-market-risk-internal-model-approach-under-basel31) | 2026-10-17 | CapitalMarketsLens |
-| Cerebras Systems (SEC EDGAR) | [Cerebras Systems, Form S-1 (filed 2026-04-17)](https://www.sec.gov/Archives/edgar/data/2021728/000162828026025762/cerebras-sx1april2026.htm) | 2026-10-16 | HeterogeneityFact, ThesisAndFraming |
+| Cerebras Systems (SEC EDGAR) | [Cerebras Systems, Form S-1 (filed 2026-04-17)](https://www.sec.gov/Archives/edgar/data/2021728/000162828026025762/cerebras-sx1april2026.htm) | 2026-10-16 | CerebrasWaferScale, HeterogeneityFact, ThesisAndFraming |
 | CXL Consortium | [CXL Consortium press release, CXL 3.0 specification (2022-08-02)](https://computeexpresslink.org/wp-content/uploads/2024/01/CXL_3.0-Specification-Release_FINAL-1.pdf) | 2026-10-16 | HighBandwidthFlash |
 | Dao-AILab | [FlashAttention README at tag v2.8.3.post2 (FlashAttention-3 beta)](https://github.com/Dao-AILab/flash-attention/blob/v2.8.3.post2/README.md) | 2026-10-17 | NvidiaHopper, RooflineAndArithmeticIntensity |
 | Dao-AILab | [FlashAttention release fa4-v4.0.0.beta35 (FlashAttention-4 beta, 2026-10-14)](https://github.com/Dao-AILab/flash-attention/releases/tag/fa4-v4.0.0.beta35) | 2026-10-16 | RooflineAndArithmeticIntensity |
@@ -99,8 +99,8 @@ Total distinct sources: 322.
 | Hugging Face | [moonshotai/Kimi-K2.5 README at revision 4d01dfe (native INT4 quantization)](https://huggingface.co/moonshotai/Kimi-K2.5/blob/4d01dfe0332d63057c186e0b262165819efb6611/README.md) | 2026-10-17 | QuantizationAndPrecision |
 | Hugging Face | [moonshotai/Kimi-K3 README at revision f831ab6 (native MXFP4 quantization)](https://huggingface.co/moonshotai/Kimi-K3/blob/f831ab66814297da540d832a5235f8e904f29d06/README.md) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
 | Hugging Face | [nvidia/DeepSeek-V3.2-NVFP4 files at revision 7c0f62c (415.1 GB of safetensors)](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4/tree/7c0f62c6da1da0c81c6e097010cc55854d206812) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
-| Hugging Face | [openai/gpt-oss-120b config.json at revision b5c939d (quantization_config)](https://huggingface.co/openai/gpt-oss-120b/blob/b5c939de8f754692c1647ca79fbf85e8c1e70f8a/config.json) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
-| Hugging Face | [openai/gpt-oss-120b README at revision b5c939d](https://huggingface.co/openai/gpt-oss-120b/blob/b5c939de8f754692c1647ca79fbf85e8c1e70f8a/README.md) | 2026-10-17 | MoeAndSparseActivation |
+| Hugging Face | [openai/gpt-oss-120b config.json at revision b5c939d (quantization_config)](https://huggingface.co/openai/gpt-oss-120b/blob/b5c939de8f754692c1647ca79fbf85e8c1e70f8a/config.json) | 2026-10-17 | CerebrasWaferScale, MoeAndSparseActivation, QuantizationAndPrecision |
+| Hugging Face | [openai/gpt-oss-120b README at revision b5c939d](https://huggingface.co/openai/gpt-oss-120b/blob/b5c939de8f754692c1647ca79fbf85e8c1e70f8a/README.md) | 2026-10-17 | CerebrasWaferScale, MoeAndSparseActivation |
 | Hugging Face | [Qwen/Qwen3-235B-A22B config.json at revision 8efa617](https://huggingface.co/Qwen/Qwen3-235B-A22B/blob/8efa61729e24bd65b1d152b5ab5409052aa80e65/config.json) | 2026-10-16 | FlashCacheTier |
 | Hugging Face | [Qwen/Qwen3-235B-A22B README at revision 8efa617 (22B activated)](https://huggingface.co/Qwen/Qwen3-235B-A22B/blob/8efa61729e24bd65b1d152b5ab5409052aa80e65/README.md) | 2026-10-17 | FlashCacheTier, MoeAndSparseActivation |
 | Hugging Face | [Qwen/Qwen3-Next-80B-A3B-Instruct README at revision 9c7f2fb](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct/blob/9c7f2fbe84465e40164a94cc16cd30b6999b0cc7/README.md) | 2026-10-17 | MoeAndSparseActivation |
@@ -186,7 +186,7 @@ Total distinct sources: 322.
 | NVIDIA Dynamo | [Dynamo recipe at tag v1.5.1: GLM-5 NVFP4 disaggregated prefill/decode on GB200 over AWS EFA (README and deploy.yaml)](https://github.com/ai-dynamo/dynamo/tree/v1.5.1/recipes/glm-5-nvfp4/sglang/disagg/efa) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | OCC | [News Release 2026-16: Agencies Request Comment on Proposals to Modernize the Regulatory Capital Framework (19 March 2026)](https://www.occ.gov/news-issuances/news-releases/2026/nr-ia-2026-16.html) | 2026-10-17 | CapitalMarketsLens |
 | Open Compute Project | [High Bandwidth Flash (HBF) High-Level Base Die Specification, Version 0.7.0 (2026-08-03)](https://www.opencompute.org/documents/ocp-hbf-architecture-specification-v0-7-0-final-pdf) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
-| Open Compute Project | [OCP Microscaling Formats (MX) Specification v1.0](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf) | 2026-10-17 | QuantizationAndPrecision |
+| Open Compute Project | [OCP Microscaling Formats (MX) Specification v1.0](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf) | 2026-10-17 | CerebrasWaferScale, QuantizationAndPrecision |
 | OpenFabrics Interfaces Working Group | [libfabric fi_efa(7) man page at commit 24fa1dc (EFA provider capabilities)](https://github.com/ofiwg/libfabric/blob/24fa1dcfaa5cd10fc3d5ca5ea94690e9925c6848/man/fi_efa.7.md) | 2026-10-16 | CapitalMarketsLens |
 | PyTorch | [PyTorch v2.14.1 aten/src/ATen/cuda/CUDABlas.cpp: cublasGemmEx and cublasLtMatmul calls](https://github.com/pytorch/pytorch/blob/v2.14.1/aten/src/ATen/cuda/CUDABlas.cpp) | 2026-10-17 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 aten/src/ATen/native/Linear.cpp: linear lowers to addmm](https://github.com/pytorch/pytorch/blob/v2.14.1/aten/src/ATen/native/Linear.cpp#L106-L129) | 2026-10-17 | NvidiaCompilersAndTooling |
@@ -229,6 +229,7 @@ Total distinct sources: 322.
 
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
+| Amazon | [AWS and Cerebras Collaboration Aims to Set a New Standard for AI Inference Speed and Performance in the Cloud (2026-03-13)](https://press.aboutamazon.com/aws/2026/3/aws-and-cerebras-collaboration-aims-to-set-a-new-standard-for-ai-inference-speed-and-performance-in-the-cloud) | 2026-10-17 | CerebrasWaferScale |
 | Amazon | [Trainium3 UltraServers now available (Trainium4 roadmap)](https://www.aboutamazon.com/news/aws/trainium-3-ultraserver-faster-ai-training-lower-cost) | 2026-10-16 | AwsCustomSilicon |
 | AMD | [AMD blog: Agentic AI: AMD EPYC 9005 CPUs Wins Today, EPYC 9006, formerly code-named "Venice", Takes It to a New Level (2026-07-23)](https://www.amd.com/en/blogs/2026/agentic-ai-amd-epyc-9005-cpus-wins-today-epyc-9006.html) | 2026-10-17 | AmdEpycTurin |
 | AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-17 | QuantizationAndPrecision, RooflineAndArithmeticIntensity |
@@ -255,10 +256,17 @@ Total distinct sources: 322.
 | AWS | [Managed Tiered KV Cache and Intelligent Routing for Amazon SageMaker HyperPod (2025-11-26)](https://aws.amazon.com/blogs/machine-learning/managed-tiered-kv-cache-and-intelligent-routing-for-amazon-sagemaker-hyperpod/) | 2026-10-17 | FlashCacheTier |
 | AWS | [SageMaker HyperPod now supports Managed tiered KV cache and intelligent routing (2025-11-26)](https://aws.amazon.com/about-aws/whats-new/2025/11/sagemaker-hyperpod-managed-tiered-kv-cache) | 2026-10-17 | FlashCacheTier |
 | AWS | [What's New: Amazon EC2 M8azn instances generally available (2026-02-12)](https://aws.amazon.com/about-aws/whats-new/2026/02/aws-m8azn-instances-generally-available/) | 2026-10-16 | CapitalMarketsLens |
-| Cerebras | [Cerebras inference docs: Models overview](https://inference-docs.cerebras.ai/models/overview) | 2026-10-16 | MoeAndSparseActivation |
-| Cerebras | [Cerebras Systems Unveils World's Fastest AI Chip with Whopping 4 Trillion Transistors (WSE-3, 2024-03-13)](https://www.cerebras.ai/press-release/cerebras-announces-third-generation-wafer-scale-engine) | 2026-10-17 | HeterogeneityFact |
-| Cerebras | [Introducing Cerebras Inference: AI at Instant Speed (2024-08-27)](https://www.cerebras.ai/blog/introducing-cerebras-inference-ai-at-instant-speed) | 2026-10-16 | HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
-| Cerebras | [Supercharge your HPC Research with the Cerebras SDK](https://www.cerebras.ai/blog/supercharge-your-hpc-research-with-the-cerebras-sdk) | 2026-10-16 | HeterogeneityFact, ThesisAndFraming |
+| AWS Marketplace | [AWS Marketplace: Cerebras Fast Inference Cloud](https://aws.amazon.com/marketplace/pp/prodview-ph4bdvplhhz3o) | 2026-10-17 | CerebrasWaferScale |
+| Cerebras | [Cerebras Beats NVIDIA Blackwell in Llama 4 Maverick Inference (2025-05-28)](https://www.cerebras.ai/press-release/maverick) | 2026-10-17 | CerebrasWaferScale |
+| Cerebras | [Cerebras inference docs: Models overview](https://inference-docs.cerebras.ai/models/overview) | 2026-10-17 | CerebrasWaferScale, MoeAndSparseActivation |
+| Cerebras | [Cerebras inference docs: OpenAI GPT OSS (gpt-oss-120b speed and pricing)](https://inference-docs.cerebras.ai/models/openai-oss) | 2026-10-17 | CerebrasWaferScale |
+| Cerebras | [Cerebras Is Coming to AWS Bedrock for Fast AI Inference (2026-03-13)](https://www.cerebras.ai/blog/cerebras-is-coming-to-aws) | 2026-10-17 | CerebrasWaferScale |
+| Cerebras | [Cerebras Systems Unveils World's Fastest AI Chip with Whopping 4 Trillion Transistors (WSE-3, 2024-03-13)](https://www.cerebras.ai/press-release/cerebras-announces-third-generation-wafer-scale-engine) | 2026-10-17 | CerebrasWaferScale, HeterogeneityFact |
+| Cerebras | [Cerebras Unveils CS-4: Up to 30 Times Faster than GPU-based Solutions (2026-08-18)](https://www.nasdaq.com/press-release/cerebras-unveils-cs-4-30-times-faster-gpu-based-solutions-2026-08-19) | 2026-10-16 | CerebrasWaferScale |
+| Cerebras | [Cerebras WSE-3 Turbo chip page](https://www.cerebras.ai/chip) | 2026-10-17 | CerebrasWaferScale |
+| Cerebras | [Introducing Cerebras CS-4 (2026-08-18)](https://www.cerebras.ai/blog/introducing-cerebras-cs-4) | 2026-10-17 | CerebrasWaferScale |
+| Cerebras | [Introducing Cerebras Inference: AI at Instant Speed (2024-08-27)](https://www.cerebras.ai/blog/introducing-cerebras-inference-ai-at-instant-speed) | 2026-10-17 | CerebrasWaferScale, HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
+| Cerebras | [Supercharge your HPC Research with the Cerebras SDK](https://www.cerebras.ai/blog/supercharge-your-hpc-research-with-the-cerebras-sdk) | 2026-10-16 | CerebrasWaferScale, HeterogeneityFact, ThesisAndFraming |
 | DeepSeek-AI | [DeepSeek-V3 Technical Report (arXiv:2412.19437)](https://arxiv.org/abs/2412.19437) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier, HighBandwidthFlash, MoeAndSparseActivation, QuantizationAndPrecision, ThesisAndFraming |
 | Groq | [Groq and Nvidia Enter Non-Exclusive Inference Technology Licensing Agreement (2025-12-24)](https://groq.com/newsroom/groq-and-nvidia-enter-non-exclusive-inference-technology-licensing-agreement-to-accelerate-ai-inference-at-global-scale) | 2026-10-17 | GroqSambanovaDataflow, HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
 | Groq | [GroqChip Processor product spec sheet (v1.5)](https://groq.com/product-spec-sheet-groqchip-processor/) | 2026-10-17 | GroqSambanovaDataflow |
@@ -277,23 +285,24 @@ Total distinct sources: 322.
 | NVIDIA | [Full-Stack Optimizations for Agentic Inference with Dynamo (in-repo blog at Dynamo tag v1.5.1)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/blog/2026/agentic-inference-optimizations.mdx) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [GTC 2026 live updates (Feynman, Rosa, Kyber)](https://blogs.nvidia.com/blog/gtc-2026-news/) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [How NVIDIA GB200 NVL72 and NVIDIA Dynamo Boost Inference Performance for MoE Models](https://developer.nvidia.com/blog/how-nvidia-gb200-nvl72-and-nvidia-dynamo-boost-inference-performance-for-moe-models/) | 2026-10-17 | GraceBlackwellUltraServer, MoeAndSparseActivation |
-| NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | DisaggregatedServingAndSpeculative, GraceBlackwellUltraServer, IsolationNie, KernelExecutionLifecycle, MoeAndSparseActivation, NvidiaBlackwell, NvidiaHopper, RooflineAndArithmeticIntensity |
+| NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | CerebrasWaferScale, DisaggregatedServingAndSpeculative, GraceBlackwellUltraServer, IsolationNie, KernelExecutionLifecycle, MoeAndSparseActivation, NvidiaBlackwell, NvidiaHopper, RooflineAndArithmeticIntensity |
 | NVIDIA | [Inside NVIDIA Groq 3 LPX: The Low-Latency Inference Accelerator for the NVIDIA Vera Rubin Platform (2026-03-16)](https://developer.nvidia.com/blog/inside-nvidia-groq-3-lpx-the-low-latency-inference-accelerator-for-the-nvidia-vera-rubin-platform/) | 2026-10-17 | DisaggregatedServingAndSpeculative, GroqSambanovaDataflow, HeterogeneityFact, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [Introducing NVFP4 for Efficient and Accurate Low-Precision Inference](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/) | 2026-10-17 | HeterogeneityFact, MoeAndSparseActivation, NvidiaBlackwell, QuantizationAndPrecision |
 | NVIDIA | [Introducing NVIDIA BlueField-4-Powered Inference Context Memory Storage Platform (G1 to G4 tiers, G3.5)](https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA Blackwell architecture](https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/) | 2026-10-16 | CapitalMarketsLens, GraceBlackwellUltraServer, NvidiaBlackwell |
+| NVIDIA | [NVIDIA Blackwell Raises Bar in New InferenceMAX Benchmarks (2025-10-09)](https://blogs.nvidia.com/blog/blackwell-inferencemax-benchmark-results/) | 2026-10-17 | CerebrasWaferScale |
 | NVIDIA | [NVIDIA BlueField data processing units (BlueField-4 800 Gb/s, BlueField-3 400 Gb/s)](https://www.nvidia.com/en-us/networking/products/data-processing-unit/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA BlueField-4 Powers New Class of AI-Native Storage Infrastructure (CES, January 2026)](https://nvidianews.nvidia.com/_gallery/download_pdf/695c3d883d6332559a6a627d/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA DGX B200](https://www.nvidia.com/en-us/data-center/dgx-b200/) | 2026-10-16 | FlashCacheTier, MoeAndSparseActivation, NvidiaBlackwell, RooflineAndArithmeticIntensity |
 | NVIDIA | [NVIDIA GB200 NVL72](https://www.nvidia.com/en-us/data-center/gb200-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, MoeAndSparseActivation, NvidiaBlackwell |
-| NVIDIA | [NVIDIA GB300 NVL72](https://www.nvidia.com/en-us/data-center/gb300-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, MoeAndSparseActivation, NvidiaBlackwell, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| NVIDIA | [NVIDIA GB300 NVL72](https://www.nvidia.com/en-us/data-center/gb300-nvl72/) | 2026-10-17 | CerebrasWaferScale, GraceBlackwellUltraServer, MoeAndSparseActivation, NvidiaBlackwell, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA Grace CPU page (Vera CPU: SOCAMM LPDDR5X, 1.2 TB/s, 1.5 TB per CPU)](https://www.nvidia.com/en-us/data-center/grace-cpu/) | 2026-10-16 | HighBandwidthFlash |
 | NVIDIA | [NVIDIA Grace CPU Superchip (Grace CPU C1 and Superchip specifications)](https://www.nvidia.com/en-us/data-center/grace-cpu-superchip/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Groq 3 LPX Now in Full Production With World-Class Speed for Agentic AI (2026-08-24)](https://nvidianews.nvidia.com/news/nvidia-groq-3-lpx-now-in-full-production-with-world-class-speed-for-agentic-ai) | 2026-10-17 | GroqSambanovaDataflow, HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
-| NVIDIA | [NVIDIA H100 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h100/) | 2026-10-16 | DisaggregatedServingAndSpeculative, FlashCacheTier, KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity |
-| NVIDIA | [NVIDIA H200 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h200/) | 2026-10-17 | FlashCacheTier, KernelExecutionLifecycle, MoeAndSparseActivation, NvidiaBlackwell, NvidiaHopper, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| NVIDIA | [NVIDIA H100 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h100/) | 2026-10-16 | CerebrasWaferScale, DisaggregatedServingAndSpeculative, FlashCacheTier, KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity |
+| NVIDIA | [NVIDIA H200 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h200/) | 2026-10-17 | CerebrasWaferScale, FlashCacheTier, KernelExecutionLifecycle, MoeAndSparseActivation, NvidiaBlackwell, NvidiaHopper, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA HGX platform (HGX B300, HGX B200 and HGX Rubin NVL8 specifications)](https://www.nvidia.com/en-us/data-center/hgx/) | 2026-10-17 | HeterogeneityFact, HighBandwidthFlash, NvidiaBlackwell, QuantizationAndPrecision, RooflineAndArithmeticIntensity |
-| NVIDIA | [NVIDIA Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | 2026-10-17 | KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| NVIDIA | [NVIDIA Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | 2026-10-17 | CerebrasWaferScale, KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA Hopper in Full Production (2022-09-20)](https://nvidianews.nvidia.com/news/nvidia-hopper-in-full-production) | 2026-10-16 | NvidiaHopper |
 | NVIDIA | [NVIDIA NVLink-C2C](https://www.nvidia.com/en-us/data-center/nvlink-c2c/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Supercharges Hopper, the World's Leading AI Computing Platform (2023-11-13)](https://nvidianews.nvidia.com/news/nvidia-supercharges-hopper-the-worlds-leading-ai-computing-platform) | 2026-10-16 | NvidiaHopper |
@@ -337,6 +346,7 @@ Total distinct sources: 322.
 | arXiv | [Pretraining Large Language Models with NVFP4 (arXiv:2509.25149)](https://arxiv.org/abs/2509.25149) | 2026-10-17 | QuantizationAndPrecision |
 | arXiv | [SambaNova SN40L: Scaling the AI Memory Wall with Dataflow and Composition of Experts (arXiv:2405.07518, MICRO 2024)](https://arxiv.org/abs/2405.07518) | 2026-10-17 | GroqSambanovaDataflow, MoeAndSparseActivation |
 | arXiv | [SPLASH: Co-Designing Sparse Attention with High-Bandwidth Flash for Efficient Long-Context Inference (arXiv:2609.23816)](https://arxiv.org/abs/2609.23816) | 2026-10-17 | HighBandwidthFlash |
+| Bitget News | [Summary of the Cerebras Q2 2026 earnings call (2026-08-12)](https://www.bitget.com/news/detail/12560605668861) | 2026-10-17 | CerebrasWaferScale |
 | Blocks & Files | [Kioxia eyes GPU memory stack with high-bandwidth flash push (2026-03-20)](https://www.blocksandfiles.com/flash/2026/03/20/kioxia-eyes-gpu-memory-stack-with-high-bandwidth-flash-push/5210520) | 2026-10-17 | HighBandwidthFlash |
 | Chips and Cheese | [A Look into Intel Xeon 6's Memory Subsystem (AWS r8i, Xeon 6 6985P-C)](https://chipsandcheese.com/p/a-look-into-intel-xeon-6s-memory) | 2026-10-17 | IntelXeon6 |
 | Chips and Cheese | [AMD's Strix Point: Zen 5 Hits Mobile (Zen 5 L2 associativity and latency)](https://chipsandcheese.com/p/amds-strix-point-zen-5-hits-mobile) | 2026-10-17 | AmdEpycTurin |
