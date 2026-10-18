@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 170.
+Total distinct sources: 173.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
@@ -29,8 +29,8 @@ Total distinct sources: 170.
 | AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | HeterogeneityFact |
 | AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-17 | KernelExecutionLifecycle |
 | AWS | [AWS Neuron: NKI Trainium2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium2_arch.html) | 2026-10-17 | KernelExecutionLifecycle |
-| AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-17 | HeterogeneityFact, KernelExecutionLifecycle, ThesisAndFraming |
-| AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-16 | HeterogeneityFact, ThesisAndFraming |
+| AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-17 | HeterogeneityFact, KernelExecutionLifecycle, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-16 | HeterogeneityFact, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | GraceBlackwellUltraServer, HeterogeneityFact |
 | AWS | [Capacity Blocks for ML: supported instance types and Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaHopper |
 | AWS | [Data persistence for Amazon EC2 instance store volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html) | 2026-10-17 | FlashCacheTier |
@@ -38,7 +38,8 @@ Total distinct sources: 170.
 | AWS | [SageMaker HyperPod: managed tiered KV cache and routing](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-ray-kv-cache.html) | 2026-10-17 | FlashCacheTier |
 | Cerebras Systems (SEC EDGAR) | [Cerebras Systems, Form S-1 (filed 2026-04-17)](https://www.sec.gov/Archives/edgar/data/2021728/000162828026025762/cerebras-sx1april2026.htm) | 2026-10-16 | HeterogeneityFact, ThesisAndFraming |
 | CXL Consortium | [CXL Consortium press release, CXL 3.0 specification (2022-08-02)](https://computeexpresslink.org/wp-content/uploads/2024/01/CXL_3.0-Specification-Release_FINAL-1.pdf) | 2026-10-16 | HighBandwidthFlash |
-| Dao-AILab | [FlashAttention README at tag v2.8.3.post2 (FlashAttention-3 beta)](https://github.com/Dao-AILab/flash-attention/blob/v2.8.3.post2/README.md) | 2026-10-17 | NvidiaHopper |
+| Dao-AILab | [FlashAttention README at tag v2.8.3.post2 (FlashAttention-3 beta)](https://github.com/Dao-AILab/flash-attention/blob/v2.8.3.post2/README.md) | 2026-10-17 | NvidiaHopper, RooflineAndArithmeticIntensity |
+| Dao-AILab | [FlashAttention release fa4-v4.0.0.beta35 (FlashAttention-4 beta, 2026-10-14)](https://github.com/Dao-AILab/flash-attention/releases/tag/fa4-v4.0.0.beta35) | 2026-10-16 | RooflineAndArithmeticIntensity |
 | DeepSeek | [DeepSeek API docs: Context Caching](https://api-docs.deepseek.com/guides/kv_cache) | 2026-10-17 | FlashCacheTier |
 | DeepSeek | [DeepSeek API docs: Models and Pricing](https://api-docs.deepseek.com/quick_start/pricing) | 2026-10-17 | FlashCacheTier |
 | Hugging Face | [deepseek-ai/DeepSeek-V3 config.json at revision e815299](https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/config.json) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
@@ -118,6 +119,7 @@ Total distinct sources: 170.
 
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
+| AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-16 | RooflineAndArithmeticIntensity |
 | AWS | [Amazon EC2 M8a instances](https://aws.amazon.com/ec2/instance-types/m8a/) | 2026-10-17 | HeterogeneityFact |
 | AWS | [Amazon EC2 M8i instances](https://aws.amazon.com/ec2/instance-types/m8i/) | 2026-10-17 | HeterogeneityFact |
 | AWS | [Amazon EC2 P5 instances](https://aws.amazon.com/ec2/instance-types/p5/) | 2026-10-17 | NvidiaHopper |
@@ -142,27 +144,27 @@ Total distinct sources: 170.
 | NVIDIA | [Full-Stack Optimizations for Agentic Inference with Dynamo (in-repo blog at Dynamo tag v1.5.1)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/blog/2026/agentic-inference-optimizations.mdx) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [GTC 2026 live updates (Feynman, Rosa, Kyber)](https://blogs.nvidia.com/blog/gtc-2026-news/) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [How NVIDIA GB200 NVL72 and NVIDIA Dynamo Boost Inference Performance for MoE Models](https://developer.nvidia.com/blog/how-nvidia-gb200-nvl72-and-nvidia-dynamo-boost-inference-performance-for-moe-models/) | 2026-10-17 | GraceBlackwellUltraServer |
-| NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | GraceBlackwellUltraServer, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper |
-| NVIDIA | [Inside NVIDIA Groq 3 LPX: The Low-Latency Inference Accelerator for the NVIDIA Vera Rubin Platform (2026-03-16)](https://developer.nvidia.com/blog/inside-nvidia-groq-3-lpx-the-low-latency-inference-accelerator-for-the-nvidia-vera-rubin-platform/) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
+| NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | GraceBlackwellUltraServer, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper, RooflineAndArithmeticIntensity |
+| NVIDIA | [Inside NVIDIA Groq 3 LPX: The Low-Latency Inference Accelerator for the NVIDIA Vera Rubin Platform (2026-03-16)](https://developer.nvidia.com/blog/inside-nvidia-groq-3-lpx-the-low-latency-inference-accelerator-for-the-nvidia-vera-rubin-platform/) | 2026-10-17 | HeterogeneityFact, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [Introducing NVFP4 for Efficient and Accurate Low-Precision Inference](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/) | 2026-10-16 | HeterogeneityFact, NvidiaBlackwell |
 | NVIDIA | [Introducing NVIDIA BlueField-4-Powered Inference Context Memory Storage Platform (G1 to G4 tiers, G3.5)](https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA Blackwell architecture](https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/) | 2026-10-16 | GraceBlackwellUltraServer, NvidiaBlackwell |
 | NVIDIA | [NVIDIA BlueField data processing units (BlueField-4 800 Gb/s, BlueField-3 400 Gb/s)](https://www.nvidia.com/en-us/networking/products/data-processing-unit/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA BlueField-4 Powers New Class of AI-Native Storage Infrastructure (CES, January 2026)](https://nvidianews.nvidia.com/_gallery/download_pdf/695c3d883d6332559a6a627d/) | 2026-10-17 | FlashCacheTier |
-| NVIDIA | [NVIDIA DGX B200](https://www.nvidia.com/en-us/data-center/dgx-b200/) | 2026-10-16 | FlashCacheTier, NvidiaBlackwell |
+| NVIDIA | [NVIDIA DGX B200](https://www.nvidia.com/en-us/data-center/dgx-b200/) | 2026-10-16 | FlashCacheTier, NvidiaBlackwell, RooflineAndArithmeticIntensity |
 | NVIDIA | [NVIDIA GB200 NVL72](https://www.nvidia.com/en-us/data-center/gb200-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell |
-| NVIDIA | [NVIDIA GB300 NVL72](https://www.nvidia.com/en-us/data-center/gb300-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell, ThesisAndFraming |
+| NVIDIA | [NVIDIA GB300 NVL72](https://www.nvidia.com/en-us/data-center/gb300-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA Grace CPU page (Vera CPU: SOCAMM LPDDR5X, 1.2 TB/s, 1.5 TB per CPU)](https://www.nvidia.com/en-us/data-center/grace-cpu/) | 2026-10-16 | HighBandwidthFlash |
 | NVIDIA | [NVIDIA Grace CPU Superchip (Grace CPU C1 and Superchip specifications)](https://www.nvidia.com/en-us/data-center/grace-cpu-superchip/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Groq 3 LPX Now in Full Production With World-Class Speed for Agentic AI (2026-08-24)](https://nvidianews.nvidia.com/news/nvidia-groq-3-lpx-now-in-full-production-with-world-class-speed-for-agentic-ai) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
-| NVIDIA | [NVIDIA H100 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h100/) | 2026-10-16 | FlashCacheTier, KernelExecutionLifecycle, NvidiaHopper |
-| NVIDIA | [NVIDIA H200 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h200/) | 2026-10-17 | FlashCacheTier, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper, ThesisAndFraming |
-| NVIDIA | [NVIDIA HGX platform (HGX B300, HGX B200 and HGX Rubin NVL8 specifications)](https://www.nvidia.com/en-us/data-center/hgx/) | 2026-10-17 | HeterogeneityFact, HighBandwidthFlash, NvidiaBlackwell |
-| NVIDIA | [NVIDIA Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | 2026-10-17 | KernelExecutionLifecycle, NvidiaHopper, ThesisAndFraming |
+| NVIDIA | [NVIDIA H100 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h100/) | 2026-10-16 | FlashCacheTier, KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity |
+| NVIDIA | [NVIDIA H200 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h200/) | 2026-10-17 | FlashCacheTier, KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| NVIDIA | [NVIDIA HGX platform (HGX B300, HGX B200 and HGX Rubin NVL8 specifications)](https://www.nvidia.com/en-us/data-center/hgx/) | 2026-10-17 | HeterogeneityFact, HighBandwidthFlash, NvidiaBlackwell, RooflineAndArithmeticIntensity |
+| NVIDIA | [NVIDIA Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | 2026-10-17 | KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA Hopper in Full Production (2022-09-20)](https://nvidianews.nvidia.com/news/nvidia-hopper-in-full-production) | 2026-10-16 | NvidiaHopper |
 | NVIDIA | [NVIDIA NVLink-C2C](https://www.nvidia.com/en-us/data-center/nvlink-c2c/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Supercharges Hopper, the World's Leading AI Computing Platform (2023-11-13)](https://nvidianews.nvidia.com/news/nvidia-supercharges-hopper-the-worlds-leading-ai-computing-platform) | 2026-10-16 | NvidiaHopper |
-| NVIDIA | [NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell |
+| NVIDIA | [NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell, RooflineAndArithmeticIntensity |
 | Samsung | [Samsung Ships Industry-First Commercial HBM4 With Ultimate Performance for AI Computing (2026-02-12)](https://news.samsung.com/global/samsung-ships-industry-first-commercial-hbm4-with-ultimate-performance-for-ai-computing) | 2026-10-16 | HighBandwidthFlash |
 | Sandisk | [HBF Fact Sheet (Tech Brief, July 2025)](https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/sandisk/collateral/company/Sandisk-HBF-Fact-Sheet.pdf) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
 | Sandisk | [Sandisk 2026 Investor Day (2026-08-13), transcript of company presentations published by Stock Analysis](https://stockanalysis.com/stocks/sndk/transcripts/708061-investor-day-2026/) | 2026-10-17 | HighBandwidthFlash |
@@ -179,9 +181,10 @@ Total distinct sources: 170.
 
 | Publisher | Source | Accessed | Cited in |
 | --- | --- | --- | --- |
-| ACM | [Roofline: An Insightful Visual Performance Model for Multicore Architectures (Williams, Waterman, Patterson, CACM 52(4), 2009), Crossref record](https://api.crossref.org/works/10.1145/1498765.1498785) | 2026-10-16 | ThesisAndFraming |
+| ACM | [Roofline: An Insightful Visual Performance Model for Multicore Architectures (Williams, Waterman, Patterson, CACM 52(4), 2009), Crossref record](https://api.crossref.org/works/10.1145/1498765.1498785) | 2026-10-16 | RooflineAndArithmeticIntensity, ThesisAndFraming |
 | arXiv | [Benchmarking and Dissecting the Nvidia Hopper GPU Architecture (Luo et al., arXiv:2402.13499v1), Table IV](https://arxiv.org/pdf/2402.13499) | 2026-10-17 | KernelExecutionLifecycle, NvidiaHopper |
 | arXiv | [Challenges and Research Directions for Large Language Model Inference Hardware (X. Ma and D. Patterson, Google; arXiv:2601.05047)](https://arxiv.org/abs/2601.05047) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
+| arXiv | [DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving (arXiv:2401.09670)](https://arxiv.org/abs/2401.09670) | 2026-10-16 | RooflineAndArithmeticIntensity |
 | arXiv | [FlashAccel: Leveraging High-Bandwidth Flash (HBF) for High-Throughput LLM Inference (arXiv:2607.10186v2)](https://arxiv.org/abs/2607.10186) | 2026-10-17 | HighBandwidthFlash |
 | arXiv | [FLINT: Efficiently Leveraging High Bandwidth Flash for Capacity-Scalable LLM Inference Acceleration (G. F. Oliveira et al.; arXiv:2608.25062v1)](https://arxiv.org/abs/2608.25062) | 2026-10-17 | HighBandwidthFlash |
 | arXiv | [GPU-Initiated On-Demand High-Throughput Storage Access in the BaM System Architecture (Qureshi et al., ASPLOS 2023, arXiv:2203.04910)](https://arxiv.org/abs/2203.04910) | 2026-10-17 | FlashCacheTier |

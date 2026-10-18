@@ -294,3 +294,9 @@ earlier one.
   Triton; CUTLASS is opt-in through `max_autotune_gemm_backends`. Sizes never
   route a matmul to CUTLASS. Kernel Execution Lifecycle and AWS Compilers and
   Tooling must not say "Inductor emits Triton for everything".
+- Roofline: Rubin HBM4 per-GPU bandwidth appears three ways on NVIDIA pages: 22 TB/s
+  (HGX individual GPU), 19.2 (Vera Rubin NVL72 page) and 16.25 (HGX Rubin NVL8 board,
+  130 TB/s / 8). The roofline uses 22. Any section quoting Rubin bandwidth or a Rubin
+  ridge names which figure it uses.
+- Heterogeneity Fact: Trainium2 already has ISA support for dynamic shapes and control
+  flow (Trainium2 architecture page); never write that Trainium3 "adds" them alone.
