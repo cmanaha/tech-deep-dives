@@ -12,7 +12,17 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 356.
+Total distinct sources: 383.
+
+## Tier 0: our own experiment, logged in research/
+
+| Publisher | Source | Accessed | Cited in |
+| --- | --- | --- | --- |
+| Our experiment | [DGX Spark hardware capture, experiment log NOTES.md (captured 2026-07-18)](https://github.com/cmanaha/tech-deep-dives/blob/d65693b49ca8245ff06cd8c452e47f70a3e8c3ad/deep-dives/silicon-memory-inference/research/dgx-spark/NOTES.md) | 2026-10-17 | EdgeSharedMemorySilicon |
+| Our experiment | [DGX Spark hardware capture: lscpu output (captured 2026-07-18)](https://github.com/cmanaha/tech-deep-dives/blob/d65693b49ca8245ff06cd8c452e47f70a3e8c3ad/deep-dives/silicon-memory-inference/research/dgx-spark/lscpu.txt) | 2026-10-17 | EdgeSharedMemorySilicon |
+| Our experiment | [DGX Spark hardware capture: lstopo SVG render (captured 2026-07-18)](https://github.com/cmanaha/tech-deep-dives/blob/d65693b49ca8245ff06cd8c452e47f70a3e8c3ad/deep-dives/silicon-memory-inference/research/dgx-spark/spark-topology.svg) | 2026-10-17 | EdgeSharedMemorySilicon |
+| Our experiment | [DGX Spark hardware capture: lstopo-no-graphics output (captured 2026-07-18)](https://github.com/cmanaha/tech-deep-dives/blob/d65693b49ca8245ff06cd8c452e47f70a3e8c3ad/deep-dives/silicon-memory-inference/research/dgx-spark/lstopo.txt) | 2026-10-17 | EdgeSharedMemorySilicon |
+| Our experiment | [DGX Spark hardware capture: nvidia-smi output (captured 2026-07-18)](https://github.com/cmanaha/tech-deep-dives/blob/d65693b49ca8245ff06cd8c452e47f70a3e8c3ad/deep-dives/silicon-memory-inference/research/dgx-spark/nvidia-smi.txt) | 2026-10-17 | EdgeSharedMemorySilicon |
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
@@ -108,7 +118,7 @@ Total distinct sources: 356.
 | Hugging Face | [moonshotai/Kimi-K3 README at revision f831ab6 (native MXFP4 quantization)](https://huggingface.co/moonshotai/Kimi-K3/blob/f831ab66814297da540d832a5235f8e904f29d06/README.md) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
 | Hugging Face | [nvidia/DeepSeek-V3.2-NVFP4 files at revision 7c0f62c (415.1 GB of safetensors)](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4/tree/7c0f62c6da1da0c81c6e097010cc55854d206812) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
 | Hugging Face | [openai/gpt-oss-120b config.json at revision b5c939d (quantization_config)](https://huggingface.co/openai/gpt-oss-120b/blob/b5c939de8f754692c1647ca79fbf85e8c1e70f8a/config.json) | 2026-10-17 | CerebrasWaferScale, MoeAndSparseActivation, QuantizationAndPrecision |
-| Hugging Face | [openai/gpt-oss-120b README at revision b5c939d](https://huggingface.co/openai/gpt-oss-120b/blob/b5c939de8f754692c1647ca79fbf85e8c1e70f8a/README.md) | 2026-10-17 | CerebrasWaferScale, MoeAndSparseActivation |
+| Hugging Face | [openai/gpt-oss-120b README at revision b5c939d](https://huggingface.co/openai/gpt-oss-120b/blob/b5c939de8f754692c1647ca79fbf85e8c1e70f8a/README.md) | 2026-10-17 | CerebrasWaferScale, EdgeSharedMemorySilicon, MoeAndSparseActivation |
 | Hugging Face | [Qwen/Qwen3-235B-A22B config.json at revision 8efa617](https://huggingface.co/Qwen/Qwen3-235B-A22B/blob/8efa61729e24bd65b1d152b5ab5409052aa80e65/config.json) | 2026-10-16 | FlashCacheTier |
 | Hugging Face | [Qwen/Qwen3-235B-A22B README at revision 8efa617 (22B activated)](https://huggingface.co/Qwen/Qwen3-235B-A22B/blob/8efa61729e24bd65b1d152b5ab5409052aa80e65/README.md) | 2026-10-17 | FlashCacheTier, MoeAndSparseActivation |
 | Hugging Face | [Qwen/Qwen3-Next-80B-A3B-Instruct README at revision 9c7f2fb](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct/blob/9c7f2fbe84465e40164a94cc16cd30b6999b0cc7/README.md) | 2026-10-17 | MoeAndSparseActivation |
@@ -141,6 +151,7 @@ Total distinct sources: 356.
 | Micron | [Micron 9650 NVMe SSD product brief (key specifications and test conditions)](https://www.micron.com/content/dam/micron/global/public/products/storage/ssds/data-center/9650/9650-nvme-ssd-product-brief.pdf) | 2026-10-17 | FlashCacheTier |
 | Microsoft | [ONNX Runtime v1.17.0 release (published 2024-02-03)](https://github.com/microsoft/onnxruntime/releases/tag/v1.17.0) | 2026-10-17 | GravitonDeepDive |
 | NVIDIA | [CUDA C++ Best Practices Guide (CUDA 13.4): Occupancy](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html) | 2026-10-17 | HeterogeneityFact, NvidiaHopper, ThesisAndFraming |
+| NVIDIA | [CUDA for Tegra application note v13.4 (memory management, I/O coherency, full coherency on Thor)](https://docs.nvidia.com/cuda/cuda-for-tegra-appnote/index.html) | 2026-10-16 | EdgeSharedMemorySilicon |
 | NVIDIA | [CUDA GPU compute capability list](https://developer.nvidia.com/cuda-gpus) | 2026-10-16 | NvidiaBlackwell, NvidiaCompilersAndTooling, NvidiaHopper |
 | NVIDIA | [CUDA Programming Guide v13.4.2: Advanced Kernel Programming (Hardware Multithreading)](https://docs.nvidia.com/cuda/cuda-programming-guide/03-advanced/advanced-kernel-programming.html) | 2026-10-17 | KernelExecutionLifecycle |
 | NVIDIA | [CUDA Programming Guide v13.4.2: Asynchronous Data Copies](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/async-copies.html) | 2026-10-17 | KernelExecutionLifecycle |
@@ -155,6 +166,10 @@ Total distinct sources: 356.
 | NVIDIA | [CUTLASS example 92_blackwell_moe_gemm at tag v4.8.0](https://github.com/NVIDIA/cutlass/tree/v4.8.0/examples/92_blackwell_moe_gemm) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [CUTLASS README at tag v4.8.0](https://github.com/NVIDIA/cutlass/blob/v4.8.0/README.md) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [DeepSeek-V3.2-NVFP4 model card at revision 7c0f62c (post-training quantization, evaluation)](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4/blob/7c0f62c6da1da0c81c6e097010cc55854d206812/README.md) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
+| NVIDIA | [DGX Spark Porting Guide: Overview (CPU cluster and cache layout)](https://docs.nvidia.com/dgx/dgx-spark-porting-guide/overview.html) | 2026-10-16 | EdgeSharedMemorySilicon |
+| NVIDIA | [DGX Spark User Guide: Hardware Overview](https://docs.nvidia.com/dgx/dgx-spark/hardware.html) | 2026-10-16 | EdgeSharedMemorySilicon |
+| NVIDIA | [dgx-spark-playbooks at commit c035e0a: connect-two-sparks performance benchmarking guide](https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/connect-two-sparks/assets/performance_benchmarking_guide.md) | 2026-10-16 | EdgeSharedMemorySilicon |
+| NVIDIA | [Jetson Orin Nano Series Modules Data Sheet DS-11105-001_v1.5 (third-party mirror of the NVIDIA PDF; read 2026-07-18, not re-fetched in October)](https://www.esys.ir/images/img_Item/3029/Files/Jetson-Orin-Nano-Series-Modules-Datasheet_DS-11105-001_v1.5.pdf) | 2026-07-18 | EdgeSharedMemorySilicon |
 | NVIDIA | [Nsight Compute Profiling Guide](https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [Nsight Systems User Guide](https://docs.nvidia.com/nsight-systems/UserGuide/index.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [NVIDIA Blackwell Tuning Guide (CUDA 13.4)](https://docs.nvidia.com/cuda/blackwell-tuning-guide/index.html) | 2026-10-17 | KernelExecutionLifecycle, NvidiaBlackwell, NvidiaHopper |
@@ -301,22 +316,35 @@ Total distinct sources: 356.
 | Micron | [Micron in High-Volume Production of HBM4 Designed for NVIDIA Vera Rubin, PCIe Gen6 SSD and SOCAMM2 (2026-03-16)](https://investors.micron.com/news/press-release/2026/Micron-in-High-Volume-Production-of-HBM4-Designed-for-NVIDIA-Vera-Rubin-PCIe-Gen6-SSD-and-SOCAMM2-03-16-2026/default.aspx) | 2026-10-16 | HighBandwidthFlash |
 | Mistral AI | [Mixtral of experts](https://mistral.ai/news/mixtral-of-experts/) | 2026-10-17 | MoeAndSparseActivation |
 | Nebius | [Nebius and WEKA benchmark shared KV cache for agentic inference on NVIDIA HGX B300 (2026-09-24)](https://nebius.com/blog/posts/nebius-weka-shared-kv-cache-benchmark-hgx-b300) | 2026-10-17 | FlashCacheTier |
+| NVIDIA | [2/23/2026 Price Change Announcement (DGX Spark, NVIDIA Developer Forums, posted 2026-02-25 by NVIDIA staff)](https://forums.developer.nvidia.com/t/2-23-2026-price-change-announcement/361713) | 2026-10-16 | EdgeSharedMemorySilicon |
+| NVIDIA | [Accelerate AI Inference for Edge and Robotics with NVIDIA Jetson T4000 and NVIDIA JetPack 7.1 (2026-01-05)](https://developer.nvidia.com/blog/accelerate-ai-inference-for-edge-and-robotics-with-nvidia-jetson-t4000-and-nvidia-jetpack-7-1/) | 2026-10-16 | EdgeSharedMemorySilicon |
 | NVIDIA | [As AI Increases Demands on Memory, Storage Steps Up (2026-08-04; Storage-Next, SCADA)](https://blogs.nvidia.com/blog/ai-storage-fms/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [AWS and NVIDIA to Deliver 2 Million Additional GPUs (2026-08-26)](https://nvidianews.nvidia.com/news/aws-and-nvidia-to-deliver-2-million-additional-gpus-and-next-generation-infrastructure-for-agentic-and-physical-ai) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [Controlling Floating-Point Determinism in NVIDIA CCCL](https://developer.nvidia.com/blog/controlling-floating-point-determinism-in-nvidia-cccl/) | 2026-10-16 | DeterminismAOT |
 | NVIDIA | [Full-Stack Optimizations for Agentic Inference with Dynamo (in-repo blog at Dynamo tag v1.5.1)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/blog/2026/agentic-inference-optimizations.mdx) | 2026-10-17 | FlashCacheTier |
+| NVIDIA | [Getting Started with Edge AI on NVIDIA Jetson: LLMs, VLMs, and Foundation Models for Robotics (2025-12-11)](https://developer.nvidia.com/blog/getting-started-with-edge-ai-on-nvidia-jetson-llms-vlms-and-foundation-models-for-robotics/) | 2026-10-16 | EdgeSharedMemorySilicon |
 | NVIDIA | [GTC 2026 live updates (Feynman, Rosa, Kyber)](https://blogs.nvidia.com/blog/gtc-2026-news/) | 2026-10-16 | NvidiaBlackwell |
+| NVIDIA | [How NVIDIA DGX Spark's Performance Enables Intensive AI Tasks (2025-10-24)](https://developer.nvidia.com/blog/how-nvidia-dgx-sparks-performance-enables-intensive-ai-tasks/) | 2026-10-16 | EdgeSharedMemorySilicon |
 | NVIDIA | [How NVIDIA GB200 NVL72 and NVIDIA Dynamo Boost Inference Performance for MoE Models](https://developer.nvidia.com/blog/how-nvidia-gb200-nvl72-and-nvidia-dynamo-boost-inference-performance-for-moe-models/) | 2026-10-17 | GraceBlackwellUltraServer, MoeAndSparseActivation |
 | NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | CerebrasWaferScale, ChipletAndInterconnect, DisaggregatedServingAndSpeculative, GraceBlackwellUltraServer, IsolationNie, KernelExecutionLifecycle, MoeAndSparseActivation, NvidiaBlackwell, NvidiaHopper, RooflineAndArithmeticIntensity |
 | NVIDIA | [Inside NVIDIA Groq 3 LPX: The Low-Latency Inference Accelerator for the NVIDIA Vera Rubin Platform (2026-03-16)](https://developer.nvidia.com/blog/inside-nvidia-groq-3-lpx-the-low-latency-inference-accelerator-for-the-nvidia-vera-rubin-platform/) | 2026-10-17 | DisaggregatedServingAndSpeculative, GroqSambanovaDataflow, HeterogeneityFact, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [Introducing NVFP4 for Efficient and Accurate Low-Precision Inference](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/) | 2026-10-17 | HeterogeneityFact, MoeAndSparseActivation, NvidiaBlackwell, QuantizationAndPrecision |
 | NVIDIA | [Introducing NVIDIA BlueField-4-Powered Inference Context Memory Storage Platform (G1 to G4 tiers, G3.5)](https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/) | 2026-10-17 | FlashCacheTier |
+| NVIDIA | [Introducing NVIDIA Jetson Thor, the Ultimate Platform for Physical AI (2025-08-25)](https://developer.nvidia.com/blog/introducing-nvidia-jetson-thor-the-ultimate-platform-for-physical-ai/) | 2026-10-17 | EdgeSharedMemorySilicon |
+| NVIDIA | [Jetson FAQ: What is the price of Jetson products? (MSRP table)](https://developer.nvidia.com/embedded/faq) | 2026-10-16 | EdgeSharedMemorySilicon |
+| NVIDIA | [Jetson Orin Nano Super Developer Kit](https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/nano-super-developer-kit/) | 2026-10-16 | EdgeSharedMemorySilicon |
+| NVIDIA | [New Software and Model Optimizations Supercharge NVIDIA DGX Spark (2026-01-05)](https://developer.nvidia.com/blog/new-software-and-model-optimizations-supercharge-nvidia-dgx-spark/) | 2026-10-16 | EdgeSharedMemorySilicon |
+| NVIDIA | [NVIDIA Announces DGX Spark and DGX Station Personal AI Computers (2025-03-18)](https://nvidianews.nvidia.com/news/nvidia-announces-dgx-spark-and-dgx-station-personal-ai-computers) | 2026-10-17 | EdgeSharedMemorySilicon |
+| NVIDIA | [NVIDIA Announces Jetson Orin Nano 2 Robotics Computer to Redefine Entry-Level Edge AI (2026-08-25)](https://nvidianews.nvidia.com/news/nvidia-announces-jetson-orin-nano-2-robotics-computer-to-redefine-entry-level-edge-ai) | 2026-10-16 | EdgeSharedMemorySilicon |
 | NVIDIA | [NVIDIA Blackwell architecture](https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/) | 2026-10-16 | CapitalMarketsLens, ChipletAndInterconnect, GraceBlackwellUltraServer, NvidiaBlackwell |
 | NVIDIA | [NVIDIA Blackwell Raises Bar in New InferenceMAX Benchmarks (2025-10-09)](https://blogs.nvidia.com/blog/blackwell-inferencemax-benchmark-results/) | 2026-10-17 | CerebrasWaferScale |
 | NVIDIA | [NVIDIA BlueField data processing units (BlueField-4 800 Gb/s, BlueField-3 400 Gb/s)](https://www.nvidia.com/en-us/networking/products/data-processing-unit/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA BlueField-4 Powers New Class of AI-Native Storage Infrastructure (CES, January 2026)](https://nvidianews.nvidia.com/_gallery/download_pdf/695c3d883d6332559a6a627d/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA DGX B200](https://www.nvidia.com/en-us/data-center/dgx-b200/) | 2026-10-16 | FlashCacheTier, MoeAndSparseActivation, NvidiaBlackwell, RooflineAndArithmeticIntensity |
-| NVIDIA | [NVIDIA GB200 NVL72](https://www.nvidia.com/en-us/data-center/gb200-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, MoeAndSparseActivation, NvidiaBlackwell |
+| NVIDIA | [NVIDIA DGX Spark (product page: specifications and clustering table)](https://www.nvidia.com/en-us/products/workstations/dgx-spark/) | 2026-10-17 | EdgeSharedMemorySilicon |
+| NVIDIA | [NVIDIA DGX Spark 64GB Gives Developers More Ways to Build and Scale Local AI (2026-10-02)](https://blogs.nvidia.com/blog/local-ai-dgx-spark-64gb-sync/) | 2026-10-17 | EdgeSharedMemorySilicon |
+| NVIDIA | [NVIDIA GB10 SoC: AI Supercomputer On Your Desk (A. Skende, Hot Chips 2025 slides, 2025-08-26)](https://hc2025.hotchips.org/assets/program/conference/day2/21_nvidia_skende_final.pdf) | 2026-10-17 | EdgeSharedMemorySilicon |
+| NVIDIA | [NVIDIA GB200 NVL72](https://www.nvidia.com/en-us/data-center/gb200-nvl72/) | 2026-10-17 | EdgeSharedMemorySilicon, GraceBlackwellUltraServer, MoeAndSparseActivation, NvidiaBlackwell |
 | NVIDIA | [NVIDIA GB300 NVL72](https://www.nvidia.com/en-us/data-center/gb300-nvl72/) | 2026-10-17 | CerebrasWaferScale, GraceBlackwellUltraServer, MoeAndSparseActivation, NvidiaBlackwell, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA Grace CPU page (Vera CPU: SOCAMM LPDDR5X, 1.2 TB/s, 1.5 TB per CPU)](https://www.nvidia.com/en-us/data-center/grace-cpu/) | 2026-10-16 | HighBandwidthFlash |
 | NVIDIA | [NVIDIA Grace CPU Superchip (Grace CPU C1 and Superchip specifications)](https://www.nvidia.com/en-us/data-center/grace-cpu-superchip/) | 2026-10-17 | GraceBlackwellUltraServer |
@@ -326,10 +354,13 @@ Total distinct sources: 356.
 | NVIDIA | [NVIDIA HGX platform (HGX B300, HGX B200 and HGX Rubin NVL8 specifications)](https://www.nvidia.com/en-us/data-center/hgx/) | 2026-10-17 | HeterogeneityFact, HighBandwidthFlash, NvidiaBlackwell, QuantizationAndPrecision, RooflineAndArithmeticIntensity |
 | NVIDIA | [NVIDIA Hopper Architecture In-Depth](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | 2026-10-17 | CerebrasWaferScale, ChipletAndInterconnect, KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA Hopper in Full Production (2022-09-20)](https://nvidianews.nvidia.com/news/nvidia-hopper-in-full-production) | 2026-10-16 | NvidiaHopper |
+| NVIDIA | [NVIDIA Jetson AI Lab: Benchmarks (MLC, INT4)](https://www.jetson-ai-lab.com/archive/benchmarks.html) | 2026-10-16 | EdgeSharedMemorySilicon |
+| NVIDIA | [NVIDIA Jetson Orin Nano Developer Kit Gets a Super Boost (2024-12-17)](https://developer.nvidia.com/blog/nvidia-jetson-orin-nano-developer-kit-gets-a-super-boost/) | 2026-10-17 | EdgeSharedMemorySilicon |
 | NVIDIA | [NVIDIA NVLink-C2C](https://www.nvidia.com/en-us/data-center/nvlink-c2c/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Supercharges Hopper, the World's Leading AI Computing Platform (2023-11-13)](https://nvidianews.nvidia.com/news/nvidia-supercharges-hopper-the-worlds-leading-ai-computing-platform) | 2026-10-16 | NvidiaHopper |
 | NVIDIA | [NVIDIA Technical Blog: AWS Integrates AI Infrastructure with NVIDIA NVLink Fusion for Trainium4 Deployment (2025-12-02)](https://developer.nvidia.com/blog/aws-integrates-ai-infrastructure-with-nvidia-nvlink-fusion-for-trainium4-deployment/) | 2026-10-17 | ChipletAndInterconnect, CommunicationAndScaleOut |
 | NVIDIA | [NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, GroqSambanovaDataflow, NvidiaBlackwell, RooflineAndArithmeticIntensity |
+| NVIDIA | [Sparks Fly: NVIDIA Accelerates Local AI at IFA 2026 (RTX Spark, 2026-09-03)](https://blogs.nvidia.com/blog/local-ai-ifa-next-gen-agents-nv-pair-rtx-spark/) | 2026-10-17 | EdgeSharedMemorySilicon |
 | SambaNova | [Introducing the SN50 RDU: Purpose-Built for Agentic Inference (2026-02-24)](https://sambanova.ai/blog/introducing-the-sn50-rdu-purpose-built-for-agentic-inference) | 2026-10-17 | GroqSambanovaDataflow, MoeAndSparseActivation |
 | SambaNova | [SambaNova Unveils Fastest Chip for Agentic AI, Collaborates with Intel, and Raises $350M+ (2026-02-24)](https://sambanova.ai/press/sambanova-unveils-fastest-chip-for-agentic-ai-collaborates-with-intel-and-raises-350m) | 2026-10-17 | GroqSambanovaDataflow |
 | Samsung | [Samsung Ships Industry-First Commercial HBM4 With Ultimate Performance for AI Computing (2026-02-12)](https://news.samsung.com/global/samsung-ships-industry-first-commercial-hbm4-with-ultimate-performance-for-ai-computing) | 2026-10-16 | HighBandwidthFlash |
@@ -379,6 +410,7 @@ Total distinct sources: 356.
 | Chips and Cheese | [Discussing AMD's Zen 5 at Hot Chips 2024](https://chipsandcheese.com/p/discussing-amds-zen-5-at-hot-chips-2024) | 2026-10-17 | AmdEpycTurin, ChipletAndInterconnect |
 | Chips and Cheese | [Evaluating Uniform Memory Access (NPS0 on a two-socket EPYC 9575F)](https://chipsandcheese.com/p/evaluating-uniform-memory-access) | 2026-10-17 | AmdEpycTurin, ChipletAndInterconnect |
 | DIGITIMES | [Samsung signals zHBF push as memory race moves beyond HBM (2026-08-27)](https://www.digitimes.com/news/a20260827VL229/samsung-hbm-bandwidth-capacity-2026.html) | 2026-10-17 | HighBandwidthFlash |
+| LMSYS | [NVIDIA DGX Spark in-depth review (LMSYS Org blog, J. Zhou and R. Chen, 2025-10-13)](https://www.lmsys.org/blog/2025-10-13-nvidia-dgx-spark/) | 2026-10-17 | EdgeSharedMemorySilicon |
 | Risk.net | [Giles and Glasserman, Smoking adjoints: fast Monte Carlo Greeks (Risk, January 2006)](https://www.risk.net/derivatives/interest-rate-derivatives/1500261/smoking-adjoints-fast-monte-carlo-greeks) | 2026-10-16 | CapitalMarketsLens |
 | ServeTheHome | [Oxmiq Labs HBF in AI Compute at Hot Chips 2026 (2026-08-27)](https://www.servethehome.com/oxmiq-labs-hbf-in-ai-compute-at-hot-chips-2026/) | 2026-10-17 | HighBandwidthFlash |
 | Tom's Hardware | [Hot Chips 2026: High Bandwidth Flash promises massive bandwidth and capacity, but its usability is extremely limited (2026-08-26)](https://www.tomshardware.com/pc-components/ssds/hot-chips-2026-high-bandwidth-flash-promises-massive-bandwidth-and-capacity-but-its-usability-is-extremely-limited-new-memory-format-strikes-a-balance-between-hbm-and-nand-flash) | 2026-10-17 | HighBandwidthFlash |

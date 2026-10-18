@@ -6,48 +6,297 @@ import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
-import Link from '@cloudscape-design/components/link';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { EdgeSocComparisonDiagram } from '../components/EdgeSocComparisonDiagram';
 import { SparkTopologyCapture } from '../components/SparkTopologyCapture';
+import { Cite } from '../components/Cite';
+import { S } from '../sources/EdgeSharedMemorySilicon';
 
 interface SpecRow {
   spec: string;
-  spark: string;
-  jetson: string;
+  spark: React.ReactNode;
+  thor: React.ReactNode;
+  orin: React.ReactNode;
 }
 
 const specRows: SpecRow[] = [
-  { spec: 'CPU', spark: '20 cores: 10x Cortex-X925 + 10x Cortex-A725 (Armv9.2)', jetson: '6x Cortex-A78AE, homogeneous (Armv8.2)' },
-  { spec: 'CPU topology', spark: 'Two mixed clusters, each 5x X925 (2 MB L2) + 5x A725 (512 KB L2); L3 16 MB + 8 MB', jetson: 'One quad cluster + one dual cluster, same core type' },
-  { spec: 'CPU clocks', spark: '3.9 GHz X925 / 2.8 GHz A725 (Tier 0, our unit; NVIDIA publishes none)', jetson: '1.5 GHz base, 1.7 GHz MAXN_SUPER' },
-  { spec: 'GPU', spark: 'Blackwell, 6,144 CUDA cores, 5th-gen Tensor Cores', jetson: 'Ampere, 1,024 CUDA cores, 32 Tensor Cores' },
-  { spec: 'AI perf (marketed)', spark: 'Up to 1 PFLOP FP4, sparse (no dense figure published)', jetson: '67 TOPS INT8 sparse; 33 TOPS dense' },
-  { spec: 'Memory', spark: '128 GB LPDDR5X, unified and coherent', jetson: '8 GB LPDDR5, shared SoC DRAM' },
-  { spec: 'Memory bus', spark: '256-bit, LPDDR5X-8533', jetson: '128-bit' },
-  { spec: 'Bandwidth', spark: '273 GB/s', jetson: '68 GB/s base, 102 GB/s MAXN_SUPER' },
-  { spec: 'CPU-GPU link', spark: 'NVLink-C2C, coherent, "5x PCIe Gen 5" (no absolute GB/s published)', jetson: 'None: CPU and iGPU share one memory controller' },
-  { spec: 'Power', spark: '240 W PSU, 140 W SoC TDP', jetson: '7 to 25 W configurable modes' },
-  { spec: 'Scale-out', spark: 'ConnectX-7 200 Gbps, two-unit cluster up to 405B params', jetson: 'None (single module)' },
-  { spec: 'Price', spark: 'UNKNOWN in this research pass (see product page)', jetson: '$249 developer kit' },
+  {
+    spec: 'CPU',
+    spark: (
+      <>
+        20 Arm cores: 10 Cortex-X925 and 10 Cortex-A725
+        <Cite s={S.sparkHardware} />
+      </>
+    ),
+    thor: (
+      <>
+        14 Arm Neoverse-V3AE cores
+        <Cite s={S.thorBlog} />
+      </>
+    ),
+    orin: (
+      <>
+        6 Arm Cortex-A78AE cores
+        <Cite s={S.orinNanoDatasheet} />
+      </>
+    ),
+  },
+  {
+    spec: 'GPU',
+    spark: (
+      <>
+        Blackwell, 6,144 CUDA cores
+        <Cite s={S.sparkHardware} />
+      </>
+    ),
+    thor: (
+      <>
+        Blackwell
+        <Cite s={S.thorBlog} />
+      </>
+    ),
+    orin: (
+      <>
+        Ampere, 1,024 CUDA cores, 32 Tensor Cores
+        <Cite s={S.orinNanoDatasheet} />
+      </>
+    ),
+  },
+  {
+    spec: 'AI compute, as marketed',
+    spark: (
+      <>
+        Up to 1 PFLOP FP4, sparse; no dense figure published
+        <Cite s={S.sparkHardware} note="Hardware overview: up to 1 PFLOP at FP4 precision with sparsity." />
+        <Cite s={S.gb10HotChips} note="The slides give AI: 1000 TOPS NVFP4 and CUDA: 31 TFLOPS FP32, and no dense FP4 figure." />
+      </>
+    ),
+    thor: (
+      <>
+        Up to 2,070 TFLOPS FP4, sparse
+        <Cite s={S.thorBlog} note="Table 1: 2070 TFLOPS (Sparse FP4)." />
+      </>
+    ),
+    orin: (
+      <>
+        67 TOPS INT8 sparse, 33 TOPS dense
+        <Cite s={S.orinNanoDatasheet} />
+      </>
+    ),
+  },
+  {
+    spec: 'Memory',
+    spark: (
+      <>
+        128 GB LPDDR5X, or 64 GB from OEM partners only; 256-bit
+        <Cite s={S.sparkProductPage} />
+        <Cite s={S.sparkHardware} />
+      </>
+    ),
+    thor: (
+      <>
+        128 GB LPDDR5X, 256-bit
+        <Cite s={S.thorBlog} />
+      </>
+    ),
+    orin: (
+      <>
+        8 GB LPDDR5, 128-bit
+        <Cite s={S.orinNanoDatasheet} />
+      </>
+    ),
+  },
+  {
+    spec: 'Memory bandwidth',
+    spark: (
+      <>
+        273 GB/s
+        <Cite s={S.sparkHardware} />
+      </>
+    ),
+    thor: (
+      <>
+        273 GB/s
+        <Cite s={S.thorBlog} />
+      </>
+    ),
+    orin: (
+      <>
+        102 GB/s in MAXN_SUPER mode, 68 GB/s before it
+        <Cite s={S.orinNanoSuperPage} />
+      </>
+    ),
+  },
+  {
+    spec: 'CPU-GPU coherence',
+    spark: (
+      <>
+        Two-way, in hardware, over NVLink-C2C at about 600 GB/s aggregate
+        <Cite s={S.gb10HotChips} />
+      </>
+    ),
+    thor: (
+      <>
+        Two-way, in hardware
+        <Cite s={S.tegraAppNote} />
+      </>
+    ),
+    orin: (
+      <>
+        One-way (I/O coherency): the GPU side still runs cache maintenance
+        <Cite s={S.tegraAppNote} />
+      </>
+    ),
+  },
+  {
+    spec: 'Power',
+    spark: (
+      <>
+        240 W external supply, 140 W SoC TDP (thermal design power)
+        <Cite s={S.sparkHardware} />
+      </>
+    ),
+    thor: (
+      <>
+        40 to 130 W
+        <Cite s={S.thorBlog} />
+      </>
+    ),
+    orin: (
+      <>
+        7 to 25 W modes
+        <Cite s={S.orinNanoDatasheet} />
+      </>
+    ),
+  },
+  {
+    spec: 'US list price (MSRP)',
+    spark: (
+      <>
+        $4,699 Founders Edition, MSRP as of 23 February 2026
+        <Cite s={S.sparkPriceChange} />; 64 GB OEM units from $4,999, on sale from 23 October 2026
+        <Cite s={S.spark64Gb} />
+      </>
+    ),
+    thor: (
+      <>
+        $5,499 developer kit, as of October 2026
+        <Cite s={S.jetsonFaq} />
+      </>
+    ),
+    orin: (
+      <>
+        $399 developer kit, as of October 2026
+        <Cite s={S.jetsonFaq} />
+      </>
+    ),
+  },
 ];
 
-interface BenchRow {
+interface DecodeRow {
   device: string;
   model: string;
-  decode: string;
-  source: string;
+  setup: string;
+  decode: React.ReactNode;
 }
 
-const benchRows: BenchRow[] = [
-  { device: 'DGX Spark', model: 'Llama 3.1 8B (NVIDIA-published config)', decode: '38.65 t/s', source: 'NVIDIA blog (Tier 2)' },
-  { device: 'DGX Spark', model: 'gpt-oss-20B (MXFP4, llama.cpp)', decode: '50 to 80 t/s (sources disagree)', source: 'llama.cpp thread / JetsonHacks (Tier 3)' },
-  { device: 'DGX Spark', model: 'gpt-oss-120B (MXFP4, llama.cpp)', decode: '35 to 53 t/s', source: 'llama.cpp thread / JetsonHacks (Tier 3)' },
-  { device: 'DGX Spark', model: 'Llama 3.1 70B (FP8, SGLang, batch 1)', decode: '2.7 t/s', source: 'LMSYS review (Tier 3)' },
-  { device: '2x DGX Spark', model: 'Qwen3 235B (over ConnectX-7)', decode: '11.73 t/s', source: 'NVIDIA blog (Tier 2)' },
-  { device: 'Orin Nano Super', model: 'Llama 3.2 3B (INT4, MLC)', decode: '43.07 t/s', source: 'Jetson AI Lab (Tier 2)' },
-  { device: 'Orin Nano Super', model: 'Llama 3.1 8B (INT4, MLC)', decode: '19.14 t/s', source: 'Jetson AI Lab (Tier 2)' },
-  { device: 'Orin Nano Super', model: 'Gemma 2 9B (INT4, MLC)', decode: '9.21 t/s', source: 'Jetson AI Lab (Tier 2)' },
+const nvidiaOct2025Note =
+  'NVIDIA table of October 2025. The Llama 3.1 8B row is listed at input length 2048, output length 128, batch size 1.';
+const jetsonLabNote = 'Jetson AI Lab table, run with MLC and INT4 quantization.';
+
+const decodeRows: DecodeRow[] = [
+  {
+    device: 'DGX Spark',
+    model: 'Llama 3.1 8B',
+    setup: 'NVFP4, TensorRT-LLM',
+    decode: (
+      <>
+        38.65
+        <Cite s={S.sparkPerfBlog} kind="vendor-claim" note={nvidiaOct2025Note} />
+      </>
+    ),
+  },
+  {
+    device: 'DGX Spark',
+    model: 'gpt-oss-20b',
+    setup: 'MXFP4, llama.cpp',
+    decode: (
+      <>
+        82.74
+        <Cite s={S.sparkPerfBlog} kind="vendor-claim" note={nvidiaOct2025Note} />
+      </>
+    ),
+  },
+  {
+    device: 'DGX Spark',
+    model: 'gpt-oss-120b',
+    setup: 'MXFP4, llama.cpp',
+    decode: (
+      <>
+        55.37
+        <Cite s={S.sparkPerfBlog} kind="vendor-claim" note={nvidiaOct2025Note} />
+      </>
+    ),
+  },
+  {
+    device: 'DGX Spark',
+    model: 'Llama 3.1 70B',
+    setup: 'FP8, SGLang',
+    decode: (
+      <>
+        2.7
+        <Cite
+          s={S.lmsysSpark}
+          kind="measured"
+          note="LMSYS, October 2025: 803 tokens/s prefill and 2.7 tokens/s decode at FP8. The review lists the FP8 runs under SGLang and does not state the batch size for this result."
+        />
+      </>
+    ),
+  },
+  {
+    device: '2x DGX Spark',
+    model: 'Qwen3 235B',
+    setup: 'NVFP4, TensorRT-LLM',
+    decode: (
+      <>
+        11.73
+        <Cite s={S.sparkPerfBlog} kind="vendor-claim" note={nvidiaOct2025Note} />
+      </>
+    ),
+  },
+  {
+    device: 'Orin Nano Super',
+    model: 'Llama 3.2 3B',
+    setup: 'INT4, MLC',
+    decode: (
+      <>
+        43.07
+        <Cite s={S.jetsonAiLab} kind="vendor-claim" note={jetsonLabNote} />
+      </>
+    ),
+  },
+  {
+    device: 'Orin Nano Super',
+    model: 'Llama 3.1 8B',
+    setup: 'INT4, MLC',
+    decode: (
+      <>
+        19.14
+        <Cite s={S.jetsonAiLab} kind="vendor-claim" note={jetsonLabNote} />
+      </>
+    ),
+  },
+  {
+    device: 'Orin Nano Super',
+    model: 'Gemma 2 9B',
+    setup: 'INT4, MLC',
+    decode: (
+      <>
+        9.21
+        <Cite s={S.jetsonAiLab} kind="vendor-claim" note={jetsonLabNote} />
+      </>
+    ),
+  },
 ];
 
 export function EdgeSharedMemorySilicon() {
@@ -57,68 +306,90 @@ export function EdgeSharedMemorySilicon() {
         header={
           <Header
             variant="h1"
-            description="The NVL72 unified-memory idea, scaled down to a desk and to a robot"
+            description="One memory pool for CPU and GPU: capacity decides which model fits, and 273 GB/s decides how fast it decodes"
           >
-            Edge shared-memory silicon: DGX Spark and Jetson Orin Nano
+            Edge shared-memory silicon: DGX Spark and Jetson
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>TLDR.</strong> Both machines put CPU and GPU on one memory
-            pool, so the whole pool is model-addressable: no PCIe copy, no
-            separate VRAM budget. The pool is LPDDR, not HBM, so capacity is
-            generous and bandwidth is the ceiling. DGX Spark (GB10) gives 128 GB
-            at 273 GB/s behind a 240 W plug; Jetson Orin Nano Super gives 8 GB
-            at 102 GB/s inside 25 W. Decode speed on both tracks memory
-            bandwidth, which is why the community runs MoE (Mixture of Experts) models and quantized SLMs (Small Language Models)
-            rather than dense 70B models. Same thesis as Section 1, third
-            hardware scale.
+            <strong>What these machines are.</strong> DGX Spark and the Jetson modules give the CPU
+            and GPU one pool of LPDDR (low-power double data rate) memory, so a model can use the
+            whole pool with no copy across PCIe (PCI Express) and no separate VRAM (dedicated GPU
+            memory) budget. DGX Spark, built on the GB10 chip, holds 128 GB at 273 GB/s behind a
+            240 W supply
+            <Cite s={S.sparkHardware} />, or 64 GB in units from OEM (original equipment
+            manufacturer) partners.
+            <Cite s={S.sparkProductPage} /> Jetson AGX Thor puts the same 128 GB at 273 GB/s into a
+            robot module of up to 130 W
+            <Cite s={S.thorBlog} />, and Jetson Orin Nano Super holds 8 GB at 102 GB/s within
+            25 W.
+            <Cite s={S.orinNanoSuperPage} />
+            <Cite s={S.orinNanoDatasheet} /> LPDDR buys capacity per watt and per dollar, and its
+            bandwidth is the ceiling: decode on all three tracks memory bandwidth, which is why MoE
+            (Mixture of Experts) models and quantized SLMs (Small Language Models) run well here
+            and dense 70B models run slowly.
           </Box>
           <Box variant="p">
-            <strong>Why these two share a page.</strong> They bracket the
-            shared-memory design space. Spark is two dies joined by a coherent
-            interconnect, a shrunk Grace-Blackwell. Jetson is one SoC where
-            sharing is free because there is only one memory controller. Between
-            them they show that "unified memory" is one promise with two very
-            different mechanisms, and that the mechanism decides what you pay
-            for coherence.
+            <strong>Why they share a page.</strong> &quot;Unified memory&quot; is one promise
+            delivered by two mechanisms. GB10 joins a CPU dielet and a GPU dielet with a coherent
+            chip-to-chip link
+            <Cite s={S.gb10HotChips} />; a Jetson module is one Tegra SoC (system on chip) whose
+            CPU and integrated GPU share the same DRAM.
+            <Cite s={S.tegraAppNote} /> The mechanism decides what coherence costs: Spark and Thor
+            keep CPU and GPU caches coherent in hardware in both directions, and Orin only in one.
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Prerequisites and the memory continuum">
-            Where this sits in the study
+          <Header
+            variant="h2"
+            description="The rack-scale coherent-memory idea at desk and robot scale, and the sections that explain its parts"
+          >
+            One idea at four scales
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Read this after Section 3 (roofline: decode at batch 1 is
-            bandwidth-bound), Section 7 (LPDDR5X economics: capacity per dollar
-            and per watt, at the cost of bandwidth), and Section 14
-            (Grace-Blackwell: NVLink-C2C and the coherent-domain idea at rack
-            scale). Sections 24 (Small Language Models) and 25 (Quantization)
-            explain the model side of what the community runs here.
+            A GB200 NVL72 rack holds about 30 TB of coherent memory, 13.4 TB of HBM3e (High
+            Bandwidth Memory) plus 17 TB of LPDDR5X, in one NVLink domain with 130 TB/s of
+            aggregate bandwidth.
+            <Cite
+              s={S.gb200Nvl72}
+              kind="derived"
+              note="13.4 TB HBM3e + 17 TB LPDDR5X = 30.4 TB, our sum of the two figures on the page."
+            />{' '}
+            Spark and Thor carry the same idea at 128 GB and Orin Nano Super at 8 GB: put the
+            model where CPU and GPU both reach it without a copy. Between Thor and Orin sits
+            the Jetson T4000 module, 64 GB in a 40 to 70 W envelope at up to 1,200 FP4 TFLOPS
+            sparse.
+            <Cite s={S.t4000Blog} /> Shared CPU-GPU memory also reaches Windows PCs as RTX Spark:
+            laptops and compact desktops with a 20-core Grace CPU, a Blackwell GPU and up to 128 GB
+            of unified memory, announced for October 2026; the announcement gives no memory
+            bandwidth and names no chip.
+            <Cite s={S.rtxSpark} kind="roadmap" note="Announced 2026-09-03 for October 2026. The post does not name the chip, and its 1 petaflop GPU figure carries no sparse or dense label." />
           </Box>
           <Box variant="p">
-            The continuum is the map: an NVL72 rack holds 30 TB of coherent
-            memory with a 130 TB/s NVLink domain; a DGX Spark holds 128 GB at
-            273 GB/s; a Jetson Orin Nano holds 8 GB at 102 GB/s. Three orders of
-            magnitude in capacity and bandwidth, one architectural idea: put the
-            model where both CPU and GPU can reach it without copies. Every
-            trade-off in this section is the rack-scale trade-off of Section 14
-            re-priced for a desk or a robot arm.
+            Background: <em>Roofline and Arithmetic Intensity</em> (why batch-1 decode is
+            bandwidth-bound), <em>DDR5, MRDIMM, LPDDR5X and CXL</em> (what LPDDR5X trades for its
+            capacity) and <em>Grace-Blackwell and UltraServer</em> (NVLink-C2C at rack scale).{' '}
+            <em>Small Language Models</em> and <em>Quantization and Precision</em> cover the model
+            side.
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Same promise, two mechanisms">
-            The two architectures side by side
+          <Header
+            variant="h2"
+            description="How the GPU reaches the pool on each machine, and the spec rows to compare before choosing one"
+          >
+            Same promise, three memory systems
           </Header>
         }
       >
@@ -127,38 +398,14 @@ export function EdgeSharedMemorySilicon() {
           <Table
             items={specRows}
             columnDefinitions={[
-              { id: 'spec', header: 'Spec', cell: (r) => r.spec, minWidth: 140 },
-              { id: 'spark', header: 'DGX Spark (GB10)', cell: (r) => r.spark },
-              { id: 'jetson', header: 'Jetson Orin Nano Super', cell: (r) => r.jetson },
+              { id: 'spec', header: 'Spec', cell: (r) => r.spec, minWidth: 120 },
+              { id: 'spark', header: 'DGX Spark (GB10)', cell: (r) => r.spark, minWidth: 200 },
+              { id: 'thor', header: 'Jetson AGX Thor (T5000)', cell: (r) => r.thor, minWidth: 170 },
+              { id: 'orin', header: 'Jetson Orin Nano Super', cell: (r) => r.orin, minWidth: 170 },
             ]}
             variant="embedded"
             wrapLines
           />
-          <Box variant="small">
-            Spark figures:{' '}
-            <Link external href="https://docs.nvidia.com/dgx/dgx-spark/hardware.html">
-              DGX Spark hardware overview
-            </Link>
-            ,{' '}
-            <Link external href="https://www.nvidia.com/en-us/products/workstations/dgx-spark/">
-              DGX Spark product page
-            </Link>
-            {' '}and{' '}
-            <Link external href="https://docs.nvidia.com/dgx/dgx-spark-porting-guide/overview.html">
-              DGX Spark porting guide
-            </Link>
-            . Jetson figures: NVIDIA Jetson Orin Nano Series Modules Data Sheet
-            DS-11105-001_v1.5 (Dec 2024) and the{' '}
-            <Link
-              external
-              href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/nano-super-developer-kit/"
-            >
-              Orin Nano Super Developer Kit page
-            </Link>
-            . All accessed 2026-07-18. Spark CPU clocks are our own measurement
-            (lscpu on a physical unit, 2026-07-18); NVIDIA does not publish
-            them.
-          </Box>
         </SpaceBetween>
       </Container>
 
@@ -166,7 +413,7 @@ export function EdgeSharedMemorySilicon() {
         header={
           <Header
             variant="h2"
-            description="Tier 0: lstopo run on a physical DGX Spark"
+            description="What lstopo and nvidia-smi show on a physical Spark, and the capacity figure to plan against"
           >
             Inside GB10, measured on our own machine
           </Header>
@@ -175,28 +422,39 @@ export function EdgeSharedMemorySilicon() {
         <SpaceBetween size="m">
           <SparkTopologyCapture />
           <Box variant="p">
-            Three things in this capture do not appear on any spec sheet. First,
-            the clusters are mixed: each ten-core cluster holds five X925
-            performance cores and five A725 efficiency cores, visible here by
-            their L2 sizes (2 MB vs 512 KB). The porting guide confirms the
-            layout
-            ({' '}
-            <Link external href="https://docs.nvidia.com/dgx/dgx-spark-porting-guide/overview.html">
-              DGX Spark porting guide
-            </Link>
-            , accessed 2026-07-18). Second, the L3 is asymmetric: one cluster
-            gets 16 MB, the other 8 MB. Third, the whole machine is one NUMA
-            node: all twenty cores and 122 GB of host-visible memory (the 128 GB
-            module minus carve-outs) in a single domain, with the GPU&apos;s
-            affinity spanning every core.
+            We ran lstopo, lscpu and nvidia-smi on a physical DGX Spark in July 2026.
+            <Cite s={S.sparkNotes} /> Each ten-core cluster mixes five Cortex-X925 cores (2 MB L2)
+            with five Cortex-A725 cores (512 KB L2)
+            <Cite s={S.sparkLstopo} kind="measured" />, and the porting guide also describes five high-performance
+            and five high-efficiency cores per cluster.
+            <Cite s={S.sparkPortingGuide} /> lscpu reports maximum clocks of 3.9 GHz on the X925
+            cores and 2.8 GHz on the A725 cores
+            <Cite s={S.sparkLscpu} kind="measured" />; NVIDIA publishes no CPU clock in the
+            hardware overview, the product page or the Hot Chips slides.
           </Box>
-          <Alert type="info" header="The tell that memory is truly unified">
-            nvidia-smi on this machine reports Memory-Usage as &quot;Not
-            Supported&quot;. There is no dedicated VRAM pool to report. The GPU
-            allocates from the same 128 GB LPDDR5X the CPU uses, which is the
-            entire point of the design: a 70B-class quantized model is
-            addressable without a discrete GPU&apos;s VRAM budget. Tier 0
-            observation, our unit, 2026-07-18; raw evidence in research/dgx-spark/.
+          <Box variant="p">
+            The L3 slices differ: lstopo shows 8 MB on one cluster and 16 MB on the other.
+            <Cite s={S.sparkLstopo} kind="measured" /> NVIDIA&apos;s documents disagree with that
+            and with each other. The porting guide gives 16 MB to a &quot;high-performance
+            cluster&quot; and 8 MB to a &quot;high-efficiency cluster&quot;, which contradicts its
+            own mixed-cluster description
+            <Cite s={S.sparkPortingGuide} />, and the Hot Chips slides give 16 MB per cluster.
+            <Cite s={S.gb10HotChips} />
+          </Box>
+          <Box variant="p">
+            The whole machine is one NUMA (non-uniform memory access) node: all twenty cores and
+            122 GB, the host view of the 128 GB after carve-outs, with the GPU&apos;s CPU affinity
+            spanning cores 0 to 19.
+            <Cite s={S.sparkLstopo} kind="measured" />
+            <Cite s={S.sparkNotes} kind="measured" /> Size models against about 122 GB, not 128.
+          </Box>
+          <Alert type="info" header="Unified memory shows up in nvidia-smi">
+            nvidia-smi reports the GPU&apos;s Memory-Usage as &quot;Not Supported&quot;, because
+            there is no dedicated VRAM pool to report, while its process list still shows each
+            process&apos;s GPU allocation (a Python process at 2,772 MiB in our capture).
+            <Cite s={S.sparkNvidiaSmi} kind="measured" /> Watch GPU memory per process. The GPU
+            allocates from the LPDDR5X the CPU uses, so a 70B-class quantized model is addressable
+            without a discrete GPU&apos;s VRAM budget.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -205,61 +463,102 @@ export function EdgeSharedMemorySilicon() {
         header={
           <Header
             variant="h2"
-            description="Coherent interconnect vs single memory controller"
+            description="Why memory bandwidth sets GB10's decode limit, and where Orin still makes software pay for sharing"
           >
-            The CPU-GPU link is the architectural fork
+            The CPU-GPU link decides what coherence costs
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Unified memory means the CPU and GPU read and write the same physical pages. Two
+            properties of the mechanism reach the developer: whether the GPU&apos;s path to memory
+            is as wide as the memory, and whether software must run cache maintenance when work
+            passes between CPU and GPU.
+          </Box>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Spark: two dielets, one coherent link</Box>
+              <Box variant="p">
+                GB10 is two dielets in TSMC 3 nm on 2.5D packaging: an S-dielet with the CPU and
+                the memory subsystem, and a G-dielet with the Blackwell GPU.
+                <Cite s={S.gb10HotChips} /> The GPU reaches the LPDDR5X over NVLink-C2C
+                (chip-to-chip), the link that also joins Grace to Blackwell in{' '}
+                <em>Grace-Blackwell and UltraServer</em>, at about 600 GB/s aggregate
+                <Cite
+                  s={S.gb10HotChips}
+                  note="GPU has access to entire system bandwidth over the C2C interface; ~600GB/s of aggregate bandwidth."
+                />
+                , which NVIDIA also expresses as 5x the bandwidth of PCIe Gen 5.
+                <Cite s={S.gb10Newsroom} /> The link is wider than the 273 GB/s memory behind it,
+                so memory sets the decode ceiling. Coherence is two-way in hardware, which removes
+                the overhead of cache maintenance operations.
+                <Cite s={S.gb10HotChips} />
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Jetson: one SoC, coherence by generation</Box>
+              <Box variant="p">
+                On Tegra parts &quot;both the CPU (Host) and the iGPU share SoC DRAM memory&quot;,
+                so there is no chip-to-chip link to cross. On Orin, coherency is one-way (I/O
+                coherency): the GPU still runs its cache maintenance at kernel launch and
+                synchronization, and the app note&apos;s unified-memory examples attach managed
+                buffers to a stream with <code>cudaStreamAttachMemAsync</code>. Thor is the
+                first Jetson with full two-way coherency, which removes both CPU and GPU cache
+                maintenance.
+                <Cite s={S.tegraAppNote} />
+              </Box>
+            </div>
+          </ColumnLayout>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="What each machine draws, and which marketed figure to size a workload against"
+          >
+            Power, and reading the headline numbers
           </Header>
         }
       >
         <SpaceBetween size="m">
           <ColumnLayout columns={2} variant="text-grid">
             <div>
-              <Box variant="h3">Spark: two complexes, one coherent link</Box>
+              <Box variant="h3">DGX Spark: 240 W supply, 140 W SoC</Box>
               <Box variant="p">
-                GB10 joins a CPU complex and a Blackwell GPU complex with
-                NVLink-C2C, the same coherency protocol as Grace-Hopper and
-                Grace-Blackwell (Section 14). NVIDIA states the link carries
-                &quot;5x the bandwidth of fifth-generation PCIe&quot; and keeps
-                CPU and GPU coherent
-                ({' '}
-                <Link
-                  external
-                  href="https://nvidianews.nvidia.com/news/nvidia-announces-dgx-spark-and-dgx-station-personal-ai-computers"
-                >
-                  NVIDIA newsroom
-                </Link>
-                , accessed 2026-07-18). Teardown analysis describes two TSMC N3
-                dies (CPU S-die co-designed with MediaTek, GPU G-die) on a
-                CoWoS-R (chip-on-wafer-on-substrate with redistribution layer) interposer, reported by TechInsights and by Hot Chips
-                2025 coverage; NVIDIA&apos;s own documentation does not state a
-                die count.
+                The external supply is rated 240 W and the GB10 SoC TDP is 140 W, leaving 100 W
+                for the rest of the system.
+                <Cite s={S.sparkHardware} /> At idle our unit drew about 10 W on the GPU at 39 C.
+                <Cite s={S.sparkNvidiaSmi} kind="measured" />
               </Box>
             </div>
             <div>
-              <Box variant="h3">Jetson: one SoC, sharing is structural</Box>
+              <Box variant="h3">Jetson: power modes chosen per deployment</Box>
               <Box variant="p">
-                On Tegra-family parts there is nothing to interconnect:
-                &quot;both the CPU (Host) and the iGPU share SoC DRAM
-                memory&quot;
-                ({' '}
-                <Link external href="https://docs.nvidia.com/cuda/cuda-for-tegra-appnote/index.html">
-                  CUDA for Tegra application note
-                </Link>
-                , accessed 2026-07-18). Zero-copy mapped memory and unified
-                memory allocations land in the same physical LPDDR5. The caveat
-                is coherency maintenance: unified memory on Tegra pays cache
-                management at kernel launch and sync boundaries, and NVIDIA
-                recommends stream-attach prefetch hints to control it.
+                Orin Nano runs in modes from 7 to 25 W.
+                <Cite s={S.orinNanoDatasheet} /> MAXN_SUPER raises the CPU from 1.5 to 1.7 GHz,
+                memory bandwidth from 68 to 102 GB/s and sparse INT8 from 40 to 67 TOPS (tera
+                operations per second)
+                <Cite s={S.orinNanoSuperPage} />, on the same hardware: earlier Orin Nano kits
+                gain the mode with a JetPack upgrade.
+                <Cite s={S.orinSuperBoostBlog} /> Check which mode a deployment runs, because the
+                mode sets the bandwidth that decode tracks. Thor runs from 40 to 130 W.
+                <Cite s={S.thorBlog} />
               </Box>
             </div>
           </ColumnLayout>
-          <Alert type="warning" header="UNKNOWN: the GB10 C2C number">
-            NVIDIA publishes no absolute GB/s figure for NVLink-C2C on GB10.
-            The 900 GB/s figure from Grace-Hopper does not transfer. TechInsights
-            derives roughly 600 GB/s bidirectional from the &quot;5x PCIe Gen
-            5&quot; claim (Tier 3 derivation, 2025-12-05, accessed 2026-07-18).
-            Treat any absolute GB10 C2C number you see quoted as derived, not
-            vendor-published.
+          <Alert type="warning" header="The headline compute figures are sparse">
+            Spark&apos;s 1 PFLOP FP4 is a sparse figure
+            <Cite s={S.sparkHardware} note="Hardware overview: up to 1 PFLOP at FP4 precision with sparsity." />, and
+            NVIDIA publishes no dense figure for it in the hardware overview, the product page or
+            the Hot Chips slides. Thor&apos;s 2,070 TFLOPS is sparse FP4.
+            <Cite s={S.thorBlog} /> Orin&apos;s 67 TOPS is sparse INT8; the module datasheet puts
+            dense INT8 at 33 TOPS.
+            <Cite s={S.orinNanoDatasheet} /> Size LLM inference that does not use structured
+            sparsity from dense figures where they exist. <em>Roofline and Arithmetic Intensity</em>{' '}
+            explains why: peak FLOPS are conditional, and decode is bound by bandwidth.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -268,142 +567,101 @@ export function EdgeSharedMemorySilicon() {
         header={
           <Header
             variant="h2"
-            description="Wall power vs power modes, and reading marketed TOPS"
+            description="The decode rates that show why MoE models and quantized small models suit 273 GB/s, and dense 70B models do not"
           >
-            Power, and the sparse-numbers trap
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <ColumnLayout columns={2} variant="text-grid">
-            <div>
-              <Box variant="h3">DGX Spark: 240 W plug, 140 W SoC</Box>
-              <Box variant="p">
-                The external supply is rated 240 W and the GB10 SoC TDP is
-                140 W
-                ({' '}
-                <Link external href="https://docs.nvidia.com/dgx/dgx-spark/hardware.html">
-                  hardware overview
-                </Link>
-                , accessed 2026-07-18). At idle our unit draws about 10 W on the
-                GPU rail at 39 C (Tier 0, 2026-07-18). A community stress test
-                reported about 94 W GPU draw at 80 C, and a forum statement
-                attributed to an NVIDIA employee puts the GPU ceiling at 120 W
-                (Tier 3, unofficial).
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">Jetson: 7 to 25 W, chosen per deployment</Box>
-              <Box variant="p">
-                Orin Nano exposes configurable power modes from 7 to 25 W, with
-                MAXN_SUPER raising CPU, GPU, and memory clocks together. Super
-                mode is a JetPack software change on unchanged silicon: the
-                same module that shipped at 40 sparse TOPS in 2022 became 67
-                sparse TOPS in December 2024, and the developer kit price moved
-                from $499 to $249
-                ({' '}
-                <Link
-                  external
-                  href="https://developer.nvidia.com/blog/nvidia-jetson-orin-nano-developer-kit-gets-a-super-boost/"
-                >
-                  NVIDIA developer blog
-                </Link>
-                , accessed 2026-07-18).
-              </Box>
-            </div>
-          </ColumnLayout>
-          <Alert type="warning" header="Both headline numbers are sparse">
-            Spark&apos;s &quot;1 PFLOP FP4&quot; carries a product-page footnote:
-            theoretical FP4 TOPS using the sparsity feature. Jetson&apos;s
-            &quot;67 TOPS&quot; is the sparse INT8 figure; the module datasheet
-            puts dense INT8 at 33 TOPS, and only the datasheet says so. LLM
-            inference without structured sparsity should be reasoned about from
-            the dense numbers. This is the Section 3 lesson applied to marketing:
-            peak FLOPs are conditional, bandwidth is not.
-          </Alert>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Measured decode rates, and the pattern they reveal"
-          >
-            What the community actually runs
+            Which models decode well here
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Table
-            items={benchRows}
+            items={decodeRows}
             columnDefinitions={[
-              { id: 'device', header: 'Device', cell: (r) => r.device, minWidth: 110 },
-              { id: 'model', header: 'Model (quant, framework)', cell: (r) => r.model },
-              { id: 'decode', header: 'Decode', cell: (r) => r.decode, minWidth: 100 },
-              { id: 'source', header: 'Source', cell: (r) => r.source },
+              { id: 'device', header: 'Device', cell: (r) => r.device, minWidth: 80 },
+              {
+                id: 'model',
+                header: 'Model (precision, backend)',
+                cell: (r) => (
+                  <>
+                    {r.model} ({r.setup})
+                  </>
+                ),
+                minWidth: 120,
+              },
+              { id: 'decode', header: 'Decode (tokens/s)', cell: (r) => r.decode, minWidth: 100 },
             ]}
             variant="embedded"
             wrapLines
           />
           <Box variant="small">
-            Sources, all accessed 2026-07-18:{' '}
-            <Link
-              external
-              href="https://developer.nvidia.com/blog/how-nvidia-dgx-sparks-performance-enables-intensive-ai-tasks/"
-            >
-              NVIDIA developer blog (2025-10-24)
-            </Link>
-            ,{' '}
-            <Link external href="https://github.com/ggml-org/llama.cpp/discussions/16578">
-              llama.cpp DGX Spark performance thread
-            </Link>
-            ,{' '}
-            <Link external href="https://www.lmsys.org/blog/2025-10-13-nvidia-dgx-spark/">
-              LMSYS in-depth review (2025-10-13)
-            </Link>
-            ,{' '}
-            <Link external href="https://www.jetson-ai-lab.com/archive/benchmarks.html">
-              Jetson AI Lab benchmarks (MLC, Machine Learning Compilation, at INT4)
-            </Link>
-            . Where two Tier 3 sources disagree (gpt-oss-20B decode: 60.85 vs
-            79.74 t/s on different llama.cpp builds) the table shows the range.
-            Tokens/sec figures age with every framework release; treat them as
-            snapshots, not specs.
+            NVFP4 is NVIDIA&apos;s 4-bit floating point and MXFP4 the Open Compute Project&apos;s
+            microscaling 4-bit format (<em>Quantization and Precision</em>); MLC is Machine
+            Learning Compilation. The NVIDIA Spark rows are vendor figures from October 2025, the
+            70B row is a third-party measurement from the same month, and the Orin rows come from
+            NVIDIA&apos;s Jetson AI Lab.
           </Box>
           <Box variant="p">
-            <strong>The pattern.</strong> The community converged on MoE models
-            (gpt-oss-20B/120B, Qwen3-Coder-30B-A3B) and quantized SLMs, not
-            dense 70B models. Dense Llama 3.1 70B fits comfortably in
-            Spark&apos;s 128 GB and still decodes at 2.7 t/s at batch 1, because
-            decode must stream every active weight per token through 273 GB/s.
-            MoE splits the difference: capacity holds the full expert set,
-            bandwidth only pays for activated experts. On Jetson, NVIDIA itself
-            frames the 8 GB module as a machine for models up to roughly 4B
-            parameters
-            ({' '}
-            <Link
-              external
-              href="https://developer.nvidia.com/blog/getting-started-with-edge-ai-on-nvidia-jetson-llms-vlms-and-foundation-models-for-robotics/"
-            >
-              NVIDIA edge AI blog, 2025-12-11
-            </Link>
-            , accessed 2026-07-18), with 3B-class SLMs at around 43 t/s and VLMs (Vision Language Models)
-            like Qwen2.5-VL-3B as the ceiling of comfort.
+            Dense Llama 3.1 70B in FP8 fits in Spark&apos;s 128 GB and decodes at 2.7 tokens/s
+            <Cite s={S.lmsysSpark} kind="measured" />, because every token streams about 70 GB of
+            weights through 273 GB/s. gpt-oss-120b holds 117B parameters and activates 5.1B per
+            token
+            <Cite s={S.gptOss120bReadme} />, and NVIDIA reports 55.37 tokens/s for it on the same
+            machine.
+            <Cite s={S.sparkPerfBlog} kind="vendor-claim" /> Capacity holds every expert;
+            bandwidth pays only for the active ones.
           </Box>
-          <ExpandableSection headerText="Two Sparks: the 405B claim vs the worked example">
-            <Box variant="p">
-              NVIDIA&apos;s product page states two ConnectX-7-linked Sparks
-              handle models up to 405B parameters. The concrete worked example
-              NVIDIA publishes is Qwen3 235B across two units at 11.73 t/s
-              decode, with the pair&apos;s QSFP (Quad Small Form-factor Pluggable) link measured near 190 Gbps RoCE (RDMA over Converged Ethernet) (RDMA over Converged Ethernet)
-              in the official playbook. The 405B figure is a capacity claim, not
-              a throughput claim: at that scale the pair still decodes through
-              the same two 273 GB/s memory systems. Community attempts to push
-              past it (GLM-class models at 1-bit quantization over llama.cpp
-              RPC) reach 1.5 to 8.9 t/s and their own authors call them
-              impractical (Tier 4, NVIDIA forum, 2026-06-25).
-            </Box>
+          <Box variant="p">
+            Throughput moves with software. In January 2026 NVIDIA reported that llama.cpp
+            updates raised MoE throughput on DGX Spark by 35% on average, and that NVFP4 with
+            speculative decoding runs Qwen-235B on two Sparks up to 2.6x faster than FP8.
+            <Cite s={S.sparkSoftwareBlog} kind="vendor-claim" /> Treat the table as an October
+            2025 snapshot and measure on the current llama.cpp or TensorRT-LLM build before
+            sizing.
+          </Box>
+          <Box variant="p">
+            On Jetson, NVIDIA rates the 8 GB Orin Nano for LLMs and VLMs (vision language models)
+            up to nearly 4B parameters, such as Qwen2.5-VL-3B or Gemma-3/4B.
+            <Cite s={S.jetsonEdgeAiBlog} /> Jetson Orin Nano 2, announced for the first half of
+            2027, keeps 8 GB and claims 78 TOPS and twice the inference performance of Orin Nano
+            Super through improved Tensor Cores and higher memory bandwidth; the announcement gives
+            no bandwidth figure.
+            <Cite s={S.orinNano2} kind="roadmap" /> With 8 GB again, the size of model that fits
+            does not change.
+          </Box>
+          <ExpandableSection headerText="Clustering Sparks: capacity scales, per-unit bandwidth does not">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                A ConnectX-7 NIC (network interface card) at 200 Gbps links up to four DGX Spark
+                systems. The product page sizes two units (256 GB) for models up to 400B
+                parameters and four (512 GB) for up to 700B
+                <Cite s={S.sparkProductPage} />, while the hardware overview gives 405B for a
+                dual-Spark configuration.
+                <Cite s={S.sparkHardware} /> These are capacity figures. NVIDIA&apos;s worked
+                example runs Qwen3 235B on two units at 11.73 tokens/s decode (NVFP4,
+                TensorRT-LLM)
+                <Cite s={S.sparkPerfBlog} kind="vendor-claim" />, and the official playbook
+                measures the pair&apos;s link at 189.85 Gbps of RoCE traffic (remote direct memory
+                access over Converged Ethernet).
+                <Cite s={S.twoSparksPlaybook} kind="measured" /> Each unit still decodes through
+                its own 273 GB/s.
+              </Box>
+              <Box variant="p">
+                A 64 GB Spark is rated for models up to 100B parameters, and in NVIDIA&apos;s Qwen
+                3.8 27B test two clustered 64 GB units delivered up to 1.7x the performance of one.
+                <Cite s={S.spark64Gb} kind="vendor-claim" /> The product page&apos;s specification
+                table lists both memory options and a single bandwidth, 273 GB/s.
+                <Cite s={S.sparkProductPage} />
+              </Box>
+              <Box variant="p">
+                On our single unit, with no cable attached, no ConnectX-7 device enumerates in{' '}
+                <code>lspci</code>: two NVIDIA PCI bridges have nothing behind them.
+                <Cite s={S.sparkNotes} kind="measured" /> The playbook&apos;s two-unit setup lists
+                the RoCE interfaces once the units are cabled.
+                <Cite s={S.twoSparksPlaybook} /> Whether the NIC stays powered down until a cable
+                is attached is unresolved, so an empty <code>lspci</code> on an uncabled unit does
+                not prove the NIC is missing.
+              </Box>
+            </SpaceBetween>
           </ExpandableSection>
         </SpaceBetween>
       </Container>
@@ -412,7 +670,7 @@ export function EdgeSharedMemorySilicon() {
         header={
           <Header
             variant="h2"
-            description="Our derivation: bandwidth ceilings vs measured decode"
+            description="Divide bandwidth by bytes per token to predict decode speed before buying; two published runs land at 70 and 75% of that ceiling"
           >
             The roofline check
           </Header>
@@ -420,31 +678,65 @@ export function EdgeSharedMemorySilicon() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Section 3&apos;s method, applied here and labeled as our own
-            arithmetic: batch-1 decode cannot exceed memory bandwidth divided by
-            bytes moved per token (roughly the active weight footprint). Spark,
-            Llama 3.1 70B at FP8: 70 GB per token into 273 GB/s gives a ceiling
-            near 3.9 t/s; LMSYS measured 2.7. Jetson, Llama 3.1 8B at INT4:
-            about 4 GB per token into 102 GB/s gives a ceiling near 25 t/s;
-            Jetson AI Lab measured 19.14. Both land at 70 to 80 percent of the
-            bandwidth ceiling, which is normal once KV (key-value) cache reads and
-            scheduling overhead join the weight stream.
+            The method from <em>Roofline and Arithmetic Intensity</em>, as our own arithmetic:
+            batch-1 decode cannot exceed memory bandwidth divided by the bytes read per token,
+            roughly the active weight footprint. Spark with Llama 3.1 70B at FP8 reads about 70 GB
+            per token; 273 GB/s gives a ceiling near 3.9 tokens/s, and LMSYS measured 2.7.
+            <Cite s={S.lmsysSpark} kind="derived" note="273 / 70 = 3.9 tokens/s; 2.7 / 3.9 = 69%. LMSYS does not state the batch size for this run." />{' '}
+            Jetson Orin Nano Super with Llama 3.1 8B at INT4 reads about 4 GB per token; 102 GB/s
+            gives a ceiling near 25 tokens/s, and Jetson AI Lab reports 19.14.
+            <Cite s={S.jetsonAiLab} kind="derived" note="102 / 4 = 25.5 tokens/s; 19.14 / 25.5 = 75%." />{' '}
+            The two land at about 70 and 75% of the bandwidth ceiling, which leaves room for KV
+            (key-value) cache reads and scheduling overhead on top of the weight stream.
           </Box>
-          <Alert type="info" header="Why prefill feels so much faster">
-            The same machines prefill at thousands of tokens per second (Spark:
-            10,256.9 t/s on Llama 3.1 8B, NVIDIA-published). Prefill batches
-            many tokens per weight fetch, so it rides the compute roofline;
-            decode rides the bandwidth roofline. EXO Labs built a whole
-            deployment pattern on this asymmetry: prefill on Spark, decode on a
-            higher-bandwidth machine (Tier 3, accessed 2026-07-18). That is
-            disaggregated serving (Section 26) rediscovered at desk scale.
+          <Alert type="info" header="Why prefill runs so much faster">
+            Spark prefills at thousands of tokens per second: NVIDIA reports 10,256.9 tokens/s
+            for Llama 3.1 8B (NVFP4, TensorRT-LLM, 2,048 input tokens).
+            <Cite s={S.sparkPerfBlog} kind="vendor-claim" /> Prefill reuses each weight fetch
+            across many tokens, so it rides the compute roofline; decode rides the bandwidth
+            roofline. <em>Disaggregated Serving and Speculative Decoding</em> builds a serving
+            design on that asymmetry.
           </Alert>
         </SpaceBetween>
       </Container>
 
+      <ExpandableSection
+        variant="container"
+        headerText="Open items: what NVIDIA does not publish"
+        headerDescription="Gaps this research could not close, and what stands in for each"
+      >
+        <SpaceBetween size="s">
+          <Box variant="p">
+            1. Dense FP4 throughput for Spark, and Tensor Core and RT (ray tracing) Core counts for
+            GB10: not in
+            the hardware overview, the product page or the Hot Chips slides, which give 31 TFLOPS
+            FP32 only.
+            <Cite s={S.gb10HotChips} />
+          </Box>
+          <Box variant="p">
+            2. GB10 CPU clocks: not in those three sources; our lscpu reading stands in.
+          </Box>
+          <Box variant="p">
+            3. Memory bandwidth for RTX Spark, Jetson Orin Nano 2 and Jetson T4000: not given in
+            the NVIDIA announcements read for this section.
+          </Box>
+          <Box variant="p">
+            4. The ConnectX-7 NIC missing from <code>lspci</code> on our uncabled Spark: likely
+            powered down without a cable, unresolved.
+          </Box>
+          <Box variant="p">
+            5. Whisper-class ASR (automatic speech recognition) benchmarks on the Orin Nano tier:
+            none located at Tier 1 or 2 during this research; AGX Orin tables exist.
+          </Box>
+        </SpaceBetween>
+      </ExpandableSection>
+
       <Container
         header={
-          <Header variant="h2" description="Questions to ask when this hardware comes up">
+          <Header
+            variant="h2"
+            description="Five checks that decide whether a shared LPDDR pool fits a workload"
+          >
             Evaluation lens
           </Header>
         }
@@ -453,68 +745,34 @@ export function EdgeSharedMemorySilicon() {
           <div>
             <ul>
               <li>
-                Is the workload capacity-bound (big model, small batch) or
-                bandwidth-bound (fast decode)? Shared LPDDR helps the first and
-                caps the second.
+                Is the workload capacity-bound (large model, small batch) or bandwidth-bound (fast
+                decode)? Shared LPDDR helps the first and caps the second at 273 GB/s on Spark and
+                Thor.
               </li>
               <li>
-                Is the marketed TOPS/FLOPS figure sparse or dense, and does the
-                workload actually use structured sparsity?
+                Is the marketed TOPS or FLOPS figure sparse or dense, and does the workload use
+                structured sparsity?
               </li>
               <li>
-                For a two-complex design: what is the CPU-GPU link bandwidth,
-                and is it vendor-published or derived?
+                For a two-die design, is the CPU-GPU link wider than the memory behind it? On
+                GB10, about 600 GB/s aggregate against 273 GB/s, so memory sets the ceiling.
               </li>
             </ul>
           </div>
           <div>
             <ul>
               <li>
-                Does the deployment need coherence (zero-copy, in-place
-                KV-cache handoff) or just capacity? Coherence is the expensive
-                promise.
+                Does the deployment need coherence (zero-copy sharing, in-place KV-cache handoff
+                between CPU and GPU) or only capacity? Spark and Thor provide two-way coherence in
+                hardware; on Orin the GPU side still pays cache maintenance.
               </li>
               <li>
-                What does the same dollar buy in cloud inference, and is local
-                data gravity, privacy, or iteration speed the real reason for
-                edge hardware?
+                What does the same dollar buy in cloud inference, and is data locality, privacy
+                or iteration speed the reason for edge hardware?
               </li>
             </ul>
           </div>
         </ColumnLayout>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Open items for this section">
-            UNKNOWN register
-          </Header>
-        }
-      >
-        <SpaceBetween size="s">
-          <Box variant="p">
-            1. GB10 NVLink-C2C absolute bandwidth: vendor-unpublished; only the
-            relative &quot;5x PCIe Gen 5&quot; claim exists.
-          </Box>
-          <Box variant="p">
-            2. Dense FP4 throughput for Spark and Tensor/RT core counts for
-            GB10: not published.
-          </Box>
-          <Box variant="p">
-            3. On our own Spark, no ConnectX-7 device enumerates on the PCI bus
-            (two empty NVIDIA bridges instead), while the spec sheet lists it.
-            Likely power-gated with no QSFP cable attached; unresolved.
-          </Box>
-          <Box variant="p">
-            4. Whisper-class ASR (automatic speech recognition) officially benchmarked on the Orin Nano tier:
-            not found at Tier 1/2 (AGX Orin tables exist).
-          </Box>
-          <Box variant="p">
-            5. Jetson vendor clocks vs Spark: NVIDIA publishes Jetson clocks in
-            the module datasheet but no CPU clocks for GB10 anywhere; our
-            Tier 0 lscpu measurement stands in.
-          </Box>
-        </SpaceBetween>
       </Container>
     </SpaceBetween>
   );
