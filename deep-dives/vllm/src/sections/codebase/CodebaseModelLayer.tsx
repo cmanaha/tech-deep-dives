@@ -550,8 +550,8 @@ export function CodebaseModelLayer() {
             <Cite tier={1} href={`${TREE}/vllm/models`}>
               vllm/models/
             </Cite>
-            ), and each package&apos;s <code>__init__.py</code> imports the <code>nvidia/</code> or{' '}
-            <code>amd/</code> implementation for the current platform{' '}
+            ), and each package&apos;s <code>__init__.py</code> imports the implementation for the
+            current platform, from <code>nvidia/</code> or <code>amd/</code> in most packages{' '}
             <Cite tier={1} href={vllmUrl('vllm/models/kimi_k3/__init__.py', 'L3-L35')}>
               kimi_k3/__init__.py L3-L35
             </Cite>
@@ -878,7 +878,7 @@ export function CodebaseModelLayer() {
             <code>--linear-backend</code> (or a per-scheme entry in{' '}
             <code>linear_backend_per_quant</code>), then returns the first kernel that is not
             disabled by <code>VLLM_DISABLED_KERNELS</code>, reports <code>is_supported()</code>{' '}
-            on this device and can implement this layer&apos;s shape{' '}
+            on this device and can implement this layer&apos;s configuration{' '}
             <Cite tier={1} href={vllmUrl(KERNELS_PY, 'L606-L698')}>
               kernels/linear/__init__.py L606-L698
             </Cite>
@@ -931,9 +931,17 @@ export function CodebaseModelLayer() {
               href={vllmUrl(`${SCALED_MM}/deep_gemm.py`, 'L47-L52')}
             >
               deep_gemm.py L47-L52
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/platforms/cuda.py', 'L709-L715')}>
+              cuda.py L709-L715
             </Cite>
-            , so an older GPU walks past it to a later entry such as Marlin or the portable
-            Triton kernel. Separate lists cover INT8 (8-bit integer), per-tensor and
+            , so an older GPU walks on down the list. Marlin accepts every layer from compute
+            capability 7.5 and runs FP8 weight-only, so that is where an Ampere or Turing GPU
+            ends up{' '}
+            <Cite tier={1} href={vllmUrl(`${SCALED_MM}/marlin.py`, 'L29-L49')}>
+              marlin.py L29-L49
+            </Cite>
+            . Separate lists cover INT8 (8-bit integer), per-tensor and
             per-channel FP8, weight-only FP8 (W8A16: 8-bit weights, 16-bit activations), MXFP8, MXFP6 and MXFP4
             (microscaling formats), NVFP4 (NVIDIA 4-bit floating point) and mixed-precision
             weight-only formats{' '}
@@ -1032,9 +1040,9 @@ export function CodebaseModelLayer() {
             steps{' '}
             <Cite
               tier={1}
-              href={vllmUrl('vllm/lora/layers/column_parallel_linear.py', 'L24-L28')}
+              href={vllmUrl('vllm/lora/layers/column_parallel_linear.py', 'L24-L73')}
             >
-              column_parallel_linear.py L24-L28
+              column_parallel_linear.py L24-L73
             </Cite>{' '}
             <Cite
               tier={1}
@@ -1110,16 +1118,22 @@ export function CodebaseModelLayer() {
           </Box>
 
           <Alert type="warning">
-            <strong>Static vs dynamic.</strong> Adapters loaded at startup into the fixed{' '}
-            <code>max_loras</code> slots are the stable path. Loading and unloading adapters at
-            request time shares those same slots and kernels{' '}
+            <strong>Static vs dynamic.</strong> Adapters named at startup are the production
+            path. Adapters loaded and unloaded at request time use the same fixed{' '}
+            <code>max_loras</code> GPU slots and kernels, since any adapter is moved into a free
+            slot when a batch needs it{' '}
             <Cite tier={1} href={vllmUrl('vllm/lora/model_manager.py', 'L352-L375')}>
               model_manager.py L352-L375
             </Cite>
-            , so it carries caveats around slot pressure and load and evict cost, and it stays
-            off unless <code>VLLM_ALLOW_RUNTIME_LORA_UPDATING</code> is set{' '}
+            . Runtime loading stays off unless <code>VLLM_ALLOW_RUNTIME_LORA_UPDATING</code> is
+            set{' '}
             <Cite tier={1} href={vllmUrl('vllm/envs.py', 'L1199-L1203')}>
               envs.py L1199-L1203
+            </Cite>
+            , and the LoRA docs keep it to isolated, fully trusted environments because of its
+            security risk{' '}
+            <Cite tier={1} href={vllmUrl('docs/features/lora.md', 'L109-L113')}>
+              lora.md L109-L113
             </Cite>
             . Size{' '}
             <code>max_loras</code> for the concurrency you actually expect; section 13 (LoRA
@@ -1144,10 +1158,17 @@ export function CodebaseModelLayer() {
                 .
               </Box>
               <Box variant="p">
-                In other words, at v0.31.0 there is no pure-PyTorch reference implementation of
-                the fused LoRA GEMMs on the base wrapper. Every live backend must override these
-                with its own kernels. It is a small thing, but it tells you where the real work
-                lives and that hardware without a Punica backend has no graceful fallback here.
+                In other words, the base wrapper carries no fallback for the fused LoRA GEMMs.
+                Each platform names its own wrapper: Triton on CUDA and ROCm, PyTorch ops on CPU{' '}
+                <Cite tier={1} href={vllmUrl('vllm/lora/punica_wrapper/punica_cpu.py', 'L9-L23')}>
+                  punica_cpu.py L9-L23
+                </Cite>
+                , and a platform that names none raises <code>NotImplementedError</code> when
+                LoRA starts{' '}
+                <Cite tier={1} href={vllmUrl('vllm/platforms/interface.py', 'L1088-L1090')}>
+                  interface.py L1088-L1090
+                </Cite>
+                . It is a small thing, but it tells you where the real work lives.
               </Box>
             </SpaceBetween>
           </ExpandableSection>

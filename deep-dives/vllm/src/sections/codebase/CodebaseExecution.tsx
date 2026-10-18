@@ -100,7 +100,7 @@ const graphModeRows: GraphModeRow[] = [
   {
     mode: 'FULL',
     captures: 'One graph for the whole forward at each captured size, mixed prefill-and-decode batches included.',
-    when: 'Reachable only when every attention backend in the model reports ALWAYS; otherwise downgraded at startup.',
+    when: 'Reachable only when every attention backend in the model reports ALWAYS; otherwise downgraded at startup, or refused when a backend reports NEVER.',
   },
   {
     mode: 'FULL_DECODE_ONLY',
@@ -666,12 +666,20 @@ export function CodebaseExecution() {
             <em>what</em> runs each step; the execution layer runs it on the GPU.
             Two objects carry the weight. The <code>Worker</code> (
             <code>vllm/v1/worker/gpu_worker.py</code>) owns the device: it picks and
-            sets the GPU, loads weights, profiles free memory, and under PP (pipeline
-            parallelism) sends and receives intermediate tensors between stages{' '}
+            sets the GPU{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_worker.py', 'L397-L462')}>
               gpu_worker.py L397-L462
             </Cite>
-            . The model runner it builds turns a <code>SchedulerOutput</code> into
+            , loads weights{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_worker.py', 'L538-L561')}>
+              L538-L561
+            </Cite>
+            , profiles free memory{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_worker.py', 'L571-L583')}>
+              L571-L583
+            </Cite>
+            , and under PP (pipeline parallelism) sends and receives intermediate
+            tensors between stages (below). The model runner it builds turns a <code>SchedulerOutput</code> into
             input tensors and attention metadata, runs the forward pass that writes new
             entries into the KV (key-value) cache, and samples tokens.
           </Box>
@@ -747,10 +755,13 @@ export function CodebaseExecution() {
             <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L700-L761')}>
               vllm.py L700-L761
             </Cite>
-            . The <code>Worker</code> reads the answer once in its constructor and
-            builds the matching class{' '}
+            . The <code>Worker</code> reads the answer once in its constructor{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_worker.py', 'L227')}>
               gpu_worker.py L227
+            </Cite>{' '}
+            and builds the matching class in <code>init_device()</code>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu_worker.py', 'L507-L526')}>
+              L507-L526
             </Cite>
             .
           </Box>
@@ -883,8 +894,11 @@ export function CodebaseExecution() {
             </Cite>
             . <code>sample_tokens(grammar_output)</code> drains that state, computes
             logits, applies the structured-output bitmask and samples{' '}
-            <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/model_runner.py', 'L1556-L1591')}>
-              model_runner.py L1556-L1591
+            <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/model_runner.py', 'L2050-L2098')}>
+              model_runner.py L2050-L2098
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/model_runner.py', 'L1556-L1600')}>
+              L1556-L1600
             </Cite>
             . The split lets the CPU build that bitmask during the forward pass:{' '}
             <code>EngineCore</code> issues{' '}
@@ -978,9 +992,10 @@ export function CodebaseExecution() {
                   model_runner.py L1520-L1538
                 </Cite>
                 . <code>build_attn_metadata()</code> turns them into one metadata
-                object per KV-cache group for its backend{' '}
-                <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/attn_utils.py', 'L418-L429')}>
-                  attn_utils.py L418-L429
+                object per attention group, built by that group&apos;s backend (a KV-cache
+                group can hold several){' '}
+                <Cite tier={1} href={vllmUrl('vllm/v1/worker/gpu/attn_utils.py', 'L429-L555')}>
+                  attn_utils.py L429-L555
                 </Cite>
                 . A FULL CUDA graph replays with its inputs already in static buffers;
                 piecewise and eager forwards run inside{' '}
@@ -1204,10 +1219,12 @@ export function CodebaseExecution() {
               attn_utils.py L284-L307
             </Cite>
             , and <code>resolve_cudagraph_mode_and_sizes()</code> downgrades the
-            requested mode with a warning. FULL with a backend below{' '}
-            <code>ALWAYS</code> becomes <code>FULL_AND_PIECEWISE</code> (or{' '}
-            <code>FULL_DECODE_ONLY</code> when attention is not a splitting op). A
-            full-graph mode with a <code>NEVER</code> backend becomes{' '}
+            requested mode with a warning. FULL with a <code>UNIFORM_BATCH</code> or{' '}
+            <code>UNIFORM_SINGLE_TOKEN_DECODE</code> backend becomes{' '}
+            <code>FULL_AND_PIECEWISE</code> (or <code>FULL_DECODE_ONLY</code> when
+            attention is not a splitting op); FULL with a <code>NEVER</code> backend is a
+            startup error. <code>FULL_AND_PIECEWISE</code> or{' '}
+            <code>FULL_DECODE_ONLY</code> with a <code>NEVER</code> backend becomes{' '}
             <code>PIECEWISE</code> (or <code>NONE</code> when attention is not compiled
             piecewise). Speculative decoding with a backend below{' '}
             <code>UNIFORM_BATCH</code> loses its full decode graphs the same way{' '}
@@ -1295,6 +1312,9 @@ export function CodebaseExecution() {
             op eagerly and resumes{' '}
             <Cite tier={1} href={vllmUrl('vllm/compilation/breakable_cudagraph.py', 'L1-L20')}>
               breakable_cudagraph.py L1-L20
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/compilation/breakable_cudagraph.py', 'L198-L211')}>
+              L198-L211
             </Cite>
             . vLLM turns it on for a fixed list of architectures (DeepSeek V3.2 and V4,
             Kimi K3, GLM-5 Next, MiniMax-M3 sparse, Qwen4Exp and others; on ROCm only
@@ -1369,10 +1389,14 @@ export function CodebaseExecution() {
                 </Cite>
                 . It runs from its own custom op, <code>unified_kv_cache_update</code>,
                 whose dummy return value keeps the write ordered before attention under
-                torch.compile; the backend declares{' '}
+                torch.compile{' '}
+                <Cite tier={1} href={vllmUrl('vllm/model_executor/layers/attention/attention.py', 'L724-L746')}>
+                  attention.py L724-L746
+                </Cite>
+                ; the backend declares{' '}
                 <code>forward_includes_kv_cache_update = False</code>{' '}
-                <Cite tier={1} href={vllmUrl('vllm/model_executor/layers/attention/attention.py', 'L724-L745')}>
-                  attention.py L724-L745
+                <Cite tier={1} href={vllmUrl('vllm/v1/attention/backends/flash_attn.py', 'L365')}>
+                  flash_attn.py L365
                 </Cite>
                 . K and V share one cache tensor split on the last dimension, and the op
                 reads the real token count from the <code>slot_mapping</code> shape, so
@@ -1386,8 +1410,11 @@ export function CodebaseExecution() {
                 (variable-length), fed the cumulative query offsets (
                 <code>cu_seqlens_q</code>), per-sequence KV lengths and the{' '}
                 <code>block_table</code>{' '}
-                <Cite tier={1} href={vllmUrl('vllm/v1/attention/backends/flash_attn.py', 'L1560-L1580')}>
-                  flash_attn.py L1560-L1580
+                <Cite tier={1} href={vllmUrl('vllm/v1/attention/backends/flash_attn.py', 'L1450-L1475')}>
+                  flash_attn.py L1450-L1475
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/v1/attention/backends/flash_attn.py', 'L113-L116')}>
+                  L113-L116
                 </Cite>
                 . The kernel gathers each sequence&apos;s scattered KV blocks as it
                 goes, with no contiguous copy, so the fused attention kernel consumes
@@ -1560,7 +1587,7 @@ export function CodebaseExecution() {
             GPUs by integer ID or UUID (no duplicates, no mixing of the two) without
             setting <code>CUDA_VISIBLE_DEVICES</code>, which keeps the full topology
             visible for GPU-to-NIC (network interface card) affinity. If{' '}
-            <code>CUDA_VISIBLE_DEVICES</code> is already set, the IDs index into it, and
+            <code>CUDA_VISIBLE_DEVICES</code> is already set, integer IDs index into it, and
             the Ray executor ignores the flag{' '}
             <Cite tier={1} href={vllmUrl('vllm/engine/arg_utils.py', 'L1136-L1148')}>
               arg_utils.py L1136-L1148
