@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 310.
+Total distinct sources: 320.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
@@ -22,10 +22,10 @@ Total distinct sources: 310.
 | AMD | [AMD EPYC 9005 Series Server CPUs data sheet (per-SKU cores, clocks, L3, memory)](https://www.amd.com/content/dam/amd/en/documents/epyc-business-docs/datasheets/amd-epyc-9005-series-processor-datasheet.pdf) | 2026-10-17 | AmdEpycTurin |
 | AMD | [AMD EPYC 9755 product page (memory type, DDR5-6400 qualifier, per-socket memory bandwidth)](https://www.amd.com/en/products/processors/server/epyc/9005-series/amd-epyc-9755.html) | 2026-10-17 | AmdEpycTurin |
 | AWS | [Amazon EC2 accelerated computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html) | 2026-10-17 | AwsCustomSilicon, CapitalMarketsLens, DisaggregatedServingAndSpeculative, FlashCacheTier, GraceBlackwellUltraServer, HeterogeneityFact, NvidiaBlackwell, NvidiaHopper |
-| AWS | [Amazon EC2 compute optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive |
-| AWS | [Amazon EC2 general purpose instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive |
+| AWS | [Amazon EC2 compute optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive, IntelXeon6 |
+| AWS | [Amazon EC2 general purpose instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive, IntelXeon6 |
 | AWS | [Amazon EC2 high performance computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/hpc.html) | 2026-10-17 | AmdEpycTurin |
-| AWS | [Amazon EC2 memory optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/mo.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive |
+| AWS | [Amazon EC2 memory optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/mo.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive, IntelXeon6 |
 | AWS | [Amazon EC2 User Guide: Data protection in Amazon EC2 (encryption in transit)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html) | 2026-10-17 | IsolationNie |
 | AWS | [Amazon FSx for Lustre performance: throughput to individual client instances](https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon FSx for Lustre: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-17 | FlashCacheTier |
@@ -106,12 +106,14 @@ Total distinct sources: 310.
 | Hugging Face | [Qwen/Qwen3-Next-80B-A3B-Instruct README at revision 9c7f2fb](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct/blob/9c7f2fbe84465e40164a94cc16cd30b6999b0cc7/README.md) | 2026-10-17 | MoeAndSparseActivation |
 | Hugging Face | [Qwen/Qwen3.8-2.4T-A95B README at revision 207bd68](https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B/blob/207bd685a7e3696cfaff12ded7c6a7ea0f88c996/README.md) | 2026-10-17 | MoeAndSparseActivation |
 | Intel | [Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)](https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html) | 2026-10-16 | CapitalMarketsLens, FlashCacheTier |
-| Intel | [The Intel Xeon 6 Processor Family Product Brief](https://cdrdv2-public.intel.com/845771/Intel-Xeon6-ProductBrief.pdf) | 2026-10-16 | AmdEpycTurin |
+| Intel | [Intel Xeon 6700/6500-Series Processors with P-Cores, product brief (PDF)](https://www.intel.com/content/dam/www/central-libraries/us/en/documents/2025-02/xeon-6-granite-rapids-product-brief.pdf) | 2026-10-17 | IntelXeon6 |
+| Intel | [intel-extension-for-pytorch README at commit 6d3ba89 (2026-03-30, repository archived)](https://github.com/intel/intel-extension-for-pytorch/blob/6d3ba89cf9c40eb7184d6092ab7fa9b5231553c1/README.md) | 2026-10-17 | IntelXeon6 |
+| Intel | [The Intel Xeon 6 Processor Family Product Brief](https://cdrdv2-public.intel.com/845771/Intel-Xeon6-ProductBrief.pdf) | 2026-10-17 | AmdEpycTurin, IntelXeon6 |
 | ISDA | [ISDA Publishes ISDA SIMM Methodology, Version 2.8+2512 (12 June 2026)](https://www.isda.org/2026/06/12/isda-publishes-isda-simm-methodology-version-2-8-2512/) | 2026-10-16 | CapitalMarketsLens |
 | ISDA | [ISDA SIMM Methodology, version 2.8+2512 (public PDF)](https://www.isda.org/a/hhkiE/ISDA-SIMM_v2.82512_PUBLIC.pdf) | 2026-10-16 | CapitalMarketsLens |
 | JEDEC | [JEDEC and Industry Leaders Collaborate to Release JESD270-4 HBM4 Standard (2025-04-16)](https://www.jedec.org/news/pressreleases/jedec%C2%AE-and-industry-leaders-collaborate-release-jesd270-4-hbm4-standard-advancing) | 2026-10-16 | HighBandwidthFlash |
 | Linux kernel | [Linux kernel Documentation/admin-guide/kernel-parameters.txt at tag v6.13 (pci=notph)](https://github.com/torvalds/linux/blob/v6.13/Documentation/admin-guide/kernel-parameters.txt#L4689-L4692) | 2026-10-17 | AmdEpycTurin |
-| Linux kernel | [Linux kernel Documentation/arch/x86/xstate.rst at tag v6.19 (AMX TILE_DATA, ARCH_REQ_XCOMP_PERM)](https://github.com/torvalds/linux/blob/v6.19/Documentation/arch/x86/xstate.rst) | 2026-10-17 | KernelExecutionLifecycle |
+| Linux kernel | [Linux kernel Documentation/arch/x86/xstate.rst at tag v6.19 (AMX TILE_DATA, ARCH_REQ_XCOMP_PERM)](https://github.com/torvalds/linux/blob/v6.19/Documentation/arch/x86/xstate.rst) | 2026-10-17 | IntelXeon6, KernelExecutionLifecycle |
 | Linux kernel | [Linux kernel Documentation/filesystems/resctrl.rst at tag v6.19 (io_alloc, io_alloc_cbm, SDCIAE)](https://github.com/torvalds/linux/blob/v6.19/Documentation/filesystems/resctrl.rst) | 2026-10-17 | AmdEpycTurin |
 | Linux kernel | [Linux kernel drivers/net/ethernet/broadcom/bnxt/bnxt.c at tag v6.19 (pcie_enable_tph and steering-tag entries)](https://github.com/torvalds/linux/blob/v6.19/drivers/net/ethernet/broadcom/bnxt/bnxt.c#L11698) | 2026-10-17 | AmdEpycTurin |
 | Linux kernel | [Linux kernel drivers/pci/tph.c at tag v6.13 (PCIe TLP Processing Hints; file absent at v6.12)](https://github.com/torvalds/linux/blob/v6.13/drivers/pci/tph.c) | 2026-10-17 | AmdEpycTurin |
@@ -120,11 +122,11 @@ Total distinct sources: 310.
 | LLVM | [AArch64InstrFormats.td at tag llvmorg-23.1.3 (SIMDThreeSameVectorMatMul, lines 9259-9265)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/AArch64/AArch64InstrFormats.td#L9259-L9265) | 2026-10-16 | GravitonDeepDive |
 | LLVM | [AArch64InstrInfo.td at tag llvmorg-23.1.3 (BFMMLA under HasBF16; SMMLA, UMMLA, USMMLA under HasMatMulInt8)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/AArch64/AArch64InstrInfo.td#L1727-L1755) | 2026-10-17 | GravitonDeepDive |
 | LLVM | [AArch64SchedNeoverseV2.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/AArch64/AArch64SchedNeoverseV2.td) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
-| LLVM | [Clang amxfp16intrin.h at tag llvmorg-23.1.3 (TDPFP16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxfp16intrin.h) | 2026-10-17 | KernelExecutionLifecycle |
-| LLVM | [Clang amxintrin.h at tag llvmorg-23.1.3 (tile size, LDTILECFG, TILELOADD, TDPBF16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxintrin.h) | 2026-10-17 | KernelExecutionLifecycle, QuantizationAndPrecision, ThesisAndFraming |
+| LLVM | [Clang amxfp16intrin.h at tag llvmorg-23.1.3 (TDPFP16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxfp16intrin.h) | 2026-10-17 | IntelXeon6, KernelExecutionLifecycle |
+| LLVM | [Clang amxintrin.h at tag llvmorg-23.1.3 (tile size, LDTILECFG, TILELOADD, TDPBF16PS)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/clang/lib/Headers/amxintrin.h) | 2026-10-17 | IntelXeon6, KernelExecutionLifecycle, QuantizationAndPrecision, ThesisAndFraming |
 | LLVM | [LLVM APFloat.cpp at tag llvmorg-23.1.3: fltSemantics (max exponent, precision, size) for IEEE, BF16, TF32, FP8 and FP4](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Support/APFloat.cpp#L71-L105) | 2026-10-17 | QuantizationAndPrecision |
-| LLVM | [LLVM X86.td at tag llvmorg-23.1.3 (per-generation feature lists: SPR, GNR, DMR)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/X86/X86.td#L1243-L1310) | 2026-10-16 | KernelExecutionLifecycle |
-| LLVM | [LLVM X86RegisterInfo.td at tag llvmorg-23.1.3 (tile registers TMM0 to TMM7)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/X86/X86RegisterInfo.td) | 2026-10-17 | KernelExecutionLifecycle |
+| LLVM | [LLVM X86.td at tag llvmorg-23.1.3 (per-generation feature lists: SPR, GNR, DMR)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/X86/X86.td#L1243-L1310) | 2026-10-16 | IntelXeon6, KernelExecutionLifecycle |
+| LLVM | [LLVM X86RegisterInfo.td at tag llvmorg-23.1.3 (tile registers TMM0 to TMM7)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/X86/X86RegisterInfo.td) | 2026-10-17 | IntelXeon6, KernelExecutionLifecycle |
 | LLVM | [X86SchedSapphireRapids.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/X86/X86SchedSapphireRapids.td) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
 | LLVM | [X86ScheduleZnver4.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/X86/X86ScheduleZnver4.td) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
 | LMCache | [LMCache local storage backend docs at tag v0.5.6 (per-GPU disk paths, O_DIRECT, example chunk size)](https://github.com/LMCache/LMCache/blob/v0.5.6/docs/source/kv_cache/storage_backends/local_storage.rst) | 2026-10-17 | FlashCacheTier |
@@ -206,7 +208,12 @@ Total distinct sources: 310.
 | Triton | [Introduction to Gluon tutorial at Triton tag v3.8.0](https://github.com/triton-lang/triton/blob/v3.8.0/python/tutorials/gluon/01-intro.py) | 2026-10-17 | AwsCompilersAndTooling, NvidiaCompilersAndTooling |
 | Triton | [Triton 3.8.0 release notes (2026-08-28)](https://github.com/triton-lang/triton/releases/tag/v3.8.0) | 2026-10-17 | NvidiaCompilersAndTooling |
 | Triton | [Triton tutorial: Matrix Multiplication (triton.autotune and triton.Config)](https://triton-lang.org/main/getting-started/tutorials/03-matrix-multiplication.html) | 2026-10-17 | NvidiaCompilersAndTooling |
-| UXL Foundation | [oneDNN src/cpu/x64/cpu_isa_traits.cpp at tag v3.13.4, lines 357-374 (AMX permission request)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/cpu/x64/cpu_isa_traits.cpp#L357-L374) | 2026-10-17 | KernelExecutionLifecycle |
+| UXL Foundation | [oneDNN cmake/options.cmake at tag v3.13.4, lines 333-335 (ENABLE_MAX_CPU_ISA defaults to ON)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/cmake/options.cmake#L333-L335) | 2026-10-17 | IntelXeon6 |
+| UXL Foundation | [oneDNN src/common/utils.cpp at tag v3.13.4, lines 112-126 (ONEDNN_ and DNNL_ environment prefixes)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/common/utils.cpp#L112-L126) | 2026-10-17 | IntelXeon6 |
+| UXL Foundation | [oneDNN src/common/verbose.cpp at tag v3.13.4, lines 100-190 (VERBOSE header with the ISA line)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/common/verbose.cpp#L100-L190) | 2026-10-17 | IntelXeon6 |
+| UXL Foundation | [oneDNN src/cpu/x64/cpu_isa_traits.cpp at tag v3.13.4, lines 31-197 (MAX_CPU_ISA cap, ISA names, highest usable tier)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/cpu/x64/cpu_isa_traits.cpp#L31-L197) | 2026-10-17 | IntelXeon6 |
+| UXL Foundation | [oneDNN src/cpu/x64/cpu_isa_traits.cpp at tag v3.13.4, lines 357-374 (AMX permission request)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/cpu/x64/cpu_isa_traits.cpp#L357-L374) | 2026-10-17 | IntelXeon6, KernelExecutionLifecycle |
+| UXL Foundation | [oneDNN src/cpu/x64/cpu_isa_traits.hpp at tag v3.13.4 (AMX dispatch tiers)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/cpu/x64/cpu_isa_traits.hpp) | 2026-10-16 | IntelXeon6 |
 | vLLM | [vLLM docs/features/disagg_prefill.md at tag v0.31.0 (experimental; connector list)](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/disagg_prefill.md) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | vLLM | [vLLM kv_offload metrics (offloading/metrics.py) at tag v0.31.0](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/offloading/metrics.py) | 2026-10-17 | FlashCacheTier |
 | vLLM | [vLLM NixlConnector nixl/base_worker.py at tag v0.31.0 (default NIXL backends ["UCX"])](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py#L559-L561) | 2026-10-17 | DisaggregatedServingAndSpeculative |
@@ -229,7 +236,7 @@ Total distinct sources: 310.
 | Arm | [Arm Neoverse V3 product page](https://www.arm.com/products/silicon-ip-cpu/neoverse/neoverse-v3) | 2026-10-16 | GravitonDeepDive |
 | AWS | [About Amazon: AWS Graviton5 (2025-12-04, updated 2026-06-10 for GA)](https://www.aboutamazon.com/news/aws/aws-graviton-5-cpu-amazon-ec2) | 2026-10-16 | GravitonDeepDive |
 | AWS | [Amazon EC2 M8a instances](https://aws.amazon.com/ec2/instance-types/m8a/) | 2026-10-17 | HeterogeneityFact |
-| AWS | [Amazon EC2 M8i instances](https://aws.amazon.com/ec2/instance-types/m8i/) | 2026-10-17 | AmdEpycTurin, HeterogeneityFact |
+| AWS | [Amazon EC2 M8i instances](https://aws.amazon.com/ec2/instance-types/m8i/) | 2026-10-17 | AmdEpycTurin, HeterogeneityFact, IntelXeon6 |
 | AWS | [Amazon EC2 P5 instances](https://aws.amazon.com/ec2/instance-types/p5/) | 2026-10-17 | NvidiaHopper |
 | AWS | [Amazon EC2 P6 instances](https://aws.amazon.com/ec2/instance-types/p6/) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier, GraceBlackwellUltraServer, NvidiaBlackwell |
 | AWS | [Amazon EC2 P6e-GB300 UltraServers (NVIDIA GB300 NVL72) generally available](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell |
@@ -255,6 +262,8 @@ Total distinct sources: 310.
 | DeepSeek-AI | [DeepSeek-V3 Technical Report (arXiv:2412.19437)](https://arxiv.org/abs/2412.19437) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier, HighBandwidthFlash, MoeAndSparseActivation, QuantizationAndPrecision, ThesisAndFraming |
 | Groq | [Groq and Nvidia Enter Non-Exclusive Inference Technology Licensing Agreement (2025-12-24)](https://groq.com/newsroom/groq-and-nvidia-enter-non-exclusive-inference-technology-licensing-agreement-to-accelerate-ai-inference-at-global-scale) | 2026-10-16 | HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
 | Groq | [GroqCloud docs: Models](https://console.groq.com/docs/models) | 2026-10-16 | MoeAndSparseActivation |
+| Intel | [Intel Outlines Architectures for Agentic AI at Hot Chips 2026 (2026-08-24)](https://www.intel.com/content/www/us/en/newsroom/news/client-computing/intel-outlines-architectures-for-agentic-ai-at-hot-chips-2026.html) | 2026-10-17 | IntelXeon6 |
+| Intel | [Intel Xeon 6+ processors product page](https://www.intel.com/content/www/us/en/products/details/processors/xeon/6-plus-series.html) | 2026-10-17 | IntelXeon6 |
 | Kioxia | [Kioxia Announces KIOXIA GP1 Series Super High IOPS SSDs for AI Applications (2026-08-03)](https://americas.kioxia.com/en-us/business/news/2026/ssd-20260803-1.html) | 2026-10-17 | FlashCacheTier |
 | Kioxia | [KIOXIA Announces New SSD Model Optimized for AI GPU-Initiated Workloads (2026-03-16)](https://americas.kioxia.com/en-us/business/news/2026/ssd-20260316-1.html) | 2026-10-17 | FlashCacheTier |
 | Meta | [The Llama 3 Herd of Models (arXiv:2407.21783), Table 3: layers, heads and key/value heads](https://arxiv.org/abs/2407.21783) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier |
@@ -327,6 +336,7 @@ Total distinct sources: 310.
 | arXiv | [SambaNova SN40L: Scaling the AI Memory Wall with Dataflow and Composition of Experts (arXiv:2405.07518, MICRO 2024)](https://arxiv.org/abs/2405.07518) | 2026-10-16 | MoeAndSparseActivation |
 | arXiv | [SPLASH: Co-Designing Sparse Attention with High-Bandwidth Flash for Efficient Long-Context Inference (arXiv:2609.23816)](https://arxiv.org/abs/2609.23816) | 2026-10-17 | HighBandwidthFlash |
 | Blocks & Files | [Kioxia eyes GPU memory stack with high-bandwidth flash push (2026-03-20)](https://www.blocksandfiles.com/flash/2026/03/20/kioxia-eyes-gpu-memory-stack-with-high-bandwidth-flash-push/5210520) | 2026-10-17 | HighBandwidthFlash |
+| Chips and Cheese | [A Look into Intel Xeon 6's Memory Subsystem (AWS r8i, Xeon 6 6985P-C)](https://chipsandcheese.com/p/a-look-into-intel-xeon-6s-memory) | 2026-10-17 | IntelXeon6 |
 | Chips and Cheese | [AMD's Strix Point: Zen 5 Hits Mobile (Zen 5 L2 associativity and latency)](https://chipsandcheese.com/p/amds-strix-point-zen-5-hits-mobile) | 2026-10-17 | AmdEpycTurin |
 | Chips and Cheese | [AMD's Turin: 5th Gen EPYC Launched (core-to-core latency on EPYC 9575F)](https://chipsandcheese.com/p/amds-turin-5th-gen-epyc-launched) | 2026-10-16 | AmdEpycTurin, CapitalMarketsLens |
 | Chips and Cheese | [Chips and Cheese: Arm's Neoverse V2 in AWS's Graviton 4](https://chipsandcheese.com/p/arms-neoverse-v2-in-awss-graviton-4) | 2026-10-16 | GravitonDeepDive |

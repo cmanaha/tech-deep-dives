@@ -317,3 +317,9 @@ earlier one.
   makes the NEFF deterministic beyond its instruction order, which is fixed at compile
   time; collective latency still depends on HBM load. Determinism: NEFF and GPU
   Reproducibility and Isolation keep the claim scoped to instruction order or source it.
+- Intel Xeon 6: AWS r8i (6985P-C, 96 cores, 480 MB L3) runs SNC3: three NUMA nodes,
+  each a compute tile with 160 MB L3 and four DDR5-7200 channels. Model weights do not
+  fit in L3, so small-batch CPU decode is bound by memory bandwidth, not AMX; Small
+  Language Models must not imply otherwise. The bandwidth figure is a "NUMA-local read",
+  never "STREAM triad per socket" (DDR5, MRDIMM, LPDDR5X and CXL still says that).
+  Topology facts for Chiplet and Interconnect are in revamp/authoring/IntelXeon6.md.
