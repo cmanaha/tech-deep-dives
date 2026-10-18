@@ -318,7 +318,7 @@ export function PrefixCaching() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Prefix sharing is purely a function of token equality, and it is{' '}
+            Prefix sharing follows from the tokens and the extra keys above, and it is{' '}
             <strong>indifferent to who sent the request</strong>. Two tenants that send the same
             opening tokens (the same boilerplate system prompt, say) share KV blocks. The KV cache
             holds no plaintext one tenant can read from another, but the <em>timing</em> of a hit
@@ -493,7 +493,7 @@ export function PrefixCaching() {
                 >
                   routers.py L34-L37
                 </Cite>
-                . A reset fails while any request holds blocks{' '}
+                . By default a reset fails while any request holds blocks{' '}
                 <Cite tier={1} href={vllmUrl('vllm/v1/core/block_pool.py', 'L840-L847')}>
                   block_pool.py L840-L847
                 </Cite>

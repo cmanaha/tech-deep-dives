@@ -316,7 +316,16 @@ export function SchedulerBatching() {
             R2&apos;s prompt runs as three chunks (P1-P3) beside R1&apos;s decodes. R3 takes the last
             free KV blocks at t2. R4 arrives at t3, waits while no blocks are free, and joins at t5,
             once R1&apos;s last decode at t4 has released R1&apos;s blocks. Illustrative schedule, not
-            measured output.
+            measured output. The timeline plans each step after the previous one finishes. Async
+            scheduling, on by default, plans t5 while t4 is still running, before R1&apos;s EOS is
+            known, so R1 keeps its blocks one step longer and R4 joins at t6{' '}
+            <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L592-L602')}>
+              vllm.py L592-L602
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/engine/core.py', 'L686-L757')}>
+              core.py L686-L757
+            </Cite>
+            .
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -357,9 +366,9 @@ export function SchedulerBatching() {
                   L1209-L1230
                 </Cite>
                 . A request arriving after R4 would wait behind it. Only requests blocked for
-                another reason are set aside so the scan can continue: remote KV still arriving, a
-                grammar still compiling, or the cap on LoRA (low-rank adaptation) adapters per
-                batch{' '}
+                another reason are set aside so the scan can continue, such as remote KV still
+                arriving, a grammar still compiling, or the cap on LoRA (low-rank adaptation)
+                adapters per batch{' '}
                 <Cite tier={1} href={vllmUrl(SCHED, 'L899-L922')}>
                   L899-L922
                 </Cite>
@@ -432,14 +441,11 @@ export function SchedulerBatching() {
             <Cite tier={1} href={vllmUrl(SCHED, 'L582-L585')}>
               v1 scheduler.py L582-L585
             </Cite>{' '}
+            <Cite tier={1} href={vllmUrl(SCHED, 'L674-L683')}>
+              L674-L683
+            </Cite>{' '}
             <Cite tier={1} href={vllmUrl(SCHED, 'L1110-L1123')}>
               L1110-L1123
-            </Cite>
-            . Waiting requests that already hold KV blocks, such as one whose KV arrived from a
-            remote prefill instance, are admitted before the ordinary queue, so a request holding
-            blocks never sits behind one whose failed allocation stops the scan{' '}
-            <Cite tier={1} href={vllmUrl(SCHED, 'L212-L216')}>
-              L212-L216
             </Cite>
             .
           </Box>
@@ -488,8 +494,8 @@ export function SchedulerBatching() {
             <Cite tier={1} href={vllmUrl(ARG_UTILS, 'L2858-L2887')}>
               arg_utils.py L2858-L2887
             </Cite>{' '}
-            <Cite tier={1} href={vllmUrl('vllm/entrypoints/cli/serve.py', 'L188')}>
-              serve.py L188
+            <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/api_server/entry.py', 'L36-L40')}>
+              entry.py L36-L40
             </Cite>
             . The 2048 and 128 declared on <code>SchedulerConfig</code> are class fallbacks, used
             when no usage context matches{' '}
@@ -533,6 +539,15 @@ export function SchedulerBatching() {
                 decoding compose cleanly: cached-prefix tokens do not need budget, and speculative
                 draft tokens are budgeted like extra decode tokens. (Prefix caching is Section 6;
                 speculative decoding is Section 11.)
+              </Box>
+              <Box variant="p">
+                Waiting requests that already hold KV blocks, such as one whose KV arrived from a
+                remote prefill instance, are admitted before the ordinary queue, so a request
+                holding blocks never sits behind one whose failed allocation stops the scan{' '}
+                <Cite tier={1} href={vllmUrl(SCHED, 'L212-L216')}>
+                  v1 scheduler.py L212-L216
+                </Cite>
+                .
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -628,7 +643,7 @@ export function SchedulerBatching() {
             <Cite tier={1} href={vllmUrl(SCHED, 'L1538-L1581')}>
               v1 scheduler.py L1538-L1581
             </Cite>
-            . The optimization guide still speaks of a default <code>RECOMPUTE</code> mode
+            . The optimization guide speaks of a default <code>RECOMPUTE</code> mode
             &quot;rather than <code>SWAP</code>&quot;{' '}
             <Cite tier={1} href={OPT_GUIDE} kind="doc-code-conflict">
               vLLM docs: Optimization and tuning
@@ -637,7 +652,7 @@ export function SchedulerBatching() {
             <Cite tier={1} href={V1_GUIDE}>
               vLLM docs: V1 user guide
             </Cite>
-            , and a search of <code>vllm/</code> at v0.31.0 for this section found no{' '}
+            , and the v0.31.0 tree under <code>vllm/</code> contains no{' '}
             <code>PreemptionMode</code>. Under FCFS the victim is the request added to the running
             batch last; under the priority policy it is the lowest-priority one{' '}
             <Cite tier={1} href={vllmUrl(SCHED, 'L763-L803')}>

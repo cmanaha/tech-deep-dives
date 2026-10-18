@@ -26,10 +26,10 @@ const wasteRows: WasteRow[] = [
     cost: 'Grows with the gap between the reserved maximum and the real length.',
   },
   {
-    kind: 'Reservation / over-allocation',
+    kind: 'Reservation',
     cause:
-      'Output length is unknown at admission, so a contiguous allocator must reserve for the worst case up front. You pay for tokens that may never be generated.',
-    cost: 'Caps batch size to whatever the worst-case reservations allow.',
+      'Slots for tokens the request will generate later are claimed at admission. They are eventually filled, but they sit empty for most of the request lifetime.',
+    cost: 'Holds memory that other requests could use now, which caps batch size.',
   },
   {
     kind: 'External fragmentation',
@@ -268,9 +268,9 @@ export function PagedAttentionKV() {
             .
           </Box>
           <Box variant="p">
-            <strong>The paging lives in the memory manager.</strong> vLLM&apos;s KV cache follows
-            the paper&apos;s design: a pool of fixed-size KV blocks, a block table per request, and
-            hash-chained prefix blocks for reuse. A reader who knows the paper will look for its
+            <strong>The paging lives in the memory manager.</strong> vLLM&apos;s KV cache keeps
+            the paper&apos;s design, a pool of fixed-size KV blocks and a block table per request,
+            and adds hash-chained prefix blocks for reuse. A reader who knows the paper will look for its
             kernel: the CUDA PagedAttention kernels were deleted in
             v0.25.0<sup>1</sup>. The attention backends (FlashAttention, FlashInfer, Triton and
             the backends for MLA, multi-head latent attention) read the paged KV cache through the
@@ -465,9 +465,13 @@ export function PagedAttentionKV() {
                 preempted request&apos;s KV cache, not by swapping it to host memory and faulting
                 it back in. So the &quot;page table&quot; is real, but the &quot;swap&quot; is
                 replaced by recompute. Offloading KV blocks to CPU or remote tiers is a separate,
-                explicit feature, off until you set <code>--kv-offloading-size</code>{' '}
+                explicit feature, off until you set <code>--kv-offloading-size</code> or name an
+                offloading connector in <code>--kv-transfer-config</code>{' '}
                 <Cite tier={1} href={vllmUrl('vllm/config/cache.py', 'L256-L260')}>
                   cache.py L256-L260
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L1124-L1158')}>
+                  vllm.py L1124-L1158
                 </Cite>{' '}
                 (section 7, KV-Cache Offloading &amp; Tiers).
               </Box>
