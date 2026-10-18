@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 320.
+Total distinct sources: 322.
 
 ## Tier 1: official documentation, specification, filing or pinned source code
 
@@ -48,7 +48,7 @@ Total distinct sources: 320.
 | AWS | [AWS Neuron: Neuron Persistent Cache](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/neuron-caching.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: Neuron Runtime configuration guide (NeuronCore reservation, NEURON_RT_VISIBLE_CORES)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/guides/configuration-guide.html) | 2026-10-17 | IsolationNie |
 | AWS | [AWS Neuron: neuron-top User Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/tools/neuron-sys-tools/neuron-top-user-guide.html) | 2026-10-17 | AwsCompilersAndTooling |
-| AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | AwsCustomSilicon, HeterogeneityFact, IsolationNie |
+| AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | AwsCustomSilicon, GroqSambanovaDataflow, HeterogeneityFact, IsolationNie |
 | AWS | [AWS Neuron: NKI API reference, nki.isa.nc_matmul](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/api/generated/nki.isa.nc_matmul.html) | 2026-10-16 | AwsCompilersAndTooling, AwsCustomSilicon |
 | AWS | [AWS Neuron: NKI Library release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nki-lib.html) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
 | AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-17 | AwsCustomSilicon, KernelExecutionLifecycle |
@@ -260,8 +260,9 @@ Total distinct sources: 320.
 | Cerebras | [Introducing Cerebras Inference: AI at Instant Speed (2024-08-27)](https://www.cerebras.ai/blog/introducing-cerebras-inference-ai-at-instant-speed) | 2026-10-16 | HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
 | Cerebras | [Supercharge your HPC Research with the Cerebras SDK](https://www.cerebras.ai/blog/supercharge-your-hpc-research-with-the-cerebras-sdk) | 2026-10-16 | HeterogeneityFact, ThesisAndFraming |
 | DeepSeek-AI | [DeepSeek-V3 Technical Report (arXiv:2412.19437)](https://arxiv.org/abs/2412.19437) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier, HighBandwidthFlash, MoeAndSparseActivation, QuantizationAndPrecision, ThesisAndFraming |
-| Groq | [Groq and Nvidia Enter Non-Exclusive Inference Technology Licensing Agreement (2025-12-24)](https://groq.com/newsroom/groq-and-nvidia-enter-non-exclusive-inference-technology-licensing-agreement-to-accelerate-ai-inference-at-global-scale) | 2026-10-16 | HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
-| Groq | [GroqCloud docs: Models](https://console.groq.com/docs/models) | 2026-10-16 | MoeAndSparseActivation |
+| Groq | [Groq and Nvidia Enter Non-Exclusive Inference Technology Licensing Agreement (2025-12-24)](https://groq.com/newsroom/groq-and-nvidia-enter-non-exclusive-inference-technology-licensing-agreement-to-accelerate-ai-inference-at-global-scale) | 2026-10-17 | GroqSambanovaDataflow, HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
+| Groq | [GroqChip Processor product spec sheet (v1.5)](https://groq.com/product-spec-sheet-groqchip-processor/) | 2026-10-17 | GroqSambanovaDataflow |
+| Groq | [GroqCloud docs: Models](https://console.groq.com/docs/models) | 2026-10-17 | GroqSambanovaDataflow, MoeAndSparseActivation |
 | Intel | [Intel Outlines Architectures for Agentic AI at Hot Chips 2026 (2026-08-24)](https://www.intel.com/content/www/us/en/newsroom/news/client-computing/intel-outlines-architectures-for-agentic-ai-at-hot-chips-2026.html) | 2026-10-17 | IntelXeon6 |
 | Intel | [Intel Xeon 6+ processors product page](https://www.intel.com/content/www/us/en/products/details/processors/xeon/6-plus-series.html) | 2026-10-17 | IntelXeon6 |
 | Kioxia | [Kioxia Announces KIOXIA GP1 Series Super High IOPS SSDs for AI Applications (2026-08-03)](https://americas.kioxia.com/en-us/business/news/2026/ssd-20260803-1.html) | 2026-10-17 | FlashCacheTier |
@@ -277,7 +278,7 @@ Total distinct sources: 320.
 | NVIDIA | [GTC 2026 live updates (Feynman, Rosa, Kyber)](https://blogs.nvidia.com/blog/gtc-2026-news/) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [How NVIDIA GB200 NVL72 and NVIDIA Dynamo Boost Inference Performance for MoE Models](https://developer.nvidia.com/blog/how-nvidia-gb200-nvl72-and-nvidia-dynamo-boost-inference-performance-for-moe-models/) | 2026-10-17 | GraceBlackwellUltraServer, MoeAndSparseActivation |
 | NVIDIA | [Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era](https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/) | 2026-10-17 | DisaggregatedServingAndSpeculative, GraceBlackwellUltraServer, IsolationNie, KernelExecutionLifecycle, MoeAndSparseActivation, NvidiaBlackwell, NvidiaHopper, RooflineAndArithmeticIntensity |
-| NVIDIA | [Inside NVIDIA Groq 3 LPX: The Low-Latency Inference Accelerator for the NVIDIA Vera Rubin Platform (2026-03-16)](https://developer.nvidia.com/blog/inside-nvidia-groq-3-lpx-the-low-latency-inference-accelerator-for-the-nvidia-vera-rubin-platform/) | 2026-10-17 | DisaggregatedServingAndSpeculative, HeterogeneityFact, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
+| NVIDIA | [Inside NVIDIA Groq 3 LPX: The Low-Latency Inference Accelerator for the NVIDIA Vera Rubin Platform (2026-03-16)](https://developer.nvidia.com/blog/inside-nvidia-groq-3-lpx-the-low-latency-inference-accelerator-for-the-nvidia-vera-rubin-platform/) | 2026-10-17 | DisaggregatedServingAndSpeculative, GroqSambanovaDataflow, HeterogeneityFact, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [Introducing NVFP4 for Efficient and Accurate Low-Precision Inference](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/) | 2026-10-17 | HeterogeneityFact, MoeAndSparseActivation, NvidiaBlackwell, QuantizationAndPrecision |
 | NVIDIA | [Introducing NVIDIA BlueField-4-Powered Inference Context Memory Storage Platform (G1 to G4 tiers, G3.5)](https://developer.nvidia.com/blog/introducing-nvidia-bluefield-4-powered-inference-context-memory-storage-platform-for-the-next-frontier-of-ai/) | 2026-10-17 | FlashCacheTier |
 | NVIDIA | [NVIDIA Blackwell architecture](https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/) | 2026-10-16 | CapitalMarketsLens, GraceBlackwellUltraServer, NvidiaBlackwell |
@@ -288,7 +289,7 @@ Total distinct sources: 320.
 | NVIDIA | [NVIDIA GB300 NVL72](https://www.nvidia.com/en-us/data-center/gb300-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, MoeAndSparseActivation, NvidiaBlackwell, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA Grace CPU page (Vera CPU: SOCAMM LPDDR5X, 1.2 TB/s, 1.5 TB per CPU)](https://www.nvidia.com/en-us/data-center/grace-cpu/) | 2026-10-16 | HighBandwidthFlash |
 | NVIDIA | [NVIDIA Grace CPU Superchip (Grace CPU C1 and Superchip specifications)](https://www.nvidia.com/en-us/data-center/grace-cpu-superchip/) | 2026-10-17 | GraceBlackwellUltraServer |
-| NVIDIA | [NVIDIA Groq 3 LPX Now in Full Production With World-Class Speed for Agentic AI (2026-08-24)](https://nvidianews.nvidia.com/news/nvidia-groq-3-lpx-now-in-full-production-with-world-class-speed-for-agentic-ai) | 2026-10-17 | HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
+| NVIDIA | [NVIDIA Groq 3 LPX Now in Full Production With World-Class Speed for Agentic AI (2026-08-24)](https://nvidianews.nvidia.com/news/nvidia-groq-3-lpx-now-in-full-production-with-world-class-speed-for-agentic-ai) | 2026-10-17 | GroqSambanovaDataflow, HeterogeneityFact, MoeAndSparseActivation, ThesisAndFraming |
 | NVIDIA | [NVIDIA H100 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h100/) | 2026-10-16 | DisaggregatedServingAndSpeculative, FlashCacheTier, KernelExecutionLifecycle, NvidiaHopper, RooflineAndArithmeticIntensity |
 | NVIDIA | [NVIDIA H200 Tensor Core GPU](https://www.nvidia.com/en-us/data-center/h200/) | 2026-10-17 | FlashCacheTier, KernelExecutionLifecycle, MoeAndSparseActivation, NvidiaBlackwell, NvidiaHopper, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | NVIDIA | [NVIDIA HGX platform (HGX B300, HGX B200 and HGX Rubin NVL8 specifications)](https://www.nvidia.com/en-us/data-center/hgx/) | 2026-10-17 | HeterogeneityFact, HighBandwidthFlash, NvidiaBlackwell, QuantizationAndPrecision, RooflineAndArithmeticIntensity |
@@ -296,8 +297,9 @@ Total distinct sources: 320.
 | NVIDIA | [NVIDIA Hopper in Full Production (2022-09-20)](https://nvidianews.nvidia.com/news/nvidia-hopper-in-full-production) | 2026-10-16 | NvidiaHopper |
 | NVIDIA | [NVIDIA NVLink-C2C](https://www.nvidia.com/en-us/data-center/nvlink-c2c/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Supercharges Hopper, the World's Leading AI Computing Platform (2023-11-13)](https://nvidianews.nvidia.com/news/nvidia-supercharges-hopper-the-worlds-leading-ai-computing-platform) | 2026-10-16 | NvidiaHopper |
-| NVIDIA | [NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaBlackwell, RooflineAndArithmeticIntensity |
-| SambaNova | [Introducing the SN50 RDU: Purpose-Built for Agentic Inference (2026-02-24)](https://sambanova.ai/blog/introducing-the-sn50-rdu-purpose-built-for-agentic-inference) | 2026-10-16 | MoeAndSparseActivation |
+| NVIDIA | [NVIDIA Vera Rubin NVL72](https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/) | 2026-10-17 | GraceBlackwellUltraServer, GroqSambanovaDataflow, NvidiaBlackwell, RooflineAndArithmeticIntensity |
+| SambaNova | [Introducing the SN50 RDU: Purpose-Built for Agentic Inference (2026-02-24)](https://sambanova.ai/blog/introducing-the-sn50-rdu-purpose-built-for-agentic-inference) | 2026-10-17 | GroqSambanovaDataflow, MoeAndSparseActivation |
+| SambaNova | [SambaNova Unveils Fastest Chip for Agentic AI, Collaborates with Intel, and Raises $350M+ (2026-02-24)](https://sambanova.ai/press/sambanova-unveils-fastest-chip-for-agentic-ai-collaborates-with-intel-and-raises-350m) | 2026-10-17 | GroqSambanovaDataflow |
 | Samsung | [Samsung Ships Industry-First Commercial HBM4 With Ultimate Performance for AI Computing (2026-02-12)](https://news.samsung.com/global/samsung-ships-industry-first-commercial-hbm4-with-ultimate-performance-for-ai-computing) | 2026-10-16 | HighBandwidthFlash |
 | Sandisk | [HBF Fact Sheet (Tech Brief, July 2025)](https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/sandisk/collateral/company/Sandisk-HBF-Fact-Sheet.pdf) | 2026-10-17 | FlashCacheTier, HighBandwidthFlash |
 | Sandisk | [Sandisk 2026 Investor Day (2026-08-13), transcript of company presentations published by Stock Analysis](https://stockanalysis.com/stocks/sndk/transcripts/708061-investor-day-2026/) | 2026-10-17 | HighBandwidthFlash |
@@ -333,7 +335,7 @@ Total distinct sources: 320.
 | arXiv | [Pond: CXL-Based Memory Pooling Systems for Cloud Platforms (arXiv:2203.00241), Figure 4](https://arxiv.org/abs/2203.00241) | 2026-10-17 | CapitalMarketsLens, HeterogeneityFact |
 | arXiv | [Potential Applications of HBF in LLM Serving Systems (Y. Yin et al.; arXiv:2608.13127v2)](https://arxiv.org/abs/2608.13127) | 2026-10-17 | HighBandwidthFlash |
 | arXiv | [Pretraining Large Language Models with NVFP4 (arXiv:2509.25149)](https://arxiv.org/abs/2509.25149) | 2026-10-17 | QuantizationAndPrecision |
-| arXiv | [SambaNova SN40L: Scaling the AI Memory Wall with Dataflow and Composition of Experts (arXiv:2405.07518, MICRO 2024)](https://arxiv.org/abs/2405.07518) | 2026-10-16 | MoeAndSparseActivation |
+| arXiv | [SambaNova SN40L: Scaling the AI Memory Wall with Dataflow and Composition of Experts (arXiv:2405.07518, MICRO 2024)](https://arxiv.org/abs/2405.07518) | 2026-10-17 | GroqSambanovaDataflow, MoeAndSparseActivation |
 | arXiv | [SPLASH: Co-Designing Sparse Attention with High-Bandwidth Flash for Efficient Long-Context Inference (arXiv:2609.23816)](https://arxiv.org/abs/2609.23816) | 2026-10-17 | HighBandwidthFlash |
 | Blocks & Files | [Kioxia eyes GPU memory stack with high-bandwidth flash push (2026-03-20)](https://www.blocksandfiles.com/flash/2026/03/20/kioxia-eyes-gpu-memory-stack-with-high-bandwidth-flash-push/5210520) | 2026-10-17 | HighBandwidthFlash |
 | Chips and Cheese | [A Look into Intel Xeon 6's Memory Subsystem (AWS r8i, Xeon 6 6985P-C)](https://chipsandcheese.com/p/a-look-into-intel-xeon-6s-memory) | 2026-10-17 | IntelXeon6 |
