@@ -8,7 +8,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 
 ## Tier 1: source code at a pinned ref, official documentation, API reference, release notes
 
-588 sources.
+591 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
@@ -32,7 +32,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [EC2 User Guide: EFA and NIXL](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nixl.html) | 2026-10-16 | AwsGpuEfaNixl, Ec2TopologyPlacement, Sources appendix |
 | [AWS EC2: How instance topology works](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ec2-instance-topology-works.html) | 2026-10-16 | Ec2TopologyPlacement, Sources appendix |
 | [AWS EC2: Placement strategies](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html) | 2026-10-16 | Ec2TopologyPlacement, Sources appendix |
-| [Bedrock: Custom Model Import](https://docs.aws.amazon.com/bedrock/latest/userguide/model-customization-import-model.html) | 2026-10-16 | AwsSageMakerBedrock |
+| [Bedrock: Custom Model Import](https://docs.aws.amazon.com/bedrock/latest/userguide/model-customization-import-model.html) | 2026-10-16 | AwsSageMakerBedrock, DecisionGuide |
 | [AWS Decision Guide](https://docs.aws.amazon.com/decision-guides/latest/decision-guides/bedrock-or-sagemaker.html) | 2026-10-16 | AwsSageMakerBedrock |
 | [EC2 accelerated computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html) | 2026-10-16 | AwsGpuEfaNixl |
 | [EKS Best Practices: AI/ML Compute](https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html) | 2026-10-16 | AwsEks, AwsSageMakerBedrock, Sources appendix |
@@ -71,11 +71,11 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [SGLang documentation](https://docs.sglang.io/) | 2026-10-16 | Sources appendix |
 | [vLLM v0.10.1 docs: AWS Neuron installation](https://docs.vllm.ai/en/v0.10.1/getting_started/installation/aws_neuron.html) | 2026-10-16 | AwsNeuron |
 | [vLLM v0.27.0 docs: Speculative Decoding](https://docs.vllm.ai/en/v0.27.0/features/speculative_decoding/) | 2026-10-16 | SpeculativeDecoding |
-| [vLLM documentation (landing)](https://docs.vllm.ai/en/v0.31.0/) | 2026-10-16 | Sources appendix |
+| [vLLM docs: home page](https://docs.vllm.ai/en/v0.31.0/) | 2026-10-16 | Sources appendix, ThesisAndFraming |
 | [vLLM: CacheConfig API reference](https://docs.vllm.ai/en/v0.31.0/api/vllm/config/cache/) | 2026-10-16 | Sources appendix |
 | [vLLM docs: LoRAConfig](https://docs.vllm.ai/en/v0.31.0/api/vllm/config/lora/) | 2026-10-16 | LoRAServing, Sources appendix |
 | [vLLM: Conserving memory](https://docs.vllm.ai/en/v0.31.0/configuration/conserving_memory/) | 2026-10-16 | OperationsFailureModes, PagedAttentionKV, Sources appendix |
-| [vLLM: Optimization & tuning](https://docs.vllm.ai/en/v0.31.0/configuration/optimization/) | 2026-10-16 | DistributedInference, OperationsFailureModes, PagedAttentionKV, SchedulerBatching, Sources appendix |
+| [vLLM: Optimization & tuning](https://docs.vllm.ai/en/v0.31.0/configuration/optimization/) | 2026-10-16 | DecisionGuide, DistributedInference, OperationsFailureModes, PagedAttentionKV, SchedulerBatching, Sources appendix |
 | [vLLM docs: Registering a model](https://docs.vllm.ai/en/v0.31.0/contributing/model/registration/) | 2026-10-16 | codebase/CodebaseModelLayer |
 | [vLLM docs: LiteLLM](https://docs.vllm.ai/en/v0.31.0/deployment/frameworks/litellm/) | 2026-10-16 | GatewaysAppLayer, Sources appendix |
 | [vLLM docs: Open WebUI](https://docs.vllm.ai/en/v0.31.0/deployment/frameworks/open-webui/) | 2026-10-16 | GatewaysAppLayer, Sources appendix |
@@ -95,7 +95,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vLLM docs: Plugin system](https://docs.vllm.ai/en/v0.31.0/design/plugin_system/) | 2026-10-16 | codebase/CodebaseModelLayer |
 | [vLLM: Automatic prefix caching (design)](https://docs.vllm.ai/en/v0.31.0/design/prefix_caching/) | 2026-10-16 | PrefixCaching, Sources appendix |
 | [vLLM docs: Disaggregated encoder](https://docs.vllm.ai/en/v0.31.0/features/disagg_encoder/) | 2026-10-16 | DisaggregatedServing |
-| [vLLM: Disaggregated prefilling](https://docs.vllm.ai/en/v0.31.0/features/disagg_prefill/) | 2026-10-16 | Sources appendix |
+| [vLLM: Disaggregated prefilling](https://docs.vllm.ai/en/v0.31.0/features/disagg_prefill/) | 2026-10-16 | DecisionGuide, Sources appendix |
 | [vLLM docs: Initialized engine snapshots](https://docs.vllm.ai/en/v0.31.0/features/initialized_snapshots/) | 2026-10-16 | OperationsFailureModes, Sources appendix, WhenNotVllm |
 | [vLLM: KV offloading usage](https://docs.vllm.ai/en/v0.31.0/features/kv_offloading_usage/) | 2026-10-16 | KVOffloadingLMCache, Sources appendix |
 | [vLLM: LoRA adapters](https://docs.vllm.ai/en/v0.31.0/features/lora/) | 2026-10-16 | LoRAServing, Sources appendix |
@@ -124,15 +124,15 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vLLM docs: Text watermarking](https://docs.vllm.ai/en/v0.31.0/features/watermarking/) | 2026-10-16 | WhenNotVllm |
 | [vLLM docs: Installation](https://docs.vllm.ai/en/v0.31.0/getting_started/installation/) | 2026-10-16 | AwsNeuron, Sources appendix, WhenNotVllm |
 | [vLLM docs: Context Parallel Deployment](https://docs.vllm.ai/en/v0.31.0/serving/context_parallel_deployment/) | 2026-10-16 | DistributedInference |
-| [vLLM: Data-parallel deployment](https://docs.vllm.ai/en/v0.31.0/serving/data_parallel_deployment/) | 2026-10-16 | DistributedInference, Sources appendix |
+| [vLLM: Data-parallel deployment](https://docs.vllm.ai/en/v0.31.0/serving/data_parallel_deployment/) | 2026-10-16 | DecisionGuide, DistributedInference, Sources appendix |
 | [vLLM: Expert-parallel deployment](https://docs.vllm.ai/en/v0.31.0/serving/expert_parallel_deployment/) | 2026-10-16 | DistributedInference, Sources appendix |
 | [vLLM docs: Claude Code](https://docs.vllm.ai/en/v0.31.0/serving/integrations/claude_code/) | 2026-10-16 | GatewaysAppLayer |
 | [vLLM docs: Codex](https://docs.vllm.ai/en/v0.31.0/serving/integrations/codex/) | 2026-10-16 | GatewaysAppLayer |
 | [vLLM docs: OpenAI-Compatible Server](https://docs.vllm.ai/en/v0.31.0/serving/online_serving/openai_compatible_server/) | 2026-10-16 | OpenAICompatServer |
 | [vLLM: OpenAI-compatible server](https://docs.vllm.ai/en/v0.31.0/serving/openai_compatible_server/) | 2026-10-16 | GatewaysAppLayer, Sources appendix |
-| [vLLM: Parallelism & scaling](https://docs.vllm.ai/en/v0.31.0/serving/parallelism_scaling/) | 2026-10-16 | DistributedInference, Sources appendix |
+| [vLLM: Parallelism & scaling](https://docs.vllm.ai/en/v0.31.0/serving/parallelism_scaling/) | 2026-10-16 | DistributedInference, InferenceWorkload, Sources appendix |
 | [vLLM: Troubleshooting](https://docs.vllm.ai/en/v0.31.0/usage/troubleshooting/) | 2026-10-16 | OperationsFailureModes, Sources appendix |
-| [vLLM: V1 user guide](https://docs.vllm.ai/en/v0.31.0/usage/v1_guide/) | 2026-10-16 | OperationsFailureModes, SchedulerBatching, Sources appendix, V1Architecture |
+| [vLLM docs: V1 guide](https://docs.vllm.ai/en/v0.31.0/usage/v1_guide/) | 2026-10-16 | InferenceWorkload, OperationsFailureModes, SchedulerBatching, Sources appendix, ThesisAndFraming, V1Architecture |
 | [vLLM docs: V1 user guide, chunked prefill](https://docs.vllm.ai/en/v0.31.0/usage/v1_guide/#chunked-prefill) | 2026-10-16 | V1Architecture |
 | [vLLM docs: V1 user guide, CUDA graphs](https://docs.vllm.ai/en/v0.31.0/usage/v1_guide/#cuda-graphs) | 2026-10-16 | V1Architecture |
 | [vLLM docs: V1 user guide, feature support](https://docs.vllm.ai/en/v0.31.0/usage/v1_guide/#feature-support) | 2026-10-16 | V1Architecture |
@@ -148,7 +148,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [ai-dynamo/dynamo @ v1.5.1: docs/fern/pages/reference/backends/vllm-configuration.mdx](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/reference/backends/vllm-configuration.mdx) | 2026-10-16 | NvidiaDynamo |
 | [ai-dynamo/dynamo @ v1.5.1: examples/backends/vllm/launch/disagg.sh](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/examples/backends/vllm/launch/disagg.sh) | 2026-10-16 | NvidiaDynamo |
 | [ai-dynamo/dynamo @ v1.5.1: lib/bindings/kvbm/python/kvbm/vllm_integration/connector/dynamo_connector.py](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/bindings/kvbm/python/kvbm/vllm_integration/connector/dynamo_connector.py) | 2026-10-16 | NvidiaDynamo |
-| [ai-dynamo/dynamo @ v1.5.1: pyproject.toml](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/pyproject.toml) | 2026-10-16 | NvidiaDynamo, RayServeLLM, WhenNotVllm |
+| [ai-dynamo/dynamo @ v1.5.1: pyproject.toml](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/pyproject.toml) | 2026-10-16 | NvidiaDynamo, RayServeLLM, ThesisAndFraming, WhenNotVllm |
 | [ai-dynamo/dynamo @ v1.5.1: README.md](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/README.md) | 2026-10-16 | NvidiaDynamo, WhenNotVllm |
 | [NVIDIA Dynamo (GitHub: ai-dynamo/dynamo, v1.5.1)](https://github.com/ai-dynamo/dynamo/tree/v1.5.1) | 2026-10-16 | Sources appendix |
 | [aws-neuron/upstreaming-to-vllm (AWS fork, repository archived)](https://github.com/aws-neuron/upstreaming-to-vllm) | 2026-10-16 | Sources appendix |
@@ -156,8 +156,8 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [aws-samples/load-test-llm-with-locust](https://github.com/aws-samples/load-test-llm-with-locust/tree/72854d749cf8d88dc1f625969df1351e526a1321) | 2026-10-16 | AwsSageMakerBedrock |
 | [AWS DLC release: LMI 30.0.0](https://github.com/aws/deep-learning-containers/releases/tag/v1.0-djl-0.38.0-inf-lmi-30.0.0-cu130) | 2026-10-16 | AwsSageMakerBedrock |
 | [aws/karpenter-provider-aws @ v1.15.0: pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml](https://github.com/aws/karpenter-provider-aws/blob/v1.15.0/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml) | 2026-10-16 | AwsEks |
-| [aws/karpenter-provider-aws @ v1.15.0: website/content/en/docs/concepts/nodeclasses.md?plain=1](https://github.com/aws/karpenter-provider-aws/blob/v1.15.0/website/content/en/docs/concepts/nodeclasses.md?plain=1) | 2026-10-16 | AwsEks, Ec2TopologyPlacement |
-| [Karpenter v1.11.0 release notes](https://github.com/aws/karpenter-provider-aws/releases/tag/v1.11.0) | 2026-10-16 | AwsEks, Ec2TopologyPlacement |
+| [aws/karpenter-provider-aws @ v1.15.0: website/content/en/docs/concepts/nodeclasses.md?plain=1](https://github.com/aws/karpenter-provider-aws/blob/v1.15.0/website/content/en/docs/concepts/nodeclasses.md?plain=1) | 2026-10-16 | AwsEks, DecisionGuide, Ec2TopologyPlacement |
+| [Karpenter v1.11.0 release notes](https://github.com/aws/karpenter-provider-aws/releases/tag/v1.11.0) | 2026-10-16 | AwsEks, DecisionGuide, Ec2TopologyPlacement |
 | [aws/model-hosting-container-standards @ v0.1.16: docs/sagemaker/04_sticky_session_routing.md](https://github.com/aws/model-hosting-container-standards/blob/v0.1.16/docs/sagemaker/04_sticky_session_routing.md) | 2026-10-16 | AwsSageMakerBedrock |
 | [aws/model-hosting-container-standards @ v0.1.16: python/model_hosting_container_standards/sagemaker/sessions/manager.py](https://github.com/aws/model-hosting-container-standards/blob/v0.1.16/python/model_hosting_container_standards/sagemaker/sessions/manager.py) | 2026-10-16 | AwsSageMakerBedrock |
 | [aws/model-hosting-container-standards (Python toolkit behind vLLM's SageMaker route; SM_VLLM_* notebooks, v0.1.16)](https://github.com/aws/model-hosting-container-standards/tree/v0.1.16) | 2026-10-16 | Sources appendix |
@@ -190,7 +190,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [kubernetes/cloud-provider-aws @ v1.37.0: pkg/providers/v1/instances_v2.go](https://github.com/kubernetes/cloud-provider-aws/blob/v1.37.0/pkg/providers/v1/instances_v2.go) | 2026-10-16 | Ec2TopologyPlacement |
 | [kubernetes/cloud-provider-aws @ v1.37.0: pkg/providers/v1/well_known_labels.go](https://github.com/kubernetes/cloud-provider-aws/blob/v1.37.0/pkg/providers/v1/well_known_labels.go) | 2026-10-16 | Ec2TopologyPlacement |
 | [llm-d/llm-d-router @ v1.0.0: docs/architecture.md](https://github.com/llm-d/llm-d-router/blob/v1.0.0/docs/architecture.md) | 2026-10-16 | LlmdKServe |
-| [llm-d/llm-d-router @ v1.0.0: docs/disaggregation.md](https://github.com/llm-d/llm-d-router/blob/v1.0.0/docs/disaggregation.md) | 2026-10-16 | LlmdKServe |
+| [llm-d/llm-d-router @ v1.0.0: docs/disaggregation.md](https://github.com/llm-d/llm-d-router/blob/v1.0.0/docs/disaggregation.md) | 2026-10-16 | DecisionGuide, LlmdKServe |
 | [llm-d/llm-d-router @ v1.0.0: pkg/epp/framework/plugins/datalayer/attribute/topology/README.md?plain=1](https://github.com/llm-d/llm-d-router/blob/v1.0.0/pkg/epp/framework/plugins/datalayer/attribute/topology/README.md?plain=1) | 2026-10-16 | Ec2TopologyPlacement |
 | [llm-d/llm-d-router @ v1.0.0: pkg/epp/framework/plugins/datalayer/extractor/metrics/factories.go](https://github.com/llm-d/llm-d-router/blob/v1.0.0/pkg/epp/framework/plugins/datalayer/extractor/metrics/factories.go) | 2026-10-16 | LlmdKServe, WhenNotVllm |
 | [llm-d/llm-d-router @ v1.0.0: pkg/epp/framework/plugins/datalayer/extractor/topology/extractor.go](https://github.com/llm-d/llm-d-router/blob/v1.0.0/pkg/epp/framework/plugins/datalayer/extractor/topology/extractor.go) | 2026-10-16 | Ec2TopologyPlacement |
@@ -207,7 +207,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [llm-d Router, formerly llm-d-inference-scheduler (GitHub, v1.0.0)](https://github.com/llm-d/llm-d-router/tree/v1.0.0) | 2026-10-16 | Sources appendix |
 | [llm-d/llm-d-router @ v1.0.0: pkg/epp/framework/plugins/scheduling/scorer](https://github.com/llm-d/llm-d-router/tree/v1.0.0/pkg/epp/framework/plugins/scheduling/scorer) | 2026-10-16 | LlmdKServe |
 | [llm-d/llm-d @ v0.10.0: README.md](https://github.com/llm-d/llm-d/blob/v0.10.0/README.md) | 2026-10-16 | LlmdKServe |
-| [llm-d v0.10.0 release notes](https://github.com/llm-d/llm-d/releases/tag/v0.10.0) | 2026-10-16 | LlmdKServe, NvidiaDynamo, RayServeLLM |
+| [llm-d v0.10.0 release notes](https://github.com/llm-d/llm-d/releases/tag/v0.10.0) | 2026-10-16 | LlmdKServe, NvidiaDynamo, RayServeLLM, ThesisAndFraming |
 | [llm-d (GitHub, v0.10.0)](https://github.com/llm-d/llm-d/tree/v0.10.0) | 2026-10-16 | Sources appendix |
 | [LMCache/LMCache @ v0.5.6: README.md](https://github.com/LMCache/LMCache/blob/v0.5.6/README.md) | 2026-10-16 | KVOffloadingLMCache |
 | [LMCache release v0.5.6](https://github.com/LMCache/LMCache/releases/tag/v0.5.6) | 2026-10-16 | KVOffloadingLMCache |
@@ -225,7 +225,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [ray-project/ray @ ray-2.59.0: python/ray/serve/llm/__init__.py](https://github.com/ray-project/ray/blob/ray-2.59.0/python/ray/serve/llm/__init__.py) | 2026-10-16 | RayServeLLM |
 | [ray-project/ray @ ray-2.59.0: python/ray/serve/llm/ingress.py](https://github.com/ray-project/ray/blob/ray-2.59.0/python/ray/serve/llm/ingress.py) | 2026-10-16 | RayServeLLM |
 | [ray-project/ray @ ray-2.59.0: python/ray/serve/llm/request_router.py](https://github.com/ray-project/ray/blob/ray-2.59.0/python/ray/serve/llm/request_router.py) | 2026-10-16 | RayServeLLM |
-| [ray-project/ray @ ray-2.59.0: python/requirements/llm/llm-requirements.txt](https://github.com/ray-project/ray/blob/ray-2.59.0/python/requirements/llm/llm-requirements.txt) | 2026-10-16 | NvidiaDynamo, RayServeLLM |
+| [ray-project/ray @ ray-2.59.0: python/requirements/llm/llm-requirements.txt](https://github.com/ray-project/ray/blob/ray-2.59.0/python/requirements/llm/llm-requirements.txt) | 2026-10-16 | DecisionGuide, NvidiaDynamo, RayServeLLM, ThesisAndFraming |
 | [ray-project/ray @ ray-2.59.0: python/setup.py](https://github.com/ray-project/ray/blob/ray-2.59.0/python/setup.py) | 2026-10-16 | RayServeLLM |
 | [sgl-project/sglang @ v0.5.21: README.md](https://github.com/sgl-project/sglang/blob/v0.5.21/README.md) | 2026-10-16 | WhenNotVllm |
 | [vllm-project/guidellm @ v0.8.1: README.md](https://github.com/vllm-project/guidellm/blob/v0.8.1/README.md) | 2026-10-16 | ObservabilityBench |
@@ -236,14 +236,14 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/production-stack @ vllm-stack-0.1.13: helm/values.schema.json](https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/helm/values.schema.json) | 2026-10-16 | ProductionStack |
 | [vllm-project/production-stack @ vllm-stack-0.1.13: helm/values.yaml](https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/helm/values.yaml) | 2026-10-16 | ProductionStack |
 | [vllm-project/production-stack @ vllm-stack-0.1.13: README.md](https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/README.md) | 2026-10-16 | ProductionStack |
-| [vllm-project/production-stack @ vllm-stack-0.1.13: src/vllm_router/parsers/parser.py](https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/src/vllm_router/parsers/parser.py) | 2026-10-16 | ProductionStack |
-| [vllm-project/production-stack @ vllm-stack-0.1.13: src/vllm_router/routers/routing_logic.py](https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/src/vllm_router/routers/routing_logic.py) | 2026-10-16 | KVOffloadingLMCache, ProductionStack |
+| [vllm-project/production-stack @ vllm-stack-0.1.13: src/vllm_router/parsers/parser.py](https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/src/vllm_router/parsers/parser.py) | 2026-10-16 | DecisionGuide, ProductionStack |
+| [vllm-project/production-stack @ vllm-stack-0.1.13: src/vllm_router/routers/routing_logic.py](https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/src/vllm_router/routers/routing_logic.py) | 2026-10-16 | DecisionGuide, KVOffloadingLMCache, ProductionStack |
 | [vllm-project/production-stack @ vllm-stack-0.1.13: src/vllm_router/services/metrics_service/__init__.py](https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/src/vllm_router/services/metrics_service/__init__.py) | 2026-10-16 | ProductionStack |
 | [vllm-project/production-stack @ vllm-stack-0.1.13: src/vllm_router/stats/engine_stats.py](https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/src/vllm_router/stats/engine_stats.py) | 2026-10-16 | LlmdKServe, ProductionStack |
 | [vllm-project/production-stack (vllm-stack-0.1.13)](https://github.com/vllm-project/production-stack/tree/vllm-stack-0.1.13) | 2026-10-16 | Sources appendix |
 | [vllm-project/production-stack @ vllm-stack-0.1.13: operator/api/v1alpha1](https://github.com/vllm-project/production-stack/tree/vllm-stack-0.1.13/operator/api/v1alpha1) | 2026-10-16 | ProductionStack |
 | [vllm-project/production-stack @ vllm-stack-0.1.13: src/vllm_router](https://github.com/vllm-project/production-stack/tree/vllm-stack-0.1.13/src/vllm_router) | 2026-10-16 | ProductionStack |
-| [vllm-project/router @ v0.1.16: README.md](https://github.com/vllm-project/router/blob/v0.1.16/README.md) | 2026-10-16 | ProductionStack |
+| [vllm-project/router @ v0.1.16: README.md](https://github.com/vllm-project/router/blob/v0.1.16/README.md) | 2026-10-16 | DecisionGuide, ProductionStack |
 | [tpu-inference](https://github.com/vllm-project/tpu-inference) | 2026-10-16 | WhenNotVllm |
 | [vllm-project/vllm-bnb-plugin @ v0.0.3: vllm_bnb_plugin/__init__.py](https://github.com/vllm-project/vllm-bnb-plugin/blob/v0.0.3/vllm_bnb_plugin/__init__.py) | 2026-10-16 | Quantization |
 | [vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) | 2026-10-16 | WhenNotVllm |
@@ -255,7 +255,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm-neuron @ v0.24.0.1.1.0: docs/guides/reference-configuration.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/docs/guides/reference-configuration.md?plain=1) | 2026-10-16 | AwsNeuron |
 | [vllm-project/vllm-neuron @ v0.24.0.1.1.0: examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI/run_prefill.sh](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI/run_prefill.sh) | 2026-10-16 | AwsNeuron |
 | [vllm-project/vllm-neuron @ v0.24.0.1.1.0: pyproject.toml](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/pyproject.toml) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: README.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/README.md?plain=1) | 2026-10-16 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: README.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/README.md?plain=1) | 2026-10-16 | AwsNeuron, DecisionGuide |
 | [vllm-project/vllm-neuron @ v0.24.0.1.1.0: vllm_neuron/vllm/platform.py](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/vllm_neuron/vllm/platform.py) | 2026-10-16 | AwsNeuron |
 | [v0.21.0.1.0.0 release notes](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.21.0.1.0.0) | 2026-10-16 | AwsNeuron |
 | [vllm-neuron v0.24.0.1.1.0 release notes](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.24.0.1.1.0) | 2026-10-16 | AwsNeuron |
@@ -280,7 +280,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: docs/design/paged_attention.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/design/paged_attention.md) | 2026-10-16 | PagedAttentionKV |
 | [vllm-project/vllm @ v0.31.0: docs/features/disagg_prefill.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/disagg_prefill.md) | 2026-10-16 | DisaggregatedServing, KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: docs/features/index_cache.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/index_cache.md) | 2026-10-16 | KVOffloadingLMCache |
-| [vllm-project/vllm @ v0.31.0: docs/features/kv_offloading_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/kv_offloading_usage.md) | 2026-10-16 | KVOffloadingLMCache |
+| [vllm-project/vllm @ v0.31.0: docs/features/kv_offloading_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/kv_offloading_usage.md) | 2026-10-16 | DecisionGuide, KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: docs/features/lora.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/lora.md) | 2026-10-16 | LoRAServing, OperationsFailureModes |
 | [vllm-project/vllm @ v0.31.0: docs/features/mooncake_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/mooncake_connector_usage.md) | 2026-10-16 | DisaggregatedServing |
 | [vllm-project/vllm @ v0.31.0: docs/features/moriio_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/moriio_connector_usage.md) | 2026-10-16 | DisaggregatedServing |
@@ -336,7 +336,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/compilation/passes/ir/lowering_pass.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/compilation/passes/ir/lowering_pass.py) | 2026-10-16 | codebase/CodebaseAdvanced |
 | [vllm-project/vllm @ v0.31.0: vllm/compilation/passes/pass_manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/compilation/passes/pass_manager.py) | 2026-10-16 | codebase/CodebaseAdvanced |
 | [vllm-project/vllm @ v0.31.0: vllm/config/attention.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/attention.py) | 2026-10-16 | KVOffloadingLMCache, codebase/CodebaseExecution |
-| [vllm-project/vllm @ v0.31.0: vllm/config/cache.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/cache.py) | 2026-10-16 | KVOffloadingLMCache, OperationsFailureModes, PagedAttentionKV, PrefixCaching, Quantization, SchedulerBatching, V1Architecture, codebase/CodebaseConfig, codebase/CodebaseScheduler |
+| [vllm-project/vllm @ v0.31.0: vllm/config/cache.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/cache.py) | 2026-10-16 | DecisionGuide, KVOffloadingLMCache, OperationsFailureModes, PagedAttentionKV, PrefixCaching, Quantization, SchedulerBatching, V1Architecture, codebase/CodebaseConfig, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/config/compilation.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/compilation.py) | 2026-10-16 | codebase/CodebaseAdvanced, codebase/CodebaseConfig, codebase/CodebaseExecution |
 | [vllm-project/vllm @ v0.31.0: vllm/config/device.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/device.py) | 2026-10-16 | codebase/CodebaseConfig |
 | [vllm-project/vllm @ v0.31.0: vllm/config/diffusion.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/diffusion.py) | 2026-10-16 | WhenNotVllm |
@@ -346,15 +346,15 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/config/kv_transfer.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/kv_transfer.py) | 2026-10-16 | DisaggregatedServing, KVOffloadingLMCache, codebase/CodebaseConfig, codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/config/load.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/load.py) | 2026-10-16 | WhenNotVllm, codebase/CodebaseConfig |
 | [vllm-project/vllm @ v0.31.0: vllm/config/lora.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/lora.py) | 2026-10-16 | LoRAServing, codebase/CodebaseConfig, codebase/CodebaseModelLayer |
-| [vllm-project/vllm @ v0.31.0: vllm/config/model.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/model.py) | 2026-10-16 | DistributedInference, PrefixCaching, Quantization, codebase/CodebaseConfig, codebase/CodebaseModelLayer |
+| [vllm-project/vllm @ v0.31.0: vllm/config/model.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/model.py) | 2026-10-16 | DecisionGuide, DistributedInference, PrefixCaching, Quantization, codebase/CodebaseConfig, codebase/CodebaseModelLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/config/observability.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/observability.py) | 2026-10-16 | ObservabilityBench, SpeculativeDecoding, codebase/CodebaseAdvanced, codebase/CodebaseConfig |
-| [vllm-project/vllm @ v0.31.0: vllm/config/parallel.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/parallel.py) | 2026-10-16 | DistributedInference, RayServeLLM, SchedulerBatching, V1Architecture, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseDistributed, codebase/CodebaseExecution |
+| [vllm-project/vllm @ v0.31.0: vllm/config/parallel.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/parallel.py) | 2026-10-16 | DecisionGuide, DistributedInference, RayServeLLM, SchedulerBatching, V1Architecture, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseDistributed, codebase/CodebaseExecution |
 | [vllm-project/vllm @ v0.31.0: vllm/config/quantization.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/quantization.py) | 2026-10-16 | Quantization |
-| [vllm-project/vllm @ v0.31.0: vllm/config/scheduler.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/scheduler.py) | 2026-10-16 | DistributedInference, GatewaysAppLayer, OpenAICompatServer, OperationsFailureModes, PagedAttentionKV, ProductionStack, SchedulerBatching, codebase/CodebaseConfig, codebase/CodebaseScheduler |
-| [vllm-project/vllm @ v0.31.0: vllm/config/speculative.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/speculative.py) | 2026-10-16 | AwsSageMakerBedrock, SpeculativeDecoding, codebase/CodebaseAdvanced, codebase/CodebaseConfig |
+| [vllm-project/vllm @ v0.31.0: vllm/config/scheduler.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/scheduler.py) | 2026-10-16 | DecisionGuide, DistributedInference, GatewaysAppLayer, OpenAICompatServer, OperationsFailureModes, PagedAttentionKV, ProductionStack, SchedulerBatching, codebase/CodebaseConfig, codebase/CodebaseScheduler |
+| [vllm-project/vllm @ v0.31.0: vllm/config/speculative.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/speculative.py) | 2026-10-16 | AwsSageMakerBedrock, DecisionGuide, SpeculativeDecoding, codebase/CodebaseAdvanced, codebase/CodebaseConfig |
 | [vllm-project/vllm @ v0.31.0: vllm/config/structured_outputs.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/structured_outputs.py) | 2026-10-16 | V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseConfig |
 | [vllm-project/vllm @ v0.31.0: vllm/config/utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/utils.py) | 2026-10-16 | codebase/CodebaseConfig |
-| [vllm-project/vllm @ v0.31.0: vllm/config/vllm.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/vllm.py) | 2026-10-16 | DistributedInference, KVOffloadingLMCache, LoRAServing, OperationsFailureModes, PagedAttentionKV, Quantization, SchedulerBatching, SpeculativeDecoding, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseConfig, codebase/CodebaseExecution |
+| [vllm-project/vllm @ v0.31.0: vllm/config/vllm.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/vllm.py) | 2026-10-16 | DistributedInference, KVOffloadingLMCache, LoRAServing, OperationsFailureModes, PagedAttentionKV, Quantization, SchedulerBatching, SpeculativeDecoding, ThesisAndFraming, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseConfig, codebase/CodebaseExecution |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/device_communicators/all2all.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/device_communicators/all2all.py) | 2026-10-16 | DistributedInference |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/device_communicators/cuda_communicator.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/device_communicators/cuda_communicator.py) | 2026-10-16 | DistributedInference, codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/device_communicators/flashinfer_all_reduce.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/device_communicators/flashinfer_all_reduce.py) | 2026-10-16 | codebase/CodebaseDistributed |
@@ -384,13 +384,15 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/simple_cpu_offload_connector.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/simple_cpu_offload_connector.py) | 2026-10-16 | KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/parallel_state.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/parallel_state.py) | 2026-10-16 | DistributedInference, codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/utils.py) | 2026-10-16 | codebase/CodebaseConfig |
-| [vllm-project/vllm @ v0.31.0: vllm/engine/arg_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/arg_utils.py) | 2026-10-16 | AwsNeuron, DistributedInference, GatewaysAppLayer, LoRAServing, OperationsFailureModes, PagedAttentionKV, PrefixCaching, SchedulerBatching, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseExecution, codebase/CodebaseScheduler |
+| [vllm-project/vllm @ v0.31.0: vllm/engine/arg_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/arg_utils.py) | 2026-10-16 | AwsNeuron, DecisionGuide, DistributedInference, GatewaysAppLayer, InferenceWorkload, LoRAServing, OperationsFailureModes, PagedAttentionKV, PrefixCaching, SchedulerBatching, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseExecution, codebase/CodebaseScheduler |
+| [vllm-project/vllm @ v0.31.0: vllm/engine/async_llm_engine.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/async_llm_engine.py) | 2026-10-16 | ThesisAndFraming |
 | [vllm-project/vllm @ v0.31.0: vllm/engine/llm_engine.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/llm_engine.py) | 2026-10-16 | V1Architecture, codebase/CodebaseArchitecture |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/anthropic/api_router.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/anthropic/api_router.py) | 2026-10-16 | GatewaysAppLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/chat_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/chat_utils.py) | 2026-10-16 | OpenAICompatServer |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/cli/benchmark/main.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/cli/benchmark/main.py) | 2026-10-16 | ObservabilityBench, codebase/CodebaseRust |
+| [vllm-project/vllm @ v0.31.0: vllm/entrypoints/cli/main.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/cli/main.py) | 2026-10-16 | ThesisAndFraming |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/cli/preload.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/cli/preload.py) | 2026-10-16 | AwsEks |
-| [vllm-project/vllm @ v0.31.0: vllm/entrypoints/cli/serve.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/cli/serve.py) | 2026-10-16 | DistributedInference, LoRAServing, OpenAICompatServer, SchedulerBatching, V1Architecture, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseDistributed, codebase/CodebaseRust |
+| [vllm-project/vllm @ v0.31.0: vllm/entrypoints/cli/serve.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/cli/serve.py) | 2026-10-16 | DistributedInference, LoRAServing, OpenAICompatServer, SchedulerBatching, ThesisAndFraming, V1Architecture, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseDistributed, codebase/CodebaseRust |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/cli/snapshot.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/cli/snapshot.py) | 2026-10-16 | OperationsFailureModes |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/cohere/api_router.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/cohere/api_router.py) | 2026-10-16 | OpenAICompatServer |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/generate/base/protocol.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/generate/base/protocol.py) | 2026-10-16 | OpenAICompatServer, PrefixCaching, codebase/CodebaseConfig |
@@ -403,7 +405,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/launchers/launcher.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/launchers/launcher.py) | 2026-10-16 | codebase/CodebaseRust |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/launchers/utils/server_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/launchers/utils/server_utils.py) | 2026-10-16 | codebase/CodebaseArchitecture |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/llm.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/llm.py) | 2026-10-16 | PrefixCaching |
-| [vllm-project/vllm @ v0.31.0: vllm/entrypoints/openai/api_server.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/openai/api_server.py) | 2026-10-16 | OpenAICompatServer |
+| [vllm-project/vllm @ v0.31.0: vllm/entrypoints/openai/api_server.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/openai/api_server.py) | 2026-10-16 | OpenAICompatServer, ThesisAndFraming |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/openai/chat_completion/api_router.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/openai/chat_completion/api_router.py) | 2026-10-16 | OperationsFailureModes |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/openai/chat_completion/protocol.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/openai/chat_completion/protocol.py) | 2026-10-16 | OpenAICompatServer |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/openai/models/serving.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/openai/models/serving.py) | 2026-10-16 | LoRAServing |
@@ -424,7 +426,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/serve/sagemaker/api_router.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/serve/sagemaker/api_router.py) | 2026-10-16 | AwsSageMakerBedrock, Sources appendix |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/serve/tokenize/api_router.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/serve/tokenize/api_router.py) | 2026-10-16 | OpenAICompatServer |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/serve/utils/api_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/serve/utils/api_utils.py) | 2026-10-16 | OperationsFailureModes, codebase/CodebaseConfig |
-| [vllm-project/vllm @ v0.31.0: vllm/envs.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/envs.py) | 2026-10-16 | AwsGpuEfaNixl, DistributedInference, KVOffloadingLMCache, LoRAServing, OpenAICompatServer, OperationsFailureModes, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseDistributed, codebase/CodebaseExecution, codebase/CodebaseModelLayer, codebase/CodebaseRust |
+| [vllm-project/vllm @ v0.31.0: vllm/envs.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/envs.py) | 2026-10-16 | AwsGpuEfaNixl, DistributedInference, KVOffloadingLMCache, LoRAServing, OpenAICompatServer, OperationsFailureModes, ThesisAndFraming, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseDistributed, codebase/CodebaseExecution, codebase/CodebaseModelLayer, codebase/CodebaseRust |
 | [vllm-project/vllm @ v0.31.0: vllm/exceptions.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/exceptions.py) | 2026-10-16 | ObservabilityBench, OpenAICompatServer, OperationsFailureModes, SchedulerBatching, codebase/CodebaseConfig |
 | [vllm-project/vllm @ v0.31.0: vllm/ir/op.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/ir/op.py) | 2026-10-16 | codebase/CodebaseAdvanced |
 | [vllm-project/vllm @ v0.31.0: vllm/ir/ops/activation.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/ir/ops/activation.py) | 2026-10-16 | codebase/CodebaseAdvanced |
@@ -473,7 +475,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/__init__.py) | 2026-10-16 | AwsNeuron |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/cpu.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/cpu.py) | 2026-10-16 | codebase/CodebaseConfig |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/cuda.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/cuda.py) | 2026-10-16 | codebase/CodebaseExecution, codebase/CodebaseModelLayer |
-| [vllm-project/vllm @ v0.31.0: vllm/platforms/interface.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/interface.py) | 2026-10-16 | OperationsFailureModes, PagedAttentionKV, codebase/CodebaseConfig, codebase/CodebaseScheduler |
+| [vllm-project/vllm @ v0.31.0: vllm/platforms/interface.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/interface.py) | 2026-10-16 | DecisionGuide, OperationsFailureModes, PagedAttentionKV, codebase/CodebaseConfig, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/rocm.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/rocm.py) | 2026-10-16 | codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/tpu.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/tpu.py) | 2026-10-16 | WhenNotVllm |
 | [vllm-project/vllm @ v0.31.0: vllm/plugins/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/plugins/__init__.py) | 2026-10-16 | AwsNeuron, LoRAServing, codebase/CodebaseModelLayer |
@@ -499,7 +501,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/v1/core/block_pool.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/core/block_pool.py) | 2026-10-16 | PagedAttentionKV, PrefixCaching, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/core/kv_cache_coordinator.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/core/kv_cache_coordinator.py) | 2026-10-16 | PagedAttentionKV, PrefixCaching, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/core/kv_cache_manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/core/kv_cache_manager.py) | 2026-10-16 | PagedAttentionKV, SchedulerBatching, V1Architecture, codebase/CodebaseConfig, codebase/CodebaseScheduler |
-| [vllm-project/vllm @ v0.31.0: vllm/v1/core/kv_cache_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/core/kv_cache_utils.py) | 2026-10-16 | LoRAServing, NvidiaDynamo, OperationsFailureModes, PagedAttentionKV, PrefixCaching, codebase/CodebaseScheduler |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/core/kv_cache_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/core/kv_cache_utils.py) | 2026-10-16 | DecisionGuide, InferenceWorkload, LoRAServing, NvidiaDynamo, OperationsFailureModes, PagedAttentionKV, PrefixCaching, ThesisAndFraming, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/core/sched/output.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/core/sched/output.py) | 2026-10-16 | codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/core/sched/request_queue.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/core/sched/request_queue.py) | 2026-10-16 | OpenAICompatServer |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/core/sched/scheduler.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/core/sched/scheduler.py) | 2026-10-16 | LoRAServing, SchedulerBatching, SpeculativeDecoding, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseConfig, codebase/CodebaseScheduler |
@@ -528,7 +530,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/kvcr/manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/kvcr/manager.py) | 2026-10-16 | KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/p2p/session/session.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/p2p/session/session.py) | 2026-10-16 | PrefixCaching |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/spec.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/spec.py) | 2026-10-16 | KVOffloadingLMCache, ObservabilityBench |
-| [vllm-project/vllm @ v0.31.0: vllm/v1/metrics/loggers.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/metrics/loggers.py) | 2026-10-16 | AwsEks, KVOffloadingLMCache, LlmdKServe, LoRAServing, ObservabilityBench, OperationsFailureModes, PagedAttentionKV, PrefixCaching, ProductionStack, SchedulerBatching, V1Architecture, codebase/CodebaseConfig, codebase/CodebaseScheduler |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/metrics/loggers.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/metrics/loggers.py) | 2026-10-16 | AwsEks, DecisionGuide, InferenceWorkload, KVOffloadingLMCache, LlmdKServe, LoRAServing, ObservabilityBench, OperationsFailureModes, PagedAttentionKV, PrefixCaching, ProductionStack, SchedulerBatching, V1Architecture, codebase/CodebaseConfig, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/metrics/stats.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/metrics/stats.py) | 2026-10-16 | LoRAServing |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/request.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/request.py) | 2026-10-16 | codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/sample/logits_processor/builtin.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/sample/logits_processor/builtin.py) | 2026-10-16 | codebase/CodebaseAdvanced |
@@ -546,14 +548,14 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/v1/structured_output/utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/structured_output/utils.py) | 2026-10-16 | codebase/CodebaseAdvanced |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/utils.py) | 2026-10-16 | codebase/CodebaseRust |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/cpu_model_runner.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/cpu_model_runner.py) | 2026-10-16 | codebase/CodebaseExecution |
-| [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu_model_runner.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu_model_runner.py) | 2026-10-16 | SpeculativeDecoding, codebase/CodebaseAdvanced |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu_model_runner.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu_model_runner.py) | 2026-10-16 | SpeculativeDecoding, ThesisAndFraming, codebase/CodebaseAdvanced |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu_worker.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu_worker.py) | 2026-10-16 | KVOffloadingLMCache, OperationsFailureModes, PagedAttentionKV, SchedulerBatching, codebase/CodebaseArchitecture, codebase/CodebaseExecution |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/attn_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu/attn_utils.py) | 2026-10-16 | codebase/CodebaseExecution |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/buffer_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu/buffer_utils.py) | 2026-10-16 | codebase/CodebaseExecution |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/cudagraph_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu/cudagraph_utils.py) | 2026-10-16 | codebase/CodebaseExecution |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/input_batch.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu/input_batch.py) | 2026-10-16 | codebase/CodebaseExecution |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/lora_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu/lora_utils.py) | 2026-10-16 | LoRAServing |
-| [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/model_runner.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu/model_runner.py) | 2026-10-16 | PagedAttentionKV, SpeculativeDecoding, codebase/CodebaseAdvanced, codebase/CodebaseExecution, codebase/CodebaseScheduler |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/model_runner.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu/model_runner.py) | 2026-10-16 | PagedAttentionKV, SpeculativeDecoding, ThesisAndFraming, codebase/CodebaseAdvanced, codebase/CodebaseExecution, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/README.md](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu/README.md) | 2026-10-16 | codebase/CodebaseExecution |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/sample/logits_processor/interface.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu/sample/logits_processor/interface.py) | 2026-10-16 | codebase/CodebaseAdvanced |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/sample/sampler.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/gpu/sample/sampler.py) | 2026-10-16 | codebase/CodebaseAdvanced |
@@ -571,13 +573,13 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/xpu_model_runner.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/worker/xpu_model_runner.py) | 2026-10-16 | codebase/CodebaseExecution |
 | [vLLM PR #43874](https://github.com/vllm-project/vllm/pull/43874) | 2026-10-16 | NvidiaDynamo |
 | [pull request #47361, Delete PagedAttention](https://github.com/vllm-project/vllm/pull/47361) | 2026-10-16 | PagedAttentionKV |
-| [vLLM PR #51875](https://github.com/vllm-project/vllm/pull/51875) | 2026-10-16 | NvidiaDynamo |
-| [vLLM releases](https://github.com/vllm-project/vllm/releases) | 2026-10-16 | KVOffloadingLMCache, OpenAICompatServer, OperationsFailureModes |
+| [vLLM PR #51875](https://github.com/vllm-project/vllm/pull/51875) | 2026-10-16 | NvidiaDynamo, ThesisAndFraming |
+| [vLLM releases](https://github.com/vllm-project/vllm/releases) | 2026-10-16 | KVOffloadingLMCache, OpenAICompatServer, OperationsFailureModes, ThesisAndFraming |
 | [v0.24.0](https://github.com/vllm-project/vllm/releases/tag/v0.24.0) | 2026-10-16 | DisaggregatedServing, Quantization, codebase/CodebaseDistributed |
-| [vLLM v0.25.0 release notes](https://github.com/vllm-project/vllm/releases/tag/v0.25.0) | 2026-10-16 | PagedAttentionKV, codebase/CodebaseExecution, codebase/CodebaseModelLayer |
+| [vLLM v0.25.0 release notes](https://github.com/vllm-project/vllm/releases/tag/v0.25.0) | 2026-10-16 | PagedAttentionKV, ThesisAndFraming, codebase/CodebaseExecution, codebase/CodebaseModelLayer |
 | [vLLM v0.27.0 release notes](https://github.com/vllm-project/vllm/releases/tag/v0.27.0) | 2026-10-16 | DisaggregatedServing, DistributedInference |
 | [v0.28.0](https://github.com/vllm-project/vllm/releases/tag/v0.28.0) | 2026-10-16 | Quantization |
-| [vLLM v0.29.0 release notes](https://github.com/vllm-project/vllm/releases/tag/v0.29.0) | 2026-10-16 | OperationsFailureModes, PrefixCaching, SpeculativeDecoding, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseExecution, codebase/CodebaseScheduler |
+| [vLLM v0.29.0 release notes](https://github.com/vllm-project/vllm/releases/tag/v0.29.0) | 2026-10-16 | OperationsFailureModes, PrefixCaching, SpeculativeDecoding, ThesisAndFraming, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseExecution, codebase/CodebaseScheduler |
 | [v0.30.0](https://github.com/vllm-project/vllm/releases/tag/v0.30.0) | 2026-10-16 | Quantization, SpeculativeDecoding, codebase/CodebaseAdvanced |
 | [v0.31.0](https://github.com/vllm-project/vllm/releases/tag/v0.31.0) | 2026-10-16 | AwsSageMakerBedrock, DistributedInference, Quantization, Sources appendix, codebase/CodebaseAdvanced |
 | [vllm-project/vllm @ v0.31.0 (commit db9527a4)](https://github.com/vllm-project/vllm/tree/v0.31.0) | 2026-10-16 | DistributedInference, Sources appendix, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseDistributed, codebase/CodebaseExecution, codebase/CodebaseModelLayer, codebase/CodebaseScheduler |
@@ -593,6 +595,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/model_executor](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/model_executor) | 2026-10-16 | Sources appendix |
 | [vllm-project/vllm @ v0.31.0: vllm/model_executor/models](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/model_executor/models) | 2026-10-16 | codebase/CodebaseModelLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/models](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/models) | 2026-10-16 | codebase/CodebaseModelLayer |
+| [vllm-project/vllm @ v0.31.0: vllm/platforms](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/platforms) | 2026-10-16 | ThesisAndFraming |
 | [vllm-project/vllm @ v0.31.0: vllm/v1](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/v1) | 2026-10-16 | Sources appendix |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/v1/worker/gpu) | 2026-10-16 | codebase/CodebaseExecution |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/spec_decode](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/v1/worker/gpu/spec_decode) | 2026-10-16 | codebase/CodebaseAdvanced |
@@ -630,7 +633,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vLLM blog: vLLM Router release](https://vllm-project.github.io/2025/12/13/vllm-router-release.html) | 2026-10-16 | ProductionStack, Sources appendix |
 | [vLLM blog: V1 alpha release](https://vllm.ai/blog/2025-01-27-v1-alpha-release) | 2026-10-16 | PrefixCaching, Sources appendix, V1Architecture |
 | [Anyscale Blog: Ray Serve LLM: Wide-EP & disaggregated serving with vLLM](https://www.anyscale.com/blog/ray-serve-llm-anyscale-apis-wide-ep-disaggregated-serving-vllm) | 2026-10-16 | RayServeLLM, Sources appendix |
-| [PyTorch Foundation welcomes vLLM (press release)](https://www.prnewswire.com/news-releases/pytorch-foundation-expands-to-umbrella-foundation-and-welcomes-vllm-and-deepspeed-projects-302447897.html) | 2026-10-16 | Sources appendix |
+| [PyTorch Foundation welcomes vLLM (press release)](https://www.prnewswire.com/news-releases/pytorch-foundation-expands-to-umbrella-foundation-and-welcomes-vllm-and-deepspeed-projects-302447897.html) | 2026-10-16 | Sources appendix, ThesisAndFraming |
 
 ## Tier 3: third-party analysis, papers, press
 
