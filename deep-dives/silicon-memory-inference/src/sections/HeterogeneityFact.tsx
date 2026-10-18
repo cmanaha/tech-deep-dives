@@ -49,15 +49,15 @@ const rows: ArchRow[] = [
     ),
     data: (
       <>
-        Registers, SMEM (shared memory), TMEM (Tensor Memory, Blackwell), L2, HBM (High
-        Bandwidth Memory)
-        <Cite s={S.ptxIsa} />
+        Registers, SMEM (shared memory), TMEM (Tensor Memory, Blackwell), L2
+        <Cite s={S.ptxIsa} />, HBM (High Bandwidth Memory)
+        <Cite s={S.hopperArchBlog} />
       </>
     ),
     shape: (
       <>
-        Tensor-core tiles, FP8 (8-bit floating point) to FP64 on Hopper, FP4 to FP64 on
-        Blackwell
+        Tensor-core tiles, FP8 (8-bit floating point) to FP64 on Hopper
+        <Cite s={S.hopperArchBlog} />, FP4 to FP64 on Blackwell
         <Cite s={S.nvfp4Blog} />; B300 cuts FP64 to 10 TFLOPS per 8-GPU board
         <Cite s={S.hgxPage} />
       </>
@@ -68,8 +68,9 @@ const rows: ArchRow[] = [
     architecture: 'AWS Trainium2 or Trainium3 NeuronCore',
     instruction: (
       <>
-        Neuron compiler fixes the schedule in a NEFF (Neuron Executable File Format); ISA
-        (instruction set architecture) extensions add dynamic shapes and control flow
+        Neuron compiler fixes the schedule in a NEFF (Neuron Executable File Format)
+        <Cite s={S.nkiOverview} />; ISA (instruction set architecture) extensions add dynamic
+        shapes and control flow
         <Cite s={S.trainium2Arch} />
         <Cite s={S.trainium3Arch} />
       </>
@@ -77,6 +78,7 @@ const rows: ArchRow[] = [
     data: (
       <>
         SBUF (State Buffer) and PSUM (Partial Sum buffer), software-managed on-chip SRAM
+        <Cite s={S.nkiTrnInf2Arch} />
         <Cite s={S.neuronCoreV3} />
       </>
     ),
@@ -84,6 +86,7 @@ const rows: ArchRow[] = [
       <>
         Systolic-array tiles sized at compile time to fit SBUF
         <Cite s={S.neuronCoreV3} />
+        <Cite s={S.nkiTrnInf2Arch} />
       </>
     ),
     stall: 'Most stalls show up in the compiled schedule',
@@ -92,10 +95,10 @@ const rows: ArchRow[] = [
     architecture: 'Cerebras WSE-3 (Wafer-Scale Engine 3)',
     instruction: (
       <>
-        Each of 900,000 cores runs its own program and fires a task when its data arrives; no
-        global scheduler
+        Each of 900,000 cores runs its own program and fires a task when its data arrives
         <Cite s={S.cerebrasS1} />
-        <Cite s={S.cerebrasSdkBlog} />
+        <Cite s={S.cerebrasSdkBlog} />; each core&apos;s own hardware picks its next task
+        <Cite s={S.cerebrasSdkDocs} />
       </>
     ),
     data: (
@@ -108,13 +111,16 @@ const rows: ArchRow[] = [
     ),
     shape: (
       <>
-        Row and column tiling over a two-dimensional mesh of cores
+        Work split across a rectangle of cores on a two-dimensional mesh, each core working
+        from its own memory
         <Cite s={S.cerebrasSdkBlog} />
+        <Cite s={S.cerebrasSdkDocs} />
       </>
     ),
     stall: (
       <>
-        Routes are fixed at compile time; arriving data decides which task runs next
+        Routes are fixed at compile time
+        <Cite s={S.cerebrasSdkDocs} />; arriving data decides which task runs next
         <Cite s={S.cerebrasSdkBlog} />
       </>
     ),
@@ -143,8 +149,8 @@ const rows: ArchRow[] = [
     ),
     stall: (
       <>
-        The compiled schedule sets per-token time; a plesiosynchronous chip-to-chip protocol
-        keeps the LPUs in step
+        The compiled schedule helps keep per-token latency stable; a plesiosynchronous
+        chip-to-chip protocol keeps the LPUs in step
         <Cite s={S.lpxBlog} />
       </>
     ),
@@ -193,7 +199,7 @@ export function HeterogeneityFact() {
         header={
           <Header
             variant="h2"
-            description="Four questions that place any chip you have not met before, answered for five shipping architectures"
+            description="Four questions that place any chip you have not met before, answered for five architectures in production"
           >
             How the live architectures place their bets
           </Header>
@@ -282,7 +288,7 @@ export function HeterogeneityFact() {
               <ul>
                 <li>
                   Mitigation: placement and routing at compile time
-                  <Cite s={S.cerebrasSdkBlog} />
+                  <Cite s={S.cerebrasSdkDocs} />
                 </li>
                 <li>Where it shows: routes at compile time, task order at runtime</li>
               </ul>

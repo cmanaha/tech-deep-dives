@@ -32,3 +32,6 @@
   Groq 3 LPX as its own rack "deployed alongside Vera Rubin NVL72", in full production since
   2026-08-24 with customer deployment unconfirmed (Thesis verification). "Inside Vera Rubin" or
   "a GPU rack carries LPX" wording must match that.
+- AWS Trainium, Inferentia and Neuron; Isolation: the NeuronCore-v3 architecture page is cited
+  for the SBUF and PSUM names and does not contain them (Heterogeneity verification; it re-cited
+  them to the page that does, see src/sources/HeterogeneityFact.ts).

@@ -37,6 +37,20 @@ export const S = {
     tier: 1,
     accessed: '2026-10-16',
   },
+  nkiOverview: {
+    title: 'AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html',
+    tier: 1,
+    accessed: '2026-10-18',
+  },
+  nkiTrnInf2Arch: {
+    title: 'AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html',
+    tier: 1,
+    accessed: '2026-10-18',
+  },
   trn2Arch: {
     title: 'AWS Neuron: Amazon EC2 Trn2 Architecture',
     publisher: 'AWS',
@@ -121,6 +135,13 @@ export const S = {
     tier: 2,
     accessed: '2026-10-16',
   },
+  hopperArchBlog: {
+    title: 'NVIDIA Hopper Architecture In-Depth',
+    publisher: 'NVIDIA',
+    url: 'https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/',
+    tier: 2,
+    accessed: '2026-10-18',
+  },
   hgxPage: {
     title: 'NVIDIA HGX platform (HGX B300, HGX B200 and HGX Rubin NVL8 specifications)',
     publisher: 'NVIDIA',
@@ -134,6 +155,13 @@ export const S = {
     url: 'https://www.cerebras.ai/blog/supercharge-your-hpc-research-with-the-cerebras-sdk',
     tier: 2,
     accessed: '2026-10-16',
+  },
+  cerebrasSdkDocs: {
+    title: 'Cerebras SDK docs: Wafer-Scale Engine Architecture',
+    publisher: 'Cerebras',
+    url: 'https://sdk.cerebras.ai/computing-with-cerebras',
+    tier: 1,
+    accessed: '2026-10-18',
   },
   cerebrasInferenceBlog: {
     title: 'Introducing Cerebras Inference: AI at Instant Speed (2024-08-27)',
