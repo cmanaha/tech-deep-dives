@@ -1,7 +1,7 @@
 # fc07-code-b: fact-check of CodebaseExecution.tsx and CodebaseModelLayer.tsx
 
 Pin: vLLM v0.31.0, commit db9527a46873454610df6dbedf79a36d6bf1a7f6, read at `/tmp/vllm-new` on
-2026-10-17. Line numbers below are at that pin. Status: DRAFT (fixes being applied).
+2026-10-17. Line numbers below are at that pin. All fixes listed below are applied.
 
 ## codebase/CodebaseExecution.tsx
 
@@ -45,6 +45,34 @@ sharding).
 
 Prose rules: clean.
 
+## Diagrams
+
+`RunnerSelectionDiagram` matches `VllmConfig.use_v2_model_runner` (vllm/config/vllm.py#L700-L761)
+check for check: HiSparse / watermarking force V2, then `VLLM_USE_V2_MODEL_RUNNER`, then the
+three ROCm architectures (#L75-L77, only when `_get_v1_model_runner_unsupported_features()` is
+empty), then Triton, then the amber list. Amber panel = `_get_v2_model_runner_unsupported_features`
+(#L3051-L3103, DBO entry from #L3245-L3246); blue panel = `_get_v1_model_runner_unsupported_features`
+(#L3105-L3149, DFlash candidate heads from #L763-L776). `BackendSelectionDiagram` matches
+`_get_backend_priorities` (platforms/cuda.py#L82-L179). `ForwardPipelineDiagram`,
+`RegistryDiagram` and `QuantDispatchDiagram` match the cited code. No diagram changed, so the
+harness was not re-run.
+
 ## Scores (after fixes)
 
-Pending.
+**CodebaseExecution.tsx: 8/10.** Every runner, backend and graph-mode claim now traces to a pinned
+line range that holds it, and the tab ends on the log lines to check. It is long and dense; the
+CUDA-graph block carries more mechanism than most readers act on.
+
+**CodebaseModelLayer.tsx: 8/10.** Registry counts, quant dispatch order and LoRA paths are
+code-confirmed and agree with Quantization.tsx (Marlin weight-only FP8 on Turing and Ampere,
+DeepGEMM Hopper and Blackwell). The interfaces and plugin expandables are reference material
+rather than a mental model.
+
+## Checks
+
+- `pnpm --filter @tech-deep-dives/vllm typecheck`: `tsc --noEmit`, exit 0, no errors.
+- `pnpm --filter @tech-deep-dives/vllm lint`: `eslint src --ext .ts,.tsx --max-warnings 0`, exit 0, no warnings.
+- Prose scan of both files after edits: no em-dash, en-dash, curly quotes, banned words, or
+  `/blob/main` / `/tree/main` links.
+
+Status: COMPLETE.
