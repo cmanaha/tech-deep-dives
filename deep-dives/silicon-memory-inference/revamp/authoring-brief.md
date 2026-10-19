@@ -23,7 +23,7 @@ Edit nothing else. `App.tsx`, `GlossaryAndSources.tsx`, `src/components/Cite.tsx
 the orchestrator. If one of them needs a change, say so in your change report.
 Other agents are editing other section files at the same time: if a build or
 typecheck fails on a file you do not own, wait a minute and retry, and never
-"fix" their file. Do not commit. Never start a background Bash command.
+"fix" their file. Do not commit. Background mode is allowed.
 
 ## Read first
 
