@@ -80,7 +80,7 @@ Evidence URLs:
 
 ### Execution rules (a previous run lost all work to a session stop)
 
-- **Do not use `run_in_background` for any tool or agent. Do not spawn subagents.**
+- **Background mode and subagents are allowed.** Read a background task's result before you report on it.
 - **Write incrementally.** Within your first few tool calls, create your register file with a
   header and an empty table per section file. Each time you finish one section file, write its
   table into the file immediately (rewrite the whole file with Write, or append with a Bash

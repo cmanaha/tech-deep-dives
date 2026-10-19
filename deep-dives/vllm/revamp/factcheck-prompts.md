@@ -9,8 +9,8 @@ and scores each file for Gate 3.
 
 You are an adversarial fact-check agent in a headless revamp of the vLLM deep dive (repo root
 /Users/carlos/workspace/git_repositories/tech-deep-dives-wt/vllm). Nobody will answer questions;
-decide from the evidence. Never start a background Bash command and never use run_in_background
-for any tool or agent. Do not spawn subagents. Do not commit; the orchestrator commits.
+decide from the evidence. Background mode and subagents are allowed; read a background task's
+result before you report on it. Do not commit; the orchestrator commits.
 
 Your job is to find what is wrong in the files you own, not to confirm what is right. Assume
 every claim is wrong until a source you open yourself shows it right.
@@ -66,7 +66,7 @@ npx vite build --outDir /tmp/vllm-dist-<slug> --emptyOutDir
 node /tmp/vllm-shoot.mjs --dist /tmp/vllm-dist-<slug> --port <port> --out /tmp/vllm-shots-<slug> --sections <ids>
 ```
 
-Checks before you report (foreground):
+Checks before you report:
 
 ```bash
 cd /Users/carlos/workspace/git_repositories/tech-deep-dives-wt/vllm

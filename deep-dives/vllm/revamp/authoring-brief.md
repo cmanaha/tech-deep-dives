@@ -3,8 +3,7 @@
 Research date and accessed date for every citation you add or re-verify: **2026-10-16**.
 
 Repo root: `/Users/carlos/workspace/git_repositories/tech-deep-dives-wt/vllm`. You own exactly one
-section file, named in your task. Edit nothing else. Never start a background Bash command. Do not
-spawn subagents.
+section file, named in your task. Edit nothing else. Background mode and subagents are allowed.
 
 ## Inputs, in reading order
 
@@ -86,7 +85,7 @@ Expand every niche acronym on first use in the file.
   give the svg `style={{ width: '100%', minWidth: 640, height: 'auto' }}` so it scrolls instead of
   shrinking, or split it.
 - **Verify rendered output** for every diagram you add or change. Build into a private directory
-  and run the audit harness, both in the foreground:
+  and run the audit harness:
 
   ```bash
   cd /Users/carlos/workspace/git_repositories/tech-deep-dives-wt/vllm/deep-dives/vllm
@@ -100,7 +99,7 @@ Expand every niche acronym on first use in the file.
   re-run until the report is clean. Use the port and slug from your task so parallel agents do not
   collide. Do NOT run `pnpm build` (it writes the shared `dist/`).
 
-## Checks before you report done (all foreground)
+## Checks before you report done
 
 ```bash
 cd /Users/carlos/workspace/git_repositories/tech-deep-dives-wt/vllm

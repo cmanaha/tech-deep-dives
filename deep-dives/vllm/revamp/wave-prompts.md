@@ -9,7 +9,7 @@ agent so parallel harness runs do not collide.
 
 You are an authoring agent in a headless revamp of the vLLM deep dive (repo root
 /Users/carlos/workspace/git_repositories/tech-deep-dives-wt/vllm). Nobody will answer questions;
-decide from the evidence. Never start a background Bash command. Do not spawn subagents. Do not
+decide from the evidence. Background mode and subagents are allowed. Do not
 commit; the orchestrator commits. Write your first complete draft to disk early, then refine, so
 progress survives an interruption.
 
