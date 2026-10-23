@@ -135,9 +135,13 @@ export function AmdEpycTurin() {
             BIOS setting can split each instruction into two 256-bit passes when power matters more
             than speed
             <Cite s={S.amdTurinArchWhitepaper} />, so check that setting before comparing AVX-512
-            results across servers. Each socket takes up to 6 TB of DDR5 on 12 channels
-            <Cite s={S.epyc9005Datasheet} />; at DDR5-6400 that is 614 GB/s per socket, and
-            DDR5-6400 needs OEM enablement and a BIOS update.
+            results across servers. Each socket takes up to 6 TB of DDR5 on 12 channels at two DIMMs
+            per channel
+            <Cite
+              s={S.epyc9005Datasheet}
+              note="Data sheet columns: 12/6TB at 2DPC (two DIMMs per channel); DDR5-6400 at 1DPC (one DIMM per channel)."
+            />; at one DIMM per channel and DDR5-6400 that is 614 GB/s per socket, and DDR5-6400
+            needs OEM (original equipment manufacturer) enablement and a BIOS update.
             <Cite s={S.epyc9755Page} />
           </Box>
           <ExpandableSection headerText="Zen 5 core changes from Zen 4 (Genoa)">
@@ -194,8 +198,9 @@ export function AmdEpycTurin() {
             <Cite s={S.amdTurinArchWhitepaper} /> That two-link form is GMI3-Wide, which the EPYC
             9575F uses.
             <Cite s={S.chipsAndCheeseTurin} /> Its eight 16-lane SERDES (serializer-deserializer)
-            blocks give 128 PCIe 5 lanes per socket, 160 in a two-socket server, each block usable
-            for PCIe, CXL (Compute Express Link) 2.0 or the link to the other socket.
+            blocks give 128 PCIe 5 lanes per socket, 160 in a two-socket server. The blocks carry
+            PCIe, the link to the other socket or up to 64 lanes of CXL (Compute Express Link) 2.0,
+            and not every block supports every function.
             <Cite s={S.amdTurinArchWhitepaper} />
             <Cite s={S.epyc9005Datasheet} />
           </Box>
@@ -369,7 +374,12 @@ export function AmdEpycTurin() {
               Bandwidth from MRDIMMs (Multiplexed Rank DIMMs): the EPYC 9005 pages list DDR5 as the
               memory type
               <Cite s={S.epyc9755Page} />, while Xeon 6 6900P takes MRDIMM at up to 8,800 MT/s
-              <Cite s={S.xeon6ProductBrief} /> (<em>Intel Xeon 6</em>)
+              <Cite s={S.xeon6ProductBrief} />
+              <Cite
+                s={S.xeon6980pArk}
+                note="Xeon 6980P memory types: DDR5 6400 MT/s, MRDIMM 8800 MT/s."
+              />{' '}
+              (<em>Intel Xeon 6</em>)
             </li>
             <li>
               Matrix math on AMX (Advanced Matrix Extensions) tiles, which Xeon 6 carries
@@ -377,10 +387,13 @@ export function AmdEpycTurin() {
             </li>
           </ul>
           <Box variant="p">
-            EPYC 9006 (Venice), announced by AMD, adds the memory Turin lacks: Zen 6 cores on TSMC 2
-            nm, up to 256 cores and 512 threads per socket, up to 16 DDR5 channels, JEDEC-standard
-            MRDIMM at up to 12,800 MT/s, and PCIe Gen 6.
-            <Cite s={S.amdVeniceBlog} kind="roadmap" /> The announcement gives no ship date.
+            EPYC 9006 (Venice) adds the memory Turin lacks: Zen 6 cores on TSMC 2 nm, up to 256 cores
+            and 512 threads per socket, up to 16 DDR5 channels, JEDEC-standard MRDIMM at up to 12,800
+            MT/s, and PCIe Gen 6.
+            <Cite s={S.amdVeniceBlog} kind="roadmap" /> EPYC 9006 is in production; AMD says major
+            OEM platforms are on track to launch and cloud providers will begin deploying it later in
+            2026.
+            <Cite s={S.amdAgenticStack} kind="roadmap" />
           </Box>
         </SpaceBetween>
       </Container>
@@ -389,7 +402,7 @@ export function AmdEpycTurin() {
         header={
           <Header
             variant="h2"
-            description="Land inbound packets in the consuming core's L2 instead of DRAM, and set up a server to get AMD's 55 to 76 ns"
+            description="Land inbound packets in the consuming core's L2 instead of DRAM, and set up a server to get the 55 to 76 ns latency cut AMD measured"
           >
             Smart Data Cache Injection (SDCI)
           </Header>

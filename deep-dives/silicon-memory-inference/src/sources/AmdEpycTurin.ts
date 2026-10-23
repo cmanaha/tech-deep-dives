@@ -45,6 +45,14 @@ export const S = {
     tier: 2,
     accessed: '2026-10-17',
   },
+  amdAgenticStack: {
+    title:
+      'AMD Newsroom: AMD EPYC CPUs Deliver for Every Layer of the Agentic AI Stack (2026-09-18; "Venice" in production, OEM platforms on track to launch)',
+    publisher: 'AMD',
+    url: 'https://newsroom.amd.com/news/amd-epyc-cpus-deliver-every-layer-agentic-ai-stack/',
+    tier: 2,
+    accessed: '2026-10-23',
+  },
 
   // Linux kernel, pinned to release tags
   linuxResctrl: {
@@ -134,6 +142,13 @@ export const S = {
     url: 'https://cdrdv2-public.intel.com/845771/Intel-Xeon6-ProductBrief.pdf',
     tier: 1,
     accessed: '2026-10-16',
+  },
+  xeon6980pArk: {
+    title: 'Intel Xeon 6980P processor specifications (ARK: 504 MB cache, 12 channels, DDR5-6400 or MRDIMM-8800)',
+    publisher: 'Intel',
+    url: 'https://www.intel.com/content/www/us/en/products/sku/240777/intel-xeon-6980p-processor-504m-cache-2-00-ghz/specifications.html',
+    tier: 1,
+    accessed: '2026-10-23',
   },
 
   // Third-party measurement and analysis (Tier 3, never an AMD specification)
