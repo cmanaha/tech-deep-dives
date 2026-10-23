@@ -17,6 +17,10 @@ const NVLINK_NOTE =
   "NVIDIA rates NVLink 5 at 1.8 TB/s per GPU bidirectional (18 links x 100 GB/s); 900 GB/s each way is half of that.";
 const GRAVITON5_NODE_NOTE =
   'AWS processor table: "Memory (NUMA) nodes: 1 (2 for 16xlarge and 48xlarge)"; "LLC (shared): 48MB per NUMA (<= 16xlarge), or 96MB per NUMA (24xlarge and 48xlarge)".';
+const HBI_NOTE =
+  "Names the die-to-die link NV-HBI. The architecture page gives the 10 TB/s figure for all Blackwell products without naming the link.";
+const HBI_LATENCY_NOTE =
+  "Neither the Blackwell architecture page nor the Blackwell Ultra post gives a latency figure for NV-HBI.";
 const XEON_L3_NOTE =
   "L3 hit just over 33 ns on the local tile; about 24 ns more on an adjacent tile; nearly 80 ns two tiles away, measured on an r8i in SNC3.";
 
@@ -124,7 +128,8 @@ const archRows: ArchRow[] = [
     dies: (
       <>
         Two reticle-limited dies on NV-HBI at 10 TB/s
-        <Cite s={S.blackwellArchitecture} />; NVLink 5 to other GPUs at 1.8 TB/s
+        <Cite s={S.blackwellArchitecture} />
+        <Cite s={S.blackwellUltraBlog} note={HBI_NOTE} />; NVLink 5 to other GPUs at 1.8 TB/s
         bidirectional, 900 GB/s each way
         <Cite s={S.blackwellUltraBlog} note={NVLINK_NOTE} />
       </>
@@ -135,7 +140,13 @@ const archRows: ArchRow[] = [
         <Cite s={S.blackwellUltraBlog} />
       </>
     ),
-    cost: <>No NV-HBI latency figure in the NVIDIA pages this research read</>,
+    cost: (
+      <>
+        No NV-HBI latency figure in the NVIDIA pages this research read
+        <Cite s={S.blackwellArchitecture} note={HBI_LATENCY_NOTE} />
+        <Cite s={S.blackwellUltraBlog} note={HBI_LATENCY_NOTE} />
+      </>
+    ),
   },
 ];
 
@@ -265,7 +276,8 @@ export function ChipletAndInterconnect() {
             <Box variant="h3">One package, one or two nodes (Graviton)</Box>
             <Box variant="p">
               Graviton4&apos;s cores share one LLC (last-level cache) on
-              Arm&apos;s CMN-700 (Coherent Mesh Network). Graviton5 puts 192
+              Arm&apos;s CMN-700 (Coherent Mesh Network).
+              <Cite s={S.gravitonReadme} /> Graviton5 puts 192
               cores in one package
               <Cite s={S.graviton5AboutAmazon} />, and that package runs as two
               NUMA nodes on 16xlarge and 48xlarge, each node with its own LLC.
@@ -282,7 +294,8 @@ export function ChipletAndInterconnect() {
               Hopper&apos;s GH100 is one 814 mm² die.
               <Cite s={S.hopperArchBlog} /> Blackwell joins two reticle-limited
               dies with NV-HBI (NVIDIA High-Bandwidth Interface)
-              <Cite s={S.blackwellArchitecture} />, and CUDA sees one device
+              <Cite s={S.blackwellArchitecture} />
+              <Cite s={S.blackwellUltraBlog} note={HBI_NOTE} />, and CUDA sees one device
               whose L2 both dies share with fully coherent access, so there is
               no NUMA split to program around.
               <Cite s={S.blackwellUltraBlog} />
@@ -346,12 +359,13 @@ export function ChipletAndInterconnect() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Every link above is proprietary: GMI, MDF over EMIB, CMN and NV-HBI
-            join dies that one vendor designed together. UCIe (Universal Chiplet
+            Every die-to-die link above is proprietary: GMI, MDF over EMIB and
+            NV-HBI join dies that one vendor designed together. UCIe (Universal Chiplet
             Interconnect Express) is the open standard for the die-to-die
             physical layer, written so one package can mix chiplets from a
             multi-vendor ecosystem. UCIe 3.0 runs at 48 and 64 GT/s
-            (gigatransfers per second), double UCIe 2.0&apos;s 32 GT/s.
+            (gigatransfers per second); the top rate doubles UCIe
+            2.0&apos;s 32 GT/s.
             <Cite s={S.ucieSpecs} /> The OCP (Open Compute Project) base die in{" "}
             <em>High Bandwidth Flash</em> specifies 16 UCIe channels to its
             accelerator.

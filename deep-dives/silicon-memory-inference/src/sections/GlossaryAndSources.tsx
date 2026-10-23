@@ -29,7 +29,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'DDR5', fullForm: 'Double Data Rate 5', description: 'The current JEDEC generation of server DRAM on DIMMs.' },
   { acronym: 'DIMM', fullForm: 'Dual In-line Memory Module', description: 'The plug-in module that carries DRAM chips on a server motherboard.' },
   { acronym: 'MRDIMM', fullForm: 'Multiplexed Rank DIMM', description: 'A buffered DIMM that interleaves two ranks so the host bus runs at a higher data rate than each rank. See DDR5, MRDIMM, LPDDR5X and CXL.' },
-  { acronym: 'LPDDR5X', fullForm: 'Low-Power Double Data Rate 5X', description: 'Mobile-derived DRAM soldered next to the processor. NVIDIA Grace and DGX Spark use it.' },
+  { acronym: 'LPDDR5X', fullForm: 'Low-Power Double Data Rate 5X', description: 'Mobile-derived DRAM placed next to the processor rather than on DIMMs. NVIDIA Grace and DGX Spark use it.' },
   { acronym: 'CXL', fullForm: 'Compute Express Link', description: 'A cache-coherent protocol on the PCIe physical layer for attaching memory and accelerators to a host.' },
   { acronym: 'CHMU', fullForm: 'CXL Hot-Page Monitoring Unit', description: 'A CXL device unit that counts accesses per page so host software can move hot pages to faster memory.' },
   { acronym: 'TSP', fullForm: 'TEE Security Protocol', description: 'The CXL protocol for attaching memory to a trusted execution environment.' },
