@@ -78,3 +78,5 @@
   Samsung's Hot Chips 2023 deck shows 2.16x / 1.79x at 64 output tokens (Compute-in-Memory
   verification). The section follows the slide. Aquabolt-XL's 4.92 / 1.23 TB/s are four-stack
   totals; HBM and the Bandwidth Wall now says so.
+
+- Luo et al. Hopper microbenchmark (`luoHopperBench`): the URL `https://arxiv.org/pdf/2402.13499` is unversioned. As of 2026-10-23 only v1 exists, so the figures hold. Optional pin to `.../2402.13499v1` in MemoryHierarchyPrimer.ts, NvidiaHopper.ts and KernelExecutionLifecycle.ts together. Open item, not a correction.
