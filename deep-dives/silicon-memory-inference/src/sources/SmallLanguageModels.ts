@@ -8,8 +8,8 @@ import type { Source } from '../components/Cite';
  * speculative-decoding docs, the Hugging Face listings). Records shared with other sections
  * reuse their URL, title, publisher and tier exactly: AmdEpycTurin (EPYC data sheet, 9755
  * page), IntelXeon6 (Chips and Cheese r8i, LLVM X86.td),
- * GravitonDeepDive (README and llama.cpp guide), IsolationNie (MIG guide pages, Blackwell
- * Ultra blog), RooflineAndArithmeticIntensity (H200 page), QuantizationAndPrecision (NVFP4
+ * GravitonDeepDive (README and llama.cpp guide), IsolationNie (MIG guide pages, MIG
+ * product page), RooflineAndArithmeticIntensity (H200 page), QuantizationAndPrecision (NVFP4
  * blog), EdgeSharedMemorySilicon (DGX Spark hardware overview, Jetson Thor blog).
  */
 export const S = {
@@ -248,12 +248,12 @@ export const S = {
     tier: 1,
     accessed: '2026-10-16',
   },
-  blackwellUltraBlog: {
-    title: 'Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era',
+  migProductPage: {
+    title: 'NVIDIA Multi-Instance GPU (MIG) product page, "MIG Specifications"',
     publisher: 'NVIDIA',
-    url: 'https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/',
+    url: 'https://www.nvidia.com/en-us/technologies/multi-instance-gpu/',
     tier: 2,
-    accessed: '2026-10-17',
+    accessed: '2026-10-18',
   },
 
   // Shared with RooflineAndArithmeticIntensity and QuantizationAndPrecision

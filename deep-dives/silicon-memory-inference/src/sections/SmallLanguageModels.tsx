@@ -13,7 +13,7 @@ const ridgeNote =
   'A decode step does 2 FLOP per weight per sequence; 16-bit weights are 2 bytes, so batch 1 is about 1 FLOP per byte. H200 dense BF16 is 989.5 TFLOPS (half the page\'s sparse 1,979) over 4.8 TB/s: a ridge of 206 FLOP per byte.';
 const cacheNote = '1B parameters x 1 byte (INT8) = 1 GB, twice the 512 MB L3 of the EPYC 9755.';
 const ceilingNote =
-  '614 GB/s / 1 GB read per token = 614 tokens/s, 1.6 ms per token; 230.4 GB/s per r8i node / 1 GB = 230 tokens/s. Weights only: KV-cache reads lower both.';
+  '614 GB/s / 1 GB read per token = 614 tokens/s, 1.6 ms per token. One r8i SNC3 node has four memory controllers at DDR5-7200: 4 x 7.2 GT/s x 8 bytes = 230.4 GB/s, / 1 GB = 230 tokens/s. Weights only: KV-cache reads lower both.';
 const subMsNote =
   'Under 1 ms per token at 614 GB/s means under 0.614 GB read per token: about 0.6B parameters at 1 byte each.';
 const kvNote =
@@ -75,7 +75,7 @@ export function SmallLanguageModels() {
             variant="h2"
             description="Which current small models to choose from, the memory each needs and the context each reads"
           >
-            The 2025-2026 small-model lineup
+            The 2024-2026 small-model lineup
           </Header>
         }
       >
@@ -196,7 +196,7 @@ export function SmallLanguageModels() {
             Spark
             <Cite s={S.sparkHardware} /> or Jetson AGX Thor
             <Cite s={S.thorBlog} />, compare such a model against a dense 3B to 7B one (
-            <em>Edge Shared-Memory Silicon</em>).
+            <em>Edge Shared-Memory Silicon: DGX Spark and Jetson</em>).
           </Box>
         </SpaceBetween>
       </Container>
@@ -224,9 +224,11 @@ export function SmallLanguageModels() {
             <Cite s={S.migSupportedGpus} />
             <Cite s={S.migConcepts} /> B200&apos;s <code>1g.23gb</code> profile gives seven per
             GPU
-            <Cite s={S.migSupportedProfiles} />; NVIDIA&apos;s Blackwell Ultra blog splits
-            B300&apos;s 288 GB into up to seven of 34 GB
-            <Cite s={S.blackwellUltraBlog} />, though the MIG guide has no HGX B300 table.
+            <Cite s={S.migSupportedProfiles} />; NVIDIA&apos;s MIG page lists, as preliminary
+            specifications, seven 34 GB instances for GB300 NVL72 and seven 32 GB instances for HGX
+            B300
+            <Cite s={S.migProductPage} />, though the MIG guide has no table for either.
+            <Cite s={S.migSupportedProfiles} />
             <Cite s={S.migSupportedGpus} /> A 7B FP8 model leaves about 16 GB of a 23 GB slice for
             KV cache.
             <Cite s={S.migSupportedProfiles} kind="derived" note={migNote} /> Past seven tenants,
@@ -277,7 +279,7 @@ export function SmallLanguageModels() {
           that input improves with size. On Google&apos;s evaluation, Gemma 4 E2B scores 19.1% on
           8-needle retrieval at 128K tokens (MRCR v2, multi-round coreference resolution) against
           66.4% for Gemma 4 31B, and 24.5% against 76.9% on the Tau2 agent benchmark.
-          <Cite s={S.gemma4E2b} kind="measured" /> Judge per task on your own evaluation, and route
+          <Cite s={S.gemma4E2b} kind="vendor-claim" /> Judge per task on your own evaluation, and route
           mixed traffic so each request goes to the smallest model that handles it.
         </Box>
       </Container>
@@ -310,7 +312,7 @@ export function SmallLanguageModels() {
                 header: (
                   <>
                     MMLU
-                    <Cite s={S.llama32Card} kind="measured" />
+                    <Cite s={S.llama32Card} kind="vendor-claim" />
                   </>
                 ),
                 cell: (r) => r.mmlu,
@@ -321,7 +323,7 @@ export function SmallLanguageModels() {
                 header: (
                   <>
                     GSM8K
-                    <Cite s={S.llama32Card} kind="measured" />
+                    <Cite s={S.llama32Card} kind="vendor-claim" />
                   </>
                 ),
                 cell: (r) => r.gsm8k,
