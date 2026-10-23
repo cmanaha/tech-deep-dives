@@ -23,8 +23,6 @@ const brief6900Note =
   'The brief gives Xeon 6 P-core maxima of 128 cores, 504 MB of L3 and 12 memory channels, and says the 6900 series has the highest core counts and the most memory channels in the family.';
 const ecoreNote =
   'The brief states AVX-512 is supported only on P-core parts and lists AMX only under P-cores; the E-core column lists AVX2 with VNNI.';
-const r8iAmxNote =
-  'AWS lists the R8i processor as Intel Xeon Granite Rapids; the Granite Rapids feature list adds AMX-FP16.';
 const twoChipsNote =
   '192 cores on r8i.96xlarge / 96 cores per 6985P-C; 3,072 GiB on r8i.96xlarge against the 1.5 TB per socket Chips and Cheese reports for r8i.';
 const ratioNote = '691.62 GB/s against 323.45 GB/s on Emerald Rapids, both by Chips and Cheese: 2.14x.';
@@ -47,7 +45,7 @@ const partRows: PartRow[] = [
     ),
     memory: (
       <>
-        12 channels; DDR5-6400, or MRDIMM up to 8,800 MT/s
+        Up to 12 channels; DDR5-6400, or MRDIMM up to 8,800 MT/s
         <Cite s={S.xeon6ProductBrief} note={brief6900Note} />
       </>
     ),
@@ -68,7 +66,7 @@ const partRows: PartRow[] = [
     ),
     memory: (
       <>
-        8 channels; DDR5-6400, or MRDIMM up to 8,000 MT/s
+        Up to 8 channels; DDR5-6400, or MRDIMM up to 8,000 MT/s
         <Cite s={S.xeon6700BriefPdf} />
       </>
     ),
@@ -89,7 +87,7 @@ const partRows: PartRow[] = [
     ),
     memory: (
       <>
-        12 channels; DDR5-6400
+        Up to 12 channels; DDR5-6400
         <Cite s={S.xeon6ProductBrief} />
       </>
     ),
@@ -118,8 +116,7 @@ const partRows: PartRow[] = [
       <>
         AVX-512; AMX
         <Cite s={S.chipsAndCheeseXeon6} /> with FP16
-        <Cite s={S.ec2MemoryOptimizedSpecs} note={r8iAmxNote} />
-        <Cite s={S.llvmX86Td} note={r8iAmxNote} />
+        <Cite s={S.r8iPage} />
       </>
     ),
   },
@@ -202,7 +199,7 @@ export function IntelXeon6() {
         header={
           <Header
             variant="h1"
-            description="Read an AWS Xeon 6 as three NUMA nodes per chip, each with its own 160 MB of L3 and its own memory, and size CPU inference against DRAM bandwidth rather than AMX"
+            description="Read the Xeon 6 in an r8i as three NUMA nodes per chip, each with its own 160 MB of L3 and its own memory, and size CPU inference against DRAM bandwidth rather than AMX"
           >
             Intel Xeon 6 (Granite Rapids)
           </Header>
@@ -423,7 +420,7 @@ export function IntelXeon6() {
             <strong>After Granite Rapids.</strong> Xeon 6+, Intel&apos;s first data-center
             processor on Intel 18A, launched in Q2 2026 with up to 288 E-cores; its product page
             names no matrix extension
-            <Cite s={S.intelXeon6Plus} />. Diamond Rapids, the next P-core Xeon, is on the roadmap
+            <Cite s={S.intelXeon6Plus} />. Diamond Rapids, the next-generation Xeon, is on the roadmap
             with no launch date: Intel 18A-P, up to 256 cores, 1.28 GB of LLC (last-level cache), 16
             memory channels at 12,800 MT/s, PCIe Gen6, CXL (Compute Express Link) 3.0 and enhanced
             AMX

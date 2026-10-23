@@ -8,11 +8,11 @@ import type { Source } from '../components/Cite';
 export const S = {
   // Intel product briefs, Tier 1 (vendor technical documentation)
   xeon6ProductBrief: {
-    title: 'The Intel Xeon 6 Processor Family Product Brief',
+    title: 'Intel Xeon 6 Product Brief (up to 64 lanes of CXL 2.0 at up to 32 GT/s per lane)',
     publisher: 'Intel',
-    url: 'https://cdrdv2-public.intel.com/845771/Intel-Xeon6-ProductBrief.pdf',
+    url: 'https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html',
     tier: 1,
-    accessed: '2026-10-17',
+    accessed: '2026-10-23',
   },
   xeon6700BriefPdf: {
     title: 'Intel Xeon 6700/6500-Series Processors with P-Cores, product brief (PDF)',
@@ -75,6 +75,14 @@ export const S = {
     url: 'https://aws.amazon.com/ec2/instance-types/m8i/',
     tier: 2,
     accessed: '2026-10-17',
+  },
+  // Shared with MainMemoryAndCxl
+  r8iPage: {
+    title: 'Amazon EC2 R8i instances',
+    publisher: 'AWS',
+    url: 'https://aws.amazon.com/ec2/instance-types/r8i/',
+    tier: 2,
+    accessed: '2026-10-23',
   },
 
   // AMX in LLVM and Clang, Tier 1 (source pinned to a tag), shared with KernelExecutionLifecycle
