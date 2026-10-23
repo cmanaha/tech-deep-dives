@@ -80,3 +80,9 @@
   totals; HBM and the Bandwidth Wall now says so.
 
 - Luo et al. Hopper microbenchmark (`luoHopperBench`): the URL `https://arxiv.org/pdf/2402.13499` is unversioned. As of 2026-10-23 only v1 exists, so the figures hold. Optional pin to `.../2402.13499v1` in MemoryHierarchyPrimer.ts, NvidiaHopper.ts and KernelExecutionLifecycle.ts together. Open item, not a correction.
+
+- EPYC 9006 (Venice) status: AMD Newsroom 2026-09-18 says "in production today", OEM platforms "on track to launch". DDR5/MRDIMM/LPDDR5X/CXL now says so; AMD EPYC Turin verifier told to align, reusing the `amdAgenticStack` record. No launch date stated by AMD.
+- Capital Markets Lens: retitle `xeon6Brief` to "Intel Xeon 6 Product Brief (up to 64 lanes of CXL 2.0 at up to 32 GT/s per lane)"; the `pond` record title says "Figure 4" but the quoted sentence is in the abstract.
+- Open: HBF "512 GiB per 16-high stack" beside "0.384 to 3.072 TB/s per stack" (Primer, Flash as a Cache Tier, tower, grid). Grade 1 (0.384) is an 8-high stack, so a 512 GiB stack starts at 1.536 TB/s. Each statement is true as written; High Bandwidth Flash gives the per-grade heights. Scope refinement, left for the next iteration.
+- Open: NVMe cell "1.56-18.75 GB/s per GPU" lists P5 and P5e, whose EBS cap is 10,000 MB/s (1.25 GB/s per GPU); 1.56 is the P5en and P6 figure. Matches the Primer tower; scope refinement.
+- Unverifiable: JEDEC MRCD (JESD82-542) standard date; jedec.org did not serve the page.
