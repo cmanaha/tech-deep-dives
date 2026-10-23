@@ -59,3 +59,5 @@
   low-latency kernel" tables in MoE and Communication.
 - Grace-Blackwell and UltraServer: the P6 page contradicts itself on EFA per GPU (400 Gbps in
   prose, 3.2 Tbps per four-GPU instance in its table); name both, as Communication now does.
+- Quantization and Precision: "10.7 (Rubin)" is cited to a page that never names Rubin; NVIDIA
+  Blackwell now cites Rubin as compute capability 10.7 to the page that does (reuse its record).

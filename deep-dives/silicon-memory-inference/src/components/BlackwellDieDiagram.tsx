@@ -120,7 +120,7 @@ export function BlackwellDieDiagram() {
           HBM3e: up to 180 GB (B200) or 288 GB in eight 12-high stacks (B300), 8 TB/s per GPU
         </text>
         <text className="bwd-sc" x="440" y="262">
-          How the stacks split between the two dies is not published
+          NVIDIA does not state how the stacks split between the two dies
         </text>
 
         {/* NVLink, outside the package */}

@@ -20,6 +20,12 @@ interface SpecRow {
 const nvlinkNote =
   'NVIDIA rates NVLink 5 at 1.8 TB/s per GPU bidirectional (18 links x 100 GB/s); 900 GB/s each way is half of that.';
 
+const stackNote =
+  "Follows the post's HBM configuration bullet: eight 12-Hi stacks, 16 x 512-bit controllers (8,192-bit total width). The post's 9/24/25 update note says it was corrected to show 12 HBM stacks instead of 8; the bullet still reads eight, and 8,192 bits is eight 1,024-bit stacks.";
+
+const hbiNote =
+  'Names the die-to-die link NV-HBI. The architecture page gives the 10 TB/s figure for all Blackwell products without naming the link.';
+
 const specRows: SpecRow[] = [
   {
     spec: 'Construction',
@@ -27,6 +33,7 @@ const specRows: SpecRow[] = [
       <>
         Two reticle-limited dies joined by NV-HBI at 10 TB/s; 208B transistors, TSMC 4NP
         <Cite s={S.blackwellArchitecture} />
+        <Cite s={S.blackwellUltraBlog} note={hbiNote} />
       </>
     ),
     b300: (
@@ -66,7 +73,7 @@ const specRows: SpecRow[] = [
     b300: (
       <>
         288 GB HBM3e in eight 12-high stacks
-        <Cite s={S.blackwellUltraBlog} />
+        <Cite s={S.blackwellUltraBlog} note={stackNote} />
       </>
     ),
   },
@@ -248,7 +255,8 @@ export function NvidiaBlackwell() {
             generation that follows Hopper (see <em>NVIDIA Hopper</em>). Each GPU is two
             reticle-limited dies joined by NV-HBI (NVIDIA High-Bandwidth Interface) at 10 TB/s
             and run as one CUDA device.
-            <Cite s={S.blackwellArchitecture} /> Each streaming multiprocessor (SM) gains Tensor
+            <Cite s={S.blackwellArchitecture} />
+            <Cite s={S.blackwellUltraBlog} note={hbiNote} /> Each streaming multiprocessor (SM) gains Tensor
             Memory (TMEM), 256 KB that holds the Tensor Core&apos;s running sum.
             <Cite s={S.blackwellUltraBlog} />
             <Cite s={S.ptxIsa} /> NVFP4, NVIDIA&apos;s 4-bit floating-point format, stores
@@ -272,7 +280,7 @@ export function NvidiaBlackwell() {
             <Cite
               s={S.ec2AcceleratedSpecs}
               kind="derived"
-              note="1 trillion parameters x 1 byte at FP8 is about 1 TB. Per-GPU memory as AWS lists it for p5en.48xlarge and p6-b300.48xlarge."
+              note="1 trillion parameters x 1 byte at FP8 is about 1 TB. AWS lists 8 x 141 GiB (about 1,211 GB) for p5en.48xlarge and 8 x 268 GiB (about 2,302 GB) for p6-b300.48xlarge, which leaves about 0.2 TB and 1.3 TB beyond the weights for KV cache and activations."
             />
           </Box>
         </SpaceBetween>
@@ -293,7 +301,8 @@ export function NvidiaBlackwell() {
             A lithography reticle caps how large one die can be. Blackwell reaches 208 billion
             transistors on TSMC 4NP by building each GPU from two reticle-limited dies joined by
             NV-HBI, a 10 TB/s chip-to-chip link.
-            <Cite s={S.blackwellArchitecture} /> CUDA sees one device, with one device ID, one
+            <Cite s={S.blackwellArchitecture} />
+            <Cite s={S.blackwellUltraBlog} note={hbiNote} /> CUDA sees one device, with one device ID, one
             address space and an L2 cache that both dies share with fully coherent memory
             access, so the programming model has no NUMA (non-uniform memory access) split between
             the dies.
@@ -301,16 +310,16 @@ export function NvidiaBlackwell() {
             SMs and eight 12-high HBM3e stacks.
             <Cite
               s={S.blackwellUltraBlog}
-              note="NVIDIA notes that available SM count and HBM capacity vary by SKU."
+              note={`NVIDIA notes that available SM count and HBM capacity vary by SKU. ${stackNote}`}
             />{' '}
             NVIDIA does not state how the stacks split between the two dies.
           </Box>
           <BlackwellDieDiagram />
           <Box variant="small" color="text-body-secondary">
-            Dies, NV-HBI, transistor count and process
-            <Cite s={S.blackwellArchitecture} />; B300 SMs, HBM stacks and bandwidth, TMEM,
-            shared L2 and NVLink 5
-            <Cite s={S.blackwellUltraBlog} />; B200 capacity and the 228 KB SMEM
+            Dies, die-to-die bandwidth, transistor count and process
+            <Cite s={S.blackwellArchitecture} />; the NV-HBI name, B300 SMs, HBM stacks and
+            bandwidth, TMEM, shared L2 and NVLink 5
+            <Cite s={S.blackwellUltraBlog} note={stackNote} />; B200 capacity and the 228 KB SMEM
             <Cite s={S.blackwellTuningGuide} />; B200 bandwidth
             <Cite s={S.dgxB200} kind="derived" />; operand placement and single-thread issue
             <Cite s={S.ptxIsa} />.
@@ -457,7 +466,8 @@ export function NvidiaBlackwell() {
               <code>sm_100</code>) and B300 is 10.3 (<code>sm_103</code>).
               <Cite s={S.cudaGpus} /> Code built for the family target{' '}
               <code>compute_100f</code> runs on 10.0, 10.3 and 10.7 (Rubin)
-              <Cite s={S.computeCapabilities} />, so target it when one build has to cover the
+              <Cite s={S.computeCapabilities} />
+              <Cite s={S.cutlassChangelog} note="4.8.0: Added initial Rubin support (SM107)." />, so target it when one build has to cover the
               fleet.
             </li>
             <li>
@@ -496,14 +506,16 @@ export function NvidiaBlackwell() {
             as B200 and B300, so code built for <code>compute_100f</code> runs on it; it raises
             shared memory to 328 KB per SM.
             <Cite s={S.computeCapabilities} />
+            <Cite s={S.cutlassChangelog} note="4.8.0: Added initial Rubin support (SM107)." />
           </Box>
           <Box variant="p">
             As of October 2026 the EC2 instance-type specification lists no Rubin instance.
-            <Cite s={S.ec2AcceleratedSpecs} /> AWS plans to deploy Blackwell Ultra, Rubin and
-            Rubin Ultra GPUs in 2027-2028.
+            <Cite s={S.ec2AcceleratedSpecs} /> AWS plans to deploy 2 million additional Blackwell
+            Ultra, Rubin and Rubin Ultra GPUs in 2027-2028.
             <Cite s={S.awsNvidia2026} kind="roadmap" /> Rubin Ultra and Feynman, the
             architecture NVIDIA names after Rubin, are roadmap parts.
-            <Cite s={S.gtc2026} kind="roadmap" />
+            <Cite s={S.awsNvidia2026} kind="roadmap" note="Rubin Ultra appears only as part of the 2027-2028 deployment plan." />
+            <Cite s={S.gtc2026} kind="roadmap" note="Names Feynman as NVIDIA's next major architecture after Vera Rubin." />
           </Box>
         </SpaceBetween>
       </Container>
@@ -524,7 +536,8 @@ export function NvidiaBlackwell() {
             <ul>
               <li>
                 MoE inference near a trillion parameters, where capacity and NVFP4 cut the GPU
-                count. The 72-GPU NVLink domain of the P6e UltraServers is covered in{' '}
+                count. The 72-GPU NVLink domain of the P6e UltraServers
+                <Cite s={S.p6Page} /> is covered in{' '}
                 <em>Grace-Blackwell and UltraServer</em>.
               </li>
               <li>
