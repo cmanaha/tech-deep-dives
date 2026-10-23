@@ -58,7 +58,11 @@ const latencyRows: LatencyRow[] = [
         Up to 228 KB per SM on Hopper and B200
         <Cite s={S.hopperTuningGuide} />
         <Cite s={S.blackwellTuningGuide} />; up to 328 KB on Rubin
-        <Cite s={S.computeCapabilities} />
+        <Cite
+          s={S.computeCapabilities}
+          note="Compute capability 10.7: 328 KB of shared memory per SM, with an explicit opt-in."
+        />
+        <Cite s={S.cutlassChangelog} note="4.8.0: Added initial Rubin support (SM107)." />
       </>
     ),
     latency: (
@@ -142,6 +146,7 @@ const lanes: LaneRow[] = [
       <>
         The GigaThread engine places blocks on SMs; warp schedulers pick ready warps. Up to 32
         blocks and 64 warps per SM on Hopper and B200.
+        <Cite s={S.blackwellUltraBlog} />
         <Cite s={S.cudaHardwareMultithreading} />
         <Cite s={S.hopperTuningGuide} />
         <Cite s={S.blackwellTuningGuide} />
@@ -176,7 +181,7 @@ const lanes: LaneRow[] = [
     unit: (
       <>
         DMA (direct memory access) engines fill SBUF (State Buffer, 28 MiB per NeuronCore-v3)
-        from HBM; the Tensor engine reads SBUF and writes PSUM (Partial Sum Buffer, 2 MiB),
+        from HBM; the Tensor engine reads SBUF and writes PSUM (Partial Sum buffer, 2 MiB),
         which accumulates near memory.
         <Cite s={S.nkiTrn2Arch} />
         <Cite s={S.nkiTrnInf2Arch} />
@@ -234,7 +239,7 @@ export function KernelExecutionLifecycle() {
             <strong>Why the stages matter.</strong> On the device the challenge is distance. On a
             Hopper-class H800, a microbenchmark measured about 479 cycles to load from HBM (High
             Bandwidth Memory) and about 29 cycles from shared memory (SMEM)
-            <Cite s={S.luoHopperBench} kind="measured" />, a gap of about 16 times.
+            <Cite s={S.luoHopperBench} kind="measured" />, a gap of about 16.5 times.
             <Cite s={S.luoHopperBench} kind="derived" note={gapNote} /> Each device stage
             either hides that distance or avoids it, and the host stages add a cost to every
             launch. The last block names the lever for each.
@@ -418,7 +423,7 @@ export function KernelExecutionLifecycle() {
         header={
           <Header
             variant="h2"
-            description="Fusion removes the HBM round trip between kernels, CUDA Graphs and PDL remove the launch gap, and a profile tells you which one to reach for"
+            description="Fusion removes the HBM round trip between kernels, CUDA Graphs and PDL (Programmatic Dependent Launch) remove the launch gap, and a profile tells you which one to reach for"
           >
             Shortening the lifecycle
           </Header>
@@ -448,7 +453,7 @@ export function KernelExecutionLifecycle() {
             still pay stages 1 to 3 each time. A CUDA Graph is defined once and launched
             repeatedly; much of the setup is paid once, at instantiation, so each launch costs
             the CPU less than it would through a stream.
-            <Cite s={S.cudaGraphs} /> PDL (Programmatic Dependent Launch), available from compute
+            <Cite s={S.cudaGraphs} /> PDL, available from compute
             capability 9.0, lets a kernel launch before the kernel it depends on in the same
             stream has finished, hiding its launch latency behind the first kernel&apos;s
             execution.

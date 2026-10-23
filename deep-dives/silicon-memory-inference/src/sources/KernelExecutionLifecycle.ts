@@ -66,6 +66,13 @@ export const S = {
     tier: 1,
     accessed: '2026-10-17',
   },
+  cutlassChangelog: {
+    title: 'CUTLASS CHANGELOG at tag v4.8.0',
+    publisher: 'NVIDIA',
+    url: 'https://github.com/NVIDIA/cutlass/blob/v4.8.0/CHANGELOG.md',
+    tier: 1,
+    accessed: '2026-10-16',
+  },
   cudaPdl: {
     title: 'CUDA Programming Guide v13.4.2: Programmatic Dependent Launch and Synchronization',
     publisher: 'NVIDIA',

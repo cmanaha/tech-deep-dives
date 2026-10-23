@@ -207,7 +207,7 @@ Total distinct sources: 465.
 | NVIDIA | [CUDA Programming Guide v13.4.2: Writing Tile Kernels](https://docs.nvidia.com/cuda/cuda-programming-guide/02-basics/writing-tile-kernels.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [CuTe DSL: JIT compilation options (keep-ptx, ptxas-options)](https://docs.nvidia.com/cutlass/latest/media/docs/pythonDSL/cute_dsl_general/dsl_jit_compilation_options.html) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [cuTile Python quickstart and release notes (1.6.0, 2026-09-09)](https://docs.nvidia.com/cuda/cutile-python/quickstart.html) | 2026-10-17 | NvidiaCompilersAndTooling |
-| NVIDIA | [CUTLASS CHANGELOG at tag v4.8.0](https://github.com/NVIDIA/cutlass/blob/v4.8.0/CHANGELOG.md) | 2026-10-17 | NvidiaBlackwell, NvidiaCompilersAndTooling, QuantizationAndPrecision |
+| NVIDIA | [CUTLASS CHANGELOG at tag v4.8.0](https://github.com/NVIDIA/cutlass/blob/v4.8.0/CHANGELOG.md) | 2026-10-17 | KernelExecutionLifecycle, NvidiaBlackwell, NvidiaCompilersAndTooling, QuantizationAndPrecision |
 | NVIDIA | [CUTLASS example 92_blackwell_moe_gemm at tag v4.8.0](https://github.com/NVIDIA/cutlass/tree/v4.8.0/examples/92_blackwell_moe_gemm) | 2026-10-16 | NvidiaBlackwell |
 | NVIDIA | [CUTLASS README at tag v4.8.0](https://github.com/NVIDIA/cutlass/blob/v4.8.0/README.md) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [DeepSeek-V3.2-NVFP4 model card at revision 7c0f62c (post-training quantization, evaluation)](https://huggingface.co/nvidia/DeepSeek-V3.2-NVFP4/blob/7c0f62c6da1da0c81c6e097010cc55854d206812/README.md) | 2026-10-17 | MoeAndSparseActivation, QuantizationAndPrecision |
