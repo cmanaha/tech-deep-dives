@@ -642,8 +642,8 @@ export function HbmAndBandwidthWall() {
             <Box variant="h3">Compute in the memory</Box>
             <Box variant="p">
               Samsung&apos;s HBM2-PIM (processing-in-memory) puts small FP16 units beside the DRAM
-              banks, stepped by ordinary read and write commands; they see 4.92 TB/s to the
-              host&apos;s 1.23 TB/s.
+              banks, stepped by ordinary read and write commands; on a GPU with four stacks they
+              see 4.92 TB/s to the host&apos;s 1.23 TB/s.
               <Cite s={S.samsungPimHc33} kind="vendor-claim" /> Samsung calls it a demonstrator,
               this research located no commercial availability, and the operator set is narrow.
               See <em>Compute-in-Memory</em>.

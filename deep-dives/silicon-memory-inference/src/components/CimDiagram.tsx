@@ -45,9 +45,10 @@ export function CimDiagram() {
         <title id="cim-diagram-title">
           Compute-in-memory moves the arithmetic to the data. On the conventional path every
           operand crosses the bus, and fetching one from DRAM costs about 200 times the energy of
-          the multiply-accumulate that uses it. With a unit beside each DRAM bank, as on
-          Samsung&apos;s HBM2-PIM, operands are read at 4.92 TB/s inside the stack against 1.23
-          TB/s over the host link, so the bandwidth wall moves out by 4x and does not disappear.
+          the multiply-accumulate that uses it. With a unit beside each pair of DRAM banks, as on
+          Samsung&apos;s HBM2-PIM, a GPU&apos;s four stacks read operands at 4.92 TB/s inside the
+          memory against 1.23 TB/s over the host link, so the bandwidth wall moves out by 4x and
+          does not disappear.
         </title>
         <defs>
           <marker
@@ -156,7 +157,7 @@ export function CimDiagram() {
             Compute-in-memory
           </text>
           <text x={466} y={92} fontSize={11} fill={sub}>
-            A unit beside each bank; only results leave the memory
+            One unit per two banks; only results leave the memory
           </text>
 
           <rect x={466} y={108} width={378} height={34} rx={6} fill="#ffffff" stroke={green} strokeWidth={1.5} />
@@ -180,13 +181,13 @@ export function CimDiagram() {
 
           <rect x={466} y={168} width={378} height={96} rx={6} fill="#ffffff" stroke={green} strokeWidth={1.5} />
           <text x={655} y={186} fontSize={12} fontWeight={700} fill={green} textAnchor="middle">
-            HBM2-PIM stack (Aquabolt-XL)
+            Aquabolt-XL HBM2-PIM, four stacks
           </text>
           {banks.map((x) => (
             <g key={x}>
               <rect x={x} y={196} width={BANK_W} height={26} fill={blueFill} stroke={blue} strokeWidth={1} />
               <text x={x + BANK_W / 2} y={213} fontSize={11} fill={ink} textAnchor="middle">
-                bank
+                2 banks
               </text>
               <rect x={x} y={228} width={BANK_W} height={26} fill={amberFill} stroke={amber} strokeWidth={1} />
               <text x={x + BANK_W / 2} y={245} fontSize={11} fontWeight={600} fill={ink} textAnchor="middle">

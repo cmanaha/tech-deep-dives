@@ -74,3 +74,7 @@
 - Capital Markets Lens: its Xeon 6 product brief record is titled "(PCIe 5.0 at 32 GT/s per
   lane)", but the brief gives 32 GT/s only for CXL 2.0 lanes (Memory Hierarchy verification).
   Retitle to match MemoryHierarchyPrimer.ts and check the claim it backs.
+- Register 01-memory.md row CM13 pairs the GPT-J figures the wrong way round; slide 12 of
+  Samsung's Hot Chips 2023 deck shows 2.16x / 1.79x at 64 output tokens (Compute-in-Memory
+  verification). The section follows the slide. Aquabolt-XL's 4.92 / 1.23 TB/s are four-stack
+  totals; HBM and the Bandwidth Wall now says so.

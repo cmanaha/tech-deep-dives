@@ -80,12 +80,12 @@ export function ComputeInMemory() {
           <Box variant="p">
             <strong>Why it matters for inference.</strong> Decode at small batch runs mostly
             general matrix-vector multiplies (GEMV), which read every weight once per step and, at
-            batch 1, use it for one MAC. Samsung profiled GEMV at 60 to 80% of generation latency
-            for GPT-J 6B on an A100.
+            batch 1, use it for one MAC. Samsung puts GEMV at 60 to 80% of generation latency, and
+            in its profile of GPT-J 6B on an A100 GEMV took 82% of the latency.
             <Cite
               s={S.samsungPimHc35}
               kind="vendor-claim"
-              note="Slide 7: 'GEMV portion can be 60-80% of total generation latency, which are the target of PIM/PNM'. Profiled with DeepSpeed, GPT-J 6B, FP16, on an A100."
+              note="Slide 7: 'GEMV portion can be 60-80% of total generation latency, which are the target of PIM/PNM'; the profile on the same slide (A100, DeepSpeed, GPT-J 6B, FP16, 7 input and 46 output tokens) gives GEMV 82.27% of latency. Slide 9: 'GEMV accounts for 82.3% of total computation time (GPU)'."
             />{' '}
             Wider HBM (High Bandwidth Memory) buses and more stacks move those bytes faster (see{' '}
             <em>HBM and the Bandwidth Wall</em>). CIM moves them a shorter distance.
@@ -108,13 +108,13 @@ export function ComputeInMemory() {
           <Box variant="p">
             In the conventional path every operand crosses the bus to the compute unit and the
             result crosses back, so the energy of each operation is mostly the trip. In-bank units
-            read operands at the bank&apos;s internal bandwidth and send only results out. On
-            Samsung&apos;s Aquabolt-XL the bank-level units see 4.92 TB/s where the host sees
-            1.23 TB/s, 4 times as much.
+            read operands at the bank&apos;s internal bandwidth and send only results out. On a GPU
+            carrying four of Samsung&apos;s Aquabolt-XL stacks, the bank-level units see 4.92 TB/s
+            where the host sees 1.23 TB/s, 4 times as much.
             <Cite
               s={S.samsungPimHc33}
               kind="vendor-claim"
-              note="'Off-chip and on-chip PIM compute bandwidth is 1.23 TB/s and 4.92 TB/s, respectively.'"
+              note="Slide 13: 'Off-chip and on-chip PIM compute bandwidth is 1.23 TB/s and 4.92 TB/s, respectively.' The same slide shows the GPU carrying '4-HBM-PIM stacks', so both figures are four-stack totals; slide 7 gives one HBM2 stack 'more than 256GB/s'."
             />{' '}
             That ratio is how far the bandwidth wall moves, and every operator the memory cannot
             run still crosses the bus at the host&apos;s rate.
@@ -135,9 +135,10 @@ export function ComputeInMemory() {
         <SpaceBetween size="m">
           <Box variant="p">
             Samsung built HBM2-PIM by modifying its Aquabolt HBM2 design and calls it &quot;the
-            first demonstrator vehicle of PIM&quot;. Each bank gets a programmable unit at its I/O
-            boundary: a 16-lane FP16 (16-bit floating point) SIMD (single instruction, multiple
-            data) array of multipliers and adders. The part keeps Aquabolt&apos;s form factor and
+            first demonstrator vehicle of PIM&quot;. Each pair of banks, one even and one odd,
+            shares a programmable unit at the banks&apos; I/O boundary: a 16-lane FP16 (16-bit
+            floating point) SIMD (single instruction, multiple data) array of multipliers and
+            adders. The part keeps Aquabolt&apos;s form factor and
             timing. In PIM mode, ordinary DRAM read and write commands step a small program stored
             in each unit, so an unmodified HBM controller drives it; Samsung validated it that way
             with a GPU and an FPGA (field-programmable gate array).
@@ -291,8 +292,8 @@ export function ComputeInMemory() {
             <Box variant="h3">What the bet wins</Box>
             <ul>
               <li>
-                Energy per operation falls by more than half on GEMV-class kernels: Samsung
-                measured over 60% less on its GPU system.
+                Energy falls by more than half: Samsung measured over 60% less on its GPU system
+                with Aquabolt-XL.
                 <Cite
                   s={S.aquaboltIeeeMicro}
                   kind="measured"
