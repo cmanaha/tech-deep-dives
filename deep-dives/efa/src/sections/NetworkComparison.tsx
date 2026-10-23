@@ -25,6 +25,8 @@ import type { DocRef } from '@tech-deep-dives/shared';
  */
 
 const ACCESSED = '2026-08-02';
+/** Pages re-read for the October 2026 refresh. */
+const REFRESHED = '2026-10-23';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
 const docs: Record<string, DocRef> = {
@@ -32,7 +34,7 @@ const docs: Record<string, DocRef> = {
     title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
     url: `${EC2_DOC}efa.html`,
     tier: 1,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
   },
   efaAcc: {
     title: 'EC2 User Guide: Maximize network bandwidth on instances with multiple network cards',
@@ -69,7 +71,7 @@ const docs: Record<string, DocRef> = {
     title: 'NVIDIA NVLink and NVLink Switch',
     url: 'https://www.nvidia.com/en-us/data-center/nvlink/',
     tier: 2,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
   },
   nvidiaIb: {
     title: 'NVIDIA InfiniBand Networking Solutions',
@@ -126,7 +128,7 @@ const comparisonData: ComparisonRow[] = [
         <SourceRef provenance="documented" doc={docs.hpcBlog} />
       </>
     ),
-    tcp: 'ECMP hashed per flow, with CUBIC or BBR tuned for the WAN',
+    tcp: 'ECMP hashed per flow, with CUBIC or BBR (Bottleneck Bandwidth and Round-trip propagation time) tuned for the WAN',
     rdma: (
       <>
         Adaptive routing switch-side, PFC on RoCE, credit-based on InfiniBand{' '}
@@ -151,7 +153,8 @@ const comparisonData: ComparisonRow[] = [
     feature: 'Latency',
     efa: (
       <>
-        Lower and more consistent than TCP. AWS publishes no per-message figure{' '}
+        Lower and more consistent latency for AI, ML and HPC workloads. AWS publishes no
+        per-message figure{' '}
         <SourceRef provenance="documented" doc={docs.efa} />
       </>
     ),
@@ -181,7 +184,8 @@ const comparisonData: ComparisonRow[] = [
     ),
     nvlink: (
       <>
-        900 GB/s per GPU (4th gen), 1,800 GB/s (5th gen){' '}
+        900 GB/s per GPU (4th gen, Hopper), 1,800 GB/s (5th gen, Blackwell), 3,000 GB/s (6th
+        gen, Vera Rubin){' '}
         <SourceRef provenance="documented" doc={docs.nvlink} />
       </>
     ),
@@ -313,7 +317,8 @@ export function NetworkComparison() {
             <Box variant="h3">Where EFA loses</Box>
             <Box variant="p">
               Point-to-point latency. A dedicated InfiniBand fabric is lower, and nothing about SRD
-              closes that gap. NVIDIA also offers in-network reduction through SHARP, which runs
+              closes that gap. NVIDIA also offers in-network reduction through SHARP (Scalable
+              Hierarchical Aggregation and Reduction Protocol), which runs
               part of a collective in the switch, plus self-healing link recovery{' '}
               <SourceRef provenance="documented" doc={docs.nvidiaIb} />. EFA has no switch-side
               collective offload. SRD costs something in the quiet case too: on the ENA Express path,

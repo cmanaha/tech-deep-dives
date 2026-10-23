@@ -11,7 +11,7 @@ const sources: Source[] = [
   { id: 4, title: 'AWS EC2 User Guide: EFA Accelerated Instance Types', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 5, title: 'AWS EC2 Accelerated Computing Instance Specs', url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 6, title: 'AWS EC2 Placement Groups', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
-  { id: 7, title: 'AWS EKS: Node EFA', url: 'https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 7, title: 'EKS User Guide: Manage EFA devices on Amazon EKS', url: 'https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html', tier: 1, type: 'official-docs', accessDate: '2026-10-23' },
   { id: 19, title: 'AWS Neuron Collective Communication Docs', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html', tier: 1, type: 'official-docs', accessDate: '2026-10-23' },
   { id: 20, title: 'AWS Neuron Training FAQ', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/faq/training/neuron-training.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 21, title: 'SageMaker Data Parallel Library', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/data-parallel-intro.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
@@ -52,7 +52,7 @@ const sources: Source[] = [
   { id: 25, title: 'Ernest Chiang: AWS SRD Protocol Deep Dive', url: 'https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/', tier: 3, type: 'third-party-analysis', accessDate: '2026-03-22' },
   // Tier 3 because NVIDIA is a third party to AWS. The comparison sections
   // label the same page tier 2 under the vendor-neutral SourceRef scale.
-  { id: 45, title: 'NVIDIA NVLink and NVLink Switch', url: 'https://www.nvidia.com/en-us/data-center/nvlink/', tier: 3, type: 'product-page', accessDate: '2026-08-02' },
+  { id: 45, title: 'NVIDIA NVLink and NVLink Switch', url: 'https://www.nvidia.com/en-us/data-center/nvlink/', tier: 3, type: 'product-page', accessDate: '2026-10-23' },
   // NIXL sources
   { id: 35, title: 'NVIDIA NIXL GitHub Repository', url: 'https://github.com/ai-dynamo/nixl', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
   { id: 36, title: 'NIXL Repository at v1.5.0', url: 'https://github.com/ai-dynamo/nixl/tree/v1.5.0', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
@@ -166,6 +166,14 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'WQE', fullForm: 'Work Queue Entry', description: 'Individual work item posted to a send or receive queue for the NIC to process' },
   { acronym: 'LLQ', fullForm: 'Low Latency Queue', description: 'EFA mechanism writing descriptors directly to NIC via MMIO, skipping DMA for small messages' },
   { acronym: 'UARN', fullForm: 'User Access Region Number', description: 'Hardware-enforced per-process doorbell scoping mechanism in EFA' },
+  { acronym: 'UCX', fullForm: 'Unified Communication X', description: 'Open source communication framework. vLLM NixlConnector selects the NIXL UCX backend unless another is named; the AWS EFA and NIXL guide names the LIBFABRIC backend' },
+  { acronym: 'SHARP', fullForm: 'Scalable Hierarchical Aggregation and Reduction Protocol', description: 'NVIDIA InfiniBand in-network reduction, which runs part of a collective in the switch. EFA has no switch-side equivalent' },
+  { acronym: 'BBR', fullForm: 'Bottleneck Bandwidth and Round-trip propagation time', description: 'TCP congestion control algorithm, an alternative to CUBIC on WAN paths' },
+  { acronym: 'LoRA', fullForm: 'Low-Rank Adaptation', description: 'Fine-tuning method that trains small low-rank matrices instead of the full weights, which keeps it on a single instance' },
+  { acronym: 'QLoRA', fullForm: 'Quantized LoRA', description: 'LoRA applied to a quantized base model, cutting memory further' },
+  { acronym: 'LTS', fullForm: 'Long-Term Support', description: 'Driver or software branch maintained for an extended period. The EKS AMI build pairs an NVIDIA LTS driver with a production-branch driver' },
+  { acronym: 'SSM', fullForm: 'AWS Systems Manager', description: 'AWS service for managed access to instances and remote command runs' },
+  { acronym: 'NGC', fullForm: 'NVIDIA GPU Cloud', description: 'NVIDIA container catalog. The EFA installer detects NGC-derived containers and changes what it installs inside them' },
   { acronym: 'ROCr', fullForm: 'ROCm Runtime', description: 'AMD GPU runtime. The libfabric EFA provider treats ROCr memory like CUDA memory when it picks a wire protocol' },
   { acronym: 'BAR', fullForm: 'Base Address Register', description: 'PCIe register defining memory-mapped I/O regions for device communication' },
   { acronym: 'DDP', fullForm: 'Distributed Data Parallel', description: 'PyTorch strategy replicating model across GPUs and synchronizing gradients via allreduce' },

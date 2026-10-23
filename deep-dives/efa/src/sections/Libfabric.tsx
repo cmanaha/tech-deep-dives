@@ -62,6 +62,12 @@ const docs = {
     tier: 1,
     accessed: '2026-10-23',
   } as DocRef,
+  awsLibfabric: {
+    title: 'aws/libfabric release v2.7.0amzn2.0 (October 15, 2026)',
+    url: 'https://github.com/aws/libfabric/releases/tag/v2.7.0amzn2.0',
+    tier: 1,
+    accessed: '2026-10-23',
+  } as DocRef,
   nixl: doc('EC2 User Guide: Get started with EFA and NIXL', `${EC2_DOC}efa-start-nixl.html`, 1),
 };
 
@@ -1045,7 +1051,8 @@ grep 'Memhooks monitor requested via FI_MR_CACHE_MONITOR' ofi_*.log`}</pre>
             October 22, 2026, upgrades to libfabric 2.7.0amzn2.0, along with EFA driver 3.3.1,
             rdma-core 65.0 and AWS OFI NCCL Plugin 1.22.0{' '}
             <SourceRef provenance="documented" doc={docs.installer} />. The amzn suffix marks an AWS
-            fork of upstream v2.7.0 carrying backports.
+            build, released from the aws/libfabric repository rather than from ofiwg{' '}
+            <SourceRef provenance="documented" doc={docs.awsLibfabric} />.
           </Box>
 
           <Alert type="warning" header="Name the channel whenever you quote a libfabric version">

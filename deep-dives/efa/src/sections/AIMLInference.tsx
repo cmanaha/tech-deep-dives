@@ -7,7 +7,7 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import { SourceRef } from '@tech-deep-dives/shared';
-import type { DocRef } from '@tech-deep-dives/shared';
+import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 
 /**
  * EFA for AI/ML Inference.
@@ -18,7 +18,8 @@ import type { DocRef } from '@tech-deep-dives/shared';
  * the search that failed is described so a reader can repeat it.
  */
 
-const ACCESSED = '2026-08-02';
+const ACCESSED = '2026-10-23';
+const READ = '2026-10-23';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
 const docs: Record<string, DocRef> = {
@@ -39,6 +40,37 @@ const docs: Record<string, DocRef> = {
     url: `${EC2_DOC}efa-start-nixl.html`,
     tier: 1,
     accessed: ACCESSED,
+  },
+};
+
+const code: Record<string, CodeRef> = {
+  nixlPostWrite: {
+    repo: 'ai-dynamo/nixl',
+    ref: 'v1.5.0',
+    path: 'src/utils/libfabric/libfabric_rail.cpp',
+    lines: 'L1366-L1415',
+    read: READ,
+  },
+  ncclP2pKernel: {
+    repo: 'NVIDIA/nccl',
+    ref: 'v2.32.3-1',
+    path: 'src/enqueue/enqueue.cc',
+    lines: 'L1241-L1249',
+    read: READ,
+  },
+  vllmBackends: {
+    repo: 'vllm-project/vllm',
+    ref: 'v0.32.0',
+    path: 'vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py',
+    lines: 'L525-L527',
+    read: READ,
+  },
+  vllmKvRole: {
+    repo: 'vllm-project/vllm',
+    ref: 'v0.32.0',
+    path: 'vllm/distributed/kv_transfer/kv_connector/v1/nixl/connector.py',
+    lines: 'L97-L103',
+    read: READ,
   },
 };
 
@@ -69,17 +101,18 @@ export function AIMLInference() {
             <div>
               <Box variant="h3">NIXL (NVIDIA Inference Xfer Library)</Box>
               <Box variant="p">
-                Purpose-built for disaggregated inference transfers. NIXL moves a buffer with{' '}
-                <strong>zero SM (Streaming Multiprocessor) consumption</strong>: the transfer needs
-                no GPU kernel launch, so the GPU keeps every SM on token generation. NCCL
-                launches a GPU kernel for each point-to-point send and receive, and on an inference
-                GPU that is already compute-bound, those SMs come straight out of throughput.
+                Purpose-built for disaggregated inference transfers. Over EFA, NIXL posts each
+                transfer from a host thread through libfabric, so the transfer takes{' '}
+                <strong>no SM (Streaming Multiprocessor)</strong> and the GPU keeps every SM on
+                token generation <SourceRef provenance="code-derived" code={code.nixlPostWrite} />.
+                NCCL launches a GPU kernel for each point-to-point send and receive{' '}
+                <SourceRef provenance="code-derived" code={code.ncclP2pKernel} />, and on an
+                inference GPU that is already compute-bound, those SMs come straight out of
+                throughput.
               </Box>
               <Box variant="p">
-                NIXL uses EFA via the libfabric backend. EFA supports NIXL for AI and ML
-                applications, and NIXL integrates with Libfabric 1.21.0 and later{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />, with its own getting-started
-                page <SourceRef provenance="documented" doc={docs.efaNixl} />.
+                NIXL reaches EFA through its libfabric backend, and integrates with Libfabric
+                1.21.0 and later <SourceRef provenance="documented" doc={docs.efa} />.
               </Box>
               <StatusIndicator type="success">EFA critical for NIXL</StatusIndicator>
             </div>
@@ -89,21 +122,32 @@ export function AIMLInference() {
                 NCCL is designed for steady-state collectives in training: allreduce, allgather,
                 reduce-scatter, running every step at a predictable size. NIXL is designed for
                 bursty point-to-point transfers in inference, where a KV-cache block moves once,
-                between two specific nodes, at an unpredictable moment. Different patterns, so
-                different libraries.
+                between two specific nodes, at an unpredictable moment.
               </Box>
               <Alert type="info" header="Size the NIXL advantage on your own transfer sizes">
                 A percentage figure circulates for NIXL against NCCL at KV-cache transfer sizes. No
-                benchmark that supports it was located during this research, and the repository
-                usually cited for it is attributed to the wrong organization. Treat the gap as
+                benchmark that supports it was located during this research. Treat the gap as
                 unquantified and measure it at the block sizes your serving stack actually moves.
               </Alert>
             </div>
           </ColumnLayout>
           <Box variant="p">
             <strong>vLLM integration:</strong> vLLM implements disaggregated serving through
-            NixlConnector. The prefiller produces, the decoder consumes, and a proxy coordinates the
-            KV-cache handoff over EFA with no GPU compute cycles spent on it.
+            NixlConnector. Name the libfabric backend in <code>kv_connector_extra_config</code>{' '}
+            with <code>{'"backends": ["LIBFABRIC"]'}</code>, because the connector
+            defaults to UCX (Unified Communication X){' '}
+            <SourceRef provenance="code-derived" code={code.vllmBackends} /> and LIBFABRIC is the
+            backend that takes NIXL traffic over EFA{' '}
+            <SourceRef provenance="documented" doc={docs.efaNixl} />. Set <code>kv_role</code> to{' '}
+            <code>kv_producer</code> on prefill instances and <code>kv_consumer</code> on decode
+            instances. The AWS sample sets <code>kv_both</code> on both, a value the connector logs
+            as deprecated{' '}
+            <SourceRef
+              provenance="doc-code-conflict"
+              doc={docs.efaNixl}
+              code={code.vllmKvRole}
+              conflict="kv_role set to kv_both on both the prefill and the decode instance"
+            />.
           </Box>
         </SpaceBetween>
       </Container>

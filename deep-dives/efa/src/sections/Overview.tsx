@@ -17,6 +17,8 @@ import type { DocRef } from '@tech-deep-dives/shared';
  */
 
 const ACCESSED = '2026-08-02';
+/** Pages re-read for the October 2026 refresh. */
+const REFRESHED = '2026-10-23';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
 const docs: Record<string, DocRef> = {
@@ -24,7 +26,7 @@ const docs: Record<string, DocRef> = {
     title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
     url: `${EC2_DOC}efa.html`,
     tier: 1,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
   },
   efaAcc: {
     title: 'EC2 User Guide: Maximize network bandwidth on instances with multiple network cards',
@@ -65,12 +67,12 @@ export function Overview() {
             Computing)) spend their step time inside that per-message cost.
           </Box>
           <Box variant="p">
-            <strong>EFA (Elastic Fabric Adapter)</strong> is a network interface for EC2 instances that
-            enables applications to communicate at the{' '}
+            <strong>EFA (Elastic Fabric Adapter)</strong> is a network interface for EC2 (Elastic Compute
+            Cloud) instances that enables applications to communicate at the{' '}
             <strong>scale and performance of on-premises HPC clusters</strong>, but in the cloud. It achieves
             this through <strong>OS-bypass</strong>: applications talk directly to the network hardware,
             skipping the kernel network stack entirely. EFA provides lower and more consistent latency
-            and higher throughput than the TCP transport traditionally used in cloud-based HPC systems{' '}
+            and higher throughput for cloud-based AI, ML and HPC workloads{' '}
             <SourceRef provenance="documented" doc={docs.efa} />.
           </Box>
           <Box variant="p">

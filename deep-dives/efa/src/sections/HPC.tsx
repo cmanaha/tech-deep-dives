@@ -18,6 +18,8 @@ import type { DocRef } from '@tech-deep-dives/shared';
  */
 
 const ACCESSED = '2026-08-02';
+/** Pages re-read for the October 2026 refresh. */
+const REFRESHED = '2026-10-23';
 
 const docs: Record<string, DocRef> = {
   hpc: {
@@ -30,13 +32,13 @@ const docs: Record<string, DocRef> = {
     title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html',
     tier: 1,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
   },
   efaStart: {
     title: 'EC2 User Guide: Get started with EFA and MPI',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html',
     tier: 1,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
   },
   hpc8a: {
     title: "AWS What's New: Announcing new high performance computing Amazon EC2 Hpc8a instances",
@@ -163,31 +165,28 @@ export function HPC() {
         <SpaceBetween size="m">
           <Box variant="p">
             AWS supports two MPI implementations, Open MPI 4.1 and later and Intel MPI
-            2019 Update 5 and later <SourceRef provenance="documented" doc={docs.efa} />. MPICH runs
-            over the same libfabric provider, and AWS support covers the two named above.
+            2019 Update 5 and later <SourceRef provenance="documented" doc={docs.efa} />. MPICH and
+            any other MPI sit outside that support statement.
           </Box>
-          <ColumnLayout columns={3} variant="text-grid">
+          <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="h3">Open MPI</Box>
               <Box variant="p">
-                Use <code>--mca mtl ofi</code> to select the OFI (OpenFabrics Interfaces, libfabric) layer.
-                EFA is selected automatically when the EFA provider is available.
+                The EFA installer installs Open MPI 4.1 in <code>/opt/amazon/openmpi</code> and
+                Open MPI 5 in <code>/opt/amazon/openmpi5</code> by default. Run{' '}
+                <code>module load openmpi5</code> to put Open MPI 5 on the <code>PATH</code>{' '}
+                <SourceRef provenance="documented" doc={docs.efaStart} />.
               </Box>
             </div>
             <div>
               <Box variant="h3">Intel MPI</Box>
               <Box variant="p">
-                Set <code>FI_PROVIDER=efa</code>, <code>I_MPI_OFI_LIBRARY_INTERNAL=0</code>,
-                and <code>I_MPI_MULTIRAIL=1</code> on instances with two or more EFA interfaces,
-                the setting behind the WRF result above. Intel MPI has its own libfabric; point it
-                at the system libfabric with EFA support.
-              </Box>
-            </div>
-            <div>
-              <Box variant="h3">MPICH</Box>
-              <Box variant="p">
-                Configure with <code>--with-libfabric</code> pointing to EFA-enabled
-                libfabric. Set <code>FI_PROVIDER=efa</code> at runtime.
+                Set <code>I_MPI_OFI_LIBRARY_INTERNAL=0</code> so Intel MPI loads the libfabric the
+                EFA installer ships instead of its own, and <code>I_MPI_OFI_PROVIDER=efa</code> so
+                a misconfigured node fails at start-up instead of falling back to TCP{' '}
+                <SourceRef provenance="documented" doc={docs.efaStart} />.{' '}
+                <code>I_MPI_MULTIRAIL=1</code> on instances with two or more EFA interfaces is the
+                setting behind the WRF result above.
               </Box>
             </div>
           </ColumnLayout>
@@ -251,13 +250,14 @@ export function HPC() {
             <div>
               <Box variant="h3">Hpc6id (Intel, Nitro v4)</Box>
               <Box variant="p">
-                64 cores of Intel Xeon Ice Lake, 200 Gbps EFA, and 4 x 3800 GB of NVMe instance
+                64 cores of Intel Xeon Ice Lake, 200 Gbps EFA, and 4 x 3800 GB of NVMe (Non-Volatile
+                Memory Express) instance
                 store for jobs that need local scratch{' '}
                 <SourceRef provenance="documented" doc={docs.hpc} />.
               </Box>
             </div>
             <div>
-              <Box variant="h3">Hpc8a (AMD, Nitro v6, newest)</Box>
+              <Box variant="h3">Hpc8a (AMD, Nitro v6)</Box>
               <Box variant="p">
                 192 cores of AMD EPYC 9R45, 768 GiB, 300 Gbps EFA{' '}
                 <SourceRef provenance="documented" doc={docs.hpc} />. The gain over Hpc7a is up to

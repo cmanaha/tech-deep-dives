@@ -26,19 +26,27 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  */
 
 const ACCESSED = '2026-08-02';
-const READ = '2026-08-02';
+/** Pages re-read for the October 2026 refresh. */
+const REREAD = '2026-10-23';
+/** Every code citation below was re-read at its current pin on this date. */
+const READ = '2026-10-23';
 
-/** amzn/amzn-drivers at the efa_linux_3.3.0 release tag, the commit that
- *  bumps the driver to 3.3.0. Master has since moved past it. */
-const DRIVER_SHA = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
-const PLUGIN_TAG = 'v1.20.0';
-const LIBFABRIC_TAG = 'v2.6.0';
-/** One of the three NCCL releases aws-ofi-nccl v1.20.0 states it was tested against. */
-const NCCL_TAG = 'v2.28.9-1';
+/** amzn/amzn-drivers at the efa_linux_3.4.0 release tag, the commit that
+ *  bumps the driver to 3.4.0. */
+const DRIVER_SHA = '9d5ca4021f7c9f8421e404c1e89edb0b1325372c';
+const PLUGIN_TAG = 'v1.22.0';
+const LIBFABRIC_TAG = 'v2.7.0';
+/** The NCCL release aws-ofi-nccl v1.22.0 states it was tested with. */
+const NCCL_TAG = 'v2.32.3-1';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 const EKS_DOC = 'https://docs.aws.amazon.com/eks/latest/userguide/';
 
-const doc = (title: string, url: string, tier: 1 | 2): DocRef => ({ title, url, tier, accessed: ACCESSED });
+const doc = (title: string, url: string, tier: 1 | 2, accessed: string = ACCESSED): DocRef => ({
+  title,
+  url,
+  tier,
+  accessed,
+});
 
 /** Pinned code reference builders. Ref is always a SHA or a release tag, never a branch. */
 const drv = (path: string, lines?: string): CodeRef => ({
@@ -76,17 +84,36 @@ const nccl = (path: string, lines?: string): CodeRef => ({
   lines,
   read: READ,
 });
+/** NVIDIA/k8s-device-plugin, pinned per release because the mofed default differs between them. */
+const nvdp = (ref: string, path: string, lines?: string): CodeRef => ({
+  repo: 'NVIDIA/k8s-device-plugin',
+  ref,
+  path,
+  lines,
+  read: READ,
+});
 
 const docs = {
   efa: doc('EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads', `${EC2_DOC}efa.html`, 1),
   monitor: doc('EC2 User Guide: Monitor an Elastic Fabric Adapter on Amazon EC2', `${EC2_DOC}efa-working-monitor.html`, 1),
   start: doc('EC2 User Guide: Get started with EFA and MPI', `${EC2_DOC}efa-start.html`, 1),
   startNccl: doc('EC2 User Guide: Get started with EFA and NCCL', `${EC2_DOC}efa-start-nccl.html`, 1),
-  changelog: doc('EC2 User Guide: Elastic Fabric Adapter release notes', `${EC2_DOC}efa-changelog.html`, 1),
+  changelog: doc('EC2 User Guide: Elastic Fabric Adapter release notes', `${EC2_DOC}efa-changelog.html`, 1, REREAD),
+  installer: doc(
+    'EFA installer 1.51.0 tarball, ChangeLog.md (tarball dated October 22, 2026)',
+    'https://efa-installer.amazonaws.com/aws-efa-installer-1.51.0.tar.gz',
+    1,
+    REREAD
+  ),
+  awsLibfabric: doc(
+    'aws/libfabric release Libfabric 2.7.0amzn2.0 (names the ofiwg/libfabric base commit)',
+    'https://github.com/aws/libfabric/releases/tag/v2.7.0amzn2.0',
+    1,
+    REREAD
+  ),
   installerCheck: doc('EC2 User Guide: Verify the EFA installer using a checksum', `${EC2_DOC}efa-verify.html`, 1),
   detach: doc('EC2 User Guide: Detach and delete an EFA from an Amazon EC2 instance', `${EC2_DOC}detach-efa.html`, 1),
-  eksDevice: doc('EKS User Guide: EFA device management with Dynamic Resource Allocation', `${EKS_DOC}device-management-efa.html`, 1),
-  eksNode: doc('EKS User Guide: Machine learning training on Amazon EKS with EFA', `${EKS_DOC}node-efa.html`, 1),
+  eksDevice: doc('EKS User Guide: Manage EFA devices on Amazon EKS', `${EKS_DOC}device-management-efa.html`, 1, REREAD),
 };
 
 const code = {
@@ -95,10 +122,10 @@ const code = {
   portStats: drv('src/efa_verbs.c', 'L74-L96'),
   deviceStats: drv('src/efa_verbs.c', 'L54-L66'),
   kverbsStats: drv('src/efa_verbs.c', 'L68-L72'),
-  fillPort: drv('src/efa_verbs.c', 'L3652-L3656'),
-  getHwStats: drv('src/efa_verbs.c', 'L3708-L3715'),
-  netStatsStruct: drv('src/efa_admin_cmds_defs.h', 'L664-L674'),
-  basicStatsStruct: drv('src/efa_admin_cmds_defs.h', 'L620-L632'),
+  fillPort: drv('src/efa_verbs.c', 'L3694-L3698'),
+  getHwStats: drv('src/efa_verbs.c', 'L3750-L3757'),
+  netStatsStruct: drv('src/efa_admin_cmds_defs.h', 'L627-L637'),
+  basicStatsStruct: drv('src/efa_admin_cmds_defs.h', 'L583-L595'),
   statsTypes: drv('src/efa_admin_cmds_defs.h', 'L70-L76'),
   modVersion: drv('src/efa_main.c', 'L42-L53'),
   pciIds: drv('src/efa_main.c', 'L27-L38'),
@@ -110,21 +137,28 @@ const code = {
   enaEthtool: ena('ena_ethtool.c', 'L113-L119'),
   fabricNames: lfab('prov/efa/src/efa.h', 'L62-L63'),
   fabricAssign: lfab('prov/efa/src/efa_prov.c', 'L106-L133'),
-  linkAddr: lfab('prov/efa/src/efa_prov_info.c', 'L346-L356'),
-  mrCacheLimits: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L141-L152'),
-  mrCacheMonitor: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L111-L126'),
-  forkAbort: lfab('prov/efa/src/efa_fork_support.c', 'L30-L60'),
+  linkAddr: lfab('prov/efa/src/efa_prov_info.c', 'L357-L367'),
+  mrCacheLimits: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L185-L196'),
+  mrCacheMonitor: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L155-L170'),
+  forkAbort: lfab('prov/efa/src/efa_fork_support.c', 'L31-L61'),
   pingpong: lfab('man/fi_pingpong.1.md'),
-  mrCacheEnv: lfab('man/fi_mr.3.md', 'L1054-L1080'),
+  mrCacheEnv: lfab('man/fi_mr.3.md', 'L1098-L1124'),
   selectedProvider: plugin('src/nccl_ofi_net.cpp', 'L643-L646'),
   pluginName: plugin('src/nccl_ofi_interface_nvidia.cpp', 'L802-L803'),
-  topoMemfd: plugin('src/nccl_ofi_rdma.cpp', 'L239-L299'),
-  topoDefer: plugin('src/platform-aws.cpp', 'L665-L687'),
+  topoMemfd: plugin('src/nccl_ofi_rdma.cpp', 'L235-L295'),
+  topoDefer: plugin('src/platform-aws.cpp', 'L768-L790'),
   envVarDoc: plugin('doc/efa-env-var.md'),
-  usingNetwork: nccl('src/init.cc', 'L428'),
-  internalPlugins: nccl('src/plugin/net.cc', 'L322-L337'),
-  pluginFailed: nccl('src/plugin/net.cc', 'L225'),
-  socketName: nccl('src/transport/net_socket.cc', 'L720-L721'),
+  usingNetwork: nccl('src/init.cc', 'L557'),
+  internalPlugins: nccl('src/plugin/net.cc', 'L320-L339'),
+  pluginFailed: nccl('src/plugin/net.cc', 'L229'),
+  /** NCCL_DEBUG to level mask: INFO and above include ATTN, WARN does not. */
+  debugLevels: nccl('src/debug.cc', 'L146-L156'),
+  socketName: nccl('src/transport/net_socket.cc', 'L694-L695'),
+  /** v0.19.0 sets the mofed-enabled default to true. */
+  mofedDefaultOn: nvdp('v0.19.0', 'cmd/nvidia-device-plugin/main.go', 'L116-L121'),
+  /** v0.19.3 drops the explicit default, so the flag falls back to false. */
+  mofedDefaultOff: nvdp('v0.19.3', 'cmd/nvidia-device-plugin/main.go', 'L114-L118'),
+  mofedLatest: nvdp('v0.20.1', 'cmd/nvidia-device-plugin/main.go', 'L115-L119'),
 };
 
 /**
@@ -287,7 +321,7 @@ function FailureLayerMapDiagram() {
       layer: 'Container and scheduler',
       sub: 'device admission',
       chips: [
-        { t: ['NVIDIA plugin mofed', 'claims the uverbs nodes'], silent: true },
+        { t: ['NVIDIA plugin v0.19.0 to v0.19.2', 'mofed claims the uverbs nodes'], silent: true },
         { t: ['Pod never requested', 'vpc.amazonaws.com/efa'], silent: false },
       ],
     },
@@ -486,7 +520,7 @@ const failureRows: FailureRow[] = [
     detect:
       'EC2 instances with the EFA driver installed pre-allocate 5128 huge pages of 2 MiB each. On Kubernetes they are a schedulable resource the pod must request.',
     fix: 'Request hugepages-2Mi in the pod spec and watch fork-heavy data loaders. Setting FI_EFA_USE_HUGE_PAGE together with fork safety aborts the process.',
-    src: <SourceRef provenance="documented" doc={docs.eksNode} />,
+    src: <SourceRef provenance="documented" doc={docs.eksDevice} />,
   },
   {
     id: 'sg',
@@ -511,7 +545,7 @@ const failureRows: FailureRow[] = [
     mode: 'Cascading Spot interruption',
     symptom: 'One reclamation event takes several ranks, and the tightly coupled job dies entirely.',
     detect:
-      'The same Availability Zone and placement group constraint that makes EFA fast makes interruptions correlated rather than independent. It is a design consequence you plan around, and no counter reports it.',
+      'The single Availability Zone that makes EFA fast, and the tighter grouping a cluster placement group adds, make interruptions correlated rather than independent. No counter reports it.',
     fix: 'Checkpoint on a cadence you can afford to lose. Prefer Capacity Blocks or a capacity reservation for the coupled phase, and keep Spot for work that can lose a rank.',
     src: <SourceRef provenance="code-derived" doc={docs.efa} label="inference" />,
   },
@@ -538,9 +572,20 @@ const failureRows: FailureRow[] = [
     mode: 'NVIDIA device plugin mofed default in containers',
     symptom: 'A pod that asked for a subset of the EFA devices gets the wrong ones, or gets all of them.',
     detect:
-      'From NVIDIA k8s-device-plugin v0.19.0 the mofed-enabled flag defaults to true, which mounts all /dev/infiniband/uverbs devices into containers requesting GPUs, conflicting with the EFA device plugin.',
-    fix: 'Set mofedEnabled to false on the NVIDIA device plugin chart, or MOFED_ENABLED to false on the GPU operator. EKS Auto Mode does not enable it by default.',
-    src: <SourceRef provenance="documented" doc={docs.eksDevice} />,
+      'NVIDIA k8s-device-plugin v0.19.0 to v0.19.2 default mofed-enabled to true, which mounts every /dev/infiniband/uverbs device into GPU containers and conflicts with the EFA device plugin. v0.19.3 (June 2026) through v0.20.1 default it to false; the EKS guide gives the v0.19.0 default with no upper bound.',
+    fix: 'Set mofedEnabled to false on the NVIDIA device plugin chart, or MOFED_ENABLED on the GPU operator, to cover v0.19.0 to v0.19.2. EKS Auto Mode leaves it off.',
+    src: (
+      <>
+        <SourceRef provenance="code-derived" code={code.mofedDefaultOn} />{' '}
+        <SourceRef
+          provenance="doc-code-conflict"
+          doc={docs.eksDevice}
+          code={code.mofedDefaultOff}
+          conflict="Starting with NVIDIA k8s-device-plugin v0.19.0, the --mofed-enabled flag defaults to true"
+        />{' '}
+        <SourceRef provenance="code-derived" code={code.mofedLatest} />
+      </>
+    ),
   },
 ];
 
@@ -629,7 +674,7 @@ ibv_devinfo -d rdmap0s31 | grep -E 'vendor_part_id|phys_state|state'
             The module version string is assembled in the driver from three constants plus a literal
             g suffix, unless the build defines DRV_MODULE_VERSION itself{' '}
             <SourceRef provenance="code-derived" code={code.modVersion} />, which is why modinfo
-            prints 2.17.3g below where dkms status prints 2.17.3. The installer builds the module
+            prints 3.3.1g below where dkms status prints 3.3.1. The installer builds the module
             through DKMS (Dynamic Kernel Module Support) and the package version lives in the DKMS
             configuration{' '}
             <SourceRef provenance="code-derived" code={code.dkms} />, so the two are views of the
@@ -640,8 +685,8 @@ ibv_devinfo -d rdmap0s31 | grep -E 'vendor_part_id|phys_state|state'
 cat /sys/module/efa/version
 dkms status | grep -i efa
 
-    version:        2.17.3g
-    efa/2.17.3, 6.1.0-1030-aws, x86_64: installed
+    version:        3.3.1g
+    efa/3.3.1, 6.1.0-1030-aws, x86_64: installed
 
 # Undocumented, and the fastest accelerator peer-to-peer check there is.
 # Empty means no P2P provider is loaded, which is a normal state.
@@ -683,11 +728,11 @@ fi_info -p efa -t FI_EP_RDM | grep -c '^provider: efa'`}</pre>
           </Box>
           <Box variant="p">
             Two lines decide the check: provider: efa and type: FI_EP_RDM. Expect the fabric line to
-            differ from the AWS walkthrough; the block below says what it prints now.
+            differ from the AWS walkthrough; the block below shows what libfabric prints there.
           </Box>
           <ExpandableSection
             headerText="Why your fabric line differs from the AWS sample"
-            headerDescription="The documentation and current libfabric print different things here. The code wins."
+            headerDescription="The documentation and the libfabric code print different things here. The code wins."
           >
             <SpaceBetween size="xs">
               <Box variant="p">
@@ -700,15 +745,14 @@ fi_info -p efa -t FI_EP_RDM | grep -c '^provider: efa'`}</pre>
                 <SourceRef provenance="code-derived" code={code.fabricAssign} />, and the EFA- form is
                 built as the link attribute address instead{' '}
                 <SourceRef provenance="code-derived" code={code.linkAddr} />. That change landed in
-                libfabric v2.1.0, which is older than anything the current installer ships{' '}
+                libfabric v2.1.0, and the installer this section pins ships a later libfabric{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   doc={docs.startNccl}
                   code={code.fabricNames}
                   conflict="fabric: EFA-fe80::94:3dff:fe89:1b70"
                 />
-                . What the line gives you now is more useful anyway: which of the two fabrics you
-                got.
+                . The line shows which of the two fabrics you got.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -780,7 +824,9 @@ fi_pingpong -p efa -e rdm -I 1000 -S all 10.0.1.42
                 <SourceRef provenance="code-derived" code={code.pluginName} />. Using network
                 Libfabric is the pass, Using network Socket is the failure. The reason is usually a
                 few lines earlier, where NCCL logs Failed to initialize NET plugin{' '}
-                <SourceRef provenance="code-derived" code={code.pluginFailed} />.
+                <SourceRef provenance="code-derived" code={code.pluginFailed} />, at the ATTN level
+                that NCCL_DEBUG=INFO shows and WARN hides{' '}
+                <SourceRef provenance="code-derived" code={code.debugLevels} />.
               </Box>
             </div>
             <div>
@@ -1089,7 +1135,7 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
         header={
           <Header
             variant="h2"
-            description="Two channels, two correct answers to what version am I on, and they disagree by two releases right now."
+            description="Two channels give two correct answers to what version am I on. This is how to tell which one you are reading."
           >
             Version and channel discipline
           </Header>
@@ -1102,35 +1148,37 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
                 What the installer ships <Badge color="green">shipping</Badge>
               </Box>
               <Box variant="p">
-                EFA installer 1.49.0, released June 27, 2026, upgrades to libfabric 2.4.0amzn5.0, EFA
-                driver 3.1.0, rdma-core 63.0 and AWS OFI NCCL Plugin 1.20.0{' '}
-                <SourceRef provenance="documented" doc={docs.changelog} />. That is what a host built
-                today from efa_installer.sh carries.
+                EFA installer 1.51.0 ships EFA driver 3.3.1, libfabric 2.7.0amzn2.0, rdma-core 65.0
+                and AWS OFI NCCL Plugin 1.22.0{' '}
+                <SourceRef provenance="documented" doc={docs.installer} />.
               </Box>
             </div>
             <div>
               <Box variant="h3">
-                What the repository carries <Badge color="grey">unreleased</Badge>
+                What the repository carries <Badge color="grey">ahead of the installer</Badge>
               </Box>
               <Box variant="p">
-                The amzn-drivers tree is at driver r3.3.0, recorded in the DKMS configuration{' '}
+                The amzn-drivers tree is at driver r3.4.0, recorded in the DKMS configuration{' '}
                 <SourceRef provenance="code-derived" code={code.dkms} />, with release notes adding
-                the 0xefa4 device id, 800 and 1600 Gbps link-speed reporting, completion counters and
-                memory region page sizes above 4 GB{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />. None of that is in
-                the installer.
+                memory region PCIe relaxed ordering and contiguous receive and completion queue
+                allocation{' '}
+                <SourceRef provenance="code-derived" code={code.releaseNotes} />. The 3.3.1 notes list
+                neither.
               </Box>
             </div>
           </ColumnLayout>
 
           <Alert type="warning" header="Name the channel every time you name a version">
-            Installer 1.49.0 ships driver 3.1.0 while the repository is at r3.3.0. Those are two
-            correct answers to the same question, and the gap is functional rather than cosmetic: a
-            host built from 1.49.0 does not carry the 0xefa4 device id, because that landed in r3.3.0{' '}
-            <SourceRef provenance="code-derived" code={code.releaseNotes} />. The same rule applies to
-            userspace: 2.4.0amzn5.0 is an AWS fork with backports and is not comparable to an upstream
-            ofiwg version string{' '}
-            <SourceRef provenance="documented" doc={docs.changelog} />.
+            Installer 1.51.0 ships driver 3.3.1 while the repository is at r3.4.0. Both answers are
+            correct, one minor release apart, and features sit in that gap. Hardware support
+            moves the same way: 0xefa4 device support landed in r3.3.0{' '}
+            <SourceRef provenance="code-derived" code={code.releaseNotes} />, which installer 1.50.0
+            was the first to ship{' '}
+            <SourceRef provenance="documented" doc={docs.changelog} />. The same rule applies to
+            userspace: 2.7.0amzn2.0 is an AWS-specific release built from upstream ofiwg commit
+            1daf10bb{' '}
+            <SourceRef provenance="documented" doc={docs.awsLibfabric} />, so compare it with other
+            amzn builds rather than with upstream v2.7.0, despite the matching base version.
           </Alert>
 
           <Box variant="h3">Determining what is installed</Box>
@@ -1138,8 +1186,9 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
             Every one of the four components reports itself, and none of them reports the installer
             version that put it there. Read all four, then map them back to a single installer release
             using the changelog{' '}
-            <SourceRef provenance="documented" doc={docs.changelog} />. If they do not map to one
-            release, the host was patched piecemeal.
+            <SourceRef provenance="documented" doc={docs.changelog} /> or the ChangeLog.md inside the
+            installer tarball <SourceRef provenance="documented" doc={docs.installer} />. If they do
+            not map to one release, the host was patched piecemeal.
           </Box>
           <Box variant="code">
             <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# 1. Kernel driver. Two views of the same DKMS build.
@@ -1154,7 +1203,7 @@ ldd $(which fi_info) | grep libfabric
 NCCL_DEBUG=INFO ... 2>&1 | grep -i 'NET/OFI.*version'
 
 # 4. The tarball you think you used. AWS publishes checksums per release.
-sha256sum aws-efa-installer-1.49.0.tar.gz`}</pre>
+sha256sum aws-efa-installer-1.51.0.tar.gz`}</pre>
           </Box>
           <Alert type="info" header="Two checks that identify what you actually installed">
             Every installer release carries an MD5 and a SHA256, and if the

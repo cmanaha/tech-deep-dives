@@ -12,19 +12,21 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 
 const ACCESSED = '2026-08-02';
 const READ = '2026-08-02';
+/** Pages re-read for the October 2026 refresh. */
+const REFRESHED = '2026-10-23';
 
 const docs: Record<string, DocRef> = {
   efa: {
     title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html',
     tier: 1,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
   },
   efaStart: {
     title: 'EC2 User Guide: Get started with EFA and MPI',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html',
     tier: 1,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
   },
   ac: {
     title: 'EC2 instance types: Accelerated computing',
@@ -42,13 +44,43 @@ const docs: Record<string, DocRef> = {
     title: 'EC2 User Guide: how Capacity Blocks for ML work',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-how.html',
     tier: 1,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
+  },
+  capacityBlocksUg: {
+    title: 'EC2 User Guide: Capacity Blocks for ML (considerations)',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html',
+    tier: 1,
+    accessed: REFRESHED,
+  },
+  capacityBlocksBilling: {
+    title: 'EC2 User Guide: Capacity Blocks pricing and billing',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-pricing-billing.html',
+    tier: 1,
+    accessed: REFRESHED,
+  },
+  odcr: {
+    title: 'EC2 User Guide: Reserve compute capacity with EC2 On-Demand Capacity Reservations',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html',
+    tier: 1,
+    accessed: REFRESHED,
+  },
+  crCpg: {
+    title: 'EC2 User Guide: Capacity Reservations in placement groups',
+    url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cr-cpg.html',
+    tier: 1,
+    accessed: REFRESHED,
+  },
+  eksTopologyLabels: {
+    title: 'EKS User Guide: Place distributed AI/ML workloads with network topology labels',
+    url: 'https://docs.aws.amazon.com/eks/latest/userguide/ml-workload-topology.html',
+    tier: 1,
+    accessed: REFRESHED,
   },
   hyperpodEks: {
     title: 'SageMaker Developer Guide: topology-aware scheduling in HyperPod task governance',
     url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-tasks-scheduling.html',
     tier: 1,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
   },
   eksNodeClass: {
     title: 'EKS User Guide: create a NodeClass, static network interface configuration',
@@ -366,20 +398,22 @@ export function DecisionGuide() {
           </ul>
           <Alert
             type="warning"
-            header="Network-node topology labels come from HyperPod task governance or a labeler DaemonSet you run"
+            header="Network-node topology labels come from the EKS control plane"
           >
             <SpaceBetween size="xs">
               <Box variant="p">
-                Topology-aware scheduling is not supported with Karpenter autoscaling. It is
-                on by default in HyperPod task governance, and anyone using Karpenter for node
-                provisioning has to disable it by setting TopologyAwareScheduling to false in
-                the kueue-manager-config ConfigMap and restarting the Kueue controller{' '}
-                <SourceRef provenance="documented" doc={docs.hyperpodEks} />.
+                Karpenter sets zone and placement group. On a supported instance type, the
+                network-node labels are written by the AWS cloud controller manager that EKS runs in
+                the control plane, once, when the node registers, whatever provisioned it{' '}
+                <SourceRef provenance="documented" doc={docs.eksTopologyLabels} />. The EC2 Instance
+                Topology API section carries the label details and the ranking that uses them.
               </Box>
               <Box variant="p">
-                So Karpenter sets zone and placement group, and the network node labels come from
-                somewhere else. The EC2 Instance Topology API section carries the label sources,
-                the labeler DaemonSet and the source-tree search behind this.
+                In HyperPod task governance, topology-aware scheduling is on by default and is not
+                supported with Karpenter autoscaling. Anyone using Karpenter for node provisioning
+                there has to disable it by setting TopologyAwareScheduling to false in the
+                kueue-manager-config ConfigMap and restarting the Kueue controller{' '}
+                <SourceRef provenance="documented" doc={docs.hyperpodEks} />.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -461,35 +495,43 @@ export function DecisionGuide() {
         header={<Header variant="h2" description="Two guaranteed-capacity paths. The choice is duration, and it is decided before the fleet exists.">Capacity planning: Blocks against ODCRs</Header>}
       >
         <SpaceBetween size="m">
-          <Alert type="info" header="Both paths are documented for EFA fleets">
-            Capacity Blocks are the better-known option, and On-Demand Capacity Reservations cover
-            the same need. Both are documented against a cluster placement group: to ensure
-            that capacity is available as you scale your cluster&apos;s instances, you can
-            create a Capacity Reservation for your cluster placement group{' '}
-            <SourceRef provenance="documented" doc={docs.efaStart} />. Pick on duration.
+          <Alert type="info" header="A reservation takes a placement group, and a block places its own instances">
+            An On-Demand Capacity Reservation can be created for a cluster placement group, to keep
+            capacity available as the cluster scales{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} />. A Capacity Block takes no
+            placement group, and you cannot specify one when launching into it. AWS places a
+            block&apos;s instances close together inside EC2 UltraClusters itself{' '}
+            <SourceRef provenance="documented" doc={docs.capacityBlocksUg} />. Pick on duration.
           </Alert>
           <Box variant="p">
             <strong>Capacity Blocks:</strong> reserve a start time up to 8 weeks ahead, for 1 to
             14 days or multiples of 7 days up to 182 days. Up to 64 instances per block and up
-            to 256 across multiple blocks. One UltraServer equals one Capacity Block, so you
-            reserve the UltraServer rather than the instances inside it. Instances are
-            terminated starting 30 minutes before the block ends for instance types, or 60
-            minutes for UltraServer types, with an EventBridge event 10 minutes before
-            termination begins{' '}
-            <SourceRef provenance="documented" doc={docs.capacityBlocks} />.
+            to 256 across blocks, counted across every account in the AWS Organization on any
+            one date <SourceRef provenance="documented" doc={docs.capacityBlocksUg} />. One
+            UltraServer equals one Capacity Block, so you reserve the UltraServer rather than the
+            instances inside it. Instances are terminated starting 30 minutes before the block
+            ends for instance types, or 60 minutes for UltraServer types, with an EventBridge
+            event 10 minutes before termination begins{' '}
+            <SourceRef provenance="documented" doc={docs.capacityBlocks} />. Every block ends at
+            11:30 UTC, and a P6e-GB200 UltraServer block needs its instances terminated at least
+            60 minutes before the end{' '}
+            <SourceRef provenance="documented" doc={docs.capacityBlocksUg} />, so finish the
+            checkpoint by 10:30 UTC on the final day (our arithmetic).
           </Box>
           <Box variant="p">
-            <strong>ODCRs:</strong> open-ended duration, and the documented way to hold capacity
-            for a cluster placement group as a fleet grows{' '}
-            <SourceRef provenance="documented" doc={docs.efaStart} />. The placement group is
-            chosen when the reservation is created. Expanding an existing reservation raises
-            insufficient-capacity risk.
+            <strong>ODCRs:</strong> open-ended duration{' '}
+            <SourceRef provenance="documented" doc={docs.odcr} />. The placement group is chosen
+            when the reservation is created, and expanding an existing reservation raises
+            insufficient-capacity risk{' '}
+            <SourceRef provenance="documented" doc={docs.crCpg} />.
           </Box>
           <Box variant="p">
             <strong>Decision rules:</strong>
           </Box>
           <ul>
-            <li><strong>Defined training burst (days-weeks)</strong> → Capacity Blocks</li>
+            <li><strong>Defined training burst (days-weeks)</strong> → Capacity Blocks, paid up
+            front; Savings Plans and Reserved Instance discounts do not apply to them{' '}
+            <SourceRef provenance="documented" doc={docs.capacityBlocksBilling} /></li>
             <li><strong>Open-ended production inference</strong> → ODCR + Savings Plan</li>
             <li><strong>Cost-sensitive experimentation</strong> → Spot with checkpointing, on a
             Spot-eligible family only</li>
@@ -506,7 +548,8 @@ export function DecisionGuide() {
             <div>
               <Box variant="h3">Stage 1: Single GPU</Box>
               <Box variant="p">
-                Fine-tuning 7B models, LoRA/QLoRA. One g5.xlarge, or p5.4xlarge if you want a
+                Fine-tuning 7B models with LoRA (Low-Rank Adaptation) or QLoRA (quantized
+                LoRA). One g5.xlarge, or p5.4xlarge if you want a
                 single H100. There is no p5.xlarge{' '}
                 <SourceRef provenance="documented" doc={docs.ac} />.
                 <strong> One GPU, so the data pipeline is the bottleneck.</strong> Spend the

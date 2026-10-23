@@ -21,15 +21,21 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * 'doc-code-conflict' means two authorities disagree and both are named.
  */
 
+/** First read. Sources not re-read in the October 2026 refresh keep this date. */
 const ACCESSED = '2026-08-01';
 const READ = '2026-08-01';
+/** Re-read or newly read in the October 2026 refresh. */
+const ACCESSED_OCT = '2026-10-23';
+const READ_OCT = '2026-10-23';
 
-/** aws/sagemaker-python-sdk master HEAD at the time of reading. */
-const SDK_SHA = '9ff3e5fa61b4b57f947957f26cc42964fe437dee';
+/** aws/sagemaker-python-sdk release carrying the container driver allowlists. */
+const SDK_REF = 'v3.27.0';
+/** The last SDK release before both lists gained ml.p5e.48xlarge and the RDMA list gained ml.p5.48xlarge. */
+const SDK_OLD = 'v3.23.0';
 /** The released SDK tag carrying the SMDDP instance list. */
 const SDK_TAG = 'v2.257.0';
 /** aws/deep-learning-containers main HEAD at the time of reading. */
-const DLC_SHA = '4c921b9ecade7322bebb79224bea6f1c5c3d0591';
+const DLC_SHA = 'f6bed33af5a829fccdca760f2011466e245090d0';
 
 const SM_DG = 'https://docs.aws.amazon.com/sagemaker/latest/dg/';
 const SM_API = 'https://docs.aws.amazon.com/sagemaker/latest/APIReference/';
@@ -39,16 +45,18 @@ const SM_API = 'https://docs.aws.amazon.com/sagemaker/latest/APIReference/';
 // broke five working citations, which the re-verification check caught.
 const WHATS_NEW = 'https://aws.amazon.com/about-aws/whats-new/';
 const ML_BLOG = 'https://aws.amazon.com/blogs/machine-learning/';
+const INSTALLER = 'https://efa-installer.amazonaws.com/aws-efa-installer-';
 
-const doc = (title: string, url: string, tier: 1 | 2): DocRef => ({ title, url, tier, accessed: ACCESSED });
+const doc = (title: string, url: string, tier: 1 | 2, accessed: string = ACCESSED): DocRef => ({ title, url, tier, accessed });
+const docO = (title: string, url: string, tier: 1 | 2): DocRef => doc(title, url, tier, ACCESSED_OCT);
 
 /** Pinned code reference builders. Ref is always a SHA or a release tag, never a branch. */
-const sdk = (path: string, lines?: string): CodeRef => ({
+const sdk = (path: string, lines?: string, ref: string = SDK_REF): CodeRef => ({
   repo: 'aws/sagemaker-python-sdk',
-  ref: SDK_SHA,
+  ref,
   path,
   lines,
-  read: READ,
+  read: READ_OCT,
 });
 const sdkTagged = (path: string, lines?: string): CodeRef => ({
   repo: 'aws/sagemaker-python-sdk',
@@ -62,16 +70,12 @@ const dlc = (path: string, lines?: string): CodeRef => ({
   ref: DLC_SHA,
   path,
   lines,
-  read: READ,
+  read: READ_OCT,
 });
 
 const docs = {
-  trainEfa: doc('SageMaker Developer Guide: Run Training with EFA', `${SM_DG}your-algorithms-training-efa.html`, 1),
-  distStart: doc(
-    'SageMaker Developer Guide: Get started with distributed training',
-    `${SM_DG}distributed-training-get-started.html`,
-    1
-  ),
+  trainEfa: docO('SageMaker Developer Guide: Run Training with EFA', `${SM_DG}your-algorithms-training-efa.html`, 1),
+  distStart: docO('SageMaker Developer Guide: Get started with distributed training', `${SM_DG}distributed-training-get-started.html`, 1),
   capacity: doc(
     'SageMaker Developer Guide: Get compute capacity for SageMaker Training Jobs',
     `${SM_DG}train-get-capacity.html`,
@@ -82,36 +86,24 @@ const docs = {
     `${SM_DG}train-encrypt.html`,
     1
   ),
-  repair: doc('SageMaker Developer Guide: Cluster repairs for GPU errors', `${SM_DG}model-checkpoints-cluster-repair.html`, 1),
-  resourceConfig: doc('SageMaker API Reference: ResourceConfig', `${SM_API}API_ResourceConfig.html`, 1),
+  repair: docO('SageMaker Developer Guide: Cluster repairs for GPU errors', `${SM_DG}model-checkpoints-cluster-repair.html`, 1),
+  resourceConfig: docO('SageMaker API Reference: ResourceConfig', `${SM_API}API_ResourceConfig.html`, 1),
   productionVariant: doc('SageMaker API Reference: ProductionVariant', `${SM_API}API_ProductionVariant.html`, 1),
   clusterNic: doc('SageMaker API Reference: ClusterNetworkInterface', `${SM_API}API_ClusterNetworkInterface.html`, 1),
-  ddpSupport: doc(
-    'SageMaker Developer Guide: SMDDP supported frameworks, Regions and instance types',
-    `${SM_DG}distributed-data-parallel-support.html`,
-    1
-  ),
+  ddpSupport: docO('SageMaker Developer Guide: SMDDP supported frameworks, Regions and instance types', `${SM_DG}distributed-data-parallel-support.html`, 1),
   ddpIntro: doc('SageMaker Developer Guide: Introduction to the SMDDP library', `${SM_DG}data-parallel-intro.html`, 1),
   ddpFaq: doc('SageMaker Developer Guide: SMDDP FAQ', `${SM_DG}data-parallel-faq.html`, 1),
-  ddpRelease: doc('SageMaker Developer Guide: SMDDP release notes', `${SM_DG}data-parallel-release-notes.html`, 1),
-  smpRelease: doc(
-    'SageMaker Developer Guide: model parallelism library release notes',
-    `${SM_DG}model-parallel-release-notes.html`,
-    1
-  ),
+  ddpRelease: docO('SageMaker Developer Guide: SMDDP release notes', `${SM_DG}data-parallel-release-notes.html`, 1),
+  smpRelease: docO('SageMaker Developer Guide: model parallelism library release notes', `${SM_DG}model-parallel-release-notes.html`, 1),
   smpSmddp: doc(
     'SageMaker Developer Guide: SMP v2 compatibility with the SMDDP library',
     `${SM_DG}model-parallel-core-features-v2-smddp-allgather.html`,
     1
   ),
-  amiPolicy: doc('SageMaker Developer Guide: HyperPod AMI support policy', `${SM_DG}sagemaker-hyperpod-ami-support-policy.html`, 1),
-  amiSlurm: doc('SageMaker Developer Guide: HyperPod AMI releases for Slurm', `${SM_DG}sagemaker-hyperpod-release-ami-slurm.html`, 1),
+  amiPolicy: docO('SageMaker Developer Guide: HyperPod AMI support policy', `${SM_DG}sagemaker-hyperpod-ami-support-policy.html`, 1),
+  amiSlurm: docO('SageMaker Developer Guide: HyperPod AMI releases for Slurm', `${SM_DG}sagemaker-hyperpod-release-ami-slurm.html`, 1),
   amiBase: doc('SageMaker Developer Guide: Amazon SageMaker HyperPod AMI', `${SM_DG}sagemaker-hyperpod-release-ami.html`, 1),
-  deepHealth: doc(
-    'SageMaker Developer Guide: HyperPod deep health checks',
-    `${SM_DG}sagemaker-hyperpod-eks-resiliency-deep-health-checks.html`,
-    1
-  ),
+  deepHealth: docO('SageMaker Developer Guide: HyperPod deep health checks', `${SM_DG}sagemaker-hyperpod-eks-resiliency-deep-health-checks.html`, 1),
   configTips: doc(
     'SageMaker Developer Guide: HyperPod suggested resilience configurations',
     `${SM_DG}sagemaker-hyperpod-eks-resiliency-config-tips.html`,
@@ -122,26 +114,21 @@ const docs = {
     `${SM_DG}sagemaker-hyperpod-resiliency-slurm-auto-resume.html`,
     1
   ),
-  topology: doc('SageMaker Developer Guide: topology-aware scheduling in HyperPod', `${SM_DG}sagemaker-hyperpod-topology.html`, 1),
-  observability: doc('SageMaker Developer Guide: HyperPod cluster metrics', `${SM_DG}hyperpod-observability-cluster-metrics.html`, 1),
-  eksPrereq: doc(
-    'SageMaker Developer Guide: HyperPod on EKS prerequisites',
-    `${SM_DG}sagemaker-hyperpod-eks-prerequisites.html`,
-    1
-  ),
+  topology: docO('SageMaker Developer Guide: topology-aware scheduling in HyperPod', `${SM_DG}sagemaker-hyperpod-topology.html`, 1),
+  observability: docO('SageMaker Developer Guide: HyperPod cluster metrics', `${SM_DG}hyperpod-observability-cluster-metrics.html`, 1),
+  eksPrereq: docO('SageMaker Developer Guide: HyperPod on EKS prerequisites', `${SM_DG}sagemaker-hyperpod-eks-prerequisites.html`, 1),
   hpDeploy: doc('SageMaker Developer Guide: Deploying models on HyperPod', `${SM_DG}sagemaker-hyperpod-model-deployment.html`, 1),
-  dpd: doc(
-    'SageMaker Developer Guide: Disaggregated Prefill and Decode on HyperPod',
-    `${SM_DG}sagemaker-hyperpod-model-deployment-dpd.html`,
-    1
-  ),
+  dpd: docO('SageMaker Developer Guide: Disaggregated Prefill and Decode on HyperPod', `${SM_DG}sagemaker-hyperpod-model-deployment-dpd.html`, 1),
   realtime: doc('SageMaker Developer Guide: Deploy models for real-time inference', `${SM_DG}realtime-endpoints-deploy-models.html`, 1),
   mme: doc(
     'SageMaker Developer Guide: instance recommendations for multi-model endpoints',
     `${SM_DG}multi-model-endpoint-instance.html`,
     1
   ),
-  eksEfa: doc('EKS User Guide: manage EFA devices on Amazon EKS', 'https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html', 1),
+  eksEfa: docO('EKS User Guide: manage EFA devices on Amazon EKS', 'https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html', 1),
+  efaChangelog: docO('EC2 User Guide: EFA installer changelog', 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-changelog.html', 1),
+  installer151: docO('aws-efa-installer 1.51.0 tarball (efa_installer.sh ngc_pre_install, ngc_filter_package; DEBS)', `${INSTALLER}1.51.0.tar.gz`, 1),
+  installer150: docO('aws-efa-installer 1.50.0 tarball (efa_installer.sh ngc_pre_install, ngc_filter_package; RPMS)', `${INSTALLER}1.50.0.tar.gz`, 1),
   efaOnlyNews: doc(
     "AWS What's New: HyperPod supports EFA-only network interfaces (June 2026)",
     `${WHATS_NEW}2026/06/amazon-sagemaker-hyperpod-efa-only/`,
@@ -206,22 +193,26 @@ const docs = {
 
 const DRIVERS = 'sagemaker-train/src/sagemaker/train/container_drivers';
 
+const EFA_SCRIPT = 'scripts/docker/common/install_efa_amzn2023.sh';
+
 const code = {
-  allowlist: sdk(`${DRIVERS}/common/utils.py`, 'L45-L60'),
-  torchrun: sdk(`${DRIVERS}/distributed_drivers/torchrun_driver.py`, 'L51-L63'),
-  mpi: sdk(`${DRIVERS}/distributed_drivers/mpi_utils.py`, 'L283-L290'),
+  allowlist: sdk(`${DRIVERS}/common/utils.py`, 'L46-L64'),
+  allowlistOld: sdk(`${DRIVERS}/common/utils.py`, 'L46-L61', SDK_OLD),
+  torchrun: sdk(`${DRIVERS}/distributed_drivers/torchrun_driver.py`, 'L56-L64'),
+  mpi: sdk(`${DRIVERS}/distributed_drivers/mpi_utils.py`, 'L284-L291'),
   smddpTypes: sdkTagged('src/sagemaker/fw_utils.py', 'L85-L91'),
-  dlcBase: dlc('docker/base/cu132/Dockerfile', 'L106-L108'),
-  dlcPytorch: dlc('.github/config/image/pytorch/2.13-sagemaker-cuda.yml', 'L20-L29'),
-  dlcInstall: dlc('scripts/docker/common/install_efa_amzn2023.sh', 'L44-L48'),
-  dlcPluginPath: dlc('scripts/docker/common/install_efa_amzn2023.sh', 'L7-L12'),
-  dlcNcclConf: dlc('scripts/docker/common/install_efa_amzn2023.sh', 'L59-L60'),
-  dlcNgc: dlc('scripts/docker/common/install_efa_amzn2023.sh', 'L37-L45'),
-  dlcLdPath: dlc('docker/pytorch/Dockerfile.cuda', 'L287-L289'),
-  dlcNcclTests: dlc('docker/pytorch/Dockerfile.cuda', 'L171-L182'),
-  dlcCudart: dlc('docker/pytorch/Dockerfile.cuda', 'L161-L164'),
+  dlcBase: dlc('docker/base/cu132/Dockerfile', 'L130-L132'),
+  dlcPytorch: dlc('.github/config/image/pytorch/2.13-sagemaker-cuda.yml', 'L20-L30'),
+  dlcInstall: dlc(EFA_SCRIPT, 'L48'),
+  dlcInstallLog: dlc(EFA_SCRIPT, 'L48-L50'),
+  dlcPluginPath: dlc(EFA_SCRIPT, 'L6-L13'),
+  dlcNcclConf: dlc(EFA_SCRIPT, 'L61-L62'),
+  dlcNgc: dlc(EFA_SCRIPT, 'L37-L46'),
+  dlcLdPath: dlc('docker/pytorch/Dockerfile.cuda', 'L320-L322'),
+  dlcNcclTests: dlc('docker/pytorch/Dockerfile.cuda', 'L182-L205'),
+  dlcCudart: dlc('docker/pytorch/Dockerfile.cuda', 'L169-L173'),
   dlcValidate: dlc('test/efa/scripts/nccl_allreduce.sh', 'L28-L36'),
-  dlcRdmaArg: dlc('test/efa/scripts/nccl_allreduce.sh', 'L23-L26'),
+  dlcDiag: dlc('test/efa/scripts/nccl_allreduce.sh', 'L59-L75'),
   dlcThreshold: dlc('test/efa/scripts/nccl_allreduce.sh', 'L46-L47'),
   dlcEfaTest: dlc('test/efa/test_efa.py', 'L1-L10'),
 };
@@ -448,7 +439,7 @@ function FourGatesDiagram() {
         'RDMAV_FORK_SAFE=1. Both are hardcoded lists, not queries.',
       ],
       note: 'Silently skipped for:',
-      noteLines: ['P5e, P5en, P6-B200, P6-B300,', 'P6e-GB200, Trn2, G6e and G7e.', 'P5 misses the RDMA list only.'],
+      noteLines: ['P5en, P6-B200, P6-B300,', 'P6e-GB200, Trn2, G6e and G7e.'],
       amber: true,
     },
     {
@@ -647,8 +638,8 @@ interface AllowRow {
 const allowRows: AllowRow[] = [
   { type: 'ml.p4d.24xlarge', nccl: 'yes', rdma: 'yes' },
   { type: 'ml.p4de.24xlarge', nccl: 'yes', rdma: 'yes' },
-  { type: 'ml.p5.48xlarge', nccl: 'yes', rdma: 'no' },
-  { type: 'ml.p5e.48xlarge', nccl: 'no', rdma: 'no' },
+  { type: 'ml.p5.48xlarge', nccl: 'yes', rdma: 'yes' },
+  { type: 'ml.p5e.48xlarge', nccl: 'yes', rdma: 'yes' },
   { type: 'ml.p5en.48xlarge', nccl: 'no', rdma: 'no' },
   { type: 'ml.p6-b200.48xlarge', nccl: 'no', rdma: 'no' },
   { type: 'ml.p6-b300.48xlarge', nccl: 'no', rdma: 'no' },
@@ -728,7 +719,7 @@ export function SageMaker() {
             People say SageMaker AI handles EFA (Elastic Fabric Adapter) for you. Treat SageMaker AI
             as three products and that resolves into three different answers. Training jobs get EFA
             implicitly from the instance type, through a software layer gated by a hardcoded
-            allowlist that stopped growing at P5. HyperPod treats EFA as a managed, versioned,
+            allowlist that stops at P5e. HyperPod treats EFA as a managed, versioned,
             health-checked component you configure by name. Managed real-time inference endpoints
             expose instance type, image version, capacity, routing and scale, and no EFA control
             appears within that surface{' '}
@@ -760,8 +751,9 @@ export function SageMaker() {
           <Box variant="h3">What ResourceConfig controls</Box>
           <Box variant="p">
             ResourceConfig is the compute block of CreateTrainingJob. Its members cover instance
-            count, instance groups, instance placement, instance type, keep-alive period, training
-            plan and volume settings{' '}
+            count, instance groups, instance placement, instance type, an ordered fallback list of up
+            to five instance types (InstancePreferences), keep-alive period, training plan and
+            volume settings{' '}
             <SourceRef provenance="documented" doc={docs.resourceConfig} />. The instance type is the
             whole fabric request: there is no EFA field and no fabric field anywhere on the API. The
             placement member, InstancePlacementConfig, configures allocation within UltraServers and
@@ -774,8 +766,8 @@ export function SageMaker() {
             single Availability Zone, to keep them physically close and minimize inter-node latency.
             Additional subnets broaden the options SageMaker can choose from rather than spreading
             one job across Availability Zones{' '}
-            <SourceRef provenance="documented" doc={docs.capacity} />. Single subnet, therefore
-            single Availability Zone, which is exactly the boundary EFA traffic cannot cross. No AWS
+            <SourceRef provenance="documented" doc={docs.capacity} />. That is exactly the boundary
+            EFA traffic cannot cross. No AWS
             source found states that training jobs use EC2 cluster placement groups, so plan on the
             subnet rule alone.
           </Alert>
@@ -816,21 +808,26 @@ export function SageMaker() {
     "ml.p4d.24xlarge",
     "ml.p4de.24xlarge",
     "ml.p5.48xlarge",
+    "ml.p5e.48xlarge",
     "ml.trn1.32xlarge",
 ]
 
 SM_EFA_RDMA_INSTANCES = [
     "ml.p4d.24xlarge",
     "ml.p4de.24xlarge",
+    "ml.p5.48xlarge",
+    "ml.p5e.48xlarge",
     "ml.trn1.32xlarge",
 ]`}</pre>
           </Box>
           <Box variant="p">
-            Read at the pinned commit{' '}
-            <SourceRef provenance="code-derived" code={code.allowlist} />. The torchrun driver
-            consumes both lists directly: it sets FI_PROVIDER to efa when the type is in the first
-            list, sets FI_EFA_USE_DEVICE_RDMA and RDMAV_FORK_SAFE when the type is in the second, and
-            always sets NCCL_SOCKET_IFNAME and NCCL_PROTO{' '}
+            Read at SDK release v3.27.0{' '}
+            <SourceRef provenance="code-derived" code={code.allowlist} />. Releases before v3.24.0
+            leave ml.p5e.48xlarge off both lists and ml.p5.48xlarge off the second{' '}
+            <SourceRef provenance="code-derived" code={code.allowlistOld} />, so pin v3.24.0 or later
+            for P5 and P5e. The torchrun driver consumes both lists directly: it sets FI_PROVIDER to
+            efa when the type is in the first list, sets FI_EFA_USE_DEVICE_RDMA and RDMAV_FORK_SAFE
+            when the type is in the second, and always sets NCCL_SOCKET_IFNAME and NCCL_PROTO{' '}
             <SourceRef provenance="code-derived" code={code.torchrun} />. The mpirun path builds the
             same settings as -x flags{' '}
             <SourceRef provenance="code-derived" code={code.mpi} />.
@@ -855,7 +852,7 @@ SM_EFA_RDMA_INSTANCES = [
           />
 
           <Alert type="info" header="What the allowlist gap establishes">
-            On ml.p5e.48xlarge, ml.p5en.48xlarge, ml.p6-b200.48xlarge, ml.p6-b300.48xlarge,
+            On ml.p5en.48xlarge, ml.p6-b200.48xlarge, ml.p6-b300.48xlarge,
             ml.p6e-gb200.36xlarge, ml.trn2.48xlarge, ml.g6e and ml.g7e types, the SDK driver leaves
             the settings AWS itself recommends unset{' '}
             <SourceRef provenance="code-derived" code={code.allowlist} />. libfabric still selects a
@@ -863,34 +860,6 @@ SM_EFA_RDMA_INSTANCES = [
             present, so whether those jobs fall back to TCP is an open question. Settle it from the
             job log rather than from the launcher.
           </Alert>
-
-          <ExpandableSection
-            headerText="On P5, two AWS-owned repositories disagree about FI_EFA_USE_DEVICE_RDMA"
-            headerDescription="Read the code for the path you are on, and set the variable yourself if you need it"
-          >
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                The SageMaker Python SDK lists ml.p4d.24xlarge, ml.p4de.24xlarge and
-                ml.trn1.32xlarge in SM_EFA_RDMA_INSTANCES, so a P5 training job launched through the
-                SDK drivers gets neither FI_EFA_USE_DEVICE_RDMA=1 nor RDMAV_FORK_SAFE=1{' '}
-                <SourceRef provenance="code-derived" code={code.allowlist} />.
-              </Box>
-              <Box variant="p">
-                The Deep Learning Containers repository, in its own EFA test, sets
-                FI_EFA_USE_DEVICE_RDMA=1 for p4d.24xlarge, p4de.24xlarge and p5.48xlarge{' '}
-                <SourceRef
-                  provenance="doc-code-conflict"
-                  code={code.dlcRdmaArg}
-                  conflict="aws/sagemaker-python-sdk omits ml.p5.48xlarge from SM_EFA_RDMA_INSTANCES at the same read date."
-                  label="repo vs repo"
-                />
-                . Both were read on the same day, at pinned commits, in repositories AWS owns, and
-                which behaviour is intended is unknown. The code on your path governs: an
-                SDK-launched P5 job gets what the SDK sets, so set FI_EFA_USE_DEVICE_RDMA yourself if
-                you want it.
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
 
           <ExpandableSection
             headerText="The five environment variables AWS recommends, and the three the SDK sets"
@@ -968,20 +937,22 @@ SM_EFA_RDMA_INSTANCES = [
             <div>
               <Box variant="h3">The base image</Box>
               <Box variant="p">
-                The CUDA 13.2 base pins NCCL 2.29.7-1, EFA installer 1.49.0 and GDRCopy 2.6, and
-                carries the single most useful comment in the repository: EFA installer 1.49.0 vends
-                libfabric 2.4.0amzn5.0 and aws-ofi-nccl 1.20.0{' '}
-                <SourceRef provenance="code-derived" code={code.dlcBase} />. No documentation page
-                maps an installer version to its components.
+                The CUDA 13.2 base pins NCCL 2.29.7-1 and installs whichever EFA installer is latest
+                at build time <SourceRef provenance="code-derived" code={code.dlcBase} />. To see
+                which version landed, read /opt/amazon/efa_installed_packages, the file the build
+                log quotes{' '}
+                <SourceRef provenance="code-derived" code={code.dlcInstallLog} />. The EFA installer
+                changelog maps that version to its libfabric, aws-ofi-nccl and driver versions{' '}
+                <SourceRef provenance="documented" doc={docs.efaChangelog} />.
               </Box>
             </div>
             <div>
               <Box variant="h3">The PyTorch 2.13 SageMaker image</Box>
               <Box variant="p">
-                CUDA 13.3.0, torch 2.13.0, NCCL 2.30.7-1, EFA installer 1.49.0, GDRCopy 2.6,
-                DeepSpeed 0.19.2, Transformer Engine 2.17.0{' '}
+                CUDA 13.3.0, torch 2.13.0, NCCL 2.30.7-1, the latest EFA installer at build time,
+                GDRCopy 2.6, DeepSpeed 0.19.2, Transformer Engine 2.17.0{' '}
                 <SourceRef provenance="code-derived" code={code.dlcPytorch} />. The EC2 variant of
-                the same image carries identical NCCL, EFA and GDRCopy pins.
+                the same image carries identical NCCL, EFA and GDRCopy settings.
               </Box>
             </div>
           </ColumnLayout>
@@ -999,18 +970,25 @@ SM_EFA_RDMA_INSTANCES = [
                 <strong>2. Resolve the plugin path at runtime, not at build time.</strong> The script
                 branches on the version: at EFA installer 1.44.0 and later the plugin lives at
                 /opt/amazon/ofi-nccl/lib64/libnccl-net-ofi.so, and before that at
-                /opt/amazon/ofi-nccl/lib/ARCH-linux-gnu/libnccl-net.so{' '}
-                <SourceRef provenance="code-derived" code={code.dlcPluginPath} />. Both the directory
-                and the file name moved, so anything with a hardcoded plugin path breaks on upgrade.
+                /opt/amazon/ofi-nccl/lib/ARCH-linux-gnu/libnccl-net.so, and EFA_VERSION=latest takes
+                the first branch <SourceRef provenance="code-derived" code={code.dlcPluginPath} />.
+                Both the directory and the file name moved, so anything with a hardcoded plugin path
+                breaks on upgrade.
               </Box>
               <Box variant="p">
-                <strong>3. Pass --disable-ngc on an NGC-derived base.</strong> The script gates the
-                flag on EFA installer 1.48.0 and later, and its own comment gives the reason: EFA
-                1.48+ auto-detects NGC containers through /opt/nvidia/nvidia_entrypoint.sh, present
-                in the nvidia/cuda amzn2023 base images, and then skips the AL2023 libnccl-ofi
-                package{' '}
-                <SourceRef provenance="code-derived" code={code.dlcNgc} />. Without the flag you get
-                an EFA install with no NCCL plugin.
+                <strong>3. Pass --disable-ngc on an NGC (NVIDIA GPU Cloud) base.</strong> The
+                installer treats any container holding /opt/nvidia/nvidia_entrypoint.sh as NGC, and
+                the nvidia/cuda amzn2023 base images carry that file. Installer 1.51.0 then splits
+                by operating system. On an Ubuntu 22.04, 24.04 or 26.04 container it installs an
+                NGC build of the plugin, libnccl-ofi-ngc, in place of the standard libnccl-ofi. On
+                any other container it prints "This container is not Ubuntu" and does the standard
+                install, plugin included{' '}
+                <SourceRef provenance="code-derived" doc={docs.installer151} />. Installer 1.50.0
+                has no such fallback and ships no NGC plugin package for Amazon Linux, so an AL2023
+                NGC base gets EFA with no NCCL plugin{' '}
+                <SourceRef provenance="code-derived" doc={docs.installer150} />. The DLC script
+                passes --disable-ngc for latest and for 1.48.0 and later, which forces the standard
+                install on every version <SourceRef provenance="code-derived" code={code.dlcNgc} />.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1025,14 +1003,14 @@ SM_EFA_RDMA_INSTANCES = [
                 NCCL_DEBUG=INFO and NCCL_SOCKET_IFNAME excluding docker0 and lo{' '}
                 <SourceRef provenance="code-derived" code={code.dlcNcclConf} />. FI_PROVIDER comes
                 from the launcher instead, at job start, which is why the container layer and the
-                launcher layer can disagree with each other. The runtime search path puts the EFA
-                stack first on LD_LIBRARY_PATH{' '}
+                launcher layer can disagree with each other. LD_LIBRARY_PATH puts the pip-installed
+                cuDNN and NCCL first, then aws-ofi-nccl, Open MPI and the EFA libraries, all ahead of
+                /usr/local/cuda/lib64{' '}
                 <SourceRef provenance="code-derived" code={code.dlcLdPath} />, and the image builds
                 all_reduce_perf from NVIDIA nccl-tests into /usr/local/bin, described in the
                 Dockerfile as used by CI EFA tests and available to customers for verifying EFA and
                 NCCL connectivity before training{' '}
-                <SourceRef provenance="code-derived" code={code.dlcNcclTests} />. The benchmark is
-                already in the image, which is what the next section verifies with.
+                <SourceRef provenance="code-derived" code={code.dlcNcclTests} />.
               </Box>
               <Box variant="p">
                 One repair the Dockerfile performs is worth copying. The CUDA runtime base ships a
@@ -1100,7 +1078,7 @@ SM_EFA_RDMA_INSTANCES = [
               The script collects nvidia-smi -L, ldconfig -p filtered for libnccl, ldd against the
               all_reduce_perf binary, fi_info -p efa, a listing of
               /opt/amazon/ofi-nccl/lib*/libnccl-net*.so, and the contents of /etc/ld.so.conf.d{' '}
-              <SourceRef provenance="code-derived" code={code.dlcValidate} />. Those six commands
+              <SourceRef provenance="code-derived" code={code.dlcDiag} />. Those six commands
               cover the three failure classes: no device, no plugin, or a plugin the loader cannot
               find.
             </Box>
@@ -1114,13 +1092,13 @@ SM_EFA_RDMA_INSTANCES = [
             variant="h2"
             description="Check the three supported instance types before you write any code against it."
           >
-            SMDDP: a P4-era library, frozen since October 2024
+            SMDDP (SageMaker Distributed Data Parallel): a P4-era library, frozen since April 2025
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            SMDDP, the SageMaker Distributed Data Parallel library, replaces NCCL as the collective
+            The SMDDP library replaces NCCL as the collective
             backend for data-parallel training while still riding EFA underneath. The support page
             lists ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, adds that support for
             optimizing collective communication on P3 has been discontinued, and states that the
@@ -1134,16 +1112,21 @@ SM_EFA_RDMA_INSTANCES = [
           </Box>
 
           <Box variant="p">
-            The release cadence tells the rest. The latest SMDDP release is v2.5.0, dated October 17,
-            2024{' '}
-            <SourceRef provenance="documented" doc={docs.ddpRelease} />, and the latest model
-            parallelism library release is v2.6.0, dated the same day{' '}
-            <SourceRef provenance="documented" doc={docs.smpRelease} />. TensorFlow support has
-            already ended: the library is no longer available in Deep Learning Containers for
-            TensorFlow later than 2.11.0{' '}
+            The release cadence tells the rest. The SMDDP release notes stop at v2.5.0, dated
+            October 17, 2024 <SourceRef provenance="documented" doc={docs.ddpRelease} />, while the
+            release notes of SMP (the SageMaker model parallelism library) record SMDDP 2.6.0 inside
+            SMP v2.8.0, dated April 1, 2025, the newest release of either library located{' '}
+            <SourceRef
+              provenance="doc-code-conflict"
+              doc={docs.smpRelease}
+              conflict="The SMDDP release notes list no release after v2.5.0 (October 17, 2024); the SMP release notes record SMDDP 2.6.0 in SMP v2.8.0 (April 1, 2025)."
+              label="doc conflict"
+            />
+            . TensorFlow support has ended: the library is not available in Deep Learning
+            Containers for TensorFlow later than 2.11.0{' '}
             <SourceRef provenance="documented" doc={docs.ddpSupport} />. No AWS deprecation notice
-            was found, so treat SMDDP as frozen: still documented, still scoped to those three
-            instance types, unchanged since October 2024.
+            was found, so treat SMDDP as frozen: documented, scoped to those three instance types,
+            and unchanged since April 2025.
           </Box>
 
           <Alert type="error" header="Quote the streaming multiprocessor saving with its instance family attached">
@@ -1181,7 +1164,8 @@ SM_EFA_RDMA_INSTANCES = [
                 <SourceRef provenance="documented" doc={docs.ddpIntro} />.
               </Box>
               <Box variant="p">
-                Activation is a process-group swap, and it composes with SMP v2, PyTorch FSDP and
+                Activation is a process-group swap, and it composes with SMP v2, PyTorch FSDP (Fully
+                Sharded Data Parallel) and
                 DeepSpeed{' '}
                 <SourceRef provenance="documented" doc={docs.smpSmddp} />. Note the order rule on
                 that page: initialize PyTorch Distributed with the SMDDP backend first, then run the
@@ -1205,13 +1189,13 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
           </ExpandableSection>
 
           <Alert type="warning" header="The distributed training documentation set has a P4-era centre of gravity">
-            As of August 1, 2026, the SageMaker distributed training getting-started page still says
+            As of October 23, 2026, the SageMaker distributed training getting-started page says
             that to achieve the most performant distributed training job in SageMaker AI, AWS
             recommends P4d and P4de instances equipped with NVIDIA A100 GPUs{' '}
             <SourceRef provenance="documented" doc={docs.distStart} />. That recommendation is two or
             more GPU generations behind the instance types the same API accepts{' '}
             <SourceRef provenance="documented" doc={docs.resourceConfig} />. It lines up with the SDK
-            allowlist stopping at P5 and with SMDDP stopping at P4de. Read the API reference and the
+            allowlist stopping at P5e and with SMDDP stopping at P4de. Read the API reference and the
             code for anything newer.
           </Alert>
         </SpaceBetween>
@@ -1271,11 +1255,13 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             <div>
               <Box variant="h3">Slurm AMI line</Box>
               <Box variant="p">
-                The July 9, 2026 release carries EFA installer 1.47.0, rdma-core 61.0-1, NVIDIA
-                driver 580.159.04, Slurm 25.11.4 and kernel 6.8.0-1057-aws. The March 30, 2026
-                release was still on EFA installer 1.45.1 with rdma-core 60.0-1, so the bump landed
-                between March 30 and April 23, 2026{' '}
-                <SourceRef provenance="documented" doc={docs.amiSlurm} />.
+                The September 17, 2026 release puts the Slurm 25.11 AMIs, x86_64 and ARM64, on EFA
+                installer 1.50.0 with rdma-core 64.0amzn0-1, NVIDIA driver 595.91.07, CUDA 13.2 and
+                Slurm 25.11.8. The Default Ubuntu 22.04 and 24.04 variants in the same release list
+                EFA installer 1.47.0 with rdma-core 61.0-1, the version every release from April 23
+                to August 29, 2026 carried{' '}
+                <SourceRef provenance="documented" doc={docs.amiSlurm} />. The variant you pick
+                decides the EFA version.
               </Box>
             </div>
           </ColumnLayout>
@@ -1313,8 +1299,7 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             instance-level check is EFA, on both GPU and Trainium instances, running latency and
             bandwidth benchmarking on the attached device; at cluster level an NCCL test runs across
             multiple GPUs and an NCCOM test across multiple Trainium nodes{' '}
-            <SourceRef provenance="documented" doc={docs.deepHealth} />. AWS benchmarks the device
-            before your work lands on it, and publishes what both outcomes look like.
+            <SourceRef provenance="documented" doc={docs.deepHealth} />.
           </Box>
           <Box variant="code">
             <pre style={preStyle}>{HEALTH_LOG_SNIPPET}</pre>
@@ -1376,7 +1361,8 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             include the EFA benchmark, a bad fabric device is inside the recovery loop.
           </Box>
           <Box variant="p">
-            On Slurm it is a SageMaker plugin on the SPANK framework that inspects cluster health
+            On Slurm it is a SageMaker plugin on the SPANK (Slurm Plug-in Architecture for Node and
+            job (K)control) framework that inspects cluster health
             when a job fails, removes a faulty node, replaces it and restarts the job; on EKS it is
             an extension to the Kubeflow Training Operator for PyTorch that makes the job wait and
             restart after the node is replaced{' '}
@@ -1391,7 +1377,7 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
           <Alert type="error" header="Live known issue: auto-resume on Slurm 25.11">
             <SpaceBetween size="xs">
               <Box variant="p">
-                Dated May 27, 2026 and still live on the release notes page as of August 1, 2026:
+                Dated May 27, 2026 and open on the release notes page as of October 23, 2026:
                 auto-resume has known issues on HyperPod clusters running Slurm 25.11, jobs
                 submitted with auto-resume enabled are not guaranteed to resume on the
                 node that is replaced after a node fault, the affected jobs are requeued instead, and
@@ -1442,7 +1428,7 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
                 Availability Zones, with training benefiting from multi-subnet distribution within an
                 Availability Zone to avoid subnet exhaustion. The feature is EKS orchestrator only{' '}
                 <SourceRef provenance="documented" doc={docs.flexGroups} />. Note the phrasing:
-                within an Availability Zone. The EFA boundary is unchanged.
+                within an Availability Zone, which is the EFA boundary.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1453,7 +1439,7 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
         header={
           <Header
             variant="h2"
-            description="Disaggregated prefill and decode, on the EKS orchestrator, is the one documented path where EFA moves inference traffic."
+            description="Disaggregated prefill and decode (DPD), on the EKS orchestrator, is the one documented path where EFA moves inference traffic."
           >
             HyperPod inference: the only place EFA carries inference traffic
           </Header>
@@ -1534,7 +1520,7 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
           <Box variant="p">
             ProductionVariant is the compute block of CreateEndpointConfig. Its members cover the
             variant name and weight, instance type and count, capacity reservation, container startup
-            health check timeout, core dumps, SSM access, InferenceAmiVersion, InstancePools, and
+            health check timeout, core dumps, SSM (AWS Systems Manager) access, InferenceAmiVersion, InstancePools, and
             routing and scaling fields. InferenceAmiVersion enumerates the managed inference images by
             NVIDIA driver, CUDA and container toolkit version, and those three components are the
             whole image specification{' '}
@@ -1676,9 +1662,10 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             in SM_EFA_NCCL_INSTANCES and SM_EFA_RDMA_INSTANCES{' '}
             <SourceRef provenance="code-derived" code={code.allowlist} />, and p4d.24xlarge is the
             type AWS runs its own EFA test on{' '}
-            <SourceRef provenance="code-derived" code={code.dlcEfaTest} />. On ml.p5.48xlarge expect
-            FI_PROVIDER to be set and FI_EFA_USE_DEVICE_RDMA to be left to you. On anything newer,
-            expect to set both yourself.
+            <SourceRef provenance="code-derived" code={code.dlcEfaTest} />. On ml.p5.48xlarge and
+            ml.p5e.48xlarge, SDK v3.24.0 or later sets both{' '}
+            <SourceRef provenance="code-derived" code={code.allowlist} />. On P5en and anything
+            newer, set both yourself.
           </Box>
           <Box variant="p">
             <strong>Step 2. Use an AWS Deep Learning Container rather than your own image.</strong>{' '}
