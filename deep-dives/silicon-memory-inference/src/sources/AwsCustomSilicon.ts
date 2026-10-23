@@ -105,11 +105,11 @@ export const S = {
     accessed: '2026-10-17',
   },
   neuronEnvVars: {
-    title: 'AWS Neuron: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)',
+    title: 'AWS Neuron 2.32.0: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)',
     publisher: 'AWS',
-    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/jax/api-reference-guide/neuron-envvars.html',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/frameworks/jax/api-reference-guide/neuron-envvars.html',
     tier: 1,
-    accessed: '2026-10-16',
+    accessed: '2026-10-23',
   },
 
   // Releases and software status (Tier 1)
