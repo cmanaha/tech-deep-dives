@@ -354,7 +354,8 @@ export function CommunicationAndScaleOut() {
             kernels shipped in 2.28.0.
             <Cite s={S.neuronWhatsNew} /> <code>torch.all_to_all_vdev_2d</code> is a PyTorch op
             built on NVIDIA&apos;s NVSHMEM
-            <Cite s={S.pytorchNvshmem} />, which TorchNeuron lists for a future release.
+            <Cite s={S.pytorchNvshmem} />, which the Neuron 2.32.0 TorchNeuron guide lists for a
+            future release.
             <Cite s={S.pytorchNative} /> NVIDIA&apos;s Wide-EP (wide expert parallelism) runs over
             GB200 multi-node NVLink
             <Cite s={S.wideEpReadme} />; on Neuron, Wide-EP is a beta in vLLM Neuron, and NxD

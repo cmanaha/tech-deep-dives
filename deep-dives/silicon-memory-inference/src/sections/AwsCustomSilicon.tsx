@@ -309,9 +309,10 @@ export function AwsCustomSilicon() {
             beta.
             <Cite s={S.neuronWhatsNew} /> The gap left is PyTorch&apos;s native dispatch and combine ops
             (<code>torch.all_to_all_vdev_2d</code> and its <code>_offset</code> variant), which
-            TorchNeuron, a closed beta, lists for future releases; it matters only to code written
-            against TorchNeuron.
-            <Cite s={S.pytorchNative} /> <em>AWS Compilers and Kernel Tooling</em> covers vLLM
+            the Neuron 2.32.0 TorchNeuron guide lists for future releases; it matters only to code
+            written against TorchNeuron, in public beta from Neuron 2.33.0.
+            <Cite s={S.pytorchNative} />
+            <Cite s={S.torchNeuron233} /> <em>AWS Compilers and Kernel Tooling</em> covers vLLM
             Neuron and NKI.
           </Alert>
         </SpaceBetween>

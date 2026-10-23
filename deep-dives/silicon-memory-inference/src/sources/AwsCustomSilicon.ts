@@ -121,11 +121,18 @@ export const S = {
     accessed: '2026-10-16',
   },
   pytorchNative: {
-    title: 'AWS Neuron: Native PyTorch for AWS Trainium (TorchNeuron)',
+    title: 'AWS Neuron 2.32.0: Native PyTorch for AWS Trainium (TorchNeuron)',
     publisher: 'AWS',
-    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/pytorch-native-overview.html',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/frameworks/torch/pytorch-native-overview.html',
     tier: 1,
-    accessed: '2026-10-17',
+    accessed: '2026-10-23',
+  },
+  torchNeuron233: {
+    title: 'AWS Neuron 2.33.0: What is TorchNeuron? (public beta)',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/about-pytorch-neuron.html',
+    tier: 1,
+    accessed: '2026-10-23',
   },
 
   // EC2 instance specification (Tier 1)

@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 476.
+Total distinct sources: 475.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -45,10 +45,10 @@ Total distinct sources: 476.
 | AWS | [AWS Neuron 2.32.0: Component Release Notes for Neuron Graph Compiler](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/components/compiler.html) | 2026-10-23 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron 2.32.0: Component Release Notes for Neuron PyTorch Framework](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/components/pytorch.html) | 2026-10-23 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron 2.32.0: JAX Support on Neuron (JAX NeuronX)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/frameworks/jax/index.html) | 2026-10-23 | AwsCompilersAndTooling |
-| AWS | [AWS Neuron 2.32.0: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/frameworks/torch/pytorch-native-overview.html) | 2026-10-23 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron 2.32.0: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/frameworks/torch/pytorch-native-overview.html) | 2026-10-23 | AwsCompilersAndTooling, AwsCustomSilicon, CommunicationAndScaleOut |
 | AWS | [AWS Neuron 2.32.0: NxD Inference MoE architecture deep dive](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/libraries/nxd-inference/developer_guides/moe-arch-deep-dive.html) | 2026-10-16 | CommunicationAndScaleOut, MoeAndSparseActivation |
 | AWS | [AWS Neuron 2.32.0: Release Notes (component versions)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/index.html) | 2026-10-23 | AwsCompilersAndTooling |
-| AWS | [AWS Neuron 2.33.0: What is TorchNeuron? (public beta)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/about-pytorch-neuron.html) | 2026-10-23 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron 2.33.0: What is TorchNeuron? (public beta)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/about-pytorch-neuron.html) | 2026-10-23 | AwsCompilersAndTooling, AwsCustomSilicon |
 | AWS | [AWS Neuron NKI Library: Attention CTE Kernel API Reference (Neuron 2.32.0)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/nki/library/api/attention-cte.html) | 2026-10-23 | KvCacheAndFlashAttention |
 | AWS | [AWS Neuron: Amazon EC2 Trn2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn2-arch.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut, HeterogeneityFact, MoeAndSparseActivation |
 | AWS | [AWS Neuron: Amazon EC2 Trn3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn3-arch.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut, MoeAndSparseActivation |
@@ -58,7 +58,6 @@ Total distinct sources: 476.
 | AWS | [AWS Neuron: Inferentia2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/inferentia2.html) | 2026-10-16 | AwsCustomSilicon |
 | AWS | [AWS Neuron: Intra-node Collective Communications with AWS Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/explore/intranode-collective-comm.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, DeterminismAOT |
 | AWS | [AWS Neuron: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/jax/api-reference-guide/neuron-envvars.html) | 2026-10-17 | AwsCustomSilicon, CapitalMarketsLens, DeterminismAOT |
-| AWS | [AWS Neuron: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/pytorch-native-overview.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut |
 | AWS | [AWS Neuron: Neuron Compiler CLI Reference Guide (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/neuronx-cc/api-reference-guide/index.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: Neuron Graph Compiler overview (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/index.html) | 2026-10-17 | AwsCompilersAndTooling, KernelExecutionLifecycle |
 | AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-18 | AwsCompilersAndTooling, AwsCustomSilicon, DeterminismAOT, GroqSambanovaDataflow, HeterogeneityFact, IsolationNie, KernelExecutionLifecycle |
