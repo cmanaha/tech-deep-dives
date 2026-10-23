@@ -145,3 +145,5 @@ GDAKI > Proxy > GPI. Lower number higher priority", `NCCL_GIN_TYPE_PROXY` 1, `NC
 that a job runs GDAKI only with `NCCL_GIN_TYPE=5`, plus the plugin guide's
 `NCCL_SYM_GIN_KERNELS_ENABLE=0` and `PeerMappingOverride` requirements
 (aws-ofi-nccl v1.22.0 `doc/gin-getting-started.md` L35-L81).
+
+STATUS: COMPLETE
