@@ -459,7 +459,7 @@ function NodeLanesDiagram() {
       title: 'Karpenter',
       key1: 'EC2NodeClass.spec',
       key2: '.networkInterfaces',
-      chip: ['Added in v1.11. Editing it', 'drifts existing nodes. DRA', 'from v1.15, feature gated.'],
+      chip: ['Added in v1.11. Editing it', 'drifts existing nodes. DRA', 'v1.15+, gated if dynamic.'],
     },
     {
       title: 'EKS Auto Mode',
@@ -944,9 +944,12 @@ make k8s=1.36 os_distro=al2023 \\
                 prefix count, so Karpenter does not set prefix counts on them. And changing networkInterfaces drifts
                 every existing node. The design also confirms only ENA and efa-only types are supported.
                 EC2NodeClass separately offers placementGroupSelector{' '}
-                <SourceRef provenance="documented" doc={docs.karpenterNodeClass} />. With the EFA DRA driver, leave
-                networkInterfaces unset: Karpenter documents it as unsupported there, with undefined behaviour{' '}
-                <SourceRef provenance="documented" doc={docs.karpenterDraUnset} />.
+                <SourceRef provenance="documented" doc={docs.karpenterNodeClass} />. With the EFA DRA driver and
+                dynamic provisioning, leave networkInterfaces unset: Karpenter documents the combination as
+                unsupported, with undefined behaviour{' '}
+                <SourceRef provenance="documented" doc={docs.karpenterDraUnset} />. For an efa-only layout under
+                DRA, use static capacity, a managed node group or self-managed nodes{' '}
+                <SourceRef provenance="documented" doc={docs.eksDevice} />.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1090,9 +1093,9 @@ make k8s=1.36 os_distro=al2023 \\
             eks.amazonaws.com/compute-type NotIn auto{' '}
             <SourceRef provenance="code-derived" code={code.dranetDs} />. Nothing in either chart separates DRA
             nodes from device plugin nodes on Karpenter <SourceRef provenance="code-derived" code={code.efaDs} />.
-            Give the DRA NodePools and the device plugin NodePools
-            separate labels, so each node runs one mechanism and a DRA pod never lands on a node where no DRA
-            driver publishes devices <SourceRef provenance="documented" doc={docs.karpenterDraPools} />.
+            Give the DRA NodePools and the device plugin NodePools separate labels, set a matching
+            nodeSelector in each chart, and put a nodeSelector for the DRA label on DRA pods, so each node
+            runs one mechanism and a DRA pod never lands on a node where no DRA driver publishes devices <SourceRef provenance="documented" doc={docs.karpenterDraPools} />.
           </Alert>
         </SpaceBetween>
       </Container>

@@ -828,8 +828,9 @@ SM_EFA_RDMA_INSTANCES = [
             for P5 and P5e. The torchrun driver consumes both lists directly: it sets FI_PROVIDER to
             efa when the type is in the first list, sets FI_EFA_USE_DEVICE_RDMA and RDMAV_FORK_SAFE
             when the type is in the second, and always sets NCCL_SOCKET_IFNAME and NCCL_PROTO{' '}
-            <SourceRef provenance="code-derived" code={code.torchrun} />. The mpirun path builds the
-            same settings as -x flags{' '}
+            <SourceRef provenance="code-derived" code={code.torchrun} />. The mpirun path passes
+            FI_PROVIDER, NCCL_PROTO and FI_EFA_USE_DEVICE_RDMA as -x flags from the same lists,
+            without RDMAV_FORK_SAFE{' '}
             <SourceRef provenance="code-derived" code={code.mpi} />.
           </Box>
 
@@ -942,8 +943,10 @@ SM_EFA_RDMA_INSTANCES = [
                 which version landed, read /opt/amazon/efa_installed_packages, the file the build
                 log quotes{' '}
                 <SourceRef provenance="code-derived" code={code.dlcInstallLog} />. The EFA installer
-                changelog maps that version to its libfabric, aws-ofi-nccl and driver versions{' '}
-                <SourceRef provenance="documented" doc={docs.efaChangelog} />.
+                changelog maps released versions to their libfabric, aws-ofi-nccl and driver
+                versions, and can lag a new installer: 1.51.0 was not listed on 2026-10-23{' '}
+                <SourceRef provenance="documented" doc={docs.efaChangelog} />. The installed-packages
+                file is then the record to trust.
               </Box>
             </div>
             <div>
@@ -1028,7 +1031,7 @@ SM_EFA_RDMA_INSTANCES = [
         header={
           <Header
             variant="h2"
-            description="Two checks that settle it, built from the four log lines AWS greps for in its own EFA test."
+            description="Two checks that settle it, built from the five log lines AWS greps for in its own EFA test."
           >
             Verifying EFA is genuinely in use
           </Header>
@@ -1047,7 +1050,7 @@ SM_EFA_RDMA_INSTANCES = [
 
           <Box variant="h3">Step 2: does the NCCL log say the transport is EFA</Box>
           <Box variant="p">
-            The Deep Learning Containers repository gates its own EFA test on four log signatures,
+            The Deep Learning Containers repository gates its own EFA test on three log signatures,
             plus two more on P4d and P5{' '}
             <SourceRef provenance="code-derived" code={code.dlcValidate} />.
           </Box>
@@ -1057,7 +1060,7 @@ SM_EFA_RDMA_INSTANCES = [
           <Box variant="p">
             Run those same greps against your CloudWatch job log. The GDRDMA line is the GPUDirect
             RDMA (Remote Direct Memory Access) confirmation, and the AWS script only checks it on P4d
-            and P5. The first three signatures without the fourth mean EFA is carrying traffic
+            and P5. The first three signatures without the GDRDMA line mean EFA is carrying traffic
             through host memory.
           </Box>
 
@@ -1256,10 +1259,10 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
               <Box variant="h3">Slurm AMI line</Box>
               <Box variant="p">
                 The September 17, 2026 release puts the Slurm 25.11 AMIs, x86_64 and ARM64, on EFA
-                installer 1.50.0 with rdma-core 64.0amzn0-1, NVIDIA driver 595.91.07, CUDA 13.2 and
-                Slurm 25.11.8. The Default Ubuntu 22.04 and 24.04 variants in the same release list
-                EFA installer 1.47.0 with rdma-core 61.0-1, the version every release from April 23
-                to August 29, 2026 carried{' '}
+                installer 1.50.0 with rdma-core 64.0amzn0-1, NVIDIA driver 595.91.07, CUDA 12.8 to
+                13.2 and Slurm 25.11.8. The Default Ubuntu 22.04 and 24.04 variants, last released on
+                September 8, 2026, list EFA installer 1.47.0 with rdma-core 61.0-1, the version every
+                release from April 23 to September 8, 2026 carried{' '}
                 <SourceRef provenance="documented" doc={docs.amiSlurm} />. The variant you pick
                 decides the EFA version.
               </Box>
@@ -1691,13 +1694,13 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             takes two nodes to exercise. Set NCCL_DEBUG to INFO, which the DLC already does through
             /etc/nccl.conf{' '}
             <SourceRef provenance="code-derived" code={code.dlcNcclConf} />, and grep the CloudWatch
-            log for the four signatures above. If aws-ofi-nccl appears but NET/OFI Selected provider
+            log for the signatures above. If aws-ofi-nccl appears but NET/OFI Selected provider
             is efa does not, the plugin loaded and the provider was never chosen. That is the failure
             the allowlist causes.
           </Box>
           <Box variant="p">
             <strong>Step 5. Move to HyperPod early if the decision above pointed there.</strong> The
-            job script, the container and the four log signatures all carry over. The cluster
+            job script, the container and the log signatures all carry over. The cluster
             lifecycle does not, and it is the expensive part to change once a run is underway.
           </Box>
         </SpaceBetween>

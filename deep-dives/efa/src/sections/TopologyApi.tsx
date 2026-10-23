@@ -198,6 +198,7 @@ const code: Record<string, CodeRef> = {
   },
   ccmTopology: { repo: 'kubernetes/cloud-provider-aws', ref: 'v1.37.0', path: 'pkg/providers/v1/instances_v2.go', lines: 'L95-L118', read: READ },
   ccmLabels: { repo: 'kubernetes/cloud-provider-aws', ref: 'v1.37.0', path: 'pkg/providers/v1/well_known_labels.go', lines: 'L22-L26', read: READ },
+  ccmLabelsFirst: { repo: 'kubernetes/cloud-provider-aws', ref: 'v1.32.0', path: 'pkg/providers/v1/well_known_labels.go', lines: 'L23-L26', read: READ },
 };
 
 /** efa-d10. The network node set as a tree, and what closeness means. */
@@ -1228,11 +1229,10 @@ sbatch --switch=1 train.sbatch`}</pre>
           </Alert>
 
           <Box variant="p">
-            HyperPod task governance applies topology.kubernetes.io/region,
-            topology.kubernetes.io/zone, topology.k8s.aws/network-node-layer-1 through -4 (layer-4
-            only on four-layer types), and topology.k8s.aws/ultraserver-id, the last identifying
-            instances in the same NVLink domain{' '}
-            <SourceRef provenance="documented" doc={docs.hyperpodEks} />.
+            HyperPod task governance schedules on topology.k8s.aws/network-node-layer-1 through -4
+            and topology.k8s.aws/ultraserver-id{' '}
+            <SourceRef provenance="documented" doc={docs.hyperpodEks} />. Layer 4 exists only on
+            four-layer types <SourceRef provenance="documented" doc={docs.eksTopo} />.
           </Box>
 
           <Box variant="code">
@@ -1296,7 +1296,7 @@ metadata:
 
           <ExpandableSection
             headerText="The portable fallback: a depth-agnostic labeler DaemonSet"
-            headerDescription="For Kubernetes on EC2 outside EKS, where no control plane writes the labels"
+            headerDescription="For clusters with no AWS cloud controller manager v1.32.0 or later writing the labels"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1307,7 +1307,11 @@ metadata:
                 returned array, so it labels three layers or four without a code change, and it
                 handles the empty case explicitly for instance types that do not support the API{' '}
                 <SourceRef provenance="code-derived" code={code.k8sLabeler} />. On EKS it duplicates
-                what the control plane already writes.
+                what the control plane already writes. A self-managed cluster that runs the AWS cloud
+                controller manager v1.32.0 or later gets the same labels from it{' '}
+                <SourceRef provenance="code-derived" code={code.ccmLabelsFirst} />, given
+                ec2:DescribeInstanceTopology on its role{' '}
+                <SourceRef provenance="documented" doc={docs.topoPrereq} />.
               </Box>
               <Box variant="code">
                 <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# Condensed from the DaemonSet manifest. Depth comes from the
