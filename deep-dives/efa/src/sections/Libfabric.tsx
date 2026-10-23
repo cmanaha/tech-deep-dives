@@ -78,7 +78,7 @@ const code = {
   manModes: lfab('man/fi_efa.7.md', 'L70-L78'),
   manMrModes: lfab('man/fi_efa.7.md', 'L81-L85'),
   manGda: lfab('man/fi_efa.7.md', 'L339-L359'),
-  manDeviceRdma: lfab('man/fi_efa.7.md', 'L795-L800'),
+  manDeviceRdma: lfab('man/fi_efa.7.md', 'L197-L212'),
   manLogging: lfab('man/fabric.7.md', 'L172-L195'),
   manLogProv: lfab('man/fabric.7.md', 'L211-L221'),
   manFiInfo: lfab('man/fi_info.1.md', 'L72-L90'),
@@ -87,7 +87,7 @@ const code = {
   getUserInfo: lfab('prov/efa/src/efa_user_info.c', 'L802-L844'),
   fabricNames: lfab('prov/efa/src/efa.h', 'L62-L63'),
   thresholdConsts: lfab('prov/efa/src/efa.h', 'L87-L90'),
-  selectRtm: lfab('prov/efa/src/rdm/efa_rdm_msg.c', 'L47-L103'),
+  selectRtm: lfab('prov/efa/src/rdm/efa_rdm_msg.c', 'L36-L103'),
   msgSizeDbg: lfab('prov/efa/src/rdm/efa_rdm_msg.c', 'L210-L213'),
   hmemThresholds: lfab('prov/efa/src/efa_hmem.c', 'L40-L116'),
   envDefine: lfab('prov/efa/src/efa_env.c', 'L171-L267'),
@@ -96,6 +96,7 @@ const code = {
   // The 2.6.0 reader for FI_EFA_ENABLE_HIGH_PPS, which 2.7.0 removes.
   envHighPps: { ...lfab('prov/efa/src/efa_env.c', 'L62-L65'), ref: 'v2.6.0' },
   cntrOpen: lfab('prov/efa/src/efa_cntr.c', 'L136-L147'),
+  hwCntrGate: lfab('prov/efa/src/efa_hw_cntr.c', 'L123-L124'),
   envAbort: lfab('prov/efa/src/efa_env.c', 'L79-L96'),
   trackMr: lfab('prov/efa/src/efa_env.c', 'L262-L266'),
   cacheOpen: lfab('prov/efa/src/rdm/efa_rdm_domain.c', 'L55-L68'),
@@ -109,6 +110,8 @@ const code = {
   reorderConst: lfab('prov/efa/src/rdm/efa_rdm_peer.h', 'L12'),
   gdaOpen: lfab('prov/efa/src/efa_domain.c', 'L792-L812'),
   modifyEp: lfab('prov/efa/src/efa_domain.c', 'L813-L822'),
+  modifyEpAttr: lfab('prov/efa/src/efa_domain.c', 'L736-L780'),
+  trackMrContext2: lfab('prov/efa/src/efa_ep.c', 'L391-L396'),
   context2Info: lfab('prov/efa/src/efa_prov_info.c', 'L241-L245'),
   context2User: lfab('prov/efa/src/efa_user_info.c', 'L555-L581'),
   ginOpen: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L588-L681'),
@@ -119,12 +122,15 @@ const code = {
   gdakiRefuse: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L663-L667'),
   paramGdaki: plugin('include/nccl_ofi_param.h', 'L379-L399'),
   platformEnv: plugin('src/platform-aws.cpp', 'L139-L246'),
+  platformEnvAll: plugin('src/platform-aws.cpp', 'L88-L286'),
+  ginGuide: plugin('doc/gin-getting-started.md', 'L35-L81'),
   envManager: plugin('include/nccl_ofi_environ.h', 'L47-L58'),
   scheduler: plugin('src/nccl_ofi_scheduler.cpp', 'L77-L133'),
   schedParams: plugin('include/nccl_ofi_param.h', 'L157-L166'),
   envCheatsheet: plugin('doc/efa-env-var.md'),
   ncclGinOrder: nccl('src/plugin/gin.cc', 'L24-L26'),
   ncclGinType: nccl('src/plugin/gin.cc', 'L141-L148'),
+  ncclGinPriority: nccl('src/plugin/gin.cc', 'L327-L340'),
   ncclGinTypes: nccl('src/include/nccl_device/core.h', 'L74-L78'),
 };
 
@@ -634,9 +640,10 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
             guaranteed to describe your host, and it is still a help string: for two settings the
             provider compiles in a different value, and both are named at the end of this section.
             Two more never appear in it, because the provider reads them straight from the
-            environment: FI_EFA_USE_HW_CNTR, which puts efa-direct counters on the device&apos;s
-            hardware completion counters{' '}
-            <SourceRef provenance="code-derived" code={code.cntrOpen} />, and
+            environment: FI_EFA_USE_HW_CNTR, which lets efa-direct counters use the device&apos;s
+            hardware completion counters, with a software counter as the fallback{' '}
+            <SourceRef provenance="code-derived" code={code.cntrOpen} />{' '}
+            <SourceRef provenance="code-derived" code={code.hwCntrGate} />, and
             FI_EFA_USE_SQ_REQ_ID_64_BIT, both 1 by default in libfabric 2.7.0{' '}
             <SourceRef provenance="code-derived" code={code.envDefaults} />{' '}
             <SourceRef provenance="code-derived" code={code.envUnregistered} />. That function
@@ -720,7 +727,9 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
               conflict="man/fi_efa.7.md lines 75 to 78 (Modes) say the provider requires FI_CONTEXT2 for the DGRAM endpoint and for the efa-direct fabric of the RDM endpoint. At v2.7.0, prov/efa/src/efa_prov_info.c lines 241 to 245 say neither efa-direct nor DGRAM requires FI_CONTEXT2 unconditionally, and efa_user_info_set_context2 (efa_user_info.c lines 555 to 581) advertises it only when the hints ask for it or are NULL. Without it, inject_size is 0, and a hint asking for a nonzero inject_size is rejected."
               label="doc vs code"
             />{' '}
-            <SourceRef provenance="code-derived" code={code.context2Info} />. It also supports
+            <SourceRef provenance="code-derived" code={code.context2Info} />, and FI_EFA_TRACK_MR
+            then refuses to enable the endpoint{' '}
+            <SourceRef provenance="code-derived" code={code.trackMrContext2} />. It also supports
             FI_MR_LOCAL only, so the application registers its own buffers, where the efa fabric
             accepts unregistered buffers for send and receive{' '}
             <SourceRef provenance="code-derived" code={code.manMrModes} />. Asking for efa-direct is
@@ -735,9 +744,10 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
             <SourceRef provenance="code-derived" code={code.manGda} />, with the handler returning a
             not-supported error on any other fabric{' '}
             <SourceRef provenance="code-derived" code={code.gdaOpen} />. The same open with
-            FI_EFA_MODIFY_EP_OPS returns a call that changes an endpoint&apos;s attributes after it
-            is enabled, also on efa-direct only{' '}
-            <SourceRef provenance="code-derived" code={code.modifyEp} />. Calling these tables is
+            FI_EFA_MODIFY_EP_OPS returns a call that changes an enabled endpoint&apos;s queue key,
+            the only attribute it supports, also on efa-direct only{' '}
+            <SourceRef provenance="code-derived" code={code.modifyEp} />{' '}
+            <SourceRef provenance="code-derived" code={code.modifyEpAttr} />. Calling these tables is
             work for whoever writes the plugin. aws-ofi-nccl v1.22.0 builds its kernel-initiated GIN
             (GPU-Initiated Networking) plugin, with no configure flag, whenever libfabric declares
             FI_EFA_GDA_OPS, the completion-counter interface is present and CUDA is the device
@@ -745,17 +755,23 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
             <code>ncclGinPlugin_v14</code>, device type 5{' '}
             <SourceRef provenance="code-derived" code={code.ginExport} />{' '}
             <SourceRef provenance="code-derived" code={code.ginDeviceType} />{' '}
-            <SourceRef provenance="code-derived" code={code.ncclGinTypes} />; NCCL tries v14 first,
-            and NCCL_GIN_TYPE=5 forces it{' '}
-            <SourceRef provenance="code-derived" code={code.ncclGinOrder} />{' '}
-            <SourceRef provenance="code-derived" code={code.ncclGinType} />. The plugin allows it
+            <SourceRef provenance="code-derived" code={code.ncclGinTypes} />, the first GIN version
+            NCCL looks for <SourceRef provenance="code-derived" code={code.ncclGinOrder} />. The
+            plugin allows it
             only on p5en, p6-b200 and p6-b300, the platforms it marks as having the EFA hardware
             completion counter, and refuses elsewhere with &quot;gin GDAKI: not supported on this
             platform&quot; <SourceRef provenance="code-derived" code={code.platformEnv} />{' '}
             <SourceRef provenance="code-derived" code={code.gdakiGate} />{' '}
-            <SourceRef provenance="code-derived" code={code.gdakiRefuse} />. The instance type is
-            the switch, and OFI_NCCL_GDAKI_EFA_HW_COUNTER is a bring-up override of it{' '}
-            <SourceRef provenance="code-derived" code={code.paramGdaki} />.
+            <SourceRef provenance="code-derived" code={code.gdakiRefuse} />. On those instances
+            NCCL still ranks this backend below its own GIN proxy, so a job runs it only when
+            NCCL_GIN_TYPE=5 selects it{' '}
+            <SourceRef provenance="code-derived" code={code.ncclGinPriority} />{' '}
+            <SourceRef provenance="code-derived" code={code.ncclGinType} />. The instance type is
+            the gate and NCCL_GIN_TYPE=5 is the switch; OFI_NCCL_GDAKI_EFA_HW_COUNTER is a bring-up
+            override of the gate <SourceRef provenance="code-derived" code={code.paramGdaki} />. The
+            plugin&apos;s setup guide also asks for NCCL_SYM_GIN_KERNELS_ENABLE=0 and the NVIDIA
+            driver&apos;s PeerMappingOverride option{' '}
+            <SourceRef provenance="code-derived" code={code.ginGuide} />.
           </Box>
         </SpaceBetween>
       </Container>
@@ -832,10 +848,10 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
           <Box variant="p">
             The ladder is walked with the size libfabric is handed, and under NCCL that is not the
             size of the collective. Two steps sit in between and the plugin sets both. The first is
-            the NCCL-side buffer: on p5, p5e, p5en, p6-b200, p6-b300 and the later p-series entries
-            the plugin inserts NCCL_BUFFSIZE=8388608 and NCCL_P2P_NET_CHUNKSIZE=524288 from a
-            per-platform table{' '}
-            <SourceRef provenance="code-derived" code={code.platformEnv} />, and it inserts them
+            the NCCL-side buffer: on p4d, p4de, p5, p5e, p5en, p6-b200, p6-b300, g7e and the later
+            p-series entries the plugin inserts NCCL_BUFFSIZE=8388608 and
+            NCCL_P2P_NET_CHUNKSIZE=524288 from a per-platform table{' '}
+            <SourceRef provenance="code-derived" code={code.platformEnvAll} />, and it inserts them
             without the overwrite flag{' '}
             <SourceRef provenance="code-derived" code={code.envManager} />. On a launch that does
             not set them itself, those sizes come from the instance family rather than from your
