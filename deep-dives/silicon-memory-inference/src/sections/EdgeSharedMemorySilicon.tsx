@@ -66,7 +66,7 @@ const specRows: SpecRow[] = [
     spec: 'AI compute, as marketed',
     spark: (
       <>
-        Up to 1 PFLOP FP4, sparse; no dense figure published
+        Up to 1 PFLOP FP4, sparse; no dense figure in NVIDIA's spec pages or Hot Chips slides
         <Cite s={S.sparkHardware} note="Hardware overview: up to 1 PFLOP at FP4 precision with sparsity." />
         <Cite s={S.gb10HotChips} note="The slides give AI: 1000 TOPS NVFP4 and CUDA: 31 TFLOPS FP32, and no dense FP4 figure." />
       </>
@@ -124,6 +124,7 @@ const specRows: SpecRow[] = [
       <>
         102 GB/s in MAXN_SUPER mode, 68 GB/s before it
         <Cite s={S.orinNanoSuperPage} />
+        <Cite s={S.orinNanoDatasheet} note="Peak Memory Bandwidth: 68 GB/s | 102 GB/s (MAXN_SUPER)." />
       </>
     ),
   },
@@ -201,7 +202,7 @@ interface DecodeRow {
 }
 
 const nvidiaOct2025Note =
-  'NVIDIA table of October 2025. The Llama 3.1 8B row is listed at input length 2048, output length 128, batch size 1.';
+  'NVIDIA Table 4 of October 2025: every row runs at input length 2048, output length 128, batch size 1.';
 const jetsonLabNote = 'Jetson AI Lab table, run with MLC and INT4 quantization.';
 
 const decodeRows: DecodeRow[] = [
@@ -355,18 +356,23 @@ export function EdgeSharedMemorySilicon() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A GB200 NVL72 rack holds about 30 TB of coherent memory, 13.4 TB of HBM3e (High
-            Bandwidth Memory) plus 17 TB of LPDDR5X, in one NVLink domain with 130 TB/s of
-            aggregate bandwidth.
+            A GB200 NVL72 rack holds about 30 TB of memory, 13.4 TB of HBM3e (High Bandwidth
+            Memory) plus 17 TB of LPDDR5X, in one NVLink domain with 130 TB/s of aggregate
+            bidirectional bandwidth.
             <Cite
               s={S.gb200Nvl72}
               kind="derived"
-              note="13.4 TB HBM3e + 17 TB LPDDR5X = 30.4 TB, our sum of the two figures on the page."
+              note="13.4 TB HBM3e + 17 TB LPDDR5X = 30.4 TB, our sum of the two per-rack figures on the page."
+            />
+            <Cite
+              s={S.blackwellUltraBlog}
+              kind="derived"
+              note="72 GPUs x 1.8 TB/s bidirectional = 129.6 TB/s, which NVIDIA gives as 130 TB/s aggregate; neither page labels the aggregate's direction."
             />{' '}
             Spark and Thor carry the same idea at 128 GB and Orin Nano Super at 8 GB: put the
             model where CPU and GPU both reach it without a copy. Between Thor and Orin sits
-            the Jetson T4000 module, 64 GB in a 40 to 70 W envelope at up to 1,200 FP4 TFLOPS
-            sparse.
+            the Jetson T4000 module, 64 GB at 273 GB/s in a 40 to 70 W envelope at up to 1,200
+            FP4 TFLOPS sparse.
             <Cite s={S.t4000Blog} /> Shared CPU-GPU memory also reaches Windows PCs as RTX Spark:
             laptops and compact desktops with a 20-core Grace CPU, a Blackwell GPU and up to 128 GB
             of unified memory, announced for October 2026; the announcement gives no memory
@@ -670,7 +676,7 @@ export function EdgeSharedMemorySilicon() {
         header={
           <Header
             variant="h2"
-            description="Divide bandwidth by bytes per token to predict decode speed before buying; two published runs land at 70 and 75% of that ceiling"
+            description="Divide bandwidth by bytes per token to predict decode speed before buying; two published runs land at about 70 and 75% of that ceiling"
           >
             The roofline check
           </Header>
@@ -684,7 +690,7 @@ export function EdgeSharedMemorySilicon() {
             per token; 273 GB/s gives a ceiling near 3.9 tokens/s, and LMSYS measured 2.7.
             <Cite s={S.lmsysSpark} kind="derived" note="273 / 70 = 3.9 tokens/s; 2.7 / 3.9 = 69%. LMSYS does not state the batch size for this run." />{' '}
             Jetson Orin Nano Super with Llama 3.1 8B at INT4 reads about 4 GB per token; 102 GB/s
-            gives a ceiling near 25 tokens/s, and Jetson AI Lab reports 19.14.
+            gives a ceiling near 25.5 tokens/s, and Jetson AI Lab reports 19.14.
             <Cite s={S.jetsonAiLab} kind="derived" note="102 / 4 = 25.5 tokens/s; 19.14 / 25.5 = 75%." />{' '}
             The two land at about 70 and 75% of the bandwidth ceiling, which leaves room for KV
             (key-value) cache reads and scheduling overhead on top of the weight stream.
@@ -709,16 +715,16 @@ export function EdgeSharedMemorySilicon() {
           <Box variant="p">
             1. Dense FP4 throughput for Spark, and Tensor Core and RT (ray tracing) Core counts for
             GB10: not in
-            the hardware overview, the product page or the Hot Chips slides, which give 31 TFLOPS
-            FP32 only.
+            the hardware overview, the product page or the Hot Chips slides; the slides add 31
+            TFLOPS FP32.
             <Cite s={S.gb10HotChips} />
           </Box>
           <Box variant="p">
             2. GB10 CPU clocks: not in those three sources; our lscpu reading stands in.
           </Box>
           <Box variant="p">
-            3. Memory bandwidth for RTX Spark, Jetson Orin Nano 2 and Jetson T4000: not given in
-            the NVIDIA announcements read for this section.
+            3. Memory bandwidth for RTX Spark and Jetson Orin Nano 2: not given in the NVIDIA
+            announcements read for this section.
           </Box>
           <Box variant="p">
             4. The ConnectX-7 NIC missing from <code>lspci</code> on our uncabled Spark: likely

@@ -5,7 +5,7 @@ import type { Source } from '../components/Cite';
  * (EdgeSocComparisonDiagram, SparkTopologyCapture).
  *
  * Tiers and URLs follow research/2026-10-refresh/04-other-arch.md (sections 0 and 6, and
- * the Sources list). Records shared with other sections (gb200Nvl72, gptOss120bReadme)
+ * the Sources list). Records shared with other sections (gb200Nvl72, gptOss120bReadme, blackwellUltraBlog)
  * reuse their URL, title, publisher and tier. Records accessed 2026-10-17 were fetched
  * during authoring: the Hot Chips 2025 GB10 slides, the DGX Spark product page, the
  * GB10 newsroom release, the Jetson Thor blog, the RTX Spark blog and the LMSYS review.
@@ -85,11 +85,11 @@ export const S = {
   },
   orinNanoDatasheet: {
     title:
-      'Jetson Orin Nano Series Modules Data Sheet DS-11105-001_v1.5 (third-party mirror of the NVIDIA PDF; read 2026-07-18, not re-fetched in October)',
+      'Jetson Orin Nano Series Modules Data Sheet DS-11105-001_v1.5 (third-party mirror of the NVIDIA PDF)',
     publisher: 'NVIDIA',
     url: 'https://www.esys.ir/images/img_Item/3029/Files/Jetson-Orin-Nano-Series-Modules-Datasheet_DS-11105-001_v1.5.pdf',
     tier: 1,
-    accessed: '2026-07-18',
+    accessed: '2026-10-23',
   },
   gptOss120bReadme: {
     title: 'openai/gpt-oss-120b README at revision b5c939d',
@@ -219,6 +219,13 @@ export const S = {
     url: 'https://www.nvidia.com/en-us/data-center/gb200-nvl72/',
     tier: 2,
     accessed: '2026-10-17',
+  },
+  blackwellUltraBlog: {
+    title: 'Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era',
+    publisher: 'NVIDIA',
+    url: 'https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/',
+    tier: 2,
+    accessed: '2026-10-23',
   },
 
   // Tier 3: third-party measurement.

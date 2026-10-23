@@ -47,7 +47,7 @@ export function SparkTopologyCapture() {
         dangerouslySetInnerHTML={{ __html: accessibleSvg }}
       />
       <Box variant="small">
-        lstopo (hwloc) on a physical DGX Spark, 18 July 2026. The GB10 GPU appears as PCI device
+        lstopo (hwloc) on a physical DGX Spark, 17 July 2026 (US Pacific time). The GB10 GPU appears as PCI device
         000f:01:00.0, and its OpenCL view reports 48 compute units and 121 GB, the pool it shares
         with the CPU.
         <Cite s={S.sparkTopologySvg} kind="measured" />

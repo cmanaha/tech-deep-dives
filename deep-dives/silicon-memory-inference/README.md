@@ -35,7 +35,7 @@ Cross-references in the prose use section names, so the numbering can change wit
 
 Every quantitative claim carries an inline citation with its source tier and access date, and a kind label where the number is not a plain specification: vendor claim, roadmap, measured, simulated or derived (our arithmetic, with the working shown in the citation note). GitHub citations are pinned to a tag or commit.
 
-- Tier 0: our own captures. The Edge section renders an lstopo topology of a physical DGX Spark; the raw lscpu, nvidia-smi and lspci bundle is in `research/dgx-spark/`.
+- Tier 0: our own captures. The Edge section renders an lstopo topology of a physical DGX Spark; the raw lscpu, lstopo and nvidia-smi captures are in `research/dgx-spark/`, with the lspci readings logged in its `NOTES.md`.
 - Tier 1: specifications, official documentation, filings and pinned source code.
 - Tier 2: vendor blogs, product pages, technical reports and conference talks.
 - Tier 3: third-party measurements, academic papers and trade press.
