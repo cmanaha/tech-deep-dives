@@ -117,7 +117,6 @@ function matchesFilter(item: InstanceInfo, needle: string) {
     item.nitroVersion,
     item.rdma,
     item.useCase,
-    item.generation,
     String(item.bandwidthGbps),
     String(item.efaInterfaces),
   ].some((field) => field.toLowerCase().includes(lower));
@@ -245,13 +244,6 @@ export function InstanceSupport() {
             header: 'Primary Use Case',
             cell: (item) => item.useCase,
           },
-          {
-            id: 'generation',
-            header: 'Status',
-            cell: (item) => (
-              <Badge color={item.generation === 'Current' ? 'green' : 'grey'}>{item.generation}</Badge>
-            ),
-          },
         ]}
         items={filtered}
         variant="full-page"
@@ -321,7 +313,8 @@ aws ec2 describe-instance-types \
             headerDescription="The rows are a shortlist, and the legacy tail is slower than its reputation"
           >
             <Box variant="p">
-              Roughly 200 instance types are EFA-capable. The rows above are the ones a technical
+              Roughly 300 instance types are EFA-capable{' '}
+              <SourceRef provenance="documented" doc={docs.efa} />. The rows above are the ones a technical
               lead actually chooses between, so several sourced groups are represented by their
               largest size or left out on purpose: the R, X, I and U7i high-memory EFA v2 sets, the
               Graviton5 c9g and m9g at 100 Gbps on EFA v4, the c8gb and m8gb pair at 400 Gbps, the
@@ -350,9 +343,9 @@ aws ec2 describe-instance-types \
           <GenerationMappingDiagram />
           <Box variant="p">
             The pairing comes straight from the headings. All four supported-instance-type
-            tables are titled verbatim: <em>Using Nitro v6 (EFA v4)</em>,{' '}
-            <em>Using Nitro v5 (EFA v3)</em>, <em>Using Nitro v4 (EFA v2)</em> and{' '}
-            <em>Using Nitro v3 (EFA v1)</em> <SourceRef provenance="documented" doc={docs.efa} />.
+            tables are titled verbatim: <em>Nitro v6 (EFA v4)</em>,{' '}
+            <em>Nitro v5 (EFA v3)</em>, <em>Nitro v4 (EFA v2)</em> and{' '}
+            <em>Nitro v3 (EFA v1)</em> <SourceRef provenance="documented" doc={docs.efa} />.
             RDMA follows the same ladder: EFA supports RDMA write on most supported instance
             types with Nitro version 4 and later, and RDMA read on all instances with Nitro
             version 4 and later{' '}
@@ -389,30 +382,27 @@ aws ec2 describe-instance-types \
       >
         <SpaceBetween size="s">
           <ExpandableSection
-            headerText="P6e-GB200: EFA v3 or EFA v4? AWS says both"
-            headerDescription="Two Tier 1 technical docs against two first-party product pages"
+            headerText="P6e-GB200: EFA v4, on Nitro v5 or Nitro v6?"
+            headerDescription="EFA v4 on three first-party statements; the hypervisor is contested"
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                The EC2 User Guide lists p6e-gb200.36xlarge in the table headed{' '}
-                <em>Using Nitro v5 (EFA v3)</em>, and the accelerated computing instance-types page
-                gives the P6e-GB200 family hypervisor as Nitro v5. Under the mapping above, that
-                makes it EFA v3. The UltraServers product page states, in these words, that
-                P6e-GB200 UltraServers deliver up to 28.8 terabits per second of Elastic Fabric
-                Adapter (EFAv4) networking. The P6 product page says the same. Both sides are
-                AWS-authored and they cannot both be right.
+                The EC2 User Guide lists p6e-gb200.36xlarge under <em>Nitro v6 (EFA v4)</em>{' '}
+                <SourceRef provenance="documented" doc={docs.efa} />. The UltraServers product page
+                gives P6e-GB200 UltraServers up to 28.8 terabits per second of EFAv4 networking{' '}
+                <SourceRef provenance="documented" doc={docs.ultraservers} />, and the P6 product
+                page also says EFAv4 <SourceRef provenance="documented" doc={docs.p6} />. The
+                accelerated computing instance-types page gives the P6e-GB200 hypervisor as Nitro
+                v5 <SourceRef provenance="documented" doc={docs.ac} />, which the mapping above
+                would pair with EFA v3. So three first-party statements give EFA v4, and the
+                hypervisor version is the contested part.
               </Box>
               <Box variant="p">
-                Trust Nitro v5: two independent Tier 1 technical documents agree on it. The EFA
-                generation stays flagged as contested{' '}
-                <SourceRef
-                  provenance="doc-code-conflict"
-                  doc={docs.efa}
-                  conflict="The UltraServers and P6 product pages state EFAv4 for P6e-GB200. The EC2 User Guide table heading and the accelerated computing page both say Nitro v5, which pairs with EFA v3."
-                  label="doc conflict"
-                />
-                . If you are sizing on this, ask your account team which one governs the hardware
-                you will actually be assigned.
+                The matrix follows the User Guide heading and shows Nitro v6. What you size on is
+                listed per type: the User Guide gives this type RDMA read and write{' '}
+                <SourceRef provenance="documented" doc={docs.efa} />, and the bandwidth ceiling
+                follows below. If the hypervisor version itself matters, ask your account team
+                which page governs the hardware you will be assigned.
               </Box>
               <Alert type="warning" header="Second P6e-GB200 tension, on bandwidth">
                 The accelerated computing page lists p6e-gb200.36xlarge at 3,200 Gbps with 17
@@ -455,7 +445,7 @@ aws ec2 describe-instance-types \
               <Box variant="p">
                 No trn3 instance type of any size appears in the EFA supported-instance-types
                 tables, in the accelerated computing instance-types page, or in the us-east-1
-                price list as of 2026-08-01. That is why there is no Trn3 row above, and why no
+                price list as of 2026-10-23. That is why there is no Trn3 row above, and why no
                 EFA device count or per-instance EFA bandwidth for Trn3 can be stated from any
                 Tier 1 source today.
               </Box>

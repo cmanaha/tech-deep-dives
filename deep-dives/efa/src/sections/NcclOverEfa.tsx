@@ -22,21 +22,24 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  */
 
 const ACCESSED = '2026-08-02';
-const READ = '2026-08-02';
+const READ = '2026-10-23';
+/** Commit pins and the historical NCCL tags: immutable, read on this date. */
+const READ_HISTORICAL = '2026-08-02';
 
 /** Pinned refs. Never a branch: a branch citation cannot be re-verified. */
-const PLUGIN_TAG = 'v1.20.0';
-const NCCL_TAG = 'v2.30.4-1';
+const PLUGIN_TAG = 'v1.22.0';
+const PLUGIN_GIN_SPLIT = 'v1.21.0';
+const NCCL_TAG = 'v2.32.3-1';
 const NCCL_221 = 'v2.21.5-1';
 const NCCL_222 = 'v2.22.3-1';
-const LIBFABRIC_TAG = 'v2.6.0';
+const LIBFABRIC_TAG = 'v2.7.0';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
 const doc = (title: string, url: string, tier: 1 | 2): DocRef => ({ title, url, tier, accessed: ACCESSED });
 
-const plugin = (path: string, lines?: string): CodeRef => ({
+const plugin = (path: string, lines?: string, ref: string = PLUGIN_TAG): CodeRef => ({
   repo: 'aws/aws-ofi-nccl',
-  ref: PLUGIN_TAG,
+  ref,
   path,
   lines,
   read: READ,
@@ -46,14 +49,14 @@ const pluginCommit = (sha: string, path: string, lines?: string): CodeRef => ({
   ref: sha,
   path,
   lines,
-  read: READ,
+  read: READ_HISTORICAL,
 });
 const nccl = (path: string, lines?: string, ref: string = NCCL_TAG): CodeRef => ({
   repo: 'NVIDIA/nccl',
   ref,
   path,
   lines,
-  read: READ,
+  read: ref === NCCL_TAG ? READ : READ_HISTORICAL,
 });
 const lfab = (path: string, lines?: string): CodeRef => ({
   repo: 'ofiwg/libfabric',
@@ -73,46 +76,50 @@ const code = {
   // Where the plugin sits.
   netSymbols: plugin('src/nccl_ofi_interface_nvidia.cpp', 'L661-L830'),
   neuronSymbols: plugin('src/nccl_ofi_interface_neuron.cpp', 'L323-L390'),
-  tunerPackaging: plugin('src/Makefile.am', 'L160-L190'),
-  xmlDir: plugin('src/Makefile.am', 'L11'),
+  tunerPackaging: plugin('src/Makefile.am', 'L169-L199'),
+  xmlDir: plugin('src/Makefile.am', 'L10'),
   banner: plugin('src/nccl_ofi_net.cpp', 'L188-L195'),
   libfabricGate: plugin('src/nccl_ofi_net.cpp', 'L644-L654'),
   pciPath: plugin('src/nccl_ofi_net.cpp', 'L622-L625'),
   protoSimple: plugin('src/nccl_ofi_net.cpp', 'L963-L969'),
   gdrForce: plugin('src/nccl_ofi_net.cpp', 'L405-L412'),
   // Provider selection and platform detection.
-  providerFilter: plugin('src/platform-aws.cpp', 'L584-L597'),
-  platformTable: plugin('src/platform-aws.cpp', 'L81-L250'),
+  providerFilter: plugin('src/platform-aws.cpp', 'L687-L700'),
+  platformTable: plugin('src/platform-aws.cpp', 'L87-L308'),
+  ibHcaNote: plugin('src/platform-aws.cpp', 'L81-L85'),
   platformOrder: plugin('src/platform-aws.cpp', 'L43-L48'),
   productName: plugin('src/nccl_ofi_system.cpp', 'L110-L140'),
   productNameFile: plugin('src/nccl_ofi_system.cpp', 'L23-L24'),
-  latency: plugin('src/platform-aws.cpp', 'L694-L709'),
+  latency: plugin('src/platform-aws.cpp', 'L797-L812'),
   // Topology.
-  topoEnv: plugin('src/platform-aws.cpp', 'L661-L687'),
-  writeTopoFile: plugin('src/nccl_ofi_rdma.cpp', 'L234-L303'),
-  writeTopoGate: plugin('src/nccl_ofi_rdma.cpp', 'L7396-L7407'),
-  topoGroup: plugin('src/nccl_ofi_topo.cpp', 'L1149-L1172'),
-  nicGroupLog: plugin('src/nccl_ofi_topo.cpp', 'L1128-L1145'),
-  sortRailsCall: plugin('src/nccl_ofi_topo.cpp', 'L998-L1005'),
-  sortRails: plugin('src/platform-aws.cpp', 'L959-L991'),
-  railContract: plugin('include/nccl_ofi_platform.h', 'L75-L97'),
+  topoEnv: plugin('src/platform-aws.cpp', 'L764-L790'),
+  writeTopoFile: plugin('src/nccl_ofi_rdma.cpp', 'L230-L299'),
+  writeTopoGate: plugin('src/nccl_ofi_rdma.cpp', 'L7199-L7210'),
+  topoGroup: plugin('src/nccl_ofi_topo.cpp', 'L1346-L1369'),
+  nicGroupLog: plugin('src/nccl_ofi_topo.cpp', 'L1325-L1342'),
+  sortRailsCall: plugin('src/nccl_ofi_topo.cpp', 'L1195-L1202'),
+  sortRails: plugin('src/platform-aws.cpp', 'L1089-L1119'),
+  railContract: plugin('include/nccl_ofi_platform.h', 'L77-L99'),
   // Environment handling.
   envManager: plugin('include/nccl_ofi_environ.h', 'L36-L58'),
   envSkipLog: plugin('include/nccl_ofi_environ.h', 'L101-L110'),
   envFreeze: plugin('src/nccl_ofi_net.cpp', 'L412'),
   paramPrefix: plugin('src/nccl_ofi_param.cpp', 'L10-L20'),
-  paramTuner: plugin('include/nccl_ofi_param.h', 'L266-L305'),
-  paramGin: plugin('include/nccl_ofi_param.h', 'L374-L390'),
+  paramTuner: plugin('include/nccl_ofi_param.h', 'L268-L307'),
+  paramEager: plugin('include/nccl_ofi_param.h', 'L223-L229'),
+  tunerPluginEnv: plugin('src/platform-aws.cpp', 'L603-L661'),
   // The tuner.
-  tunerV2: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L138-L156'),
-  tunerV3: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L182-L186'),
-  tunerV6: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L188-L227'),
-  tunerV2Symbol: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L254-L258'),
+  tunerV2: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L140-L159'),
+  tunerV3: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L184-L188'),
+  tunerV6: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L190-L246'),
+  tunerV2Symbol: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L273-L277'),
   tunerInit: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L47-L72'),
   shouldUse: plugin('include/tuner/nccl_ofi_tuner_process_config.h', 'L66-L79'),
   fallbackLog: plugin('include/tuner/nccl_ofi_tuner_process_config.h', 'L85-L111'),
   tunerPlatform: plugin('include/tuner/nccl_ofi_tuner_process_config.h', 'L30-L53'),
-  regionSkip: plugin('src/tuner/nccl_ofi_regions.cpp', 'L2094-L2117'),
+  tunerChunk: plugin('src/tuner/nccl_ofi_regions.cpp', 'L2345-L2375'),
+  regionSkip: plugin('src/tuner/nccl_ofi_regions.cpp', 'L2173-L2196'),
+  regionTwoNodes: plugin('src/tuner/nccl_ofi_regions.cpp', 'L2162-L2167'),
   segfaultFix: pluginCommit(
     'd204003337ff4e66d28bc7463d9570b18bd1ad49',
     'src/tuner/nccl_ofi_tuner.cpp'
@@ -123,27 +130,43 @@ const code = {
     'src/tuner/nccl_ofi_tuner.cpp'
   ),
   // NCCL side of the tuner contract.
-  ncclIgnore: nccl('src/include/plugin/nccl_tuner.h', 'L43'),
+  ncclIgnore: nccl('src/include/plugin/nccl_tuner.h', 'L43-L44'),
   ncclSymbol: nccl('src/include/plugin/nccl_tuner.h', 'L25'),
   ncclSymbol221: nccl('src/include/nccl_tuner.h', 'L58', NCCL_221),
   ncclSymbol222: nccl('src/include/nccl_tuner.h', 'L60', NCCL_222),
-  ncclInitTable: nccl('src/enqueue.cc', 'L1893-L1899'),
-  ncclUpdateTable: nccl('src/enqueue.cc', 'L1903-L1938'),
-  ncclCallOrder: nccl('src/enqueue.cc', 'L2052-L2066'),
-  ncclPickMin: nccl('src/enqueue.cc', 'L1940-L1960'),
-  ncclEnvParse: nccl('src/graph/tuning.cc', 'L416-L435'),
-  ncclZeroBw: nccl('src/graph/tuning.cc', 'L486-L506'),
-  ncclAlgoTime: nccl('src/graph/tuning.cc', 'L593-L599'),
-  ncclCmpScore: nccl('src/graph/search.cc', 'L181-L202'),
-  ncclSearchSort: nccl('src/graph/search.cc', 'L241-L280'),
-  ncclBuffsize: nccl('src/init.cc', 'L781-L786'),
-  // GPUDirect Async.
-  ginOpen: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L145-L175'),
-  ginSwitch: plugin('src/rdma/gin/nccl_ofi_gin_api.cpp', 'L90-L118'),
-  ginExport: plugin('include/rdma/gin/nccl_ofi_gin_gdaki.h', 'L15'),
+  ncclEnvParse: nccl('src/tuning/cost_model.cc', 'L306-L345'),
+  ncclEnableFlags: nccl('src/tuning/cost_model.cc', 'L371-L384'),
+  ncclDropCandidate: nccl('src/tuning/cost_model.cc', 'L470-L497'),
+  ncclValidList: nccl('src/tuning/tuning.cc', 'L128-L149'),
+  ncclInitTable: nccl('src/tuning/tuning.cc', 'L204-L209'),
+  ncclUpdateTable: nccl('src/tuning/tuning.cc', 'L210-L216'),
+  ncclCallOrder: nccl('src/tuning/tuning.cc', 'L202-L231'),
+  ncclPickMin: nccl('src/tuning/tuning.cc', 'L155-L173'),
+  ncclChunk: nccl('src/enqueue/enqueue.cc', 'L2355-L2365'),
+  ncclCmpScore: nccl('src/graph/search.cc', 'L190-L212'),
+  ncclSearchSort: nccl('src/graph/search.cc', 'L254-L283'),
+  ncclBuffsize: nccl('src/init.cc', 'L1006'),
+  ncclNetVersions: nccl('src/plugin/net.cc', 'L40-L42'),
+  // GPU-initiated networking.
+  ginProxyExports: plugin('src/rdma/gin/nccl_ofi_gin_api.cpp', 'L566-L617'),
+  ginGdakiExport: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L1256-L1274'),
+  ginGdakiExportFirst: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L1225-L1226', PLUGIN_GIN_SPLIT),
+  ginGdakiType: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L143'),
+  ginBuild: plugin('configure.ac', 'L343-L351'),
+  ginOpen: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L588-L681'),
+  ginPlatformGate: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L663-L668'),
+  ginCounterDecision: plugin('src/platform-aws.cpp', 'L432-L448'),
+  paramGdakiCounter: plugin('include/nccl_ofi_param.h', 'L379-L399'),
+  ncclGinVersions: nccl('src/plugin/gin.cc', 'L24-L26'),
+  ncclGinLoad: nccl('src/plugin/gin.cc', 'L79-L83'),
+  ncclGinType: nccl('src/plugin/gin.cc', 'L141-L147'),
+  ncclGinProxySkip: nccl('src/plugin/gin.cc', 'L164-L170'),
+  ncclGinTypes: nccl('src/include/nccl_device/core.h', 'L74-L78'),
   gdaOps: lfab('prov/efa/src/fi_ext_efa.h', 'L11'),
+  gdaOpsDirect: lfab('prov/efa/src/efa_domain.c', 'L803-L808'),
   // Version compatibility.
-  releaseNotes: plugin('RELEASENOTES.md', 'L10-L16'),
+  releaseNotes: plugin('RELEASENOTES.md', 'L12-L14'),
+  releaseNotesV120: plugin('RELEASENOTES.md', 'L90-L91'),
   envCheatsheet: plugin('doc/efa-env-var.md', 'L28-L69'),
 };
 
@@ -245,7 +268,7 @@ function PluginStackDiagram() {
       })}
 
       <text className="st-cap" x="450" y="486">
-        Layer boundaries and variable prefixes read from aws-ofi-nccl v1.20.0 and NCCL v2.30.4-1.
+        Layer boundaries and variable prefixes read from aws-ofi-nccl v1.22.0 and NCCL v2.32.3-1.
       </text>
     </svg>
   );
@@ -286,7 +309,7 @@ const knobLayers: KnobLayer[] = [
       { name: 'OFI_NCCL_PROTOCOL', status: 'evidence' },
       { name: 'OFI_NCCL_TUNER_TYPE', status: 'evidence' },
       { name: 'OFI_NCCL_FORCE_NUM_RAILS', status: 'evidence' },
-      { name: 'OFI_NCCL_GIN_TYPE', status: 'evidence' },
+      { name: 'OFI_NCCL_GDAKI_EFA_HW_COUNTER', status: 'never' },
       { name: 'OFI_NCCL_EAGER_MAX_SIZE', status: 'evidence' },
       { name: 'OFI_NCCL_FORCE_PRODUCT_NAME', status: 'evidence' },
     ],
@@ -475,7 +498,7 @@ const staleRows: StaleRow[] = [
     advice: 'FI_EFA_USE_DEVICE_RDMA=1',
     verdict: 'Leave unset',
     why:
-      'The cheatsheet scopes it to software older than libfabric 1.18.0 with aws-ofi-nccl 1.7.0. On p4 and p5 with current software it is harmless and pointless.',
+      'The cheatsheet scopes it to software older than libfabric 1.18.0 with aws-ofi-nccl 1.7.0. On p4 and p5 with later releases it is harmless and pointless.',
   },
   {
     advice: 'NCCL_PROTO=simple',
@@ -534,7 +557,7 @@ const logRows: LogRow[] = [
   },
   {
     line: 'NET/OFI Running on <type> platform, topology file <path>',
-    meaning: 'A packaged topology XML matched this instance type and NCCL_TOPO_FILE now points at it.',
+    meaning: 'A packaged topology XML matched this instance type and the plugin pointed NCCL_TOPO_FILE at it.',
   },
   {
     line: 'NET/OFI Internode latency set at <n> us',
@@ -588,7 +611,7 @@ export function NcclOverEfa() {
             specific to EFA (Elastic Fabric Adapter) is made there, between the framework above and
             the device below. AWS documents the install path{' '}
             <SourceRef provenance="documented" doc={docs.efaNccl} /> and leaves the mechanism to the
-            implementation, so this section reads it out of the plugin at release tag v1.20.0.
+            implementation, so this section reads it out of the plugin at release tag v1.22.0.
           </Box>
           <Box variant="p">
             The short version, if all you want is the settings: run with NCCL_DEBUG=INFO and
@@ -610,7 +633,7 @@ export function NcclOverEfa() {
               types support EFA <SourceRef provenance="documented" doc={docs.efa} />. It documents
               none of the plugin behaviour on this page: the platform table, the tuner conditions,
               the topology generation and the environment injection are all read from the
-              implementation at release tag v1.20.0. Re-check them against the tag you are running.
+              implementation at release tag v1.22.0. Re-check them against the tag you are running.
             </Box>
           </ExpandableSection>
         </SpaceBetween>
@@ -628,9 +651,10 @@ export function NcclOverEfa() {
 
           <Box variant="p">
             NCCL loads network plugins by looking for versioned symbols in a shared library. The
-            plugin exports the NVIDIA network interface at versions 6 through 12 in a single build,
-            so one binary serves NCCL 2.17.1 through 2.30.x{' '}
-            <SourceRef provenance="code-derived" code={code.netSymbols} />. A separate file exports
+            plugin exports the NVIDIA network interface at versions 6 through 12 in a single build{' '}
+            <SourceRef provenance="code-derived" code={code.netSymbols} />, so one binary serves
+            NCCL 2.17.1 through at least 2.32.3, which loads the same range{' '}
+            <SourceRef provenance="code-derived" code={code.ncclNetVersions} />. A separate file exports
             the Neuron interface at versions 4 through 6 for Trainium and Inferentia
             <SourceRef provenance="code-derived" code={code.neuronSymbols} />.
           </Box>
@@ -661,17 +685,18 @@ export function NcclOverEfa() {
           <Alert type="success" header="On NCCL 2.21 or later, the tuner loads itself">
             The build system spells out the version history in its own comment: NCCL 2.19 and 2.20
             loaded a tuner only when NCCL_TUNER_PLUGIN named a file, and from NCCL 2.21 onward NCCL
-            first checks NCCL_TUNER_PLUGIN and then looks inside the network plugin. Bundling the
-            tuner into the network plugin is deliberate, so that it loads by default on NCCL 2.21 or
-            later <SourceRef provenance="code-derived" code={code.tunerPackaging} />. Pointing
-            NCCL_TUNER_PLUGIN at a path is scoped to NCCL 2.19 and 2.20.
+            first checks NCCL_TUNER_PLUGIN and then looks inside the network plugin, which is why
+            the tuner is bundled there <SourceRef provenance="code-derived" code={code.tunerPackaging} />.
+            On EC2 the plugin&apos;s CUDA build also sets NCCL_TUNER_PLUGIN to its own library
+            unless you set it first <SourceRef provenance="code-derived" code={code.tunerPluginEnv} />.
+            Pointing it at a path by hand is scoped to NCCL 2.19 and 2.20.
           </Alert>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="The settings that survive contact with current software, and the ones the plugin already owns for you">
+          <Header variant="h2" description="The settings worth making, and the ones the plugin already owns for you">
             Environment variables: which layer, and which era
           </Header>
         }
@@ -684,8 +709,11 @@ export function NcclOverEfa() {
             names the software releases it applies to{' '}
             <SourceRef provenance="code-derived" code={code.envCheatsheet} />. Read against it, the
             standard EFA environment block that circulates in tutorials turns out to be scoped to
-            releases from 2023. The libfabric side of these variables is covered in the libfabric
-            section; what follows is the NCCL and plugin side.
+            releases from 2023. OFI_NCCL_EAGER_MAX_SIZE defaults to -1, which turns eager messages
+            off on the RDMA protocol{' '}
+            <SourceRef provenance="code-derived" code={code.paramEager} />. The libfabric side
+            of these variables is covered in the libfabric section; what follows is the NCCL and
+            plugin side.
           </Box>
 
           <Table
@@ -715,11 +743,11 @@ export function NcclOverEfa() {
               <SourceRef
                 provenance="doc-code-conflict"
                 code={code.platformTable}
-                conflict="doc/efa-env-var.md says of NCCL_BUFFSIZE: 'Recommend to leave it out to use the default.' The platform table in platform-aws.cpp injects NCCL_BUFFSIZE=8388608 on p4d, p4de, p5, p5e, p5en, p6-b200, the p-series catch-all, and g7e."
+                conflict="doc/efa-env-var.md says of NCCL_BUFFSIZE: 'Recommend to leave it out to use the default.' The platform table in platform-aws.cpp injects NCCL_BUFFSIZE=8388608 on p4d, p4de, p5, p5e, p5en, p6-b200, p6-b300, the p-series catch-all, and g7e."
               />
               . NCCL's default is 4 MiB{' '}
-              <SourceRef provenance="code-derived" code={code.ncclBuffsize} />. On every EFA GPU
-              platform in the table the plugin injects 8388608, which is 8 MiB, so the effective
+              <SourceRef provenance="code-derived" code={code.ncclBuffsize} />. On each of those
+              platforms the plugin injects 8388608, which is 8 MiB, so the effective
               default is twice what NCCL would have chosen and it tracks the platform. Code wins:
               treat 8 MiB as the default you already have. Setting it by hand keeps the same value
               and moves ownership to you, and the plugin logs that it skipped its own{' '}
@@ -794,10 +822,14 @@ export function NcclOverEfa() {
                 NCCL_NET_FORCE_FLUSH at 0 <SourceRef provenance="code-derived" code={code.platformTable} />.
               </Box>
               <Box variant="p">
-                p5en and p6-b200 share an entry that drops internode latency to 35 microseconds and
-                adds NCCL_NETDEVS_POLICY set to max:1, with a comment saying that value was chosen
-                empirically for platforms with two GPUs and two network devices per PCIe switch{' '}
-                <SourceRef provenance="code-derived" code={code.platformTable} />.
+                p5en, p6-b200 and p6-b300 each have their own entry, all at 35 microseconds of
+                internode latency. p5en and p6-b200 add NCCL_NETDEVS_POLICY set to max:1, with a
+                comment saying that value was chosen empirically for platforms with two GPUs and two
+                network devices per PCIe switch{' '}
+                <SourceRef provenance="code-derived" code={code.platformTable} />. p6-b200 and
+                p6-b300 also set NCCL_IB_HCA to invalid, a name matching no device, so NCCL&apos;s
+                internal InfiniBand transports skip the GPU baseboard&apos;s ConnectX-7 bridge, which
+                has no link to other nodes <SourceRef provenance="code-derived" code={code.ibHcaNote} />.
               </Box>
               <Box variant="p">
                 A catch-all p-series entry picks up whichever p5 and later families the earlier rows
@@ -864,8 +896,7 @@ export function NcclOverEfa() {
               <Box variant="p">
                 So the p5 family gets a topology file built from what the plugin discovered on the
                 running instance. Leaving NCCL_TOPO_FILE unset is what lets that happen: setting it
-                by hand suppresses both the packaged file and the generated one, which is the
-                opposite of what the old advice to hunt for the right topology XML promises.
+                by hand suppresses both the packaged file and the generated one.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -920,8 +951,8 @@ export function NcclOverEfa() {
             algorithm and by protocol, and asks it to fill in preferences. The plugin's region tuner
             walks a list of regions for the collective type, finds the one containing the point
             defined by message size and rank count, and sets that cell to 0.0{' '}
-            <SourceRef provenance="code-derived" code={code.regionSkip} />. NCCL then scans the
-            table and picks the lowest non-ignored cost{' '}
+            <SourceRef provenance="code-derived" code={code.regionSkip} />. NCCL then picks the
+            lowest-cost candidate that remains{' '}
             <SourceRef provenance="code-derived" code={code.ncclPickMin} />. That is the whole
             mental model: the tuner biases a choice NCCL still makes, one cell at a time, and a zero
             cost is a vote rather than a measured time.
@@ -967,11 +998,16 @@ export function NcclOverEfa() {
               NCCL 2.21.5 defines the tuner plugin symbol as ncclTunerPlugin_v2{' '}
               <SourceRef provenance="code-derived" code={code.ncclSymbol221} />, NCCL 2.22.3 moved it
               to v3 <SourceRef provenance="code-derived" code={code.ncclSymbol222} />, and NCCL
-              2.30.4 uses v6 <SourceRef provenance="code-derived" code={code.ncclSymbol} />. The
+              2.32.3 uses v6 <SourceRef provenance="code-derived" code={code.ncclSymbol} />. The
               plugin exports all three, so the NCCL you are running makes the choice{' '}
-              <SourceRef provenance="code-derived" code={code.tunerV2Symbol} />. The v1 interface was
+              <SourceRef provenance="code-derived" code={code.tunerV2Symbol} />. Through v6 the
+              tuner can also set NCCL&apos;s chunk size; v1.22.0 does so only on p5en, for two
+              algorithm and protocol pairs at one rank per node{' '}
+              <SourceRef provenance="code-derived" code={code.tunerV6} />
+              <SourceRef provenance="code-derived" code={code.tunerChunk} />
+              <SourceRef provenance="code-derived" code={code.ncclChunk} />. The v1 interface was
               removed entirely in plugin v1.20.0{' '}
-              <SourceRef provenance="code-derived" code={code.releaseNotes} />, and the commit that
+              <SourceRef provenance="code-derived" code={code.releaseNotesV120} />, and the commit that
               introduced the guard scopes it in its own subject line: updating tuner v1/v2 to fall
               back on internal when algo or proto is set{' '}
               <SourceRef provenance="code-derived" code={code.v2Guard} />.
@@ -983,19 +1019,22 @@ export function NcclOverEfa() {
             headerDescription="NCCL marks the cells you excluded before the tuner is ever called"
           >
             <Box variant="p">
-              Your filter is applied first. NCCL parses NCCL_ALGO and NCCL_PROTO into per-function
-              enable arrays at tuning time{' '}
-              <SourceRef provenance="code-derived" code={code.ncclEnvParse} /> and zeroes the
-              modelled bandwidth for every disabled combination{' '}
-              <SourceRef provenance="code-derived" code={code.ncclZeroBw} />, which makes the time
-              lookup return -1.0 <SourceRef provenance="code-derived" code={code.ncclAlgoTime} />,
-              the exact value of NCCL_ALGO_PROTO_IGNORE{' '}
+              Your filter is applied first. At communicator setup NCCL parses NCCL_ALGO and
+              NCCL_PROTO into per-function enable flags{' '}
+              <SourceRef provenance="code-derived" code={code.ncclEnvParse} /> and clears the flag
+              for every combination you excluded{' '}
+              <SourceRef provenance="code-derived" code={code.ncclEnableFlags} />. A disabled
+              combination gets a time of -1.0 and is left out of the candidate list{' '}
+              <SourceRef provenance="code-derived" code={code.ncclDropCandidate} />
+              <SourceRef provenance="code-derived" code={code.ncclValidList} />; -1.0 is the exact
+              value of NCCL_ALGO_PROTO_IGNORE{' '}
               <SourceRef provenance="code-derived" code={code.ncclIgnore} />. Only then does NCCL
-              initialise the table <SourceRef provenance="code-derived" code={code.ncclInitTable} />,
-              fill in modelled times for the combinations the communicator allows{' '}
+              initialise the table to that value{' '}
+              <SourceRef provenance="code-derived" code={code.ncclInitTable} />, fill in modelled
+              times for the candidates that remain{' '}
               <SourceRef provenance="code-derived" code={code.ncclUpdateTable} />, call the tuner and
               pick the minimum <SourceRef provenance="code-derived" code={code.ncclCallOrder} />, and
-              the tuner skips any cell already equal to NCCL_ALGO_PROTO_IGNORE{' '}
+              the tuner skips any cell still equal to NCCL_ALGO_PROTO_IGNORE{' '}
               <SourceRef provenance="code-derived" code={code.regionSkip} />. Your filter and the
               tuner compose: the filter narrows the table, the tuner votes inside what is left, and
               NCCL takes the minimum of that.
@@ -1008,7 +1047,7 @@ export function NcclOverEfa() {
           >
             <Box variant="p">
               The v1.20.0 release notes list a fix for a tuner segfault when NCCL_ALGO or NCCL_PROTO
-              is explicitly set <SourceRef provenance="code-derived" code={code.releaseNotes} />, and
+              is explicitly set <SourceRef provenance="code-derived" code={code.releaseNotesV120} />, and
               since a crash needs code to be executing, that line invites the reading that the tuner
               ran despite those variables. The commit places the crash inside the bailout instead:
               the v2 initialiser logged on the early-return path before the log function pointer had
@@ -1051,14 +1090,14 @@ export function NcclOverEfa() {
             <Box variant="p">
               cmpScore is the comparison function for a sort over candidate GPUs, used while NCCL
               searches for the next GPU to add to a ring or tree channel. The scores come from path
-              hop counts and bandwidths between GPUs and between a GPU and the network device, and
-              the comment above the structure says the sort exists so the search converges quickly
-              even if it times out{' '}
-              <SourceRef provenance="code-derived" code={code.ncclSearchSort} />. Guides that cite it
-              as the place algorithms get chosen quote its ordering correctly, interBw then
-              interPciBw then interNhops then intraBw then intraNhops{' '}
+              hop counts and bandwidths between GPUs and between a GPU and the network device{' '}
+              <SourceRef provenance="code-derived" code={code.ncclSearchSort} />, and the comment
+              above the structure says the sort exists so the search converges quickly even if it
+              times out <SourceRef provenance="code-derived" code={code.ncclCmpScore} />. Guides
+              that cite it as the place algorithms get chosen quote its ordering
+              correctly, interBw then interPciBw then interNhops then intraBw then intraNhops{' '}
               <SourceRef provenance="code-derived" code={code.ncclCmpScore} />, but algorithm and
-              protocol selection is the cost-table path described above, in enqueue.cc. The path is
+              protocol selection is the cost-table path described above, in src/tuning. The path is
               worth copying carefully too: the file is src/graph/search.cc, and has been since at
               least NCCL 2.21.5.
             </Box>
@@ -1070,8 +1109,8 @@ export function NcclOverEfa() {
             <SpaceBetween size="s">
               <Box variant="p">
                 Where GPUDirect RDMA support is missing, the plugin logs that it needs to force the
-                simple protocol because GDR is unsupported, and stages NCCL_PROTO as simple with
-                overwrite set to false{' '}
+                simple protocol because GDR (GPUDirect RDMA) is unsupported, and stages NCCL_PROTO
+                as simple with overwrite set to false{' '}
                 <SourceRef provenance="code-derived" code={code.gdrForce} />
                 <SourceRef provenance="code-derived" code={code.protoSimple} />. The surrounding
                 comment argues correctness rather than performance: the low-latency protocol polls
@@ -1102,12 +1141,12 @@ export function NcclOverEfa() {
         <SpaceBetween size="m">
           <Box variant="p">
             The plugin's release notes state the tested matrix for each release, which is a
-            narrower thing than a compatibility promise. Release v1.20.0 was tested with NCCL
-            v2.28.9-1, v2.29.7-1 and
-            v2.30.4-1, and states backward compatibility with NCCL v2.17.1 and later. It was tested
-            with an AWS build of libfabric 2.4.0, requires at least libfabric 1.11.0 to build, and
-            requires at least libfabric 1.22.0 to compile AWS-specific support{' '}
-            <SourceRef provenance="code-derived" code={code.releaseNotes} />. That last number
+            narrower thing than a compatibility promise. Release v1.22.0 was tested with NCCL
+            v2.32.3-1 and states backward compatibility with NCCL v2.17.1 and later. It was tested
+            with libfabric 2.7.0amzn2.0, requires at least libfabric 1.11.0 to build, requires at
+            least libfabric 1.22.0 to compile AWS-specific support, and needs libfabric 2.6.0 or
+            later for the kernel-initiated GIN path{' '}
+            <SourceRef provenance="code-derived" code={code.releaseNotes} />. The 1.22.0 minimum
             matches the run-time gate: an EFA provider on a libfabric older than 1.22.0 is refused
             outright <SourceRef provenance="code-derived" code={code.libfabricGate} />.
           </Box>
@@ -1170,8 +1209,8 @@ export function NcclOverEfa() {
           <Alert type="warning" header="Two strings to grep for exactly as this version prints them">
             <SpaceBetween size="xs">
               <Box variant="p">
-                The provider line is Selected provider is, lowercase, and it now also reports the
-                fabric name and the device count in the same line{' '}
+                The provider line is Selected provider is, lowercase, and it also reports the fabric
+                name and the device count in the same line{' '}
                 <SourceRef provenance="code-derived" code={code.libfabricGate} />. Guides quote
                 Selected Provider with a capital P, which returns an empty grep on a working job.
               </Box>
@@ -1188,43 +1227,63 @@ export function NcclOverEfa() {
 
       <Container
         header={
-          <Header variant="h2" description="A GPU-initiated networking path exists in the plugin today, behind a build flag and an environment variable.">
-            GPUDirect Async is wired in
+          <Header variant="h2" description="What has to line up before a GPU drives EFA directly, and the variable that forces it.">
+            GPUDirect Async: getting the GDAKI path
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The plugin carries a GIN (GPU-Initiated Networking) subsystem: seven implementation
-            files under src/rdma/gin and nine headers, with a GDAKI variant that consumes the
-            libfabric EFA provider's GPUDirect Async operations{' '}
-            <SourceRef provenance="code-derived" code={code.ginOpen} />. The plugin is a consumer
-            of the libfabric feature at release tag v1.20.0.
+            The plugin&apos;s GIN (GPU-Initiated Networking) subsystem lets GPU kernels start
+            network transfers, in two modes. Host-proxy GIN is exported at NCCL&apos;s GIN
+            interface versions 11 and 13 under the name Libfabric{' '}
+            <SourceRef provenance="code-derived" code={code.ginProxyExports} />. GDAKI (GPUDirect
+            Async Kernel-Initiated) is a separate export from v1.21.0{' '}
+            <SourceRef provenance="code-derived" code={code.ginGdakiExportFirst} />: interface
+            version 14, named Libfabric_GDAKI, reporting the EFA_GDA device type, value 5{' '}
+            <SourceRef provenance="code-derived" code={code.ginGdakiExport} />
+            <SourceRef provenance="code-derived" code={code.ginGdakiType} />
+            <SourceRef provenance="code-derived" code={code.ncclGinTypes} />. NCCL 2.32.3 runs
+            host-proxy GIN itself over its own RMA backend and skips an external plugin&apos;s proxy
+            export <SourceRef provenance="code-derived" code={code.ncclGinProxySkip} />, so with
+            that release GDAKI is the only GIN path the plugin supplies. Four conditions decide
+            whether a job gets it.
           </Box>
-          <Box variant="p">
-            It reuses the libfabric domain the proxy plugin already opened, with an in-file comment
-            stating that on libfabric 2.4 and later the proxy selects the efa-direct fabric and that
-            domain is the one exposing the GPUDirect Async operations. It opens FI_EFA_GDA_OPS on an
-            endpoint of that domain and queries the work-queue and completion-queue attributes
-            needed to populate GPU-resident queue-pair and completion-queue descriptors{' '}
-            <SourceRef provenance="code-derived" code={code.ginOpen} />
-            <SourceRef provenance="code-derived" code={code.gdaOps} />. A failed open throws with a
-            message naming the two likely causes, and they are the two to check first: libfabric too
-            old, or a proxy-selected fabric other than efa-direct{' '}
-            <SourceRef provenance="code-derived" code={code.ginOpen} />. The libfabric section covers
-            that operations table and the efa-direct gate in detail.
-          </Box>
-          <Box variant="p">
-            The result is exported against NCCL's GPU-initiated networking interface at version 13{' '}
-            <SourceRef provenance="code-derived" code={code.ginExport} />. It is opt-in twice over.
-            The plugin must be built with the GDAKI option, and OFI_NCCL_GIN_TYPE must be set to
-            GDAKI at run time, at which point it logs that GDAKI mode is enabled and overwrites the
-            exported GIN plugin symbol with the GDAKI one. Asking for GDAKI on a plugin built
-            without it fails init deliberately, on the stated grounds that GDAKI was an explicit
-            opt-in <SourceRef provenance="code-derived" code={code.ginSwitch} />
-            <SourceRef provenance="code-derived" code={code.paramGin} />. The default remains the
-            proxy path, so a job that does not ask for GDAKI on both counts does not get it.
-          </Box>
+          <ol style={{ margin: 0 }}>
+            <li>
+              <strong>Instance.</strong> GDAKI needs the EFA hardware completion counter, which the
+              platform table declares only for p5en, p6-b200 and p6-b300{' '}
+              <SourceRef provenance="code-derived" code={code.platformTable} />. Elsewhere the
+              plugin refuses to create a GDAKI context and logs that GDAKI is not supported on this
+              platform <SourceRef provenance="code-derived" code={code.ginPlatformGate} />
+              <SourceRef provenance="code-derived" code={code.ginCounterDecision} />.
+              OFI_NCCL_GDAKI_EFA_HW_COUNTER is a bring-up override of that decision; leave it at
+              auto <SourceRef provenance="code-derived" code={code.paramGdakiCounter} />.
+            </li>
+            <li>
+              <strong>Build.</strong> Configure includes GDAKI automatically when libfabric
+              declares FI_EFA_GDA_OPS and the completion-counter interface, and CUDA is the device
+              interface; otherwise it builds proxy-only GIN and says so{' '}
+              <SourceRef provenance="code-derived" code={code.ginBuild} />.
+            </li>
+            <li>
+              <strong>Fabric.</strong> GDAKI opens FI_EFA_GDA_OPS on the libfabric domain the proxy
+              plugin opened on each rail <SourceRef provenance="code-derived" code={code.ginOpen} />,
+              and libfabric offers those operations only on the efa-direct fabric{' '}
+              <SourceRef provenance="code-derived" code={code.gdaOps} />
+              <SourceRef provenance="code-derived" code={code.gdaOpsDirect} />. A failed open
+              names the two causes to check first: libfabric too old, or a proxy-selected fabric
+              other than efa-direct <SourceRef provenance="code-derived" code={code.ginOpen} />. The
+              libfabric section covers that operations table.
+            </li>
+            <li>
+              <strong>NCCL.</strong> NCCL 2.32.3 looks for the version 14 GIN symbol before version
+              13 <SourceRef provenance="code-derived" code={code.ncclGinVersions} />
+              <SourceRef provenance="code-derived" code={code.ncclGinLoad} />, so a plugin built
+              with GDAKI hands NCCL its GDAKI export. NCCL_GIN_TYPE=5 restricts NCCL to the EFA_GDA backend, which is
+              how to force GDAKI <SourceRef provenance="code-derived" code={code.ncclGinType} />.
+            </li>
+          </ol>
         </SpaceBetween>
       </Container>
 
@@ -1262,8 +1321,9 @@ export function NcclOverEfa() {
                 <SourceRef provenance="code-derived" code={code.tunerPlatform} />, and the fallback
                 message names which of the three conditions applied when it declined{' '}
                 <SourceRef provenance="code-derived" code={code.fallbackLog} />. Jobs of two nodes or
-                fewer are skipped by design, because the regions start above that size{' '}
-                <SourceRef provenance="code-derived" code={code.regionSkip} />.
+                fewer are skipped by design and left to NCCL&apos;s own tuning, because the regions
+                are not defined for them{' '}
+                <SourceRef provenance="code-derived" code={code.regionTwoNodes} />.
               </Box>
             </div>
           </ColumnLayout>

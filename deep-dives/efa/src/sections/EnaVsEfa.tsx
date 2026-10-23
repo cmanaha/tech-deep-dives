@@ -23,30 +23,33 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * Research: research/2026-08-refresh/06-ena-vs-efa.md.
  */
 
+/** Date the AWS pages and the utilities script were read. */
 const READ = '2026-08-01';
-const DRIVERS_SHA = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
+/** amzn/amzn-drivers at tag efa_linux_3.4.0, and the date it was read there. */
+const DRIVERS_SHA = '9d5ca4021f7c9f8421e404c1e89edb0b1325372c';
+const DRIVERS_READ = '2026-10-23';
 const UTILS_SHA = '6ecb14cf1dc3f17a375ea72c1aa3dfd72dc5a1e7';
 
 /** A citation into amzn-drivers, pinned to the commit the research read. */
 function drv(path: string, lines: string): CodeRef {
-  return { repo: 'amzn/amzn-drivers', ref: DRIVERS_SHA, path, lines, read: READ };
+  return { repo: 'amzn/amzn-drivers', ref: DRIVERS_SHA, path, lines, read: DRIVERS_READ };
 }
 
 const code = {
   enaPciIds: drv('kernel/linux/ena/ena_pci_id_tbl.h', 'L9-L43'),
   efaPciIds: drv('kernel/linux/efa/src/efa_main.c', 'L27-L40'),
   enaDriver: drv('kernel/linux/ena/ena_netdev.c', 'L5979-L5982'),
-  efaDriver: drv('kernel/linux/efa/src/efa_main.c', 'L998-L1004'),
+  efaDriver: drv('kernel/linux/efa/src/efa_main.c', 'L1003-L1009'),
   enaMakefile: drv('kernel/linux/ena/Makefile', 'L1-L17'),
   efaKbuild: drv('kernel/linux/efa/src/Kbuild.in', 'L1-L2'),
-  efaIbDevice: drv('kernel/linux/efa/src/efa_main.c', 'L616-L655'),
+  efaIbDevice: drv('kernel/linux/efa/src/efa_main.c', 'L618-L657'),
   efaQpType: drv('kernel/linux/efa/src/efa-abi.h', 'L90'),
   enaBars: drv('kernel/linux/ena/ena_netdev.h', 'L72-L74'),
   efaBars: drv('kernel/linux/efa/src/efa_main.c', 'L67-L69'),
   enaPush: drv('kernel/linux/common/ena_com/ena_eth_com.c', 'L95-L134'),
   enaWcMap: drv('kernel/linux/ena/ena_netdev.c', 'L4291-L4303'),
-  efaUserMap: drv('kernel/linux/efa/src/efa_verbs.c', 'L890-L902'),
-  efaSqDesc: drv('kernel/linux/efa/src/efa_verbs.c', 'L1148-L1149'),
+  efaUserMap: drv('kernel/linux/efa/src/efa_verbs.c', 'L891-L903'),
+  efaSqDesc: drv('kernel/linux/efa/src/efa_verbs.c', 'L1149-L1150'),
   efaAbiKeys: drv('kernel/linux/efa/src/efa-abi.h', 'L115-L120'),
   enaRings: drv('kernel/linux/ena/ena_netdev.h', 'L76-L78'),
   enaMsix: drv('kernel/linux/ena/ena_netdev.h', 'L56-L70'),
@@ -294,7 +297,7 @@ function WhoHoldsThePenDiagram() {
       <text className="pn-s" x="83" y="286">libfabric</text>
       <path className="pn-ar" d="M146,270 L172,270" />
       <rect className="pn-fast" x="176" y="246" width="180" height="48" rx="6" />
-      <text className="pn-t" x="266" y="268">Mapped SQ ring</text>
+      <text className="pn-t" x="266" y="268">Mapped send queue</text>
       <text className="pn-s" x="266" y="286">in the app address space</text>
       <path className="pn-arg" d="M360,270 L658,270" />
       <text className="pn-s" x="509" y="258">store to mapped memory</text>
@@ -434,7 +437,7 @@ const ladderRows: LadderRow[] = [
   {
     config: 'ENA Express',
     ceiling: '25 Gbps',
-    note: 'Capped by the aggregate instance limit. Scope is contested, see below.',
+    note: 'Capped by the aggregate instance limit. Two AWS pages give different scopes, see below.',
   },
   {
     config: 'Multipath TCP across several paths',
@@ -698,7 +701,8 @@ export function EnaVsEfa() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            ENA registers a net_device and behaves like any modern NIC driver. The model is paired
+            ENA registers a net_device and behaves like any modern NIC (network interface card)
+            driver. The model is paired
             submission queue and completion queue per direction, multi-queue on both transmit and
             receive, with doorbells written as plain MMIO stores of the queue tail. The default
             ring size is 1024 entries, with a minimum of 256, and a wide LLQ ring default of 512{' '}
@@ -1019,8 +1023,8 @@ ethtool -S eth0 | grep ena_srd
                 <SourceRef provenance="documented" doc={docs.enaExpress} />.
               </Box>
               <Box variant="p">
-                These cannot both be the scope, and the driver cannot break the tie, because it
-                only reads counters{' '}
+                The two pages give different scopes, and the driver cannot settle which one AWS
+                means, because it only reads counters{' '}
                 <SourceRef provenance="code-derived" code={code.srdGet} />. If you are sizing on the
                 25 Gbps figure across Availability Zones, confirm it before you build on it.
               </Box>

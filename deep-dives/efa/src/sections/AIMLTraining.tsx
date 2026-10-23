@@ -21,12 +21,13 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  */
 
 const ACCESSED = '2026-08-02';
-const READ = '2026-08-02';
+const REFRESHED = '2026-10-23';
+const READ = '2026-10-23';
 
 /** Pinned refs. Never a branch: a branch citation cannot be re-verified. */
-const PLUGIN_TAG = 'v1.20.0';
-const NCCL_TAG = 'v2.30.4-1';
-const LIBFABRIC_TAG = 'v2.6.0';
+const PLUGIN_TAG = 'v1.22.0';
+const NCCL_TAG = 'v2.32.3-1';
+const LIBFABRIC_TAG = 'v2.7.0';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
 const plugin = (path: string, lines?: string): CodeRef => ({
@@ -52,20 +53,36 @@ const lfab = (path: string, lines?: string): CodeRef => ({
 });
 
 const code = {
-  tunerV2: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L138-L156'),
-  tunerV3: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L182-L186'),
-  tunerV6: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L188-L227'),
-  ncclCmpScore: nccl('src/graph/search.cc', 'L181-L202'),
-  rdma: plugin('src/nccl_ofi_rdma.cpp'),
-  sortRails: plugin('src/platform-aws.cpp', 'L959-L991'),
+  tunerV2: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L140-L159'),
+  tunerV3: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L184-L188'),
+  tunerV6: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L190-L246'),
+  ncclCmpScore: nccl('src/graph/search.cc', 'L190-L212'),
+  railObjects: plugin('include/nccl_ofi_rdma.h', 'L1414-L1457'),
+  railConnMsg: plugin('src/nccl_ofi_rdma.cpp', 'L5983-L5990'),
+  railCount: plugin('src/nccl_ofi_rdma.cpp', 'L5100-L5107'),
+  railAvInsert: plugin('src/nccl_ofi_rdma.cpp', 'L4904-L4920'),
+  sortRails: plugin('src/platform-aws.cpp', 'L1089-L1119'),
+  topoDiscover: plugin('src/nccl_ofi_topo.cpp', 'L934'),
+  topoEnv: plugin('src/platform-aws.cpp', 'L764-L790'),
   topoP4d: plugin('topology/p4d-24xl-topo.xml'),
   topoG5: plugin('topology/g5.48xl-topo.xml'),
-  cudaPointer: plugin('src/nccl_ofi_cuda.cpp', 'L84'),
-  cudaPointerCall: plugin('src/nccl_ofi_cuda.cpp', 'L290'),
-  ginGdaki: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L145-L175'),
+  tunerPluginEnv: plugin('src/platform-aws.cpp', 'L603-L661'),
+  tunerPluginCall: plugin('src/platform-aws.cpp', 'L757-L761'),
+  gdrProbe: plugin('src/nccl_ofi_ofiutils.cpp', 'L345-L372'),
+  hmemProps: plugin('src/nccl_ofi_net.cpp', 'L488-L492'),
+  ptrSupport: plugin('src/nccl_ofi_interface_nvidia.cpp', 'L95-L98'),
+  gdrForce: plugin('src/nccl_ofi_net.cpp', 'L405-L410'),
+  cudaPointer: plugin('src/nccl_ofi_cuda.cpp', 'L238'),
+  cudaPointerCall: plugin('src/nccl_ofi_cuda.cpp', 'L607-L625'),
+  paramEager: plugin('include/nccl_ofi_param.h', 'L223-L229'),
+  ginGdaki: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L1256-L1274'),
+  ginBuild: plugin('configure.ac', 'L343-L351'),
   gdaOps: lfab('prov/efa/src/fi_ext_efa.h', 'L11'),
-  hmemThresholds: lfab('prov/efa/src/efa_hmem.c', 'L54-L95'),
-  rdmOrder: lfab('prov/efa/src/efa_prov_info.c', 'L633-L640'),
+  gdaOpsDirect: lfab('prov/efa/src/efa_domain.c', 'L803-L808'),
+  hmemThresholds: lfab('prov/efa/src/efa_hmem.c', 'L62-L92'),
+  rdmCaps: lfab('prov/efa/src/efa_prov_info.c', 'L569-L572'),
+  rdmSize: lfab('prov/efa/src/efa_prov_info.c', 'L622-L625'),
+  rdmOrder: lfab('prov/efa/src/efa_prov_info.c', 'L642-L649'),
   envCheatsheet: plugin('doc/efa-env-var.md', 'L28-L69'),
 };
 
@@ -92,7 +109,13 @@ const docs: Record<string, DocRef> = {
     title: 'NVIDIA NVLink and NVLink Switch',
     url: 'https://www.nvidia.com/en-us/data-center/nvlink/',
     tier: 2,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
+  },
+  neuronCollectives: {
+    title: 'AWS Neuron Documentation: What is Neuron Collective Communication?',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html',
+    tier: 1,
+    accessed: REFRESHED,
   },
   trn2: {
     title: 'Amazon EC2 Trn2 Instances',
@@ -187,10 +210,12 @@ export function AIMLTraining() {
               <Box variant="p">
                 SRD&apos;s multi-path routing handles asymmetric traffic well. EFA supports GPUDirect
                 Async: the libfabric EFA provider exposes it as FI_EFA_GDA_OPS on the efa-direct fabric{' '}
-                <SourceRef provenance="code-derived" code={code.gdaOps} />, and the aws-ofi-nccl plugin
-                consumes it through a GIN (GPU-Initiated Networking) subsystem with a GDAKI variant,
-                opt-in at build time and at run time{' '}
-                <SourceRef provenance="code-derived" code={code.ginGdaki} />. The NCCL over EFA
+                <SourceRef provenance="code-derived" code={code.gdaOps} />
+                <SourceRef provenance="code-derived" code={code.gdaOpsDirect} />, and the aws-ofi-nccl
+                plugin consumes it through the GDAKI export of its GIN (GPU-Initiated Networking)
+                subsystem, built whenever libfabric and CUDA supply what it needs{' '}
+                <SourceRef provenance="code-derived" code={code.ginGdaki} />
+                <SourceRef provenance="code-derived" code={code.ginBuild} />. The NCCL over EFA
                 section has the full sequence.
               </Box>
               <StatusIndicator type="info">
@@ -256,10 +281,12 @@ export function AIMLTraining() {
             </div>
           </ColumnLayout>
 
-          <ExpandableSection headerText="Neuron architecture advantage: dedicated CC Engine">
+          <ExpandableSection headerText="Neuron architecture advantage: dedicated collectives communication (CC) cores">
             <SpaceBetween size="s">
               <Box variant="p">
-                Trainium puts collectives on <strong>dedicated collective cores</strong>. AWS
+                Each NeuronCore has <strong>dedicated CC cores</strong>, synchronization processors
+                that orchestrate collective communication{' '}
+                <SourceRef provenance="documented" doc={docs.neuronCollectives} />. AWS
                 describes them as dozens of communication cores physically separate from compute,
                 with zero contention between compute and communication and on-chip traffic
                 prioritization so time-sensitive data moves first, which minimizes the straggler
@@ -302,16 +329,18 @@ export function AIMLTraining() {
 FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               </pre>
               <Box variant="p">
-                The rest of the block that circulates in EFA tutorials is scoped to 2023 software.
-                The plugin publishes its own cheatsheet, and each entry names the releases it
-                applies to <SourceRef provenance="code-derived" code={code.envCheatsheet} />. Read
+                The other variables in the usual EFA environment block apply to the 2023 plugin
+                releases. The plugin publishes its own cheatsheet, and each entry names the releases
+                it applies to <SourceRef provenance="code-derived" code={code.envCheatsheet} />. Read
                 against it, <code>FI_PROVIDER=efa</code> applies to aws-ofi-nccl 1.5.0 and older,
                 the cheatsheet says to leave <code>FI_EFA_USE_DEVICE_RDMA=1</code> out on libfabric
-                1.18.0 or later with aws-ofi-nccl 1.7.0 or later,{' '}
-                <code>NCCL_TUNER_PLUGIN</code> became unnecessary at NCCL 2.21, and both{' '}
+                1.18.0 or later with aws-ofi-nccl 1.7.0 or later, and both{' '}
                 <code>NCCL_BUFFSIZE</code> and the channel-count knobs work best at their defaults.
-                The NCCL over EFA section walks the block line by line and says which layer owns
-                each variable.
+                Leave <code>NCCL_TUNER_PLUGIN</code> unset too: on EC2 the plugin&apos;s CUDA build
+                sets it to its own library{' '}
+                <SourceRef provenance="code-derived" code={code.tunerPluginEnv} />
+                <SourceRef provenance="code-derived" code={code.tunerPluginCall} />. The NCCL over
+                EFA section walks the block line by line and says which layer owns each variable.
               </Box>
               <Box variant="p">
                 Install steps, including GDRCopy, are AWS-documented{' '}
@@ -326,7 +355,9 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 uses RDM endpoints. SRD already provides reliability in hardware, so what RDM buys
                 is the layer above it: ordering guarantees, unlimited message size through software
                 segmentation, tagging, atomics and directed receive, which the provider declares in
-                its capability set <SourceRef provenance="code-derived" code={code.rdmOrder} />.
+                its capability set <SourceRef provenance="code-derived" code={code.rdmOrder} />
+                <SourceRef provenance="code-derived" code={code.rdmSize} />
+                <SourceRef provenance="code-derived" code={code.rdmCaps} />.
                 Those semantics carry overhead, and they are the ones NCCL expects.
               </Box>
               <Box variant="p">
@@ -341,30 +372,41 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 <strong>NCCL operation mapping to libfabric verbs:</strong>
               </Box>
               <ul>
-                <li><code>fi_send</code>: eager sends for small messages (below rendezvous threshold)</li>
+                <li><code>fi_send</code>: eager sends for small messages (below rendezvous threshold),
+                  off by default on the plugin&apos;s RDMA protocol at v1.22.0{' '}
+                  <SourceRef provenance="code-derived" code={code.paramEager} /></li>
                 <li><code>fi_write</code> with immediate data: the RDMA write path, with completion
                   signalled out of the immediate data rather than a separate message</li>
                 <li><code>fi_read</code>: runting-read protocol for large GPU transfers</li>
               </ul>
               <Box variant="p">
-                <strong>Multi-rail implementation</strong>{' '}
-                <SourceRef provenance="code-derived" code={code.rdma} />: each rail gets a separate{' '}
+                <strong>Multi-rail implementation:</strong> each rail gets its own{' '}
                 <code>fi_endpoint</code>, Address Vector (<code>fi_av</code>) and Completion Queue
-                (<code>fi_cq</code>). Rail selection is a software handshake: the sender picks a
-                rail, sends a connection request carrying rail metadata, and the receiver confirms
-                and binds that rail for the communicator. A rail is a software agreement between
-                the two ends. The file is <code>src/nccl_ofi_rdma.cpp</code>; the
-                plugin moved from C to C++ in v1.15.0, so citations pointing at{' '}
-                <code>nccl_ofi_rdma.c</code> predate that move.
+                (<code>fi_cq</code>) <SourceRef provenance="code-derived" code={code.railObjects} />.
+                Setting up a communicator is a software handshake: the connect message carries the
+                endpoint name of every rail{' '}
+                <SourceRef provenance="code-derived" code={code.railConnMsg} />, the receiver checks
+                that both sides have the same rail count{' '}
+                <SourceRef provenance="code-derived" code={code.railCount} />, and it inserts each
+                remote rail into the matching local address vector{' '}
+                <SourceRef provenance="code-derived" code={code.railAvInsert} />, so a communicator
+                spans every rail. The code is in <code>src/nccl_ofi_rdma.cpp</code>, named{' '}
+                <code>nccl_ofi_rdma.c</code> before the plugin moved to C++ in v1.15.0.
               </Box>
               <Box variant="p">
-                <strong>P2P GPU RDMA is runtime-probed:</strong> the plugin resolves{' '}
-                <code>cuPointerGetAttributes</code> dynamically{' '}
-                <SourceRef provenance="code-derived" code={code.cudaPointer} /> and calls it to
-                classify a pointer at run time{' '}
-                <SourceRef provenance="code-derived" code={code.cudaPointerCall} />. Peer-to-peer
-                access is a run-time property of a given pair of devices, so the plugin checks it
-                per pointer and stages through host memory when it is unavailable.
+                <strong>GPU memory support is decided once per process:</strong> the plugin treats
+                the provider as GPUDirect RDMA capable when libfabric agrees, on the first endpoint,
+                to keep CUDA calls out of the provider{' '}
+                <SourceRef provenance="code-derived" code={code.gdrProbe} />. It then advertises
+                CUDA pointers to NCCL alongside host pointers{' '}
+                <SourceRef provenance="code-derived" code={code.hmemProps} />
+                <SourceRef provenance="code-derived" code={code.ptrSupport} />; without it, host
+                pointers only and NCCL&apos;s Simple protocol{' '}
+                <SourceRef provenance="code-derived" code={code.gdrForce} />. It resolves{' '}
+                <code>cuPointerGetAttributes</code>, which finds the GPU that owns a buffer, at
+                initialisation rather than linking it{' '}
+                <SourceRef provenance="code-derived" code={code.cudaPointer} />
+                <SourceRef provenance="code-derived" code={code.cudaPointerCall} />.
               </Box>
               <Box variant="p">
                 <strong>Algorithm selection:</strong> the <code>aws-ofi-nccl</code> tuner writes
@@ -390,8 +432,9 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               <Alert type="warning">
                 <strong>Install GDRCopy as its own step:</strong> the AWS NCCL getting-started guide
                 carries one for it <SourceRef provenance="documented" doc={docs.efaNccl} />.
-                GPUDirect RDMA is a separate mechanism, enabled by the EFA kernel driver, and host
-                staging happens when NIC-to-GPU peer-to-peer is unavailable. AWS gives no minimum
+                GPUDirect RDMA is a separate mechanism, enabled by the EFA kernel driver, and
+                without it the plugin offers NCCL host buffers only{' '}
+                <SourceRef provenance="code-derived" code={code.ptrSupport} />. AWS gives no minimum
                 GDRCopy version, so this page quotes none.
               </Alert>
               <Alert type="error">
@@ -413,17 +456,19 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
             </SpaceBetween>
           </ExpandableSection>
 
-          <Alert type="success" header="Getting NCCL_TOPO_FILE right: leave it unset on P5 and later">
-            A topology XML places each network device under the same PCIe switch as its paired GPUs,
-            which is how NCCL knows which device to use for a given GPU&apos;s inter-node traffic.
-            The plugin ships exactly three of those files at v1.20.0, for p4d, p4de and
-            g5.48xlarge <SourceRef provenance="code-derived" code={code.topoP4d} />
-            <SourceRef provenance="code-derived" code={code.topoG5} />. On P5 and later the plugin
-            discovers the topology on the running instance and reorders the NIC-to-GPU rail
-            assignment itself <SourceRef provenance="code-derived" code={code.sortRails} />, so an
-            unset variable is the correct setting there. Advice to point{' '}
-            <code>NCCL_TOPO_FILE</code> at a file for your instance type is stale on anything newer
-            than P4d.
+          <Alert type="success" header="Getting NCCL_TOPO_FILE right: leave it unset">
+            A topology XML tells NCCL which network device sits under the same PCIe switch as each
+            GPU, and so which device carries that GPU&apos;s inter-node traffic.
+            The plugin ships three of those files at v1.22.0, for p4d, p4de and g5.48xlarge{' '}
+            <SourceRef provenance="code-derived" code={code.topoP4d} />
+            <SourceRef provenance="code-derived" code={code.topoG5} />, and points{' '}
+            <code>NCCL_TOPO_FILE</code> at the matching one itself when the variable is unset{' '}
+            <SourceRef provenance="code-derived" code={code.topoEnv} />. On P5 and later the
+            plugin builds the topology on the running instance{' '}
+            <SourceRef provenance="code-derived" code={code.topoDiscover} /> and reorders the EFA
+            devices within each GPU&apos;s group so that paired devices line up across nodes{' '}
+            <SourceRef provenance="code-derived" code={code.sortRails} />, so leave it unset there
+            too.
           </Alert>
         </SpaceBetween>
       </Container>

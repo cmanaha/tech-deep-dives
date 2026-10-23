@@ -6,31 +6,32 @@ import type { Source, FactCheckItem, GlossaryEntry } from '@tech-deep-dives/shar
 const sources: Source[] = [
   // Tier 1: Official AWS docs
   { id: 1, title: 'AWS EC2 User Guide: Elastic Fabric Adapter', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
-  { id: 2, title: 'AWS EC2 User Guide: Get started with EFA and MPI', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 2, title: 'AWS EC2 User Guide: Get started with EFA and MPI', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html', tier: 1, type: 'official-docs', accessDate: '2026-10-23' },
   { id: 3, title: 'AWS EC2 User Guide: Get started with EFA and NCCL', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nccl.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 4, title: 'AWS EC2 User Guide: EFA Accelerated Instance Types', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 5, title: 'AWS EC2 Accelerated Computing Instance Specs', url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 6, title: 'AWS EC2 Placement Groups', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 7, title: 'AWS EKS: Node EFA', url: 'https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
-  { id: 19, title: 'AWS Neuron Collective Communication Docs', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 19, title: 'AWS Neuron Collective Communication Docs', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/about/collectives.html', tier: 1, type: 'official-docs', accessDate: '2026-10-23' },
   { id: 20, title: 'AWS Neuron Training FAQ', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/faq/training/neuron-training.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 21, title: 'SageMaker Data Parallel Library', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/data-parallel-intro.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 22, title: 'SageMaker Expert Parallelism', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/model-parallel-core-features-v2-expert-parallelism.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
   { id: 29, title: 'EC2 DescribeInstanceTopology API Reference', url: 'https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstanceTopology.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
-  { id: 30, title: 'EC2 Capacity Blocks for ML', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
-  { id: 31, title: 'EC2 On-Demand Capacity Reservations', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html', tier: 1, type: 'official-docs', accessDate: '2026-03-22' },
+  { id: 30, title: 'EC2 Capacity Blocks for ML', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html', tier: 1, type: 'official-docs', accessDate: '2026-10-23' },
+  { id: 31, title: 'EC2 On-Demand Capacity Reservations', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html', tier: 1, type: 'official-docs', accessDate: '2026-10-23' },
   { id: 42, title: 'AWS Well-Architected HPC Lens: Data protection', url: 'https://docs.aws.amazon.com/wellarchitected/latest/high-performance-computing-lens/data-protection.html', tier: 1, type: 'official-docs', accessDate: '2026-08-02' },
   { id: 43, title: 'EC2 instance types: Specifications for high-performance computing instances', url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/hpc.html', tier: 1, type: 'official-docs', accessDate: '2026-08-02' },
   // Tier 1: Price List bulk API. The Pricing section pins every rate to a
   // publication version, so the version travels in the title.
-  { id: 40, title: 'AWS Price List bulk API, Amazon EC2, us-east-1 (version 20260728175247)', url: 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-1/index.csv', tier: 1, type: 'api-reference', accessDate: '2026-08-01' },
-  { id: 41, title: 'AWS Price List bulk API, Amazon EC2, us-east-2 (version 20260728175247)', url: 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-2/index.csv', tier: 1, type: 'api-reference', accessDate: '2026-08-01' },
+  { id: 40, title: 'AWS Price List bulk API, Amazon EC2, us-east-1 (version 20261022231453)', url: 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-1/index.csv', tier: 1, type: 'api-reference', accessDate: '2026-10-23' },
+  { id: 41, title: 'AWS Price List bulk API, Amazon EC2, us-east-2 (version 20261022231453)', url: 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-2/index.csv', tier: 1, type: 'api-reference', accessDate: '2026-10-23' },
   // Tier 1: Source code
-  { id: 17, title: 'aws/aws-ofi-nccl GitHub README (v1.20.0)', url: 'https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/README.md', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
+  { id: 48, title: 'EFA installer 1.51.0 ChangeLog.md and package list (inside aws-efa-installer-1.51.0.tar.gz)', url: 'https://efa-installer.amazonaws.com/aws-efa-installer-1.51.0.tar.gz', tier: 1, type: 'official-docs', accessDate: '2026-10-23' },
+  { id: 17, title: 'aws/aws-ofi-nccl GitHub README (v1.22.0)', url: 'https://github.com/aws/aws-ofi-nccl/blob/v1.22.0/README.md', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
   { id: 18, title: 'aws/aws-ofi-nccl Releases', url: 'https://github.com/aws/aws-ofi-nccl/releases', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
-  { id: 32, title: 'NVIDIA/nccl source code (src/graph/search.cc, v2.30.7-1)', url: 'https://github.com/NVIDIA/nccl/blob/v2.30.7-1/src/graph/search.cc', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
-  { id: 33, title: 'aws/aws-ofi-nccl tuner source (src/tuner/nccl_ofi_tuner.cpp, v1.20.0)', url: 'https://github.com/aws/aws-ofi-nccl/blob/v1.20.0/src/tuner/nccl_ofi_tuner.cpp', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
-  { id: 34, title: 'aws/aws-ofi-nccl topology XML files (v1.20.0)', url: 'https://github.com/aws/aws-ofi-nccl/tree/v1.20.0/topology', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
+  { id: 32, title: 'NVIDIA/nccl source code (src/graph/search.cc, v2.32.3-1)', url: 'https://github.com/NVIDIA/nccl/blob/v2.32.3-1/src/graph/search.cc', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
+  { id: 33, title: 'aws/aws-ofi-nccl tuner source (src/tuner/nccl_ofi_tuner.cpp, v1.22.0)', url: 'https://github.com/aws/aws-ofi-nccl/blob/v1.22.0/src/tuner/nccl_ofi_tuner.cpp', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
+  { id: 34, title: 'aws/aws-ofi-nccl topology XML files (v1.22.0)', url: 'https://github.com/aws/aws-ofi-nccl/tree/v1.22.0/topology', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
   // Tier 2: AWS product pages, blogs, announcements
   { id: 8, title: 'Amazon EC2 P5 Instance Types', url: 'https://aws.amazon.com/ec2/instance-types/p5/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
   { id: 9, title: 'Amazon EC2 Trn2 Instance Types', url: 'https://aws.amazon.com/ec2/instance-types/trn2/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
@@ -54,10 +55,11 @@ const sources: Source[] = [
   { id: 45, title: 'NVIDIA NVLink and NVLink Switch', url: 'https://www.nvidia.com/en-us/data-center/nvlink/', tier: 3, type: 'product-page', accessDate: '2026-08-02' },
   // NIXL sources
   { id: 35, title: 'NVIDIA NIXL GitHub Repository', url: 'https://github.com/ai-dynamo/nixl', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
-  { id: 36, title: 'NIXL Repository at v1.3.2 (docs/architecture.md no longer exists upstream; no equivalent document published)', url: 'https://github.com/ai-dynamo/nixl/tree/v1.3.2', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
-  { id: 37, title: 'NIXL libfabric Backend README (src/plugins/libfabric, v1.3.2)', url: 'https://github.com/ai-dynamo/nixl/blob/v1.3.2/src/plugins/libfabric/README.md', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
-  { id: 38, title: 'vLLM NixlConnector Source (kv_connector/v1/nixl, v0.26.0)', url: 'https://github.com/vllm-project/vllm/tree/v0.26.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl', tier: 1, type: 'source-code', accessDate: '2026-08-02' },
-  { id: 39, title: 'UCCL KV-Cache Transfer Benchmark (NIXL vs NCCL, uccl-project/uccl v0.1.1)', url: 'https://github.com/uccl-project/uccl/tree/v0.1.1/p2p/benchmarks', tier: 3, type: 'third-party-benchmark', accessDate: '2026-08-02' },
+  { id: 36, title: 'NIXL Repository at v1.5.0', url: 'https://github.com/ai-dynamo/nixl/tree/v1.5.0', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
+  { id: 37, title: 'NIXL libfabric Backend README (src/plugins/libfabric, v1.5.0)', url: 'https://github.com/ai-dynamo/nixl/blob/v1.5.0/src/plugins/libfabric/README.md', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
+  { id: 38, title: 'vLLM NixlConnector Source (kv_connector/v1/nixl, v0.32.0)', url: 'https://github.com/vllm-project/vllm/tree/v0.32.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
+  { id: 46, title: 'NIXL libfabric backend: host-posted fi_writemsg and fi_readmsg (src/utils/libfabric/libfabric_rail.cpp, v1.5.0)', url: 'https://github.com/ai-dynamo/nixl/blob/v1.5.0/src/utils/libfabric/libfabric_rail.cpp#L1310-L1336', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
+  { id: 47, title: 'NVIDIA/nccl point-to-point plan selects a device kernel (src/enqueue/enqueue.cc, scheduleP2pTasksToPlan, v2.32.3-1)', url: 'https://github.com/NVIDIA/nccl/blob/v2.32.3-1/src/enqueue/enqueue.cc#L1241-L1249', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
 ];
 
 /**
@@ -110,8 +112,8 @@ const factChecks: FactCheckItem[] = [
   { claim: '405B parameters at fp16 = ~810GB model size', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'P5 has 640GB total GPU memory (8x H100 80GB)', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'NIXL requires libfabric 1.21.0+', section: 'AI/ML Inference', sourceId: 1 },
-  { claim: 'NCCL launches a GPU kernel even for point-to-point send/recv', section: 'AI/ML Inference', sourceId: 36 },
-  { claim: 'NIXL performs transfers with zero SM consumption (no GPU kernel launch)', section: 'AI/ML Inference', sourceId: 36 },
+  { claim: 'NCCL launches a GPU kernel even for point-to-point send/recv', section: 'AI/ML Inference', sourceId: 47 },
+  { claim: 'NIXL over the libfabric backend posts transfers from host threads, with no GPU kernel launch', section: 'AI/ML Inference', sourceId: 46 },
   { claim: 'vLLM NixlConnector: prefiller as producer, decoder as consumer', section: 'AI/ML Inference', sourceId: 38 },
 
   // Traditional HPC
@@ -125,9 +127,9 @@ const factChecks: FactCheckItem[] = [
   { claim: 'Up to 6,400 Gbps per instance on P6-B300, the EFA row of the transport comparison', section: 'EFA vs Alternatives', sourceId: 4 },
 
   // Pricing Analysis
-  { claim: 'EFA is free (no per-interface charge, no data transfer fee)', section: 'Pricing Analysis', sourceId: 1 },
-  { claim: 'p5.48xlarge On-Demand: $55.04/hr, us-east-1, price list 20260728175247', section: 'Pricing Analysis', sourceId: 40 },
-  { claim: 'p4d.24xlarge On-Demand: $21.957642/hr, us-east-1, price list 20260728175247', section: 'Pricing Analysis', sourceId: 40 },
+  { claim: 'EFA is an optional networking feature at no additional cost on any supported instance', section: 'Pricing Analysis', sourceId: 1 },
+  { claim: 'p5.48xlarge On-Demand: $55.04/hr, us-east-1, price list 20261022231453', section: 'Pricing Analysis', sourceId: 40 },
+  { claim: 'p4d.24xlarge On-Demand: $21.957642/hr, us-east-1, price list 20261022231453', section: 'Pricing Analysis', sourceId: 40 },
   { claim: 'trn1.32xlarge On-Demand: $21.50/hr', section: 'Pricing Analysis', sourceId: 40 },
   { claim: 'trn1n.32xlarge On-Demand: $24.78/hr', section: 'Pricing Analysis', sourceId: 40 },
   { claim: 'hpc7a.96xlarge On-Demand: $7.20/hr in us-east-2. There is no us-east-1 SKU', section: 'Pricing Analysis', sourceId: 41 },
@@ -164,6 +166,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'WQE', fullForm: 'Work Queue Entry', description: 'Individual work item posted to a send or receive queue for the NIC to process' },
   { acronym: 'LLQ', fullForm: 'Low Latency Queue', description: 'EFA mechanism writing descriptors directly to NIC via MMIO, skipping DMA for small messages' },
   { acronym: 'UARN', fullForm: 'User Access Region Number', description: 'Hardware-enforced per-process doorbell scoping mechanism in EFA' },
+  { acronym: 'ROCr', fullForm: 'ROCm Runtime', description: 'AMD GPU runtime. The libfabric EFA provider treats ROCr memory like CUDA memory when it picks a wire protocol' },
   { acronym: 'BAR', fullForm: 'Base Address Register', description: 'PCIe register defining memory-mapped I/O regions for device communication' },
   { acronym: 'DDP', fullForm: 'Distributed Data Parallel', description: 'PyTorch strategy replicating model across GPUs and synchronizing gradients via allreduce' },
   { acronym: 'FSDP', fullForm: 'Fully Sharded Data Parallel', description: 'PyTorch strategy sharding model parameters, gradients, and optimizer states across GPUs' },
@@ -176,9 +179,9 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'WRF', fullForm: 'Weather Research and Forecasting', description: 'Mesoscale numerical weather prediction system used in atmospheric research' },
   { acronym: 'AMI', fullForm: 'Amazon Machine Image', description: 'Template for EC2 instance root volumes containing OS, application server, and applications' },
   { acronym: 'NIXL', fullForm: 'NVIDIA Inference Xfer Library', description: 'NVIDIA library for point-to-point inference transfers, including KV cache migration and disaggregated prefill and decode. Reaches EFA through its libfabric backend plugin, which requires libfabric 1.21.0 or later' },
-  { acronym: 'SM', fullForm: 'Streaming Multiprocessor', description: 'GPU compute unit containing CUDA cores. NCCL runs its collectives in SMs, and a NIXL transfer runs in none' },
+  { acronym: 'SM', fullForm: 'Streaming Multiprocessor', description: 'GPU compute unit containing CUDA cores. NCCL runs its collectives and its send and receive in SMs; a NIXL transfer over the libfabric backend runs in none' },
   { acronym: 'KV', fullForm: 'Key-Value', description: 'As in KV-cache: stores computed attention keys and values for autoregressive inference' },
-  { acronym: 'CC', fullForm: 'Collective Compute', description: 'Dedicated engine on Trainium chips orchestrating collective operations independently from NeuronCores' },
+  { acronym: 'CC', fullForm: 'Collectives Communication', description: 'CC cores: dedicated synchronization processors on each Trainium NeuronCore that orchestrate collective communication' },
   { acronym: 'RDM', fullForm: 'Reliable Datagram Message', description: 'Libfabric endpoint type adding software reliability and message tagging over unreliable datagrams' },
   { acronym: 'DGRAM', fullForm: 'Datagram', description: 'Raw unreliable datagram endpoint type in libfabric; used directly by some MPI implementations' },
   { acronym: 'PCIe', fullForm: 'Peripheral Component Interconnect Express', description: 'High-speed serial bus standard connecting CPUs, GPUs, NICs, and other peripherals' },
@@ -190,13 +193,12 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'AWS mechanism to reserve EC2 capacity in a specific AZ for an open-ended duration. The placement group is chosen when the reservation is created' },
   { acronym: 'MSI-X', fullForm: 'Message Signaled Interrupts Extended', description: 'PCIe interrupt mechanism supporting per-queue interrupts for high-performance I/O' },
   { acronym: 'NCI', fullForm: 'Network Card Index', description: 'Identifier for a specific network card on a multi-NIC EC2 instance' },
-  { acronym: 'UCCL', fullForm: 'Unified Collective Communication Library', description: 'Open source GPU communication library developed at the UC Berkeley Sky Computing Lab and UC Davis, covering collectives, point-to-point transfers and expert parallelism. Cited here for the NIXL versus NCCL KV cache benchmarks under p2p/benchmarks in uccl-project/uccl' },
 
   // EFA hardware generations
-  { acronym: 'EFAv1', fullForm: 'Elastic Fabric Adapter generation 1', description: 'First EFA generation, on Nitro v3 instances such as P4d. Baseline for the 75% collectives improvement AWS claims for EFAv2' },
-  { acronym: 'EFAv2', fullForm: 'Elastic Fabric Adapter generation 2', description: 'Second EFA generation, on Nitro v4. AWS states 75% faster collectives than EFAv1' },
-  { acronym: 'EFAv3', fullForm: 'Elastic Fabric Adapter generation 3', description: 'Third EFA generation, on Nitro v5 instances such as P5en and Trn2. AWS states 35% lower latency than EFAv2' },
-  { acronym: 'EFAv4', fullForm: 'Elastic Fabric Adapter generation 4', description: 'Generation label AWS uses on the P6 and UltraServers product pages for P6e-GB200. The EC2 User Guide places the same instance under Nitro v5, which maps to EFAv3. This dive publishes the conflict rather than picking a side' },
+  { acronym: 'EFAv1', fullForm: 'Elastic Fabric Adapter generation 1', description: 'First EFA generation, on Nitro v3 instances such as P4d. The baseline AWS measures the second generation against' },
+  { acronym: 'EFAv2', fullForm: 'Elastic Fabric Adapter generation 2', description: 'Second EFA generation, on Nitro v4. AWS reports 30% lower endpoint latency than the first generation and an additional 50% communication-time improvement for very small collectives' },
+  { acronym: 'EFAv3', fullForm: 'Elastic Fabric Adapter generation 3', description: 'Third EFA generation, on Nitro v5 instances such as P5en and Trn2. AWS states up to 35% lower latency for P5en than for P5, which carries the previous generation' },
+  { acronym: 'EFAv4', fullForm: 'Elastic Fabric Adapter generation 4', description: 'Fourth EFA generation, on Nitro v6 instances such as P6-B200 and P6-B300. The EC2 User Guide and the P6 product page also give EFA v4 for P6e-GB200, while the accelerated computing instance-types page lists its hypervisor as Nitro v5' },
 
   // AWS platform
   { acronym: 'EC2', fullForm: 'Elastic Compute Cloud', description: 'AWS virtual machine service. EFA attaches to EC2 instances as an additional network interface' },
@@ -223,8 +225,8 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'SMP', fullForm: 'SageMaker Model Parallelism library', description: 'AWS training library for sharded model parallelism. Its relationship to EFA is indirect, mediated by SMDDP or by NCCL over aws-ofi-nccl' },
 
   // GPU data movement
-  { acronym: 'GIN', fullForm: 'GPU-Initiated Networking', description: 'Subsystem in the aws-ofi-nccl plugin that lets a GPU kernel drive network operations directly' },
-  { acronym: 'GDAKI', fullForm: 'GPUDirect Async Kernel-Initiated', description: 'GIN implementation that drives EFA queue pairs from GPU kernels through the libfabric FI_EFA_GDA_OPS table. Opt-in only, via OFI_NCCL_GIN_TYPE=GDAKI' },
+  { acronym: 'GIN', fullForm: 'GPU-Initiated Networking', description: 'NCCL plugin interface that lets a GPU kernel drive network operations. aws-ofi-nccl provides a proxy implementation and a kernel-initiated one, GDAKI' },
+  { acronym: 'GDAKI', fullForm: 'GPUDirect Async Kernel-Initiated', description: 'GIN implementation in which GPU kernels drive EFA queue pairs through the libfabric FI_EFA_GDA_OPS table. The aws-ofi-nccl export reports the EFA_GDA device type, which NCCL_GIN_TYPE=5 selects, and runs on p5en, p6-b200 and p6-b300' },
   { acronym: 'GDRCopy', fullForm: 'GPUDirect RDMA Copy library', description: 'NVIDIA low-latency library for copying between host and GPU memory, and a documented EFA install step. A separate component from GPUDirect RDMA, listed here as GDR' },
   { acronym: 'GDS', fullForm: 'GPUDirect Storage', description: 'NVIDIA path moving file data straight between storage and GPU memory, skipping a host bounce buffer. Used by FSx for Lustre on a restricted instance list' },
   { acronym: 'GDRDMA', fullForm: 'GPUDirect RDMA', description: 'Token printed in the NCCL log line NET/Libfabric/0/GDRDMA, which is the evidence that the plugin selected the GPUDirect RDMA path' },

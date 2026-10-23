@@ -7,18 +7,15 @@ import type { DocRef, Provenance } from '@tech-deep-dives/shared';
  * version mapping follows the four verbatim table headings in the EC2 User
  * Guide "Supported instance types" section:
  *
- *   Using Nitro v6 (EFA v4)
- *   Using Nitro v5 (EFA v3)
- *   Using Nitro v4 (EFA v2)
- *   Using Nitro v3 (EFA v1)
+ *   Nitro v6 (EFA v4)
+ *   Nitro v5 (EFA v3)
+ *   Nitro v4 (EFA v2)
+ *   Nitro v3 (EFA v1)
  *
- * An earlier version of this page shifted that mapping by one generation
- * (Nitro v6 labelled EFA v3, EFA v4 described as P6e-GB200 only). Nine rows
- * and three of the four generation cards inherited the error. Do not
- * reintroduce it: read the heading, do not infer the pairing.
+ * Read the heading a type is listed under; do not infer the pairing.
  */
 
-const ACCESSED = '2026-08-01';
+const ACCESSED = '2026-10-23';
 
 export const docs = {
   efa: {
@@ -63,6 +60,12 @@ export const docs = {
     tier: 1,
     accessed: ACCESSED,
   },
+  mo: {
+    title: 'EC2 instance types: Memory optimized',
+    url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/mo.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
   api: {
     title: 'EC2 API Reference: DescribeInstanceTypes',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstanceTypes.html',
@@ -90,6 +93,12 @@ export const docs = {
   ultraservers: {
     title: 'AWS product page: Amazon EC2 UltraServers',
     url: 'https://aws.amazon.com/ec2/ultraservers/',
+    tier: 2,
+    accessed: ACCESSED,
+  },
+  p6: {
+    title: 'AWS product page: Amazon EC2 P6 instances',
+    url: 'https://aws.amazon.com/ec2/instance-types/p6/',
     tier: 2,
     accessed: ACCESSED,
   },
@@ -140,7 +149,7 @@ export const generations: GenerationInfo[] = [
   {
     efaVersion: 'EFAv1',
     nitroVersion: 'v3',
-    heading: 'Using Nitro v3 (EFA v1)',
+    heading: 'Nitro v3 (EFA v1)',
     maxBandwidthGbps: 400,
     maxBandwidthType: 'p4d.24xlarge and p4de.24xlarge, 4 x 100 Gbps',
     rdma: 'RDMA read on p4d and p4de only. Every other Nitro v3 type is send and receive with no RDMA.',
@@ -149,7 +158,7 @@ export const generations: GenerationInfo[] = [
   {
     efaVersion: 'EFAv2',
     nitroVersion: 'v4',
-    heading: 'Using Nitro v4 (EFA v2)',
+    heading: 'Nitro v4 (EFA v2)',
     maxBandwidthGbps: 3200,
     maxBandwidthType: 'p5.48xlarge and p5e.48xlarge, 32 x 100 Gbps',
     rdma: 'RDMA read and write. Nitro v4 is the floor for RDMA write.',
@@ -158,20 +167,20 @@ export const generations: GenerationInfo[] = [
   {
     efaVersion: 'EFAv3',
     nitroVersion: 'v5',
-    heading: 'Using Nitro v5 (EFA v3)',
+    heading: 'Nitro v5 (EFA v3)',
     maxBandwidthGbps: 3200,
     maxBandwidthType: 'p5en.48xlarge and trn2.48xlarge',
     rdma: 'RDMA read and write, with named exceptions: c7gn.16xlarge, c7gn.metal, hpc7g.4xlarge, hpc7g.8xlarge and hpc7g.16xlarge are read only.',
-    examples: 'p5en, p6e-gb200, trn2, trn2u, hpc7g, c7gn, c8g, m8g, r8g, x8g, i7ie, i8g',
+    examples: 'p5en, trn2, trn2u, hpc7g, c7gn, c8g, m8g, r8g, x8g, i7ie, i8g',
   },
   {
     efaVersion: 'EFAv4',
     nitroVersion: 'v6',
-    heading: 'Using Nitro v6 (EFA v4)',
+    heading: 'Nitro v6 (EFA v4)',
     maxBandwidthGbps: 6400,
     maxBandwidthType: 'p6-b300.48xlarge, 16 EFA-capable cards x 400 Gbps',
     rdma: 'RDMA read and write.',
-    examples: 'p6-b200, p6-b300, g7, g7e, hpc8a, c8i, m8i, c8gn, m8gn, c8in, m8in, r8in, c8gb, m8gb, c8a, m8a, c9g, m9g',
+    examples: 'p6-b200, p6-b300, p6e-gb200, g7, g7e, hpc8a, c8i, m8i, c8gn, m8gn, c8in, m8in, r8in, c8gb, m8gb, c8a, m8a, c9g, m9g, r9g',
   },
 ];
 
@@ -217,18 +226,16 @@ export const instances: InstanceInfo[] = [
     accelerator: '4x NVIDIA B200 (2x GB200 Grace Blackwell Superchip)',
     efaInterfaces: 8,
     bandwidthGbps: 1600,
-    efaVersion: 'EFAv3',
-    nitroVersion: 'v5',
+    efaVersion: 'EFAv4',
+    nitroVersion: 'v6',
     rdma: 'read + write',
     useCase: 'UltraServer training, 72-GPU NVLink domain',
     generation: 'Current',
     category: 'gpu',
     note:
-      '1,600 Gbps is the EFA ceiling, reached as 4 x 400 Gbps or 8 x 200 Gbps. The instance-types page lists 3,200 Gbps of total network capacity across shared physical cards.',
-    provenance: 'doc-code-conflict',
+      '1,600 Gbps is the EFA ceiling, reached as 4 x 400 Gbps or 8 x 200 Gbps. The instance-types page lists 3,200 Gbps of total network capacity across shared physical cards, and gives the hypervisor as Nitro v5.',
+    provenance: 'documented',
     doc: docs.efa,
-    conflict:
-      'The P6 and UltraServers product pages call this EFAv4. The EC2 User Guide lists the type under the heading Using Nitro v5 (EFA v3), and the accelerated computing page gives the family hypervisor as Nitro v5.',
   },
   {
     family: 'P5en',
@@ -301,7 +308,7 @@ export const instances: InstanceInfo[] = [
     nitroVersion: 'v3',
     rdma: 'read only',
     useCase: 'Training and inference',
-    generation: 'Previous',
+    generation: 'Current',
     category: 'gpu',
     provenance: 'documented',
     doc: docs.efa,
@@ -316,7 +323,7 @@ export const instances: InstanceInfo[] = [
     nitroVersion: 'v3',
     rdma: 'read only',
     useCase: 'Training with extended accelerator memory',
-    generation: 'Previous',
+    generation: 'Current',
     category: 'gpu',
     provenance: 'documented',
     doc: docs.efa,
@@ -461,7 +468,7 @@ export const instances: InstanceInfo[] = [
     nitroVersion: 'v3',
     rdma: 'none',
     useCase: 'Inference, the only Inf1 size with EFA',
-    generation: 'Previous',
+    generation: 'Current',
     category: 'trainium',
     provenance: 'documented',
     doc: docs.efa,
@@ -544,9 +551,9 @@ export const instances: InstanceInfo[] = [
     nitroVersion: 'v4',
     rdma: 'read + write',
     useCase: 'CPU HPC',
-    generation: 'Previous',
+    generation: 'Current',
     category: 'hpc',
-    note: 'One network card and 100 Gbps, not two cards and 200 Gbps. This row was wrong on all three of card count, bandwidth and EFA generation.',
+    note: 'One network card at 100 Gbps.',
     provenance: 'documented',
     doc: docs.hpc,
   },
@@ -626,10 +633,23 @@ export const instances: InstanceInfo[] = [
     useCase: 'Network-intensive memory optimized',
     generation: 'Current',
     category: 'general',
-    note:
-      'The EFA v4 listing is documented. The 600 Gbps figure was re-verified directly for the c8in and m8in siblings, and carried across to r8in. Confirm with the CLI before you size on it.',
     provenance: 'documented',
-    doc: docs.efa,
+    doc: docs.mo,
+  },
+  {
+    family: 'R9g',
+    type: 'r9g.48xlarge',
+    accelerator: 'None (AWS Graviton5)',
+    efaInterfaces: 1,
+    bandwidthGbps: 100,
+    efaVersion: 'EFAv4',
+    nitroVersion: 'v6',
+    rdma: 'read + write',
+    useCase: 'Memory optimized Graviton5',
+    generation: 'Current',
+    category: 'general',
+    provenance: 'documented',
+    doc: docs.mo,
   },
   {
     family: 'C8i',
@@ -697,7 +717,7 @@ export const instances: InstanceInfo[] = [
   {
     family: 'C7gn',
     type: 'c7gn.16xlarge',
-    accelerator: 'None (AWS Graviton3)',
+    accelerator: 'None (AWS Graviton3E)',
     efaInterfaces: 1,
     bandwidthGbps: 200,
     efaVersion: 'EFAv3',
@@ -735,7 +755,7 @@ export const instances: InstanceInfo[] = [
     nitroVersion: 'v3',
     rdma: 'none',
     useCase: 'Network-intensive compute, the original EFA instance',
-    generation: 'Previous',
+    generation: 'Current',
     category: 'general',
     provenance: 'documented',
     doc: docs.efa,

@@ -27,14 +27,14 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  *  3. The SRD design paper is Shalev et al., IEEE Micro 2020. Not NSDI.
  */
 
-const CODE_READ = '2026-08-01';
+const CODE_READ = '2026-10-23';
 const DOC_ACCESSED = '2026-08-01';
 
-/** amzn/amzn-drivers at the efa_linux_3.3.0 release tag. There is no bare
- *  r3.3.0 tag; the driver tags are named efa_linux_*. */
-const DRIVERS = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
-/** ofiwg/libfabric at the v2.6.0 release tag. */
-const LIBFABRIC = 'v2.6.0';
+/** amzn/amzn-drivers at the efa_linux_3.4.0 release tag. There is no bare
+ *  r3.4.0 tag; the driver tags are named efa_linux_*. */
+const DRIVERS = '9d5ca4021f7c9f8421e404c1e89edb0b1325372c';
+/** ofiwg/libfabric at the v2.7.0 release tag. */
+const LIBFABRIC = 'v2.7.0';
 
 function driversRef(path: string, lines: string): CodeRef {
   return { repo: 'amzn/amzn-drivers', ref: DRIVERS, path, lines, read: CODE_READ };
@@ -46,8 +46,8 @@ function libfabricRef(path: string, lines: string): CodeRef {
 
 const code = {
   txMeta: driversRef('kernel/linux/efa/src/efa_io_defs.h', 'L87-L151'),
-  modifyQp: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L215-L250'),
-  netStats: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L664-L674'),
+  modifyQp: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L209-L244'),
+  netStats: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L627-L637'),
   portStats: driversRef('kernel/linux/efa/src/efa_verbs.c', 'L74-L96'),
   compStatus: driversRef('kernel/linux/efa/src/efa_io_defs.h', 'L36-L70'),
   enaSrdStats: driversRef('kernel/linux/common/ena_com/ena_admin_defs.h', 'L512-L536'),
@@ -56,28 +56,29 @@ const code = {
   enaSrdDecl: driversRef('kernel/linux/common/ena_com/ena_com.h', 'L794-L801'),
   // Where the ENA driver hands the SRD counter names to ethtool.
   enaSrdEthtool: driversRef('kernel/linux/ena/ena_ethtool.c', 'L130-L136'),
-  enaEthtoolOps: driversRef('kernel/linux/ena/ena_ethtool.c', 'L2020-L2022'),
+  enaEthtoolOps: driversRef('kernel/linux/ena/ena_ethtool.c', 'L2022-L2024'),
   maxAh: driversRef('kernel/linux/efa/src/efa_com_cmd.h', 'L127-L136'),
   // The provider's own error vocabulary, and where it prints it.
   compStatuses: libfabricRef('prov/efa/src/efa_errno.h', 'L58-L75'),
-  provErrnos: libfabricRef('prov/efa/src/efa_errno.h', 'L109-L111'),
-  showHelp: libfabricRef('prov/efa/src/efa_strerror.c', 'L63-L105'),
+  provErrnos: libfabricRef('prov/efa/src/efa_errno.h', 'L109-L112'),
+  manMrAbort: libfabricRef('man/fi_efa.7.md', 'L146-L151'),
+  showHelp: libfabricRef('prov/efa/src/efa_strerror.c', 'L63-L110'),
   errMsg: libfabricRef('prov/efa/src/rdm/efa_rdm_util.c', 'L111-L144'),
-  opeErr: libfabricRef('prov/efa/src/rdm/efa_rdm_ope.c', 'L649-L655'),
+  opeErr: libfabricRef('prov/efa/src/rdm/efa_rdm_ope.c', 'L675-L681'),
   infoLevel: libfabricRef('prov/efa/src/efa_prov.h', 'L13'),
   logEnv: libfabricRef('man/fabric.7.md', 'L174-L221'),
   hostIdFile: libfabricRef('prov/efa/src/efa_env.c', 'L36'),
   msgOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L26'),
-  rdmOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L633-L640'),
-  rdmRxOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L677-L680'),
+  rdmOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L642-L649'),
+  rdmRxOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L686-L689'),
   directRnr: libfabricRef('prov/efa/src/efa_prov_info.c', 'L102-L108'),
-  robuf: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L95-L114'),
+  robuf: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L106-L125'),
   robufDefault: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L12'),
   envRecvwin: libfabricRef('prov/efa/src/efa_env.c', 'L18'),
-  envRecvwinHelp: libfabricRef('prov/efa/src/efa_env.c', 'L188-L189'),
+  envRecvwinHelp: libfabricRef('prov/efa/src/efa_env.c', 'L189-L190'),
   recvwinAlloc: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L46-L66'),
-  recvwinUse: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L31'),
-  recvwinModulo: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L320'),
+  recvwinUse: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L40'),
+  recvwinModulo: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L518'),
   // The two tuning commits that left the help string behind.
   tune16kTo8k: {
     repo: 'ofiwg/libfabric',
@@ -87,7 +88,7 @@ const code = {
   } as CodeRef,
   tune8kTo16: {
     repo: 'ofiwg/libfabric',
-    ref: 'bd987ab20e57',
+    ref: 'bd987ab20e57292f55589b30a2fc40c0ace3338c',
     path: 'prov/efa/src/rdm/efa_rdm_peer.h',
     read: CODE_READ,
   } as CodeRef,
@@ -570,7 +571,7 @@ const triageRows = [
     text: 'Unreachable remote - never received a response',
     means: 'Nothing was ever established with this peer. Detected locally.',
     next:
-      'Configuration, not hardware. The provider prints its own long-form hint for this code, naming inbound and outbound security group rules first. Check the self-referencing security group, then that both instances are in one Availability Zone.',
+      'Configuration, not hardware. The provider prints its own long-form hint for this code, naming inbound and outbound security group rules first. Check the self-referencing security group, then that both instances are in one Availability Zone (AZ).',
   },
   {
     id: 'unresp',
@@ -596,6 +597,15 @@ const triageRows = [
       'The device can reach the peer, so the network is fine. libfabric could not finish a handshake. The provider reads this as the peer process no longer being present.',
     next:
       'Look at the peer rank, not the fabric. A rank that exited early, was never launched, or crashed during startup produces this.',
+  },
+  {
+    id: 'aborted',
+    codeName: 'FI_EFA_ERR_PEER_ABORTED (4127)',
+    text: 'Operation aborted because the peer closed its memory registration or endpoint mid-transfer',
+    means:
+      'The peer cancelled the transfer by closing what it was using. The provider reads this as expected when the peer aborts in-flight operations.',
+    next:
+      'Look at what the peer process was tearing down, and run libfabric 2.7.0 or later on both sides: with an older peer a memory-region abort is undefined.',
   },
   {
     id: 'rnr',
@@ -737,10 +747,12 @@ export function SrdProtocol() {
             Codes 10 to 15 are device completion statuses{' '}
             <SourceRef provenance="code-derived" code={code.compStatus} />, and the printed strings
             are the provider's table for them{' '}
-            <SourceRef provenance="code-derived" code={code.compStatuses} />. Codes 4124 and 4126
-            are libfabric's own, defined to tell an unresponsive receiver that completed a handshake
-            from one that never did{' '}
-            <SourceRef provenance="code-derived" code={code.provErrnos} />. Readings attributed to
+            <SourceRef provenance="code-derived" code={code.compStatuses} />. Codes 4124, 4126 and
+            4127 are libfabric's own: the first two tell an unresponsive receiver that completed a
+            handshake from one that never did, and 4127 reports a peer that cancelled the transfer{' '}
+            <SourceRef provenance="code-derived" code={code.provErrnos} />. The man page leaves an
+            abort by memory-region close undefined unless both peers run libfabric 2.7.0 or later{' '}
+            <SourceRef provenance="code-derived" code={code.manMrAbort} />. Readings attributed to
             the provider are quoted from its help text{' '}
             <SourceRef provenance="code-derived" code={code.showHelp} />; the check column is ours.
           </Box>
@@ -1069,6 +1081,20 @@ a peer process is no longer present.`}</pre>
                 constant is what the environment structure is initialised with.
               </Box>
               <Box variant="p">
+                Code wins. Treat the per-peer reorder window as 16 outstanding messages unless you
+                set the variable yourself{' '}
+                <SourceRef
+                  provenance="doc-code-conflict"
+                  code={code.robufDefault}
+                  conflict="prov/efa/src/efa_env.c line 189 defines FI_EFA_RECVWIN_SIZE with the help text 'Defines the size of sliding receive window. (Default: 16384)'. The initialiser at line 18 of the same file sets recvwin_size to EFA_RDM_PEER_DEFAULT_REORDER_BUFFER_SIZE, which prov/efa/src/rdm/efa_rdm_peer.h line 12 defines as 16. Both values count messages, not bytes: the count is passed to efa_recvwin_buf_alloc unscaled and sizes a pointer array. The default went 16384 to 8192 in commit 7232f8af (2025-10-16), then 8192 to 16 in commit bd987ab2 (2025-11-18). The help string was not updated by either."
+                  label="doc vs code"
+                />
+                . Both lines are in the same file{' '}
+                <SourceRef provenance="code-derived" code={code.envRecvwin} />{' '}
+                <SourceRef provenance="code-derived" code={code.envRecvwinHelp} />, which is a
+                useful reminder that a help string is documentation, not behaviour.
+              </Box>
+              <Box variant="p">
                 <strong>The unit is messages, not bytes.</strong> A jump from 16384 to 16 looks like
                 a units error, and it is not. The value is passed to the allocator unscaled{' '}
                 <SourceRef provenance="code-derived" code={code.recvwinUse} />, which sizes the
@@ -1079,29 +1105,14 @@ a peer process is no longer present.`}</pre>
                 disagree.
               </Box>
               <Box variant="p">
-                <strong>The help text is two tuning rounds stale, not one.</strong> The default was
-                16384. In October 2025 it went to 8192 while the peer reorder buffer pool dropped
-                from 1024 to 16{' '}
+                <strong>Why the help text says 16384.</strong> That was the default before two
+                tuning commits, and neither touched the help string. In October 2025 the window went
+                to 8192 while the peer reorder buffer pool dropped from 1024 to 16{' '}
                 <SourceRef provenance="code-derived" code={code.tune16kTo8k} label="commit" />. In
-                November 2025 the window itself was cut to 16 to match the pool, on the reasoning
-                that a differently sized pool and buffer make no sense when every peer needs one
-                buffer <SourceRef provenance="code-derived" code={code.tune8kTo16} label="commit" />
-                . Both changes were made to hold performance without the memory overhead. The help
-                string was updated in neither.
-              </Box>
-              <Box variant="p">
-                Code wins. Treat the per-peer reorder window as 16 outstanding messages unless you
-                set the variable yourself{' '}
-                <SourceRef
-                  provenance="doc-code-conflict"
-                  code={code.robufDefault}
-                  conflict="prov/efa/src/efa_env.c line 188 defines FI_EFA_RECVWIN_SIZE with the help text 'Defines the size of sliding receive window. (Default: 16384)'. The initialiser at line 18 of the same file sets recvwin_size to EFA_RDM_PEER_DEFAULT_REORDER_BUFFER_SIZE, which prov/efa/src/rdm/efa_rdm_peer.h line 12 defines as 16. Both values count messages, not bytes: the count is passed to efa_recvwin_buf_alloc unscaled and sizes a pointer array. The default went 16384 to 8192 in commit 7232f8af (2025-10-16), then 8192 to 16 in commit bd987ab2 (2025-11-18). The help string was not updated by either."
-                  label="doc vs code"
-                />
-                . The two citations are eight lines apart in the same file{' '}
-                <SourceRef provenance="code-derived" code={code.envRecvwin} />{' '}
-                <SourceRef provenance="code-derived" code={code.envRecvwinHelp} />, which is a
-                useful reminder that a help string is documentation, not behaviour.
+                November 2025 the window went to 16 to match the pool, on the reasoning that a
+                differently sized pool and buffer make no sense when every peer needs one buffer{' '}
+                <SourceRef provenance="code-derived" code={code.tune8kTo16} label="commit" />. Both
+                changes were made to hold performance without the memory overhead.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1109,7 +1120,7 @@ a peer process is no longer present.`}</pre>
           <Alert type="warning" header="Grep your launch scripts for FI_EFA_RECVWIN_SIZE">
             A script that copied 16384 out of the help text asks for a 16,384-slot pointer array for
             every peer the process talks to, which is the memory the two tuning commits were
-            removing. Unset is the supported answer on current libfabric. If a run genuinely needs a
+            removing. Unset is the supported answer on libfabric 2.7.0. If a run genuinely needs a
             deeper window, the evidence for it is arrivals spilling to{' '}
             <code>overflow_pke_list</code>, not a number carried over from an older guide.
           </Alert>

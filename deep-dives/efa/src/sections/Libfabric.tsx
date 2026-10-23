@@ -16,16 +16,17 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * reaches the EFA device, and the settings that change what it does.
  *
  * Sourcing (revamp/source-authority-standard.md): AWS statements are
- * 'documented'; anything read out of libfabric or the NCCL plugin is
+ * 'documented'; anything read out of libfabric, the NCCL plugin or NCCL is
  * 'code-derived' and pinned to a release tag. Where two files in the same
  * repository disagree the claim is 'doc-code-conflict', with both sides named.
  */
 
 const ACCESSED = '2026-08-01';
-const READ = '2026-08-01';
+const READ = '2026-10-23';
 
-const LIBFABRIC_TAG = 'v2.6.0';
-const PLUGIN_TAG = 'v1.20.0';
+const LIBFABRIC_TAG = 'v2.7.0';
+const PLUGIN_TAG = 'v1.22.0';
+const NCCL_TAG = 'v2.32.3-1';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
 const doc = (title: string, url: string, tier: 1 | 2): DocRef => ({ title, url, tier, accessed: ACCESSED });
@@ -45,10 +46,22 @@ const plugin = (path: string, lines?: string): CodeRef => ({
   lines,
   read: READ,
 });
+const nccl = (path: string, lines?: string): CodeRef => ({
+  repo: 'NVIDIA/nccl',
+  ref: NCCL_TAG,
+  path,
+  lines,
+  read: READ,
+});
 
 const docs = {
   efa: doc('EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads', `${EC2_DOC}efa.html`, 1),
-  changelog: doc('EC2 User Guide: Elastic Fabric Adapter release notes', `${EC2_DOC}efa-changelog.html`, 1),
+  installer: {
+    title: 'EFA installer 1.51.0 tarball, ChangeLog.md (tarball dated October 22, 2026)',
+    url: 'https://efa-installer.amazonaws.com/aws-efa-installer-1.51.0.tar.gz',
+    tier: 1,
+    accessed: '2026-10-23',
+  } as DocRef,
   nixl: doc('EC2 User Guide: Get started with EFA and NIXL', `${EC2_DOC}efa-start-nixl.html`, 1),
 };
 
@@ -56,41 +69,57 @@ const code = {
   man: lfab('man/fi_efa.7.md'),
   manOverview: lfab('man/fi_efa.7.md', 'L12-L26'),
   manEndpoints: lfab('man/fi_efa.7.md', 'L33-L57'),
+  manModes: lfab('man/fi_efa.7.md', 'L70-L78'),
   manMrModes: lfab('man/fi_efa.7.md', 'L81-L85'),
-  manGda: lfab('man/fi_efa.7.md', 'L285-L305'),
-  manDeviceRdma: lfab('man/fi_efa.7.md', 'L676-L681'),
+  manGda: lfab('man/fi_efa.7.md', 'L339-L359'),
+  manDeviceRdma: lfab('man/fi_efa.7.md', 'L795-L800'),
   manLogging: lfab('man/fabric.7.md', 'L172-L195'),
   manLogProv: lfab('man/fabric.7.md', 'L211-L221'),
   manFiInfo: lfab('man/fi_info.1.md', 'L72-L90'),
   logDefault: lfab('src/log.c', 'L179-L181'),
   provOrder: lfab('prov/efa/src/efa_prov.c', 'L93-L176'),
-  getUserInfo: lfab('prov/efa/src/efa_user_info.c', 'L626-L668'),
+  getUserInfo: lfab('prov/efa/src/efa_user_info.c', 'L802-L844'),
   fabricNames: lfab('prov/efa/src/efa.h', 'L62-L63'),
-  thresholdConsts: lfab('prov/efa/src/efa.h', 'L89-L92'),
-  selectRtm: lfab('prov/efa/src/rdm/efa_rdm_msg.c', 'L46-L102'),
-  msgSizeDbg: lfab('prov/efa/src/rdm/efa_rdm_msg.c', 'L209-L212'),
+  thresholdConsts: lfab('prov/efa/src/efa.h', 'L87-L90'),
+  selectRtm: lfab('prov/efa/src/rdm/efa_rdm_msg.c', 'L47-L103'),
+  msgSizeDbg: lfab('prov/efa/src/rdm/efa_rdm_msg.c', 'L210-L213'),
   hmemThresholds: lfab('prov/efa/src/efa_hmem.c', 'L40-L116'),
-  envDefine: lfab('prov/efa/src/efa_env.c', 'L170-L262'),
-  envDefaults: lfab('prov/efa/src/efa_env.c', 'L11-L46'),
+  envDefine: lfab('prov/efa/src/efa_env.c', 'L171-L267'),
+  envDefaults: lfab('prov/efa/src/efa_env.c', 'L11-L47'),
+  envUnregistered: lfab('prov/efa/src/efa_env.c', 'L49-L66'),
+  // The 2.6.0 reader for FI_EFA_ENABLE_HIGH_PPS, which 2.7.0 removes.
+  envHighPps: { ...lfab('prov/efa/src/efa_env.c', 'L62-L65'), ref: 'v2.6.0' },
+  cntrOpen: lfab('prov/efa/src/efa_cntr.c', 'L136-L147'),
   envAbort: lfab('prov/efa/src/efa_env.c', 'L79-L96'),
-  trackMr: lfab('prov/efa/src/efa_env.c', 'L257-L261'),
-  cacheOpen: lfab('prov/efa/src/efa_domain.c', 'L114-L127'),
-  cacheInit: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L64-L169'),
-  cacheMonitorLog: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L111-L124'),
-  cacheEnabledLog: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L166-L167'),
+  trackMr: lfab('prov/efa/src/efa_env.c', 'L262-L266'),
+  cacheOpen: lfab('prov/efa/src/rdm/efa_rdm_domain.c', 'L55-L68'),
+  cacheInit: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L108-L213'),
+  cacheMonitorLog: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L155-L168'),
+  cacheEnabledLog: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L210-L211'),
   cacheParams: lfab('prov/util/src/util_mem_monitor.c', 'L244-L270'),
   cacheDefaults: lfab('prov/util/src/util_mr_cache.c', 'L48-L54'),
-  forkInit: lfab('prov/efa/src/efa_fork_support.c', 'L12-L62'),
-  forkAbort: lfab('prov/efa/src/efa_fork_support.c', 'L157-L192'),
+  forkInit: lfab('prov/efa/src/efa_fork_support.c', 'L13-L63'),
+  forkAbort: lfab('prov/efa/src/efa_fork_support.c', 'L158-L193'),
   reorderConst: lfab('prov/efa/src/rdm/efa_rdm_peer.h', 'L12'),
-  gdaTable: lfab('prov/efa/src/efa_domain.c', 'L868-L897'),
-  ginOpen: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L112-L174'),
-  ginSwitch: plugin('src/rdma/gin/nccl_ofi_gin_api.cpp', 'L90-L118'),
-  platformEnv: plugin('src/platform-aws.cpp', 'L129-L167'),
+  gdaOpen: lfab('prov/efa/src/efa_domain.c', 'L792-L812'),
+  modifyEp: lfab('prov/efa/src/efa_domain.c', 'L813-L822'),
+  context2Info: lfab('prov/efa/src/efa_prov_info.c', 'L241-L245'),
+  context2User: lfab('prov/efa/src/efa_user_info.c', 'L555-L581'),
+  ginOpen: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L588-L681'),
+  ginBuild: plugin('configure.ac', 'L343-L351'),
+  ginDeviceType: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L143'),
+  ginExport: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L1256-L1274'),
+  gdakiGate: plugin('src/platform-aws.cpp', 'L432-L448'),
+  gdakiRefuse: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L663-L667'),
+  paramGdaki: plugin('include/nccl_ofi_param.h', 'L379-L399'),
+  platformEnv: plugin('src/platform-aws.cpp', 'L139-L246'),
   envManager: plugin('include/nccl_ofi_environ.h', 'L47-L58'),
   scheduler: plugin('src/nccl_ofi_scheduler.cpp', 'L77-L133'),
   schedParams: plugin('include/nccl_ofi_param.h', 'L157-L166'),
   envCheatsheet: plugin('doc/efa-env-var.md'),
+  ncclGinOrder: nccl('src/plugin/gin.cc', 'L24-L26'),
+  ncclGinType: nccl('src/plugin/gin.cc', 'L141-L148'),
+  ncclGinTypes: nccl('src/include/nccl_device/core.h', 'L74-L78'),
 };
 
 /**
@@ -263,7 +292,7 @@ function ProtocolLadderDiagram() {
       <title id="efa-protocol-ladder-title">
         The efa fabric picks a two-sided protocol by message size, and the ladder is different for
         host memory and for accelerator memory. Host memory walks eager, then medium, then a
-        credit-based long protocol, then a read-based one. For CUDA, ROCr and Neuron memory the
+        credit-based long protocol, then a read-based one. For CUDA, ROCr (the AMD ROCm runtime) and Neuron memory the
         medium band is switched off entirely, so anything past eager goes straight to the read-based
         runting protocol.
       </title>
@@ -598,6 +627,15 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
             ships a fork of libfabric rather than upstream tags, that is the only defaults list
             guaranteed to describe your host, and it is still a help string: for two settings the
             provider compiles in a different value, and both are named at the end of this section.
+            Two more never appear in it, because the provider reads them straight from the
+            environment: FI_EFA_USE_HW_CNTR, which puts efa-direct counters on the device&apos;s
+            hardware completion counters{' '}
+            <SourceRef provenance="code-derived" code={code.cntrOpen} />, and
+            FI_EFA_USE_SQ_REQ_ID_64_BIT, both 1 by default in libfabric 2.7.0{' '}
+            <SourceRef provenance="code-derived" code={code.envDefaults} />{' '}
+            <SourceRef provenance="code-derived" code={code.envUnregistered} />. That function
+            also read FI_EFA_ENABLE_HIGH_PPS in 2.6.0{' '}
+            <SourceRef provenance="code-derived" code={code.envHighPps} /> and drops it in 2.7.0.
             Commands 5 and 6 apply the same idea to behaviour. Info is cheap enough for a first job
             and detailed enough to answer most of what follows, so keep one logged run per image as
             the baseline. Debug is the opposite, marked in the man page as high traffic likely to
@@ -649,9 +687,10 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
               </Box>
               <Box variant="p">
                 The datagram endpoint supports only FI_MSG, caps messages at the hardware maximum
-                transmission unit of approximately 8 KiB, requires FI_MSG_PREFIX mode, and has no
-                wait objects{' '}
-                <SourceRef provenance="code-derived" code={code.manEndpoints} />. Every collective
+                transmission unit of approximately 8 KiB{' '}
+                <SourceRef provenance="code-derived" code={code.manEndpoints} />, requires
+                FI_MSG_PREFIX mode, and has no wait objects{' '}
+                <SourceRef provenance="code-derived" code={code.manModes} />. Every collective
                 algorithm needs tagging, RMA (remote memory access), messages longer than one packet
                 or a blocking completion read, so NCCL, MPI and NIXL all sit on RDM. This one serves
                 applications that want a raw unreliable datagram, and it is the single place the
@@ -665,8 +704,17 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
             FI_READ and FI_SOURCE, leaves send-after-send ordering to the application, caps
             messages at the device
             transmission unit and remote memory operations at the device maximum RDMA (Remote
-            Direct Memory Access) size, and requires the FI_CONTEXT2 mode{' '}
-            <SourceRef provenance="code-derived" code={code.manEndpoints} />. It also supports
+            Direct Memory Access) size <SourceRef provenance="code-derived" code={code.manEndpoints} />.
+            FI_CONTEXT2 is optional from libfabric 2.7.0, although the man page lists it as
+            required: without it the endpoint leaves your context buffer alone and disables
+            inject{' '}
+            <SourceRef
+              provenance="doc-code-conflict"
+              code={code.context2User}
+              conflict="man/fi_efa.7.md lines 75 to 78 (Modes) say the provider requires FI_CONTEXT2 for the DGRAM endpoint and for the efa-direct fabric of the RDM endpoint. At v2.7.0, prov/efa/src/efa_prov_info.c lines 241 to 245 say neither efa-direct nor DGRAM requires FI_CONTEXT2 unconditionally, and efa_user_info_set_context2 (efa_user_info.c lines 555 to 581) advertises it only when the hints ask for it or are NULL. Without it, inject_size is 0, and a hint asking for a nonzero inject_size is rejected."
+              label="doc vs code"
+            />{' '}
+            <SourceRef provenance="code-derived" code={code.context2Info} />. It also supports
             FI_MR_LOCAL only, so the application registers its own buffers, where the efa fabric
             accepts unregistered buffers for send and receive{' '}
             <SourceRef provenance="code-derived" code={code.manMrModes} />. Asking for efa-direct is
@@ -680,14 +728,28 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
             and the doorbells, and GPU-side code builds and rings the work queue entries itself{' '}
             <SourceRef provenance="code-derived" code={code.manGda} />, with the handler returning a
             not-supported error on any other fabric{' '}
-            <SourceRef provenance="code-derived" code={code.gdaTable} />. Calling that table is work
-            for whoever writes the plugin. What reaches an operator is one failure signature:
-            aws-ofi-nccl v1.20.0 is opt-in twice over, a build that includes GDAKI support and
-            OFI_NCCL_GIN_TYPE set to GDAKI at run time, and a binary built without that support
-            fails initialisation loudly instead of falling back{' '}
-            <SourceRef provenance="code-derived" code={code.ginSwitch} />. A job that dies at plugin
-            initialisation right after someone added OFI_NCCL_GIN_TYPE has a build problem, not a
-            fabric one.
+            <SourceRef provenance="code-derived" code={code.gdaOpen} />. The same open with
+            FI_EFA_MODIFY_EP_OPS returns a call that changes an endpoint&apos;s attributes after it
+            is enabled, also on efa-direct only{' '}
+            <SourceRef provenance="code-derived" code={code.modifyEp} />. Calling these tables is
+            work for whoever writes the plugin. aws-ofi-nccl v1.22.0 builds its kernel-initiated GIN
+            (GPU-Initiated Networking) plugin, with no configure flag, whenever libfabric declares
+            FI_EFA_GDA_OPS, the completion-counter interface is present and CUDA is the device
+            interface <SourceRef provenance="code-derived" code={code.ginBuild} />. It exports it as{' '}
+            <code>ncclGinPlugin_v14</code>, device type 5{' '}
+            <SourceRef provenance="code-derived" code={code.ginExport} />{' '}
+            <SourceRef provenance="code-derived" code={code.ginDeviceType} />{' '}
+            <SourceRef provenance="code-derived" code={code.ncclGinTypes} />; NCCL tries v14 first,
+            and NCCL_GIN_TYPE=5 forces it{' '}
+            <SourceRef provenance="code-derived" code={code.ncclGinOrder} />{' '}
+            <SourceRef provenance="code-derived" code={code.ncclGinType} />. The plugin allows it
+            only on p5en, p6-b200 and p6-b300, the platforms it marks as having the EFA hardware
+            completion counter, and refuses elsewhere with &quot;gin GDAKI: not supported on this
+            platform&quot; <SourceRef provenance="code-derived" code={code.platformEnv} />{' '}
+            <SourceRef provenance="code-derived" code={code.gdakiGate} />{' '}
+            <SourceRef provenance="code-derived" code={code.gdakiRefuse} />. The instance type is
+            the switch, and OFI_NCCL_GDAKI_EFA_HW_COUNTER is a bring-up override of it{' '}
+            <SourceRef provenance="code-derived" code={code.paramGdaki} />.
           </Box>
         </SpaceBetween>
       </Container>
@@ -705,7 +767,7 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
         <SpaceBetween size="m">
           <Box variant="p">
             On the efa fabric the provider picks a wire protocol for every two-sided send, from the
-            message length and the kind of memory the buffer lives in. Knowing the ladder is how
+            message length and the kind of memory the buffer lives in: host, CUDA, ROCr or Neuron. Knowing the ladder is how
             you predict which one a given send takes, and which setting would move it.
           </Box>
 
@@ -764,8 +826,8 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
           <Box variant="p">
             The ladder is walked with the size libfabric is handed, and under NCCL that is not the
             size of the collective. Two steps sit in between and the plugin sets both. The first is
-            the NCCL-side buffer: on p5, p5e, p5en, p6-b200 and the later p-series entries the
-            plugin inserts NCCL_BUFFSIZE=8388608 and NCCL_P2P_NET_CHUNKSIZE=524288 from a
+            the NCCL-side buffer: on p5, p5e, p5en, p6-b200, p6-b300 and the later p-series entries
+            the plugin inserts NCCL_BUFFSIZE=8388608 and NCCL_P2P_NET_CHUNKSIZE=524288 from a
             per-platform table{' '}
             <SourceRef provenance="code-derived" code={code.platformEnv} />, and it inserts them
             without the overwrite flag{' '}
@@ -975,23 +1037,23 @@ grep 'Memhooks monitor requested via FI_MR_CACHE_MONITOR' ofi_*.log`}</pre>
           <Box variant="p">
             Version selection is a libfabric question before it is anything else: the installer, the
             provider and the plugin all move on their own schedules, and only one of them is on your
-            host. <Badge color="grey">upstream</Badge> The ofiwg project has released v2.6.0, and
-            every code citation in this section is pinned to that tag{' '}
-            <SourceRef provenance="code-derived" code={code.man} />. That is the tree to read when
-            you want to know what the EFA provider does.{' '}
-            <Badge color="green">shipped</Badge> EFA installer 1.49.0, released June 27, 2026,
-            upgrades to libfabric 2.4.0amzn5.0, along with EFA driver 3.1.0, rdma-core 63.0 and AWS
-            OFI NCCL Plugin 1.20.0{' '}
-            <SourceRef provenance="documented" doc={docs.changelog} />. The amzn suffix marks an AWS
-            fork carrying backports, not upstream v2.4.0.
+            host. <Badge color="grey">upstream</Badge> The ofiwg project has released v2.7.0, and
+            the libfabric citations in this section are pinned to that tag, apart from one that
+            shows 2.6.0 behaviour <SourceRef provenance="code-derived" code={code.man} />. That is
+            the tree to read when you want to know what the EFA provider does.{' '}
+            <Badge color="green">shipped</Badge> EFA installer 1.51.0, whose tarball is dated
+            October 22, 2026, upgrades to libfabric 2.7.0amzn2.0, along with EFA driver 3.3.1,
+            rdma-core 65.0 and AWS OFI NCCL Plugin 1.22.0{' '}
+            <SourceRef provenance="documented" doc={docs.installer} />. The amzn suffix marks an AWS
+            fork of upstream v2.7.0 carrying backports.
           </Box>
 
           <Alert type="warning" header="Name the channel whenever you quote a libfabric version">
-            2.4.0amzn5.0 and 2.6.0 are different code, and the version strings are comparable only
-            within a channel. A backport can put a v2.6 feature into an amzn5 build, and a v2.5
-            feature can be absent from it. So a comparison across channels settles nothing, and
-            neither does the installer release note on its own: the only answer that binds is the
-            binary in front of you.
+            2.7.0amzn2.0 and upstream 2.7.0 share a base version, and the version strings are still
+            comparable only within a channel: a backport can put a later upstream change into an
+            amzn build, and an upstream change can be absent from it. So a comparison across
+            channels settles nothing, and neither does the installer release note on its own: the
+            only answer that binds is the binary in front of you.
           </Alert>
 
           <Box variant="code">

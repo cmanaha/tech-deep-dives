@@ -21,10 +21,14 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * device operations gated by device-reported capability bits.
  */
 
-const AMZN = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
-const LINUX = '2d2338c93da79b3bfe4b6099a931d9468d539952';
-const LF = 'v2.6.0';
-const READ = '2026-08-01';
+/** amzn/amzn-drivers at tag efa_linux_3.4.0. */
+const AMZN = '9d5ca4021f7c9f8421e404c1e89edb0b1325372c';
+const LINUX = 'v7.3';
+const LF = 'v2.7.0';
+/** Date the code was read at these pins. */
+const READ = '2026-10-23';
+/** Date the AWS pages were read, unless a page sets its own. */
+const DOC_READ = '2026-08-01';
 
 /** Pinned code citations. Never a branch: a ci.sh gate rejects /blob/main/. */
 const amzn = (path: string, lines?: string): CodeRef => ({
@@ -44,45 +48,46 @@ const lfab = (path: string, lines?: string): CodeRef => ({
 
 const code = {
   // amzn-drivers, the out-of-tree module the EFA installer builds.
-  kverbs: amzn('src/efa_data_verbs.c', 'L324-L756'),
-  devOps: amzn('src/efa_main.c', 'L551-L559'),
-  controlOps: amzn('src/efa_main.c', 'L474-L547'),
+  kverbs: amzn('src/efa_data_verbs.c', 'L331-L763'),
+  devOps: amzn('src/efa_main.c', 'L553-L561'),
+  controlOps: amzn('src/efa_main.c', 'L476-L549'),
   kverbsOn: amzn('CMakeLists.txt', 'L36'),
   dkms: amzn('conf/configure-dkms.sh'),
   ioDefs: amzn('src/efa_io_defs.h', 'L23-L93'),
-  deviceCaps: amzn('src/efa_admin_cmds_defs.h', 'L726-L746'),
-  capMasks: amzn('src/efa_admin_cmds_defs.h', 'L1296-L1299'),
+  deviceCaps: amzn('src/efa_admin_cmds_defs.h', 'L689-L709'),
+  capMasks: amzn('src/efa_admin_cmds_defs.h', 'L1230-L1233'),
   mmapKinds: amzn('src/efa_verbs.c', 'L40-L42'),
-  mmapQueue: amzn('src/efa_verbs.c', 'L879-L923'),
-  mmapCq: amzn('src/efa_verbs.c', 'L1763-L1775'),
-  mmapProt: amzn('src/efa_verbs.c', 'L3343-L3382'),
+  mmapQueue: amzn('src/efa_verbs.c', 'L880-L924'),
+  mmapCq: amzn('src/efa_verbs.c', 'L1765-L1777'),
+  mmapProt: amzn('src/efa_verbs.c', 'L3385-L3424'),
   uarn: amzn('src/efa.h', 'L89-L99'),
-  uarnScope: amzn('src/efa_verbs.c', 'L1333'),
-  p2p: amzn('src/efa_verbs.c', 'L2814'),
-  dmabuf: amzn('src/efa_verbs.c', 'L2707-L2754'),
+  uarnScope: amzn('src/efa_verbs.c', 'L1334'),
+  p2p: amzn('src/efa_verbs.c', 'L2854'),
+  p2pAlign: amzn('src/efa_verbs.c', 'L2785-L2813'),
+  dmabuf: amzn('src/efa_verbs.c', 'L2715-L2762'),
 
   // The driver that ships inside mainline Linux. A different driver.
   mainlineOps: {
     repo: 'torvalds/linux',
     ref: LINUX,
     path: 'drivers/infiniband/hw/efa/efa_main.c',
-    lines: 'L365-L403',
+    lines: 'L369-L413',
     read: READ,
   },
 
   // libfabric EFA provider.
-  dpdQp: lfab('src/efa_data_path_direct.c', 'L82-L100'),
-  dpdCq: lfab('src/efa_data_path_direct.c', 'L186-L200'),
-  dpdOwner: lfab('src/efa_data_path_direct.c', 'L130-L132'),
-  dpdGate: lfab('configure.m4', 'L317-L322'),
-  dpdHelp: lfab('src/efa_env.c', 'L244-L249'),
-  dpdDefault: lfab('src/efa_env.c', 'L41'),
-  dpdFallback: lfab('src/efa_data_path_ops.h', 'L216-L219'),
-  dpdDoorbell: lfab('src/efa_data_path_direct_entry.h', 'L435-L445'),
-  subCq: lfab('src/efa_device.c', 'L521-L526'),
-  mrCacheOpen: lfab('src/efa_domain.c', 'L115-L127'),
-  mrCacheDefault: lfab('src/rdm/efa_rdm_mr.c', 'L28-L38'),
-  mrCacheHelp: lfab('src/efa_env.c', 'L194-L201'),
+  dpdQp: lfab('src/efa_data_path_direct.c', 'L83-L101'),
+  dpdCq: lfab('src/efa_data_path_direct.c', 'L191-L205'),
+  dpdOwner: lfab('src/efa_data_path_direct.c', 'L135-L137'),
+  dpdGate: lfab('configure.m4', 'L329-L334'),
+  dpdHelp: lfab('src/efa_env.c', 'L249-L254'),
+  dpdDefault: lfab('src/efa_env.c', 'L42'),
+  dpdFallback: lfab('src/efa_data_path_ops.h', 'L223-L226'),
+  dpdDoorbell: lfab('src/efa_data_path_direct_entry.h', 'L440-L450'),
+  subCq: lfab('src/efa_device.c', 'L605-L610'),
+  mrCacheOpen: lfab('src/rdm/efa_rdm_domain.c', 'L56-L68'),
+  mrCacheDefault: lfab('src/rdm/efa_rdm_mr.c', 'L72-L82'),
+  mrCacheHelp: lfab('src/efa_env.c', 'L195-L202'),
   memcpyThreshold: lfab('src/efa_env.c', 'L24'),
 } satisfies Record<string, CodeRef>;
 
@@ -91,19 +96,19 @@ const docs = {
     title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html',
     tier: 1,
-    accessed: READ,
+    accessed: DOC_READ,
   },
   changelog: {
     title: 'EC2 User Guide: EFA software release notes',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-changelog.html',
     tier: 1,
-    accessed: READ,
+    accessed: '2026-10-23',
   },
   nccl: {
     title: 'EC2 User Guide: Get started with EFA and NCCL',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nccl.html',
     tier: 1,
-    accessed: READ,
+    accessed: DOC_READ,
   },
 } satisfies Record<string, DocRef>;
 
@@ -506,8 +511,10 @@ export function DataPath() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The split is by lifetime. Work that happens once per resource goes through the kernel,
-            and work that happens once per message stays in userspace.
+            The split is by lifetime. Work that happens once per resource goes through the kernel:
+            creating the QP (queue pair), PD (protection domain), MR (memory region) and AH (address
+            handle), and mapping the device BARs (Base Address Registers) into the process. Work
+            that happens once per message stays in userspace.
           </Box>
           <KernelUserspaceSplitDiagram />
           <ColumnLayout columns={2} variant="text-grid">
@@ -729,8 +736,8 @@ export function DataPath() {
             <div>
               <Box variant="h3">Doorbells: uncached</Box>
               <Box variant="p">
-                The send-queue and receive-queue doorbells come from the doorbell BAR (Base Address
-                Register) and are mapped uncached; the memory BAR is the write-combining case in
+                The send-queue and receive-queue doorbells come from the doorbell BAR and are mapped
+                uncached; the memory BAR is the write-combining case in
                 the same switch statement{' '}
                 <SourceRef provenance="code-derived" code={code.mmapProt} />. That is what a
                 doorbell needs: an uncached mapping makes it reach the device as a single,
@@ -738,7 +745,7 @@ export function DataPath() {
               </Box>
             </div>
             <div>
-              <Box variant="h3">LLQ descriptors: write-combined</Box>
+              <Box variant="h3">Low-latency queue descriptors: write-combined</Box>
               <Box variant="p">
                 The send-queue descriptor ring lives in the memory BAR and is the region that is
                 mapped write-combined{' '}
@@ -824,7 +831,10 @@ export function DataPath() {
             and the payload travels from GPU memory to the wire. The driver carries the
             peer-to-peer plumbing for this and takes it whenever the
             registered range resolves to accelerator memory{' '}
-            <SourceRef provenance="code-derived" code={code.p2p} />. A second, more modern route
+            <SourceRef provenance="code-derived" code={code.p2p} />, failing the registration when
+            the buffer address and the registered virtual address sit at different offsets within
+            the peer-to-peer page size{' '}
+            <SourceRef provenance="code-derived" code={code.p2pAlign} />. A second, more modern route
             registers the buffer from a shared file descriptor{' '}
             <SourceRef provenance="code-derived" code={code.dmabuf} />.
           </Box>
@@ -855,14 +865,14 @@ export function DataPath() {
                 masks for both bits defined further down the same header{' '}
                 <SourceRef provenance="code-derived" code={code.capMasks} />.
               </Box>
-              <Alert type="error" header="A file in the same repository still says only Send is supported">
+              <Alert type="error" header="A design note in the same repository lists Send as the only supported operation">
                 That file is a specification document written in 2019 and never revised. It sits
                 next to the driver that contradicts it, inside an official AWS repository, which is
                 exactly why it reads like a primary source. It is not one, and the code wins{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   code={code.deviceCaps}
-                  conflict="kernel/linux/efa/SRD.txt in the same repository still reads: Currently only Send operation is supported, but nothing precludes RDMA operations support in future (with weak memory consistency). It is a 2019 specification document that has not been revised. The driver in the same repository defines RDMA read and write opcodes and reads device capability bits for both."
+                  conflict="kernel/linux/efa/SRD.txt in the same repository reads: Currently only Send operation is supported, but nothing precludes RDMA operations support in future (with weak memory consistency). It is a 2019 specification document that has not been revised. The driver in the same repository defines RDMA read and write opcodes and reads device capability bits for both."
                   label="doc vs code"
                 />
                 .
@@ -870,10 +880,10 @@ export function DataPath() {
             </SpaceBetween>
           </ExpandableSection>
           <Alert type="info" header="GPUDirect RDMA is on by default; GDRCopy is a separate install">
-            AWS made the installer flag that used to enable it a no-op in 2021, because the
-            driver enables the support by default{' '}
-            <SourceRef provenance="documented" doc={docs.changelog} />. GDRCopy is its own
-            component, installed as its own step in the AWS NCCL getting-started guide{' '}
+            The installer flag for it has been a no-op since 2021, because the driver enables the
+            support by default <SourceRef provenance="documented" doc={docs.changelog} />. GDRCopy
+            (the GPUDirect RDMA copy library) is its own component, installed as its own step in
+            the AWS NCCL getting-started guide{' '}
             <SourceRef provenance="documented" doc={docs.nccl} />, and it gives the host processor
             a low-latency mapping into GPU memory. Peer-to-peer support is what decides whether
             payloads leave GPU memory, so that is the one to confirm on a new instance; a build
