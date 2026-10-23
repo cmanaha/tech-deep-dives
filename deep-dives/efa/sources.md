@@ -105,7 +105,7 @@ original build and assert only that the URL resolved when the August pass probed
 | 49 | AWS Neuron documentation (Neuron 2.33.0): Amazon EC2 Trn3 Architecture | https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/arch/neuron-hardware/trn3-arch.html | official-docs | 2026-10-23 | 1 |
 | 51 | NVIDIA/nccl GIN backend priority: the NCCL proxy ranks above EFA-GDA (src/plugin/gin.cc, v2.32.3-1) | https://github.com/NVIDIA/nccl/blob/v2.32.3-1/src/plugin/gin.cc#L327-L340 | source-code | 2026-10-23 | 1 |
 | 53 | AWS Neuron documentation (Neuron 2.33.0): Amazon EC2 Trn1 Architecture | https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/arch/neuron-hardware/trn1-arch.html | official-docs | 2026-10-23 | 1 |
-| 54 | vLLM speculative decoding documentation (docs/features/speculative_decoding/README.md, v0.32.0) | https://github.com/vllm-project/vllm/blob/v0.32.0/docs/features/speculative_decoding/README.md#L3 | source-code | 2026-10-23 | 1 |
+| 54 | vLLM speculative decoding documentation (docs/features/speculative_decoding/README.md, v0.32.0) | https://github.com/vllm-project/vllm/blob/v0.32.0/docs/features/speculative_decoding/README.md#L3 | official-docs | 2026-10-23 | 1 |
 
 ## Tier 2: AWS product pages, blogs, announcements, whitepapers (15)
 

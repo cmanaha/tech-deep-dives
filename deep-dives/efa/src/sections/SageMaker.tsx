@@ -1104,23 +1104,28 @@ SM_EFA_RDMA_INSTANCES = [
         <SpaceBetween size="m">
           <Box variant="p">
             The SMDDP library replaces NCCL as the collective
-            backend for data-parallel training while still riding EFA underneath. It supports
-            ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, support for optimizing collective
-            communication on P3 has been discontinued, and the optimized AllGather collective is only
-            available for P4 instances <SourceRef provenance="documented" doc={docs.ddpSupport} />. In
-            practice it runs only on P4d and P4de, with NVIDIA A100 GPUs and EFA{' '}
-            <SourceRef provenance="documented" doc={docs.ddpFaq} />{' '}
-            <SourceRef provenance="code-confirmed" doc={docs.ddpSupport} code={code.smddpTypes} />.
-            That list is the whole scope, so P5, P6, Trn2 and the G family run plain NCCL over
-            aws-ofi-nccl over EFA instead.
+            backend for data-parallel training while still riding EFA underneath. The support page
+            lists ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, notes that support for
+            optimizing collective communication on P3 has been discontinued, and makes the optimized
+            AllGather collective P4-only <SourceRef provenance="documented" doc={docs.ddpSupport} />.
+            The SDK's own allowlist accepts those three and ml.p3.16xlarge as well, which the support
+            page does not list{' '}
+            <SourceRef
+              provenance="doc-code-conflict"
+              doc={docs.ddpSupport}
+              code={code.smddpTypes}
+              conflict="The support page lists ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge; the SDK allowlist also accepts ml.p3.16xlarge."
+            />. The FAQ is narrower and names only P4d and P4de, with NVIDIA A100 GPUs and EFA{' '}
+            <SourceRef provenance="documented" doc={docs.ddpFaq} />. None of these lists includes P5,
+            P6, Trn2 or the G family, so those run plain NCCL over aws-ofi-nccl over EFA instead.
           </Box>
 
           <Box variant="p">
             TensorFlow support has ended: the library is not available in Deep Learning Containers
             for TensorFlow later than 2.11.0{' '}
             <SourceRef provenance="documented" doc={docs.ddpSupport} />. No AWS deprecation notice
-            was found, so treat SMDDP as frozen: documented, scoped to those three instance types,
-            and unchanged since April 2025.
+            was found, so treat SMDDP as frozen: documented, scoped to the support page's three
+            instance types, and unchanged since April 2025.
           </Box>
 
           <ExpandableSection
@@ -1180,9 +1185,9 @@ SM_EFA_RDMA_INSTANCES = [
                 Activation is a process-group swap, and it composes with SMP v2, PyTorch FSDP (Fully
                 Sharded Data Parallel) and
                 DeepSpeed{' '}
-                <SourceRef provenance="documented" doc={docs.smpSmddp} />. Note the order rule on
-                that page: initialize PyTorch Distributed with the SMDDP backend first, then run the
-                SMP initialization.
+                <SourceRef provenance="documented" doc={docs.smpSmddp} />. Initialize PyTorch
+                Distributed with the SMDDP backend first, then run the SMP initialization{' '}
+                <SourceRef provenance="documented" doc={docs.smpSmddp} />.
               </Box>
               <Box variant="code">
                 <pre style={preStyle}>{String.raw`import torch.distributed as dist
@@ -1318,11 +1323,10 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             <pre style={preStyle}>{HEALTH_LOG_SNIPPET}</pre>
           </Box>
           <Box variant="p">
-            Both log samples are quoted from the deep health checks page{' '}
-            <SourceRef provenance="documented" doc={docs.deepHealth} />. The failure is a fabric
-            bandwidth threshold failure rather than a GPU failure: expected minimum 80, NCCL test
-            output 30. Cluster-level results land in CloudWatch under the cluster log group, and
-            instance-level results in /var/log/aws/clusters/sagemaker-deep-health-check.log on each
+            The failure is a fabric bandwidth threshold failure rather than a GPU failure: expected
+            minimum 80, NCCL test output 30{' '}
+            <SourceRef provenance="documented" doc={docs.deepHealth} />. Cluster-level results land
+            in CloudWatch under the cluster log group, and instance-level results in /var/log/aws/clusters/sagemaker-deep-health-check.log on each
             node. You can also trigger a run on demand with the StartClusterHealthCheck API{' '}
             <SourceRef provenance="documented" doc={docs.deepHealth} />.
           </Box>
@@ -1440,8 +1444,10 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
                 instance types through InstanceRequirements and provide multiple subnets across
                 Availability Zones, with training benefiting from multi-subnet distribution within an
                 Availability Zone to avoid subnet exhaustion. The feature is EKS orchestrator only{' '}
-                <SourceRef provenance="documented" doc={docs.flexGroups} />. That distribution stays
-                within an Availability Zone, the EFA boundary.
+                <SourceRef provenance="documented" doc={docs.flexGroups} />. The training benefit is
+                stated for distribution within one Availability Zone, the EFA boundary, and the
+                feature also accepts subnets across zones, so keep an EFA training group's subnets in
+                one zone.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1477,13 +1483,11 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             <SourceRef provenance="documented" doc={docs.hpDeploy} />.
           </Box>
           <Box variant="p">
-            The four bands in the diagram are the AWS blog's own description of the transport, with
-            NIXL selecting the RDMA operation and the libfabric provider exposing EFA as kernel-bypass
-            GPUDirect RDMA that keeps the host CPU off the data path{' '}
-            <SourceRef provenance="documented" doc={docs.dpdBlog} />. Same post, the quantified
-            claim: on ml.p5.48xlarge with 3,200 Gbps of EFA, an 8,000-token transfer for Llama 3.3
-            70B takes single-digit milliseconds{' '}
-            <SourceRef provenance="documented" doc={docs.dpdBlog} />.
+            In the transport the diagram shows, NIXL selects the RDMA operation and the libfabric
+            provider exposes EFA as kernel-bypass GPUDirect RDMA that keeps the host CPU off the data path{' '}
+            <SourceRef provenance="documented" doc={docs.dpdBlog} />. AWS's blog puts an 8,000-token
+            transfer for Llama 3.3 70B on ml.p5.48xlarge, with 3,200 Gbps of EFA, at single-digit
+            milliseconds <SourceRef provenance="documented" doc={docs.dpdBlog} />.
           </Box>
 
           <ColumnLayout columns={2} variant="text-grid">

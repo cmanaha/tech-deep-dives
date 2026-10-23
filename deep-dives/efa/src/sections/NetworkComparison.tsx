@@ -193,7 +193,7 @@ const comparisonData: ComparisonRow[] = [
     nvlink: (
       <>
         900 GB/s per GPU (4th gen, Hopper), 1,800 GB/s (5th gen, Blackwell), 3,000 GB/s (6th
-        gen, Vera Rubin){' '}
+        gen, Vera Rubin, from a specification table NVIDIA marks preliminary){' '}
         <SourceRef provenance="documented" doc={docs.nvlink} />
       </>
     ),
@@ -329,8 +329,8 @@ export function NetworkComparison() {
               closes that gap. NVIDIA also offers in-network reduction through SHARP (Scalable
               Hierarchical Aggregation and Reduction Protocol), which runs
               part of a collective in the switch, plus self-healing link recovery{' '}
-              <SourceRef provenance="documented" doc={docs.nvidiaIb} />. EFA has no switch-side
-              collective offload. SRD costs something in the quiet case too: on the ENA Express path,
+              <SourceRef provenance="documented" doc={docs.nvidiaIb} />. No switch-side collective
+              offload for EFA was located in AWS documentation during this research. SRD costs something in the quiet case too: on the ENA Express path,
               median packet latency may rise slightly, by tens of microseconds, when the network is
               uncongested{' '}
               <SourceRef provenance="documented" doc={docs.enaExpress} />. SRD is tuned for the bad

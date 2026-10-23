@@ -254,9 +254,8 @@ export function DecisionGuide() {
             The single-AZ rule is the hard one. EFA traffic cannot cross
             Availability Zones or VPCs (Virtual Private Clouds){' '}
             <SourceRef provenance="documented" doc={docs.efa} />. A cluster placement group is
-            the recommended way to satisfy that rule and keep latency low, and it is not an
-            absolute requirement{' '}
-            <SourceRef provenance="documented" doc={docs.efaStart} />. Skipping it is legal and
+            the recommended way, rather than a required one, to satisfy that rule and keep latency
+            low <SourceRef provenance="documented" doc={docs.efaStart} />. Skipping it is legal and
             usually a mistake.
           </Box>
         </SpaceBetween>
@@ -269,8 +268,8 @@ export function DecisionGuide() {
           <div>
             <Box variant="h3">1. Is this multi-node?</Box>
             <Box variant="p">
-              A single-instance workload runs its collectives over NVLink on a multi-GPU
-              instance, or NeuronLink on trn1.32xlarge{' '}
+              A single-instance workload runs its collectives inside the instance: over NVLink
+              on a multi-GPU P-family instance, or NeuronLink on trn1.32xlarge{' '}
               <SourceRef provenance="documented" doc={docs.trn1Arch} />. The fabric has nothing
               to add, so stop here.
             </Box>
@@ -442,7 +441,7 @@ export function DecisionGuide() {
               doc={docs.eksBestPractices}
               code={code.eksBpSpot}
               label="tier 2: EKS best practices"
-            />. No AWS mapping from its topology layers to a named rack or spine was located
+            />. No AWS mapping from the EC2 topology layers to a named rack or spine was located
             during this research.
           </Alert>
           <ColumnLayout columns={2} variant="text-grid">
@@ -514,9 +513,11 @@ export function DecisionGuide() {
             UltraServer types, with an EventBridge event 10 minutes before termination begins{' '}
             <SourceRef provenance="documented" doc={docs.capacityBlocks} />, and a P6e-GB200
             UltraServer block needs its instances terminated at least 60 minutes before the end{' '}
-            <SourceRef provenance="documented" doc={docs.capacityBlocksUg} />. Finish the
-            checkpoint by 11:00 UTC on the final day of an instance block, and by 10:30 UTC on a
-            P6e-GB200 UltraServer block (our arithmetic).
+            <SourceRef provenance="documented" doc={docs.capacityBlocksUg} />. Termination begins
+            at 11:00 UTC on the final day{' '}
+            <SourceRef provenance="documented" doc={docs.capacityBlocksUg} />, so finish the
+            checkpoint before then on an instance block, and by 10:30 UTC on a P6e-GB200
+            UltraServer block (our arithmetic).
           </Box>
           <Box variant="p">
             <strong>ODCRs:</strong> open-ended duration{' '}

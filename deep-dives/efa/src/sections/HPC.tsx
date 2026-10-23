@@ -217,7 +217,7 @@ export function HPC() {
       </Container>
 
       <Container
-        header={<Header variant="h2" description="The dedicated HPC families are the price-performance answer and the most constrained families on EC2. Pick knowing both.">Choosing the instance</Header>}
+        header={<Header variant="h2" description="What each dedicated HPC family gives you, and the purchase limits (no Spot, no Dedicated Hosts, no metal sizes) that come with all of them.">Choosing the instance</Header>}
       >
         <SpaceBetween size="m">
           <Box variant="p">

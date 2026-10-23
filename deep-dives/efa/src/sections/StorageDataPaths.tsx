@@ -142,7 +142,7 @@ const docs = {
   s3Whitepaper: doc(
     'AWS Whitepaper: Best Practices Design Patterns, Optimizing Amazon S3 Performance (PDF, initial publication June 2019, reviewed March 10, 2021)',
     'https://d1.awsstatic.com/whitepapers/AmazonS3BestPractices.pdf',
-    1,
+    2,
     REFRESHED
   ),
   cliConfig: doc('AWS CLI Reference: S3 configuration topic', 'https://docs.aws.amazon.com/cli/latest/topic/s3-config.html', 1),
@@ -699,7 +699,7 @@ const comparison: CompareRow[] = [
   },
   {
     axis: 'Latency',
-    efa: 'SRD delivers out of order, and the libfabric RDM endpoint restores message order in software. The EC2 User Guide gives no per-message latency for EFA, and the one AWS figure located (15.5 microseconds of one-way MPI latency) comes from the 2019 launch, so baseline it with fi_pingpong -p efa -e rdm.',
+    efa: 'SRD delivers out of order, and the libfabric RDM endpoint restores message order in software. The EC2 User Guide gives no per-message latency for EFA, and the one AWS figure located (15.5 microseconds of one-way MPI latency in a cluster placement group) comes from the 2019 launch, so baseline it with fi_pingpong -p efa -e rdm.',
     fsx: 'Sub-millisecond for data already on the file system. A file backed by an S3 data repository pays a load penalty on first access.',
     s3: 'First-byte latency in the 100 to 200 millisecond range, which is why every fast S3 client is a concurrency engine.',
   },
@@ -1021,9 +1021,6 @@ export function StorageDataPaths() {
                 advertised 1600 Gbps and 800 Gbps bandwidth can be hit from the CPU in userspace{' '}
                 <SourceRef provenance="code-derived" code={code.platformP6} />. These are code
                 comments, so they are evidence of the authors' intent rather than proof of behaviour.
-                They are quoted here because they are the clearest available statement of the CPU
-                ceiling that separates an object path from a fabric path, and they come from the
-                people who wrote the client.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1280,11 +1277,7 @@ export function StorageDataPaths() {
           the second irreversible decision, and the token bucket because it explains why a throttled
           client fails instead of converging. Part size resolution, backoff jitter modes, prefix
           partitioning and data repository task mechanics belong to a storage dive, and the pinned
-          commits above are where to start reading. The two halves are also different classes of
-          evidence: FSx for Lustre here is documentation-sourced, because the service side has no
-          open-source artifact to read, and the S3 client is code-sourced at pinned commits you can
-          open.
-          The badge on each claim says which one you are looking at.
+          commits above are where to start reading.
         </Box>
       </Container>
 

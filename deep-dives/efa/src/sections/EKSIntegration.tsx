@@ -574,7 +574,7 @@ const contractRows: ContractRow[] = [
     item: 'vpc.amazonaws.com/efa in requests and limits',
     status: 'Required',
     detail:
-      'It is a Kubernetes extended resource, so the request and the limit have to be equal. AWS sets both to the same number in every example it publishes.',
+      'It is a Kubernetes extended resource, so the request and the limit have to be equal. AWS sets both to the same number in every example this research located.',
   },
   {
     item: 'hugepages-2Mi',
@@ -1379,8 +1379,9 @@ spec:
           </Box>
           <Box variant="p">
             Training operators need nothing special. EFA works because the worker pod template carries the resource
-            request, so MPIJob, PyTorchJob, LeaderWorkerSet and RayJob all behave identically and no operator CRD
-            (Custom Resource Definition) has an EFA-specific field. AWS uses the Kubeflow MPI Operator for its NCCL
+            request, so MPIJob, PyTorchJob, LeaderWorkerSet and RayJob all behave identically and none of those
+            four operators' CRDs (Custom Resource Definitions) carries an EFA-specific field that this research
+            located. AWS uses the Kubeflow MPI Operator for its NCCL
             test walkthrough <SourceRef provenance="documented" doc={docs.eksDevice} /> and LeaderWorkerSet for its
             multi-node inference samples.
           </Box>

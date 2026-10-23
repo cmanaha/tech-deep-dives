@@ -141,7 +141,7 @@ export function Overview() {
 
       <Container
         header={
-          <Header variant="h2" description="Three layers, and the section that takes each apart">
+          <Header variant="h2" description="What you attach, what holds the tail down, and why your application code stays as it is">
             The 30-second mental model
           </Header>
         }

@@ -41,6 +41,18 @@ const docs: Record<string, DocRef> = {
     tier: 1,
     accessed: ACCESSED,
   },
+  ac: {
+    title: 'EC2 instance types: Accelerated computing',
+    url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  vllmSpecDecodeDoc: {
+    title: 'vLLM documentation (v0.32.0): Speculative Decoding',
+    url: 'https://github.com/vllm-project/vllm/blob/v0.32.0/docs/features/speculative_decoding/README.md#L3',
+    tier: 1,
+    accessed: ACCESSED,
+  },
 };
 
 const code: Record<string, CodeRef> = {
@@ -84,13 +96,6 @@ const code: Record<string, CodeRef> = {
     ref: 'v0.32.0',
     path: 'vllm/distributed/kv_transfer/kv_connector/v1/nixl/connector.py',
     lines: 'L97-L103',
-    read: READ,
-  },
-  vllmSpecDecode: {
-    repo: 'vllm-project/vllm',
-    ref: 'v0.32.0',
-    path: 'docs/features/speculative_decoding/README.md',
-    lines: 'L3',
     read: READ,
   },
 };
@@ -181,9 +186,9 @@ export function AIMLInference() {
       <Container header={<Header variant="h2" description="Tensor parallelism pays the network cost once per token, so one added millisecond becomes a second per response.">Models that need more than one node</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            405B parameters at fp16 is about 810 GB, more than the 640 GB of total GPU memory in a
-            P5 instance. Run that same comparison for your own weights against your own instance
-            first, because it is what decides whether either of the next two strategies is in play
+            405B parameters at fp16 is about 810 GB, more than the 640 GiB (about 687 GB) of total
+            GPU memory in a P5 instance <SourceRef provenance="documented" doc={docs.ac} />. Run
+            that same comparison for your own weights against your own instance first, because it is what decides whether either of the next two strategies is in play
             at all. They split a model across nodes, and they load the fabric differently.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
@@ -218,10 +223,11 @@ export function AIMLInference() {
             <Box variant="h3">Cross-node speculative decoding</Box>
             <Box variant="p">
               A draft model on one node generates candidate tokens and a verifier on another node
-              accepts or rejects them. Each model fits on its own node, and the verification loop is
-              latency-sensitive: every round-trip adds to inter-token latency{' '}
-              <SourceRef provenance="code-derived" code={code.vllmSpecDecode} />, which is what EFA
-              shortens here.
+              accepts or rejects them. Each model fits on its own node, and speculative decoding
+              exists to cut inter-token latency in medium-to-low QPS (queries per second),
+              memory-bound serving{' '}
+              <SourceRef provenance="documented" doc={docs.vllmSpecDecodeDoc} />, so every
+              draft-to-verifier round-trip lands there, and that round-trip is what EFA shortens.
             </Box>
             <StatusIndicator type="info">EFA beneficial</StatusIndicator>
           </div>
@@ -237,14 +243,17 @@ export function AIMLInference() {
         </ColumnLayout>
       </Container>
 
-      <Container header={<Header variant="h2" description="Two serving shapes where the intra-node links carry everything, and the single-zone constraint you sidestep by staying there.">Where NVLink already covers it</Header>}>
+      <Container header={<Header variant="h2" description="Two serving shapes that skip EFA: one node where NVLink carries everything, and batch work loose enough on latency to run on standard networking across zones.">Where NVLink already covers it</Header>}>
         <ColumnLayout columns={2} variant="text-grid">
           <div>
             <Box variant="h3">Single-node, single-request serving</Box>
             <Box variant="p">
               One node holds the model, one node serves the request, and all GPU-to-GPU
               communication travels over NVLink and NVSwitch inside the instance. Roughly 300B
-              parameters at fp16, or roughly 600B at fp8 and int8, fit on a single P5.
+              parameters at fp16, or roughly 600B at fp8 and int8, fit on a single P5 by weight
+              alone: about 600 GB against 640 GiB (about 687 GB) of GPU memory{' '}
+              <SourceRef provenance="documented" doc={docs.ac} />, which leaves under 90 GB for the
+              KV-cache and activations (our arithmetic).
             </Box>
             <StatusIndicator type="stopped">EFA irrelevant</StatusIndicator>
           </div>
@@ -277,13 +286,13 @@ export function AIMLInference() {
             parallelism across nodes with NCCL over EFA. Put every node in one Availability Zone and
             one VPC, the boundary EFA traffic stays inside{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. AWS recommends a cluster placement
-            group to satisfy that and keep latency low; it is a recommendation, and the hard
-            boundary is the zone <SourceRef provenance="documented" doc={docs.efaStart} />.
+            group to satisfy that and keep latency low; the hard boundary is the zone{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} />.
           </Box>
           <Box variant="p">
             <strong>4. Are you running speculative decoding across nodes?</strong> EFA is
             beneficial. The verification loop runs per token and lands in inter-token latency{' '}
-            <SourceRef provenance="code-derived" code={code.vllmSpecDecode} />.
+            <SourceRef provenance="documented" doc={docs.vllmSpecDecodeDoc} />.
           </Box>
           <Box variant="p">
             <strong>5. Do you need KV-cache migration for autoscaling or rebalancing?</strong> EFA
