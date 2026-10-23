@@ -72,7 +72,6 @@ const docs = {
 };
 
 const code = {
-  man: lfab('man/fi_efa.7.md'),
   manOverview: lfab('man/fi_efa.7.md', 'L12-L26'),
   manEndpoints: lfab('man/fi_efa.7.md', 'L33-L57'),
   manModes: lfab('man/fi_efa.7.md', 'L70-L78'),
@@ -109,8 +108,6 @@ const code = {
   forkAbort: lfab('prov/efa/src/efa_fork_support.c', 'L158-L193'),
   reorderConst: lfab('prov/efa/src/rdm/efa_rdm_peer.h', 'L12'),
   gdaOpen: lfab('prov/efa/src/efa_domain.c', 'L792-L812'),
-  modifyEp: lfab('prov/efa/src/efa_domain.c', 'L813-L822'),
-  modifyEpAttr: lfab('prov/efa/src/efa_domain.c', 'L736-L780'),
   trackMrContext2: lfab('prov/efa/src/efa_ep.c', 'L391-L396'),
   context2Info: lfab('prov/efa/src/efa_prov_info.c', 'L241-L245'),
   context2User: lfab('prov/efa/src/efa_user_info.c', 'L555-L581'),
@@ -140,8 +137,8 @@ const code = {
  */
 function LibfabricStackDiagram() {
   const consumers = [
-    { title: 'NCCL and RCCL', sub: 'through the aws-ofi-nccl plugin' },
-    { title: 'Open MPI, Intel MPI', sub: 'through the OFI MTL and BTL' },
+    { title: 'NCCL', sub: 'through the aws-ofi-nccl plugin' },
+    { title: 'Open MPI, Intel MPI', sub: 'through their OFI transport layers' },
     { title: 'NIXL', sub: 'disaggregated inference transfers' },
   ];
 
@@ -532,7 +529,7 @@ export function Libfabric() {
         header={
           <Header
             variant="h2"
-            description="One device, two fabrics, three consumers, and a provider chosen at runtime from a list."
+            description="Which of the two fabrics your job runs on, and the one field that switches between them."
           >
             The stack: one API, two fabrics, one device
           </Header>
@@ -542,8 +539,7 @@ export function Libfabric() {
           <LibfabricStackDiagram />
 
           <Box variant="p">
-            libfabric's own EFA man page frames the split. The efa fabric implements a set of wire
-            protocols to support more capabilities and features beyond the EFA device capabilities.
+            The efa fabric implements a set of wire protocols to support more capabilities and features beyond the EFA device capabilities.
             The efa-direct fabric offloads all libfabric data plane calls to the device directly
             without wire protocols, providing a fast path to hand off application requests to the
             device{' '}
@@ -646,9 +642,10 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
             <SourceRef provenance="code-derived" code={code.hwCntrGate} />, and
             FI_EFA_USE_SQ_REQ_ID_64_BIT, both 1 by default in libfabric 2.7.0{' '}
             <SourceRef provenance="code-derived" code={code.envDefaults} />{' '}
-            <SourceRef provenance="code-derived" code={code.envUnregistered} />. That function
-            also read FI_EFA_ENABLE_HIGH_PPS in 2.6.0{' '}
-            <SourceRef provenance="code-derived" code={code.envHighPps} /> and drops it in 2.7.0.
+            <SourceRef provenance="code-derived" code={code.envUnregistered} />. In 2.6.0 the
+            provider read FI_EFA_ENABLE_HIGH_PPS the same way{' '}
+            <SourceRef provenance="code-derived" code={code.envHighPps} />, and 2.7.0 does not read
+            it.
             Commands 5 and 6 apply the same idea to behaviour. Info is cheap enough for a first job
             and detailed enough to answer most of what follows, so keep one logged run per image as
             the baseline. Debug is the opposite, marked in the man page as high traffic likely to
@@ -728,8 +725,9 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
               label="doc vs code"
             />{' '}
             <SourceRef provenance="code-derived" code={code.context2Info} />, and FI_EFA_TRACK_MR
-            then refuses to enable the endpoint{' '}
-            <SourceRef provenance="code-derived" code={code.trackMrContext2} />. It also supports
+            refuses to enable the endpoint{' '}
+            <SourceRef provenance="code-derived" code={code.trackMrContext2} />, so ask for it in
+            your hints if you want either. It also supports
             FI_MR_LOCAL only, so the application registers its own buffers, where the efa fabric
             accepts unregistered buffers for send and receive{' '}
             <SourceRef provenance="code-derived" code={code.manMrModes} />. Asking for efa-direct is
@@ -737,42 +735,54 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
           </Alert>
 
           <Box variant="p">
-            What you get back for that work, beyond the shorter path, is GPUDirect Async. It is a
-            handover rather than an offload: an application asks for FI_EFA_GDA_OPS in the name
-            parameter of a domain ops open, libfabric supplies the address handle, the queue buffers
-            and the doorbells, and GPU-side code builds and rings the work queue entries itself{' '}
-            <SourceRef provenance="code-derived" code={code.manGda} />, with the handler returning a
-            not-supported error on any other fabric{' '}
-            <SourceRef provenance="code-derived" code={code.gdaOpen} />. The same open with
-            FI_EFA_MODIFY_EP_OPS returns a call that changes an enabled endpoint&apos;s queue key,
-            the only attribute it supports, also on efa-direct only{' '}
-            <SourceRef provenance="code-derived" code={code.modifyEp} />{' '}
-            <SourceRef provenance="code-derived" code={code.modifyEpAttr} />. Calling these tables is
-            work for whoever writes the plugin. aws-ofi-nccl v1.22.0 builds its kernel-initiated GIN
-            (GPU-Initiated Networking) plugin, with no configure flag, whenever libfabric declares
-            FI_EFA_GDA_OPS, the completion-counter interface is present and CUDA is the device
-            interface <SourceRef provenance="code-derived" code={code.ginBuild} />. It exports it as{' '}
-            <code>ncclGinPlugin_v14</code>, device type 5{' '}
-            <SourceRef provenance="code-derived" code={code.ginExport} />{' '}
-            <SourceRef provenance="code-derived" code={code.ginDeviceType} />{' '}
-            <SourceRef provenance="code-derived" code={code.ncclGinTypes} />, the first GIN version
-            NCCL looks for <SourceRef provenance="code-derived" code={code.ncclGinOrder} />. The
-            plugin allows it
-            only on p5en, p6-b200 and p6-b300, the platforms it marks as having the EFA hardware
-            completion counter, and refuses elsewhere with &quot;gin GDAKI: not supported on this
+            What you get back for that work, beyond the shorter path, is GPUDirect Async: libfabric
+            hands over the queue buffers and the doorbells, and GPU-side code builds and rings the
+            work queue entries itself{' '}
+            <SourceRef provenance="code-derived" code={code.manGda} />. On aws-ofi-nccl v1.22.0 the
+            instance type is the gate and NCCL_GIN_TYPE=5 is the switch. The plugin&apos;s
+            kernel-initiated GIN (GPU-Initiated Networking) backend is allowed only on p5en,
+            p6-b200 and p6-b300 and refuses elsewhere with &quot;gin GDAKI: not supported on this
             platform&quot; <SourceRef provenance="code-derived" code={code.platformEnv} />{' '}
             <SourceRef provenance="code-derived" code={code.gdakiGate} />{' '}
-            <SourceRef provenance="code-derived" code={code.gdakiRefuse} />. On those instances
-            NCCL still ranks this backend below its own GIN proxy, so a job runs it only when
-            NCCL_GIN_TYPE=5 selects it{' '}
+            <SourceRef provenance="code-derived" code={code.gdakiRefuse} />, and NCCL ranks it
+            below its own GIN proxy, so a job runs it only when NCCL_GIN_TYPE=5 selects it{' '}
             <SourceRef provenance="code-derived" code={code.ncclGinPriority} />{' '}
-            <SourceRef provenance="code-derived" code={code.ncclGinType} />. The instance type is
-            the gate and NCCL_GIN_TYPE=5 is the switch; OFI_NCCL_GDAKI_EFA_HW_COUNTER is a bring-up
-            override of the gate <SourceRef provenance="code-derived" code={code.paramGdaki} />. The
-            plugin&apos;s setup guide also asks for NCCL_SYM_GIN_KERNELS_ENABLE=0 and the NVIDIA
-            driver&apos;s PeerMappingOverride option{' '}
-            <SourceRef provenance="code-derived" code={code.ginGuide} />.
+            <SourceRef provenance="code-derived" code={code.ncclGinType} />. The plugin&apos;s setup
+            guide also asks for NCCL_SYM_GIN_KERNELS_ENABLE=0 and the NVIDIA driver&apos;s
+            PeerMappingOverride option <SourceRef provenance="code-derived" code={code.ginGuide} />.
           </Box>
+
+          <ExpandableSection
+            headerText="How the plugin builds and exposes it"
+            headerDescription="Work for whoever writes the plugin: the libfabric handover, the build conditions and the NCCL export"
+          >
+            <SpaceBetween size="s">
+              <Box variant="p">
+                An application asks for FI_EFA_GDA_OPS in the name parameter of a domain ops open,
+                and libfabric supplies the address handle, the queue buffers and the doorbells{' '}
+                <SourceRef provenance="code-derived" code={code.manGda} />, with the handler
+                returning a not-supported error on any other fabric{' '}
+                <SourceRef provenance="code-derived" code={code.gdaOpen} />.
+              </Box>
+              <Box variant="p">
+                aws-ofi-nccl v1.22.0 builds the GIN plugin, with no configure flag, whenever
+                libfabric declares FI_EFA_GDA_OPS, the completion-counter interface is present and
+                CUDA is the device interface{' '}
+                <SourceRef provenance="code-derived" code={code.ginBuild} />. It exports it as{' '}
+                <code>ncclGinPlugin_v14</code>, device type 5{' '}
+                <SourceRef provenance="code-derived" code={code.ginExport} />{' '}
+                <SourceRef provenance="code-derived" code={code.ginDeviceType} />{' '}
+                <SourceRef provenance="code-derived" code={code.ncclGinTypes} />, the first GIN
+                version NCCL looks for{' '}
+                <SourceRef provenance="code-derived" code={code.ncclGinOrder} />. The three
+                instance types it allows are the platforms it marks as having the EFA hardware
+                completion counter <SourceRef provenance="code-derived" code={code.platformEnv} />{' '}
+                <SourceRef provenance="code-derived" code={code.gdakiGate} />, and
+                OFI_NCCL_GDAKI_EFA_HW_COUNTER is a bring-up override of that gate{' '}
+                <SourceRef provenance="code-derived" code={code.paramGdaki} />.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -789,18 +799,18 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
         <SpaceBetween size="m">
           <Box variant="p">
             On the efa fabric the provider picks a wire protocol for every two-sided send, from the
-            message length and the kind of memory the buffer lives in: host, CUDA, ROCr or Neuron. Knowing the ladder is how
-            you predict which one a given send takes, and which setting would move it.
+            message length and the kind of memory the buffer lives in: host, CUDA, ROCr (the AMD
+            ROCm runtime) or Neuron. Knowing the ladder is how you predict which one a given send
+            takes, and which setting would move it.
           </Box>
 
           <ProtocolLadderDiagram />
 
           <Box variant="p">
-            The selection function's own comment names the options: four types of protocol can be
-            used, eager, medium, longcts and longread, each with a tagged and non-tagged version and
-            some with a delivery-complete version{' '}
-            <SourceRef provenance="code-derived" code={code.selectRtm} />. It checks the read-based
-            branch first, and that branch turns on four conditions at once with size only one of
+            Four types of protocol can be used, eager, medium, longcts and longread, each with a
+            tagged and non-tagged version and some with a delivery-complete version{' '}
+            <SourceRef provenance="code-derived" code={code.selectRtm} />. The selection function
+            checks the read-based branch first, and that branch turns on four conditions at once with size only one of
             them. It fires when peer to peer is usable, the message length is at or above the
             minimum read message size for this memory type, the peer supports RDMA read, and either
             the application passed a memory descriptor or the registration cache is available.
@@ -879,8 +889,8 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
             everything else is runting read, provided peer to peer is usable, the peer supports RDMA
             read, and either a descriptor or the registration cache is available. The four-rung
             host-memory ladder above describes traffic a collectives job does not generate. That is
-            why FI_EFA_INTER_MAX_MEDIUM_MESSAGE_SIZE is the most commonly copied EFA setting that
-            does nothing, and FI_EFA_RUNT_SIZE is the one that shapes the path.
+            why FI_EFA_INTER_MAX_MEDIUM_MESSAGE_SIZE does nothing for a GPU job, and
+            FI_EFA_RUNT_SIZE is the one that shapes the path.
           </Alert>
 
           <Box variant="h3">What you would see, and what to do about it</Box>
@@ -956,8 +966,7 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
             <SourceRef provenance="code-derived" code={code.cacheParams} />.
           </Box>
           <Box variant="p">
-            The EFA provider carries a long comment about why this is delicate. Both Open MPI and
-            libfabric use the same live binary patching to enable memory monitoring, and the
+            Both Open MPI and libfabric use the same live binary patching to enable memory monitoring, and the
             patching technique only allows a single winning patch, so the libfabric memhooks monitor
             will not overwrite a previous patch and instead returns an already-in-use error{' '}
             <SourceRef provenance="code-derived" code={code.cacheInit} />. When it detects that, it
@@ -1004,7 +1013,7 @@ grep 'Memhooks monitor requested via FI_MR_CACHE_MONITOR' ofi_*.log`}</pre>
             <SourceRef provenance="code-derived" code={code.forkInit} />.
           </Box>
           <Box variant="p">
-            Turning it on has a cost the code states plainly: rdma-core fork support does not work
+            Turning it on has a cost: rdma-core fork support does not work
             for huge pages, and while huge page fork support can be activated it is extremely
             expensive and would defeat the purpose of using huge pages, so the provider simply
             disables huge page usage when fork support is enabled{' '}
@@ -1059,10 +1068,9 @@ grep 'Memhooks monitor requested via FI_MR_CACHE_MONITOR' ofi_*.log`}</pre>
           <Box variant="p">
             Version selection is a libfabric question before it is anything else: the installer, the
             provider and the plugin all move on their own schedules, and only one of them is on your
-            host. <Badge color="grey">upstream</Badge> The ofiwg project has released v2.7.0, and
-            the libfabric citations in this section are pinned to that tag, apart from one that
-            shows 2.6.0 behaviour <SourceRef provenance="code-derived" code={code.man} />. That is
-            the tree to read when you want to know what the EFA provider does.{' '}
+            host. <Badge color="grey">upstream</Badge> The libfabric citations in this section are
+            pinned to upstream v2.7.0, apart from one that shows 2.6.0 behaviour. That is the tree
+            to read when you want to know what the EFA provider does.{' '}
             <Badge color="green">shipped</Badge> EFA installer 1.51.0, whose tarball is dated
             October 22, 2026, upgrades to libfabric 2.7.0amzn2.0, along with EFA driver 3.3.1,
             rdma-core 65.0 and AWS OFI NCCL Plugin 1.22.0{' '}
@@ -1074,9 +1082,9 @@ grep 'Memhooks monitor requested via FI_MR_CACHE_MONITOR' ofi_*.log`}</pre>
           <Alert type="warning" header="Name the channel whenever you quote a libfabric version">
             2.7.0amzn2.0 and upstream 2.7.0 share a base version, and the version strings are still
             comparable only within a channel: a backport can put a later upstream change into an
-            amzn build, and an upstream change can be absent from it. So a comparison across
-            channels settles nothing, and neither does the installer release note on its own: the
-            only answer that binds is the binary in front of you.
+            amzn build, and an upstream change can be absent from it. The installer release note
+            does not settle it on its own either: the only answer that binds is the binary in front
+            of you.
           </Alert>
 
           <Box variant="code">
@@ -1100,9 +1108,9 @@ fi_info -l`}</pre>
             It now sits in a dedicated directory under an efa_rdm_ prefix, which is where the
             protocol selection cited earlier lives{' '}
             <SourceRef provenance="code-derived" code={code.selectRtm} />. That rename dates any
-            piece of writing instantly. Symbols such as rxr_pkt_post_ctrl appear in a great deal of
-            EFA material and libfabric today has none of them, so a citation to one of those names
-            is a citation to a tree nobody is running. Use it: when you read an EFA tuning guide,
+            piece of writing instantly. Symbols such as rxr_pkt_post_ctrl appear in older EFA
+            material, and libfabric v2.7.0 has none of them, so a citation to one of those names is
+            a citation to a tree older than the rename. Use it: when you read an EFA tuning guide,
             grep the pinned source for the first symbol it names. If the symbol is gone, the rest of
             the guidance is from the same era and deserves the same suspicion. The check takes ten
             seconds.
@@ -1118,8 +1126,7 @@ fi_info -l`}</pre>
                 FI_EFA_USE_DATA_PATH_DIRECT set to 0. The parameter help text describes it as
                 bypassing rdma-core on the data path, including completion queue polling and
                 transmit and receive submissions{' '}
-                <SourceRef provenance="code-derived" code={code.envDefine} />. Note the scope in
-                that sentence: on the data path, not everywhere.
+                <SourceRef provenance="code-derived" code={code.envDefine} />.
               </Box>
               <Box variant="p">
                 Device RDMA defaults changed with the API version rather than with a release. For
@@ -1128,8 +1135,8 @@ fi_info -l`}</pre>
                 <SourceRef provenance="code-derived" code={code.manDeviceRdma} />. That is the real
                 reason FI_EFA_USE_DEVICE_RDMA stopped being useful: the behaviour follows the API
                 version the application requests, alongside the hardware revision. NIXL, the newest
-                consumer of all this, is documented as integrating with Libfabric 1.21.0 and later,
-                where NCCL and MPI integrate with 1.7.0 and later{' '}
+                consumer of all this, integrates with Libfabric 1.21.0 and later, where NCCL and MPI
+                integrate with 1.7.0 and later{' '}
                 <SourceRef provenance="documented" doc={docs.efa} />, on its own getting-started
                 path{' '}
                 <SourceRef provenance="documented" doc={docs.nixl} />.

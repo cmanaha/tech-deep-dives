@@ -336,8 +336,8 @@ function KernelUserspaceSplitDiagram() {
 function PostSendDoorbellSequence() {
   const steps = [
     { n: '1', title: 'Build the WQE', sub: 'opcode, key, len', lane: 0 },
-    { n: '2', title: 'Write to the SQ', sub: 'write-combined', lane: 1 },
-    { n: '3', title: 'Ring doorbell', sub: 'one MMIO write', lane: 1 },
+    { n: '2', title: 'Write send queue', sub: 'write-combined', lane: 1 },
+    { n: '3', title: 'Ring doorbell', sub: 'one mapped write', lane: 1 },
     { n: '4', title: 'Device sends', sub: 'reads the payload', lane: 2 },
     { n: '5', title: 'CQE written', sub: 'phase bit flips', lane: 1 },
     { n: '6', title: 'Poll and reap', sub: 'no system call', lane: 0 },
@@ -530,9 +530,8 @@ export function DataPath() {
             <div>
               <Box variant="h3">Kernel, once per resource</Box>
               <Box variant="p">
-                Allocating a protection domain, creating a queue pair and a completion queue,
-                registering memory, creating an address handle, and mapping the device registers
-                into the process. Each of these is a real transition into the kernel{' '}
+                Every setup step listed above, plus creating the completion queue, is a real
+                transition into the kernel{' '}
                 <SourceRef provenance="code-derived" code={code.controlOps} />, and teardown runs
                 the same way in reverse.
               </Box>
@@ -601,9 +600,9 @@ export function DataPath() {
           <Box variant="p">
             Verbs is the RDMA (Remote Direct Memory Access) object model EFA is programmed
             through, and five of its objects stand behind every send. All five are created through
-            the kernel, once per resource. None of them is a setting you tune: this table is the
-            vocabulary the registration, mapping and completion material below is written in, and
-            its last column is the lifetime split made concrete.
+            the kernel, once per resource. This table is the vocabulary the registration, mapping
+            and completion material below is written in, and its last column is the lifetime split
+            made concrete.
           </Box>
           <Table
             columnDefinitions={[
@@ -711,8 +710,8 @@ export function DataPath() {
                 .
               </Alert>
               <Box variant="p">
-                Two gates decide whether it is live on a given host, and neither is a switch you
-                throw. The feature turns itself off on 0xefa0 devices, which still use
+                Two gates decide whether it is live on a given host, and both are properties of
+                the host. The feature turns itself off on 0xefa0 devices, which still use
                 sub-completion queues and which the provider detects by vendor part identifier{' '}
                 <SourceRef provenance="code-derived" code={code.subCq} />{' '}
                 <SourceRef provenance="code-derived" code={code.ddpOff} />, and it declines
@@ -720,7 +719,7 @@ export function DataPath() {
                 doorbell field in its completion-queue attributes{' '}
                 <SourceRef provenance="code-derived" code={code.cqWaitObj} />. So which of the two descriptor
                 paths a job runs on follows from the device generation and from the rdma-core in
-                the image, and it changes when either of those changes.
+                the image, and a change to either one is the moment to re-check it.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -831,7 +830,10 @@ export function DataPath() {
 
       <Container
         header={
-          <Header variant="h2" description="Taking host memory out of the copy path as well">
+          <Header
+            variant="h2"
+            description="Which RDMA operations your instance type has, and what decides whether payloads leave GPU memory"
+          >
             GPUDirect RDMA
           </Header>
         }
@@ -843,9 +845,9 @@ export function DataPath() {
             and the payload travels from GPU memory to the wire. The driver carries the
             peer-to-peer plumbing for this and takes it whenever the
             registered range resolves to accelerator memory{' '}
-            <SourceRef provenance="code-derived" code={code.p2p} />, failing the registration when
-            the buffer address and the registered virtual address sit at different offsets within
-            the peer-to-peer page size{' '}
+            <SourceRef provenance="code-derived" code={code.p2p} />. On that path, register GPU
+            buffers so the buffer address and the registered virtual address sit at the same offset
+            within the peer-to-peer page size; the driver fails the registration otherwise{' '}
             <SourceRef provenance="code-derived" code={code.p2pAlign} />. A second, more modern route
             registers the buffer from a shared file descriptor{' '}
             <SourceRef provenance="code-derived" code={code.dmabuf} />.
@@ -880,7 +882,8 @@ export function DataPath() {
               <Alert type="error" header="A design note in the same repository lists Send as the only supported operation">
                 That file is a specification document written in 2019 and never revised. It sits
                 next to the driver that contradicts it, inside an official AWS repository, which is
-                exactly why it reads like a primary source. It is not one, and the code wins{' '}
+                exactly why it reads like a primary source. The driver beside it is the primary
+                source, and the code wins{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   code={code.deviceCaps}
@@ -898,9 +901,9 @@ export function DataPath() {
             the AWS NCCL getting-started guide{' '}
             <SourceRef provenance="documented" doc={docs.nccl} />, and it gives the host processor
             a low-latency mapping into GPU memory{' '}
-            <SourceRef provenance="documented" doc={docs.gdrcopy} />. Peer-to-peer support is what decides whether
-            payloads leave GPU memory, so that is the one to confirm on a new instance; a build
-            without GDRCopy still sends straight from GPU memory.
+            <SourceRef provenance="documented" doc={docs.gdrcopy} />. A build without GDRCopy still
+            sends straight from GPU memory: peer-to-peer support is what decides whether payloads
+            leave GPU memory, so that is the one to confirm on a new instance.
           </Alert>
         </SpaceBetween>
       </Container>
