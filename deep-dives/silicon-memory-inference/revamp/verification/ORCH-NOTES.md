@@ -89,3 +89,5 @@
 
 - Open (Intel Xeon 6): Chips and Cheese's 691.62 GB/s on an r8i sits beside "one node's four channels peak at 230.4 GB/s". Three SNC3 nodes x 230.4 = 691.2 GB/s, so the measurement reads as 100.06% of a one-socket peak; Chips and Cheese does not name the r8i size (a two-socket 96xlarge has twice the peak). Each figure is true as cited; a scope note naming that gap is for the next iteration.
 - Not aligned: AmdEpycTurin.ts `xeon6ProductBrief` cites the PDF of the Xeon 6 brief (cdrdv2-public.intel.com/845771) for the P-core MRDIMM 8,800 MT/s line; the HTML brief record elsewhere is titled for its CXL rate. Two bibliography entries for one document, both correct.
+
+- Open (Edge Shared-Memory Silicon): NOTES.md cites `lspci -nn` output that was never saved to research/dgx-spark/; the lspci readings rest on the log. Save the raw output on the next hardware session. README now says so.
