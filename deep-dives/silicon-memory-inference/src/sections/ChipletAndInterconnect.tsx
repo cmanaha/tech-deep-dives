@@ -95,7 +95,7 @@ const archRows: ArchRow[] = [
     ),
     cost: (
       <>
-        Core to core 30 to 60 ns, about 138 ns across sockets
+        Core to core 30 to 60 ns, about 139 ns across sockets
         <Cite s={S.chipsAndCheeseGraviton4} kind="measured" />
       </>
     ),
@@ -105,7 +105,8 @@ const archRows: ArchRow[] = [
     dies: (
       <>
         192 cores in one package
-        <Cite s={S.graviton5AboutAmazon} />, CMN-S3 mesh; LLC 96 MB per node on
+        <Cite s={S.graviton5AboutAmazon} />
+        <Cite s={S.gravitonReadme} note="Processor table: Graviton5 core is Neoverse V3." />, CMN-S3 mesh; LLC 96 MB per node on
         24xlarge and 48xlarge, 48 MB per node on smaller sizes
         <Cite s={S.gravitonReadme} note={GRAVITON5_NODE_NOTE} />
       </>
