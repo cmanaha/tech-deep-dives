@@ -13,7 +13,7 @@ import { Cite } from '../components/Cite';
 import { S } from '../sources/KvCacheAndFlashAttention';
 
 const llamaKvNote =
-  '2 (K and V) x 80 layers x 8 KV heads x 128 head dim x 2 bytes (BF16) = 327,680 B per token. 8,192 tokens = 2.68 GB; 32 such requests = 85.9 GB; 128,000 tokens = 41.9 GB.';
+  '2 (K and V) x 80 layers x 8 KV heads x 128 head dim (8,192 / 64 heads) x 2 bytes (BF16) = 327,680 B per token. 8,192 tokens = 2.68 GB; 32 such requests = 85.9 GB; 128,000 tokens = 41.9 GB.';
 const weightsNote =
   '70,553,706,496 parameters x 2 B = 141.1 GB in BF16, x 1 B = 70.6 GB in FP8. 70.6 + 85.9 = 156.5 GB, above one H200 at 141 GB. FP8 KV halves 85.9 to 42.9 GB; 70.6 + 42.9 = 113.5 GB.';
 const nodeNote = '8 x 141 GB = 1,128 GB of HBM; 1,128 - 70.6 GB of FP8 weights = 1,057 GB.';
@@ -122,7 +122,7 @@ const modelKvRows: ModelKvRow[] = [
     ),
     attention: (
       <>
-        Compressed sparse attention, FP4 (4-bit floating point) KV entries
+        Compressed sparse attention, FP4 (4-bit floating point) main KV
         <Cite s={S.deepseekV41Flash} />
       </>
     ),
@@ -153,8 +153,8 @@ export function KvCacheAndFlashAttention() {
           <Box variant="p">
             KV bytes per token is the figure that decides how much context one GPU holds. Across
             current models it spans more than 300x, from 327,680 bytes for Llama 3.1 70B
-            <Cite s={S.llama3Herd} kind="derived" note={llamaKvNote} /> to 890 for
-            DeepSeek-V4.1-Flash.
+            <Cite s={S.llama3Herd} kind="derived" note={llamaKvNote} /> to 890 bytes of global
+            cache for DeepSeek-V4.1-Flash.
             <Cite s={S.deepseekV41Flash} />
             <Cite s={S.deepseekV41Flash} kind="derived" note={spreadNote} />
           </Box>
@@ -248,18 +248,18 @@ export function KvCacheAndFlashAttention() {
           <Box variant="p">
             <strong>Read the table as the formula at work.</strong> Mixtral 8x7B, a mixture of
             experts (MoE) with eight experts per layer, stores the same 128 KiB per token as
-            Mistral 7B, because its attention shape is identical.
+            Mistral 7B, because its layers and KV heads have the same shape.
             <Cite s={S.mixtralConfig} /> Qwen3-235B-A22B stores 41% less per token than Llama 3.1
             70B, because its 16:1 grouping outweighs its 94 layers.
             <Cite s={S.qwen3Config} kind="derived" note={compareNote} /> From Llama 3.1 70B to
-            DeepSeek-V4.1-Flash the spread is more than 300x, so the same HBM holds 368 times as
-            many tokens of context.
+            DeepSeek-V4.1-Flash&apos;s global cache the spread is more than 300x: the same HBM holds
+            368 times as many tokens of global cache.
             <Cite s={S.deepseekV41Flash} kind="derived" note={spreadNote} />
           </Box>
           <ExpandableSection headerText="How MLA, sliding windows and hybrid layers change the formula">
             <SpaceBetween size="s">
               <Box variant="p">
-                MLA stores one vector per token per layer, a 512-wide latent plus a 64-wide rotary
+                Per token and per layer, MLA stores a 512-wide latent plus a 64-wide rotary
                 position embedding (RoPE) key, shared by all 128 query heads.
                 <Cite s={S.deepseekV3Config} /> The heads&apos; keys and values are rebuilt from
                 the latent, and only the latent and the RoPE key are cached
@@ -283,7 +283,8 @@ export function KvCacheAndFlashAttention() {
           <Box variant="p">
             Before sizing a deployment, read the model&apos;s <code>config.json</code>:{' '}
             <code>num_key_value_heads</code>, <code>head_dim</code>, <code>kv_lora_rank</code>,{' '}
-            <code>layer_types</code> and <code>full_attention_interval</code> set the KV budget.
+            <code>layer_types</code>, <code>sliding_window</code> and{' '}
+            <code>full_attention_interval</code> set the KV budget.
           </Box>
         </SpaceBetween>
       </Container>
@@ -325,19 +326,19 @@ export function KvCacheAndFlashAttention() {
             <em>NVIDIA Compilers and Kernel Tooling</em>), targets Hopper and Blackwell (H100,
             B200) and installs with{' '}
             <code>pip install flash-attn-4</code>.
-            <Cite s={S.fa4Readme} /> It ships as betas, the latest fa4-v4.0.0.beta35 on
+            <Cite s={S.fa4Readme} /> It ships as betas; fa4-v4.0.0.beta35 came out on
             2026-10-14.
             <Cite s={S.fa4Release} />
           </Box>
           <Box variant="p">
-            <strong>Blackwell moved the bottleneck to the softmax.</strong> From H200 to B200,
+            <strong>Blackwell shifts the bottleneck toward the softmax.</strong> From H200 to B200,
             dense BF16 tensor throughput per GPU rose 2.3x
             <Cite s={S.h200Page} />
             <Cite s={S.hgxPage} kind="derived" note={throughputNote} />, while the special function
             units (SFUs) that compute the softmax&apos;s exponentials went from 4.5 to 5
             TeraExponentials/s. NVIDIA notes that the softmax stage can become a latency bottleneck
-            for long-context reasoning models, and Blackwell Ultra doubles SFU throughput for
-            attention.
+            for long-context reasoning models, and Blackwell Ultra doubles SFU throughput for the
+            key instructions attention uses.
             <Cite s={S.blackwellUltraBlog} note={sfuNote} /> FlashAttention-4 answers with software-emulated
             exponentials and conditional softmax rescaling: a fused kernel runs at the pace of its
             slowest unit.
@@ -422,7 +423,8 @@ export function KvCacheAndFlashAttention() {
           </ColumnLayout>
           <Box variant="p">
             When the working set outgrows HBM after every lever above, the KV cache moves down the
-            hierarchy: TensorRT-LLM copies an evicted block&apos;s KV state to secondary memory.
+            hierarchy: once <code>host_cache_size</code> (default 0) is set, TensorRT-LLM copies an
+            evicted block&apos;s KV state to host memory.
             <Cite s={S.trtllmKvCache} /> <em>Flash as a Cache Tier for Inference</em> sizes host
             DRAM and local NVMe for that tier and weighs fetching a cached prefix against
             recomputing it, and the <em>KV Offloading and LMCache</em> section of the{' '}

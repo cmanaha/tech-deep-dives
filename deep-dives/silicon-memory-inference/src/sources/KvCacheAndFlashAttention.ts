@@ -69,9 +69,9 @@ export const S = {
   llama70bApi: {
     title: 'meta-llama/Llama-3.1-70B model metadata at sha 349b2dd (70,553,706,496 parameters)',
     publisher: 'Hugging Face',
-    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B',
+    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac',
     tier: 1,
-    accessed: '2026-10-16',
+    accessed: '2026-10-23',
   },
   llama31ModelCard: {
     title: 'meta-llama/llama-models Llama 3.1 MODEL_CARD.md at tag v0.2.0 (GQA, 128k context)',
@@ -120,9 +120,9 @@ export const S = {
   nkiAttentionCte: {
     title: 'AWS Neuron NKI Library: Attention CTE Kernel API Reference (Neuron 2.32.0)',
     publisher: 'AWS',
-    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/library/api/attention-cte.html',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/nki/library/api/attention-cte.html',
     tier: 1,
-    accessed: '2026-10-16',
+    accessed: '2026-10-23',
   },
 
   // Vendor pages, blogs and vendor-authored reports (Tier 2)

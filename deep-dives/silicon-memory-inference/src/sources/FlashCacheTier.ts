@@ -256,9 +256,9 @@ export const S = {
   llama70bApi: {
     title: 'meta-llama/Llama-3.1-70B model metadata at sha 349b2dd (70,553,706,496 parameters)',
     publisher: 'Hugging Face',
-    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B',
+    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac',
     tier: 1,
-    accessed: '2026-10-16',
+    accessed: '2026-10-23',
   },
   llama3Herd: {
     title: 'The Llama 3 Herd of Models (arXiv:2407.21783), Table 3: layers, heads and key/value heads',
