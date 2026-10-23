@@ -90,6 +90,12 @@ export const docs = {
     tier: 2,
     accessed: ACCESSED,
   },
+  neuronTrn3: {
+    title: 'AWS Neuron documentation (Neuron 2.33.0): Amazon EC2 Trn3 Architecture',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/arch/neuron-hardware/trn3-arch.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
   ultraservers: {
     title: 'AWS product page: Amazon EC2 UltraServers',
     url: 'https://aws.amazon.com/ec2/ultraservers/',

@@ -445,16 +445,12 @@ aws ec2 describe-instance-types \
               <Box variant="p">
                 No trn3 instance type of any size appears in the EFA supported-instance-types
                 tables, in the accelerated computing instance-types page, or in the us-east-1
-                price list as of 2026-10-23. That is why there is no Trn3 row above, and why no
-                EFA device count or per-instance EFA bandwidth for Trn3 can be stated from any
-                Tier 1 source today.
+                price list as of 2026-10-23. That is why there is no Trn3 row above. The Neuron
+                Trn3 architecture page gives EFA bandwidth per UltraServer only: 12,800 Gbps for
+                the 64-chip Gen1 UltraServer and 28,800 Gbps for the 144-chip Gen2 UltraServer{' '}
+                <SourceRef provenance="documented" doc={docs.neuronTrn3} />. It gives no
+                per-instance figure and no EFA device count.
               </Box>
-              <Alert type="warning" header="Ask for a direct citation before quoting 28.8 Tbps for Trn3">
-                A 28.8 Tbps aggregate scale-out bandwidth figure circulates for Trn3 UltraServers.
-                It does not appear in the AWS announcement, and 28.8 Tbps is also the published
-                P6e-GB200 UltraServer EFA figure, which makes a transcription collision the
-                likeliest explanation. Do not quote it without a direct citation.
-              </Alert>
             </SpaceBetween>
           </ExpandableSection>
 

@@ -27,7 +27,7 @@ export const PRICE_LIST_OHIO: DocRef = {
 };
 
 export const PRICE_LIST_ARCHIVE: DocRef = {
-  title: 'AWS Price List bulk API, Amazon EC2 version index (123 archived monthly versions)',
+  title: 'AWS Price List bulk API, Amazon EC2 version index (123 archived versions)',
   url: 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/index.json',
   tier: 1,
   accessed: '2026-10-23',
@@ -213,8 +213,8 @@ export const capacityBlockRates: CapacityBlockRate[] = [
   { item: 'u-p6e-gb200x36 UltraServer (36 GPUs)', regions: 'US East (Dallas) Local Zone', hourly: '$380.952' },
   { item: 'p6-b300.48xlarge', regions: 'us-east-1, us-west-2, US East (Atlanta) Local Zone, Seoul, Hyderabad, Jakarta, London; GovCloud (US-East) at $134.55', hourly: '$129.168' },
   { item: 'p6-b200.48xlarge', regions: 'us-east-1, us-east-2, us-west-2, Mumbai, Hyderabad, Stockholm, Paris; GovCloud (US-West, US-East) at $118.404', hourly: '$113.666' },
-  { item: 'p5en.48xlarge', regions: 'US, Europe and Asia Pacific regions, plus US East (Atlanta) Local Zone', hourly: '$63.158' },
-  { item: 'p5.48xlarge', regions: 'US, Europe, Asia Pacific and South America regions, plus US East (Atlanta) Local Zone', hourly: '$47.757' },
+  { item: 'p5en.48xlarge', regions: '11 Regions in the US, Europe and Asia Pacific, plus US East (Atlanta) Local Zone', hourly: '$63.158' },
+  { item: 'p5.48xlarge', regions: '11 Regions in the US, Europe, Asia Pacific and South America, plus US East (Atlanta) Local Zone', hourly: '$47.757' },
   { item: 'trn2.48xlarge', regions: 'us-east-2, Hyderabad', hourly: '$35.7608' },
   { item: 'trn1.32xlarge', regions: 'us-east-1, us-east-2, us-west-2, Mumbai, Melbourne, Sydney, Stockholm', hourly: '$9.532' },
 ];

@@ -377,8 +377,9 @@ export function Pricing() {
                 Every block ends at 11:30 UTC (Coordinated Universal Time) on its final day, and
                 instance-type blocks start terminating at 11:00 UTC{' '}
                 <SourceRef provenance="documented" doc={CAPACITY_BLOCK_UG_DOC} />. UltraServer
-                blocks start 60 minutes before the end, with an EventBridge event 10 minutes
-                before termination begins <SourceRef provenance="documented" doc={CAPACITY_BLOCK_DOC} />.
+                blocks start terminating 60 minutes before the end, with an EventBridge event 10
+                minutes before termination begins{' '}
+                <SourceRef provenance="documented" doc={CAPACITY_BLOCK_DOC} />.
               </Box>
               <Box variant="p">
                 On a P6e-GB200 UltraServer block, instances must be terminated at least 60 minutes
