@@ -98,6 +98,12 @@ const xferc = (path: string, lines?: string): CodeRef => ({
 });
 
 const docs = {
+  efaGa2019: doc(
+    'AWS News Blog: Now Available - Elastic Fabric Adapter (EFA) for Tightly-Coupled HPC Workloads (April 29, 2019)',
+    'https://aws.amazon.com/blogs/aws/now-available-elastic-fabric-adapter-efa-for-tightly-coupled-hpc-workloads/',
+    2,
+    REFRESHED
+  ),
   fsxEfa: doc('FSx for Lustre User Guide: EFA-enabled file systems', `${FSX_DOC}efa-file-systems.html`, 1, REFRESHED),
   fsxClients: doc(
     'FSx for Lustre User Guide: Configuring EFA clients',
@@ -169,6 +175,13 @@ const code = {
   pyDefault: pyc('awscrt/s3.py', 'L353-L354'),
   javaOptions: javac('src/main/java/software/amazon/awssdk/crt/s3/S3ClientOptions.java'),
   xferTarget: xferc('s3transfer/crt.py', 'L169-L184'),
+  pingpongMan: {
+    repo: 'ofiwg/libfabric',
+    ref: 'v2.7.0',
+    path: 'man/fi_pingpong.1.md',
+    lines: 'L28-L29',
+    read: REFRESHED,
+  },
   rdmOrder: {
     repo: 'ofiwg/libfabric',
     ref: 'v2.7.0',
@@ -680,7 +693,7 @@ const comparison: CompareRow[] = [
   },
   {
     axis: 'Latency',
-    efa: 'AWS publishes no per-message figure for EFA, so baseline it with fi_pingpong. SRD delivers out of order, and the libfabric RDM endpoint restores message order in software.',
+    efa: 'The EC2 User Guide gives no per-message latency for EFA, and the one AWS figure located (15.5 microseconds of one-way MPI latency) comes from the 2019 launch, so baseline it with fi_pingpong -p efa -e rdm. SRD delivers out of order, and the libfabric RDM endpoint restores message order in software.',
     fsx: 'Sub-millisecond for data already on the file system. A file backed by an S3 data repository pays a load penalty on first access.',
     s3: 'First-byte latency in the 100 to 200 millisecond range, which is why every fast S3 client is a concurrency engine.',
   },
@@ -1297,7 +1310,10 @@ export function StorageDataPaths() {
             <SourceRef provenance="documented" doc={docs.s3Perf} />; the S3 client's CPU ceiling,
             socket count and memory ladder{' '}
             <SourceRef provenance="code-derived" code={code.platformP5} />; EFA latency{' '}
-            <SourceRef provenance="documented" doc={docs.efa} /> and message ordering{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />{' '}
+            <SourceRef provenance="documented" doc={docs.efaGa2019} />, the fi_pingpong default
+            endpoint <SourceRef provenance="code-derived" code={code.pingpongMan} /> and message
+            ordering{' '}
             <SourceRef provenance="code-derived" code={code.rdmOrder} />.
           </Box>
 

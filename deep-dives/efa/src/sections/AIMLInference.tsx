@@ -58,6 +58,20 @@ const code: Record<string, CodeRef> = {
     lines: 'L1241-L1249',
     read: READ,
   },
+  vllmKvConvert: {
+    repo: 'vllm-project/vllm',
+    ref: 'v0.32.0',
+    path: 'vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py',
+    lines: 'L2701-L2724',
+    read: READ,
+  },
+  vllmKvConvertWhen: {
+    repo: 'vllm-project/vllm',
+    ref: 'v0.32.0',
+    path: 'vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py',
+    lines: 'L2944-L2950',
+    read: READ,
+  },
   vllmBackends: {
     repo: 'vllm-project/vllm',
     ref: 'v0.32.0',
@@ -102,10 +116,14 @@ export function AIMLInference() {
               <Box variant="h3">NIXL (NVIDIA Inference Xfer Library)</Box>
               <Box variant="p">
                 Purpose-built for disaggregated inference transfers. Over EFA, NIXL posts each
-                transfer from a host thread through libfabric, so the transfer takes{' '}
-                <strong>no SM (Streaming Multiprocessor)</strong> and the GPU keeps every SM on
-                token generation <SourceRef provenance="code-derived" code={code.nixlPostWrite} />.
-                NCCL launches a GPU kernel for each point-to-point send and receive{' '}
+                transfer from a host thread through libfabric, so the transfer itself launches no
+                GPU kernel and takes <strong>no SM (Streaming Multiprocessor)</strong>{' '}
+                <SourceRef provenance="code-derived" code={code.nixlPostWrite} />. vLLM still runs a
+                conversion on the decode GPU when prefill and decode use different block sizes or
+                KV layouts{' '}
+                <SourceRef provenance="code-derived" code={code.vllmKvConvert} />
+                <SourceRef provenance="code-derived" code={code.vllmKvConvertWhen} />. NCCL runs its
+                point-to-point sends and receives inside a GPU kernel{' '}
                 <SourceRef provenance="code-derived" code={code.ncclP2pKernel} />, and on an
                 inference GPU that is already compute-bound, those SMs come straight out of
                 throughput.

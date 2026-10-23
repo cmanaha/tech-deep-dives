@@ -28,6 +28,12 @@ const docs: Record<string, DocRef> = {
     tier: 1,
     accessed: REFRESHED,
   },
+  createEfa: {
+    title: 'EC2 User Guide: Create and attach an EFA to an Amazon EC2 instance',
+    url: `${EC2_DOC}create-efa.html`,
+    tier: 1,
+    accessed: REFRESHED,
+  },
   efaAcc: {
     title: 'EC2 User Guide: Maximize network bandwidth on instances with multiple network cards',
     url: `${EC2_DOC}efa-acc-inst-types.html`,
@@ -68,16 +74,17 @@ export function Overview() {
           </Box>
           <Box variant="p">
             <strong>EFA (Elastic Fabric Adapter)</strong> is a network interface for EC2 (Elastic Compute
-            Cloud) instances that enables applications to communicate at the{' '}
-            <strong>scale and performance of on-premises HPC clusters</strong>, but in the cloud. It achieves
+            Cloud) instances that enables applications to reach the{' '}
+            <strong>performance of an on-premises AI/ML or HPC cluster</strong> with the scalability
+            of the cloud. It achieves
             this through <strong>OS-bypass</strong>: applications talk directly to the network hardware,
-            skipping the kernel network stack entirely. EFA provides lower and more consistent latency
-            and higher throughput for cloud-based AI, ML and HPC workloads{' '}
+            skipping the kernel network stack entirely. AWS describes the result as lower and more
+            consistent latency and higher throughput than the operating system&apos;s TCP/IP path{' '}
             <SourceRef provenance="documented" doc={docs.efa} />.
           </Box>
           <Box variant="p">
-            The one comparative latency figure AWS publishes is about the tail: relaxing
-            in-order packet delivery dropped p99 tail latency by around a factor of ten{' '}
+            The one comparative latency figure this research located from AWS is about the tail:
+            relaxing in-order packet delivery dropped p99 tail latency by around a factor of ten{' '}
             <SourceRef provenance="documented" doc={docs.hpcBlog} />. A collective finishes when its slowest
             member finishes, so the tail is what decides the step time. The SRD (Scalable Reliable Datagram)
             section carries that trade in full.
@@ -146,12 +153,14 @@ export function Overview() {
           <div>
             <Box variant="h3">1. Hardware</Box>
             <Box variant="p">
-              A network device you attach to a supported EC2 instance, chosen at launch time. It comes in two
+              A network device you attach to a supported EC2 instance, at launch or while the instance
+              is stopped, never while it runs{' '}
+              <SourceRef provenance="documented" doc={docs.createEfa} />. It comes in two
               shapes: an EFA (EFA with ENA) interface, which creates both an EFA device and an ENA (Elastic
               Network Adapter) device, and an EFA-only interface, which creates just the EFA device and is
               always a secondary interface with no IP address{' '}
-              <SourceRef provenance="documented" doc={docs.efa} />. Which shape you attach is decided at
-              launch, and the EFA Device section covers that choice along with network cards and rails.
+              <SourceRef provenance="documented" doc={docs.efa} />. The EFA Device section covers that
+              choice along with network cards and rails.
             </Box>
           </div>
           <div>

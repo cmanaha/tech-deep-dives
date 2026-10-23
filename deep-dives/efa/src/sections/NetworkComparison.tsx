@@ -30,6 +30,12 @@ const REFRESHED = '2026-10-23';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
 const docs: Record<string, DocRef> = {
+  efaGa2019: {
+    title: 'AWS News Blog: Now Available - Elastic Fabric Adapter (EFA) for Tightly-Coupled HPC Workloads (April 29, 2019)',
+    url: 'https://aws.amazon.com/blogs/aws/now-available-elastic-fabric-adapter-efa-for-tightly-coupled-hpc-workloads/',
+    tier: 2,
+    accessed: REFRESHED,
+  },
   efa: {
     title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
     url: `${EC2_DOC}efa.html`,
@@ -153,9 +159,11 @@ const comparisonData: ComparisonRow[] = [
     feature: 'Latency',
     efa: (
       <>
-        Lower and more consistent latency for AI, ML and HPC workloads. AWS publishes no
-        per-message figure{' '}
-        <SourceRef provenance="documented" doc={docs.efa} />
+        Lower and more consistent latency for AI, ML and HPC workloads{' '}
+        <SourceRef provenance="documented" doc={docs.efa} />. The EC2 User Guide gives no
+        per-message figure; the one AWS figure located, 15.5 microseconds of one-way MPI latency
+        in a cluster placement group, comes from the 2019 launch post{' '}
+        <SourceRef provenance="documented" doc={docs.efaGa2019} />
       </>
     ),
     tcp: 'Baseline. Every message crosses the kernel stack',

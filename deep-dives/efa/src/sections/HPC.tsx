@@ -185,8 +185,9 @@ export function HPC() {
                 EFA installer ships instead of its own, and <code>I_MPI_OFI_PROVIDER=efa</code> so
                 a misconfigured node fails at start-up instead of falling back to TCP{' '}
                 <SourceRef provenance="documented" doc={docs.efaStart} />.{' '}
-                <code>I_MPI_MULTIRAIL=1</code> on instances with two or more EFA interfaces is the
-                setting behind the WRF result above.
+                Intel MPI 2021.6 to 2021.11 needs <code>I_MPI_MULTIRAIL=1</code> to use both EFA
+                devices, the setting behind the WRF result above; 2021.12 and later use both without
+                it <SourceRef provenance="documented" doc={docs.multirail} />.
               </Box>
             </div>
           </ColumnLayout>

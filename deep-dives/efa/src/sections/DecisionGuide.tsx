@@ -402,8 +402,8 @@ export function DecisionGuide() {
           >
             <SpaceBetween size="xs">
               <Box variant="p">
-                Karpenter sets zone and placement group. On a supported instance type, the
-                network-node labels are written by the AWS cloud controller manager that EKS runs in
+                Karpenter sets zone and placement group. On a supported instance type, in a Region
+                where DescribeInstanceTopology is available, the network-node labels are written by the AWS cloud controller manager that EKS runs in
                 the control plane, once, when the node registers, whatever provisioned it{' '}
                 <SourceRef provenance="documented" doc={docs.eksTopologyLabels} />. The EC2 Instance
                 Topology API section carries the label details and the ranking that uses them.
@@ -521,8 +521,8 @@ export function DecisionGuide() {
           <Box variant="p">
             <strong>ODCRs:</strong> open-ended duration{' '}
             <SourceRef provenance="documented" doc={docs.odcr} />. The placement group is chosen
-            when the reservation is created, and expanding an existing reservation raises
-            insufficient-capacity risk{' '}
+            when the reservation is created, and growing reserved capacity in the group, by
+            modifying a reservation or by adding one, raises insufficient-capacity risk{' '}
             <SourceRef provenance="documented" doc={docs.crCpg} />.
           </Box>
           <Box variant="p">
