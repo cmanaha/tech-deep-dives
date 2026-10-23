@@ -4,7 +4,7 @@ Status: **PASS** (0 finding(s))
 
 | field | value |
 | --- | --- |
-| generated | 2026-08-05T23:05:35.279Z |
+| generated | 2026-10-23T20:37:38.591Z |
 | viewport | 390 x 844 |
 | base URL | http://127.0.0.1:4173/ |
 | sections visited | 20 |
@@ -155,7 +155,7 @@ These do not change the verdict above. They are a human judgement call.
 
 **sm-gates-title - A SageMaker training job runs NCCL over EFA after passing four gates: an EFA-capable instance type, a containe...**
 
-- smallest label renders at 3.2px (32 of 32 labels below 8px). The diagram is 308px wide here against a 960-unit viewBox.
+- smallest label renders at 3.2px (31 of 31 labels below 8px). The diagram is 308px wide here against a 960-unit viewBox.
 
 **sm-dpd-title - HyperPod disaggregated prefill and decode moves the key-value cache from a prefiller pod to a decoder pod on a...**
 
