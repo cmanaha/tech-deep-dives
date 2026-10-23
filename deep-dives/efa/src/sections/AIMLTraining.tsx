@@ -45,7 +45,6 @@ const lfab = (path: string, lines?: string): CodeRef => ({
 });
 
 const code = {
-  tunerV2: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L140-L159'),
   tunerV3: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L184-L188'),
   tunerV6: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L190-L246'),
   railObjects: plugin('include/nccl_ofi_rdma.h', 'L1414-L1457'),
@@ -55,6 +54,8 @@ const code = {
   writeTopoFile: plugin('src/nccl_ofi_rdma.cpp', 'L230-L299'),
   writeTopoGate: plugin('src/nccl_ofi_rdma.cpp', 'L7199-L7210'),
   topoEnv: plugin('src/platform-aws.cpp', 'L764-L790'),
+  topoRows: plugin('src/platform-aws.cpp', 'L88-L105'),
+  topoRowG5: plugin('src/platform-aws.cpp', 'L248-L250'),
   tunerPluginEnv: plugin('src/platform-aws.cpp', 'L603-L661'),
   tunerPluginCall: plugin('src/platform-aws.cpp', 'L757-L761'),
   gdrProbe: plugin('src/nccl_ofi_ofiutils.cpp', 'L345-L372'),
@@ -64,6 +65,7 @@ const code = {
   paramEager: plugin('include/nccl_ofi_param.h', 'L223-L229'),
   ginGdaki: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L1256-L1274'),
   gdaOps: lfab('prov/efa/src/fi_ext_efa.h', 'L11'),
+  gdaOpsDirect: lfab('prov/efa/src/efa_domain.c', 'L803-L808'),
   hmemThresholds: lfab('prov/efa/src/efa_hmem.c', 'L45-L92'),
   rdmCaps: lfab('prov/efa/src/efa_prov_info.c', 'L569-L572'),
   rdmSize: lfab('prov/efa/src/efa_prov_info.c', 'L622-L625'),
@@ -94,6 +96,13 @@ const docs: Record<string, DocRef> = {
     title:
       'Shoeybi et al., Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism (arXiv:1909.08053)',
     url: 'https://arxiv.org/abs/1909.08053',
+    tier: 3,
+    accessed: REFRESHED,
+  },
+  megatronGpu: {
+    title:
+      'Narayanan et al., Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM (arXiv:2104.04473)',
+    url: 'https://arxiv.org/abs/2104.04473',
     tier: 3,
     accessed: REFRESHED,
   },
@@ -152,8 +161,7 @@ export function AIMLTraining() {
             Each strategy splits the model and batch differently, and the split decides the traffic
             shape: one large allreduce per step, allreduces added to every forward and backward
             pass, all-to-all exchanges sized by routing, or point-to-point activation handoffs. Find
-            your strategy below and you know which property of the fabric you are buying, bandwidth
-            or latency.
+            your strategy below and you know what the fabric has to carry.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -186,12 +194,14 @@ export function AIMLTraining() {
                 <strong>point-to-point</strong> activation transfers between stages.
               </Box>
               <Box variant="p">
-                Tensor parallelism is latency-sensitive (many small messages) and pipeline
-                parallelism is bandwidth-sensitive (large activation tensors). EFA serves both: low
-                latency for TP (Tensor Parallelism), high bandwidth for PP (Pipeline Parallelism).
+                Those allreduces run inside every layer, which is why the hybrid layout below keeps
+                TP (Tensor Parallelism) on NVLink. Pipeline parallelism sends activations
+                point-to-point only between stages, which is far cheaper{' '}
+                <SourceRef provenance="documented" doc={docs.megatronGpu} label="tier 3: paper" />, so
+                PP (Pipeline Parallelism) is the split that crosses nodes over EFA.
               </Box>
               <StatusIndicator type="success">
-                EFA critical, especially for tensor parallelism across nodes
+                EFA carries the pipeline stages between nodes; keep TP on NVLink
               </StatusIndicator>
             </div>
             <div>
@@ -203,12 +213,14 @@ export function AIMLTraining() {
               </Box>
               <Box variant="p">
                 The multi-path routing of SRD (Scalable Reliable Datagram) handles asymmetric
-                traffic well. EFA also supports GPUDirect Async{' '}
-                <SourceRef provenance="code-derived" code={code.gdaOps} />, which the aws-ofi-nccl
-                plugin consumes through the GDAKI (GPUDirect Async Kernel-Initiated) export of its
-                GIN (GPU-Initiated Networking) subsystem{' '}
-                <SourceRef provenance="code-derived" code={code.ginGdaki} />. The NCCL over EFA
-                section has the conditions a job has to meet to use it.
+                traffic well. EFA also supports GPUDirect Async on the efa-direct fabric only{' '}
+                <SourceRef provenance="code-derived" code={code.gdaOps} />
+                <SourceRef provenance="code-derived" code={code.gdaOpsDirect} />, which the
+                aws-ofi-nccl plugin consumes through the GDAKI (GPUDirect Async Kernel-Initiated)
+                export of its GIN (GPU-Initiated Networking) subsystem{' '}
+                <SourceRef provenance="code-derived" code={code.ginGdaki} />. The section on NCCL
+                (NVIDIA Collective Communications Library) over EFA has the conditions a job has to
+                meet to use it.
               </Box>
               <StatusIndicator type="info">
                 EFA beneficial: routing decisions set the all-to-all volume
@@ -283,8 +295,8 @@ export function AIMLTraining() {
                 with zero contention between compute and communication and on-chip traffic
                 prioritization so time-sensitive data moves first, which minimizes the straggler
                 effect <SourceRef provenance="documented" doc={docs.trainium} />. That is a
-                structural difference from the CUDA and NCCL (NVIDIA Collective Communications
-                Library) path, where a collective occupies GPU streaming multiprocessors. No AWS
+                structural difference from the CUDA and NCCL path, where a collective occupies GPU
+                streaming multiprocessors. No AWS
                 figure for the resulting speedup was located during this research, and the speedup
                 is workload-dependent.
               </Box>
@@ -310,17 +322,17 @@ export function AIMLTraining() {
             them to EFA hardware commands; and the device moves the bytes. The NCCL over EFA section
             draws that stack and says which layer owns which environment variables.
           </Box>
-
-          <ExpandableSection headerText="NCCL environment variables for EFA: the two worth setting">
-            <SpaceBetween size="s">
-              <Box variant="p">
-                Two lines earn a place in the launcher. They make the plugin report what it loaded
-                and let libfabric say what it selected.
-              </Box>
-              <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>
+          <Box variant="p">
+            Two lines earn a place in the launcher. They make the plugin report what it loaded and
+            let libfabric say what it selected.
+          </Box>
+          <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>
 {`NCCL_DEBUG=INFO     # plugin init banner, provider, device count, rail groups
 FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
-              </pre>
+          </pre>
+
+          <ExpandableSection headerText="The rest of the usual EFA environment block">
+            <SpaceBetween size="s">
               <Box variant="p">
                 The rest of the usual EFA environment block either applies only to plugin releases
                 from 2023 and earlier or is best left at its defaults: <code>FI_PROVIDER=efa</code>{' '}
@@ -398,16 +410,13 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 <SourceRef provenance="code-derived" code={code.gdrForce} />.
               </Box>
               <Box variant="p">
-                <strong>Algorithm selection:</strong> the <code>aws-ofi-nccl</code> tuner writes
-                into <code>collCostTable</code>, the algorithm by protocol cost matrix, making the
-                combinations it prefers cheaper. NCCL then picks the minimum, so the tuner biases a
-                choice NCCL still makes. The one entry point that switches the tuner off when{' '}
-                <code>NCCL_ALGO</code> or <code>NCCL_PROTO</code> is set is v2, serving NCCL 2.21.x{' '}
-                <SourceRef provenance="code-derived" code={code.tunerV2} />; v3 for NCCL 2.22.3 and
-                later <SourceRef provenance="code-derived" code={code.tunerV3} /> and v6 for NCCL
-                2.30.3 and later <SourceRef provenance="code-derived" code={code.tunerV6} /> run the
-                tuner either way. So on anything past NCCL 2.21.x, setting{' '}
-                <code>NCCL_ALGO</code> narrows the table rather than disabling the tuner.
+                <strong>Algorithm selection:</strong> the <code>aws-ofi-nccl</code> tuner makes the
+                algorithm and protocol combinations it prefers cheaper in{' '}
+                <code>collCostTable</code>, and NCCL still picks the minimum. On NCCL 2.22.3 and
+                later, setting <code>NCCL_ALGO</code> narrows the table rather than disabling the
+                tuner <SourceRef provenance="code-derived" code={code.tunerV3} />
+                <SourceRef provenance="code-derived" code={code.tunerV6} />. The NCCL over EFA
+                section has the version-by-version account.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -425,13 +434,7 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               <Alert type="error">
                 <strong>NVIDIA Fabric Manager on P4d/P5:</strong> run the{' '}
                 <code>nvidia-fabricmanager</code> systemd service to manage NVSwitch, at a version
-                that <strong>exactly matches</strong> the NVIDIA kernel module. A mismatch takes all
-                8 GPUs out of inter-GPU operations.
-              </Alert>
-              <Alert type="warning">
-                <strong>Disk space:</strong> CUDA toolkit requires 10-20 GiB beyond base AMI (Amazon
-                Machine Image). Allocate at minimum a 30 GiB root volume, or the EFA installer fails
-                silently.
+                that <strong>exactly matches</strong> the NVIDIA kernel module.
               </Alert>
               <Alert type="info">
                 <strong>nouveau driver:</strong> blacklist it before installing the NVIDIA
@@ -445,7 +448,10 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
             A topology XML tells NCCL which network device sits under the same PCIe switch as each
             GPU, and so which device carries that GPU&apos;s inter-node traffic. With{' '}
             <code>NCCL_TOPO_FILE</code> unset, the plugin supplies one itself: a packaged file on
-            p4d, p4de and g5.48xlarge <SourceRef provenance="code-derived" code={code.topoEnv} />,
+            p4d, p4de and g5.48xlarge at v1.22.0{' '}
+            <SourceRef provenance="code-derived" code={code.topoRows} />
+            <SourceRef provenance="code-derived" code={code.topoRowG5} />
+            <SourceRef provenance="code-derived" code={code.topoEnv} />,
             and a file written on the running instance where a GPU has more than one EFA device, as
             on P5, P5en and P6-B300{' '}
             <SourceRef provenance="code-derived" code={code.writeTopoFile} />

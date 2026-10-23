@@ -150,7 +150,8 @@ export function InstanceSupport() {
           That single fact decides the EFA generation of every row below, and with it the RDMA
           (Remote Direct Memory Access) capability and the bandwidth ceiling, apart from the RDMA
           exceptions the generation cards name. EFA-capable types run from 25 Gbps at the small end
-          (g6.8xlarge, gr6.8xlarge, vt1.24xlarge) to 6,400 Gbps on p6-b300.48xlarge{' '}
+          (g6.8xlarge, gr6.8xlarge, vt1.24xlarge){' '}
+          <SourceRef provenance="documented" doc={docs.ac} /> to 6,400 Gbps on p6-b300.48xlarge{' '}
           <SourceRef provenance="documented" doc={docs.efaAcc} />, and the peak steps up with the
           Nitro version: 400 Gbps on Nitro v3, 3,200 Gbps on Nitro v4 and v5, 6,400 Gbps on Nitro
           v6.
@@ -407,11 +408,12 @@ aws ec2 describe-instance-types \
               </Box>
               <Alert type="warning" header="Second P6e-GB200 tension, on bandwidth">
                 The accelerated computing page lists p6e-gb200.36xlarge at 3,200 Gbps with 17
-                network cards. The multi-network-card guide caps EFA at 1,600 Gbps for the same
-                type{' '}
-                <SourceRef provenance="documented" doc={docs.efaAcc} />. These reconcile: 3,200
-                Gbps is total physical card capacity, and the 1,600 Gbps EFA ceiling comes from
-                the GPU sharing topology. Anyone spot-checking against the instance-types page
+                network cards <SourceRef provenance="documented" doc={docs.ac} />. The
+                multi-network-card guide caps EFA at 1,600 Gbps for the same type{' '}
+                <SourceRef provenance="documented" doc={docs.efaAcc} />. Our arithmetic reconciles
+                them from the sharing rules below: eight physical cards at 400 Gbps each give 3,200
+                Gbps, and four GPU-shared pairs at 400 Gbps each give the 1,600 Gbps EFA ceiling.
+                Anyone spot-checking against the instance-types page
                 alone will read 3,200 and think this table is wrong.
               </Alert>
             </SpaceBetween>

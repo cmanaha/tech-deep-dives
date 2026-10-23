@@ -691,8 +691,8 @@ export function TopologyApi() {
                 bottom node as the one connected to the instance{' '}
                 <SourceRef provenance="documented" doc={docs.topoHow} />. No AWS mapping from layer
                 index to a named datacenter construct, such as spine, aggregation, leaf, top of rack
-                or rack, was located during this research. Any
-                page that tells you layer iii is a top-of-rack switch is inferring it.
+                or rack, was located during this research. Treat any page that names layer iii a
+                top-of-rack switch as inference unless it cites an AWS source.
               </Box>
               <Box variant="p">
                 Treat the index as a depth. Depth ordering is documented and sufficient for
@@ -802,8 +802,7 @@ ranked = [host
               <Box variant="p">
                 Open MPI v4.1 uses <code>--mca rmaps seq</code>. Open MPI v5.0 uses{' '}
                 <code>--map-by seq</code>. Omit the flag and the sort is discarded silently, with
-                no warning and no error. This is the single most common way topology-aware ranking
-                ends up doing nothing.
+                no warning and no error.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1399,8 +1398,9 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
                 repeated.
               </Box>
               <Box variant="p">
-                <strong>Layer to hardware mapping.</strong> AWS publishes depth. Nothing in the
-                documentation binds layer i, ii or iii to a spine, aggregation or leaf tier.
+                <strong>Layer to hardware mapping.</strong> AWS publishes depth. No documentation
+                binding layer i, ii or iii to a spine, aggregation or leaf tier was located during
+                this research.
               </Box>
             </SpaceBetween>
           </ExpandableSection>

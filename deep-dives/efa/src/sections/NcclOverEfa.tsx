@@ -149,6 +149,7 @@ const code = {
   ncclChunk: nccl('src/enqueue/enqueue.cc', 'L2355-L2365'),
   ncclBuffsize: nccl('src/init.cc', 'L1006'),
   ncclNetVersions: nccl('src/plugin/net.cc', 'L40-L42'),
+  ncclNetInternal: nccl('src/plugin/net.cc', 'L333-L337'),
   // GPU-initiated networking.
   ginProxyExports: plugin('src/rdma/gin/nccl_ofi_gin_api.cpp', 'L566-L617'),
   ginGdakiExport: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L1256-L1274'),
@@ -1148,7 +1149,9 @@ export function NcclOverEfa() {
               <Box variant="h3">What each version drift costs you</Box>
               <Box variant="p">
                 Too-new NCCL against a too-old plugin: NCCL looks for a network plugin symbol beyond
-                the exported range and falls back to its own transport. Too-old NCCL: the tuner
+                the exported range and falls back to its own transport{' '}
+                <SourceRef provenance="code-derived" code={code.ncclNetVersions} />
+                <SourceRef provenance="code-derived" code={code.ncclNetInternal} />. Too-old NCCL: the tuner
                 binds to the v2 interface and the NCCL_ALGO bailout is live again. Too-old
                 libfabric: the plugin refuses EFA at init. A platform name outside the table: the
                 job runs with no injected defaults and a 75 microsecond latency hint{' '}

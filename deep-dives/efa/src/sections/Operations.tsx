@@ -155,6 +155,7 @@ const code = {
   selectedProvider: plugin('src/nccl_ofi_net.cpp', 'L643-L646'),
   pluginName: plugin('src/nccl_ofi_interface_nvidia.cpp', 'L802-L803'),
   topoMemfd: plugin('src/nccl_ofi_rdma.cpp', 'L235-L295'),
+  topoGate: plugin('src/nccl_ofi_rdma.cpp', 'L7199-L7210'),
   topoDefer: plugin('src/platform-aws.cpp', 'L768-L790'),
   envVarDoc: plugin('doc/efa-env-var.md'),
   usingNetwork: nccl('src/init.cc', 'L557'),
@@ -472,11 +473,11 @@ const counterRows: CounterRow[] = [
     problem: 'rdma_write_wr_err, for the same reason.',
   },
   {
-    group: 'Network (SRD)',
+    group: 'Network (SRD, Scalable Reliable Datagram)',
     counters:
       'retrans_bytes, retrans_pkts, retrans_timeout_events, unresponsive_remote_events, impaired_remote_conn_events',
     meaning:
-      'Available on Nitro v4 and later only. retrans_timeout_events counts times SRD (Scalable Reliable Datagram) traffic timed out and resulted in a network path change. impaired_remote_conn_events counts times a connection entered an impaired state, resulting in a reduced throughput rate limit.',
+      'Available on Nitro v4 and later only. retrans_timeout_events counts times SRD traffic timed out and resulted in a network path change. impaired_remote_conn_events counts times a connection entered an impaired state, resulting in a reduced throughput rate limit.',
     problem:
       'Yes, this is the group that matters. Alert on the rate of change of the three event counters.',
   },
@@ -519,8 +520,13 @@ const failureRows: FailureRow[] = [
     symptom: 'Correct results, uneven rail usage, worse scaling than an identical cluster.',
     detect:
       'A healthy P5 run has NCCL_TOPO_FILE unset. Where it is set, the plugin logs NCCL_TOPO_FILE environment variable is already set to and defers to your file, and the topology it generated goes unused.',
-    fix: 'Leave NCCL_TOPO_FILE unset on P5 and later so the plugin writes its own into a memfd. The static XML files that ship with the plugin cover p4d, p4de and g5.48xl only.',
-    src: <SourceRef provenance="code-derived" code={code.topoDefer} />,
+    fix: 'Leave NCCL_TOPO_FILE unset so the plugin can write its own into a memfd wherever a GPU has more than one EFA device. The static XML files that ship with the plugin cover p4d, p4de and g5.48xl only.',
+    src: (
+      <>
+        <SourceRef provenance="code-derived" code={code.topoDefer} />
+        <SourceRef provenance="code-derived" code={code.topoGate} />
+      </>
+    ),
   },
   {
     id: 'huge',
@@ -581,8 +587,8 @@ const failureRows: FailureRow[] = [
     mode: 'NVIDIA device plugin MOFED (Mellanox OpenFabrics Enterprise Distribution) default in containers',
     symptom: 'A pod that asked for a subset of the EFA devices gets the wrong ones, or gets all of them.',
     detect:
-      'NVIDIA k8s-device-plugin v0.19.0 to v0.19.2 default mofed-enabled to true, which mounts every /dev/infiniband/uverbs device into GPU containers and conflicts with the EFA device plugin. v0.19.3 (June 2026) through v0.20.1 default it to false; the EKS (Elastic Kubernetes Service) guide gives the v0.19.0 default with no upper bound.',
-    fix: 'Set mofedEnabled to false on the NVIDIA device plugin chart, or MOFED_ENABLED on the GPU operator, to cover v0.19.0 to v0.19.2. EKS Auto Mode leaves it off.',
+      'NVIDIA k8s-device-plugin v0.19.0 to v0.19.2 default mofed-enabled to true, which mounts every /dev/infiniband/uverbs device into GPU containers and conflicts with the EFA device plugin. v0.19.3 (June 2026) through v0.20.1 default it to false; the EKS guide gives the v0.19.0 default with no upper bound.',
+    fix: 'Set mofedEnabled to false on the NVIDIA device plugin chart, or MOFED_ENABLED on the GPU operator, to cover v0.19.0 to v0.19.2. EKS (Elastic Kubernetes Service) Auto Mode leaves it off.',
     src: (
       <>
         <SourceRef provenance="code-derived" code={code.mofedDefaultOn} />{' '}
@@ -760,13 +766,15 @@ fi_info -p efa -t FI_EP_RDM | grep -c '^provider: efa'`}</pre>
                 fabric arrived in v2.1.0{' '}
                 <SourceRef provenance="code-derived" code={code.fabricDirectFirst} />, and installer
                 1.51.0 ships 2.7.0amzn2.0{' '}
+                <SourceRef provenance="documented" doc={docs.installer} />. The line shows which of
+                the two fabrics you got{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   doc={docs.startNccl}
                   code={code.fabricNames}
                   conflict="fabric: EFA-fe80::94:3dff:fe89:1b70"
                 />
-                . The line shows which of the two fabrics you got.
+                .
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -804,9 +812,9 @@ fi_pingpong -p efa -e rdm -I 1000 -S all 10.0.1.42
             <SourceRef provenance="code-derived" code={code.pingpongGetinfo} />, after its TCP
             control connection to the peer on port 47592 is up{' '}
             <SourceRef provenance="code-derived" code={code.pingpongCtrlPort} />
-            <SourceRef provenance="code-derived" code={code.pingpongOrder} />. So the error points
-            at the EFA device or the -p and -e flags, and a peer the security group blocks would fail
-            earlier, at that control connection.
+            <SourceRef provenance="code-derived" code={code.pingpongOrder} />. Our reading of that
+            order: the error points at the EFA device or the -p and -e flags, and a security group
+            that blocks the control port fails earlier, at that control connection.
           </Box>
           <Box variant="p">
             The usec/xfer column is the average microseconds per outbound transfer{' '}
@@ -1019,7 +1027,7 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
           <Alert type="warning" header="EFA counters come from the RDMA subsystem, and ethtool reads the ENA side">
             <SpaceBetween size="xs">
               <Box variant="p">
-                The EFA driver registers an InfiniBand device and nothing else. A search of the whole
+                The EFA driver registers an InfiniBand device and no network device. A search of the whole
                 driver source at the pinned commit for net_device, register_netdev or ethtool returns
                 no matches{' '}
                 <SourceRef provenance="code-derived" code={code.driverSrc} label="grep" />. There is no
@@ -1131,9 +1139,11 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
                 <SourceRef provenance="code-derived" code={code.envVarDoc} />.
               </Box>
               <Box variant="p">
-                <strong>Topology.</strong> On P5 and later the plugin writes a NCCL topology into an
-                anonymous in-memory file and points NCCL_TOPO_FILE at it, unless the variable is
-                already set <SourceRef provenance="code-derived" code={code.topoMemfd} />; the
+                <strong>Topology.</strong> Where a GPU has more than one EFA device, the plugin
+                writes a NCCL topology into an anonymous in-memory file and points NCCL_TOPO_FILE at
+                it, unless the variable is already set{' '}
+                <SourceRef provenance="code-derived" code={code.topoMemfd} />
+                <SourceRef provenance="code-derived" code={code.topoGate} />; the
                 platform layer defers the same way and logs that the variable is already set{' '}
                 <SourceRef provenance="code-derived" code={code.topoDefer} />. Copying an
                 NCCL_TOPO_FILE line out of an older runbook is an instruction to ignore everything the

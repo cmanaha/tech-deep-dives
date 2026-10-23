@@ -9,6 +9,7 @@ import Badge from '@cloudscape-design/components/badge';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { SourceRef } from '@tech-deep-dives/shared';
+import type { DocRef } from '@tech-deep-dives/shared';
 
 import {
   AC_DOC,
@@ -19,6 +20,7 @@ import {
   EFA_DOC,
   EFA_START_DOC,
   HPC_DOC,
+  PLACEMENT_GROUPS_DOC,
   PRICE_LIST_ARCHIVE,
   PRICE_LIST_VIRGINIA,
   SAVINGS_PLANS_DOC,
@@ -34,13 +36,14 @@ interface CostItem {
   component: string;
   cost: string;
   notes: string;
+  doc: DocRef;
 }
 
 const costBreakdown: CostItem[] = [
-  { component: 'EFA interface', cost: 'Free', notes: 'EFA can be enabled "on any supported instance at no additional cost".' },
-  { component: 'Instance premium', cost: 'None', notes: 'The same SKU is billed whether or not you attach an EFA.' },
-  { component: 'Cluster placement group', cost: 'Free', notes: 'A placement group is a scheduling constraint with no line item.' },
-  { component: 'What you actually pay', cost: 'Instance rate', notes: 'You pay for the instances. EFA-capable types skew toward the largest size in each family.' },
+  { component: 'EFA interface', cost: 'Free', notes: 'EFA can be enabled "on any supported instance at no additional cost".', doc: EFA_DOC },
+  { component: 'Instance premium', cost: 'None', notes: 'The same SKU (stock keeping unit) is billed whether or not you attach an EFA.', doc: EFA_DOC },
+  { component: 'Cluster placement group', cost: 'Free', notes: 'Creating a placement group carries no charge.', doc: PLACEMENT_GROUPS_DOC },
+  { component: 'What you actually pay', cost: 'Instance rate', notes: 'You pay for the instances.', doc: EFA_DOC },
 ];
 
 // A grey badge, not a citation. The point is that this column is our division.
@@ -99,7 +102,7 @@ export function Pricing() {
           {
             id: 'source',
             header: 'Source',
-            cell: () => <SourceRef provenance="documented" doc={EFA_DOC} />,
+            cell: (item) => <SourceRef provenance="documented" doc={item.doc} />,
           },
         ]}
         items={costBreakdown}
@@ -119,9 +122,7 @@ export function Pricing() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The rates are us-east-1, Linux, Shared tenancy, On-Demand. What a Gbps of EFA bandwidth
-            costs on each family is the number that decides whether you scale out on cheap
-            network-optimized instances or pay the accelerator premium.
+            The rates are us-east-1, Linux, Shared tenancy, On-Demand.
           </Box>
           <Table
             columnDefinitions={[
@@ -279,9 +280,9 @@ export function Pricing() {
             Every On-Demand rate on this page was read out of the AWS Price List bulk API,
             publication version 20261022231453, under one strict filter: Linux, Shared tenancy,
             TermType=OnDemand, CapacityStatus=Used, MarketOption=OnDemand, no pre-installed
-            software, no license. The MarketOption filter carries weight: the same SKU (stock
-            keeping unit) also has a MarketOption=CapacityBlock row priced at zero, which quietly
-            corrupts any naive search of the file.{' '}
+            software, no license. The MarketOption filter carries weight: the same SKU also has
+            a MarketOption=CapacityBlock row priced at zero, which quietly corrupts any naive
+            search of the file.{' '}
             <SourceRef provenance="documented" doc={PRICE_LIST_VIRGINIA} label="doc: price list" />
           </Box>
         </SpaceBetween>
@@ -394,9 +395,9 @@ export function Pricing() {
           </ColumnLayout>
 
           <Box variant="p">
-            Our arithmetic, Tier 2 block rate over Tier 1 us-east-1 On-Demand rate: a block hour
-            costs 99.8% of On-Demand on p6-b200 and p5en, 90.7% on p6-b300 and 86.8% on p5{' '}
-            <DerivedBadge />.
+            Our arithmetic, Tier 2 block rate over Tier 1 us-east-1 On-Demand rate, at the block
+            rates scheduled to change in January 2027: a block hour costs 99.8% of On-Demand on
+            p6-b200 and p5en, 90.7% on p6-b300 and 86.8% on p5 <DerivedBadge />.
           </Box>
 
           <ExpandableSection
@@ -467,7 +468,6 @@ export function Pricing() {
                 EFA-enabled instances in a cluster placement group as it launches the instances into
                 a low-latency group in a single Availability Zone."{' '}
                 <SourceRef provenance="documented" doc={EFA_START_DOC} label="doc: efa-start" />
-                {' '}Skipping it is legal and usually a mistake.
               </Box>
             </div>
             <div>

@@ -47,6 +47,13 @@ export const EFA_START_DOC: DocRef = {
   accessed: '2026-10-23',
 };
 
+export const PLACEMENT_GROUPS_DOC: DocRef = {
+  title: 'Amazon EC2 User Guide: Placement groups for your Amazon EC2 instances',
+  url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html',
+  tier: 1,
+  accessed: '2026-10-23',
+};
+
 export const EFA_ACC_DOC: DocRef = {
   title: 'Amazon EC2 User Guide: Maximize network bandwidth on instances with multiple network cards',
   url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-acc-inst-types.html',
