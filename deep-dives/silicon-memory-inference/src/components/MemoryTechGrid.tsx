@@ -38,7 +38,7 @@ const rows: Row[] = [
     sub: "on the CPU's own memory channels",
     cells: [
       {
-        name: 'DDR5 RDIMM',
+        name: 'DDR5 DIMM',
         pills: [
           { text: 'Host', tone: 'host' },
           { text: 'Socketed DIMM', tone: 'host' },
@@ -63,7 +63,7 @@ const rows: Row[] = [
           { label: 'Capacity', value: 'Up to 3 TB per socket', note: 'Xeon 6 6900P' },
           { label: 'Latency', value: 'No figure located', note: 'no vendor figure in this research' },
         ],
-        where: 'On Xeon 6 6900P; EPYC 9006 announced',
+        where: 'On Xeon 6 6900P; EPYC 9006 in production',
         fill: '#ecf7ec',
         stroke: '#037f0c',
       },
@@ -75,7 +75,7 @@ const rows: Row[] = [
         ],
         metrics: [
           { label: 'Bandwidth', value: 'Grace: 384-500 GB/s', note: 'Vera: up to 1.2 TB/s per CPU' },
-          { label: 'Capacity', value: 'Grace: 480 GB', note: 'Vera: 1.5 TB (NVIDIA) or 2 TB (Micron)' },
+          { label: 'Capacity', value: 'Grace: up to 480 GB', note: 'Vera: 1.5 TB (NVIDIA) or 2 TB (Micron)' },
           { label: 'Latency', value: 'No figure located', note: 'no vendor figure in this research' },
         ],
         where: 'On Grace; Vera uses SOCAMM2 modules',
@@ -288,7 +288,7 @@ export function MemoryTechGrid() {
       >
         <title id="memory-tech-grid-title">
           Six places to keep bytes near compute. On the host&apos;s own memory channels: DDR5
-          RDIMMs at 614 to 845 GB/s per socket, MRDIMMs at 845 to 1,638 GB/s per socket, and
+          DIMMs at 614 to 845 GB/s per socket, MRDIMMs at 845 to 1,638 GB/s per socket, and
           LPDDR5X at up to 500 GB/s on Grace and 1.2 TB/s on Vera. Beyond local DRAM: CXL memory at
           64 GB/s per x16 link and about 110 ns more per load than local DRAM, NVMe flash at 1.56 to
           18.75 GB/s per GPU with 30.4 TB per instance, and High Bandwidth Flash, a roadmap tier on

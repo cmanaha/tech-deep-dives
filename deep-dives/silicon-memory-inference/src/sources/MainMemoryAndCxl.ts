@@ -74,6 +74,13 @@ export const S = {
   },
 
   // CXL Consortium specification releases (Tier 1)
+  cxl2Blog: {
+    title: 'CXL Consortium blog: Compute Express Link 2.0 Specification Now Available (2020-12-02)',
+    publisher: 'CXL Consortium',
+    url: 'https://computeexpresslink.org/blog/compute-express-link-2-0-specification-now-available-2374/',
+    tier: 1,
+    accessed: '2026-10-23',
+  },
   cxl3Spec: {
     title: 'CXL Consortium press release, CXL 3.0 specification (2022-08-02)',
     publisher: 'CXL Consortium',
@@ -120,7 +127,7 @@ export const S = {
     accessed: '2026-10-16',
   },
   xeon6Brief: {
-    title: 'Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)',
+    title: 'Intel Xeon 6 Product Brief (up to 64 lanes of CXL 2.0 at up to 32 GT/s per lane)',
     publisher: 'Intel',
     url: 'https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html',
     tier: 1,
@@ -196,6 +203,14 @@ export const S = {
     url: 'https://www.amd.com/en/blogs/2026/agentic-ai-amd-epyc-9005-cpus-wins-today-epyc-9006.html',
     tier: 2,
     accessed: '2026-10-17',
+  },
+  amdAgenticStack: {
+    title:
+      'AMD Newsroom: AMD EPYC CPUs Deliver for Every Layer of the Agentic AI Stack (2026-09-18; "Venice" in production, OEM platforms on track to launch)',
+    publisher: 'AMD',
+    url: 'https://newsroom.amd.com/news/amd-epyc-cpus-deliver-every-layer-agentic-ai-stack/',
+    tier: 2,
+    accessed: '2026-10-23',
   },
   graceCpuPage: {
     title: 'NVIDIA Grace CPU page (Vera CPU: SOCAMM LPDDR5X, 1.2 TB/s, 1.5 TB per CPU)',

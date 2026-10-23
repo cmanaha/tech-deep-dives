@@ -73,7 +73,7 @@ const speedRows: SpeedRow[] = [
     source: S.r8iPage,
   },
   {
-    grade: 'DDR5-8800 RDIMM',
+    grade: 'DDR5-8800',
     perChannel: '70.4 GB/s',
     perSocket: '844.8 GB/s (12 ch)',
     where: (
@@ -97,8 +97,8 @@ const speedRows: SpeedRow[] = [
     perSocket: '1,638 GB/s (16 ch)',
     where: (
       <>
-        EPYC 9006, announced July 2026
-        <Cite s={S.amdVeniceBlog} kind="roadmap" />
+        EPYC 9006, in production, OEM platforms to come
+        <Cite s={S.amdAgenticStack} kind="roadmap" />
       </>
     ),
     source: S.epyc9996Page,
@@ -130,11 +130,12 @@ export function MainMemoryAndCxl() {
           </Box>
           <Box variant="p">
             <strong>One formula sets the ceiling.</strong> Peak bandwidth per socket is channels x
-            data rate x 8 bytes. Twelve channels of DDR5-8800, the RDIMMs in Graviton5, give{' '}
+            data rate x 8 bytes. Twelve channels of DDR5-8800, the DIMMs in Graviton5, give{' '}
             <strong>844.8 GB/s</strong>
             <Cite s={S.c9gGa} kind="derived" note={g5Note} />; the same channels at 6,400 MT/s
             (megatransfers per second) give 614.4. MRDIMMs raise the data rate on the same DRAM:
-            16 channels at 12,800 MT/s on AMD&apos;s announced EPYC 9006 give 1,638 GB/s per socket.
+            16 channels at 12,800 MT/s on AMD&apos;s EPYC 9006, in production with OEM (original
+            equipment manufacturer) platforms still to launch, give 1,638 GB/s per socket.
             <Cite s={S.epyc9996Page} /> CXL adds capacity instead, at about 110 ns more per load
             than local DRAM.
             <Cite s={S.samsungCmmD} kind="derived" note={cxlDeltaNote} />
@@ -157,13 +158,14 @@ export function MainMemoryAndCxl() {
           <Box variant="small" color="text-body-secondary">
             High Bandwidth Flash (HBF) is accelerator memory, beside HBM on the accelerator package,
             and no product ships. It is here because it competes for the same decision as the host
-            tiers: which bytes to keep near compute. Sources: DDR5 RDIMM
+            tiers: which bytes to keep near compute. Sources: DDR5 DIMM
             <Cite s={S.c9gGa} kind="derived" note={g5Note} />
             <Cite s={S.epyc9005Datasheet} note="EPYC 9005: 12 channels, up to 6 TB per socket." />
             <Cite s={S.samsungCmmD} kind="vendor-claim" note="Local DRAM measured at 144 ns idle on Samsung's test platform." />
             . MRDIMM
             <Cite s={S.xeon6980pArk} note="MRDIMM 8,800 MT/s, 12 channels, 3 TB maximum memory." />
             <Cite s={S.epyc9996Page} note="MRDIMM up to 12,800 MT/s, 1,638 GB/s per socket, 16 channels." />
+            <Cite s={S.amdAgenticStack} kind="roadmap" note="AMD, 2026-09-18: 'Venice' is in production; major OEM platforms are on track to launch." />
             . LPDDR5X
             <Cite s={S.gb200Nvl72} note="480 GB of LPDDR5X per Grace (17 TB over 36 Grace CPUs)." />
             <Cite s={S.graceSuperchipPage} note="Up to 500 GB/s; Grace CPU C1: up to 384 GB/s for 480 GB." />
@@ -189,7 +191,7 @@ export function MainMemoryAndCxl() {
             <Cite
               s={S.sandiskInvestorDay2026}
               kind="roadmap"
-              note="Sandisk: first HBF memory die taped out in August 2026; samples of inference devices with HBF targeted for 2027."
+              note="Sandisk said on 2026-08-13 that its first HBF memory die had taped out; samples of inference devices with HBF targeted for 2027."
             />
             . &quot;No figure located&quot;: none found in the sources read for this research.
           </Box>
@@ -208,7 +210,7 @@ export function MainMemoryAndCxl() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            DDR5 RDIMMs are the socketed DRAM on Graviton, EPYC and Xeon hosts. DDR5 launched at
+            Socketed DDR5 DIMMs are the DRAM on Graviton, EPYC and Xeon hosts. DDR5 launched at
             4,800 MT/s
             <Cite s={S.jedecDdr5} />, and JESD79-5C sets timings up to 8,800.
             <Cite s={S.jedecDdr5c} /> Each channel moves 8 bytes per transfer, so the table&apos;s
@@ -275,19 +277,23 @@ export function MainMemoryAndCxl() {
           <Box variant="p">
             <strong>Where it runs.</strong> Xeon 6 6900P takes MRDIMMs at 8,800 MT/s on 12 channels
             <Cite s={S.xeon6980pArk} />; Intel puts the gain over standard DDR5 DIMMs at more than 37%
-            <Cite s={S.xeon6Brief} kind="vendor-claim" />, which is 8,800 over 6,400. EPYC 9005
-            takes RDIMMs only.
-            <Cite s={S.epyc9005Datasheet} /> AMD has announced EPYC 9006 with JEDEC-standard MRDIMMs
-            at up to 12,800 MT/s
+            <Cite s={S.xeon6Brief} kind="vendor-claim" />, which is 8,800 over 6,400. AMD&apos;s EPYC
+            9005 data sheet lists no MRDIMM support.
+            <Cite s={S.epyc9005Datasheet} /> EPYC 9006 takes JEDEC-standard MRDIMMs at up to 12,800
+            MT/s
             <Cite s={S.amdVeniceBlog} kind="roadmap" />: 1,638 GB/s per socket against 1,024 GB/s
             with RDIMMs at 8,000 MT/s on the same 16 channels.
             <Cite s={S.epyc9996Page} /> On that platform the module type alone is worth 60%.
-            <Cite s={S.epyc9996Page} kind="derived" note={veniceNote} />
+            <Cite s={S.epyc9996Page} kind="derived" note={veniceNote} /> EPYC 9006 is in
+            production; AMD says major OEM platforms are on track to launch and cloud providers will
+            begin deploying it later in 2026.
+            <Cite s={S.amdAgenticStack} kind="roadmap" />
           </Box>
           <Box variant="p">
-            <strong>The edge moves.</strong> Graviton5 reaches 8,800 MT/s with ordinary RDIMMs, so
-            its 12 channels deliver the same 844.8 GB/s that MRDIMMs give a Xeon 6 6900P.
-            <Cite s={S.c9gGa} kind="derived" note={g5Note} /> JEDEC&apos;s second-generation MRDIMM
+            <strong>The edge moves.</strong> Graviton5 runs its DDR5 DIMMs at 8,800 MT/s, so its 12
+            channels deliver the same 844.8 GB/s that MRDIMMs give a Xeon 6 6900P.
+            <Cite s={S.c9gGa} kind="derived" note={g5Note} /> The AWS pages read for this research
+            do not name Graviton5&apos;s module type. JEDEC&apos;s second-generation MRDIMM
             raw cards target 12,800 MT/s, and a third generation is in development.
             <Cite s={S.jedecMrdimmRoadmap} kind="roadmap" /> No vendor latency figure for MRDIMMs
             was located during this research.
@@ -306,7 +312,7 @@ export function MainMemoryAndCxl() {
         header={
           <Header
             variant="h2"
-            description="Why NVIDIA's CPUs use low-power memory, and what moving from soldered packages to SOCAMM2 modules changes for capacity and service"
+            description="Why NVIDIA's CPUs use low-power memory, and what moving from on-module memory to field-replaceable SOCAMM2 modules changes for capacity and service"
           >
             LPDDR5X and SOCAMM2: bandwidth per watt, on modules
           </Header>
@@ -315,8 +321,8 @@ export function MainMemoryAndCxl() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>What it is.</strong> LPDDR5X is mobile-derived DRAM that gives up socketed
-            capacity for bandwidth per watt. On Grace it is soldered to the compute module: up to
-            480 GB per CPU
+            capacity for bandwidth per watt. On Grace it sits on the compute module: up to 480 GB
+            per CPU
             <Cite s={S.gb200Nvl72} />, drawing about 16 W at up to 500 GB/s.
             <Cite s={S.graceSuperchipPage} /> NVIDIA&apos;s Grace CPU C1 figures give 384 GB/s for
             a 480 GB Grace
@@ -355,6 +361,7 @@ export function MainMemoryAndCxl() {
             layer: a CPU addresses memory on an expansion card, or in a pool behind a CXL switch, as
             ordinary memory. CXL 2.0 adds switching and pooling across hosts; CXL 3.0 adds
             sharing.
+            <Cite s={S.cxl2Blog} />
             <Cite s={S.cxl3Spec} /> Shipping CPUs speak CXL 2.0: up to 64 lanes on Xeon 6 at 32 GT/s
             (gigatransfers per second), 64 GB/s per direction per x16 link
             <Cite s={S.xeon6Brief} />
@@ -431,14 +438,14 @@ export function MainMemoryAndCxl() {
           <div>
             <Box variant="h3">MRDIMM, when bandwidth per socket is the limit</Box>
             <ul>
-              <li>Xeon 6 6900P at 8,800 MT/s, or EPYC 9006 at 12,800 once it ships.</li>
-              <li>Price an RDIMM platform at the same rate first: Graviton5 gets 844.8 GB/s from DDR5-8800.</li>
+              <li>Xeon 6 6900P at 8,800 MT/s, or EPYC 9006 at 12,800 once its OEM platforms launch.</li>
+              <li>Price Graviton5 first: its DDR5-8800 DIMMs give the same 844.8 GB/s.</li>
             </ul>
           </div>
           <div>
             <Box variant="h3">LPDDR5X, when the CPU sits beside the GPU</Box>
             <ul>
-              <li>Grace solders it; Vera puts it on SOCAMM2 modules.</li>
+              <li>Grace carries it on the compute module; Vera puts it on SOCAMM2 modules.</li>
               <li>Size Vera at NVIDIA&apos;s 1.5 TB per CPU.</li>
             </ul>
           </div>

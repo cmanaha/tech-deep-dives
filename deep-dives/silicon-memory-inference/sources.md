@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 465.
+Total distinct sources: 467.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -92,6 +92,7 @@ Total distinct sources: 465.
 | Cerebras | [Cerebras SDK docs: Wafer-Scale Engine Architecture](https://sdk.cerebras.ai/computing-with-cerebras) | 2026-10-18 | CerebrasWaferScale, HeterogeneityFact, ThesisAndFraming |
 | Cerebras | [Meet CS-4: Cerebras CS-4 datasheet (CS-4 Specifications, footnoted "compute shown as sparse FP16")](https://cdn.sanity.io/files/e4qjo92p/production/bb028ae2422089dfbcc9fd2455c021f3625c7a75.pdf) | 2026-10-18 | CerebrasWaferScale |
 | Cerebras Systems (SEC EDGAR) | [Cerebras Systems, Form S-1 (filed 2026-04-17)](https://www.sec.gov/Archives/edgar/data/2021728/000162828026025762/cerebras-sx1april2026.htm) | 2026-10-16 | CerebrasWaferScale, HbmAndBandwidthWall, HeterogeneityFact, ThesisAndFraming |
+| CXL Consortium | [CXL Consortium blog: Compute Express Link 2.0 Specification Now Available (2020-12-02)](https://computeexpresslink.org/blog/compute-express-link-2-0-specification-now-available-2374/) | 2026-10-23 | MainMemoryAndCxl |
 | CXL Consortium | [CXL Consortium press release, CXL 3.0 specification (2022-08-02)](https://computeexpresslink.org/wp-content/uploads/2024/01/CXL_3.0-Specification-Release_FINAL-1.pdf) | 2026-10-16 | HighBandwidthFlash, MainMemoryAndCxl, MemoryHierarchyPrimer |
 | CXL Consortium | [CXL Consortium press release, CXL 3.1 specification (2023-11-14)](https://computeexpresslink.org/wp-content/uploads/2024/01/CXL_3.1-Specification-Release_FINAL.pdf) | 2026-10-16 | MainMemoryAndCxl |
 | CXL Consortium | [CXL Consortium press release, CXL 3.2 specification (2024-12-03)](https://computeexpresslink.org/wp-content/uploads/2024/12/CXL_3.2-Spec-Announcement_FINAL-1.pdf) | 2026-10-16 | MainMemoryAndCxl |
@@ -328,6 +329,7 @@ Total distinct sources: 465.
 | AMD | [AMD EPYC 9996 product page (16 channels; RDIMM up to 8000 MT/s, MRDIMM up to 12800 MT/s; 1024 / 1638 GB/s per socket)](https://www.amd.com/en/products/processors/server/epyc/9006-series/amd-epyc-9996.html) | 2026-10-16 | MainMemoryAndCxl |
 | AMD | [AMD Instinct MI355X GPU](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html) | 2026-10-18 | HbmAndBandwidthWall, QuantizationAndPrecision, RooflineAndArithmeticIntensity |
 | AMD | [AMD Instinct MI455X GPU (432 GB HBM4, 12 stacks, 23.3 TB/s, launch date 7/23/2026)](https://www.amd.com/en/products/accelerators/instinct/mi400/mi455x.html) | 2026-10-16 | HbmAndBandwidthWall |
+| AMD | [AMD Newsroom: AMD EPYC CPUs Deliver for Every Layer of the Agentic AI Stack (2026-09-18; "Venice" in production, OEM platforms on track to launch)](https://newsroom.amd.com/news/amd-epyc-cpus-deliver-every-layer-agentic-ai-stack/) | 2026-10-23 | MainMemoryAndCxl |
 | AMD | [AMD Solarflare X4 Low Latency Using SDCI (white paper, October 2025, Rev 1)](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/white-papers/x4-sdci-whitepaper.pdf) | 2026-10-17 | AmdEpycTurin, CapitalMarketsLens |
 | Arm | [Arm Neoverse V3 product page](https://www.arm.com/products/silicon-ip-cpu/neoverse/neoverse-v3) | 2026-10-16 | GravitonDeepDive |
 | AWS | [About Amazon: AWS Graviton5 (2025-12-04, updated 2026-06-10 for GA)](https://www.aboutamazon.com/news/aws/aws-graviton-5-cpu-amazon-ec2) | 2026-10-16 | ChipletAndInterconnect, GravitonDeepDive |
