@@ -46,8 +46,9 @@ export function HighBandwidthFlash() {
             <Cite s={S.hgxPage} /> HBF would put terabytes on the package. What it gives up is
             bandwidth per byte stored: a first-generation HBF stack can be read end to end about 3
             times a second, a shipping HBM4 stack about 80 times.
-            <Cite s={S.sandiskFactSheet} kind="derived" note="1.6 TB/s / 512 GB = 3.1 per second." />
-            <Cite s={S.micronHbm4} kind="derived" note="2.8 to 3.3 TB/s over a 36 GB 12-high stack = 78 to 92 per second." />{' '}
+            <Cite s={S.sandiskFactSheet} kind="derived" note="Sandisk's vendor claim for its first-generation stack: 1.6 TB/s / 512 GB = 3.1 per second." />
+            <Cite s={S.micronHbm4} kind="derived" note="Micron: greater than 2.8 TB/s from a 36 GB 12-high stack = more than 78 per second." />
+            <Cite s={S.samsungHbm4} kind="derived" note="Samsung: up to 3.3 TB/s per stack, over 36 GB = 92 per second." />{' '}
             That ratio decides what HBF can hold. HBF is a roadmap technology: a published
             interface specification and one taped-out memory die, with no product on sale as of
             October 2026.
@@ -155,7 +156,7 @@ export function HighBandwidthFlash() {
             token
             <Cite s={S.deepseekV3Report} />, so the same stacks read one token&apos;s weights in
             2.9 ms, against 1.7 ms from a Rubin GPU&apos;s 22 TB/s of HBM4.
-            <Cite s={S.hgxPage} kind="derived" note="37 GB / 12.8 TB/s and 37 GB / 22 TB/s, weights only." />{' '}
+            <Cite s={S.hgxPage} kind="derived" note="37 GB / 12.8 TB/s and 37 GB / 22 TB/s, weights only. 22 TB/s is the HGX page's individual Rubin GPU figure." />{' '}
             Data that is large and partly read per step suits HBF; data read in full every step
             runs at the sweep rate.
           </Box>
@@ -255,8 +256,8 @@ export function HighBandwidthFlash() {
             fit when it selects KV in flash-page-sized units: SPLASH, built that way, reports 3.5 to
             11.4 times its baselines&apos; decode throughput per GPU at 100 ms per token.
             <Cite s={S.splash} kind="simulated" /> Activations, rewritten every layer, belong in HBM
-            or the base-die SRAM, and the specification recommends separate channel groups for
-            weights and KV because mixing them costs endurance and capacity.
+            or the base-die SRAM, and the specification suggests separate channel groups for
+            weights and KV because mixing them in one zone may cost endurance and capacity.
             <Cite s={S.ocpSpec} /> <em>KV Cache and FlashAttention</em> covers KV sizing; KV reused
             across requests belongs on the off-package tier in{' '}
             <em>Flash as a Cache Tier for Inference</em>.
@@ -278,14 +279,14 @@ export function HighBandwidthFlash() {
           <Box variant="p">
             <strong>Plan HBF as a cache reloaded from storage.</strong> The specification
             guarantees 24 hours of retention at 85 C while powered, has the host refresh data
-            typically every 24 to 48 hours, guarantees no retention without power and recommends
+            typically every 24 to 48 hours, does not guarantee retention without power and recommends
             SSDs for persistent data.
             <Cite s={S.ocpSpec} /> Sandisk&apos;s 2025 fact sheet calls HBF non-volatile with no
             refresh power needed
             <Cite s={S.sandiskFactSheet} kind="vendor-claim" />; plan on the specification. Keep
             the storage load path and budget the time to refill every stack after a power loss,
-            which depends on a write bandwidth that neither the specification nor Sandisk nor SK
-            hynix publishes.
+            which depends on a sustained NAND write rate that neither the specification nor Sandisk
+            nor SK hynix publishes.
           </Box>
           <Box variant="p">
             <strong>Refresh turns reads into writes.</strong> Retention refresh alone rewrites
@@ -306,7 +307,7 @@ export function HighBandwidthFlash() {
             seconds, and at 10<sup>5</sup> P/E cycles the stack lasts 36 days; at 10<sup>6</sup>{' '}
             reads and 10<sup>7</sup> cycles it lasts 99 years.
             <Cite s={S.sandiskFactSheet} kind="derived" note={disturbNote} />
-            <Cite s={S.flint} note="Assumed block geometry, threshold range and P/E sweep." />{' '}
+            <Cite s={S.flint} kind="simulated" note="Simulator inputs: block geometry, threshold range and P/E sweep." />{' '}
             Real workloads read less than flat out, so these are lower bounds for those inputs,
             and HBF&apos;s actual threshold and rating are unpublished.
           </Box>
@@ -339,7 +340,7 @@ export function HighBandwidthFlash() {
           <HbfPackageDiagram />
           <Box variant="small" color="text-body-secondary">
             Sandisk&apos;s layouts and capacities
-            <Cite s={S.sandiskInvestorDay2025} kind="vendor-claim" />; the specification&apos;s
+            <Cite s={S.sandiskInvestorDay2025} kind="vendor-claim" note="The slides give totals only; 24 GB per HBM stack is our division, 192 GB / 8." />; the specification&apos;s
             layout, summed to 1,168 GiB
             <Cite s={S.ocpSpec} kind="derived" />; 12.8 TB/s is eight stacks at 1.6 TB/s
             <Cite s={S.sandiskFactSheet} kind="derived" />; Rubin
@@ -349,7 +350,7 @@ export function HighBandwidthFlash() {
             <strong>Where it sits among the tiers.</strong> Per GPU, eight Gen 1 stacks give 12.8
             TB/s against a Rubin GPU&apos;s 22 TB/s: an all-HBF package trades about 40% of the
             bandwidth for 14 times the capacity.
-            <Cite s={S.hgxPage} kind="derived" note="12.8 / 22 = 0.58; 4,096 / 288 = 14.2." /> HBF
+            <Cite s={S.hgxPage} kind="derived" note="12.8 / 22 = 0.58; 4,096 / 288 = 14.2. 22 TB/s and 288 GB are the HGX page's individual Rubin GPU figures." /> HBF
             lands between HBM and host memory, but it attaches to the accelerator, so its
             competitor for any byte is the HBM beside it. One Gen 1 stack reads 1.33 times as fast
             as a whole Vera CPU&apos;s LPDDR5X (1.2 TB/s)
@@ -362,8 +363,8 @@ export function HighBandwidthFlash() {
           <ExpandableSection headerText="Worked example: DeepSeek-V3 on the specification's layout">
             <Box variant="p">
               DeepSeek-V3&apos;s 671 GB of FP8 weights fit on the layout&apos;s two HBF stacks
-              (1,099.5 GB) with 428 GB to spare.
-              <Cite s={S.ocpSpec} kind="derived" note="2 x 512 GiB = 1,099.5 GB." /> At 128K
+              (1,099.5 GB) with 429 GB to spare.
+              <Cite s={S.ocpSpec} kind="derived" note="2 x 512 GiB = 1,099.5 GB; 1,099.5 - 671 = 428.5 GB." /> At 128K
               context one sequence&apos;s KV cache is 131,072 tokens x 70,272 bytes = 9.21 GB
               <Cite s={S.deepseekV3Config} kind="derived" note="MLA caches (512 + 64) values per layer x 61 layers x 2 bytes = 70,272 bytes per token." />
               , so the layout&apos;s 154.6 GB of HBM holds 16 sequences, against 20 for three Rubin
@@ -394,8 +395,9 @@ export function HighBandwidthFlash() {
             members during standardisation, and Sandisk later named Meta.
             <Cite s={S.ocpSpec} />
             <Cite s={S.sandiskOcpRelease} />
-            <Cite s={S.sandiskInvestorDay2026} /> Sandisk taped out its first HBF memory die in
-            August 2026 and targets samples of inference devices with HBF in 2027.
+            <Cite s={S.sandiskInvestorDay2026} /> Sandisk announced in August 2026 that it had
+            taped out its first HBF memory die, and targets samples of inference devices with HBF
+            in 2027.
             <Cite s={S.sandiskInvestorDay2026} kind="vendor-claim" />
             <Cite s={S.sandiskSkHynixMou} kind="roadmap" note="'early 2027' for AI-inference devices with HBF." />{' '}
             Its undated roadmap adds a Gen 2 above 2 TB/s with up to 1 TB per stack and a Gen 3 at

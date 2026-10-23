@@ -5,7 +5,7 @@ import React from 'react';
 // decode step reads (bottom to top) decides whether the sweep rate caps its speed.
 // Positions are qualitative and follow the placement evidence cited in the section.
 //
-// On a phone the SVG keeps a 600 px minimum width and the wrapper scrolls sideways.
+// On a phone the SVG keeps a 640 px minimum width and the wrapper scrolls sideways.
 
 type Fit = 'keep' | 'maybe' | 'fit';
 
@@ -41,7 +41,7 @@ export function HbfPlacementMap() {
         viewBox="0 0 860 416"
         role="img"
         aria-labelledby="hbf-placement-title"
-        style={{ width: '100%', minWidth: 600, height: 'auto', display: 'block' }}
+        style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
       >
         <title id="hbf-placement-title">
           Two questions place inference data on HBF. Data written every token or layer, such

@@ -7,11 +7,13 @@ import type { Source } from '../components/Cite';
  * register come from research/2026-10-refresh/01-memory.md and keep its
  * accessed date. hgxPage reuses the NvidiaBlackwell record unchanged.
  *
- * The register grades arXiv papers Tier 1 for their own method and results;
- * every figure taken from one is cited with kind 'simulated'.
+ * The register grades arXiv papers Tier 1 for their own method and results; the
+ * dive grades academic papers Tier 3 (authoring brief), and every result taken from
+ * one is cited with kind 'simulated'. The 2025 Investor Day deck is a vendor
+ * presentation, so it is Tier 2 here although the register grades it Tier 1.
  */
 export const S = {
-  // Specification and filings
+  // Specification (Tier 1) and the 2025 investor deck (Tier 2)
   ocpSpec: {
     title: 'High Bandwidth Flash (HBF) High-Level Base Die Specification, Version 0.7.0 (2026-08-03)',
     publisher: 'Open Compute Project',
@@ -23,7 +25,7 @@ export const S = {
     title: 'Future FWD: Sandisk 2025 Investor Day presentation (2025-02-11)',
     publisher: 'Sandisk',
     url: 'https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/sandisk/corporate/Sandisk-Investor-Day_2025.pdf',
-    tier: 1,
+    tier: 2,
     accessed: '2026-10-17',
   },
 
@@ -59,7 +61,7 @@ export const S = {
     accessed: '2026-10-17',
   },
   skhynixOcp2025: {
-    title: 'SK hynix Presents Next Generation NAND Storage Product Strategy at OCP 2025 (2025-10-27)',
+    title: 'SK hynix Presents Next Generation NAND Storage Product Strategy at OCP 2025 (2025-10-26)',
     publisher: 'SK hynix',
     url: 'https://news.skhynix.com/en/sk-hynix-presents-next-generation-nand-storage-product-strategy-at-ocp-2025/',
     tier: 2,

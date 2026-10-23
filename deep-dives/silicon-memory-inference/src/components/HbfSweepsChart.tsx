@@ -4,7 +4,7 @@ import React from 'react';
 // one CPU memory system, on a log axis computed here without a charting library.
 // Every value drawn is cited in the caption the section renders below the SVG.
 //
-// On a phone the SVG keeps a 600 px minimum width and the wrapper scrolls sideways.
+// On a phone the SVG keeps a 640 px minimum width and the wrapper scrolls sideways.
 
 type Group = 'cpu' | 'hbf' | 'hbm' | 'hbmRoadmap';
 
@@ -60,14 +60,14 @@ export function HbfSweepsChart() {
         viewBox="0 0 860 424"
         role="img"
         aria-labelledby="hbf-sweeps-title"
-        style={{ width: '100%', minWidth: 600, height: 'auto', display: 'block' }}
+        style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
       >
         <title id="hbf-sweeps-title">
           Bandwidth divided by capacity gives how many times a second a memory device can be
           read end to end. An HBF stack manages 1.4 to 5.6 sweeps a second depending on its
           grade, and Sandisk&apos;s first product about 3.1, while a shipping HBM4 stack
-          manages 78 to 92 and a Vera CPU&apos;s LPDDR5X about 0.8: HBF sits about 25 to 30
-          times below HBM4 on this measure.
+          manages 78 to 92 and a Vera CPU&apos;s LPDDR5X about 0.8: Sandisk&apos;s stack sits
+          about 25 to 30 times below HBM4 on this measure.
         </title>
         <style>{`
           .hbfw-grid { stroke: #e9ebed; stroke-width: 1; }

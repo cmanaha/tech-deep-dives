@@ -4,8 +4,8 @@ import React from 'react';
 // v0.7.0, and the split of work between the base die, the host software and the
 // SSD. Every figure drawn here is cited in the caption the section renders below.
 //
-// On a phone the SVG keeps a 600 px minimum width and the wrapper scrolls sideways,
-// so 11-unit labels stay near 8 px instead of shrinking to 5 px.
+// On a phone the SVG keeps a 640 px minimum width and the wrapper scrolls sideways,
+// so 11-unit labels stay above 8 px instead of shrinking to 5 px.
 
 const DIES = Array.from({ length: 16 }, (_, i) => 52 + i * 11);
 const BUMPS = Array.from({ length: 14 }, (_, i) => 218 + i * 16);
@@ -18,7 +18,7 @@ export function HbfStackDiagram() {
         viewBox="0 0 860 452"
         role="img"
         aria-labelledby="hbf-stack-title"
-        style={{ width: '100%', minWidth: 600, height: 'auto', display: 'block' }}
+        style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
       >
         <title id="hbf-stack-title">
           An HBF stack is sixteen NAND dies joined by through-silicon vias to a base die that
@@ -126,7 +126,7 @@ export function HbfStackDiagram() {
         ))}
         <rect className="hbfs-ip" x="190" y="280" width="650" height="24" rx="3" />
         <text className="hbfs-sc" x="515" y="296">
-          Silicon interposer or bridge: 45 µm bumps in the UCIe region, as with HBM
+          Interposer or bridge, as with HBM; HBF uses 45 µm bumps in its UCIe region
         </text>
 
         {/* Bandwidth arithmetic */}

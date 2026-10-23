@@ -5,7 +5,7 @@ import React from 'react';
 // four HBM). Stack positions are schematic. Every figure drawn here is cited in the
 // caption the section renders below the SVG.
 //
-// On a phone the SVG keeps a 600 px minimum width and the wrapper scrolls sideways.
+// On a phone the SVG keeps a 640 px minimum width and the wrapper scrolls sideways.
 
 type Kind = 'hbf' | 'hbm';
 
@@ -80,7 +80,7 @@ export function HbfPackageDiagram() {
         viewBox="0 0 860 392"
         role="img"
         aria-labelledby="hbf-package-title"
-        style={{ width: '100%', minWidth: 600, height: 'auto', display: 'block' }}
+        style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
       >
         <title id="hbf-package-title">
           The same package sites filled four ways. Sandisk&apos;s examples give 192 GB with
