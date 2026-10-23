@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 471.
+Total distinct sources: 476.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -42,18 +42,23 @@ Total distinct sources: 471.
 | AWS | [Amazon FSx for Lustre: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon FSx for Lustre: working with EFA-enabled file systems](https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon S3 Express One Zone: high performance with directory buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html) | 2026-10-17 | FlashCacheTier |
+| AWS | [AWS Neuron 2.32.0: Component Release Notes for Neuron Graph Compiler](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/components/compiler.html) | 2026-10-23 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron 2.32.0: Component Release Notes for Neuron PyTorch Framework](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/components/pytorch.html) | 2026-10-23 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron 2.32.0: JAX Support on Neuron (JAX NeuronX)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/frameworks/jax/index.html) | 2026-10-23 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron 2.32.0: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/frameworks/torch/pytorch-native-overview.html) | 2026-10-23 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron 2.32.0: NxD Inference MoE architecture deep dive](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/libraries/nxd-inference/developer_guides/moe-arch-deep-dive.html) | 2026-10-16 | CommunicationAndScaleOut, MoeAndSparseActivation |
+| AWS | [AWS Neuron 2.32.0: Release Notes (component versions)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/index.html) | 2026-10-23 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron 2.33.0: What is TorchNeuron? (public beta)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/about-pytorch-neuron.html) | 2026-10-23 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron NKI Library: Attention CTE Kernel API Reference (Neuron 2.32.0)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/nki/library/api/attention-cte.html) | 2026-10-23 | KvCacheAndFlashAttention |
 | AWS | [AWS Neuron: Amazon EC2 Trn2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn2-arch.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut, HeterogeneityFact, MoeAndSparseActivation |
 | AWS | [AWS Neuron: Amazon EC2 Trn3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trn3-arch.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut, MoeAndSparseActivation |
 | AWS | [AWS Neuron: Component Release Notes for Neuron Developer Tools (Neuron Explorer)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/dev-tools.html) | 2026-10-17 | AwsCompilersAndTooling |
-| AWS | [AWS Neuron: Component Release Notes for Neuron Graph Compiler](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/compiler.html) | 2026-10-16 | AwsCompilersAndTooling, DeterminismAOT |
-| AWS | [AWS Neuron: Component Release Notes for Neuron PyTorch Framework](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/pytorch.html) | 2026-10-17 | AwsCompilersAndTooling |
+| AWS | [AWS Neuron: Component Release Notes for Neuron Graph Compiler](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/compiler.html) | 2026-10-16 | DeterminismAOT |
 | AWS | [AWS Neuron: Data Types](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-features/data-types.html) | 2026-10-17 | QuantizationAndPrecision |
 | AWS | [AWS Neuron: Inferentia2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/inferentia2.html) | 2026-10-16 | AwsCustomSilicon |
 | AWS | [AWS Neuron: Intra-node Collective Communications with AWS Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/explore/intranode-collective-comm.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, DeterminismAOT |
 | AWS | [AWS Neuron: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/jax/api-reference-guide/neuron-envvars.html) | 2026-10-17 | AwsCustomSilicon, CapitalMarketsLens, DeterminismAOT |
-| AWS | [AWS Neuron: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/pytorch-native-overview.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, CommunicationAndScaleOut |
+| AWS | [AWS Neuron: Native PyTorch for AWS Trainium (TorchNeuron)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/torch/pytorch-native-overview.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut |
 | AWS | [AWS Neuron: Neuron Compiler CLI Reference Guide (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/neuronx-cc/api-reference-guide/index.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: Neuron Graph Compiler overview (neuronx-cc)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/compiler/index.html) | 2026-10-17 | AwsCompilersAndTooling, KernelExecutionLifecycle |
 | AWS | [AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html) | 2026-10-18 | AwsCompilersAndTooling, AwsCustomSilicon, DeterminismAOT, GroqSambanovaDataflow, HeterogeneityFact, IsolationNie, KernelExecutionLifecycle |
@@ -64,10 +69,9 @@ Total distinct sources: 471.
 | AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | AwsCustomSilicon, DeterminismAOT, GroqSambanovaDataflow, HeterogeneityFact, IsolationNie, MemoryHierarchyPrimer |
 | AWS | [AWS Neuron: NKI API reference, nki.isa.nc_matmul](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/api/generated/nki.isa.nc_matmul.html) | 2026-10-16 | AwsCompilersAndTooling, AwsCustomSilicon |
 | AWS | [AWS Neuron: NKI Library release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nki-lib.html) | 2026-10-17 | DeterminismAOT, MoeAndSparseActivation, QuantizationAndPrecision |
-| AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-18 | AwsCustomSilicon, HeterogeneityFact, IsolationNie, KernelExecutionLifecycle, ThesisAndFraming |
+| AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-23 | AwsCompilersAndTooling, AwsCustomSilicon, HeterogeneityFact, IsolationNie, KernelExecutionLifecycle, ThesisAndFraming |
 | AWS | [AWS Neuron: NKI Trainium2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium2_arch.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, KernelExecutionLifecycle, MemoryHierarchyPrimer |
 | AWS | [AWS Neuron: NKI Trainium3 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium3_arch.html) | 2026-10-16 | AwsCustomSilicon, MemoryHierarchyPrimer |
-| AWS | [AWS Neuron: Release Notes (Neuron 2.32.0 component versions)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/index.html) | 2026-10-17 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron: Trainium2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, CommunicationAndScaleOut, HeterogeneityFact, IsolationNie, KernelExecutionLifecycle, MemoryHierarchyPrimer, MoeAndSparseActivation, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | AWS | [AWS Neuron: Trainium3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, HbmAndBandwidthWall, HeterogeneityFact, MemoryHierarchyPrimer, QuantizationAndPrecision, RooflineAndArithmeticIntensity, ThesisAndFraming |
 | AWS | [AWS Neuron: vLLM Neuron design, Decode Context-Length Bucketing](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/vllm-neuron/docs/design/vllm/decode-context-length-bucketing.html) | 2026-10-17 | DeterminismAOT |
@@ -78,6 +82,7 @@ Total distinct sources: 471.
 | AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | CapitalMarketsLens, ChipletAndInterconnect, GraceBlackwellUltraServer, GravitonDeepDive, HeterogeneityFact, MainMemoryAndCxl, MemoryHierarchyPrimer, SmallLanguageModels |
 | AWS | [aws-graviton-getting-started repository at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/tree/8b322a4160b827be202beedaf35ce21b4c635603) | 2026-10-16 | GravitonDeepDive |
 | AWS | [aws-neuron/nki-library at release tag 2.32 (Apache-2.0)](https://github.com/aws-neuron/nki-library/tree/2.32) | 2026-10-17 | AwsCompilersAndTooling |
+| AWS | [aws-neuron/torch-neuronx at release tag v2.33.0 (Apache-2.0)](https://github.com/aws-neuron/torch-neuronx/tree/v2.33.0) | 2026-10-23 | AwsCompilersAndTooling |
 | AWS | [aws/aws-ofi-nccl release v1.21.1](https://github.com/aws/aws-ofi-nccl/releases/tag/v1.21.1) | 2026-10-16 | CommunicationAndScaleOut |
 | AWS | [Capacity Blocks for ML: supported instance types and Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaHopper |
 | AWS | [Data persistence for Amazon EC2 instance store volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html) | 2026-10-17 | FlashCacheTier |

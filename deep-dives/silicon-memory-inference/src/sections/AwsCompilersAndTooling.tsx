@@ -41,7 +41,7 @@ const componentRows: ComponentRow[] = [
         2.27.5334.0
         <Cite
           s={S.neuronReleaseNotes}
-          note="The compiler's own release-notes page lists 2.27.4747.0 for the same release."
+          note="The compiler's release-notes page heads its Neuron 2.32.0 entry 2.27.5334.0, but its Latest version line reads 2.27.4747.0."
         />
         <Cite s={S.compilerNotes} />
       </>
@@ -166,7 +166,8 @@ export function AwsCompilersAndTooling() {
           <Box variant="p">
             torch-neuronx captures a PyTorch model through PyTorch/XLA, and JAX NeuronX does the
             same for JAX.
-            <Cite s={S.neuronCompiler} /> neuronx-cc then runs four stages: graph-level optimization
+            <Cite s={S.neuronCache} />
+            <Cite s={S.jaxNeuronx} /> neuronx-cc then runs four stages: graph-level optimization
             in the XLA front end, including operator fusion; loop-level optimization, which sets
             layout, tiling and loop fusion; intrinsics mapping to hardware instructions; and the back
             end, which allocates memory and schedules instructions.
@@ -181,13 +182,12 @@ export function AwsCompilersAndTooling() {
           </Box>
           <Box variant="p">
             <strong>The PyTorch path is moving.</strong> PyTorch 2.9 is the last version on
-            PyTorch/XLA; from PyTorch 2.10, in a future Neuron release, Neuron uses TorchNeuron and
-            scripts need updating.
+            PyTorch/XLA; from PyTorch 2.10, Neuron uses TorchNeuron, and scripts need updating.
             <Cite s={S.pytorchNotes} /> TorchNeuron is a native PyTorch backend that runs eager mode
-            and torch.compile, without Inductor. AWS describes it both as open source at
-            aws-neuron/torch-neuronx and as a closed beta
-            <Cite s={S.pytorchNative} />; that repository was not public when this research checked
-            it in October 2026.
+            and torch.compile, without Inductor. It is open source at aws-neuron/torch-neuronx and in
+            public beta from Neuron 2.33.0 (October 2026).
+            <Cite s={S.torchNeuron233} />
+            <Cite s={S.torchNeuronxRepo} />
           </Box>
           <ExpandableSection headerText="Components and versions in Neuron 2.32.0 (August 2026)">
             <Table
@@ -264,8 +264,8 @@ export NEURON_COMPILE_CACHE_URL="s3://your-bucket/neuron-compile-cache"`}</pre>
           <Box variant="p">
             <strong>Serving.</strong> vLLM Neuron, in beta since July 2026, implements models inside
             the vLLM plugin with no dependency on NxD Inference (NeuronX Distributed Inference), and
-            runs on Trn2 and Trn3. NxD Inference is in maintenance mode from Neuron 2.32.0, and AWS
-            directs its users to vLLM Neuron.
+            runs on Trn2 and Trn3. NxD Inference is in maintenance mode, and AWS directs its users
+            to vLLM Neuron.
             <Cite s={S.neuronWhatsNew} /> Pin vLLM Neuron by release tag.
             <Cite s={S.vllmNeuronRepo} />
           </Box>
@@ -356,6 +356,7 @@ export NEURON_COMPILE_CACHE_URL="s3://your-bucket/neuron-compile-cache"`}</pre>
                 with syntax and tile-level semantics similar to Triton and NumPy.
                 <Cite s={S.nkiOverview} /> The author places tiles in SBUF (State Buffer) and PSUM
                 (Partial Sum buffer) explicitly
+                <Cite s={S.nkiTrnInf2Arch} />
                 <Cite s={S.nkiTrn2Arch} />
                 <Cite s={S.ncMatmul} />; in Triton, the compiler manages memory allocation and data
                 movement.
