@@ -105,8 +105,17 @@ export function GraceBlackwellUltraServer() {
             Bandwidth Memory) and 17 TB of LPDDR5X (low-power DDR5X).
             <Cite s={S.gb200Nvl72} /> Every GPU reaches every other GPU through a non-blocking
             NVLink Switch fabric at 1.8 TB/s bidirectional, 900 GB/s each way
-            <Cite s={S.blackwellUltraBlog} />; aggregate NVLink bandwidth is 130 TB/s.
+            <Cite
+              s={S.blackwellUltraBlog}
+              note="1.8 TB/s bidirectional per GPU (18 links x 100 GB/s); 900 GB/s each way is half of that."
+            />
+            ; aggregate NVLink bandwidth is 130 TB/s bidirectional.
             <Cite s={S.gb200Nvl72} />
+            <Cite
+              s={S.blackwellUltraBlog}
+              kind="derived"
+              note="72 GPUs x 1.8 TB/s bidirectional = 129.6 TB/s, which NVIDIA gives as 130 TB/s aggregate; neither page labels the aggregate's direction."
+            />
           </Box>
           <Box variant="p">
             GB300 NVL72, built on Blackwell Ultra, raises GPU memory to 20 TB and dense NVFP4
@@ -118,7 +127,8 @@ export function GraceBlackwellUltraServer() {
               note="GB300 NVL72 FP4: 1,440 | 1,080 PFLOPS; the second figure is marked without sparsity."
             />{' '}
             The successor, Vera Rubin NVL72, keeps 72 GPUs and 36 CPUs with 20.7 TB of HBM4
-            <Cite s={S.veraRubinNvl72} /> and is in full production at partners
+            <Cite s={S.veraRubinNvl72} /> and is in full production, with racks running at
+            partners
             <Cite s={S.nvidiaQ2Fy27} />; as of October 2026 the EC2 instance specification lists
             no Rubin instance.
             <Cite s={S.ec2AcceleratedSpecs} />
@@ -147,7 +157,14 @@ export function GraceBlackwellUltraServer() {
               note="372 GB of HBM3e per superchip, divided by its two GPUs."
             />
             ; non-blocking 1.8 TB/s per GPU
-            <Cite s={S.blackwellUltraBlog} />; NVLink-C2C
+            <Cite s={S.blackwellUltraBlog} />; 900 GB/s each way and the aggregate&apos;s
+            direction
+            <Cite
+              s={S.blackwellUltraBlog}
+              kind="derived"
+              note="1.8 TB/s bidirectional per GPU / 2 = 900 GB/s each way; 72 x 1.8 = 129.6 TB/s, given as 130 TB/s aggregate."
+            />
+            ; NVLink-C2C
             <Cite s={S.blackwellArchitecture} />; the DeepSeek-R1 layout
             <Cite s={S.moeBlog} />.
           </Box>
@@ -216,8 +233,12 @@ export function GraceBlackwellUltraServer() {
             <Box variant="h3">CPU memory: 480 GB LPDDR5X</Box>
             <Box variant="p">
               Each Grace carries up to 480 GB of LPDDR5X
-              <Cite s={S.gb200Nvl72} />, soldered on the compute module it shares with its two
-              GPUs.
+              <Cite s={S.gb200Nvl72} /> as on-module memory
+              <Cite
+                s={S.graceSuperchipPage}
+                note="Grace CPU C1 column: '120GB, 240GB and 480GB on-module memory options available'."
+              />
+              , on the compute module it shares with its two GPUs.
               <Cite s={S.p6Page} /> The memory draws about 16 W at up to 500 GB/s.
               <Cite s={S.graceSuperchipPage} /> Two NVIDIA pages disagree on its bandwidth: up to
               512 GB/s per GB200 superchip
@@ -246,7 +267,8 @@ export function GraceBlackwellUltraServer() {
               GPU memory on GB200 and GB300 NVL72 appears to the OS as NUMA (non-uniform memory
               access) nodes. Bind host memory to the CPU nodes (the Wide-EP guide uses{' '}
               <code>numactl -m 0,1</code>), or turn on Coherent Driver-Based Memory Management
-              (CDMM, from the R580 driver), which keeps GPU memory out of the NUMA map; with CDMM
+              (CDMM, introduced for GB200 platforms in the R580 driver), which keeps GPU memory out
+              of the NUMA map; with CDMM
               on, Wide-EP&apos;s online load balancer needs GDRCopy.
               <Cite s={S.wideEpReadme} />
             </Box>
@@ -290,20 +312,21 @@ export function GraceBlackwellUltraServer() {
           <ExpandableSection headerText="How far NVLink and EFA sit apart, per GPU">
             <Box variant="p">
               Inside the domain a GPU has 900 GB/s each way over NVLink.
-              <Cite s={S.blackwellUltraBlog} /> Beyond it, AWS gives 400 Gbps of
-              fourth-generation EFA per GPU
+              <Cite s={S.blackwellUltraBlog} kind="derived" note="1.8 TB/s bidirectional per GPU / 2." />{' '}
+              Beyond it, the P6 page&apos;s prose gives 400 Gbps of fourth-generation EFA per GPU
               <Cite s={S.p6Page} />: 50 GB/s, 18 times less.
               <Cite s={S.p6Page} kind="derived" note="400 Gbps / 8 = 50 GB/s; 900 / 50 = 18." />{' '}
-              The instance specification&apos;s 3.2 Tbps per four-GPU{' '}
-              <code>p6e-gb200.36xlarge</code>
-              <Cite s={S.ec2AcceleratedSpecs} /> works out to 100 GB/s per GPU, 9 times less.
+              The P6 page&apos;s own instance table and the instance specification both give 3.2
+              Tbps per four-GPU <code>p6e-gb200.36xlarge</code>
+              <Cite s={S.p6Page} />
+              <Cite s={S.ec2AcceleratedSpecs} />, which works out to 100 GB/s per GPU, 9 times less.
               <Cite
                 s={S.ec2AcceleratedSpecs}
                 kind="derived"
                 note="3,200 Gbps / 4 GPUs = 800 Gbps = 100 GB/s; 900 / 100 = 9."
               />{' '}
               Neither EFA figure carries a direction label; both ratios read them as
-              per-direction line rates. Nine 8-GPU P6-B200 nodes get the same 400 Gbps per GPU
+              per-direction line rates. Nine 8-GPU P6-B200 nodes get 400 Gbps per GPU
               <Cite s={S.p6Page} /> in NVLink domains of eight, so a 64-GPU expert layout spans
               eight nodes and its all-to-all crosses EFA.
             </Box>

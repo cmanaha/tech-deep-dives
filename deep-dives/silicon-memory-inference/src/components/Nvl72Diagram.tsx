@@ -149,6 +149,9 @@ export function Nvl72Diagram() {
         <text className="nvl-bc" x="465" y="272">
           130 TB/s aggregate
         </text>
+        <text className="nvl-sc" x="465" y="288">
+          bidirectional
+        </text>
 
         {/* One superchip in detail */}
         <rect className="nvl-panel" x="566" y="94" width="282" height="212" rx="8" />

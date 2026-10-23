@@ -61,3 +61,6 @@
   prose, 3.2 Tbps per four-GPU instance in its table); name both, as Communication now does.
 - Quantization and Precision: "10.7 (Rubin)" is cited to a page that never names Rubin; NVIDIA
   Blackwell now cites Rubin as compute capability 10.7 to the page that does (reuse its record).
+- Memory Hierarchy Primer, MoE, Edge Shared-Memory Silicon: NVLink figures without a direction
+  label (Grace-Blackwell verification). 1.8 TB/s per GPU and 130 TB/s per NVL72 are
+  bidirectional; NVLink-C2C 900 GB/s is bidirectional; 900 GB/s each way is derived.
