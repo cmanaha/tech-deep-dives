@@ -66,3 +66,8 @@
   bidirectional; NVLink-C2C 900 GB/s is bidirectional; 900 GB/s each way is derived.
 - Intel Xeon 6: the Xeon 6 product brief gives 32 GT/s only for CXL lanes (Flash as a Cache
   Tier verification); check any PCIe 5.0 rate the Xeon section attributes to it.
+- DeepSeek-V4.1-Flash 890 B per token is DeepSeek's "global KV cache footprint" (Quantization
+  verification). KV Cache scopes it; Flash as a Cache Tier (:144) and Disaggregated (:175, :386)
+  state it unscoped. Orchestrator consistency pass: add "global KV cache" where it is quoted.
+- Trainium3 8-bit format: the Neuron data-types page says FP8, the Trn3 page says MXFP8 only
+  (Quantization verification); AWS Trainium section and Quantization should not contradict.

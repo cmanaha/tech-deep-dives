@@ -46,6 +46,13 @@ export const S = {
     tier: 1,
     accessed: '2026-10-16',
   },
+  cutlassChangelog: {
+    title: 'CUTLASS CHANGELOG at tag v4.8.0',
+    publisher: 'NVIDIA',
+    url: 'https://github.com/NVIDIA/cutlass/blob/v4.8.0/CHANGELOG.md',
+    tier: 1,
+    accessed: '2026-10-16',
+  },
   nvfp4Blog: {
     title: 'Introducing NVFP4 for Efficient and Accurate Low-Precision Inference',
     publisher: 'NVIDIA',

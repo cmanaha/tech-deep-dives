@@ -78,7 +78,7 @@ const formatRows: FormatRow[] = [
     ),
     use: (
       <>
-        E4M3 for weights, activations and, with block scales, every training tensor
+        E4M3 for weights, activations and, with block scales, every FP8 training tensor
         <Cite s={S.deepseekV3Report} />; E5M2 for gradients in the older hybrid recipe
         <Cite s={S.deepseekV3Report} />
       </>
@@ -91,8 +91,10 @@ const formatRows: FormatRow[] = [
         Blackwell and Rubin
         <Cite
           s={S.ptxIsa}
-          note="tcgen05.mma .kind::mxf8f6f4. tcgen05 targets the sm_100 family, which covers compute capability 10.0, 10.3 and 10.7 (Rubin)."
+          note="tcgen05.mma .kind::mxf8f6f4; tcgen05.mma is supported on 'sm_100f or higher in the same family'."
         />
+        <Cite s={S.computeCapabilities} note="Family target compute_100f runs on compute capability 10.0, 10.3 and 10.7." />
+        <Cite s={S.cutlassChangelog} note="4.8.0: Added initial Rubin support (SM107)." />
         , Trainium3
         <Cite s={S.trn3Page} />, AMD MI355X
         <Cite s={S.mi355xPage} />
@@ -127,7 +129,9 @@ const formatRows: FormatRow[] = [
       <>
         NVIDIA Blackwell and Rubin
         <Cite s={S.nvfp4Blog} />
-        <Cite s={S.ptxIsa} note="tcgen05.mma .kind::mxf4 and .kind::mxf8f6f4." />, Trainium3
+        <Cite s={S.ptxIsa} note="tcgen05.mma .kind::mxf4 and .kind::mxf8f6f4, supported on 'sm_100f or higher in the same family'." />
+        <Cite s={S.computeCapabilities} note="Family target compute_100f runs on compute capability 10.0, 10.3 and 10.7." />
+        <Cite s={S.cutlassChangelog} note="4.8.0: Added initial Rubin support (SM107)." />, Trainium3
         <Cite s={S.trainium3Arch} />, AMD MI355X
         <Cite s={S.mi355xPage} />
       </>
@@ -212,10 +216,10 @@ export function QuantizationAndPrecision() {
             Each step down gives up exponent bits (range), mantissa bits (resolution) or both,
             and deployments mix rungs by tensor: FP32 master weights, BF16 (bfloat16) or FP8 in training,
             FP8, 4-bit or INT8 weights at inference. FP8 training holds at scale: DeepSeek-V3
-            used E4M3 (4 exponent bits, 3 mantissa bits) on every tensor, with tile- and
-            block-wise scaling.
+            used E4M3 (4 exponent bits, 3 mantissa bits) on every FP8 tensor, gradients included,
+            with tile- and block-wise scaling.
             <Cite s={S.deepseekV3Report} /> A 12-billion-parameter model trained on 10 trillion
-            tokens in NVFP4 matched its FP8 baseline in loss and downstream accuracy.
+            tokens in NVFP4 reached loss and downstream accuracy comparable to its FP8 baseline.
             <Cite s={S.nvfp4Pretraining} kind="measured" />
           </Box>
         </SpaceBetween>
@@ -289,7 +293,8 @@ export function QuantizationAndPrecision() {
                 <Cite s={S.nvfp4Blog} /> Tensor Cores run it through <code>tcgen05.mma</code> (
                 <code>.kind::mxf4nvf4</code>) on Blackwell and Rubin.
                 <Cite s={S.ptxIsa} />
-                <Cite s={S.computeCapabilities} note="tcgen05 builds for the sm_100 family run on compute capability 10.0, 10.3 and 10.7 (Rubin)." />
+                <Cite s={S.computeCapabilities} note="Family target compute_100f runs on compute capability 10.0, 10.3 and 10.7." />
+                <Cite s={S.cutlassChangelog} note="4.8.0: Added initial Rubin support (SM107)." />
               </Box>
             </div>
             <div>
@@ -404,8 +409,8 @@ export function QuantizationAndPrecision() {
             <strong>Treat the KV cache as its own decision.</strong> DeepSeek&apos;s vLLM command
             for V4-Pro serves an FP8 KV cache
             <Cite s={S.deepseekV4ProReadme} />, and DeepSeek-V4.1-Flash keeps its main KV cache in
-            FP4 (E2M1, one E4M3 scale per 16 channels), part of what brings it to 890 bytes per
-            token.
+            FP4 (E2M1, one E4M3 scale per 16 channels), part of what brings its global KV cache to
+            890 bytes per token.
             <Cite s={S.deepseekV41Flash} /> Evaluate KV precision separately from weights.
           </Box>
           <Box variant="p">
