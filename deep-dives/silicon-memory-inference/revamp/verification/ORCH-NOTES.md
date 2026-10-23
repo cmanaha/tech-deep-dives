@@ -48,3 +48,7 @@
   of EFA per GPU against 400 Gbps in its prose (Disaggregated verification).
 - Disaggregated scored 7/10 on economy (+63%); ~150 words of cut candidates in its Backlog. If
   the Gate 3 average falls under 8, apply those cuts as section-shape corrections.
+- Small Language Models: the B300 MIG wording. NVIDIA's MIG page gives 7 x 34 GB for GB300
+  NVL72 and 7 x 32 GB for HGX B300 (Isolation verification; reuse its records).
+- Capital Markets Lens: align the list of what the NIE proof leaves out with Isolation (I/O
+  device management, live update and migration, concurrency, per the white paper).

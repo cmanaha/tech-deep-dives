@@ -25,7 +25,7 @@ const columns: Column[] = [
     fill: '#f2f8fd',
     rows: [
       ['Separates', ['Virtual machines on one host']],
-      ['Enforced by', ['NIE alone at the highest', 'privilege level; policy below it']],
+      ['Enforced by', ['NIE alone at the top hypervisor', 'privilege level; policy below it']],
       ['Where', ['Every Graviton5 instance;', 'generally available June 2026']],
       ['Evidence', ['Isabelle/HOL proof, about', '330,000 lines']],
       ['Outside it', ['Micro-architectural side', 'channels; scheduling']],

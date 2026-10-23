@@ -75,6 +75,13 @@ export const S = {
     tier: 1,
     accessed: '2026-10-17',
   },
+  migProductPage: {
+    title: 'NVIDIA Multi-Instance GPU (MIG) product page, "MIG Specifications"',
+    publisher: 'NVIDIA',
+    url: 'https://www.nvidia.com/en-us/technologies/multi-instance-gpu/',
+    tier: 2,
+    accessed: '2026-10-18',
+  },
   blackwellUltraBlog: {
     title: 'Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era',
     publisher: 'NVIDIA',
@@ -106,6 +113,13 @@ export const S = {
     url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html',
     tier: 1,
     accessed: '2026-10-16',
+  },
+  nkiTrnInf2Arch: {
+    title: 'AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html',
+    tier: 1,
+    accessed: '2026-10-18',
   },
   neuronCoreV3: {
     title: 'AWS Neuron: NeuronCore-v3 Architecture',

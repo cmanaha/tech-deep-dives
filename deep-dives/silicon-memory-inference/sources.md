@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 458.
+Total distinct sources: 459.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -63,7 +63,7 @@ Total distinct sources: 458.
 | AWS | [AWS Neuron: NeuronCore-v3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-16 | AwsCustomSilicon, DeterminismAOT, GroqSambanovaDataflow, HeterogeneityFact, IsolationNie, MemoryHierarchyPrimer |
 | AWS | [AWS Neuron: NKI API reference, nki.isa.nc_matmul](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/api/generated/nki.isa.nc_matmul.html) | 2026-10-16 | AwsCompilersAndTooling, AwsCustomSilicon |
 | AWS | [AWS Neuron: NKI Library release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/nki-lib.html) | 2026-10-17 | DeterminismAOT, MoeAndSparseActivation, QuantizationAndPrecision |
-| AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-18 | AwsCustomSilicon, HeterogeneityFact, KernelExecutionLifecycle, ThesisAndFraming |
+| AWS | [AWS Neuron: NKI Trainium/Inferentia2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium_inferentia2_arch.html) | 2026-10-18 | AwsCustomSilicon, HeterogeneityFact, IsolationNie, KernelExecutionLifecycle, ThesisAndFraming |
 | AWS | [AWS Neuron: NKI Trainium2 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium2_arch.html) | 2026-10-17 | AwsCompilersAndTooling, AwsCustomSilicon, KernelExecutionLifecycle, MemoryHierarchyPrimer |
 | AWS | [AWS Neuron: NKI Trainium3 Architecture Guide](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/guides/architecture/trainium3_arch.html) | 2026-10-16 | AwsCustomSilicon, MemoryHierarchyPrimer |
 | AWS | [AWS Neuron: Release Notes (Neuron 2.32.0 component versions)](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/index.html) | 2026-10-17 | AwsCompilersAndTooling |
@@ -415,6 +415,7 @@ Total distinct sources: 458.
 | NVIDIA | [NVIDIA Hopper in Full Production (2022-09-20)](https://nvidianews.nvidia.com/news/nvidia-hopper-in-full-production) | 2026-10-16 | NvidiaHopper |
 | NVIDIA | [NVIDIA Jetson AI Lab: Benchmarks (MLC, INT4)](https://www.jetson-ai-lab.com/archive/benchmarks.html) | 2026-10-16 | EdgeSharedMemorySilicon |
 | NVIDIA | [NVIDIA Jetson Orin Nano Developer Kit Gets a Super Boost (2024-12-17)](https://developer.nvidia.com/blog/nvidia-jetson-orin-nano-developer-kit-gets-a-super-boost/) | 2026-10-17 | EdgeSharedMemorySilicon |
+| NVIDIA | [NVIDIA Multi-Instance GPU (MIG) product page, "MIG Specifications"](https://www.nvidia.com/en-us/technologies/multi-instance-gpu/) | 2026-10-18 | IsolationNie |
 | NVIDIA | [NVIDIA NVLink-C2C](https://www.nvidia.com/en-us/data-center/nvlink-c2c/) | 2026-10-17 | GraceBlackwellUltraServer |
 | NVIDIA | [NVIDIA Supercharges Hopper, the World's Leading AI Computing Platform (2023-11-13)](https://nvidianews.nvidia.com/news/nvidia-supercharges-hopper-the-worlds-leading-ai-computing-platform) | 2026-10-16 | NvidiaHopper |
 | NVIDIA | [NVIDIA Technical Blog: AWS Integrates AI Infrastructure with NVIDIA NVLink Fusion for Trainium4 Deployment (2025-12-02)](https://developer.nvidia.com/blog/aws-integrates-ai-infrastructure-with-nvidia-nvlink-fusion-for-trainium4-deployment/) | 2026-10-17 | ChipletAndInterconnect, CommunicationAndScaleOut |

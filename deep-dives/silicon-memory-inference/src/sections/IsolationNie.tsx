@@ -39,13 +39,14 @@ const migRows: MigRow[] = [
     source: S.migSupportedProfiles,
   },
   {
-    gpu: 'B300 (Blackwell Ultra), 288 GB',
-    layouts: '7\u00a0×\u00a034 GB · 4\u00a0×\u00a070 GB · 2\u00a0×\u00a0140 GB (no published profile names or whole-GPU profile)',
+    gpu: 'Blackwell Ultra, 288 GB (NVIDIA blog example)',
+    layouts: '7\u00a0×\u00a034 GB · 4\u00a0×\u00a070 GB · 2\u00a0×\u00a0140 GB',
     source: S.blackwellUltraBlog,
   },
   {
     gpu: 'GB300 (DGX Station), 252 GB',
-    layouts: '1g.31gb\u00a0×\u00a07 · 1g.63gb\u00a0×\u00a04 · 3g.126gb\u00a0×\u00a02 · 7g.251gb\u00a0×\u00a01',
+    layouts:
+      '1g.31gb\u00a0×\u00a07 · 1g.63gb\u00a0×\u00a04 · 3g.126gb\u00a0×\u00a02 · 7g.251gb\u00a0×\u00a01',
     source: S.migSupportedProfiles,
   },
 ];
@@ -324,8 +325,10 @@ export function IsolationNie() {
           <Alert type="info" header="What the proof covers, what it assumes, what it leaves out">
             <SpaceBetween size="xs">
               <Box variant="p">
-                <strong>Scope.</strong> Three parts of the VM lifecycle in the hypercall API: VM
-                creation and configuration, vCPU (virtual CPU) management, and memory management.
+                <strong>Scope.</strong> Three of the five parts of the VM lifecycle in the hypercall
+                API: VM creation and configuration, vCPU (virtual CPU) management, and memory
+                management. I/O device management, live update and live migration are not yet
+                covered.
                 <Cite s={S.nieWhitepaper} />
               </Box>
               <Box variant="p">
@@ -346,7 +349,9 @@ export function IsolationNie() {
                 model leaves out caches, branch predictors and speculative execution; NIE mitigates
                 them by design, with secret-hiding (a guest&apos;s memory is unmapped from NIE
                 except while NIE acts for that guest), speculation barriers and no L1 cache shared
-                between guests. Scheduling, because the deprivileged hypervisor decides it.
+                between guests. Concurrent execution across physical CPUs, because the proofs reason
+                sequentially; strict two-phase locking is the mitigation. Scheduling, because the
+                deprivileged hypervisor decides it.
                 <Cite s={S.nieWhitepaper} />
               </Box>
             </SpaceBetween>
@@ -378,7 +383,7 @@ export function IsolationNie() {
             MIG splits one NVIDIA GPU into up to seven GPU instances on data-center parts, four on
             the RTX PRO 6000 Blackwell and two on the RTX PRO 5000 and 4500 Blackwell.
             <Cite s={S.migSupportedGpus} /> Each instance has its own SMs (Streaming
-            Multiprocessors), L2 cache slice, memory, copy engines and decoders
+            Multiprocessors), L2 cache slice, memory and copy engines
             <Cite s={S.migSupportedProfiles} />, and its memory resources &quot;limit both the
             available capacity and bandwidth, and provide memory QoS&quot; (quality of service),
             with SM performance and errors isolated too.
@@ -407,8 +412,11 @@ export function IsolationNie() {
             wrapLines
           />
           <Box variant="p">
-            Slice sizes follow the product&apos;s memory, as the B300 and GB300 rows show, and the
-            MIG guide has no HGX B300 table.
+            Slice sizes follow the product&apos;s memory, as the Blackwell Ultra and GB300 rows
+            show. NVIDIA&apos;s MIG page gives the blog&apos;s 7&nbsp;×&nbsp;34 GB split to GB300
+            NVL72 and lists HGX B300 as 7&nbsp;×&nbsp;32, 4&nbsp;×&nbsp;67, 2&nbsp;×&nbsp;135 or
+            1&nbsp;×&nbsp;270 GB
+            <Cite s={S.migProductPage} />, and the MIG guide has no B300 table.
             <Cite s={S.migSupportedGpus} /> Read the profiles on your own instance before you size a
             model to a slice.
           </Box>
@@ -416,14 +424,17 @@ export function IsolationNie() {
             <Box variant="p">
               Blackwell adds TEE-I/O (Trusted Execution Environment for I/O) and inline NVLink
               protection.
-              <Cite s={S.blackwellUltraBlog} /> In NVIDIA&apos;s confidential-computing modes, whole
-              GPUs pass through to one confidential VM: one GPU, or up to eight on Blackwell with
-              NVLink traffic encrypted, and the GPUs are not shared among VMs. CPU-to-GPU traffic is
-              encrypted, and the VM runs on AMD SEV-SNP (Secure Encrypted Virtualization with Secure
-              Nested Paging) or Intel TDX (Trust Domain Extensions).
-              <Cite s={S.nvidiaSecureAi} /> MIG divides one GPU among workloads; confidential
-              computing protects one VM&apos;s data on its way to and between whole GPUs. No EC2
-              documentation for NVIDIA GPU confidential computing was located during this research.
+              <Cite s={S.blackwellUltraBlog} /> In the confidential-computing modes NVIDIA
+              documents, whole GPUs pass through to one confidential VM: one GPU, or up to eight on
+              Blackwell with NVLink traffic encrypted, and the GPUs are not shared among VMs.
+              CPU-to-GPU traffic is encrypted, and the VM runs on AMD SEV-SNP (Secure Encrypted
+              Virtualization with Secure Nested Paging) or Intel TDX (Trust Domain Extensions).
+              <Cite s={S.nvidiaSecureAi} /> NVIDIA&apos;s MIG page says confidential computing
+              isolates each MIG instance
+              <Cite s={S.migProductPage} kind="vendor-claim" />; the white paper lists only
+              whole-GPU modes. MIG divides one GPU among workloads; confidential computing protects
+              one VM&apos;s data on its way to and between whole GPUs. No EC2 documentation for
+              NVIDIA GPU confidential computing was located during this research.
             </Box>
           </ExpandableSection>
         </SpaceBetween>
@@ -452,8 +463,9 @@ export function IsolationNie() {
           <Box variant="p">
             Inside a core, the NEFF (Neuron Executable File Format) fixes memory allocation and
             instruction order at compile time
-            <Cite s={S.nkiOverview} />, and the core&apos;s SBUF (State Buffer) scratchpad has no
-            cache in front: compiled code decides what sits there.
+            <Cite s={S.nkiOverview} />, and the core&apos;s SBUF (State Buffer) scratchpad is
+            software-managed: compiled code decides what sits there.
+            <Cite s={S.nkiTrnInf2Arch} />
             <Cite s={S.neuronCoreV3} /> A NeuronCore belongs to one process, so its SBUF does too.
             HBM (High Bandwidth Memory) capacity and bandwidth are specified per chip
             <Cite s={S.trainium2Arch} />, and no per-NeuronCore bandwidth partition was located in
