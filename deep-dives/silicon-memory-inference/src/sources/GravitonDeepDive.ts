@@ -6,7 +6,9 @@ import type { Source } from '../components/Cite';
  * Sources list). Records shared with other sections reuse their URL, title, publisher
  * and tier. Records accessed 2026-10-17 were fetched during authoring (the R8g GA post,
  * the ONNX Runtime v1.17.0 release, and the EC2 instance specification pages, re-read
- * for per-size vCPU counts).
+ * for per-size vCPU counts). The two QEMU records were added during verification
+ * (2026-10-23): they carry the MMLA and BFMMLA matrix shapes, which LLVM's
+ * definitions do not state.
  */
 export const S = {
   // Tier 1: AWS processor table, guides and EC2 specifications, pinned code
@@ -72,6 +74,20 @@ export const S = {
     url: 'https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/AArch64/AArch64InstrInfo.td#L1727-L1755',
     tier: 1,
     accessed: '2026-10-17',
+  },
+  qemuInt8Mmla: {
+    title: 'QEMU target/arm/tcg/vec_helper.c at tag v11.1.2 (do_smmla_b to do_mmla_b, lines 2771-2834)',
+    publisher: 'QEMU',
+    url: 'https://github.com/qemu/qemu/blob/v11.1.2/target/arm/tcg/vec_helper.c#L2771-L2834',
+    tier: 1,
+    accessed: '2026-10-23',
+  },
+  qemuBfmmla: {
+    title: 'QEMU target/arm/tcg/vec_helper.c at tag v11.1.2 (gvec_bfmmla, lines 3045-3119)',
+    publisher: 'QEMU',
+    url: 'https://github.com/qemu/qemu/blob/v11.1.2/target/arm/tcg/vec_helper.c#L3045-L3119',
+    tier: 1,
+    accessed: '2026-10-23',
   },
   onnxRuntime1170: {
     title: 'ONNX Runtime v1.17.0 release (published 2024-02-03)',

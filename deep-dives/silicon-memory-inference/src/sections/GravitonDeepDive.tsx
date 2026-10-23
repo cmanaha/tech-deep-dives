@@ -121,8 +121,8 @@ const specRows: SpecRow[] = [
     spec: 'L3 per core',
     g4: (
       <>
-        375 KB
-        <Cite s={S.gravitonReadme} kind="derived" note="36 MB / 96 cores." />
+        0.375 MB
+        <Cite s={S.gravitonReadme} kind="derived" note="36 MB / 96 cores = 0.375 MB." />
       </>
     ),
     g5: (
@@ -185,7 +185,7 @@ const specRows: SpecRow[] = [
     g4: (
       <>
         1; 2 on the two-socket 48xlarge
-        <Cite s={S.gravitonReadme} />, about 138 ns across sockets
+        <Cite s={S.gravitonReadme} />, 138.6 ns across sockets on average
         <Cite s={S.chipsAndCheeseGraviton4} kind="measured" />
       </>
     ),
@@ -265,7 +265,8 @@ export function GravitonDeepDive() {
             Trainium accelerator. Graviton4 (Neoverse V2) was announced at re:Invent 2023
             <Cite s={S.r8gPreview} /> and has been generally available since July 2024, starting
             with R8g
-            <Cite s={S.r8gGa} />. Graviton5 (Neoverse V3) was announced in December 2025
+            <Cite s={S.r8gGa} />. Graviton5 (Neoverse V3
+            <Cite s={S.gravitonReadme} />) was announced in December 2025
             <Cite s={S.graviton5AboutAmazon} />; M9g became generally available in June 2026
             <Cite s={S.m9gGa} />, C9g later that month
             <Cite s={S.c9gGa} /> and R9g in August 2026
@@ -342,8 +343,8 @@ export function GravitonDeepDive() {
           <Box variant="p">
             <strong>Graviton4 is one node.</strong> All 96 cores share one 36 MB LLC on Arm&apos;s
             CMN-700 Coherent Mesh Network
-            <Cite s={S.gravitonReadme} />, about 375 KB per core
-            <Cite s={S.gravitonReadme} kind="derived" note="36 MB / 96 cores." />. Only the
+            <Cite s={S.gravitonReadme} />, 0.375 MB per core
+            <Cite s={S.gravitonReadme} kind="derived" note="36 MB / 96 cores = 0.375 MB." />. Only the
             two-socket 48xlarge adds a second node.
           </Box>
           <Box variant="p">
@@ -403,11 +404,16 @@ export function GravitonDeepDive() {
               s={S.llvmMatMulFormat}
               note="LLVM encodes the instruction as $Rd.4s, $Rn.16b, $Rm.16b: two vectors of 16 int8 values accumulate into 4 int32 values."
             />
-            . FEAT_BF16 adds BFMMLA, the same operation on BF16 (bfloat16) inputs with FP32
-            accumulators
             <Cite
-              s={S.llvmMatMulDefs}
-              note="BFMMLA is defined under HasBF16 and writes v4f32 from two v8bf16 operands."
+              s={S.qemuInt8Mmla}
+              note="Each of the four int32 sums in a 16-byte segment adds an 8-element int8 dot product of one 8-byte row from each source."
+            />
+            . FEAT_BF16 adds BFMMLA, which multiplies a 2x4 BF16 (bfloat16) matrix by a 4x2 one
+            into a 2x2 block of FP32 accumulators in the same 128-bit register
+            <Cite s={S.llvmMatMulDefs} note="BFMMLA is defined under HasBF16." />
+            <Cite
+              s={S.qemuBfmmla}
+              note="Each of the four FP32 sums adds two bfdotadd steps of two BF16 products each: four products per output."
             />
             .
           </Box>
@@ -516,8 +522,8 @@ export function GravitonDeepDive() {
                 48xlarge, confirm the layout with <code>numactl --hardware</code>, then bind
                 threads and memory to one node, for example{' '}
                 <code>numactl --cpunodebind=0 --membind=0 &lt;command&gt;</code>. On Graviton4
-                only the two-socket 48xlarge needs this, where crossing sockets measured about
-                138 ns
+                only the two-socket 48xlarge needs this, where crossing sockets measured 138.6 ns
+                on average
                 <Cite s={S.chipsAndCheeseGraviton4} kind="measured" />.
               </Box>
             </SpaceBetween>

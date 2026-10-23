@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 467.
+Total distinct sources: 469.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -280,6 +280,8 @@ Total distinct sources: 467.
 | PyTorch | [PyTorch v2.14.1 torch/_inductor/kernel/mm_grouped.py: tuned_grouped_mm and the CuTe DSL template](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/_inductor/kernel/mm_grouped.py#L519) | 2026-10-17 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 torch/_inductor/kernel/mm.py: tuned_mm, tuned_addmm, tuned_int_mm, tuned_scaled_mm](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/_inductor/kernel/mm.py) | 2026-10-17 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 torch/_inductor/utils.py: use_triton_template, use_cutlass_template, use_aten_gemm_kernels](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/_inductor/utils.py) | 2026-10-17 | NvidiaCompilersAndTooling |
+| QEMU | [QEMU target/arm/tcg/vec_helper.c at tag v11.1.2 (do_smmla_b to do_mmla_b, lines 2771-2834)](https://github.com/qemu/qemu/blob/v11.1.2/target/arm/tcg/vec_helper.c#L2771-L2834) | 2026-10-23 | GravitonDeepDive |
+| QEMU | [QEMU target/arm/tcg/vec_helper.c at tag v11.1.2 (gvec_bfmmla, lines 3045-3119)](https://github.com/qemu/qemu/blob/v11.1.2/target/arm/tcg/vec_helper.c#L3045-L3119) | 2026-10-23 | GravitonDeepDive |
 | Qwen | [Qwen/Qwen3.5-0.8B README at revision 2fc0636 (language model 0.8B, hidden layout, 262,144-token context)](https://huggingface.co/Qwen/Qwen3.5-0.8B/blob/2fc06364715b967f1860aea9cf38778875588b17/README.md) | 2026-10-17 | SmallLanguageModels |
 | Qwen | [Qwen/Qwen3.5-2B at revision 15852e8 (README, config.json, safetensors total)](https://huggingface.co/Qwen/Qwen3.5-2B/tree/15852e8c16360a2fea060d615a32b45270f8a8fc) | 2026-10-17 | SmallLanguageModels |
 | Qwen | [Qwen/Qwen3.5-2B config.json at revision 15852e8 (layer_types, num_key_value_heads, head_dim, mtp_num_hidden_layers)](https://huggingface.co/Qwen/Qwen3.5-2B/blob/15852e8c16360a2fea060d615a32b45270f8a8fc/config.json) | 2026-10-17 | SmallLanguageModels |

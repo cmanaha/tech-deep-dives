@@ -72,7 +72,7 @@ export function GravitonComparison() {
           36 MB LLC, shared
         </text>
         <text className="grv-s" x="170" y="196">
-          375 KB per core
+          0.375 MB per core
         </text>
         <rect className="grv-dram" x="36" y="240" width="268" height="54" rx="4" />
         <text className="grv-tb" x="170" y="263">
