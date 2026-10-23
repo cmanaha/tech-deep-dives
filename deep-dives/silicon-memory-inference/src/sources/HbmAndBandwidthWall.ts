@@ -109,9 +109,9 @@ export const S = {
     accessed: '2026-10-17',
   },
   trainium3Arch: {
-    title: 'AWS Neuron: Trainium3 Architecture',
+    title: 'AWS Neuron 2.32.0: Trainium3 Architecture',
     publisher: 'AWS',
-    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium3.html',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/about-neuron/arch/neuron-hardware/trainium3.html',
     tier: 1,
     accessed: '2026-10-17',
   },

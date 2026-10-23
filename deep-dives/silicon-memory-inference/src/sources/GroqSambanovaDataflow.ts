@@ -62,16 +62,16 @@ export const S = {
 
   // AWS Trainium (Tier 1 docs).
   neuronCoreV3: {
-    title: 'AWS Neuron: NeuronCore-v3 Architecture',
+    title: 'AWS Neuron 2.32.0: NeuronCore-v3 Architecture',
     publisher: 'AWS',
-    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/about-neuron/arch/neuron-hardware/neuron-core-v3.html',
     tier: 1,
     accessed: '2026-10-16',
   },
   nkiOverview: {
-    title: 'AWS Neuron: Neuron Kernel Interface (NKI) overview, "How NKI works"',
+    title: 'AWS Neuron 2.32.0: Neuron Kernel Interface (NKI) overview, "How NKI works"',
     publisher: 'AWS',
-    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/nki/index.html',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/nki/index.html',
     tier: 1,
     accessed: '2026-10-18',
   },
