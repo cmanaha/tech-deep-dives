@@ -86,3 +86,6 @@
 - Open: HBF "512 GiB per 16-high stack" beside "0.384 to 3.072 TB/s per stack" (Primer, Flash as a Cache Tier, tower, grid). Grade 1 (0.384) is an 8-high stack, so a 512 GiB stack starts at 1.536 TB/s. Each statement is true as written; High Bandwidth Flash gives the per-grade heights. Scope refinement, left for the next iteration.
 - Open: NVMe cell "1.56-18.75 GB/s per GPU" lists P5 and P5e, whose EBS cap is 10,000 MB/s (1.25 GB/s per GPU); 1.56 is the P5en and P6 figure. Matches the Primer tower; scope refinement.
 - Unverifiable: JEDEC MRCD (JESD82-542) standard date; jedec.org did not serve the page.
+
+- Open (Intel Xeon 6): Chips and Cheese's 691.62 GB/s on an r8i sits beside "one node's four channels peak at 230.4 GB/s". Three SNC3 nodes x 230.4 = 691.2 GB/s, so the measurement reads as 100.06% of a one-socket peak; Chips and Cheese does not name the r8i size (a two-socket 96xlarge has twice the peak). Each figure is true as cited; a scope note naming that gap is for the next iteration.
+- Not aligned: AmdEpycTurin.ts `xeon6ProductBrief` cites the PDF of the Xeon 6 brief (cdrdv2-public.intel.com/845771) for the P-core MRDIMM 8,800 MT/s line; the HTML brief record elsewhere is titled for its CXL rate. Two bibliography entries for one document, both correct.
