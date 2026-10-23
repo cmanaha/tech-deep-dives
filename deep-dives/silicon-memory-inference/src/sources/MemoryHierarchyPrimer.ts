@@ -257,7 +257,7 @@ export const S = {
     accessed: '2026-10-17',
   },
   pond: {
-    title: 'Pond: CXL-Based Memory Pooling Systems for Cloud Platforms (arXiv:2203.00241), Figure 4',
+    title: 'Pond: CXL-Based Memory Pooling Systems for Cloud Platforms (arXiv:2203.00241)',
     publisher: 'arXiv',
     url: 'https://arxiv.org/abs/2203.00241',
     tier: 3,

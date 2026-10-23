@@ -8,6 +8,13 @@ import type { Source } from '../components/Cite';
  */
 export const S = {
   // Trading path: kernel bypass, EFA scope, tail-latency sources
+  moldUdp64: {
+    title: 'MoldUDP64 Protocol Specification V 1.00 (UDP multicast downstream packets)',
+    publisher: 'Nasdaq',
+    url: 'https://www.nasdaqtrader.com/content/technicalsupport/specifications/dataproducts/moldudp64.pdf',
+    tier: 1,
+    accessed: '2026-10-23',
+  },
   amdSdciWhitepaper: {
     title: 'AMD Solarflare X4 Low Latency Using SDCI (white paper, October 2025, Rev 1)',
     publisher: 'AMD',
@@ -51,15 +58,15 @@ export const S = {
     accessed: '2026-10-16',
   },
   neuronEnvVars: {
-    title: 'AWS Neuron: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)',
+    title:
+      'AWS Neuron 2.32.0: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)',
     publisher: 'AWS',
-    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/jax/api-reference-guide/neuron-envvars.html',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/frameworks/jax/api-reference-guide/neuron-envvars.html',
     tier: 1,
-    accessed: '2026-10-16',
+    accessed: '2026-10-23',
   },
   pond: {
-    title:
-      'Pond: CXL-Based Memory Pooling Systems for Cloud Platforms (arXiv:2203.00241), Figure 4',
+    title: 'Pond: CXL-Based Memory Pooling Systems for Cloud Platforms (arXiv:2203.00241)',
     publisher: 'arXiv',
     url: 'https://arxiv.org/abs/2203.00241',
     tier: 3,
@@ -157,11 +164,11 @@ export const S = {
     accessed: '2026-10-16',
   },
   xeon6Brief: {
-    title: 'Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)',
+    title: 'Intel Xeon 6 Product Brief (up to 64 lanes of CXL 2.0 at up to 32 GT/s per lane)',
     publisher: 'Intel',
     url: 'https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html',
     tier: 1,
-    accessed: '2026-10-16',
+    accessed: '2026-10-23',
   },
   ec2AcceleratedSpecs: {
     title: 'Amazon EC2 accelerated computing instance specifications',
@@ -175,7 +182,7 @@ export const S = {
     publisher: 'AWS',
     url: 'https://d1.awsstatic.com/onedam/marketing-channels/website/aws/en_US/whitepapers/compliance/nitro-isolation-engine-whitepaper.pdf',
     tier: 1,
-    accessed: '2026-10-16',
+    accessed: '2026-10-17',
   },
   nieComputeBlog: {
     title:
@@ -183,7 +190,7 @@ export const S = {
     publisher: 'AWS',
     url: 'https://aws.amazon.com/blogs/compute/aws-nitro-isolation-engine-formally-verifying-the-hypervisor-in-the-aws-nitro-system/',
     tier: 2,
-    accessed: '2026-10-16',
+    accessed: '2026-10-17',
   },
   blackwellArchitecture: {
     title: 'NVIDIA Blackwell architecture',

@@ -108,7 +108,7 @@ const failureRows: FailureRow[] = [
         Format) and set a fixed rounding seed
         <Cite
           s={S.neuronEnvVars}
-          note="NEURON_RT_STOCHASTIC_ROUNDING_SEED: set to a fixed value to ensure reproducibility between runs."
+          note="'Please set NEURON_RT_STOCHASTIC_ROUNDING_SEED to a fixed value to ensure reproducibility between runs.'"
         />{' '}
         (<em>Determinism: NEFF and GPU Reproducibility</em>)
       </>
@@ -166,6 +166,10 @@ export function CapitalMarketsLens() {
             Tick-to-trade runs from the moment a market tick reaches the NIC (network interface
             card) to the moment the resulting order leaves it. Stages 1, 2, 6 and 7 live in the
             network stack. Exchange feeds arrive as multicast UDP (User Datagram Protocol)
+            <Cite
+              s={S.moldUdp64}
+              note="Nasdaq's feed transport: 'MoldUDP64 transmitters send Downstream packets via UDP multicast to transport the normal data stream sent to the listeners.'"
+            />
             <Cite
               s={S.amdSdciWhitepaper}
               note="The financial technology (or Fintech) market requires low latency, wire speed packet performance, deterministic packet jitter, and specialized multicast processing."
@@ -260,7 +264,7 @@ export function CapitalMarketsLens() {
             <Cite
               s={S.pond}
               kind="simulated"
-              note="CXL 'will add 70-90ns to access latencies over same-NUMA-node DRAM with a pool size of 8-16 sockets, and add more than 180ns for rack-scale pooling.'"
+              note="Section 1, page 1: CXL 'will add 70-90ns to access latencies over same-NUMA-node DRAM with a pool size of 8-16 sockets, and add more than 180ns for rack-scale pooling.'"
             />{' '}
             For a tick-to-trade pipeline that fights for nanoseconds, a slower tier for marginal
             bytes moves the wrong way.
@@ -332,8 +336,8 @@ export function CapitalMarketsLens() {
           </Box>
           <Alert type="success" header="The headline result (authors' measurement)">
             On the Danske Bank benchmark in the paper, a twin network trained on 8,192 samples gives
-            a &quot;virtually perfect&quot; risk approximation, where a vanilla network needs 65,536
-            samples for a much rougher one. Standard errors are 12.85M for the classical network at
+            a &quot;virtually perfect&quot; approximation of the book&apos;s values, where a vanilla
+            network trained on 65,536 samples gives a much rougher one. Standard errors are 12.85M for the classical network at
             64k samples and 1.77M for the differential network at 8k, on a test range of 200M.
             <Cite s={S.hugeSavine} kind="measured" note="Section 2.3, pages 12 to 13." /> In the
             authors&apos; words,{' '}
@@ -342,7 +346,7 @@ export function CapitalMarketsLens() {
             </em>
             <Cite s={S.hugeSavine} kind="measured" note="Page 10." />, and{' '}
             <em>
-              &quot;The twin network has the same degree of approximation as orders of magnitude
+              &quot;the twin network has the same degree of approximation as orders of magnitude
               slower nested Monte-Carlo&quot;
             </em>
             <Cite s={S.hugeSavine} kind="measured" note="Section 2.3, page 13." />.
@@ -482,12 +486,9 @@ export function CapitalMarketsLens() {
             <Box variant="h3">For risk and analytics</Box>
             <ul>
               <li>
-                Xeon 6 with MRDIMM (Multiplexed Rank DIMM) at 8,800 MT/s for bandwidth-bound
+                Xeon 6 with MRDIMM (Multiplexed Rank DIMM) at up to 8,800 MT/s for bandwidth-bound
                 analytics
-                <Cite
-                  s={S.xeon6Brief}
-                  note="The product brief lists MRDIMM support at 8,800 MT/s."
-                />{' '}
+                <Cite s={S.xeon6Brief} note="'MRDIMMs deliver up to 8,800 MT/s.'" />{' '}
                 (<em>DDR5, MRDIMM, LPDDR5X and CXL</em>, <em>Intel Xeon 6</em>)
               </li>
               <li>
@@ -545,8 +546,10 @@ export function CapitalMarketsLens() {
             <strong>2. How do you demonstrate isolation to my regulator?</strong> Start from the NIE
             white paper. Its Isabelle/HOL proof covers the confidentiality and integrity of each
             VM&apos;s private data across VM creation and configuration, vCPU management and memory
-            management, and the paper names what sits outside it: micro-architectural side channels
-            such as caches, and scheduling, which the deprivileged Nitro Hypervisor keeps.
+            management. The paper names what sits outside it: I/O device management, live update
+            and live migration, which the proof does not yet cover; concurrent execution across
+            physical CPUs, because the proofs reason sequentially; micro-architectural side channels
+            such as caches; and scheduling, which the deprivileged Nitro Hypervisor keeps.
             <Cite s={S.nieWhitepaper} /> AWS plans to make the NIE source code and proofs available
             to third parties for independent review.
             <Cite s={S.nieComputeBlog} /> On GPUs, the MIG layout is configuration you can show; for
