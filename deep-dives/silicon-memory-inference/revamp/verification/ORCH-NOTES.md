@@ -93,3 +93,5 @@
 - Open (Edge Shared-Memory Silicon): NOTES.md cites `lspci -nn` output that was never saved to research/dgx-spark/; the lspci readings rest on the log. Save the raw output on the next hardware session. README now says so.
 
 - TorchNeuron (AWS Compilers verification): Neuron 2.33.0 (2026-10-19) moved TorchNeuron from a closed beta to a public beta and dropped the FAQ line that listed `torch.all_to_all_vdev_2d` and its `_offset` variant for future releases. The `pytorchNative` record is now pinned to the v2.32.0 page in AWS Compilers, AWS Trainium and Communication, and both alerts scope the future-release line to that guide and give the 2.33.0 public-beta status.
+
+- Neuron docs pin (orchestrator, 2026-10-23): Neuron 2.33.0 (2026-10-19) changed what every `/en/latest/` Neuron URL serves, and moved the JAX env-vars page (the old path returns 404). Every Neuron record was read on 2026-10-16 to 2026-10-18 against 2.32.0, so all 24 unversioned URLs (75 records, 14 source files) now point to `/en/v2.32.0/` with "AWS Neuron 2.32.0:" titles; each v2.32.0 URL returned HTTP 200. TorchNeuron's 2.33.0 status is cited to its own v2.33.0 record.
