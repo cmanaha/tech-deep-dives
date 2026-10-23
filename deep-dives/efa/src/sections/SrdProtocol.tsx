@@ -984,7 +984,8 @@ a peer process is no longer present.`}</pre>
           </Box>
 
           <Box variant="p">
-            Because drops are expected, recovery is routine, and the card is what performs it. The
+            Because drops are expected, recovery is routine, and it happens in the Nitro card, where
+            SRD is implemented <SourceRef provenance="documented" doc={docs.storageBlog} />. The
             device reports the five network counters above{' '}
             <SourceRef provenance="code-derived" code={code.netStats} />. The driver code that
             surfaces them copies the values out of an admin-queue response rather than computing
@@ -995,9 +996,9 @@ a peer process is no longer present.`}</pre>
             the device doing the work, though an absence found by searching is weaker evidence than
             the presence of the stats path. That same search turned up no host-side policy governing
             loss retransmission, which is why these five counters read as a monitoring surface
-            rather than a control surface. The application never blocks for it either: it keeps
-            posting work and polling completions while the card resends the packet on a different
-            path.
+            rather than a control surface. Our reading is that the application does not block for it
+            either: it keeps posting work and polling completions while the card resends the packet
+            on a different path.
           </Box>
 
           <Box variant="p">
@@ -1156,9 +1157,8 @@ a peer process is no longer present.`}</pre>
       >
         <SpaceBetween size="m">
           <Alert type="info" header="This block is model: why peer count stops being a resource question">
-            Nothing here is configurable. It is the reason peer count stops being a resource
-            question on EFA, which is what makes the address-vector behaviour and the flat scaling
-            in the practical sections make sense.
+            Nothing here is configurable. It is what makes the address-vector behaviour and the
+            flat scaling in the practical sections make sense.
           </Alert>
 
           <Box variant="p">
@@ -1261,9 +1261,10 @@ a peer process is no longer present.`}</pre>
 
           <Box variant="p">
             ENA Express is the middle option. It puts ordinary TCP and UDP traffic onto SRD without
-            any application change <SourceRef provenance="documented" doc={docs.enaExpress} />:
-            you keep sockets and pay the uncongested median tax. EFA takes the other route. The
-            libfabric API bypasses the operating system kernel and communicates directly with the
+            any application change and raises the single-flow ceiling from 5 Gbps to up to 25 Gbps{' '}
+            <SourceRef provenance="documented" doc={docs.enaExpress} />, a figure whose scope the
+            ENA and EFA section examines. You keep sockets and pay the uncongested median tax. EFA
+            takes the other route. The libfabric API bypasses the operating system kernel and communicates directly with the
             EFA device to put packets on the network{' '}
             <SourceRef provenance="documented" doc={docs.efa} />, and the price of that is
             the programming model in the first column above. The tens-of-microseconds median figure
@@ -1278,8 +1279,8 @@ a peer process is no longer present.`}</pre>
             <code>ENA_ADMIN_ENA_SRD_UDP_ORDERING_BYPASS_ENABLED</code>{' '}
             <SourceRef provenance="code-derived" code={code.enaSrdFlags} />, decides whether the card
             restores UDP receive ordering or hands packets up out of order: this section's whole
-            trade, offered as a per-attachment switch. The ENA and EFA section covers how to enable
-            it, the MTU it needs and the counters that confirm it is carrying traffic. Turn the
+            trade, offered as a per-attachment switch. The ENA and EFA section covers where it is
+            switched on, the MTU (Maximum Transmission Unit) it needs and the counters that confirm it is carrying traffic. Turn the
             bypass on only for a receiver written to tolerate reordering.
           </Alert>
         </SpaceBetween>

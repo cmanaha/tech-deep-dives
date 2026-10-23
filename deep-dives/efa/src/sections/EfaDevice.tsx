@@ -370,7 +370,7 @@ const hostRequirements: HostRequirement[] = [
   {
     id: 'hugepages',
     item: 'Huge pages',
-    fails: 'Pods that do not request hugepages-2Mi can be admitted and then fail at libfabric init. Fork-heavy Python data loaders can exhaust the pool.',
+    fails: 'Our reading: pods that do not request hugepages-2Mi can be admitted and then fail at libfabric init, and fork-heavy Python data loaders can exhaust the pool.',
   },
   {
     id: 'mr',
@@ -855,8 +855,8 @@ export function EfaDevice() {
             <SourceRef provenance="documented" doc={docs.efaOnlyNews} />. A rule scoped to a CIDR
             (Classless Inter-Domain Routing) range and a port is not expressible for this traffic.
             Self-referencing the group is the only shape that matches what the device sends. A
-            missing self-reference lets a freshly built cluster launch cleanly and then hang at the
-            first collective.
+            missing self-reference lets a freshly built cluster launch cleanly and fail at its first
+            EFA traffic, with the unreachable-remote error the SRD section decodes.
           </Box>
           <Alert type="info" header="Scope the group, not the rule">
             Since the rule cannot be narrowed, the security boundary is membership. Put only the

@@ -437,7 +437,7 @@ const ladderRows: LadderRow[] = [
   {
     config: 'ENA Express',
     ceiling: '25 Gbps',
-    note: 'Capped by the aggregate instance limit. Both AWS pages cover one Availability Zone; across zones, see below.',
+    note: 'Capped by the aggregate instance limit. Within one Availability Zone, either AWS page applies; across zones, see below.',
   },
   {
     config: 'Multipath TCP across several paths',
@@ -899,8 +899,8 @@ ethtool -S eth0 | grep ena_srd
                 One caveat on the last counter. ena_srd_resource_utilization is commented only as
                 a percentage of the ENA SRD resources that is in use{' '}
                 <SourceRef provenance="code-derived" code={code.srdStats} />. Which resource, and
-                what action a high value should trigger, is stated nowhere in code or
-                documentation. Watch it. Do not yet interpret it.
+                what action a high value should trigger, is not stated in the driver code at the
+                pinned commit or in any AWS documentation located during this research. Watch it. Do not yet interpret it.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -938,8 +938,10 @@ ethtool -S eth0 | grep ena_srd
             items={ladderRows}
             footer={
               <Box variant="small" color="text-body-secondary">
-                All four rows sourced from the EC2 instance network bandwidth guide{' '}
-                <SourceRef provenance="documented" doc={docs.bandwidth} />.
+                Ceilings sourced from the EC2 instance network bandwidth guide{' '}
+                <SourceRef provenance="documented" doc={docs.bandwidth} />; the ENA Express note also
+                draws on the ENA Express guide{' '}
+                <SourceRef provenance="documented" doc={docs.enaExpress} />.
               </Box>
             }
           />
@@ -993,8 +995,8 @@ ethtool -S eth0 | grep ena_srd
           <Box variant="p">
             Spreading across those cards is yours to arrange. ena_probe and efa_probe each bind
             one PCI function to one independent device instance{' '}
-            <SourceRef provenance="code-derived" code={code.enaDriver} />, and amzn-drivers carries
-            no driver-level link aggregation. At the host that means Linux bonding or ECMP
+            <SourceRef provenance="code-derived" code={code.enaDriver} />, and no driver-level link
+            aggregation was found in amzn-drivers during this research. At the host that means Linux bonding or ECMP
             (Equal-Cost Multi-Path); in the application it means opening more flows. For EFA,
             libfabric enumerates several domains and leaves the striping to the caller.
           </Box>
@@ -1136,15 +1138,15 @@ ethtool -S eth0 | grep ena_srd
             </div>
             <div>
               <Box variant="h3">
-                EFA <Badge color="green">lowest latency</Badge>
+                EFA <Badge color="green">OS bypass</Badge>
               </Box>
               <Box variant="p">
-                <strong>Latency:</strong> best of the three, because the application writes the
-                descriptor itself and the kernel sits outside the data path entirely.
+                <strong>Latency:</strong> best of the three on our reading, because the application
+                writes the descriptor itself and the kernel sits outside the data path entirely.
               </Box>
               <Box variant="p">
-                <strong>CPU cost:</strong> lowest of the three. A send is a store into mapped
-                memory, and the SRD protocol work happens in the card.
+                <strong>CPU cost:</strong> lowest of the three on our reading. A send is a store into
+                mapped memory, and the SRD protocol work happens in the card.
               </Box>
               <Box variant="p">
                 <strong>Ordering:</strong> out-of-order delivery is the native model.

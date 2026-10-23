@@ -653,8 +653,6 @@ export function DataPath() {
               <Box variant="p">
                 The card reads the descriptor, then reads the payload out of the registered buffer
                 by DMA (Direct Memory Access) using the local key in the descriptor to find it.
-                For small messages the payload rides inline in the descriptor, which is what the
-                low-latency queue exists for.
               </Box>
             </div>
             <div>
@@ -710,8 +708,8 @@ export function DataPath() {
                 .
               </Alert>
               <Box variant="p">
-                Two gates decide whether it is live on a given host, and both are properties of
-                the host. The feature turns itself off on 0xefa0 devices, which still use
+                Two gates decide whether it is live, and both are fixed by the hardware and the
+                image the job runs on. The feature turns itself off on 0xefa0 devices, which still use
                 sub-completion queues and which the provider detects by vendor part identifier{' '}
                 <SourceRef provenance="code-derived" code={code.subCq} />{' '}
                 <SourceRef provenance="code-derived" code={code.ddpOff} />, and it declines
@@ -761,9 +759,8 @@ export function DataPath() {
                 The send-queue descriptor ring lives in the memory BAR and is the region that is
                 mapped write-combined{' '}
                 <SourceRef provenance="code-derived" code={code.mmapQueue} />. This is the LLQ
-                (Low-Latency Queue): the descriptor, and for small messages the payload with it,
-                is pushed to the device by MMIO (Memory-Mapped I/O) instead of waiting for the
-                device to DMA it back.
+                (Low-Latency Queue): the descriptor is pushed to the device by MMIO (Memory-Mapped
+                I/O) instead of waiting for the device to DMA it back.
               </Box>
             </div>
             <div>
@@ -782,8 +779,8 @@ export function DataPath() {
             that the driver records on the context{' '}
             <SourceRef provenance="code-derived" code={code.uarn} /> and passes to the device when
             it creates each queue pair{' '}
-            <SourceRef provenance="code-derived" code={code.uarnScope} />. A process can only ring
-            doorbells inside its own region.
+            <SourceRef provenance="code-derived" code={code.uarnScope} />. Our reading of that design
+            is that a process can ring doorbells only inside its own region.
           </Box>
         </SpaceBetween>
       </Container>

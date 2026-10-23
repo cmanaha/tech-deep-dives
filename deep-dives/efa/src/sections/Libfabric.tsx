@@ -493,7 +493,7 @@ export function Libfabric() {
         header={
           <Header
             variant="h1"
-            description="How an application reaches the EFA device, and which of libfabric's several hundred settings change what it does."
+            description="How an application reaches the EFA device, and which libfabric settings change what it does."
           >
             libfabric and the EFA Provider
           </Header>
@@ -529,7 +529,7 @@ export function Libfabric() {
         header={
           <Header
             variant="h2"
-            description="Which of the two fabrics your job runs on, and the one field that switches between them."
+            description="What each of the two fabrics adds between your call and the wire, and the one field that switches between them."
           >
             The stack: one API, two fabrics, one device
           </Header>
@@ -643,9 +643,9 @@ FI_LOG_LEVEL=debug FI_LOG_PROV=efa FI_LOG_SUBSYS=ep_data ./your_job`}</pre>
             FI_EFA_USE_SQ_REQ_ID_64_BIT, both 1 by default in libfabric 2.7.0{' '}
             <SourceRef provenance="code-derived" code={code.envDefaults} />{' '}
             <SourceRef provenance="code-derived" code={code.envUnregistered} />. In 2.6.0 the
-            provider read FI_EFA_ENABLE_HIGH_PPS the same way{' '}
-            <SourceRef provenance="code-derived" code={code.envHighPps} />, and 2.7.0 does not read
-            it.
+            same reader also took FI_EFA_ENABLE_HIGH_PPS{' '}
+            <SourceRef provenance="code-derived" code={code.envHighPps} />, and the 2.7.0 reader
+            drops it <SourceRef provenance="code-derived" code={code.envUnregistered} />.
             Commands 5 and 6 apply the same idea to behaviour. Info is cheap enough for a first job
             and detailed enough to answer most of what follows, so keep one logged run per image as
             the baseline. Debug is the opposite, marked in the man page as high traffic likely to
@@ -1082,9 +1082,9 @@ grep 'Memhooks monitor requested via FI_MR_CACHE_MONITOR' ofi_*.log`}</pre>
           <Alert type="warning" header="Name the channel whenever you quote a libfabric version">
             2.7.0amzn2.0 and upstream 2.7.0 share a base version, and the version strings are still
             comparable only within a channel: a backport can put a later upstream change into an
-            amzn build, and an upstream change can be absent from it. The installer release note
-            does not settle it on its own either: the only answer that binds is the binary in front
-            of you.
+            amzn build, and an upstream change can be absent from it. Neither a comparison across
+            channels nor the installer release note on its own settles whether a given change is in
+            your build: the only answer that binds is the binary in front of you.
           </Alert>
 
           <Box variant="code">
