@@ -57,7 +57,7 @@ export const S = {
     accessed: '2026-10-16',
   },
   xeon6Brief: {
-    title: 'Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)',
+    title: 'Intel Xeon 6 Product Brief (up to 64 lanes of CXL 2.0 at up to 32 GT/s per lane)',
     publisher: 'Intel',
     url: 'https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html',
     tier: 1,

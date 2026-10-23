@@ -13,7 +13,10 @@ import { Cite } from '../components/Cite';
 import { S } from '../sources/MemoryHierarchyPrimer';
 
 const hostLinkNote =
-  'PCIe 5.0 signals at 32 GT/s per lane: 32 x 16 lanes / 8 bits = 64 GB/s per direction before encoding.';
+  'PCIe Gen5: 128 GB/s per H200 across both directions = 64 GB/s per direction (line rate).';
+const cxlLinkNote =
+  'CXL 2.0 at up to 32 GT/s per lane x 16 lanes / 8 bits = 64 GB/s per direction, before encoding.';
+const nvlinkEachWayNote = 'NVLink 5: 1.8 TB/s bidirectional per GPU / 2 = 900 GB/s each way.';
 const p5enStepNote =
   'H200: 141 GB at 4,800 GB/s. Host DRAM on p5en: 2,048 GiB / 8 GPUs = 256 GiB (274.9 GB) per GPU at 64 GB/s per direction. 4,800 / 64 = 75; 274.9 / 141 = 1.95.';
 const rubinNote =
@@ -22,7 +25,7 @@ const dramRangeNote =
   '12 channels x 8 bytes x 6,400 MT/s (DDR5) = 614.4 GB/s; x 8,800 MT/s (MRDIMM) = 844.8 GB/s.';
 const bwNote4 = '12 channels x 5.6 GT/s x 8 bytes = 537.6 GB/s; / 96 cores = 5.6 GB/s.';
 const bwNote5 =
-  '12 channels x 8.8 GT/s x 8 bytes = 844.8 GB/s; / 192 cores = 4.4 GB/s, 21% below 5.6 GB/s; 844.8 / 537.6 = 1.57.';
+  '12 channels (Graviton README) x 8.8 GT/s x 8 bytes = 844.8 GB/s; / 192 cores = 4.4 GB/s, 21% below 5.6 GB/s; 844.8 / 537.6 = 1.57.';
 const nvmeNote =
   '8 x 3,800 GB = 30.4 TB. 4.4 M IOPS x 4,096 B / 8 GPUs = 2.25 GB/s; EBS 12,500 MB/s on p5en and P6 / 8 = 1.56 GB/s.';
 
@@ -53,6 +56,7 @@ const compareRows: TierCompareRow[] = [
       <>
         SMEM up to 228 KB per SM
         <Cite s={S.hopperTuningGuide} />; TMEM 256 KB per SM on Blackwell
+        <Cite s={S.blackwellUltraBlog} />
         <Cite s={S.ptxIsa} kind="derived" note="512 columns x 128 lanes x 32 bits = 256 KB. PTX states the geometry per CTA." />
       </>
     ),
@@ -82,7 +86,8 @@ const compareRows: TierCompareRow[] = [
     trainium: (
       <>
         None documented; SBUF is software-managed
-        <Cite s={S.neuronCoreV3} />
+        <Cite s={S.neuronCoreV3} note="Each NeuronCore-v3 has 28 MB of on-chip SRAM, software-managed; the NKI guide names it SBUF." />
+        <Cite s={S.nkiTrn2Arch} />
       </>
     ),
   },
@@ -92,6 +97,7 @@ const compareRows: TierCompareRow[] = [
       <>
         2 MB per core (Xeon 6, Graviton4 and 5)
         <Cite s={S.intelOrm} />
+        <Cite s={S.chipsAndCheeseXeon6} />
         <Cite s={S.gravitonReadme} />
       </>
     ),
@@ -115,7 +121,7 @@ const compareRows: TierCompareRow[] = [
     ),
     gpu: (
       <>
-        None; L2 is the last level
+        None documented above L2
         <Cite s={S.hopperTuningGuide} />
       </>
     ),
@@ -152,7 +158,7 @@ const compareRows: TierCompareRow[] = [
     gpu: (
       <>
         PCIe Gen5 x16, 64 GB/s per direction
-        <Cite s={S.xeon6Brief} kind="derived" note={hostLinkNote} />; NVLink-C2C, 900 GB/s
+        <Cite s={S.h200Page} kind="derived" note={hostLinkNote} />; NVLink-C2C, 900 GB/s
         bidirectional (GB200)
         <Cite s={S.blackwellArchitecture} />
       </>
@@ -171,7 +177,7 @@ const compareRows: TierCompareRow[] = [
       <>
         Other GPUs&apos; HBM over NVLink: 13.4 TB per GB200 NVL72
         <Cite s={S.gb200Nvl72} />, 900 GB/s each way
-        <Cite s={S.blackwellUltraBlog} />
+        <Cite s={S.blackwellUltraBlog} kind="derived" note={nvlinkEachWayNote} />
       </>
     ),
     trainium: (
@@ -232,7 +238,7 @@ export function MemoryHierarchyPrimer() {
             <Cite s={S.h200Page} />, and host DRAM (dynamic RAM), 256 GiB per GPU
             <Cite s={S.ec2AcceleratedSpecs} kind="derived" note="2,048 GiB of host memory / 8 GPUs." />,
             over PCIe Gen5 x16 at 64 GB/s per direction
-            <Cite s={S.xeon6Brief} kind="derived" note={hostLinkNote} />: 75 times less bandwidth
+            <Cite s={S.h200Page} kind="derived" note={hostLinkNote} />: 75 times less bandwidth
             for under twice the capacity.
             <Cite s={S.h200Page} kind="derived" note={p5enStepNote} /> High Bandwidth Flash (HBF)
             breaks the pattern: 512 GiB stacks of flash beside HBM on the accelerator package
@@ -244,7 +250,7 @@ export function MemoryHierarchyPrimer() {
             <Cite
               s={S.sandiskInvestorDay2026}
               kind="roadmap"
-              note="Sandisk: first HBF memory die taped out in August 2026; samples of inference devices with HBF targeted for 2027."
+              note="Sandisk, 2026-08-13: its first HBF memory die has taped out; first samples of inference devices with HBF to customers next year (2027)."
             />
           </Box>
         </SpaceBetween>
@@ -282,7 +288,7 @@ export function MemoryHierarchyPrimer() {
             Rubin&apos;s 22 TB/s is the per-GPU figure on NVIDIA&apos;s HGX page; the Vera Rubin
             NVL72 page gives 19.2 TB/s.
             <Cite s={S.veraRubinNvl72} /> A CXL x16 link carries 64 GB/s per direction
-            <Cite s={S.xeon6Brief} kind="derived" note={hostLinkNote} />; the per-family table below
+            <Cite s={S.xeon6Brief} kind="derived" note={cxlLinkNote} />; the per-family table below
             and{' '}
             <em>Capacity beyond HBM and DRAM</em> cite the rest. A hyphen marks no sourced figure;
             HBF is dashed because no product ships.
@@ -322,11 +328,11 @@ export function MemoryHierarchyPrimer() {
             missed, and the one accelerators build on. Trainium2&apos;s SBUF holds 28 MiB per
             NeuronCore, about 126 times a Hopper SM&apos;s 228 KB of SMEM
             <Cite s={S.nkiTrn2Arch} kind="derived" note="28 MiB / 228 KB, with 1 KB = 1,024 bytes: about 126." />
-            <Cite s={S.hopperTuningGuide} />, with no cache in front of it
+            <Cite s={S.hopperTuningGuide} />, with no cache documented in front of it
             <Cite s={S.neuronCoreV3} />; Blackwell&apos;s TMEM holds the tiles its tcgen05
             tensor-core instructions work on.
-            <Cite s={S.ptxIsa} /> <em>NVIDIA Blackwell</em> and <em>AWS Trainium, Inferentia and
-            Neuron</em> cover how kernels use each.
+            <Cite s={S.ptxIsa} /> <em>NVIDIA Blackwell: B200 and B300</em> and <em>AWS Trainium,
+            Inferentia and Neuron</em> cover how kernels use each.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -404,6 +410,7 @@ export function MemoryHierarchyPrimer() {
             cores that is 4.4 GB/s per core, 21% less than Graviton4&apos;s 5.6.
             <Cite s={S.r8gPreview} kind="derived" note={bwNote4} />
             <Cite s={S.m9gGa} kind="derived" note={bwNote5} />
+            <Cite s={S.gravitonReadme} />
           </Box>
           <Box variant="p">
             Services that need bandwidth per thread, such as databases, JVM (Java Virtual Machine)
@@ -447,7 +454,7 @@ export function MemoryHierarchyPrimer() {
             <Cite s={S.ocpSpec} /> A first-generation stack can be read end to end about 3 times a
             second, a shipping HBM4 stack about 80 times
             <Cite s={S.sandiskFactSheet} kind="derived" note="1.6 TB/s / 512 GB = 3.1 per second." />
-            <Cite s={S.micronHbm4} kind="derived" note="2.8 to 3.3 TB/s over a 36 GB 12-high stack = 78 to 92 per second." />
+            <Cite s={S.micronHbm4} kind="derived" note="Micron: greater than 2.8 TB/s from a 36 GB 12-high stack = more than 78 per second." />
             , and no read latency is published.
             <Cite
               s={S.sandiskFactSheet}

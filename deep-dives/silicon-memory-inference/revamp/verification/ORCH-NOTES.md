@@ -71,3 +71,6 @@
   state it unscoped. Orchestrator consistency pass: add "global KV cache" where it is quoted.
 - Trainium3 8-bit format: the Neuron data-types page says FP8, the Trn3 page says MXFP8 only
   (Quantization verification); AWS Trainium section and Quantization should not contradict.
+- Capital Markets Lens: its Xeon 6 product brief record is titled "(PCIe 5.0 at 32 GT/s per
+  lane)", but the brief gives 32 GT/s only for CXL 2.0 lanes (Memory Hierarchy verification).
+  Retitle to match MemoryHierarchyPrimer.ts and check the claim it backs.
