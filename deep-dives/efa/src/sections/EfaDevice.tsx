@@ -107,6 +107,7 @@ const code = {
   sortRails: plugin('src/platform-aws.cpp', 'L1089-L1119'),
   guidByDeviceId: plugin('src/platform-aws.cpp', 'L1042-L1062'),
   subCq: lfab('prov/efa/src/efa_device.c', 'L604-L610'),
+  ddpOff: lfab('prov/efa/src/efa_data_path_direct.c', 'L178-L188'),
 };
 
 /**
@@ -742,8 +743,8 @@ export function EfaDevice() {
                 The amzn-drivers tree carries driver r3.4.0, with the package version recorded in
                 the DKMS (Dynamic Kernel Module Support) configuration{' '}
                 <SourceRef provenance="code-derived" code={code.dkms} />. Its r3.4.0 release notes
-                add PCIe relaxed ordering for memory regions and contiguous allocation for receive
-                and completion queues, and fix an admin-queue race and an initialisation-order bug{' '}
+                add PCIe relaxed ordering for memory regions, improve contiguous memory allocation
+                for receive and completion queues, and fix an admin-queue race and an initialisation-order bug{' '}
                 <SourceRef provenance="code-derived" code={code.releaseNotes} />.
               </Box>
             </div>
@@ -815,7 +816,8 @@ export function EfaDevice() {
             them. First: libfabric's Data Path Direct feature, which moves work queue entry
             construction and completion parsing into libfabric itself, is disabled on 0xefa0 devices
             because those parts use a sub completion queue implementation{' '}
-            <SourceRef provenance="code-derived" code={code.subCq} />. The oldest EFA hardware does
+            <SourceRef provenance="code-derived" code={code.subCq} />{' '}
+            <SourceRef provenance="code-derived" code={code.ddpOff} />. The oldest EFA hardware does
             not get the newest fast path, regardless of which libfabric you install.
           </Box>
           <Box variant="p">

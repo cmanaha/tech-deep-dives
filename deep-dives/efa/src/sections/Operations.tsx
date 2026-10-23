@@ -111,7 +111,7 @@ const docs = {
     1,
     REREAD
   ),
-  installerCheck: doc('EC2 User Guide: Verify the EFA installer using a checksum', `${EC2_DOC}efa-verify.html`, 1),
+  installerCheck: doc('EC2 User Guide: Verify the EFA installer using a checksum', `${EC2_DOC}efa-verify.html`, 1, REREAD),
   detach: doc('EC2 User Guide: Detach and delete an EFA from an Amazon EC2 instance', `${EC2_DOC}detach-efa.html`, 1),
   eksDevice: doc('EKS User Guide: Manage EFA devices on Amazon EKS', `${EKS_DOC}device-management-efa.html`, 1, REREAD),
 };
@@ -138,6 +138,10 @@ const code = {
   fabricNames: lfab('prov/efa/src/efa.h', 'L62-L63'),
   fabricAssign: lfab('prov/efa/src/efa_prov.c', 'L106-L133'),
   linkAddr: lfab('prov/efa/src/efa_prov_info.c', 'L357-L367'),
+  // The release where the fabric name became the literal efa, and the one before it.
+  fabricNameEfa: { ...lfab('prov/efa/src/efa_fabric.c', 'L60'), ref: 'v1.15.0' },
+  fabricNameGid: { ...lfab('prov/efa/src/efa_fabric.c', 'L755'), ref: 'v1.14.0' },
+  fabricDirectFirst: { ...lfab('prov/efa/src/efa.h', 'L62'), ref: 'v2.1.0' },
   mrCacheLimits: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L185-L196'),
   mrCacheMonitor: lfab('prov/efa/src/rdm/efa_rdm_mr.c', 'L155-L170'),
   forkAbort: lfab('prov/efa/src/efa_fork_support.c', 'L31-L61'),
@@ -744,8 +748,12 @@ fi_info -p efa -t FI_EP_RDM | grep -c '^provider: efa'`}</pre>
                 provider builds its info list{' '}
                 <SourceRef provenance="code-derived" code={code.fabricAssign} />, and the EFA- form is
                 built as the link attribute address instead{' '}
-                <SourceRef provenance="code-derived" code={code.linkAddr} />. That change landed in
-                libfabric v2.1.0, and the installer this section pins ships a later libfabric{' '}
+                <SourceRef provenance="code-derived" code={code.linkAddr} />. The fabric name became
+                efa in libfabric v1.15.0{' '}
+                <SourceRef provenance="code-derived" code={code.fabricNameGid} />{' '}
+                <SourceRef provenance="code-derived" code={code.fabricNameEfa} />, the efa-direct
+                fabric arrived in v2.1.0{' '}
+                <SourceRef provenance="code-derived" code={code.fabricDirectFirst} />, and the installer this section pins ships 2.7.0amzn2.0{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   doc={docs.startNccl}
@@ -1160,10 +1168,10 @@ more /sys/class/infiniband/rdmap0s31/ports/1/hw_counters/* | cat`}</pre>
               <Box variant="p">
                 The amzn-drivers tree is at driver r3.4.0, recorded in the DKMS configuration{' '}
                 <SourceRef provenance="code-derived" code={code.dkms} />, with release notes adding
-                memory region PCIe relaxed ordering and contiguous receive and completion queue
-                allocation{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />. The 3.3.1 notes list
-                neither.
+                memory region PCIe relaxed ordering and improving contiguous receive and completion
+                queue allocation{' '}
+                <SourceRef provenance="code-derived" code={code.releaseNotes} />. Relaxed ordering is
+                absent from the 3.3.1 notes.
               </Box>
             </div>
           </ColumnLayout>
@@ -1202,14 +1210,16 @@ ldd $(which fi_info) | grep libfabric
 # 3. aws-ofi-nccl. The plugin logs its own version at init.
 NCCL_DEBUG=INFO ... 2>&1 | grep -i 'NET/OFI.*version'
 
-# 4. The tarball you think you used. AWS publishes checksums per release.
-sha256sum aws-efa-installer-1.51.0.tar.gz`}</pre>
+# 4. The tarball you think you used. Compare with the per-release table.
+sha256sum aws-efa-installer-<version>.tar.gz`}</pre>
           </Box>
           <Alert type="info" header="Two checks that identify what you actually installed">
             Every installer release carries an MD5 and a SHA256, and if the
             checksums do not match you should not run the installation script{' '}
             <SourceRef provenance="documented" doc={docs.installerCheck} />, which makes step 4 the
-            only check that identifies the installer rather than its output. Step 2 matters for the
+            only check that identifies the installer rather than its output. On 2026-10-23 the
+            table&apos;s newest entry was 1.50.0, a day after the 1.51.0 tarball appeared, so
+            confirm your version is listed before you rely on step 4. Step 2 matters for the
             same reason: Intel MPI ships its own libfabric, and at debug
             level 1 and above the printed libfabric version is suffixed with impi when the internal
             one is in use{' '}
