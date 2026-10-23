@@ -127,6 +127,9 @@ const docs = {
   ),
   eksEfa: docO('EKS User Guide: manage EFA devices on Amazon EKS', 'https://docs.aws.amazon.com/eks/latest/userguide/device-management-efa.html', 1),
   efaChangelog: docO('EC2 User Guide: EFA installer changelog', 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-changelog.html', 1),
+  ncclTag278: docO('NVIDIA/nccl tag v2.7.8-1 (tagged commit dated July 27, 2020)', 'https://github.com/NVIDIA/nccl/tree/v2.7.8-1', 1),
+  ofiRel111: docO('aws/aws-ofi-nccl release v1.1.1 (published November 2, 2020)', 'https://github.com/aws/aws-ofi-nccl/releases/tag/v1.1.1', 1),
+  installer130: docO('aws-efa-installer 1.30.0 tarball (Last-Modified December 20, 2023)', `${INSTALLER}1.30.0.tar.gz`, 1),
   installer151: docO('aws-efa-installer 1.51.0 tarball (efa_installer.sh ngc_pre_install, ngc_filter_package; DEBS)', `${INSTALLER}1.51.0.tar.gz`, 1),
   installer150: docO('aws-efa-installer 1.50.0 tarball (efa_installer.sh ngc_pre_install, ngc_filter_package; RPMS)', `${INSTALLER}1.50.0.tar.gz`, 1),
   efaOnlyNews: doc(
@@ -421,9 +424,9 @@ function FourGatesDiagram() {
       w: 460,
       title: 'Gate 2. Container',
       lines: [
-        'The image must carry libfabric, aws-ofi-nccl and a matching NCCL.',
-        'The DLC installs EFA with --skip-kmod, so the host owns the',
-        'kernel module. Container NCCL must match the PyTorch build.',
+        'The image must carry libfabric, aws-ofi-nccl and an NCCL that',
+        'matches PyTorch. A Deep Learning Container (DLC) installs',
+        'EFA with --skip-kmod, so the host owns the kernel module.',
       ],
       note: 'Falls out here:',
       noteLines: ['A bring-your-own container with no', 'libfabric, or a NCCL version that', 'disagrees with PyTorch.'],
@@ -516,7 +519,7 @@ function FourGatesDiagram() {
       })}
 
       <text className="fg-cap" x="480" y="504">
-        Gates 1 and 2 fail loudly. Gate 3 fails quietly. That is why gate 4 is the only one worth trusting.
+        Gate 1 fails loudly. Gates 2 and 3 can fail quietly, so gate 4 is the only one worth trusting.
       </text>
     </svg>
   );
@@ -788,7 +791,10 @@ export function SageMaker() {
           <Alert type="info" header="Take the structure of the documented Dockerfile and the versions from somewhere else">
             The example Dockerfile on that page still pins NCCL 2.7.8, EFA installer 1.30.0 and
             aws-ofi-nccl 1.1.1{' '}
-            <SourceRef provenance="documented" doc={docs.trainEfa} />, which are roughly 2023 pins.
+            <SourceRef provenance="documented" doc={docs.trainEfa} />, releases that date from 2020 to
+            2023 <SourceRef provenance="documented" doc={docs.ncclTag278} />{' '}
+            <SourceRef provenance="documented" doc={docs.ofiRel111} />{' '}
+            <SourceRef provenance="documented" doc={docs.installer130} />.
             The Deep Learning Container configuration in the next section carries current ones.
           </Alert>
 
@@ -821,11 +827,11 @@ SM_EFA_RDMA_INSTANCES = [
 ]`}</pre>
           </Box>
           <Box variant="p">
-            Read at SDK release v3.27.0{' '}
-            <SourceRef provenance="code-derived" code={code.allowlist} />. Releases before v3.24.0
-            leave ml.p5e.48xlarge off both lists and ml.p5.48xlarge off the second{' '}
-            <SourceRef provenance="code-derived" code={code.allowlistOld} />, so pin v3.24.0 or later
-            for P5 and P5e. The torchrun driver consumes both lists directly: it sets FI_PROVIDER to
+            Pin SageMaker Python SDK v3.24.0 or later for P5 and P5e: earlier releases leave
+            ml.p5e.48xlarge off both lists and ml.p5.48xlarge off the second{' '}
+            <SourceRef provenance="code-derived" code={code.allowlistOld} />. The lists above are as
+            read at v3.27.0 <SourceRef provenance="code-derived" code={code.allowlist} />. The torchrun
+            driver consumes both lists directly: it sets FI_PROVIDER to
             efa when the type is in the first list, sets FI_EFA_USE_DEVICE_RDMA and RDMAV_FORK_SAFE
             when the type is in the second, and always sets NCCL_SOCKET_IFNAME and NCCL_PROTO{' '}
             <SourceRef provenance="code-derived" code={code.torchrun} />. The mpirun path passes
@@ -868,7 +874,7 @@ SM_EFA_RDMA_INSTANCES = [
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                The AWS best-practices blog for training large language models lists five settings
+                The AWS best-practices blog for training large language models (LLMs) lists five settings
                 for your own container: FI_PROVIDER set to efa, NCCL_PROTO=simple, because the EFA
                 provider does not support low-latency protocols and enabling them could lead to data
                 corruption, FI_EFA_USE_DEVICE_RDMA=1, NCCL_LAUNCH_MODE set to PARALLEL, and
@@ -939,14 +945,12 @@ SM_EFA_RDMA_INSTANCES = [
               <Box variant="h3">The base image</Box>
               <Box variant="p">
                 The CUDA 13.2 base pins NCCL 2.29.7-1 and installs whichever EFA installer is latest
-                at build time <SourceRef provenance="code-derived" code={code.dlcBase} />. To see
-                which version landed, read /opt/amazon/efa_installed_packages, the file the build
-                log quotes{' '}
-                <SourceRef provenance="code-derived" code={code.dlcInstallLog} />. The EFA installer
-                changelog maps released versions to their libfabric, aws-ofi-nccl and driver
-                versions, and can lag a new installer: 1.51.0 was not listed on 2026-10-23{' '}
-                <SourceRef provenance="documented" doc={docs.efaChangelog} />. The installed-packages
-                file is then the record to trust.
+                at build time <SourceRef provenance="code-derived" code={code.dlcBase} />, so read
+                /opt/amazon/efa_installed_packages, the file the build log quotes, to see which
+                version landed <SourceRef provenance="code-derived" code={code.dlcInstallLog} />. The
+                EFA installer changelog maps released versions to their libfabric, aws-ofi-nccl and
+                driver versions, and can lag a new installer: 1.51.0 was not listed on 2026-10-23{' '}
+                <SourceRef provenance="documented" doc={docs.efaChangelog} />.
               </Box>
             </div>
             <div>
@@ -981,17 +985,16 @@ SM_EFA_RDMA_INSTANCES = [
               <Box variant="p">
                 <strong>3. Pass --disable-ngc on an NGC (NVIDIA GPU Cloud) base.</strong> The
                 installer treats any container holding /opt/nvidia/nvidia_entrypoint.sh as NGC, and
-                the nvidia/cuda amzn2023 base images carry that file. Installer 1.51.0 then splits
-                by operating system. On an Ubuntu 22.04, 24.04 or 26.04 container it installs an
-                NGC build of the plugin, libnccl-ofi-ngc, in place of the standard libnccl-ofi. On
-                any other container it prints "This container is not Ubuntu" and does the standard
-                install, plugin included{' '}
-                <SourceRef provenance="code-derived" doc={docs.installer151} />. Installer 1.50.0
-                has no such fallback and ships no NGC plugin package for Amazon Linux, so an AL2023
-                NGC base gets EFA with no NCCL plugin{' '}
-                <SourceRef provenance="code-derived" doc={docs.installer150} />. The DLC script
-                passes --disable-ngc for latest and for 1.48.0 and later, which forces the standard
-                install on every version <SourceRef provenance="code-derived" code={code.dlcNgc} />.
+                the nvidia/cuda amzn2023 base images carry that file. What follows depends on the
+                installer version. 1.51.0 installs libnccl-ofi-ngc in place of the standard
+                libnccl-ofi on an Ubuntu 22.04, 24.04 or 26.04 container, and on any other container
+                prints "This container is not Ubuntu" and does the standard install, plugin included{' '}
+                <SourceRef provenance="code-derived" doc={docs.installer151} />. 1.50.0 has no such
+                fallback and ships no NGC plugin package for Amazon Linux, so an AL2023 NGC base gets
+                EFA with no NCCL plugin{' '}
+                <SourceRef provenance="code-derived" doc={docs.installer150} />. Passing --disable-ngc,
+                as the DLC script does for latest and for 1.48.0 and later, forces the standard install
+                on every version <SourceRef provenance="code-derived" code={code.dlcNgc} />.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1040,9 +1043,8 @@ SM_EFA_RDMA_INSTANCES = [
         <SpaceBetween size="m">
           <Box variant="h3">Step 1: is the device visible in the container</Box>
           <Box variant="p">
-            AWS documents the check{' '}
-            <SourceRef provenance="documented" doc={docs.trainEfa} />. Expected output includes
-            provider efa, domain efa_0-rdm, endpoint type FI_EP_RDM and protocol FI_PROTO_EFA.
+            Expected output includes provider efa, domain efa_0-rdm, endpoint type FI_EP_RDM and
+            protocol FI_PROTO_EFA <SourceRef provenance="documented" doc={docs.trainEfa} />.
           </Box>
           <Box variant="code">
             <pre style={preStyle}>{String.raw`/opt/amazon/efa/bin/fi_info -p efa`}</pre>
@@ -1102,35 +1104,43 @@ SM_EFA_RDMA_INSTANCES = [
         <SpaceBetween size="m">
           <Box variant="p">
             The SMDDP library replaces NCCL as the collective
-            backend for data-parallel training while still riding EFA underneath. The support page
-            lists ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, adds that support for
-            optimizing collective communication on P3 has been discontinued, and states that the
-            optimized AllGather collective is only available for P4 instances{' '}
-            <SourceRef provenance="documented" doc={docs.ddpSupport} />. The FAQ says the library
-            only supports GPU instances, specifically P4d and P4de with NVIDIA A100 GPUs and EFA{' '}
-            <SourceRef provenance="documented" doc={docs.ddpFaq} />, and the SDK source agrees{' '}
+            backend for data-parallel training while still riding EFA underneath. It supports
+            ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, support for optimizing collective
+            communication on P3 has been discontinued, and the optimized AllGather collective is only
+            available for P4 instances <SourceRef provenance="documented" doc={docs.ddpSupport} />. In
+            practice it runs only on P4d and P4de, with NVIDIA A100 GPUs and EFA{' '}
+            <SourceRef provenance="documented" doc={docs.ddpFaq} />{' '}
             <SourceRef provenance="code-confirmed" doc={docs.ddpSupport} code={code.smddpTypes} />.
             That list is the whole scope, so P5, P6, Trn2 and the G family run plain NCCL over
             aws-ofi-nccl over EFA instead.
           </Box>
 
           <Box variant="p">
-            The release cadence tells the rest. The SMDDP release notes stop at v2.5.0, dated
-            October 17, 2024 <SourceRef provenance="documented" doc={docs.ddpRelease} />, while the
-            release notes of SMP (the SageMaker model parallelism library) record SMDDP 2.6.0 inside
-            SMP v2.8.0, dated April 1, 2025, the newest release of either library located{' '}
-            <SourceRef
-              provenance="doc-code-conflict"
-              doc={docs.smpRelease}
-              conflict="The SMDDP release notes list no release after v2.5.0 (October 17, 2024); the SMP release notes record SMDDP 2.6.0 in SMP v2.8.0 (April 1, 2025)."
-              label="doc conflict"
-            />
-            . TensorFlow support has ended: the library is not available in Deep Learning
-            Containers for TensorFlow later than 2.11.0{' '}
+            TensorFlow support has ended: the library is not available in Deep Learning Containers
+            for TensorFlow later than 2.11.0{' '}
             <SourceRef provenance="documented" doc={docs.ddpSupport} />. No AWS deprecation notice
             was found, so treat SMDDP as frozen: documented, scoped to those three instance types,
             and unchanged since April 2025.
           </Box>
+
+          <ExpandableSection
+            headerText="Where April 2025 comes from"
+            headerDescription="Two release-notes pages disagree on the last SMDDP release"
+          >
+            <Box variant="p">
+              The SMDDP release notes stop at v2.5.0, dated October 17, 2024{' '}
+              <SourceRef provenance="documented" doc={docs.ddpRelease} />, while the release notes of
+              SMP (the SageMaker model parallelism library) record SMDDP 2.6.0 inside SMP v2.8.0,
+              dated April 1, 2025, the newest release of either library located{' '}
+              <SourceRef
+                provenance="doc-code-conflict"
+                doc={docs.smpRelease}
+                conflict="The SMDDP release notes list no release after v2.5.0 (October 17, 2024); the SMP release notes record SMDDP 2.6.0 in SMP v2.8.0 (April 1, 2025)."
+                label="doc conflict"
+              />
+              .
+            </Box>
+          </ExpandableSection>
 
           <Alert type="error" header="Quote the streaming multiprocessor saving with its instance family attached">
             P4d and P4de carry NVIDIA A100 GPUs with 108 streaming multiprocessors each, NCCL takes
@@ -1276,8 +1286,8 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
           </Alert>
 
           <ExpandableSection
-            headerText="Three AWS pages disagree about the HyperPod base operating system"
-            headerDescription="Which page to trust, and the NCCL-per-CUDA mapping worth taking from the third"
+            headerText="Two AWS pages disagree about the HyperPod base operating system"
+            headerDescription="Which page to trust, and the NCCL-per-CUDA mapping worth taking from the release notes"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1430,8 +1440,8 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
                 instance types through InstanceRequirements and provide multiple subnets across
                 Availability Zones, with training benefiting from multi-subnet distribution within an
                 Availability Zone to avoid subnet exhaustion. The feature is EKS orchestrator only{' '}
-                <SourceRef provenance="documented" doc={docs.flexGroups} />. Note the phrasing:
-                within an Availability Zone, which is the EFA boundary.
+                <SourceRef provenance="documented" doc={docs.flexGroups} />. That distribution stays
+                within an Availability Zone, the EFA boundary.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1444,7 +1454,7 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             variant="h2"
             description="Disaggregated prefill and decode (DPD), on the EKS orchestrator, is the one documented path where EFA moves inference traffic."
           >
-            HyperPod inference: the only place EFA carries inference traffic
+            HyperPod inference: the one documented place EFA carries inference traffic
           </Header>
         }
       >
@@ -1638,7 +1648,7 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
 
           <Alert type="info" header="The tie-breaker nobody weighs early enough">
             If you will later serve the model with multi-node inference, HyperPod on the EKS
-            orchestrator is the only SageMaker surface where that exists, through the Inference
+            orchestrator is the only SageMaker surface where that is documented, through the Inference
             Operator's disaggregated prefill and decode feature{' '}
             <SourceRef provenance="documented" doc={docs.dpdNews} />. Choosing a training job today
             is also choosing to move platforms before you serve, which is a bigger decision than the
@@ -1696,7 +1706,7 @@ dist.init_process_group(backend="smddp")  # Replacing "nccl"`}</pre>
             <SourceRef provenance="code-derived" code={code.dlcNcclConf} />, and grep the CloudWatch
             log for the signatures above. If aws-ofi-nccl appears but NET/OFI Selected provider
             is efa does not, the plugin loaded and the provider was never chosen. That is the failure
-            the allowlist causes.
+            to look for when the instance type is off the allowlist.
           </Box>
           <Box variant="p">
             <strong>Step 5. Move to HyperPod early if the decision above pointed there.</strong> The

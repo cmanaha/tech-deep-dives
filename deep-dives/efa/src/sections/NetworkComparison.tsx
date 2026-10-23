@@ -16,10 +16,11 @@ import type { DocRef } from '@tech-deep-dives/shared';
  * load-bearing cell in the table carries a SourceRef, or it carries no number.
  *
  * Figures held out on purpose, so a later pass does not put them back:
- * per-column microsecond latencies (no citable source for these four
- * transports), "P99.9" and an "85% reduction" (wrong percentile, magnitude no
- * source gives), per-port InfiniBand rates and sub-microsecond fabric
- * latencies (no first-party page stating them was located), and an ENA Express
+ * microsecond latencies for TCP, RoCE/InfiniBand and NVLink (no citable source
+ * for those three; the EFA cell carries the 2019 launch-post figure), "P99.9"
+ * and an "85% reduction" (wrong percentile, magnitude no source gives),
+ * per-port InfiniBand rates and sub-microsecond fabric latencies (no
+ * first-party page stating them was located), and an ENA Express
  * figure in the EFA single-flow cell (EFA has no 5-tuple flow to cap).
  * RDMA write support starts at Nitro v4.
  */
@@ -144,6 +145,20 @@ const comparisonData: ComparisonRow[] = [
     nvlink: 'N/A',
   },
   {
+    feature: 'Latency',
+    efa: (
+      <>
+        Lower and more consistent, in AWS&apos;s description, and the EC2 User Guide gives no
+        per-message figure <SourceRef provenance="documented" doc={docs.efa} />. The one AWS
+        figure located: 15.5 microseconds one-way MPI latency in a cluster placement group, from
+        the 2019 launch post <SourceRef provenance="documented" doc={docs.efaGa2019} />
+      </>
+    ),
+    tcp: 'Baseline. Every message crosses the kernel stack',
+    rdma: 'Lowest of the inter-node options. No first-party number cited here',
+    nvlink: 'Lowest overall, and intra-node only',
+  },
+  {
     feature: 'Tail latency',
     efa: (
       <>
@@ -154,21 +169,6 @@ const comparisonData: ComparisonRow[] = [
     tcp: 'Baseline. Head-of-line blocking on any loss',
     rdma: 'Strong, and PFC pauses can cascade on RoCE',
     nvlink: 'N/A',
-  },
-  {
-    feature: 'Latency',
-    efa: (
-      <>
-        Lower and more consistent latency for AI, ML and HPC workloads{' '}
-        <SourceRef provenance="documented" doc={docs.efa} />. The EC2 User Guide gives no
-        per-message figure; the one AWS figure located, 15.5 microseconds of one-way MPI latency
-        in a cluster placement group, comes from the 2019 launch post{' '}
-        <SourceRef provenance="documented" doc={docs.efaGa2019} />
-      </>
-    ),
-    tcp: 'Baseline. Every message crosses the kernel stack',
-    rdma: 'Lowest of the inter-node options. No first-party number cited here',
-    nvlink: 'Lowest overall, and intra-node only',
   },
   {
     feature: 'Bandwidth (max)',
@@ -227,7 +227,7 @@ const comparisonData: ComparisonRow[] = [
     feature: 'Encryption in transit',
     efa: (
       <>
-        Automatic between cluster members. AEAD, 256-bit, no performance impact{' '}
+        Automatic between cluster members. AEAD, 256-bit, and no performance impact per AWS{' '}
         <SourceRef provenance="documented" doc={docs.hpcLens} />
       </>
     ),
@@ -290,9 +290,10 @@ export function NetworkComparison() {
         variant="embedded"
         footer={
           <Box variant="small" color="text-body-secondary">
-            Every comparative figure here comes from a first-party source. Per-column microsecond
-            latencies stay out because no citable source giving them for these four transports was
-            located, and per-port InfiniBand rates because no NVIDIA page stating them was located.
+            Every comparative figure here comes from a first-party source. Only the EFA column
+            carries a microsecond latency: no citable source giving one for the other three
+            transports was located, and no NVIDIA page stating per-port InfiniBand rates was
+            located.
           </Box>
         }
       />

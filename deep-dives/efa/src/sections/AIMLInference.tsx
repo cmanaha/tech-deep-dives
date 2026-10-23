@@ -86,6 +86,13 @@ const code: Record<string, CodeRef> = {
     lines: 'L97-L103',
     read: READ,
   },
+  vllmSpecDecode: {
+    repo: 'vllm-project/vllm',
+    ref: 'v0.32.0',
+    path: 'docs/features/speculative_decoding/README.md',
+    lines: 'L3',
+    read: READ,
+  },
 };
 
 export function AIMLInference() {
@@ -98,12 +105,12 @@ export function AIMLInference() {
           network on the critical path of a request. Disaggregated prefill and decode, cross-node
           speculative decoding and KV-cache (Key-Value cache) migration each move bytes between
           instances while every node holds a full copy of the model. So the figure to work out for
-          your own deployment is not the model size. It is how many bytes leave the instance per
-          request, and how many times that happens per response.
+          your own deployment is how many bytes leave the instance per request, and how many times
+          that happens per response.
         </Box>
       </Container>
 
-      <Container header={<Header variant="h2" description="The model fits on every node and the KV-cache still crosses the wire on every request.">Disaggregated serving puts the KV-cache on the wire</Header>}>
+      <Container header={<Header variant="h2" description="Which transfer library carries the KV-cache, and the two connector settings that put it on EFA.">Disaggregated serving puts the KV-cache on the wire</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
             In disaggregated prefill and decode, prefill runs on one set of nodes and decode on
@@ -115,22 +122,14 @@ export function AIMLInference() {
             <div>
               <Box variant="h3">NIXL (NVIDIA Inference Xfer Library)</Box>
               <Box variant="p">
-                Purpose-built for disaggregated inference transfers. Over EFA, NIXL posts each
-                transfer from a host thread through libfabric, so the transfer itself launches no
-                GPU kernel and takes <strong>no SM (Streaming Multiprocessor)</strong>{' '}
-                <SourceRef provenance="code-derived" code={code.nixlPostWrite} />. vLLM still runs a
-                conversion on the decode GPU when prefill and decode use different block sizes or
-                KV layouts{' '}
-                <SourceRef provenance="code-derived" code={code.vllmKvConvert} />
-                <SourceRef provenance="code-derived" code={code.vllmKvConvertWhen} />. NCCL runs its
+                Over EFA, NIXL posts each transfer from a host thread through libfabric, so the
+                transfer itself launches no GPU kernel and takes{' '}
+                <strong>no SM (Streaming Multiprocessor)</strong>{' '}
+                <SourceRef provenance="code-derived" code={code.nixlPostWrite} />. NCCL runs its
                 point-to-point sends and receives inside a GPU kernel{' '}
                 <SourceRef provenance="code-derived" code={code.ncclP2pKernel} />, and on an
                 inference GPU that is already compute-bound, those SMs come straight out of
                 throughput.
-              </Box>
-              <Box variant="p">
-                NIXL reaches EFA through its libfabric backend, and integrates with Libfabric
-                1.21.0 and later <SourceRef provenance="documented" doc={docs.efa} />.
               </Box>
               <StatusIndicator type="success">EFA critical for NIXL</StatusIndicator>
             </div>
@@ -150,13 +149,18 @@ export function AIMLInference() {
             </div>
           </ColumnLayout>
           <Box variant="p">
+            NIXL reaches EFA through its libfabric backend and integrates with Libfabric 1.21.0 and
+            later <SourceRef provenance="documented" doc={docs.efa} />, so check the Libfabric
+            version in the serving image.
+          </Box>
+          <Box variant="p">
             <strong>vLLM integration:</strong> vLLM implements disaggregated serving through
-            NixlConnector. Name the libfabric backend in <code>kv_connector_extra_config</code>{' '}
-            with <code>{'"backends": ["LIBFABRIC"]'}</code>, because the connector
-            defaults to UCX (Unified Communication X){' '}
-            <SourceRef provenance="code-derived" code={code.vllmBackends} /> and LIBFABRIC is the
-            backend that takes NIXL traffic over EFA{' '}
-            <SourceRef provenance="documented" doc={docs.efaNixl} />. Set <code>kv_role</code> to{' '}
+            NixlConnector. LIBFABRIC is the backend that takes NIXL traffic over EFA{' '}
+            <SourceRef provenance="documented" doc={docs.efaNixl} />, and the connector defaults to
+            UCX (Unified Communication X){' '}
+            <SourceRef provenance="code-derived" code={code.vllmBackends} />, so name it in{' '}
+            <code>kv_connector_extra_config</code> with{' '}
+            <code>{'"backends": ["LIBFABRIC"]'}</code>. Set <code>kv_role</code> to{' '}
             <code>kv_producer</code> on prefill instances and <code>kv_consumer</code> on decode
             instances. The AWS sample sets <code>kv_both</code> on both, a value the connector logs
             as deprecated{' '}
@@ -165,7 +169,11 @@ export function AIMLInference() {
               doc={docs.efaNixl}
               code={code.vllmKvRole}
               conflict="kv_role set to kv_both on both the prefill and the decode instance"
-            />.
+            />. When prefill and decode use different block sizes or KV layouts, vLLM runs a
+            conversion on the decode GPU{' '}
+            <SourceRef provenance="code-derived" code={code.vllmKvConvert} />
+            <SourceRef provenance="code-derived" code={code.vllmKvConvertWhen} />, so compare both
+            settings across the two fleets.
           </Box>
         </SpaceBetween>
       </Container>
@@ -211,7 +219,8 @@ export function AIMLInference() {
             <Box variant="p">
               A draft model on one node generates candidate tokens and a verifier on another node
               accepts or rejects them. Each model fits on its own node, and the verification loop is
-              latency-sensitive: every round-trip adds to time-to-first-token, which is what EFA
+              latency-sensitive: every round-trip adds to inter-token latency{' '}
+              <SourceRef provenance="code-derived" code={code.vllmSpecDecode} />, which is what EFA
               shortens here.
             </Box>
             <StatusIndicator type="info">EFA beneficial</StatusIndicator>
@@ -273,7 +282,8 @@ export function AIMLInference() {
           </Box>
           <Box variant="p">
             <strong>4. Are you running speculative decoding across nodes?</strong> EFA is
-            beneficial. The verification loop runs per token and lands in time-to-first-token.
+            beneficial. The verification loop runs per token and lands in inter-token latency{' '}
+            <SourceRef provenance="code-derived" code={code.vllmSpecDecode} />.
           </Box>
           <Box variant="p">
             <strong>5. Do you need KV-cache migration for autoscaling or rebalancing?</strong> EFA

@@ -34,6 +34,8 @@ const sources: Source[] = [
   { id: 34, title: 'aws/aws-ofi-nccl topology XML files (v1.22.0)', url: 'https://github.com/aws/aws-ofi-nccl/tree/v1.22.0/topology', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
   { id: 49, title: 'AWS Neuron documentation (Neuron 2.33.0): Amazon EC2 Trn3 Architecture', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/arch/neuron-hardware/trn3-arch.html', tier: 1, type: 'official-docs', accessDate: '2026-10-23' },
   { id: 51, title: 'NVIDIA/nccl GIN backend priority: the NCCL proxy ranks above EFA-GDA (src/plugin/gin.cc, v2.32.3-1)', url: 'https://github.com/NVIDIA/nccl/blob/v2.32.3-1/src/plugin/gin.cc#L327-L340', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
+  { id: 53, title: 'AWS Neuron documentation (Neuron 2.33.0): Amazon EC2 Trn1 Architecture', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/arch/neuron-hardware/trn1-arch.html', tier: 1, type: 'official-docs', accessDate: '2026-10-23' },
+  { id: 54, title: 'vLLM speculative decoding documentation (docs/features/speculative_decoding/README.md, v0.32.0)', url: 'https://github.com/vllm-project/vllm/blob/v0.32.0/docs/features/speculative_decoding/README.md#L3', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
   // Tier 2: AWS product pages, blogs, announcements
   { id: 50, title: 'AWS News Blog: Now Available - Elastic Fabric Adapter (EFA) for Tightly-Coupled HPC Workloads (April 29, 2019)', url: 'https://aws.amazon.com/blogs/aws/now-available-elastic-fabric-adapter-efa-for-tightly-coupled-hpc-workloads/', tier: 2, type: 'aws-blog', accessDate: '2026-10-23' },
   { id: 8, title: 'Amazon EC2 P5 Instance Types', url: 'https://aws.amazon.com/ec2/instance-types/p5/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
@@ -116,6 +118,7 @@ const factChecks: FactCheckItem[] = [
   { claim: '900 GB/s per GPU on fourth-generation NVLink, which is what P5 carries', section: 'AI/ML Training', sourceId: 45 },
 
   // AI/ML Inference
+  { claim: 'Speculative decoding round-trips land in inter-token latency, not time-to-first-token', section: 'AI/ML Inference', sourceId: 54 },
   { claim: '405B parameters at fp16 = ~810GB model size', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'P5 has 640GB total GPU memory (8x H100 80GB)', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'NIXL requires libfabric 1.21.0+', section: 'AI/ML Inference', sourceId: 1 },
@@ -143,6 +146,7 @@ const factChecks: FactCheckItem[] = [
   { claim: 'hpc7a.96xlarge On-Demand: $7.20/hr in us-east-2. There is no us-east-1 SKU', section: 'Pricing Analysis', sourceId: 41 },
 
   // Decision Guide
+  { claim: 'trn1.32xlarge connects its Trainium chips with NeuronLink-v2 in a 2D torus, not NVLink', section: 'Decision Guide', sourceId: 53 },
   { claim: '30 to 40% better price performance on Trn2 vs P5e at scale', section: 'Decision Guide', sourceId: 9 },
   { claim: 'SMDDP AllGather reduces GPU SM usage from 24 to under 9, on P4 only', section: 'Decision Guide', sourceId: 21 },
   { claim: 'The placement group for an ODCR is chosen when the reservation is created', section: 'Decision Guide', sourceId: 2 },

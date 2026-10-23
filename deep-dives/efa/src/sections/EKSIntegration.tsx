@@ -604,13 +604,13 @@ const contractRows: ContractRow[] = [
     item: 'IPC_LOCK capability',
     status: 'Undocumented',
     detail:
-      'Present in several AWS sample manifests, stated as a requirement by no AWS documentation. Memory pinning for RDMA registration is the obvious motive. Nobody at AWS has written that down.',
+      'Present in several AWS sample manifests. No AWS documentation located during this research states it as a requirement. Memory pinning for RDMA registration is the likely motive, on our reading, and no AWS statement of it was located.',
   },
   {
     item: 'NCCL_TOPO_FILE',
     status: 'Delete it',
     detail:
-      'Topology alignment on EKS comes from the AL2023 AMI automatically, or from a DRA matchAttribute constraint. No AWS documentation and no AWS-authored EFA manifest sets this variable.',
+      'Topology alignment on EKS comes from the AL2023 AMI automatically, or from a DRA matchAttribute constraint. No AWS documentation or AWS-authored EFA manifest located during this research sets this variable.',
   },
 ];
 
@@ -743,14 +743,11 @@ resources:
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The AL2023 EKS AMI build runs the standard AWS EFA installer with one flag. The literal line is{' '}
-            <code>sudo ./efa_installer.sh --minimal -y</code>, at line 53 of the Packer provisioner, and the AMI
-            component list names the result EFA minimal, the kernel module and rdma-core{' '}
-            <SourceRef provenance="code-confirmed" doc={docs.eksAmi} code={code.installEfa} />. The script is gated
-            only on the ENABLE_EFA variable <SourceRef provenance="code-derived" code={code.installEfaGuard} />, and
-            the default template sets enable_efa to true with no per-Kubernetes-version override{' '}
-            <SourceRef provenance="code-derived" code={code.amiVars} />. Release v20261019 confirms the artifact:
-            the efa package row reads 3.3.0-1.amzn2023 across all five AL2023 variants, standard ones included{' '}
+            The AL2023 EKS AMI build runs the standard AWS EFA installer with one flag,{' '}
+            <code>sudo ./efa_installer.sh --minimal -y</code>, and the AMI component list names the result EFA
+            minimal, the kernel module and rdma-core{' '}
+            <SourceRef provenance="code-confirmed" doc={docs.eksAmi} code={code.installEfa} />. Release v20261019
+            ships efa 3.3.0-1.amzn2023 on all five AL2023 variants, standard ones included{' '}
             <SourceRef provenance="documented" doc={docs.amiRelease} />.
           </Box>
 
@@ -787,9 +784,9 @@ resources:
             --minimal leaves the complete suite on the node: ibacm, infiniband-diags, libibumad, libibverbs,
             libibverbs-utils, librdmacm, librdmacm-utils, python3-pyverbs, rdma-core and rdma-core-devel{' '}
             <SourceRef provenance="code-derived" doc={docs.installer} />. efa-config and efa-nv-peermem survive too.
-            The build proves the latter by explicitly removing efa-nv-peermem again on non-NVIDIA AMIs, which it
-            would have no reason to do if --minimal had not installed it{' '}
-            <SourceRef provenance="code-derived" code={code.installEfaPeermem} />.
+            The build points to the latter: it removes efa-nv-peermem again on non-NVIDIA AMIs{' '}
+            <SourceRef provenance="code-derived" code={code.installEfaPeermem} />, which on our reading means
+            --minimal installed it.
           </Box>
 
           <Alert
@@ -812,11 +809,11 @@ resources:
                 <SourceRef provenance="code-derived" code={code.brKmod} />.
               </Box>
               <Box variant="p">
-                Two consequences the documentation hides. First, the versions differ: AL2023 pulls the latest
-                installer at build time and lands EFA driver 3.3.0{' '}
-                <SourceRef provenance="code-derived" code={code.installEfaLatest} doc={docs.amiRelease} />, while the
-                Bottlerocket kernel module spec pins installer 1.49.0, whose driver is 3.1.0, and its RPM Version
-                field reads 3.0.0{' '}
+                Two consequences the documentation hides. First, the driver versions differ. AL2023 pulls the
+                latest installer at build time and lands EFA driver 3.3.0{' '}
+                <SourceRef provenance="code-derived" code={code.installEfaLatest} doc={docs.amiRelease} />.
+                Bottlerocket pins installer 1.49.0, whose driver is 3.1.0, and compiles that source, though its RPM
+                Version field reads 3.0.0{' '}
                 <SourceRef provenance="code-derived" code={code.brKmod} doc={docs.efaChangelog} />. Second, the host debugging tools differ.
                 Bottlerocket builds its own rdma-core and strips every provider except libefa{' '}
                 <SourceRef provenance="code-derived" code={code.brRdma} />, where AL2023 gets the stock suite with
@@ -836,6 +833,12 @@ resources:
                 <SourceRef provenance="documented" doc={docs.eksAmi} />. Off the node, each AMI release publishes a
                 package version table per AMI type{' '}
                 <SourceRef provenance="documented" doc={docs.amiRelease} />.
+              </Box>
+              <Box variant="p">
+                The install script is gated only on the ENABLE_EFA variable{' '}
+                <SourceRef provenance="code-derived" code={code.installEfaGuard} />, and the default template sets
+                enable_efa to true with no per-Kubernetes-version override{' '}
+                <SourceRef provenance="code-derived" code={code.amiVars} />.
               </Box>
               <Box variant="code">
                 {`# Rebuild the same AMI from the published build scripts.
@@ -870,7 +873,7 @@ make k8s=1.36 os_distro=al2023 \\
         header={
           <Header
             variant="h2"
-            description="Four mechanisms, four sets of limitations, one node-level result."
+            description="Pick the provisioning path by the limits you can accept: all four end in the same device nodes."
           >
             Getting EFA interfaces onto the nodes
           </Header>
@@ -888,10 +891,8 @@ make k8s=1.36 os_distro=al2023 \\
                 traffic fails without a useful error.
               </Box>
               <Box variant="p">
-                A cluster placement group is how AWS recommends satisfying the zone rule, and it writes the status
-                verbatim: it is not an absolute requirement to launch your EFA-enabled instances into a cluster
-                placement group. However, AWS does recommend running EFA-enabled instances in a cluster placement
-                group, as it launches the instances into a low-latency group in a single Availability Zone{' '}
+                AWS recommends a cluster placement group to satisfy the zone rule, without requiring one, because it
+                launches the instances into a low-latency group in a single Availability Zone{' '}
                 <SourceRef provenance="documented" doc={docs.efaStart} />.
               </Box>
             </SpaceBetween>
@@ -903,10 +904,9 @@ make k8s=1.36 os_distro=al2023 \\
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                eksctl remains the shortest path, and a launch template is where you go for efa-only interfaces.
-                The efaEnabled setting cannot create them, because it configures every interface as type efa, so
-                use a NodeClass, an EC2NodeClass or a launch template instead{' '}
-                <SourceRef provenance="documented" doc={docs.eksDevice} />. eksctl also accepts an explicit
+                eksctl is the shortest path, and its efaEnabled setting configures every interface as type efa, so
+                it cannot create efa-only interfaces. For those, use a launch template, a NodeClass or an
+                EC2NodeClass <SourceRef provenance="documented" doc={docs.eksDevice} />. eksctl also accepts an explicit
                 placement group name alongside efaEnabled{' '}
                 <SourceRef provenance="code-derived" code={code.eksctlDocs} />.
               </Box>
@@ -945,8 +945,8 @@ make k8s=1.36 os_distro=al2023 \\
                 every existing node. The design also confirms only ENA and efa-only types are supported.
                 EC2NodeClass separately offers placementGroupSelector{' '}
                 <SourceRef provenance="documented" doc={docs.karpenterNodeClass} />. With the EFA DRA driver and
-                dynamic provisioning, leave networkInterfaces unset: Karpenter documents the combination as
-                unsupported, with undefined behaviour{' '}
+                dynamic provisioning, leave networkInterfaces unset: Karpenter does not support the combination,
+                and its behaviour is undefined{' '}
                 <SourceRef provenance="documented" doc={docs.karpenterDraUnset} />. For an efa-only layout under
                 DRA, use static capacity, a managed node group or self-managed nodes{' '}
                 <SourceRef provenance="documented" doc={docs.eksDevice} />.
@@ -1233,17 +1233,12 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
             p5.48xlarge instances there are four EFA devices that share the same PCIe root with one GPU, and to
             allocate those groups alongside aligned GPUs even without knowing the exact mapping and count, you
             configure the ResourceClaimTemplate with allocationMode: All{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />. ExactCount is the default.
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. ExactCount is the default. A p5.48xlarge
+            has eight such roots, one GPU{' '}
+            <SourceRef provenance="code-derived" code={code.karpenterGpuMeta} /> and four EFA devices{' '}
+            <SourceRef provenance="code-derived" code={code.karpenterEfaMeta} /> on each, which is the documented
+            total of 32 <SourceRef provenance="documented" doc={docs.eksDevice} />.
           </Box>
-
-          <Alert type="info" header="Eight PCIe roots, each with one GPU and four EFA devices: that is the 32">
-            The EKS documentation gives the per-root ratio, four EFA devices with one GPU, and the total, 32 EFA
-            devices on a p5.48xlarge <SourceRef provenance="documented" doc={docs.eksDevice} />. The grouping that
-            connects the two is in AWS-maintained Karpenter code. Its generated DRA metadata for p5.48xlarge lists
-            32 EFA devices on eight PCIe roots, four per root{' '}
-            <SourceRef provenance="code-derived" code={code.karpenterEfaMeta} />, and eight GPUs, one on each of the
-            same roots <SourceRef provenance="code-derived" code={code.karpenterGpuMeta} />.
-          </Alert>
 
           <ExpandableSection
             headerText="What misalignment costs, measured"
@@ -1266,7 +1261,7 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
         header={
           <Header
             variant="h2"
-            description="The fields a working EFA pod carries, the two you can drop, and two that no AWS documentation explains."
+            description="The fields a working EFA pod carries, the two you can drop, and two whose AWS rationale this research did not locate."
           >
             The pod contract
           </Header>
@@ -1313,7 +1308,7 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
                 in its workload pod examples and its NCCL test walkthrough{' '}
                 <SourceRef provenance="documented" doc={docs.eksDevice} />. The comment{' '}
                 <code>hostNetwork: true # Required for EFA</code> that travels with copied manifests has no source
-                behind it.
+                behind it that this research located.
               </Box>
               <Box variant="p">
                 AWS does set it on workloads, in three places. The HyperPod checkpointless training example
@@ -1325,9 +1320,8 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
                 <SourceRef provenance="code-derived" code={code.doEks} />.
               </Box>
               <Box variant="p">
-                No AWS source states a reason for those three. The plausible one is rendezvous and launcher
-                addressing rather than the EFA data path, but nobody has written that down, so treat it as our
-                reading. Start on the pod network, and reach for hostNetwork when a launcher needs a stable address.
+                No AWS source located during this research states a reason for those three. The plausible one is
+                rendezvous and launcher addressing rather than the EFA data path; treat that as our reading. Start on the pod network, and reach for hostNetwork when a launcher needs a stable address.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1418,14 +1412,10 @@ spec:
             .
           </Box>
           <Box variant="p">
-            The code bounds that to three releases. The mofed-enabled flag carries an explicit Value: true in
-            v0.19.0 <SourceRef provenance="code-confirmed" doc={docs.eksDevice} code={code.nvdpNew} /> through
-            v0.19.2 <SourceRef provenance="code-derived" code={code.nvdpLastTrue} />. It has no Value field in
-            v0.18.2 <SourceRef provenance="code-derived" code={code.nvdpOld} />, nor from v0.19.3, which reverted
-            the default <SourceRef provenance="code-derived" code={code.nvdpRevert} />, so those releases take the
-            Go zero value of false. v0.20.1 stays at false, with mofedEnabled null in its Helm values{' '}
-            <SourceRef provenance="code-derived" code={code.nvdpCurrent} />{' '}
-            <SourceRef provenance="code-derived" code={code.nvdpHelm} />. Enabling it appends the mofed mode to the container device interface generator{' '}
+            The code bounds that to three releases, v0.19.0{' '}
+            <SourceRef provenance="code-confirmed" doc={docs.eksDevice} code={code.nvdpNew} /> to v0.19.2{' '}
+            <SourceRef provenance="code-derived" code={code.nvdpLastTrue} />; v0.19.3 reverted the default{' '}
+            <SourceRef provenance="code-derived" code={code.nvdpRevert} />. Enabling the flag appends the mofed mode to the container device interface generator{' '}
             <SourceRef provenance="code-derived" code={code.nvdpCdi} />, whose discoverer injects two glob patterns
             into any GPU-requesting container: /dev/infiniband/uverbs* and also /dev/infiniband/rdma_cm{' '}
             <SourceRef provenance="code-derived" code={code.mofed} />. AWS names only the first.
@@ -1451,6 +1441,21 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
     --set 'devicePlugin.env[0].name=MOFED_ENABLED' \\
     --set 'devicePlugin.env[0].value=false'`}
           </Box>
+          <ExpandableSection
+            headerText="Which releases default to true, in the code"
+            headerDescription="The Value field of the mofed-enabled flag across five releases"
+          >
+            <Box variant="p">
+              The mofed-enabled flag carries an explicit Value: true in v0.19.0{' '}
+              <SourceRef provenance="code-confirmed" doc={docs.eksDevice} code={code.nvdpNew} /> through
+              v0.19.2 <SourceRef provenance="code-derived" code={code.nvdpLastTrue} />. It has no Value field in
+              v0.18.2 <SourceRef provenance="code-derived" code={code.nvdpOld} />, nor from v0.19.3, which
+              reverted the default <SourceRef provenance="code-derived" code={code.nvdpRevert} />, so those
+              releases take the Go zero value of false. v0.20.1 stays at false, with mofedEnabled null in its
+              Helm values <SourceRef provenance="code-derived" code={code.nvdpCurrent} />{' '}
+              <SourceRef provenance="code-derived" code={code.nvdpHelm} />.
+            </Box>
+          </ExpandableSection>
           <Alert type="info" header="One more GPU Operator rule on EKS accelerated AMIs">
             When using the NVIDIA GPU Operator with the EKS-optimized AL2023 NVIDIA AMIs, you must disable the
             operator installation of the driver and the toolkit, because both are already in the AMI{' '}

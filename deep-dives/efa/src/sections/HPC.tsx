@@ -100,9 +100,9 @@ export function HPC() {
             <div>
               <Box variant="h3">Tightly Coupled (EFA critical)</Box>
               <ul>
-                <li><strong>Weather/Climate:</strong> WRF (Weather Research and Forecasting), MPAS, IFS: domain decomposition, halo exchange every timestep</li>
+                <li><strong>Weather/Climate:</strong> WRF (Weather Research and Forecasting), MPAS (Model for Prediction Across Scales), IFS (Integrated Forecasting System): domain decomposition, halo exchange every timestep</li>
                 <li><strong>CFD:</strong> OpenFOAM, ANSYS Fluent: mesh partitioning, neighbor communication</li>
-                <li><strong>Molecular Dynamics:</strong> GROMACS, LAMMPS, NAMD: particle domain decomposition</li>
+                <li><strong>Molecular Dynamics:</strong> GROMACS, LAMMPS (Large-scale Atomic/Molecular Massively Parallel Simulator), NAMD: particle domain decomposition</li>
                 <li><strong>Seismic Processing:</strong> Finite-difference wave propagation</li>
                 <li><strong>Structural Analysis:</strong> ABAQUS, LS-DYNA: implicit solvers with global coupling</li>
               </ul>
@@ -111,7 +111,7 @@ export function HPC() {
               <Box variant="h3">Loosely Coupled (EFA optional)</Box>
               <ul>
                 <li><strong>Monte Carlo and parameter sweeps:</strong> Independent trajectories or cases, minimal to no inter-rank communication</li>
-                <li><strong>Genomics pipelines:</strong> BWA, GATK: bound by storage I/O</li>
+                <li><strong>Genomics pipelines:</strong> BWA (Burrows-Wheeler Aligner), GATK (Genome Analysis Toolkit): bound by storage I/O</li>
                 <li><strong>Rendering:</strong> Frame-independent, scatter-gather at boundaries</li>
               </ul>
             </div>
@@ -137,7 +137,7 @@ export function HPC() {
           <div>
             <Box variant="h3">Weather (WRF), multi-rail EFA against single-rail</Box>
             <Box variant="p">
-              WRF v4.2.2 CONUS 2.5 km on hpc7a with Intel MPI 2021.9.0. Setting{' '}
+              WRF v4.2.2 CONUS (Continental United States) 2.5 km on hpc7a with Intel MPI 2021.9.0. Setting{' '}
               <code>I_MPI_MULTIRAIL=1</code> gave a <strong>10% increase in speedup at 32
               instances</strong>, and at 192 instances <strong>the increase was over 30%</strong>{' '}
               <SourceRef provenance="documented" doc={docs.multirail} />. This is EFA against EFA:
@@ -165,15 +165,16 @@ export function HPC() {
         <SpaceBetween size="m">
           <Box variant="p">
             AWS supports two MPI implementations, Open MPI 4.1 and later and Intel MPI
-            2019 Update 5 and later <SourceRef provenance="documented" doc={docs.efa} />. MPICH and
-            any other MPI sit outside that support statement.
+            2019 Update 5 and later <SourceRef provenance="documented" doc={docs.efa} />. Running
+            MPICH or any other MPI means running outside that support statement.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="h3">Open MPI</Box>
               <Box variant="p">
-                The EFA installer installs Open MPI 4.1 in <code>/opt/amazon/openmpi</code> and
-                Open MPI 5 in <code>/opt/amazon/openmpi5</code> by default. Run{' '}
+                From EFA installer 1.30.0, the installer puts Open MPI 4.1 in{' '}
+                <code>/opt/amazon/openmpi</code> and Open MPI 5 in{' '}
+                <code>/opt/amazon/openmpi5</code> by default. Run{' '}
                 <code>module load openmpi5</code> to put Open MPI 5 on the <code>PATH</code>{' '}
                 <SourceRef provenance="documented" doc={docs.efaStart} />.
               </Box>
@@ -261,10 +262,10 @@ export function HPC() {
               <Box variant="h3">Hpc8a (AMD, Nitro v6)</Box>
               <Box variant="p">
                 192 cores of AMD EPYC 9R45, 768 GiB, 300 Gbps EFA{' '}
-                <SourceRef provenance="documented" doc={docs.hpc} />. The gain over Hpc7a is up to
-                40% in performance, up to 25% in price performance and up to 42% in memory
-                bandwidth <SourceRef provenance="documented" doc={docs.hpc8a} />. Nitro
-                v6 pairs with EFA v4.
+                <SourceRef provenance="documented" doc={docs.hpc} />. AWS&apos;s launch announcement
+                puts the gain over Hpc7a at up to 40% in performance, up to 25% in price performance
+                and up to 42% in memory bandwidth{' '}
+                <SourceRef provenance="documented" doc={docs.hpc8a} />.
               </Box>
             </div>
           </ColumnLayout>

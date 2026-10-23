@@ -45,7 +45,7 @@ Twenty sections, wired in `src/App.tsx` in reading order:
 | 10 | `training` | AI/ML Training | Collectives at scale, rails, Trainium |
 | 11 | `inference` | AI/ML Inference | Disaggregated serving, NIXL backends, vLLM |
 | 12 | `hpc` | Traditional HPC | MPI over EFA, multi-rail, HPC families |
-| 13 | `storage` | Storage Data Paths: FSx, S3 and the CRT | FSx for Lustre with EFA and GDS, the CRT S3 client |
+| 13 | `storage` | Storage Data Paths: FSx, S3 and the Common Runtime | FSx for Lustre with EFA and GDS, the CRT (Common Runtime) S3 client |
 | 14 | `comparison` | EFA vs Alternatives | TCP, InfiniBand, RoCE, NVLink |
 | 15 | `eks` | EFA on Amazon EKS | AMIs, device plugin versus DRA driver, Karpenter, Auto Mode |
 | 16 | `sagemaker` | EFA on SageMaker and HyperPod | Training jobs, SDK environment, DLCs, HyperPod AMIs, SMDDP |
