@@ -49,6 +49,7 @@ const code = {
   modifyQp: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L209-L244'),
   netStats: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L627-L637'),
   portStats: driversRef('kernel/linux/efa/src/efa_verbs.c', 'L74-L96'),
+  netStatsCopy: driversRef('kernel/linux/efa/src/efa_verbs.c', 'L3735-L3745'),
   compStatus: driversRef('kernel/linux/efa/src/efa_io_defs.h', 'L36-L70'),
   enaSrdStats: driversRef('kernel/linux/common/ena_com/ena_admin_defs.h', 'L512-L536'),
   enaSrdFlags: driversRef('kernel/linux/common/ena_com/ena_admin_defs.h', 'L163-L170'),
@@ -78,24 +79,31 @@ const code = {
   envRecvwinHelp: libfabricRef('prov/efa/src/efa_env.c', 'L189-L190'),
   recvwinAlloc: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L46-L66'),
   recvwinUse: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L40'),
-  recvwinModulo: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L518'),
+  recvwinSlot: { repo: 'ofiwg/libfabric', ref: LIBFABRIC, path: 'include/ofi_recvwin.h', lines: 'L72-L96', read: CODE_READ } as CodeRef,
+  robufPool: libfabricRef('prov/efa/src/rdm/efa_rdm_ep_fiops.c', 'L327-L332'),
   // The two tuning commits that left the help string behind.
-  tune16kTo8k: {
-    repo: 'ofiwg/libfabric',
-    ref: '7232f8af12d0a7ad54cc571529e37c006cb3bc92',
-    path: 'prov/efa/src/rdm/efa_rdm_peer.h',
-    read: CODE_READ,
-  } as CodeRef,
-  tune8kTo16: {
-    repo: 'ofiwg/libfabric',
-    ref: 'bd987ab20e57292f55589b30a2fc40c0ace3338c',
-    path: 'prov/efa/src/rdm/efa_rdm_peer.h',
-    read: CODE_READ,
-  } as CodeRef,
+
   // The compiled default for the out-of-order bounce-buffer copy, in the
   // initialiser rather than in the fi_param_define help string.
   envOooDefault: libfabricRef('prov/efa/src/efa_env.c', 'L28'),
 };
+
+// The two tuning commits that left the help string behind, linked as commit pages
+// because the reasoning lives in the commit messages.
+const commits = {
+  tune16kTo8k: {
+    title: 'libfabric commit 7232f8af: tune recvwindow and peer reorder buffer pool sizes',
+    url: 'https://github.com/ofiwg/libfabric/commit/7232f8af12d0a7ad54cc571529e37c006cb3bc92',
+    tier: 1,
+    accessed: CODE_READ,
+  },
+  tune8kTo16: {
+    title: 'libfabric commit bd987ab2: decrease the peer robuf size instead of the robuf pool',
+    url: 'https://github.com/ofiwg/libfabric/commit/bd987ab20e57292f55589b30a2fc40c0ace3338c',
+    tier: 1,
+    accessed: CODE_READ,
+  },
+} satisfies Record<string, DocRef>;
 
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
@@ -987,7 +995,8 @@ a peer process is no longer present.`}</pre>
             <SourceRef provenance="code-derived" code={code.netStats} />. The driver code that
             surfaces them copies the values out of an admin-queue response rather than computing
             them{' '}
-            <SourceRef provenance="code-derived" code={code.portStats} />. A search of the driver
+            <SourceRef provenance="code-derived" code={code.portStats} />{' '}
+            <SourceRef provenance="code-derived" code={code.netStatsCopy} />. A search of the driver
             tree for retransmission logic during this research found none, which is consistent with
             the device doing the work, though an absence found by searching is weaker evidence than
             the presence of the stats path. That same search turned up no host-side policy governing
@@ -1052,8 +1061,9 @@ a peer process is no longer present.`}</pre>
             are out of order, whose message identifier is larger than the one the endpoint expects
             from that peer, plus an <code>overflow_pke_list</code> for out-of-order packets that do
             not fit the current window <SourceRef provenance="code-derived" code={code.robuf} />.
-            The slot is the message id modulo the window size{' '}
-            <SourceRef provenance="code-derived" code={code.recvwinModulo} />, and out-of-order
+            Each held packet goes in the slot at its distance from the expected message id, around
+            a ring sized to a power of two{' '}
+            <SourceRef provenance="code-derived" code={code.recvwinSlot} />, and out-of-order
             arrivals are copied out of the pre-posted receive buffers into a separate bounce-buffer
             pool. That copy is on in a default build: the provider's environment structure is
             initialised with <code>.rx_copy_ooo = 1</code>{' '}
@@ -1086,7 +1096,7 @@ a peer process is no longer present.`}</pre>
                 <SourceRef
                   provenance="doc-code-conflict"
                   code={code.robufDefault}
-                  conflict="prov/efa/src/efa_env.c line 189 defines FI_EFA_RECVWIN_SIZE with the help text 'Defines the size of sliding receive window. (Default: 16384)'. The initialiser at line 18 of the same file sets recvwin_size to EFA_RDM_PEER_DEFAULT_REORDER_BUFFER_SIZE, which prov/efa/src/rdm/efa_rdm_peer.h line 12 defines as 16. Both values count messages, not bytes: the count is passed to efa_recvwin_buf_alloc unscaled and sizes a pointer array. The default went 16384 to 8192 in commit 7232f8af (2025-10-16), then 8192 to 16 in commit bd987ab2 (2025-11-18). The help string was not updated by either."
+                  conflict="prov/efa/src/efa_env.c line 189 defines FI_EFA_RECVWIN_SIZE with the help text 'Defines the size of sliding receive window. (Default: 16384)'. The initialiser at line 18 of the same file sets recvwin_size to EFA_RDM_PEER_DEFAULT_REORDER_BUFFER_SIZE, which prov/efa/src/rdm/efa_rdm_peer.h line 12 defines as 16. Both values count messages, not bytes: the count is passed unscaled and sizes each peer's array of packet pointers. The default went 16384 to 8192 in commit 7232f8af (merged 2025-10-17, first released in v2.4.0), then 8192 to 16 in commit bd987ab2 (merged 2026-01-13, first released in v2.5.0). The help string was not updated by either."
                   label="doc vs code"
                 />
                 . Both lines are in the same file{' '}
@@ -1097,22 +1107,25 @@ a peer process is no longer present.`}</pre>
               <Box variant="p">
                 <strong>The unit is messages, not bytes.</strong> A jump from 16384 to 16 looks like
                 a units error, and it is not. The value is passed to the allocator unscaled{' '}
-                <SourceRef provenance="code-derived" code={code.recvwinUse} />, which sizes the
-                pending queue as <code>sizeof(struct efa_rdm_pke*) * size</code>: one pointer slot
-                per held message, with a power-of-two assertion on the count{' '}
+                <SourceRef provenance="code-derived" code={code.recvwinUse} />, which takes each
+                peer&apos;s pending queue from a pool whose entries are{' '}
+                <code>sizeof(struct efa_rdm_pke*)</code> times the window size{' '}
+                <SourceRef provenance="code-derived" code={code.robufPool} />: one pointer slot per
+                held message, with a power-of-two assertion on the count{' '}
                 <SourceRef provenance="code-derived" code={code.recvwinAlloc} />. Nothing anywhere
                 multiplies it by a page, a packet size or a kilobyte, so the two numbers really do
                 disagree.
               </Box>
               <Box variant="p">
                 <strong>Why the help text says 16384.</strong> That was the default before two
-                tuning commits, and neither touched the help string. In October 2025 the window went
-                to 8192 while the peer reorder buffer pool dropped from 1024 to 16{' '}
-                <SourceRef provenance="code-derived" code={code.tune16kTo8k} label="commit" />. In
-                November 2025 the window went to 16 to match the pool, on the reasoning that a
-                differently sized pool and buffer make no sense when every peer needs one buffer{' '}
-                <SourceRef provenance="code-derived" code={code.tune8kTo16} label="commit" />. Both
-                changes were made to hold performance without the memory overhead.
+                tuning commits, and neither touched the help string. The first, merged in October
+                2025, cut the window to 8192 and the peer reorder buffer pool from 1024 to 16, to
+                hold performance without the memory overhead{' '}
+                <SourceRef provenance="code-derived" doc={commits.tune16kTo8k} label="commit" />.
+                The second, merged in January 2026, put the pool back to 1024, since every peer
+                needs one buffer, and cut the window to 16 instead{' '}
+                <SourceRef provenance="code-derived" doc={commits.tune8kTo16} label="commit" />. So
+                libfabric 2.4.0 defaults to 8192 and 2.5.0 onward to 16.
               </Box>
             </SpaceBetween>
           </ExpandableSection>

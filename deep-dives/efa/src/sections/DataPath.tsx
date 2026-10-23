@@ -48,7 +48,8 @@ const lfab = (path: string, lines?: string): CodeRef => ({
 
 const code = {
   // amzn-drivers, the out-of-tree module the EFA installer builds.
-  kverbs: amzn('src/efa_data_verbs.c', 'L331-L763'),
+  kverbs: amzn('src/efa_data_verbs.c', 'L331-L772'),
+  kverbsSince: amzn('RELEASENOTES.md', 'L98-L99'),
   devOps: amzn('src/efa_main.c', 'L553-L561'),
   controlOps: amzn('src/efa_main.c', 'L476-L549'),
   kverbsOn: amzn('CMakeLists.txt', 'L36'),
@@ -85,6 +86,8 @@ const code = {
   dpdFallback: lfab('src/efa_data_path_ops.h', 'L223-L226'),
   dpdDoorbell: lfab('src/efa_data_path_direct_entry.h', 'L440-L450'),
   subCq: lfab('src/efa_device.c', 'L605-L610'),
+  ddpOff: lfab('src/efa_data_path_direct.c', 'L179-L188'),
+  cqWaitObj: lfab('src/efa_cq.c', 'L1133-L1144'),
   mrCacheOpen: lfab('src/rdm/efa_rdm_domain.c', 'L56-L68'),
   mrCacheDefault: lfab('src/rdm/efa_rdm_mr.c', 'L72-L82'),
   mrCacheHelp: lfab('src/efa_env.c', 'L195-L202'),
@@ -103,6 +106,12 @@ const docs = {
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-changelog.html',
     tier: 1,
     accessed: '2026-10-23',
+  },
+  gdrcopy: {
+    title: 'NVIDIA GDRCopy README at v2.5.2, lines 1 to 11',
+    url: 'https://github.com/NVIDIA/gdrcopy/blob/v2.5.2/README.md',
+    tier: 1,
+    accessed: READ,
   },
   nccl: {
     title: 'EC2 User Guide: Get started with EFA and NCCL',
@@ -555,7 +564,8 @@ export function DataPath() {
                 data-path source file implementing post send (<code>post_send</code>), post receive
                 (<code>post_recv</code>), poll completion queue (<code>poll_cq</code>) and request
                 notify, and has done since driver r2.12.0{' '}
-                <SourceRef provenance="code-derived" code={code.kverbs} />, and registers all four in
+                <SourceRef provenance="code-derived" code={code.kverbs} />{' '}
+                <SourceRef provenance="code-derived" code={code.kverbsSince} />, and registers all four in
                 the device operations table behind a kernel-verbs build guard{' '}
                 <SourceRef provenance="code-derived" code={code.devOps} />. That guard is on by
                 default: the build sets the kernel-verbs option to ON in its own cache{' '}
@@ -702,11 +712,13 @@ export function DataPath() {
               </Alert>
               <Box variant="p">
                 Two gates decide whether it is live on a given host, and neither is a switch you
-                throw. The feature turns itself off on first-generation devices, which the provider
-                detects by vendor part identifier{' '}
-                <SourceRef provenance="code-derived" code={code.subCq} />, and it declines
+                throw. The feature turns itself off on 0xefa0 devices, which still use
+                sub-completion queues and which the provider detects by vendor part identifier{' '}
+                <SourceRef provenance="code-derived" code={code.subCq} />{' '}
+                <SourceRef provenance="code-derived" code={code.ddpOff} />, and it declines
                 completion queues that carry a wait object when the installed rdma-core lacks a
-                doorbell field in its completion-queue attributes. So which of the two descriptor
+                doorbell field in its completion-queue attributes{' '}
+                <SourceRef provenance="code-derived" code={code.cqWaitObj} />. So which of the two descriptor
                 paths a job runs on follows from the device generation and from the rdma-core in
                 the image, and it changes when either of those changes.
               </Box>
@@ -768,9 +780,9 @@ export function DataPath() {
           <Box variant="p">
             The kernel is off the data path, and the device is what keeps one process out of
             another&apos;s queues. Each user context is allocated a UARN (User Access Region Number)
-            that the driver records on the context and on every queue pair{' '}
+            that the driver records on the context{' '}
             <SourceRef provenance="code-derived" code={code.uarn} /> and passes to the device when
-            it creates the queue pair{' '}
+            it creates each queue pair{' '}
             <SourceRef provenance="code-derived" code={code.uarnScope} />. A process can only ring
             doorbells inside its own region.
           </Box>
@@ -885,7 +897,8 @@ export function DataPath() {
             (the GPUDirect RDMA copy library) is its own component, installed as its own step in
             the AWS NCCL getting-started guide{' '}
             <SourceRef provenance="documented" doc={docs.nccl} />, and it gives the host processor
-            a low-latency mapping into GPU memory. Peer-to-peer support is what decides whether
+            a low-latency mapping into GPU memory{' '}
+            <SourceRef provenance="documented" doc={docs.gdrcopy} />. Peer-to-peer support is what decides whether
             payloads leave GPU memory, so that is the one to confirm on a new instance; a build
             without GDRCopy still sends straight from GPU memory.
           </Alert>
