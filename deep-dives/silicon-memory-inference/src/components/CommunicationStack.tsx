@@ -47,7 +47,7 @@ const layers: Layer[] = [
     cells: [
       ['NVLink'],
       ['EFA with SRD', '64 paths at a time'],
-      ['NeuronLink-v3 / -v4', 'Trn2 / Trn3; EFA between servers'],
+      ['NeuronLink-v3 / -v4', 'Trn2 / Trn3; EFA beyond NeuronLink'],
     ],
   },
   {

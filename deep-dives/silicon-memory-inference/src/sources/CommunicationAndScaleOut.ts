@@ -129,7 +129,7 @@ export const S = {
     accessed: '2026-10-17',
   },
   deepEpReadme: {
-    title: 'DeepEP README at tag v1.2.1 (V1 kernel performance tables)',
+    title: 'DeepEP README at tag v1.2.1 (normal and low-latency kernel performance tables)',
     publisher: 'DeepSeek-AI',
     url: 'https://github.com/deepseek-ai/DeepEP/blob/v1.2.1/README.md',
     tier: 1,
@@ -197,7 +197,7 @@ export const S = {
     title: 'Ultra Ethernet Consortium: UEC Launches Specification 1.0 (2025-06-11)',
     publisher: 'Ultra Ethernet Consortium',
     url: 'https://ultraethernet.org/ultra-ethernet-consortium-uec-launches-specification-1-0-transforming-ethernet-for-ai-and-hpc-at-scale/',
-    tier: 2,
+    tier: 1,
     accessed: '2026-10-17',
   },
   nvlinkFusionTrainium4: {

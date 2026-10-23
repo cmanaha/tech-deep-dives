@@ -208,7 +208,7 @@ export const S = {
     accessed: '2026-10-16',
   },
   deepEpReadme: {
-    title: 'DeepEP README at tag v1.2.1 (V1 kernel performance tables)',
+    title: 'DeepEP README at tag v1.2.1 (normal and low-latency kernel performance tables)',
     publisher: 'DeepSeek-AI',
     url: 'https://github.com/deepseek-ai/DeepEP/blob/v1.2.1/README.md',
     tier: 1,

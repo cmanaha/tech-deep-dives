@@ -52,7 +52,8 @@ const efaRows: EfaRow[] = [
       <>
         3,200 Gbps, 800 per GPU
         <Cite s={S.ec2AcceleratedSpecs} kind="derived" note="3,200 Gbps / 4 GPUs." />
-        ; the P6 page gives 400 per GPU
+        ; the P6 page&apos;s prose gives 400 per GPU
+        <Cite s={S.p6Page} />, its instance table 3.2 Tbps
         <Cite s={S.p6Page} />
       </>
     ),
@@ -200,6 +201,7 @@ export function CommunicationAndScaleOut() {
               announcement of a UEC or UALink product. <em>Chiplet and Interconnect</em> covers UCIe
               (Universal Chiplet Interconnect Express), which the UALink chiplet specification
               complies with.
+              <Cite s={S.ualinkFourSpecs} />
             </Box>
           </ExpandableSection>
         </SpaceBetween>
@@ -242,8 +244,8 @@ export function CommunicationAndScaleOut() {
             launch attaches one ENA, Elastic Network Adapter, interface); a trn2.3xlarge does not
             qualify.
             <Cite s={S.nixlLibfabric} /> <em>Disaggregated Serving and Speculative Decoding</em>{' '}
-            covers the backend switch: vLLM and SGLang default to UCX (Unified Communication X), and
-            EFA needs LIBFABRIC.
+            covers the backend switch: NIXL in vLLM and SGLang defaults to UCX (Unified
+            Communication X), and EFA needs LIBFABRIC.
           </Box>
           <Alert type="info" header="Pick the library by the shape of the traffic">
             NCCL is collective-shaped: many ranks join one bandwidth-heavy operation. NIXL is
@@ -308,7 +310,8 @@ export function CommunicationAndScaleOut() {
             ]}
           />
           <Box variant="p">
-            The two AWS pages disagree on P6e-GB200&apos;s Nitro generation and on its EFA per GPU.{' '}
+            AWS&apos;s pages disagree on P6e-GB200&apos;s Nitro generation and on its EFA per GPU,
+            and the P6 page disagrees with itself.{' '}
             <em>Grace-Blackwell and UltraServer</em> shows what the per-GPU gap means for an expert
             layout.
           </Box>
@@ -383,7 +386,7 @@ export function CommunicationAndScaleOut() {
             <SpaceBetween size="s">
               <Box variant="p">
                 <strong>DeepEP</strong> (release v1.2.1) is DeepSeek&apos;s open-source set of
-                dispatch and combine kernels. On H800 GPUs with 400 Gb/s ConnectX-7 cards its V1
+                dispatch and combine kernels. On H800 GPUs with 400 Gb/s ConnectX-7 cards its normal
                 kernels measured 153 GB/s for EP8 (expert parallelism across 8 GPUs) dispatch over
                 NVLink and 51 GB/s for EP64 dispatch over RDMA (remote direct memory access).
                 <Cite s={S.deepEpReadme} kind="measured" /> On EFA, AWS lists DeepEP v2 from its
@@ -407,7 +410,8 @@ export function CommunicationAndScaleOut() {
             figures). In DeepSeek&apos;s measurement, dispatch across 64 GPUs over RDMA ran at a
             third of the 8-GPU NVLink rate
             <Cite s={S.deepEpReadme} kind="derived" note="51 / 153 GB/s." />, and a Trn2 chip has a
-            quarter of its in-instance bandwidth for traffic leaving the instance.
+            quarter of its in-instance NeuronLink bandwidth toward the other instances of an
+            UltraServer.
             <Cite s={S.trn2Arch} kind="derived" note="256 / 1,024 GB/s per chip." /> Keep the group
             inside one domain when the model allows: 8 GPUs in a P5
             <Cite s={S.ec2AcceleratedSpecs} />, up to 72 in a P6e-GB200 UltraServer

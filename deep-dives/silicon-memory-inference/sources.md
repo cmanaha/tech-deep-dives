@@ -100,7 +100,7 @@ Total distinct sources: 459.
 | Dao-AILab | [FlashAttention release fa4-v4.0.0.beta35 (FlashAttention-4 beta, 2026-10-14)](https://github.com/Dao-AILab/flash-attention/releases/tag/fa4-v4.0.0.beta35) | 2026-10-18 | KvCacheAndFlashAttention, RooflineAndArithmeticIntensity |
 | DeepSeek | [DeepSeek API docs: Context Caching](https://api-docs.deepseek.com/guides/kv_cache) | 2026-10-17 | FlashCacheTier |
 | DeepSeek | [DeepSeek API docs: Models and Pricing](https://api-docs.deepseek.com/quick_start/pricing) | 2026-10-17 | FlashCacheTier |
-| DeepSeek-AI | [DeepEP README at tag v1.2.1 (V1 kernel performance tables)](https://github.com/deepseek-ai/DeepEP/blob/v1.2.1/README.md) | 2026-10-17 | CommunicationAndScaleOut, MoeAndSparseActivation |
+| DeepSeek-AI | [DeepEP README at tag v1.2.1 (normal and low-latency kernel performance tables)](https://github.com/deepseek-ai/DeepEP/blob/v1.2.1/README.md) | 2026-10-17 | CommunicationAndScaleOut, MoeAndSparseActivation |
 | eCFR | [17 CFR 240.17a-4, Records to be preserved by certain exchange members, brokers and dealers, paragraph (e)(8)](https://www.ecfr.gov/current/title-17/section-240.17a-4) | 2026-10-17 | DeterminismAOT |
 | EUR-Lex | [Commission Delegated Regulation (EU) 2017/589 (RTS 6), Articles 5, 9 and 28](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32017R0589) | 2026-10-17 | DeterminismAOT |
 | EUR-Lex | [Regulation (EU) 2022/2554 (DORA), Article 17: ICT-related incident management process](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32022R2554) | 2026-10-17 | DeterminismAOT |
@@ -293,6 +293,7 @@ Total distinct sources: 459.
 | UALink Consortium | [UALink Consortium press release: UALink Consortium Publishes Four Specifications (2026-04-07, PDF)](https://ualinkconsortium.org/wp-content/uploads/2026/04/UALink-2.0-Specification-PR_FINAL.pdf) | 2026-10-17 | ChipletAndInterconnect, CommunicationAndScaleOut |
 | UALink Consortium | [UALink Consortium press release: UALink Consortium Releases the Ultra Accelerator Link 200G 1.0 Specification (2025-04-08, PDF)](https://ualinkconsortium.org/wp-content/uploads/2025/04/UALink-1.0-Specification-PR_FINAL.pdf) | 2026-10-17 | CommunicationAndScaleOut |
 | UCIe Consortium | [UCIe Consortium: Specifications (UCIe 1.0, 1.1, 2.0, 3.0)](https://www.uciexpress.org/specifications) | 2026-10-17 | ChipletAndInterconnect |
+| Ultra Ethernet Consortium | [Ultra Ethernet Consortium: UEC Launches Specification 1.0 (2025-06-11)](https://ultraethernet.org/ultra-ethernet-consortium-uec-launches-specification-1-0-transforming-ethernet-for-ai-and-hpc-at-scale/) | 2026-10-17 | CommunicationAndScaleOut |
 | UXL Foundation | [oneDNN cmake/options.cmake at tag v3.13.4, lines 333-335 (ENABLE_MAX_CPU_ISA defaults to ON)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/cmake/options.cmake#L333-L335) | 2026-10-17 | IntelXeon6 |
 | UXL Foundation | [oneDNN src/common/utils.cpp at tag v3.13.4, lines 112-126 (ONEDNN_ and DNNL_ environment prefixes)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/common/utils.cpp#L112-L126) | 2026-10-17 | IntelXeon6 |
 | UXL Foundation | [oneDNN src/common/verbose.cpp at tag v3.13.4, lines 100-190 (VERBOSE header with the ISA line)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/common/verbose.cpp#L100-L190) | 2026-10-17 | IntelXeon6 |
@@ -442,7 +443,6 @@ Total distinct sources: 459.
 | SK hynix | [SK hynix Presents Next Generation NAND Storage Product Strategy at OCP 2025 (2025-10-27)](https://news.skhynix.com/en/sk-hynix-presents-next-generation-nand-storage-product-strategy-at-ocp-2025/) | 2026-10-17 | HighBandwidthFlash |
 | SK hynix | [SK hynix Ships Samples of 12-Layer Next-Gen HBM4E (2026-06-18)](https://news.skhynix.com/en/sk-hynix-ships-samples-of-12-layer-next-gen-hbm4e-2/) | 2026-10-16 | HbmAndBandwidthWall, HighBandwidthFlash |
 | SK hynix | [SK hynix Showcases Next-Generation AI Memory Innovations at CES 2026 (2026-01-06)](https://news.skhynix.com/en/sk-hynix-showcases-next-generation-ai-memory-innovations-at-ces-2026/) | 2026-10-18 | ComputeInMemory |
-| Ultra Ethernet Consortium | [Ultra Ethernet Consortium: UEC Launches Specification 1.0 (2025-06-11)](https://ultraethernet.org/ultra-ethernet-consortium-uec-launches-specification-1-0-transforming-ethernet-for-ai-and-hpc-at-scale/) | 2026-10-17 | CommunicationAndScaleOut |
 | VAST Data | [NVIDIA Dynamo + VAST = Scalable, Optimized Inference (2025-12-16, with CoreWeave)](https://www.vastdata.com/blog/nvidia-dynamo-vast-scalable-optimized-inference) | 2026-10-17 | FlashCacheTier |
 
 ## Tier 3: third-party analysis, academic paper or trade press

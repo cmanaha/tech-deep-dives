@@ -52,3 +52,10 @@
   NVL72 and 7 x 32 GB for HGX B300 (Isolation verification; reuse its records).
 - Capital Markets Lens: align the list of what the NIE proof leaves out with Isolation (I/O
   device management, live update and migration, concurrency, per the white paper).
+- Tier convention (orchestrator ruling, Communication verification): announcements by standards
+  bodies and regulators of their own standards (JEDEC, CXL Consortium, UALink, UEC, PRA, OCC)
+  are Tier 1 across the dive; vendor press releases are Tier 2. The UEC 1.0 release was the
+  one Tier 2 outlier and is now Tier 1. DeepEP record title renamed from "V1" to "normal and
+  low-latency kernel" tables in MoE and Communication.
+- Grace-Blackwell and UltraServer: the P6 page contradicts itself on EFA per GPU (400 Gbps in
+  prose, 3.2 Tbps per four-GPU instance in its table); name both, as Communication now does.
