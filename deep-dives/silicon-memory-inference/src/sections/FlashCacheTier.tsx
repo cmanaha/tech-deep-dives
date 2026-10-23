@@ -20,7 +20,7 @@ const sparseNote =
 const floorNote =
   '4,400,000 IOPS x 4,096 B = 18.0 GB/s per instance, 2.25 GB/s per GPU. AWS rates the IOPS aggregated, at 4 KiB, at queue depth saturation.';
 const tierRateNote =
-  'EBS 12,500 MB/s / 8 = 1.56 GB/s per GPU; FSx 1,200 Gb/s = 150 GB/s per instance, 18.75 per GPU; EFA 3,200 Gb/s = 400 GB/s per instance, 50 per GPU; PCIe 5.0 at 32 GT/s x 16 lanes = 64 GB/s per direction before encoding, 512 GB/s across eight GPUs.';
+  'EBS 12,500 MB/s / 8 = 1.56 GB/s per GPU; FSx 1,200 Gb/s = 150 GB/s per instance, 18.75 per GPU; EFA 3,200 Gb/s = 400 GB/s per instance, 50 per GPU; PCIe Gen5 at 128 GB/s per H200 across both directions = 64 GB/s per direction (line rate), 512 GB/s across eight GPUs.';
 const clockNote =
   'Usable KV space assumed: about 900 GB of HBM (8 x 141 GB x 0.92, the vLLM default gpu_memory_utilization, minus 141 GB of BF16 weights), 1.5 TB of the 2,048 GiB of host DRAM, 30.4 TB of instance store. Fill rate: 50% of 8 x 989.5 TFLOPS over 1.24 PFLOP per 8K prefix = 26,000 tokens/s. 2.75 M tokens / 26,000 = 105 s; 4.58 M = 176 s; 92.8 M = 3,560 s.';
 const blockNote =
@@ -88,7 +88,7 @@ export function FlashCacheTier() {
             HBM<Cite s={S.h200Page} />; host memory, EFA (Elastic Fabric Adapter), EBS (Elastic Block Store) and the
             instance store&apos;s IOPS (I/O operations per second)
             <Cite s={S.ec2AcceleratedSpecs} /><Cite s={S.ec2AcceleratedSpecs} kind="derived" note={floorNote} />; PCIe
-            5.0 lane rate<Cite s={S.xeon6Brief} />; FSx for Lustre with EFA and GDS (GPUDirect Storage)
+            Gen5 host link<Cite s={S.h200Page} />; FSx for Lustre with EFA and GDS (GPUDirect Storage)
             <Cite s={S.fsxPerformance} />; per-GPU rates<Cite s={S.ec2AcceleratedSpecs} kind="derived" note={tierRateNote} />;
             HBF stack capacity<Cite s={S.ocpHbfSpec} /> and bandwidth, a roadmap part
             <Cite s={S.sandiskHbf} kind="vendor-claim" />.
@@ -133,7 +133,7 @@ export function FlashCacheTier() {
             <Cite s={S.deepseekV3Config} /><Cite s={S.deepseekV3Report} />; dense peaks<Cite s={S.h100Page} note={sparseNote} />
             <Cite s={S.h200Page} note={sparseNote} /><Cite s={S.dgxB200} note={sparseNote} />; tier rates
             <Cite s={S.ec2AcceleratedSpecs} kind="derived" note={tierRateNote} /><Cite s={S.fsxPerformance} />
-            <Cite s={S.xeon6Brief} />. Every line is our arithmetic at 100% of dense peak; at 50% MFU (Model FLOPs
+            <Cite s={S.h200Page} />. Every line is our arithmetic at 100% of dense peak; at 50% MFU (Model FLOPs
             Utilization) every line halves.
           </Box>
           <Box variant="p">
@@ -168,7 +168,7 @@ export function FlashCacheTier() {
               <Cite s={S.ec2AcceleratedSpecs} kind="derived" note={tierRateNote} /> Mooncake&apos;s authors reach the
               same order: Llama3-70B at an 8K prefix gains from reuse once KV loads at 6 GB/s per 8x A800 node, or 19
               GB/s per 8x H800.
-              <Cite s={S.mooncakeFast} kind="measured" /> For MLA models, tensor-parallel attention that makes every
+              <Cite s={S.mooncakeFast} kind="simulated" note="Mooncake's analytical model (its Equation 2), not a hardware measurement." /> For MLA models, tensor-parallel attention that makes every
               rank load the full latent multiplies flash reads by the parallel degree unless blocks are broadcast;
               KVBM&apos;s <code>DYN_KVBM_NCCL_MLA_MODE</code> covers that case.
               <Cite s={S.dynamoKvbmDocs} />
@@ -274,7 +274,7 @@ export function FlashCacheTier() {
             <strong>Turning it into a KV tier.</strong> Each serving stack has one setting that points its disk tier
             at a local path such as the instance store mount. Pick one offload backend per deployment: Dynamo&apos;s
             docs call LMCache, FlexKV and HiCache &quot;alternatives, not cache layers to stack together&quot;.
-            <Cite s={S.dynamoKvbmDocs} /> The section <em>KV-Cache Offloading &amp; LMCache</em> in the{' '}
+            <Cite s={S.dynamoOffloadOverview} /> The section <em>KV-Cache Offloading &amp; LMCache</em> in the{' '}
             <Link href="../vllm/">vLLM Inference Engine</Link> dive covers how offload works inside the engine.
           </Box>
           <ul>
@@ -293,7 +293,7 @@ export function FlashCacheTier() {
             <li>
               <strong>vLLM OffloadingConnector</strong> (HBM, CPU RAM, filesystem): a <code>secondary_tiers</code>{' '}
               entry with <code>type: fs</code>.
-              <Cite s={S.llmd} />
+              <Cite s={S.llmdTieredDoc} />
             </li>
             <li>
               <strong>LMCache</strong>: the local-disk backend, with each GPU given its own path on a dedicated drive.
@@ -359,7 +359,7 @@ export function FlashCacheTier() {
             <Cite s={S.bam} kind="measured" /> Default blocks run from 16 tokens in vLLM
             <Cite s={S.vllmCacheConfig} /> and 32 in KVBM
             <Cite s={S.dynamoKvbmCode} /> to a recommended 64 in HiCache
-            <Cite s={S.sglangHicache} /> and 256-token chunks in LMCache&apos;s example configurations.
+            <Cite s={S.sglangHicacheBp} /> and 256-token chunks in LMCache&apos;s example configurations.
             <Cite s={S.lmcache} /> With a page-first layout, KV offload is a bandwidth workload that TLC
             (triple-level cell) NVMe with GDS or a host bounce serves. Watch for layer-first layouts on flash, which
             turn the same bytes into millions of small reads.
@@ -380,7 +380,7 @@ export function FlashCacheTier() {
                 <Cite s={S.kioxiaStorageNext} /> Kioxia&apos;s GP1 claims up to 10 million random reads a second at
                 512 B and up to 50 DWPD (drive writes per day), with evaluation samples by the end of 2026 and later
                 generations targeting 100 million
-                <Cite s={S.kioxiaGp1} kind="roadmap" />; SK hynix plans AI-N P samples by the end of 2026.
+                <Cite s={S.kioxiaGp1} kind="vendor-claim" /><Cite s={S.kioxiaGp1} kind="roadmap" />; SK hynix plans AI-N P samples by the end of 2026.
                 <Cite s={S.skhynixAin} kind="roadmap" /> Ten million 512 B reads is 5.1 GB/s
                 <Cite s={S.kioxiaGp1} kind="derived" note="10 M x 512 B = 5.1 GB/s." />: these drives serve sub-4
                 KiB random reads of the kind BaM targets. No primary source located in this research measures them on
@@ -391,7 +391,7 @@ export function FlashCacheTier() {
                 Samsung&apos;s CMM-H prototype, an FPGA controller with 16 GB of DRAM over a 1 TB TLC SSD, reached 4.5
                 GB/s against 219 GB/s for local DDR5, with 99.99th-percentile reads at about 450 ns while data fits the
                 DRAM cache and about 15 µs once a 32 GB region misses to NAND.
-                <Cite s={S.cmmH} kind="measured" /> <em>DDR5, MRDIMM, LPDDR5X and CXL</em> covers CXL memory.
+                <Cite s={S.cmmH} kind="measured" /><Cite s={S.cmmH} kind="roadmap" note="An FPGA prototype, not a shipping product." /> <em>DDR5, MRDIMM, LPDDR5X and CXL</em> covers CXL memory.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -433,9 +433,11 @@ export function FlashCacheTier() {
             <Cite s={S.ec2AcceleratedSpecs} /> S3 Express One Zone gives single-digit millisecond access
             <Cite s={S.s3Express} />, which suits large chunks fetched ahead of use; KVBM&apos;s G4 tier and the{' '}
             <code>obj</code> plugin of NIXL (NVIDIA Inference Xfer Library) target S3.
-            <Cite s={S.dynamoKvbmDocs} /><Cite s={S.nixl} /> llm-d&apos;s AWS guide uses Amazon EFS (Elastic File
-            System) in Max I/O mode for its shared filesystem tier, and its connector leaves eviction to the storage
-            system.
+            <Cite s={S.dynamoKvbmDocs} /><Cite s={S.nixl} /> llm-d&apos;s AWS guide puts its shared filesystem tier
+            on Amazon EFS (Elastic File System) and recommends Max I/O mode
+            <Cite s={S.llmdAwsEfs} />, which AWS calls a previous-generation mode with higher per-operation latency,
+            recommending General Purpose for all file systems.
+            <Cite s={S.efsPerformance} /> The llm-d connector leaves eviction to the storage system.
             <Cite s={S.llmd} /> NIXL reaches storage through the same plugin architecture it uses between GPUs, and
             its libfabric plugin maps GPUs to EFA devices
             <Cite s={S.nixl} />: <em>Disaggregated Serving and Speculative Decoding</em> covers the GPU-to-GPU half,
@@ -475,7 +477,7 @@ export function FlashCacheTier() {
               NVIDIA CMX (context memory storage) puts BlueField-4 DPUs (data processing units, 800 Gb/s) in front of
               an Ethernet-attached flash tier for KV that NVIDIA labels G3.5, between node-local SSD (G3) and shared
               storage (G4), and treats KV as &quot;transient, derived, and recomputable if lost&quot;.
-              <Cite s={S.dpuPage} /><Cite s={S.cmxBlog} /> NVIDIA claims up to 5x the tokens per second of
+              <Cite s={S.dpuPage} kind="roadmap" /><Cite s={S.cmxBlog} /> NVIDIA claims up to 5x the tokens per second of
               traditional storage, with BlueField-4 due in the second half of 2026.
               <Cite s={S.cesRelease} kind="vendor-claim" /><Cite s={S.cesRelease} kind="roadmap" /> No AWS offering of
               it was located in this research.
@@ -511,7 +513,7 @@ export function FlashCacheTier() {
               <Cite s={S.lmcache} />, and keep the admission filter on. Read from the code at v1.5.1, Dynamo&apos;s
               default writes a block to disk on its second sighting, with counts decaying every 600 seconds; the docs
               say only that the filter can be disabled.
-              <Cite s={S.dynamoKvbmCode} /> The filter earns its place: more than half the blocks in the Mooncake
+              <Cite s={S.dynamoKvbmCode} /><Cite s={S.dynamoKvbmFilter} /> The filter earns its place: more than half the blocks in the Mooncake
               trace are never reused
               <Cite s={S.mooncakeArxiv} kind="measured" />, and a 1 DWPD 30.72 TB drive absorbs about 356 MB/s of
               continuous writes.

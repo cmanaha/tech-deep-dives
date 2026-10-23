@@ -85,9 +85,9 @@ export const S = {
   mooncakeArxiv: {
     title: 'Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving (arXiv:2407.00079v4)',
     publisher: 'arXiv',
-    url: 'https://arxiv.org/abs/2407.00079',
+    url: 'https://arxiv.org/abs/2407.00079v4',
     tier: 3,
-    accessed: '2026-10-17',
+    accessed: '2026-10-23',
   },
 
   // Disaggregated serving: NVIDIA Dynamo and NIXL

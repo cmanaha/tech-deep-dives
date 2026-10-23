@@ -6,7 +6,8 @@ import type { Source } from '../components/Cite';
  * with rows reused from 01-memory.md, 02-nvidia.md, 05-workloads.md and hbf.md.
  * Records shared with another section file reuse its URL, title, publisher and
  * tier. Records for the two instance store pages, the Llama 3 paper and the LMCache
- * local storage page were fetched during authoring on 2026-10-17.
+ * local storage page were fetched during authoring on 2026-10-17. Records accessed
+ * 2026-10-23 were added or re-pinned during verification.
  */
 export const S = {
   // AWS documentation (Tier 1)
@@ -66,6 +67,13 @@ export const S = {
     tier: 1,
     accessed: '2026-10-17',
   },
+  efsPerformance: {
+    title: 'Amazon EFS performance specifications (performance modes: General Purpose and Max I/O)',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/efs/latest/ug/performance.html',
+    tier: 1,
+    accessed: '2026-10-23',
+  },
 
   // Pinned code and in-repo docs (Tier 1)
   dynamoKvbmDocs: {
@@ -75,12 +83,26 @@ export const S = {
     tier: 1,
     accessed: '2026-10-17',
   },
+  dynamoOffloadOverview: {
+    title: 'ai-dynamo/dynamo KV cache offloading overview at tag v1.5.1 (choose one backend)',
+    publisher: 'NVIDIA Dynamo',
+    url: 'https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/cli/kv-cache-offloading/overview.mdx',
+    tier: 1,
+    accessed: '2026-10-23',
+  },
   dynamoKvbmCode: {
     title: 'ai-dynamo/dynamo lib/bindings/kvbm/src/block_manager.rs at tag v1.5.1 (disk offload filter, page_size)',
     publisher: 'NVIDIA Dynamo',
     url: 'https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/bindings/kvbm/src/block_manager.rs',
     tier: 1,
     accessed: '2026-10-17',
+  },
+  dynamoKvbmFilter: {
+    title: 'ai-dynamo/dynamo lib/llm/src/block_manager/offload/filter.rs at tag v1.5.1 (FrequencyFilter: count doubles per sighting, decays by 1)',
+    publisher: 'NVIDIA Dynamo',
+    url: 'https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/llm/src/block_manager/offload/filter.rs',
+    tier: 1,
+    accessed: '2026-10-23',
   },
   dynamoRouterCode: {
     title: 'ai-dynamo/dynamo lib/kv-router/src/scheduling/config.rs at tag v1.5.1 (cache hit weights)',
@@ -102,6 +124,13 @@ export const S = {
     url: 'https://github.com/sgl-project/sglang/blob/v0.5.21/docs/docs/advanced_features/hicache_design.mdx',
     tier: 1,
     accessed: '2026-10-17',
+  },
+  sglangHicacheBp: {
+    title: 'SGLang HiCache best practices at tag v0.5.21 (essential flags, --page-size 64)',
+    publisher: 'SGLang',
+    url: 'https://github.com/sgl-project/sglang/blob/v0.5.21/docs/docs/advanced_features/hicache_best_practices.mdx',
+    tier: 1,
+    accessed: '2026-10-23',
   },
   lmcache: {
     title: 'LMCache local storage backend docs at tag v0.5.6 (per-GPU disk paths, O_DIRECT, example chunk size)',
@@ -130,6 +159,20 @@ export const S = {
     url: 'https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/README.md',
     tier: 1,
     accessed: '2026-10-17',
+  },
+  llmdTieredDoc: {
+    title: 'llm-d tiered prefix cache foundations at tag v0.10.0 (TieringOffloadingSpec, secondary_tiers type: fs)',
+    publisher: 'llm-d',
+    url: 'https://github.com/llm-d/llm-d/blob/v0.10.0/docs/well-lit-paths/foundations/tiered-prefix-cache.md',
+    tier: 1,
+    accessed: '2026-10-23',
+  },
+  llmdAwsEfs: {
+    title: 'llm-d Provisioning AWS EFS for the tiered prefix cache at tag v0.10.0 (Max I/O recommendation)',
+    publisher: 'llm-d',
+    url: 'https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/manifests/backends/aws/README.md',
+    tier: 1,
+    accessed: '2026-10-23',
   },
 
   // NVIDIA and device documentation (Tier 1)
@@ -190,9 +233,9 @@ export const S = {
   mooncakeArxiv: {
     title: 'Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving (arXiv:2407.00079v4)',
     publisher: 'arXiv',
-    url: 'https://arxiv.org/abs/2407.00079',
+    url: 'https://arxiv.org/abs/2407.00079v4',
     tier: 3,
-    accessed: '2026-10-17',
+    accessed: '2026-10-23',
   },
   deepseekCaching: {
     title: 'DeepSeek API docs: Context Caching',
@@ -256,13 +299,6 @@ export const S = {
     title: 'deepseek-ai/DeepSeek-V4.1-Flash README at revision 314113f (890 bytes per token)',
     publisher: 'Hugging Face',
     url: 'https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/314113f8a7dadb388215396ba5fbee2c610a04d6/README.md',
-    tier: 1,
-    accessed: '2026-10-16',
-  },
-  xeon6Brief: {
-    title: 'Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)',
-    publisher: 'Intel',
-    url: 'https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html',
     tier: 1,
     accessed: '2026-10-16',
   },

@@ -64,3 +64,5 @@
 - Memory Hierarchy Primer, MoE, Edge Shared-Memory Silicon: NVLink figures without a direction
   label (Grace-Blackwell verification). 1.8 TB/s per GPU and 130 TB/s per NVL72 are
   bidirectional; NVLink-C2C 900 GB/s is bidirectional; 900 GB/s each way is derived.
+- Intel Xeon 6: the Xeon 6 product brief gives 32 GT/s only for CXL lanes (Flash as a Cache
+  Tier verification); check any PCIe 5.0 rate the Xeon section attributes to it.

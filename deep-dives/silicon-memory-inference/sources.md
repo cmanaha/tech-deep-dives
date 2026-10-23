@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 459.
+Total distinct sources: 465.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -37,6 +37,7 @@ Total distinct sources: 459.
 | AWS | [Amazon EC2 high performance computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/hpc.html) | 2026-10-17 | AmdEpycTurin |
 | AWS | [Amazon EC2 memory optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/mo.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive, IntelXeon6 |
 | AWS | [Amazon EC2 User Guide: Data protection in Amazon EC2 (encryption in transit)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html) | 2026-10-17 | IsolationNie |
+| AWS | [Amazon EFS performance specifications (performance modes: General Purpose and Max I/O)](https://docs.aws.amazon.com/efs/latest/ug/performance.html) | 2026-10-23 | FlashCacheTier |
 | AWS | [Amazon FSx for Lustre performance: throughput to individual client instances](https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html) | 2026-10-17 | FlashCacheTier, MainMemoryAndCxl, MemoryHierarchyPrimer |
 | AWS | [Amazon FSx for Lustre: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [Amazon FSx for Lustre: working with EFA-enabled file systems](https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html) | 2026-10-17 | FlashCacheTier |
@@ -141,7 +142,7 @@ Total distinct sources: 459.
 | Hugging Face | [Qwen/Qwen3-Next-80B-A3B-Instruct README at revision 9c7f2fb](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct/blob/9c7f2fbe84465e40164a94cc16cd30b6999b0cc7/README.md) | 2026-10-17 | MoeAndSparseActivation |
 | Hugging Face | [Qwen/Qwen3.8-2.4T-A95B README at revision 207bd68](https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B/blob/207bd685a7e3696cfaff12ded7c6a7ea0f88c996/README.md) | 2026-10-17 | MoeAndSparseActivation |
 | Intel | [Intel 64 and IA-32 Architectures Optimization Reference Manual, document 248966-050 (change document: Golden Cove 48 KB L1D, 2 MB server MLC)](https://cdrdv2-public.intel.com/821613/355308-Optimization-Reference-Manual-050-Changes-Doc.pdf) | 2026-10-16 | MemoryHierarchyPrimer |
-| Intel | [Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)](https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html) | 2026-10-16 | CapitalMarketsLens, FlashCacheTier, MainMemoryAndCxl, MemoryHierarchyPrimer |
+| Intel | [Intel Xeon 6 Product Brief (PCIe 5.0 at 32 GT/s per lane)](https://www.intel.com/content/www/us/en/products/docs/xeon-6-product-brief.html) | 2026-10-16 | CapitalMarketsLens, MainMemoryAndCxl, MemoryHierarchyPrimer |
 | Intel | [Intel Xeon 6700/6500-Series Processors with P-Cores, product brief (PDF)](https://www.intel.com/content/dam/www/central-libraries/us/en/documents/2025-02/xeon-6-granite-rapids-product-brief.pdf) | 2026-10-17 | IntelXeon6 |
 | Intel | [Intel Xeon 6787P processor specifications (ARK: memory types MRDIMM(8800MT/s), maximum memory speed 8000 MT/s, 8 channels)](https://www.intel.com/content/www/us/en/products/sku/241844/intel-xeon-6787p-processor-336m-cache-2-00-ghz/specifications.html) | 2026-10-16 | MainMemoryAndCxl |
 | Intel | [Intel Xeon 6980P processor specifications (ARK: 504 MB cache, 12 channels, DDR5-6400 or MRDIMM-8800)](https://www.intel.com/content/www/us/en/products/sku/240777/intel-xeon-6980p-processor-504m-cache-2-00-ghz/specifications.html) | 2026-10-16 | MainMemoryAndCxl, MemoryHierarchyPrimer |
@@ -168,7 +169,9 @@ Total distinct sources: 459.
 | Linux kernel | [Linux kernel Documentation/filesystems/resctrl.rst at tag v6.19 (io_alloc, io_alloc_cbm, SDCIAE)](https://github.com/torvalds/linux/blob/v6.19/Documentation/filesystems/resctrl.rst) | 2026-10-17 | AmdEpycTurin |
 | Linux kernel | [Linux kernel drivers/net/ethernet/broadcom/bnxt/bnxt.c at tag v6.19 (pcie_enable_tph and steering-tag entries)](https://github.com/torvalds/linux/blob/v6.19/drivers/net/ethernet/broadcom/bnxt/bnxt.c#L11698) | 2026-10-17 | AmdEpycTurin |
 | Linux kernel | [Linux kernel drivers/pci/tph.c at tag v6.13 (PCIe TLP Processing Hints; file absent at v6.12)](https://github.com/torvalds/linux/blob/v6.13/drivers/pci/tph.c) | 2026-10-17 | AmdEpycTurin |
+| llm-d | [llm-d Provisioning AWS EFS for the tiered prefix cache at tag v0.10.0 (Max I/O recommendation)](https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/manifests/backends/aws/README.md) | 2026-10-23 | FlashCacheTier |
 | llm-d | [llm-d README at tag v0.10.0](https://github.com/llm-d/llm-d/blob/v0.10.0/README.md) | 2026-10-17 | DisaggregatedServingAndSpeculative |
+| llm-d | [llm-d tiered prefix cache foundations at tag v0.10.0 (TieringOffloadingSpec, secondary_tiers type: fs)](https://github.com/llm-d/llm-d/blob/v0.10.0/docs/well-lit-paths/foundations/tiered-prefix-cache.md) | 2026-10-23 | FlashCacheTier |
 | llm-d | [llm-d tiered prefix cache guides and metrics docs at tag v0.10.0](https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/README.md) | 2026-10-17 | FlashCacheTier |
 | LLVM | [AArch64InstrFormats.td at tag llvmorg-23.1.3 (SIMDThreeSameVectorMatMul, lines 9259-9265)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/AArch64/AArch64InstrFormats.td#L9259-L9265) | 2026-10-16 | GravitonDeepDive |
 | LLVM | [AArch64InstrInfo.td at tag llvmorg-23.1.3 (BFMMLA under HasBF16; SMMLA, UMMLA, USMMLA under HasMatMulInt8)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/AArch64/AArch64InstrInfo.td#L1727-L1755) | 2026-10-17 | GravitonDeepDive |
@@ -248,9 +251,11 @@ Total distinct sources: 459.
 | NVIDIA | [TensorRT-LLM release v1.2.1 (2026-04-20)](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v1.2.1) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [TensorRT-LLM tensorrt_llm/llmapi/llm_args.py at tag v1.2.1 (MoE parallel sizes)](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/tensorrt_llm/llmapi/llm_args.py) | 2026-10-17 | MoeAndSparseActivation |
 | NVIDIA | [TensorRT-LLM tensorrt_llm/mapping.py at tag v1.2.1 (MoE world size check)](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/tensorrt_llm/mapping.py) | 2026-10-17 | MoeAndSparseActivation |
+| NVIDIA Dynamo | [ai-dynamo/dynamo KV cache offloading overview at tag v1.5.1 (choose one backend)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/cli/kv-cache-offloading/overview.mdx) | 2026-10-23 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/dynamo KVBM configuration and KV cache offloading docs at tag v1.5.1](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/reference/components/kvbm-configuration.mdx) | 2026-10-17 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/dynamo lib/bindings/kvbm/src/block_manager.rs at tag v1.5.1 (disk offload filter, page_size)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/bindings/kvbm/src/block_manager.rs) | 2026-10-17 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/dynamo lib/kv-router/src/scheduling/config.rs at tag v1.5.1 (cache hit weights)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/kv-router/src/scheduling/config.rs) | 2026-10-17 | FlashCacheTier |
+| NVIDIA Dynamo | [ai-dynamo/dynamo lib/llm/src/block_manager/offload/filter.rs at tag v1.5.1 (FrequencyFilter: count doubles per sighting, decays by 1)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/llm/src/block_manager/offload/filter.rs) | 2026-10-23 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/nixl libfabric plugin README at tag v1.5.0 (validated on AWS EFA, Neuron requirements)](https://github.com/ai-dynamo/nixl/blob/v1.5.0/src/plugins/libfabric/README.md) | 2026-10-17 | CommunicationAndScaleOut |
 | NVIDIA Dynamo | [ai-dynamo/nixl README at tag v1.5.0 (point-to-point transfers for inference frameworks)](https://github.com/ai-dynamo/nixl/blob/v1.5.0/README.md) | 2026-10-16 | CommunicationAndScaleOut, DisaggregatedServingAndSpeculative |
 | NVIDIA Dynamo | [ai-dynamo/nixl storage and network plugins at tag v1.5.0](https://github.com/ai-dynamo/nixl/tree/v1.5.0/src/plugins) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier |
@@ -284,6 +289,7 @@ Total distinct sources: 459.
 | SGLang | [SGLang arg_groups/fields/disagg.py at tag v0.5.21 (disaggregation_mode; transfer backend default mooncake)](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/arg_groups/fields/disagg.py#L55-L65) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | SGLang | [SGLang arg_groups/fields/spec.py at tag v0.5.21 (speculative_algorithm builtins)](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/arg_groups/fields/spec.py#L30-L33) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | SGLang | [SGLang docs/docs/advanced_features/deterministic_inference.mdx at tag v0.5.21](https://github.com/sgl-project/sglang/blob/v0.5.21/docs/docs/advanced_features/deterministic_inference.mdx) | 2026-10-17 | DeterminismAOT |
+| SGLang | [SGLang HiCache best practices at tag v0.5.21 (essential flags, --page-size 64)](https://github.com/sgl-project/sglang/blob/v0.5.21/docs/docs/advanced_features/hicache_best_practices.mdx) | 2026-10-23 | FlashCacheTier |
 | SGLang | [SGLang HiCache design and best practices at tag v0.5.21](https://github.com/sgl-project/sglang/blob/v0.5.21/docs/docs/advanced_features/hicache_design.mdx) | 2026-10-17 | FlashCacheTier |
 | SGLang | [SGLang python/sglang/srt/arg_groups/fields/exec_.py at tag v0.5.21 (--moe-a2a-backend choices)](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/arg_groups/fields/exec_.py) | 2026-10-16 | CommunicationAndScaleOut, MoeAndSparseActivation |
 | SGLang | [SGLang srt/environ.py at tag v0.5.21 (SGLANG_DISAGGREGATION_NIXL_BACKEND default "UCX")](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/environ.py#L711) | 2026-10-17 | DisaggregatedServingAndSpeculative |
@@ -468,7 +474,7 @@ Total distinct sources: 459.
 | arXiv | [HBFSim: Fast and Faithful Simulation of High-Bandwidth Flash Under Real GPU Execution (Y. Hu et al.; arXiv:2609.09800)](https://arxiv.org/abs/2609.09800) | 2026-10-17 | HighBandwidthFlash, MainMemoryAndCxl, MemoryHierarchyPrimer |
 | arXiv | [Huge and Savine, Differential Machine Learning (arXiv:2005.02347v4, 30 September 2020)](https://arxiv.org/abs/2005.02347v4) | 2026-10-16 | CapitalMarketsLens |
 | arXiv | [Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads (arXiv:2401.10774)](https://arxiv.org/abs/2401.10774) | 2026-10-17 | DisaggregatedServingAndSpeculative |
-| arXiv | [Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving (arXiv:2407.00079v4)](https://arxiv.org/abs/2407.00079) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier |
+| arXiv | [Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving (arXiv:2407.00079v4)](https://arxiv.org/abs/2407.00079v4) | 2026-10-23 | DisaggregatedServingAndSpeculative, FlashCacheTier |
 | arXiv | [Performance Characterizations and Usage Guidelines of Samsung CXL Memory Module Hybrid Prototype (Zeng et al., arXiv:2503.22017)](https://arxiv.org/abs/2503.22017) | 2026-10-17 | FlashCacheTier |
 | arXiv | [Pond: CXL-Based Memory Pooling Systems for Cloud Platforms (arXiv:2203.00241), Figure 4](https://arxiv.org/abs/2203.00241) | 2026-10-17 | CapitalMarketsLens, HeterogeneityFact, MainMemoryAndCxl, MemoryHierarchyPrimer |
 | arXiv | [Potential Applications of HBF in LLM Serving Systems (Y. Yin et al.; arXiv:2608.13127v2)](https://arxiv.org/abs/2608.13127) | 2026-10-17 | HighBandwidthFlash |
