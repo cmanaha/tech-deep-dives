@@ -13,7 +13,7 @@ replacement text. Leverage candidates are limited to blocks the refresh diff
 touched and may not assert anything absent from the section. Enhancements are
 in each section's BACKLOG.
 
-STATUS: IN PROGRESS
+STATUS: see last line
 
 ---
 
@@ -218,7 +218,7 @@ Refresh diff (+62 words, the largest growth in this batch): L398-419 (Karpenter 
 
 - The model is sound and early: EFA costs nothing and constrains a lot (h1, L233-240); the Three Questions (L253-295) end the conversation for single-node or compute-bound work before any configuration, and "EFA pays off in proportion to the share of wall clock a job spends in collectives" (L271-272) is predictive. The Spot container's co-location model (L424, L435-442) explains why interruptions arrive together.
 - Practical leverage is the highest in the batch: Karpenter fields and disruption settings (L372-397), the HyperPod ConfigMap change (L412-416), Spot-ineligible families by name (L460-465), Capacity Block windows, limits and end-of-block deadline (L507-519), up-front billing with no Savings Plan discount (L532-534), and a close on "Build the EFA stack into the image, then confirm the provider line on the first run" (L634-635).
-- Held at 7 by economy and by rule defects. The one-zone, placement-group-recommended-not-required pair is restated ten times (L236-237, L242-248, L284-288, L182, L206, L317-320, L372-375, L435-436, L575-577, L618-627). Three hedges are wider than the research behind them (L487, L600-601, L623-624). The refreshed Karpenter Alert puts good news (labels arrive with no work) under a warning icon. And Stage 2 says NVLink carries every collective on a Trainium instance (accuracy flag).
+- Held at 7 by economy and by rule defects. The one-zone, placement-group-recommended-not-required pair is restated ten times (L236-237, L242-248, L284-288, L182, L206, L317-320, L372-375, L435-436, L575-577, L618-627). Three hedges are wider than the research behind them (L487, L600-601, L623-624). The refreshed Karpenter Alert puts good news (labels arrive with no work) under a warning icon. Stage 2 says NVLink carries every collective on a Trainium instance, and the SMDDP Alert still calls v2.5.0 the latest release after the SageMaker section's refresh moved it to April 2025 (accuracy flags).
 
 ### Leverage axes (BEFORE)
 
@@ -227,7 +227,7 @@ Refresh diff (+62 words, the largest growth in this batch): L398-419 (Karpenter 
 | 4 | 5 | 4 | 4 | 3 |
 
 - Rigor 4: the refreshed blocks are cited to the right pages (FC7 DG-01 to DG-22 hold). Outside them are uncited heuristics: "Most inference and fine-tuning workloads are single-node" (L265), "Short training runs (<2 hours)" (L457), "SRD handles asymmetric traffic patterns" (L218), plus corrections 1-3 (hedge scope). One citation placement is loose: "Up to 64 instances per block" (L508) sits under capacityBlocksUg, while FC7 DG-08 locates the 64 figure on capacity-blocks-how.html (capacityBlocks).
-- Accuracy 4: see the accuracy flag. Everything diff-touched holds.
+- Accuracy 4: see the two accuracy flags. Everything diff-touched holds.
 - Economy 3: the AZ/placement-group repetition above, two pointer paragraphs that only route elsewhere (L349-353, L409), and page-referential asides ("so this page does not name the shared hardware", L449; table footer L317-324 on sourcing).
 
 ### Corrections
@@ -236,8 +236,8 @@ Refresh diff (+62 words, the largest growth in this batch): L398-419 (Karpenter 
    Replace "No AWS source states that training jobs use EC2 cluster placement groups" with "No AWS source located during this research states that training jobs use EC2 cluster placement groups".
 2. **L485-487, universal claim from a local search (rule 14).**
    Replace "Spot rates are not published in the EC2 Price List bulk API or in any credential-free first-party AWS endpoint, so" with "Spot rates do not appear in the EC2 Price List bulk API, or in any credential-free first-party AWS endpoint located during this research, so". (Pricing.tsx:307-308 carries the same unscoped phrase; outside this batch.)
-3. **L600-602, universal claim from a local search plus a negation definition** ("frozen rather than deprecated: AWS has not announced a deprecation"; a release-notes page cannot evidence the absence of an announcement elsewhere).
-   Replace "The library is frozen rather than deprecated: AWS has not announced a deprecation, and the latest release is v2.5.0, dated October 17, 2024" with "The library is frozen: the latest release is v2.5.0, dated October 17, 2024, and no deprecation announcement was located during this research".
+3. **L600-602, universal claim from a local search plus a negation definition** ("frozen rather than deprecated: AWS has not announced a deprecation"; a release-notes page cannot evidence the absence of an announcement elsewhere). This sentence also carries the cross-section conflict in the accuracy flag below, so the replacement resolves both; it needs the `smpRelease` DocRef that SageMaker.tsx already defines.
+   Replace "The library is frozen rather than deprecated: AWS has not announced a deprecation, and the latest release is v2.5.0, dated October 17, 2024 [ddpRelease]" with "The library is frozen: its own release notes stop at v2.5.0, dated October 17, 2024 [ddpRelease], the model parallelism library's release notes record SMDDP 2.6.0 inside SMP v2.8.0, dated April 1, 2025 [smpRelease], and no deprecation announcement was located during this research". The Alert header at L593 ("and it is frozen at v2.5.0") becomes "and it has been frozen since April 2025", matching SageMaker.tsx:1098.
 4. **L552-554, definition by absence** ("There is no p5.xlarge"). FC7 DG-20 confirms the P5 sizes listed are p5.4xlarge and p5.48xlarge only.
    Replace "One g5.xlarge, or p5.4xlarge if you want a single H100. There is no p5.xlarge [ac]." with "One g5.xlarge, or p5.4xlarge, the smallest P5 size, if you want a single H100 [ac]."
 5. **L606, page-history residue** ("The underlying number holds inside that scope." answers a challenge the reader never saw).
@@ -245,8 +245,9 @@ Refresh diff (+62 words, the largest growth in this batch): L398-419 (Karpenter 
 6. **L361, h2 description restates the topic** ("What Karpenter provisions for EFA, and where network-node ranking comes from instead").
    Replace with: `description="The four Karpenter settings an EFA fleet needs, and why the network-node labels need none of them"` (traces to the four bullets L372-397 and "whatever provisioned it", L407).
 
-### Accuracy flag (for the fact-check track; not a written-rule correction)
+### Accuracy flags (for the fact-check track; not written-rule corrections)
 
+- **L593 and L600-603, SMDDP "frozen at v2.5.0" / "the latest release is v2.5.0, dated October 17, 2024" contradicts the refreshed SageMaker section.** SageMaker.tsx:1098 and :1118-1132 (changed in this refresh, cited to the SMP release notes as a doc conflict) record SMDDP 2.6.0 inside SMP v2.8.0, dated April 1, 2025, and title the library "frozen since April 2025". DecisionGuide was not updated with it. Correction 3 carries the aligned text.
 - **L563, with L175-176 and L194: "NVLink carries every collective" applied to trn1.32xlarge.** [SPECULATIVE: scorer's knowledge, unfetched] Trainium instances connect their chips with NeuronLink, not NVLink; the dive itself names NeuronLink for Trn2 (AIMLTraining.tsx:274). Proposed after a fact check: "NVLink on p5.48xlarge, or NeuronLink on trn1.32xlarge, carries every collective", with a Tier 1 citation for Trn1's interconnect. The table's "Single node: NVLink carries all GPU communication" (L175) needs the same treatment.
 
 ### Leverage candidates (blocks changed in this refresh)
@@ -264,3 +265,223 @@ Refresh diff (+62 words, the largest growth in this batch): L398-419 (Karpenter 
 - A rendered flow for the Three Questions (multi-node, communication-bound, one zone) ending on EFA or no EFA.
 - A citation or softer wording for the uncited heuristics (L218, L265, L457).
 
+---
+
+## 6. EKSIntegration.tsx (EFA on EKS: the AMI, the device layer and the pod contract)
+
+Refresh diff (-76 words): pins and versions re-read (AMI v20261019, efa 3.3.0, chart v0.5.33, dranet v1.5.0, Bottlerocket 1.49.0 tarball); eksctl version-floor line and the "Version floors that bite" Alert deleted; the "8 times 4 is our inference" Alert replaced by a code-derived "Eight PCIe roots" Alert (L1239-1246); NVIDIA driver-major variables paragraph added (L846-854); placement-group Alert header made positive and its checklist sentence deleted (L882-898); eksctl efa-only reasoning rewritten (L906-911); Karpenter DRA guidance added (L947-952, L1066-1073, L1091-1099); MOFED section rebuilt around the v0.19.0 to v0.19.2 window (L1400-1439); ai-on-eks policy switch added (L1478-1481); archive-date aside removed (L1491-1494); huge pages Bottlerocket sentence re-sourced (L1383-1384).
+
+### Gate 3 score: 8 / 10
+
+- The opener (L657-663) is one of the strongest models in the dive: the node image stops at the kernel driver and rdma-core, the container image carries the fabric stack, and "everything below is a consequence". The layer-cake diagram carries it visually, and "you count against an integer and you match against attributes" (L1061-1062) does the same for device plugin against DRA.
+- Practical leverage is at the ceiling: the shortest-path Alert (L671-695), the driver-major variables with the silently dropped name (L846-854), the "not additive" bandwidth arithmetic (L1002-1003), the separate-NodePools recipe (L1096-1098), `mofedEnabled=false` on every version (h2 description L1400, L1438-1439), and a closing triage list ordered by the split (L1562-1583), which is the reader's next action.
+- Doc-versus-code conflicts are framed at the moment of trust (Bottlerocket build, `--minimal` exclusions, the MOFED version bound) and pinned to tags or SHAs.
+- Held at 8 by hedge scopes widened in five places in the pod-contract material, two attribution narrations in refreshed text, and economy: evidence chains sit in the main flow (L746-754, L1421-1427) where the reader needs only their conclusion.
+
+### Leverage axes (BEFORE)
+
+| Mental model | Practical leverage | Rigor | Accuracy | Economy |
+|---|---|---|---|---|
+| 5 | 5 | 4 | 5 | 3 |
+
+- Rigor 4: corrections 3-7 (unscoped absence claims); L790-792 uses an argument from design as proof ("which it would have no reason to do if --minimal had not installed it"), which the leverage standard's check 3 classes as inference rather than evidence.
+- Accuracy 5: FC6 PARTIAL rows for this file (E-03, E-06, E-07) are applied at HEAD; nothing found wrong.
+- Economy 3: about 1,600 lines; provenance chains in the main flow; the placement-group recommendation restated in full again (L891-895), as in the Decision Guide.
+
+### Corrections
+
+1. **L891-895, attribution narration in a refreshed Alert** ("and it writes the status verbatim:" fails the delete-the-attribution test; "AWS recommends" stays, case 3).
+   Replace the paragraph with: "AWS recommends a cluster placement group to satisfy the zone rule, without requiring one, because it launches the instances into a low-latency group in a single Availability Zone [efaStart]."
+2. **L948-949, attribution narration** ("Karpenter documents the combination as unsupported", FC6 E-06 wording; "documents" carries only provenance).
+   Replace with: "With the EFA DRA driver and dynamic provisioning, leave networkInterfaces unset: Karpenter does not support the combination, and its behaviour is undefined [karpenterDraUnset]."
+3. **L607, contract table, IPC_LOCK row: universal absence claims and an unlabelled inference (rule 14).**
+   Replace the detail with: "Present in several AWS sample manifests. No AWS documentation located during this research states it as a requirement. Memory pinning for RDMA registration is the likely motive, on our reading, and no AWS statement of it was located."
+4. **L613, contract table, NCCL_TOPO_FILE row: universal absence claim.**
+   Replace "No AWS documentation and no AWS-authored EFA manifest sets this variable." with "No AWS documentation or AWS-authored EFA manifest located during this research sets this variable."
+5. **L1269, h2 description: universal absence claim.**
+   Replace "and two that no AWS documentation explains." with "and two whose AWS rationale this research did not locate."
+6. **L1315-1316, universal absence claim.** Replace "has no source behind it." with "has no source behind it that this research located."
+7. **L1328-1330, universal absence claims.**
+   Replace "No AWS source states a reason for those three. The plausible one is rendezvous and launcher addressing rather than the EFA data path, but nobody has written that down, so treat it as our reading." with "No AWS source located during this research states a reason for those three. The plausible one is rendezvous and launcher addressing rather than the EFA data path; treat that as our reading."
+8. **L873, h2 description summarises the diagram instead of the payoff** ("Four mechanisms, four sets of limitations, one node-level result.").
+   Replace with: `description="Pick the provisioning path by the limits you can accept: all four end in the same device nodes."` (traces to the diagram title, L490-492).
+
+### Leverage candidates (blocks changed in this refresh)
+
+1. **Demote, L750-754 (ENABLE_EFA gate, template default, five-variant release check)** into the existing "Inspecting and rebuilding the AMI yourself" disclosure. The reader needs what lands on the node; the gate and override chain prove it is always on. Main-flow text that remains: "The AL2023 EKS AMI build runs the standard AWS EFA installer with one flag, <code>sudo ./efa_installer.sh --minimal -y</code>, and the AMI component list names the result EFA minimal, the kernel module and rdma-core [installEfa]. Release v20261019 ships efa 3.3.0-1.amzn2023 on all five AL2023 variants, standard ones included [amiRelease]."
+2. **Re-express, L815-820 (three Bottlerocket version numbers in one clause).** A reader cannot tell which driver Bottlerocket runs. Proposed: "First, the driver versions differ. AL2023 pulls the latest installer at build time and lands EFA driver 3.3.0 [installEfaLatest][amiRelease]. Bottlerocket pins installer 1.49.0, whose driver is 3.1.0, and compiles that source, though its RPM Version field reads 3.0.0 [brKmod][efaChangelog]." ("Compiles that source" restates L809-811.)
+3. **Demote, L1421-1427 (the Value-field walk across v0.18.2, v0.19.0, v0.19.2, v0.19.3, v0.20.1)** into an ExpandableSection titled "Which releases default to true, in the code". The action (set false on every version) and the doc-versus-code bound already sit in the h2 description and L1438-1439; the five pins are the evidence. Keep in the main flow: "The code bounds that to three releases, v0.19.0 to v0.19.2 [nvdpNew][nvdpLastTrue]; v0.19.3 reverted the default [nvdpRevert]." and the CDI glob sentences (L1428-1431), which L1434 depends on.
+4. **Re-express, L1239-1246 (Alert to one sentence).** The header already states the model; the body is provenance. Proposed, appended to L1236: "A p5.48xlarge has eight such roots, one GPU and four EFA devices on each, which is the documented total of 32 [eksDevice][karpenterEfaMeta][karpenterGpuMeta]."
+5. **Re-express, L906-911.** "A launch template is where you go" and then three options in the next sentence; "remains" reads as page history. Proposed: "eksctl is the shortest path, and its efaEnabled setting configures every interface as type efa, so it cannot create efa-only interfaces. For those, use a launch template, a NodeClass or an EC2NodeClass [eksDevice]. eksctl also accepts an explicit placement group name alongside efaEnabled [eksctlDocs]."
+
+### Backlog
+
+- Name the Karpenter DRA alpha feature gates and the Helm value that enables them (the cited options.go L78 and values.yaml L216-L219 carry them), so "gated, default off" becomes typeable.
+- Bottlerocket huge pages: the refreshed sentence (L1383-1384) says support exists from 1.64.0 but not what a Bottlerocket node sets to provide hugepages-2Mi; needs a source.
+- A rendered PCIe-root diagram (eight roots, one GPU and four EFA each) for the DRA alignment block.
+
+---
+
+## 7. SageMaker.tsx (EFA on SageMaker AI and HyperPod)
+
+Refresh diff (+19 words): SDK allowlist re-read at v3.27.0 with ml.p5 and ml.p5e now on both lists and a "pin v3.24.0 or later" rule (L803-834, table L638-651, diagram gate 3 L442, Step 1 L1668-1671); the "two AWS repositories disagree on P5" disclosure deleted; DLC base and PyTorch image now "latest EFA installer at build time" with the efa_installed_packages check (L940-958); `--disable-ngc` rewritten around installer 1.50.0 and 1.51.0 behaviour (L982-994); log-signature count corrected to three plus two (L1034, L1053-1064); SMDDP retitled "frozen since April 2025" with a doc conflict on SMP v2.8.0 (L1098-1132); Slurm AMI line re-dated to September 2026 with "the variant you pick decides the EFA version" (L1261-1267); InstancePreferences added to ResourceConfig (L754-755); SPANK, SSM, NGC, FSDP and DPD expanded.
+
+### Gate 3 score: 8 / 10
+
+- The intro (L719-726) and the three-contracts diagram turn "SageMaker handles EFA" into three answers with named owners per stage, and the four-gates diagram carries the predictive model for training jobs: gate 3 fails quietly, so gate 4 (the log) is the only evidence (L519).
+- Practical leverage is high and the refresh raised it: pin SDK v3.24.0 or later for P5 and P5e (L827-828), read /opt/amazon/efa_installed_packages because the changelog lags (L942-949), `--disable-ngc` with its version behaviour (L982-994), the three-plus-two grep signatures and the GDRDMA reading (L1053-1064), the 3 GB/s CI floor (L1067-1074), the EFA exporter switched on before an incident (L1399-1404), and a five-step close (L1661-1705) that ends on the reader's next action.
+- Hedges are handled well where the research is thin: "Absence of documentation is not the same as documented absence" (L1551) and "undocumented rather than unsupported" (L1569) keep scope exactly.
+- Held at 8 by attribution narration in two places, two universal "only" claims that the section's own hedges scope more narrowly, a Step 4 sentence that asserts what an earlier Alert calls an open question, one unexpanded acronym in a diagram, and two internal inconsistencies (accuracy flags).
+
+### Leverage axes (BEFORE)
+
+| Mental model | Practical leverage | Rigor | Accuracy | Economy |
+|---|---|---|---|---|
+| 5 | 5 | 4 | 4 | 3 |
+
+- Rigor 4: corrections 1-5; "which are roughly 2023 pins" (L791) dates NCCL 2.7.8, EFA installer 1.30.0 and aws-ofi-nccl 1.1.1 without a source, and NCCL 2.7.8 is older than that [SPECULATIVE: scorer's knowledge, unfetched].
+- Accuracy 4: two flags below; FC6's PARTIAL and FAILS rows for this file (S-04, S-11, S-20, S-23, S-24) are applied at HEAD.
+- Economy 3: about 1,700 lines; long version inventories in the main flow (EKS AMI line L1251-1255, Slurm AMI line), and a release-notes conflict in the SMDDP body that supports a conclusion the h2 already states.
+
+### Corrections
+
+1. **L1043, attribution narration** ("AWS documents the check [trainEfa]." is provenance only).
+   Delete the sentence and move the citation: "Expected output includes provider efa, domain efa_0-rdm, endpoint type FI_EP_RDM and protocol FI_PROTO_EFA [trainEfa]."
+2. **L1105-1112, attribution narration** ("The support page lists ..., adds that ..., and states that ...", "The FAQ says ..."; agreement between sources is not one of the load-bearing cases).
+   Replace from "The support page lists" to "the SDK source agrees [smddpTypes]." with: "It supports ml.p3dn.24xlarge, ml.p4d.24xlarge and ml.p4de.24xlarge, support for optimizing collective communication on P3 has been discontinued, and the optimized AllGather collective is only available for P4 instances [ddpSupport]. In practice it runs only on P4d and P4de, with NVIDIA A100 GPUs and EFA [ddpFaq][smddpTypes]."
+3. **L1447, h2 title states a universal the section scopes elsewhere** (rule 14; the description and the DPD diagram title both say "documented").
+   Replace "HyperPod inference: the only place EFA carries inference traffic" with "HyperPod inference: the one documented place EFA carries inference traffic".
+4. **L1640-1641, same universal.** Replace "HyperPod on the EKS orchestrator is the only SageMaker surface where that exists" with "HyperPod on the EKS orchestrator is the only SageMaker surface where that is documented".
+5. **L1698-1699, hedge widened against the section's own Alert** (L860-862 calls TCP fallback on off-allowlist types "an open question"; Step 4 asserts the cause).
+   Replace "That is the failure the allowlist causes." with "That is the failure to look for when the instance type is off the allowlist."
+6. **L425 (four-gates diagram, gate 2), acronym not expanded at first use.** "DLC" is first read here; the prose spells out Deep Learning Container only later.
+   Replace lines 2-3 of gate 2 with 'A Deep Learning Container (DLC) installs EFA with --skip-kmod,' and 'so the host owns the kernel module. Its NCCL must match PyTorch.' (64 characters, about the existing longest line in that box; confirm with `gate-content-overflow`.)
+7. **L876, acronym not expanded** (first reader-visible "LLM" in the dive). Replace "multi-node LLM training performance" with "multi-node LLM (large language model) training performance". Low priority if the team treats LLM as a common acronym.
+
+### Accuracy flags (for the fact-check track; not written-rule corrections)
+
+- **L519 diagram caption, "Gates 1 and 2 fail loudly", against gate 2's own failure case** ("A bring-your-own container with no libfabric", L429). The dive says elsewhere that a missing aws-ofi-nccl makes NCCL fall back to sockets silently (EKSIntegration.tsx:589 and :1578-1580). [SPECULATIVE: scorer's reading] A container with no libfabric cannot load aws-ofi-nccl, so that half of gate 2 fails quietly. Proposed after a check: "Gate 1 fails loudly. Gates 2 and 3 can fail quietly. That is why gate 4 is the only one worth trusting."
+- **L1279, ExpandableSection header "Three AWS pages disagree about the HyperPod base operating system"**, while the body (L1284-1292) names two pages, the AMI overview and the Slurm release notes. Either the third page was lost or the header overcounts; the headerDescription ("worth taking from the third") has the same problem.
+
+### Leverage candidates (blocks changed in this refresh)
+
+1. **Re-express, L982-994 (`--disable-ngc`, the longest refreshed block).** The action is in the bold lead, then about 110 words of version behaviour, then the DLC practice. Ordering the version split before the practice lets the action land last. Proposed body: "The installer treats any container holding /opt/nvidia/nvidia_entrypoint.sh as NGC, and the nvidia/cuda amzn2023 base images carry that file. What follows depends on the installer version. 1.51.0 installs libnccl-ofi-ngc on an Ubuntu 22.04, 24.04 or 26.04 container and otherwise prints "This container is not Ubuntu" and does the standard install [installer151]; 1.50.0 has no such fallback and ships no NGC plugin package for Amazon Linux, so an AL2023 NGC base gets EFA with no NCCL plugin [installer150]. Passing --disable-ngc, as the DLC script does for latest and for 1.48.0 and later, forces the standard install on every version [dlcNgc]."
+2. **Re-express, L823-828 (allowlist versions).** "Read at SDK release v3.27.0" is a provenance-only sentence and the reader's rule ("pin v3.24.0 or later") sits mid-paragraph. Proposed opening: "Pin SageMaker Python SDK v3.24.0 or later for P5 and P5e: earlier releases leave ml.p5e.48xlarge off both lists and ml.p5.48xlarge off the second [allowlistOld]. The lists above are as read at v3.27.0 [allowlist]." The torchrun and mpirun sentences follow unchanged.
+3. **Re-express, L941-949 (base image).** Lead the check with its reason and drop the closing restatement. Proposed: "The CUDA 13.2 base pins NCCL 2.29.7-1 and installs whichever EFA installer is latest at build time [dlcBase], so read /opt/amazon/efa_installed_packages, the file the build log quotes, to see which version landed [dlcInstallLog]. The EFA installer changelog maps released versions to their libfabric, aws-ofi-nccl and driver versions, and can lag a new installer: 1.51.0 was not listed on 2026-10-23 [efaChangelog]." ("The installed-packages file is then the record to trust" is removed; the first sentence already says it.)
+4. **Demote, L1117-1127 (SMDDP release-notes conflict)** into the existing "Why AWS built it" disclosure, keeping the conclusion in the body: "TensorFlow support has ended ... [ddpSupport]. No AWS deprecation notice was found, so treat SMDDP as frozen: documented, scoped to those three instance types, and unchanged since April 2025." The reader's decision (do not build on SMDDP for P5 and later) is already in the h2 and the first paragraph; the conflict is the evidence for "April 2025" and stays intact behind the disclosure.
+5. **Re-express, L1433-1434** ("Note the phrasing: within an Availability Zone, which is the EFA boundary."). "Note the phrasing" points at the source's wording rather than at the fact. Proposed: "That distribution stays within an Availability Zone, the EFA boundary."
+
+### Backlog
+
+- Restore or remove the third page in the base-OS disclosure (accuracy flag 2).
+- A source for the date of the documented Dockerfile's pins, or drop "roughly 2023".
+- Cross-check NCCL_PROTO=simple as "mandatory" (L882-883) against the NCCL over EFA section's current guidance before the next refresh.
+
+---
+
+## 8. StorageDataPaths.tsx (Storage Data Paths: FSx for Lustre, S3 and the CRT)
+
+Refresh diff (dated-claim fixes only): P6-B300 added to every GPUDirect Storage client list (diagram L220-221, create-time diagram L382, scope table L652, h3 badge "five instance types" L854, L860, L865-867); the Latency row's EFA cell rewritten from "Single-digit microsecond class" to the EC2 User Guide's silence, the 2019 launch figure, `fi_pingpong -p efa -e rdm` and RDM reordering (L696), with three new footer citations (L1312-1317); "At the pinned commit," added to the binding-layer Alert (L1200); the NIC expansion dropped at L1056 (expanded earlier in nav order); fsxEfa, fsxClients and efa re-read 2026-10-23.
+
+### Gate 3 score: 8 / 10
+
+- The decision and the number arrive before any mechanism: the "Start here" Alert (L762-772) names the one file system configuration that reaches the fabric and says it is create-time only, and 7 times and 12 times (L777-779) are landed again at L805 against the four-path diagram ("Two rows in that diagram are the same AWS service").
+- Practical leverage is high: the security-group-by-ID Alert gives a throughput signal to check (L895-911), the throughput-target section turns a code reading into a counter-intuitive rule (L1114-1121) and a 503 warning tied to prefix layout (L1124-1158), and the close ends on the reader's action twice ("Two decisions to get right" L1320-1340, then "The order to answer these in" L1344-1354).
+- Rigor is visible: code claims are pinned, the blog-versus-code conflict is scoped to the trees read (L1227-1233), and the S3/DRA corner case is labelled "our reading" (L953-955).
+- Held at 8 by three acronyms read before their expansion (CRT in the h1, GDS, LNet), three h2 descriptions that tease or restate, two attribution narrations, an unlabelled inference in the security-group Alert, and prose that names a whitepaper the citation no longer points to.
+
+### Leverage axes (BEFORE)
+
+| Mental model | Practical leverage | Rigor | Accuracy | Economy |
+|---|---|---|---|---|
+| 5 | 5 | 4 | 4 | 3 |
+
+- Mental model 5: four paths with four ceilings, the CPU ceiling that separates an object path from a fabric path (L1026-1040), and the target as a divisor that shrinks range size (L1086-1121) each let the reader predict an unseen system.
+- Rigor 4: correction 10 and accuracy flag 1 are absence or behaviour claims stated wider than the evidence, against careful labelling elsewhere in the same section.
+- Accuracy 4: two flags below. FC8 S-4 and S-5 (latency cell) are applied at HEAD; S-9 (instance table never consulted internally) holds at the pinned commit.
+- Economy 3: about 1,360 lines. The boundary container (L1261-1284) and "They are quoted here because ..." (L1021-1023) talk about the page rather than the subject, and the binding-layer scope paragraph (L1227-1233) restates the table header's scope.
+
+### Corrections
+
+1. **L757, acronym used before its expansion.** "CRT" is read in the h1 (and the nav label, App.tsx:52, and the diagram lane L241) before "AWS Common Runtime (CRT)" at L986.
+   Replace the h1 with "Storage Data Paths: FSx for Lustre, S3 and the Common Runtime (CRT)". Optional companion in App.tsx:52: "Storage Data Paths: FSx, S3 and the Common Runtime".
+2. **L225 (diagram, rendered at L802), acronym never expanded.** "GDS" is first read in the diagram's "1,200 Gbps with GDS". No line in the section writes "GPUDirect Storage (GDS)".
+   At L777, the first prose use, replace "1,200 Gbps over EFA with GPUDirect Storage" with "1,200 Gbps over EFA with GPUDirect Storage (GDS)".
+3. **L219 and L232 (diagram, rendered at L802), acronym before its gloss.** "LNet" is read in the diagram. The gloss "LNet, the Lustre network layer" waits until L824-825.
+   Replace L799-800 with "A GPU instance in a cluster has four ways to move bytes, and they differ in what the bytes traverse before they leave the host. Two of them reach the fabric. In the two FSx for Lustre rows, LNet is the Lustre network layer."
+   Then shorten L824-825 to "LNet then runs over the EFA device."
+4. **L858-860, attribution narration** ("AWS describes it as enabling ..." carries provenance only, and this is a mechanism description rather than a vendor performance figure).
+   Replace "GPUDirect Storage builds on EFA, so an EFA-enabled Persistent 2 file system is the prerequisite. AWS describes it as enabling direct data transfer between the file system and the GPU memory, bypassing the CPU, and it names the client instances exhaustively: P5, P5e, P5en, P6-B200 or P6-B300 [fsxEfa]." with "GPUDirect Storage builds on EFA, so an EFA-enabled Persistent 2 file system is the prerequisite. It transfers data directly between the file system and GPU memory, bypassing the CPU, and the supported clients are a closed list: P5, P5e, P5en, P6-B200 or P6-B300 [fsxEfa]."
+5. **L963-966, attribution narration** ("AWS also gives a threshold for when to bother:" fails the delete test; "AWS recommends" stays, because the verb carries strength).
+   Replace with "If you are creating a file system with over 10 GBps of throughput capacity, AWS recommends enabling EFA to optimize throughput per client instance [fsxPerf]. Below that, the ENA path is the documented answer."
+6. **L1214, negation inside a definition** ("a per-instance-type constant, not discovery"). The next sentence already says what it does not read.
+   Replace "That lookup is a per-instance-type constant, not discovery. It reads no interfaces," with "That lookup is a per-instance-type constant. It reads no interfaces,".
+7. **L814, h2 description restates the topic** and carries an unsourced claim. "show up as support cases" is [DERIVED] in research 07 §4.1.
+   Replace with "The create-time choices and security group rules that decide whether a client gets 700 Gbps from the file system or stays near the 100 Gbps ENA figure." (traces to L777 and L908-911).
+8. **L1080, h2 description teases instead of stating the result** ("One knob, four effects, and a relationship that runs the opposite way to intuition.").
+   Replace with "Raising the target opens more connections and shrinks every range request, until the 8 MiB floor binds past roughly 400 Gbps." (traces to L1114-1117).
+9. **L1266, h2 description restates the topic** ("What this section leaves to a storage dive, and which half of it you can check for yourself.").
+   Replace with "FSx for Lustre claims here come from documentation and S3 client claims from code at pinned commits you can open, and the badge on each claim says which." (traces to L1278-1282).
+10. **L1117, absence-in-the-world claim from a source read (rule 14).**
+    Replace "Nothing warns about this, and the memory commitment is real:" with "No warning for this was located in the client source at the pinned commits, and the memory commitment is real:".
+
+### Accuracy flags (for the fact-check track; not written-rule corrections)
+
+- **L904-909, inference presented as behaviour.** "Get it wrong and the file system still works: created with EfaEnabled true, mounted successfully, running at ENA speed, with nothing in the console indicating anything is wrong" has no citation. Research 07 §4.1 marks the fallback reading [DERIVED]. The cited security-group page says only that CIDR rules "do not satisfy EFA requirements".
+  Proposed, using the section's own label from L953-955: "Our reading of this rule, across the security group and performance pages, is that a file system created with EfaEnabled true can still mount and run at ENA speed when the rules are CIDR-based, so a rule that looks maximally permissive is the one to suspect." The throughput-signal sentence that follows stays as written.
+- **L1238-1254, the named source does not match the citation.** The prose says "the AWS performance whitepaper" (headerDescription L1238, L1242, L1250, L1252, L1254). The `s3Paper` DocRef was re-pinned on 2026-08-02 to the S3 User Guide page "Performance design patterns, horizontal scaling and request parallelization", because the whitepaper path redirects (code comment L133-136).
+  Replace "whitepaper" with "S3 User Guide" in those five places, for example "The S3 User Guide suggests making concurrent requests ...".
+  Not re-fetched for this score: whether the 85 to 90 MB/s and 15-request figures appear verbatim on the User Guide page.
+
+### Leverage candidates (blocks changed in this refresh)
+
+1. **Reorder, L696 (Latency row, EFA cell).** Put the ordering fact first so the `-e rdm` flag follows the sentence that explains why the RDM endpoint matters, and the reader's action lands last.
+   Proposed: "SRD delivers out of order, and the libfabric RDM endpoint restores message order in software. The EC2 User Guide gives no per-message latency for EFA, and the one AWS figure located (15.5 microseconds of one-way MPI latency) comes from the 2019 launch, so baseline it with fi_pingpong -p efa -e rdm." Both hedges keep their scope.
+2. **Re-express, L864-867 (GDS client list).** "The list being closed is what matters when you read ..." spends a clause on why the paragraph exists.
+   Proposed: "The instance matrix elsewhere in this dive lists many more EFA-capable types than these five, so check whether the clients you already plan to buy are among the five."
+
+Considered and rejected: deleting "At the pinned commit," at L1200 (FC8 ST-2). Deletion would widen the claim to every release. FC8 S-9 records that aws-c-s3 v1.3.1 does read the platform table, for default memory sizing below 10 Gbps. The pass may not add FC8's replacement sentence, because that text is not in the section. It goes to the backlog.
+
+### Backlog
+
+- Say what changed after the pinned commit at L1200. FC8 ST-2 drafted the sentence, citing aws-c-s3 v1.3.1 `source/s3_client.c`.
+- Name the environment variable at L1120 ("an environment variable that AWS does document"). The reader is told an escape hatch exists but not what to type.
+- Carry the 2019 post's cluster placement group condition with the 15.5 microsecond figure (L696; FC8 N-3 quotes "When used in this way [Cluster Placement Group]").
+- Gloss fi_pingpong at its first use in nav order (FC8 ST-3), or point to the Operations section that introduces it.
+- Economy: fold the boundary container (L1261-1284) into one sentence under the comparison table, or demote it.
+
+---
+
+## Summary
+
+| Section | Gate 3 score | Mental model | Practical leverage | Rigor | Accuracy | Economy | Corrections | Leverage candidates | Accuracy flags |
+|---|---|---|---|---|---|---|---|---|---|
+| Overview.tsx | 8 | 4 | 3 | 4 | 5 | 4 | 4 | 3 | 0 |
+| AIMLInference.tsx | 8 | 4 | 4 | 4 | 4 | 4 | 2 | 4 | 1 |
+| HPC.tsx | 8 | 4 | 5 | 4 | 5 | 4 | 5 | 3 | 0 |
+| NetworkComparison.tsx | 8 | 5 | 3 | 4 | 4 | 4 | 2 | 2 | 1 |
+| DecisionGuide.tsx | 7 | 4 | 5 | 4 | 4 | 3 | 6 | 5 | 2 |
+| EKSIntegration.tsx | 8 | 5 | 5 | 4 | 5 | 3 | 8 | 5 | 0 |
+| SageMaker.tsx | 8 | 5 | 5 | 4 | 4 | 3 | 7 | 5 | 2 |
+| StorageDataPaths.tsx | 8 | 5 | 5 | 4 | 4 | 3 | 10 | 2 | 2 |
+
+Batch C has no section below 7. The batch average is 7.875 (63 / 8), just under the Gate 3 average bar of 8 if that bar is applied to this batch alone. DecisionGuide is the only 7. Its corrections plus the SMDDP accuracy flag are what would lift it.
+
+Corrections total 44, almost all mechanical:
+- acronym order (Overview 2, HPC 3, SageMaker 2, Storage 3)
+- attribution narration and flattened vendor claims (Overview 2, HPC 1, NetworkComparison 2, EKSIntegration 2, SageMaker 2, Storage 2)
+- absence-from-search written as absence-in-the-world (DecisionGuide 3, EKSIntegration 5, SageMaker 3, Storage 1)
+- h2 descriptions (AIMLInference 1, DecisionGuide 1, EKSIntegration 1, Storage 3)
+
+Accuracy flags needing a decision (8):
+- AIMLInference: speculative-decoding round trips placed in time-to-first-token.
+- NetworkComparison: the footer excludes microsecond figures that the EFA cell now carries.
+- DecisionGuide: SMDDP "latest v2.5.0" against SMDDP 2.6.0 in SMP v2.8.0; NVLink claimed for trn1.32xlarge.
+- SageMaker: "Gates 1 and 2 fail loudly"; "Three AWS pages" with two in the body.
+- StorageDataPaths: the security-group fallback stated as behaviour; "whitepaper" against a User Guide citation.
+
+Cross-section consistency: the 15.5 microsecond 2019 figure now appears in NetworkComparison and StorageDataPaths with the same hedge, and neither carries the source's placement-group condition.
+
+Source note: no external fetch was made for this report. Everything is read from the section files, `git diff b39b4d3 HEAD`, and the FC6, FC7 and FC8 fact-check reports and research notes in this directory. Tier labels on research claims ([DERIVED], [T1]) are quoted from those notes.
+
+STATUS: COMPLETE
