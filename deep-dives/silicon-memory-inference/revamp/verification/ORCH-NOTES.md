@@ -91,3 +91,5 @@
 - Not aligned: AmdEpycTurin.ts `xeon6ProductBrief` cites the PDF of the Xeon 6 brief (cdrdv2-public.intel.com/845771) for the P-core MRDIMM 8,800 MT/s line; the HTML brief record elsewhere is titled for its CXL rate. Two bibliography entries for one document, both correct.
 
 - Open (Edge Shared-Memory Silicon): NOTES.md cites `lspci -nn` output that was never saved to research/dgx-spark/; the lspci readings rest on the log. Save the raw output on the next hardware session. README now says so.
+
+- TorchNeuron (AWS Compilers verification): Neuron 2.33.0 (2026-10-19) moved TorchNeuron from a closed beta to a public beta and dropped the FAQ line that listed `torch.all_to_all_vdev_2d` and its `_offset` variant for future releases. The `pytorchNative` record is now pinned to the v2.32.0 page in AWS Compilers, AWS Trainium and Communication, and both alerts scope the future-release line to that guide and give the 2.33.0 public-beta status.
