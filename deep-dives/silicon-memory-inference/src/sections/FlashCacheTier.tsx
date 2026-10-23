@@ -141,7 +141,7 @@ export function FlashCacheTier() {
             billion for Llama 3.1 70B in BF16 (bfloat16), 8,751 for Qwen3-235B-A22B, a sparse MoE (Mixture of
             Experts) with 22B active, and 1,899 for DeepSeek-V3&apos;s MLA (Multi-head Latent Attention) cache.
             <Cite s={S.qwen3Config} kind="derived" note="327,680 / 70.55 = 4,645; 192,512 / 22 = 8,751; 70,272 / 37 = 1,899." />{' '}
-            DeepSeek-V4.1-Flash stores 890 B per token
+            DeepSeek-V4.1-Flash stores 890 B of global KV cache per token
             <Cite s={S.deepseekV41Flash} />, 111 per billion of its 8B prefill-active parameters, about 40x below a
             dense 70B.
             <Cite s={S.deepseekV41Flash} kind="derived" note="890 / 8 = 111; 4,645 / 111 = 42." /> Faster GPUs raise
@@ -221,7 +221,7 @@ export function FlashCacheTier() {
             think time, session resumption and system prompts shared across sessions on one node, up to about an hour
             of full-load history. Shared flash catches reuse across nodes, scale-out warm-up and anything longer. For
             compressed caches capacity stops being the limit: 30.4 TB holds 34 billion tokens of DeepSeek-V4.1-Flash
-            KV.
+            global KV cache.
             <Cite s={S.deepseekV41Flash} kind="derived" note="30.4 TB / 890 B per token = 34 billion tokens." />
           </Box>
         </SpaceBetween>
