@@ -13,8 +13,8 @@ Research behind the current content lives in two refresh directories:
   `04-open-items-sweep.md`), one authoring log per section group with its claim diff,
   and the adversarial fact check of every changed claim.
 
-- **Sources declared in the appendix:** 47
-- **Fact-check entries in the appendix:** 42, referencing 23 distinct source ids
+- **Sources declared in the appendix:** 50
+- **Fact-check entries in the appendix:** 45, referencing 26 distinct source ids
 - **Glossary entries:** 106
 - **Orphans (no fact-check references them):** 24
 
@@ -68,7 +68,7 @@ original build and assert only that the URL resolved when the August pass probed
 
 ---
 
-## Tier 1: Official AWS documentation, API reference and source code (30)
+## Tier 1: Official AWS documentation, API reference and source code (32)
 
 | id | Title | URL | Type | Accessed | Fact-checks |
 |---|---|---|---|---|---|
@@ -102,8 +102,10 @@ original build and assert only that the URL resolved when the August pass probed
 | 46 | NIXL libfabric backend: host-posted fi_writemsg and fi_readmsg (src/utils/libfabric/libfabric_rail.cpp, v1.5.0) | https://github.com/ai-dynamo/nixl/blob/v1.5.0/src/utils/libfabric/libfabric_rail.cpp#L1310-L1336 | source-code | 2026-10-23 | 1 |
 | 47 | NVIDIA/nccl point-to-point plan selects a device kernel (src/enqueue/enqueue.cc, scheduleP2pTasksToPlan, v2.32.3-1) | https://github.com/NVIDIA/nccl/blob/v2.32.3-1/src/enqueue/enqueue.cc#L1241-L1249 | source-code | 2026-10-23 | 1 |
 | 48 | EFA installer 1.51.0 ChangeLog.md and package list (inside aws-efa-installer-1.51.0.tar.gz) | https://efa-installer.amazonaws.com/aws-efa-installer-1.51.0.tar.gz | official-docs | 2026-10-23 | 0 |
+| 49 | AWS Neuron documentation (Neuron 2.33.0): Amazon EC2 Trn3 Architecture | https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/arch/neuron-hardware/trn3-arch.html | official-docs | 2026-10-23 | 1 |
+| 51 | NVIDIA/nccl GIN backend priority: the NCCL proxy ranks above EFA-GDA (src/plugin/gin.cc, v2.32.3-1) | https://github.com/NVIDIA/nccl/blob/v2.32.3-1/src/plugin/gin.cc#L327-L340 | source-code | 2026-10-23 | 1 |
 
-## Tier 2: AWS product pages, blogs, announcements, whitepapers (14)
+## Tier 2: AWS product pages, blogs, announcements, whitepapers (15)
 
 | id | Title | URL | Type | Accessed | Fact-checks |
 |---|---|---|---|---|---|
@@ -121,6 +123,7 @@ original build and assert only that the URL resolved when the August pass probed
 | 27 | AWS HPC Blog: hpc7a MPI Multi-Rail EFA | https://aws.amazon.com/blogs/hpc/optimizing-mpi-application-performance-on-hpc7a-by-effectively-using-both-efa-devices/ | aws-blog | 2026-03-22 | 2 |
 | 28 | AWS HPC Benchmarking Whitepaper | https://d1.awsstatic.com/whitepapers/benchmarking-aws-and-hpc-services.pdf | whitepaper | 2026-03-22 | 0 |
 | 44 | AWS What's New: Announcing new high performance computing Amazon EC2 Hpc8a instances (Feb 2026) | https://aws.amazon.com/about-aws/whats-new/2026/02/announcing-amazon-ec2-hpc8a-instances/ | announcement | 2026-08-02 | 1 |
+| 50 | AWS News Blog: Now Available - Elastic Fabric Adapter (EFA) for Tightly-Coupled HPC Workloads (April 29, 2019) | https://aws.amazon.com/blogs/aws/now-available-elastic-fabric-adapter-efa-for-tightly-coupled-hpc-workloads/ | aws-blog | 2026-10-23 | 1 |
 
 ## Tier 3: Third-party analysis, benchmarks, vendor pages outside AWS (3)
 
@@ -132,7 +135,7 @@ original build and assert only that the URL resolved when the August pass probed
 
 ## Orphan sources
 
-24 of 47 sources are referenced by no `factChecks` entry. An orphan is
+24 of 50 sources are referenced by no `factChecks` entry. An orphan is
 not dead weight by default: most of these are cited inline from section files through
 `SourceRef` and are orphans only with respect to the appendix fact-check array.
 

@@ -32,7 +32,10 @@ const sources: Source[] = [
   { id: 32, title: 'NVIDIA/nccl source code (src/graph/search.cc, v2.32.3-1)', url: 'https://github.com/NVIDIA/nccl/blob/v2.32.3-1/src/graph/search.cc', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
   { id: 33, title: 'aws/aws-ofi-nccl tuner source (src/tuner/nccl_ofi_tuner.cpp, v1.22.0)', url: 'https://github.com/aws/aws-ofi-nccl/blob/v1.22.0/src/tuner/nccl_ofi_tuner.cpp', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
   { id: 34, title: 'aws/aws-ofi-nccl topology XML files (v1.22.0)', url: 'https://github.com/aws/aws-ofi-nccl/tree/v1.22.0/topology', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
+  { id: 49, title: 'AWS Neuron documentation (Neuron 2.33.0): Amazon EC2 Trn3 Architecture', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/arch/neuron-hardware/trn3-arch.html', tier: 1, type: 'official-docs', accessDate: '2026-10-23' },
+  { id: 51, title: 'NVIDIA/nccl GIN backend priority: the NCCL proxy ranks above EFA-GDA (src/plugin/gin.cc, v2.32.3-1)', url: 'https://github.com/NVIDIA/nccl/blob/v2.32.3-1/src/plugin/gin.cc#L327-L340', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
   // Tier 2: AWS product pages, blogs, announcements
+  { id: 50, title: 'AWS News Blog: Now Available - Elastic Fabric Adapter (EFA) for Tightly-Coupled HPC Workloads (April 29, 2019)', url: 'https://aws.amazon.com/blogs/aws/now-available-elastic-fabric-adapter-efa-for-tightly-coupled-hpc-workloads/', tier: 2, type: 'aws-blog', accessDate: '2026-10-23' },
   { id: 8, title: 'Amazon EC2 P5 Instance Types', url: 'https://aws.amazon.com/ec2/instance-types/p5/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
   { id: 9, title: 'Amazon EC2 Trn2 Instance Types', url: 'https://aws.amazon.com/ec2/instance-types/trn2/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
   { id: 10, title: 'Amazon EC2 UltraServers', url: 'https://aws.amazon.com/ec2/ultraservers/', tier: 2, type: 'product-page', accessDate: '2026-03-22' },
@@ -95,9 +98,11 @@ const factChecks: FactCheckItem[] = [
   { claim: '3,200 Gbps bandwidth on Trn2 with 16 EFA interfaces', section: 'Instance Support Matrix', sourceId: 1 },
   { claim: 'P5en has 16 network cards = 16 EFA but same 3,200 Gbps total', section: 'Instance Support Matrix', sourceId: 5 },
   { claim: 'Up to 28.8 Tbps per P6e-GB200 UltraServer, on a product page that also says EFAv4', section: 'Instance Support Matrix', sourceId: 10 },
+  { claim: 'Trn3 EFA bandwidth is published per UltraServer only: 12,800 Gbps for Gen1 and 28,800 Gbps for Gen2', section: 'Instance Support Matrix', sourceId: 49 },
   { claim: 'Inf2 does NOT have EFA; only inf1.24xlarge has single 100 Gbps EFA', section: 'Instance Support Matrix', sourceId: 1 },
 
   // NCCL over EFA
+  { claim: 'NCCL ranks its own GIN proxy above EFA-GDA, so a job runs GDAKI only with NCCL_GIN_TYPE=5', section: 'NCCL over EFA: the aws-ofi-nccl Plugin', sourceId: 51 },
   { claim: 'P5 and P5en ship no static topology XML; the plugin generates one at run time', section: 'NCCL over EFA: the aws-ofi-nccl Plugin', sourceId: 34 },
   { claim: 'NCCL_ALGO and NCCL_PROTO switch the tuner off only in the v2 entry point (NCCL 2.21.x); v3 and v6 run it either way', section: 'NCCL over EFA: the aws-ofi-nccl Plugin', sourceId: 33 },
 
@@ -112,7 +117,7 @@ const factChecks: FactCheckItem[] = [
   { claim: '405B parameters at fp16 = ~810GB model size', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'P5 has 640GB total GPU memory (8x H100 80GB)', section: 'AI/ML Inference', sourceId: 8 },
   { claim: 'NIXL requires libfabric 1.21.0+', section: 'AI/ML Inference', sourceId: 1 },
-  { claim: 'NCCL launches a GPU kernel even for point-to-point send/recv', section: 'AI/ML Inference', sourceId: 47 },
+  { claim: 'NCCL runs its point-to-point sends and receives inside a GPU kernel', section: 'AI/ML Inference', sourceId: 47 },
   { claim: 'NIXL over the libfabric backend posts transfers from host threads, with no GPU kernel launch', section: 'AI/ML Inference', sourceId: 46 },
   { claim: 'vLLM NixlConnector: prefiller as producer, decoder as consumer', section: 'AI/ML Inference', sourceId: 38 },
 
@@ -124,6 +129,7 @@ const factChecks: FactCheckItem[] = [
   { claim: 'Hpc8a: up to 40% higher performance than Hpc7a', section: 'Traditional HPC', sourceId: 44 },
 
   // EFA vs Alternatives
+  { claim: 'The one AWS per-message EFA latency figure located is 15.5 microseconds one-way MPI, from the 2019 launch post', section: 'EFA vs Alternatives', sourceId: 50 },
   { claim: 'Up to 6,400 Gbps per instance on P6-B300, the EFA row of the transport comparison', section: 'EFA vs Alternatives', sourceId: 4 },
 
   // Pricing Analysis
