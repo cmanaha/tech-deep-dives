@@ -131,21 +131,22 @@ export function DeterminismAOT() {
         header={
           <Header
             variant="h2"
-            description="What the compiler fixes, and the three things you pin so a Trainium call replays"
+            description="What the compiler fixes, and the three things to pin before a Trainium call can replay"
           >
-            Trainium: deterministic by default once you pin the NEFF, the
-            rounding seed and the bucket
+            Trainium: pin the NEFF, the rounding seed and the bucket
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
             The Neuron compiler builds the NEFF ahead of time, fixing memory
-            allocation and instruction order.
-            <Cite s={S.nkiOverview} /> A NeuronCore has no warp scheduler, and
-            its on-chip SRAM (static RAM) is software-managed.
-            <Cite s={S.neuronCoreV3} /> Timing still varies: intra-node
-            collective latency depends on HBM (High Bandwidth Memory) load.
+            allocation and instruction order, so no warp scheduler makes those
+            choices at run time.
+            <Cite s={S.nkiOverview} /> A NeuronCore&apos;s on-chip SRAM (static
+            RAM) is software-managed.
+            <Cite s={S.neuronCoreV3} /> Timing still varies: the per-hop latency
+            of intra-node ring collectives depends on HBM (High Bandwidth Memory)
+            load.
             <Cite s={S.intranodeCollectives} />
           </Box>
           <Box variant="p">

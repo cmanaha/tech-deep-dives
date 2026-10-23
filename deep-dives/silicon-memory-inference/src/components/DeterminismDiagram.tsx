@@ -30,7 +30,7 @@ const columns: Column[] = [
   {
     x: LEFT_X,
     name: "Trainium",
-    tagline: "Deterministic by default once pinned",
+    tagline: "The NEFF fixes the schedule; you pin the rest",
     fixedLabel: "Fixed at compile time",
     fixed: [
       [{ t: "Instruction order and memory allocation, in the NEFF" }],
@@ -50,7 +50,7 @@ const columns: Column[] = [
   {
     x: RIGHT_X,
     name: "NVIDIA GPU",
-    tagline: "Deterministic once configured",
+    tagline: "Libraries repeat per configuration; you set the rest",
     fixedLabel: "Fixed by the libraries",
     fixed: [
       [{ t: "cuBLAS: same bits per toolkit, architecture, SM count" }],

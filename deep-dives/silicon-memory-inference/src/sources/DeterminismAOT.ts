@@ -40,11 +40,11 @@ export const S = {
   },
   neuronEnvVars: {
     title:
-      "AWS Neuron: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)",
+      "AWS Neuron 2.32.0: JAX NeuronX environment variables (NEURON_RT_STOCHASTIC_ROUNDING_SEED)",
     publisher: "AWS",
-    url: "https://awsdocs-neuron.readthedocs-hosted.com/en/latest/frameworks/jax/api-reference-guide/neuron-envvars.html",
+    url: "https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/frameworks/jax/api-reference-guide/neuron-envvars.html",
     tier: 1,
-    accessed: "2026-10-17",
+    accessed: "2026-10-23",
   },
   vllmNeuronBucketing: {
     title: "AWS Neuron: vLLM Neuron design, Decode Context-Length Bucketing",
@@ -54,11 +54,11 @@ export const S = {
     accessed: "2026-10-17",
   },
   neuronCompilerNotes: {
-    title: "AWS Neuron: Component Release Notes for Neuron Graph Compiler",
+    title: "AWS Neuron 2.32.0: Component Release Notes for Neuron Graph Compiler",
     publisher: "AWS",
-    url: "https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/components/compiler.html",
+    url: "https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/components/compiler.html",
     tier: 1,
-    accessed: "2026-10-16",
+    accessed: "2026-10-23",
   },
   nkiLibNotes: {
     title: "AWS Neuron: NKI Library release notes",
@@ -71,19 +71,19 @@ export const S = {
   // NVIDIA GPU: library guarantees and the framework switches
   cublasReproducibility: {
     title:
-      'NVIDIA cuBLAS documentation, section 2.1.4 "Results Reproducibility"',
+      'NVIDIA cuBLAS documentation (CUDA 13.4), section 2.1.4 "Results Reproducibility"',
     publisher: "NVIDIA",
     url: "https://docs.nvidia.com/cuda/cublas/index.html",
     tier: 1,
-    accessed: "2026-10-17",
+    accessed: "2026-10-23",
   },
   cudnnReproducibility: {
     title:
-      'NVIDIA cuDNN backend documentation, "Odds and Ends: Reproducibility (Determinism)"',
+      'NVIDIA cuDNN 9.27.0 backend documentation, "Odds and Ends: Reproducibility (Determinism)"',
     publisher: "NVIDIA",
-    url: "https://docs.nvidia.com/deeplearning/cudnn/backend/latest/developer/misc.html",
+    url: "https://docs.nvidia.com/deeplearning/cudnn/backend/v9.27.0/developer/misc.html",
     tier: 1,
-    accessed: "2026-10-16",
+    accessed: "2026-10-23",
   },
   pytorchReproducibility: {
     title:
