@@ -134,3 +134,14 @@ Scan: `git diff -U0 b39b4d3 HEAD` added lines of both files, grepped for em-dash
 Style: 0 em-dash, en-dash or curly-quote hits; 1 low-severity optional rewording (S2); 1 cosmetic wrap (S5).
 
 STATUS: COMPLETE
+
+## Orchestrator addendum (2026-10-23)
+
+N16 holds on its narrow claim, but the sentence around it implied that a plugin built with GDAKI
+gets GDAKI by default. It does not. FC3 row L-20 found the backend priority, and the orchestrator
+re-read it at the pin: NVIDIA/nccl v2.32.3-1 `src/plugin/gin.cc` L327-L340, "Current priority is
+GDAKI > Proxy > GPI. Lower number higher priority", `NCCL_GIN_TYPE_PROXY` 1, `NCCL_GIN_TYPE_EFA_GDA`
+2, sorted by `ncclGinSetDefaultBackend` (L364-L383). NcclOverEfa.tsx now cites that range and states
+that a job runs GDAKI only with `NCCL_GIN_TYPE=5`, plus the plugin guide's
+`NCCL_SYM_GIN_KERNELS_ENABLE=0` and `PeerMappingOverride` requirements
+(aws-ofi-nccl v1.22.0 `doc/gin-getting-started.md` L35-L81).

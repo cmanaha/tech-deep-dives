@@ -161,6 +161,11 @@ const code = {
   ncclGinLoad: nccl('src/plugin/gin.cc', 'L79-L83'),
   ncclGinType: nccl('src/plugin/gin.cc', 'L141-L147'),
   ncclGinProxySkip: nccl('src/plugin/gin.cc', 'L164-L170'),
+  ncclGinPriority: nccl('src/plugin/gin.cc', 'L327-L340'),
+  ncclRmaOrder: nccl('src/plugin/rma.cc', 'L211-L233'),
+  ncclDevGinConnect: nccl('src/dev_runtime.cc', 'L1439-L1484'),
+  pluginRmaExport: plugin('src/rdma/gin/nccl_ofi_gin_api.cpp', 'L619-L621'),
+  ginGuide: plugin('doc/gin-getting-started.md', 'L35-L81'),
   ncclGinTypes: nccl('src/include/nccl_device/core.h', 'L74-L78'),
   gdaOps: lfab('prov/efa/src/fi_ext_efa.h', 'L11'),
   gdaOpsDirect: lfab('prov/efa/src/efa_domain.c', 'L803-L808'),
@@ -1243,11 +1248,15 @@ export function NcclOverEfa() {
             version 14, named Libfabric_GDAKI, reporting the EFA_GDA device type, value 5{' '}
             <SourceRef provenance="code-derived" code={code.ginGdakiExport} />
             <SourceRef provenance="code-derived" code={code.ginGdakiType} />
-            <SourceRef provenance="code-derived" code={code.ncclGinTypes} />. NCCL 2.32.3 runs
-            host-proxy GIN itself over its own RMA backend and skips an external plugin&apos;s proxy
-            export <SourceRef provenance="code-derived" code={code.ncclGinProxySkip} />, so with
-            that release GDAKI is the only GIN path the plugin supplies. Four conditions decide
-            whether a job gets it.
+            <SourceRef provenance="code-derived" code={code.ncclGinTypes} />. NCCL 2.32.3 runs the
+            host-proxy GIN path itself, over an RMA backend the plugin also exports, and skips an
+            external plugin&apos;s proxy GIN export{' '}
+            <SourceRef provenance="code-derived" code={code.ncclGinProxySkip} />
+            <SourceRef provenance="code-derived" code={code.ncclRmaOrder} />
+            <SourceRef provenance="code-derived" code={code.pluginRmaExport} />. With that release
+            the plugin&apos;s GIN export matters only for GDAKI. Four conditions decide whether a
+            job that uses NCCL&apos;s device API with GIN gets it{' '}
+            <SourceRef provenance="code-derived" code={code.ncclDevGinConnect} />.
           </Box>
           <ol style={{ margin: 0 }}>
             <li>
@@ -1280,8 +1289,13 @@ export function NcclOverEfa() {
               <strong>NCCL.</strong> NCCL 2.32.3 looks for the version 14 GIN symbol before version
               13 <SourceRef provenance="code-derived" code={code.ncclGinVersions} />
               <SourceRef provenance="code-derived" code={code.ncclGinLoad} />, so a plugin built
-              with GDAKI hands NCCL its GDAKI export. NCCL_GIN_TYPE=5 restricts NCCL to the EFA_GDA backend, which is
-              how to force GDAKI <SourceRef provenance="code-derived" code={code.ncclGinType} />.
+              with GDAKI hands NCCL its GDAKI export. NCCL still ranks that backend below its own
+              GIN proxy <SourceRef provenance="code-derived" code={code.ncclGinPriority} />, so a
+              job runs GDAKI only when NCCL_GIN_TYPE=5 restricts NCCL to the EFA_GDA backend{' '}
+              <SourceRef provenance="code-derived" code={code.ncclGinType} />. The plugin&apos;s
+              setup guide also asks for NCCL_SYM_GIN_KERNELS_ENABLE=0 and the NVIDIA driver&apos;s
+              PeerMappingOverride option{' '}
+              <SourceRef provenance="code-derived" code={code.ginGuide} />.
             </li>
           </ol>
         </SpaceBetween>
@@ -1322,7 +1336,7 @@ export function NcclOverEfa() {
                 message names which of the three conditions applied when it declined{' '}
                 <SourceRef provenance="code-derived" code={code.fallbackLog} />. Jobs of two nodes or
                 fewer are skipped by design and left to NCCL&apos;s own tuning, because the regions
-                are not defined for them{' '}
+                are not well defined for them{' '}
                 <SourceRef provenance="code-derived" code={code.regionTwoNodes} />.
               </Box>
             </div>

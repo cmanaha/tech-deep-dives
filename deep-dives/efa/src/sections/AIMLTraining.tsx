@@ -62,7 +62,8 @@ const code = {
   railCount: plugin('src/nccl_ofi_rdma.cpp', 'L5100-L5107'),
   railAvInsert: plugin('src/nccl_ofi_rdma.cpp', 'L4904-L4920'),
   sortRails: plugin('src/platform-aws.cpp', 'L1089-L1119'),
-  topoDiscover: plugin('src/nccl_ofi_topo.cpp', 'L934'),
+  writeTopoFile: plugin('src/nccl_ofi_rdma.cpp', 'L230-L299'),
+  writeTopoGate: plugin('src/nccl_ofi_rdma.cpp', 'L7199-L7210'),
   topoEnv: plugin('src/platform-aws.cpp', 'L764-L790'),
   topoP4d: plugin('topology/p4d-24xl-topo.xml'),
   topoG5: plugin('topology/g5.48xl-topo.xml'),
@@ -79,7 +80,7 @@ const code = {
   ginBuild: plugin('configure.ac', 'L343-L351'),
   gdaOps: lfab('prov/efa/src/fi_ext_efa.h', 'L11'),
   gdaOpsDirect: lfab('prov/efa/src/efa_domain.c', 'L803-L808'),
-  hmemThresholds: lfab('prov/efa/src/efa_hmem.c', 'L62-L92'),
+  hmemThresholds: lfab('prov/efa/src/efa_hmem.c', 'L45-L92'),
   rdmCaps: lfab('prov/efa/src/efa_prov_info.c', 'L569-L572'),
   rdmSize: lfab('prov/efa/src/efa_prov_info.c', 'L622-L625'),
   rdmOrder: lfab('prov/efa/src/efa_prov_info.c', 'L642-L649'),
@@ -329,8 +330,8 @@ export function AIMLTraining() {
 FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               </pre>
               <Box variant="p">
-                The other variables in the usual EFA environment block apply to the 2023 plugin
-                releases. The plugin publishes its own cheatsheet, and each entry names the releases
+                The other variables in the usual EFA environment block either apply only to plugin
+                releases from 2023 and earlier or are best left at their defaults. The plugin publishes its own cheatsheet, and each entry names the releases
                 it applies to <SourceRef provenance="code-derived" code={code.envCheatsheet} />. Read
                 against it, <code>FI_PROVIDER=efa</code> applies to aws-ofi-nccl 1.5.0 and older,
                 the cheatsheet says to leave <code>FI_EFA_USE_DEVICE_RDMA=1</code> out on libfabric
@@ -362,7 +363,7 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               </Box>
               <Box variant="p">
                 <strong>GPU memory gets different transfer protocols:</strong> when the buffer lives
-                in GPU memory, libfabric uses the eager and runting-read protocols only. The
+                in GPU memory and the device supports peer-to-peer access, libfabric uses the eager and runting-read protocols only. The
                 mechanism is a threshold: the provider sets the maximum medium message size to zero
                 for CUDA, ROCR and Neuron memory and warns that only eager and runting read
                 protocols are supported{' '}
@@ -463,9 +464,11 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
             <SourceRef provenance="code-derived" code={code.topoP4d} />
             <SourceRef provenance="code-derived" code={code.topoG5} />, and points{' '}
             <code>NCCL_TOPO_FILE</code> at the matching one itself when the variable is unset{' '}
-            <SourceRef provenance="code-derived" code={code.topoEnv} />. On P5 and later the
-            plugin builds the topology on the running instance{' '}
-            <SourceRef provenance="code-derived" code={code.topoDiscover} /> and reorders the EFA
+            <SourceRef provenance="code-derived" code={code.topoEnv} />. Where a GPU has more than
+            one EFA device in its group, as on P5, P5en and P6-B300, the plugin writes a topology
+            file on the running instance{' '}
+            <SourceRef provenance="code-derived" code={code.writeTopoFile} />
+            <SourceRef provenance="code-derived" code={code.writeTopoGate} /> and reorders the EFA
             devices within each GPU&apos;s group so that paired devices line up across nodes{' '}
             <SourceRef provenance="code-derived" code={code.sortRails} />, so leave it unset there
             too.
