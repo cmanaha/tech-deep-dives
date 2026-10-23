@@ -99,10 +99,11 @@ export function NvidiaCompilersAndTooling() {
             <code>sm_103</code> (B300)
             <Cite s={S.cudaGpus} />; a <code>compute_100f</code> build runs on B200, B300 and Rubin.
             <Cite s={S.computeCapabilities} />
+            <Cite s={S.cutlassChangelog} note="4.8.0: Added initial Rubin support (SM107)." />
           </Box>
           <Box variant="p">
             <strong>Why it matters.</strong> Most of what happens at operand staging and at the
-            functional unit, two of the stages <em>Anatomy of a Kernel Execution</em> follows, was
+            Tensor Core, two of the stages <em>Anatomy of a Kernel Execution</em> follows, was
             fixed before launch by the layer that generated the kernel: tile size, operand
             precision, where operands are staged, and what was fused. Knowing which layer produced a
             kernel tells you which knob changes it.
@@ -132,7 +133,8 @@ export function NvidiaCompilersAndTooling() {
           <Box variant="p">
             torch.compile hands the graph to TorchInductor, its default backend.
             <Cite s={S.torchCompileDefault} /> Inductor generates Triton for the pointwise and
-            reduction operations it fuses, and sends <code>aten.mm</code> and{' '}
+            reduction operations it fuses
+            <Cite s={S.inductorCudaBackend} />, and sends <code>aten.mm</code> and{' '}
             <code>aten.addmm</code>, the operators a linear layer usually lowers to
             <Cite s={S.atenLinear} />, to ATen, PyTorch&apos;s operator library
             <Cite s={S.inductorUtils} />
@@ -226,7 +228,8 @@ compiled = torch.compile(model, mode="max-autotune")`}</pre>
                 <Cite s={S.cutlassChangelog} /> Use it for matmul-class kernels at peak throughput.
                 Its limit is C++ template metaprogramming; CuTe DSL gives the same control with a
                 smoother learning curve and faster compiles.
-                <Cite s={S.cutlassReadme} /> TensorRT-LLM ships CUTLASS and CuTe DSL MoE backends
+                <Cite s={S.cutlassReadme} /> TensorRT-LLM ships CUTLASS and CuTe DSL MoE (mixture of experts)
+                backends
                 <Cite s={S.wideEpReadme} />; this research located no NVIDIA statement of what
                 cuBLAS, cuDNN or cuTENSOR use internally.
               </Box>
@@ -264,8 +267,9 @@ compiled = torch.compile(model, mode="max-autotune")`}</pre>
             <Cite s={S.trtllmV100} />, and v1.2.1, the latest stable release (April 2026)
             <Cite s={S.trtllmV121} />, is architected on PyTorch with a Python LLM API, custom
             attention kernels and FP8 and FP4 quantization.
-            <Cite s={S.trtllmReadme} /> FP8 MoE (mixture of experts) support dates from v0.12.0.
-            <Cite s={S.trtllmV0120} /> TensorRT is a separate product that compiles a trained model,
+            <Cite s={S.trtllmReadme} /> FP8 MoE support dates from v0.10.0.
+            <Cite s={S.trtllmV0100} />
+            <Cite s={S.trtllmMoePluginV0100} /> TensorRT is a separate product that compiles a trained model,
             usually an ONNX (Open Neural Network Exchange) export, into a GPU-specific engine.
             <Cite s={S.tensorrtQuickStart} />
           </Box>

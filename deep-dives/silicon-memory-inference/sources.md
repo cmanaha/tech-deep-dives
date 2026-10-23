@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 469.
+Total distinct sources: 471.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -246,12 +246,13 @@ Total distinct sources: 469.
 | NVIDIA | [TensorRT-LLM examples/wide_ep at tag v1.2.1](https://github.com/NVIDIA/TensorRT-LLM/tree/v1.2.1/examples/wide_ep) | 2026-10-16 | MoeAndSparseActivation, NvidiaCompilersAndTooling, QuantizationAndPrecision |
 | NVIDIA | [TensorRT-LLM examples/wide_ep README at tag v1.2.1](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/examples/wide_ep/README.md) | 2026-10-17 | CommunicationAndScaleOut, GraceBlackwellUltraServer, MoeAndSparseActivation, NvidiaCompilersAndTooling |
 | NVIDIA | [TensorRT-LLM README at tag v1.2.1](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/README.md) | 2026-10-17 | NvidiaCompilersAndTooling |
-| NVIDIA | [TensorRT-LLM release v0.12.0 notes (2024-08-29)](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v0.12.0) | 2026-10-17 | NvidiaCompilersAndTooling |
+| NVIDIA | [TensorRT-LLM release v0.10.0 notes (2024-06-05): "Added FP8 quantization support for Mixtral"](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v0.10.0) | 2026-10-23 | NvidiaCompilersAndTooling |
 | NVIDIA | [TensorRT-LLM release v0.21.0 notes](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v0.21.0) | 2026-10-17 | GraceBlackwellUltraServer, MoeAndSparseActivation |
 | NVIDIA | [TensorRT-LLM release v1.0.0 notes (2025-09-24)](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v1.0.0) | 2026-10-17 | MoeAndSparseActivation, NvidiaCompilersAndTooling, QuantizationAndPrecision |
 | NVIDIA | [TensorRT-LLM release v1.2.1 (2026-04-20)](https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v1.2.1) | 2026-10-17 | NvidiaCompilersAndTooling |
 | NVIDIA | [TensorRT-LLM tensorrt_llm/llmapi/llm_args.py at tag v1.2.1 (MoE parallel sizes)](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/tensorrt_llm/llmapi/llm_args.py) | 2026-10-17 | MoeAndSparseActivation |
 | NVIDIA | [TensorRT-LLM tensorrt_llm/mapping.py at tag v1.2.1 (MoE world size check)](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/tensorrt_llm/mapping.py) | 2026-10-17 | MoeAndSparseActivation |
+| NVIDIA | [TensorRT-LLM v0.10.0 mixtureOfExpertsPlugin.cpp: FP8 CutlassMoeFCRunner](https://github.com/NVIDIA/TensorRT-LLM/blob/v0.10.0/cpp/tensorrt_llm/plugins/mixtureOfExperts/mixtureOfExpertsPlugin.cpp#L201-L217) | 2026-10-23 | NvidiaCompilersAndTooling |
 | NVIDIA Dynamo | [ai-dynamo/dynamo KV cache offloading overview at tag v1.5.1 (choose one backend)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/cli/kv-cache-offloading/overview.mdx) | 2026-10-23 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/dynamo KVBM configuration and KV cache offloading docs at tag v1.5.1](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/docs/fern/pages/reference/components/kvbm-configuration.mdx) | 2026-10-17 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/dynamo lib/bindings/kvbm/src/block_manager.rs at tag v1.5.1 (disk offload filter, page_size)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/bindings/kvbm/src/block_manager.rs) | 2026-10-17 | FlashCacheTier |
@@ -274,6 +275,7 @@ Total distinct sources: 469.
 | PyTorch | [PyTorch v2.14.1 aten/src/ATen/native/Linear.cpp: linear lowers to addmm](https://github.com/pytorch/pytorch/blob/v2.14.1/aten/src/ATen/native/Linear.cpp#L106-L129) | 2026-10-17 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 torch/__init__.py: torch.compile signature, backend="inductor"](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/__init__.py#L3019) | 2026-10-17 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 torch/_inductor/__init__.py: list_mode_options, "max-autotune"](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/_inductor/__init__.py#L384-L388) | 2026-10-17 | NvidiaCompilersAndTooling |
+| PyTorch | [PyTorch v2.14.1 torch/_inductor/config.py: cuda_backend = "triton" (CUDA codegen backend)](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/_inductor/config.py#L2818-L2820) | 2026-10-23 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 torch/_inductor/config.py: max_autotune_gemm_backends](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/_inductor/config.py#L637-L649) | 2026-10-17 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 torch/_inductor/kernel/bmm.py: tuned_bmm](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/_inductor/kernel/bmm.py#L230) | 2026-10-17 | NvidiaCompilersAndTooling |
 | PyTorch | [PyTorch v2.14.1 torch/_inductor/kernel/mm_common.py: _use_small_mm_pointwise](https://github.com/pytorch/pytorch/blob/v2.14.1/torch/_inductor/kernel/mm_common.py#L197-L215) | 2026-10-17 | NvidiaCompilersAndTooling |

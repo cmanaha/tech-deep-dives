@@ -32,6 +32,13 @@ export const S = {
     tier: 1,
     accessed: '2026-10-17',
   },
+  inductorCudaBackend: {
+    title: 'PyTorch v2.14.1 torch/_inductor/config.py: cuda_backend = "triton" (CUDA codegen backend)',
+    publisher: 'PyTorch',
+    url: 'https://github.com/pytorch/pytorch/blob/v2.14.1/torch/_inductor/config.py#L2818-L2820',
+    tier: 1,
+    accessed: '2026-10-23',
+  },
   inductorUtils: {
     title:
       'PyTorch v2.14.1 torch/_inductor/utils.py: use_triton_template, use_cutlass_template, use_aten_gemm_kernels',
@@ -181,12 +188,19 @@ export const S = {
     tier: 1,
     accessed: '2026-10-17',
   },
-  trtllmV0120: {
-    title: 'TensorRT-LLM release v0.12.0 notes (2024-08-29)',
+  trtllmV0100: {
+    title: 'TensorRT-LLM release v0.10.0 notes (2024-06-05): "Added FP8 quantization support for Mixtral"',
     publisher: 'NVIDIA',
-    url: 'https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v0.12.0',
+    url: 'https://github.com/NVIDIA/TensorRT-LLM/releases/tag/v0.10.0',
     tier: 1,
-    accessed: '2026-10-17',
+    accessed: '2026-10-23',
+  },
+  trtllmMoePluginV0100: {
+    title: 'TensorRT-LLM v0.10.0 mixtureOfExpertsPlugin.cpp: FP8 CutlassMoeFCRunner',
+    publisher: 'NVIDIA',
+    url: 'https://github.com/NVIDIA/TensorRT-LLM/blob/v0.10.0/cpp/tensorrt_llm/plugins/mixtureOfExperts/mixtureOfExpertsPlugin.cpp#L201-L217',
+    tier: 1,
+    accessed: '2026-10-23',
   },
   trtllmV121: {
     title: 'TensorRT-LLM release v1.2.1 (2026-04-20)',

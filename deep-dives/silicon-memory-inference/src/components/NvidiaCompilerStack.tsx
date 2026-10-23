@@ -142,7 +142,7 @@ const nodes: StackNodeType[] = [
     top('in'),
     bottom('out'),
   ]),
-  stack('triton', COL, 236, W, 'green', 'Triton / Gluon', ['fused ops; GEMM', 'templates only under', 'max-autotune'], [
+  stack('triton', COL, 236, W, 'green', 'Triton / Gluon', ['fused ops; mm / addmm', 'templates only under', 'max-autotune'], [
     top('in'),
     bottom('out'),
   ]),
@@ -275,7 +275,8 @@ export function NvidiaCompilerStack() {
         }}
       >
         With default settings, torch.compile hands the model to TorchInductor, which generates Triton
-        kernels for fused operations and sends matrix multiplies to cuBLAS or cuBLASLt through ATen.
+        kernels for fused operations and sends linear-layer matrix multiplies to cuBLAS or cuBLASLt
+        through ATen.
         CUTLASS and CuTe DSL GEMM templates join only when you opt in with max-autotune and a backend
         list. Triton and CUTLASS kernels become PTX that ptxas assembles into SASS; cuBLAS ships
         prebuilt kernels, and cuTile kernels are compiled by tileiras.
