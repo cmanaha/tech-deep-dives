@@ -71,6 +71,17 @@ const code = {
   rdmSize: lfab('prov/efa/src/efa_prov_info.c', 'L622-L625'),
   rdmOrder: lfab('prov/efa/src/efa_prov_info.c', 'L642-L649'),
   envCheatsheet: plugin('doc/efa-env-var.md', 'L28-L69'),
+  readUses: plugin('src/nccl_ofi_rdma.cpp', 'L1249-L1256'),
+  rdmHint: plugin('src/nccl_ofi_rdma.cpp', 'L7083'),
+  neuronBuild: plugin('configure.ac', 'L129-L132'),
+  neuronIface: plugin('src/nccl_ofi_interface_neuron.cpp', 'L323-L346'),
+  allreduceBytes: {
+    repo: 'NVIDIA/nccl-tests',
+    ref: 'v2.21.1',
+    path: 'doc/PERFORMANCE.md',
+    lines: 'L50-L59',
+    read: READ,
+  },
 };
 
 const docs: Record<string, DocRef> = {
@@ -84,7 +95,13 @@ const docs: Record<string, DocRef> = {
     title: 'EC2 User Guide: Get started with EFA and NCCL',
     url: `${EC2_DOC}efa-start-nccl.html`,
     tier: 1,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
+  },
+  fabricManager: {
+    title: 'NVIDIA Fabric Manager User Guide',
+    url: 'https://docs.nvidia.com/datacenter/tesla/fabric-manager-user-guide/index.html',
+    tier: 1,
+    accessed: REFRESHED,
   },
   efaAcc: {
     title: 'EC2 User Guide: Maximize network bandwidth on instances with multiple network cards',
@@ -168,7 +185,8 @@ export function AIMLTraining() {
               <Box variant="h3">Data Parallelism (DDP (Distributed Data Parallel) / FSDP (Fully Sharded Data Parallel))</Box>
               <Box variant="p">
                 Each node has a full model copy, processes different data, synchronizes gradients via{' '}
-                <strong>allreduce</strong>. Communication volume per step = 2 × model_size × (N-1)/N.
+                <strong>allreduce</strong>. Each rank moves at least 2 × model_size × (N-1)/N per step{' '}
+                <SourceRef provenance="code-derived" code={code.allreduceBytes} />.
               </Box>
               <Box variant="p">
                 Worked as arithmetic: a 7B parameter model is 14 GB in fp16, so one step moves roughly
@@ -181,7 +199,7 @@ export function AIMLTraining() {
                 instance you are sizing.
               </Box>
               <StatusIndicator type="success">
-                EFA critical: allreduce is the bottleneck
+                EFA critical: every step's gradient allreduce crosses the fabric
               </StatusIndicator>
             </div>
             <div>
@@ -190,13 +208,12 @@ export function AIMLTraining() {
                 Tensor parallelism splits individual layers across GPUs and adds{' '}
                 <strong>allreduce</strong> operations to every forward and backward pass{' '}
                 <SourceRef provenance="documented" doc={docs.megatron} label="tier 3: paper" />.
-                Pipeline parallelism splits layers sequentially and requires{' '}
-                <strong>point-to-point</strong> activation transfers between stages.
+                Pipeline parallelism splits layers sequentially and hands activations{' '}
+                <strong>point-to-point</strong> from one stage to the next.
               </Box>
               <Box variant="p">
                 Those allreduces run inside every layer, which is why the hybrid layout below keeps
-                TP (Tensor Parallelism) on NVLink. Pipeline parallelism sends activations
-                point-to-point only between stages, which is far cheaper{' '}
+                TP (Tensor Parallelism) on NVLink. The stage-to-stage handoffs are far cheaper{' '}
                 <SourceRef provenance="documented" doc={docs.megatronGpu} label="tier 3: paper" />, so
                 PP (Pipeline Parallelism) is the split that crosses nodes over EFA.
               </Box>
@@ -212,8 +229,7 @@ export function AIMLTraining() {
                 amounts of data to different nodes based on routing decisions.
               </Box>
               <Box variant="p">
-                The multi-path routing of SRD (Scalable Reliable Datagram) handles asymmetric
-                traffic well. EFA also supports GPUDirect Async on the efa-direct fabric only{' '}
+                EFA supports GPUDirect Async on the efa-direct fabric only{' '}
                 <SourceRef provenance="code-derived" code={code.gdaOps} />
                 <SourceRef provenance="code-derived" code={code.gdaOpsDirect} />, which the
                 aws-ofi-nccl plugin consumes through the GDAKI (GPUDirect Async Kernel-Initiated)
@@ -229,8 +245,9 @@ export function AIMLTraining() {
             <div>
               <Box variant="h3">Hybrid Parallelism (3D/4D)</Box>
               <Box variant="p">
-                Modern large model training combines all strategies. Common pattern:
-                TP within a node (NVLink), PP + DP (Data Parallelism) across nodes (EFA).
+                Large-model training combines these strategies, and a common layout keeps TP within
+                a node (NVLink) and runs PP + DP (Data Parallelism) across nodes (EFA){' '}
+                <SourceRef provenance="documented" doc={docs.megatronGpu} label="tier 3: paper" />.
               </Box>
               <Box variant="p">
                 The key architecture decision: <strong>TP stays intra-node</strong> (NVIDIA states
@@ -258,9 +275,12 @@ export function AIMLTraining() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            AWS Trainium and Inferentia2 chips run on the <strong>Neuron SDK</strong>. The Neuron
-            Collective Communication Library (Neuron CCL) calls libfabric directly, so the EFA path
-            on Trainium instances is Neuron CCL, then libfabric, then the device.
+            AWS Trainium and Inferentia2 chips run on the <strong>Neuron SDK</strong>. On Trainium,
+            Neuron collective communication crosses nodes over EFA{' '}
+            <SourceRef provenance="documented" doc={docs.neuronCollectives} />, and the aws-ofi-nccl
+            plugin also builds against the Neuron runtime and exports a network-plugin interface for
+            it <SourceRef provenance="code-derived" code={code.neuronBuild} />
+            <SourceRef provenance="code-derived" code={code.neuronIface} />.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -334,8 +354,8 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
           <ExpandableSection headerText="The rest of the usual EFA environment block">
             <SpaceBetween size="s">
               <Box variant="p">
-                The rest of the usual EFA environment block either applies only to plugin releases
-                from 2023 and earlier or is best left at its defaults: <code>FI_PROVIDER=efa</code>{' '}
+                These either apply only to plugin releases from 2023 and earlier or are best left at
+                their defaults: <code>FI_PROVIDER=efa</code>{' '}
                 applies to aws-ofi-nccl 1.5.0 and older, <code>FI_EFA_USE_DEVICE_RDMA=1</code> can
                 be left out on libfabric 1.18.0 or later with aws-ofi-nccl 1.7.0 or later, and{' '}
                 <code>NCCL_BUFFSIZE</code> and the channel-count knobs work best at their defaults{' '}
@@ -346,23 +366,19 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 <SourceRef provenance="code-derived" code={code.tunerPluginCall} />. The NCCL over
                 EFA section walks the block line by line and says which layer owns each variable.
               </Box>
-              <Box variant="p">
-                Install steps, including GDRCopy, are AWS-documented{' '}
-                <SourceRef provenance="documented" doc={docs.efaNccl} />.
-              </Box>
             </SpaceBetween>
           </ExpandableSection>
           <ExpandableSection headerText="Under the Hood: NCCL → libfabric → Hardware">
             <SpaceBetween size="s">
               <Box variant="p">
-                <strong>RDM (Reliable Datagram Message) vs DGRAM (Datagram) endpoints:</strong> NCCL
-                uses RDM endpoints. SRD already provides reliability in hardware, so what RDM buys
+                <strong>RDM (Reliable Datagram Message) vs DGRAM (Datagram) endpoints:</strong> the
+                plugin opens RDM endpoints <SourceRef provenance="code-derived" code={code.rdmHint} />.
+                SRD (Scalable Reliable Datagram) already provides reliability in hardware, so what RDM buys
                 is the layer above it: ordering guarantees, unlimited message size through software
                 segmentation, tagging, atomics and directed receive, which the provider declares in
                 its capability set <SourceRef provenance="code-derived" code={code.rdmOrder} />
                 <SourceRef provenance="code-derived" code={code.rdmSize} />
                 <SourceRef provenance="code-derived" code={code.rdmCaps} />.
-                Those semantics carry overhead, and they are the ones NCCL expects.
               </Box>
               <Box variant="p">
                 <strong>GPU memory gets different transfer protocols:</strong> when the buffer lives
@@ -383,7 +399,9 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                   <SourceRef provenance="code-derived" code={code.paramEager} /></li>
                 <li><code>fi_write</code> with immediate data: the RDMA write path, with completion
                   signalled out of the immediate data rather than a separate message</li>
-                <li><code>fi_read</code>: runting-read protocol for large GPU transfers</li>
+                <li><code>fi_read</code>: an RMA read, which the plugin posts to flush GPU writes, to
+                  copy an eager message out of its receive buffer, and for NCCL&apos;s RMA read{' '}
+                  <SourceRef provenance="code-derived" code={code.readUses} /></li>
               </ul>
               <Box variant="p">
                 <strong>Multi-rail implementation:</strong> each rail gets its own{' '}
@@ -413,10 +431,11 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 <strong>Algorithm selection:</strong> the <code>aws-ofi-nccl</code> tuner makes the
                 algorithm and protocol combinations it prefers cheaper in{' '}
                 <code>collCostTable</code>, and NCCL still picks the minimum. On NCCL 2.22.3 and
-                later, setting <code>NCCL_ALGO</code> narrows the table rather than disabling the
-                tuner <SourceRef provenance="code-derived" code={code.tunerV3} />
-                <SourceRef provenance="code-derived" code={code.tunerV6} />. The NCCL over EFA
-                section has the version-by-version account.
+                later the tuner runs whether or not <code>NCCL_ALGO</code> is set{' '}
+                <SourceRef provenance="code-derived" code={code.tunerV3} />
+                <SourceRef provenance="code-derived" code={code.tunerV6} />, so setting it narrows the
+                table the tuner sees rather than switching the tuner off. The NCCL over EFA section
+                has the version-by-version account and the NCCL code that does the narrowing.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -426,20 +445,24 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               <Alert type="warning">
                 <strong>Install GDRCopy as its own step:</strong> the AWS NCCL getting-started guide
                 carries one for it <SourceRef provenance="documented" doc={docs.efaNccl} />.
-                GPUDirect RDMA is a separate mechanism, enabled by the EFA kernel driver, and
-                without it the plugin offers NCCL host buffers only{' '}
-                <SourceRef provenance="code-derived" code={code.ptrSupport} />. The guide gives no
-                minimum GDRCopy version, so this page quotes none.
+                GPUDirect RDMA is a separate mechanism, and without it the plugin offers NCCL host
+                buffers only <SourceRef provenance="code-derived" code={code.ptrSupport} />. The
+                guide names no minimum GDRCopy version.
               </Alert>
               <Alert type="error">
-                <strong>NVIDIA Fabric Manager on P4d/P5:</strong> run the{' '}
-                <code>nvidia-fabricmanager</code> systemd service to manage NVSwitch, at a version
-                that <strong>exactly matches</strong> the NVIDIA kernel module.
+                <strong>NVIDIA Fabric Manager on NVSwitch instances such as P4d and P5:</strong>{' '}
+                install and start the <code>nvidia-fabricmanager</code> systemd service{' '}
+                <SourceRef provenance="documented" doc={docs.efaNccl} />. On NVIDIA GPU driver
+                releases before 620 its package version must <strong>exactly match</strong> the
+                driver package version; from release 620 Fabric Manager carries its own version{' '}
+                <SourceRef provenance="documented" doc={docs.fabricManager} />.
               </Alert>
               <Alert type="info">
-                <strong>nouveau driver:</strong> blacklist it before installing the NVIDIA
-                proprietary drivers. Add <code>blacklist nouveau</code> to{' '}
-                <code>/etc/modprobe.d/</code> and regenerate initramfs.
+                <strong>nouveau driver:</strong> disable it before installing the NVIDIA driver.
+                Add <code>blacklist nouveau</code> to <code>/etc/modprobe.d/blacklist.conf</code>,
+                add <code>rdblacklist=nouveau</code> to <code>GRUB_CMDLINE_LINUX</code>, rebuild the
+                GRUB configuration and reboot{' '}
+                <SourceRef provenance="documented" doc={docs.efaNccl} />.
               </Alert>
             </SpaceBetween>
           </ExpandableSection>
@@ -486,7 +509,9 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
           </Alert>
           <Box variant="p">
             So measure it on your own job. Time one step on a single node and one step at your
-            target node count. That ratio, against the node count, is what the network work buys.
+            target node count, keeping the per-node batch the same. Single-node step time divided
+            by multi-node step time is your scaling efficiency: 0.9 on 64 nodes is the work of about
+            58.
           </Box>
         </SpaceBetween>
       </Container>

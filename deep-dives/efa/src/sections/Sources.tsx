@@ -60,6 +60,7 @@ const sources: Source[] = [
   // Tier 3 because NVIDIA is a third party to AWS. The comparison sections
   // label the same page tier 2 under the vendor-neutral SourceRef scale.
   { id: 45, title: 'NVIDIA NVLink and NVLink Switch', url: 'https://www.nvidia.com/en-us/data-center/nvlink/', tier: 3, type: 'product-page', accessDate: '2026-10-23' },
+  { id: 56, title: 'NVIDIA Fabric Manager User Guide', url: 'https://docs.nvidia.com/datacenter/tesla/fabric-manager-user-guide/index.html', tier: 3, type: 'official-docs', accessDate: '2026-10-23' },
   // NIXL sources
   { id: 35, title: 'NVIDIA NIXL GitHub Repository', url: 'https://github.com/ai-dynamo/nixl', tier: 1, type: 'source-code', accessDate: '2026-03-22' },
   { id: 36, title: 'NIXL Repository at v1.5.0', url: 'https://github.com/ai-dynamo/nixl/tree/v1.5.0', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
@@ -113,6 +114,7 @@ const factChecks: FactCheckItem[] = [
   // AI/ML Training
   { claim: 'Tensor parallelism adds allreduce operations to the forward and backward pass', section: 'AI/ML Training', sourceId: 52 },
   { claim: 'Tensor parallelism is best kept within a node because of its all-reduce cost; pipeline parallelism uses cheaper point-to-point transfers that can cross nodes', section: 'AI/ML Training', sourceId: 55 },
+  { claim: 'On NVIDIA GPU driver releases before 620 the Fabric Manager package version must match the driver package version; from release 620 Fabric Manager is versioned standalone', section: 'AI/ML Training', sourceId: 56 },
   { claim: '7B model allreduce: about 2.2s at 100 Gbps against about 70ms at 3,200 Gbps', section: 'AI/ML Training', sourceId: 4 },
   { claim: 'Trn1n has 16 EFA interfaces (1,600 Gbps) vs Trn1 8 EFA (800 Gbps)', section: 'AI/ML Training', sourceId: 1 },
   { claim: 'Trn2: 30 to 40% better price performance than P5e and P5en', section: 'AI/ML Training', sourceId: 9 },
