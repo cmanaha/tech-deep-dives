@@ -30,6 +30,8 @@ const READ_HISTORICAL = '2026-08-02';
 const PLUGIN_TAG = 'v1.22.0';
 const PLUGIN_GIN_SPLIT = 'v1.21.0';
 const NCCL_TAG = 'v2.32.3-1';
+const NCCL_219 = 'v2.19.3-1';
+const NCCL_220 = 'v2.20.5-1';
 const NCCL_221 = 'v2.21.5-1';
 const NCCL_222 = 'v2.22.3-1';
 const LIBFABRIC_TAG = 'v2.7.0';
@@ -132,6 +134,8 @@ const code = {
   // NCCL side of the tuner contract.
   ncclIgnore: nccl('src/include/plugin/nccl_tuner.h', 'L43-L44'),
   ncclSymbol: nccl('src/include/plugin/nccl_tuner.h', 'L25'),
+  ncclSymbol219: { ...nccl('src/include/nccl_tuner.h', 'L53', NCCL_219), read: READ },
+  ncclSymbol220: { ...nccl('src/include/nccl_tuner.h', 'L53', NCCL_220), read: READ },
   ncclSymbol221: nccl('src/include/nccl_tuner.h', 'L58', NCCL_221),
   ncclSymbol222: nccl('src/include/nccl_tuner.h', 'L60', NCCL_222),
   ncclEnvParse: nccl('src/tuning/cost_model.cc', 'L306-L345'),
@@ -143,8 +147,6 @@ const code = {
   ncclCallOrder: nccl('src/tuning/tuning.cc', 'L202-L231'),
   ncclPickMin: nccl('src/tuning/tuning.cc', 'L155-L173'),
   ncclChunk: nccl('src/enqueue/enqueue.cc', 'L2355-L2365'),
-  ncclCmpScore: nccl('src/graph/search.cc', 'L190-L212'),
-  ncclSearchSort: nccl('src/graph/search.cc', 'L254-L283'),
   ncclBuffsize: nccl('src/init.cc', 'L1006'),
   ncclNetVersions: nccl('src/plugin/net.cc', 'L40-L42'),
   // GPU-initiated networking.
@@ -207,8 +209,8 @@ function PluginStackDiagram() {
       knobs: 'FI_EFA_* and core FI_* variables.',
     },
     {
-      title: 'EFA device and SRD',
-      sub: 'Nitro hardware',
+      title: 'EFA device',
+      sub: 'Nitro hardware, Scalable Reliable Datagram',
       owns: 'Moves the bytes. Multi-path spraying, hardware retransmit, out-of-order delivery.',
       knobs: 'The instance type decides what you get here.',
     },
@@ -694,7 +696,11 @@ export function NcclOverEfa() {
             the tuner is bundled there <SourceRef provenance="code-derived" code={code.tunerPackaging} />.
             On EC2 the plugin&apos;s CUDA build also sets NCCL_TUNER_PLUGIN to its own library
             unless you set it first <SourceRef provenance="code-derived" code={code.tunerPluginEnv} />.
-            Pointing it at a path by hand is scoped to NCCL 2.19 and 2.20.
+            Pointing it at a path by hand is scoped to NCCL 2.19 and 2.20, which look up the v1
+            tuner symbol <SourceRef provenance="code-derived" code={code.ncclSymbol219} />
+            <SourceRef provenance="code-derived" code={code.ncclSymbol220} />, and to plugin
+            releases before v1.20.0, the release that removed v1{' '}
+            <SourceRef provenance="code-derived" code={code.releaseNotesV120} />.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -714,9 +720,10 @@ export function NcclOverEfa() {
             names the software releases it applies to{' '}
             <SourceRef provenance="code-derived" code={code.envCheatsheet} />. Read against it, the
             standard EFA environment block that circulates in tutorials turns out to be scoped to
-            releases from 2023. OFI_NCCL_EAGER_MAX_SIZE defaults to -1, which turns eager messages
-            off on the RDMA protocol{' '}
-            <SourceRef provenance="code-derived" code={code.paramEager} />. The libfabric side
+            releases from 2023. OFI_NCCL_EAGER_MAX_SIZE is one to change only with measurements in
+            hand: it defaults to -1, which turns eager messages off on the RDMA (Remote Direct
+            Memory Access) protocol <SourceRef provenance="code-derived" code={code.paramEager} />.
+            The libfabric side
             of these variables is covered in the libfabric section; what follows is the NCCL and
             plugin side.
           </Box>
@@ -764,7 +771,7 @@ export function NcclOverEfa() {
 
       <Container
         header={
-          <Header variant="h2" description="Two decisions the plugin makes before a single collective runs: which provider, and which platform.">
+          <Header variant="h2" description="Why leaving FI_PROVIDER unset gets you the efa filter, and what decides the defaults your instance type receives">
             Provider selection and platform detection
           </Header>
         }
@@ -790,7 +797,7 @@ export function NcclOverEfa() {
 
           <Box variant="h3">How the plugin decides which instance type it is on</Box>
           <Box variant="p">
-            It reads the DMI product name out of sysfs, at
+            It reads the DMI (Desktop Management Interface) product name out of sysfs, at
             /sys/devices/virtual/dmi/id/product_name, caches it, and matches it against an ordered
             table <SourceRef provenance="code-derived" code={code.productNameFile} />
             <SourceRef provenance="code-derived" code={code.productName} />. Sysfs is the only
@@ -969,7 +976,8 @@ export function NcclOverEfa() {
             only a job pinned to NCCL 2.21.x binds to. The v3 entry point binds to the plain
             initialiser <SourceRef provenance="code-derived" code={code.tunerV3} />, and so does v6{' '}
             <SourceRef provenance="code-derived" code={code.tunerV6} />. On those versions your
-            NCCL_ALGO filter and the tuner both apply, in that order.
+            NCCL_ALGO filter narrows the table, the tuner votes inside what is left, and NCCL takes
+            the minimum.
           </Alert>
 
           <Box variant="h3">The three conditions that decide whether the tuner runs</Box>
@@ -1040,9 +1048,7 @@ export function NcclOverEfa() {
               <SourceRef provenance="code-derived" code={code.ncclUpdateTable} />, call the tuner and
               pick the minimum <SourceRef provenance="code-derived" code={code.ncclCallOrder} />, and
               the tuner skips any cell still equal to NCCL_ALGO_PROTO_IGNORE{' '}
-              <SourceRef provenance="code-derived" code={code.regionSkip} />. Your filter and the
-              tuner compose: the filter narrows the table, the tuner votes inside what is left, and
-              NCCL takes the minimum of that.
+              <SourceRef provenance="code-derived" code={code.regionSkip} />.
             </Box>
           </ExpandableSection>
 
@@ -1089,25 +1095,6 @@ export function NcclOverEfa() {
           </ExpandableSection>
 
           <ExpandableSection
-            headerText="What cmpScore actually sorts"
-            headerDescription="A function widely cited as the algorithm chooser, and the job it really does"
-          >
-            <Box variant="p">
-              cmpScore is the comparison function for a sort over candidate GPUs, used while NCCL
-              searches for the next GPU to add to a ring or tree channel. The scores come from path
-              hop counts and bandwidths between GPUs and between a GPU and the network device{' '}
-              <SourceRef provenance="code-derived" code={code.ncclSearchSort} />, and the comment
-              above the structure says the sort exists so the search converges quickly even if it
-              times out <SourceRef provenance="code-derived" code={code.ncclCmpScore} />. Guides
-              that cite it as the place algorithms get chosen quote its ordering
-              correctly, interBw then interPciBw then interNhops then intraBw then intraNhops{' '}
-              <SourceRef provenance="code-derived" code={code.ncclCmpScore} />, but algorithm and
-              protocol selection is the cost-table path described above, in src/tuning. The path is
-              worth copying carefully too: the file is src/graph/search.cc, and has been since at
-              least NCCL 2.21.5.
-            </Box>
-          </ExpandableSection>
-          <ExpandableSection
             headerText="One case where the plugin sets NCCL_PROTO for you"
             headerDescription="And the interaction with the v2 tuner bailout that follows from it"
           >
@@ -1138,7 +1125,7 @@ export function NcclOverEfa() {
 
       <Container
         header={
-          <Header variant="h2" description="Four version numbers have to agree, and only one place tells you what is actually loaded.">
+          <Header variant="h2" description="Three versions and the instance type have to agree, and the startup banners are where you read what the running process loaded.">
             Version compatibility, and how to tell what you are running
           </Header>
         }
@@ -1150,7 +1137,7 @@ export function NcclOverEfa() {
             v2.32.3-1 and states backward compatibility with NCCL v2.17.1 and later. It was tested
             with libfabric 2.7.0amzn2.0, requires at least libfabric 1.11.0 to build, requires at
             least libfabric 1.22.0 to compile AWS-specific support, and needs libfabric 2.6.0 or
-            later for the kernel-initiated GIN path{' '}
+            later for the kernel-initiated GIN (GPU-Initiated Networking) path{' '}
             <SourceRef provenance="code-derived" code={code.releaseNotes} />. The 1.22.0 minimum
             matches the run-time gate: an EFA provider on a libfabric older than 1.22.0 is refused
             outright <SourceRef provenance="code-derived" code={code.libfabricGate} />.
@@ -1239,24 +1226,32 @@ export function NcclOverEfa() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The plugin&apos;s GIN (GPU-Initiated Networking) subsystem lets GPU kernels start
-            network transfers, in two modes. Host-proxy GIN is exported at NCCL&apos;s GIN
-            interface versions 11 and 13 under the name Libfabric{' '}
-            <SourceRef provenance="code-derived" code={code.ginProxyExports} />. GDAKI (GPUDirect
-            Async Kernel-Initiated) is a separate export from v1.21.0{' '}
-            <SourceRef provenance="code-derived" code={code.ginGdakiExportFirst} />: interface
-            version 14, named Libfabric_GDAKI, reporting the EFA_GDA device type, value 5{' '}
-            <SourceRef provenance="code-derived" code={code.ginGdakiExport} />
-            <SourceRef provenance="code-derived" code={code.ginGdakiType} />
-            <SourceRef provenance="code-derived" code={code.ncclGinTypes} />. NCCL 2.32.3 runs the
-            host-proxy GIN path itself, over an RMA backend the plugin also exports, and skips an
-            external plugin&apos;s proxy GIN export{' '}
-            <SourceRef provenance="code-derived" code={code.ncclGinProxySkip} />
-            <SourceRef provenance="code-derived" code={code.ncclRmaOrder} />
-            <SourceRef provenance="code-derived" code={code.pluginRmaExport} />. With that release
-            the plugin&apos;s GIN export matters only for GDAKI. Four conditions decide whether a
-            job that uses NCCL&apos;s device API with GIN gets it{' '}
-            <SourceRef provenance="code-derived" code={code.ncclDevGinConnect} />.
+            The plugin&apos;s GIN subsystem lets GPU kernels start network transfers, in two modes:
+            host-proxy GIN, and GDAKI (GPUDirect Async Kernel-Initiated), a separate export from
+            v1.21.0 <SourceRef provenance="code-derived" code={code.ginGdakiExportFirst} />. NCCL
+            2.32.3 runs the host-proxy path itself{' '}
+            <SourceRef provenance="code-derived" code={code.ncclGinProxySkip} />, so with that
+            release the plugin&apos;s GIN export matters only for GDAKI.
+          </Box>
+          <ExpandableSection headerText="Which GIN symbols the plugin exports">
+            <Box variant="p">
+              Host-proxy GIN is exported at NCCL&apos;s GIN interface versions 11 and 13 under the
+              name Libfabric <SourceRef provenance="code-derived" code={code.ginProxyExports} />.
+              The GDAKI export is interface version 14, named Libfabric_GDAKI, reporting the
+              EFA_GDA device type, value 5{' '}
+              <SourceRef provenance="code-derived" code={code.ginGdakiExport} />
+              <SourceRef provenance="code-derived" code={code.ginGdakiType} />
+              <SourceRef provenance="code-derived" code={code.ncclGinTypes} />. NCCL 2.32.3 runs
+              host-proxy GIN over an RMA (Remote Memory Access) backend the plugin also exports, and
+              skips an external plugin&apos;s proxy GIN export{' '}
+              <SourceRef provenance="code-derived" code={code.ncclGinProxySkip} />
+              <SourceRef provenance="code-derived" code={code.ncclRmaOrder} />
+              <SourceRef provenance="code-derived" code={code.pluginRmaExport} />.
+            </Box>
+          </ExpandableSection>
+          <Box variant="p">
+            Four conditions decide whether a job that uses NCCL&apos;s device API with GIN gets
+            GDAKI <SourceRef provenance="code-derived" code={code.ncclDevGinConnect} />.
           </Box>
           <ol style={{ margin: 0 }}>
             <li>

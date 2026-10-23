@@ -685,7 +685,7 @@ export const instances: InstanceInfo[] = [
     generation: 'Current',
     category: 'general',
     note:
-      '75 Gbps on one card, not 200 Gbps on two. The C8i ladder runs 32xlarge 50 Gbps, 48xlarge 75 Gbps, 96xlarge 100 Gbps, and EFA switches on at 48xlarge.',
+      '75 Gbps on one card. The C8i ladder runs 32xlarge 50 Gbps, 48xlarge 75 Gbps, 96xlarge 100 Gbps, and EFA switches on at 48xlarge.',
     provenance: 'documented',
     doc: docs.co,
   },

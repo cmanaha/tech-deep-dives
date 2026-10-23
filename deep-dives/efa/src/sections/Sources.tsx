@@ -51,6 +51,7 @@ const sources: Source[] = [
   { id: 28, title: 'AWS HPC Benchmarking Whitepaper', url: 'https://d1.awsstatic.com/whitepapers/benchmarking-aws-and-hpc-services.pdf', tier: 2, type: 'whitepaper', accessDate: '2026-03-22' },
   { id: 44, title: 'AWS What\'s New: Announcing new high performance computing Amazon EC2 Hpc8a instances (Feb 2026)', url: 'https://aws.amazon.com/about-aws/whats-new/2026/02/announcing-amazon-ec2-hpc8a-instances/', tier: 2, type: 'announcement', accessDate: '2026-08-02' },
   // Tier 3: Third-party analysis, benchmarks, academic papers
+  { id: 52, title: 'Shoeybi et al., Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism (arXiv:1909.08053)', url: 'https://arxiv.org/abs/1909.08053', tier: 3, type: 'academic-paper', accessDate: '2026-10-23' },
   { id: 24, title: 'CFD Direct: OpenFOAM HPC with AWS EFA', url: 'https://cfd.direct/cloud/openfoam-hpc-aws-efa/', tier: 3, type: 'third-party-benchmark', accessDate: '2026-03-22' },
   { id: 25, title: 'Ernest Chiang: AWS SRD Protocol Deep Dive', url: 'https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/', tier: 3, type: 'third-party-analysis', accessDate: '2026-03-22' },
   // Tier 3 because NVIDIA is a third party to AWS. The comparison sections
@@ -107,6 +108,7 @@ const factChecks: FactCheckItem[] = [
   { claim: 'NCCL_ALGO and NCCL_PROTO switch the tuner off only in the v2 entry point (NCCL 2.21.x); v3 and v6 run it either way', section: 'NCCL over EFA: the aws-ofi-nccl Plugin', sourceId: 33 },
 
   // AI/ML Training
+  { claim: 'Tensor parallelism adds allreduce operations to the forward and backward pass', section: 'AI/ML Training', sourceId: 52 },
   { claim: '7B model allreduce: about 2.2s at 100 Gbps against about 70ms at 3,200 Gbps', section: 'AI/ML Training', sourceId: 4 },
   { claim: 'Trn1n has 16 EFA interfaces (1,600 Gbps) vs Trn1 8 EFA (800 Gbps)', section: 'AI/ML Training', sourceId: 1 },
   { claim: 'Trn2: 30 to 40% better price performance than P5e and P5en', section: 'AI/ML Training', sourceId: 9 },

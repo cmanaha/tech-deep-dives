@@ -147,11 +147,13 @@ export function InstanceSupport() {
             EFA (Elastic Fabric Adapter) support is a property of the Nitro hypervisor generation
             the instance runs on.
           </strong>{' '}
-          That single fact decides the EFA generation, the RDMA (Remote Direct Memory Access)
-          capability and the bandwidth ceiling of every row below. EFA-capable types run from 25
-          Gbps at the small end (g6.8xlarge, gr6.8xlarge, vt1.24xlarge) to 6,400 Gbps on
-          p6-b300.48xlarge <SourceRef provenance="documented" doc={docs.efaAcc} />, and the ceiling
-          tracks the Nitro version in a straight line.
+          That single fact decides the EFA generation of every row below, and with it the RDMA
+          (Remote Direct Memory Access) capability and the bandwidth ceiling, apart from the RDMA
+          exceptions the generation cards name. EFA-capable types run from 25 Gbps at the small end
+          (g6.8xlarge, gr6.8xlarge, vt1.24xlarge) to 6,400 Gbps on p6-b300.48xlarge{' '}
+          <SourceRef provenance="documented" doc={docs.efaAcc} />, and the peak steps up with the
+          Nitro version: 400 Gbps on Nitro v3, 3,200 Gbps on Nitro v4 and v5, 6,400 Gbps on Nitro
+          v6.
         </Box>
       </Container>
 
@@ -342,11 +344,9 @@ aws ec2 describe-instance-types \
         <SpaceBetween size="m">
           <GenerationMappingDiagram />
           <Box variant="p">
-            The pairing comes straight from the headings. All four supported-instance-type
-            tables are titled verbatim: <em>Nitro v6 (EFA v4)</em>,{' '}
-            <em>Nitro v5 (EFA v3)</em>, <em>Nitro v4 (EFA v2)</em> and{' '}
-            <em>Nitro v3 (EFA v1)</em> <SourceRef provenance="documented" doc={docs.efa} />.
-            RDMA follows the same ladder: EFA supports RDMA write on most supported instance
+            Each Nitro version pairs with one EFA generation, and the EC2 User Guide files every
+            supported type under a heading that names both{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />. RDMA follows the same ladder: EFA supports RDMA write on most supported instance
             types with Nitro version 4 and later, and RDMA read on all instances with Nitro
             version 4 and later{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. Each rung below carries its peak,
@@ -387,21 +387,22 @@ aws ec2 describe-instance-types \
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                The EC2 User Guide lists p6e-gb200.36xlarge under <em>Nitro v6 (EFA v4)</em>{' '}
+                Three first-party statements give EFA v4, and the hypervisor version is the
+                contested part. The EC2 User Guide lists p6e-gb200.36xlarge under{' '}
+                <em>Nitro v6 (EFA v4)</em>{' '}
                 <SourceRef provenance="documented" doc={docs.efa} />. The UltraServers product page
                 gives P6e-GB200 UltraServers up to 28.8 terabits per second of EFAv4 networking{' '}
                 <SourceRef provenance="documented" doc={docs.ultraservers} />, and the P6 product
                 page also says EFAv4 <SourceRef provenance="documented" doc={docs.p6} />. The
                 accelerated computing instance-types page gives the P6e-GB200 hypervisor as Nitro
                 v5 <SourceRef provenance="documented" doc={docs.ac} />, which the mapping above
-                would pair with EFA v3. So three first-party statements give EFA v4, and the
-                hypervisor version is the contested part.
+                would pair with EFA v3.
               </Box>
               <Box variant="p">
-                The matrix follows the User Guide heading and shows Nitro v6. What you size on is
-                listed per type: the User Guide gives this type RDMA read and write{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />, and the bandwidth ceiling
-                follows below. If the hypervisor version itself matters, ask your account team
+                The matrix follows the User Guide heading and shows Nitro v6. Size on what the User
+                Guide lists for this type: RDMA read and write{' '}
+                <SourceRef provenance="documented" doc={docs.efa} /> and the 1,600 Gbps EFA ceiling
+                in the warning below. If the hypervisor version itself matters, ask your account team
                 which page governs the hardware you will be assigned.
               </Box>
               <Alert type="warning" header="Second P6e-GB200 tension, on bandwidth">
@@ -436,20 +437,20 @@ aws ec2 describe-instance-types \
           >
             <SpaceBetween size="s">
               <Box variant="p">
+                No trn3 instance type of any size appears in the EFA supported-instance-types
+                tables, in the accelerated computing instance-types page, or in the us-east-1
+                price list as of 2026-10-23, so the matrix carries no Trn3 row. The Neuron Trn3
+                architecture page gives EFA bandwidth per UltraServer only: 12,800 Gbps for the
+                64-chip Gen1 UltraServer and 28,800 Gbps for the 144-chip Gen2 UltraServer{' '}
+                <SourceRef provenance="documented" doc={docs.neuronTrn3} />. It gives no
+                per-instance figure and no EFA device count.
+              </Box>
+              <Box variant="p">
                 AWS announced general availability of Trn3 UltraServers on 2025-12-02, built on
                 Trainium3: 2.52 petaflops of FP8 (8-bit floating point) compute per chip, 144 GB
                 of HBM3e (High Bandwidth Memory) per chip, 4.9 TB/s of memory bandwidth per chip,
                 up to 144 chips per UltraServer, and a NeuronSwitch-v1 all-to-all fabric{' '}
                 <SourceRef provenance="documented" doc={docs.trn3} />.
-              </Box>
-              <Box variant="p">
-                No trn3 instance type of any size appears in the EFA supported-instance-types
-                tables, in the accelerated computing instance-types page, or in the us-east-1
-                price list as of 2026-10-23. That is why there is no Trn3 row above. The Neuron
-                Trn3 architecture page gives EFA bandwidth per UltraServer only: 12,800 Gbps for
-                the 64-chip Gen1 UltraServer and 28,800 Gbps for the 144-chip Gen2 UltraServer{' '}
-                <SourceRef provenance="documented" doc={docs.neuronTrn3} />. It gives no
-                per-instance figure and no EFA device count.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -463,9 +464,9 @@ aws ec2 describe-instance-types \
               Hpc6id, Hpc7a, Hpc7g and Hpc8a are all Spot-ineligible{' '}
               <SourceRef provenance="documented" doc={docs.hpc} />. P4d, P4de, P5, P5e, P5en,
               P6-B200, P6-B300, Trn1, Trn1n, Trn2, Inf1, G6, G6e, G7 and G7e do support Spot{' '}
-              <SourceRef provenance="documented" doc={docs.ac} />. Spot prices themselves are not
-              published in any credential-free AWS endpoint, so no Spot rate or savings percentage
-              appears here.
+              <SourceRef provenance="documented" doc={docs.ac} />. No credential-free AWS endpoint
+              carrying Spot prices was located during this research, so no Spot rate or savings
+              percentage appears here.
             </Box>
           </ExpandableSection>
         </SpaceBetween>
@@ -499,8 +500,7 @@ aws ec2 describe-instance-types \
           <Alert type="warning" header="AWS recommends a cluster placement group, and the hard requirement is the Availability Zone">
             <SpaceBetween size="xs">
               <Box variant="p">
-                AWS is explicit: it is not an absolute requirement to launch your EFA-enabled
-                instances into a cluster placement group. AWS recommends one because it lands the
+                A cluster placement group is optional for EFA-enabled instances. AWS recommends one because it lands the
                 instances in a low-latency group in a single Availability Zone{' '}
                 <SourceRef provenance="documented" doc={docs.efaStart} />.
               </Box>

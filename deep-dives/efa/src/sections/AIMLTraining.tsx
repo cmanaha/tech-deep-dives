@@ -26,20 +26,12 @@ const READ = '2026-10-23';
 
 /** Pinned refs. Never a branch: a branch citation cannot be re-verified. */
 const PLUGIN_TAG = 'v1.22.0';
-const NCCL_TAG = 'v2.32.3-1';
 const LIBFABRIC_TAG = 'v2.7.0';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
 const plugin = (path: string, lines?: string): CodeRef => ({
   repo: 'aws/aws-ofi-nccl',
   ref: PLUGIN_TAG,
-  path,
-  lines,
-  read: READ,
-});
-const nccl = (path: string, lines?: string): CodeRef => ({
-  repo: 'NVIDIA/nccl',
-  ref: NCCL_TAG,
   path,
   lines,
   read: READ,
@@ -56,30 +48,22 @@ const code = {
   tunerV2: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L140-L159'),
   tunerV3: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L184-L188'),
   tunerV6: plugin('src/tuner/nccl_ofi_tuner.cpp', 'L190-L246'),
-  ncclCmpScore: nccl('src/graph/search.cc', 'L190-L212'),
   railObjects: plugin('include/nccl_ofi_rdma.h', 'L1414-L1457'),
   railConnMsg: plugin('src/nccl_ofi_rdma.cpp', 'L5983-L5990'),
   railCount: plugin('src/nccl_ofi_rdma.cpp', 'L5100-L5107'),
   railAvInsert: plugin('src/nccl_ofi_rdma.cpp', 'L4904-L4920'),
-  sortRails: plugin('src/platform-aws.cpp', 'L1089-L1119'),
   writeTopoFile: plugin('src/nccl_ofi_rdma.cpp', 'L230-L299'),
   writeTopoGate: plugin('src/nccl_ofi_rdma.cpp', 'L7199-L7210'),
   topoEnv: plugin('src/platform-aws.cpp', 'L764-L790'),
-  topoP4d: plugin('topology/p4d-24xl-topo.xml'),
-  topoG5: plugin('topology/g5.48xl-topo.xml'),
   tunerPluginEnv: plugin('src/platform-aws.cpp', 'L603-L661'),
   tunerPluginCall: plugin('src/platform-aws.cpp', 'L757-L761'),
   gdrProbe: plugin('src/nccl_ofi_ofiutils.cpp', 'L345-L372'),
   hmemProps: plugin('src/nccl_ofi_net.cpp', 'L488-L492'),
   ptrSupport: plugin('src/nccl_ofi_interface_nvidia.cpp', 'L95-L98'),
   gdrForce: plugin('src/nccl_ofi_net.cpp', 'L405-L410'),
-  cudaPointer: plugin('src/nccl_ofi_cuda.cpp', 'L238'),
-  cudaPointerCall: plugin('src/nccl_ofi_cuda.cpp', 'L607-L625'),
   paramEager: plugin('include/nccl_ofi_param.h', 'L223-L229'),
   ginGdaki: plugin('src/rdma/gin/nccl_ofi_gin_gdaki.cpp', 'L1256-L1274'),
-  ginBuild: plugin('configure.ac', 'L343-L351'),
   gdaOps: lfab('prov/efa/src/fi_ext_efa.h', 'L11'),
-  gdaOpsDirect: lfab('prov/efa/src/efa_domain.c', 'L803-L808'),
   hmemThresholds: lfab('prov/efa/src/efa_hmem.c', 'L45-L92'),
   rdmCaps: lfab('prov/efa/src/efa_prov_info.c', 'L569-L572'),
   rdmSize: lfab('prov/efa/src/efa_prov_info.c', 'L622-L625'),
@@ -105,6 +89,13 @@ const docs: Record<string, DocRef> = {
     url: `${EC2_DOC}efa-acc-inst-types.html`,
     tier: 1,
     accessed: ACCESSED,
+  },
+  megatron: {
+    title:
+      'Shoeybi et al., Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism (arXiv:1909.08053)',
+    url: 'https://arxiv.org/abs/1909.08053',
+    tier: 3,
+    accessed: REFRESHED,
   },
   nvlink: {
     title: 'NVIDIA NVLink and NVLink Switch',
@@ -143,9 +134,9 @@ export function AIMLTraining() {
         }
       >
         <Box variant="p">
-          Distributed training is <strong>communication-bound</strong>. As you scale from 1 node to
-          N nodes, the fraction of each step spent synchronizing grows, and EFA&apos;s job is to
-          keep scaling efficiency close to linear.
+          Distributed training grows more <strong>communication-bound</strong> as it scales. As you
+          scale from 1 node to N nodes, the fraction of each step spent synchronizing grows, and the
+          job of EFA (Elastic Fabric Adapter) is to keep scaling efficiency close to linear.
         </Box>
       </Container>
 
@@ -159,9 +150,10 @@ export function AIMLTraining() {
         <SpaceBetween size="m">
           <Box variant="p">
             Each strategy splits the model and batch differently, and the split decides the traffic
-            shape: one large allreduce per step, many small all-to-all exchanges, or point-to-point
-            activation handoffs. Find your strategy below and you know which property of the fabric
-            you are buying, bandwidth or latency.
+            shape: one large allreduce per step, allreduces added to every forward and backward
+            pass, all-to-all exchanges sized by routing, or point-to-point activation handoffs. Find
+            your strategy below and you know which property of the fabric you are buying, bandwidth
+            or latency.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -187,10 +179,11 @@ export function AIMLTraining() {
             <div>
               <Box variant="h3">Model Parallelism (Tensor + Pipeline)</Box>
               <Box variant="p">
-                Tensor parallelism splits individual layers across GPUs and requires
-                <strong> all-to-all</strong> communication every forward/backward pass. Pipeline
-                parallelism splits layers sequentially and requires <strong> point-to-point</strong>{' '}
-                activation transfers between stages.
+                Tensor parallelism splits individual layers across GPUs and adds{' '}
+                <strong>allreduce</strong> operations to every forward and backward pass{' '}
+                <SourceRef provenance="documented" doc={docs.megatron} label="tier 3: paper" />.
+                Pipeline parallelism splits layers sequentially and requires{' '}
+                <strong>point-to-point</strong> activation transfers between stages.
               </Box>
               <Box variant="p">
                 Tensor parallelism is latency-sensitive (many small messages) and pipeline
@@ -209,15 +202,13 @@ export function AIMLTraining() {
                 amounts of data to different nodes based on routing decisions.
               </Box>
               <Box variant="p">
-                SRD&apos;s multi-path routing handles asymmetric traffic well. EFA supports GPUDirect
-                Async: the libfabric EFA provider exposes it as FI_EFA_GDA_OPS on the efa-direct fabric{' '}
-                <SourceRef provenance="code-derived" code={code.gdaOps} />
-                <SourceRef provenance="code-derived" code={code.gdaOpsDirect} />, and the aws-ofi-nccl
-                plugin consumes it through the GDAKI export of its GIN (GPU-Initiated Networking)
-                subsystem, built whenever libfabric and CUDA supply what it needs{' '}
-                <SourceRef provenance="code-derived" code={code.ginGdaki} />
-                <SourceRef provenance="code-derived" code={code.ginBuild} />. The NCCL over EFA
-                section has the full sequence.
+                The multi-path routing of SRD (Scalable Reliable Datagram) handles asymmetric
+                traffic well. EFA also supports GPUDirect Async{' '}
+                <SourceRef provenance="code-derived" code={code.gdaOps} />, which the aws-ofi-nccl
+                plugin consumes through the GDAKI (GPUDirect Async Kernel-Initiated) export of its
+                GIN (GPU-Initiated Networking) subsystem{' '}
+                <SourceRef provenance="code-derived" code={code.ginGdaki} />. The NCCL over EFA
+                section has the conditions a job has to meet to use it.
               </Box>
               <StatusIndicator type="info">
                 EFA beneficial: routing decisions set the all-to-all volume
@@ -248,8 +239,8 @@ export function AIMLTraining() {
 
       <Container
         header={
-          <Header variant="h2" description="Trainium reaches EFA through Neuron CCL and libfabric, and runs collectives on cores dedicated to communication">
-            Neuron + EFA (Trainium/Inferentia)
+          <Header variant="h2" description="Which Trainium instance to pick for multi-node training, and why its collectives run on cores separate from compute">
+            Neuron + EFA (Trainium)
           </Header>
         }
       >
@@ -257,7 +248,7 @@ export function AIMLTraining() {
           <Box variant="p">
             AWS Trainium and Inferentia2 chips run on the <strong>Neuron SDK</strong>. The Neuron
             Collective Communication Library (Neuron CCL) calls libfabric directly, so the EFA path
-            on these instances is Neuron CCL, then libfabric, then the device.
+            on Trainium instances is Neuron CCL, then libfabric, then the device.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
@@ -282,7 +273,7 @@ export function AIMLTraining() {
             </div>
           </ColumnLayout>
 
-          <ExpandableSection headerText="Neuron architecture advantage: dedicated collectives communication (CC) cores">
+          <ExpandableSection headerText="Neuron collectives run on dedicated collective communication (CC) cores">
             <SpaceBetween size="s">
               <Box variant="p">
                 Each NeuronCore has <strong>dedicated CC cores</strong>, synchronization processors
@@ -292,8 +283,9 @@ export function AIMLTraining() {
                 with zero contention between compute and communication and on-chip traffic
                 prioritization so time-sensitive data moves first, which minimizes the straggler
                 effect <SourceRef provenance="documented" doc={docs.trainium} />. That is a
-                structural difference from the CUDA and NCCL path, where a collective occupies GPU
-                streaming multiprocessors. AWS publishes no figure for the resulting speedup, and it
+                structural difference from the CUDA and NCCL (NVIDIA Collective Communications
+                Library) path, where a collective occupies GPU streaming multiprocessors. No AWS
+                figure for the resulting speedup was located during this research, and the speedup
                 is workload-dependent.
               </Box>
             </SpaceBetween>
@@ -310,8 +302,8 @@ export function AIMLTraining() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            NVIDIA NCCL (Collective Communications Library) is the standard for GPU-to-GPU
-            communication. The <code>aws-ofi-nccl</code> plugin bridges NCCL to EFA via libfabric:
+            NCCL is the standard for GPU-to-GPU communication. The <code>aws-ofi-nccl</code>{' '}
+            plugin bridges NCCL to EFA via libfabric:
             PyTorch calls NCCL for allreduce, allgather and reduce-scatter; NCCL decides which GPU
             talks to which and in what order, then hands each send and receive to the plugin; the
             plugin turns those into libfabric operations and registers the memory; libfabric maps
@@ -330,14 +322,13 @@ export function AIMLTraining() {
 FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               </pre>
               <Box variant="p">
-                The other variables in the usual EFA environment block either apply only to plugin
-                releases from 2023 and earlier or are best left at their defaults. The plugin publishes its own cheatsheet, and each entry names the releases
-                it applies to <SourceRef provenance="code-derived" code={code.envCheatsheet} />. Read
-                against it, <code>FI_PROVIDER=efa</code> applies to aws-ofi-nccl 1.5.0 and older,
-                the cheatsheet says to leave <code>FI_EFA_USE_DEVICE_RDMA=1</code> out on libfabric
-                1.18.0 or later with aws-ofi-nccl 1.7.0 or later, and both{' '}
-                <code>NCCL_BUFFSIZE</code> and the channel-count knobs work best at their defaults.
-                Leave <code>NCCL_TUNER_PLUGIN</code> unset too: on EC2 the plugin&apos;s CUDA build
+                The rest of the usual EFA environment block either applies only to plugin releases
+                from 2023 and earlier or is best left at its defaults: <code>FI_PROVIDER=efa</code>{' '}
+                applies to aws-ofi-nccl 1.5.0 and older, <code>FI_EFA_USE_DEVICE_RDMA=1</code> can
+                be left out on libfabric 1.18.0 or later with aws-ofi-nccl 1.7.0 or later, and{' '}
+                <code>NCCL_BUFFSIZE</code> and the channel-count knobs work best at their defaults{' '}
+                <SourceRef provenance="code-derived" code={code.envCheatsheet} />. Leave{' '}
+                <code>NCCL_TUNER_PLUGIN</code> unset too: on EC2 the plugin&apos;s CUDA build
                 sets it to its own library{' '}
                 <SourceRef provenance="code-derived" code={code.tunerPluginEnv} />
                 <SourceRef provenance="code-derived" code={code.tunerPluginCall} />. The NCCL over
@@ -365,7 +356,8 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 <strong>GPU memory gets different transfer protocols:</strong> when the buffer lives
                 in GPU memory and the device supports peer-to-peer access, libfabric uses the eager and runting-read protocols only. The
                 mechanism is a threshold: the provider sets the maximum medium message size to zero
-                for CUDA, ROCR and Neuron memory and warns that only eager and runting read
+                for CUDA, ROCR (the AMD ROCm runtime) and Neuron memory and warns that only eager
+                and runting read
                 protocols are supported{' '}
                 <SourceRef provenance="code-derived" code={code.hmemThresholds} />.
               </Box>
@@ -374,7 +366,8 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
               </Box>
               <ul>
                 <li><code>fi_send</code>: eager sends for small messages (below rendezvous threshold),
-                  off by default on the plugin&apos;s RDMA protocol at v1.22.0{' '}
+                  off by default on the plugin&apos;s RDMA (Remote Direct Memory Access) protocol
+                  at v1.22.0{' '}
                   <SourceRef provenance="code-derived" code={code.paramEager} /></li>
                 <li><code>fi_write</code> with immediate data: the RDMA write path, with completion
                   signalled out of the immediate data rather than a separate message</li>
@@ -391,8 +384,7 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 <SourceRef provenance="code-derived" code={code.railCount} />, and it inserts each
                 remote rail into the matching local address vector{' '}
                 <SourceRef provenance="code-derived" code={code.railAvInsert} />, so a communicator
-                spans every rail. The code is in <code>src/nccl_ofi_rdma.cpp</code>, named{' '}
-                <code>nccl_ofi_rdma.c</code> before the plugin moved to C++ in v1.15.0.
+                spans every rail.
               </Box>
               <Box variant="p">
                 <strong>GPU memory support is decided once per process:</strong> the plugin treats
@@ -403,21 +395,13 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 <SourceRef provenance="code-derived" code={code.hmemProps} />
                 <SourceRef provenance="code-derived" code={code.ptrSupport} />; without it, host
                 pointers only and NCCL&apos;s Simple protocol{' '}
-                <SourceRef provenance="code-derived" code={code.gdrForce} />. It resolves{' '}
-                <code>cuPointerGetAttributes</code>, which finds the GPU that owns a buffer, at
-                initialisation rather than linking it{' '}
-                <SourceRef provenance="code-derived" code={code.cudaPointer} />
-                <SourceRef provenance="code-derived" code={code.cudaPointerCall} />.
+                <SourceRef provenance="code-derived" code={code.gdrForce} />.
               </Box>
               <Box variant="p">
                 <strong>Algorithm selection:</strong> the <code>aws-ofi-nccl</code> tuner writes
                 into <code>collCostTable</code>, the algorithm by protocol cost matrix, making the
                 combinations it prefers cheaper. NCCL then picks the minimum, so the tuner biases a
-                choice NCCL still makes. Two details follow. <code>cmpScore</code> sorts candidate
-                GPUs during ring and tree search and lives in <code>src/graph/search.cc</code>{' '}
-                <SourceRef provenance="code-derived" code={code.ncclCmpScore} />, so guides naming
-                it as the algorithm chooser (often at <code>src/search.cc</code>) name the wrong
-                function. And the one entry point that switches the tuner off when{' '}
+                choice NCCL still makes. The one entry point that switches the tuner off when{' '}
                 <code>NCCL_ALGO</code> or <code>NCCL_PROTO</code> is set is v2, serving NCCL 2.21.x{' '}
                 <SourceRef provenance="code-derived" code={code.tunerV2} />; v3 for NCCL 2.22.3 and
                 later <SourceRef provenance="code-derived" code={code.tunerV3} /> and v6 for NCCL
@@ -435,8 +419,8 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
                 carries one for it <SourceRef provenance="documented" doc={docs.efaNccl} />.
                 GPUDirect RDMA is a separate mechanism, enabled by the EFA kernel driver, and
                 without it the plugin offers NCCL host buffers only{' '}
-                <SourceRef provenance="code-derived" code={code.ptrSupport} />. AWS gives no minimum
-                GDRCopy version, so this page quotes none.
+                <SourceRef provenance="code-derived" code={code.ptrSupport} />. The guide gives no
+                minimum GDRCopy version, so this page quotes none.
               </Alert>
               <Alert type="error">
                 <strong>NVIDIA Fabric Manager on P4d/P5:</strong> run the{' '}
@@ -459,19 +443,14 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
 
           <Alert type="success" header="Getting NCCL_TOPO_FILE right: leave it unset">
             A topology XML tells NCCL which network device sits under the same PCIe switch as each
-            GPU, and so which device carries that GPU&apos;s inter-node traffic.
-            The plugin ships three of those files at v1.22.0, for p4d, p4de and g5.48xlarge{' '}
-            <SourceRef provenance="code-derived" code={code.topoP4d} />
-            <SourceRef provenance="code-derived" code={code.topoG5} />, and points{' '}
-            <code>NCCL_TOPO_FILE</code> at the matching one itself when the variable is unset{' '}
-            <SourceRef provenance="code-derived" code={code.topoEnv} />. Where a GPU has more than
-            one EFA device in its group, as on P5, P5en and P6-B300, the plugin writes a topology
-            file on the running instance{' '}
+            GPU, and so which device carries that GPU&apos;s inter-node traffic. With{' '}
+            <code>NCCL_TOPO_FILE</code> unset, the plugin supplies one itself: a packaged file on
+            p4d, p4de and g5.48xlarge <SourceRef provenance="code-derived" code={code.topoEnv} />,
+            and a file written on the running instance where a GPU has more than one EFA device, as
+            on P5, P5en and P6-B300{' '}
             <SourceRef provenance="code-derived" code={code.writeTopoFile} />
-            <SourceRef provenance="code-derived" code={code.writeTopoGate} /> and reorders the EFA
-            devices within each GPU&apos;s group so that paired devices line up across nodes{' '}
-            <SourceRef provenance="code-derived" code={code.sortRails} />, so leave it unset there
-            too.
+            <SourceRef provenance="code-derived" code={code.writeTopoGate} />. The NCCL over EFA
+            section explains both paths and the rail ordering that goes with them.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -492,8 +471,8 @@ FI_LOG_LEVEL=info   # libfabric provider selection and warnings`}
             network: the nodes you are already paying for stop idling.
           </Box>
           <Alert type="info" header="Efficiency depends on your job, so the band to trust is your own">
-            No scaling efficiency band for EFA on P5, and none for TCP at the same scale, traces to
-            a benchmark that can be cited, so this page quotes neither. Efficiency depends on model,
+            No scaling efficiency band for EFA on P5, or for TCP at the same scale, was traced to a
+            citable benchmark during this research, so this page quotes neither. Efficiency depends on model,
             parallelism strategy, batch size, node count and the collective algorithm chosen, so a
             single band would be misleading even if it were sourced. The sourced performance numbers
             on this site are in the Traditional HPC section, each tied to a named benchmark and

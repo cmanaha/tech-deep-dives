@@ -196,6 +196,20 @@ const code: Record<string, CodeRef> = {
     path: 'pkg',
     read: READ,
   },
+  karpenterPgSelector: {
+    repo: 'aws/karpenter-provider-aws',
+    ref: 'v1.15.0',
+    path: 'pkg/apis/v1/ec2nodeclass.go',
+    lines: 'L57-L61',
+    read: READ,
+  },
+  karpenterPgLaunchTemplate: {
+    repo: 'aws/karpenter-provider-aws',
+    ref: 'v1.15.0',
+    path: 'pkg/providers/launchtemplate/launchtemplate.go',
+    lines: 'L157-L175',
+    read: READ,
+  },
   ccmTopology: { repo: 'kubernetes/cloud-provider-aws', ref: 'v1.37.0', path: 'pkg/providers/v1/instances_v2.go', lines: 'L95-L118', read: READ },
   ccmLabels: { repo: 'kubernetes/cloud-provider-aws', ref: 'v1.37.0', path: 'pkg/providers/v1/well_known_labels.go', lines: 'L22-L26', read: READ },
   ccmLabelsFirst: { repo: 'kubernetes/cloud-provider-aws', ref: 'v1.32.0', path: 'pkg/providers/v1/well_known_labels.go', lines: 'L23-L26', read: READ },
@@ -660,8 +674,8 @@ export function TopologyApi() {
                 layer that decides adjacency.
               </Box>
               <Box variant="p">
-                <strong>Impact: unmeasured.</strong> No AWS statement and no benchmark quantifies
-                what the mis-indexed grouping costs on a real job. Treat it as a correctness defect
+                <strong>Impact: unmeasured.</strong> No AWS statement or benchmark located during
+                this research quantifies what the mis-indexed grouping costs on a real job. Treat it as a correctness defect
                 of unmeasured cost.
               </Box>
             </SpaceBetween>
@@ -675,9 +689,9 @@ export function TopologyApi() {
               <Box variant="p">
                 The documentation gives each layer a position in a hierarchy and identifies the
                 bottom node as the one connected to the instance{' '}
-                <SourceRef provenance="documented" doc={docs.topoHow} />. That is the whole
-                published vocabulary: AWS publishes no mapping from layer index to a named
-                datacenter construct such as spine, aggregation, leaf, top of rack or rack. Any
+                <SourceRef provenance="documented" doc={docs.topoHow} />. No AWS mapping from layer
+                index to a named datacenter construct, such as spine, aggregation, leaf, top of rack
+                or rack, was located during this research. Any
                 page that tells you layer iii is a top-of-rack switch is inferring it.
               </Box>
               <Box variant="p">
@@ -714,7 +728,8 @@ export function TopologyApi() {
                 .
               </Box>
               <Box variant="p">
-                All three are AWS authored and cannot all describe the same response. The blog may
+                All three are AWS authored, and the blog cannot describe the same response as the
+                two pages that say three layers. The blog may
                 be describing the general label schema rather than that instance depth, and nothing
                 located during this research settles it. Read the depth from the array length at
                 run time, which is correct under either answer.
@@ -896,7 +911,7 @@ aws ec2 describe-instance-topology \
                 domain, and calling the API immediately after launching instances might
                 return null for capacityBlockId because the data might not have fully propagated{' '}
                 <SourceRef provenance="documented" doc={docs.instApi} />. Post-launch automation
-                that reads it once and caches the answer will cache a wrong answer{' '}
+                that reads it once and caches the answer can cache a wrong answer{' '}
                 <SourceRef provenance="documented" doc={docs.consistency} />.
               </Box>
               <Box variant="p">
@@ -1030,7 +1045,7 @@ aws ec2 describe-capacity-reservation-topology \
           </Alert>
 
           <ExpandableSection
-            headerText="AWS states the reservation limit two ways on two pages"
+            headerText="AWS states the reservation limit two ways on three pages"
             headerDescription="Trust the API reference, and chunk your reservation IDs in tens"
           >
             <SpaceBetween size="s">
@@ -1072,7 +1087,7 @@ aws ec2 describe-capacity-reservation-topology \
         header={
           <Header
             variant="h2"
-            description="The network node hash becomes the switch name, verbatim"
+            description="Which Slurm topology plugin fits your fleet, tree or block, and how the network node hash becomes the switch name"
           >
             Slurm: topology.conf, tree against block, and topology.yaml
           </Header>
@@ -1185,7 +1200,8 @@ sbatch --switch=1 train.sbatch`}</pre>
               </Box>
               <Box variant="p">
                 To turn placement off entirely, set TopologyPlugin=topology/flat{' '}
-                <SourceRef provenance="documented" doc={docs.hyperpodSlurm} />. AWS PCS takes the
+                <SourceRef provenance="documented" doc={docs.hyperpodSlurm} />. AWS PCS (Parallel
+                Computing Service) takes the
                 same approach for UltraServer node groups: it inspects the Capacity Block,
                 configures the plugin, and continuously reconciles a generated topology.yaml
                 against the current cluster state{' '}
@@ -1200,7 +1216,7 @@ sbatch --switch=1 train.sbatch`}</pre>
         header={
           <Header
             variant="h2"
-            description="One kubectl command tells you whether the labels are there, and Karpenter needs the scheduler turned off"
+            description="One kubectl command tells you whether the labels are there, and Karpenter needs topology-aware scheduling turned off"
           >
             Kubernetes: topology labels and topology-aware scheduling
           </Header>
@@ -1236,7 +1252,7 @@ sbatch --switch=1 train.sbatch`}</pre>
           </Box>
 
           <Box variant="code">
-            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# See which layer each node sits on. Layer 4 exists only on four-layer types.
+            <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# See which layer each node sits on.
 kubectl get nodes \
   -L topology.k8s.aws/network-node-layer-1 \
   -L topology.k8s.aws/network-node-layer-2 \
@@ -1278,18 +1294,21 @@ metadata:
                 TopologyAwareScheduling to false, and restart the Kueue controller deployment.
               </Box>
               <Box variant="p">
-                A search of the full aws/karpenter-provider-aws v1.15.0 release for
-                network-node-layer returns zero occurrences, and so does a search for
-                DescribeInstanceTopology{' '}
-                <SourceRef provenance="code-derived" code={code.karpenter} />. Karpenter neither
-                calls the topology API nor emits these labels. Its nodes carry them anyway, from the
-                cloud controller manager in the EKS control plane{' '}
-                <SourceRef provenance="documented" doc={docs.eksTopo} />.
+                Karpenter nodes carry the labels, written by the cloud controller manager in the EKS
+                control plane <SourceRef provenance="documented" doc={docs.eksTopo} />. A search of
+                the full aws/karpenter-provider-aws v1.15.0 release for network-node-layer returns
+                zero occurrences, and so does a search for DescribeInstanceTopology{' '}
+                <SourceRef provenance="code-derived" code={code.karpenter} />, so in that release
+                Karpenter neither calls the topology API nor emits these labels.
               </Box>
               <Box variant="p">
                 What Karpenter does enforce is zonal placement through topology.kubernetes.io/zone
-                and placement group membership through the launch template. That is a useful
-                constraint set, and its boundary sits one level above the network node layers.
+                and placement group membership through the EC2NodeClass placementGroupSelector{' '}
+                <SourceRef provenance="code-derived" code={code.karpenterPgSelector} />, which it
+                writes into the launch templates it generates{' '}
+                <SourceRef provenance="code-derived" code={code.karpenterPgLaunchTemplate} />. That
+                is a useful constraint set, and its boundary sits one level above the network node
+                layers.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1363,13 +1382,13 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
             <SourceRef provenance="documented" doc={docs.instType} />. Those two fields, plus
             zoneId, are what let a single response answer both what did I ask for and what did I
             get. A cluster placement group guarantees a low-latency group in one Availability Zone.
-            It is not a published guarantee that every member shares a bottom network node, and
-            AWS does not publish how often the two diverge.
+            It is not a published guarantee that every member shares a bottom network node, and no
+            AWS figure for how often the two diverge was located during this research.
           </Alert>
 
           <ExpandableSection
             headerText="Where the published evidence stops"
-            headerDescription="Three gaps to check before you quote a number you read elsewhere"
+            headerDescription="Two gaps to check before you quote a number you read elsewhere"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1382,10 +1401,6 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
               <Box variant="p">
                 <strong>Layer to hardware mapping.</strong> AWS publishes depth. Nothing in the
                 documentation binds layer i, ii or iii to a spine, aggregation or leaf tier.
-              </Box>
-              <Box variant="p">
-                <strong>One open contradiction.</strong> The depth of p6e-gb200.36xlarge has AWS
-                sources on each side. Read the depth from the response rather than from a table.
               </Box>
             </SpaceBetween>
           </ExpandableSection>

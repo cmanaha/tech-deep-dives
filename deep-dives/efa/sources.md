@@ -13,8 +13,8 @@ Research behind the current content lives in two refresh directories:
   `04-open-items-sweep.md`), one authoring log per section group with its claim diff,
   and the adversarial fact check of every changed claim.
 
-- **Sources declared in the appendix:** 50
-- **Fact-check entries in the appendix:** 45, referencing 26 distinct source ids
+- **Sources declared in the appendix:** 51
+- **Fact-check entries in the appendix:** 46, referencing 27 distinct source ids
 - **Glossary entries:** 106
 - **Orphans (no fact-check references them):** 24
 
@@ -125,17 +125,18 @@ original build and assert only that the URL resolved when the August pass probed
 | 44 | AWS What's New: Announcing new high performance computing Amazon EC2 Hpc8a instances (Feb 2026) | https://aws.amazon.com/about-aws/whats-new/2026/02/announcing-amazon-ec2-hpc8a-instances/ | announcement | 2026-08-02 | 1 |
 | 50 | AWS News Blog: Now Available - Elastic Fabric Adapter (EFA) for Tightly-Coupled HPC Workloads (April 29, 2019) | https://aws.amazon.com/blogs/aws/now-available-elastic-fabric-adapter-efa-for-tightly-coupled-hpc-workloads/ | aws-blog | 2026-10-23 | 1 |
 
-## Tier 3: Third-party analysis, benchmarks, vendor pages outside AWS (3)
+## Tier 3: Third-party analysis, benchmarks, vendor pages outside AWS (4)
 
 | id | Title | URL | Type | Accessed | Fact-checks |
 |---|---|---|---|---|---|
 | 24 | CFD Direct: OpenFOAM HPC with AWS EFA | https://cfd.direct/cloud/openfoam-hpc-aws-efa/ | third-party-benchmark | 2026-03-22 | 1 |
 | 25 | Ernest Chiang: AWS SRD Protocol Deep Dive | https://www.ernestchiang.com/en/notes/general/aws-srd-scalable-reliable-datagram/ | third-party-analysis | 2026-03-22 | 0 |
 | 45 | NVIDIA NVLink and NVLink Switch | https://www.nvidia.com/en-us/data-center/nvlink/ | product-page | 2026-10-23 | 1 |
+| 52 | Shoeybi et al., Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism (arXiv:1909.08053) | https://arxiv.org/abs/1909.08053 | academic-paper | 2026-10-23 | 1 |
 
 ## Orphan sources
 
-24 of 50 sources are referenced by no `factChecks` entry. An orphan is
+24 of 51 sources are referenced by no `factChecks` entry. An orphan is
 not dead weight by default: most of these are cited inline from section files through
 `SourceRef` and are orphans only with respect to the appendix fact-check array.
 

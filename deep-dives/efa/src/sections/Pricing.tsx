@@ -61,29 +61,18 @@ export function Pricing() {
           </Header>
         }
       >
-        <SpaceBetween size="m">
-          <Alert type="success" header="EFA (Elastic Fabric Adapter) carries no additional charge">
-            <Box variant="p">
-              EFA "is available as an optional Amazon EC2
-              networking feature that you can enable on any supported instance at no additional
-              cost."{' '}
-              <SourceRef
-                provenance="documented"
-                doc={EFA_DOC}
-                label="doc: EFA pricing"
-              />
-            </Box>
-          </Alert>
+        <Alert type="success" header="EFA (Elastic Fabric Adapter) carries no additional charge">
           <Box variant="p">
-            Every On-Demand rate on this page was read out of the AWS Price List bulk API,
-            publication version 20261022231453, under one strict filter: Linux, Shared tenancy,
-            TermType=OnDemand, CapacityStatus=Used, MarketOption=OnDemand, no pre-installed
-            software, no license. That last filter carries weight: the same SKU (stock keeping
-            unit) also has a MarketOption=CapacityBlock row priced at zero, which quietly corrupts
-            any naive search of the file.{' '}
-            <SourceRef provenance="documented" doc={PRICE_LIST_VIRGINIA} label="doc: price list" />
+            EFA "is available as an optional Amazon EC2
+            networking feature that you can enable on any supported instance at no additional
+            cost."{' '}
+            <SourceRef
+              provenance="documented"
+              doc={EFA_DOC}
+              label="doc: EFA pricing"
+            />
           </Box>
-        </SpaceBetween>
+        </Alert>
       </Container>
 
       <Table
@@ -122,7 +111,7 @@ export function Pricing() {
         header={
           <Header
             variant="h2"
-            description="us-east-1, Linux, Shared tenancy, On-Demand. Price list version 20261022231453."
+            description="What a Gbps of EFA costs on each family, the number that decides between network-optimized instances and the accelerator premium"
           >
             Instance cost against EFA bandwidth
           </Header>
@@ -130,9 +119,9 @@ export function Pricing() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The question worth asking is what a Gbps of EFA bandwidth costs on each family. That is
-            the number that decides whether you scale out on cheap network-optimized instances or
-            pay the accelerator premium.
+            The rates are us-east-1, Linux, Shared tenancy, On-Demand. What a Gbps of EFA bandwidth
+            costs on each family is the number that decides whether you scale out on cheap
+            network-optimized instances or pay the accelerator premium.
           </Box>
           <Table
             columnDefinitions={[
@@ -175,11 +164,11 @@ export function Pricing() {
             sortingDisabled
             variant="embedded"
           />
-          <Alert type="info" header="The cost-per-Gbps column is our arithmetic, not an AWS figure">
+          <Alert type="info" header="The cost-per-Gbps column is our arithmetic">
             <Box variant="p">
               AWS does not publish a cost-per-Gbps metric. This column is the On-Demand column
               divided by the max EFA bandwidth column, both of which carry their own citation, so
-              you can redo the sum. It is a comparison aid, not a price. It also ignores
+              you can redo the sum. It is a comparison aid. It also ignores
               everything an instance does besides move packets, which is why c8i.48xlarge looks
               terrible here and is still the right choice for a workload that is mostly compute.
             </Box>
@@ -283,10 +272,18 @@ export function Pricing() {
             <Box variant="p">
               A price is a claim with an expiry date. Re-pull the bulk API before you build a
               business case on any rate here, and cite the version you read alongside the URL, so
-              the next reader can tell staleness from a real change. Every On-Demand rate on this
-              page is pinned to version 20261022231453.
+              the next reader can tell staleness from a real change.
             </Box>
           </Alert>
+          <Box variant="p">
+            Every On-Demand rate on this page was read out of the AWS Price List bulk API,
+            publication version 20261022231453, under one strict filter: Linux, Shared tenancy,
+            TermType=OnDemand, CapacityStatus=Used, MarketOption=OnDemand, no pre-installed
+            software, no license. The MarketOption filter carries weight: the same SKU (stock
+            keeping unit) also has a MarketOption=CapacityBlock row priced at zero, which quietly
+            corrupts any naive search of the file.{' '}
+            <SourceRef provenance="documented" doc={PRICE_LIST_VIRGINIA} label="doc: price list" />
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -294,7 +291,7 @@ export function Pricing() {
         header={
           <Header
             variant="h2"
-            description="Which families you can bid on, and where a real rate comes from"
+            description="Which families support Spot, and where a real rate comes from"
           >
             Spot
           </Header>
@@ -305,15 +302,16 @@ export function Pricing() {
             <Box variant="p">
               The instance specification tables carry Spot eligibility as a plain column, so
               eligibility is citable. The rate is a different matter: Spot rates do not appear in
-              the EC2 Price List bulk API or in any credential-free first-party AWS endpoint. So a
-              Spot rate cannot be pinned to a price list version the way every other rate here is,
+              the EC2 Price List bulk API, and no credential-free first-party AWS endpoint carrying
+              them was located during this research. So a Spot rate cannot be pinned to a price
+              list version the way every On-Demand rate here is,
               and any Spot figure you carry into a business case has to arrive with its own
               provenance and its own date.
             </Box>
           </Alert>
           <ColumnLayout columns={2} variant="text-grid">
             <div>
-              <Box variant="h3">Families sold as whole units</Box>
+              <Box variant="h3">Families with no Spot support</Box>
               <Box variant="p">
                 p6e-gb200.36xlarge and trn2u.48xlarge both show Spot support of No.{' '}
                 <SourceRef provenance="documented" doc={AC_DOC} />
@@ -327,14 +325,14 @@ export function Pricing() {
               </Box>
             </div>
             <div>
-              <Box variant="h3">Families you can bid on</Box>
+              <Box variant="h3">Families with Spot support</Box>
               <Box variant="p">
                 p4d, p4de, p5, p5e, p5en, p6-b200, p6-b300, trn1, trn1n, trn2, inf1, g6, g6e, g7
                 and g7e all show Spot support of Yes.{' '}
                 <SourceRef provenance="documented" doc={AC_DOC} />
               </Box>
               <Box variant="p">
-                Eligibility is not availability. For a multi-node EFA job every instance has to
+                For a multi-node EFA job every instance has to
                 land in one Availability Zone, and a single interruption takes the collective down
                 with it. Treat Spot as viable for checkpointed training and unsuitable for
                 latency-bound inference behind a placement constraint.
@@ -388,11 +386,18 @@ export function Pricing() {
                 UTC <DerivedBadge />. The monitoring page times the warning at 40 minutes before
                 the end, with no UltraServer case{' '}
                 <SourceRef provenance="documented" doc={CAPACITY_BLOCK_MONITOR_DOC} />, so for
-                UltraServers the two pages disagree. Schedule the checkpoint and drain from the
-                clock.
+                UltraServers the two pages disagree. Schedule the checkpoint and drain to finish
+                before 11:00 UTC on an instance-type block and before 10:30 UTC on an UltraServer
+                block.
               </Box>
             </div>
           </ColumnLayout>
+
+          <Box variant="p">
+            Our arithmetic, Tier 2 block rate over Tier 1 us-east-1 On-Demand rate: a block hour
+            costs 99.8% of On-Demand on p6-b200 and p5en, 90.7% on p6-b300 and 86.8% on p5{' '}
+            <DerivedBadge />.
+          </Box>
 
           <ExpandableSection
             headerText="Published Capacity Block rates (Tier 2, product pricing page)"
@@ -401,19 +406,13 @@ export function Pricing() {
             <SpaceBetween size="s">
               <Alert type="info">
                 <Box variant="p">
-                  These rates come from the Capacity Blocks product pricing page, a Tier 2 source;
-                  every On-Demand rate above comes from the Price List bulk API. The page states:
-                  "The current prices are scheduled to be updated next in January, 2027."{' '}
+                  The page states: "The current prices are scheduled to be updated next in January,
+                  2027."{' '}
                   <SourceRef
                     provenance="documented"
                     doc={CAPACITY_BLOCK_PRICING_DOC}
                     label="tier 2: pricing page"
                   />
-                </Box>
-                <Box variant="p">
-                  Our arithmetic, Tier 2 block rate over Tier 1 us-east-1 On-Demand rate: a block
-                  hour costs 99.8% of On-Demand on p6-b200 and p5en, 90.7% on p6-b300 and 86.8% on
-                  p5 <DerivedBadge />.
                 </Box>
               </Alert>
               <Table
@@ -455,10 +454,9 @@ export function Pricing() {
             <div>
               <Box variant="h3">One Availability Zone is the rule</Box>
               <Box variant="p">
-                The EFA limitations section is unambiguous: "EFA traffic can't cross Availability
-                Zones or VPCs."{' '}
-                <SourceRef provenance="documented" doc={EFA_DOC} />
-                {' '}That is the rule that removes cross-AZ redundancy from an EFA cluster. The same
+                EFA traffic cannot cross Availability Zones or VPCs (Virtual Private Clouds){' '}
+                <SourceRef provenance="documented" doc={EFA_DOC} />. That is the rule that removes
+                redundancy across Availability Zones from an EFA cluster. The EFA limitations
                 section adds that EFA is not supported on AWS Outposts, and that EFA traffic between
                 P4d, P4de or DL1 instances and other instance types is not supported.
               </Box>
