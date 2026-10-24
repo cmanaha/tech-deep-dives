@@ -206,9 +206,9 @@ export const S = {
     accessed: '2026-10-24',
   },
   lmcacheGds: {
-    title: 'LMCache lmcache/v1/storage_backend/gds_backend.py at tag v0.5.6 (cuFile reads and writes to a file path)',
+    title: 'LMCache lmcache/v1/storage_backend/gds_backend.py at tag v0.5.6 (contains() looks for the key\'s metadata file under every gds_path)',
     publisher: 'LMCache',
-    url: 'https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/gds_backend.py#L218-L357',
+    url: 'https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/gds_backend.py#L531-L547',
     tier: 1,
     accessed: '2026-10-24',
   },
@@ -219,10 +219,10 @@ export const S = {
     tier: 1,
     accessed: '2026-10-24',
   },
-  llmdFsBackend: {
-    title: 'llm-d/llm-d-kv-cache llmd_fs_backend README at tag v1.0.0 (shared-storage offloading spec for vLLM)',
-    publisher: 'llm-d',
-    url: 'https://github.com/llm-d/llm-d-kv-cache/blob/v1.0.0/kv_connectors/llmd_fs_backend/README.md#L15-L35',
+  lmcacheFsNativeExists: {
+    title: 'LMCache csrc/storage_backends/fs/connector.cpp at tag v0.5.6 (fs_native\'s FSConnector: a key exists when its file exists under base_path)',
+    publisher: 'LMCache',
+    url: 'https://github.com/LMCache/LMCache/blob/v0.5.6/csrc/storage_backends/fs/connector.cpp#L218-L221',
     tier: 1,
     accessed: '2026-10-24',
   },
@@ -268,17 +268,17 @@ export const S = {
     tier: 1,
     accessed: '2026-10-24',
   },
-  valkeyLargeObjectSession: {
-    title: 'valkey-io/valkey-large-object src/transport/session.rs at commit 7510b94 (server-posted DMA write and read)',
-    publisher: 'Valkey',
-    url: 'https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/transport/session.rs#L36-L91',
+  lmcacheValkeyPr: {
+    title: 'LMCache open PR 5556 at head 7e5987f: valkey/rdma_worker_pool.py (each worker registers the whole L1 arena once)',
+    publisher: 'LMCache',
+    url: 'https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/storage_backend/valkey/rdma_worker_pool.py#L1-L23',
     tier: 1,
     accessed: '2026-10-24',
   },
-  lmcacheValkeyPr: {
-    title: 'LMCache open PR 5556 at head 7e5987f: valkey/rdma_worker_pool.py (registers the pinned host L1 arena)',
+  lmcacheValkeyL1: {
+    title: 'LMCache open PR 5556 at head 7e5987f: distributed/memory_manager/l1_memory_manager.py (CPU pinned-DRAM L1 memory manager)',
     publisher: 'LMCache',
-    url: 'https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/storage_backend/valkey/rdma_worker_pool.py#L1-L23',
+    url: 'https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/distributed/memory_manager/l1_memory_manager.py#L1-L2',
     tier: 1,
     accessed: '2026-10-24',
   },

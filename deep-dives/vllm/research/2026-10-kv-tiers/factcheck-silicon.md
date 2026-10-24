@@ -199,3 +199,33 @@ valkey-large-object tags, releases, HEAD; llm-d-kv-cache tag commit. PyPI JSON A
 
 Tier 2: AWS Storage Blog, "Accelerate inference with KV cache tiering on AWS" (2026-09-21); valkey-io/valkey
 issue 4743 comment 5766728140 (2026-09-21).
+
+## Applied
+
+Applied 2026-10-24 by the corrections pass. Line numbers are the working tree after the pass. FT = `deep-dives/silicon-memory-inference/src/sections/FlashCacheTier.tsx`, SRC = `.../src/sources/FlashCacheTier.ts`. Ranges re-fetched at the pinned ref on 2026-10-24 before they were attached.
+
+- C1d (correction 1): deleted "or llm-d's fs backend" and its cite; step 3 now reads "vLLM's `fs` tier with every instance on one `root_dir`, or LMCache's GDS or `fs_native` backend." FT:560-563. Removed the `llmdFsBackend` record (SRC, formerly L222-L228).
+- D11 (correction 2): deleted the second section-7 pointer at the end of "Pooled DRAM on AWS." The earlier pointer stays at FT:282-283.
+- P9 (correction 3): prose "or 62.4 TiB for reads from the servers' memory cache, about 1.7 TiB at that size." FT:440-441. `fsxSizingNote` gains "The hot set must fit its RAM cache: 62.4 x 27.3 GiB per TiB = 1,704 GiB." FT:26-27 (27.3 GiB of RAM per TiB for PERSISTENT-1000 re-read on ssd-storage.html).
+- P6 (correction 4): "That choice puts the per-GPU ceiling at 18.75 GB/s with EFA and GDS, 10.9 with EFA or 1.56 without, either side of the ladder's 2.1 GB/s break-even." FT:435-436. Added "1,200 Gb/s = 18.75 GB/s per GPU" to `fsxPerGpuNote` so the derived cite carries 18.75. FT:24-25.
+- P1 (correction 5): "FSx for Lustre allows one client up to 100 Gb/s ..." FT:430; h2 description "which AWS service allows one GPU instance up to 150 GB/s" FT:410.
+- P11 (correction 6): "the FSx pages located in this research say only "sub-millisecond"". FT:460-461.
+- P7 (correction 7): "is created in 4.8 TiB steps". FT:438.
+- D9 (correction 8): new record `lmcacheValkeyL1`, `l1_memory_manager.py#L1-L2` at 7e5987f ("CPU pinned-DRAM L1 memory manager"), cited beside `lmcacheValkeyPr` (SRC:278-284, FT:478). `lmcacheValkeyPr` title changed to what its range says, "each worker registers the whole L1 arena once" (SRC:271-277).
+- C1b (correction 8): `lmcacheGds` range changed from L218-L357 to `#L531-L547` (`contains()` falls through to `_try_to_read_metadata`, which checks `os.path.exists` on the metadata file under every `gds_path`); title updated to match. SRC:208-214.
+- C1c (correction 8): new record `lmcacheFsNativeExists`, `csrc/storage_backends/fs/connector.cpp#L218-L221` at v0.5.6 (`do_single_exists` returns `std::filesystem::exists`), cited after `lmcacheFsNative` (SRC:222-228, FT:563). `pybind.cpp` L9 at v0.5.6 binds `FSConnector` as `LMCacheFSClient`, the client the fs_native doc names.
+- Q2: closed by the D9, C1b, C1c and C1d rows above.
+- Correction 9: the Valkey module now gets an identity before its status: "keeps large values such as KV tensors in DRAM, optionally backed by NVMe, with optional EFA transport; it is pre-release, ..." (README L3 and L9-L10 at 7510b94, already cited as `valkeyLargeObject`; "to GPU memory" not carried). FT:473-475.
+- Correction 10: cut "Its server initiates each RDMA (remote direct memory access) transfer, and"; the sentence is now "Its clients located in this research register host memory." FT:477. Removed the `valkeyLargeObjectSession` record (unused elsewhere). RDMA no longer appears in this section, so its expansion went with it.
+- Correction 11 (D12): moved the NIXL sentence into "Shared flash on AWS." after the KVBM G4 / NIXL `obj` sentence. FT:446-449.
+- Correction 12: the AWS Storage Blog versus FSx-pages latency conflict moved into an ExpandableSection "FSx latency figures" after the shared-flash paragraph, both cites and the vendor-claim label kept. FT:456-463.
+- Correction 13: moved the CMX ExpandableSection above "Reading a vendor's claim.", so the h2 closes on the vendor checklist. FT:495-505, FT:506.
+
+Declined or left alone:
+- P1's optional 5 Gb/s per-server footnote: not applied. The backlog lists it as new scope.
+- `FlashTierLadder.tsx`: unchanged. No correction targets it (P12 to P14 HOLD), so geometry and labels are as they were.
+- `sources.md` not regenerated (orchestrator's job). The registry total stays at 493: `llmdFsBackend` and `valkeyLargeObjectSession` removed, `lmcacheValkeyL1` and `lmcacheFsNativeExists` added.
+
+Word count (tags and cites stripped): body prose 3,188 before, 3,189 after. Cite notes grew by 16 words, all from the two derivation inputs that corrections 3 and 4 require.
+
+Verification: typecheck 0, lint 0, test 1 (only "keeps sources.md in sync with the registry" fails, 908 of 909 pass), no-ai-tells 0, svg-a11y 0, pinned-refs 0.

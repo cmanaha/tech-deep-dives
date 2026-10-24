@@ -22,9 +22,9 @@ const floorNote =
 const tierRateNote =
   'EBS 12,500 MB/s / 8 = 1.56 GB/s per GPU; FSx 1,200 Gb/s = 150 GB/s per instance, 18.75 per GPU; FSx over EFA without GDS 700 Gb/s = 87.5 GB/s, 10.9 per GPU; FSx without EFA 100 Gb/s = 12.5 GB/s, 1.56 per GPU; EFA 3,200 Gb/s = 400 GB/s per instance, 50 per GPU; PCIe Gen5 at 128 GB/s per H200 across both directions = 64 GB/s per direction (line rate), 512 GB/s across eight GPUs.';
 const fsxPerGpuNote =
-  'Per-client ceilings / 8 bits / 8 GPUs: 700 Gb/s = 10.9 GB/s per GPU, 100 Gb/s = 1.56 GB/s per GPU. Break-even 2.1 GB/s per GPU for Llama 3.1 70B at an 8K prefix on 8x H100. These are documented maximums; AWS gives no test setup behind them.';
+  'Per-client ceilings / 8 bits / 8 GPUs: 1,200 Gb/s = 18.75 GB/s per GPU, 700 Gb/s = 10.9, 100 Gb/s = 1.56. Break-even 2.1 GB/s per GPU for Llama 3.1 70B at an 8K prefix on 8x H100. These are documented maximums; AWS gives no test setup behind them.';
 const fsxSizingNote =
-  'Disk-bound: 150,000 MB/s / 1,000 MB/s per TiB = 150 TiB, rounded up to 32 steps of 4.8 TiB = 153.6 TiB. Network-bound: 150,000 / 2,600 = 57.7 TiB, rounded up to 13 x 4.8 = 62.4 TiB. Assumes the per-TiB rates add linearly and one client reaches the 1,200 Gb/s ceiling; no AWS measurement located in this research shows either.';
+  'Disk-bound: 150,000 MB/s / 1,000 MB/s per TiB = 150 TiB, rounded up to 32 steps of 4.8 TiB = 153.6 TiB. Network-bound: 150,000 / 2,600 = 57.7 TiB, rounded up to 13 x 4.8 = 62.4 TiB. The hot set must fit its RAM cache: 62.4 x 27.3 GiB per TiB = 1,704 GiB. Assumes the per-TiB rates add linearly and one client reaches the 1,200 Gb/s ceiling; no AWS measurement located in this research shows either.';
 const clockNote =
   'Usable KV space assumed: about 900 GB of HBM (8 x 141 GB x 0.92, the vLLM default gpu_memory_utilization, minus 141 GB of BF16 weights), 1.5 TB of the 2,048 GiB of host DRAM, 30.4 TB of instance store. Fill rate: 50% of 8 x 989.5 TFLOPS over 1.24 PFLOP per 8K prefix = 26,000 tokens/s. 2.75 M tokens / 26,000 = 105 s; 4.58 M = 176 s; 92.8 M = 3,560 s.';
 const blockNote =
@@ -407,7 +407,7 @@ export function FlashCacheTier() {
         header={
           <Header
             variant="h2"
-            description="When a cache shared by every node is worth the network hop, which AWS service gets 150 GB/s into one GPU instance, and how to predict a vendor's 20x time-to-first-token (TTFT) claim"
+            description="When a cache shared by every node is worth the network hop, which AWS service allows one GPU instance up to 150 GB/s, and how to predict a vendor's 20x time-to-first-token (TTFT) claim"
           >
             Sharing context across nodes
           </Header>
@@ -427,32 +427,41 @@ export function FlashCacheTier() {
             <Cite s={S.mooncakeFast} kind="measured" /><Cite s={S.mooncakeArxiv} kind="measured" />
           </Box>
           <Box variant="p">
-            <strong>Shared flash on AWS.</strong> FSx for Lustre delivers 100 Gb/s to one client without EFA,
+            <strong>Shared flash on AWS.</strong> FSx for Lustre allows one client up to 100 Gb/s without EFA,
             700 Gb/s with EFA and 1,200 Gb/s (150 GB/s) with EFA and GDS.
             <Cite s={S.fsxPerformance} /> EFA clients are Nitro v4 or later EFA instances outside the trn2 family,
             GDS clients are P5, P5e, P5en, P6-B200 and P6-B300, and EFA is set only when the file system is
             created.
-            <Cite s={S.fsxEfa} /> That choice is up to 10.9 GB/s per GPU with EFA or 1.56 without, either side of the
-            2.1 GB/s break-even in the ladder.
+            <Cite s={S.fsxEfa} /> That choice puts the per-GPU ceiling at 18.75 GB/s with EFA and GDS, 10.9 with
+            EFA or 1.56 without, either side of the ladder&apos;s 2.1 GB/s break-even.
             <Cite s={S.fsxPerformance} kind="derived" note={fsxPerGpuNote} /> Size it for throughput: an EFA file
-            system at PERSISTENT-1000 grows in 4.8 TiB steps
+            system at PERSISTENT-1000 is created in 4.8 TiB steps
             <Cite s={S.fsxGettingStarted} />, and one GDS client at full rate needs 153.6 TiB when disk-bound
-            (writes, uncached reads) or 62.4 TiB for reads from the servers&apos; memory cache.
+            (writes, uncached reads) or 62.4 TiB for reads from the servers&apos; memory cache, about 1.7 TiB at that
+            size.
             <Cite s={S.fsxSsd} /><Cite s={S.fsxPerformance} /><Cite s={S.fsxSsd} kind="derived" note={fsxSizingNote} />{' '}
-            An AWS Storage Blog post&apos;s four-tier framing (HBM, host DRAM, FSx for Lustre, S3) gives FSx 100 to
-            500 µs without a measurement
-            <Cite s={S.awsStorageKvBlog} kind="vendor-claim" />; the FSx documentation says only
-            &quot;sub-millisecond&quot;.
-            <Cite s={S.fsxSsd} /> S3 Express One Zone gives single-digit millisecond access
+            S3 Express One Zone gives single-digit millisecond access
             <Cite s={S.s3Express} />, which suits large chunks fetched ahead of use; KVBM&apos;s G4 tier and the{' '}
             <code>obj</code> plugin of NIXL (NVIDIA Inference Xfer Library) target S3.
-            <Cite s={S.dynamoKvbmDocs} /><Cite s={S.nixl} /> llm-d&apos;s AWS guide puts its shared filesystem tier
-            on Amazon EFS (Elastic File System) and recommends Max I/O mode
+            <Cite s={S.dynamoKvbmDocs} /><Cite s={S.nixl} /> NIXL reaches storage through the same plugin
+            architecture it uses between GPUs, and its libfabric plugin maps GPUs to EFA devices
+            <Cite s={S.nixl} />: <em>Disaggregated Serving and Speculative Decoding</em> covers the GPU-to-GPU half,
+            and the <Link href="../efa/">Elastic Fabric Adapter</Link> dive covers EFA. llm-d&apos;s AWS guide puts
+            its shared filesystem tier on Amazon EFS (Elastic File System) and recommends Max I/O mode
             <Cite s={S.llmdAwsEfs} />, which AWS calls a previous-generation mode with higher per-operation latency,
             recommending General Purpose for all file systems.
             <Cite s={S.efsPerformance} /> The llm-d connector leaves eviction to the storage system.
             <Cite s={S.llmd} />
           </Box>
+          <ExpandableSection headerText="FSx latency figures">
+            <Box variant="p">
+              An AWS Storage Blog post&apos;s four-tier framing (HBM, host DRAM, FSx for Lustre, S3) gives FSx 100 to
+              500 µs without a measurement
+              <Cite s={S.awsStorageKvBlog} kind="vendor-claim" />; the FSx pages located in this research say only
+              &quot;sub-millisecond&quot;.
+              <Cite s={S.fsxSsd} />
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             <strong>Pooled DRAM on AWS.</strong> A pool of peer DRAM rides EFA at 3,200 Gb/s per p5en or p6-b200,
             6,400 on p6-b300.
@@ -461,19 +470,14 @@ export function FlashCacheTier() {
             <Cite s={S.mooncakeStoreDesign} /><Cite s={S.mooncakeTransferTask} />, whose EFA transport registers GPU
             buffers as CUDA memory and ships in the separate <code>mooncake-transfer-engine-efa</code> wheels.
             <Cite s={S.mooncakeEfaMr} /><Cite s={S.mooncakeEfaBuild} note="USE_EFA defaults to OFF." /><Cite s={S.mooncakeEfaWheel} />{' '}
-            The Valkey BLOB module, <code>valkey-large-object</code>, is pre-release, with no tags and an API
-            experimental until 1.0.
+            The Valkey BLOB module, <code>valkey-large-object</code>, keeps large values such as KV tensors in
+            DRAM, optionally backed by NVMe, with optional EFA transport; it is pre-release, with no tags and an
+            API experimental until 1.0.
             <Cite s={S.valkeyLargeObject} note="GitHub API on 2026-10-24: no tags and no releases; crate version 0.1.0." />
-            <Cite s={S.valkeyAcceptance} kind="roadmap" /> Its server initiates each RDMA (remote direct memory
-            access) transfer, and the clients located in this research register host memory.
-            <Cite s={S.valkeyLargeObjectSession} /><Cite s={S.lmcacheValkeyPr} /><Cite s={S.glideRdma} /> No
-            ElastiCache offering of it was located in this research, which leaves self-managed Valkey on EC2.
-            <Cite s={S.elasticacheVersions} /> NIXL reaches storage through the same plugin architecture it uses
-            between GPUs, and its libfabric plugin maps GPUs to EFA devices
-            <Cite s={S.nixl} />: <em>Disaggregated Serving and Speculative Decoding</em> covers the GPU-to-GPU half,
-            and the <Link href="../efa/">Elastic Fabric Adapter</Link> dive covers EFA. The{' '}
-            <Link href="../vllm/">vLLM Inference Engine</Link> dive&apos;s section 7, <em>KV-Cache Offloading &amp;
-            Tiers</em>, traces each engine&apos;s path to these tiers.
+            <Cite s={S.valkeyAcceptance} kind="roadmap" /> Its clients located in this research register host memory.
+            <Cite s={S.lmcacheValkeyPr} /><Cite s={S.lmcacheValkeyL1} /><Cite s={S.glideRdma} /> No ElastiCache
+            offering of it was located in this research, which leaves self-managed Valkey on EC2.
+            <Cite s={S.elasticacheVersions} />
           </Box>
           <Box variant="p">
             <strong>The managed option.</strong> SageMaker HyperPod managed tiered KV cache runs an L1 in local CPU
@@ -488,6 +492,17 @@ export function FlashCacheTier() {
             intelligent routing, against a baseline without them.
             <Cite s={S.hyperpodBlog} kind="vendor-claim" />
           </Box>
+          <ExpandableSection headerText="NVIDIA CMX: a flash tier behind a DPU">
+            <Box variant="p">
+              NVIDIA CMX (context memory storage) puts BlueField-4 DPUs (data processing units, 800 Gb/s) in front of
+              an Ethernet-attached flash tier for KV that NVIDIA labels G3.5, between node-local SSD (G3) and shared
+              storage (G4), and treats KV as &quot;transient, derived, and recomputable if lost&quot;.
+              <Cite s={S.dpuPage} kind="roadmap" /><Cite s={S.cmxBlog} /> NVIDIA claims up to 5x the tokens per second of
+              traditional storage, with BlueField-4 due in the second half of 2026.
+              <Cite s={S.cesRelease} kind="vendor-claim" /><Cite s={S.cesRelease} kind="roadmap" /> No AWS offering of
+              it was located in this research.
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             <strong>Reading a vendor&apos;s claim.</strong> Storage vendors sell flash as context memory, and every
             headline number located in this research is the vendor&apos;s own, measured against recomputing a long
@@ -504,17 +519,6 @@ export function FlashCacheTier() {
             <Cite s={S.nebiusWeka} kind="vendor-claim" /> No independent measurement of any of these products was
             located in this research.
           </Box>
-          <ExpandableSection headerText="NVIDIA CMX: a flash tier behind a DPU">
-            <Box variant="p">
-              NVIDIA CMX (context memory storage) puts BlueField-4 DPUs (data processing units, 800 Gb/s) in front of
-              an Ethernet-attached flash tier for KV that NVIDIA labels G3.5, between node-local SSD (G3) and shared
-              storage (G4), and treats KV as &quot;transient, derived, and recomputable if lost&quot;.
-              <Cite s={S.dpuPage} kind="roadmap" /><Cite s={S.cmxBlog} /> NVIDIA claims up to 5x the tokens per second of
-              traditional storage, with BlueField-4 due in the second half of 2026.
-              <Cite s={S.cesRelease} kind="vendor-claim" /><Cite s={S.cesRelease} kind="roadmap" /> No AWS offering of
-              it was located in this research.
-            </Box>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -555,9 +559,8 @@ export function FlashCacheTier() {
               <strong>Shared flash when reuse crosses nodes.</strong> FSx for Lustre with EFA and GDS sized for
               throughput, a storage vendor&apos;s KV store, or HyperPod&apos;s managed tier. On FSx the connector
               makes the tier shared: vLLM&apos;s <code>fs</code> tier with every instance on one{' '}
-              <code>root_dir</code>, LMCache&apos;s GDS or <code>fs_native</code> backend, or llm-d&apos;s fs
-              backend.
-              <Cite s={S.vllmFsTierDoc} /><Cite s={S.lmcacheGds} /><Cite s={S.lmcacheFsNative} /><Cite s={S.llmdFsBackend} />{' '}
+              <code>root_dir</code>, or LMCache&apos;s GDS or <code>fs_native</code> backend.
+              <Cite s={S.vllmFsTierDoc} /><Cite s={S.lmcacheGds} /><Cite s={S.lmcacheFsNative} /><Cite s={S.lmcacheFsNativeExists} />{' '}
               KVBM&apos;s disk tier there is one private file per worker process, deleted on exit.
               <Cite s={S.dynamoKvbmDisk} />
             </li>
