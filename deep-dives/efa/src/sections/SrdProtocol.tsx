@@ -27,14 +27,14 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  *  3. The SRD design paper is Shalev et al., IEEE Micro 2020. Not NSDI.
  */
 
-const CODE_READ = '2026-08-01';
+const CODE_READ = '2026-10-23';
 const DOC_ACCESSED = '2026-08-01';
 
-/** amzn/amzn-drivers at the efa_linux_3.3.0 release tag. There is no bare
- *  r3.3.0 tag; the driver tags are named efa_linux_*. */
-const DRIVERS = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
-/** ofiwg/libfabric at the v2.6.0 release tag. */
-const LIBFABRIC = 'v2.6.0';
+/** amzn/amzn-drivers at the efa_linux_3.4.0 release tag. There is no bare
+ *  r3.4.0 tag; the driver tags are named efa_linux_*. */
+const DRIVERS = '9d5ca4021f7c9f8421e404c1e89edb0b1325372c';
+/** ofiwg/libfabric at the v2.7.0 release tag. */
+const LIBFABRIC = 'v2.7.0';
 
 function driversRef(path: string, lines: string): CodeRef {
   return { repo: 'amzn/amzn-drivers', ref: DRIVERS, path, lines, read: CODE_READ };
@@ -46,55 +46,61 @@ function libfabricRef(path: string, lines: string): CodeRef {
 
 const code = {
   txMeta: driversRef('kernel/linux/efa/src/efa_io_defs.h', 'L87-L151'),
-  modifyQp: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L215-L250'),
-  netStats: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L664-L674'),
+  modifyQp: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L209-L244'),
+  netStats: driversRef('kernel/linux/efa/src/efa_admin_cmds_defs.h', 'L627-L637'),
   portStats: driversRef('kernel/linux/efa/src/efa_verbs.c', 'L74-L96'),
+  netStatsCopy: driversRef('kernel/linux/efa/src/efa_verbs.c', 'L3735-L3745'),
   compStatus: driversRef('kernel/linux/efa/src/efa_io_defs.h', 'L36-L70'),
   enaSrdStats: driversRef('kernel/linux/common/ena_com/ena_admin_defs.h', 'L512-L536'),
   enaSrdFlags: driversRef('kernel/linux/common/ena_com/ena_admin_defs.h', 'L163-L170'),
-  enaSrdGet: driversRef('kernel/linux/common/ena_com/ena_com.c', 'L2645-L2661'),
-  enaSrdDecl: driversRef('kernel/linux/common/ena_com/ena_com.h', 'L794-L801'),
   // Where the ENA driver hands the SRD counter names to ethtool.
   enaSrdEthtool: driversRef('kernel/linux/ena/ena_ethtool.c', 'L130-L136'),
-  enaEthtoolOps: driversRef('kernel/linux/ena/ena_ethtool.c', 'L2020-L2022'),
+  enaEthtoolOps: driversRef('kernel/linux/ena/ena_ethtool.c', 'L2022-L2024'),
   maxAh: driversRef('kernel/linux/efa/src/efa_com_cmd.h', 'L127-L136'),
   // The provider's own error vocabulary, and where it prints it.
   compStatuses: libfabricRef('prov/efa/src/efa_errno.h', 'L58-L75'),
-  provErrnos: libfabricRef('prov/efa/src/efa_errno.h', 'L109-L111'),
-  showHelp: libfabricRef('prov/efa/src/efa_strerror.c', 'L63-L105'),
+  provErrnos: libfabricRef('prov/efa/src/efa_errno.h', 'L109-L112'),
+  manMrAbort: libfabricRef('man/fi_efa.7.md', 'L146-L151'),
+  showHelp: libfabricRef('prov/efa/src/efa_strerror.c', 'L63-L110'),
   errMsg: libfabricRef('prov/efa/src/rdm/efa_rdm_util.c', 'L111-L144'),
-  opeErr: libfabricRef('prov/efa/src/rdm/efa_rdm_ope.c', 'L649-L655'),
+  opeErr: libfabricRef('prov/efa/src/rdm/efa_rdm_ope.c', 'L675-L681'),
   infoLevel: libfabricRef('prov/efa/src/efa_prov.h', 'L13'),
   logEnv: libfabricRef('man/fabric.7.md', 'L174-L221'),
   hostIdFile: libfabricRef('prov/efa/src/efa_env.c', 'L36'),
   msgOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L26'),
-  rdmOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L633-L640'),
-  rdmRxOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L677-L680'),
+  rdmOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L642-L649'),
+  rdmRxOrder: libfabricRef('prov/efa/src/efa_prov_info.c', 'L686-L689'),
   directRnr: libfabricRef('prov/efa/src/efa_prov_info.c', 'L102-L108'),
-  robuf: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L95-L114'),
+  robuf: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L106-L125'),
   robufDefault: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L12'),
   envRecvwin: libfabricRef('prov/efa/src/efa_env.c', 'L18'),
-  envRecvwinHelp: libfabricRef('prov/efa/src/efa_env.c', 'L188-L189'),
+  envRecvwinHelp: libfabricRef('prov/efa/src/efa_env.c', 'L189-L190'),
   recvwinAlloc: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.h', 'L46-L66'),
-  recvwinUse: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L31'),
-  recvwinModulo: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L320'),
+  recvwinUse: libfabricRef('prov/efa/src/rdm/efa_rdm_peer.c', 'L40'),
+  robufPool: libfabricRef('prov/efa/src/rdm/efa_rdm_ep_fiops.c', 'L327-L332'),
   // The two tuning commits that left the help string behind.
-  tune16kTo8k: {
-    repo: 'ofiwg/libfabric',
-    ref: '7232f8af12d0a7ad54cc571529e37c006cb3bc92',
-    path: 'prov/efa/src/rdm/efa_rdm_peer.h',
-    read: CODE_READ,
-  } as CodeRef,
-  tune8kTo16: {
-    repo: 'ofiwg/libfabric',
-    ref: 'bd987ab20e57',
-    path: 'prov/efa/src/rdm/efa_rdm_peer.h',
-    read: CODE_READ,
-  } as CodeRef,
+
   // The compiled default for the out-of-order bounce-buffer copy, in the
   // initialiser rather than in the fi_param_define help string.
   envOooDefault: libfabricRef('prov/efa/src/efa_env.c', 'L28'),
 };
+
+// The two tuning commits that left the help string behind, linked as commit pages
+// because the reasoning lives in the commit messages.
+const commits = {
+  tune16kTo8k: {
+    title: 'libfabric commit 7232f8af: tune recvwindow and peer reorder buffer pool sizes',
+    url: 'https://github.com/ofiwg/libfabric/commit/7232f8af12d0a7ad54cc571529e37c006cb3bc92',
+    tier: 1,
+    accessed: CODE_READ,
+  },
+  tune8kTo16: {
+    title: 'libfabric commit bd987ab2: decrease the peer robuf size instead of the robuf pool',
+    url: 'https://github.com/ofiwg/libfabric/commit/bd987ab20e57292f55589b30a2fc40c0ace3338c',
+    tier: 1,
+    accessed: CODE_READ,
+  },
+} satisfies Record<string, DocRef>;
 
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
@@ -570,7 +576,7 @@ const triageRows = [
     text: 'Unreachable remote - never received a response',
     means: 'Nothing was ever established with this peer. Detected locally.',
     next:
-      'Configuration, not hardware. The provider prints its own long-form hint for this code, naming inbound and outbound security group rules first. Check the self-referencing security group, then that both instances are in one Availability Zone.',
+      'Configuration, not hardware. The provider prints its own long-form hint for this code, naming inbound and outbound security group rules first. Check the self-referencing security group, then that both instances are in one Availability Zone (AZ).',
   },
   {
     id: 'unresp',
@@ -598,12 +604,21 @@ const triageRows = [
       'Look at the peer rank, not the fabric. A rank that exited early, was never launched, or crashed during startup produces this.',
   },
   {
+    id: 'aborted',
+    codeName: 'FI_EFA_ERR_PEER_ABORTED (4127)',
+    text: 'Operation aborted because the peer closed its memory registration or endpoint mid-transfer',
+    means:
+      'The peer cancelled the transfer by closing what it was using. The provider reads this as expected when the peer aborts in-flight operations.',
+    next:
+      'Look at what the peer process was tearing down, and run libfabric 2.7.0 or later on both sides: with an older peer a memory-region abort is undefined.',
+  },
+  {
     id: 'rnr',
     codeName: 'REMOTE_ERROR_RNR (10)',
     text: 'Destination resource not ready (no work queue entries posted on receive queue)',
     means: 'The message arrived and the receiver had no buffer posted for it.',
     next:
-      'Occasional RNR under load is the receiver being outrun, not a fault. Sustained RNR points at a receiving process that is not posting receives fast enough, so profile the receiver rather than the fabric.',
+      'Occasional RNR (Receiver Not Ready) under load is the receiver being outrun, not a fault. Sustained RNR points at a receiving process that is not posting receives fast enough, so profile the receiver rather than the fabric.',
   },
 ];
 
@@ -703,11 +718,10 @@ export function SrdProtocol() {
         <SpaceBetween size="m">
           <Box variant="p">
             SRD runs in the Nitro card, which is why everything you see of it is a report rather
-            than a knob. AWS states it for the storage case in its own words: to minimize jitter and
-            to ensure the fastest response to network congestion fluctuations, SRD is implemented in
-            the AWS custom Nitro networking card{' '}
-            <SourceRef provenance="documented" doc={docs.storageBlog} />, and the EBS (Elastic Block
-            Store) documentation repeats it for io2 Block Express{' '}
+            than a knob. On the storage side, SRD is implemented in the AWS custom Nitro networking
+            card to minimize jitter and to ensure the fastest response to network congestion
+            fluctuations, including for EBS (Elastic Block Store) io2 Block Express{' '}
+            <SourceRef provenance="documented" doc={docs.storageBlog} />{' '}
             <SourceRef provenance="documented" doc={docs.ebsIops} />. EFA (Elastic Fabric Adapter)
             and ENA (Elastic Network Adapter, through ENA Express) are peer consumers of that one
             transport. It reaches you in two forms: completion errors libfabric surfaces, and five
@@ -737,10 +751,12 @@ export function SrdProtocol() {
             Codes 10 to 15 are device completion statuses{' '}
             <SourceRef provenance="code-derived" code={code.compStatus} />, and the printed strings
             are the provider's table for them{' '}
-            <SourceRef provenance="code-derived" code={code.compStatuses} />. Codes 4124 and 4126
-            are libfabric's own, defined to tell an unresponsive receiver that completed a handshake
-            from one that never did{' '}
-            <SourceRef provenance="code-derived" code={code.provErrnos} />. Readings attributed to
+            <SourceRef provenance="code-derived" code={code.compStatuses} />. Codes 4124, 4126 and
+            4127 are libfabric's own: the first two tell an unresponsive receiver that completed a
+            handshake from one that never did, and 4127 reports a peer that cancelled the transfer{' '}
+            <SourceRef provenance="code-derived" code={code.provErrnos} />. The man page leaves an
+            abort by memory-region close undefined unless both peers run libfabric 2.7.0 or later{' '}
+            <SourceRef provenance="code-derived" code={code.manMrAbort} />. Readings attributed to
             the provider are quoted from its help text{' '}
             <SourceRef provenance="code-derived" code={code.showHelp} />; the check column is ours.
           </Box>
@@ -888,9 +904,9 @@ a peer process is no longer present.`}</pre>
                 packet drops from buffer overflow, and that lossless link layer is what lets the
                 InfiniBand transport stay simple and highly efficient{' '}
                 <SourceRef provenance="documented" doc={docs.dcqcn} />. The cost is a custom
-                networking stack on purpose-built hardware. AWS makes the ordering half of the same
-                point from the other side: fabrics like InfiniBand and protocols like TCP send
-                packets in order, and one lost packet holds up everything queued behind it{' '}
+                networking stack on purpose-built hardware. Ordering is the other half of the same
+                point: fabrics like InfiniBand and protocols like TCP send packets in order, and one
+                lost packet holds up everything queued behind it{' '}
                 <SourceRef provenance="documented" doc={docs.hpcBlog} />.
               </Box>
             </div>
@@ -919,11 +935,9 @@ a peer process is no longer present.`}</pre>
           </Alert>
 
           <Box variant="p">
-            AWS makes the comparison itself, in first-party words: SRD differs from protocols like
-            TCP, InfiniBand or RoCE, and instead of preserving packet order it sends packets over as
-            many network paths as possible while avoiding overloaded paths, leaving message order
-            restoration to the upper layer because that layer has a better understanding of the
-            required ordering semantics{' '}
+            SRD differs from TCP, InfiniBand and RoCE: instead of preserving packet order it sends packets over as many network paths as possible while avoiding overloaded
+            paths, and leaves message order restoration to the upper layer, because that layer has
+            a better understanding of the required ordering semantics{' '}
             <SourceRef provenance="documented" doc={docs.storageBlog} />.
           </Box>
         </SpaceBetween>
@@ -970,19 +984,21 @@ a peer process is no longer present.`}</pre>
           </Box>
 
           <Box variant="p">
-            Because drops are expected, recovery is routine, and the card is what performs it. The
+            Because drops are expected, recovery is routine, and it happens in the Nitro card, where
+            SRD is implemented <SourceRef provenance="documented" doc={docs.storageBlog} />. The
             device reports the five network counters above{' '}
             <SourceRef provenance="code-derived" code={code.netStats} />. The driver code that
             surfaces them copies the values out of an admin-queue response rather than computing
             them{' '}
-            <SourceRef provenance="code-derived" code={code.portStats} />. A search of the driver
+            <SourceRef provenance="code-derived" code={code.portStats} />{' '}
+            <SourceRef provenance="code-derived" code={code.netStatsCopy} />. A search of the driver
             tree for retransmission logic during this research found none, which is consistent with
             the device doing the work, though an absence found by searching is weaker evidence than
             the presence of the stats path. That same search turned up no host-side policy governing
             loss retransmission, which is why these five counters read as a monitoring surface
-            rather than a control surface. The application never blocks for it either: it keeps
-            posting work and polling completions while the card resends the packet on a different
-            path.
+            rather than a control surface. Our reading is that the application does not block for it
+            either: it keeps posting work and polling completions while the card resends the packet
+            on a different path.
           </Box>
 
           <Box variant="p">
@@ -1040,9 +1056,7 @@ a peer process is no longer present.`}</pre>
             are out of order, whose message identifier is larger than the one the endpoint expects
             from that peer, plus an <code>overflow_pke_list</code> for out-of-order packets that do
             not fit the current window <SourceRef provenance="code-derived" code={code.robuf} />.
-            The slot is the message id modulo the window size{' '}
-            <SourceRef provenance="code-derived" code={code.recvwinModulo} />, and out-of-order
-            arrivals are copied out of the pre-posted receive buffers into a separate bounce-buffer
+            Out-of-order arrivals are copied out of the pre-posted receive buffers into a separate bounce-buffer
             pool. That copy is on in a default build: the provider's environment structure is
             initialised with <code>.rx_copy_ooo = 1</code>{' '}
             <SourceRef provenance="code-derived" code={code.envOooDefault} />.
@@ -1069,39 +1083,41 @@ a peer process is no longer present.`}</pre>
                 constant is what the environment structure is initialised with.
               </Box>
               <Box variant="p">
-                <strong>The unit is messages, not bytes.</strong> A jump from 16384 to 16 looks like
-                a units error, and it is not. The value is passed to the allocator unscaled{' '}
-                <SourceRef provenance="code-derived" code={code.recvwinUse} />, which sizes the
-                pending queue as <code>sizeof(struct efa_rdm_pke*) * size</code>: one pointer slot
-                per held message, with a power-of-two assertion on the count{' '}
-                <SourceRef provenance="code-derived" code={code.recvwinAlloc} />. Nothing anywhere
-                multiplies it by a page, a packet size or a kilobyte, so the two numbers really do
-                disagree.
-              </Box>
-              <Box variant="p">
-                <strong>The help text is two tuning rounds stale, not one.</strong> The default was
-                16384. In October 2025 it went to 8192 while the peer reorder buffer pool dropped
-                from 1024 to 16{' '}
-                <SourceRef provenance="code-derived" code={code.tune16kTo8k} label="commit" />. In
-                November 2025 the window itself was cut to 16 to match the pool, on the reasoning
-                that a differently sized pool and buffer make no sense when every peer needs one
-                buffer <SourceRef provenance="code-derived" code={code.tune8kTo16} label="commit" />
-                . Both changes were made to hold performance without the memory overhead. The help
-                string was updated in neither.
-              </Box>
-              <Box variant="p">
                 Code wins. Treat the per-peer reorder window as 16 outstanding messages unless you
                 set the variable yourself{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   code={code.robufDefault}
-                  conflict="prov/efa/src/efa_env.c line 188 defines FI_EFA_RECVWIN_SIZE with the help text 'Defines the size of sliding receive window. (Default: 16384)'. The initialiser at line 18 of the same file sets recvwin_size to EFA_RDM_PEER_DEFAULT_REORDER_BUFFER_SIZE, which prov/efa/src/rdm/efa_rdm_peer.h line 12 defines as 16. Both values count messages, not bytes: the count is passed to efa_recvwin_buf_alloc unscaled and sizes a pointer array. The default went 16384 to 8192 in commit 7232f8af (2025-10-16), then 8192 to 16 in commit bd987ab2 (2025-11-18). The help string was not updated by either."
+                  conflict="prov/efa/src/efa_env.c line 189 defines FI_EFA_RECVWIN_SIZE with the help text 'Defines the size of sliding receive window. (Default: 16384)'. The initialiser at line 18 of the same file sets recvwin_size to EFA_RDM_PEER_DEFAULT_REORDER_BUFFER_SIZE, which prov/efa/src/rdm/efa_rdm_peer.h line 12 defines as 16. Both values count messages, not bytes: the count is passed unscaled and sizes each peer's array of packet pointers. The default went 16384 to 8192 in commit 7232f8af (merged 2025-10-17, first released in v2.4.0), then 8192 to 16 in commit bd987ab2 (merged 2026-01-13, first released in v2.5.0). The help string was not updated by either."
                   label="doc vs code"
                 />
-                . The two citations are eight lines apart in the same file{' '}
+                . Both lines are in the same file{' '}
                 <SourceRef provenance="code-derived" code={code.envRecvwin} />{' '}
-                <SourceRef provenance="code-derived" code={code.envRecvwinHelp} />, which is a
-                useful reminder that a help string is documentation, not behaviour.
+                <SourceRef provenance="code-derived" code={code.envRecvwinHelp} />: the help string
+                is documentation, and the initialiser is the behaviour.
+              </Box>
+              <Box variant="p">
+                <strong>The unit is messages, not bytes.</strong> A jump from 16384 to 16 looks like
+                a units error, and it is not. The value is passed to the allocator unscaled{' '}
+                <SourceRef provenance="code-derived" code={code.recvwinUse} />, which takes each
+                peer&apos;s pending queue from a pool whose entries are{' '}
+                <code>sizeof(struct efa_rdm_pke*)</code> times the window size{' '}
+                <SourceRef provenance="code-derived" code={code.robufPool} />: one pointer slot per
+                held message, with a power-of-two assertion on the count{' '}
+                <SourceRef provenance="code-derived" code={code.recvwinAlloc} />. Nothing anywhere
+                multiplies it by a page, a packet size or a kilobyte, so the two numbers really do
+                disagree.
+              </Box>
+              <Box variant="p">
+                <strong>Which default your version has.</strong> On libfabric 2.4.0 the default is
+                8192, and from 2.5.0 onward it is 16. The 16384 in the help text was the default
+                before two tuning commits, and neither touched the help string. The first, merged in
+                October 2025, cut the window to 8192 and the peer reorder buffer pool from 1024 to 16, to
+                hold performance without the memory overhead{' '}
+                <SourceRef provenance="code-derived" doc={commits.tune16kTo8k} label="commit" />.
+                The second, merged in January 2026, put the pool back to 1024, since every peer
+                needs one buffer, and cut the window to 16 instead{' '}
+                <SourceRef provenance="code-derived" doc={commits.tune8kTo16} label="commit" />.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1109,14 +1125,16 @@ a peer process is no longer present.`}</pre>
           <Alert type="warning" header="Grep your launch scripts for FI_EFA_RECVWIN_SIZE">
             A script that copied 16384 out of the help text asks for a 16,384-slot pointer array for
             every peer the process talks to, which is the memory the two tuning commits were
-            removing. Unset is the supported answer on current libfabric. If a run genuinely needs a
+            removing. Leave it unset on libfabric 2.5.0 and later, where the default is 16. If a run
+            genuinely needs a
             deeper window, the evidence for it is arrivals spilling to{' '}
             <code>overflow_pke_list</code>, not a number carried over from an older guide.
           </Alert>
 
           <Box variant="p">
-            This is the honest price of SRD. Relaxing ordering is what dropped p99 tail latency by
-            around a factor of ten <SourceRef provenance="documented" doc={docs.hpcBlog} />, and
+            This is the honest price of SRD. Relaxing ordering is what AWS credits for dropping p99
+            tail latency by around a factor of ten{' '}
+            <SourceRef provenance="documented" doc={docs.hpcBlog} />, and
             software is where the bill arrives. An application that asks for ordered delivery pays
             for a per-peer window, a bounce-buffer copy on every out-of-order arrival, and an
             overflow list when reordering exceeds the window. An application that does not need
@@ -1138,10 +1156,9 @@ a peer process is no longer present.`}</pre>
         }
       >
         <SpaceBetween size="m">
-          <Alert type="info" header="This block is model, not a knob">
-            Nothing here is configurable. It is the reason peer count stops being a resource
-            question on EFA, which is what makes the address-vector behaviour and the flat scaling
-            in the practical sections make sense.
+          <Alert type="info" header="This block is model: why peer count stops being a resource question">
+            Nothing here is configurable. It is what makes the address-vector behaviour and the
+            flat scaling in the practical sections make sense.
           </Alert>
 
           <Box variant="p">
@@ -1165,7 +1182,7 @@ a peer process is no longer present.`}</pre>
           <Alert type="warning" header="The commonly quoted form of this argument mixes units">
             <SpaceBetween size="xs">
               <Box variant="p">
-                The version repeated everywhere is that a cluster needs N x p queue pairs with SRD
+                The commonly quoted version is that a cluster needs N x p queue pairs with SRD
                 against N x p x p with a connected transport. Those two figures are not counted the
                 same way. N x p is a cluster total. N x p x p is a per-instance figure. Comparing
                 them understates the connected-transport cost by a factor of N.
@@ -1231,29 +1248,25 @@ a peer process is no longer present.`}</pre>
             <div>
               <Box variant="h3">A latency tax when nothing is congested</Box>
               <Box variant="p">
-                SRD is tuned for the bad case. AWS documents the good-case cost on the ENA Express
-                path: when network traffic is light you might notice a slight increase in median
-                packet latency, of tens of microseconds, when the packet uses ENA Express{' '}
-                <SourceRef provenance="documented" doc={docs.enaExpress} />. AWS adds that
-                applications with high packets-per-second requirements that need to optimize for
-                latency during uncongested periods may be better served by standard enhanced
-                networking.
+                SRD is tuned for the bad case. The good-case cost shows on the ENA Express path:
+                when network traffic is light, packets that use ENA Express can show a slight
+                increase in median packet latency, of tens of microseconds{' '}
+                <SourceRef provenance="documented" doc={docs.enaExpress} />. Applications with high
+                packets-per-second requirements that need to optimize for latency during
+                uncongested periods may be better served by standard enhanced networking{' '}
+                <SourceRef provenance="documented" doc={docs.enaExpress} />.
               </Box>
             </div>
           </ColumnLayout>
 
           <Box variant="p">
-            ENA Express is the middle option worth knowing about. It puts ordinary TCP and UDP
-            traffic onto SRD without any application change, raising the single-flow ceiling from 5
-            Gbps to up to 25 Gbps within the same Region, up to the aggregate instance limit, and
-            reducing tail latency of network traffic between EC2 instances in the same Availability
-            Zone, especially during periods of high network load{' '}
-            <SourceRef provenance="documented" doc={docs.enaExpress} />. Note which of those two
-            carries which scope: the bandwidth figure is stated for the Region, the tail-latency
-            claim for a single Availability Zone. You keep sockets and pay the uncongested median
-            tax. EFA takes the other route. The libfabric API bypasses the operating system kernel
-            and communicates directly with the EFA device to put packets on the
-            network <SourceRef provenance="documented" doc={docs.efa} />, and the price of that is
+            ENA Express is the middle option. It puts ordinary TCP and UDP traffic onto SRD without
+            any application change and raises the single-flow ceiling from 5 Gbps to up to 25 Gbps{' '}
+            <SourceRef provenance="documented" doc={docs.enaExpress} />, a figure whose scope the
+            ENA and EFA section examines. You keep sockets and pay the uncongested median tax. EFA
+            takes the other route. The libfabric API bypasses the operating system kernel and communicates directly with the
+            EFA device to put packets on the network{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />, and the price of that is
             the programming model in the first column above. The tens-of-microseconds median figure
             is stated for the ENA Express path; no equivalent figure for the EFA path was located in
             AWS documentation during this research. Reach for ENA Express when the application has
@@ -1261,30 +1274,14 @@ a peer process is no longer present.`}</pre>
             libfabric.
           </Box>
 
-          <Alert type="info" header="ENA Express is switched on outside the instance">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                What the ENA driver declares for SRD is one accessor. Its common header exports{' '}
-                <code>ena_com_get_ena_srd_info()</code> and nothing else naming SRD{' '}
-                <SourceRef provenance="code-derived" code={code.enaSrdDecl} />, and the definition
-                is a getter that issues an admin-queue statistics request and copies the response
-                out <SourceRef provenance="code-derived" code={code.enaSrdGet} />. No matching set
-                function was found in the tree during this research. ENA Express
-                is configured on the network interface attachment through the EC2 control plane, and
-                the driver only observes the result. Any guide showing an in-instance command to
-                enable it is describing tuning, not enablement.
-              </Box>
-              <Box variant="p">
-                What the attachment carries is three bits:{' '}
-                <code>ENA_ADMIN_ENA_SRD_ENABLED</code>,{' '}
-                <code>ENA_ADMIN_ENA_SRD_UDP_ENABLED</code> and{' '}
-                <code>ENA_ADMIN_ENA_SRD_UDP_ORDERING_BYPASS_ENABLED</code>{' '}
-                <SourceRef provenance="code-derived" code={code.enaSrdFlags} />. The third decides
-                whether the card restores UDP receive ordering or hands packets up out of order,
-                which is this section's whole trade offered as a per-attachment switch. Turn it on
-                only for a receiver written to tolerate reordering.
-              </Box>
-            </SpaceBetween>
+          <Alert type="info" header="ENA Express offers this section's trade as a per-attachment switch">
+            An ENA Express attachment carries three configuration bits, and the third,{' '}
+            <code>ENA_ADMIN_ENA_SRD_UDP_ORDERING_BYPASS_ENABLED</code>{' '}
+            <SourceRef provenance="code-derived" code={code.enaSrdFlags} />, decides whether the card
+            restores UDP receive ordering or hands packets up out of order: this section's whole
+            trade, offered as a per-attachment switch. The ENA and EFA section covers where it is
+            switched on, the MTU (Maximum Transmission Unit) it needs and the counters that confirm it is carrying traffic. Turn the
+            bypass on only for a receiver written to tolerate reordering.
           </Alert>
         </SpaceBetween>
       </Container>

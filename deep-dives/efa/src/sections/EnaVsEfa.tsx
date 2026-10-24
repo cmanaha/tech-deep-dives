@@ -23,30 +23,33 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * Research: research/2026-08-refresh/06-ena-vs-efa.md.
  */
 
+/** Date the AWS pages and the utilities script were read. */
 const READ = '2026-08-01';
-const DRIVERS_SHA = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
+/** amzn/amzn-drivers at tag efa_linux_3.4.0, and the date it was read there. */
+const DRIVERS_SHA = '9d5ca4021f7c9f8421e404c1e89edb0b1325372c';
+const DRIVERS_READ = '2026-10-23';
 const UTILS_SHA = '6ecb14cf1dc3f17a375ea72c1aa3dfd72dc5a1e7';
 
 /** A citation into amzn-drivers, pinned to the commit the research read. */
 function drv(path: string, lines: string): CodeRef {
-  return { repo: 'amzn/amzn-drivers', ref: DRIVERS_SHA, path, lines, read: READ };
+  return { repo: 'amzn/amzn-drivers', ref: DRIVERS_SHA, path, lines, read: DRIVERS_READ };
 }
 
 const code = {
   enaPciIds: drv('kernel/linux/ena/ena_pci_id_tbl.h', 'L9-L43'),
   efaPciIds: drv('kernel/linux/efa/src/efa_main.c', 'L27-L40'),
   enaDriver: drv('kernel/linux/ena/ena_netdev.c', 'L5979-L5982'),
-  efaDriver: drv('kernel/linux/efa/src/efa_main.c', 'L998-L1004'),
+  efaDriver: drv('kernel/linux/efa/src/efa_main.c', 'L1003-L1009'),
   enaMakefile: drv('kernel/linux/ena/Makefile', 'L1-L17'),
   efaKbuild: drv('kernel/linux/efa/src/Kbuild.in', 'L1-L2'),
-  efaIbDevice: drv('kernel/linux/efa/src/efa_main.c', 'L616-L655'),
+  efaIbDevice: drv('kernel/linux/efa/src/efa_main.c', 'L618-L657'),
   efaQpType: drv('kernel/linux/efa/src/efa-abi.h', 'L90'),
   enaBars: drv('kernel/linux/ena/ena_netdev.h', 'L72-L74'),
   efaBars: drv('kernel/linux/efa/src/efa_main.c', 'L67-L69'),
   enaPush: drv('kernel/linux/common/ena_com/ena_eth_com.c', 'L95-L134'),
   enaWcMap: drv('kernel/linux/ena/ena_netdev.c', 'L4291-L4303'),
-  efaUserMap: drv('kernel/linux/efa/src/efa_verbs.c', 'L890-L902'),
-  efaSqDesc: drv('kernel/linux/efa/src/efa_verbs.c', 'L1148-L1149'),
+  efaUserMap: drv('kernel/linux/efa/src/efa_verbs.c', 'L891-L903'),
+  efaSqDesc: drv('kernel/linux/efa/src/efa_verbs.c', 'L1149-L1150'),
   efaAbiKeys: drv('kernel/linux/efa/src/efa-abi.h', 'L115-L120'),
   enaRings: drv('kernel/linux/ena/ena_netdev.h', 'L76-L78'),
   enaMsix: drv('kernel/linux/ena/ena_netdev.h', 'L56-L70'),
@@ -294,7 +297,7 @@ function WhoHoldsThePenDiagram() {
       <text className="pn-s" x="83" y="286">libfabric</text>
       <path className="pn-ar" d="M146,270 L172,270" />
       <rect className="pn-fast" x="176" y="246" width="180" height="48" rx="6" />
-      <text className="pn-t" x="266" y="268">Mapped SQ ring</text>
+      <text className="pn-t" x="266" y="268">Mapped send queue</text>
       <text className="pn-s" x="266" y="286">in the app address space</text>
       <path className="pn-arg" d="M360,270 L658,270" />
       <text className="pn-s" x="509" y="258">store to mapped memory</text>
@@ -383,7 +386,7 @@ function SrdSubstrateDiagram() {
       <text className="sb-tag" x="440" y="274">NITRO CARD, BELOW THE PCI BOUNDARY</text>
       <text className="sb-h" x="440" y="298">SRD (Scalable Reliable Datagram) transport</text>
       <text className="sb-s" x="440" y="318">multipath spray, retransmission, reordering, congestion control</text>
-      <text className="sb-s" x="440" y="336">Neither kernel driver contains any SRD implementation</text>
+      <text className="sb-s" x="440" y="336">No SRD implementation was found in either kernel driver</text>
 
       <text className="sb-cap" x="440" y="368">
         ENA and EFA are peer consumers of the same transport.
@@ -434,7 +437,7 @@ const ladderRows: LadderRow[] = [
   {
     config: 'ENA Express',
     ceiling: '25 Gbps',
-    note: 'Capped by the aggregate instance limit. Scope is contested, see below.',
+    note: 'Capped by the aggregate instance limit. Within one Availability Zone, either AWS page applies; across zones, see below.',
   },
   {
     config: 'Multipath TCP across several paths',
@@ -529,7 +532,8 @@ export function EnaVsEfa() {
               </Box>
               <Box variant="p">
                 The directory kernel/linux/common/ena_com is common across the ENA ports for Linux,
-                FreeBSD and DPDK. Only the ENA Makefile references it, through ENA_COM_PATH{' '}
+                FreeBSD and DPDK (Data Plane Development Kit). Only the ENA Makefile references it,
+                through ENA_COM_PATH{' '}
                 <SourceRef provenance="code-derived" code={code.enaMakefile} />, while the EFA build
                 carries its own efa_com, structurally parallel and textually independent{' '}
                 <SourceRef provenance="code-derived" code={code.efaKbuild} />.
@@ -679,26 +683,32 @@ export function EnaVsEfa() {
             device and no ENA device{' '}
             <SourceRef provenance="documented" doc={docs.efa} />, and it still carries SRD traffic,
             so SRD reaches the wire with the ENA device absent in a configuration AWS ships and
-            documents. And the ENA driver's entire knowledge of SRD is a read-only statistics
-            structure, struct ena_admin_ena_srd_stats, holding four counters{' '}
-            <SourceRef provenance="code-derived" code={code.srdStats} />. Retransmission, the
-            reliability state machine, congestion control and reordering all live below the PCI
+            documents. And what the ENA driver carries for SRD is read-only: a statistics structure
+            holding four counters and a configuration bitmap it reads back{' '}
+            <SourceRef provenance="code-derived" code={code.srdStats} />{' '}
+            <SourceRef provenance="code-derived" code={code.srdFlags} />. No retransmission,
+            reliability, congestion-control or reordering code for SRD was found in either driver
+            during this research, which is consistent with all of it living below the PCI
             boundary, in the card. That is why the ethtool counters later in this section are the
-            whole of the in-instance view of SRD.
+            whole of the ENA driver&apos;s view of SRD.
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="The baseline the other two are measured against: queue model, interrupt layout, offload list.">
+          <Header
+            variant="h2"
+            description="Why one flow lands on one core, and where receive aggregation spends host CPU."
+          >
             What ENA actually is
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            ENA registers a net_device and behaves like any modern NIC driver. The model is paired
+            ENA registers a net_device and behaves like any modern NIC (network interface card)
+            driver. The model is paired
             submission queue and completion queue per direction, multi-queue on both transmit and
             receive, with doorbells written as plain MMIO stores of the queue tail. The default
             ring size is 1024 entries, with a minimum of 256, and a wide LLQ ring default of 512{' '}
@@ -734,19 +744,20 @@ export function EnaVsEfa() {
                 flow steering{' '}
                 <SourceRef provenance="code-derived" code={code.enaOffloads} />. RSS is the one that
                 comes back below, as a cap on a single flow. XDP (eXpress Data Path) is supported:
-                an eBPF hook that runs inside the kernel, with the kernel still in the path.
+                an eBPF (extended Berkeley Packet Filter) hook that runs inside the kernel, with
+                the kernel still in the path.
               </Box>
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="Receive aggregation is GRO, done in software">
-            The receive path calls napi_gro_receive, the Linux stack entry point for GRO (Generic
-            Receive Offload), which aggregates after delivery on the host CPU{' '}
-            <SourceRef provenance="code-derived" code={code.enaGro} />. Secondary write-ups
-            routinely credit ENA with hardware LRO (Large Receive Offload) instead. A grep for lro
-            across the ENA and common driver trees returns zero hits beyond incidental substring
-            matches on tailroom, and the tree carries no NETIF_F_LRO feature bit and no hardware
-            coalescing path. Code is the authority: budget host cycles for receive aggregation.
+          <Alert type="warning" header="Receive aggregation is GRO (Generic Receive Offload), done in software">
+            The receive path calls napi_gro_receive, the Linux stack entry point for GRO, which
+            aggregates after delivery on the host CPU{' '}
+            <SourceRef provenance="code-derived" code={code.enaGro} />. Some secondary write-ups
+            credit ENA with hardware LRO (Large Receive Offload) instead. A grep for lro across the
+            ENA and common driver trees returns zero hits beyond incidental substring matches on
+            tailroom, and no NETIF_F_LRO feature bit or hardware coalescing path was found in the
+            tree. Code is the authority: budget host cycles for receive aggregation.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -775,14 +786,14 @@ export function EnaVsEfa() {
             the entire point.
           </Box>
 
-          <Alert type="info" header="The same AWS guide documents a median latency cost">
-            In the same guide: during periods of time when network traffic is light, you might
-            notice a slight increase in median packet latency, tens of microseconds, when the
-            packet uses ENA Express{' '}
-            <SourceRef provenance="documented" doc={docs.enaExpress} />. AWS follows it with a
-            note that applications with high packets-per-second requirements needing to optimize
-            for latency during uncongested periods may be better served by plain enhanced
-            networking. SRD is a congestion play, and it costs tens of microseconds at idle.
+          <Alert type="info" header="ENA Express costs tens of microseconds of median latency at idle">
+            When network traffic is light, packets that use ENA Express can show a slight increase
+            in median packet latency, tens of microseconds{' '}
+            <SourceRef provenance="documented" doc={docs.enaExpress} />. Applications with high
+            packets-per-second requirements that need to optimize for latency during uncongested
+            periods may be better served by plain enhanced networking{' '}
+            <SourceRef provenance="documented" doc={docs.enaExpress} />. SRD is a congestion play,
+            and it costs tens of microseconds at idle.
           </Alert>
 
           <ColumnLayout columns={2} variant="text-grid">
@@ -793,12 +804,13 @@ export function EnaVsEfa() {
                 through the EC2 control plane, and the driver observes the result.
                 ena_com_get_ena_srd_info reaches SRD through exactly one path, the statistics
                 admin command ENA_ADMIN_GET_STATS_TYPE_ENA_SRD{' '}
-                <SourceRef provenance="code-derived" code={code.srdGet} />, and the tree carries
-                no ena_com_set_ena_srd counterpart. Reading is the whole of the driver's access.
+                <SourceRef provenance="code-derived" code={code.srdGet} />, and no
+                ena_com_set_ena_srd counterpart was found in the tree during this research. The
+                driver access located is read-only.
               </Box>
               <Box variant="p">
-                Any in-instance command you find for ENA Express is tuning: MTU (Maximum
-                Transmission Unit), queue sizes, byte queue limits.
+                Our reading: an in-instance command for ENA Express is tuning, such as MTU (Maximum
+                Transmission Unit), queue sizes and byte queue limits.
               </Box>
             </div>
             <div>
@@ -887,8 +899,8 @@ ethtool -S eth0 | grep ena_srd
                 One caveat on the last counter. ena_srd_resource_utilization is commented only as
                 a percentage of the ENA SRD resources that is in use{' '}
                 <SourceRef provenance="code-derived" code={code.srdStats} />. Which resource, and
-                what action a high value should trigger, is stated nowhere in code or
-                documentation. Watch it. Do not yet interpret it.
+                what action a high value should trigger, is not stated in the driver code at the
+                pinned commit or in any AWS documentation located during this research. Watch it. Do not yet interpret it.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -905,7 +917,8 @@ ethtool -S eth0 | grep ena_srd
         <SpaceBetween size="m">
           <Box variant="p">
             A single flow is a unique 5-tuple TCP or UDP flow, and for protocols such
-            as GRE or IPsec, the 3-tuple of source IP, destination IP and next protocol{' '}
+            as GRE (Generic Routing Encapsulation) or IPsec, the 3-tuple of source IP, destination
+            IP and next protocol{' '}
             <SourceRef provenance="documented" doc={docs.bandwidth} />. The per-flow ceiling is the
             number that surprises people, because it is unrelated to the instance aggregate.
           </Box>
@@ -925,8 +938,10 @@ ethtool -S eth0 | grep ena_srd
             items={ladderRows}
             footer={
               <Box variant="small" color="text-body-secondary">
-                All four rows sourced from the EC2 instance network bandwidth guide{' '}
-                <SourceRef provenance="documented" doc={docs.bandwidth} />.
+                Ceilings sourced from the EC2 instance network bandwidth guide{' '}
+                <SourceRef provenance="documented" doc={docs.bandwidth} />; the ENA Express note also
+                draws on the ENA Express guide{' '}
+                <SourceRef provenance="documented" doc={docs.enaExpress} />.
               </Box>
             }
           />
@@ -962,11 +977,10 @@ ethtool -S eth0 | grep ena_srd
 
           <Alert type="info" header="ENA Express fixes two of the three">
             It raises the ceiling and it sprays across paths, so causes 1 and 3 improve. Cause 2
-            is untouched. The flow still lands on one receive queue on one core. This is exactly
-            why AWS warns that high packets-per-second workloads may prefer plain enhanced
-            networking{' '}
-            <SourceRef provenance="documented" doc={docs.enaExpress} />: SRD adds per-packet work
-            without removing the single-queue bottleneck. The general escape is more flows, or
+            is untouched. The flow still lands on one receive queue on one core. Our reading is
+            that this is why AWS warns that high packets-per-second workloads may prefer plain
+            enhanced networking <SourceRef provenance="documented" doc={docs.enaExpress} />: SRD
+            leaves the single-queue bottleneck in place. The general escape is more flows, or
             more interfaces.
           </Alert>
 
@@ -981,8 +995,8 @@ ethtool -S eth0 | grep ena_srd
           <Box variant="p">
             Spreading across those cards is yours to arrange. ena_probe and efa_probe each bind
             one PCI function to one independent device instance{' '}
-            <SourceRef provenance="code-derived" code={code.enaDriver} />, and amzn-drivers carries
-            no driver-level link aggregation. At the host that means Linux bonding or ECMP
+            <SourceRef provenance="code-derived" code={code.enaDriver} />, and no driver-level link
+            aggregation was found in amzn-drivers during this research. At the host that means Linux bonding or ECMP
             (Equal-Cost Multi-Path); in the application it means opening more flows. For EFA,
             libfabric enumerates several domains and leaves the striping to the caller.
           </Box>
@@ -1019,10 +1033,8 @@ ethtool -S eth0 | grep ena_srd
                 <SourceRef provenance="documented" doc={docs.enaExpress} />.
               </Box>
               <Box variant="p">
-                These cannot both be the scope, and the driver cannot break the tie, because it
-                only reads counters{' '}
-                <SourceRef provenance="code-derived" code={code.srdGet} />. If you are sizing on the
-                25 Gbps figure across Availability Zones, confirm it before you build on it.
+                The two pages give different scopes. If you are sizing on the 25 Gbps figure across
+                Availability Zones, confirm it before you build on it.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1045,17 +1057,18 @@ ethtool -S eth0 | grep ena_srd
 
           <ExpandableSection
             headerText="Can ENA Express run on the ENA half of an EFA attachment?"
-            headerDescription="The drivers have no set path, so an API experiment is what settles it"
+            headerDescription="No set path was found in the drivers, so an API experiment is what settles it"
           >
             <Box variant="p">
               An EFA with ENA attachment has both devices{' '}
               <SourceRef provenance="documented" doc={docs.efa} />, and ENA Express is an
               attachment-level setting{' '}
               <SourceRef provenance="code-derived" code={code.srdFlags} />. Whether the EC2 control
-              plane permits enabling ENA Express on the ENA half of an EFA-type interface is
-              visible nowhere in the drivers, because the drivers have no SET path at all{' '}
-              <SourceRef provenance="code-derived" code={code.srdGet} />, and the fetched
-              documentation does not address it. Settling it needs an API experiment against an
+              plane permits enabling ENA Express on the ENA half of an EFA-type interface is not
+              visible in the drivers: the SRD accessor located is a getter{' '}
+              <SourceRef provenance="code-derived" code={code.srdGet} />, no SET path was found
+              during this research, and the fetched documentation does not address it. Settling
+              it needs an API experiment against an
               efa-type interface, not more reading.
             </Box>
           </ExpandableSection>
@@ -1125,15 +1138,15 @@ ethtool -S eth0 | grep ena_srd
             </div>
             <div>
               <Box variant="h3">
-                EFA <Badge color="green">lowest latency</Badge>
+                EFA <Badge color="green">OS bypass</Badge>
               </Box>
               <Box variant="p">
-                <strong>Latency:</strong> best of the three, because the application writes the
-                descriptor itself and the kernel sits outside the data path entirely.
+                <strong>Latency:</strong> best of the three on our reading, because the application
+                writes the descriptor itself and the kernel sits outside the data path entirely.
               </Box>
               <Box variant="p">
-                <strong>CPU cost:</strong> lowest of the three. A send is a store into mapped
-                memory, and the SRD protocol work happens in the card.
+                <strong>CPU cost:</strong> lowest of the three on our reading. A send is a store into
+                mapped memory, and the SRD protocol work happens in the card.
               </Box>
               <Box variant="p">
                 <strong>Ordering:</strong> out-of-order delivery is the native model.

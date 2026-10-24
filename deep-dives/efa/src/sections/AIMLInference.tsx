@@ -7,7 +7,7 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import { SourceRef } from '@tech-deep-dives/shared';
-import type { DocRef } from '@tech-deep-dives/shared';
+import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 
 /**
  * EFA for AI/ML Inference.
@@ -18,7 +18,8 @@ import type { DocRef } from '@tech-deep-dives/shared';
  * the search that failed is described so a reader can repeat it.
  */
 
-const ACCESSED = '2026-08-02';
+const ACCESSED = '2026-10-23';
+const READ = '2026-10-23';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
 const docs: Record<string, DocRef> = {
@@ -40,6 +41,63 @@ const docs: Record<string, DocRef> = {
     tier: 1,
     accessed: ACCESSED,
   },
+  ac: {
+    title: 'EC2 instance types: Accelerated computing',
+    url: 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+  vllmSpecDecodeDoc: {
+    title: 'vLLM documentation (v0.32.0): Speculative Decoding',
+    url: 'https://github.com/vllm-project/vllm/blob/v0.32.0/docs/features/speculative_decoding/README.md#L3',
+    tier: 1,
+    accessed: ACCESSED,
+  },
+};
+
+const code: Record<string, CodeRef> = {
+  nixlPostWrite: {
+    repo: 'ai-dynamo/nixl',
+    ref: 'v1.5.0',
+    path: 'src/utils/libfabric/libfabric_rail.cpp',
+    lines: 'L1366-L1415',
+    read: READ,
+  },
+  ncclP2pKernel: {
+    repo: 'NVIDIA/nccl',
+    ref: 'v2.32.3-1',
+    path: 'src/enqueue/enqueue.cc',
+    lines: 'L1241-L1249',
+    read: READ,
+  },
+  vllmKvConvert: {
+    repo: 'vllm-project/vllm',
+    ref: 'v0.32.0',
+    path: 'vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py',
+    lines: 'L2701-L2724',
+    read: READ,
+  },
+  vllmKvConvertWhen: {
+    repo: 'vllm-project/vllm',
+    ref: 'v0.32.0',
+    path: 'vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py',
+    lines: 'L2944-L2950',
+    read: READ,
+  },
+  vllmBackends: {
+    repo: 'vllm-project/vllm',
+    ref: 'v0.32.0',
+    path: 'vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py',
+    lines: 'L525-L527',
+    read: READ,
+  },
+  vllmKvRole: {
+    repo: 'vllm-project/vllm',
+    ref: 'v0.32.0',
+    path: 'vllm/distributed/kv_transfer/kv_connector/v1/nixl/connector.py',
+    lines: 'L97-L103',
+    read: READ,
+  },
 };
 
 export function AIMLInference() {
@@ -52,12 +110,12 @@ export function AIMLInference() {
           network on the critical path of a request. Disaggregated prefill and decode, cross-node
           speculative decoding and KV-cache (Key-Value cache) migration each move bytes between
           instances while every node holds a full copy of the model. So the figure to work out for
-          your own deployment is not the model size. It is how many bytes leave the instance per
-          request, and how many times that happens per response.
+          your own deployment is how many bytes leave the instance per request, and how many times
+          that happens per response.
         </Box>
       </Container>
 
-      <Container header={<Header variant="h2" description="The model fits on every node and the KV-cache still crosses the wire on every request.">Disaggregated serving puts the KV-cache on the wire</Header>}>
+      <Container header={<Header variant="h2" description="Which transfer library carries the KV-cache, and the two connector settings that put it on EFA.">Disaggregated serving puts the KV-cache on the wire</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
             In disaggregated prefill and decode, prefill runs on one set of nodes and decode on
@@ -69,17 +127,14 @@ export function AIMLInference() {
             <div>
               <Box variant="h3">NIXL (NVIDIA Inference Xfer Library)</Box>
               <Box variant="p">
-                Purpose-built for disaggregated inference transfers. NIXL moves a buffer with{' '}
-                <strong>zero SM (Streaming Multiprocessor) consumption</strong>: the transfer needs
-                no GPU kernel launch, so the GPU keeps every SM on token generation. NCCL
-                launches a GPU kernel for each point-to-point send and receive, and on an inference
-                GPU that is already compute-bound, those SMs come straight out of throughput.
-              </Box>
-              <Box variant="p">
-                NIXL uses EFA via the libfabric backend. EFA supports NIXL for AI and ML
-                applications, and NIXL integrates with Libfabric 1.21.0 and later{' '}
-                <SourceRef provenance="documented" doc={docs.efa} />, with its own getting-started
-                page <SourceRef provenance="documented" doc={docs.efaNixl} />.
+                Over EFA, NIXL posts each transfer from a host thread through libfabric, so the
+                transfer itself launches no GPU kernel and takes{' '}
+                <strong>no SM (Streaming Multiprocessor)</strong>{' '}
+                <SourceRef provenance="code-derived" code={code.nixlPostWrite} />. NCCL runs its
+                point-to-point sends and receives inside a GPU kernel{' '}
+                <SourceRef provenance="code-derived" code={code.ncclP2pKernel} />, and on an
+                inference GPU that is already compute-bound, those SMs come straight out of
+                throughput.
               </Box>
               <StatusIndicator type="success">EFA critical for NIXL</StatusIndicator>
             </div>
@@ -89,21 +144,41 @@ export function AIMLInference() {
                 NCCL is designed for steady-state collectives in training: allreduce, allgather,
                 reduce-scatter, running every step at a predictable size. NIXL is designed for
                 bursty point-to-point transfers in inference, where a KV-cache block moves once,
-                between two specific nodes, at an unpredictable moment. Different patterns, so
-                different libraries.
+                between two specific nodes, at an unpredictable moment.
               </Box>
               <Alert type="info" header="Size the NIXL advantage on your own transfer sizes">
                 A percentage figure circulates for NIXL against NCCL at KV-cache transfer sizes. No
-                benchmark that supports it was located during this research, and the repository
-                usually cited for it is attributed to the wrong organization. Treat the gap as
+                benchmark that supports it was located during this research. Treat the gap as
                 unquantified and measure it at the block sizes your serving stack actually moves.
               </Alert>
             </div>
           </ColumnLayout>
           <Box variant="p">
+            NIXL reaches EFA through its libfabric backend and integrates with Libfabric 1.21.0 and
+            later <SourceRef provenance="documented" doc={docs.efa} />, so check the Libfabric
+            version in the serving image.
+          </Box>
+          <Box variant="p">
             <strong>vLLM integration:</strong> vLLM implements disaggregated serving through
-            NixlConnector. The prefiller produces, the decoder consumes, and a proxy coordinates the
-            KV-cache handoff over EFA with no GPU compute cycles spent on it.
+            NixlConnector. LIBFABRIC is the backend that takes NIXL traffic over EFA{' '}
+            <SourceRef provenance="documented" doc={docs.efaNixl} />, and the connector defaults to
+            UCX (Unified Communication X){' '}
+            <SourceRef provenance="code-derived" code={code.vllmBackends} />, so name it in{' '}
+            <code>kv_connector_extra_config</code> with{' '}
+            <code>{'"backends": ["LIBFABRIC"]'}</code>. Set <code>kv_role</code> to{' '}
+            <code>kv_producer</code> on prefill instances and <code>kv_consumer</code> on decode
+            instances. The AWS sample sets <code>kv_both</code> on both, a value the connector logs
+            as deprecated{' '}
+            <SourceRef
+              provenance="doc-code-conflict"
+              doc={docs.efaNixl}
+              code={code.vllmKvRole}
+              conflict="kv_role set to kv_both on both the prefill and the decode instance"
+            />. When prefill and decode use different block sizes or KV layouts, vLLM runs a
+            conversion on the decode GPU{' '}
+            <SourceRef provenance="code-derived" code={code.vllmKvConvert} />
+            <SourceRef provenance="code-derived" code={code.vllmKvConvertWhen} />, so compare both
+            settings across the two fleets.
           </Box>
         </SpaceBetween>
       </Container>
@@ -111,9 +186,9 @@ export function AIMLInference() {
       <Container header={<Header variant="h2" description="Tensor parallelism pays the network cost once per token, so one added millisecond becomes a second per response.">Models that need more than one node</Header>}>
         <SpaceBetween size="m">
           <Box variant="p">
-            405B parameters at fp16 is about 810 GB, more than the 640 GB of total GPU memory in a
-            P5 instance. Run that same comparison for your own weights against your own instance
-            first, because it is what decides whether either of the next two strategies is in play
+            405B parameters at fp16 is about 810 GB, more than the 640 GiB (about 687 GB) of total
+            GPU memory in a P5 instance <SourceRef provenance="documented" doc={docs.ac} />. Run
+            that same comparison for your own weights against your own instance first, because it is what decides whether either of the next two strategies is in play
             at all. They split a model across nodes, and they load the fabric differently.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
@@ -148,9 +223,11 @@ export function AIMLInference() {
             <Box variant="h3">Cross-node speculative decoding</Box>
             <Box variant="p">
               A draft model on one node generates candidate tokens and a verifier on another node
-              accepts or rejects them. Each model fits on its own node, and the verification loop is
-              latency-sensitive: every round-trip adds to time-to-first-token, which is what EFA
-              shortens here.
+              accepts or rejects them. Each model fits on its own node, and speculative decoding
+              exists to cut inter-token latency in medium-to-low QPS (queries per second),
+              memory-bound serving{' '}
+              <SourceRef provenance="documented" doc={docs.vllmSpecDecodeDoc} />, so every
+              draft-to-verifier round-trip lands there, and that round-trip is what EFA shortens.
             </Box>
             <StatusIndicator type="info">EFA beneficial</StatusIndicator>
           </div>
@@ -166,14 +243,17 @@ export function AIMLInference() {
         </ColumnLayout>
       </Container>
 
-      <Container header={<Header variant="h2" description="Two serving shapes where the intra-node links carry everything, and the single-zone constraint you sidestep by staying there.">Where NVLink already covers it</Header>}>
+      <Container header={<Header variant="h2" description="Two serving shapes that skip EFA: one node where NVLink carries everything, and batch work loose enough on latency to run on standard networking across zones.">Where NVLink already covers it</Header>}>
         <ColumnLayout columns={2} variant="text-grid">
           <div>
             <Box variant="h3">Single-node, single-request serving</Box>
             <Box variant="p">
               One node holds the model, one node serves the request, and all GPU-to-GPU
               communication travels over NVLink and NVSwitch inside the instance. Roughly 300B
-              parameters at fp16, or roughly 600B at fp8 and int8, fit on a single P5.
+              parameters at fp16, or roughly 600B at fp8 and int8, fit on a single P5 by weight
+              alone: about 600 GB against 640 GiB (about 687 GB) of GPU memory{' '}
+              <SourceRef provenance="documented" doc={docs.ac} />, which leaves under 90 GB for the
+              KV-cache and activations (our arithmetic).
             </Box>
             <StatusIndicator type="stopped">EFA irrelevant</StatusIndicator>
           </div>
@@ -206,12 +286,13 @@ export function AIMLInference() {
             parallelism across nodes with NCCL over EFA. Put every node in one Availability Zone and
             one VPC, the boundary EFA traffic stays inside{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. AWS recommends a cluster placement
-            group to satisfy that and keep latency low; it is a recommendation, and the hard
-            boundary is the zone <SourceRef provenance="documented" doc={docs.efaStart} />.
+            group to satisfy that and keep latency low; the hard boundary is the zone{' '}
+            <SourceRef provenance="documented" doc={docs.efaStart} />.
           </Box>
           <Box variant="p">
             <strong>4. Are you running speculative decoding across nodes?</strong> EFA is
-            beneficial. The verification loop runs per token and lands in time-to-first-token.
+            beneficial. The verification loop runs per token and lands in inter-token latency{' '}
+            <SourceRef provenance="documented" doc={docs.vllmSpecDecodeDoc} />.
           </Box>
           <Box variant="p">
             <strong>5. Do you need KV-cache migration for autoscaling or rebalancing?</strong> EFA

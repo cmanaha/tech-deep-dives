@@ -24,25 +24,34 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * ci.sh pinned-refs gate rejects branch references.
  */
 
+/** First read. Docs and code not re-read in the October 2026 refresh keep this date. */
 const ACCESSED = '2026-08-01';
 const READ = '2026-08-01';
+/** Re-read or newly read in the October 2026 refresh. */
+const ACCESSED_OCT = '2026-10-23';
+const READ_OCT = '2026-10-23';
 
 const EKS_DOC = 'https://docs.aws.amazon.com/eks/latest/userguide/';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 const BATCH_DOC = 'https://docs.aws.amazon.com/batch/latest/userguide/';
 
-/** Pinned refs. Read 2026-08-01. */
-const AMI_SHA = 'ac5f340c56a9a6943808c9201da87adec9edb1da';
+/** Pinned refs. */
+const AMI_SHA = '9c99e21e6d07a733596b85d197a065815603e5f0';
 const DRANET_CHART_SHA = 'c043cef46c7e50a71094e50b43b8225322a750ff';
-const EFA_CHART_SHA = 'bfe91c4b9257c80f754ad4b3d6a9a3c239b2b8ec';
+const EFA_CHART_SHA = 'ab081b33b8a1f6627e699d4aa48e43d73d138bce';
 const NVDP_NEW = 'v0.19.0';
+const NVDP_LAST_TRUE = 'v0.19.2';
+const NVDP_REVERT = 'v0.19.3';
+const NVDP_CURRENT = 'v0.20.1';
 const NVDP_OLD = 'v0.18.2';
-const CTK_TAG = 'v1.19.1';
+const CTK_TAG = 'v1.20.1';
 const K8S_TAG = 'v1.34.0';
 const DRANET_SHIPPED = 'v1.2.0';
-const DRANET_LATEST = 'v1.4.0';
-const BR_KERNEL_TAG = 'v7.2.1';
-const BR_CORE_TAG = 'v15.0.0';
+const DRANET_LATEST = 'v1.5.0';
+const BR_KERNEL_TAG = 'v9.4.1';
+const BR_CORE_TAG = 'v17.2.0';
+const BR_OS_TAG = 'v1.67.0';
+const KARPENTER_TAG = 'v1.15.0';
 const BOTOCORE_TAG = '1.43.62';
 const CKPT_SHA = '08c4ff60ef06cfe2a659f4ea38c342c81fd86410';
 const RECIPES_SHA = '20ea8f4551cd540b5b023b25d41ab414b16fe493';
@@ -52,48 +61,35 @@ const KARPENTER_SHA = '4b2a2049469190a8a379668794e053207464b740';
 const EKSCTL_SHA = 'a5cb648e5bd6245a80e6b62b8817ce6fa1e6d7cd';
 const AI_ON_EKS_SHA = '5e6282cb121f423e734caccb550a9f61c2935584';
 
-const doc = (title: string, url: string, tier: 1 | 2): DocRef => ({ title, url, tier, accessed: ACCESSED });
-const ref = (repo: string, r: string, path: string, lines?: string): CodeRef => ({
+const doc = (title: string, url: string, tier: 1 | 2, accessed: string = ACCESSED): DocRef => ({ title, url, tier, accessed });
+const ref = (repo: string, r: string, path: string, lines?: string, read: string = READ): CodeRef => ({
   repo,
   ref: r,
   path,
   lines,
-  read: READ,
+  read,
 });
+/** Same builders, for sources read in the October 2026 refresh. */
+const docO = (title: string, url: string, tier: 1 | 2): DocRef => doc(title, url, tier, ACCESSED_OCT);
+const refO = (repo: string, r: string, path: string, lines?: string): CodeRef => ref(repo, r, path, lines, READ_OCT);
+
+const KARPENTER_DRA_DOC = `https://github.com/aws/karpenter-provider-aws/blob/${KARPENTER_TAG}/website/content/en/preview/tasks/dra.md`;
 
 const docs = {
-  eksDevice: doc(
-    'EKS User Guide: Manage EFA devices on Amazon EKS',
-    `${EKS_DOC}device-management-efa.html`,
-    1
-  ),
-  eksNode: doc(
-    'EKS User Guide: Run machine learning training on Amazon EKS with EFA',
-    `${EKS_DOC}node-efa.html`,
-    1
-  ),
-  eksAmi: doc(
-    'EKS User Guide: Use EKS-optimized accelerated AMIs',
-    `${EKS_DOC}ml-eks-optimized-ami.html`,
-    1
-  ),
+  eksDevice: docO('EKS User Guide: Manage EFA devices on Amazon EKS', `${EKS_DOC}device-management-efa.html`, 1),
+  eksAmi: docO('EKS User Guide: Use EKS-optimized accelerated AMIs', `${EKS_DOC}ml-eks-optimized-ami.html`, 1),
   eksAmiBuild: doc(
     'EKS User Guide: Build a custom EKS-optimized Amazon Linux AMI',
     `${EKS_DOC}eks-ami-build-scripts.html`,
     1
   ),
-  eksNodeClass: doc(
+  eksNodeClass: docO(
     'EKS User Guide: Create a Node Class (static network interface configuration)',
     `${EKS_DOC}create-node-class.html`,
     1
   ),
-  eksNvidia: doc(
-    'EKS User Guide: Manage NVIDIA GPU devices on Amazon EKS',
-    `${EKS_DOC}device-management-nvidia.html`,
-    1
-  ),
-  efaStart: doc('EC2 User Guide: Get started with EFA and MPI', `${EC2_DOC}efa-start.html`, 1),
-  efaAcc: doc(
+  efaStart: docO('EC2 User Guide: Get started with EFA and MPI', `${EC2_DOC}efa-start.html`, 1),
+  efaAcc: docO(
     'EC2 User Guide: Maximize network bandwidth on instances with multiple network cards',
     `${EC2_DOC}efa-acc-inst-types.html`,
     1
@@ -105,9 +101,9 @@ const docs = {
     1
   ),
   batchEks: doc('AWS Batch User Guide: Amazon EKS compute environments', `${BATCH_DOC}eks.html`, 1),
-  amiRelease: doc(
-    'awslabs/amazon-eks-ami release v20260728 (per-variant package tables)',
-    'https://github.com/awslabs/amazon-eks-ami/releases/tag/v20260728',
+  amiRelease: docO(
+    'awslabs/amazon-eks-ami release v20261019 (per-variant package tables)',
+    'https://github.com/awslabs/amazon-eks-ami/releases/tag/v20261019',
     1
   ),
   installer: doc(
@@ -115,33 +111,54 @@ const docs = {
     'https://efa-installer.amazonaws.com/aws-efa-installer-1.49.0.tar.gz',
     1
   ),
+  efaChangelog: docO('EC2 User Guide: EFA installer changelog', `${EC2_DOC}efa-changelog.html`, 1),
   karpenterNodeClass: doc('Karpenter documentation: EC2NodeClass', 'https://karpenter.sh/docs/concepts/nodeclasses/', 1),
+  karpenterDraUnset: docO('Karpenter documentation at v1.15.0: Dynamic Resource Allocation (EFA DRA and networkInterfaces)', `${KARPENTER_DRA_DOC}#L191`, 1),
+  karpenterDraPools: docO(
+    'Karpenter documentation at v1.15.0: running DRA drivers alongside device plugins',
+    `${KARPENTER_DRA_DOC}#L340-L370`,
+    1
+  ),
+  brChangelog: docO(
+    'Bottlerocket CHANGELOG at v1.67.0 (v1.64.0 entry)',
+    `https://github.com/bottlerocket-os/bottlerocket/blob/${BR_OS_TAG}/CHANGELOG.md#L127-L130`,
+    1
+  ),
+  dranetRelease: docO('kubernetes-sigs/dranet release v1.5.0', 'https://github.com/kubernetes-sigs/dranet/releases/tag/v1.5.0', 1),
   aiOnEks: doc('AI on EKS blueprints', 'https://awslabs.github.io/ai-on-eks/', 1),
 };
 
+const AMI_REPO = 'awslabs/amazon-eks-ami';
+const INSTALL_EFA = 'templates/al2023/provisioners/install-efa.sh';
+const AMI_VARS = 'templates/al2023/variables-default.pkrvars.hcl';
+const KARPENTER_REPO = 'aws/karpenter-provider-aws';
+const DRA_META = 'pkg/providers/drametadata';
+const NVDP = 'NVIDIA/k8s-device-plugin';
+const NVDP_MAIN = 'cmd/nvidia-device-plugin/main.go';
+const ADAI = 'awslabs/awsome-distributed-ai';
+const AI_ON_EKS = 'awslabs/ai-on-eks';
+
 const code = {
-  installEfa: ref('awslabs/amazon-eks-ami', AMI_SHA, 'templates/al2023/provisioners/install-efa.sh', 'L53'),
-  installEfaGuard: ref('awslabs/amazon-eks-ami', AMI_SHA, 'templates/al2023/provisioners/install-efa.sh', 'L6-L8'),
-  installEfaPeermem: ref(
-    'awslabs/amazon-eks-ami',
-    AMI_SHA,
-    'templates/al2023/provisioners/install-efa.sh',
-    'L63-L65'
-  ),
-  amiVars: ref('awslabs/amazon-eks-ami', AMI_SHA, 'templates/al2023/variables-default.json', 'L17'),
-  brKmod: ref(
-    'bottlerocket-os/bottlerocket-kernel-kit',
-    BR_KERNEL_TAG,
-    'packages/kmod-6.18-efa/kmod-6.18-efa.spec',
-    'L1-L29'
-  ),
-  brRdma: ref('bottlerocket-os/bottlerocket-core-kit', BR_CORE_TAG, 'packages/rdma-core/rdma-core.spec', 'L109-L125'),
-  efaChart: ref('aws/eks-charts', EFA_CHART_SHA, 'stable/aws-efa-k8s-device-plugin/Chart.yaml'),
-  efaDs: ref('aws/eks-charts', EFA_CHART_SHA, 'stable/aws-efa-k8s-device-plugin/templates/daemonset.yaml', 'L60-L64'),
-  efaValues: ref('aws/eks-charts', EFA_CHART_SHA, 'stable/aws-efa-k8s-device-plugin/values.yaml'),
-  dranetChart: ref('aws/eks-charts', DRANET_CHART_SHA, 'stable/aws-dranet/Chart.yaml'),
-  dranetValues: ref('aws/eks-charts', DRANET_CHART_SHA, 'stable/aws-dranet/values.yaml', 'L313-L328'),
-  dranetDs: ref('aws/eks-charts', DRANET_CHART_SHA, 'stable/aws-dranet/templates/daemonset.yaml', 'L33-L66'),
+  installEfa: refO(AMI_REPO, AMI_SHA, INSTALL_EFA, 'L53'),
+  installEfaGuard: refO(AMI_REPO, AMI_SHA, INSTALL_EFA, 'L6-L8'),
+  installEfaLatest: refO(AMI_REPO, AMI_SHA, INSTALL_EFA, 'L14'),
+  installEfaPeermem: refO(AMI_REPO, AMI_SHA, INSTALL_EFA, 'L63-L65'),
+  amiVars: refO(AMI_REPO, AMI_SHA, AMI_VARS, 'L11'),
+  amiDriverVars: refO(AMI_REPO, AMI_SHA, AMI_VARS, 'L18-L19'),
+  amiDriverDoc: refO(AMI_REPO, AMI_SHA, 'doc/usage/al2023.md', 'L34-L35'),
+  amiMakeVars: refO(AMI_REPO, AMI_SHA, 'Makefile', 'L94-L95'),
+  brKmod: refO('bottlerocket-os/bottlerocket-kernel-kit', BR_KERNEL_TAG, 'packages/kmod-6.18-efa/kmod-6.18-efa.spec', 'L1-L29'),
+  brRdma: refO('bottlerocket-os/bottlerocket-core-kit', BR_CORE_TAG, 'packages/rdma-core/rdma-core.spec', 'L111-L136'),
+  efaChart: refO('aws/eks-charts', EFA_CHART_SHA, 'stable/aws-efa-k8s-device-plugin/Chart.yaml', 'L4-L5'),
+  efaDs: refO('aws/eks-charts', EFA_CHART_SHA, 'stable/aws-efa-k8s-device-plugin/templates/daemonset.yaml', 'L60-L64'),
+  efaValues: refO('aws/eks-charts', EFA_CHART_SHA, 'stable/aws-efa-k8s-device-plugin/values.yaml'),
+  dranetChart: refO('aws/eks-charts', DRANET_CHART_SHA, 'stable/aws-dranet/Chart.yaml'),
+  dranetValues: refO('aws/eks-charts', DRANET_CHART_SHA, 'stable/aws-dranet/values.yaml', 'L313-L328'),
+  dranetDs: refO('aws/eks-charts', DRANET_CHART_SHA, 'stable/aws-dranet/templates/daemonset.yaml', 'L33-L66'),
+  karpenterGates: refO(KARPENTER_REPO, KARPENTER_TAG, 'pkg/operator/options/options.go', 'L78'),
+  karpenterEnableDra: refO(KARPENTER_REPO, KARPENTER_TAG, 'charts/karpenter/values.yaml', 'L216-L219'),
+  karpenterEfaMeta: refO(KARPENTER_REPO, KARPENTER_TAG, `${DRA_META}/zz_generated_efa_metadata.go`, 'L449-L773'),
+  karpenterGpuMeta: refO(KARPENTER_REPO, KARPENTER_TAG, `${DRA_META}/zz_generated_gpu_metadata.go`, 'L1806-L1914'),
   k8sAttr: ref(
     'kubernetes/kubernetes',
     K8S_TAG,
@@ -149,40 +166,37 @@ const code = {
     'L23-L33'
   ),
   dranetDb: ref('kubernetes-sigs/dranet', DRANET_SHIPPED, 'pkg/inventory/db.go', 'L290'),
-  dranetBench: ref('kubernetes-sigs/dranet', DRANET_LATEST, 'site/content/docs/user/aws-eks-efa.md', 'L109-L118'),
-  nvdpNew: ref('NVIDIA/k8s-device-plugin', NVDP_NEW, 'cmd/nvidia-device-plugin/main.go', 'L116-L121'),
-  nvdpOld: ref('NVIDIA/k8s-device-plugin', NVDP_OLD, 'cmd/nvidia-device-plugin/main.go', 'L114-L118'),
-  nvdpCdi: ref('NVIDIA/k8s-device-plugin', NVDP_NEW, 'internal/cdi/cdi.go', 'L154-L156'),
-  mofed: ref('NVIDIA/nvidia-container-toolkit', CTK_TAG, 'internal/discover/mofed.go', 'L25-L36'),
-  batchModel: ref('boto/botocore', BOTOCORE_TAG, 'botocore/data/batch/2016-08-10/service-2.json'),
-  ckptJob: ref(
+  dranetBench: refO('kubernetes-sigs/dranet', DRANET_LATEST, 'site/content/docs/user/aws-eks-efa.md', 'L109-L118'),
+  nvdpNew: refO(NVDP, NVDP_NEW, NVDP_MAIN, 'L116-L121'),
+  nvdpLastTrue: refO(NVDP, NVDP_LAST_TRUE, NVDP_MAIN, 'L116-L121'),
+  nvdpRevert: refO(NVDP, NVDP_REVERT, NVDP_MAIN, 'L114-L118'),
+  nvdpCurrent: refO(NVDP, NVDP_CURRENT, NVDP_MAIN, 'L115-L119'),
+  nvdpHelm: refO(NVDP, NVDP_CURRENT, 'deployments/helm/nvidia-device-plugin/values.yaml', 'L38'),
+  nvdpOld: ref(NVDP, NVDP_OLD, NVDP_MAIN, 'L114-L118'),
+  nvdpCdi: ref(NVDP, NVDP_NEW, 'internal/cdi/cdi.go', 'L154-L156'),
+  mofed: refO('NVIDIA/nvidia-container-toolkit', CTK_TAG, 'internal/discover/mofed.go', 'L25-L36'),
+  batchModel: refO('boto/botocore', BOTOCORE_TAG, 'botocore/data/batch/2016-08-10/service-2.json'),
+  ckptJob: refO(
     'aws/sagemaker-hyperpod-checkpointless-training',
     CKPT_SHA,
     'examples/llama3/launch/pretrain_llama3_70b_p5.yaml',
     'L34-L59'
   ),
-  recipes: ref(
-    'aws/sagemaker-hyperpod-recipes',
-    RECIPES_SHA,
-    'launcher/nemo/k8s_templates/training/training.yaml',
-    'L78-L81'
-  ),
-  doEks: ref(
+  recipes: refO('aws/sagemaker-hyperpod-recipes', RECIPES_SHA, 'launcher/nemo/k8s_templates/training/training.yaml', 'L78-L81'),
+  doEks: refO(
     'aws-samples/aws-do-eks',
     DO_EKS_SHA,
     'Container-Root/eks/deployment/inference/agentic-ai/nemotron/ultra/agg/lws.yaml-template',
     'L30-L31'
   ),
-  ncclTests: ref('awslabs/awsome-distributed-ai', ADAI_SHA, 'micro-benchmarks/nccl-tests/kubernetes/nccl-tests.yaml'),
-  ncclGb200: ref(
-    'awslabs/awsome-distributed-ai',
-    ADAI_SHA,
-    'micro-benchmarks/nccl-tests/kubernetes/nccl-tests-gb200.yaml'
-  ),
-  ncclDockerfile: ref('awslabs/awsome-distributed-ai', ADAI_SHA, 'micro-benchmarks/nccl-tests/nccl-tests.Dockerfile'),
-  karpenterDesign: ref('aws/karpenter-provider-aws', KARPENTER_SHA, 'designs/efa-for-static-capacity.md'),
-  eksctlDocs: ref('eksctl-io/eksctl', EKSCTL_SHA, 'userdocs/src/usage/nodegroup-managed.md'),
-  aiOnEksTf: ref('awslabs/ai-on-eks', AI_ON_EKS_SHA, 'infra/base/terraform/eks.tf'),
+  ncclTests: refO(ADAI, ADAI_SHA, 'micro-benchmarks/nccl-tests/kubernetes/nccl-tests.yaml'),
+  ncclGb200: refO(ADAI, ADAI_SHA, 'micro-benchmarks/nccl-tests/kubernetes/nccl-tests-gb200.yaml'),
+  ncclDockerfile: refO(ADAI, ADAI_SHA, 'micro-benchmarks/nccl-tests/nccl-tests.Dockerfile'),
+  karpenterDesign: refO(KARPENTER_REPO, KARPENTER_SHA, 'designs/efa-for-static-capacity.md'),
+  eksctlDocs: refO('eksctl-io/eksctl', EKSCTL_SHA, 'userdocs/src/usage/nodegroup-managed.md'),
+  aiOnEksTf: refO(AI_ON_EKS, AI_ON_EKS_SHA, 'infra/base/terraform/eks.tf'),
+  aiOnEksPolicy: refO(AI_ON_EKS, AI_ON_EKS_SHA, 'infra/base/terraform/variables.tf', 'L160-L164'),
+  aiOnEksLocals: refO(AI_ON_EKS, AI_ON_EKS_SHA, 'infra/base/terraform/modules/efa-networkinterfaces-generator/locals.tf', 'L25-L37'),
 };
 
 /**
@@ -338,7 +352,7 @@ function LayerCakeDiagram() {
  */
 function MinimalFlagDiagram() {
   const rows = [
-    { name: 'efa kernel driver (efa-3.1.0-1.amzn2023)', kept: true },
+    { name: 'efa kernel driver (efa-3.3.0-1.amzn2023)', kept: true },
     { name: 'efa-config', kept: true },
     { name: 'efa-nv-peermem', kept: true },
     { name: 'rdma-core suite (ibv_devinfo, pyverbs, devel, diags)', kept: true },
@@ -416,7 +430,7 @@ function MinimalFlagDiagram() {
         NCCL sits outside the installer in both modes, so its absence from the node has a different cause.
       </text>
       <text className="mn-cap" x="450" y="510">
-        Package names and versions read from aws-efa-installer 1.49.0.
+        Package names read from aws-efa-installer 1.49.0. The efa driver version is from EKS AMI release v20261019.
       </text>
     </svg>
   );
@@ -445,13 +459,13 @@ function NodeLanesDiagram() {
       title: 'Karpenter',
       key1: 'EC2NodeClass.spec',
       key2: '.networkInterfaces',
-      chip: ['Added in v1.11. Editing it', 'drifts existing nodes. AWS', 'says no DRA driver here.'],
+      chip: ['Added in v1.11. Editing it', 'drifts existing nodes. DRA', 'v1.15+, gated if dynamic.'],
     },
     {
       title: 'EKS Auto Mode',
       key1: 'NodeClass.spec',
       key2: '.advancedNetworking',
-      chip: ['No extra ENIs after launch.', 'No IPv6. AWS says no DRA', 'driver here either.'],
+      chip: ['No extra ENIs after launch.', 'No IPv6. AWS says no DRA', 'driver here.'],
     },
   ];
 
@@ -543,7 +557,7 @@ function NodeLanesDiagram() {
       })}
 
       <text className="nl-cap" x="450" y="470">
-        The Karpenter and Auto Mode exclusions are AWS support statements. Only the Auto Mode one is enforced by the charts.
+        Auto Mode has no DRA support, and the aws-dranet chart enforces that with a node affinity rule.
       </text>
     </svg>
   );
@@ -560,7 +574,7 @@ const contractRows: ContractRow[] = [
     item: 'vpc.amazonaws.com/efa in requests and limits',
     status: 'Required',
     detail:
-      'It is a Kubernetes extended resource, so the request and the limit have to be equal. AWS sets both to the same number in every example it publishes.',
+      'It is a Kubernetes extended resource, so the request and the limit have to be equal. AWS sets both to the same number in every example this research located.',
   },
   {
     item: 'hugepages-2Mi',
@@ -590,13 +604,13 @@ const contractRows: ContractRow[] = [
     item: 'IPC_LOCK capability',
     status: 'Undocumented',
     detail:
-      'Present in several AWS sample manifests, stated as a requirement by no AWS documentation. Memory pinning for RDMA registration is the obvious motive. Nobody at AWS has written that down.',
+      'Present in several AWS sample manifests. No AWS documentation located during this research states it as a requirement. Memory pinning for RDMA registration is the likely motive, on our reading, and no AWS statement of it was located.',
   },
   {
     item: 'NCCL_TOPO_FILE',
     status: 'Delete it',
     detail:
-      'Topology alignment on EKS comes from the AL2023 AMI automatically, or from a DRA matchAttribute constraint. No AWS documentation and no AWS-authored EFA manifest sets this variable.',
+      'Topology alignment on EKS comes from the AL2023 AMI automatically, or from a DRA matchAttribute constraint. No AWS documentation or AWS-authored EFA manifest located during this research sets this variable.',
   },
 ];
 
@@ -610,7 +624,7 @@ const mechanismRows: MechanismRow[] = [
   { feature: 'Minimum Kubernetes version', dra: '1.34', plugin: 'All EKS-supported versions' },
   {
     feature: 'EKS compute',
-    dra: 'Managed node groups, self-managed nodes',
+    dra: 'Karpenter v1.15 and later, managed node groups, self-managed nodes',
     plugin: 'EKS Auto Mode, Karpenter, managed node groups, self-managed nodes',
   },
   {
@@ -645,7 +659,7 @@ export function EKSIntegration() {
             driver and the rdma-core userspace, and it stops there. Your container image supplies the fabric
             stack: libfabric, aws-ofi-nccl, NCCL (NVIDIA Collective Communications Library) and MPI (Message
             Passing Interface).</strong> Everything below is a consequence: why fi_info fails on the host, why
-            Bottlerocket and AL2023 land on different driver versions, and why a job that ran at a few GB/s was
+            Bottlerocket and AL2023 (Amazon Linux 2023) land on different driver versions, and why a job that ran at a few GB/s was
             missing a library rather than a tuning flag.
           </Box>
           <Box variant="p">
@@ -665,8 +679,7 @@ export function EKSIntegration() {
                 container image is the other half of the split, and it is the half people forget.
               </Box>
               <Box variant="code">
-                {`# eksctl 0.215.0 or later is required for efaEnabled node groups.
-managedNodeGroups:
+                {`managedNodeGroups:
   - name: my-efa-ng
     instanceType: p5.48xlarge
     availabilityZones: ["us-west-2a"]   # single AZ: this is the hard constraint
@@ -711,7 +724,9 @@ resources:
             alike <SourceRef provenance="documented" doc={docs.eksDevice} />. The NVIDIA layer splits by AMI:
             Bottlerocket NVIDIA carries the NVIDIA device plugin in the image, and on the EKS-optimized AL2023
             NVIDIA AMIs you install the NVIDIA Kubernetes device plugin and the NVIDIA DRA driver yourself{' '}
-            <SourceRef provenance="documented" doc={docs.eksAmi} />.
+            <SourceRef provenance="documented" doc={docs.eksAmi} />. To run the NVIDIA DRA driver on Bottlerocket,
+            disable the bundled plugin first, which takes Bottlerocket 1.63.0 or later{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -728,13 +743,11 @@ resources:
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The AL2023 EKS AMI build runs the standard AWS EFA installer with one flag. The literal line is{' '}
-            <code>sudo ./efa_installer.sh --minimal -y</code>, at line 53 of the Packer provisioner{' '}
-            <SourceRef provenance="code-derived" code={code.installEfa} />. The script is gated only on the
-            ENABLE_EFA variable <SourceRef provenance="code-derived" code={code.installEfaGuard} />, and the default
-            template sets enable_efa to true with no per-Kubernetes-version override{' '}
-            <SourceRef provenance="code-derived" code={code.amiVars} />. Release v20260728 confirms the artifact:
-            the efa package row reads 3.1.0-1.amzn2023 across all five AL2023 variants, standard ones included{' '}
+            The AL2023 EKS AMI build runs the standard AWS EFA installer with one flag,{' '}
+            <code>sudo ./efa_installer.sh --minimal -y</code>, and the AMI component list names the result EFA
+            minimal, the kernel module and rdma-core{' '}
+            <SourceRef provenance="code-confirmed" doc={docs.eksAmi} code={code.installEfa} />. Release v20261019
+            ships efa 3.3.0-1.amzn2023 on all five AL2023 variants, standard ones included{' '}
             <SourceRef provenance="documented" doc={docs.amiRelease} />.
           </Box>
 
@@ -760,7 +773,7 @@ resources:
               <Box variant="p">
                 NCCL sits outside this list entirely. The EFA installer package manifest carries no NCCL in any
                 mode, so its absence from the node traces to a different cause than the four families the flag
-                excludes. What the flag excludes is the aws-ofi-nccl plugin, shipped as libnccl-ofi-1.20.0{' '}
+                excludes. What the flag excludes is the aws-ofi-nccl plugin, shipped as the libnccl-ofi package{' '}
                 <SourceRef provenance="code-derived" doc={docs.installer} />.
               </Box>
             </SpaceBetween>
@@ -771,9 +784,9 @@ resources:
             --minimal leaves the complete suite on the node: ibacm, infiniband-diags, libibumad, libibverbs,
             libibverbs-utils, librdmacm, librdmacm-utils, python3-pyverbs, rdma-core and rdma-core-devel{' '}
             <SourceRef provenance="code-derived" doc={docs.installer} />. efa-config and efa-nv-peermem survive too.
-            The build proves the latter by explicitly removing efa-nv-peermem again on non-NVIDIA AMIs, which it
-            would have no reason to do if --minimal had not installed it{' '}
-            <SourceRef provenance="code-derived" code={code.installEfaPeermem} />.
+            The build points to the latter: it removes efa-nv-peermem again on non-NVIDIA AMIs{' '}
+            <SourceRef provenance="code-derived" code={code.installEfaPeermem} />, which on our reading means
+            --minimal installed it.
           </Box>
 
           <Alert
@@ -782,9 +795,8 @@ resources:
           >
             <SpaceBetween size="xs">
               <Box variant="p">
-                AWS writes that the EKS-optimized AL2023 accelerated AMIs and all Bottlerocket AMIs include the
-                host-level components required to use EFA, specifically the components installed by the
-                aws-efa-installer{' '}
+                AWS writes that the EKS-optimized AL2023 AMIs and all Bottlerocket AMIs include the host-level
+                components required to use EFA, specifically the components installed by the aws-efa-installer{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   doc={docs.eksDevice}
@@ -792,19 +804,20 @@ resources:
                   conflict="EKS User Guide: Bottlerocket ships the components installed by the aws-efa-installer."
                 />
                 . The Bottlerocket build treats that installer as a source archive instead. It downloads a pinned
-                1.47.0 tarball, extracts the driver sources out of the RPM inside it, and compiles its own kernel
+                1.49.0 tarball, extracts the driver sources out of the RPM inside it, and compiles its own kernel
                 module against its own kernel{' '}
                 <SourceRef provenance="code-derived" code={code.brKmod} />.
               </Box>
               <Box variant="p">
-                Two consequences the documentation hides. First, the versions differ: AL2023 pulls the latest
-                installer at build time and lands EFA driver 3.1.0, while the Bottlerocket kernel module spec pins
-                installer 1.47.0 and builds version 3.0.0{' '}
-                <SourceRef provenance="code-derived" code={code.brKmod} />. Second, the host debugging tools differ.
+                Two consequences the documentation hides. First, the driver versions differ. AL2023 pulls the
+                latest installer at build time and lands EFA driver 3.3.0{' '}
+                <SourceRef provenance="code-derived" code={code.installEfaLatest} doc={docs.amiRelease} />.
+                Bottlerocket pins installer 1.49.0, whose driver is 3.1.0, and compiles that source, though its RPM
+                Version field reads 3.0.0{' '}
+                <SourceRef provenance="code-derived" code={code.brKmod} doc={docs.efaChangelog} />. Second, the host debugging tools differ.
                 Bottlerocket builds its own rdma-core and strips every provider except libefa{' '}
                 <SourceRef provenance="code-derived" code={code.brRdma} />, where AL2023 gets the stock suite with
-                pyverbs, diags and headers. Both differences sit on the node side of the split. The end states are
-                similar, the build paths are independent, and so are the versions.
+                pyverbs, diags and headers. Both differences sit on the node side of the split.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -821,12 +834,26 @@ resources:
                 package version table per AMI type{' '}
                 <SourceRef provenance="documented" doc={docs.amiRelease} />.
               </Box>
+              <Box variant="p">
+                The install script is gated only on the ENABLE_EFA variable{' '}
+                <SourceRef provenance="code-derived" code={code.installEfaGuard} />, and the default template sets
+                enable_efa to true with no per-Kubernetes-version override{' '}
+                <SourceRef provenance="code-derived" code={code.amiVars} />.
+              </Box>
               <Box variant="code">
                 {`# Rebuild the same AMI from the published build scripts.
 make k8s=1.36 os_distro=al2023 \\
   enable_accelerator=nvidia \\
-  nvidia_driver_major_version=580 \\
   enable_efa=true`}
+              </Box>
+              <Box variant="p">
+                The NVIDIA driver majors default to 580 for the LTS (long-term support) tree and 595 for the
+                production-branch (pb) tree{' '}
+                <SourceRef provenance="code-derived" code={code.amiDriverVars} />. To change them, set
+                nvidia_driver_lts_version and nvidia_driver_pb_version, and set them together{' '}
+                <SourceRef provenance="code-derived" code={code.amiDriverDoc} />. The Makefile forwards only
+                variables the Packer template declares, so an undeclared name such as nvidia_driver_major_version is
+                dropped without an error <SourceRef provenance="code-derived" code={code.amiMakeVars} />.
               </Box>
               <Box variant="p">
                 Two AWS rules go with that. On top of an EKS-optimized AMI, running an operating system upgrade or
@@ -846,7 +873,7 @@ make k8s=1.36 os_distro=al2023 \\
         header={
           <Header
             variant="h2"
-            description="Four mechanisms, four sets of limitations, one node-level result."
+            description="Pick the provisioning path by the limits you can accept: all four end in the same device nodes."
           >
             Getting EFA interfaces onto the nodes
           </Header>
@@ -855,7 +882,7 @@ make k8s=1.36 os_distro=al2023 \\
         <SpaceBetween size="m">
           <NodeLanesDiagram />
 
-          <Alert type="warning" header="Two networking rules bind here, and the placement group is neither of them">
+          <Alert type="warning" header="Two networking rules bind here: one Availability Zone and a self-referencing security group">
             <SpaceBetween size="xs">
               <Box variant="p">
                 The Availability Zone is the first rule, because EFA traffic cannot cross one. The security group
@@ -864,12 +891,9 @@ make k8s=1.36 os_distro=al2023 \\
                 traffic fails without a useful error.
               </Box>
               <Box variant="p">
-                A cluster placement group is how AWS recommends satisfying the zone rule, and it writes the status
-                verbatim: it is not an absolute requirement to launch your EFA-enabled instances into a cluster
-                placement group. However, AWS does recommend running EFA-enabled instances in a cluster placement
-                group, as it launches the instances into a low-latency group in a single Availability Zone{' '}
-                <SourceRef provenance="documented" doc={docs.efaStart} />. A checklist that lists it as a flat setup
-                requirement is stating a recommendation as a rule.
+                AWS recommends a cluster placement group to satisfy the zone rule, without requiring one, because it
+                launches the instances into a low-latency group in a single Availability Zone{' '}
+                <SourceRef provenance="documented" doc={docs.efaStart} />.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -880,11 +904,9 @@ make k8s=1.36 os_distro=al2023 \\
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                eksctl remains the shortest path, and a launch template is where you go for efa-only interfaces.
-                You cannot use eksctl to create nodes and node groups that use EFA-only
-                interfaces, and if you need to customize the per-device EFA configuration when using eksctl, it is
-                recommended to use the eksctl support for launch templates{' '}
-                <SourceRef provenance="documented" doc={docs.eksDevice} />. eksctl also accepts an explicit
+                eksctl is the shortest path, and its efaEnabled setting configures every interface as type efa, so
+                it cannot create efa-only interfaces. For those, use a launch template, a NodeClass or an
+                EC2NodeClass <SourceRef provenance="documented" doc={docs.eksDevice} />. eksctl also accepts an explicit
                 placement group name alongside efaEnabled{' '}
                 <SourceRef provenance="code-derived" code={code.eksctlDocs} />.
               </Box>
@@ -895,7 +917,7 @@ make k8s=1.36 os_distro=al2023 \\
                 API and rejects launch templates that include subnet configuration{' '}
                 <SourceRef provenance="documented" doc={docs.eksDevice} />. Note also that you cannot make network
                 card 0 an efa-only interface, since it is the primary interface{' '}
-                <SourceRef provenance="documented" doc={docs.eksNode} />.
+                <SourceRef provenance="documented" doc={docs.eksDevice} />.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -922,7 +944,12 @@ make k8s=1.36 os_distro=al2023 \\
                 prefix count, so Karpenter does not set prefix counts on them. And changing networkInterfaces drifts
                 every existing node. The design also confirms only ENA and efa-only types are supported.
                 EC2NodeClass separately offers placementGroupSelector{' '}
-                <SourceRef provenance="documented" doc={docs.karpenterNodeClass} />.
+                <SourceRef provenance="documented" doc={docs.karpenterNodeClass} />. With the EFA DRA driver and
+                dynamic provisioning, leave networkInterfaces unset: Karpenter does not support the combination,
+                and its behaviour is undefined{' '}
+                <SourceRef provenance="documented" doc={docs.karpenterDraUnset} />. For an efa-only layout under
+                DRA, use static capacity, a managed node group or self-managed nodes{' '}
+                <SourceRef provenance="documented" doc={docs.eksDevice} />.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1004,7 +1031,8 @@ make k8s=1.36 os_distro=al2023 \\
             (Virtual Private Cloud) CNI (Container Network Interface) allocates IP addresses across all IP-enabled
             attached ENIs by default, which can consume a large number of subnet addresses even when pods are not
             using them, and on instances with dozens of interfaces this can quickly exhaust the subnet. The two
-            fixes are using efa-only for every interface except the primary, and tuning WARM_IP_TARGET and
+            fixes are using efa-only for every interface except the primary, which needs VPC CNI 1.18.5 or later,
+            and tuning WARM_IP_TARGET and
             WARM_ENI_TARGET on the aws-node DaemonSet. The caveat on the second one matters: those settings are
             cluster-wide and apply to every node the VPC CNI manages, with no way to set them per node group or
             instance type{' '}
@@ -1035,11 +1063,14 @@ make k8s=1.36 os_distro=al2023 \\
             below follows from that.
           </Box>
           <Box variant="p">
-            AWS recommends the DRA driver for new deployments on clusters running Kubernetes 1.34 or later with EKS
-            managed node groups or self-managed node groups, and in the same paragraph sends Karpenter and EKS Auto
-            Mode clusters to the EFA device plugin, since the EFA DRA driver is not supported with either. The two
-            cannot coexist: do not install the EFA DRA driver on nodes where the EFA device plugin is running{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />.
+            AWS recommends the DRA driver for new deployments on Kubernetes 1.34 or later on Karpenter, EKS managed
+            node groups or self-managed nodes. EKS Auto Mode does not support DRA, so Auto Mode clusters stay on the
+            device plugin. The two cannot share a node: installing the EFA DRA driver where the EFA device plugin
+            runs can silently oversubscribe the same devices to several pods on that node{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. Karpenter supports the driver from v1.15
+            for static and dynamic provisioning, and dynamic provisioning sits behind alpha feature gates that
+            default to off <SourceRef provenance="code-confirmed" doc={docs.eksDevice} code={code.karpenterGates} />{' '}
+            <SourceRef provenance="code-derived" code={code.karpenterEnableDra} />.
           </Box>
 
           <Table
@@ -1057,12 +1088,14 @@ make k8s=1.36 os_distro=al2023 \\
             <SourceRef provenance="documented" doc={docs.eksDevice} />.
           </Box>
 
-          <Alert type="warning" header="The Auto Mode half is enforced by the charts. The Karpenter half is a support statement.">
+          <Alert type="warning" header="The charts keep DRA off Auto Mode. On Karpenter, separate NodePools keep the two mechanisms apart.">
             Both charts carry the same node affinity clause excluding EKS Auto Mode nodes, keyed on
             eks.amazonaws.com/compute-type NotIn auto{' '}
-            <SourceRef provenance="code-derived" code={code.dranetDs} />. The Karpenter case has no such clause: a
-            Karpenter node whose instance type appears in the chart allowlist schedules the aws-dranet DaemonSet
-            quite happily. Enforce that half yourself, in the NodePool or in review.
+            <SourceRef provenance="code-derived" code={code.dranetDs} />. Nothing in either chart separates DRA
+            nodes from device plugin nodes on Karpenter <SourceRef provenance="code-derived" code={code.efaDs} />.
+            Give the DRA NodePools and the device plugin NodePools separate labels, set a matching
+            nodeSelector in each chart, and put a nodeSelector for the DRA label on DRA pods, so each node
+            runs one mechanism and a DRA pod never lands on a node where no DRA driver publishes devices <SourceRef provenance="documented" doc={docs.karpenterDraPools} />.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -1080,8 +1113,8 @@ make k8s=1.36 os_distro=al2023 \\
         <SpaceBetween size="m">
           <Box variant="p">
             That extended resource goes in both container resource requests and limits{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />, and as of the pinned chart commit the
-            plugin is at version v0.5.30 with app version v0.5.20{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />, and at the pinned chart commit the chart
+            is version v0.5.33 with app version v0.5.21-eksbuild.13{' '}
             <SourceRef provenance="code-derived" code={code.efaChart} />.
           </Box>
           <Box variant="code">
@@ -1102,7 +1135,7 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
                 The advertised count is the number of EFA interfaces attached at launch. The instance type only
                 sets the ceiling: you can assign up to one EFA per network card, and an
                 EFA counts as a network interface{' '}
-                <SourceRef provenance="documented" doc={docs.eksNode} />.
+                <SourceRef provenance="documented" doc={docs.eksDevice} />.
               </Box>
               <Box variant="p">
                 A p5.48xlarge configured for maximum fabric bandwidth yields 32. A p6-b200.48xlarge has 8 network
@@ -1129,14 +1162,6 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
               </Box>
             </div>
           </ColumnLayout>
-
-          <Alert type="info" header="Version floors that bite">
-            EFA device plugin v0.5.6 or later is needed for P6-B200 instances. Amazon VPC CNI 1.7.10 or later is
-            needed before launching nodes with multiple EFAs such as p4d or p5, and 1.18.5 or later for efa-only
-            interfaces. eksctl 0.215.0 or later is needed for efaEnabled node groups. Bottlerocket 1.28.0 or later
-            includes official EFA support{' '}
-            <SourceRef provenance="documented" doc={docs.eksNode} />.
-          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -1160,13 +1185,13 @@ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,EFA:.status.allocatable
             <SourceRef provenance="code-derived" code={code.dranetValues} />.
           </Box>
 
-          <Alert type="warning" header="The recommended path is one commit old and two upstream minors behind">
-            The aws-dranet chart has exactly one commit in its history, dated 2026-04-30, and is still at chart
+          <Alert type="warning" header="The recommended path is one commit old and three upstream minors behind">
+            The aws-dranet chart has exactly one commit in its history, dated 2026-04-30, and sits at chart
             version 1.0.0 pinning image v1.2.0-eksbuild.2{' '}
-            <SourceRef provenance="code-derived" code={code.dranetChart} />. Upstream kubernetes-sigs/dranet has
-            since released v1.3.0 and v1.4.0. AWS recommends this path for new deployments, and the packaging of it
-            has not been touched since the day it landed. Budget for pinning the image yourself if you need an
-            upstream fix.
+            <SourceRef provenance="code-derived" code={code.dranetChart} />. Upstream kubernetes-sigs/dranet is at
+            v1.5.0, three minor releases past that image{' '}
+            <SourceRef provenance="documented" doc={docs.dranetRelease} />. AWS recommends this path for new
+            deployments, so budget for pinning the image yourself if you need an upstream fix.
           </Alert>
 
           <Box variant="code">
@@ -1208,29 +1233,12 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
             p5.48xlarge instances there are four EFA devices that share the same PCIe root with one GPU, and to
             allocate those groups alongside aligned GPUs even without knowing the exact mapping and count, you
             configure the ResourceClaimTemplate with allocationMode: All{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />. ExactCount is the default.
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. ExactCount is the default. A p5.48xlarge
+            has eight such roots, one GPU{' '}
+            <SourceRef provenance="code-derived" code={code.karpenterGpuMeta} /> and four EFA devices{' '}
+            <SourceRef provenance="code-derived" code={code.karpenterEfaMeta} /> on each, which is the documented
+            total of 32 <SourceRef provenance="documented" doc={docs.eksDevice} />.
           </Box>
-
-          <Alert type="warning" header="The 8 times 4 equals 32 arithmetic is our inference, and it is doing real work">
-            <SpaceBetween size="xs">
-              <Box variant="p">
-                AWS states a local ratio and only that: four EFA devices sharing one PCIe root with one GPU. It
-                never enumerates how many such groups a p5.48xlarge has. Multiplying that ratio by the known 8 GPUs
-                to reach eight groups and 32 devices is arithmetic we performed{' '}
-                <SourceRef provenance="code-derived" doc={docs.eksDevice} code={code.k8sAttr} label="inference" />.
-              </Box>
-              <Box variant="p">
-                Flag it because of what it is used for. AWS documentation contains a genuine internal contradiction
-                on this instance: the NCCL walkthrough narrates each worker requesting four EFAs while the YAML
-                immediately below requests 32{' '}
-                <SourceRef provenance="documented" doc={docs.eksNode} />. The 8 times 4 reading reconciles those two
-                numbers neatly, which is exactly the situation where an inference must not be dressed up as a
-                citation. Note also that the two fours are different quantities. One is a per-worker-pod request
-                count, and it is the wrong one. The other is a per-PCIe-root topology fact. They coincide by
-                accident.
-              </Box>
-            </SpaceBetween>
-          </Alert>
 
           <ExpandableSection
             headerText="What misalignment costs, measured"
@@ -1242,9 +1250,8 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
               bus bandwidth with GPUDirect RDMA (Remote Direct Memory Access) active. The unaligned template, same
               GPU against an EFA on pci0000:a0, reports roughly 6.04 GB/s with GPUDirect RDMA off, which the project
               summarises as degrading performance by roughly 1.9 times at the same GPU and EFA count{' '}
-              <SourceRef provenance="code-derived" code={code.dranetBench} />. These figures come from an upstream
-              repository rather than from AWS, and this dive treats an in-repo document as orientation rather than
-              proof. Treat the shape as sound and the numbers as someone else's benchmark.
+              <SourceRef provenance="code-derived" code={code.dranetBench} />. Treat the shape as sound and the
+              numbers as someone else's benchmark.
             </Box>
           </ExpandableSection>
         </SpaceBetween>
@@ -1254,7 +1261,7 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
         header={
           <Header
             variant="h2"
-            description="The fields a working EFA pod carries, the two you can drop, and two that no AWS documentation explains."
+            description="The fields a working EFA pod carries, the two you can drop, and two whose AWS rationale this research did not locate."
           >
             The pod contract
           </Header>
@@ -1289,7 +1296,7 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
             items={contractRows}
           />
 
-          <Alert type="warning" header="What hostNetwork is for, and why AWS samples still set it on workloads">
+          <Alert type="warning" header="What hostNetwork is for, and why some AWS samples set it on workloads">
             <SpaceBetween size="xs">
               <Box variant="p">
                 hostNetwork belongs to the device layer. Both the EFA device plugin DaemonSet{' '}
@@ -1298,10 +1305,10 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
                 A workload pod reaches EFA through injected /dev/infiniband device nodes, whatever its network
                 namespace, and AWS multi-node inference samples run EFA on the pod network with NCCL_SOCKET_IFNAME
                 set to eth0. The word hostNetwork appears nowhere on the AWS EFA device management page, including
-                in its own workload pod example, and nowhere on the EKS machine learning training page{' '}
+                in its workload pod examples and its NCCL test walkthrough{' '}
                 <SourceRef provenance="documented" doc={docs.eksDevice} />. The comment{' '}
                 <code>hostNetwork: true # Required for EFA</code> that travels with copied manifests has no source
-                behind it.
+                behind it that this research located.
               </Box>
               <Box variant="p">
                 AWS does set it on workloads, in three places. The HyperPod checkpointless training example
@@ -1313,9 +1320,8 @@ kubectl get resourceslices --field-selector spec.driver=dra.net`}
                 <SourceRef provenance="code-derived" code={code.doEks} />.
               </Box>
               <Box variant="p">
-                No AWS source states a reason for those three. The plausible one is rendezvous and launcher
-                addressing rather than the EFA data path, but nobody has written that down, so treat it as our
-                reading. Start on the pod network, and reach for hostNetwork when a launcher needs a stable address.
+                No AWS source located during this research states a reason for those three. The plausible one is
+                rendezvous and launcher addressing rather than the EFA data path; treat that as our reading. Start on the pod network, and reach for hostNetwork when a launcher needs a stable address.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1366,16 +1372,17 @@ spec:
           <Box variant="p">
             On huge pages, hold two numbers apart. EC2 instances with the EFA driver installed
             pre-allocate 5128 2MiB huge pages, requestable as a resource in your job specifications{' '}
-            <SourceRef provenance="documented" doc={docs.eksNode} />. The AWS manifests then request 5120Mi, which
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. The AWS manifests then request 5120Mi, which
             is 2,560 pages, roughly half of what was pre-allocated: different quantities, easily confused.
-            Bottlerocket pre-allocates nothing, so you set vm.nr_hugepages by sysctl in node user data instead{' '}
-            <SourceRef provenance="documented" doc={docs.eksNode} />.
+            Bottlerocket supports static and transparent huge pages from release 1.64.0{' '}
+            <SourceRef provenance="documented" doc={docs.brChangelog} />.
           </Box>
           <Box variant="p">
             Training operators need nothing special. EFA works because the worker pod template carries the resource
-            request, so MPIJob, PyTorchJob, LeaderWorkerSet and RayJob all behave identically and no operator CRD
-            (Custom Resource Definition) has an EFA-specific field. AWS uses the Kubeflow MPI Operator for its NCCL
-            test walkthrough <SourceRef provenance="documented" doc={docs.eksNode} /> and LeaderWorkerSet for its
+            request, so MPIJob, PyTorchJob, LeaderWorkerSet and RayJob all behave identically and none of those
+            four operators' CRDs (Custom Resource Definitions) carries an EFA-specific field that this research
+            located. AWS uses the Kubeflow MPI Operator for its NCCL
+            test walkthrough <SourceRef provenance="documented" doc={docs.eksDevice} /> and LeaderWorkerSet for its
             multi-node inference samples.
           </Box>
         </SpaceBetween>
@@ -1385,27 +1392,31 @@ spec:
         header={
           <Header
             variant="h2"
-            description="Set mofedEnabled=false, and here is the upstream default that makes it necessary."
+            description="Set mofedEnabled=false on every version: NVIDIA device plugin v0.19.0 to v0.19.2 hand every EFA device to every GPU pod."
           >
-            The NVIDIA MOFED collision
+            The NVIDIA MOFED (Mellanox OpenFabrics Enterprise Distribution) collision
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            AWS documents the symptom: starting with NVIDIA k8s-device-plugin v0.19.0, the --mofed-enabled flag
+            The EKS documentation states that from NVIDIA k8s-device-plugin v0.19.0 the --mofed-enabled flag
             defaults to true, which causes the NVIDIA device plugin to mount all /dev/infiniband/uverbs* devices
             into containers requesting GPUs, conflicting with the EFA device plugin, which should be the component
             managing EFA device allocation at /dev/infiniband{' '}
-            <SourceRef provenance="documented" doc={docs.eksDevice} />.
+            <SourceRef
+              provenance="doc-code-conflict"
+              doc={docs.eksDevice}
+              code={code.nvdpRevert}
+              conflict="EKS User Guide: from v0.19.0 the flag defaults to true, with no upper version bound."
+            />
+            .
           </Box>
           <Box variant="p">
-            The code confirms it and adds a device the documentation misses. In v0.19.0 the mofed-enabled boolean
-            flag carries an explicit default of true{' '}
-            <SourceRef provenance="code-confirmed" doc={docs.eksDevice} code={code.nvdpNew} />. In v0.18.2 the same
-            flag has no Value field at all, so it took the Go zero value of false{' '}
-            <SourceRef provenance="code-derived" code={code.nvdpOld} />. One added line is the entire change.
-            Enabling it appends the mofed mode to the container device interface generator{' '}
+            The code bounds that to three releases, v0.19.0{' '}
+            <SourceRef provenance="code-confirmed" doc={docs.eksDevice} code={code.nvdpNew} /> to v0.19.2{' '}
+            <SourceRef provenance="code-derived" code={code.nvdpLastTrue} />; v0.19.3 reverted the default{' '}
+            <SourceRef provenance="code-derived" code={code.nvdpRevert} />. Enabling the flag appends the mofed mode to the container device interface generator{' '}
             <SourceRef provenance="code-derived" code={code.nvdpCdi} />, whose discoverer injects two glob patterns
             into any GPU-requesting container: /dev/infiniband/uverbs* and also /dev/infiniband/rdma_cm{' '}
             <SourceRef provenance="code-derived" code={code.mofed} />. AWS names only the first.
@@ -1415,7 +1426,8 @@ spec:
             devices the pod was allocated, so a workload asking for fewer than all the EFA devices on a node still
             receives all of them, colliding with the exclusive allocation model of the EFA device plugin. EKS Auto
             Mode does not enable MOFED by default and is unaffected{' '}
-            <SourceRef provenance="documented" doc={docs.eksNvidia} />.
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. Set mofedEnabled=false explicitly whatever
+            version you run: from v0.19.3 it matches the default, and on v0.19.0 to v0.19.2 it is the fix.
           </Box>
           <Box variant="code">
             {`# Device plugin chart:
@@ -1430,6 +1442,21 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
     --set 'devicePlugin.env[0].name=MOFED_ENABLED' \\
     --set 'devicePlugin.env[0].value=false'`}
           </Box>
+          <ExpandableSection
+            headerText="Which releases default to true, in the code"
+            headerDescription="The Value field of the mofed-enabled flag across five releases"
+          >
+            <Box variant="p">
+              The mofed-enabled flag carries an explicit Value: true in v0.19.0{' '}
+              <SourceRef provenance="code-confirmed" doc={docs.eksDevice} code={code.nvdpNew} /> through
+              v0.19.2 <SourceRef provenance="code-derived" code={code.nvdpLastTrue} />. It has no Value field in
+              v0.18.2 <SourceRef provenance="code-derived" code={code.nvdpOld} />, nor from v0.19.3, which
+              reverted the default <SourceRef provenance="code-derived" code={code.nvdpRevert} />, so those
+              releases take the Go zero value of false. v0.20.1 stays at false, with mofedEnabled null in its
+              Helm values <SourceRef provenance="code-derived" code={code.nvdpCurrent} />{' '}
+              <SourceRef provenance="code-derived" code={code.nvdpHelm} />.
+            </Box>
+          </ExpandableSection>
           <Alert type="info" header="One more GPU Operator rule on EKS accelerated AMIs">
             When using the NVIDIA GPU Operator with the EKS-optimized AL2023 NVIDIA AMIs, you must disable the
             operator installation of the driver and the toolkit, because both are already in the AMI{' '}
@@ -1454,8 +1481,11 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
                 and generates per-instance-type network interface blocks through an
                 efa-networkinterfaces-generator module with a bandwidth-optimized against IP-optimized policy
                 switch, which is the bandwidth against IP layout choice made into a module{' '}
-                <SourceRef provenance="code-derived" code={code.aiOnEksTf} />. Start here rather than from a blank
-                launch template <SourceRef provenance="documented" doc={docs.aiOnEks} />.
+                <SourceRef provenance="code-derived" code={code.aiOnEksTf} />. It defaults to the one-IP layout,
+                policy 1; set efa_network_interfaces_policy to 2 for the eight-IP layout{' '}
+                <SourceRef provenance="code-derived" code={code.aiOnEksPolicy} />{' '}
+                <SourceRef provenance="code-derived" code={code.aiOnEksLocals} />. Start here rather than from a
+                blank launch template <SourceRef provenance="documented" doc={docs.aiOnEks} />.
               </Box>
               <Box variant="p">
                 awslabs/awsome-distributed-ai is actively maintained and holds the NCCL test manifests and the
@@ -1464,11 +1494,10 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
               </Box>
             </div>
             <div>
-              <Box variant="h3">One link still in circulation</Box>
+              <Box variant="h3">One archived repository to skip</Box>
               <Box variant="p">
-                aws-samples/aws-efa-eks is archived. Its last push was 2024-10-15, and the GitHub API reports no
-                archive date, so treat the archive date itself as unknown rather than assuming it matches the push.
-                AWS documentation still links there for the device plugin. Use the eks-charts Helm chart instead.
+                aws-samples/aws-efa-eks is archived, with its last push on 2024-10-15. Use the eks-charts Helm chart
+                instead.
               </Box>
             </div>
           </ColumnLayout>
@@ -1512,8 +1541,9 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            AWS recommends the Kubeflow MPI Operator for NCCL tests, since it makes allreduce-style distributed
-            training straightforward on Kubernetes <SourceRef provenance="documented" doc={docs.eksNode} />. The
+            The AWS NCCL test walkthrough deploys the Kubeflow MPI Operator, which runs Allreduce-style distributed
+            jobs on Kubernetes through the MPIJob custom resource{' '}
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. The
             reference manifest is one launcher pod plus N worker pods, slotsPerWorker: 8, and mpirun -np 16 -N 8
             across two p5.48xlarge nodes running all_reduce_perf from 8 bytes to 16 GB{' '}
             <SourceRef provenance="code-derived" code={code.ncclTests} />.
@@ -1526,7 +1556,7 @@ helm upgrade --install gpu-operator nvidia/gpu-operator \\
 #   FI_EFA_FORK_SAFE=1
 #   NCCL_DEBUG=INFO
 #   PATH=$PATH:/opt/amazon/efa/bin:/usr/bin
-#   LD_LIBRARY_PATH=/opt/amazon/openmpi/lib:/opt/nccl/build/lib:/opt/amazon/efa/lib:/opt/amazon/ofi-nccl/lib/x86_64-linux-gnu`}
+#   LD_LIBRARY_PATH=/opt/amazon/openmpi/lib:/opt/nccl/build/lib:/opt/amazon/efa/lib:/opt/amazon/ofi-nccl/lib/x86_64-linux-gnu:/usr/local/nvidia/lib:$LD_LIBRARY_PATH`}
           </Box>
           <Box variant="p">
             The container stack in the AWS reference image is worth copying rather than inventing: a CUDA devel

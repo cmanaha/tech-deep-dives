@@ -17,6 +17,8 @@ import type { DocRef } from '@tech-deep-dives/shared';
  */
 
 const ACCESSED = '2026-08-02';
+/** Pages re-read for the October 2026 refresh. */
+const REFRESHED = '2026-10-23';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 
 const docs: Record<string, DocRef> = {
@@ -24,7 +26,13 @@ const docs: Record<string, DocRef> = {
     title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
     url: `${EC2_DOC}efa.html`,
     tier: 1,
-    accessed: ACCESSED,
+    accessed: REFRESHED,
+  },
+  createEfa: {
+    title: 'EC2 User Guide: Create and attach an EFA to an Amazon EC2 instance',
+    url: `${EC2_DOC}create-efa.html`,
+    tier: 1,
+    accessed: REFRESHED,
   },
   efaAcc: {
     title: 'EC2 User Guide: Maximize network bandwidth on instances with multiple network cards',
@@ -65,26 +73,24 @@ export function Overview() {
             Computing)) spend their step time inside that per-message cost.
           </Box>
           <Box variant="p">
-            <strong>EFA (Elastic Fabric Adapter)</strong> is a network interface for EC2 instances that
-            enables applications to communicate at the{' '}
-            <strong>scale and performance of on-premises HPC clusters</strong>, but in the cloud. It achieves
-            this through <strong>OS-bypass</strong>: applications talk directly to the network hardware,
-            skipping the kernel network stack entirely. EFA provides lower and more consistent latency
-            and higher throughput than the TCP transport traditionally used in cloud-based HPC systems{' '}
+            <strong>EFA (Elastic Fabric Adapter)</strong> is a network interface for EC2 (Elastic Compute
+            Cloud) instances built on <strong>OS-bypass</strong>: applications talk directly to the network hardware,
+            skipping the kernel network stack entirely. AWS describes the result as lower and more
+            consistent latency and higher throughput than the operating system&apos;s TCP/IP path{' '}
             <SourceRef provenance="documented" doc={docs.efa} />.
           </Box>
           <Box variant="p">
-            The one comparative latency figure AWS publishes is about the tail: relaxing
-            in-order packet delivery dropped p99 tail latency by around a factor of ten{' '}
-            <SourceRef provenance="documented" doc={docs.hpcBlog} />. A collective finishes when its slowest
+            Relaxing in-order packet delivery dropped p99 tail latency by around a factor of ten{' '}
+            <SourceRef provenance="documented" doc={docs.hpcBlog} />, the one comparative latency figure
+            this research located from AWS. A collective finishes when its slowest
             member finishes, so the tail is what decides the step time. The SRD (Scalable Reliable Datagram)
             section carries that trade in full.
           </Box>
           <Box variant="p">
             Two questions get settled before any of the mechanism matters. Encryption: EFA traffic is{' '}
             <strong>encrypted in transit</strong> by the Nitro hardware, using AEAD (Authenticated
-            Encryption with Associated Data) algorithms with 256-bit encryption, with no impact on network
-            performance, and it is applied automatically between cluster members{' '}
+            Encryption with Associated Data) algorithms with 256-bit encryption, which AWS rates as having
+            no impact on network performance, and it is applied automatically between cluster members{' '}
             <SourceRef provenance="documented" doc={docs.hpcLens} />. There is
             nothing to switch on for it. Cost: EFA is an optional EC2 networking feature you can enable on
             any supported instance at no additional cost{' '}
@@ -135,7 +141,7 @@ export function Overview() {
 
       <Container
         header={
-          <Header variant="h2" description="Three layers, and the section that takes each apart">
+          <Header variant="h2" description="What you attach, what holds the tail down, and why your application code stays as it is">
             The 30-second mental model
           </Header>
         }
@@ -144,12 +150,14 @@ export function Overview() {
           <div>
             <Box variant="h3">1. Hardware</Box>
             <Box variant="p">
-              A network device you attach to a supported EC2 instance, chosen at launch time. It comes in two
-              shapes: an EFA (EFA with ENA) interface, which creates both an EFA device and an ENA (Elastic
-              Network Adapter) device, and an EFA-only interface, which creates just the EFA device and is
+              A network device you attach to a supported EC2 instance, at launch or while the instance
+              is stopped, never while it runs{' '}
+              <SourceRef provenance="documented" doc={docs.createEfa} />. It comes in two
+              shapes: an EFA (EFA with ENA, the Elastic Network Adapter) interface, which creates both an EFA
+              device and an ENA device, and an EFA-only interface, which creates just the EFA device and is
               always a secondary interface with no IP address{' '}
-              <SourceRef provenance="documented" doc={docs.efa} />. Which shape you attach is decided at
-              launch, and the EFA Device section covers that choice along with network cards and rails.
+              <SourceRef provenance="documented" doc={docs.efa} />. The EFA Device section covers that
+              choice along with network cards and rails.
             </Box>
           </div>
           <div>
@@ -157,8 +165,8 @@ export function Overview() {
             <Box variant="p">
               AWS&apos;s own transport protocol. SRD uses multi-path routing and out-of-order delivery to
               hold tail latency down under congestion, which is where that factor of ten comes from, and the
-              SRD section sets it against InfiniBand and RoCE (RDMA over Converged Ethernet). RDMA (Remote
-              Direct Memory Access) is a separate question from the transport: EFA supports RDMA read on all
+              SRD section sets it against InfiniBand and RoCE (RDMA over Converged Ethernet, where RDMA is
+              Remote Direct Memory Access). RDMA is a separate question from the transport: EFA supports RDMA read on all
               instances with Nitro version 4 and later, and RDMA write on most of them{' '}
               <SourceRef provenance="documented" doc={docs.efa} />, so it is an instance-type question, and
               the Data Path section has the capability bits the device reports for it.

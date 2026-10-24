@@ -49,7 +49,7 @@ const sections = [
   { id: 'training', title: 'AI/ML Training' },
   { id: 'inference', title: 'AI/ML Inference' },
   { id: 'hpc', title: 'Traditional HPC' },
-  { id: 'storage', title: 'Storage Data Paths: FSx, S3 and the CRT' },
+  { id: 'storage', title: 'Storage Data Paths: FSx, S3 and the Common Runtime' },
   { id: 'comparison', title: 'EFA vs Alternatives' },
   { id: 'eks', title: 'EFA on Amazon EKS' },
   { id: 'sagemaker', title: 'EFA on SageMaker and HyperPod' },

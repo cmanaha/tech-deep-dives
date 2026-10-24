@@ -21,10 +21,14 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * device operations gated by device-reported capability bits.
  */
 
-const AMZN = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
-const LINUX = '2d2338c93da79b3bfe4b6099a931d9468d539952';
-const LF = 'v2.6.0';
-const READ = '2026-08-01';
+/** amzn/amzn-drivers at tag efa_linux_3.4.0. */
+const AMZN = '9d5ca4021f7c9f8421e404c1e89edb0b1325372c';
+const LINUX = 'v7.3';
+const LF = 'v2.7.0';
+/** Date the code was read at these pins. */
+const READ = '2026-10-23';
+/** Date the AWS pages were read, unless a page sets its own. */
+const DOC_READ = '2026-08-01';
 
 /** Pinned code citations. Never a branch: a ci.sh gate rejects /blob/main/. */
 const amzn = (path: string, lines?: string): CodeRef => ({
@@ -44,45 +48,49 @@ const lfab = (path: string, lines?: string): CodeRef => ({
 
 const code = {
   // amzn-drivers, the out-of-tree module the EFA installer builds.
-  kverbs: amzn('src/efa_data_verbs.c', 'L324-L756'),
-  devOps: amzn('src/efa_main.c', 'L551-L559'),
-  controlOps: amzn('src/efa_main.c', 'L474-L547'),
+  kverbs: amzn('src/efa_data_verbs.c', 'L331-L772'),
+  kverbsSince: amzn('RELEASENOTES.md', 'L98-L99'),
+  devOps: amzn('src/efa_main.c', 'L553-L561'),
+  controlOps: amzn('src/efa_main.c', 'L476-L549'),
   kverbsOn: amzn('CMakeLists.txt', 'L36'),
   dkms: amzn('conf/configure-dkms.sh'),
   ioDefs: amzn('src/efa_io_defs.h', 'L23-L93'),
-  deviceCaps: amzn('src/efa_admin_cmds_defs.h', 'L726-L746'),
-  capMasks: amzn('src/efa_admin_cmds_defs.h', 'L1296-L1299'),
+  deviceCaps: amzn('src/efa_admin_cmds_defs.h', 'L689-L709'),
+  capMasks: amzn('src/efa_admin_cmds_defs.h', 'L1230-L1233'),
   mmapKinds: amzn('src/efa_verbs.c', 'L40-L42'),
-  mmapQueue: amzn('src/efa_verbs.c', 'L879-L923'),
-  mmapCq: amzn('src/efa_verbs.c', 'L1763-L1775'),
-  mmapProt: amzn('src/efa_verbs.c', 'L3343-L3382'),
+  mmapQueue: amzn('src/efa_verbs.c', 'L880-L924'),
+  mmapCq: amzn('src/efa_verbs.c', 'L1765-L1777'),
+  mmapProt: amzn('src/efa_verbs.c', 'L3385-L3424'),
   uarn: amzn('src/efa.h', 'L89-L99'),
-  uarnScope: amzn('src/efa_verbs.c', 'L1333'),
-  p2p: amzn('src/efa_verbs.c', 'L2814'),
-  dmabuf: amzn('src/efa_verbs.c', 'L2707-L2754'),
+  uarnScope: amzn('src/efa_verbs.c', 'L1334'),
+  p2p: amzn('src/efa_verbs.c', 'L2854'),
+  p2pAlign: amzn('src/efa_verbs.c', 'L2785-L2813'),
+  dmabuf: amzn('src/efa_verbs.c', 'L2715-L2762'),
 
   // The driver that ships inside mainline Linux. A different driver.
   mainlineOps: {
     repo: 'torvalds/linux',
     ref: LINUX,
     path: 'drivers/infiniband/hw/efa/efa_main.c',
-    lines: 'L365-L403',
+    lines: 'L369-L413',
     read: READ,
   },
 
   // libfabric EFA provider.
-  dpdQp: lfab('src/efa_data_path_direct.c', 'L82-L100'),
-  dpdCq: lfab('src/efa_data_path_direct.c', 'L186-L200'),
-  dpdOwner: lfab('src/efa_data_path_direct.c', 'L130-L132'),
-  dpdGate: lfab('configure.m4', 'L317-L322'),
-  dpdHelp: lfab('src/efa_env.c', 'L244-L249'),
-  dpdDefault: lfab('src/efa_env.c', 'L41'),
-  dpdFallback: lfab('src/efa_data_path_ops.h', 'L216-L219'),
-  dpdDoorbell: lfab('src/efa_data_path_direct_entry.h', 'L435-L445'),
-  subCq: lfab('src/efa_device.c', 'L521-L526'),
-  mrCacheOpen: lfab('src/efa_domain.c', 'L115-L127'),
-  mrCacheDefault: lfab('src/rdm/efa_rdm_mr.c', 'L28-L38'),
-  mrCacheHelp: lfab('src/efa_env.c', 'L194-L201'),
+  dpdQp: lfab('src/efa_data_path_direct.c', 'L83-L101'),
+  dpdCq: lfab('src/efa_data_path_direct.c', 'L191-L205'),
+  dpdOwner: lfab('src/efa_data_path_direct.c', 'L135-L137'),
+  dpdGate: lfab('configure.m4', 'L329-L334'),
+  dpdHelp: lfab('src/efa_env.c', 'L249-L254'),
+  dpdDefault: lfab('src/efa_env.c', 'L42'),
+  dpdFallback: lfab('src/efa_data_path_ops.h', 'L223-L226'),
+  dpdDoorbell: lfab('src/efa_data_path_direct_entry.h', 'L440-L450'),
+  subCq: lfab('src/efa_device.c', 'L605-L610'),
+  ddpOff: lfab('src/efa_data_path_direct.c', 'L179-L188'),
+  cqWaitObj: lfab('src/efa_cq.c', 'L1133-L1144'),
+  mrCacheOpen: lfab('src/rdm/efa_rdm_domain.c', 'L56-L68'),
+  mrCacheDefault: lfab('src/rdm/efa_rdm_mr.c', 'L72-L82'),
+  mrCacheHelp: lfab('src/efa_env.c', 'L195-L202'),
   memcpyThreshold: lfab('src/efa_env.c', 'L24'),
 } satisfies Record<string, CodeRef>;
 
@@ -91,11 +99,17 @@ const docs = {
     title: 'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html',
     tier: 1,
-    accessed: READ,
+    accessed: DOC_READ,
   },
   changelog: {
     title: 'EC2 User Guide: EFA software release notes',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-changelog.html',
+    tier: 1,
+    accessed: '2026-10-23',
+  },
+  gdrcopy: {
+    title: 'NVIDIA GDRCopy README at v2.5.2, lines 1 to 11',
+    url: 'https://github.com/NVIDIA/gdrcopy/blob/v2.5.2/README.md',
     tier: 1,
     accessed: READ,
   },
@@ -103,7 +117,7 @@ const docs = {
     title: 'EC2 User Guide: Get started with EFA and NCCL',
     url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start-nccl.html',
     tier: 1,
-    accessed: READ,
+    accessed: DOC_READ,
   },
 } satisfies Record<string, DocRef>;
 
@@ -322,8 +336,8 @@ function KernelUserspaceSplitDiagram() {
 function PostSendDoorbellSequence() {
   const steps = [
     { n: '1', title: 'Build the WQE', sub: 'opcode, key, len', lane: 0 },
-    { n: '2', title: 'Write to the SQ', sub: 'write-combined', lane: 1 },
-    { n: '3', title: 'Ring doorbell', sub: 'one MMIO write', lane: 1 },
+    { n: '2', title: 'Write send queue', sub: 'write-combined', lane: 1 },
+    { n: '3', title: 'Ring doorbell', sub: 'one mapped write', lane: 1 },
     { n: '4', title: 'Device sends', sub: 'reads the payload', lane: 2 },
     { n: '5', title: 'CQE written', sub: 'phase bit flips', lane: 1 },
     { n: '6', title: 'Poll and reap', sub: 'no system call', lane: 0 },
@@ -506,17 +520,18 @@ export function DataPath() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The split is by lifetime. Work that happens once per resource goes through the kernel,
-            and work that happens once per message stays in userspace.
+            The split is by lifetime. Work that happens once per resource goes through the kernel:
+            creating the QP (queue pair), PD (protection domain), MR (memory region) and AH (address
+            handle), and mapping the device BARs (Base Address Registers) into the process. Work
+            that happens once per message stays in userspace.
           </Box>
           <KernelUserspaceSplitDiagram />
           <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="h3">Kernel, once per resource</Box>
               <Box variant="p">
-                Allocating a protection domain, creating a queue pair and a completion queue,
-                registering memory, creating an address handle, and mapping the device registers
-                into the process. Each of these is a real transition into the kernel{' '}
+                Every setup step listed above, plus creating the completion queue, is a real
+                transition into the kernel{' '}
                 <SourceRef provenance="code-derived" code={code.controlOps} />, and teardown runs
                 the same way in reverse.
               </Box>
@@ -548,7 +563,8 @@ export function DataPath() {
                 data-path source file implementing post send (<code>post_send</code>), post receive
                 (<code>post_recv</code>), poll completion queue (<code>poll_cq</code>) and request
                 notify, and has done since driver r2.12.0{' '}
-                <SourceRef provenance="code-derived" code={code.kverbs} />, and registers all four in
+                <SourceRef provenance="code-derived" code={code.kverbs} />{' '}
+                <SourceRef provenance="code-derived" code={code.kverbsSince} />, and registers all four in
                 the device operations table behind a kernel-verbs build guard{' '}
                 <SourceRef provenance="code-derived" code={code.devOps} />. That guard is on by
                 default: the build sets the kernel-verbs option to ON in its own cache{' '}
@@ -584,9 +600,9 @@ export function DataPath() {
           <Box variant="p">
             Verbs is the RDMA (Remote Direct Memory Access) object model EFA is programmed
             through, and five of its objects stand behind every send. All five are created through
-            the kernel, once per resource. None of them is a setting you tune: this table is the
-            vocabulary the registration, mapping and completion material below is written in, and
-            its last column is the lifetime split made concrete.
+            the kernel, once per resource. This table is the vocabulary the registration, mapping
+            and completion material below is written in, and its last column is the lifetime split
+            made concrete.
           </Box>
           <Table
             columnDefinitions={[
@@ -637,8 +653,6 @@ export function DataPath() {
               <Box variant="p">
                 The card reads the descriptor, then reads the payload out of the registered buffer
                 by DMA (Direct Memory Access) using the local key in the descriptor to find it.
-                For small messages the payload rides inline in the descriptor, which is what the
-                low-latency queue exists for.
               </Box>
             </div>
             <div>
@@ -694,14 +708,16 @@ export function DataPath() {
                 .
               </Alert>
               <Box variant="p">
-                Two gates decide whether it is live on a given host, and neither is a switch you
-                throw. The feature turns itself off on first-generation devices, which the provider
-                detects by vendor part identifier{' '}
-                <SourceRef provenance="code-derived" code={code.subCq} />, and it declines
+                Two gates decide whether it is live, and both are fixed by the hardware and the
+                image the job runs on. The feature turns itself off on 0xefa0 devices, which still use
+                sub-completion queues and which the provider detects by vendor part identifier{' '}
+                <SourceRef provenance="code-derived" code={code.subCq} />{' '}
+                <SourceRef provenance="code-derived" code={code.ddpOff} />, and it declines
                 completion queues that carry a wait object when the installed rdma-core lacks a
-                doorbell field in its completion-queue attributes. So which of the two descriptor
+                doorbell field in its completion-queue attributes{' '}
+                <SourceRef provenance="code-derived" code={code.cqWaitObj} />. So which of the two descriptor
                 paths a job runs on follows from the device generation and from the rdma-core in
-                the image, and it changes when either of those changes.
+                the image, and a change to either one is the moment to re-check it.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -729,8 +745,8 @@ export function DataPath() {
             <div>
               <Box variant="h3">Doorbells: uncached</Box>
               <Box variant="p">
-                The send-queue and receive-queue doorbells come from the doorbell BAR (Base Address
-                Register) and are mapped uncached; the memory BAR is the write-combining case in
+                The send-queue and receive-queue doorbells come from the doorbell BAR and are mapped
+                uncached; the memory BAR is the write-combining case in
                 the same switch statement{' '}
                 <SourceRef provenance="code-derived" code={code.mmapProt} />. That is what a
                 doorbell needs: an uncached mapping makes it reach the device as a single,
@@ -738,14 +754,13 @@ export function DataPath() {
               </Box>
             </div>
             <div>
-              <Box variant="h3">LLQ descriptors: write-combined</Box>
+              <Box variant="h3">Low-latency queue descriptors: write-combined</Box>
               <Box variant="p">
                 The send-queue descriptor ring lives in the memory BAR and is the region that is
                 mapped write-combined{' '}
                 <SourceRef provenance="code-derived" code={code.mmapQueue} />. This is the LLQ
-                (Low-Latency Queue): the descriptor, and for small messages the payload with it,
-                is pushed to the device by MMIO (Memory-Mapped I/O) instead of waiting for the
-                device to DMA it back.
+                (Low-Latency Queue): the descriptor is pushed to the device by MMIO (Memory-Mapped
+                I/O) instead of waiting for the device to DMA it back.
               </Box>
             </div>
             <div>
@@ -761,11 +776,11 @@ export function DataPath() {
           <Box variant="p">
             The kernel is off the data path, and the device is what keeps one process out of
             another&apos;s queues. Each user context is allocated a UARN (User Access Region Number)
-            that the driver records on the context and on every queue pair{' '}
+            that the driver records on the context{' '}
             <SourceRef provenance="code-derived" code={code.uarn} /> and passes to the device when
-            it creates the queue pair{' '}
-            <SourceRef provenance="code-derived" code={code.uarnScope} />. A process can only ring
-            doorbells inside its own region.
+            it creates each queue pair{' '}
+            <SourceRef provenance="code-derived" code={code.uarnScope} />. Our reading of that design
+            is that a process can ring doorbells only inside its own region.
           </Box>
         </SpaceBetween>
       </Container>
@@ -812,7 +827,10 @@ export function DataPath() {
 
       <Container
         header={
-          <Header variant="h2" description="Taking host memory out of the copy path as well">
+          <Header
+            variant="h2"
+            description="Which RDMA operations your instance type has, and what decides whether payloads leave GPU memory"
+          >
             GPUDirect RDMA
           </Header>
         }
@@ -824,7 +842,10 @@ export function DataPath() {
             and the payload travels from GPU memory to the wire. The driver carries the
             peer-to-peer plumbing for this and takes it whenever the
             registered range resolves to accelerator memory{' '}
-            <SourceRef provenance="code-derived" code={code.p2p} />. A second, more modern route
+            <SourceRef provenance="code-derived" code={code.p2p} />. On that path, register GPU
+            buffers so the buffer address and the registered virtual address sit at the same offset
+            within the peer-to-peer page size; the driver fails the registration otherwise{' '}
+            <SourceRef provenance="code-derived" code={code.p2pAlign} />. A second, more modern route
             registers the buffer from a shared file descriptor{' '}
             <SourceRef provenance="code-derived" code={code.dmabuf} />.
           </Box>
@@ -855,14 +876,15 @@ export function DataPath() {
                 masks for both bits defined further down the same header{' '}
                 <SourceRef provenance="code-derived" code={code.capMasks} />.
               </Box>
-              <Alert type="error" header="A file in the same repository still says only Send is supported">
+              <Alert type="error" header="A design note in the same repository lists Send as the only supported operation">
                 That file is a specification document written in 2019 and never revised. It sits
                 next to the driver that contradicts it, inside an official AWS repository, which is
-                exactly why it reads like a primary source. It is not one, and the code wins{' '}
+                exactly why it reads like a primary source. The driver beside it is the primary
+                source, and the code wins{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   code={code.deviceCaps}
-                  conflict="kernel/linux/efa/SRD.txt in the same repository still reads: Currently only Send operation is supported, but nothing precludes RDMA operations support in future (with weak memory consistency). It is a 2019 specification document that has not been revised. The driver in the same repository defines RDMA read and write opcodes and reads device capability bits for both."
+                  conflict="kernel/linux/efa/SRD.txt in the same repository reads: Currently only Send operation is supported, but nothing precludes RDMA operations support in future (with weak memory consistency). It is a 2019 specification document that has not been revised. The driver in the same repository defines RDMA read and write opcodes and reads device capability bits for both."
                   label="doc vs code"
                 />
                 .
@@ -870,14 +892,15 @@ export function DataPath() {
             </SpaceBetween>
           </ExpandableSection>
           <Alert type="info" header="GPUDirect RDMA is on by default; GDRCopy is a separate install">
-            AWS made the installer flag that used to enable it a no-op in 2021, because the
-            driver enables the support by default{' '}
-            <SourceRef provenance="documented" doc={docs.changelog} />. GDRCopy is its own
-            component, installed as its own step in the AWS NCCL getting-started guide{' '}
+            The installer flag for it has been a no-op since 2021, because the driver enables the
+            support by default <SourceRef provenance="documented" doc={docs.changelog} />. GDRCopy
+            (the GPUDirect RDMA copy library) is its own component, installed as its own step in
+            the AWS NCCL getting-started guide{' '}
             <SourceRef provenance="documented" doc={docs.nccl} />, and it gives the host processor
-            a low-latency mapping into GPU memory. Peer-to-peer support is what decides whether
-            payloads leave GPU memory, so that is the one to confirm on a new instance; a build
-            without GDRCopy still sends straight from GPU memory.
+            a low-latency mapping into GPU memory{' '}
+            <SourceRef provenance="documented" doc={docs.gdrcopy} />. A build without GDRCopy still
+            sends straight from GPU memory: peer-to-peer support is what decides whether payloads
+            leave GPU memory, so that is the one to confirm on a new instance.
           </Alert>
         </SpaceBetween>
       </Container>

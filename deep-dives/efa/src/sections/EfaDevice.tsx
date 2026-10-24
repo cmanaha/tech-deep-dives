@@ -22,20 +22,28 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  */
 
 const ACCESSED = '2026-08-01';
-const READ = '2026-08-01';
+/** Pages re-read for the October 2026 refresh. */
+const REREAD = '2026-10-23';
+/** Every code citation below was re-read at its current pin on this date. */
+const READ = '2026-10-23';
 
 /**
- * amzn/amzn-drivers at the commit the efa_linux_3.3.0 release tag points to:
- * driver r3.3.0. Verified against the tag rather than described as a branch
+ * amzn/amzn-drivers at the commit the efa_linux_3.4.0 release tag points to:
+ * driver r3.4.0. Verified against the tag rather than described as a branch
  * head, so the pin stays true after master advances.
  */
-const DRIVER_SHA = 'b99452b70756b1b394b1e7ff238d4efbdca44c5b';
-const PLUGIN_TAG = 'v1.20.0';
-const LIBFABRIC_TAG = 'v2.6.0';
+const DRIVER_SHA = '9d5ca4021f7c9f8421e404c1e89edb0b1325372c';
+const PLUGIN_TAG = 'v1.22.0';
+const LIBFABRIC_TAG = 'v2.7.0';
 const EC2_DOC = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/';
 const EKS_DOC = 'https://docs.aws.amazon.com/eks/latest/userguide/';
 
-const doc = (title: string, url: string, tier: 1 | 2): DocRef => ({ title, url, tier, accessed: ACCESSED });
+const doc = (title: string, url: string, tier: 1 | 2, accessed: string = ACCESSED): DocRef => ({
+  title,
+  url,
+  tier,
+  accessed,
+});
 
 /** Pinned code reference builders. Ref is always a SHA or a release tag, never a branch. */
 const drv = (path: string, lines?: string): CodeRef => ({
@@ -68,9 +76,20 @@ const docs = {
     `${EC2_DOC}efa-acc-inst-types.html`,
     1
   ),
-  changelog: doc('EC2 User Guide: Elastic Fabric Adapter release notes', `${EC2_DOC}efa-changelog.html`, 1),
-  eksNode: doc('EKS User Guide: Machine learning training on Amazon EKS with EFA', `${EKS_DOC}node-efa.html`, 1),
-  eksDevice: doc('EKS User Guide: EFA device management with Dynamic Resource Allocation', `${EKS_DOC}device-management-efa.html`, 1),
+  changelog: doc('EC2 User Guide: Elastic Fabric Adapter release notes', `${EC2_DOC}efa-changelog.html`, 1, REREAD),
+  installer: doc(
+    'EFA installer 1.51.0 tarball, ChangeLog.md (tarball dated October 22, 2026)',
+    'https://efa-installer.amazonaws.com/aws-efa-installer-1.51.0.tar.gz',
+    1,
+    REREAD
+  ),
+  installerScript: doc(
+    'EFA installer 1.51.0 tarball, efa_installer.sh (Debian 11 refusal at lines 16-19, NGC fallback at lines 1345-1350)',
+    'https://efa-installer.amazonaws.com/aws-efa-installer-1.51.0.tar.gz',
+    1,
+    REREAD
+  ),
+  eksDevice: doc('EKS User Guide: Manage EFA devices on Amazon EKS', `${EKS_DOC}device-management-efa.html`, 1, REREAD),
   efaOnlyNews: doc(
     "AWS What's New: EFA updates for scalability of AI/ML applications (Oct 24, 2024)",
     'https://aws.amazon.com/about-aws/whats-new/2024/10/aws-efa-updates-scalability-ai-ml-applications/',
@@ -81,13 +100,14 @@ const docs = {
 const code = {
   pciIds: drv('src/efa_main.c', 'L27-L39'),
   queryDevice: drv('src/efa_verbs.c', 'L350-L359'),
-  registerMr: drv('src/efa_verbs.c', 'L2628-L2636'),
+  registerMr: drv('src/efa_verbs.c', 'L2636-L2644'),
   dkms: drv('conf/dkms.conf'),
   releaseNotes: drv('RELEASENOTES.md'),
-  railContract: plugin('include/nccl_ofi_platform.h', 'L82-L97'),
-  sortRails: plugin('src/platform-aws.cpp', 'L961-L991'),
-  guidByDeviceId: plugin('src/platform-aws.cpp', 'L939-L959'),
-  subCq: lfab('prov/efa/src/efa_device.c', 'L520-L526'),
+  railContract: plugin('include/nccl_ofi_platform.h', 'L84-L99'),
+  sortRails: plugin('src/platform-aws.cpp', 'L1089-L1119'),
+  guidByDeviceId: plugin('src/platform-aws.cpp', 'L1042-L1062'),
+  subCq: lfab('prov/efa/src/efa_device.c', 'L604-L610'),
+  ddpOff: lfab('prov/efa/src/efa_data_path_direct.c', 'L178-L188'),
 };
 
 /**
@@ -343,7 +363,6 @@ function CountingLayersDiagram() {
 interface HostRequirement {
   id: string;
   item: string;
-  what: string;
   fails: string;
 }
 
@@ -351,15 +370,11 @@ const hostRequirements: HostRequirement[] = [
   {
     id: 'hugepages',
     item: 'Huge pages',
-    what:
-      'AWS states that EC2 instances with the EFA driver installed pre-allocate 5128 huge pages of 2 MiB each. On Kubernetes they are a schedulable resource a pod must request. Bottlerocket does not pre-allocate them.',
-    fails: 'Pods that do not request hugepages-2Mi can be admitted and then fail at libfabric init. Fork-heavy Python data loaders can exhaust the pool.',
+    fails: 'Our reading: pods that do not request hugepages-2Mi can be admitted and then fail at libfabric init, and fork-heavy Python data loaders can exhaust the pool.',
   },
   {
     id: 'mr',
     item: 'Memory registration budget',
-    what:
-      'The device reports its own registration counts and sizes. The driver copies max_mr, max_pd, max_ah and page_size_cap out of the admin-queue device attributes, and computes max_mr_size as max_mr_pages multiplied by the host page size.',
     fails: 'Registration fails with a not-supported error when no page size in page_size_cap fits the region being registered.',
   },
 ];
@@ -438,11 +453,6 @@ export function EfaDevice() {
                 one interface that is either plain ENA or EFA with ENA{' '}
                 <SourceRef provenance="documented" doc={docs.efa} />.
               </Box>
-              <Box variant="p">
-                It is also the right answer on any single-card instance type. If the instance has
-                one network card, the EFA device has to live on the primary interface, and the
-                primary interface cannot be EFA-only.
-              </Box>
             </div>
             <div>
               <Box variant="h3">Pick EFA-only for secondary cards</Box>
@@ -464,8 +474,11 @@ export function EfaDevice() {
             </div>
           </ColumnLayout>
 
-          <Alert type="info" header="Both flavours still consume an ENI attachment slot">
-            EFA-only interfaces count towards the ENI (Elastic Network Interface) attachment limit
+          <Alert
+            type="info"
+            header="Both flavours still consume an ENI (Elastic Network Interface) attachment slot"
+          >
+            EFA-only interfaces count towards the ENI attachment limit
             for the instance, exactly like ENA and EFA with ENA interfaces do{' '}
             <SourceRef provenance="documented" doc={docs.efa} />. Dropping the ENA device saves IP
             addresses and guest routing complexity. It does not save attachment slots.
@@ -562,7 +575,7 @@ export function EfaDevice() {
 
           <Alert
             type="warning"
-            header="AWS documents four EFA devices sharing a PCIe root with one GPU. The eight groups of four are our arithmetic."
+            header="AWS documents four EFA devices sharing a PCIe (Peripheral Component Interconnect Express) root with one GPU. The eight groups of four are our arithmetic."
           >
             <SpaceBetween size="xs">
               <Box variant="p">
@@ -604,7 +617,7 @@ export function EfaDevice() {
                 breaks that multiplication, which is the fastest way to spot the error.
               </Box>
               <Box variant="p">
-                One more caution on the same page: since EFA and ENA traffic share the same
+                One more caution: since EFA and ENA traffic share the same
                 underlying resources, bandwidth used by one will reduce the bandwidth that is
                 available to the other{' '}
                 <SourceRef provenance="documented" doc={docs.efaAcc} />. The 6,400 and 3,870 Gbps
@@ -636,7 +649,6 @@ export function EfaDevice() {
             variant="embedded"
             columnDefinitions={[
               { id: 'item', header: 'Resource', cell: (item) => <strong>{item.item}</strong> },
-              { id: 'what', header: 'What actually happens', cell: (item) => item.what },
               { id: 'fails', header: 'How it shows up when it is short', cell: (item) => item.fails },
             ]}
             items={hostRequirements}
@@ -645,11 +657,11 @@ export function EfaDevice() {
           <Box variant="h3">Huge pages</Box>
           <Box variant="p">
             Amazon EC2 instances with the EFA driver installed pre-allocate 5128 huge pages of
-            2 MiB each, which you can request as resources to consume in your job
+            2 MiB each, which you request as hugepages-2Mi resources in your workload
             specifications{' '}
-            <SourceRef provenance="documented" doc={docs.eksNode} />. That number is worth holding
+            <SourceRef provenance="documented" doc={docs.eksDevice} />. That number is worth holding
             on to, because the p5 manifests on the same page request 5120Mi of hugepages-2Mi{' '}
-            <SourceRef provenance="documented" doc={docs.eksNode} />, which is 2,560 pages, roughly
+            <SourceRef provenance="documented" doc={docs.eksDevice} />, which is 2,560 pages, roughly
             half of what was pre-allocated. The two figures are easy to confuse.
           </Box>
           <Alert type="info" header="Huge pages are also a libfabric setting, and the two interact">
@@ -678,10 +690,11 @@ export function EfaDevice() {
             pages are pre-allocated, so treat the causal link as our reading of the code.
           </Box>
           <Box variant="p">
-            Driver r3.3.0 moved this ceiling: its release notes list adding driver support for
-            memory region page sizes above 4 GB{' '}
-            <SourceRef provenance="code-derived" code={code.releaseNotes} />. Whether you have that
-            depends on which driver you installed, which is the next section.
+            Driver r3.3.0 moved this ceiling, adding support for memory region page sizes above
+            4 GB <SourceRef provenance="code-derived" code={code.releaseNotes} />, and installer
+            1.50.0 was the first to ship it{' '}
+            <SourceRef provenance="documented" doc={docs.changelog} />, so a host installed from
+            1.50.0 or later has it. The next section shows how to tell which driver a host runs.
           </Box>
         </SpaceBetween>
       </Container>
@@ -690,7 +703,7 @@ export function EfaDevice() {
         header={
           <Header
             variant="h2"
-            description="Two channels ship EFA software, two releases apart. Which one you installed decides which features you have."
+            description="Two channels ship EFA software, and they drift apart. Which one you installed decides which features you have."
           >
             Driver and installer versions
           </Header>
@@ -703,36 +716,36 @@ export function EfaDevice() {
                 What you get from the installer <Badge color="green">shipping</Badge>
               </Box>
               <Box variant="p">
-                EFA installer 1.49.0, released June 27, 2026, upgrades to libfabric 2.4.0amzn5.0,
-                EFA driver 3.1.0, rdma-core 63.0 and AWS OFI NCCL Plugin 1.20.0, and discontinues
-                support for openSUSE Leap{' '}
-                <SourceRef provenance="documented" doc={docs.changelog} />. This is what
-                efa_installer.sh puts on a host today.
+                EFA installer 1.51.0 ships EFA driver 3.3.1, libfabric 2.7.0amzn2.0, rdma-core 65.0
+                and the AWS OFI (OpenFabrics Interfaces) NCCL plugin 1.22.0{' '}
+                <SourceRef provenance="documented" doc={docs.installer} />. On Debian 11, the newest
+                installer you can run is 1.50.0, the last release to support it; 1.51.0 refuses to
+                run there <SourceRef provenance="documented" doc={docs.installer} />. In an NGC (NVIDIA
+                GPU Cloud) container that is not Ubuntu, 1.51.0 drops its NGC handling and installs
+                the standard packages, NCCL plugin included{' '}
+                <SourceRef provenance="code-derived" doc={docs.installerScript} label="script" />.
               </Box>
             </div>
             <div>
               <Box variant="h3">
-                What is in the repository <Badge color="grey">unreleased</Badge>
+                What is in the repository <Badge color="grey">ahead of the installer</Badge>
               </Box>
               <Box variant="p">
-                The amzn-drivers tree carries driver r3.3.0, with the package version recorded in
+                The amzn-drivers tree carries driver r3.4.0, with the package version recorded in
                 the DKMS (Dynamic Kernel Module Support) configuration{' '}
-                <SourceRef provenance="code-derived" code={code.dkms} />. Its release notes add the
-                0xefa4 device id, support for reporting 800 and 1600 Gbps link speed, completion
-                counters, 64-bit work request ids, 128-byte send queue work queue entries, inline
-                RDMA (Remote Direct Memory Access) write and memory region page sizes above 4 GB{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />.
+                <SourceRef provenance="code-derived" code={code.dkms} />.
               </Box>
             </div>
           </ColumnLayout>
 
-          <Alert type="warning" header="The current EFA driver version has two different right answers">
-            Installer 1.49.0 ships driver 3.1.0. The repository is at r3.3.0. Those are two
-            different answers to the same question, and the gap is not cosmetic: the 0xefa4 device
-            id landed in r3.3.0, so a host installed from 1.49.0 does not carry it. Name the channel
-            before you quote a version. The userspace half skews the same way and by a wider margin,
-            2.4.0amzn5.0 from the installer against upstream v2.6.0, which the libfabric section of
-            this dive works through in full.
+          <Alert type="warning" header="The EFA driver version has two right answers">
+            Installer 1.51.0 ships driver 3.3.1. The repository is at r3.4.0. Those are two answers
+            to the same question, one minor release apart, and features sit in the gap: memory
+            region PCIe relaxed ordering is in the r3.4.0 notes and absent from the 3.3.1 notes{' '}
+            <SourceRef provenance="code-derived" code={code.releaseNotes} />. Name the channel
+            before you quote a version. The userspace half shares a base version, 2.7.0amzn2.0 from
+            the installer against upstream v2.7.0, and the libfabric section of this dive works
+            through why the two strings still compare only within a channel.
           </Alert>
 
           <Box variant="p">
@@ -764,22 +777,26 @@ export function EfaDevice() {
             dive is keyed to it.
           </Box>
 
-          <Alert type="warning" header="Five PCI device ids against four EFA versions, and no AWS source maps one to the other">
+          <Alert
+            type="warning"
+            header="Five PCI device ids against four EFA versions, and no source located maps one to the other"
+          >
             <SpaceBetween size="xs">
               <Box variant="p">
                 The driver defines five PCI device ids, 0xefa0 through 0xefa4, and registers all
                 five in its PCI device table{' '}
                 <SourceRef provenance="code-derived" code={code.pciIds} />. AWS documents four EFA
                 versions. Five ids against four versions cannot be a one to one mapping, and no AWS
-                source and no line of driver source maps a device id to an EFA version number at
-                all.
+                source located during this research, and no line of the driver source at the pinned
+                commit, maps a device id to an EFA version number.
               </Box>
               <Box variant="p">
-                So the widely repeated equivalence between 0xefa4 and EFA v4 is unsourced inference.
-                What you can say is narrower and still useful: 0xefa4 was added in driver r3.3.0
-                alongside 800 and 1600 Gbps link-speed reporting{' '}
-                <SourceRef provenance="code-derived" code={code.releaseNotes} />, and r3.3.0 is not
-                in the shipping installer.
+                So equating 0xefa4 with EFA v4 is unsourced inference. What you can say is
+                narrower: 0xefa4 was added in driver r3.3.0 alongside 800 and 1600 Gbps link-speed
+                reporting <SourceRef provenance="code-derived" code={code.releaseNotes} />, and
+                installer 1.50.0 was the first to ship that driver{' '}
+                <SourceRef provenance="documented" doc={docs.changelog} />, so a driver from an older
+                installer does not carry the 0xefa4 id.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -790,7 +807,8 @@ export function EfaDevice() {
             them. First: libfabric's Data Path Direct feature, which moves work queue entry
             construction and completion parsing into libfabric itself, is disabled on 0xefa0 devices
             because those parts use a sub completion queue implementation{' '}
-            <SourceRef provenance="code-derived" code={code.subCq} />. The oldest EFA hardware does
+            <SourceRef provenance="code-derived" code={code.subCq} />{' '}
+            <SourceRef provenance="code-derived" code={code.ddpOff} />. The oldest EFA hardware does
             not get the newest fast path, regardless of which libfabric you install.
           </Box>
           <Box variant="p">
@@ -835,10 +853,10 @@ export function EfaDevice() {
             or UDP port numbers to write a narrower rule against, and the EFA device is not assigned
             an IP address at all because SRD operates over MAC addresses{' '}
             <SourceRef provenance="documented" doc={docs.efaOnlyNews} />. A rule scoped to a CIDR
-            range and a port is not expressible for this traffic. Self-referencing the group is the
-            only shape that matches what the device sends. A missing self-reference is the single
-            most common reason a freshly built cluster launches cleanly and then hangs at the first
-            collective.
+            (Classless Inter-Domain Routing) range and a port is not expressible for this traffic.
+            Self-referencing the group is the only shape that matches what the device sends. A
+            missing self-reference lets a freshly built cluster launch cleanly and fail at its first
+            EFA traffic, with the unreachable-remote error the SRD section decodes.
           </Box>
           <Alert type="info" header="Scope the group, not the rule">
             Since the rule cannot be narrowed, the security boundary is membership. Put only the
@@ -852,9 +870,9 @@ export function EfaDevice() {
           <Box variant="p">
             The documented boundary list is short. EFA traffic cannot cross Availability Zones or
             VPCs, EFA traffic is not routable, and EFA is not supported on AWS Outposts{' '}
-            <SourceRef provenance="documented" doc={docs.efa} />. The same page adds a distinction
-            worth keeping: those limits apply to traffic through the EFA device, and do not apply to
-            normal IP traffic from the ENA device of an EFA interface{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />. Those limits apply to traffic
+            through the EFA device, and do not apply to normal IP traffic from the ENA device of an
+            EFA interface{' '}
             <SourceRef provenance="documented" doc={docs.efa} />.
           </Box>
           <Box variant="p">
@@ -863,7 +881,7 @@ export function EfaDevice() {
             to match{' '}
             <SourceRef provenance="documented" doc={docs.efaAcc} />. Reading those two together, an
             EFA cluster spread across several subnets inside one Availability Zone is not prohibited
-            by anything AWS publishes. That is an argument from the absence of a stated limit rather
+            by anything on those two pages. That is an argument from the absence of a stated limit rather
             than a positive AWS statement, so treat it as our reading, and keep the Availability
             Zone boundary as the hard line.
           </Box>
@@ -886,9 +904,7 @@ export function EfaDevice() {
               </Box>
               <Box variant="p">
                 The hard constraint is the Availability Zone. The placement group is the documented
-                way to satisfy that constraint and to keep latency low, not a gate on EFA itself.
-                Any page that says EFA requires a cluster placement group is stating a
-                recommendation as a rule.
+                way to satisfy it and to keep latency low.
               </Box>
               <Box variant="p">
                 The practical follow-on is capacity. To ensure that capacity is available as you

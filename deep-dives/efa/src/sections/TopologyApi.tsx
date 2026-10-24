@@ -22,8 +22,12 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * CapacityReservationPrefixDiagram, efa-d11 DatacenterFabricHierarchy.
  */
 
-const ACCESSED = '2026-08-02';
-const READ = '2026-08-02';
+/** Read in the October 2026 refresh. */
+const ACCESSED = '2026-10-23';
+const READ = '2026-10-23';
+/** First read, not re-read in the October 2026 refresh. */
+const ACCESSED_AUG = '2026-08-02';
+const READ_AUG = '2026-08-02';
 
 /**
  * The AWS Containers blog slug contains a token the no-ai-tells prose gate
@@ -95,13 +99,13 @@ const docs: Record<string, DocRef> = {
     title: 'EC2 Developer Guide: Request throttling for the Amazon EC2 API',
     url: 'https://docs.aws.amazon.com/ec2/latest/devguide/ec2-api-throttling.html',
     tier: 1,
-    accessed: ACCESSED,
+    accessed: ACCESSED_AUG,
   },
   consistency: {
     title: 'EC2 Developer Guide: Eventual consistency in the Amazon EC2 API',
     url: 'https://docs.aws.amazon.com/ec2/latest/devguide/eventual-consistency.html',
     tier: 1,
-    accessed: ACCESSED,
+    accessed: ACCESSED_AUG,
   },
   crCpg: {
     title: 'EC2 User Guide: Use Capacity Reservations with placement groups',
@@ -125,14 +129,11 @@ const docs: Record<string, DocRef> = {
     title: 'AWS PCS User Guide: Capacity Blocks and NVIDIA IMEX for UltraServers',
     url: 'https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks-nvidia-imex.html',
     tier: 1,
-    accessed: ACCESSED,
+    accessed: ACCESSED_AUG,
   },
-  eksMlPools: {
-    title: 'EKS User Guide: manage compute for AI/ML with EKS Auto Mode and Karpenter',
-    url: 'https://docs.aws.amazon.com/eks/latest/userguide/ml-node-pools.html',
-    tier: 1,
-    accessed: ACCESSED,
-  },
+  eksTopo: { title: 'EKS User Guide: Place distributed AI/ML workloads with network topology labels', url: 'https://docs.aws.amazon.com/eks/latest/userguide/ml-workload-topology.html', tier: 1, accessed: ACCESSED },
+  eksNodePool: { title: 'EKS User Guide: Create a Node Pool for EKS Auto Mode (well-known labels)', url: 'https://docs.aws.amazon.com/eks/latest/userguide/create-node-pool.html', tier: 1, accessed: ACCESSED },
+  capacityBlocks: { title: 'EC2 User Guide: Capacity Blocks for ML', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html', tier: 1, accessed: ACCESSED },
   pcOdcr: {
     title: 'ParallelCluster User Guide: compute node initialization with ODCRs',
     url: 'https://docs.aws.amazon.com/parallelcluster/latest/ug/compute-node-initialization-odcr-v3.html',
@@ -143,27 +144,27 @@ const docs: Record<string, DocRef> = {
     title: 'AWS What is New: Capacity Reservation Topology API general availability, posted 2025-10-30',
     url: 'https://aws.amazon.com/about-aws/whats-new/2025/10/capacity-reservation-topology-api-ai-ml-hpc-instance-type/',
     tier: 2,
-    accessed: ACCESSED,
+    accessed: ACCESSED_AUG,
   },
   containersBlog: {
     title: 'AWS Containers Blog: dynamic resource allocation on Amazon EKS with Amazon EC2 P6e-GB200',
     url: `https://aws.amazon.com/blogs/containers/${CONTAINERS_BLOG_SLUG}`,
     tier: 2,
-    accessed: ACCESSED,
+    accessed: ACCESSED_AUG,
   },
 };
 
 const code: Record<string, CodeRef> = {
   topologify: {
     repo: 'aws/aws-ofi-nccl',
-    ref: 'v1.20.0',
+    ref: 'v1.22.0',
     path: 'contrib/scripts/topology_aware/hostfile-topologify.py',
     lines: 'L110-L125',
     read: READ,
   },
   topologifyDoc: {
     repo: 'aws/aws-ofi-nccl',
-    ref: 'v1.20.0',
+    ref: 'v1.22.0',
     path: 'doc/topology-aware.md',
     lines: 'L122-L149',
     read: READ,
@@ -173,28 +174,45 @@ const code: Record<string, CodeRef> = {
     ref: '57abd4d9347e8a31b533918639a69b7637dd6328',
     path: 'ec2-topology.py',
     lines: 'L196-L202',
-    read: READ,
+    read: READ_AUG,
   },
   slurmEmit: {
     repo: 'aws-samples/ec2-topology-aware-for-slurm',
     ref: '57abd4d9347e8a31b533918639a69b7637dd6328',
     path: 'ec2-topology.py',
     lines: 'L74-L81',
-    read: READ,
+    read: READ_AUG,
   },
   k8sLabeler: {
     repo: 'aws-samples/sample-rlinf-on-eks',
     ref: 'c8b5e3a39d89de783b5eb97eaa57dc30a6307f33',
     path: 'infrastructure/manifests/topology-labeler.yaml',
     lines: 'L80-L92',
-    read: READ,
+    read: READ_AUG,
   },
   karpenter: {
     repo: 'aws/karpenter-provider-aws',
-    ref: 'v1.14.0',
+    ref: 'v1.15.0',
     path: 'pkg',
     read: READ,
   },
+  karpenterPgSelector: {
+    repo: 'aws/karpenter-provider-aws',
+    ref: 'v1.15.0',
+    path: 'pkg/apis/v1/ec2nodeclass.go',
+    lines: 'L57-L61',
+    read: READ,
+  },
+  karpenterPgLaunchTemplate: {
+    repo: 'aws/karpenter-provider-aws',
+    ref: 'v1.15.0',
+    path: 'pkg/providers/launchtemplate/launchtemplate.go',
+    lines: 'L157-L175',
+    read: READ,
+  },
+  ccmTopology: { repo: 'kubernetes/cloud-provider-aws', ref: 'v1.37.0', path: 'pkg/providers/v1/instances_v2.go', lines: 'L95-L118', read: READ },
+  ccmLabels: { repo: 'kubernetes/cloud-provider-aws', ref: 'v1.37.0', path: 'pkg/providers/v1/well_known_labels.go', lines: 'L22-L26', read: READ },
+  ccmLabelsFirst: { repo: 'kubernetes/cloud-provider-aws', ref: 'v1.32.0', path: 'pkg/providers/v1/well_known_labels.go', lines: 'L23-L26', read: READ },
 };
 
 /** efa-d10. The network node set as a tree, and what closeness means. */
@@ -656,8 +674,8 @@ export function TopologyApi() {
                 layer that decides adjacency.
               </Box>
               <Box variant="p">
-                <strong>Impact: unmeasured.</strong> No AWS statement and no benchmark quantifies
-                what the mis-indexed grouping costs on a real job. Treat it as a correctness defect
+                <strong>Impact: unmeasured.</strong> No AWS statement or benchmark located during
+                this research quantifies what the mis-indexed grouping costs on a real job. Treat it as a correctness defect
                 of unmeasured cost.
               </Box>
             </SpaceBetween>
@@ -671,10 +689,10 @@ export function TopologyApi() {
               <Box variant="p">
                 The documentation gives each layer a position in a hierarchy and identifies the
                 bottom node as the one connected to the instance{' '}
-                <SourceRef provenance="documented" doc={docs.topoHow} />. That is the whole
-                published vocabulary: AWS publishes no mapping from layer index to a named
-                datacenter construct such as spine, aggregation, leaf, top of rack or rack. Any
-                page that tells you layer iii is a top-of-rack switch is inferring it.
+                <SourceRef provenance="documented" doc={docs.topoHow} />. No AWS mapping from layer
+                index to a named datacenter construct, such as spine, aggregation, leaf, top of rack
+                or rack, was located during this research. Treat any page that names layer iii a
+                top-of-rack switch as inference unless it cites an AWS source.
               </Box>
               <Box variant="p">
                 Treat the index as a depth. Depth ordering is documented and sufficient for
@@ -685,29 +703,33 @@ export function TopologyApi() {
 
           <ExpandableSection
             headerText="AWS states the depth of p6e-gb200.36xlarge two ways"
-            headerDescription="A Tier 1 page implies three layers, a Tier 2 blog implies four"
+            headerDescription="Two Tier 1 pages say three layers, a Tier 2 blog implies four"
           >
             <SpaceBetween size="s">
               <Box variant="p">
                 The EC2 prerequisites page lists p6e-gb200.36xlarge in the group that returns 3
                 network nodes, alongside p5en.48xlarge and the Trainium sizes{' '}
-                <SourceRef provenance="documented" doc={docs.topoPrereq} />.
+                <SourceRef provenance="documented" doc={docs.topoPrereq} />. The EKS (Elastic
+                Kubernetes Service) topology labels page puts p6e-gb200 in its three-layer row, with
+                network-node-layer-3 as the bottom layer{' '}
+                <SourceRef provenance="documented" doc={docs.eksTopo} />.
               </Box>
               <Box variant="p">
-                The AWS Containers blog describes each P6e-GB200 node in an EKS (Elastic Kubernetes
-                Service) cluster as automatically labelled with network topology labels from
-                network-node-layer-1 through network-node-layer-4, which reads as four layers on
-                that same instance type{' '}
+                The AWS Containers blog describes each P6e-GB200 node in an EKS cluster as
+                automatically labelled with network topology labels from network-node-layer-1
+                through network-node-layer-4, which reads as four layers on that same instance
+                type{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   doc={docs.containersBlog}
-                  conflict="The EC2 prerequisites page places p6e-gb200.36xlarge in the 3-network-node group, while the Containers blog describes network-node-layer-1 through network-node-layer-4 labels on P6e-GB200 nodes."
+                  conflict="The EC2 prerequisites page and the EKS topology labels page place p6e-gb200 in the 3-network-node group, while the Containers blog describes network-node-layer-1 through network-node-layer-4 labels on P6e-GB200 nodes."
                   label="doc conflict"
                 />
                 .
               </Box>
               <Box variant="p">
-                Both are AWS authored and they cannot both describe the same response. The blog may
+                All three are AWS authored, and the blog cannot describe the same response as the
+                two pages that say three layers. The blog may
                 be describing the general label schema rather than that instance depth, and nothing
                 located during this research settles it. Read the depth from the array length at
                 run time, which is correct under either answer.
@@ -780,8 +802,7 @@ ranked = [host
               <Box variant="p">
                 Open MPI v4.1 uses <code>--mca rmaps seq</code>. Open MPI v5.0 uses{' '}
                 <code>--map-by seq</code>. Omit the flag and the sort is discarded silently, with
-                no warning and no error. This is the single most common way topology-aware ranking
-                ends up doing nothing.
+                no warning and no error.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -889,7 +910,7 @@ aws ec2 describe-instance-topology \
                 domain, and calling the API immediately after launching instances might
                 return null for capacityBlockId because the data might not have fully propagated{' '}
                 <SourceRef provenance="documented" doc={docs.instApi} />. Post-launch automation
-                that reads it once and caches the answer will cache a wrong answer{' '}
+                that reads it once and caches the answer can cache a wrong answer{' '}
                 <SourceRef provenance="documented" doc={docs.consistency} />.
               </Box>
               <Box variant="p">
@@ -1023,27 +1044,17 @@ aws ec2 describe-capacity-reservation-topology \
           </Alert>
 
           <ExpandableSection
-            headerText="AWS states the reservation limit three ways on three pages"
+            headerText="AWS states the reservation limit two ways on three pages"
             headerDescription="Trust the API reference, and chunk your reservation IDs in tens"
           >
             <SpaceBetween size="s">
               <Box variant="p">
-                The API reference states a maximum of 10 explicitly specified Capacity Reservation
-                IDs and a MaxResults default of 10 with a valid range of 1 to 10{' '}
-                <SourceRef provenance="documented" doc={docs.crApi} />.
-              </Box>
-              <Box variant="p">
-                The AWS CLI reference for the same operation states a maximum of 100 explicitly
-                specified Capacity Reservation IDs{' '}
-                <SourceRef
-                  provenance="doc-code-conflict"
-                  doc={docs.crCli}
-                  conflict="The CLI reference states maximum 100 Capacity Reservation IDs, while the API reference for the same operation states maximum 10."
-                  label="doc conflict"
-                />
-                . The User Guide examples page states that output is paginated with up to 20 items
-                per page by default and up to 100 per page using MaxResults, describing both APIs
-                in one sentence{' '}
+                The API reference and the AWS CLI reference both state a maximum of 10 explicitly
+                specified Capacity Reservation IDs and a MaxResults default of 10 with a valid
+                range of 1 to 10 <SourceRef provenance="documented" doc={docs.crApi} />{' '}
+                <SourceRef provenance="documented" doc={docs.crCli} />. The User Guide examples
+                page states that output is paginated with up to 20 items per page by default and up
+                to 100 per page using MaxResults, describing both APIs in one sentence{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   doc={docs.topoExamples}
@@ -1054,12 +1065,13 @@ aws ec2 describe-capacity-reservation-topology \
               </Box>
               <Box variant="p">
                 Trust the API reference: it defines the wire contract the service validates
-                against. The behaviour that survives all three readings is the same anyway. Chunk
+                against. The behaviour that survives both readings is the same anyway. Chunk
                 reservation IDs in batches of 10 and never set MaxResults above 10 on the
                 reservation API.
               </Box>
               <Box variant="p">
-                The same pair of pages also disagrees on the flag name. The CLI synopsis lists{' '}
+                The CLI reference and the examples page also disagree on the flag name. The CLI
+                synopsis lists{' '}
                 <code>--capacity-reservation-ids</code>, while the User Guide example writes{' '}
                 <code>--capacity-reservation-id</code>{' '}
                 <SourceRef provenance="documented" doc={docs.crCli} />. Use the plural form from
@@ -1074,7 +1086,7 @@ aws ec2 describe-capacity-reservation-topology \
         header={
           <Header
             variant="h2"
-            description="The network node hash becomes the switch name, verbatim"
+            description="Which Slurm topology plugin fits your fleet, tree or block, and how the network node hash becomes the switch name"
           >
             Slurm: topology.conf, tree against block, and topology.yaml
           </Header>
@@ -1187,7 +1199,8 @@ sbatch --switch=1 train.sbatch`}</pre>
               </Box>
               <Box variant="p">
                 To turn placement off entirely, set TopologyPlugin=topology/flat{' '}
-                <SourceRef provenance="documented" doc={docs.hyperpodSlurm} />. AWS PCS takes the
+                <SourceRef provenance="documented" doc={docs.hyperpodSlurm} />. AWS PCS (Parallel
+                Computing Service) takes the
                 same approach for UltraServer node groups: it inspects the Capacity Block,
                 configures the plugin, and continuously reconciles a generated topology.yaml
                 against the current cluster state{' '}
@@ -1202,7 +1215,7 @@ sbatch --switch=1 train.sbatch`}</pre>
         header={
           <Header
             variant="h2"
-            description="One kubectl command tells you whether the labels are there, and Karpenter needs the scheduler turned off"
+            description="One kubectl command tells you whether the labels are there, and Karpenter needs topology-aware scheduling turned off"
           >
             Kubernetes: topology labels and topology-aware scheduling
           </Header>
@@ -1210,14 +1223,31 @@ sbatch --switch=1 train.sbatch`}</pre>
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            On the Kubernetes side the topology arrives as node labels. HyperPod task governance
-            applies topology.kubernetes.io/region,
-            topology.kubernetes.io/zone, topology.k8s.aws/network-node-layer-1 through -3, and
-            topology.k8s.aws/ultraserver-id, the last identifying instances in the same NVLink
-            domain <SourceRef provenance="documented" doc={docs.hyperpodEks} />. The aws-ofi-nccl
-            documentation publishes one more that the HyperPod page omits,
-            topology.k8s.aws/zone-id, carrying the account-independent Availability Zone ID{' '}
-            <SourceRef provenance="code-derived" code={code.topologifyDoc} />.
+            On the Kubernetes side the topology arrives as node labels, and on EKS the control
+            plane writes them. The AWS cloud controller manager calls DescribeInstanceTopology
+            when a node registers and writes one topology.k8s.aws/network-node-layer-N label per
+            network node in the response, numbered from the top of the hierarchy down{' '}
+            <SourceRef provenance="code-confirmed" doc={docs.eksTopo} code={code.ccmTopology} />.
+            Managed node groups, self-managed nodes, Karpenter nodes and Auto Mode nodes all get
+            them, with no add-on to install and no IAM permission to grant{' '}
+            <SourceRef provenance="documented" doc={docs.eksTopo} />.
+          </Box>
+
+          <Alert type="info" header="EKS labels every node of a supported type, once, at registration">
+            A node of any other instance type carries no network-node-layer labels at all, and in
+            a Region without DescribeInstanceTopology no node receives them. The controller writes
+            the labels when the node first joins and does not refresh them, so relabeling cannot
+            force an update <SourceRef provenance="documented" doc={docs.eksTopo} />. Next to them
+            sits topology.k8s.aws/zone-id, the Availability Zone ID, which names the same
+            physical zone in every AWS account{' '}
+            <SourceRef provenance="code-confirmed" doc={docs.eksNodePool} code={code.ccmLabels} />.
+          </Alert>
+
+          <Box variant="p">
+            HyperPod task governance schedules on topology.k8s.aws/network-node-layer-1 through -4
+            and topology.k8s.aws/ultraserver-id{' '}
+            <SourceRef provenance="documented" doc={docs.hyperpodEks} />. Layer 4 exists only on
+            four-layer types <SourceRef provenance="documented" doc={docs.eksTopo} />.
           </Box>
 
           <Box variant="code">
@@ -1225,9 +1255,10 @@ sbatch --switch=1 train.sbatch`}</pre>
 kubectl get nodes \
   -L topology.k8s.aws/network-node-layer-1 \
   -L topology.k8s.aws/network-node-layer-2 \
-  -L topology.k8s.aws/network-node-layer-3
+  -L topology.k8s.aws/network-node-layer-3 \
+  -L topology.k8s.aws/network-node-layer-4
 
-# Hard constraint: every pod in the set must land on one bottom-layer
+# Hard constraint: every pod in the set must land under one layer-3
 # node, or the job stays suspended in the waitlist.
 metadata:
   annotations:
@@ -1262,26 +1293,28 @@ metadata:
                 TopologyAwareScheduling to false, and restart the Kueue controller deployment.
               </Box>
               <Box variant="p">
-                The source tree agrees. A search of the full aws/karpenter-provider-aws v1.14.0
-                release for network-node-layer returns zero occurrences, and so does a search for
-                DescribeInstanceTopology{' '}
-                <SourceRef provenance="code-derived" code={code.karpenter} />. In that release
-                Karpenter neither calls the topology API nor emits these labels. The EKS well-known
-                label tables for Auto Mode and self-managed Karpenter list instance family, category,
-                generation, GPU attributes, capacity type and zone, with no network node layer
-                entry <SourceRef provenance="documented" doc={docs.eksMlPools} />.
+                Karpenter nodes carry the labels, written by the cloud controller manager in the EKS
+                control plane <SourceRef provenance="documented" doc={docs.eksTopo} />. A search of
+                the full aws/karpenter-provider-aws v1.15.0 release for network-node-layer returns
+                zero occurrences, and so does a search for DescribeInstanceTopology{' '}
+                <SourceRef provenance="code-derived" code={code.karpenter} />, so in that release
+                Karpenter neither calls the topology API nor emits these labels.
               </Box>
               <Box variant="p">
                 What Karpenter does enforce is zonal placement through topology.kubernetes.io/zone
-                and placement group membership through the launch template. That is a useful
-                constraint set, and its boundary sits one level above the network node layers.
+                and placement group membership through the EC2NodeClass placementGroupSelector{' '}
+                <SourceRef provenance="code-derived" code={code.karpenterPgSelector} />, which it
+                writes into the launch templates it generates{' '}
+                <SourceRef provenance="code-derived" code={code.karpenterPgLaunchTemplate} />. That
+                is a useful constraint set, and its boundary sits one level above the network node
+                layers.
               </Box>
             </SpaceBetween>
           </Alert>
 
           <ExpandableSection
             headerText="The portable fallback: a depth-agnostic labeler DaemonSet"
-            headerDescription="For clusters outside HyperPod task governance and P6e-GB200"
+            headerDescription="For clusters with no AWS cloud controller manager v1.32.0 or later writing the labels"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1291,7 +1324,12 @@ metadata:
                 applies one label per returned layer. The loop is driven by the length of the
                 returned array, so it labels three layers or four without a code change, and it
                 handles the empty case explicitly for instance types that do not support the API{' '}
-                <SourceRef provenance="code-derived" code={code.k8sLabeler} />.
+                <SourceRef provenance="code-derived" code={code.k8sLabeler} />. On EKS it duplicates
+                what the control plane already writes. A self-managed cluster that runs the AWS cloud
+                controller manager v1.32.0 or later gets the same labels from it{' '}
+                <SourceRef provenance="code-derived" code={code.ccmLabelsFirst} />, given
+                ec2:DescribeInstanceTopology on its role{' '}
+                <SourceRef provenance="documented" doc={docs.topoPrereq} />.
               </Box>
               <Box variant="code">
                 <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{String.raw`# Condensed from the DaemonSet manifest. Depth comes from the
@@ -1303,40 +1341,6 @@ for i in $(seq 0 $((NODE_COUNT - 1))); do
   LABEL_ARGS="$LABEL_ARGS topology.k8s.aws/network-node-layer-$LAYER=$NODE_ID"
 done
 kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
-              </Box>
-            </SpaceBetween>
-          </ExpandableSection>
-
-          <ExpandableSection
-            headerText="Does EKS label every supported type, or only P6e-GB200?"
-            headerDescription="AWS says both. The answer decides whether you need the DaemonSet above."
-          >
-            <SpaceBetween size="s">
-              <Box variant="p">
-                The aws-ofi-nccl documentation states the general case: Amazon EKS supports
-                topology-aware scheduling through native integration with EC2 instance topology,
-                and when worker nodes launch, EKS automatically discovers and exposes their network
-                topology information as node labels{' '}
-                <SourceRef provenance="code-derived" code={code.topologifyDoc} />.
-              </Box>
-              <Box variant="p">
-                The AWS Containers blog scopes the same behaviour to one instance type, describing
-                each P6e-GB200 node as automatically labelled with its capacity block type and
-                detailed network topology labels{' '}
-                <SourceRef
-                  provenance="doc-code-conflict"
-                  doc={docs.containersBlog}
-                  conflict="The aws-ofi-nccl documentation describes automatic EKS topology labelling generally, while the Containers blog scopes it to P6e-GB200 nodes. No EKS User Guide page enumerating topology.k8s.aws/network-node-layer-* as a standard managed node group label was located."
-                  label="doc conflict"
-                />
-                .
-              </Box>
-              <Box variant="p">
-                No EKS User Guide page listing topology.k8s.aws/network-node-layer as a standard
-                label for all supported instance types was located. Until one exists, treat
-                automatic labelling as verified for HyperPod task governance and for P6e-GB200, run
-                the kubectl command above on any other combination, and fall back to the DaemonSet
-                when the labels are absent.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1377,13 +1381,13 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
             <SourceRef provenance="documented" doc={docs.instType} />. Those two fields, plus
             zoneId, are what let a single response answer both what did I ask for and what did I
             get. A cluster placement group guarantees a low-latency group in one Availability Zone.
-            It is not a published guarantee that every member shares a bottom network node, and
-            AWS does not publish how often the two diverge.
+            It is not a published guarantee that every member shares a bottom network node, and no
+            AWS figure for how often the two diverge was located during this research.
           </Alert>
 
           <ExpandableSection
             headerText="Where the published evidence stops"
-            headerDescription="Three gaps to check before you quote a number you read elsewhere"
+            headerDescription="Two gaps to check before you quote a number you read elsewhere"
           >
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1394,14 +1398,9 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
                 repeated.
               </Box>
               <Box variant="p">
-                <strong>Layer to hardware mapping.</strong> AWS publishes depth. Nothing in the
-                documentation binds layer i, ii or iii to a spine, aggregation or leaf tier.
-              </Box>
-              <Box variant="p">
-                <strong>Two open contradictions.</strong> The depth of p6e-gb200.36xlarge and the
-                scope of automatic EKS labelling both have AWS sources on each side. One defensive
-                pattern covers both: read the depth from the response, and verify the labels on
-                your own cluster.
+                <strong>Layer to hardware mapping.</strong> AWS publishes depth. No documentation
+                binding layer i, ii or iii to a spine, aggregation or leaf tier was located during
+                this research.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1420,7 +1419,10 @@ kubectl label node "$NODE_NAME" $LABEL_ARGS --overwrite`}</pre>
               <Box variant="h3">Where the topology APIs add something</Box>
               <Box variant="p">
                 Jobs that span multiple placement groups, multiple reservations or multiple
-                Capacity Blocks, where no single placement construct covers the whole job. Ranking
+                Capacity Blocks, where no single placement construct covers the whole job.
+                Capacity Blocks take no placement group at all, and several blocks, instance or
+                UltraServer, can sit in one Capacity Reservation Resource Group{' '}
+                <SourceRef provenance="documented" doc={docs.capacityBlocks} />. Ranking
                 across those boundaries is the only thing that can order the fleet, and the
                 announcement names that scale directly: tens to hundreds of reservations{' '}
                 <SourceRef provenance="documented" doc={docs.crTopoGa} />.

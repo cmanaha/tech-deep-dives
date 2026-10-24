@@ -29,6 +29,8 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  */
 
 const ACCESSED = '2026-08-01';
+/** Pages and code re-read for the October 2026 refresh. */
+const REFRESHED = '2026-10-23';
 /** The C repositories were cloned and read on this date. */
 const READ_C = '2026-08-01';
 /** The language bindings were read on this date, to settle the open caveat below. */
@@ -44,7 +46,12 @@ const XFER_TAG = '0.15.0';
 const FSX_DOC = 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/';
 const S3_DOC = 'https://docs.aws.amazon.com/AmazonS3/latest/userguide/';
 
-const doc = (title: string, url: string, tier: 1 | 2): DocRef => ({ title, url, tier, accessed: ACCESSED });
+const doc = (title: string, url: string, tier: 1 | 2, accessed: string = ACCESSED): DocRef => ({
+  title,
+  url,
+  tier,
+  accessed,
+});
 
 /** Pinned code reference builders. Ref is always a SHA or a release tag, never a branch. */
 const s3c = (path: string, lines?: string): CodeRef => ({
@@ -91,8 +98,25 @@ const xferc = (path: string, lines?: string): CodeRef => ({
 });
 
 const docs = {
-  fsxEfa: doc('FSx for Lustre User Guide: EFA-enabled file systems', `${FSX_DOC}efa-file-systems.html`, 1),
-  fsxClients: doc('FSx for Lustre User Guide: Configuring EFA clients', `${FSX_DOC}configure-efa-clients.html`, 1),
+  efaGa2019: doc(
+    'AWS News Blog: Now Available - Elastic Fabric Adapter (EFA) for Tightly-Coupled HPC Workloads (April 29, 2019)',
+    'https://aws.amazon.com/blogs/aws/now-available-elastic-fabric-adapter-efa-for-tightly-coupled-hpc-workloads/',
+    2,
+    REFRESHED
+  ),
+  fsxEfa: doc('FSx for Lustre User Guide: EFA-enabled file systems', `${FSX_DOC}efa-file-systems.html`, 1, REFRESHED),
+  fsxClients: doc(
+    'FSx for Lustre User Guide: Configuring EFA clients',
+    `${FSX_DOC}configure-efa-clients.html`,
+    1,
+    REFRESHED
+  ),
+  efa: doc(
+    'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
+    'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html',
+    1,
+    REFRESHED
+  ),
   fsxPerf: doc('FSx for Lustre User Guide: Amazon FSx for Lustre performance', `${FSX_DOC}performance.html`, 1),
   fsxSecGroups: doc(
     'FSx for Lustre User Guide: Controlling access with Amazon VPC security groups',
@@ -114,6 +138,12 @@ const docs = {
     'S3 User Guide: Performance design patterns, horizontal scaling and request parallelization',
     'https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-design-patterns.html',
     1
+  ),
+  s3Whitepaper: doc(
+    'AWS Whitepaper: Best Practices Design Patterns, Optimizing Amazon S3 Performance (PDF, initial publication June 2019, reviewed March 10, 2021)',
+    'https://d1.awsstatic.com/whitepapers/AmazonS3BestPractices.pdf',
+    2,
+    REFRESHED
   ),
   cliConfig: doc('AWS CLI Reference: S3 configuration topic', 'https://docs.aws.amazon.com/cli/latest/topic/s3-config.html', 1),
   repost: doc(
@@ -151,6 +181,20 @@ const code = {
   pyDefault: pyc('awscrt/s3.py', 'L353-L354'),
   javaOptions: javac('src/main/java/software/amazon/awssdk/crt/s3/S3ClientOptions.java'),
   xferTarget: xferc('s3transfer/crt.py', 'L169-L184'),
+  pingpongMan: {
+    repo: 'ofiwg/libfabric',
+    ref: 'v2.7.0',
+    path: 'man/fi_pingpong.1.md',
+    lines: 'L28-L29',
+    read: REFRESHED,
+  },
+  rdmOrder: {
+    repo: 'ofiwg/libfabric',
+    ref: 'v2.7.0',
+    path: 'prov/efa/src/efa_prov_info.c',
+    lines: 'L642-L648',
+    read: REFRESHED,
+  },
 };
 
 /**
@@ -179,8 +223,8 @@ function ThreeDataPathsDiagram() {
       fabric: true,
       traverses: [
         'LNet runs over the EFA device. The Lustre client kernel',
-        'module still handles metadata. GPUDirect Storage moves',
-        'file data into GPU memory on P5, P5e, P5en, P6-B200.',
+        'module still handles metadata. GPUDirect Storage moves file',
+        'data to GPU memory on P5, P5e, P5en, P6-B200, P6-B300.',
       ],
       endpoint: ['FSx for Lustre object', 'storage servers'],
       ceiling: '700 Gbps',
@@ -341,7 +385,7 @@ function CreateTimeDoorsDiagram() {
       lines: [
         'Replicated, provisioned per TiB.',
         'EFA: yes. GPUDirect Storage: yes, on',
-        'P5, P5e, P5en and P6-B200 clients.',
+        'P5, P5e, P5en, P6-B200, P6-B300 clients.',
         'S3 data repository association: yes.',
       ],
       ceiling: '700 / 1,200 Gbps',
@@ -611,7 +655,7 @@ const efaScope: ScopeRow[] = [
   {
     dimension: 'GPUDirect Storage clients',
     requirement:
-      'P5, P5e, P5en or P6-B200 only, with CUDA, the open source NVIDIA driver, and NVIDIA GDS driver 2.24.2 or higher.',
+      'P5, P5e, P5en, P6-B200 or P6-B300 only, with CUDA, the open source NVIDIA driver, and NVIDIA GDS driver 2.24.2 or higher.',
   },
   {
     dimension: 'Fleet-wide limit',
@@ -655,7 +699,7 @@ const comparison: CompareRow[] = [
   },
   {
     axis: 'Latency',
-    efa: 'Single-digit microsecond class. SRD tolerates out-of-order delivery and reorders in the transport.',
+    efa: 'SRD delivers out of order, and the libfabric RDM endpoint restores message order in software. The EC2 User Guide gives no per-message latency for EFA, and the one AWS figure located (15.5 microseconds of one-way MPI latency in a cluster placement group) comes from the 2019 launch, so baseline it with fi_pingpong -p efa -e rdm.',
     fsx: 'Sub-millisecond for data already on the file system. A file backed by an S3 data repository pays a load penalty on first access.',
     s3: 'First-byte latency in the 100 to 200 millisecond range, which is why every fast S3 client is a concurrency engine.',
   },
@@ -716,7 +760,7 @@ export function StorageDataPaths() {
             variant="h1"
             description="Two storage services sit next to an EFA cluster. One of them can be put on the fabric, and that choice is made in the create call, before a byte is written."
           >
-            Storage Data Paths: FSx for Lustre, S3 and the CRT
+            Storage Data Paths: FSx for Lustre, S3 and the Common Runtime (CRT)
           </Header>
         }
       >
@@ -736,7 +780,7 @@ export function StorageDataPaths() {
           <Box variant="p">
             One AWS table puts numbers on all four options. For the same file system, maximum
             throughput per client instance is 100 Gbps over ENA, 100 Gbps over ENA Express, 700 Gbps
-            over EFA, and 1,200 Gbps over EFA with GPUDirect Storage{' '}
+            over EFA, and 1,200 Gbps over EFA with GPUDirect Storage (GDS){' '}
             <SourceRef provenance="documented" doc={docs.fsxPerf} />. That is 7 times for the fabric
             and 12 times with the GPU path added. The ENA rows carry a footnote that explains why
             they need wide fan-out to reach even 100 Gbps: traffic between an individual client
@@ -759,7 +803,8 @@ export function StorageDataPaths() {
         <SpaceBetween size="m">
           <Box variant="p">
             A GPU instance in a cluster has four ways to move bytes, and they differ in what the
-            bytes traverse before they leave the host. Two of them reach the fabric.
+            bytes traverse before they leave the host. Two of them reach the fabric. In the two FSx
+            for Lustre rows, LNet is the Lustre network layer.
           </Box>
           <ThreeDataPathsDiagram />
           <Box variant="p">
@@ -773,7 +818,7 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="What AWS requires before a file system will speak to the fabric, and the two traps that show up as support cases."
+            description="The create-time choices and security group rules that decide whether a client gets 700 Gbps from the file system or stays near the 100 Gbps ENA figure."
           >
             Putting FSx for Lustre on the fabric
           </Header>
@@ -783,8 +828,8 @@ export function StorageDataPaths() {
           <Box variant="p">
             Putting a file system on the fabric is a create-time flag plus a client-side install.
             The file system is created as Persistent 2 with EfaEnabled set, and each client gets the
-            Lustre client, the EFA driver and, for GPUDirect Storage, the NVIDIA GDS driver. LNet,
-            the Lustre network layer, then runs over the EFA device. The supported scope is narrower
+            Lustre client, the EFA driver and, for GPUDirect Storage, the NVIDIA GDS driver. LNet
+            then runs over the EFA device. The supported scope is narrower
             than EFA support on EC2 generally, so check your clients against it before you provision
             anything.
           </Box>
@@ -813,20 +858,17 @@ export function StorageDataPaths() {
           <ColumnLayout columns={2} variant="text-grid">
             <div>
               <Box variant="h3">
-                GDS is narrower than EFA <Badge color="blue">four instance types</Badge>
+                GDS is narrower than EFA <Badge color="blue">five instance types</Badge>
               </Box>
               <Box variant="p">
                 GPUDirect Storage builds on EFA, so an EFA-enabled Persistent 2 file system is the
-                prerequisite. AWS describes it as enabling direct data transfer between the file
-                system and the GPU memory, bypassing the CPU, and it names the client instances
-                exhaustively: P5, P5e, P5en or P6-B200{' '}
-                <SourceRef provenance="documented" doc={docs.fsxEfa} />.
+                prerequisite. It transfers data directly between the file system and GPU memory,
+                bypassing the CPU, and the supported clients are a closed list: P5, P5e, P5en,
+                P6-B200 or P6-B300 <SourceRef provenance="documented" doc={docs.fsxEfa} />.
               </Box>
               <Box variant="p">
-                The list being closed is what matters when you read the EFA instance matrix
-                elsewhere in this dive: four instance types, against a much longer list of
-                EFA-capable ones. The check to run is whether the clients you already plan to buy
-                are among the four.
+                The instance matrix elsewhere in this dive lists many more EFA-capable types than
+                these five, so check whether the clients you already plan to buy are among the five.
               </Box>
             </div>
             <div>
@@ -863,11 +905,11 @@ export function StorageDataPaths() {
               </Box>
               <Box variant="p">
                 This is the same self-referencing security group requirement EFA already has for
-                instance-to-instance traffic, described in the device section of this dive. Get it
-                wrong and the file system still works: created with EfaEnabled true, mounted
-                successfully, running at ENA speed, with nothing in the console indicating anything
-                is wrong. A rule that looks maximally permissive is the one that silently keeps you
-                off the fabric, so the signal to watch is per-client throughput: a file system
+                instance-to-instance traffic, described in the device section of this dive. Our
+                reading of this rule, across the security group and performance pages, is that a file
+                system created with EfaEnabled true can still mount and run at ENA speed when the
+                rules are CIDR-based, so a rule that looks maximally permissive is the one to
+                suspect. The signal to watch is per-client throughput: a file system
                 created with EFA that tops out near the 100 Gbps ENA figure rather than the 700
                 Gbps EFA one is worth re-checking against these rules.
               </Box>
@@ -922,9 +964,8 @@ export function StorageDataPaths() {
                 EFA-enabled file system you can provision starts at one of those increments.
               </Box>
               <Box variant="p">
-                AWS also gives a threshold for when to bother: if you are creating a file system with
-                over 10 GBps of throughput capacity, AWS recommends enabling EFA to optimize
-                throughput per client instance{' '}
+                If you are creating a file system with over 10 GBps of throughput capacity, AWS
+                recommends enabling EFA to optimize throughput per client instance{' '}
                 <SourceRef provenance="documented" doc={docs.fsxPerf} />. Below that, the ENA path is
                 the documented answer.
               </Box>
@@ -980,9 +1021,6 @@ export function StorageDataPaths() {
                 advertised 1600 Gbps and 800 Gbps bandwidth can be hit from the CPU in userspace{' '}
                 <SourceRef provenance="code-derived" code={code.platformP6} />. These are code
                 comments, so they are evidence of the authors' intent rather than proof of behaviour.
-                They are quoted here because they are the clearest available statement of the CPU
-                ceiling that separates an object path from a fabric path, and they come from the
-                people who wrote the client.
               </Box>
             </SpaceBetween>
           </Alert>
@@ -1015,7 +1053,7 @@ export function StorageDataPaths() {
                 Next to the per-instance throughput table, the source reads: for all instances from
                 p5e.48xlarge to p6-b300.48xlarge, the max_throughput_gbps values configured are
                 based on the maximum bandwidth offered from
-                a single NIC (network interface card) in these instances. CRT clients default to
+                a single NIC in these instances. CRT clients default to
                 using a single NIC unless configured to use multiple NICs by identifying the number
                 of NICs and providing the names in an array. The comment ends with a TODO: once we
                 are able to auto-detect NICs and add them, default values should be updated with
@@ -1039,7 +1077,7 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="One knob, four effects, and a relationship that runs the opposite way to intuition."
+            description="Raising the target opens more connections and shrinks every range request, until the 8 MiB floor binds past roughly 400 Gbps."
           >
             What the throughput target actually sets
           </Header>
@@ -1076,8 +1114,8 @@ export function StorageDataPaths() {
             The consequence runs against intuition. Raising the target raises the connection count,
             which divides a fixed memory ceiling into smaller pieces, which makes every range request
             smaller. Past roughly 400 Gbps the 8 MiB floor binds, and the client is issuing the
-            smallest range it will ever issue at its highest concurrency. Nothing warns about this,
-            and the memory commitment is real: a target of 400 commits the process to a 24 GiB buffer
+            smallest range it will ever issue at its highest concurrency. No warning for this was
+            located in the client source at the pinned commits, and the memory commitment is real: a target of 400 commits the process to a 24 GiB buffer
             pool ceiling, which is an out-of-memory event waiting to happen inside a container with a
             lower limit. The escape hatch is an environment variable that AWS does document{' '}
             <SourceRef provenance="documented" doc={docs.cliConfig} />.
@@ -1159,12 +1197,11 @@ export function StorageDataPaths() {
             <SpaceBetween size="xs">
               <Box variant="p">
                 A conflict claim is only safe once you have checked whether the discovery happens
-                somewhere else. The C client exposes its instance table only as a standalone query
-                API and never consults it internally, so a binding could plausibly call that API and
-                pass the result down. One of them does. The Python binding exposes a recommended
-                throughput function whose entire body reads the platform info and returns the
-                recorded maximum
-                for the detected instance type{' '}
+                somewhere else. At the pinned commit, the C client exposes its instance table only as
+                a standalone query API and never consults it internally, so a binding could plausibly
+                call that API and pass the result down. One of them does. The Python binding exposes
+                a recommended throughput function whose entire body reads the platform info and
+                returns the recorded maximum for the detected instance type{' '}
                 <SourceRef provenance="code-derived" code={code.pyNative} />, and boto3's CRT
                 transfer layer calls it, logs the result, and falls back to 10.0 when it comes back
                 empty{' '}
@@ -1174,7 +1211,7 @@ export function StorageDataPaths() {
                 <SourceRef provenance="documented" doc={docs.repost} />.
               </Box>
               <Box variant="p">
-                That lookup is a per-instance-type constant, not discovery. It reads no interfaces,
+                That lookup is a per-instance-type constant. It reads no interfaces,
                 no CPU topology and no host memory, and the Python binding says as much in its own
                 comment: eventually the CRT will make a full calculation based on NIC and CPU
                 configuration, but until then handle 0{' '}
@@ -1206,6 +1243,8 @@ export function StorageDataPaths() {
                 a granularity of 8 to 16 MB, one concurrent request for each 85 to 90 MB/s of desired
                 network throughput, and about 15 concurrent requests to saturate a 10 Gb/s network
                 interface card{' '}
+                <SourceRef provenance="documented" doc={docs.s3Whitepaper} />. The S3 User Guide
+                section on request parallelization gives the same advice without these figures{' '}
                 <SourceRef provenance="documented" doc={docs.s3Paper} />.
               </Box>
               <Box variant="p">
@@ -1226,7 +1265,7 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="What this section leaves to a storage dive, and which half of it you can check for yourself."
+            description="FSx for Lustre claims here come from documentation and S3 client claims from code at pinned commits you can open, and the badge on each claim says which."
           >
             The boundary of this section
           </Header>
@@ -1238,11 +1277,7 @@ export function StorageDataPaths() {
           the second irreversible decision, and the token bucket because it explains why a throttled
           client fails instead of converging. Part size resolution, backoff jitter modes, prefix
           partitioning and data repository task mechanics belong to a storage dive, and the pinned
-          commits above are where to start reading. The two halves are also different classes of
-          evidence: FSx for Lustre here is documentation-sourced, because the service side has no
-          open-source artifact to read, and the S3 client is code-sourced at pinned commits you can
-          open.
-          The badge on each claim says which one you are looking at.
+          commits above are where to start reading.
         </Box>
       </Container>
 
@@ -1272,7 +1307,12 @@ export function StorageDataPaths() {
             <SourceRef provenance="documented" doc={docs.fsxPerf} />; S3 first-byte latency{' '}
             <SourceRef provenance="documented" doc={docs.s3Perf} />; the S3 client's CPU ceiling,
             socket count and memory ladder{' '}
-            <SourceRef provenance="code-derived" code={code.platformP5} />.
+            <SourceRef provenance="code-derived" code={code.platformP5} />; EFA latency{' '}
+            <SourceRef provenance="documented" doc={docs.efa} />{' '}
+            <SourceRef provenance="documented" doc={docs.efaGa2019} />, the fi_pingpong default
+            endpoint <SourceRef provenance="code-derived" code={code.pingpongMan} /> and message
+            ordering{' '}
+            <SourceRef provenance="code-derived" code={code.rdmOrder} />.
           </Box>
 
           <Alert type="info" header="Two decisions to get right before any data is written">
