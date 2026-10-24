@@ -2,7 +2,7 @@
 
 **Title:** SGLang: The Serving Runtime Built Around a Shared Prefix Index
 **Subtitle:** How SGLang v0.5.22 schedules, caches and scales LLM serving, where its design differs from vLLM and why, and how to run it on AWS
-**Status:** Scoping v1 (2026-10-24). Research registers 00 to 08 complete; 09 (AWS) and 10 (SGLang vs vLLM) in progress. Reviews pending.
+**Status:** Scoping v1 (2026-10-24). Research registers 00 to 09 complete; 10 (SGLang vs vLLM) in progress. Reviews pending.
 **Pin:** SGLang `v0.5.22`, commit `baa9befa381511cd4d56f83980951e5a45fffc6d`, released 2026-10-19 (register 00). Accessed date 2026-10-24 on every citation.
 **Sibling dive:** vLLM (pinned to v0.31.0). The reader knows it. Shared fundamentals (the inference workload, continuous batching, paged KV memory, the parallelism vocabulary) are defined there and linked, never repeated here.
 
@@ -190,18 +190,21 @@ Diagram: the module map on tab 1 (directories sized by role, with the request pa
 
 **22. SGLang on AWS: choosing the deployment path**
 Depth: practical
-Payoff: Pick SageMaker, HyperPod, EKS or EC2 for an SGLang workload, and know what each path supplies.
-Content from register 09 A, B, F, G (pending): SageMaker routes and env handling, DLC availability, HyperPod inference support, EKS guidance and the LWS pattern, Bedrock scope. Diagram: deployment-path decision tree.
+Payoff: Pick SageMaker, HyperPod, EKS or EC2 for an SGLang workload, know what each path supplies, and avoid the three SageMaker launch failures.
+
+Opens with the decision tree: Bedrock gives no engine choice (09 G1); SageMaker AI gives a managed endpoint SGLang already speaks; HyperPod and EKS give Kubernetes control; EC2 gives everything. The model: SGLang already speaks SageMaker, and what varies is the entrypoint. Every SGLang server registers `GET /ping` and `POST /invocations`; the images differ in how they turn environment variables into flags (09 A1, A9, A10). AWS publishes SGLang Deep Learning Containers in two lines: an Ubuntu line built from `lmsysorg/sglang:v0.5.22` that adds the EFA installer and the SageMaker entrypoint and tracks upstream within about a day, and an Amazon Linux 2023 "server" line that carries DeepEP V2 over EFA but runs SGLang 0.5.19, amd64 only (09 A13, A14, C9, C10, D6). The SageMaker specifics as how to get it right: `/ping` is a static 200 that exists only after the model loads and is not exempt from the API key, so do not set `--api-key` on SageMaker (09 A3 to A5); SGLang's own `docker/serve` script turns `SM_SGLANG_X=true` into `--x true`, which the parser rejects, while the AWS image handles booleans (09 A10); `/metrics` needs `--enable-metrics` (`SM_SGLANG_ENABLE_METRICS=true` on the AWS DLC), which no SageMaker entrypoint adds (09 A17); use the documented `gpu-4-1` AMI (09 A12). HyperPod: the inference operator lists SGLang as a runtime and the Inference Gateway accepts `engineType: sglang`, while HyperPod's native disaggregated prefill/decode is vLLM only (09 A19 to A21, F1, F2). EKS: SGLang named in the real-time inference overview, `/dev/shm` sizing, probes on `/health`, the EFA device plugin and hugepages, LWS for multi-node (09 B1 to B11; 06 F2). Trainium and Inferentia: no support in the v0.5.22 tree, listed as in progress, upstream work after v0.5.22 uses an unpublished out-of-tree Neuron plugin; the practical path on Trainium today is the vLLM dive's "21. vLLM on AWS Neuron" (09 E1 to E5). AWS-authored SGLang content as dated Tier 2 items (09 F1 to F12). Ends on the reader's next action: pick the image line for the instance family. Diagram: the deployment-path decision tree.
 
 **23. EC2 Instances and GPU-Dependent Behaviour**
 Depth: practical
-Payoff: Map an EC2 instance family to the SGLang defaults, backends and features it unlocks.
-Content from register 09 C plus 01 D, 03 A, 02 B13 (pending). Trainium status block from 09 E. Diagram: an instance map (family, GPU, memory, EFA bandwidth, default backend and page size).
+Payoff: Map an EC2 instance family to the SGLang defaults, backends and features it changes, before you move a deployment between families.
+
+Opens with the model: the GPU generation sets SGLang's defaults, and the EC2 family name is a proxy for compute capability and memory (09 C3). The instance map: P4d/P4de, P5, P5e, P5en, P6-B200, P6-B300, P6e-GB200, P6e-GB300, G6e and others with GPU, memory, count and EFA bandwidth (09 C1, C2). The strongest fact, landed twice: moving a Llama-style model from P5 to P6 changes attention from `fa3` to `trtllm_mha` and KV pages from 1 token to 64, with no flag change (09 C4, C5; 03 A4, B13). Memory tiers and chunk and graph sizes (09 C6; 01 C20). FP8 and FP4 by family: SM80/SM86 run FP8 weight-only (09 C7; 03 D6). Images: upstream release images are CUDA 13 for amd64 and arm64, the AWS DLC is amd64 only, so Grace hosts (P6e) need the upstream image (09 C8, C9). No EC2 instance offers an AMD Instinct GPU on the spec page read (09 C11). Ends on a pre-migration checklist. Diagram: the instance map (family, GPU, compute capability, memory, default backend and page size).
 
 **24. PD and Wide EP over EFA**
-Depth: practical
-Payoff: Bring up KV transfer and all-to-all over EFA in the right order, with the checks that prove each layer works.
-Content from 05 D and 09 D (pending): Mooncake over EFA (`MOONCAKE_PROTOCOL=efa`, the x86_64 EFA wheel, CUDA VMM allocators rejected, images not EFA-ready), NIXL over libfabric, the EP all-to-all question on EFA, placement groups and Capacity Blocks. Cross-links to the EFA dive. Ends on the bring-up order: EFA installer, `fi_info -p efa -t FI_EP_RDM`, EFA wheel and `engine.SUPPORT_EFA`, then `MOONCAKE_PROTOCOL=efa` on both roles (05 D1 to D11). Diagram: the EFA bring-up stack with one check per layer.
+Depth: mechanism plus practical
+Payoff: Bring up KV transfer and expert all-to-all over EFA as two separate stacks, with the check that proves each layer.
+
+Opens with the model: on EFA, moving KV between prefill and decode and the MoE all-to-all are two problems with two libraries. KV moves through libfabric, either Mooncake's EFA wheel with `MOONCAKE_PROTOCOL=efa` or NIXL with `SGLANG_DISAGGREGATION_NIXL_BACKEND=LIBFABRIC`; expert all-to-all moves through NCCL GIN and aws-ofi-nccl (DeepEP V2 from AWS's fork) or NVSHMEM's libfabric transport (09 D1 to D12; 05 D1 to D10). NIXL reaches EFA for KV and not for EP, so an image can be ready for PD over EFA and still unable to run wide EP over EFA (09 D12). Mooncake over EFA: the x86_64 EFA wheel, CUDA VMM allocators rejected, no Mooncake EP, upstream images not EFA-ready (05 D1 to D5, D11). DeepEP V2 over EFA needs AWS's DeepEP fork and NCCL 2.31.2 or later while the upstream image ships 2.30.7, the strongest number (09 D6 to D10). GPU-initiated EFA (EFA-GDA) works on P5en, P6-B200 and P6-B300 only, with `NCCL_GIN_TYPE=5`; P5 and P5e fall back to a CPU proxy (09 D7). UCCL-EP as a third route under the `deepep` backend (09 D14). NCCL falls back to TCP sockets silently when the OFI plugin is not found, so check the NCCL init log (09 D16). EFA installer versions that matter (09 D17). Placement groups, the EC2 topology API and Capacity Blocks for PD pairs, linked to the EFA and vLLM dives (09 D18). AWS benchmark claims in an ExpandableSection with conditions (09 D15, F3). Ends on two bring-up orders, one per stack, each with its check: `fi_info -p efa -t FI_EP_RDM`, `engine.SUPPORT_EFA`, then `MOONCAKE_PROTOCOL=efa` on both roles; NCCL version, `NCCL_NET_PLUGIN=ofi`, `NCCL_GIN_TYPE=5`. Diagram: the two EFA stacks side by side, KV transfer and expert all-to-all, with one check per layer.
 
 ### Layer G. Compare, operate, decide
 
@@ -257,8 +260,8 @@ Acronym glossary and the tier-grouped sources appendix (generated sources.md mir
 | 20 | Deployment topology | Gateway, pools, bootstrap and KV edges |
 | 21 | Module map | Request path through the source tree |
 | 22 | AWS path tree | SageMaker / HyperPod / EKS / EC2 |
-| 23 | Instance map | Family to GPU to default backend and page size |
-| 24 | EFA bring-up stack | One check per layer |
+| 23 | Instance map | Family to GPU to compute capability to default backend and page size |
+| 24 | Two EFA stacks | KV transfer and expert all-to-all use different libraries; one check per layer |
 | 25 | Side-by-side request path | Where the two engines split the same work |
 | 26 | Ecosystem map | Runtime, sgl-project projects, third-party integrations |
 | 28 | Decision tree | Workload to recommendation |
