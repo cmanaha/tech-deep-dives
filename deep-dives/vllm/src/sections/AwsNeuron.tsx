@@ -352,7 +352,7 @@ export function AwsNeuron() {
             <Cite tier={1} href={`${VN_README}#L135`} accessed={NEURON_ACCESSED}>
               vllm-neuron README L135
             </Cite>
-            . The 0.5.x line hands the model to NxD Inference, which Neuron 2.32.0 put &quot;in maintenance mode; no new feature releases are planned. Migrate
+            . The 0.5.x line hands the model to NxD Inference, which is &quot;in maintenance mode; no new feature releases are planned. Migrate
             to vLLM Neuron&quot;{' '}
             <Cite tier={1} href={NEURON_WHATS_NEW} accessed={NEURON_ACCESSED}>
               Neuron docs: What&apos;s New, 2.32.0 software lifecycle updates
@@ -407,7 +407,8 @@ export function AwsNeuron() {
             Both lines keep vLLM on top and the Neuron runtime at the bottom. They differ in the
             middle. On the 1.x line the plugin carries the model code and the NKI (Neuron Kernel
             Interface) kernels, and a compile package it installs turns each model graph into
-            Trainium programs through TorchNeuron&apos;s lowering, with XLA (Accelerated Linear
+            NEFFs (Neuron Executable File Format), the programs Trainium runs, through
+            TorchNeuron&apos;s lowering, with XLA (Accelerated Linear
             Algebra) as a deprecated second route. On the 0.5.x line the plugin is a worker over NxD Inference, which owns
             the model.
           </Box>
@@ -462,8 +463,8 @@ export function AwsNeuron() {
           <Box variant="p">
             <strong>How it compiles.</strong> vLLM captures each model graph with TorchDynamo. On the
             native route, the default, the graph is lowered through AOTAutograd and torch-mlir to
-            StableHLO, the form <code>neuronx-cc</code> compiles into one NEFF (Neuron Executable File
-            Format) per shape bucket{' '}
+            StableHLO, the form <code>neuronx-cc</code> compiles into one NEFF per shape
+            bucket{' '}
             <Cite tier={1} href={NEURON_VLLM_TORCHNEURON} accessed={NEURON_ACCESSED}>
               Neuron docs: How vLLM is integrated with TorchNeuron
             </Cite>
@@ -541,11 +542,14 @@ export function AwsNeuron() {
               Neuron docs: How to use the Precompile Cache
             </Cite>{' '}
             <Cite tier={1} href={LITE_WHEEL} kind="code" accessed={NEURON_ACCESSED}>
-              libtorch-neuronx-lite wheel, __init__.py L83-L104
+              libtorch-neuronx-lite wheel, __init__.py L83-L104, L162-L180
             </Cite>
-            . Keep <code>VLLM_CACHE_ROOT</code> on storage that survives a restart: the precompile
-            cache reads from it, and the NEFF cache sits under it unless{' '}
-            <code>NEURON_LIBTORCH_CACHE_ROOT</code> is set. <code>TORCH_NEURONX_NEFF_CACHE_DIR</code>{' '}
+            . On a multi-node or encoder-disaggregated (EPD) deployment the Precompile Cache guide asks
+            for the cache off, with <code>TORCH_CACHING_PRECOMPILE=0</code>. Set <code>VLLM_CACHE_ROOT</code>{' '}
+            explicitly, to storage that survives a restart: the precompile cache reads from it, and the
+            NEFF cache sits under it only when the variable is set in the environment (unset, the NEFFs
+            go to <code>~/.cache/neuron_libtorch</code>; <code>NEURON_LIBTORCH_CACHE_ROOT</code>, when
+            set, takes precedence). <code>TORCH_NEURONX_NEFF_CACHE_DIR</code>{' '}
             moves the NEFFs on their own, for example to a file system that later nodes share{' '}
             <Cite tier={1} href={LITE_WHEEL} kind="code" accessed={NEURON_ACCESSED}>
               libtorch-neuronx-lite wheel, envs.py L80-L138
@@ -648,8 +652,9 @@ export function AwsNeuron() {
                   Neuron docs: What&apos;s New, release dates
                 </Cite>
                 : re-read the version table and rerun your benchmark at each one. The 0.29.0.1.2.0
-                release notes claim GPT-OSS-120B throughput up to about 2.5x that of the Neuron 2.32
-                release on Trn3, measured at batch size 128, with the gain varying by batch size{' '}
+                release notes claim GPT-OSS-120B system-level and per-user throughput up to about 2.5x
+                that of the Neuron 2.32 release on Trn3 with MXFP4 weights and a packed FP8 KV cache,
+                measured at batch size 128; the gain varies by batch size{' '}
                 <Cite tier={1} href={VN_REL_029} accessed={NEURON_ACCESSED}>
                   vllm-neuron v0.29.0.1.2.0 release notes
                 </Cite>
@@ -1080,10 +1085,10 @@ export function AwsNeuron() {
           <Box variant="p">
             <strong>Next step.</strong> Find your model in the README&apos;s tested list at the
             plugin tag, check every feature against the matrix above, and read each vLLM flag you
-            depend on against 0.29.0. If all three pass, start from the Neuron 2.33.0 DLC or DLAMI,
-            which ships vllm-neuron 0.29.0.1.2.0, set <code>VLLM_NEURON_BACKEND=neuron_native</code>,
-            and keep <code>VLLM_CACHE_ROOT</code> on persistent storage so every boot after the first
-            reuses the traced graphs and the compiled NEFFs.
+            depend on against 0.29.0. If all three pass, start from the Neuron 2.33.0 vLLM DLC or vLLM
+            DLAMI, which ships vllm-neuron 0.29.0.1.2.0, set <code>VLLM_NEURON_BACKEND=neuron_native</code>,
+            and set <code>VLLM_CACHE_ROOT</code> to a directory on persistent storage so a restart on the
+            same configuration and versions reuses the traced graphs and the compiled NEFFs.
           </Box>
         </SpaceBetween>
       </Container>
