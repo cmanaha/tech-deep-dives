@@ -1,6 +1,6 @@
 # Sources: RL and Agentic Learning Loops
 
-Every source used in research wave 1, grouped by tier. Accessed 2026-10-16 or 2026-10-17 as stated on each entry.
+Every source used in research wave 1, grouped by tier. Accessed 2026-10-16, 2026-10-17 or 2026-10-24 as stated on each entry.
 Generated from the tiered source lists at the end of each claim register in `research/2026-10/`; the register named in brackets holds the claims each source supports, with verbatim quotes and locations.
 Code citations are pinned to a release tag or a 40-character commit SHA. Papers are pinned by arXiv ID with version. Vendor performance figures are vendor claims.
 
@@ -45,11 +45,14 @@ Code citations are pinned to a release tag or a 40-character commit SHA. Papers 
 - Amazon Bedrock pricing; Amazon Nova pricing (F06-16) (accessed 2026-10-17) Base: https://aws.amazon.com/bedrock/pricing/ (exact pages in the cited entries). (register 06)
 - `huggingface/optimum-neuron` tag v0.4.5, `abf5985828e56167ab2e48c4d5e14a83e40b6370` (F06-48) (accessed 2026-10-17) Base: https://github.com/huggingface/optimum-neuron/tree/abf5985828e56167ab2e48c4d5e14a83e40b6370 (exact pages in the cited entries). (register 06)
 - `aws-neuron/aws-neuron-sdk` tag v2.33.0, `10832bbcc6b6920b3046a7d7aa59b6b684f6b81a`: documentation source tree, searched in F06-44 (accessed 2026-10-24) Base: https://github.com/aws-neuron/aws-neuron-sdk/tree/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a (register 06)
-- Neuron documentation at v2.33.0: what-is-neuron, TorchNeuron about page and release notes, vLLM Neuron release notes and integration page, native PyTorch inference, TorchTitan Neuron (F06-44, F06-47, F06-62, F06-63) (accessed 2026-10-24) Base: https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/ (exact pages in the cited entries). (register 06)
+- Neuron documentation at v2.33.0: what-is-neuron, TorchNeuron about page and release notes, vLLM Neuron release notes and integration page, native PyTorch inference, TorchTitan Neuron release notes and about page, release notes index, NxDT and NxD Core training end-of-support announcement (F06-47, F06-48, F06-62, F06-63, U18) (accessed 2026-10-24) Base: https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/ (exact pages in the cited entries). (register 06)
 - huggingface/trl `v1.16.0` (`1b5c75ed94b7387f42532adb090c935166d4878d`): `docs/source/aws_trainium.md`, `trl/trainer/grpo_config.py` (F06-61) Base: https://github.com/huggingface/trl/blob/1b5c75ed94b7387f42532adb090c935166d4878d/docs/source/aws_trainium.md; rendered at https://huggingface.co/docs/trl/v1.16.0/en/aws_trainium (accessed 2026-10-24) (register 06)
 - `vllm-project/vllm-neuron` tag v0.29.0.1.2.0, `eb6cb360f7cff6082e22a9437d8ce0ba3891304a`: `requirements/core.txt`, `vllm_neuron/vllm/model_runner_v2_policy.py` (F06-62) (accessed 2026-10-24) Base: https://github.com/vllm-project/vllm-neuron/tree/eb6cb360f7cff6082e22a9437d8ce0ba3891304a (register 06)
 - `aws-neuron/torchtitan-neuron` tag release-2.33.0, `b7582e986586051d7be85d03956afe169624aeda`: `torchtitan/experiments/rl/`, `torchtitan_neuron/` (F06-63) (accessed 2026-10-24) Base: https://github.com/aws-neuron/torchtitan-neuron/tree/b7582e986586051d7be85d03956afe169624aeda (register 06)
 - `aws-neuron/torch-neuronx` tag v2.33.0, `b1b6c66a2be28bce3bed6ef20632f0d3164119ef`: repository text search, `examples/` (F06-65) (accessed 2026-10-24) Base: https://github.com/aws-neuron/torch-neuronx/tree/b1b6c66a2be28bce3bed6ef20632f0d3164119ef (register 06)
+- `vllm-project/vllm` tag v0.29.0, `98dff2a81d747d1dba01a47f939f48c3526d4206`: `requirements/cuda.txt` (F06-62) (accessed 2026-10-24) Base: https://github.com/vllm-project/vllm/blob/98dff2a81d747d1dba01a47f939f48c3526d4206/requirements/cuda.txt (register 06)
+- `libtorch-neuronx-lite` 2.13.0.1.0.3112 wheel from the Neuron pip index, a published artifact rather than a git tag, sha256 `05b984920136399a14c022fd99a1e545c459d7e17508201da5260d6f31b735bc`: `*.dist-info/METADATA` (F06-62) (accessed 2026-10-24) Base: https://pip.repos.neuron.amazonaws.com/libtorch-neuronx-lite/ (register 06)
+- TRL issue tracker, status record only: https://github.com/huggingface/trl/issues/7660 (F06-61) (accessed 2026-10-24) (register 06)
 - `verl-project/verl` tag v0.9.1, `1876b06d0a3e4e71e06230be10af14492ca8a75b`: `verl/plugin/platform/platform_manager.py`, `verl/utils/ray_utils.py` (F06-65) (accessed 2026-10-24) Base: https://github.com/verl-project/verl/tree/1876b06d0a3e4e71e06230be10af14492ca8a75b (register 06)
 
 ## Tier 2: first-party lab and vendor posts and talks, including authors on their own methods
@@ -57,6 +60,7 @@ Code citations are pinned to a release tag or a 40-character commit SHA. Papers 
 - AWS, "Introducing TorchNeuron: Native PyTorch backend for AWS Trainium", PyTorch blog, 2026-10-19, https://pytorch.org/blog/introducing-torchneuron-native-pytorch-backend-for-aws-trainium/. Accessed 2026-10-24. Vendor statement that TRL supports Trainium upstream (F06-60). (register 06)
 - Hugging Face, "TorchNeuron: running HF models on AWS Trainium is easier than ever", 2026-10-19, https://huggingface.co/blog/hf-torchneuron. Accessed 2026-10-24. Library vendor on its own libraries (F06-48). (register 06)
 - Anthropic, "Anthropic and Amazon expand collaboration for up to 5 gigawatts of new compute", 2026-04-20, https://www.anthropic.com/news/anthropic-amazon-compute. Accessed 2026-10-24. "train and serve Claude" on Trainium2 (F06-64). (register 06)
+- AWS, Trainium customers page, https://aws.amazon.com/ai/machine-learning/trainium/customers/. Accessed 2026-10-24. Customer quote from Anthropic on Trainium2 (F06-64). (register 06)
 - Schulman, "Approximating KL Divergence", 2020-03-07, http://joschu.net/blog/kl-approx.html. Accessed 2026-10-16. Author's own post; definitions of the k1, k2, k3 estimators. (register 01)
 - Together AI and Agentica, "DeepSWE" (2025-07-02): https://www.together.ai/blog/deepswe Accessed 2026-10-16. (register 02)
 - Thinking Machines, "LoRA Without Regret" (2025-09-29): https://thinkingmachines.ai/blog/lora/ Accessed 2026-10-16. (register 02)
