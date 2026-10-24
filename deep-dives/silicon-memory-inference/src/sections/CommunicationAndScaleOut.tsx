@@ -352,7 +352,13 @@ export function CommunicationAndScaleOut() {
             Call <code>nki.collectives.all_to_all_v</code> (Neuron 2.29.0 and later); the Neuron
             Runtime adds AllToAllV on Trn2 and Trn3 from 2.32.0, and the NKI Library&apos;s MoE
             kernels shipped in 2.28.0.
-            <Cite s={S.neuronWhatsNew} /> <code>torch.all_to_all_vdev_2d</code> is a PyTorch op
+            <Cite s={S.neuronWhatsNew} /> NVIDIA&apos;s Wide-EP (wide expert parallelism) runs
+            over GB200 multi-node NVLink
+            <Cite s={S.wideEpReadme} />; on Neuron, Wide-EP is a beta in vLLM Neuron
+            <Cite s={S.neuronWhatsNew} />, and NxD Inference (NeuronX Distributed Inference),
+            which ends on Trn2 and Trn3 in Neuron 2.34
+            <Cite s={S.eosNxdInference} />, documents expert parallelism over All-Gather.
+            <Cite s={S.nxdiMoe} /> <code>torch.all_to_all_vdev_2d</code> is a PyTorch op
             built on NVIDIA&apos;s NVSHMEM
             <Cite s={S.pytorchNvshmem} />, and the torch-neuronx source at v2.33.0 has no
             implementation of it.
@@ -366,13 +372,7 @@ export function CommunicationAndScaleOut() {
             <code>init_process_group(backend=&quot;neuron&quot;)</code>, which runs collectives,{' '}
             <code>all_to_all</code> among them, on the collective cores inside a node and over EFA
             between nodes.
-            <Cite s={S.torchNeuronNotes} /> NVIDIA&apos;s Wide-EP (wide expert parallelism) runs
-            over GB200 multi-node NVLink
-            <Cite s={S.wideEpReadme} />; on Neuron, Wide-EP is a beta in vLLM Neuron
-            <Cite s={S.neuronWhatsNew} />, and NxD Inference (NeuronX Distributed Inference),
-            which ends on Trn2 and Trn3 in Neuron 2.34
-            <Cite s={S.eosNxdInference} />, documents expert parallelism over All-Gather.
-            <Cite s={S.nxdiMoe} />
+            <Cite s={S.torchNeuronNotes} />
           </Alert>
         </SpaceBetween>
       </Container>

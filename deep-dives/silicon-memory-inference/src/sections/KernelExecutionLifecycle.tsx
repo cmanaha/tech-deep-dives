@@ -165,7 +165,8 @@ const lanes: LaneRow[] = [
     silicon: 'AWS Trainium2',
     host: (
       <>
-        TorchNeuron lowers each eager operator, or each torch.compile graph, to StableHLO;
+        TorchNeuron, the native PyTorch backend for Trainium, lowers each eager operator, or
+        each torch.compile graph, to StableHLO;
         neuronx-cc compiles it into a NEFF on first use, which the Neuron Runtime loads.
         <Cite s={S.torchNeuron233} />
         <Cite s={S.neuronCompiler} />

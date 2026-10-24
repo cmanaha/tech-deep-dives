@@ -309,13 +309,12 @@ export function AwsCustomSilicon() {
             beta.
             <Cite s={S.neuronWhatsNew} /> PyTorch code on TorchNeuron can call{' '}
             <code>torch._grouped_mm</code> and MoE dispatch and combine on the{' '}
-            <code>neuron</code> device
-            <Cite s={S.torchNeuron233} />, but a grouped GEMM always forces a torch.compile graph
-            break
-            <Cite s={S.torchCompileRef} />, which is an error under the{' '}
-            <code>fullgraph=True</code> that TorchTitan compiles with, so on TorchTitan Neuron keep
-            the expert computation out of the compiled region; its expert-parallel dispatch runs
-            on an NKI all-to-all-v collective.
+            <code>neuron</code> device.
+            <Cite s={S.torchNeuron233} /> On TorchTitan Neuron, keep the expert computation out of
+            the compiled region, because a grouped GEMM always forces a torch.compile graph break
+            <Cite s={S.torchCompileRef} />, an error under the <code>fullgraph=True</code> that
+            TorchTitan compiles with; its expert-parallel dispatch runs on an NKI all-to-all-v
+            collective.
             <Cite s={S.torchtitanNeuron} /> PyTorch&apos;s <code>torch.all_to_all_vdev_2d</code>{' '}
             has no Neuron implementation in the torch-neuronx source at v2.33.0.
             <Cite
@@ -367,7 +366,8 @@ export function AwsCustomSilicon() {
               <Box variant="h3">Trn1 and Inf2</Box>
               <Box variant="p">
                 Both remain on EC2.
-                <Cite s={S.ec2AcceleratedSpecs} /> PyTorch on them stays on the deprecated
+                <Cite s={S.ec2AcceleratedSpecs} /> This research found no announced Inferentia
+                successor. PyTorch on them stays on the deprecated
                 XLA-based torch-neuronx 2.9 build, 2.9.0.2.15.32035 in Neuron 2.33.0
                 <Cite s={S.pytorchNeuronxNotes233} />; TorchNeuron supports Trn2 and Trn3.
                 <Cite s={S.torchNeuron233} /> For serving them with NxD Inference (NeuronX
@@ -377,7 +377,6 @@ export function AwsCustomSilicon() {
                 maintenance mode at Neuron SDK 2.31, with critical fixes and security patches only,
                 and names vLLM Neuron as the serving path on Trn2 and Trn3.
                 <Cite s={S.eosNxdInference} /> Confirm the release with AWS before pinning one.
-                This research found no announced Inferentia successor.
               </Box>
             </div>
           </ColumnLayout>

@@ -175,7 +175,9 @@ export function AwsCompilersAndTooling() {
             <Cite s={S.whatIsNeuron233} /> So does PyTorch 2.9, through the deprecated XLA build of
             torch-neuronx, which runs on Trn1, Inf2, Trn2 and Trn3 and is the only PyTorch path on
             Trn1 and Inf2.
-            <Cite s={S.pytorchXlaNotes233} /> Both front ends end the same way: neuronx-cc compiles
+            <Cite s={S.pytorchXlaNotes233} /> Its inference support on Trn2 and Trn3 ends in Neuron
+            2.34.
+            <Cite s={S.whatsNew233} /> Both front ends end the same way: neuronx-cc compiles
             the graph into a NEFF (Neuron Executable File Format), and the Neuron Runtime loads the
             NEFF and runs it.
             <Cite s={S.neuronCompiler} />
@@ -261,28 +263,29 @@ export function AwsCompilersAndTooling() {
             <Cite s={S.torchNeuron233} />
             <Cite s={S.whatsNew233} />
             <Cite s={S.tnxDeviceRegistration} /> Installing the package is enough:{' '}
-            <code>import torch</code> loads it through the <code>torch.backends</code> entry point
-            the package registers.
+            <code>import torch</code> loads it through the package&apos;s <code>torch.backends</code>{' '}
+            entry point.
             <Cite s={S.torchIndex233} />
             <Cite s={S.tnxEntryPoints} />
           </Box>
           <TorchNeuronStackDiagram />
           <Box variant="small" color="text-body-secondary">
             Schematic, not measured. Solid blue: the two TorchNeuron paths. Dashed green: NKI
-            kernels entering both as custom ops. Dashed grey: the XLA path. The -O1 and -O2
-            compiler levels are the ones the torch-neuronx source sets at tag v2.33.0, cited below.
+            kernels entering both as custom ops. Dashed grey: the XLA path. The torch-neuronx source
+            at tag v2.33.0 sets the -O1 and -O2 levels, cited below.
           </Box>
           <Box variant="p">
             <strong>Eager mode compiles one NEFF per operator.</strong> Each ATen operator is lowered
             to StableHLO, compiled by neuronx-cc into its own NEFF on first use, and enqueued for
             asynchronous execution.
-            <Cite s={S.torchNeuron233} /> In the source, these per-operator compiles run at{' '}
-            <code>-O1</code>, the level the compiler reference describes as minimizing compile time
+            <Cite s={S.torchNeuron233} /> These per-operator compiles run at <code>-O1</code>, the
+            level the compiler reference describes as minimizing compile time
             <Cite s={S.tnxEagerOptLevel} />
             <Cite s={S.compilerCli} />, and the dispatcher caches each result under the
             operator&apos;s shapes, dtypes and strides, so a repeat call with the same signature
             skips Python and the compiler.
-            <Cite s={S.tnxDispatchCacheKey} /> A new shape means a new compile. Because every
+            <Cite s={S.tnxDispatchCacheKey} /> A new shape means a new compile.
+            <Cite s={S.torchNeuron233} /> Because every
             operator is its own NEFF, intermediates travel through HBM (High Bandwidth Memory)
             between operators.
             <Cite s={S.pytorchBlog} /> Operation concatenation, which fuses eligible queued eager
@@ -299,8 +302,8 @@ export function AwsCompilersAndTooling() {
             them to StableHLO, and neuronx-cc compiles each graph into a single NEFF; TorchInductor
             plays no part.
             <Cite s={S.torchNeuron233} />
-            <Cite s={S.tnxAotAutograd} /> In the source, graph compiles run at <code>-O2</code>,
-            the compiler&apos;s default level, with{' '}
+            <Cite s={S.tnxAotAutograd} /> Graph compiles run at <code>-O2</code>, the
+            compiler&apos;s default level, with{' '}
             <code>--model-type transformer --auto-cast=none</code>.
             <Cite s={S.tnxGraphCompileFlags} />
             <Cite s={S.compilerCli} /> The graph is what gives neuronx-cc room to optimize: a graph
@@ -308,11 +311,10 @@ export function AwsCompilersAndTooling() {
             <Cite s={S.torchNeuron233} />
           </Box>
           <Box variant="p">
-            <strong>NKI kernels enter both paths as custom ops.</strong> Call a plain{' '}
-            <code>@nki.jit</code> kernel on <code>neuron</code> tensors directly, or register it with{' '}
-            <code>torch_neuronx.nki_op</code>, which creates a named <code>torch.library</code>{' '}
-            custom op; reach for <code>nki_op</code> only when you need autograd or a named
-            operator.
+            <strong>NKI kernels enter both paths as custom ops.</strong> A plain{' '}
+            <code>@nki.jit</code> kernel can be called on <code>neuron</code> tensors directly, and{' '}
+            <code>torch_neuronx.nki_op</code> registers one as a named <code>torch.library</code>{' '}
+            custom op.
             <Cite s={S.torchNeuronNotes} />
             <Cite s={S.torchBestPractices} />
             <Cite s={S.tnxNkiCustomOp} />
@@ -338,6 +340,20 @@ export function AwsCompilersAndTooling() {
             <Cite s={S.torchIndex233} />
             <Cite s={S.torchNeuron233} />
           </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Pin torch-neuronx to your PyTorch version, change the device, find the operators that fell back to the CPU, then compile with static shapes and full graphs inside the 2.33.0 support boundary"
+          >
+            Getting a PyTorch model onto neuron and through torch.compile
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
           <Box variant="p">
             <strong>One package name, two products.</strong> <code>torch-neuronx</code> 2.13 and 2.14
             are TorchNeuron: 2.13.3.0 for PyTorch 2.13 and 2.14.3.0 for PyTorch 2.14, on Python 3.12
@@ -354,20 +370,6 @@ export function AwsCompilersAndTooling() {
             refuses them, so the package itself will not stop a run outside the list.
             <Cite s={S.tnxPlatforms} />
           </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Change the device string, find the operators that fell back to the CPU, then compile with static shapes and full graphs inside the 2.33.0 support boundary"
-          >
-            Getting a PyTorch model onto neuron and through torch.compile
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
           <Box variant="p">
             <strong>Port by changing the device.</strong> Change <code>.to(&apos;cuda&apos;)</code>{' '}
             to <code>.to(&apos;neuron&apos;)</code>; code written against{' '}
@@ -384,21 +386,25 @@ export function AwsCompilersAndTooling() {
             operator that has no Neuron lowering on the CPU, so the model still runs, at a cost in
             performance.
             <Cite s={S.torchNeuronNotes} />
-            <Cite s={S.torchBestPractices} /> AWS&apos;s pages disagree on whether you are told: the
-            TorchNeuron overview says the fallback emits a warning, and the best-practices page
-            says it is silent.
-            <Cite s={S.torchNeuron233} />
-            <Cite s={S.torchBestPractices} /> The code sides with silence: the logger drops the
-            fallback line for an operator with no Neuron implementation, and the one warning it
-            prints comes from an implemented operator whose lowering raised an error.
-            <Cite s={S.tnxFallbackLogDropped} />
-            <Cite s={S.tnxLoweringFailWarn} /> Read <code>torch_neuronx.get_fallback_ops()</code>{' '}
+            <Cite s={S.torchBestPractices} /> Read <code>torch_neuronx.get_fallback_ops()</code>{' '}
             after a run instead of the log.{' '}
             <code>TORCH_NEURONX_FALLBACK_ONLY_FOR_UNIMPLEMENTED_OPS=1</code> turns a failed lowering
             into an error, and only operators with no Neuron implementation still fall back.
             <Cite s={S.torchBestPractices} />
             <Cite s={S.tnxFallbackOnlyUnimplemented} />
           </Box>
+          <ExpandableSection headerText="Why the log is not the check">
+            <Box variant="p">
+              AWS&apos;s pages disagree on whether you are told: the TorchNeuron overview says the
+              fallback emits a warning, and the best-practices page says it is silent.
+              <Cite s={S.torchNeuron233} />
+              <Cite s={S.torchBestPractices} /> The code sides with silence: the logger drops the
+              fallback line for an operator with no Neuron implementation, and the one warning it
+              prints comes from an implemented operator whose lowering raised an error.
+              <Cite s={S.tnxFallbackLogDropped} />
+              <Cite s={S.tnxLoweringFailWarn} />
+            </Box>
+          </ExpandableSection>
           <Box variant="code">
             <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{eagerThenCompile}</pre>
           </Box>
@@ -473,8 +479,8 @@ export function AwsCompilersAndTooling() {
             torch-neuronx source <code>float8_e4m3fn</code> and <code>float8_e8m0fnu</code> report
             as unsupported on Trn2.
             <Cite s={S.torchNeuron233} />
-            <Cite s={S.tnxFp8Trn2} /> AWS also excludes forward-mode automatic differentiation from
-            the first release.
+            <Cite s={S.tnxFp8Trn2} /> The first release also excludes forward-mode automatic
+            differentiation.
             <Cite s={S.pytorchBlog} />
           </Box>
           <ExpandableSection headerText="How mature the beta is: published coverage and speed figures, and who produced them">
@@ -607,8 +613,11 @@ export TORCH_NEURONX_NEFF_CACHE_DIR="/fsx/neff_cache"`}</pre>
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Serving.</strong> vLLM Neuron, in beta since July 2026, implements models inside
-            the vLLM plugin with no dependency on NxD Inference, and runs on Trn2 and Trn3.
+            <strong>Serving.</strong> NxD Inference, the NxD Core inference APIs and PyTorch/XLA
+            inference end support on Trn2 and Trn3 in Neuron 2.34: migrate inference to vLLM
+            Neuron, and model build and trace code to torch.compile with TorchNeuron.
+            <Cite s={S.whatsNew233} /> vLLM Neuron, in beta since July 2026, implements models
+            inside the vLLM plugin with no dependency on NxD Inference, and runs on Trn2 and Trn3.
             <Cite s={S.neuronWhatsNew} /> Release 0.29.0.1.2.0 makes native PyTorch torch.compile
             its default compilation path
             <Cite s={S.vllmNeuronNotes233} />, through its own package, libtorch-neuronx-lite,
@@ -620,20 +629,17 @@ export TORCH_NEURONX_NEFF_CACHE_DIR="/fsx/neff_cache"`}</pre>
             device in a process: with both installed, set{' '}
             <code>TORCH_DEVICE_BACKEND_AUTOLOAD=0</code> in the environment before the server
             starts, or it stops at startup with a PrivateUse1 registration error.
-            <Cite s={S.vllmTorchNeuronDesign} /> NxD Inference, the NxD Core inference APIs and
-            PyTorch/XLA inference end support on Trn2 and Trn3 in Neuron 2.34: migrate inference to
-            vLLM Neuron, and model build and trace code to torch.compile with TorchNeuron.
-            <Cite s={S.whatsNew233} /> Pin vLLM Neuron by release tag.
+            <Cite s={S.vllmTorchNeuronDesign} /> Pin vLLM Neuron by release tag.
             <Cite s={S.vllmNeuronRepo} />
           </Box>
           <Box variant="p">
-            <strong>Training.</strong> PyTorch/XLA is no longer supported for training on Trainium
-            from Neuron 2.30
+            <strong>Training.</strong> On Trn2 and Trn3, train on TorchNeuron, with FSDP2 and
+            DTensor as above.
+            <Cite s={S.torchNeuronNotes} /> PyTorch/XLA is no longer supported for training on
+            Trainium from Neuron 2.30
             <Cite s={S.noXlaTraining} />, and NeuronX Distributed Training and the NxD Core
             training APIs are in maintenance mode, with security fixes only.
-            <Cite s={S.neuronWhatsNew} /> On Trn2 and Trn3, train on TorchNeuron, with FSDP2 and
-            DTensor as above.
-            <Cite s={S.torchNeuronNotes} /> TorchTitan runs through TorchTitan Neuron 0.2.2+neuron.1
+            <Cite s={S.neuronWhatsNew} /> TorchTitan runs through TorchTitan Neuron 0.2.2+neuron.1
             (beta), the aws-neuron/torchtitan-neuron fork of pytorch/torchtitan: it keeps
             TorchTitan&apos;s model definitions, parallelism strategies and torch.compile
             integration without changes to your model code
@@ -658,7 +664,7 @@ export TORCH_NEURONX_NEFF_CACHE_DIR="/fsx/neff_cache"`}</pre>
         header={
           <Header
             variant="h2"
-            description="The NEFF fixes the instruction order while the timing still varies; torch.profiler and three tools show where the time goes, from device inventory to a per-engine timeline"
+            description="When utilization is lower than you expect, three tools and torch.profiler show where the time went, from device inventory to a per-engine timeline"
           >
             Profiling: neuron-ls, neuron-top and Neuron Explorer
           </Header>
@@ -773,8 +779,8 @@ export TORCH_NEURONX_NEFF_CACHE_DIR="/fsx/neff_cache"`}</pre>
               <Box variant="h3">When to reach for it</Box>
               <Box variant="p">
                 Check the NKI Library first: AWS&apos;s open-source (Apache 2.0) collection of
-                optimized kernels
-                <Cite s={S.neuronWhatsNew} />, here at its 2.32 tag.
+                optimized kernels.
+                <Cite s={S.neuronWhatsNew} />
                 <Cite s={S.nkiLibraryRepo} /> Its MoE kernels, Router Top-K among them, shipped in
                 Neuron 2.28.0.
                 <Cite s={S.neuronWhatsNew} /> Write your own when the profile shows the
@@ -794,10 +800,13 @@ export TORCH_NEURONX_NEFF_CACHE_DIR="/fsx/neff_cache"`}</pre>
           </Box>
           <Box variant="p">
             <strong>Then call it from PyTorch.</strong> On TorchNeuron, call the{' '}
-            <code>@nki.jit</code> kernel on <code>neuron</code> tensors directly, or wrap it in{' '}
-            <code>torch_neuronx.nki_op</code> for a named custom op that runs in eager mode and
-            inside torch.compile. A model you train needs the kernel&apos;s backward pass,
-            registered with <code>torch.library.register_autograd</code>.
+            <code>@nki.jit</code> kernel on <code>neuron</code> tensors directly. Wrap it in{' '}
+            <code>torch_neuronx.nki_op</code>, a named custom op that runs in eager mode and inside
+            torch.compile, only when you need autograd or a named operator.
+            <Cite s={S.torchNeuronNotes} />
+            <Cite s={S.torchNeuron233} />
+            <Cite s={S.torchBestPractices} /> A model you train needs the kernel&apos;s backward
+            pass, registered with <code>torch.library.register_autograd</code>.
             <Cite s={S.torchNeuronNotes} />
             <Cite s={S.torchNeuron233} />
           </Box>
