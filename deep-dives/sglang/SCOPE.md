@@ -2,7 +2,7 @@
 
 **Title:** SGLang: The Serving Runtime Built Around a Shared Prefix Index
 **Subtitle:** How SGLang v0.5.22 schedules, caches and scales LLM serving, where its design differs from vLLM and why, and how to run it on AWS
-**Status:** Scoping v1 (2026-10-24). Research registers 00 to 07 complete; 08 (ecosystem), 09 (AWS) and 10 (SGLang vs vLLM) in progress. Reviews pending.
+**Status:** Scoping v1 (2026-10-24). Research registers 00 to 08 complete; 09 (AWS) and 10 (SGLang vs vLLM) in progress. Reviews pending.
 **Pin:** SGLang `v0.5.22`, commit `baa9befa381511cd4d56f83980951e5a45fffc6d`, released 2026-10-19 (register 00). Accessed date 2026-10-24 on every citation.
 **Sibling dive:** vLLM (pinned to v0.31.0). The reader knows it. Shared fundamentals (the inference workload, continuous batching, paged KV memory, the parallelism vocabulary) are defined there and linked, never repeated here.
 
@@ -211,14 +211,15 @@ Payoff: Know which differences change behaviour on your workload, and how to rea
 Content from register 10 (pending): the design table, convergence, attributed benchmark claims with conditions. Diagram: a side-by-side request path through each engine.
 
 **26. Ecosystem and Production Users**
-Depth: overview
-Payoff: Who builds SGLang, what grows around it, and which production users say so themselves.
-Content from register 08 (pending), first-party statements only. Diagram: the ecosystem map.
+Depth: overview, with one practical table
+Payoff: Who builds SGLang, what grows around it, which production users say so themselves, and which SGLang version your framework actually runs.
+
+Opens with the model: SGLang is one package plus a family of separately released projects, hosted by LMSYS with RadixArk as a commercial maintainer (08 A1 to A7, B1 to B12). The adoption evidence as a ladder of strengths: first-party engineering statements first, led by LinkedIn's ranking stack (multi-item scoring cut 50-item ranking latency 69%, LinkedIn's own measurement) and Cloudflare moving its Clef decision models to SGLang in October 2026 while keeping its own Infire engine for other models (08 C3, C4); then vendor platform statements (08 D1 to D5); then the README and sglang.io logo walls, attributed as project claims (08 C1, C2). DeepSeek recommends SGLang for its open weights while stating its own serving engine is based on an early fork of vLLM (08 C5). Unconfirmed candidates stay out of the prose (08 UNKNOWN rows). Ends on the reader's action: every downstream pins its own SGLang (verl 0.5.8, AReaL 0.5.10.post1, NVIDIA's container 0.5.19, Dynamo 0.5.21), so check the version your framework or container installs before relying on a v0.5.22 behaviour (08 B15). Diagrams: the ecosystem map (runtime, sgl-project projects, third-party integrations, each with the SGLang version it pins); the evidence ladder.
 
 **27. Operations: metrics, warm-up, admin security and failure signatures**
 Depth: practical
 Payoff: The first dashboards, the start-up costs, the keys to set, and the log lines that name a failure.
-Collects the operating facts the earlier sections establish, each pointed back to its section: scheduler log fields and metrics (01 E), `token_usage` semantics (02 C14), kernel warm-up and caches (03 C), admin key (07 B12 to B14), gateway metrics and health (06 D), PD queue gauges (05 C23), structured-output failure cache (04 B5). Diagram: none; a symptom-to-cause table.
+Collects the operating facts the earlier sections establish, each pointed back to its section: scheduler log fields and metrics (01 E), `token_usage` semantics (02 C14), kernel warm-up and caches (03 C), admin key (07 B12 to B14), gateway metrics and health (06 D), PD queue gauges (05 C23), structured-output failure cache (04 B5). Security posture as its own block, opening on the strongest number: nine CVEs published March to June 2026, five critical, all through Python deserialization or a file-upload path (08 E2). The defaults that protect (bind to `127.0.0.1` by default, custom logit processors off) and the ones that do not (no API key by default; `ADMIN_OPTIONAL` routes open without keys despite the release note's "Require admin auth") (08 E4 to E6; 07 B12). No security policy in the repo, so watch the GitHub Advisory Database (08 E1). Ends on: run v0.5.22 or later, keep `--host` private or behind the gateway, set `--api-key` and `--admin-api-key`. Diagram: none; a symptom-to-cause table.
 
 **28. Decision Guide**
 Depth: practical
