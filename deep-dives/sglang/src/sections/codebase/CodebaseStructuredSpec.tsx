@@ -1,0 +1,11 @@
+import Container from '@cloudscape-design/components/container';
+import Header from '@cloudscape-design/components/header';
+import Box from '@cloudscape-design/components/box';
+
+export function CodebaseStructuredSpec() {
+  return (
+    <Container header={<Header variant="h2">Structured Output &amp; Speculative Decoding</Header>}>
+      <Box variant="p">This tab is being written.</Box>
+    </Container>
+  );
+}
