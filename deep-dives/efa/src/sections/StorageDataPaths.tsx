@@ -752,7 +752,7 @@ function TargetFanOutDiagram() {
 
   const rows = [
     ['10 (default)', '25', '27.31 MiB'],
-    ['100', '250', '21.84 MiB'],
+    ['100', '250', '21.85 MiB'],
     ['400', '1,000', '8.19 MiB'],
     ['800', '2,000', '8 MiB floor'],
   ];
@@ -1707,7 +1707,8 @@ export function StorageDataPaths() {
             <ProjectRef doc={docs.mooncakeStore} />; the engine-side Transfer Engine, with protocol{' '}
             <code>efa</code> <SourceRef provenance="code-derived" code={code.mcProtocol} />, posts
             one-sided <code>fi_write</code> and <code>fi_read</code> on one RDM endpoint per EFA device{' '}
-            <SourceRef provenance="code-derived" code={code.mcRmaPost} />. In a CUDA build, GPU
+            <SourceRef provenance="code-derived" code={code.mcRmaPost} />{' '}
+            <SourceRef provenance="code-derived" code={code.mcRdmEndpoint} />. In a CUDA build, GPU
             buffers register with <code>FI_HMEM_CUDA</code>, so loaded KV can land in GPU memory{' '}
             <SourceRef provenance="code-derived" code={code.mcHmem} />.
           </Box>
@@ -1742,7 +1743,8 @@ export function StorageDataPaths() {
                 <SourceRef provenance="code-derived" code={code.mcLocalGpuOnly} />. Mooncake&apos;s EFA
                 guide says to set <code>FI_EFA_ENABLE_SHM_TRANSFER=0</code> for same-host GPU transfers
                 between processes to avoid a crash, but a CUDA build declares <code>FI_HMEM</code>,
-                whose absence caused it, so the setting only gives up the same-host shm path{' '}
+                which the code&apos;s own comment names as the fix for that crash, so by our reading the
+                setting only gives up the same-host shm path{' '}
                 <SourceRef
                   provenance="doc-code-conflict"
                   code={code.mcHmemCaps}
@@ -1807,7 +1809,7 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="FSx for Lustre service claims come from AWS documentation. S3 client and KV-tier claims come from code at pinned commits or from the projects' own documents. The badge on each claim says which."
+            description="What this section leaves to a storage dive, and where in the pinned code to pick it up. The badge on each claim says whether it rests on AWS documentation, code or a project's own document."
           >
             The boundary of this section
           </Header>

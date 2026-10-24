@@ -83,7 +83,7 @@ export function FlashCacheTier() {
             bandwidth, and for a dense 70B model on an 8x H100 node that bar is about 17 GB/s per node, about 2 GB/s
             per GPU, even at peak compute.
             <Cite s={S.llama3Herd} kind="derived" note={breakEvenNote} /> The NVMe instance store in every 8-GPU P5
-            and P6 instance is rated at a floor level with that bar, and what flash adds is time: under full prefill
+            and P6 instance has a rated read floor level with that bar, and what flash adds is time: under full prefill
             load, HBM holds about 105 seconds of a node&apos;s new prefixes and the instance store about an hour.
             <Cite s={S.ec2AcceleratedSpecs} kind="derived" note={clockNote} />
           </Box>
@@ -416,7 +416,7 @@ export function FlashCacheTier() {
         <SpaceBetween size="m">
           <Box variant="p">
             A node-local tier hits only when the router sends a request back to the node holding its prefix, and
-            routers rank lower tiers lower: read from the code, Dynamo credits a prefix block in pinned host memory
+            routers rank lower tiers lower: Dynamo credits a prefix block in pinned host memory
             at 0.75 of a GPU hit and on disk at 0.25 by default.
             <Cite s={S.dynamoRouterCode} /> SGLang makes cross-instance reuse &quot;the job of L3&quot;
             <Cite s={S.sglangHicache} />, and Mooncake pools DRAM and SSD across nodes because its authors found
@@ -440,8 +440,8 @@ export function FlashCacheTier() {
               <Box variant="p">
                 An EFA file system at PERSISTENT-1000 is created in 4.8 TiB steps
                 <Cite s={S.fsxGettingStarted} />, and one GDS client at full rate needs 153.6 TiB when disk-bound
-                (writes, uncached reads) or 62.4 TiB for reads from the servers&apos; memory cache, about 1.7 TiB at
-                that size.
+                (writes, uncached reads) or 62.4 TiB for reads served from the servers&apos; memory cache, which holds about
+                1.7 TiB at that size.
                 <Cite s={S.fsxSsd} /><Cite s={S.fsxPerformance} /><Cite s={S.fsxSsd} kind="derived" note={fsxSizingNote} />
               </Box>
               <Box variant="p">
@@ -454,22 +454,22 @@ export function FlashCacheTier() {
             </SpaceBetween>
           </ExpandableSection>
           <Box variant="p">
-            <strong>S3 and EFS.</strong> S3 Express One Zone gives single-digit millisecond access
+            <strong>S3 and EFS (Elastic File System).</strong> S3 Express One Zone gives single-digit millisecond access
             <Cite s={S.s3Express} />, which suits large chunks fetched ahead of use; KVBM&apos;s G4 tier and the{' '}
             <code>obj</code> plugin of NIXL (NVIDIA Inference Xfer Library) target S3.
             <Cite s={S.dynamoKvbmDocs} /><Cite s={S.nixl} /> NIXL reaches storage through the same plugin
             architecture it uses between GPUs, and its libfabric plugin maps GPUs to EFA devices
             <Cite s={S.nixl} />: <em>Disaggregated Serving and Speculative Decoding</em> covers the GPU-to-GPU half,
             and the <Link href="../efa/">Elastic Fabric Adapter</Link> dive covers EFA. llm-d&apos;s AWS guide puts
-            its shared filesystem tier on Amazon EFS (Elastic File System) and recommends Max I/O mode
+            its shared filesystem tier on Amazon EFS and recommends Max I/O mode
             <Cite s={S.llmdAwsEfs} />, which AWS calls a previous-generation mode with higher per-operation latency,
             recommending General Purpose for all file systems.
             <Cite s={S.efsPerformance} /> The llm-d connector leaves eviction to the storage system.
             <Cite s={S.llmd} />
           </Box>
           <Box variant="p">
-            <strong>Pooled DRAM on AWS.</strong> A pool of peer DRAM rides EFA at 3,200 Gb/s per p5en or p6-b200,
-            6,400 on p6-b300.
+            <strong>Pooled DRAM on AWS.</strong> A pool of peer DRAM rides EFA, up to its line rate of 3,200 Gb/s per
+            p5en or p6-b200 and 6,400 on p6-b300.
             <Cite s={S.ec2AcceleratedSpecs} /> Mooncake Store pools DRAM that its clients contribute and moves KV
             between them with its Transfer Engine
             <Cite s={S.mooncakeStoreDesign} /><Cite s={S.mooncakeTransferTask} />, whose EFA transport registers GPU
@@ -493,13 +493,13 @@ export function FlashCacheTier() {
             intelligent routing, against a baseline without them.
             <Cite s={S.hyperpodBlog} kind="vendor-claim" /> The SageMaker docs describe tiered storage as &quot;a
             pooled memory tier that spans cluster nodes&quot;
-            <Cite s={S.hyperpodKvDocs} />; only the What&apos;s New post mentions &quot;automatic tiering from CPU
+            <Cite s={S.hyperpodKvDocs} />; of the AWS pages located in this research, only the What&apos;s New post mentions &quot;automatic tiering from CPU
             memory to local SSD&quot;
             <Cite s={S.hyperpodWhatsNew} />, so treat flash inside it as undocumented.
           </Box>
-          <ExpandableSection headerText="NVIDIA CMX: a flash tier behind a DPU">
+          <ExpandableSection headerText="NVIDIA CMX: a flash tier behind a DPU (data processing unit)">
             <Box variant="p">
-              NVIDIA CMX (context memory storage) puts BlueField-4 DPUs (data processing units, 800 Gb/s) in front of
+              NVIDIA CMX (context memory storage) puts BlueField-4 DPUs (800 Gb/s) in front of
               an Ethernet-attached flash tier for KV that NVIDIA labels G3.5, between node-local SSD (G3) and shared
               storage (G4), and treats KV as &quot;transient, derived, and recomputable if lost&quot;.
               <Cite s={S.dpuPage} kind="roadmap" /><Cite s={S.cmxBlog} /> NVIDIA claims up to 5x the tokens per second of
