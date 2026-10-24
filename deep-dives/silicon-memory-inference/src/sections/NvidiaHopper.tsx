@@ -4,32 +4,257 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
-import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
-import Link from '@cloudscape-design/components/link';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { HopperSmDiagram } from '../components/HopperSmDiagram';
+import { Cite } from '../components/Cite';
+import { S } from '../sources/NvidiaHopper';
 
 interface SpecRow {
   spec: string;
-  h100: string;
-  h200: string;
+  h100: React.ReactNode;
+  h200: React.ReactNode;
 }
 
+const sparseNote =
+  'NVIDIA marks this figure "With sparsity". Its Hopper architecture blog lists H100 SXM5 Tensor Core peaks as dense/sparse pairs at a 1:2 ratio, so dense is half.';
+
+const nvlinkNote =
+  'NVIDIA lists 900 GB/s per GPU; its Blackwell Ultra blog (Table 1) gives Hopper NVLink as 900 in bidirectional GB/s, which is 450 GB/s each way.';
+
+const ratioNote = '4.8 / 3.35 = 1.43 for bandwidth; 141 / 80 = 1.76 for capacity.';
+
 const specRows: SpecRow[] = [
-  { spec: 'Die', h100: 'GH100 (TSMC 4N)', h200: 'GH100 (same die)' },
-  { spec: 'SM count', h100: '132 active (144 physical)', h200: '132 active (same)' },
-  { spec: 'Register file / SM', h100: '64K × 32-bit', h200: '64K × 32-bit' },
-  { spec: 'SMEM / SM', h100: 'up to 228 KB', h200: 'up to 228 KB' },
-  { spec: 'L1 + SMEM combined', h100: '256 KB', h200: '256 KB' },
-  { spec: 'L2 cache', h100: '50 MB', h200: '50 MB' },
-  { spec: 'HBM generation', h100: 'HBM3', h200: 'HBM3e' },
-  { spec: 'HBM capacity', h100: '80 GB', h200: '141 GB' },
-  { spec: 'HBM bandwidth', h100: '3.35 TB/s', h200: '4.8 TB/s' },
-  { spec: 'NVLink Gen 4 BW per GPU', h100: '900 GB/s', h200: '900 GB/s' },
-  { spec: 'FP8 Tensor Core (sparse)', h100: '3,958 TFLOPS', h200: '3,958 TFLOPS' },
-  { spec: 'BF16 Tensor Core', h100: '1,979 TFLOPS', h200: '1,979 TFLOPS' },
-  { spec: 'AWS instance family', h100: 'P5, P5e', h200: 'P5en' },
+  {
+    spec: 'Compute capability',
+    h100: (
+      <>
+        9.0 (<code>sm_90</code>)
+        <Cite s={S.cudaGpus} />
+      </>
+    ),
+    h200: (
+      <>
+        9.0 (<code>sm_90</code>)
+        <Cite s={S.cudaGpus} />
+      </>
+    ),
+  },
+  {
+    spec: 'SMs',
+    h100: (
+      <>
+        132 (the full GH100 die has 144)
+        <Cite s={S.hopperArchBlog} />
+      </>
+    ),
+    h200: (
+      <>
+        Not on NVIDIA&apos;s H200 page
+        <Cite s={S.h200Page} />
+      </>
+    ),
+  },
+  {
+    spec: 'L2 cache',
+    h100: (
+      <>
+        50 MB
+        <Cite s={S.hopperTuningGuide} />
+      </>
+    ),
+    h200: (
+      <>
+        Not on NVIDIA&apos;s H200 page
+        <Cite s={S.h200Page} />
+      </>
+    ),
+  },
+  {
+    spec: 'FP8 Tensor Core',
+    h100: (
+      <>
+        3,958 TFLOPS sparse, about 1,979 dense
+        <Cite s={S.h100Page} />
+        <Cite s={S.hopperArchBlog} kind="derived" note={sparseNote} />
+      </>
+    ),
+    h200: (
+      <>
+        3,958 TFLOPS sparse, about 1,979 dense
+        <Cite s={S.h200Page} />
+        <Cite s={S.hopperArchBlog} kind="derived" note={sparseNote} />
+      </>
+    ),
+  },
+  {
+    spec: 'BF16 (bfloat16) Tensor Core',
+    h100: (
+      <>
+        1,979 TFLOPS sparse, about 990 dense
+        <Cite s={S.h100Page} />
+        <Cite s={S.hopperArchBlog} kind="derived" note={sparseNote} />
+      </>
+    ),
+    h200: (
+      <>
+        1,979 TFLOPS sparse, about 990 dense
+        <Cite s={S.h200Page} />
+        <Cite s={S.hopperArchBlog} kind="derived" note={sparseNote} />
+      </>
+    ),
+  },
+  {
+    spec: 'NVLink per GPU',
+    h100: (
+      <>
+        900 GB/s bidirectional (450 GB/s each way)
+        <Cite s={S.h100Page} />
+        <Cite s={S.blackwellUltraBlog} note={nvlinkNote} />
+      </>
+    ),
+    h200: (
+      <>
+        900 GB/s bidirectional (450 GB/s each way)
+        <Cite s={S.h200Page} />
+        <Cite s={S.blackwellUltraBlog} note={nvlinkNote} />
+      </>
+    ),
+  },
+  {
+    spec: 'HBM',
+    h100: (
+      <>
+        80 GB of HBM3
+        <Cite s={S.h100Page} />
+        <Cite s={S.hopperArchBlog} />
+      </>
+    ),
+    h200: (
+      <>
+        141 GB of HBM3e (1.76x)
+        <Cite s={S.h200Page} />
+        <Cite s={S.h200Page} kind="derived" note={ratioNote} />
+      </>
+    ),
+  },
+  {
+    spec: 'HBM bandwidth',
+    h100: (
+      <>
+        3.35 TB/s
+        <Cite s={S.h100Page} />
+      </>
+    ),
+    h200: (
+      <>
+        4.8 TB/s (1.43x)
+        <Cite s={S.h200Page} />
+        <Cite s={S.h200Page} kind="derived" note={ratioNote} />
+      </>
+    ),
+  },
+  {
+    spec: 'On AWS',
+    h100: (
+      <>
+        P5 (p5.4xlarge, p5.48xlarge)
+        <Cite s={S.ec2AcceleratedSpecs} />
+      </>
+    ),
+    h200: (
+      <>
+        P5e and P5en (p5e.48xlarge, p5en.48xlarge)
+        <Cite s={S.ec2AcceleratedSpecs} />
+      </>
+    ),
+  },
+];
+
+interface InstanceRow {
+  size: string;
+  gpus: React.ReactNode;
+  host: React.ReactNode;
+  pick: React.ReactNode;
+}
+
+const instanceRows: InstanceRow[] = [
+  {
+    size: 'p5.4xlarge',
+    gpus: (
+      <>
+        1 x H100, 80 GiB
+        <Cite s={S.ec2AcceleratedSpecs} />
+      </>
+    ),
+    host: (
+      <>
+        AMD EPYC 7R13, Nitro v4; 100 Gbps EFA, no GPUDirect RDMA (remote direct memory
+        access)
+        <Cite s={S.ec2AcceleratedSpecs} />
+        <Cite s={S.p5Page} />
+      </>
+    ),
+    pick: 'The only single-GPU Hopper size: development and single-GPU serving.',
+  },
+  {
+    size: 'p5.48xlarge',
+    gpus: (
+      <>
+        8 x H100, 640 GiB (8 x 80)
+        <Cite s={S.ec2AcceleratedSpecs} />
+      </>
+    ),
+    host: (
+      <>
+        AMD EPYC 7R13, Nitro v4; 3,200 Gbps second-generation EFA
+        <Cite s={S.ec2AcceleratedSpecs} />
+        <Cite s={S.p5Page} />
+      </>
+    ),
+    pick: 'H100 at node and cluster scale, when the model and its batch fit in 80 GB per GPU.',
+  },
+  {
+    size: 'p5e.48xlarge',
+    gpus: (
+      <>
+        8 x H200, 1,128 GiB (8 x 141)
+        <Cite s={S.ec2AcceleratedSpecs} />
+      </>
+    ),
+    host: (
+      <>
+        AMD EPYC 7R13, Nitro v4; 3,200 Gbps second-generation EFA
+        <Cite s={S.ec2AcceleratedSpecs} />
+        <Cite s={S.p5Page} />
+      </>
+    ),
+    pick: 'H200 capacity and bandwidth on the P5 host.',
+  },
+  {
+    size: 'p5en.48xlarge',
+    gpus: (
+      <>
+        8 x H200, 1,128 GiB (8 x 141)
+        <Cite s={S.ec2AcceleratedSpecs} />
+      </>
+    ),
+    host: (
+      <>
+        Intel Xeon Sapphire Rapids, Nitro v5, PCIe Gen5 between CPU and GPU; 3,200 Gbps
+        third-generation EFA
+        <Cite s={S.ec2AcceleratedSpecs} />
+        <Cite s={S.p5Page} />
+      </>
+    ),
+    pick: (
+      <>
+        H200 when host-to-GPU traffic or collective latency matters. AWS cites up to 4x the
+        CPU-to-GPU bandwidth of P5e and P5, and up to 35% lower latency than P5.
+        <Cite s={S.p5Page} kind="vendor-claim" />
+      </>
+    ),
+  },
 ];
 
 export function NvidiaHopper() {
@@ -39,27 +264,40 @@ export function NvidiaHopper() {
         header={
           <Header
             variant="h1"
-            description="Same compute, different memory — the cleanest evidence the bandwidth wall binds"
+            description="One compute design with two memory configurations: what H200's extra memory buys an inference workload, and which P5 instance to pick"
           >
-            NVIDIA Hopper — H100 and H200
+            NVIDIA Hopper: H100 and H200
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>What Hopper is.</strong> NVIDIA&apos;s 9th-generation data-center GPU
-            architecture, built on TSMC 4N. The Hopper SM introduced 4th-generation
-            Tensor Cores with FP8 support, asynchronous data movement (Tensor Memory
-            Accelerator and async copy), and the Distributed Shared Memory model.
-            Hopper ships in two product variants: H100 (HBM3) launched late 2022, and
-            H200 (HBM3e) launched November 2023 — same GH100 die, different memory.
+            <strong>What Hopper is.</strong> Hopper is the NVIDIA data-center GPU generation
+            before Blackwell (see <em>NVIDIA Blackwell</em>), sold as H100 and H200, both
+            compute capability 9.0.
+            <Cite s={S.cudaGpus} /> Its streaming multiprocessors (SMs) add FP8 to the
+            fourth-generation Tensor Cores
+            <Cite s={S.hopperArchBlog} />, a Tensor Memory Accelerator (TMA) that bulk-copies
+            tensors between global and shared memory, and thread block clusters whose blocks can
+            read, write and run atomics on each other&apos;s shared memory (Distributed Shared
+            Memory).
+            <Cite s={S.hopperTuningGuide} /> H100 (HBM3, High Bandwidth Memory)
+            <Cite s={S.hopperArchBlog} /> reached full production in September 2022
+            <Cite s={S.hopperFullProduction} />; H200 (HBM3e) was announced in November 2023,
+            with systems expected from the second quarter of 2024.
+            <Cite s={S.h200Announcement} />
           </Box>
           <Box variant="p">
-            <strong>Why these two products matter together.</strong> The H100 → H200
-            transition is the cleanest piece of evidence in the entire deep dive that
-            inference economics are bandwidth-bound. The compute did not change. The
-            memory did. And the inference performance moved with the memory, exactly as
-            the roofline (Section 3) predicts for decode workloads.
+            <strong>Why the pair matters.</strong> The compute stays fixed and the memory
+            changes. H200 carries 141 GB of HBM3e at 4.8 TB/s against H100 SXM&apos;s 80 GB of
+            HBM3 at 3.35 TB/s
+            <Cite s={S.h200Page} />
+            <Cite s={S.h100Page} />
+            <Cite s={S.hopperArchBlog} />, and NVIDIA rates it 1.9x faster on Llama 2 70B inference,
+            run at 4x the batch size.
+            <Cite s={S.h200Page} kind="vendor-claim" /> That makes the pair the cleanest view
+            in this dive of what memory buys an inference workload: bandwidth sets the step
+            time, capacity sets the batch.
           </Box>
         </SpaceBetween>
       </Container>
@@ -68,33 +306,54 @@ export function NvidiaHopper() {
         header={
           <Header
             variant="h2"
-            description="What lives inside one streaming multiprocessor"
+            description="Where wgmma finds its operands, how far each memory level sits from the Tensor Cores, and what caps the warps that hide that distance"
           >
-            The SM in detail
+            Inside one Hopper SM
           </Header>
         }
       >
         <SpaceBetween size="m">
           <HopperSmDiagram />
-          <Box variant="p">
-            Hopper&apos;s SM holds 64 concurrent warps with 32 threads each, up to 32
-            thread blocks, and a 64K × 32-bit register file. SMEM and L1 share 256 KB,
-            with SMEM configurable up to 228 KB per SM (a 39% increase over A100&apos;s
-            164 KB). The 4th-generation Tensor Cores are dispatched via the
-            <code> wgmma</code> instruction, which operates on tiles staged through SMEM
-            ({' '}
-            <Link external href="https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html">
-              Hopper Tuning Guide
-            </Link>
-            , accessed 2026-04-23).
+          <Box variant="small" color="text-body-secondary">
+            Per-SM figures, L2 and TMA
+            <Cite s={S.hopperTuningGuide} />
+            <Cite s={S.computeCapabilities} />; SM count
+            <Cite s={S.hopperArchBlog} />; wgmma
+            <Cite s={S.ptxIsa} />; FP8
+            <Cite s={S.h100Page} />
+            <Cite s={S.hopperArchBlog} kind="derived" note={sparseNote} />; HBM
+            <Cite s={S.h100Page} />
+            <Cite s={S.hopperArchBlog} />
+            <Cite s={S.h200Page} />
+            <Cite s={S.h200Page} kind="derived" note={ratioNote} />. Cycle counts come from a
+            third-party microbenchmark on an H800 PCIe (Hopper with HBM2e, 1,755 MHz maximum
+            clock); the HBM figure is its global-memory latency.
+            <Cite s={S.luoHopperBench} kind="measured" />
           </Box>
-          <Alert type="info" header="Latency hiding via concurrency, not speculation">
-            The warp scheduler picks ready warps each clock and rotates among them
-            while others wait on operands. There is no branch prediction, no
-            speculation, and no out-of-order issue per warp. Latency is hidden by
-            having enough concurrent warps that some are always ready — the
-            occupancy variable that comes up in every CUDA tuning conversation.
-          </Alert>
+          <Box variant="p">
+            <strong>wgmma is the Tensor Core path.</strong> Hopper&apos;s Tensor Cores are
+            driven by <code>wgmma</code>, the warpgroup-level matrix multiply-accumulate
+            instruction. Operand B always comes from shared memory (SMEM), operand A from SMEM
+            or registers, and the accumulator D stays in registers.
+            <Cite s={S.ptxIsa} /> The TMA fills SMEM in bulk while the block keeps working on
+            other instructions
+            <Cite s={S.hopperTuningGuide} />, so a kernel can copy the next tile in while it
+            multiplies the current one.
+          </Box>
+          <Box variant="p">
+            <strong>Occupancy hides the distance.</strong> A thread&apos;s instructions run in
+            sequence, so the SM hides a stalled warp&apos;s latency by running other warps.
+            Occupancy is the ratio of active warps per SM to the maximum.
+            <Cite s={S.cudaBestPractices} /> The register file caps it: 64K registers across 64
+            warps of 32 threads is 32 registers per thread, so a kernel that needs 128 fits at
+            most 16 warps.
+            <Cite
+              s={S.hopperTuningGuide}
+              kind="derived"
+              note="65,536 registers / (64 warps x 32 threads) = 32 per thread; 65,536 / (128 x 32) = 16 warps."
+            />{' '}
+            When occupancy comes in low, registers per thread is the first number to check.
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -102,34 +361,63 @@ export function NvidiaHopper() {
         header={
           <Header
             variant="h2"
-            description="Vendor-cited numbers per product"
+            description="Every compute figure NVIDIA publishes for both GPUs matches; only the memory rows move"
           >
-            H100 vs H200 — what changed
+            H100 and H200 side by side
+          </Header>
+        }
+      >
+        <Table
+          items={specRows}
+          columnDefinitions={[
+            { id: 'spec', header: 'Spec', cell: (r) => r.spec, minWidth: 130 },
+            { id: 'h100', header: 'H100 SXM', cell: (r) => r.h100, minWidth: 170 },
+            { id: 'h200', header: 'H200 SXM', cell: (r) => r.h200, minWidth: 170 },
+          ]}
+          variant="embedded"
+          wrapLines
+        />
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="H200 ran 4x the batch to reach 1.9x on Llama 2 70B: bandwidth sets the step time, capacity sets the batch"
+          >
+            What 1.9x is made of
           </Header>
         }
       >
         <SpaceBetween size="m">
-          <Table
-            items={specRows}
-            columnDefinitions={[
-              { id: 'spec', header: 'Spec', cell: (r) => r.spec, minWidth: 220 },
-              { id: 'h100', header: 'H100 SXM', cell: (r) => r.h100 },
-              { id: 'h200', header: 'H200 SXM', cell: (r) => r.h200 },
-            ]}
-            variant="embedded"
-            wrapLines
-          />
-          <Box variant="small">
-            All numbers track the{' '}
-            <Link external href="https://www.nvidia.com/en-us/data-center/h100/">
-              NVIDIA H100 product page
-            </Link>
-            {' '}and{' '}
-            <Link external href="https://www.nvidia.com/en-us/data-center/h200/">
-              NVIDIA H200 product page
-            </Link>
-            , accessed 2026-04-23. Hopper SM internals from the Hopper Tuning Guide
-            (same access date).
+          <Box variant="p">
+            NVIDIA rates H200 at 1.9x the inference throughput of H100 on Llama 2 70B, and 1.6x
+            on GPT-3 175B.
+            <Cite s={S.h200Page} kind="vendor-claim" /> The footnote changes the batch size
+            along with the GPU: Llama 2 70B ran at batch size 8 on one H100 and 32 on one H200,
+            and GPT-3 175B at 64 on eight H100s and 128 on eight H200s.
+            <Cite s={S.h200Page} /> With the compute identical, a fixed batch gains at most
+            the 1.43x bandwidth ratio, and the rest is the larger batch that H200&apos;s extra 61
+            GB holds.
+            <Cite
+              s={S.h200Page}
+              kind="derived"
+              note="4.8 / 3.35 = 1.43; 141 GB - 80 GB = 61 GB; batch 32 / 8 = 4x."
+            />{' '}
+            <em>HBM and the Bandwidth Wall</em> takes the two levers apart.
+          </Box>
+          <ExpandableSection headerText="The rest of NVIDIA's benchmark footnote">
+            <Box variant="p">
+              Llama 2 70B ran 2K input and 128 output tokens in throughput mode; GPT-3 175B ran
+              80 input and 200 output tokens. NVIDIA labels the footnote &quot;Preliminary
+              specifications. May be subject to change.&quot;
+              <Cite s={S.h200Page} />
+            </Box>
+          </ExpandableSection>
+          <Box variant="p">
+            <strong>Choosing between H100 and H200.</strong> For decode-heavy serving, benchmark
+            each at the largest batch its memory holds after the weights; at one shared batch
+            size the comparison tops out at the 1.43x bandwidth ratio.
           </Box>
         </SpaceBetween>
       </Container>
@@ -138,111 +426,91 @@ export function NvidiaHopper() {
         header={
           <Header
             variant="h2"
-            description="The vendor delivered the roofline prediction in their own marketing"
-          >
-            The bandwidth wall, observed
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            <strong>Same FLOPs.</strong> H100 and H200 have identical FP8 (3,958 TFLOPS),
-            BF16 (1,979 TFLOPS), and FP16 peaks. NVLink bandwidth is identical at 900
-            GB/s per GPU. SM count, register file, SMEM, and L2 are identical.
-          </Box>
-          <Box variant="p">
-            <strong>Different memory.</strong> H100 ships 80 GB of HBM3 at 3.35 TB/s.
-            H200 ships 141 GB of HBM3e at 4.8 TB/s. NVIDIA describes this as
-            &ldquo;nearly double the capacity&rdquo; and &ldquo;1.4× more memory
-            bandwidth.&rdquo;
-          </Box>
-          <Alert type="success" header="The vendor's own number">
-            NVIDIA reports H200 at &ldquo;up to 1.9× faster Llama2 70B
-            inference&rdquo; and &ldquo;1.6× faster GPT-3 175B inference&rdquo;
-            ({' '}
-            <Link external href="https://www.nvidia.com/en-us/data-center/h200/">
-              NVIDIA H200 product page
-            </Link>
-            , accessed 2026-04-23). Compute did not change, memory bandwidth went up
-            1.4×, decode throughput went up 1.6-1.9×. This is the roofline prediction
-            for decode delivered verbatim by the silicon vendor.
-          </Alert>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="What customers see — P5 / P5e / P5en on AWS"
+            description="Which P5 size to pick: one H100, eight H100s, or eight H200s on the older or the newer host"
           >
             Hopper on AWS
           </Header>
         }
       >
-        <ColumnLayout columns={3} variant="text-grid">
-          <div>
-            <Box variant="h3">P5</Box>
-            <Box variant="p">
-              8× H100 SXM. EFA v2. Capacity Blocks for ML support. The original
-              GA platform for distributed training; still ships heavily in 2026 for
-              workloads tuned to it.
-            </Box>
-          </div>
-          <div>
-            <Box variant="h3">P5e</Box>
-            <Box variant="p">
-              8× H100 SXM with same compute and increased GPU memory tier. EFA v2.
-              Aimed at workloads that needed more HBM headroom than the P5 baseline.
-            </Box>
-          </div>
-          <div>
-            <Box variant="h3">P5en</Box>
-            <Box variant="p">
-              8× H200 SXM. EFA v3 (built on Nitro v5). The Hopper-class machine that
-              ships H200 silicon — the right pick when the workload is decode-heavy
-              and the H100 → H200 1.9× number above applies.
-            </Box>
-          </div>
-        </ColumnLayout>
+        <SpaceBetween size="m">
+          <Box variant="p">
+            P5 carries H100; P5e and P5en carry H200, the GPU behind the 1.9x result.
+            <Cite s={S.p5Page} /> P5e and P5en have the same eight H200s and differ in the host
+            and the EFA (Elastic Fabric Adapter) generation. All four sizes can be reserved for
+            a future date through Capacity Blocks for ML.
+            <Cite s={S.capacityBlocks} />
+          </Box>
+          <Table
+            items={instanceRows}
+            columnDefinitions={[
+              { id: 'size', header: 'Instance', cell: (r) => <code>{r.size}</code>, minWidth: 120 },
+              { id: 'gpus', header: 'GPUs and memory', cell: (r) => r.gpus, minWidth: 150 },
+              { id: 'host', header: 'Host and network', cell: (r) => r.host, minWidth: 200 },
+              { id: 'pick', header: 'Pick it for', cell: (r) => r.pick, minWidth: 220 },
+            ]}
+            variant="embedded"
+            wrapLines
+          />
+        </SpaceBetween>
       </Container>
 
       <Container
         header={
           <Header
             variant="h2"
-            description="When Hopper is still the right call vs Blackwell"
+            description="When Hopper is the cheaper answer, when Blackwell is, and the kernel check to run before you move"
           >
-            Where Hopper still wins
+            Choosing Hopper, and moving off it
           </Header>
         }
       >
-        <ExpandableSection headerText="Mature kernel ecosystem" defaultExpanded>
-          <Box variant="p">
-            Five years of FlashAttention generations, fused MoE kernels, vLLM /
-            TensorRT-LLM tuning, and CUTLASS / Triton libraries are all production-
-            hardened on Hopper. Blackwell is catching up fast (CUTLASS example 92,
-            tcgen05 path, NVFP4) but the long-tail of operators and the most
-            thoroughly tested fused paths still ship on Hopper first.
-          </Box>
-        </ExpandableSection>
-        <ExpandableSection headerText="Capacity Blocks pricing curves">
-          <Box variant="p">
-            P5 and P5en pricing through Capacity Blocks for ML can be the
-            controlling variable for time-bounded training runs. When the model fits
-            in 80 GB / 141 GB and the workload is throughput-not-latency, the
-            economics often favor a Hopper Capacity Block over chasing Blackwell on
-            on-demand pricing.
-          </Box>
-        </ExpandableSection>
-        <ExpandableSection headerText="When Hopper is wrong">
-          <ul>
-            <li>Workloads that need NVFP4 or tcgen05.mma — Blackwell-only</li>
-            <li>MoE deployments that benefit from MNNVL all-to-all in NVL72</li>
-            <li>Models that exceed 141 GB and would otherwise fit in B200 / B300</li>
-            <li>Workloads that benefit from coherent CPU memory via NVLink-C2C (Grace-Blackwell territory)</li>
-          </ul>
-        </ExpandableSection>
+        <ColumnLayout columns={2} variant="text-grid">
+          <div>
+            <Box variant="h3">Blackwell is the better fit for</Box>
+            <ul>
+              <li>
+                Workloads that need NVFP4 (NVIDIA&apos;s 4-bit float) or{' '}
+                <code>tcgen05.mma</code>, which target Blackwell and later.
+                <Cite s={S.ptxIsa} />
+              </li>
+              <li>
+                Models that exceed 141 GB per GPU and fit B200&apos;s 180 GB or B300&apos;s 288
+                GB
+                <Cite s={S.blackwellTuningGuide} />
+                <Cite s={S.blackwellUltraBlog} />, listed on AWS as 179 GiB and 268 GiB per GPU.
+                <Cite s={S.ec2AcceleratedSpecs} />
+              </li>
+              <li>
+                Mixture-of-experts (MoE) serving that needs all-to-all across a rack-scale NVLink
+                domain, and workloads that want CPU memory coherent with the GPU over NVLink-C2C
+                (see <em>Grace-Blackwell and UltraServer</em>).
+              </li>
+            </ul>
+          </div>
+          <div>
+            <Box variant="h3">Getting Hopper right, and the move after it</Box>
+            <ul>
+              <li>
+                Price Hopper first when the model fits: AWS cut On-Demand prices 44% for P5 and
+                25% for P5en from the May 31, 2025 baseline.
+                <Cite s={S.gpuPriceCut} />
+              </li>
+              <li>
+                FlashAttention-3 is optimized for Hopper GPUs; its README lists H100 or H800 with
+                CUDA 12.3 or later and calls it a beta release.
+                <Cite s={S.flashAttentionReadme} /> See <em>KV Cache and FlashAttention</em>.
+              </li>
+              <li>
+                Move to Blackwell kernel by kernel: confirm that each kernel on the critical path
+                has a Blackwell build before the workload moves. Watch for <code>wgmma</code>: it
+                requires <code>sm_90a</code>
+                <Cite s={S.ptxIsa} />, so a Hopper kernel built on it has no Blackwell build and
+                needs a <code>tcgen05</code> rewrite (see <em>NVIDIA Blackwell</em> and{' '}
+                <em>NVIDIA Compilers and Kernel Tooling</em>).
+              </li>
+            </ul>
+          </div>
+        </ColumnLayout>
       </Container>
     </SpaceBetween>
   );

@@ -3,36 +3,193 @@ import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
+import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
-import Link from '@cloudscape-design/components/link';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Xeon6Topology } from '../components/Xeon6Topology';
+import { Cite } from '../components/Cite';
+import { S } from '../sources/IntelXeon6';
 
-interface SkuRow {
-  sku: string;
-  cores: string;
-  channels: string;
-  ddrSpeed: string;
-  notes: string;
+const perTileNote =
+  'The chip totals (96 cores, 120 CHAs) divided by three compute tiles; Chips and Cheese gives the totals and the 160 MB of L3 per tile.';
+const nodeBwNote =
+  'Four memory controllers per compute tile x 7.2 GT/s x 8 bytes = 230.4 GB/s per SNC3 node, a theoretical peak.';
+const weightsNote =
+  '1B parameters x 2 bytes (FP16) = 2 GB; 7B x 2 bytes = 14 GB; both against the 160 MB of L3 per tile Chips and Cheese reports.';
+const decodeNote =
+  '14 GB of FP16 weights read once per token / 230.4 GB/s per node (four controllers per tile x DDR5-7200 x 8 bytes) = about 61 ms per token, about 16 tokens/s, before any compute. INT8 weights are 7 GB: about 33 tokens/s.';
+const brief6900Note =
+  'The brief gives Xeon 6 P-core maxima of 128 cores, 504 MB of L3 and 12 memory channels, and says the 6900 series has the highest core counts and the most memory channels in the family.';
+const ecoreNote =
+  'The brief states AVX-512 is supported only on P-core parts and lists AMX only under P-cores; the E-core column lists AVX2 with VNNI.';
+const twoChipsNote =
+  '192 cores on r8i.96xlarge / 96 cores per 6985P-C; 3,072 GiB on r8i.96xlarge against the 1.5 TB per socket Chips and Cheese reports for r8i.';
+const ratioNote = '691.62 GB/s against 323.45 GB/s on Emerald Rapids, both by Chips and Cheese: 2.14x.';
+
+interface PartRow {
+  part: string;
+  cores: React.ReactNode;
+  memory: React.ReactNode;
+  units: React.ReactNode;
 }
 
-const skuRows: SkuRow[] = [
-  { sku: 'Xeon 6 6900P (LGA 7529)', cores: 'up to 128', channels: '12', ddrSpeed: 'DDR5-6400 / MRDIMM-8800', notes: 'Granite Rapids-AP. AMX FP16. SNC3.' },
-  { sku: 'Xeon 6 6700P / 6500P (LGA 4710)', cores: 'up to 86', channels: '8', ddrSpeed: 'DDR5-6400 / MRDIMM-8000', notes: '4 / 8-socket capable.' },
-  { sku: 'Xeon 6 6900E (Sierra Forest)', cores: 'up to 288 E-cores', channels: '12', ddrSpeed: 'DDR5-6400', notes: 'E-cores; no AVX-512, no AMX.' },
+const partRows: PartRow[] = [
+  {
+    part: 'Xeon 6900 series, P-cores',
+    cores: (
+      <>
+        Up to 128 cores, up to 504 MB L3
+        <Cite s={S.xeon6ProductBrief} note={brief6900Note} />
+      </>
+    ),
+    memory: (
+      <>
+        Up to 12 channels; DDR5-6400, or MRDIMM up to 8,800 MT/s
+        <Cite s={S.xeon6ProductBrief} note={brief6900Note} />
+      </>
+    ),
+    units: (
+      <>
+        AVX-512; AMX with FP16
+        <Cite s={S.xeon6ProductBrief} />
+      </>
+    ),
+  },
+  {
+    part: 'Xeon 6700 and 6500 series, P-cores',
+    cores: (
+      <>
+        Up to 86 cores, up to 336 MB L3
+        <Cite s={S.xeon6700BriefPdf} />
+      </>
+    ),
+    memory: (
+      <>
+        Up to 8 channels; DDR5-6400, or MRDIMM up to 8,000 MT/s
+        <Cite s={S.xeon6700BriefPdf} />
+      </>
+    ),
+    units: (
+      <>
+        AVX-512; AMX with FP16
+        <Cite s={S.xeon6700BriefPdf} />
+      </>
+    ),
+  },
+  {
+    part: 'Xeon 6, E-cores',
+    cores: (
+      <>
+        Up to 288 cores, up to 216 MB L3
+        <Cite s={S.xeon6ProductBrief} />
+      </>
+    ),
+    memory: (
+      <>
+        Up to 12 channels; DDR5-6400
+        <Cite s={S.xeon6ProductBrief} />
+      </>
+    ),
+    units: (
+      <>
+        AVX2 with VNNI; no AVX-512, no AMX
+        <Cite s={S.xeon6ProductBrief} note={ecoreNote} />
+      </>
+    ),
+  },
+  {
+    part: 'Xeon 6 6985P-C, AWS r8i',
+    cores: (
+      <>
+        96 cores, 480 MB L3
+        <Cite s={S.chipsAndCheeseXeon6} />
+      </>
+    ),
+    memory: (
+      <>
+        12 channels; DDR5-7200
+        <Cite s={S.chipsAndCheeseXeon6} />
+      </>
+    ),
+    units: (
+      <>
+        AVX-512; AMX
+        <Cite s={S.chipsAndCheeseXeon6} /> with FP16
+        <Cite s={S.r8iPage} />
+      </>
+    ),
+  },
 ];
 
 interface AmxRow {
   format: string;
-  generation: string;
-  notes: string;
+  generation: React.ReactNode;
+  instruction: React.ReactNode;
 }
 
 const amxRows: AmxRow[] = [
-  { format: 'BF16', generation: 'Sapphire Rapids (Xeon 4) onward', notes: 'Tile registers + TDPBF16PS' },
-  { format: 'INT8', generation: 'Sapphire Rapids onward', notes: 'TDPBSSD / TDPBSUD / TDPBUSD / TDPBUUD' },
-  { format: 'FP16', generation: 'Granite Rapids (Xeon 6) NEW', notes: 'TDPFP16PS — first FP16 tile matmul on Xeon' },
+  {
+    format: 'BF16 (bfloat16)',
+    generation: (
+      <>
+        Sapphire Rapids
+        <Cite s={S.llvmX86Td} />
+      </>
+    ),
+    instruction: (
+      <>
+        <code>TDPBF16PS</code>
+        <Cite s={S.llvmAmxIntrin} />
+      </>
+    ),
+  },
+  {
+    format: 'INT8',
+    generation: (
+      <>
+        Sapphire Rapids
+        <Cite s={S.llvmX86Td} />
+      </>
+    ),
+    instruction: (
+      <>
+        <code>TDPBSSD</code>, <code>TDPBSUD</code>, <code>TDPBUSD</code>, <code>TDPBUUD</code>{' '}
+        (signed and unsigned pairs)
+        <Cite s={S.llvmAmxIntrin} />
+      </>
+    ),
+  },
+  {
+    format: 'FP16',
+    generation: (
+      <>
+        Granite Rapids
+        <Cite s={S.llvmX86Td} />
+      </>
+    ),
+    instruction: (
+      <>
+        <code>TDPFP16PS</code>
+        <Cite s={S.llvmAmxFp16Intrin} />
+      </>
+    ),
+  },
+  {
+    format: 'FP8',
+    generation: (
+      <>
+        Diamond Rapids
+        <Cite s={S.llvmX86Td} kind="roadmap" />
+      </>
+    ),
+    instruction: (
+      <>
+        AMX-FP8 in LLVM&apos;s Diamond Rapids target
+        <Cite s={S.llvmX86Td} kind="roadmap" />
+      </>
+    ),
+  },
 ];
 
 export function IntelXeon6() {
@@ -42,7 +199,7 @@ export function IntelXeon6() {
         header={
           <Header
             variant="h1"
-            description="Granite Rapids — three compute tiles, two IO dies, AMX FP16, MRDIMM up to DDR5-8800"
+            description="Read the Xeon 6 in an r8i as three NUMA nodes per chip, each with its own 160 MB of L3 and its own memory, and size CPU inference against DRAM bandwidth rather than AMX"
           >
             Intel Xeon 6 (Granite Rapids)
           </Header>
@@ -50,27 +207,26 @@ export function IntelXeon6() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>What Xeon 6 is.</strong> Intel&apos;s 6th-generation Xeon Scalable
-            line, branded as Xeon 6. Two distinct silicon families share the brand:
-            Granite Rapids (P-cores, Redwood Cove microarchitecture) and Sierra Forest
-            (E-cores, Crestmont). This section covers Granite Rapids — the P-core
-            family that competes with EPYC Turin in the inference-host space.
+            Xeon 6 is Intel&apos;s server CPU brand for two kinds of core: P-cores (performance
+            cores) with AVX-512 (Advanced Vector Extensions 512) and AMX (Advanced Matrix
+            Extensions), a matrix unit in every core, and E-cores (efficiency cores) with neither
+            <Cite s={S.xeon6ProductBrief} note={ecoreNote} />. The P-core design, Granite Rapids, is
+            the processor AWS lists for M8i, C8i, R8i and X8i
+            <Cite s={S.ec2GeneralPurposeSpecs} />
+            <Cite s={S.ec2ComputeOptimizedSpecs} />
+            <Cite s={S.ec2MemoryOptimizedSpecs} />.
           </Box>
           <Box variant="p">
-            <strong>What is new vs Emerald Rapids.</strong> Disaggregated chiplet
-            architecture (3 compute tiles + 2 I/O dies on EMIB), wider mesh, AMX FP16
-            (a new precision in the AMX instruction set), MRDIMM at DDR5-8800 on the
-            6900P, and CXL 2.0 directly from the I/O die. The L3 grew to 504 MB
-            declared (480 MB measured by third parties on the 6985P-C), and the L2 per
-            P-core stayed at 2 MB but with a deeper 64-entry miss queue
-            ({' '}
-            <Link
-              external
-              href="https://chipsandcheese.com/p/a-look-into-intel-xeon-6s-memory"
-            >
-              Chips and Cheese — Xeon 6 memory
-            </Link>
-            , accessed 2026-04-23).
+            <strong>The model to carry.</strong> An r8i runs a custom 96-core Xeon 6 6985P-C, three
+            compute tiles and two IO dies, in SNC3 (Sub-NUMA Clustering into three nodes)
+            <Cite s={S.chipsAndCheeseXeon6} />. Each tile is a NUMA (Non-Uniform Memory Access) node
+            of about 32 cores
+            <Cite s={S.chipsAndCheeseXeon6} kind="derived" note={perTileNote} /> with its own{' '}
+            <strong>160 MB of L3</strong> and four memory channels
+            <Cite s={S.chipsAndCheeseXeon6} />. Keep a job on one node, because each die boundary it
+            crosses adds latency
+            <Cite s={S.chipsAndCheeseXeon6} kind="measured" />. Size CPU decode against DRAM
+            bandwidth, because even a 1B-parameter model&apos;s weights do not fit in L3.
           </Box>
         </SpaceBetween>
       </Container>
@@ -79,39 +235,43 @@ export function IntelXeon6() {
         header={
           <Header
             variant="h2"
-            description="Three compute tiles + two IO dies, joined by EMIB"
+            description="Where the cores, caches and memory controllers sit, so you can predict what a thread pays to reach its data"
           >
-            Topology
+            Three compute tiles, two IO dies
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Xeon6Topology />
-          <Box variant="p">
-            The compute tiles host the cores, L2, L3 slice, and four DDR5 controllers
-            each. The IO dies host PCIe 5.0, UPI (socket-to-socket), CXL 2.0, and the
-            on-die accelerators (DSA, IAA, QAT, DLB). Compute tiles communicate with
-            external hosts only via the IO dies — there is no direct off-package path
-            from the compute tiles. EMIB (Embedded Multi-die Interconnect Bridge)
-            carries the high-density signals across the substrate. MDF (Modular Data
-            Fabric) stops at die boundaries run at 2.5 GHz and handle the logical mesh
-            protocol across boundaries
-            ({' '}
-            <Link
-              external
-              href="https://www.nextplatform.com/2024/09/24/intel-shoots-granite-rapids-xeon-6-into-the-datacenter/"
-            >
-              NextPlatform — Granite Rapids
-            </Link>
-            , accessed 2026-04-23).
+          <Box variant="small" color="text-body-secondary">
+            Dies, EMIB, Intel 3, caches, CHA and MDF counts and clocks, memory controllers,
+            DDR5-7200 and SNC3, measured on r8i
+            <Cite s={S.chipsAndCheeseXeon6} kind="measured" />; per-tile cores and CHAs
+            <Cite s={S.chipsAndCheeseXeon6} kind="derived" note={perTileNote} />; PCIe 5.0, UPI 2.0
+            and CXL 2.0
+            <Cite s={S.xeon6ProductBrief} />.
           </Box>
-          <Alert type="info" header="SNC3 is the default NUMA mode">
-            Each compute tile is its own NUMA domain — three NUMA nodes per socket,
-            each backed by ~160 MB of L3 and 4 DDR5 channels. The alternative
-            &ldquo;HEX mode&rdquo; (former SNC1) collapses to a single NUMA with all
-            DRAM striped across all 12 controllers. SNC3 is correct for low-latency
-            workloads with thread / memory affinity; HEX for batch throughput without
-            NUMA-aware code.
+          <Box variant="p">
+            The compute tiles hold the cores, the L3 and the memory controllers, so memory hangs off
+            the compute tiles; the IO dies hold the slower I/O and the accelerators
+            <Cite s={S.chipsAndCheeseXeon6} />. The L3 is a set of CHAs (Caching and Home Agents),
+            each an L3 slice and snoop filter on a core&apos;s mesh stop. MDF (Modular Data Fabric)
+            stops carry the mesh across die boundaries over EMIB (Embedded Multi-die Interconnect
+            Bridge), a silicon bridge between dies
+            <Cite s={S.chipsAndCheeseXeon6} />. Intel&apos;s largest P-core parts reach 128 cores
+            and 504 MB of L3
+            <Cite s={S.xeon6ProductBrief} />.
+          </Box>
+          <Alert type="info" header="Keep each job inside one SNC3 node">
+            SNC3, Intel&apos;s default and AWS&apos;s choice on r8i, backs each node with one
+            tile&apos;s L3 and memory controllers and caches a node&apos;s memory only in that
+            tile&apos;s L3; a unified one-node mode also exists
+            <Cite s={S.chipsAndCheeseXeon6} />. On r8i an L3 hit takes just over 33 ns locally,
+            about 24 ns more one tile away and nearly 80 ns two away; DRAM one tile away takes
+            157.44 ns, about 26 ns over local
+            <Cite s={S.chipsAndCheeseXeon6} kind="measured" />. List the nodes with{' '}
+            <code style={{ whiteSpace: 'nowrap' }}>numactl --hardware</code> and bind each job to one:{' '}
+            <code>numactl --cpunodebind=0 --membind=0 &lt;command&gt;</code>.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -120,89 +280,152 @@ export function IntelXeon6() {
         header={
           <Header
             variant="h2"
-            description="The matmul instruction set that puts a tensor unit on a host CPU"
+            description="The bandwidth an r8i delivers, and the per-node ceiling that sets the token rate of small-batch CPU decode"
           >
-            AMX — including the new FP16 in Xeon 6
+            Memory bandwidth and CPU decode
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>What AMX is.</strong> Advanced Matrix Extensions — Intel&apos;s
-            tile-register-based matmul ISA. AMX defines 8 tile registers, each holding
-            16 rows of up to 64 bytes (1 KB max per tile), with instructions that
-            multiply two tiles into a third. AMX runs as a CPU-thread instruction —
-            no host/device boundary, no PCIe — and is managed by the OS via XSAVE /
-            XRSTOR. The tile registers source operands from L1D
-            ({' '}
-            <Link
-              external
-              href="https://www.intel.com/content/www/us/en/developer/articles/technical/advanced-matrix-extensions-overview.html"
-            >
-              Intel AMX overview
-            </Link>
-            , accessed 2026-04-23).
+            The r8i uses DDR5-7200
+            <Cite s={S.chipsAndCheeseXeon6} />, as does M8i
+            <Cite s={S.m8iPage} />; Intel&apos;s own figures are DDR5-6400, or MRDIMM (Multiplexed
+            Rank DIMM) up to 8,800 MT/s on P-core parts
+            <Cite s={S.xeon6ProductBrief} />. With each thread reading its own node&apos;s memory,
+            Chips and Cheese measured 691.62 GB/s on an r8i
+            <Cite s={S.chipsAndCheeseXeon6} kind="measured" />, about 2.1x their Emerald Rapids
+            figure
+            <Cite s={S.chipsAndCheeseXeon6} kind="derived" note={ratioNote} />. One node&apos;s four
+            channels peak at <strong>230.4 GB/s</strong>
+            <Cite s={S.chipsAndCheeseXeon6} kind="derived" note={nodeBwNote} />.
+          </Box>
+          <Box variant="p">
+            <strong>CPU decode streams the weights from DRAM.</strong> A 1B-parameter FP16 model is
+            about 2 GB of weights and a 7B model about 14 GB
+            <Cite s={S.chipsAndCheeseXeon6} kind="derived" note={weightsNote} />; neither fits in a
+            node&apos;s 160 MB of L3, so every token reads all the weights from memory and batch-1
+            speed is bandwidth divided by model size (<em>Roofline and Arithmetic Intensity</em>). A
+            7B FP16 model on one node tops out near 16 tokens per second before compute, and INT8
+            weights double that
+            <Cite s={S.chipsAndCheeseXeon6} kind="derived" note={decodeNote} />. AMX cannot lift
+            the ceiling, since at batch 1 each weight read feeds one multiply-add. It pays off when
+            one weight read serves many tokens, in prefill and batched decode (
+            <em>Small Language Models</em>).
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="What AMX computes, which precision each Xeon generation adds, and how to confirm your process is using it"
+          >
+            AMX: a matrix unit in every P-core
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            AMX keeps operands in eight tile registers, TMM0 to TMM7, each up to 16 rows of 64 bytes
+            <Cite s={S.llvmAmxIntrin} />
+            <Cite s={S.llvmX86Registers} />, and one instruction multiplies two tiles into a third
+            <Cite s={S.llvmAmxIntrin} />. It runs in the calling thread (
+            <em>Anatomy of a Kernel Execution</em>). On Linux a process must first request
+            permission with <code>arch_prctl(ARCH_REQ_XCOMP_PERM)</code>
+            <Cite s={S.linuxXstate} />; oneDNN makes that request itself
+            <Cite s={S.oneDnnAmxPermission} />. Intel rates AMX at up to 2,048 INT8, and 1,024 BF16
+            or FP16, operations per cycle per core
+            <Cite s={S.xeon6ProductBrief} kind="vendor-claim" />.
           </Box>
           <Table
             items={amxRows}
             columnDefinitions={[
-              { id: 'fmt', header: 'Precision', cell: (r) => r.format, minWidth: 140 },
-              { id: 'gen', header: 'First generation', cell: (r) => r.generation },
-              { id: 'notes', header: 'Notes', cell: (r) => r.notes },
+              { id: 'fmt', header: 'Precision', cell: (r) => r.format, minWidth: 120 },
+              { id: 'gen', header: 'First Xeon with it', cell: (r) => r.generation, minWidth: 150 },
+              { id: 'ins', header: 'Tile dot-product instruction', cell: (r) => r.instruction },
+            ]}
+            variant="embedded"
+            wrapLines
+          />
+          <ExpandableSection headerText="The rest of the AMX instruction sequence">
+            <Box variant="p">
+              <code>LDTILECFG</code> sets each tile&apos;s shape; <code>TILELOADD</code> and{' '}
+              <code>TILELOADDT1</code> load tiles, <code>TILESTORED</code> stores one,{' '}
+              <code>TILEZERO</code> clears one and <code>TILERELEASE</code> returns all tiles to
+              their initial state
+              <Cite s={S.llvmAmxIntrin} />. The kernel saves tile data with the thread&apos;s
+              extended state, as XSTATE component 18
+              <Cite s={S.linuxXstate} />.
+            </Box>
+          </ExpandableSection>
+          <Alert type="info" header="oneDNN picks the AMX tier at run time and reports which one">
+            oneDNN, which PyTorch calls for AMX (<em>Anatomy of a Kernel Execution</em>), has three
+            AMX tiers: <code>AVX10_1_512_AMX</code> (BF16 and INT8),{' '}
+            <code>AVX10_1_512_AMX_FP16</code> (adds FP16) and <code>AVX10_2_AMX_2</code> (AVX10.2
+            with a second-generation AMX flag)
+            <Cite s={S.oneDnnIsaTraits} />; the AVX10.1 names are oneDNN&apos;s labels. LLVM&apos;s
+            Diamond Rapids target adds AVX10.2 and AMX-FP8
+            <Cite s={S.llvmX86Td} kind="roadmap" />. <code>ONEDNN_VERBOSE=1</code> prints an{' '}
+            <code>info,cpu,isa</code> line naming the highest tier the process will use; for Granite
+            Rapids, v3.13.4 prints &quot;Intel AVX10.1 and Intel AMX with bfloat16, float16 and
+            8-bit integer support&quot;. A lower tier means AMX is hidden from the process, the
+            permission request failed, or a cap is set
+            <Cite s={S.oneDnnVerbose} />
+            <Cite s={S.oneDnnMaxCpuIsa} />. <code>ONEDNN_MAX_CPU_ISA=AVX10_1_512_AMX</code> sets
+            that cap, which isolates what FP16 adds on the same instance
+            <Cite s={S.oneDnnMaxCpuIsa} />
+            <Cite s={S.oneDnnEnvPrefix} />
+            <Cite
+              s={S.oneDnnBuildOptions}
+              note="The cap is compiled in when oneDNN is built with ENABLE_MAX_CPU_ISA, which defaults to ON."
+            />
+            .
+          </Alert>
+          <ExpandableSection headerText="IPEX is archived: use stock PyTorch">
+            <Box variant="p">
+              IPEX (Intel Extension for PyTorch) is archived: its last commit, on 2026-03-30, adds
+              the archive notice, and the README reports known security issues. Most of its
+              optimizations are upstream, and Intel recommends using PyTorch directly
+              <Cite s={S.ipexReadme} />. Drop the <code>intel_extension_for_pytorch</code> import.
+            </Box>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Which Xeon 6 parts carry a matrix unit, how much memory each one feeds, and which part AWS runs"
+          >
+            The Xeon 6 family
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Table
+            items={partRows}
+            columnDefinitions={[
+              { id: 'part', header: 'Part', cell: (r) => r.part, minWidth: 150 },
+              { id: 'cores', header: 'Cores and L3, per socket', cell: (r) => r.cores, minWidth: 170 },
+              { id: 'mem', header: 'Memory', cell: (r) => r.memory, minWidth: 170 },
+              { id: 'units', header: 'Vector and matrix units', cell: (r) => r.units, minWidth: 170 },
             ]}
             variant="embedded"
             wrapLines
           />
           <Box variant="p">
-            <strong>AMX FP16 is the Xeon 6 specific addition.</strong> Sapphire and
-            Emerald Rapids supported BF16 and INT8 only. Granite Rapids adds the
-            TDPFP16PS instruction — FP16 tile matmul. For inference workloads
-            quantized to FP16 or BF16, this brings Xeon 6 close to the per-thread
-            tensor density of an entry-level GPU for small-batch host-side
-            inference.
+            <strong>After Granite Rapids.</strong> Xeon 6+, Intel&apos;s first data-center
+            processor on Intel 18A, launched in Q2 2026 with up to 288 E-cores; its product page
+            names no matrix extension
+            <Cite s={S.intelXeon6Plus} />. Diamond Rapids, the next-generation Xeon, is on the roadmap
+            with no launch date: Intel 18A-P, up to 256 cores, 1.28 GB of LLC (last-level cache), 16
+            memory channels at 12,800 MT/s, PCIe Gen6, CXL (Compute Express Link) 3.0 and enhanced
+            AMX
+            <Cite s={S.intelHotChips2026} kind="roadmap" />.
           </Box>
-          <Box variant="p">
-            <strong>The full AMX instruction set.</strong> Tile state is configured
-            with LDTILECFG (load tile config) using a TILECFG palette — palette_id=1
-            is the only currently-defined palette, providing 8 tile registers each
-            up to 16 rows × 64 bytes. Tiles are loaded with TILELOADD / TILELOADDT1,
-            stored with TILESTORED, zeroed with TILEZERO. The matmul family is
-            TDPBF16PS (BF16 dot-product producing single-precision), TDPFP16PS
-            (FP16, Granite Rapids), and TDPBSSD / TDPBSUD / TDPBUSD / TDPBUUD for
-            INT8 with signed / unsigned operand combinations.
-          </Box>
-          <Alert type="info" header="oneDNN dispatcher tiers — the cleanest authoritative anchor for AMX generations">
-            oneDNN exposes three AMX dispatcher tiers that map cleanly onto the
-            Intel silicon timeline: <code>AVX10_1_512_AMX</code> (Sapphire Rapids
-            and Emerald Rapids — BF16 and INT8 only), <code>AVX10_1_512_AMX_FP16
-            </code> (Granite Rapids — adds TDPFP16PS), and <code>AVX10_2_AMX_2
-            </code> (next-generation Xeon, AMX-2 with extended capabilities).
-            Production code paths reach AMX through oneDNN, which is what PyTorch,
-            TensorFlow, and OpenVINO use under the hood.
-          </Alert>
-          <ExpandableSection headerText="IPEX (Intel Extension for PyTorch) is archived — AMX paths now live in mainline PyTorch">
-            <Box variant="p">
-              IPEX was Intel&apos;s historical fast path for AMX-accelerated
-              inference, providing optimized operators ahead of mainline PyTorch.
-              The IPEX repository was archived as of March 30, 2026 — the AMX
-              code paths have been upstreamed into mainline PyTorch and are
-              accessed transparently via <code>torch.compile</code> on Xeon 6
-              hardware. Production workflows that previously imported{' '}
-              <code>intel_extension_for_pytorch</code> can now drop the import
-              and rely on stock PyTorch.
-            </Box>
-          </ExpandableSection>
-          <ExpandableSection headerText="AMX as the host-side path for SLM inference">
-            <Box variant="p">
-              The natural pairing for AMX FP16 is Small Language Model inference
-              (Section 24). A 1-7B parameter SLM in FP16 fits comfortably in
-              Xeon 6&apos;s 504 MB declared L3 plus DDR5-7200 / MRDIMM-8800
-              channels. The latency profile for SLM decode on AMX is competitive
-              with entry-level GPU inference at small batch sizes — particularly
-              attractive for multi-tenant deployments where the cost of a
-              dedicated accelerator per tenant does not pencil out.
-            </Box>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -210,37 +433,33 @@ export function IntelXeon6() {
         header={
           <Header
             variant="h2"
-            description="A measured number from AWS, and where the host mesh runs out of headroom"
+            description="Which instance families run Granite Rapids, how large they get, and what to check before placing a job"
           >
-            Memory bandwidth in the wild
+            Xeon 6 on AWS
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            On AWS r8i (custom Xeon 6 with DDR5-7200 RDIMMs), Chips and Cheese measured
-            STREAM triad at <strong>691.62 GB/s</strong> per socket — 2.14× their
-            Emerald Rapids measurement of 323.45 GB/s, hitting essentially the
-            12-channel theoretical peak. AWS chose DDR5-7200 RDIMMs rather than
-            MRDIMM-8800 for M8i / R8i, splitting the difference between the DDR5-6400
-            baseline and the full-speed MRDIMM ceiling
-            ({' '}
-            <Link
-              external
-              href="https://aws.amazon.com/ec2/instance-types/m8i/"
-            >
-              AWS M8i instance page
-            </Link>
-            , accessed 2026-04-23).
+            M8i, C8i and R8i, with their -flex and d variants, and X8i all list Intel Xeon Granite
+            Rapids on Nitro v6. A 96xlarge has 384 vCPUs on 192 cores, with 1,536 GiB on M8i, 3,072
+            GiB on R8i or 6,144 GiB on X8i
+            <Cite s={S.ec2GeneralPurposeSpecs} />
+            <Cite s={S.ec2ComputeOptimizedSpecs} />
+            <Cite s={S.ec2MemoryOptimizedSpecs} />. M8i sustains a 3.9 GHz all-core turbo on
+            DDR5-7200
+            <Cite s={S.m8iPage} />, and AWS claims 2.5x the previous generation&apos;s memory
+            throughput
+            <Cite s={S.m8iPage} kind="vendor-claim" />.
           </Box>
-          <Alert type="warning" header="Mesh congestion is the binding constraint">
-            Per-core L3 read bandwidth on Granite Rapids is ~30 GB/s; on AMD Turin it
-            is closer to 261 GB/s due to the per-CCX L3 architecture. At chip scale
-            this means ~11 GB/s per core on Granite Rapids vs ~98 GB/s per core on
-            Turin across all active cores. The mesh fabric carries every L3 access,
-            and at high core counts that is a real architectural constraint. SNC3
-            partial-mitigates by keeping accesses tile-local.
-          </Alert>
+          <Box variant="p">
+            <strong>Placement on r8i.</strong> The r8i chip is the 96-core 6985P-C
+            <Cite s={S.chipsAndCheeseXeon6} />, so the 192-core r8i.96xlarge carries two
+            <Cite s={S.ec2MemoryOptimizedSpecs} kind="derived" note={twoChipsNote} />. The EC2
+            instance specifications give no NUMA layout per size
+            <Cite s={S.ec2MemoryOptimizedSpecs} />, so read it with <code style={{ whiteSpace: 'nowrap' }}>numactl --hardware</code>{' '}
+            on the size you launch.
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -248,54 +467,62 @@ export function IntelXeon6() {
         header={
           <Header
             variant="h2"
-            description="The lineup that ships in production"
+            description="Where Xeon 6 is the right host, what to check before committing a workload to it, and the first run to make"
           >
-            SKU lineup
+            Choosing Xeon 6 for a workload
           </Header>
         }
       >
-        <Table
-          items={skuRows}
-          columnDefinitions={[
-            { id: 'sku', header: 'SKU', cell: (r) => r.sku, minWidth: 220 },
-            { id: 'cores', header: 'Cores', cell: (r) => r.cores },
-            { id: 'ch', header: 'DDR channels', cell: (r) => r.channels },
-            { id: 'speed', header: 'DDR / MRDIMM speed', cell: (r) => r.ddrSpeed },
-            { id: 'notes', header: 'Notes', cell: (r) => r.notes },
-          ]}
-          variant="embedded"
-          wrapLines
-        />
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Where Xeon 6 wins and where it does not"
-          >
-            Workload fit
-          </Header>
-        }
-      >
-        <ExpandableSection headerText="Where Xeon 6 wins" defaultExpanded>
-          <ul>
-            <li>AMX-emitting kernels — especially with the new FP16 instruction</li>
-            <li>Bandwidth-hungry workloads on 6900P with MRDIMM-8800</li>
-            <li>Capacity-heavy workloads up to 6 TB / socket</li>
-            <li>Mixed-workload servers that benefit from on-die accelerators (DSA, QAT, IAA)</li>
-            <li>CXL 2.0 attached pooled memory (direct from IO die)</li>
-            <li>Workloads with NUMA-aware code that benefits from SNC3 tile partitioning</li>
-          </ul>
-        </ExpandableSection>
-        <ExpandableSection headerText="Where Xeon 6 struggles">
-          <ul>
-            <li>Workloads bottlenecked on per-core L3 bandwidth (mesh congestion)</li>
-            <li>Cross-tile-heavy workloads — each EMIB crossing adds ~24 ns</li>
-            <li>Single-thread bandwidth comparisons vs Turin&apos;s per-CCX L3</li>
-            <li>Highest core-count workloads — Turin Dense ships 192 cores</li>
-          </ul>
-        </ExpandableSection>
+        <SpaceBetween size="m">
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Fits Xeon 6 well</Box>
+              <ul>
+                <li>
+                  BF16, FP16 and INT8 matrix work that reaches AMX through oneDNN, at batch sizes that
+                  share weight reads
+                </li>
+                <li>
+                  Jobs that fit one node: about 32 cores and 160 MB of L3
+                  <Cite s={S.chipsAndCheeseXeon6} kind="derived" note={perTileNote} />
+                </li>
+                <li>
+                  Large-memory work, up to 6,144 GiB on x8i.96xlarge
+                  <Cite s={S.ec2MemoryOptimizedSpecs} />
+                </li>
+                <li>
+                  Offload to QAT (QuickAssist Technology) for crypto and compression, DSA (Data
+                  Streaming Accelerator) for data movement, IAA (In-Memory Analytics Accelerator)
+                  for compression and scans
+                  <Cite s={S.xeon6ProductBrief} />
+                </li>
+              </ul>
+            </div>
+            <div>
+              <Box variant="h3">Check first</Box>
+              <ul>
+                <li>
+                  Single-thread streaming: one core reads about 30 GB/s from L3, less than a Zen 5
+                  core reads from DRAM (<em>AMD EPYC Turin</em>)
+                  <Cite s={S.chipsAndCheeseXeon6} kind="measured" />
+                </li>
+                <li>
+                  More than 128 cores per socket: only E-core parts, which have no AMX
+                  <Cite s={S.xeon6ProductBrief} note={ecoreNote} />
+                </li>
+              </ul>
+            </div>
+          </ColumnLayout>
+          <Box variant="p">
+            <strong>Before you benchmark.</strong> Read the size&apos;s NUMA layout with{' '}
+            <code style={{ whiteSpace: 'nowrap' }}>numactl --hardware</code>, bind the job to one node, and run once with{' '}
+            <code>ONEDNN_VERBOSE=1</code> to confirm the <code>info,cpu,isa</code> line names AMX
+            with float16
+            <Cite s={S.oneDnnVerbose} />. Then compare tokens per second with the 230.4 GB/s
+            per-node ceiling
+            <Cite s={S.chipsAndCheeseXeon6} kind="derived" note={nodeBwNote} />.
+          </Box>
+        </SpaceBetween>
       </Container>
     </SpaceBetween>
   );

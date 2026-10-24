@@ -1,100 +1,234 @@
 import React from 'react';
 
-// Tick-to-trade latency budget diagram. Shows the path from market tick arrival
-// at the NIC through OS-bypass receive, strategy / inference, order generation,
-// and out the wire — with rough latency budgets at each stage.
+// Tick-to-trade pipeline drawn as two lanes: the network stack owns the way in
+// (stages 1 and 2) and the way out (stages 6 and 7); the silicon and memory
+// this dive covers own the middle (stages 3 to 5). No latency budgets are
+// drawn: no per-stage measurement was sourced for this page.
 
 interface Stage {
   num: number;
-  name: string;
-  detail: string;
-  budget: string;
+  title: string;
+  lines: string[];
+  x: number;
+  y: number;
+  w: number;
   fill: string;
-  border: string;
+  stroke: string;
 }
 
+const VB_W = 760;
+const VB_H = 320;
+const TOP_Y = 42;
+const BOTTOM_Y = 188;
+const BOX_H = 88;
+const TOP_W = 164;
+const BOTTOM_W = 200;
+
+const NET_FILL = '#f2f8fd';
+const NET_STROKE = '#0972d3';
+const MEM_FILL = '#fdf3ec';
+const MEM_STROKE = '#ec7211';
+const DECIDE_FILL = '#ecf7ec';
+const DECIDE_STROKE = '#037f0c';
+
 const stages: Stage[] = [
-  { num: 1, name: 'Tick arrives at NIC', detail: 'Multicast UDP from exchange feed handler', budget: '~hundreds of ns', fill: '#f2f8fd', border: '#0972d3' },
-  { num: 2, name: 'OS-bypass receive', detail: 'Solarflare / EFA / DPDK lifts directly to user space', budget: '~hundreds of ns', fill: '#f2f8fd', border: '#0972d3' },
-  { num: 3, name: 'Decode + book', detail: 'Order book state updated; cache-resident', budget: '~µs', fill: '#fdf3ec', border: '#ec7211' },
-  { num: 4, name: 'Strategy / inference', detail: 'Decision logic; AMX or accelerator', budget: '~µs to 10s of µs', fill: '#ecf7ec', border: '#037f0c' },
-  { num: 5, name: 'Order generation', detail: 'Build outgoing message; risk check', budget: '~hundreds of ns', fill: '#fdf3ec', border: '#ec7211' },
-  { num: 6, name: 'OS-bypass send', detail: 'Write directly to NIC TX ring', budget: '~hundreds of ns', fill: '#f2f8fd', border: '#0972d3' },
-  { num: 7, name: 'Order on the wire', detail: 'Out to colo switch and exchange', budget: '~hundreds of ns', fill: '#f2f8fd', border: '#0972d3' },
+  {
+    num: 1,
+    title: 'Tick arrives',
+    lines: ['Multicast UDP feed', 'from the exchange'],
+    x: 16,
+    y: TOP_Y,
+    w: TOP_W,
+    fill: NET_FILL,
+    stroke: NET_STROKE,
+  },
+  {
+    num: 2,
+    title: 'OS-bypass receive',
+    lines: ['Onload, ef_vi or DPDK', 'hands it to user space'],
+    x: 196,
+    y: TOP_Y,
+    w: TOP_W,
+    fill: NET_FILL,
+    stroke: NET_STROKE,
+  },
+  {
+    num: 3,
+    title: 'Decode and book update',
+    lines: ['Book state updated in', 'place; keep it in cache'],
+    x: 56,
+    y: BOTTOM_Y,
+    w: BOTTOM_W,
+    fill: MEM_FILL,
+    stroke: MEM_STROKE,
+  },
+  {
+    num: 4,
+    title: 'Strategy or inference',
+    lines: ['Decision logic on the', 'CPU, its matrix units', 'or an accelerator'],
+    x: 280,
+    y: BOTTOM_Y,
+    w: BOTTOM_W,
+    fill: DECIDE_FILL,
+    stroke: DECIDE_STROKE,
+  },
+  {
+    num: 5,
+    title: 'Order and risk check',
+    lines: ['Build the outgoing', 'message and run the', 'pre-trade risk check'],
+    x: 504,
+    y: BOTTOM_Y,
+    w: BOTTOM_W,
+    fill: MEM_FILL,
+    stroke: MEM_STROKE,
+  },
+  {
+    num: 6,
+    title: 'OS-bypass send',
+    lines: ['Write straight to the', 'NIC transmit ring'],
+    x: 400,
+    y: TOP_Y,
+    w: TOP_W,
+    fill: NET_FILL,
+    stroke: NET_STROKE,
+  },
+  {
+    num: 7,
+    title: 'Order on the wire',
+    lines: ['Through the colo', 'switch to the exchange'],
+    x: 580,
+    y: TOP_Y,
+    w: TOP_W,
+    fill: NET_FILL,
+    stroke: NET_STROKE,
+  },
 ];
 
+const byNum = (n: number) => stages.find((s) => s.num === n) as Stage;
+const cx = (s: Stage) => s.x + s.w / 2;
+
+// Corridor between the two lanes, used by the elbow connectors.
+const CORRIDOR_Y = 159;
+
 export function TickToTradeDiagram() {
-  const width = 920;
-  const height = 360;
-  const margin = { top: 50, left: 30, right: 30, bottom: 30 };
-  const lane = (width - margin.left - margin.right) / stages.length;
-  const laneInset = 8;
-  const boxW = lane - laneInset * 2;
-  const boxH = 240;
-  const yBox = margin.top + 20;
+  const s2 = byNum(2);
+  const s3 = byNum(3);
+  const s5 = byNum(5);
+  const s6 = byNum(6);
+  const straight: Array<[number, number]> = [
+    [1, 2],
+    [3, 4],
+    [4, 5],
+    [6, 7],
+  ];
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ overflowX: 'auto' }}>
       <svg
-        width="100%"
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="xMidYMid meet"
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
         role="img"
-        aria-label="Tick-to-trade latency pipeline: market tick arrives at NIC, OS-bypass receive, decode and book update, strategy or inference, order generation, OS-bypass send, order on the wire"
-        style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
+        aria-labelledby="tick-to-trade-title"
+        style={{
+          width: '100%',
+          minWidth: 640,
+          height: 'auto',
+          display: 'block',
+        }}
       >
-        <text x={margin.left} y={20} fontSize={13} fontWeight={700} fill="#16191f">
-          Tick-to-trade pipeline — where every nanosecond is fought for
-        </text>
-        <text x={margin.left} y={36} fontSize={11} fill="#687078">
-          The full HFT round trip is in the low microseconds. Memory-architecture choices land squarely on stages 3 and 4.
+        <title id="tick-to-trade-title">
+          Tick-to-trade runs through seven stages. The network stack owns the way in and the way
+          out: the tick arrives as a multicast UDP feed, a kernel-bypass library such as Onload,
+          ef_vi or DPDK hands it to user space, and the order leaves through the NIC transmit ring.
+          The three middle stages, updating the order book, running the strategy or model, and
+          building the order with its risk check, run on the CPU, caches and memory this deep dive
+          covers.
+        </title>
+        <defs>
+          <marker
+            id="ttt-ah"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M0,0 L10,5 L0,10 z" fill="#414d5c" />
+          </marker>
+        </defs>
+        <style>{`
+          .ttt-band-net { fill: #f7fafd; stroke: #b6cfe8; stroke-width: 1; stroke-dasharray: 5 4; }
+          .ttt-band-mem { fill: #fffaf5; stroke: #f2c9a6; stroke-width: 1; stroke-dasharray: 5 4; }
+          .ttt-lane { font: 600 11px sans-serif; }
+          .ttt-num { fill: #ffffff; font: 700 11px sans-serif; text-anchor: middle; }
+          .ttt-title { fill: #16191f; font: 600 12px sans-serif; }
+          .ttt-line { fill: #414d5c; font: 11px sans-serif; }
+          .ttt-arrow { stroke: #414d5c; stroke-width: 1.5; fill: none; marker-end: url(#ttt-ah); }
+        `}</style>
+
+        <rect x={0} y={0} width={VB_W} height={VB_H} rx={8} fill="#ffffff" stroke="#e9ebed" />
+
+        <rect className="ttt-band-net" x={8} y={10} width={VB_W - 16} height={132} rx={8} />
+        <text className="ttt-lane" x={20} y={30} fill="#065299">
+          NETWORK STACK: stages 1, 2, 6 and 7
         </text>
 
-        {stages.map((s, i) => {
-          const x = margin.left + i * lane + laneInset;
+        <rect className="ttt-band-mem" x={8} y={176} width={VB_W - 16} height={136} rx={8} />
+        <text className="ttt-lane" x={20} y={300} fill="#8a4b0f">
+          SILICON AND MEMORY: stages 3, 4 and 5, the subject of this deep dive
+        </text>
+
+        {stages.map((s) => (
+          <g key={s.num}>
+            <rect
+              x={s.x}
+              y={s.y}
+              width={s.w}
+              height={BOX_H}
+              rx={6}
+              fill={s.fill}
+              stroke={s.stroke}
+              strokeWidth={1.5}
+            />
+            <circle cx={s.x + 16} cy={s.y + 18} r={10} fill={s.stroke} />
+            <text className="ttt-num" x={s.x + 16} y={s.y + 22}>
+              {s.num}
+            </text>
+            <text className="ttt-title" x={s.x + 32} y={s.y + 22}>
+              {s.title}
+            </text>
+            {s.lines.map((line, i) => (
+              <text key={line} className="ttt-line" x={s.x + 12} y={s.y + 46 + i * 16}>
+                {line}
+              </text>
+            ))}
+          </g>
+        ))}
+
+        {straight.map(([a, b]) => {
+          const from = byNum(a);
+          const to = byNum(b);
+          const y = from.y + BOX_H / 2;
           return (
-            <g key={s.num}>
-              <rect x={x} y={yBox} width={boxW} height={boxH} rx={6} fill={s.fill} stroke={s.border} strokeWidth={2} />
-              <circle cx={x + 14} cy={yBox + 16} r={11} fill={s.border} />
-              <text x={x + 14} y={yBox + 20} fontSize={11} fontWeight={700} fill="#ffffff" textAnchor="middle">
-                {s.num}
-              </text>
-              <text x={x + 32} y={yBox + 20} fontSize={11} fontWeight={700} fill="#16191f">
-                {s.name}
-              </text>
-              <text x={x + 8} y={yBox + 56} fontSize={10} fontWeight={600} fill="#16191f">
-                What happens
-              </text>
-              <text x={x + 8} y={yBox + 72} fontSize={10} fill="#16191f">
-                {s.detail.split('\n').map((line, idx) => (
-                  <tspan key={idx} x={x + 8} dy={idx === 0 ? 0 : 12}>
-                    {line}
-                  </tspan>
-                ))}
-              </text>
-              <text x={x + 8} y={yBox + 130} fontSize={10} fontWeight={600} fill="#16191f">
-                Latency budget
-              </text>
-              <text x={x + 8} y={yBox + 148} fontSize={11} fontWeight={700} fill={s.border}>
-                {s.budget}
-              </text>
-            </g>
+            <line
+              key={`${a}-${b}`}
+              className="ttt-arrow"
+              x1={from.x + from.w}
+              y1={y}
+              x2={to.x - 1}
+              y2={y}
+            />
           );
         })}
 
-        {/* Arrows between stages */}
-        {stages.slice(0, -1).map((_, i) => {
-          const x1 = margin.left + (i + 1) * lane - laneInset;
-          const x2 = margin.left + (i + 1) * lane + laneInset;
-          const y = yBox + boxH / 2;
-          return (
-            <g key={`arrow-${i}`}>
-              <line x1={x1} y1={y} x2={x2} y2={y} stroke="#16191f" strokeWidth={1.5} />
-              <polygon points={`${x2},${y} ${x2 - 5},${y - 4} ${x2 - 5},${y + 4}`} fill="#16191f" />
-            </g>
-          );
-        })}
+        <path
+          className="ttt-arrow"
+          d={`M ${cx(s2)} ${s2.y + BOX_H} V ${CORRIDOR_Y} H ${cx(s3)} V ${s3.y - 1}`}
+        />
+        <path
+          className="ttt-arrow"
+          d={`M ${cx(s5)} ${s5.y} V ${CORRIDOR_Y} H ${cx(s6)} V ${s6.y + BOX_H + 1}`}
+        />
       </svg>
     </div>
   );

@@ -4,41 +4,88 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
-import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
-import Link from '@cloudscape-design/components/link';
-import ExpandableSection from '@cloudscape-design/components/expandable-section';
-import { CerebrasWaferDiagram } from '../components/CerebrasWaferDiagram';
+import { Cite } from '../components/Cite';
+import { CerebrasWaferDiagram, CerebrasLayerSplitDiagram } from '../components/CerebrasWaferDiagram';
+import { S } from '../sources/CerebrasWaferScale';
 
-interface BenchRow {
-  model: string;
-  cerebras: string;
-  blackwell: string;
-  source: string;
-  url: string;
+const wse3PeakNote =
+  'The WSE-3 announcement calls this "peak AI performance" without saying dense or sparse. The CS-4 datasheet marks the WSE-3T\'s 250 PFLOPS, twice this, as sparse FP16.';
+
+const sparseNote = 'The datasheet footnotes the 250 PFLOPS: "compute shown as sparse FP16."';
+
+const ridgeNote =
+  'WSE-3: 125 PFLOPS / 21 PB/s = about 6 FLOP/byte. WSE-3T: 250 / 43.2 = about 5.8. Both peaks are sparse FP16, so the dense ridge is lower. BF16 decode does 2 FLOPs per 2-byte weight per sequence, 1 FLOP/byte at batch 1, so the weight matmuls reach a ridge of 6 at a batch of 6 and a lower dense ridge sooner.';
+
+const denseEstimateNote =
+  'The Register lists WSE-3 dense FP16 at 12.5 PFLOPS beside the 125 sparse, citing no Cerebras source ("the same 10x sparsity we saw with the WSE-3"). 12.5 / 21 PB/s = about 0.6 FLOP/byte.';
+
+const h200RidgeNote =
+  'H200 FP8: 1,979 TFLOPS dense / 4.8 TB/s = about 412 FLOP/byte (Thesis and Framing). FP8 decode does 2 FLOPs per 1-byte weight per token, so the ridge falls at a batch of about 206.';
+
+const gptOssSizeNote =
+  '117B parameters x 4.25 bits / 8 = about 62 GB. Attention, router and embeddings stay in BF16 (modules_to_not_convert), so the true size is higher.';
+
+const perRequestNote =
+  "Our reading: Cerebras lists one speed per model without defining it, so it compares with NVIDIA's per-user figure.";
+
+const curveNote =
+  'Per-GPU throughput falls as per-user speed rises: the same post gives 30,000 tokens/s per GPU at 100 tokens/s per user, with speculative decoding.';
+
+const aaNote =
+  'Artificial Analysis figures, quoted in a Cerebras press release. The release does not name the Blackwell system behind the 1,038; its DGX B200 mention refers to NVIDIA\'s own claim of 1,000 tokens/s per user.';
+
+interface SpeedRow {
+  id: string;
+  model: React.ReactNode;
+  cerebras: React.ReactNode;
+  nvidia: React.ReactNode;
 }
 
-const benchRows: BenchRow[] = [
+const speedRows: SpeedRow[] = [
   {
-    model: 'Llama 4 Maverick',
-    cerebras: '2,522 tokens/s',
-    blackwell: '1,038 tokens/s',
-    source: 'Artificial Analysis (May 2025)',
-    url: 'https://artificialanalysis.ai/',
+    id: 'gpt-oss',
+    model: (
+      <>
+        gpt-oss-120b, in the shared catalog
+        <Cite s={S.cerebrasModels} />
+      </>
+    ),
+    cerebras: (
+      <>
+        About 3,000 tokens/s
+        <Cite s={S.cerebrasGptOssPage} kind="vendor-claim" note={perRequestNote} />; $0.35 in
+        and $0.75 out per million tokens
+        <Cite s={S.cerebrasGptOssPage} />
+      </>
+    ),
+    nvidia: (
+      <>
+        B200, TensorRT-LLM: up to 60,000 tokens/s per GPU, or 1,000 per user
+        <Cite s={S.inferenceMaxBlog} kind="vendor-claim" note={curveNote} />
+      </>
+    ),
   },
   {
-    model: 'Qwen3-235B-A22B',
-    cerebras: 'Production at $0.60 / $1.20 per Mtok',
-    blackwell: 'Comparable model running on B200 / H200 fleets',
-    source: 'Cerebras inference page',
-    url: 'https://www.cerebras.ai/inference',
-  },
-  {
-    model: 'GPT-OSS-120B',
-    cerebras: 'Production deployment',
-    blackwell: 'NVIDIA-cited 60,000 TPS/GPU max throughput',
-    source: 'Cerebras / NVIDIA blogs',
-    url: 'https://www.cerebras.ai/inference',
+    id: 'maverick',
+    model: (
+      <>
+        Llama 4 Maverick, May 2025, since retired from the catalog
+        <Cite s={S.cerebrasModels} />
+      </>
+    ),
+    cerebras: (
+      <>
+        2,522 tokens/s
+        <Cite s={S.maverickPress} kind="measured" note={aaNote} />
+      </>
+    ),
+    nvidia: (
+      <>
+        NVIDIA Blackwell: 1,038 tokens/s
+        <Cite s={S.maverickPress} kind="measured" note={aaNote} />
+      </>
+    ),
   },
 ];
 
@@ -49,35 +96,40 @@ export function CerebrasWaferScale() {
         header={
           <Header
             variant="h1"
-            description="The wafer is the chip — 900,000 cores and 44 GB of on-wafer SRAM"
+            description="Where a wafer of SRAM beats HBM, where models outgrow it, and how to reach it from AWS today"
           >
-            Cerebras WSE-3 — wafer-scale silicon
+            Cerebras Wafer-Scale
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>What WSE-3 is.</strong> The third generation of Cerebras&apos;s
-            wafer-scale engine. A single piece of silicon ~46,225 mm² in area —
-            roughly 57× the area of a flagship GPU die — containing ~900,000
-            individual cores and ~44 GB of SRAM <em>on the wafer</em>. There is
-            no HBM, no DDR, and no external memory in the steady-state inference
-            path. The model is in SRAM. The aggregate on-wafer memory bandwidth
-            is in the tens of petabytes per second — about three orders of
-            magnitude over a Blackwell GPU&apos;s HBM3e
-            ({' '}
-            <Link external href="https://www.cerebras.ai/">
-              Cerebras
-            </Link>
-            , accessed 2026-04-23).
+            Cerebras builds each accelerator from a whole wafer. The WSE-3 (Wafer-Scale Engine 3)
+            is one 46,225 mm² die
+            <Cite s={S.cerebrasS1} />, about 57x an H100 die of 814 mm²
+            <Cite s={S.hopperArchBlog} kind="derived" note="46,225 / 814 = 56.8." />, with 900,000
+            cores and 44 GB of SRAM (static RAM) on the same silicon.
+            <Cite s={S.cerebrasS1} /> That SRAM delivers 21 PB/s, 2,625x the HBM (High Bandwidth
+            Memory) bandwidth of a B200.
+            <Cite s={S.cerebrasS1} note="Cerebras's own comparison, against the B200." />{' '}
+            Inference keeps the weights in that SRAM
+            <Cite s={S.cerebrasInferenceBlog} />; training adds up to 1.2 PB of external memory.
+            <Cite s={S.wse3Press} />
           </Box>
           <Box variant="p">
-            <strong>Why this matters.</strong> The single technical claim that
-            frames every Cerebras conversation is: HBM is a bandwidth-wall
-            problem only because compute and memory are in different packages.
-            Put them in the same wafer and the wall does not exist. The
-            economics of MoE inference (Section 23) lean hard on this —
-            experts in on-wafer SRAM switch in nanoseconds, not microseconds.
+            The CS-4, announced in August 2026 with first shipments planned for that quarter, puts
+            three WSE-3T wafers in a rack, each with the same cores and 44 GB at twice the compute
+            and bandwidth: 250 PFLOPS of sparse FP16 (16-bit floating point) and 43.2 PB/s, linked
+            wafer to wafer at as low as 2 µs.
+            <Cite s={S.cs4Press} />
+            <Cite s={S.cs4Datasheet} note={sparseNote} />
+            <Cite s={S.cs4Blog} />
+          </Box>
+          <Box variant="p">
+            Put compute and memory on one wafer and the bandwidth wall becomes a capacity wall: a
+            model larger than 44 GB is split at layer boundaries across wafers
+            <Cite s={S.cerebrasInferenceBlog} />, and the links between wafers become the network
+            to plan around.
           </Box>
         </SpaceBetween>
       </Container>
@@ -86,7 +138,7 @@ export function CerebrasWaferScale() {
         header={
           <Header
             variant="h2"
-            description="The wafer in proportion to a typical accelerator package"
+            description="A wafer and an H100 die at the same scale, and where each keeps its weights"
           >
             What the silicon looks like
           </Header>
@@ -95,13 +147,14 @@ export function CerebrasWaferScale() {
         <SpaceBetween size="m">
           <CerebrasWaferDiagram />
           <Box variant="p">
-            A standard accelerator package puts the GPU die in the middle and
-            arranges 4-8 HBM stacks around it on a silicon interposer. Bandwidth
-            between the GPU and HBM is high (TB/s class) but the path traverses
-            the interposer and the HBM PHY. WSE-3 collapses that distance: the
-            cores and the memory are <em>the same piece of silicon</em>. Each
-            core has its own SRAM and a connection to its neighbors through an
-            on-wafer fabric.
+            A GPU package puts HBM stacks beside the die on a silicon interposer: 80 GB on an H100
+            <Cite s={S.h100Page} />, 288 GB in eight stacks on a B300.
+            <Cite s={S.blackwellUltraBlog} /> Every weight read crosses from a stack to the die.
+            On the WSE-3 each core owns 48 kB of SRAM that no other core uses and talks to its
+            neighbours over a two-dimensional mesh
+            <Cite s={S.cerebrasSdkBlog} />; 900,000 cores at 48 kB is about 43 GB, the 44 GB on
+            the spec sheet.
+            <Cite s={S.cerebrasSdkBlog} kind="derived" note="900,000 x 48 kB = 43.2 GB." />
           </Box>
         </SpaceBetween>
       </Container>
@@ -110,53 +163,41 @@ export function CerebrasWaferScale() {
         header={
           <Header
             variant="h2"
-            description="The four properties that come out of wafer-scale"
+            description="BF16 decode crosses the ridge by a batch of six, and the compiler fixes where everything runs"
           >
-            What changes at wafer scale
+            What changes on one wafer
           </Header>
         }
       >
         <ColumnLayout columns={2} variant="text-grid">
           <div>
-            <Box variant="h3">No bandwidth wall</Box>
+            <Box variant="h3">The ridge drops to 6 FLOP/byte or less</Box>
             <Box variant="p">
-              Aggregate on-wafer memory bandwidth is in the tens of PB/s.
-              Section 6&apos;s bandwidth wall — limited by HBM pin speed and
-              interposer signal integrity — is a different physical problem
-              than &ldquo;cores reading from adjacent SRAM cells.&rdquo; The
-              ridge point on a roofline plot moves so far left that decode is
-              compute-bound, not bandwidth-bound.
+              A WSE-3 peaks at 125 PFLOPS
+              <Cite s={S.wse3Press} note={wse3PeakNote} /> over 21 PB/s
+              <Cite s={S.cerebrasS1} />, a ridge of about 6 FLOP per byte.
+              <Cite s={S.cerebrasS1} kind="derived" note={ridgeNote} /> That peak counts
+              sparsity: the WSE-3T&apos;s 250 PFLOPS, twice the WSE-3&apos;s, is sparse FP16
+              <Cite s={S.cs4Datasheet} note={sparseNote} />, and no Cerebras dense figure was
+              located, so 6 is a ceiling. Decode in BF16 (bfloat16) does about 1 FLOP per weight
+              byte per sequence, so the weight matmuls cross the ridge by a batch of six, where an
+              H200 in FP8 needs about 200.
+              <Cite s={S.h200Page} kind="derived" note={h200RidgeNote} /> A trade-press estimate
+              puts dense FP16 at a tenth of the peak, a ridge near 0.6 that even batch 1 crosses.
+              <Cite s={S.registerCs4} kind="derived" note={denseEstimateNote} /> The WSE-3T
+              doubles compute and bandwidth together
+              <Cite s={S.cs4Press} />, so its ridge stays near 6.
             </Box>
           </div>
           <div>
-            <Box variant="h3">Static dataflow execution</Box>
+            <Box variant="h3">Compiled routes, data-triggered tasks</Box>
             <Box variant="p">
-              The compiler places the program onto specific cores and routes
-              activations through the on-wafer fabric. There is no global
-              scheduler, no cache hierarchy, no warps. The program is the
-              schedule. Closer to Trainium&apos;s NEFF model than to a GPU, but
-              spread across nearly a million cores instead of dozens of SMs.
-            </Box>
-          </div>
-          <div>
-            <Box variant="h3">MoE expert switching is free</Box>
-            <Box variant="p">
-              All experts live on-wafer. Routing a token to a different expert
-              is a fabric-internal event, not a fabric-crossing event. There is
-              no all-to-all-over-NVLink or all-to-all-over-InfiniBand cost
-              because there is no HBM and no network in the path.
-            </Box>
-          </div>
-          <div>
-            <Box variant="h3">Capacity is the constraint</Box>
-            <Box variant="p">
-              The model has to fit on the wafer. 44 GB of SRAM means a 70B
-              parameter model in BF16 does not fit; it must be quantized or the
-              workload must run on a multi-CS-3 cluster. Cerebras&apos;s
-              solution is to chain wafers — multiple WSE-3 dies cooperating
-              over inter-system links. For models that fit, the architecture
-              wins; for models that do not, the cost / capacity calculus
-              shifts.
+              The compiler places the program on specific cores and fixes the routes through the
+              fabric
+              <Cite s={S.cerebrasSdkDocs} />; at run time a core runs a task when its data arrives.
+              <Cite s={S.cerebrasSdkBlog} /> With each core&apos;s 48 kB private, there is no
+              cache hierarchy to tune and no warps to keep occupied. As with a Trainium NEFF
+              (Neuron Executable File Format), placement is settled before the model runs.
             </Box>
           </div>
         </ColumnLayout>
@@ -166,39 +207,69 @@ export function CerebrasWaferScale() {
         header={
           <Header
             variant="h2"
-            description="What Cerebras has actually shipped — and what third-party benchmarks say"
+            description="Layers split across wafers, and the link between them becomes the network you size"
           >
-            Production inference state
+            When the model outgrows one wafer
           </Header>
         }
       >
         <SpaceBetween size="m">
-          <Table
-            items={benchRows}
-            columnDefinitions={[
-              { id: 'model', header: 'Model', cell: (r) => r.model, minWidth: 200 },
-              { id: 'cb', header: 'Cerebras (third-party measured)', cell: (r) => r.cerebras },
-              { id: 'bw', header: 'Comparison silicon', cell: (r) => r.blackwell },
-              {
-                id: 'src',
-                header: 'Source',
-                cell: (r) => (
-                  <Link external href={r.url}>
-                    {r.source}
-                  </Link>
-                ),
-              },
-            ]}
-            variant="embedded"
-            wrapLines
-          />
-          <Alert type="success">
-            On Llama 4 Maverick, Artificial Analysis measured Cerebras at
-            2,522 tokens/s — versus Blackwell at 1,038 tokens/s, SambaNova at
-            794, and Groq at 549 (May 2025). For an MoE model where experts
-            live on-wafer, the throughput gap is not a marketing artifact; it
-            is a direct consequence of skipping the HBM-and-fabric round trip.
-          </Alert>
+          <Box variant="p">
+            At 16-bit weights one wafer holds a 20B-parameter model; a 70B model runs on as few as
+            four systems, split at layer boundaries.
+            <Cite s={S.cerebrasInferenceBlog} />
+          </Box>
+          <CerebrasLayerSplitDiagram />
+          <Box variant="small" color="text-body-secondary">
+            I/O latency between wafers: as low as 2 µs on CS-4, 5 µs on CS-3.
+            <Cite s={S.cs4Press} />
+          </Box>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="h3">Expert routing stays on one wafer</Box>
+              <Box variant="p">
+                Each layer sits whole on one wafer, so an MoE (Mixture of Experts) layer&apos;s
+                router and experts share that wafer&apos;s SRAM and a token&apos;s trip to its
+                expert never leaves it.
+                <Cite
+                  s={S.cerebrasInferenceBlog}
+                  kind="derived"
+                  note="Follows from splitting at layer boundaries."
+                />{' '}
+                Only the activation hand-off between layer groups crosses wafers.{' '}
+                <em>Mixture of Experts and Sparse Activation</em> sets this against a GPU
+                cluster&apos;s all-to-all.
+              </Box>
+            </div>
+            <div>
+              <Box variant="h3">Capacity sets the wafer count</Box>
+              <Box variant="p">
+                gpt-oss-120b has 117B parameters and fits on one 80 GB H100.
+                <Cite s={S.gptOss120bReadme} /> At the 4.25 bits per weight of its MXFP4
+                (Microscaling FP4) checkpoint it needs at least 62 GB
+                <Cite s={S.gptOss120bConfig} kind="derived" note={gptOssSizeNote} />
+                <Cite s={S.ocpMx} />, more than one wafer; the Cerebras model page states no
+                serving precision.
+                <Cite s={S.cerebrasGptOssPage} /> A CS-4 rack holds 132 GB of SRAM
+                <Cite s={S.cs4Press} kind="derived" note="Three wafers x 44 GB." />; one B300
+                holds 288 GB of HBM3e
+                <Cite s={S.blackwellUltraBlog} /> and a GB300 NVL72 20 TB.
+                <Cite s={S.gb300Nvl72} />
+              </Box>
+            </div>
+          </ColumnLayout>
+          <Box variant="p">
+            <strong>Count wafers before you price.</strong> Weight bytes at the serving precision
+            divided by 44 GB, rounded up, is a floor: the KV (key-value) cache needs room too, and
+            the Cerebras inference blog does not say where it lives.
+            <Cite s={S.cerebrasInferenceBlog} /> Each wafer boundary adds at least 2 µs to every
+            token.
+            <Cite
+              s={S.cs4Blog}
+              kind="derived"
+              note="One activation hand-off per wafer boundary per decode step, at the CS-4's minimum wafer-to-wafer latency."
+            />
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -206,41 +277,84 @@ export function CerebrasWaferScale() {
         header={
           <Header
             variant="h2"
-            description="The places the wafer-scale bet does not pay"
+            description="Per-request speed on a wafer, set against NVIDIA's figures in the same unit"
           >
-            Where Cerebras struggles
+            Measured and quoted speed
           </Header>
         }
       >
-        <ExpandableSection headerText="Capacity and model fit">
+        <SpaceBetween size="m">
+          <Table
+            items={speedRows}
+            trackBy="id"
+            columnDefinitions={[
+              { id: 'model', header: 'Model', cell: (r) => r.model, minWidth: 180 },
+              { id: 'cb', header: 'Cerebras', cell: (r) => r.cerebras, minWidth: 200 },
+              { id: 'nv', header: 'NVIDIA', cell: (r) => r.nvidia, minWidth: 200 },
+            ]}
+            variant="embedded"
+            wrapLines
+          />
           <Box variant="p">
-            44 GB of on-wafer SRAM is not in the same league as 288 GB of
-            HBM3e on a single B300 GPU, let alone the 13.4 TB / 20 TB of
-            aggregate HBM in NVL72. Models that fit comfortably in one B300 may
-            need a multi-wafer Cerebras configuration. The economics depend on
-            how many wafers it takes to host a model versus how many GPUs.
+            NVIDIA&apos;s 60,000 tokens/s is one B200&apos;s total across all its users; set its
+            1,000 per user
+            <Cite s={S.inferenceMaxBlog} kind="vendor-claim" /> against about 3,000 on Cerebras.
+            <Cite s={S.cerebrasGptOssPage} kind="vendor-claim" /> The Maverick measurement put
+            SambaNova at 794 tokens/s and Groq at 549
+            <Cite s={S.maverickPress} kind="measured" note={aaNote} />; <em>Groq, SambaNova and
+            Dataflow</em> covers both.
           </Box>
-        </ExpandableSection>
-        <ExpandableSection headerText="Software ecosystem and tooling maturity">
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="What AWS has announced, what you can subscribe to today, and what to check first"
+          >
+            Reaching Cerebras from AWS
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
           <Box variant="p">
-            CUDA and the surrounding ecosystem (cuBLAS, cuDNN, FlashAttention,
-            CUTLASS, TensorRT-LLM, vLLM, SGLang, Triton, and so on) is a
-            decade of accumulated tuning. Cerebras&apos;s software stack has
-            matured but does not have the same long-tail operator coverage. For
-            workloads that depend on a specific kernel implementation, GPU
-            silicon often wins on availability before it wins on performance.
+            <strong>Announced: Amazon Bedrock.</strong> In March 2026 AWS and Cerebras announced
+            CS-3 systems in AWS data centers, offered exclusively through Amazon Bedrock rather
+            than as EC2 instances, with Trainium doing prefill and CS-3 decode over EFA (Elastic
+            Fabric Adapter) networking.
+            <Cite s={S.awsCerebrasPress} /> Trainium sends the KV cache it computes to the wafer
+            <Cite s={S.cerebrasAwsBlog} />, so that transfer crosses EFA;{' '}
+            <em>Disaggregated Serving and Speculative Decoding</em> covers when it pays. The
+            launch was due &quot;in the next couple of months&quot;.
+            <Cite s={S.awsCerebrasPress} /> This research located no AWS launch announcement as
+            of 2026-10-16; a trade-press summary of Cerebras&apos;s August 2026 earnings call has
+            the CEO expecting Q1 2027.
+            <Cite s={S.earningsCallSummary} />
           </Box>
-        </ExpandableSection>
-        <ExpandableSection headerText="Marketplace and supply">
           <Box variant="p">
-            Cerebras systems are sold as inference-as-a-service and as
-            on-premises systems. AWS does not currently host CS-3 in EC2.
-            Customers who need an AWS-resident solution have to deploy elsewhere
-            or use Cerebras&apos;s hosted inference API. This is a real
-            integration cost for AWS-native architectures even when the
-            performance argument favors Cerebras.
+            <strong>Software coverage.</strong> CUDA&apos;s libraries and serving stacks cover a
+            long tail of operators the Cerebras stack does not. The Cerebras API follows the
+            OpenAI Chat Completions format
+            <Cite s={S.cerebrasInferenceBlog} />, so client code ports as is and the gap bites on
+            custom kernels and models outside the catalog.
           </Box>
-        </ExpandableSection>
+          <Box variant="p">
+            <strong>Supply.</strong> Cerebras sells on-premises systems and cloud inference, and
+            two customers dominate its revenue: MBZUAI (Mohamed bin Zayed University of
+            Artificial Intelligence) at 62% and G42 at 24% in 2025. An OpenAI agreement is valued
+            at more than $20 billion for 750 megawatts.
+            <Cite s={S.cerebrasS1} /> Get dedicated capacity committed in the contract.
+          </Box>
+          <Box variant="p">
+            <strong>Available today: AWS Marketplace.</strong> The Cerebras Fast Inference Cloud
+            listing is a usage-billed subscription to the OpenAI-compatible Cerebras API.
+            <Cite s={S.awsMarketplaceListing} /> Shared inference serves gpt-oss-120b and
+            qwen-3.8-27b; other models need a Dedicated Inference deployment.
+            <Cite s={S.cerebrasModels} /> Point an OpenAI client at it, measure your own prompts
+            at your own concurrency, and plan on Bedrock once AWS announces the launch.
+          </Box>
+        </SpaceBetween>
       </Container>
     </SpaceBetween>
   );

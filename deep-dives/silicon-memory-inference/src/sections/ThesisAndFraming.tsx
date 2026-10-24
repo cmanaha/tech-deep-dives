@@ -5,8 +5,30 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Alert from '@cloudscape-design/components/alert';
-import Link from '@cloudscape-design/components/link';
 import { TriangleDiagram } from '../components/TriangleDiagram';
+import { Cite } from '../components/Cite';
+import { S } from '../sources/ThesisAndFraming';
+
+const sparseNote =
+  'NVIDIA marks the H200 FP8 Tensor Core figure, 3,958 TFLOPS, "With sparsity". Its Hopper architecture blog lists Tensor Core peaks as dense/sparse pairs at a 1:2 ratio, so dense FP8 is about 1,979 TFLOPS.';
+
+const ridgeNote =
+  '1,979 TFLOPS / 4.8 TB/s = 412 FLOP per byte (dense FP8). With the sparse 3,958 TFLOPS it would be 825.';
+
+const decodeNote =
+  'A decode step multiplies every weight once per sequence in the batch: one multiply-add, 2 FLOPs. With 8-bit weights each weight is 1 byte, so a batch of B gives about 2B FLOP per byte of weights read: 2 to 10 at batch 1 to 5. 412 / 10 = 41 and 412 / 2 = 206. KV-cache reads add bytes, so real decode sits at or below this.';
+
+const sparseRidgeNote =
+  'The H200 page marks FP8 Tensor Core 3,958 TFLOPS "With sparsity". 3,958 / 4.8 = 825 FLOP per byte.';
+
+const rooflineNote =
+  'Roofline: attainable FLOP/s = min(peak FLOP/s, bandwidth x operational intensity). Below the ridge the bandwidth term is the smaller one, so attainable throughput moves with bandwidth and ignores peak.';
+
+const mispredictNote =
+  'MispredictPenalty in LLVM scheduling models at llvmorg-19.1.0: Neoverse V2 10 (commented "Copied from N2"), Zen 4 13, Sapphire Rapids 14. These are compiler cost estimates, not measurements.';
+
+const amxNote =
+  'Comment in amxintrin.h: "AMX tile register size can be configured, the maximum size is 16x64=1024 bytes."';
 
 export function ThesisAndFraming() {
   return (
@@ -15,48 +37,54 @@ export function ThesisAndFraming() {
         header={
           <Header
             variant="h1"
-            description="Why peak FLOPs is the wrong first question for modern inference silicon"
+            description="A way to predict how a model will run on any chip in this dive, from one ratio you can work out from a spec sheet"
           >
-            Memory bandwidth, not peak FLOPs
+            Thesis and Framing
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>The framing problem.</strong> When a vendor announces a new accelerator, the
-            first slide is almost always a FLOPs number — FP8 peak, sparse peak, or the
-            next-precision-down peak that looks biggest. For modern inference workloads that
-            number is nearly useless on its own. A transformer in the decode phase reads the
-            entire model&apos;s weights from memory once per generated token and does a small
-            amount of arithmetic per byte read. The silicon spends most of its time waiting
-            for operands, not executing math. Peak FLOPs tells you about the ceiling; inference
-            economics live on the floor.
+            This deep dive gives you a way to predict how an inference workload will run on a chip
+            before you benchmark it. Every operation needs three deliveries at a functional unit:
+            an instruction, its operands and their layout. Find the one your workload waits on,
+            then read each chip for how it makes that delivery. For decode, the phase that
+            generates each output token, it is operand data, so read memory bandwidth first.
           </Box>
           <Box variant="p">
-            <strong>The concrete number.</strong> NVIDIA H200 SXM (Server PCIe Module form
-            factor) ships 3,958 TFLOPS of FP8 tensor performance against 4.8 TB/s of
-            HBM3e (High Bandwidth Memory generation 3e) bandwidth
-            {' ('}
-            <Link external href="https://www.nvidia.com/en-us/data-center/h200/">
-              NVIDIA H200 product page
-            </Link>
-            , accessed 2026-04-23). Divide: the ridge point is roughly 825 FLOPs per byte —
-            the boundary where a workload stops being bandwidth-bound and becomes
-            compute-bound. Decode with a modest batch size lives at 2-10 FLOPs per byte. That
-            is two orders of magnitude below the ridge. Doubling the peak FLOPs on that
-            silicon would do nothing for decode; doubling the HBM bandwidth would roughly
-            double the tokens per second.
+            <strong>Reading a spec sheet for inference.</strong> The headline figure is peak
+            FLOPS, often quoted with sparsity.
+            <Cite
+              s={S.gb300Nvl72}
+              note='"All Tensor Core specifications are with sparsity unless otherwise noted."'
+            />{' '}
+            Decode does little arithmetic per byte: a dense model reads every weight once per
+            generated token, and an MoE (mixture of experts) model reads the experts each token
+            selects.
+            <Cite s={S.deepseekV3Report} />
           </Box>
           <Box variant="p">
-            <strong>The heterogeneity reality.</strong> Silicon has never been more varied in
-            how it delivers throughput. Arm Neoverse host cores, x86 CPUs with AMX
-            (Advanced Matrix Extensions) tile registers, NVIDIA Hopper and Blackwell GPUs,
-            AWS Trainium and Inferentia, Cerebras wafer-scale, Groq LPU (Language
-            Processing Unit), SambaNova RDU (Reconfigurable Dataflow Unit), and
-            compute-in-memory devices each
-            make a different bet about how the instruction, the data, and the data shape
-            should arrive at the functional unit. &ldquo;Fastest chip&rdquo; is an ill-formed
-            question until you know which leg of that triangle your workload stresses.
+            <strong>The anchor number.</strong> An NVIDIA H200 SXM delivers 1,979 TFLOPS of dense
+            FP8 (8-bit floating point) against 4.8 TB/s of HBM3e (High Bandwidth Memory).
+            <Cite s={S.h200Page} />
+            <Cite s={S.hopperArchBlog} kind="derived" note={sparseNote} /> Dividing gives the ridge
+            point, where a workload stops being limited by bandwidth and becomes limited by
+            compute: about 412 FLOP per byte.
+            <Cite s={S.h200Page} kind="derived" note={ridgeNote} /> Each weight feeds one
+            multiply-add per sequence in the batch, so with 8-bit weights at batch 1 to 5, decode
+            sits at 2 to 10 FLOP per byte, about 40 to 200 times below the ridge.
+            <Cite s={S.roofline} kind="derived" note={decodeNote} /> Doubling peak FLOPS does
+            nothing for it; doubling bandwidth roughly doubles tokens per second until a fixed
+            latency floor sets the step time.
+            <Cite s={S.roofline} kind="derived" note={rooflineNote} />
+          </Box>
+          <Box variant="small" color="text-body-secondary">
+            Sparse aside: NVIDIA&apos;s 3,958 TFLOPS FP8 headline is &quot;With sparsity&quot;, a
+            rate that applies only to weights pruned to the 2:4 structured pattern, and it gives a
+            ridge of 825.
+            <Cite s={S.h200Page} kind="derived" note={sparseRidgeNote} />
+            <Cite s={S.sparsityBlog} />{' '}
+            Place workloads with the dense figure.
           </Box>
         </SpaceBetween>
       </Container>
@@ -65,7 +93,7 @@ export function ThesisAndFraming() {
         header={
           <Header
             variant="h2"
-            description="Three things must arrive at the unit simultaneously — not just FLOPs"
+            description="The three deliveries every operation waits on, and how each kind of chip makes them"
           >
             The instruction-data-shape triangle
           </Header>
@@ -73,57 +101,65 @@ export function ThesisAndFraming() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A single FLOP happens when a functional unit executes a specified operation on a
-            specified operand. For that to happen, the architecture has to deliver three
-            things to the unit at the same clock: an <strong>instruction</strong>, the
-            <strong> data</strong>, and the <strong>shape</strong> of that data. Every modern
-            silicon architecture is a different answer to &ldquo;how do we keep this triangle
-            aligned?&rdquo;
+            An operation retires when a functional unit executes it. Three things must reach the
+            unit in the same cycle: the <strong>instruction</strong>, the <strong>data</strong>,
+            and the <strong>shape</strong> of that data. Each architecture in this dive is a
+            different answer to keeping the three aligned.
           </Box>
           <TriangleDiagram />
           <ColumnLayout columns={3} variant="text-grid">
             <div>
               <Box variant="h3">Instruction delivery</Box>
               <Box variant="p">
-                The front end must fetch, decode, and issue an operation the workload wants.
-                Out-of-order host cores do this speculatively with a branch predictor and
-                BTB (Branch Target Buffer). GPU SMs (Streaming Multiprocessors) do it with
-                a warp scheduler and no speculation. AWS Trainium does not do it at runtime
-                at all — the Neuron compiler emits a NEFF (Neuron Executable File Format)
-                descriptor ahead of time and the runtime plays it back. Cerebras WSE-3
-                (Wafer-Scale Engine generation 3) bakes the program into per-processing-
-                element state so there is no runtime front end.
+                The front end fetches, decodes and issues the operation. Out-of-order host cores
+                do it speculatively, with a branch predictor and a BTB (Branch Target Buffer). A
+                GPU SM (Streaming Multiprocessor) issues from a warp scheduler and hides a stalled
+                warp&apos;s latency by running other warps.
+                <Cite s={S.cudaBestPractices} /> On Trainium the Neuron compiler fixes most of the
+                schedule ahead of time in a NEFF (Neuron Executable File Format); Trainium2 and
+                Trainium3 add ISA (instruction set architecture) support for dynamic shapes and
+                control flow.
+                <Cite s={S.trainium2Arch} />
+                <Cite s={S.trainium3Arch} /> On a Cerebras WSE-3 (Wafer-Scale Engine 3), each of
+                900,000 cores runs its own program from 48 kB of local SRAM and fires a task when
+                its data arrives; each core&apos;s own task picker chooses what runs next.
+                <Cite s={S.cerebrasS1} />
+                <Cite s={S.cerebrasSdkBlog} />
+                <Cite s={S.cerebrasSdkDocs} />
               </Box>
             </div>
             <div>
               <Box variant="h3">Data delivery</Box>
               <Box variant="p">
-                The operand bytes must be resident in the tier the unit reads from. On a
-                CPU core: the register file sourced from L1. On a GPU SM: the register
-                file sourced from SMEM (Shared Memory) and (on Blackwell) TMEM (Tensor
-                Memory). On Trainium: SBUF (State Buffer) and PSUM (Partial Sum buffer).
-                Every cache miss or scratchpad miss upstream turns into either a pipeline
-                stall or a compiler-visible schedule slip — see Section 4 for the hierarchy.
+                The operands must sit in the tier the unit reads from. On a CPU core that is the
+                register file, filled from L1. On a GPU SM it is the register file, filled from
+                SMEM (shared memory) and, on Blackwell, TMEM (Tensor Memory).
+                <Cite s={S.ptxIsa} /> On Trainium it is SBUF (State Buffer) and PSUM (Partial Sum
+                buffer).
+                <Cite s={S.trainium2Arch} />
+                <Cite s={S.nkiTrnInf2Arch} /> A miss upstream becomes a pipeline stall or a slip in
+                the compiled schedule.
               </Box>
             </div>
             <div>
               <Box variant="h3">Shape fit</Box>
               <Box variant="p">
-                The operand layout — tile size, stride, alignment, precision — must match
-                what the unit expects. AMX tile registers on Intel Xeon 6 hold 16 rows of
-                up to 64 bytes. Blackwell tcgen05 reads TMEM tiles in specific shapes.
-                Trainium&apos;s systolic array consumes tiles sized by the Neuron compiler.
-                A kernel with the wrong tile either under-fills the unit or recompiles
-                into a slower fallback that does not hit tensor-core throughput.
+                The operand layout (tile size, stride, alignment, precision) must match what the
+                unit consumes. An AMX (Advanced Matrix Extensions) tile register on Intel Xeon
+                holds at most 16 rows of 64 bytes.
+                <Cite s={S.clangAmxIntrin} note={amxNote} /> Blackwell&apos;s tcgen05 instructions read TMEM in
+                fixed data-path layouts.
+                <Cite s={S.ptxIsa} /> Trainium&apos;s systolic array consumes tiles the Neuron
+                compiler sizes. A kernel with the wrong tile under-fills the unit or falls back to
+                a slower path that misses tensor-core throughput.
               </Box>
             </div>
           </ColumnLayout>
           <Alert type="info">
-            Peak FLOPs implicitly assumes all three legs of the triangle are aligned for
-            free. In practice, instruction selection is the compiler&apos;s job, data
-            staging is the memory hierarchy&apos;s job, and shape fit is a property of the
-            kernel author. A silicon choice that looks strong on peak FLOPs can lose to a
-            slower chip that delivers the triangle more consistently on the target workload.
+            Peak FLOPS assumes all three deliveries arrive on time. In practice the compiler
+            selects instructions, the memory hierarchy stages data, and the kernel author sets the
+            shape. A chip that leads on peak FLOPS can lose to a slower one that makes the three
+            deliveries more consistently on the target workload.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -132,7 +168,7 @@ export function ThesisAndFraming() {
         header={
           <Header
             variant="h2"
-            description="Workload character selects the bet — the same box looks like a different machine"
+            description="The workload decides which delivery binds, which is why NVIDIA's Vera Rubin platform pairs its GPU racks with a rack of a second kind of chip for decode"
           >
             Heterogeneity is the organizing fact
           </Header>
@@ -140,34 +176,50 @@ export function ThesisAndFraming() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Consider two workloads on the same server. A payments ledger — branchy code,
-            short-lived objects, working set in L2 and L3 — lives on the front end. Branch
-            prediction accuracy and L3 hit rate are the first-order variables; the tensor
-            cores on the same chip are dark silicon for this workload. Swap to transformer
-            decode on the same box and the picture inverts. Branches are sparse and easily
-            predicted, the front end is over-provisioned, and the bottleneck is HBM
-            bandwidth staging weights into the tensor pipe. Different legs of the triangle,
-            different silicon paying attention.
+            Run two workloads on one server. A payments ledger (branchy code, a working set in L2
+            and L3) lives on the front end: branch-prediction accuracy and L3 hit rate set its
+            speed, and the tensor cores sit idle. Transformer decode inverts that. Its branches
+            are few and predictable, and the bottleneck is HBM bandwidth staging weights into the
+            tensor pipe.
           </Box>
           <Box variant="p">
-            This is why &ldquo;which chip is fastest&rdquo; is an ill-formed question until you
-            specify the workload. An HFT matching engine at p99.9 tick-to-trade latency, a
-            Retrieval-Augmented Generation (RAG) pipeline at tokens per second per dollar, a
-            foundation-model training run at time-to-convergence, and a mixed-tenant SaaS
-            backend at cost per request are four different architectures of problem. They
-            select different triangles and, often, different silicon families.
+            Across chips the spread is wider. Arm Neoverse host cores, x86 cores with AMX tiles,
+            NVIDIA Hopper and Blackwell GPUs, AWS Trainium and Inferentia, Cerebras wafer-scale
+            engines, the Groq LPU (Language Processing Unit), the SambaNova RDU (Reconfigurable
+            Dataflow Unit) and compute-in-memory devices each place a different bet on how
+            instruction, data and shape reach the unit.
           </Box>
-          <Alert type="warning" header="Stall cost is not portable">
-            A branch mispredict on an out-of-order core costs 15-20 cycles of drained
-            pipeline. A pipeline bubble on a tensor core costs the matmul&apos;s worth of
-            FLOPs that did not retire that clock. A schedule slip on Trainium is
-            compiler-visible — the NEFF encoded when each operand had to arrive, so the
-            miss shows up as a compile-time artifact rather than a runtime surprise. A
-            fabric congestion event on WSE-3 is handled by static routing, meaning either
-            the plan avoided it or the model does not fit. Transferring optimization
-            intuitions between these architectures is dangerous — &ldquo;we cut p99 by
-            raising speculation depth&rdquo; does not translate to a systolic array because
-            there is no speculation depth to raise.
+          <Box variant="p">
+            <strong>A GPU vendor ships the thesis.</strong> NVIDIA&apos;s Vera Rubin platform
+            includes the NVIDIA Groq 3 LPX, a rack of LPUs built on Groq inference technology
+            that NVIDIA licenses, in full production since August 2026.
+            <Cite s={S.groqNvidiaLicense} />
+            <Cite s={S.lpxProduction} /> Each LPU&apos;s primary working storage is 500 MB of
+            on-chip SRAM. Within decode, LPX runs latency-sensitive work such as the MoE expert
+            FFNs (feed-forward networks), while Rubin GPUs keep prefill and decode attention over
+            the KV (key-value) cache.
+            <Cite s={S.lpxBlog} /> One decode step crosses two kinds of silicon.
+          </Box>
+          <Box variant="p">
+            So &quot;which chip is fastest&quot; has no answer until the workload is named. An
+            HFT (high-frequency trading) matching engine judged on p99.9 tick-to-trade latency, a
+            RAG (Retrieval-Augmented Generation) pipeline judged on tokens per second per dollar
+            and a training run judged on time to convergence bind on different deliveries, and
+            often land on different silicon.
+          </Box>
+          <Alert type="warning" header="Check that the mechanism exists before you port a tuning result">
+            A branch mispredict costs a host core a pipeline refill, 10 to 14 cycles in
+            LLVM&apos;s scheduling models.
+            <Cite s={S.llvmNeoverseV2} note={mispredictNote} />
+            <Cite s={S.llvmZnver4} note={mispredictNote} />
+            <Cite s={S.llvmSapphireRapids} note={mispredictNote} /> A tensor-core pipeline bubble
+            costs the matrix FLOPs that did not retire that cycle. On Trainium most of the
+            schedule is fixed at compile time, so stalls are largely visible in the compiled
+            schedule. On WSE-3 the compiler fixes the routes.
+            <Cite s={S.cerebrasSdkDocs} /> A model larger than one wafer is split at layer
+            boundaries across several CS-3 systems.
+            <Cite s={S.cerebrasInferenceBlog} /> &quot;We cut p99 by raising speculation
+            depth&quot; gives a systolic array nothing to act on: it has no speculation depth.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -176,7 +228,7 @@ export function ThesisAndFraming() {
         header={
           <Header
             variant="h2"
-            description="The rest of this deep dive is organized around the questions that replace peak FLOPs"
+            description="The question to bring to every chip, and where the dive answers it"
           >
             What to ask instead
           </Header>
@@ -184,20 +236,22 @@ export function ThesisAndFraming() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Section 3 defines the roofline formally and computes ridge points per
-            architecture. Section 4 walks the seven-tier memory hierarchy. Section 6 digs
-            into HBM — the tier that matters most for inference and the tier most actively
-            contested in silicon roadmaps. Sections 9-18 take each silicon family in turn
-            and show which leg of the triangle it optimizes, with Tier 1 vendor citations.
-            Sections 22-26 cover the software techniques (KV cache layout,
-            FlashAttention-class fusion, quantization, speculative decoding, disaggregated
-            serving) that change a workload&apos;s arithmetic intensity and therefore its
-            placement on the roofline.
+            Bring one question to every chip: on this workload, which delivery binds, and what
+            does the silicon do when it is late? <em>Roofline and Arithmetic Intensity</em>{' '}
+            computes ridge points across chips and precisions. <em>Memory Hierarchy Primer</em>{' '}
+            and <em>Anatomy of a Kernel Execution</em> walk the tiers; <em>HBM and the Bandwidth
+            Wall</em>, <em>DDR5, MRDIMM, LPDDR5X and CXL</em>, <em>High Bandwidth Flash</em> and{' '}
+            <em>Flash as a Cache Tier for Inference</em> take the ones that hold weights and KV
+            cache. The silicon sections, <em>Graviton Deep Dive</em> through{' '}
+            <em>Compute-in-Memory</em>, show which delivery each family optimizes. The software
+            sections, <em>KV Cache and FlashAttention</em> through{' '}
+            <em>Disaggregated Serving and Speculative Decoding</em>, cover techniques that change
+            a workload&apos;s arithmetic intensity and so move it on the roofline.
           </Box>
           <Box variant="p">
-            The organizing question of the deep dive is not &ldquo;how many FLOPs does this
-            chip do&rdquo; but &ldquo;on this workload, which leg of the triangle binds, and
-            what does the silicon do when that leg is late?&rdquo;
+            For H200 decode the answer is data: the ridge sits near 412 FLOP per byte and decode
+            at 2 to 10. To place your own workload, work out its FLOP per byte the way the anchor
+            number does, then open <em>Roofline and Arithmetic Intensity</em>.
           </Box>
         </SpaceBetween>
       </Container>

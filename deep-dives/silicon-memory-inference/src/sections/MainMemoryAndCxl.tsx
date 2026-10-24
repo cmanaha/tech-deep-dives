@@ -4,25 +4,105 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
-import Alert from '@cloudscape-design/components/alert';
 import Table from '@cloudscape-design/components/table';
 import Link from '@cloudscape-design/components/link';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { MemoryTechGrid } from '../components/MemoryTechGrid';
+import { Cite, type Source } from '../components/Cite';
+import { S } from '../sources/MainMemoryAndCxl';
+
+const g5Note =
+  '12 channels (Graviton README) x 8,800 MT/s x 8 bytes = 844.8 GB/s per socket; 12 x 6,400 x 8 = 614.4 GB/s.';
+const veniceNote = '1,638 / 1,024 GB/s per socket = 1.6, MRDIMM at 12,800 MT/s against RDIMM at 8,000, both on 16 channels.';
+const cxlLinkNote = 'CXL 2.0 at 32 GT/s per lane x 16 lanes / 8 bits = 64 GB/s per direction, before encoding overhead.';
+const cxlDeltaNote = '254 - 144 = 110 ns, both idle, on Samsung\'s platform.';
+const nvmeNote =
+  '8 x 3,800 GB = 30.4 TB. 4.4 M IOPS x 4,096 B / 8 GPUs = 2.25 GB/s; EBS 12,500 MB/s on p5en and P6 / 8 = 1.56 GB/s.';
 
 interface SpeedRow {
-  spec: string;
+  grade: string;
   perChannel: string;
-  twelveCh: string;
-  notes: string;
+  perSocket: string;
+  where: React.ReactNode;
+  source: Source;
 }
 
 const speedRows: SpeedRow[] = [
-  { spec: 'DDR5-4800', perChannel: '38.4 GB/s', twelveCh: '460.8 GB/s', notes: 'Original DDR5 launch (Genoa, Sapphire Rapids)' },
-  { spec: 'DDR5-5600', perChannel: '44.8 GB/s', twelveCh: '537.6 GB/s', notes: 'Graviton4 (12 channels)' },
-  { spec: 'DDR5-6400', perChannel: '51.2 GB/s', twelveCh: '614.4 GB/s', notes: 'Turin (9005), Xeon 6 baseline' },
-  { spec: 'DDR5-7200', perChannel: '57.6 GB/s', twelveCh: '691.2 GB/s', notes: 'Graviton5; AWS M8i / R8i (Xeon 6, custom RDIMM)' },
-  { spec: 'MRDIMM DDR5-8800', perChannel: '70.4 GB/s', twelveCh: '844.8 GB/s', notes: 'Xeon 6 6900P only — JEDEC MRDIMM' },
+  {
+    grade: 'DDR5-4800',
+    perChannel: '38.4 GB/s',
+    perSocket: '460.8 GB/s (12 ch)',
+    where: 'First DDR5 data rate in the JEDEC standard',
+    source: S.jedecDdr5,
+  },
+  {
+    grade: 'DDR5-5600',
+    perChannel: '44.8 GB/s',
+    perSocket: '537.6 GB/s (12 ch)',
+    where: (
+      <>
+        Graviton4 (R8g)
+        <Cite s={S.gravitonReadme} />
+      </>
+    ),
+    source: S.r8gPage,
+  },
+  {
+    grade: 'DDR5-6400',
+    perChannel: '51.2 GB/s',
+    perSocket: '614.4 GB/s (12 ch)',
+    where: (
+      <>
+        EPYC 9005, with OEM enablement and a BIOS update
+        <Cite s={S.epyc9755Page} />; Xeon 6 6900P
+        <Cite s={S.xeon6980pArk} />; Graviton4 R8gn and R8gb
+      </>
+    ),
+    source: S.r8gPage,
+  },
+  {
+    grade: 'DDR5-7200',
+    perChannel: '57.6 GB/s',
+    perSocket: '691.2 GB/s (12 ch)',
+    where: (
+      <>
+        AWS M8i
+        <Cite s={S.m8iPage} /> and R8i (Xeon 6)
+      </>
+    ),
+    source: S.r8iPage,
+  },
+  {
+    grade: 'DDR5-8800',
+    perChannel: '70.4 GB/s',
+    perSocket: '844.8 GB/s (12 ch)',
+    where: (
+      <>
+        Graviton5
+        <Cite s={S.gravitonReadme} />
+      </>
+    ),
+    source: S.c9gGa,
+  },
+  {
+    grade: 'MRDIMM-8800',
+    perChannel: '70.4 GB/s',
+    perSocket: '844.8 GB/s (12 ch)',
+    where: 'Xeon 6 6900P',
+    source: S.xeon6980pArk,
+  },
+  {
+    grade: 'MRDIMM-12800',
+    perChannel: '102.4 GB/s',
+    perSocket: '1,638 GB/s (16 ch)',
+    where: (
+      <>
+        EPYC 9006, in production, OEM platforms to come
+        <Cite s={S.amdAgenticStack} kind="roadmap" />
+      </>
+    ),
+    source: S.epyc9996Page,
+  },
 ];
 
 export function MainMemoryAndCxl() {
@@ -32,29 +112,33 @@ export function MainMemoryAndCxl() {
         header={
           <Header
             variant="h1"
-            description="Tier 6 (DRAM) and tier 7 (CXL) for the host side of inference systems"
+            description="Size the host side of an inference server: the bandwidth and capacity each memory type buys, which platforms take it, and where bytes go once local DRAM runs out"
           >
-            DDR5, MRDIMM, LPDDR5X, and CXL
+            DDR5, MRDIMM, LPDDR5X and CXL
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Why this section.</strong> Section 6 covered HBM — the tier
-            accelerators live in. This section covers the tiers the host CPU lives in.
-            The host side of an inference system rarely runs the model itself, but it
-            almost always runs the request scheduler, the tokenizer, the KV-cache
-            management, the embeddings store, the retrieval index, and the orchestration
-            code. Bandwidth and capacity at tiers 6 and 7 determine how much per-request
-            host work the system can absorb without the GPU stalling.
+            <strong>What host memory does.</strong> Host memory is the DRAM (dynamic RAM) on the
+            CPU&apos;s own memory controllers. In an inference server the CPU rarely runs the model;
+            it runs the scheduler, tokenizer and retrieval indexes, and can hold the KV (key-value)
+            cache that outgrows the accelerator&apos;s HBM (High Bandwidth Memory). Four
+            technologies supply it: DDR5 (Double Data Rate 5) RDIMMs (registered
+            dual in-line memory modules), MRDIMMs (Multiplexed Rank DIMMs), LPDDR5X (Low-Power
+            DDR5X) and CXL (Compute Express Link) memory.
           </Box>
           <Box variant="p">
-            <strong>What is moving in 2026.</strong> DDR5 pin speeds keep climbing
-            (4800 → 5600 → 6400 → 7200), MRDIMM has shipped on Xeon 6 6900P at DDR5-8800,
-            LPDDR5X is the high-bandwidth low-power option (NVIDIA Grace at ~500 GB/s
-            per CPU), and CXL has progressed from 2.0 (pooling) to 3.0 (sharing). All
-            four technologies coexist; none is the &ldquo;winner.&rdquo; The architectural
-            question is which fits which workload.
+            <strong>One formula sets the ceiling.</strong> Peak bandwidth per socket is channels x
+            data rate x 8 bytes. Twelve channels of DDR5-8800, the DIMMs in Graviton5, give{' '}
+            <strong>844.8 GB/s</strong>
+            <Cite s={S.c9gGa} kind="derived" note={g5Note} />; the same channels at 6,400 MT/s
+            (megatransfers per second) give 614.4. MRDIMMs raise the data rate on the same DRAM:
+            16 channels at 12,800 MT/s on AMD&apos;s EPYC 9006, in production with OEM (original
+            equipment manufacturer) platforms still to launch, give 1,638 GB/s per socket.
+            <Cite s={S.epyc9996Page} /> CXL adds capacity instead, at about 110 ns more per load
+            than local DRAM.
+            <Cite s={S.samsungCmmD} kind="derived" note={cxlDeltaNote} />
           </Box>
         </SpaceBetween>
       </Container>
@@ -63,38 +147,53 @@ export function MainMemoryAndCxl() {
         header={
           <Header
             variant="h2"
-            description="Side by side — bandwidth, capacity, latency, and use case"
+            description="Compare bandwidth, capacity and latency across six places a byte can live outside HBM, and see which ones a host can buy today"
           >
-            The four technologies, compared
+            The options side by side
           </Header>
         }
       >
         <SpaceBetween size="m">
           <MemoryTechGrid />
-          <Box variant="small">
-            DDR5 / MRDIMM speed and capacity figures track the{' '}
-            <Link
-              external
-              href="https://www.intel.com/content/www/us/en/products/docs/processors/xeon/6th-gen-xeon-processors-product-brief.html"
-            >
-              Intel Xeon 6 product brief
-            </Link>
-            {' '}and{' '}
-            <Link
-              external
-              href="https://www.amd.com/en/products/processors/server/epyc/9005-series.html"
-            >
-              AMD EPYC 9005 series page
-            </Link>
-            . LPDDR5X figures track the{' '}
-            <Link external href="https://www.nvidia.com/en-us/data-center/grace-cpu/">
-              NVIDIA Grace CPU page
-            </Link>
-            . CXL figures track the{' '}
-            <Link external href="https://computeexpresslink.org/">
-              CXL Consortium specification
-            </Link>
-            . All access dates 2026-04-23.
+          <Box variant="small" color="text-body-secondary">
+            High Bandwidth Flash (HBF) is accelerator memory, beside HBM on the accelerator package,
+            and no product ships. It is here because it competes for the same decision as the host
+            tiers: which bytes to keep near compute. Sources: DDR5 DIMM
+            <Cite s={S.c9gGa} kind="derived" note={g5Note} />
+            <Cite s={S.epyc9005Datasheet} note="EPYC 9005: 12 channels, up to 6 TB per socket." />
+            <Cite s={S.samsungCmmD} kind="vendor-claim" note="Local DRAM measured at 144 ns idle on Samsung's test platform." />
+            . MRDIMM
+            <Cite s={S.xeon6980pArk} note="MRDIMM 8,800 MT/s, 12 channels, 3 TB maximum memory." />
+            <Cite s={S.epyc9996Page} note="MRDIMM up to 12,800 MT/s, 1,638 GB/s per socket, 16 channels." />
+            <Cite s={S.amdAgenticStack} kind="roadmap" note="AMD, 2026-09-18: 'Venice' is in production; major OEM platforms are on track to launch." />
+            . LPDDR5X
+            <Cite s={S.gb200Nvl72} note="480 GB of LPDDR5X per Grace (17 TB over 36 Grace CPUs)." />
+            <Cite s={S.graceSuperchipPage} note="Up to 500 GB/s; Grace CPU C1: up to 384 GB/s for 480 GB." />
+            <Cite s={S.graceCpuPage} note="Vera: up to 1.2 TB/s and 1.5 TB per CPU." />
+            <Cite s={S.micronHbm4} kind="vendor-claim" note="Micron: up to 2 TB per CPU with SOCAMM2." />
+            . CXL
+            <Cite s={S.xeon6Brief} kind="derived" note={cxlLinkNote} />
+            <Cite s={S.cxl4Spec} kind="derived" note="128 GT/s x 16 lanes / 8 bits = 256 GB/s per direction." />
+            <Cite s={S.samsungCmmD} kind="vendor-claim" note="CMM-D at 254 ns idle locally against 144 ns for local DRAM." />
+            . NVMe (Non-Volatile Memory Express) flash: EBS (Elastic Block Store), FSx for Lustre
+            with GDS (GPUDirect Storage), instance-store IOPS (I/O operations per second)
+            <Cite s={S.ec2AcceleratedSpecs} />
+            <Cite s={S.ec2AcceleratedSpecs} kind="derived" note={nvmeNote} />
+            <Cite s={S.fsxPerformance} kind="derived" note="1,200 Gb/s per instance / 8 bits / 8 GPUs = 18.75 GB/s." />
+            <Cite s={S.gdsOverview} />
+            . HBF: OCP (Open Compute Project) grades
+            <Cite s={S.ocpSpec} />, Sandisk Gen 1
+            <Cite s={S.sandiskFactSheet} kind="vendor-claim" note="1.6 TB/s read per stack; HBF latency is higher than HBM's, with no figure given." />
+            , simulator latency inputs
+            <Cite s={S.flint} kind="simulated" note="Simulator input: 1 to 2 µs, SLC flash." />
+            <Cite s={S.hbfSim} kind="simulated" note="Simulator input: about 20 µs per page read." />
+            {' '}and samples
+            <Cite
+              s={S.sandiskInvestorDay2026}
+              kind="roadmap"
+              note="Sandisk said on 2026-08-13 that its first HBF memory die had taped out; samples of inference devices with HBF targeted for 2027."
+            />
+            . &quot;No figure located&quot;: none found in the sources read for this research.
           </Box>
         </SpaceBetween>
       </Container>
@@ -103,47 +202,52 @@ export function MainMemoryAndCxl() {
         header={
           <Header
             variant="h2"
-            description="DDR5 speed grades that matter for current host silicon"
+            description="Work out a socket's peak bandwidth from its channel count and DIMM speed, and see which grade each platform runs"
           >
-            DDR5 — the workhorse
+            DDR5: channels times data rate
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            DDR5 doubled DDR4&apos;s peak data rate at launch and has continued climbing
-            with each tick. Per-channel bandwidth scales linearly with the data rate; a
-            12-channel server CPU multiplies that by 12. The numbers below are theoretical
-            peaks on the most common 12-channel configurations — measured STREAM
-            triad usually lands at 60-90% of theoretical depending on access pattern,
-            NUMA mode, and prefetch behavior.
+            Socketed DDR5 DIMMs are the DRAM on Graviton, EPYC and Xeon hosts. DDR5 launched at
+            4,800 MT/s
+            <Cite s={S.jedecDdr5} />, and JESD79-5C sets timings up to 8,800.
+            <Cite s={S.jedecDdr5c} /> Each channel moves 8 bytes per transfer, so the table&apos;s
+            peaks follow from the data rate; <em>Intel Xeon 6</em> gives a measured NUMA-local
+            (non-uniform memory access) read on an r8i.
           </Box>
           <Table
             items={speedRows}
             columnDefinitions={[
-              { id: 'spec', header: 'Spec', cell: (r) => r.spec, minWidth: 180 },
-              { id: 'pc', header: 'Per channel', cell: (r) => r.perChannel },
-              { id: '12', header: '12 channels theoretical', cell: (r) => r.twelveCh },
-              { id: 'notes', header: 'Where it ships', cell: (r) => r.notes },
+              { id: 'grade', header: 'Grade', cell: (r) => r.grade, minWidth: 140 },
+              { id: 'pc', header: 'Per channel', cell: (r) => r.perChannel, minWidth: 110 },
+              {
+                id: 'ps',
+                header: 'Peak per socket',
+                cell: (r) => (
+                  <>
+                    {r.perSocket}
+                    <Cite s={r.source} kind="derived" note="Data rate x 8 bytes per channel, times the channel count." />
+                  </>
+                ),
+                minWidth: 190,
+              },
+              {
+                id: 'where',
+                header: 'Where it runs',
+                cell: (r) => (
+                  <>
+                    {r.where}
+                    <Cite s={r.source} />
+                  </>
+                ),
+                minWidth: 280,
+              },
             ]}
             variant="embedded"
             wrapLines
           />
-          <Alert type="info" header="A measured number to anchor on">
-            On AWS r8i (Xeon 6 with custom DDR5-7200 RDIMMs), Chips and Cheese measured
-            STREAM triad at <strong>691.62 GB/s</strong> per socket — 2.14× their
-            Emerald Rapids measurement of 323.45 GB/s. The 12-channel theoretical peak
-            (691.2 GB/s) and the measured number happen to match almost exactly, which
-            is unusual and worth knowing
-            {' ('}
-            <Link
-              external
-              href="https://chipsandcheese.com/p/a-look-into-intel-xeon-6s-memory"
-            >
-              Chips and Cheese — Xeon 6 memory
-            </Link>
-            , accessed 2026-04-23).
-          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -151,160 +255,208 @@ export function MainMemoryAndCxl() {
         header={
           <Header
             variant="h2"
-            description="The Xeon 6 6900P-only technology that breaks the DDR5 ceiling"
+            description="What the extra buffer chips buy, which CPUs take MRDIMMs, and how much a socket gains by switching"
           >
-            MRDIMM — what it is and why it matters
+            MRDIMM: two ranks on one bus
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>What MRDIMM is.</strong> Multiplexed Rank DIMM — a registered DIMM
-            with an extra buffer chip (the MRCD) that lets the host bus run at higher
-            speeds (DDR5-8800) while the underlying DRAM dies still operate at half rate
-            (~4400 MT/s effective). The MRCD multiplexes simultaneous access to two
-            ranks on the same channel, presenting twice the bus bandwidth without
-            requiring faster DRAM cells.
+            <strong>What it is.</strong> An MRDIMM is a registered DIMM with two more kinds of chip,
+            a multiplexed-rank registering clock driver (MRCD) and multiplexed-rank data buffers
+            (MDB), both JEDEC device standards.
+            <Cite s={S.jedecJc40} /> They interleave two ranks onto one channel, so the bus runs at
+            twice the DRAM&apos;s own rate: 8,800 MT/s on the bus over DRAM at 4,400.
+            <Cite
+              s={S.jedecMrdimmPlans}
+              kind="derived"
+              note="JEDEC: MRDIMM delivers up to twice the peak bandwidth of native DRAM; 8,800 / 2 = 4,400."
+            />
           </Box>
           <Box variant="p">
-            <strong>Where it ships.</strong> Intel Xeon 6 6900P only at the time of
-            writing. The 6700P / 6500P support DDR5-8000 MRDIMM but not the full 8800
-            rate. AMD EPYC Turin (9005) explicitly does <em>not</em> support MRDIMM —
-            AMD says they are waiting for full JEDEC standardization
-            {' ('}
-            <Link
-              external
-              href="https://www.amd.com/en/products/processors/server/epyc/9005-series.html"
-            >
-              AMD EPYC 9005 series
-            </Link>
-            , accessed 2026-04-23).
+            <strong>Where it runs.</strong> Xeon 6 6900P takes MRDIMMs at 8,800 MT/s on 12 channels
+            <Cite s={S.xeon6980pArk} />; Intel puts the gain over standard DDR5 DIMMs at more than 37%
+            <Cite s={S.xeon6Brief} kind="vendor-claim" />, which is 8,800 over 6,400. AMD&apos;s EPYC
+            9005 data sheet lists no MRDIMM support.
+            <Cite s={S.epyc9005Datasheet} /> EPYC 9006 takes JEDEC-standard MRDIMMs at up to 12,800
+            MT/s
+            <Cite s={S.amdVeniceBlog} kind="roadmap" />: 1,638 GB/s per socket against 1,024 GB/s
+            with RDIMMs at 8,000 MT/s on the same 16 channels.
+            <Cite s={S.epyc9996Page} /> On that platform the module type alone is worth 60%.
+            <Cite s={S.epyc9996Page} kind="derived" note={veniceNote} /> EPYC 9006 is in
+            production; AMD says major OEM platforms are on track to launch and cloud providers will
+            begin deploying it later in 2026.
+            <Cite s={S.amdAgenticStack} kind="roadmap" />
           </Box>
           <Box variant="p">
-            <strong>What it buys you.</strong> 12 channels of DDR5-8800 hits 844.8 GB/s
-            theoretical peak — about 37% over DDR5-6400. For bandwidth-hungry server
-            workloads (databases, recommender embeddings, in-memory analytics) that
-            improvement is non-trivial. For latency-sensitive workloads MRDIMM is
-            roughly neutral — the buffer adds a small latency penalty that is usually
-            covered by the per-channel speed gain.
+            <strong>The edge moves.</strong> Graviton5 runs its DDR5 DIMMs at 8,800 MT/s, so its 12
+            channels deliver the same 844.8 GB/s that MRDIMMs give a Xeon 6 6900P.
+            <Cite s={S.c9gGa} kind="derived" note={g5Note} /> The AWS pages read for this research
+            do not name Graviton5&apos;s module type. JEDEC&apos;s second-generation MRDIMM
+            raw cards target 12,800 MT/s, and a third generation is in development.
+            <Cite s={S.jedecMrdimmRoadmap} kind="roadmap" /> No vendor latency figure for MRDIMMs
+            was located during this research.
           </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Bandwidth without DDR5's pin-count cost — and the power story"
-          >
-            LPDDR5X — high bandwidth, low power
-          </Header>
-        }
-      >
-        <Box variant="p">
-          LPDDR5X is the mobile-derived memory used in NVIDIA Grace, Apple silicon, and
-          numerous embedded and edge platforms. NVIDIA Grace pairs 480 GB of LPDDR5X at
-          ~500 GB/s per CPU into a roughly 16 W envelope — a fundamentally different
-          design point from RDIMM-based servers
-          {' ('}
-          <Link external href="https://www.nvidia.com/en-us/data-center/grace-cpu/">
-            NVIDIA Grace CPU
-          </Link>
-          , accessed 2026-04-23). LPDDR5X cannot match the capacity of socketed RDIMMs
-          (you cannot scale beyond what is soldered to the package) and the latency is
-          modestly higher than DDR5 RDIMM. The trade is bandwidth-per-watt and
-          bandwidth-density — both decisive for Grace-Blackwell-class systems where the
-          CPU sits next to the GPU and shares an NVLink-C2C coherent domain.
-        </Box>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Why CXL solves a capacity problem, not a latency one"
-          >
-            CXL 2.0 and 3.0 — the tier 7 lever
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            <strong>What CXL is.</strong> A coherent expansion bus over a PCIe-class
-            physical layer. CXL 2.0 supports memory pooling — multiple hosts share a
-            CXL switch and a memory-pool device, with each host allocating from the
-            pool on demand. CXL 3.0 supports memory sharing — multiple hosts addressing
-            the same physical memory coherently. Both are tier 7 (disaggregated /
-            expansion). The CXL Consortium publishes the spec
-            {' ('}
-            <Link external href="https://computeexpresslink.org/">
-              CXL Consortium
-            </Link>
-            , accessed 2026-04-23).
-          </Box>
-          <Box variant="p">
-            <strong>Where CXL fits.</strong> Capacity-limited workloads — recommender
-            embeddings (10s of TBs), in-memory OLAP, sparse retrieval indexes, large
-            graph databases — fit well. The CXL pool can be sized independently of the
-            host&apos;s socket count, and the host pays only the link latency (200-400
-            ns) for the marginal bytes it consumes.
-          </Box>
-          <Alert type="warning" header="CXL solves the wrong problem for HFT">
-            Latency-sensitive workloads do not benefit from CXL. The link adds 100s of
-            nanoseconds over a direct DDR channel. Capital markets workloads that care
-            about p99.9 tick-to-trade latency want fewer memory hops, not more. A
-            common framing error is to treat CXL as a generic memory upgrade — it is a
-            capacity lever, and the latency cost is real and visible.
-          </Alert>
-          <ExpandableSection headerText="CXL 2.0 vs CXL 3.0 — what changed">
+          <ExpandableSection headerText="Xeon 6 6700P: two speeds on one ARK page">
             <Box variant="p">
-              CXL 2.0 introduced switching and pooling: a host attaches to a pool device
-              through a CXL switch, and multiple hosts share that pool with dynamic
-              allocation. CXL 3.0 doubled the lane rate to 64 GT/s (PCIe 6.0 physical),
-              added fabric topologies (multi-headed devices, peer-to-peer between
-              accelerators), and supported memory sharing — multiple hosts addressing
-              the same coherent memory. The shipping CXL silicon in 2025-2026 is mostly
-              2.0; CXL 3.0 silicon is starting to appear but not yet broadly deployed in
-              production servers.
+              Intel ARK lists the Xeon 6787P&apos;s memory types as DDR5 at 6,400 and MRDIMM at
+              8,800 MT/s, and its maximum memory speed as 8,000 MT/s, on 8 channels.
+              <Cite s={S.xeon6787pArk} /> Size a 6700P host at 8,000, the lower figure.
             </Box>
           </ExpandableSection>
         </SpaceBetween>
       </Container>
 
       <Container
-        header={<Header variant="h2" description="The decision matrix">How to choose</Header>}
+        header={
+          <Header
+            variant="h2"
+            description="Why NVIDIA's CPUs use low-power memory, and what moving from on-module memory to field-replaceable SOCAMM2 modules changes for capacity and service"
+          >
+            LPDDR5X and SOCAMM2: bandwidth per watt, on modules
+          </Header>
+        }
       >
-        <ColumnLayout columns={2} variant="text-grid">
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>What it is.</strong> LPDDR5X is mobile-derived DRAM that gives up socketed
+            capacity for bandwidth per watt. On Grace it sits on the compute module: up to 480 GB
+            per CPU
+            <Cite s={S.gb200Nvl72} />, drawing about 16 W at up to 500 GB/s.
+            <Cite s={S.graceSuperchipPage} /> NVIDIA&apos;s Grace CPU C1 figures give 384 GB/s for
+            a 480 GB Grace
+            <Cite s={S.graceSuperchipPage} note="Grace CPU C1 column: 'Up to 384 GB/s for 480GB'." />;{' '}
+            <em>Grace-Blackwell and UltraServer</em> covers which figure to plan with.
+          </Box>
+          <Box variant="p">
+            <strong>SOCAMM2 makes it replaceable.</strong> SOCAMM2 (Small Outline Compression
+            Attached Memory Module 2) puts LPDDR5X on a module: JEDEC JESD328, published June 2026
+            <Cite s={S.jedecJc45} />, at up to 9.6 Gb/s per pin where signal integrity allows.
+            <Cite s={S.jedecSocamm2} /> Vera uses field-replaceable SOCAMM modules, with up to 1.2
+            TB/s and 1.5 TB per CPU.
+            <Cite s={S.graceCpuPage} /> Micron, whose 192 GB SOCAMM2 it reports in high-volume
+            production for Vera Rubin, gives up to 2 TB per CPU.
+            <Cite s={S.micronHbm4} kind="vendor-claim" /> The vendors disagree; size a Vera host
+            at NVIDIA&apos;s 1.5 TB until a platform specification settles it. LPDDR6 is published (JESD209-6, July 2025)
+            <Cite s={S.jedecLpddr6} />; no data-center LPDDR6 product was located during this
+            research.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="When a CXL tier pays for itself in an inference server, what each load costs, and where you can run one today"
+          >
+            CXL memory: capacity at about 110 ns a load
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>What it is.</strong> CXL is a cache-coherent protocol over the PCIe physical
+            layer: a CPU addresses memory on an expansion card, or in a pool behind a CXL switch, as
+            ordinary memory. CXL 2.0 adds switching and pooling across hosts; CXL 3.0 adds
+            sharing.
+            <Cite s={S.cxl2Blog} />
+            <Cite s={S.cxl3Spec} /> Shipping CPUs speak CXL 2.0: up to 64 lanes on Xeon 6 at 32 GT/s
+            (gigatransfers per second), 64 GB/s per direction per x16 link
+            <Cite s={S.xeon6Brief} />
+            <Cite s={S.xeon6Brief} kind="derived" note={cxlLinkNote} />, and CXL 2.0 on EPYC 9005.
+            <Cite s={S.epyc9005Datasheet} /> The AMD pages read for EPYC 9006 do not state its CXL
+            version.
+          </Box>
+          <Box variant="p">
+            <strong>What a load costs.</strong> Samsung measured 254 ns idle for its CMM-D module
+            against 144 ns for local DRAM on its platform
+            <Cite s={S.samsungCmmD} kind="vendor-claim" />, about{' '}
+            <strong>110 ns more per load</strong>
+            <Cite s={S.samsungCmmD} kind="derived" note={cxlDeltaNote} />. In Pond&apos;s
+            estimates CXL adds 70 to 90 ns in pools of 8 to 16 sockets, and more than 180 ns at rack
+            scale.
+            <Cite
+              s={S.pond}
+              kind="simulated"
+              note="CXL 'will add 70-90ns to access latencies over same-NUMA-node DRAM with a pool size of 8-16 sockets, and add more than 180ns for rack-scale pooling.'"
+            />{' '}
+            Keep latency-bound data in local DRAM and put capacity-bound data on CXL;{' '}
+            <em>Capital Markets Lens</em> applies this to trading systems.
+          </Box>
+          <Box variant="p">
+            <strong>The inference case is KV-cache offload.</strong> Samsung ran vLLM with LMCache
+            against a CXL 2.0 switch-based memory pool on eight RTX PRO 6000 GPUs, and reports
+            performance comparable to DRAM at TP=1 (no tensor parallelism) and about 92% of
+            DRAM&apos;s at TP=8 (tensor parallelism across eight GPUs).
+            <Cite s={S.samsungKvCxl} kind="vendor-claim" /> Recommender embeddings and retrieval
+            indexes are the other capacity-bound fits.
+          </Box>
+          <Box variant="p">
+            <strong>Where to run it.</strong> Azure offers CXL memory on M-series VMs in private
+            preview, announced in November 2025.
+            <Cite s={S.azureCxl} /> No EC2 instance with CXL-attached memory was located during this
+            research; X8i, the memory-optimized family launched in January 2026, offers up to 6 TB
+            and mentions no CXL tier.
+            <Cite s={S.x8iWhatsNew} /> On EC2 the tier below host DRAM is NVMe flash (
+            <em>Flash as a Cache Tier for Inference</em>); the{' '}
+            <Link href="../vllm/">vLLM dive</Link>&apos;s KV Offloading and LMCache section covers
+            the software that moves KV between tiers.
+          </Box>
+          <ExpandableSection headerText="CXL versions, 2.0 to 4.0">
+            <Box variant="p">
+              CXL 3.0 (August 2022) doubled the rate to 64 GT/s with no added latency, and added
+              fabrics, improved memory sharing and pooling, and peer-to-peer access.
+              <Cite s={S.cxl3Spec} /> CXL 3.1 (November 2023) added fabric manageability and TSP
+              (TEE Security Protocol, for trusted execution environments)
+              <Cite s={S.cxl31Spec} />; CXL 3.2 (December 2024) added a Hot-Page Monitoring Unit
+              (CHMU) for memory tiering.
+              <Cite s={S.cxl32Spec} /> CXL 4.0 (November 2025) doubles the rate to 128 GT/s, adds
+              bundled ports, and stays backward compatible to 1.0.
+              <Cite s={S.cxl4Spec} /> An x16 link carries 128 GB/s per direction at 64 GT/s and 256
+              GB/s at 128 GT/s.
+              <Cite s={S.cxl4Spec} kind="derived" note="GT/s x 16 lanes / 8 bits, per direction, before encoding overhead." />{' '}
+              No shipping CPU with CXL 3.x support was confirmed in a source read during this
+              research.
+            </Box>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Match the memory to the limit you hit: bandwidth per socket, bandwidth per watt, or capacity"
+          >
+            How to choose
+          </Header>
+        }
+      >
+        <ColumnLayout columns={3} variant="text-grid">
           <div>
-            <Box variant="h3">Pick DDR5 RDIMM when</Box>
+            <Box variant="h3">MRDIMM, when bandwidth per socket is the limit</Box>
             <ul>
-              <li>You need balanced bandwidth and capacity across general workloads</li>
-              <li>Cost per GB matters more than peak bandwidth</li>
-              <li>You are running a mixed-tenant SaaS backend or microservices fleet</li>
+              <li>Xeon 6 6900P at 8,800 MT/s, or EPYC 9006 at 12,800 once its OEM platforms launch.</li>
+              <li>Price Graviton5 first: its DDR5-8800 DIMMs give the same 844.8 GB/s.</li>
             </ul>
           </div>
           <div>
-            <Box variant="h3">Pick MRDIMM (Xeon 6 6900P) when</Box>
+            <Box variant="h3">LPDDR5X, when the CPU sits beside the GPU</Box>
             <ul>
-              <li>You are bandwidth-hungry per socket — databases, in-memory analytics</li>
-              <li>You can constrain to Xeon 6 6900P silicon</li>
-              <li>You have validated that the small latency penalty does not matter</li>
+              <li>Grace carries it on the compute module; Vera puts it on SOCAMM2 modules.</li>
+              <li>Size Vera at NVIDIA&apos;s 1.5 TB per CPU.</li>
             </ul>
           </div>
           <div>
-            <Box variant="h3">Pick LPDDR5X when</Box>
+            <Box variant="h3">CXL memory, when capacity is the limit</Box>
             <ul>
-              <li>You are designing into a Grace-Blackwell-class platform</li>
-              <li>Power envelope is a hard constraint</li>
-              <li>You can live with the soldered-to-package capacity limit</li>
-            </ul>
-          </div>
-          <div>
-            <Box variant="h3">Pick CXL pooling when</Box>
-            <ul>
-              <li>The model or working set exceeds 12-channel DDR capacity</li>
-              <li>You are willing to pay 100s of ns for marginal bytes</li>
-              <li>The workload is bandwidth-tolerant on the CXL-attached portion</li>
+              <li>
+                The working set outgrows the DIMM slots and tolerates about 110 ns more per load: KV-cache
+                offload, embeddings, retrieval indexes.
+              </li>
+              <li>Azure M-series has it in preview; none was found on EC2, where NVMe flash is the next tier.</li>
             </ul>
           </div>
         </ColumnLayout>

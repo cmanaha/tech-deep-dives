@@ -1,110 +1,131 @@
 import React from 'react';
 
-// Side-by-side schematic comparison of Graviton4 (Neoverse V2 + CMN-700, 96 cores, 36 MB SLC)
-// vs Graviton5 (Neoverse V3 + CMN-S3, 192 cores, 192 MB distributed L3).
+// Graviton4 against Graviton5 as AWS's processor table describes them: Graviton4 is one
+// NUMA node (96 cores, one 36 MB LLC); Graviton5 is one package that shows up as two NUMA
+// nodes, each with 96 cores and its own 96 MB LLC. DRAM is drawn per package because the
+// table gives the channel count per package, not per node. Every figure drawn here is
+// cited in the caption the section renders below the SVG.
+//
+// On a phone the SVG keeps a 640 px minimum width and the wrapper scrolls sideways.
+
+const G5_NODES = [
+  { x: 376, label: 'NUMA node 0' },
+  { x: 612, label: 'NUMA node 1' },
+];
 
 export function GravitonComparison() {
-  const width = 880;
-  const height = 360;
-  const colW = (width - 60) / 2;
-  const colY = 60;
-  const colH = 270;
-
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ overflowX: 'auto' }}>
       <svg
-        width="100%"
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="xMidYMid meet"
+        viewBox="0 0 860 372"
         role="img"
-        aria-label="Graviton4 vs Graviton5: 96 cores with 36 MB SLC on CMN-700 versus 192 cores with 192 MB distributed L3 on CMN-S3"
-        style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
+        aria-labelledby="graviton-compare-title"
+        style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
       >
-        <text x={20} y={26} fontSize={13} fontWeight={700} fill="#16191f">
-          Graviton4 → Graviton5: doubling cores while changing the cache philosophy
+        <title id="graviton-compare-title">
+          Graviton4 is one NUMA node: 96 cores share one 36 MB last-level cache and 12 channels
+          of DDR5-5600, 537.6 GB/s or 5.6 GB/s per core. Graviton5 puts 192 cores in one
+          package that runs as two NUMA nodes, each with 96 cores and its own 96 MB last-level
+          cache, on 12 channels of DDR5-8800: 844.8 GB/s, or 4.4 GB/s per core, 21% less per
+          core than Graviton4. The 16xlarge and 48xlarge sizes span both nodes.
+        </title>
+        <style>{`
+          .grv-bg { fill: #ffffff; stroke: #e9ebed; }
+          .grv-p4 { fill: #f2f8fd; stroke: #0972d3; stroke-width: 2; }
+          .grv-p5 { fill: #ecf7ec; stroke: #037f0c; stroke-width: 2; }
+          .grv-node { fill: #ffffff; stroke: #879596; stroke-width: 1.5; stroke-dasharray: 5 4; }
+          .grv-llc { fill: #e6f4f2; stroke: #1f7a70; stroke-width: 1.5; }
+          .grv-dram { fill: #e9ebed; stroke: #414d5c; stroke-width: 1.5; }
+          .grv-h { fill: #16191f; font: 600 13px sans-serif; }
+          .grv-h4 { fill: #0972d3; font: 600 13px sans-serif; }
+          .grv-h5 { fill: #037f0c; font: 600 13px sans-serif; }
+          .grv-sub { fill: #5f6b7a; font: 11px sans-serif; }
+          .grv-nl { fill: #414d5c; font: 600 11px sans-serif; text-anchor: middle; }
+          .grv-t { fill: #16191f; font: 12px sans-serif; text-anchor: middle; }
+          .grv-tb { fill: #16191f; font: 600 12px sans-serif; text-anchor: middle; }
+          .grv-s { fill: #414d5c; font: 11px sans-serif; text-anchor: middle; }
+          .grv-foot { fill: #414d5c; font: 11px sans-serif; }
+        `}</style>
+
+        <rect className="grv-bg" x="0" y="0" width="860" height="372" rx="8" />
+        <text className="grv-h" x="20" y="28">
+          Twice the cores, split into two NUMA domains that each have their own LLC
         </text>
 
-        {/* Graviton4 panel */}
-        <rect x={20} y={colY} width={colW} height={colH} rx={8} fill="#f2f8fd" stroke="#0972d3" strokeWidth={2} />
-        <text x={32} y={84} fontSize={13} fontWeight={700} fill="#0972d3">
-          Graviton4 — Neoverse V2
+        {/* Graviton4 */}
+        <rect className="grv-p4" x="20" y="44" width="300" height="308" rx="8" />
+        <text className="grv-h4" x="36" y="68">
+          Graviton4 (Neoverse V2)
         </text>
-        <text x={32} y={102} fontSize={11} fill="#687078">
-          ARMv9.0 · TSMC N4/N5 · 2.8 GHz
+        <text className="grv-sub" x="36" y="86">
+          Armv9.0-A, 2.8 GHz (2.7 GHz on 48xlarge)
         </text>
-        <text x={32} y={130} fontSize={12} fontWeight={600} fill="#16191f">
-          Compute
+        <rect className="grv-node" x="36" y="100" width="268" height="124" rx="6" />
+        <text className="grv-nl" x="170" y="118">
+          One NUMA node
         </text>
-        <text x={32} y={146} fontSize={11} fill="#16191f">
-          96 cores in a single socket
+        <text className="grv-t" x="170" y="140">
+          96 cores, 2 MB L2 each
         </text>
-        <text x={32} y={170} fontSize={12} fontWeight={600} fill="#16191f">
-          Cache
+        <rect className="grv-llc" x="56" y="154" width="228" height="54" rx="4" />
+        <text className="grv-tb" x="170" y="177">
+          36 MB LLC, shared
         </text>
-        <text x={32} y={186} fontSize={11} fill="#16191f">
-          L1: 64+64 KB · L2: 2 MB / core · L3: 36 MB SLC (CMN-700)
+        <text className="grv-s" x="170" y="196">
+          0.375 MB per core
         </text>
-        <text x={32} y={202} fontSize={11} fill="#16191f">
-          ~375 KB SLC per core
+        <rect className="grv-dram" x="36" y="240" width="268" height="54" rx="4" />
+        <text className="grv-tb" x="170" y="263">
+          12 x DDR5-5600
         </text>
-        <text x={32} y={226} fontSize={12} fontWeight={600} fill="#16191f">
-          DRAM
+        <text className="grv-s" x="170" y="282">
+          537.6 GB/s, 5.6 GB/s per core
         </text>
-        <text x={32} y={242} fontSize={11} fill="#16191f">
-          12 × DDR5-5600 = 537.6 GB/s · 5.6 GB/s per core
+        <text className="grv-foot" x="36" y="318">
+          Only the two-socket 48xlarge
         </text>
-        <text x={32} y={266} fontSize={12} fontWeight={600} fill="#16191f">
-          Inter-core latency
-        </text>
-        <text x={32} y={282} fontSize={11} fill="#16191f">
-          30-60 ns (CMN-700 mesh) · 138 ns cross-socket
-        </text>
-        <text x={32} y={314} fontSize={11} fontStyle="italic" fill="#0972d3">
-          The SLC is unified and modest; per-core cache footprint is small.
+        <text className="grv-foot" x="36" y="334">
+          has a second NUMA node.
         </text>
 
-        {/* Arrow */}
-        <line x1={20 + colW + 10} y1={colY + colH / 2} x2={40 + colW + 30} y2={colY + colH / 2} stroke="#16191f" strokeWidth={2} />
-        <polygon points={`${40 + colW + 30},${colY + colH / 2} ${40 + colW + 22},${colY + colH / 2 - 6} ${40 + colW + 22},${colY + colH / 2 + 6}`} fill="#16191f" />
-
-        {/* Graviton5 panel */}
-        <rect x={40 + colW + 40} y={colY} width={colW} height={colH} rx={8} fill="#ecf7ec" stroke="#037f0c" strokeWidth={2} />
-        <text x={40 + colW + 52} y={84} fontSize={13} fontWeight={700} fill="#037f0c">
-          Graviton5 — Neoverse V3
+        {/* Graviton5 */}
+        <rect className="grv-p5" x="360" y="44" width="480" height="308" rx="8" />
+        <text className="grv-h5" x="376" y="68">
+          Graviton5 (Neoverse V3): 192 cores in one package
         </text>
-        <text x={40 + colW + 52} y={102} fontSize={11} fill="#687078">
-          ARMv9.2 · TSMC 3 nm · 3.1 GHz
+        <text className="grv-sub" x="376" y="86">
+          Armv9.2-A, 3.3 GHz, no turbo
         </text>
-        <text x={40 + colW + 52} y={130} fontSize={12} fontWeight={600} fill="#16191f">
-          Compute
+        {G5_NODES.map((n) => (
+          <g key={n.label}>
+            <rect className="grv-node" x={n.x} y="100" width="212" height="124" rx="6" />
+            <text className="grv-nl" x={n.x + 106} y="118">
+              {n.label}
+            </text>
+            <text className="grv-t" x={n.x + 106} y="140">
+              96 cores, 2 MB L2 each
+            </text>
+            <rect className="grv-llc" x={n.x + 16} y="154" width="180" height="54" rx="4" />
+            <text className="grv-tb" x={n.x + 106} y="177">
+              96 MB LLC
+            </text>
+            <text className="grv-s" x={n.x + 106} y="196">
+              1 MB per core
+            </text>
+          </g>
+        ))}
+        <rect className="grv-dram" x="376" y="240" width="448" height="54" rx="4" />
+        <text className="grv-tb" x="600" y="263">
+          12 x DDR5-8800 per package
         </text>
-        <text x={40 + colW + 52} y={146} fontSize={11} fill="#16191f">
-          192 cores in a single socket (2× Graviton4)
+        <text className="grv-s" x="600" y="282">
+          844.8 GB/s, 4.4 GB/s per core (21% less per core than Graviton4)
         </text>
-        <text x={40 + colW + 52} y={170} fontSize={12} fontWeight={600} fill="#16191f">
-          Cache
+        <text className="grv-foot" x="376" y="318">
+          16xlarge and 48xlarge span both nodes.
         </text>
-        <text x={40 + colW + 52} y={186} fontSize={11} fill="#16191f">
-          L1: 64+64 KB · L2: 2 MB / core · L3: 192 MB distributed (CMN-S3)
-        </text>
-        <text x={40 + colW + 52} y={202} fontSize={11} fontWeight={700} fill="#037f0c">
-          1 MB L3 per core (2.67× G4)
-        </text>
-        <text x={40 + colW + 52} y={226} fontSize={12} fontWeight={600} fill="#16191f">
-          DRAM
-        </text>
-        <text x={40 + colW + 52} y={242} fontSize={11} fill="#16191f">
-          12 × DDR5-7200 = 691.2 GB/s · 3.6 GB/s per core (-36%)
-        </text>
-        <text x={40 + colW + 52} y={266} fontSize={12} fontWeight={600} fill="#16191f">
-          Inter-core latency
-        </text>
-        <text x={40 + colW + 52} y={282} fontSize={11} fill="#16191f">
-          ~33% lower vs G4 (AWS claim) · NUMA eliminated
-        </text>
-        <text x={40 + colW + 52} y={314} fontSize={11} fontStyle="italic" fill="#037f0c">
-          L3 grows 5.3× to compensate for per-core DRAM bandwidth dropping.
+        <text className="grv-foot" x="376" y="334">
+          24xlarge is one node: 96 cores and 96 MB of LLC.
         </text>
       </svg>
     </div>

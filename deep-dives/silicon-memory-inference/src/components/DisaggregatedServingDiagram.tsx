@@ -1,136 +1,133 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  ReactFlow,
-  ReactFlowProvider,
-  Node,
-  Edge,
-  Background,
-  MarkerType,
-  Position,
-  useReactFlow,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+import React from 'react';
 
-const node = (color: string, border: string) => ({
-  background: color,
-  border: `2px solid ${border}`,
-  borderRadius: '8px',
-  padding: '10px 14px',
-  fontSize: '12px',
-  fontWeight: 600,
-  color: '#16191f',
-  minWidth: '170px',
-  textAlign: 'center' as const,
-});
+// Disaggregated serving as a U-shaped flow: the router sends the prompt to the
+// prefill pool, the KV cache crosses once to the decode pool, and decode streams
+// tokens back. An inset inside the decode pool shows the second split NVIDIA
+// ships on Vera Rubin with Groq 3 LPX (attention on GPUs, FFN and MoE on LPUs,
+// activations every token). The diagram carries no figures; the section caption
+// cites every source.
+//
+// On a phone the SVG keeps a 640 px minimum width and the wrapper scrolls.
 
-const nodes: Node[] = [
-  {
-    id: 'request',
-    position: { x: 0, y: 200 },
-    data: { label: 'Inference request' },
-    style: node('#f2f8fd', '#0972d3'),
-    sourcePosition: Position.Right,
-    draggable: false,
-  },
-  {
-    id: 'router',
-    position: { x: 220, y: 200 },
-    data: { label: 'Request router' },
-    style: node('#f2f8fd', '#0972d3'),
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-    draggable: false,
-  },
-  {
-    id: 'prefill',
-    position: { x: 460, y: 80 },
-    data: { label: 'Prefill cluster\nFLOP-rich GPUs\n(compute-bound)' },
-    style: node('#fdf3ec', '#ec7211'),
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-    draggable: false,
-  },
-  {
-    id: 'kv',
-    position: { x: 700, y: 80 },
-    data: { label: 'KV cache transport\nNIXL / NCCL\nover NVLink / EFA' },
-    style: node('#ecf7ec', '#037f0c'),
-    sourcePosition: Position.Bottom,
-    targetPosition: Position.Left,
-    draggable: false,
-  },
-  {
-    id: 'decode',
-    position: { x: 700, y: 280 },
-    data: { label: 'Decode cluster\nbandwidth-rich GPUs\n(memory-bound)' },
-    style: node('#fce7e7', '#d91515'),
-    sourcePosition: Position.Right,
-    targetPosition: Position.Top,
-    draggable: false,
-  },
-  {
-    id: 'response',
-    position: { x: 940, y: 280 },
-    data: { label: 'Streaming\nresponse' },
-    style: node('#f2f8fd', '#0972d3'),
-    targetPosition: Position.Left,
-    draggable: false,
-  },
-];
-
-const e = {
-  type: 'smoothstep' as const,
-  markerEnd: { type: MarkerType.ArrowClosed, width: 12, height: 12 },
-};
-
-const edges: Edge[] = [
-  { id: 'r-rt', source: 'request', target: 'router', ...e, style: { stroke: '#0972d3', strokeWidth: 2 }, animated: true },
-  { id: 'rt-p', source: 'router', target: 'prefill', ...e, style: { stroke: '#ec7211', strokeWidth: 2 }, animated: true, label: 'prompt' },
-  { id: 'p-k', source: 'prefill', target: 'kv', ...e, style: { stroke: '#037f0c', strokeWidth: 2 }, animated: true, label: 'KV cache' },
-  { id: 'k-d', source: 'kv', target: 'decode', ...e, style: { stroke: '#037f0c', strokeWidth: 3 }, animated: true, label: 'transport' },
-  { id: 'd-r', source: 'decode', target: 'response', ...e, style: { stroke: '#d91515', strokeWidth: 2 }, animated: true, label: 'tokens' },
-];
-
-// FitViewOnResize watches the container and re-runs fitView so React Flow's
-// coordinate system stays inside the visible area on mobile.
-function FitViewOnResize({ containerRef }: { containerRef: React.RefObject<HTMLDivElement> }) {
-  const { fitView } = useReactFlow();
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const observer = new ResizeObserver(() => {
-      requestAnimationFrame(() => fitView({ padding: 0.15, duration: 0 }));
-    });
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, [containerRef, fitView]);
-  return null;
-}
+const VB_W = 860;
+const VB_H = 400;
 
 export function DisaggregatedServingDiagram() {
-  const containerRef = useRef<HTMLDivElement>(null);
   return (
-    <div
-      ref={containerRef}
-      style={{ width: '100%', height: '460px', border: '1px solid #e9ebed', borderRadius: '8px' }}
-    >
-      <ReactFlowProvider>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          fitView
-          fitViewOptions={{ padding: 0.15 }}
-          nodesDraggable={false}
-          nodesConnectable={false}
-          elementsSelectable={false}
-          zoomOnScroll={false}
-          panOnScroll={false}
-          panOnDrag={false}
-          proOptions={{ hideAttribution: true }}
-        >
-          <Background gap={20} size={1} color="#e9ebed" />
-          <FitViewOnResize containerRef={containerRef} />
-        </ReactFlow>
-      </ReactFlowProvider>
+    <div style={{ overflowX: 'auto' }}>
+      <svg
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
+        role="img"
+        aria-labelledby="disagg-flow-title"
+        style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
+      >
+        <title id="disagg-flow-title">
+          Disaggregated serving runs prefill in a compute-bound pool sized for time to first token
+          and decode in a memory-bound pool sized for time per output token. The KV cache crosses
+          from prefill to decode once per request: through NIXL over NVLink or EFA on GPUs, and
+          through the Neuron runtime over EFA on Trainium. With a Groq 3 LPX rack deployed alongside
+          Vera Rubin NVL72, decode splits again: attention stays on Rubin GPUs, LPUs accelerate
+          latency-sensitive work such as FFN and MoE expert execution, and activations cross
+          between them every token.
+        </title>
+        <style>{`
+          .dsd-bg { fill: #ffffff; }
+          .dsd-t { fill: #16191f; font: 600 13px sans-serif; text-anchor: middle; }
+          .dsd-s { fill: #414d5c; font: 11px sans-serif; text-anchor: middle; }
+          .dsd-b { fill: #16191f; font: 600 11px sans-serif; text-anchor: middle; }
+          .dsd-l { fill: #5f6b7a; font: 600 11px sans-serif; text-anchor: middle; }
+          .dsd-n { fill: #5f6b7a; font: 10px sans-serif; text-anchor: middle; }
+          .dsd-blue { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; }
+          .dsd-pre { fill: #fdf3ec; stroke: #ec7211; stroke-width: 1.5; }
+          .dsd-dec { fill: #e6f4f2; stroke: #1f7a70; stroke-width: 1.5; }
+          .dsd-kv { fill: #ecf7ec; stroke: #037f0c; stroke-width: 1.5; }
+          .dsd-inset { fill: #ffffff; stroke: #879596; stroke-width: 1.2; stroke-dasharray: 5 4; }
+          .dsd-gpu { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.2; }
+          .dsd-lpu { fill: #efe7fb; stroke: #6f4cc4; stroke-width: 1.2; }
+          .dsd-arr { stroke: #5f6b7a; stroke-width: 1.5; fill: none; marker-end: url(#dsd-ah); }
+          .dsd-kvarr { stroke: #037f0c; stroke-width: 2.5; fill: none; marker-end: url(#dsd-ahg); }
+          .dsd-act { stroke: #6f4cc4; stroke-width: 1.5; fill: none; marker-start: url(#dsd-ahp); marker-end: url(#dsd-ahp); }
+        `}</style>
+        <defs>
+          <marker id="dsd-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#5f6b7a" />
+          </marker>
+          <marker id="dsd-ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#037f0c" />
+          </marker>
+          <marker id="dsd-ahp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#6f4cc4" />
+          </marker>
+        </defs>
+
+        <rect className="dsd-bg" x="0" y="0" width={VB_W} height={VB_H} rx="8" />
+
+        {/* Client */}
+        <rect className="dsd-blue" x="16" y="150" width="140" height="62" rx="6" />
+        <text className="dsd-t" x="86" y="176">Client</text>
+        <text className="dsd-s" x="86" y="195">prompt in, tokens out</text>
+
+        {/* Router */}
+        <rect className="dsd-blue" x="186" y="144" width="140" height="74" rx="6" />
+        <text className="dsd-t" x="256" y="168">Router</text>
+        <text className="dsd-s" x="256" y="187">picks a prefill and</text>
+        <text className="dsd-s" x="256" y="202">a decode worker</text>
+
+        {/* Client <-> Router */}
+        <path className="dsd-arr" d="M156,170 H184" />
+        <path className="dsd-arr" d="M186,194 H158" />
+
+        {/* Prefill pool */}
+        <rect className="dsd-pre" x="372" y="24" width="236" height="104" rx="6" />
+        <text className="dsd-t" x="490" y="48">Prefill pool</text>
+        <text className="dsd-s" x="490" y="68">compute-bound: each weight read</text>
+        <text className="dsd-s" x="490" y="84">serves every prompt token</text>
+        <text className="dsd-s" x="490" y="108">sized for time to first token</text>
+
+        {/* Router -> Prefill */}
+        <path className="dsd-arr" d="M256,144 V76 H370" />
+        <text className="dsd-l" x="312" y="68">prompt</text>
+
+        {/* KV handoff */}
+        <rect className="dsd-kv" x="652" y="40" width="192" height="236" rx="6" />
+        <text className="dsd-t" x="748" y="66">KV cache handoff</text>
+        <text className="dsd-s" x="748" y="88">once per request:</text>
+        <text className="dsd-s" x="748" y="104">prompt tokens x</text>
+        <text className="dsd-s" x="748" y="120">KV bytes per token</text>
+        <text className="dsd-b" x="748" y="152">GPU</text>
+        <text className="dsd-s" x="748" y="168">NIXL over NVLink,</text>
+        <text className="dsd-s" x="748" y="184">or libfabric over EFA</text>
+        <text className="dsd-b" x="748" y="216">Trainium</text>
+        <text className="dsd-s" x="748" y="232">Neuron runtime over EFA,</text>
+        <text className="dsd-s" x="748" y="248">zero copy</text>
+
+        {/* Prefill -> KV -> Decode */}
+        <path className="dsd-kvarr" d="M608,76 H650" />
+        <path className="dsd-kvarr" d="M652,236 H610" />
+
+        {/* Decode pool */}
+        <rect className="dsd-dec" x="372" y="184" width="236" height="200" rx="6" />
+        <text className="dsd-t" x="490" y="208">Decode pool</text>
+        <text className="dsd-s" x="490" y="228">memory-bound: every weight read</text>
+        <text className="dsd-s" x="490" y="244">serves one token per sequence</text>
+        <text className="dsd-s" x="490" y="264">sized for time per output token</text>
+
+        {/* Inset: attention-FFN split on Vera Rubin + Groq 3 LPX */}
+        <rect className="dsd-inset" x="384" y="278" width="212" height="96" rx="6" />
+        <text className="dsd-n" x="490" y="294">on Vera Rubin with Groq 3 LPX</text>
+        <rect className="dsd-gpu" x="392" y="302" width="86" height="44" rx="4" />
+        <text className="dsd-b" x="435" y="320">Attention</text>
+        <text className="dsd-s" x="435" y="336">Rubin GPUs</text>
+        <rect className="dsd-lpu" x="514" y="302" width="74" height="44" rx="4" />
+        <text className="dsd-b" x="551" y="320">FFN, MoE</text>
+        <text className="dsd-s" x="551" y="336">LPUs</text>
+        <path className="dsd-act" d="M481,324 H511" />
+        <text className="dsd-n" x="490" y="364">activations every token</text>
+
+        {/* Decode -> Router */}
+        <path className="dsd-arr" d="M372,300 H256 V220" />
+        <text className="dsd-l" x="312" y="316">tokens</text>
+      </svg>
     </div>
   );
 }

@@ -1,152 +1,166 @@
 import React from 'react';
 
-// Three-pillar isolation diagram: NIE (host), MIG / TEE-I/O (accelerator), Trainium SBUF partitioning.
+// Three isolation boundaries compared: NIE on Graviton5 hosts, MIG on NVIDIA GPUs, and
+// the Neuron runtime's NeuronCore reservation on Trainium. Each column answers the same
+// five questions. Every figure drawn here is cited in the caption the section renders
+// below the SVG (NIE white paper and blog, MIG user guide, NVIDIA confidential-computing
+// white paper, Neuron runtime configuration guide).
+//
+// Wide: on a phone the svg keeps a 640 px minimum width and the wrapper scrolls
+// sideways, so labels keep their size instead of shrinking.
+
+interface Column {
+  title: string;
+  subtitle: string;
+  stroke: string;
+  fill: string;
+  rows: [string, string[]][];
+}
+
+const columns: Column[] = [
+  {
+    title: 'Host: NIE',
+    subtitle: 'Nitro Isolation Engine',
+    stroke: '#0972d3',
+    fill: '#f2f8fd',
+    rows: [
+      ['Separates', ['Virtual machines on one host']],
+      ['Enforced by', ['NIE alone at the top hypervisor', 'privilege level; policy below it']],
+      ['Where', ['Every Graviton5 instance;', 'generally available June 2026']],
+      ['Evidence', ['Isabelle/HOL proof, about', '330,000 lines']],
+      ['Outside it', ['Micro-architectural side', 'channels; scheduling']],
+    ],
+  },
+  {
+    title: 'GPU: MIG',
+    subtitle: 'Multi-Instance GPU on NVIDIA',
+    stroke: '#037f0c',
+    fill: '#ecf7ec',
+    rows: [
+      ['Separates', ['GPU instances on one GPU']],
+      ['Enforced by', ['Hardware partition of compute,', 'cache, memory and bandwidth']],
+      ['Where', ['Up to 7 per GPU; 4 or 2 on', 'RTX PRO Blackwell']],
+      ['Evidence', ['The MIG layout configured', 'on the GPU']],
+      ['Outside it', ['Encryption: confidential', 'computing takes whole GPUs']],
+    ],
+  },
+  {
+    title: 'Trainium: NeuronCores',
+    subtitle: 'Neuron runtime reservation',
+    stroke: '#ec7211',
+    fill: '#fdf3ec',
+    rows: [
+      ['Separates', ['Processes, per NeuronCore']],
+      ['Enforced by', ['Runtime gives each core to one', 'process; the compiler places data']],
+      ['Where', ['Cores chosen per process with', 'NEURON_RT_VISIBLE_CORES']],
+      ['Evidence', ['The core assignment of each', 'process']],
+      ['Outside it', ['Chip memory bandwidth: no', 'per-core split found']],
+    ],
+  },
+];
+
+const VB_W = 880;
+const VB_H = 412;
+const COL_W = 266;
+const GAP = 21;
+const X0 = 20;
+const TOP = 16;
+const ROW0 = 96;
+const ROW_H = 62;
 
 export function IsolationLayers() {
-  const width = 880;
-  const height = 360;
-  const colW = (width - 60) / 3;
-
+  const font = 'sans-serif';
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ overflowX: 'auto' }}>
       <svg
-        width="100%"
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="xMidYMid meet"
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
         role="img"
-        aria-label="Three-pillar isolation: Nitro Isolation Engine on host, MIG with TEE-I/O on NVIDIA accelerators, compiler-managed SBUF partitioning on Trainium"
-        style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
+        aria-labelledby="isolation-layers-title"
+        style={{
+          width: '100%',
+          minWidth: 640,
+          height: 'auto',
+          display: 'block',
+        }}
       >
-        <text x={20} y={26} fontSize={13} fontWeight={700} fill="#16191f">
-          AWS three-pillar isolation story — host, accelerator, software
-        </text>
-
-        {/* Pillar 1: NIE */}
-        <rect x={20} y={50} width={colW} height={290} rx={10} fill="#f2f8fd" stroke="#0972d3" strokeWidth={2} />
-        <text x={36} y={78} fontSize={13} fontWeight={700} fill="#0972d3">
-          Pillar 1 — Host
-        </text>
-        <text x={36} y={96} fontSize={11} fill="#687078">
-          Nitro Isolation Engine (NIE)
-        </text>
-        <text x={36} y={124} fontSize={12} fontWeight={600} fill="#16191f">
-          Mechanism
-        </text>
-        <text x={36} y={142} fontSize={11} fill="#16191f">
-          Rust hypercall module beneath
-        </text>
-        <text x={36} y={158} fontSize={11} fill="#16191f">
-          the Nitro Hypervisor
-        </text>
-        <text x={36} y={186} fontSize={12} fontWeight={600} fill="#16191f">
-          Verification
-        </text>
-        <text x={36} y={204} fontSize={11} fill="#16191f">
-          Isabelle/HOL proof
-        </text>
-        <text x={36} y={220} fontSize={11} fill="#16191f">
-          ~250,000 lines · 30 min check
-        </text>
-        <text x={36} y={248} fontSize={12} fontWeight={600} fill="#16191f">
-          Where it ships
-        </text>
-        <text x={36} y={266} fontSize={11} fill="#16191f">
-          Graviton5 (M9g preview Dec 2025)
-        </text>
-        <text x={36} y={282} fontSize={11} fill="#16191f">
-          C9g, R9g — 2026
-        </text>
-        <text x={36} y={310} fontSize={11} fontStyle="italic" fill="#0972d3">
-          First formally verified
-        </text>
-        <text x={36} y={326} fontSize={11} fontStyle="italic" fill="#0972d3">
-          cloud hypervisor
-        </text>
-
-        {/* Pillar 2: MIG */}
-        <rect x={40 + colW} y={50} width={colW} height={290} rx={10} fill="#ecf7ec" stroke="#037f0c" strokeWidth={2} />
-        <text x={56 + colW} y={78} fontSize={13} fontWeight={700} fill="#037f0c">
-          Pillar 2 — Accelerator
-        </text>
-        <text x={56 + colW} y={96} fontSize={11} fill="#687078">
-          MIG + TEE-I/O on NVIDIA
-        </text>
-        <text x={56 + colW} y={124} fontSize={12} fontWeight={600} fill="#16191f">
-          Mechanism
-        </text>
-        <text x={56 + colW} y={142} fontSize={11} fill="#16191f">
-          Hardware partitioning of GPU
-        </text>
-        <text x={56 + colW} y={158} fontSize={11} fill="#16191f">
-          into up to 7 instances
-        </text>
-        <text x={56 + colW} y={186} fontSize={12} fontWeight={600} fill="#16191f">
-          Per-instance isolation
-        </text>
-        <text x={56 + colW} y={204} fontSize={11} fill="#16191f">
-          Dedicated SMs, L2 slice, HBM
-        </text>
-        <text x={56 + colW} y={220} fontSize={11} fill="#16191f">
-          region + bandwidth + TEE-I/O
-        </text>
-        <text x={56 + colW} y={248} fontSize={12} fontWeight={600} fill="#16191f">
-          Where it ships
-        </text>
-        <text x={56 + colW} y={266} fontSize={11} fill="#16191f">
-          A100, H100, H200, B200, B300
-        </text>
-        <text x={56 + colW} y={282} fontSize={11} fill="#16191f">
-          TEE-I/O adds encryption on Blackwell
-        </text>
-        <text x={56 + colW} y={310} fontSize={11} fontStyle="italic" fill="#037f0c">
-          B300: up to 7 × ~34 GB
-        </text>
-        <text x={56 + colW} y={326} fontSize={11} fontStyle="italic" fill="#037f0c">
-          per MIG instance
-        </text>
-
-        {/* Pillar 3: Trainium */}
-        <rect x={60 + colW * 2} y={50} width={colW} height={290} rx={10} fill="#fdf3ec" stroke="#ec7211" strokeWidth={2} />
-        <text x={76 + colW * 2} y={78} fontSize={13} fontWeight={700} fill="#ec7211">
-          Pillar 3 — Software
-        </text>
-        <text x={76 + colW * 2} y={96} fontSize={11} fill="#687078">
-          NEFF AOT on Trainium
-        </text>
-        <text x={76 + colW * 2} y={124} fontSize={12} fontWeight={600} fill="#16191f">
-          Mechanism
-        </text>
-        <text x={76 + colW * 2} y={142} fontSize={11} fill="#16191f">
-          Compiler-managed SBUF
-        </text>
-        <text x={76 + colW * 2} y={158} fontSize={11} fill="#16191f">
-          + ahead-of-time schedule
-        </text>
-        <text x={76 + colW * 2} y={186} fontSize={12} fontWeight={600} fill="#16191f">
-          What it gives you
-        </text>
-        <text x={76 + colW * 2} y={204} fontSize={11} fill="#16191f">
-          Per-call deterministic output
-        </text>
-        <text x={76 + colW * 2} y={220} fontSize={11} fill="#16191f">
-          No cache contention possible
-        </text>
-        <text x={76 + colW * 2} y={248} fontSize={12} fontWeight={600} fill="#16191f">
-          Where it ships
-        </text>
-        <text x={76 + colW * 2} y={266} fontSize={11} fill="#16191f">
-          Trainium2, Inferentia2
-        </text>
-        <text x={76 + colW * 2} y={282} fontSize={11} fill="#16191f">
-          Trn2 UltraServer (64 chips)
-        </text>
-        <text x={76 + colW * 2} y={310} fontSize={11} fontStyle="italic" fill="#ec7211">
-          Reproducibility as a
-        </text>
-        <text x={76 + colW * 2} y={326} fontSize={11} fontStyle="italic" fill="#ec7211">
-          first-class property
-        </text>
+        <title id="isolation-layers-title">
+          Three isolation boundaries compared. NIE separates virtual machines on Graviton5 hosts and
+          carries an Isabelle/HOL proof that leaves micro-architectural side channels and scheduling
+          outside it. MIG splits one NVIDIA GPU into up to seven hardware partitions with their own
+          compute, memory and bandwidth; encryption comes from confidential computing, which takes
+          whole GPUs. On Trainium the Neuron runtime reserves each NeuronCore for one process, while
+          the chip&apos;s memory bandwidth has no published per-core split.
+        </title>
+        <rect x={0} y={0} width={VB_W} height={VB_H} rx={8} fill="#ffffff" />
+        {columns.map((col, ci) => {
+          const x = X0 + ci * (COL_W + GAP);
+          const tx = x + 16;
+          return (
+            <g key={col.title}>
+              <rect
+                x={x}
+                y={TOP}
+                width={COL_W}
+                height={VB_H - TOP - 16}
+                rx={10}
+                fill={col.fill}
+                stroke={col.stroke}
+                strokeWidth={2}
+              />
+              <text
+                x={tx}
+                y={TOP + 26}
+                fontSize={14}
+                fontWeight={700}
+                fill={col.stroke}
+                fontFamily={font}
+              >
+                {col.title}
+              </text>
+              <text x={tx} y={TOP + 45} fontSize={11} fill="#5f6b7a" fontFamily={font}>
+                {col.subtitle}
+              </text>
+              <line
+                x1={x + 12}
+                y1={TOP + 60}
+                x2={x + COL_W - 12}
+                y2={TOP + 60}
+                stroke={col.stroke}
+                strokeOpacity={0.4}
+              />
+              {col.rows.map(([label, lines], ri) => {
+                const y = ROW0 + ri * ROW_H;
+                const outside = label === 'Outside it';
+                return (
+                  <g key={label}>
+                    <text
+                      x={tx}
+                      y={y}
+                      fontSize={11}
+                      fontWeight={700}
+                      fill={outside ? '#8b6c00' : '#414d5c'}
+                      fontFamily={font}
+                    >
+                      {label}
+                    </text>
+                    {lines.map((line, li) => (
+                      <text
+                        key={line}
+                        x={tx}
+                        y={y + 17 + li * 16}
+                        fontSize={11}
+                        fill="#16191f"
+                        fontFamily={font}
+                      >
+                        {line}
+                      </text>
+                    ))}
+                  </g>
+                );
+              })}
+            </g>
+          );
+        })}
       </svg>
     </div>
   );

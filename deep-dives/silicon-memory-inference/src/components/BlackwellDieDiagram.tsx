@@ -1,67 +1,188 @@
 import React from 'react';
 
-// Blackwell GB100: two reticle-sized dies joined by NV-HBI (~10 TB/s) presented as one logical GPU.
-// New: TMEM 256 KB / SM, tcgen05.mma, NVFP4 datapath.
+// One Blackwell GPU: two reticle-limited dies joined by NV-HBI, programmed as one CUDA
+// device. Lower band: where tcgen05.mma reads its operands and writes its accumulator.
+// Every figure drawn here is cited in the caption the section renders below the SVG.
+//
+// On a phone the SVG keeps a 640 px minimum width and the wrapper scrolls sideways, so
+// 11-unit labels render near 8 px instead of shrinking to 4 px.
 
 export function BlackwellDieDiagram() {
-  const width = 880;
-  const height = 380;
-
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ overflowX: 'auto' }}>
       <svg
-        width="100%"
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="xMidYMid meet"
+        viewBox="0 0 880 448"
         role="img"
-        aria-label="NVIDIA Blackwell GB100: two reticle-sized dies joined by NV-HBI presented as a single logical GPU; new TMEM 256 KB per SM and tcgen05.mma instructions"
-        style={{ border: '1px solid #e9ebed', borderRadius: '8px', background: '#ffffff' }}
+        aria-labelledby="bw-die-title"
+        style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
       >
-        <text x={20} y={24} fontSize={13} fontWeight={700} fill="#16191f">
-          Blackwell GB100 — two reticle-sized dies stitched into one coherent GPU
+        <title id="bw-die-title">
+          A Blackwell GPU is two reticle-limited dies joined by the 10 TB/s NV-HBI link and
+          programmed as one CUDA device with an L2 cache shared coherently by both dies. Inside
+          each SM, one thread issues tcgen05.mma: operands A and B come from shared memory (A
+          can also come from Tensor Memory) and the accumulator D lives in the 256 KB Tensor
+          Memory rather than in registers.
+        </title>
+        <style>{`
+          .bwd-pkg { fill: #fafbfc; stroke: #414d5c; stroke-width: 1.5; stroke-dasharray: 6 4; }
+          .bwd-die { fill: #f2f8fd; stroke: #0972d3; stroke-width: 2; }
+          .bwd-hbi { fill: #ecf7ec; stroke: #037f0c; stroke-width: 2; }
+          .bwd-l2 { fill: #e6f4f2; stroke: #1f7a70; stroke-width: 1.5; }
+          .bwd-hbm { fill: #fbf3d5; stroke: #8b6c00; stroke-width: 1.5; }
+          .bwd-nvl { fill: #efe7fb; stroke: #6f4cc4; stroke-width: 1.5; }
+          .bwd-sm { fill: #ffffff; stroke: #879596; stroke-width: 1.5; }
+          .bwd-tm { fill: #f2f8fd; stroke: #0972d3; stroke-width: 2; }
+          .bwd-link { stroke: #037f0c; stroke-width: 4; }
+          .bwd-arr { stroke: #5f6b7a; stroke-width: 1.5; fill: none; marker-end: url(#bwd-ah); }
+          .bwd-arr-opt { stroke: #5f6b7a; stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; marker-end: url(#bwd-ah); }
+          .bwd-h { fill: #16191f; font: 600 13px sans-serif; }
+          .bwd-s { fill: #414d5c; font: 11px sans-serif; }
+          .bwd-hc { fill: #16191f; font: 600 13px sans-serif; text-anchor: middle; }
+          .bwd-dt { fill: #0972d3; font: 600 13px sans-serif; text-anchor: middle; }
+          .bwd-gt { fill: #037f0c; font: 600 13px sans-serif; text-anchor: middle; }
+          .bwd-tc { fill: #16191f; font: 11px sans-serif; text-anchor: middle; }
+          .bwd-sc { fill: #5f6b7a; font: 11px sans-serif; text-anchor: middle; }
+          .bwd-bc { fill: #16191f; font: 600 11px sans-serif; text-anchor: middle; }
+          .bwd-el { fill: #414d5c; font: 600 11px sans-serif; text-anchor: middle; }
+        `}</style>
+        <defs>
+          <marker
+            id="bwd-ah"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="8"
+            markerHeight="8"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#5f6b7a" />
+          </marker>
+        </defs>
+
+        <rect x="0" y="0" width="880" height="448" rx="8" fill="#ffffff" stroke="#e9ebed" />
+
+        {/* The package: one CUDA device */}
+        <rect className="bwd-pkg" x="12" y="12" width="856" height="272" rx="10" />
+        <text className="bwd-h" x="28" y="36">
+          One Blackwell GPU, one CUDA device
+        </text>
+        <text className="bwd-s" x="28" y="54">
+          208B transistors on TSMC 4NP across two dies; B300 has up to 160 SMs
         </text>
 
         {/* Die A */}
-        <rect x={20} y={50} width={350} height={250} rx={10} fill="#f2f8fd" stroke="#0972d3" strokeWidth={2} />
-        <text x={36} y={74} fontSize={13} fontWeight={700} fill="#0972d3">Die A — reticle-sized</text>
-        <text x={36} y={92} fontSize={11} fill="#687078">TSMC 4NP · ~104B transistors</text>
-        <text x={36} y={120} fontSize={12} fontWeight={600} fill="#16191f">Per-SM additions (Blackwell)</text>
-        <text x={36} y={138} fontSize={11} fill="#16191f">• TMEM 256 KB (new tier 2)</text>
-        <text x={36} y={154} fontSize={11} fill="#16191f">• 5th-gen Tensor Core</text>
-        <text x={36} y={170} fontSize={11} fill="#16191f">• tcgen05.mma instructions</text>
-        <text x={36} y={186} fontSize={11} fill="#16191f">• NVFP4 (E2M1) datapath</text>
-        <text x={36} y={216} fontSize={12} fontWeight={600} fill="#16191f">Memory side</text>
-        <text x={36} y={232} fontSize={11} fill="#16191f">4 HBM3e stacks per die</text>
-        <text x={36} y={250} fontSize={11} fill="#16191f">B200: ~180 GB · 8 TB/s class</text>
-        <text x={36} y={268} fontSize={11} fill="#16191f">B300: 288 GB · 8 TB/s</text>
-        <text x={36} y={290} fontSize={10} fontStyle="italic" fill="#0972d3">UNKNOWN per-die HBM split</text>
+        <rect className="bwd-die" x="28" y="66" width="336" height="104" rx="8" />
+        <text className="bwd-dt" x="196" y="92">
+          Die A (reticle-limited)
+        </text>
+        <text className="bwd-tc" x="196" y="114">
+          SMs with 5th-gen Tensor Cores
+        </text>
+        <text className="bwd-tc" x="196" y="132">
+          SMEM and TMEM in every SM
+        </text>
 
-        {/* NV-HBI bridge */}
-        <rect x={384} y={130} width={112} height={90} rx={8} fill="#ecf7ec" stroke="#037f0c" strokeWidth={2} />
-        <text x={440} y={156} fontSize={12} fontWeight={700} fill="#037f0c" textAnchor="middle">NV-HBI</text>
-        <text x={440} y={174} fontSize={10} fill="#16191f" textAnchor="middle">High-Bandwidth</text>
-        <text x={440} y={188} fontSize={10} fill="#16191f" textAnchor="middle">Interface</text>
-        <text x={440} y={206} fontSize={11} fontWeight={700} fill="#037f0c" textAnchor="middle">~10 TB/s</text>
+        {/* NV-HBI */}
+        <line className="bwd-link" x1="364" y1="118" x2="384" y2="118" />
+        <line className="bwd-link" x1="496" y1="118" x2="516" y2="118" />
+        <rect className="bwd-hbi" x="384" y="78" width="112" height="80" rx="8" />
+        <text className="bwd-gt" x="440" y="104">
+          NV-HBI
+        </text>
+        <text className="bwd-gt" x="440" y="124">
+          10 TB/s
+        </text>
+        <text className="bwd-tc" x="440" y="144">
+          die to die
+        </text>
 
         {/* Die B */}
-        <rect x={510} y={50} width={350} height={250} rx={10} fill="#f2f8fd" stroke="#0972d3" strokeWidth={2} />
-        <text x={526} y={74} fontSize={13} fontWeight={700} fill="#0972d3">Die B — reticle-sized</text>
-        <text x={526} y={92} fontSize={11} fill="#687078">Mirror layout to Die A</text>
-        <text x={526} y={120} fontSize={12} fontWeight={600} fill="#16191f">Coherent presentation</text>
-        <text x={526} y={138} fontSize={11} fill="#16191f">A single CUDA device ID</text>
-        <text x={526} y={154} fontSize={11} fill="#16191f">Unified address space</text>
-        <text x={526} y={170} fontSize={11} fill="#16191f">No NUMA in CUDA model</text>
-        <text x={526} y={186} fontSize={11} fill="#16191f">Software-transparent NV-HBI</text>
-        <text x={526} y={216} fontSize={12} fontWeight={600} fill="#16191f">Memory side</text>
-        <text x={526} y={232} fontSize={11} fill="#16191f">4 HBM3e stacks per die</text>
-        <text x={526} y={250} fontSize={11} fill="#16191f">Aggregate HBM addressed as one</text>
-
-        <text x={20} y={330} fontSize={11} fill="#687078">
-          Total NVFP4 throughput (Blackwell Ultra B300): 14 PFLOPS per GPU. NVFP4 reduces DeepSeek-V3.2 from 690 GB FP8 to 415 GB.
+        <rect className="bwd-die" x="516" y="66" width="336" height="104" rx="8" />
+        <text className="bwd-dt" x="684" y="92">
+          Die B (reticle-limited)
         </text>
-        <text x={20} y={350} fontSize={11} fill="#687078">
-          NVLink Gen 5 per GPU: 1.8 TB/s GPU-to-GPU.
+        <text className="bwd-tc" x="684" y="114">
+          SMs with 5th-gen Tensor Cores
+        </text>
+        <text className="bwd-tc" x="684" y="132">
+          SMEM and TMEM in every SM
+        </text>
+
+        {/* Shared L2 */}
+        <rect className="bwd-l2" x="28" y="182" width="824" height="30" rx="6" />
+        <text className="bwd-bc" x="440" y="202">
+          L2 cache shared by both dies, with fully coherent memory access
+        </text>
+
+        {/* HBM */}
+        <rect className="bwd-hbm" x="28" y="224" width="824" height="48" rx="6" />
+        <text className="bwd-bc" x="440" y="244">
+          HBM3e: up to 180 GB (B200) or 288 GB in eight 12-high stacks (B300), 8 TB/s per GPU
+        </text>
+        <text className="bwd-sc" x="440" y="262">
+          NVIDIA does not state how the stacks split between the two dies
+        </text>
+
+        {/* NVLink, outside the package */}
+        <rect className="bwd-nvl" x="28" y="294" width="824" height="28" rx="6" />
+        <text className="bwd-bc" x="440" y="313">
+          NVLink 5 to other GPUs: 1.8 TB/s per GPU bidirectional (900 GB/s each way)
+        </text>
+
+        {/* Inside each SM */}
+        <text className="bwd-h" x="28" y="352">
+          Inside each SM: one thread issues tcgen05.mma, and the accumulator lives in TMEM
+        </text>
+
+        <rect className="bwd-sm" x="28" y="364" width="210" height="72" rx="8" />
+        <text className="bwd-hc" x="133" y="388">
+          Shared memory (SMEM)
+        </text>
+        <text className="bwd-tc" x="133" y="406">
+          228 KB per SM, as on Hopper
+        </text>
+        <text className="bwd-sc" x="133" y="424">
+          A and B operand tiles
+        </text>
+
+        <rect className="bwd-sm" x="335" y="364" width="210" height="72" rx="8" />
+        <text className="bwd-hc" x="440" y="388">
+          5th-gen Tensor Core
+        </text>
+        <text className="bwd-tc" x="440" y="406">
+          tcgen05.mma
+        </text>
+        <text className="bwd-sc" x="440" y="424">
+          issued by one thread
+        </text>
+
+        <rect className="bwd-tm" x="642" y="364" width="210" height="72" rx="8" />
+        <text className="bwd-dt" x="747" y="388">
+          Tensor Memory (TMEM)
+        </text>
+        <text className="bwd-tc" x="747" y="406">
+          256 KB per SM, new
+        </text>
+        <text className="bwd-sc" x="747" y="424">
+          holds accumulator D
+        </text>
+
+        {/* SMEM -> Tensor Core: A and B */}
+        <line className="bwd-arr" x1="240" y1="400" x2="332" y2="400" />
+        <text className="bwd-el" x="286" y="390">
+          A and B
+        </text>
+
+        {/* Tensor Core -> TMEM: D */}
+        <line className="bwd-arr" x1="547" y1="388" x2="639" y2="388" />
+        <text className="bwd-el" x="593" y="378">
+          accumulate D
+        </text>
+
+        {/* TMEM -> Tensor Core: optional A */}
+        <line className="bwd-arr-opt" x1="640" y1="414" x2="548" y2="414" />
+        <text className="bwd-el" x="594" y="430">
+          A, optional
         </text>
       </svg>
     </div>
