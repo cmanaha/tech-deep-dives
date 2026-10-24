@@ -8,6 +8,8 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import Alert from '@cloudscape-design/components/alert';
 import Badge from '@cloudscape-design/components/badge';
 import Table from '@cloudscape-design/components/table';
+import Link from '@cloudscape-design/components/link';
+import Popover from '@cloudscape-design/components/popover';
 import { SourceRef } from '@tech-deep-dives/shared';
 import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 
@@ -26,6 +28,11 @@ import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
  * load-bearing claim carries a SourceRef. FSx material is 'documented',
  * because no open-source artifact exists for the service side. S3 client
  * material is 'code-derived' at pinned commits. The two are never blended.
+ *
+ * The "KV cache over the fabric" container follows the same split: FSx service
+ * facts are 'documented'; KV connector, Mooncake and Valkey facts are
+ * 'code-derived' at pinned tags or SHAs, and project documents are cited with
+ * ProjectRef, which marks them as the project's statement rather than AWS's.
  */
 
 const ACCESSED = '2026-08-01';
@@ -35,6 +42,12 @@ const REFRESHED = '2026-10-23';
 const READ_C = '2026-08-01';
 /** The language bindings were read on this date, to settle the open caveat below. */
 const READ_BINDINGS = '2026-08-02';
+/**
+ * KV-cache container: code read, and the FSx performance and client pages
+ * re-read, on this date. Evidence registers live in
+ * deep-dives/vllm/research/2026-10-kv-tiers/ (rows Vn, Mn, Fn).
+ */
+const KV_READ = '2026-10-24';
 
 const S3_SHA = '469cbd020db52c329631a614e3b8401f3fda7717';
 const IO_SHA = 'fbac3c30fd8c50c05168f41486403a69d91f7600';
@@ -42,6 +55,21 @@ const HTTP_SHA = 'e543240bbd28ce39423bbc470785f2f38ff28ecb';
 const PY_TAG = 'v0.36.1';
 const JAVA_TAG = 'v0.48.3';
 const XFER_TAG = '0.15.0';
+
+/** KV-tier pins. valkey-large-object has no tags; the PR heads are open pull requests. */
+const VLO_SHA = '7510b9483d9837bf63b475d4a8e8fa612c65063f';
+const VDMA_SHA = '72c3a088fcfd111f21d96cfa43c05ea5bd40ae18';
+const LMC_PR_SHA = '7e5987f80ada75380c31e92a186106841e999e94';
+const GLIDE_PR_SHA = '7644df8b12ee71c77a219254c98d7cd69282f79c';
+const VALKEY_TAG = '9.1.2';
+const MOONCAKE_TAG = 'v0.3.13.post1';
+const RDMA_CORE_TAG = 'v65.0';
+const VLLM_TAG = 'v0.31.0';
+const LMCACHE_TAG = 'v0.5.6';
+const LLMD_KV_TAG = 'v1.0.0';
+const DYNAMO_TAG = 'v1.6.0';
+const NIXL_TAG = 'v1.5.0';
+const SGLANG_TAG = 'v0.5.22';
 
 const FSX_DOC = 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/';
 const S3_DOC = 'https://docs.aws.amazon.com/AmazonS3/latest/userguide/';
@@ -96,6 +124,97 @@ const xferc = (path: string, lines?: string): CodeRef => ({
   lines,
   read: READ_BINDINGS,
 });
+const vloc = (path: string, lines?: string): CodeRef => ({
+  repo: 'valkey-io/valkey-large-object',
+  ref: VLO_SHA,
+  path,
+  lines,
+  read: KV_READ,
+});
+const vdmac = (path: string, lines?: string): CodeRef => ({
+  repo: 'momentohq/vdma',
+  ref: VDMA_SHA,
+  path,
+  lines,
+  read: KV_READ,
+});
+const lmcprc = (path: string, lines?: string): CodeRef => ({
+  repo: 'LMCache/LMCache',
+  ref: LMC_PR_SHA,
+  path,
+  lines,
+  read: KV_READ,
+});
+const glidec = (path: string, lines?: string): CodeRef => ({
+  repo: 'valkey-io/valkey-glide',
+  ref: GLIDE_PR_SHA,
+  path,
+  lines,
+  read: KV_READ,
+});
+const valkeyc = (path: string, lines?: string): CodeRef => ({
+  repo: 'valkey-io/valkey',
+  ref: VALKEY_TAG,
+  path,
+  lines,
+  read: KV_READ,
+});
+const mcc = (path: string, lines?: string): CodeRef => ({
+  repo: 'kvcache-ai/Mooncake',
+  ref: MOONCAKE_TAG,
+  path,
+  lines,
+  read: KV_READ,
+});
+const rdmac = (path: string, lines?: string): CodeRef => ({
+  repo: 'linux-rdma/rdma-core',
+  ref: RDMA_CORE_TAG,
+  path,
+  lines,
+  read: KV_READ,
+});
+const vllmc = (path: string, lines?: string): CodeRef => ({
+  repo: 'vllm-project/vllm',
+  ref: VLLM_TAG,
+  path,
+  lines,
+  read: KV_READ,
+});
+const lmcc = (path: string, lines?: string): CodeRef => ({
+  repo: 'LMCache/LMCache',
+  ref: LMCACHE_TAG,
+  path,
+  lines,
+  read: KV_READ,
+});
+const llmdc = (path: string, lines?: string): CodeRef => ({
+  repo: 'llm-d/llm-d-kv-cache',
+  ref: LLMD_KV_TAG,
+  path,
+  lines,
+  read: KV_READ,
+});
+const dync = (path: string, lines?: string): CodeRef => ({
+  repo: 'ai-dynamo/dynamo',
+  ref: DYNAMO_TAG,
+  path,
+  lines,
+  read: KV_READ,
+});
+const nixlc = (path: string, lines?: string): CodeRef => ({
+  repo: 'ai-dynamo/nixl',
+  ref: NIXL_TAG,
+  path,
+  lines,
+  read: KV_READ,
+});
+const sglc = (path: string, lines?: string): CodeRef => ({
+  repo: 'sgl-project/sglang',
+  ref: SGLANG_TAG,
+  path,
+  lines,
+  read: KV_READ,
+});
 
 const docs = {
   efaGa2019: doc(
@@ -105,11 +224,13 @@ const docs = {
     REFRESHED
   ),
   fsxEfa: doc('FSx for Lustre User Guide: EFA-enabled file systems', `${FSX_DOC}efa-file-systems.html`, 1, REFRESHED),
+  // Re-read 2026-10-24 for the KV container; register 03 rows F19, F23, F25,
+  // F26 and F27 re-verified every claim this file cites to this page.
   fsxClients: doc(
     'FSx for Lustre User Guide: Configuring EFA clients',
     `${FSX_DOC}configure-efa-clients.html`,
     1,
-    REFRESHED
+    KV_READ
   ),
   efa: doc(
     'EC2 User Guide: Elastic Fabric Adapter for AI/ML and HPC workloads',
@@ -117,7 +238,9 @@ const docs = {
     1,
     REFRESHED
   ),
-  fsxPerf: doc('FSx for Lustre User Guide: Amazon FSx for Lustre performance', `${FSX_DOC}performance.html`, 1),
+  // Re-read 2026-10-24 for the KV container; register 03 rows F20, F37, F71
+  // and F72 re-verified every claim this file cites to this page.
+  fsxPerf: doc('FSx for Lustre User Guide: Amazon FSx for Lustre performance', `${FSX_DOC}performance.html`, 1, KV_READ),
   fsxSecGroups: doc(
     'FSx for Lustre User Guide: Controlling access with Amazon VPC security groups',
     `${FSX_DOC}limit-access-security-groups.html`,
@@ -156,7 +279,87 @@ const docs = {
     'https://aws.amazon.com/blogs/storage/improving-amazon-s3-throughput-for-the-aws-cli-and-boto3-with-the-aws-common-runtime/',
     2
   ),
+  // KV container. Project documents, issues and pull requests are cited with
+  // ProjectRef, so the popover does not attribute them to AWS.
+  mooncakeNoRc: doc(
+    'Mooncake documentation at v0.3.13.post1: EFA transport, "Why libfabric instead of ibverbs?"',
+    `https://github.com/kvcache-ai/Mooncake/blob/${MOONCAKE_TAG}/docs/source/design/transfer-engine/efa_transport.md#L650-L654`,
+    1,
+    KV_READ
+  ),
+  mooncakeShm: doc(
+    'Mooncake documentation at v0.3.13.post1: EFA transport, same-host GPU transfers and FI_EFA_ENABLE_SHM_TRANSFER',
+    `https://github.com/kvcache-ai/Mooncake/blob/${MOONCAKE_TAG}/docs/source/design/transfer-engine/efa_transport.md#L388-L415`,
+    1,
+    KV_READ
+  ),
+  vloGovernance: doc(
+    'valkey-io/valkey issue 4743: core team accepts valkey-large-object, API experimental until 1.0 (comment of 2026-09-21)',
+    'https://github.com/valkey-io/valkey/issues/4743#issuecomment-5766728140',
+    2,
+    KV_READ
+  ),
+  vloReadme: doc(
+    'valkey-large-object README at commit 7510b948, lines 1 to 3',
+    `https://github.com/valkey-io/valkey-large-object/blob/${VLO_SHA}/README.md#L1-L3`,
+    1,
+    KV_READ
+  ),
+  vloReleases: doc(
+    'valkey-io/valkey-large-object releases (none published as of 2026-10-24)',
+    'https://github.com/valkey-io/valkey-large-object/releases',
+    1,
+    KV_READ
+  ),
+  lmcachePr: doc(
+    'LMCache pull request 5556: valkey RDMA transport for the L2 adapter (open as of 2026-10-24)',
+    'https://github.com/LMCache/LMCache/pull/5556',
+    2,
+    KV_READ
+  ),
+  glidePr: doc(
+    'valkey-glide pull request 7412: integrate glide-rdma into glide-core (open as of 2026-10-24)',
+    'https://github.com/valkey-io/valkey-glide/pull/7412',
+    2,
+    KV_READ
+  ),
 };
+
+/**
+ * Citation for a project's own document, issue, pull request or release page.
+ * SourceRef's 'documented' popover reads "AWS states this in its own
+ * documentation", which is not true of a Mooncake or Valkey document, so the
+ * KV container marks these as the project's statement instead.
+ */
+function ProjectRef({ doc }: { doc: DocRef }) {
+  return (
+    <Popover
+      triggerType="custom"
+      dismissButton={false}
+      size="large"
+      header="Project source"
+      content={
+        <SpaceBetween size="xs">
+          <Box variant="small">
+            The open-source project states this in its own repository. It is not an AWS statement.
+          </Box>
+          <Box variant="small">
+            <Link href={doc.url} external>
+              {doc.title}
+            </Link>
+            <Box variant="small" color="text-body-secondary">
+              Tier {doc.tier}, accessed {doc.accessed}
+            </Box>
+          </Box>
+        </SpaceBetween>
+      }
+    >
+      <span style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+        <Badge color="grey">project</Badge>
+      </span>
+    </Popover>
+  );
+}
 
 const code = {
   perConnection: s3c('source/s3_client.c', 'L59-L77'),
@@ -195,6 +398,43 @@ const code = {
     lines: 'L642-L648',
     read: REFRESHED,
   },
+
+  // KV container: FSx for Lustre connectors (register 03).
+  lmcGds: lmcc('lmcache/v1/storage_backend/gds_backend.py', 'L1015-L1097'),
+  llmdGdsMode: llmdc('kv_connectors/llmd_fs_backend/llmd_fs_backend/worker.py', 'L442-L468'),
+  dynGdsMt: dync('lib/llm/src/block_manager/distributed/worker.rs', 'L94-L114'),
+  dynDiskFile: dync('lib/llm/src/block_manager/storage/disk.rs', 'L398-L470'),
+  nixlGdsMt: nixlc('src/plugins/cuda_gds/gds_mt_engine.cpp', 'L29-L54'),
+  vllmFsIo: vllmc('vllm/v1/kv_offload/tiering/fs/io.py', 'L90-L218'),
+  vllmFsHost: vllmc('vllm/v1/kv_offload/tiering/fs/manager.py', 'L109-L128'),
+  sglFile: sglc('python/sglang/srt/mem_cache/hicache_storage.py', 'L484-L547'),
+
+  // KV container: Mooncake Transfer Engine (register 02).
+  mcProtocol: mcc('mooncake-transfer-engine/src/multi_transport.cpp', 'L516-L520'),
+  mcRdmEndpoint: mcc('mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp', 'L75-L103'),
+  mcRmaPost: mcc('mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp', 'L1146-L1158'),
+  mcHmem: mcc('mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp', 'L534-L592'),
+  mcAllNics: mcc('mooncake-transfer-engine/src/transport/efa_transport/efa_transport.cpp', 'L306-L315'),
+  mcNicSelection: mcc('mooncake-transfer-engine/src/config.cpp', 'L623-L634'),
+  mcLocalNics: mcc('mooncake-transfer-engine/src/transport/efa_transport/efa_transport.cpp', 'L1284-L1300'),
+  mcEfaOff: mcc('mooncake-common/common.cmake', 'L100'),
+  mcEfaWheel: mcc('scripts/build_wheel.sh', 'L264-L291'),
+  mcRcQp: mcc('mooncake-transfer-engine/src/transport/rdma_transport/rdma_endpoint.cpp', 'L138'),
+
+  // KV container: Valkey large-object module and its clients (register 01).
+  vloTriples: vloc('src/commands/mod.rs', 'L22-L84'),
+  vloServerPosts: vloc('src/transport/session.rs', 'L36-L91'),
+  vdmaRmaPost: vdmac('crates/dma-libfabric/src/connection.rs', 'L43-L99'),
+  vdmaFabric: vdmac('crates/dma-libfabric/src/configuration.rs', 'L7-L48'),
+  vdmaRdm: vdmac('crates/dma-libfabric/src/endpoint.rs', 'L95-L120'),
+  lmcHostArena: lmcprc('lmcache/v1/storage_backend/valkey/rdma_worker_pool.py', 'L137-L159'),
+  lmcL1Host: lmcprc('lmcache/v1/distributed/memory_manager/l1_memory_manager.py', 'L2'),
+  glideHostMr: glidec('glide-rdma/src/endpoint.rs', 'L756-L785'),
+
+  // KV container: why RC verbs stacks stop on EFA (registers 01 and 02).
+  efaQpTypes: rdmac('providers/efa/verbs.c', 'L2268-L2305'),
+  efaSrdDriverQp: rdmac('providers/efa/verbs.c', 'L2057-L2061'),
+  valkeyRcQp: valkeyc('src/rdma.c', 'L366-L381'),
 };
 
 /**
@@ -222,9 +462,9 @@ function ThreeDataPathsDiagram() {
       sub: 'Persistent 2, EFA enabled',
       fabric: true,
       traverses: [
-        'LNet runs over the EFA device. The Lustre client kernel',
-        'module still handles metadata. GPUDirect Storage moves file',
-        'data to GPU memory on P5, P5e, P5en, P6-B200, P6-B300.',
+        'LNet runs over the EFA device. GPUDirect Storage moves',
+        'file data directly between the file system and GPU',
+        'memory on P5, P5e, P5en, P6-B200, P6-B300.',
       ],
       endpoint: ['FSx for Lustre object', 'storage servers'],
       ceiling: '700 Gbps',
@@ -626,6 +866,141 @@ function TargetFanOutDiagram() {
   );
 }
 
+/**
+ * Diagram 4. Three remote KV tiers on EFA: who drives the transfer, what
+ * crosses the fabric, and where loaded KV lands. Class prefix "kvf-".
+ * Coordinate rationale: deep-dives/vllm/research/2026-10-kv-tiers/authoring-efa.md.
+ */
+function KvOverFabricDiagram() {
+  const lanes = [
+    {
+      key: 'mooncake',
+      who: ['Mooncake Store', 'engine-side Transfer Engine', 'posts the transfer, protocol efa'],
+      wire: ['fi_write / fi_read', 'one RDM endpoint per EFA device', "to and from a peer's DRAM segment"],
+      lands: ['GPU or host memory', 'GPU buffers registered', 'with FI_HMEM_CUDA'],
+      gpu: true,
+    },
+    {
+      key: 'valkey',
+      who: ['Valkey large-object module', 'server posts the transfer after', 'a Valkey command over TCP'],
+      wire: ['fi_writemsg / fi_read', 'for GET / for SET, on efa-direct', "into the client's registered buffer"],
+      lands: ['Host memory today', 'clients located so far', 'register host memory'],
+      gpu: false,
+    },
+    {
+      key: 'fsx',
+      who: ['FSx for Lustre', 'Lustre client on the engine', 'instance, LNet over EFA'],
+      wire: ['cuFile or POSIX I/O', 'GDS path: up to 1,200 Gbps', 'POSIX path: up to 700 Gbps'],
+      lands: ['GPU or host memory', 'GPU through cuFile and GDS', 'host through POSIX I/O'],
+      gpu: true,
+    },
+  ];
+
+  const columns = [
+    { x: 24, w: 240, field: 'who' as const },
+    { x: 304, w: 260, field: 'wire' as const },
+    { x: 604, w: 232, field: 'lands' as const },
+  ];
+
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg
+        viewBox="0 0 860 456"
+        role="img"
+        aria-labelledby="kvf-tiers-title"
+        style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
+      >
+        <title id="kvf-tiers-title">
+          Three remote KV cache tiers reach EFA, and they differ in who drives the transfer and where
+          loaded KV lands. Mooncake&apos;s Transfer Engine on the engine side posts fi_write and fi_read
+          against a peer&apos;s DRAM segment and can land KV in GPU memory. The Valkey large-object
+          module&apos;s server posts fi_writemsg or fi_read after a Valkey command over TCP, and the clients
+          located so far register host memory. FSx for Lustre runs LNet over EFA and reaches GPU
+          memory through cuFile with GPUDirect Storage, at up to 1,200 Gbps per client, or host
+          memory through POSIX I/O. RDMA stacks built on reliable connected verbs queue pairs stop
+          at queue-pair creation on EFA.
+        </title>
+        <style>
+          {`
+            .kvf-hd { fill: #0f1b2a; font: 600 13px sans-serif; }
+            .kvf-col { fill: #5f6b7a; font: 600 11px sans-serif; }
+            .kvf-box { fill: #f2f8fd; stroke: #0972d3; stroke-width: 1.5; }
+            .kvf-gpu { fill: #ecf7ec; stroke: #037f0c; stroke-width: 1.5; }
+            .kvf-host { fill: #fbf3d5; stroke: #8b6c00; stroke-width: 1.5; }
+            .kvf-t { fill: #0f1b2a; font: 600 13px sans-serif; }
+            .kvf-s { fill: #414d5c; font: 11px sans-serif; }
+            .kvf-arr { stroke: #5f6b7a; stroke-width: 1.5; fill: none; marker-end: url(#kvf-head); }
+            .kvf-band { fill: #fdf3ec; stroke: #ec7211; stroke-width: 1.5; stroke-dasharray: 5 4; }
+            .kvf-band-t { fill: #0f1b2a; font: 600 12px sans-serif; }
+            .kvf-band-s { fill: #414d5c; font: 11px sans-serif; }
+            .kvf-x { stroke: #ec7211; stroke-width: 2; stroke-linecap: round; }
+          `}
+        </style>
+        <defs>
+          <marker id="kvf-head" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="#5f6b7a" />
+          </marker>
+        </defs>
+        <rect x="0" y="0" width="860" height="456" rx="8" fill="#ffffff" />
+
+        <text className="kvf-hd" x="24" y="30">
+          Three KV tiers on EFA: who drives each transfer, and where loaded KV lands
+        </text>
+        <text className="kvf-col" x="24" y="58">
+          Tier, and who drives the transfer
+        </text>
+        <text className="kvf-col" x="304" y="58">
+          What crosses EFA
+        </text>
+        <text className="kvf-col" x="604" y="58">
+          Where loaded KV lands
+        </text>
+
+        {lanes.map((lane, index) => {
+          const y0 = 70 + index * 100;
+          return (
+            <g key={lane.key}>
+              {columns.map((column) => {
+                const lines = lane[column.field];
+                const tone =
+                  column.field === 'lands' ? (lane.gpu ? 'kvf-gpu' : 'kvf-host') : 'kvf-box';
+                return (
+                  <g key={column.field}>
+                    <rect className={tone} x={column.x} y={y0} width={column.w} height="86" rx="6" />
+                    <text className="kvf-t" x={column.x + 14} y={y0 + 28}>
+                      {lines[0]}
+                    </text>
+                    <text className="kvf-s" x={column.x + 14} y={y0 + 50}>
+                      {lines[1]}
+                    </text>
+                    <text className="kvf-s" x={column.x + 14} y={y0 + 68}>
+                      {lines[2]}
+                    </text>
+                  </g>
+                );
+              })}
+              <path className="kvf-arr" d={`M266,${y0 + 43} L298,${y0 + 43}`} />
+              <path className="kvf-arr" d={`M566,${y0 + 43} L598,${y0 + 43}`} />
+            </g>
+          );
+        })}
+
+        <rect className="kvf-band" x="24" y="372" width="812" height="68" rx="8" />
+        <path className="kvf-x" d="M42,398 L58,414 M58,398 L42,414" />
+        <text className="kvf-band-t" x="72" y="394">
+          RC (Reliable Connected) verbs stacks stop at queue-pair creation on EFA
+        </text>
+        <text className="kvf-band-s" x="72" y="413">
+          Core Valkey RDMA and Mooncake&apos;s rdma transport create RC queue pairs.
+        </text>
+        <text className="kvf-band-s" x="72" y="430">
+          The EFA verbs provider accepts UD (Unreliable Datagram) and SRD queue pairs only.
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 interface ScopeRow {
   dimension: string;
   requirement: string;
@@ -706,7 +1081,7 @@ const comparison: CompareRow[] = [
   {
     axis: 'CPU cost',
     efa: 'Lowest. The kernel and the host CPU are off the data path, and GPUDirect RDMA removes the host copy.',
-    fsx: 'Low on the GPUDirect Storage path, since the CPU is bypassed for data movement. The Lustre client kernel module is otherwise in the path.',
+    fsx: 'Low on the GPUDirect Storage path, since the CPU is bypassed for data movement.',
     s3: 'Highest. TLS, HTTP parsing and checksums in userspace across up to 10,000 sockets, plus a buffer pool the client sizes between 2 and 24 GiB.',
   },
   {
@@ -1265,7 +1640,7 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="FSx for Lustre claims here come from documentation and S3 client claims from code at pinned commits you can open, and the badge on each claim says which."
+            description="FSx for Lustre service claims here come from documentation, and S3 client and KV-tier claims from code at pinned commits you can open, and the badge on each claim says which."
           >
             The boundary of this section
           </Header>
@@ -1279,6 +1654,144 @@ export function StorageDataPaths() {
           partitioning and data repository task mechanics belong to a storage dive, and the pinned
           commits above are where to start reading.
         </Box>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Where an EFA cluster can keep KV cache beyond one instance, whether loaded KV lands in GPU or host memory, and the first check to run on a KV store before planning it onto the fabric."
+          >
+            KV cache over the fabric
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            An inference engine can keep KV cache beyond its own instance, so another instance reuses a
+            prefix instead of recomputing it. Two kinds of remote tier carry it over EFA: a shared file
+            system and pooled DRAM on other instances.
+          </Box>
+          <KvOverFabricDiagram />
+          <Box variant="small" color="text-body-secondary">
+            FSx for Lustre figures are AWS per-client maximums; matching connectors to them, and the
+            core Valkey entry, is our reading of code.
+          </Box>
+
+          <Box variant="h3">FSx for Lustre: the GDS figure needs a cuFile connector</Box>
+          <Box variant="p">
+            LNet runs over the EFA device{' '}
+            <SourceRef provenance="documented" doc={docs.fsxClients} />, and an EFA client gets up to
+            700 Gbps, or 1,200 Gbps with GDS <SourceRef provenance="documented" doc={docs.fsxPerf} />.
+            GDS needs a P5, P5e, P5en, P6-B200 or P6-B300 client with NVIDIA GDS driver 2.24.2 or
+            later <SourceRef provenance="documented" doc={docs.fsxClients} />.
+          </Box>
+          <Box variant="p">
+            By our reading of the connector code, the 1,200 Gbps path needs cuFile I/O:
+            LMCache&apos;s GDS backend <SourceRef provenance="code-derived" code={code.lmcGds} />,
+            llm-d&apos;s fs backend with <code>gds_mode</code> set (default disabled){' '}
+            <SourceRef provenance="code-derived" code={code.llmdGdsMode} />, or the disk tier of
+            Dynamo&apos;s KV block manager, whose NIXL agent creates GDS_MT{' '}
+            <SourceRef provenance="code-derived" code={code.dynGdsMt} />{' '}
+            <SourceRef provenance="code-derived" code={code.nixlGdsMt} /> and whose file is private to
+            one worker <SourceRef provenance="code-derived" code={code.dynDiskFile} />. vLLM&apos;s fs
+            tier <SourceRef provenance="code-derived" code={code.vllmFsIo} />{' '}
+            <SourceRef provenance="code-derived" code={code.vllmFsHost} /> and SGLang&apos;s file
+            backend <SourceRef provenance="code-derived" code={code.sglFile} /> do POSIX I/O from
+            host memory.
+          </Box>
+
+          <Box variant="h3">Pooled DRAM: who posts the RDMA operation</Box>
+          <Box variant="p">
+            Mooncake&apos;s Transfer Engine, with protocol <code>efa</code>{' '}
+            <SourceRef provenance="code-derived" code={code.mcProtocol} />, posts one-sided{' '}
+            <code>fi_write</code> and <code>fi_read</code> from the engine side on one RDM endpoint per
+            EFA device <SourceRef provenance="code-derived" code={code.mcRmaPost} />. In a CUDA build,
+            GPU buffers register with <code>FI_HMEM_CUDA</code>, so loaded KV can land in GPU memory{' '}
+            <SourceRef provenance="code-derived" code={code.mcHmem} />. Buffers go on every EFA device
+            when the page-table budget allows{' '}
+            <SourceRef provenance="code-derived" code={code.mcAllNics} />, or on the nearest ones with{' '}
+            <code>MC_EFA_NIC_SELECTION=local</code>{' '}
+            <SourceRef provenance="code-derived" code={code.mcNicSelection} />{' '}
+            <SourceRef provenance="code-derived" code={code.mcLocalNics} />. Install an EFA wheel such
+            as <code>mooncake-transfer-engine-efa</code>, since the default build omits the transport{' '}
+            <SourceRef provenance="code-derived" code={code.mcEfaOff} />{' '}
+            <SourceRef provenance="code-derived" code={code.mcEfaWheel} />, and set{' '}
+            <code>FI_EFA_ENABLE_SHM_TRANSFER=0</code> for same-host GPU transfers between processes,
+            which libfabric&apos;s shm path can crash{' '}
+            <ProjectRef doc={docs.mooncakeShm} />.
+          </Box>
+          <Box variant="p">
+            The Valkey large-object module puts the server in charge. The client sends a RESP (Redis
+            Serialization Protocol) command over TCP naming its registered buffer{' '}
+            <SourceRef provenance="code-derived" code={code.vloTriples} />; the server posts{' '}
+            <code>fi_writemsg</code> with <code>FI_DELIVERY_COMPLETE</code> for a GET, so the reply
+            cannot overtake the payload, or <code>fi_read</code> for a SET{' '}
+            <SourceRef provenance="code-derived" code={code.vloServerPosts} />{' '}
+            <SourceRef provenance="code-derived" code={code.vdmaRmaPost} />, over efa-direct{' '}
+            <SourceRef provenance="code-derived" code={code.vdmaFabric} />. Located clients register
+            host memory, so KV lands there today{' '}
+            <SourceRef provenance="code-derived" code={code.lmcHostArena} />{' '}
+            <SourceRef provenance="code-derived" code={code.lmcL1Host} />{' '}
+            <SourceRef
+              provenance="doc-code-conflict"
+              code={code.glideHostMr}
+              doc={docs.vloReadme}
+              conflict="the module README describes an optional EFA RDMA transport to GPU memory; neither located client registers GPU memory"
+            />
+            . As of 2026-10-24 the module is unreleased{' '}
+            <ProjectRef doc={docs.vloReleases} />, with an experimental API
+            until 1.0 <ProjectRef doc={docs.vloGovernance} />, and its client
+            support is in open pull requests{' '}
+            <ProjectRef doc={docs.lmcachePr} />{' '}
+            <ProjectRef doc={docs.glidePr} />.
+          </Box>
+
+          <Box variant="h3">What makes a KV store EFA-capable</Box>
+          <Box variant="p">
+            The EFA verbs provider accepts UD (Unreliable Datagram) queue pairs through standard
+            verbs and SRD through its direct-verbs extension{' '}
+            <SourceRef provenance="code-derived" code={code.efaQpTypes} />{' '}
+            <SourceRef provenance="code-derived" code={code.efaSrdDriverQp} />, so stacks built on RC
+            (Reliable Connected) queue pairs stop at creation. Mooncake&apos;s ibverbs{' '}
+            <code>rdma</code> transport is one, and its <code>efa</code> transport replaces it on EFA{' '}
+            <ProjectRef doc={docs.mooncakeNoRc} />. Core Valkey RDMA creates RC
+            queue pairs <SourceRef provenance="code-derived" code={code.valkeyRcQp} />, so by our
+            reading of both codebases it is another; no AWS or Valkey document stating so was located
+            during this research. Both pools above open a libfabric RDM endpoint on the efa provider{' '}
+            <SourceRef provenance="code-derived" code={code.mcRdmEndpoint} />{' '}
+            <SourceRef provenance="code-derived" code={code.vdmaRdm} />, the userspace path of this
+            section&apos;s EFA and SRD lane, and that endpoint is the first thing to look for in a KV
+            store&apos;s transport before planning it onto EFA.
+          </Box>
+          <ExpandableSection
+            headerText="The code behind the RC verdict"
+            headerDescription="Where each codebase sets or checks the queue-pair type, at pinned tags"
+          >
+            <Box variant="p">
+              In rdma-core {RDMA_CORE_TAG}, <code>efa_create_qp</code> and{' '}
+              <code>efa_create_qp_ex</code> return EOPNOTSUPP for any type but UD{' '}
+              <SourceRef provenance="code-derived" code={code.efaQpTypes} />, and a driver queue pair
+              must be SRD <SourceRef provenance="code-derived" code={code.efaSrdDriverQp} />. Valkey{' '}
+              {VALKEY_TAG} sets <code>IBV_QPT_RC</code> before <code>rdma_create_qp</code>{' '}
+              <SourceRef provenance="code-derived" code={code.valkeyRcQp} />, and Mooncake&apos;s rdma
+              endpoint sets the same type <SourceRef provenance="code-derived" code={code.mcRcQp} />.
+            </Box>
+          </ExpandableSection>
+
+          <Box variant="p">
+            Per-engine configuration is in section 7 (KV-Cache Offloading &amp; Tiers) of the{' '}
+            <Link external href="../vllm/">
+              vLLM deep dive
+            </Link>
+            ; bandwidth per GPU against the recompute break-even is on the tier ladder in section 9
+            (Flash as a Cache Tier for Inference) of the{' '}
+            <Link external href="../silicon-memory-inference/">
+              Silicon, Memory &amp; Inference deep dive
+            </Link>
+            .
+          </Box>
+        </SpaceBetween>
       </Container>
 
       <Container
