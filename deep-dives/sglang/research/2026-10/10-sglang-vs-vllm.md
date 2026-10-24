@@ -220,3 +220,11 @@ Only the knobs that differ in meaning or default between the engines; SGLang def
 - **"SGLang and vLLM: what differs, what converged, and how to choose"** (depth: practical). Open with the convergence fact the reader does not expect: both engines now cache prefixes by default, overlap CPU and GPU work, page the KV cache and run the same kernel projects, so the real differences are in defaults and in what ships with the engine. Then the design table (A, trimmed to the rows that change a decision: A2, A5, A7, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20), convergence as an `ExpandableSection` (B), benchmark claims as an `ExpandableSection` with tier badges (C, once filled), and end on the switching checklist (E9). Name the vLLM dive section on every row instead of re-explaining vLLM.
 - **Inline pointers in mechanism sections** (depth: mechanism): each SGLang mechanism section ends with a one-line vLLM contrast drawn from the matching A row (radix cache: A6 to A8; scheduler: A2 to A5; PD: A14; router: A15; APIs: A16 to A19).
 - **vLLM dive maintenance** (not an SGLang section): apply D1, D2, D4, D7, D12, D13, D19, D20 when the vLLM dive is next re-pinned, and add the cross-links above once the SGLang sections exist.
+
+## Errata from the scope review (2026-10-24)
+
+These override the rows they name. Source: `reviews/scope-review-factual.md` follow-up #82 to #84.
+
+- A14 and B7, "default `NixlConnector` pulls" and "the default (pull for vLLM's NIXL connector)": vLLM PD is a connector chosen by `--kv-transfer-config`, with no single default (05 F1, F2). Correct wording: "the reference `NixlConnector` pulls", "vLLM's reference pull proxy runs prefill first", "the reference connector's pull". Do not copy "default" from A14. (#82)
+- A19, "with no key they are open", and Practical knobs, "callable on a default SGLang server": the default bind is 127.0.0.1 (08 E6; `arg_groups/fields/serving.py:65`). Correct wording: "with no key they accept any client that can reach the port (localhost at the default bind)"; knobs: "callable by any client that reaches the port on a server with no key". (#83)
+- E5 and A20, "use vLLM with the vLLM Neuron plugin ... or NxD Inference": add "NxD Inference, which the vLLM register records as in maintenance mode (09 E5)". (#84)
