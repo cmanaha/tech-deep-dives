@@ -407,7 +407,7 @@ export function FlashCacheTier() {
         header={
           <Header
             variant="h2"
-            description="When a cache shared by every node is worth the network hop, which AWS service allows one GPU instance up to 150 GB/s, and how to predict a vendor's 20x time-to-first-token (TTFT) claim"
+            description="When a shared cache is worth the network hop, why FSx for Lustre allows one GPU instance up to 150 GB/s only if created with EFA, and how to predict a vendor's 20x time-to-first-token (TTFT) claim"
           >
             Sharing context across nodes
           </Header>
@@ -415,32 +415,46 @@ export function FlashCacheTier() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A node-local tier hits only when the router sends a request back to the node holding its prefix.
-            Mooncake&apos;s authors found local DRAM reached about half the theoretical hit rate, which is why Mooncake
-            pools DRAM and SSD across nodes
-            <Cite s={S.mooncakeFast} kind="measured" />, and SGLang makes cross-instance reuse &quot;the job of
-            L3&quot;.
-            <Cite s={S.sglangHicache} /> Routers rank lower tiers lower: read from the code, Dynamo credits a prefix
-            block in pinned host memory at 0.75 of a GPU hit and on disk at 0.25 by default.
-            <Cite s={S.dynamoRouterCode} /> The Mooncake authors report that it lets Kimi handle 115% (A800) and 107%
-            (H800) more requests in the FAST 2025 paper, and 75% more in the later arXiv version.
+            A node-local tier hits only when the router sends a request back to the node holding its prefix, and
+            routers rank lower tiers lower: read from the code, Dynamo credits a prefix block in pinned host memory
+            at 0.75 of a GPU hit and on disk at 0.25 by default.
+            <Cite s={S.dynamoRouterCode} /> SGLang makes cross-instance reuse &quot;the job of L3&quot;
+            <Cite s={S.sglangHicache} />, and Mooncake pools DRAM and SSD across nodes because its authors found
+            local DRAM reached about half the theoretical hit rate.
+            <Cite s={S.mooncakeFast} kind="measured" /> They report it lets Kimi handle 115% (A800) and 107% (H800)
+            more requests in the FAST 2025 paper, and 75% more in the later arXiv version.
             <Cite s={S.mooncakeFast} kind="measured" /><Cite s={S.mooncakeArxiv} kind="measured" />
           </Box>
           <Box variant="p">
             <strong>Shared flash on AWS.</strong> FSx for Lustre allows one client up to 100 Gb/s without EFA,
             700 Gb/s with EFA and 1,200 Gb/s (150 GB/s) with EFA and GDS.
-            <Cite s={S.fsxPerformance} /> EFA clients are Nitro v4 or later EFA instances outside the trn2 family,
-            GDS clients are P5, P5e, P5en, P6-B200 and P6-B300, and EFA is set only when the file system is
-            created.
-            <Cite s={S.fsxEfa} /> That choice puts the per-GPU ceiling at 18.75 GB/s with EFA and GDS, 10.9 with
-            EFA or 1.56 without, either side of the ladder&apos;s 2.1 GB/s break-even.
-            <Cite s={S.fsxPerformance} kind="derived" note={fsxPerGpuNote} /> Size it for throughput: an EFA file
-            system at PERSISTENT-1000 is created in 4.8 TiB steps
-            <Cite s={S.fsxGettingStarted} />, and one GDS client at full rate needs 153.6 TiB when disk-bound
-            (writes, uncached reads) or 62.4 TiB for reads from the servers&apos; memory cache, about 1.7 TiB at that
-            size.
-            <Cite s={S.fsxSsd} /><Cite s={S.fsxPerformance} /><Cite s={S.fsxSsd} kind="derived" note={fsxSizingNote} />{' '}
-            S3 Express One Zone gives single-digit millisecond access
+            <Cite s={S.fsxPerformance} /> EFA is set only when the file system is created
+            <Cite s={S.fsxEfa} />, and that choice puts the per-GPU ceiling at 18.75 GB/s with EFA and GDS, 10.9
+            with EFA or 1.56 without, either side of the ladder&apos;s 2.1 GB/s break-even.
+            <Cite s={S.fsxPerformance} kind="derived" note={fsxPerGpuNote} /> GDS clients are P5, P5e, P5en,
+            P6-B200 and P6-B300, and EFA clients are Nitro v4 or later EFA instances outside the trn2 family.
+            <Cite s={S.fsxEfa} />
+          </Box>
+          <ExpandableSection headerText="FSx sizing and latency figures">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                An EFA file system at PERSISTENT-1000 is created in 4.8 TiB steps
+                <Cite s={S.fsxGettingStarted} />, and one GDS client at full rate needs 153.6 TiB when disk-bound
+                (writes, uncached reads) or 62.4 TiB for reads from the servers&apos; memory cache, about 1.7 TiB at
+                that size.
+                <Cite s={S.fsxSsd} /><Cite s={S.fsxPerformance} /><Cite s={S.fsxSsd} kind="derived" note={fsxSizingNote} />
+              </Box>
+              <Box variant="p">
+                An AWS Storage Blog post&apos;s four-tier framing (HBM, host DRAM, FSx for Lustre, S3) gives FSx 100
+                to 500 µs without a measurement
+                <Cite s={S.awsStorageKvBlog} kind="vendor-claim" />; the FSx pages located in this research say only
+                &quot;sub-millisecond&quot;.
+                <Cite s={S.fsxSsd} />
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+          <Box variant="p">
+            <strong>S3 and EFS.</strong> S3 Express One Zone gives single-digit millisecond access
             <Cite s={S.s3Express} />, which suits large chunks fetched ahead of use; KVBM&apos;s G4 tier and the{' '}
             <code>obj</code> plugin of NIXL (NVIDIA Inference Xfer Library) target S3.
             <Cite s={S.dynamoKvbmDocs} /><Cite s={S.nixl} /> NIXL reaches storage through the same plugin
@@ -453,15 +467,6 @@ export function FlashCacheTier() {
             <Cite s={S.efsPerformance} /> The llm-d connector leaves eviction to the storage system.
             <Cite s={S.llmd} />
           </Box>
-          <ExpandableSection headerText="FSx latency figures">
-            <Box variant="p">
-              An AWS Storage Blog post&apos;s four-tier framing (HBM, host DRAM, FSx for Lustre, S3) gives FSx 100 to
-              500 µs without a measurement
-              <Cite s={S.awsStorageKvBlog} kind="vendor-claim" />; the FSx pages located in this research say only
-              &quot;sub-millisecond&quot;.
-              <Cite s={S.fsxSsd} />
-            </Box>
-          </ExpandableSection>
           <Box variant="p">
             <strong>Pooled DRAM on AWS.</strong> A pool of peer DRAM rides EFA at 3,200 Gb/s per p5en or p6-b200,
             6,400 on p6-b300.
@@ -471,8 +476,8 @@ export function FlashCacheTier() {
             buffers as CUDA memory and ships in the separate <code>mooncake-transfer-engine-efa</code> wheels.
             <Cite s={S.mooncakeEfaMr} /><Cite s={S.mooncakeEfaBuild} note="USE_EFA defaults to OFF." /><Cite s={S.mooncakeEfaWheel} />{' '}
             The Valkey BLOB module, <code>valkey-large-object</code>, keeps large values such as KV tensors in
-            DRAM, optionally backed by NVMe, with optional EFA transport; it is pre-release, with no tags and an
-            API experimental until 1.0.
+            DRAM, optionally backed by NVMe, with optional EFA transport; it is pre-release, with an API
+            experimental until 1.0.
             <Cite s={S.valkeyLargeObject} note="GitHub API on 2026-10-24: no tags and no releases; crate version 0.1.0." />
             <Cite s={S.valkeyAcceptance} kind="roadmap" /> Its clients located in this research register host memory.
             <Cite s={S.lmcacheValkeyPr} /><Cite s={S.lmcacheValkeyL1} /><Cite s={S.glideRdma} /> No ElastiCache
@@ -483,14 +488,14 @@ export function FlashCacheTier() {
             <strong>The managed option.</strong> SageMaker HyperPod managed tiered KV cache runs an L1 in local CPU
             memory and a cluster-wide L2, with <code>tieredstorage</code> (recommended) or <code>redis</code> as the
             L2 backend, behind <code>kvCacheSpec.enableL2Cache</code>.
-            <Cite s={S.hyperpodWhatsNew} /><Cite s={S.hyperpodBlog} /> The SageMaker docs describe tiered storage as
-            &quot;a pooled memory tier that spans cluster nodes&quot;
+            <Cite s={S.hyperpodWhatsNew} /><Cite s={S.hyperpodBlog} /> AWS measured Llama-3.1-70B on seven
+            p5.48xlarge replicas at 64K context: median TTFT down 94% and throughput up 38% with L1, L2 and
+            intelligent routing, against a baseline without them.
+            <Cite s={S.hyperpodBlog} kind="vendor-claim" /> The SageMaker docs describe tiered storage as &quot;a
+            pooled memory tier that spans cluster nodes&quot;
             <Cite s={S.hyperpodKvDocs} />; only the What&apos;s New post mentions &quot;automatic tiering from CPU
             memory to local SSD&quot;
-            <Cite s={S.hyperpodWhatsNew} />, so treat flash inside it as undocumented. AWS measured Llama-3.1-70B on
-            seven p5.48xlarge replicas at 64K context: median TTFT down 94% and throughput up 38% with L1, L2 and
-            intelligent routing, against a baseline without them.
-            <Cite s={S.hyperpodBlog} kind="vendor-claim" />
+            <Cite s={S.hyperpodWhatsNew} />, so treat flash inside it as undocumented.
           </Box>
           <ExpandableSection headerText="NVIDIA CMX: a flash tier behind a DPU">
             <Box variant="p">
@@ -504,20 +509,18 @@ export function FlashCacheTier() {
             </Box>
           </ExpandableSection>
           <Box variant="p">
-            <strong>Reading a vendor&apos;s claim.</strong> Storage vendors sell flash as context memory, and every
-            headline number located in this research is the vendor&apos;s own, measured against recomputing a long
-            prefix or against HBM alone. VAST and CoreWeave report Llama-3.1-405B with a 127,188-token prompt on 8x
-            H100: 62 s TTFT with prefill against 3 s loading KV from VAST over 2 x 100 Gb/s NFS (Network File System),
-            peaking at 198 Gb/s.
+            <strong>Reading a vendor&apos;s claim.</strong> Every headline number from a storage vendor located in
+            this research is the vendor&apos;s own, measured against recomputing a long prefix or against HBM alone.
+            VAST and CoreWeave report Llama-3.1-405B with a 127,188-token prompt on 8x H100: 62 s TTFT with prefill
+            against 3 s loading KV from VAST over 2 x 100 Gb/s NFS (Network File System), peaking at 198 Gb/s.
             <Cite s={S.vastBlog} kind="vendor-claim" /> At FP16 that prompt holds 65.6 GB of KV, which takes 2.65 s
             at 198 Gb/s
             <Cite s={S.llama3Herd} kind="derived" note="2 x 126 layers x 8 KV heads x 128 x 2 B = 516,096 B per token; x 127,188 = 65.6 GB; / 24.75 GB/s = 2.65 s. Assumes FP16 KV." />:
-            the 20x comes from the prefix length and the link. Ask any vendor for hit rate, p95 TTFT, link speed
-            and context length. The Nebius and WEKA run reports them: one 8x B300 node replaying production agentic
-            coding traffic for 8 hours, hit rate 93% against 40% for HBM alone, p95 TTFT 3.82 s against 23.12 s, and
-            3.7x the output tokens per GPU-hour.
+            the 20x comes from the prefix length and the link. The Nebius and WEKA run replayed production agentic
+            coding traffic on one 8x B300 node for 8 hours: hit rate 93% against 40% for HBM alone, p95 TTFT 3.82 s
+            against 23.12 s, and 3.7x the output tokens per GPU-hour.
             <Cite s={S.nebiusWeka} kind="vendor-claim" /> No independent measurement of any of these products was
-            located in this research.
+            located in this research. Ask any vendor for hit rate, p95 TTFT, link speed and context length.
           </Box>
         </SpaceBetween>
       </Container>
@@ -535,9 +538,9 @@ export function FlashCacheTier() {
         <SpaceBetween size="m">
           <ol>
             <li>
-              <strong>Host DRAM tier first.</strong> Size it larger than the GPU KV pool. Dynamo recommends a CPU
-              cache of at least 100 GB and larger than the device cache; a smaller one makes KVBM churn,
-              &quot;offloading blocks after every forward pass&quot;.
+              <strong>Host DRAM tier first, larger than the GPU KV pool.</strong> Dynamo recommends a CPU cache of
+              at least 100 GB and larger than the device cache; a smaller one makes KVBM churn, &quot;offloading
+              blocks after every forward pass&quot;.
               <Cite s={S.dynamoKvbmDocs} /> A p5en or P6-B200 carries 2,048 GiB of host memory, 256 GiB per GPU.
               <Cite s={S.ec2AcceleratedSpecs} /> <em>DDR5, MRDIMM, LPDDR5X and CXL</em> covers what sets this
               tier&apos;s bandwidth.
@@ -545,20 +548,20 @@ export function FlashCacheTier() {
             <li>
               <strong>Local flash next, with an admission filter.</strong> Add the disk tier when the working set
               outgrows HBM plus host DRAM, size it at least as large as the host tier
-              <Cite s={S.dynamoKvbmDocs} />, give each GPU its own drive path
-              <Cite s={S.lmcache} />, and keep the admission filter on. Read from the code at v1.5.1, Dynamo&apos;s
-              default writes a block to disk on its second sighting, with counts decaying every 600 seconds; the docs
-              say only that the filter can be disabled.
-              <Cite s={S.dynamoKvbmCode} /><Cite s={S.dynamoKvbmFilter} /> The filter earns its place: more than half the blocks in the Mooncake
-              trace are never reused
+              <Cite s={S.dynamoKvbmDocs} />, and give each GPU its own drive path.
+              <Cite s={S.lmcache} /> Keep the admission filter on: more than half the blocks in the Mooncake trace
+              are never reused
               <Cite s={S.mooncakeArxiv} kind="measured" />, and a 1 DWPD 30.72 TB drive absorbs about 356 MB/s of
               continuous writes.
-              <Cite s={S.micron9650} kind="derived" note="30.72 TB x 1 drive write per day / 86,400 s = 356 MB/s." />
+              <Cite s={S.micron9650} kind="derived" note="30.72 TB x 1 drive write per day / 86,400 s = 356 MB/s." />{' '}
+              Read from the code at v1.5.1, Dynamo&apos;s default writes a block to disk on its second sighting, with
+              counts decaying every 600 seconds; the docs say only that the filter can be disabled.
+              <Cite s={S.dynamoKvbmCode} /><Cite s={S.dynamoKvbmFilter} />
             </li>
             <li>
-              <strong>Shared flash when reuse crosses nodes.</strong> FSx for Lustre with EFA and GDS sized for
-              throughput, a storage vendor&apos;s KV store, or HyperPod&apos;s managed tier. On FSx the connector
-              makes the tier shared: vLLM&apos;s <code>fs</code> tier with every instance on one{' '}
+              <strong>Shared flash when reuse crosses nodes.</strong> FSx for Lustre created with EFA, used with
+              GDS and sized for throughput; a storage vendor&apos;s KV store; or HyperPod&apos;s managed tier. On FSx
+              the connector makes the tier shared: vLLM&apos;s <code>fs</code> tier with every instance on one{' '}
               <code>root_dir</code>, or LMCache&apos;s GDS or <code>fs_native</code> backend.
               <Cite s={S.vllmFsTierDoc} /><Cite s={S.lmcacheGds} /><Cite s={S.lmcacheFsNative} /><Cite s={S.lmcacheFsNativeExists} />{' '}
               KVBM&apos;s disk tier there is one private file per worker process, deleted on exit.
@@ -566,14 +569,13 @@ export function FlashCacheTier() {
             </li>
           </ol>
           <Box variant="p">
-            <strong>What to monitor.</strong> Watch load bytes against store bytes: vLLM exports{' '}
+            <strong>What to monitor.</strong> Watch load bytes against store bytes, which vLLM exports as{' '}
             <code>vllm:kv_offload_load_bytes</code> and <code>vllm:kv_offload_store_bytes</code>
-            <Cite s={S.vllmOffloadMetrics} />, and llm-d computes the hit rate as{' '}
-            <code>vllm:external_prefix_cache_hits_total</code> over{' '}
+            <Cite s={S.vllmOffloadMetrics} />: a tier written far more than it is read spends drive endurance and
+            bandwidth for no TTFT gain. Track the hit rate, <code>vllm:external_prefix_cache_hits_total</code> over{' '}
             <code>vllm:external_prefix_cache_queries_total</code>.
-            <Cite s={S.llmd} /> A tier written far more than it is read spends drive endurance and bandwidth for no
-            TTFT gain. If the hit rate climbs and TTFT does not fall, compare the tier&apos;s bandwidth with the
-            break-even for that model: for a dense 70B on Hopper, about 17 GB/s per node.
+            <Cite s={S.llmd} /> If the hit rate climbs and TTFT does not fall, compare the tier&apos;s bandwidth with
+            the break-even for that model: for a dense 70B on Hopper, about 17 GB/s per node.
           </Box>
         </SpaceBetween>
       </Container>
