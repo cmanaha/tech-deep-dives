@@ -4,7 +4,7 @@ import Box from '@cloudscape-design/components/box';
 
 export function CodebaseRust() {
   return (
-    <Container header={<Header variant="h2">The Rust Side</Header>}>
+    <Container header={<Header variant="h2">Gateway &amp; Rust Frontend</Header>}>
       <Box variant="p">This tab is being written.</Box>
     </Container>
   );

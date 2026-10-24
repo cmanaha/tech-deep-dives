@@ -4,7 +4,7 @@ import Box from '@cloudscape-design/components/box';
 
 export function DecisionGuide() {
   return (
-    <Container header={<Header variant="h1">28. Decision Guide</Header>}>
+    <Container header={<Header variant="h1">26. Decision Guide</Header>}>
       <Box variant="p">This section is being written.</Box>
     </Container>
   );

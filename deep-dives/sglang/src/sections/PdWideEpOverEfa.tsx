@@ -4,7 +4,7 @@ import Box from '@cloudscape-design/components/box';
 
 export function PdWideEpOverEfa() {
   return (
-    <Container header={<Header variant="h1">24. PD &amp; Wide EP over EFA</Header>}>
+    <Container header={<Header variant="h1">22. PD &amp; Wide EP over EFA</Header>}>
       <Box variant="p">This section is being written.</Box>
     </Container>
   );

@@ -44,7 +44,7 @@ export function GlossaryAndSources() {
             variant="h1"
             description="Look up any acronym in the dive, and find the source behind any claim, graded by how far to trust it"
           >
-            29. Glossary &amp; Sources
+            28. Glossary &amp; Sources
           </Header>
         }
       >

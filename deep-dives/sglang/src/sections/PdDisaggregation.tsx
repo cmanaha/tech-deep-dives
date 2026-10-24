@@ -4,7 +4,7 @@ import Box from '@cloudscape-design/components/box';
 
 export function PdDisaggregation() {
   return (
-    <Container header={<Header variant="h1">18. PD Disaggregation</Header>}>
+    <Container header={<Header variant="h1">15. PD Disaggregation</Header>}>
       <Box variant="p">This section is being written.</Box>
     </Container>
   );

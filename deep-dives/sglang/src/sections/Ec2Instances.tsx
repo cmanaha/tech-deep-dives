@@ -4,7 +4,7 @@ import Box from '@cloudscape-design/components/box';
 
 export function Ec2Instances() {
   return (
-    <Container header={<Header variant="h1">23. EC2 Instances &amp; GPU-Dependent Behaviour</Header>}>
+    <Container header={<Header variant="h1">21. EC2 Instances, Images &amp; GPU Defaults</Header>}>
       <Box variant="p">This section is being written.</Box>
     </Container>
   );

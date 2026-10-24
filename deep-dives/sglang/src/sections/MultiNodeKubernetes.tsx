@@ -4,7 +4,7 @@ import Box from '@cloudscape-design/components/box';
 
 export function MultiNodeKubernetes() {
   return (
-    <Container header={<Header variant="h1">20. Multi-Node &amp; Kubernetes</Header>}>
+    <Container header={<Header variant="h1">18. Multi-Node &amp; Kubernetes Orchestrators</Header>}>
       <Box variant="p">This section is being written.</Box>
     </Container>
   );

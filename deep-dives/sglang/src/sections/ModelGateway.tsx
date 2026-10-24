@@ -4,7 +4,7 @@ import Box from '@cloudscape-design/components/box';
 
 export function ModelGateway() {
   return (
-    <Container header={<Header variant="h1">19. The Model Gateway</Header>}>
+    <Container header={<Header variant="h1">17. The Model Gateway</Header>}>
       <Box variant="p">This section is being written.</Box>
     </Container>
   );

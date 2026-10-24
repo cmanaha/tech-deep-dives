@@ -43,12 +43,6 @@ const SpeculativeDecoding = React.lazy(() =>
 const ApiSurfaces = React.lazy(() =>
   import('./sections/ApiSurfaces').then((m) => ({ default: m.ApiSurfaces }))
 );
-const LoRAServing = React.lazy(() =>
-  import('./sections/LoRAServing').then((m) => ({ default: m.LoRAServing }))
-);
-const FrontendLanguage = React.lazy(() =>
-  import('./sections/FrontendLanguage').then((m) => ({ default: m.FrontendLanguage }))
-);
 const RlRollout = React.lazy(() =>
   import('./sections/RlRollout').then((m) => ({ default: m.RlRollout }))
 );
@@ -57,11 +51,11 @@ const RlRollout = React.lazy(() =>
 const Parallelism = React.lazy(() =>
   import('./sections/Parallelism').then((m) => ({ default: m.Parallelism }))
 );
-const WideExpertParallelism = React.lazy(() =>
-  import('./sections/WideExpertParallelism').then((m) => ({ default: m.WideExpertParallelism }))
-);
 const PdDisaggregation = React.lazy(() =>
   import('./sections/PdDisaggregation').then((m) => ({ default: m.PdDisaggregation }))
+);
+const WideExpertParallelism = React.lazy(() =>
+  import('./sections/WideExpertParallelism').then((m) => ({ default: m.WideExpertParallelism }))
 );
 const ModelGateway = React.lazy(() =>
   import('./sections/ModelGateway').then((m) => ({ default: m.ModelGateway }))
@@ -70,14 +64,12 @@ const MultiNodeKubernetes = React.lazy(() =>
   import('./sections/MultiNodeKubernetes').then((m) => ({ default: m.MultiNodeKubernetes }))
 );
 
-// Inside the code
-const InsideCodebase = React.lazy(() =>
-  import('./sections/InsideCodebase').then((m) => ({ default: m.InsideCodebase }))
-);
-
 // SGLang on AWS
-const AwsDeploymentPaths = React.lazy(() =>
-  import('./sections/AwsDeploymentPaths').then((m) => ({ default: m.AwsDeploymentPaths }))
+const AwsManagedPaths = React.lazy(() =>
+  import('./sections/AwsManagedPaths').then((m) => ({ default: m.AwsManagedPaths }))
+);
+const AwsSelfManagedPaths = React.lazy(() =>
+  import('./sections/AwsSelfManagedPaths').then((m) => ({ default: m.AwsSelfManagedPaths }))
 );
 const Ec2Instances = React.lazy(() =>
   import('./sections/Ec2Instances').then((m) => ({ default: m.Ec2Instances }))
@@ -99,6 +91,11 @@ const Operations = React.lazy(() =>
 const DecisionGuide = React.lazy(() =>
   import('./sections/DecisionGuide').then((m) => ({ default: m.DecisionGuide }))
 );
+
+// Reference
+const InsideCodebase = React.lazy(() =>
+  import('./sections/InsideCodebase').then((m) => ({ default: m.InsideCodebase }))
+);
 const GlossaryAndSources = React.lazy(() =>
   import('./sections/GlossaryAndSources').then((m) => ({ default: m.GlossaryAndSources }))
 );
@@ -115,24 +112,23 @@ const sections = [
   { id: 'quant', title: '9. Quantization & KV Precision' },
   { id: 'structured', title: '10. Structured Output' },
   { id: 'spec-decode', title: '11. Speculative Decoding' },
-  { id: 'apis', title: '12. Talking to SGLang: the APIs' },
-  { id: 'lora', title: '13. LoRA & Multi-Adapter Serving' },
-  { id: 'frontend', title: '14. The Frontend Language' },
-  { id: 'rl', title: '15. SGLang as an RL Rollout Engine' },
-  { id: 'parallelism', title: '16. Parallelism: TP, DP Attention & EP' },
-  { id: 'wide-ep', title: '17. Wide Expert Parallelism' },
-  { id: 'pd', title: '18. PD Disaggregation' },
-  { id: 'gateway', title: '19. The Model Gateway' },
-  { id: 'multinode', title: '20. Multi-Node & Kubernetes' },
-  { id: 'codebase', title: '21. Inside the Codebase' },
-  { id: 'aws-paths', title: '22. SGLang on AWS: Deployment Paths' },
-  { id: 'ec2', title: '23. EC2 Instances & GPU-Dependent Behaviour' },
-  { id: 'efa', title: '24. PD & Wide EP over EFA' },
-  { id: 'vs-vllm', title: '25. SGLang & vLLM Compared' },
-  { id: 'ecosystem', title: '26. Ecosystem & Production Users' },
-  { id: 'ops', title: '27. Operations & Failure Signatures' },
-  { id: 'decision', title: '28. Decision Guide' },
-  { id: 'sources', title: '29. Glossary & Sources' },
+  { id: 'apis', title: '12. APIs, LoRA & the Admin Plane' },
+  { id: 'rl', title: '13. SGLang as an RL Rollout Engine' },
+  { id: 'parallelism', title: '14. Parallelism: TP, DP Attention & EP' },
+  { id: 'pd', title: '15. PD Disaggregation' },
+  { id: 'wide-ep', title: '16. Wide Expert Parallelism' },
+  { id: 'gateway', title: '17. The Model Gateway' },
+  { id: 'multinode', title: '18. Multi-Node & Kubernetes Orchestrators' },
+  { id: 'aws-managed', title: '19. SGLang on SageMaker AI & HyperPod' },
+  { id: 'aws-self-managed', title: '20. SGLang on EKS & EC2' },
+  { id: 'ec2', title: '21. EC2 Instances, Images & GPU Defaults' },
+  { id: 'efa', title: '22. PD & Wide EP over EFA' },
+  { id: 'vs-vllm', title: '23. SGLang & vLLM Compared' },
+  { id: 'ecosystem', title: '24. Ecosystem & Production Users' },
+  { id: 'ops', title: '25. Operations & Failure Signatures' },
+  { id: 'decision', title: '26. Decision Guide' },
+  { id: 'codebase', title: '27. Inside the Codebase' },
+  { id: 'sources', title: '28. Glossary & Sources' },
 ];
 
 const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
@@ -148,22 +144,21 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   structured: StructuredOutput,
   'spec-decode': SpeculativeDecoding,
   apis: ApiSurfaces,
-  lora: LoRAServing,
-  frontend: FrontendLanguage,
   rl: RlRollout,
   parallelism: Parallelism,
-  'wide-ep': WideExpertParallelism,
   pd: PdDisaggregation,
+  'wide-ep': WideExpertParallelism,
   gateway: ModelGateway,
   multinode: MultiNodeKubernetes,
-  codebase: InsideCodebase,
-  'aws-paths': AwsDeploymentPaths,
+  'aws-managed': AwsManagedPaths,
+  'aws-self-managed': AwsSelfManagedPaths,
   ec2: Ec2Instances,
   efa: PdWideEpOverEfa,
   'vs-vllm': SglangVsVllm,
   ecosystem: EcosystemUsers,
   ops: Operations,
   decision: DecisionGuide,
+  codebase: InsideCodebase,
   sources: GlossaryAndSources,
 };
 
@@ -173,8 +168,8 @@ export function App() {
 
   return (
     <DeepDiveLayout
-      title="SGLang: The Serving Runtime Built Around a Shared Prefix Index"
-      subtitle="How SGLang v0.5.22 schedules, caches and scales LLM serving, where its design differs from vLLM and why, and how to run it on AWS"
+      title="SGLang: The Radix-Tree Serving Runtime, and Where It Differs from vLLM"
+      subtitle="How SGLang v0.5.22 schedules, caches and scales LLM serving, which of its defaults a vLLM user already knows, and how to run it on AWS"
       sections={sections}
       activeSection={activeSection}
       onSectionChange={setActiveSection}

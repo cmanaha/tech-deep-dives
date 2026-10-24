@@ -97,9 +97,43 @@ report it to the orchestrator. Also avoid the rhetorical tics in CLAUDE.md and e
 Expand every niche acronym on first use in your file: e.g. "ZMQ (ZeroMQ)", "DP (data parallelism)",
 "MLA (multi-head latent attention)", "EP (expert parallelism)", "PD (prefill/decode)", "TBO
 (two-batch overlap)", "EPLB (expert-parallel load balancer)", "LWS (LeaderWorkerSet)", "RBG
-(RoleBasedGroup)", "EFA (Elastic Fabric Adapter)", "NIXL (NVIDIA Inference Xfer Library)". Common
-computing acronyms (CPU, GPU, API, HTTP) need no expansion. Report every acronym you used to the
-orchestrator so the glossary can list it.
+(RoleBasedGroup)", "EFA (Elastic Fabric Adapter)", "NIXL (NVIDIA Inference Xfer Library)", "EOS (end
+of sequence)", "MHA and GQA (multi-head and grouped-query attention)", "SM90 (compute capability
+9.0, Hopper)" for each SM code, "FA3 (FlashAttention 3)", "MTP (multi-token prediction)", "NCCL
+(NVIDIA Collective Communications Library)", "IPC (inter-process communication)", "CP and DCP
+(context parallelism, decode context parallelism)", "TTFT (time to first token)", "ITL (inter-token
+latency)", "EPD (encoder-prefill-decode disaggregation)", "LMSYS (Large Model Systems
+Organization)", "GIN (NCCL GPU-Initiated Networking)", "NVSHMEM (NVIDIA's OpenSHMEM library)", "VMM
+(CUDA virtual memory management)", "EBNF (Extended Backus-Naur Form)", "CVE (Common Vulnerabilities
+and Exposures)", "FCFS (first-come-first-served)", "LoRA (low-rank adaptation)", "MoE (mixture of
+experts)". Take EFA-GDA and UCCL-EP expansions from the AWS source the register cites; never invent
+one. Common computing acronyms (CPU, GPU, API, HTTP) need no expansion. Report every acronym you
+used to the orchestrator so the glossary can list it.
+
+## Section plan v2 rules (from the scope reviews)
+
+- The section numbers and titles are SCOPE.md v2 (28 sections). Your task names your number.
+- Every mechanism section ends with one "Against vLLM" line drawn from its register 10 A row, naming
+  the vLLM dive section by its title (the SCOPE block says which). Map vLLM terms where the reader
+  first meets them: retraction is SGLang's name for preemption; DeepEP "normal" is the counterpart of
+  vLLM's high-throughput mode; TBO is the counterpart of vLLM's DBO (dual-batch overlap);
+  `--mem-fraction-static` is a different quantity from `--gpu-memory-utilization`.
+- Your SCOPE block's "Strongest number:" line names the figure to land at least twice.
+- Do not write register labels as reader text ("DOC-CODE conflict"). Write "The documentation says X;
+  v0.5.22's code does Y, so set Z", with the docs side cited `kind="doc-code-conflict"`.
+- vLLM dive section titles, for links (pinned v0.31.0): 1. Thesis & Framing; 2. The Inference
+  Workload; 3. The V1 Engine Architecture; 4. Scheduler & Continuous Batching; 5. Paged KV Cache &
+  Block Tables; 6. Automatic Prefix Caching; 7. KV-Cache Offloading & Tiers; 8. Quantization &
+  Precision; 9. Distributed Inference; 10. Disaggregated Prefill / Decode; 11. Speculative Decoding;
+  12. The OpenAI-Compatible Server; 13. LoRA & Multi-Adapter Serving; 14. Inside the Codebase; 15.
+  Orchestration: Ray & Ray Serve LLM; 16. Kubernetes: Production-Stack & Router; 17. Kubernetes:
+  llm-d, KServe & Gateway API; 18. NVIDIA Dynamo & the Ecosystem; 19. Gateways & Application Layer;
+  20. Observability & Benchmarking; 21. vLLM on AWS Neuron; 22. vLLM on AWS GPUs, EFA & NIXL; 23. EC2
+  Topology & Placement Groups; 24. vLLM on Amazon EKS; 25. vLLM on SageMaker & vs Bedrock; 26. When
+  Not vLLM; 27. Operations & Failure Modes; 28. Decision Guide. EFA dive sections are linked as
+  `<Link href="../efa/">EFA dive: libfabric and the EFA Provider</Link>`.
+- Links to other sections of this dive are plain text ("section 15, PD Disaggregation"): the app has
+  no in-page anchors.
 
 JSX: raw `<` and `>` in text fail lint; write `&lt;` `&gt;` or wrap in `<code>`. Every `<pre>` carries
 `style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}` (gate `pre-overflow`).
