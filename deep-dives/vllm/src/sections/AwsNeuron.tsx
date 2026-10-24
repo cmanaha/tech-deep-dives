@@ -193,7 +193,7 @@ const featureRows: FeatureRow[] = [
   {
     feature: 'Pipeline parallelism',
     status: 'Not supported',
-    notes: 'Not available; the supported splits are TP, SP, DP, EP and CP.',
+    notes: 'The supported splits are TP, SP, DP, EP and CP.',
   },
   {
     feature: 'KV cache offloading',
@@ -320,19 +320,10 @@ export function AwsNeuron() {
         <SpaceBetween size="m">
           <Box variant="p">
             <strong>What it is.</strong> vLLM reaches AWS Trainium through the vLLM Neuron plugin,{' '}
-            <code>vllm-neuron</code>. Its README opens: &quot;The vLLM Neuron plugin is the
-            recommended serving solution for large language models on AWS Trainium.&quot;{' '}
+            <code>vllm-neuron</code>, &quot;the recommended serving solution for large language
+            models on AWS Trainium&quot;{' '}
             <Cite tier={1} href={`${VN_README}#L3`} accessed={NEURON_ACCESSED}>
               vllm-neuron README L3
-            </Cite>
-            . The package registers <code>{'neuron = "vllm_neuron:register"'}</code> under the{' '}
-            <code>vllm.platform_plugins</code> entry-point group{' '}
-            <Cite tier={1} href={`${VN}/pyproject.toml#L25-L26`} kind="code" accessed={NEURON_ACCESSED}>
-              vllm-neuron pyproject.toml L25-L26
-            </Cite>
-            , the group vLLM loads when it resolves which platform it runs on{' '}
-            <Cite tier={1} href={vllmUrl('vllm/plugins/__init__.py', 'L21-L23')} kind="code" accessed={NEURON_ACCESSED}>
-              plugins/__init__.py L21-L23
             </Cite>
             . vLLM v0.31.0 has no Neuron platform of its own: its built-in platforms are TPU, CUDA,
             ROCm, XPU and CPU{' '}
@@ -396,7 +387,7 @@ export function AwsNeuron() {
         header={
           <Header
             variant="h2"
-            description="What the 1.x plugin replaces, what compiles your model and where NxD Inference went, so you can place any Neuron deployment on its line and set the compile path before the first start"
+            description="What the 1.x plugin replaces, what compiles your model and where NxD Inference went, so you can place any Neuron deployment on its line"
           >
             Two plugin lines, one serving surface
           </Header>
@@ -435,152 +426,33 @@ export function AwsNeuron() {
             </Cite>
             .
           </Box>
-          <Box variant="p">
-            On the 1.x line the plugin sets vLLM&apos;s worker class to <code>NeuronWorker</code>{' '}
-            <Cite tier={1} href={`${VN_PLATFORM}#L728-L731`} kind="code" accessed={NEURON_ACCESSED}>
-              vllm-neuron platform.py L728-L731
-            </Cite>
-            , replaces the default scheduler with <code>NeuronScheduler</code> (or{' '}
-            <code>NeuronAsyncScheduler</code> under async scheduling){' '}
-            <Cite tier={1} href={`${VN_PLATFORM}#L806-L819`} kind="code" accessed={NEURON_ACCESSED}>
-              platform.py L806-L819
-            </Cite>
-            , and ships its own <code>model</code> and <code>nki</code> packages{' '}
-            <Cite tier={1} href={`${VN_TREE}/vllm_neuron`} kind="code" accessed={NEURON_ACCESSED}>
-              vllm-neuron vllm_neuron/
-            </Cite>
-            . Inside the worker, Model Runner V2 is the default for dense models; MoE
-            (mixture-of-experts) models, speculative decoding and multimodal models run on Model
-            Runner V1{' '}
-            <Cite tier={1} href={VN_REL_029} accessed={NEURON_ACCESSED}>
-              vllm-neuron v0.29.0.1.2.0 release notes
-            </Cite>{' '}
-            <Cite tier={1} href={`${VN_MRV2_POLICY}#L174-L230`} kind="code" accessed={NEURON_ACCESSED}>
-              model_runner_v2_policy.py L174-L230
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            <strong>How it compiles.</strong> vLLM captures each model graph with TorchDynamo. On the
-            native route, the default, the graph is lowered through AOTAutograd and torch-mlir to
-            StableHLO, the form <code>neuronx-cc</code> compiles into one NEFF per shape
-            bucket{' '}
-            <Cite tier={1} href={NEURON_VLLM_TORCHNEURON} accessed={NEURON_ACCESSED}>
-              Neuron docs: How vLLM is integrated with TorchNeuron
-            </Cite>
-            . That lowering is TorchNeuron&apos;s, packaged separately: the plugin depends on{' '}
-            <code>libtorch-neuronx-lite</code>, which carries its own copy of it, and not on{' '}
-            <code>torch-neuronx</code>{' '}
-            <Cite tier={1} href={VN_CORE_REQ} kind="code" accessed={NEURON_ACCESSED}>
-              vllm-neuron requirements/core.txt
-            </Cite>
-            , and the native route imports lite at startup{' '}
-            <Cite tier={1} href={`${VN_INIT}#L91-L96`} kind="code" accessed={NEURON_ACCESSED}>
-              vllm_neuron/__init__.py L91-L96
-            </Cite>
-            . The release notes headline the path as &quot;built on the TorchNeuron library&quot;{' '}
-            <Cite tier={1} href={VN_REL_029} kind="doc-code-conflict" accessed={NEURON_ACCESSED}>
-              vllm-neuron v0.29.0.1.2.0 release notes
-            </Cite>
-            ; that holds for the lowering, and not for the package. The practical
-            consequence is in the integration guide: &quot;vLLM Neuron uses its own copy of the
-            lowering, so the two versions can be different&quot;{' '}
-            <Cite tier={1} href={NEURON_VLLM_TORCHNEURON} accessed={NEURON_ACCESSED}>
-              Neuron docs: How vLLM is integrated with TorchNeuron
-            </Cite>
-            , so a fix that lands in public torch-neuronx is not evidence the plugin has it. The stack
-            runs on PyTorch 2.13: vLLM 0.29.0 pins it{' '}
-            <Cite tier={1} href={`${VLLM_0290}/requirements/cuda.txt#L7`} kind="code" accessed={NEURON_ACCESSED}>
-              vLLM v0.29.0 requirements/cuda.txt L7
-            </Cite>{' '}
-            and the lite wheel requires it{' '}
-            <Cite tier={1} href={LITE_WHEEL} kind="code" accessed={NEURON_ACCESSED}>
-              libtorch-neuronx-lite 2.13.0.1.0.3112 wheel, METADATA L12
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            <strong>Two variables to set before the first start.</strong>{' '}
-            <code>VLLM_NEURON_BACKEND</code> selects the route: unset or <code>neuron_native</code>{' '}
-            runs the native route, and <code>vllm_neuron</code> selects the XLA route{' '}
-            <Cite tier={1} href={`${VN_ENVS}#L779-L786`} kind="code" accessed={NEURON_ACCESSED}>
-              vllm-neuron envs.py L779-L786
-            </Cite>
-            , which is deprecated and ends on Trn2 and Trn3 in Neuron 2.34{' '}
-            <Cite tier={1} href={EOS_VLLM_XLA} accessed={NEURON_ACCESSED}>
-              Neuron docs: Torch/XLA path in vLLM Neuron, end of support
-            </Cite>
-            . A misspelled value logs a warning and runs native{' '}
-            <Cite tier={1} href={NEURON_VLLM_ROUTE} accessed={NEURON_ACCESSED}>
-              Neuron docs: How to choose a compilation route
-            </Cite>
-            . Set <code>neuron_native</code> explicitly anyway, for the cache reason below. If{' '}
-            <code>torch-neuronx</code> is installed in the same environment, export{' '}
-            <code>TORCH_DEVICE_BACKEND_AUTOLOAD=0</code> before the server starts: only one package can
-            own the <code>neuron</code> device, and without it startup fails with{' '}
-            <code>Tried to register multiple backend fallbacks for the same dispatch key PrivateUse1</code>{' '}
-            <Cite tier={1} href={NEURON_VLLM_TORCHNEURON} accessed={NEURON_ACCESSED}>
-              Neuron docs: How vLLM is integrated with TorchNeuron
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            <strong>Keep the compile across restarts.</strong> Warmup compiles one NEFF per shape
-            bucket (sequence length by batch size) and caches it on disk for later restarts{' '}
-            <Cite tier={1} href={`${VN_FEATURES}#L38-L40`} accessed={NEURON_ACCESSED}>
-              vllm-neuron features guide L38-L40
-            </Cite>
-            ; budget that compile on first boot. The plugin&apos;s release notes claim up to 2x faster
-            cold start and up to 6x faster warm start from the PyTorch precompile cache{' '}
-            <Cite tier={1} href={VN_REL_029} accessed={NEURON_ACCESSED}>
-              vllm-neuron v0.29.0.1.2.0 release notes
-            </Cite>
-            . That cache turns on only when <code>VLLM_NEURON_BACKEND</code> is{' '}
-            <code>neuron_native</code> or <code>neuron</code>, so an unset variable runs the native
-            route with the cache off{' '}
-            <Cite tier={1} href={NEURON_VLLM_PRECOMPILE} accessed={NEURON_ACCESSED}>
-              Neuron docs: How to use the Precompile Cache
-            </Cite>{' '}
-            <Cite tier={1} href={LITE_WHEEL} kind="code" accessed={NEURON_ACCESSED}>
-              libtorch-neuronx-lite wheel, __init__.py L83-L104, L162-L180
-            </Cite>
-            . On a multi-node or encoder-disaggregated (EPD) deployment the Precompile Cache guide asks
-            for the cache off, with <code>TORCH_CACHING_PRECOMPILE=0</code>. Set <code>VLLM_CACHE_ROOT</code>{' '}
-            explicitly, to storage that survives a restart: the precompile cache reads from it, and the
-            NEFF cache sits under it only when the variable is set in the environment (unset, the NEFFs
-            go to <code>~/.cache/neuron_libtorch</code>; <code>NEURON_LIBTORCH_CACHE_ROOT</code>, when
-            set, takes precedence). <code>TORCH_NEURONX_NEFF_CACHE_DIR</code>{' '}
-            moves the NEFFs on their own, for example to a file system that later nodes share{' '}
-            <Cite tier={1} href={LITE_WHEEL} kind="code" accessed={NEURON_ACCESSED}>
-              libtorch-neuronx-lite wheel, envs.py L80-L138
-            </Cite>
-            . The features guide also documents <code>NEURON_COMPILED_ARTIFACTS</code> for
-            pre-compiled artifacts{' '}
-            <Cite tier={1} href={`${VN_FEATURES}#L53-L65`} accessed={NEURON_ACCESSED}>
-              features guide L53-L65
-            </Cite>
-            , but no code in the plugin at this tag, in the libtorch-neuronx-lite 2.13.0.1.0.3112
-            wheel or in vLLM 0.29.0&apos;s <code>envs.py</code> reads that variable{' '}
-            <Cite tier={1} href={VN_TREE} kind="doc-code-conflict" accessed={NEURON_ACCESSED}>
-              vllm-neuron at v0.29.0.1.2.0 (searched)
-            </Cite>{' '}
-            <Cite tier={1} href={LITE_WHEEL} kind="doc-code-conflict" accessed={NEURON_ACCESSED}>
-              libtorch-neuronx-lite wheel (searched)
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            <strong>Check which platform loaded.</strong> At startup vLLM logs{' '}
-            <code>Platform plugin neuron is activated</code> when the plugin is in use{' '}
-            <Cite tier={1} href={`${VLLM_0290}/vllm/platforms/__init__.py#L270-L272`} kind="code" accessed={NEURON_ACCESSED}>
-              vLLM v0.29.0 platforms/__init__.py L270-L272
-            </Cite>
-            ; an activated out-of-tree platform plugin takes precedence over the built-in platforms{' '}
-            <Cite tier={1} href={vllmUrl('vllm/platforms/__init__.py', 'L272-L279')} kind="code" accessed={NEURON_ACCESSED}>
-              platforms/__init__.py L272-L279
-            </Cite>
-            . If that line is missing at the default log level, vLLM did not activate the plugin.
-          </Box>
+          <ExpandableSection headerText="Code behind the plugin layer">
+            <Box variant="p">
+              On the 1.x line the plugin sets vLLM&apos;s worker class to <code>NeuronWorker</code>{' '}
+              <Cite tier={1} href={`${VN_PLATFORM}#L728-L731`} kind="code" accessed={NEURON_ACCESSED}>
+                vllm-neuron platform.py L728-L731
+              </Cite>
+              , replaces the default scheduler with <code>NeuronScheduler</code> (or{' '}
+              <code>NeuronAsyncScheduler</code> under async scheduling){' '}
+              <Cite tier={1} href={`${VN_PLATFORM}#L806-L819`} kind="code" accessed={NEURON_ACCESSED}>
+                platform.py L806-L819
+              </Cite>
+              , and ships its own <code>model</code> and <code>nki</code> packages{' '}
+              <Cite tier={1} href={`${VN_TREE}/vllm_neuron`} kind="code" accessed={NEURON_ACCESSED}>
+                vllm-neuron vllm_neuron/
+              </Cite>
+              . Inside the worker, Model Runner V2 is the default for dense models; MoE
+              (mixture-of-experts) models, speculative decoding and multimodal models run on Model
+              Runner V1{' '}
+              <Cite tier={1} href={VN_REL_029} accessed={NEURON_ACCESSED}>
+                vllm-neuron v0.29.0.1.2.0 release notes
+              </Cite>{' '}
+              <Cite tier={1} href={`${VN_MRV2_POLICY}#L174-L230`} kind="code" accessed={NEURON_ACCESSED}>
+                model_runner_v2_policy.py L174-L230
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -646,25 +518,24 @@ export function AwsNeuron() {
                 <Cite tier={1} href={NEURON_WHATS_NEW} accessed={NEURON_ACCESSED}>
                   Neuron docs: What&apos;s New, 2.33.0
                 </Cite>
+                . The 0.29.0.1.2.0 release notes claim GPT-OSS-120B system-level and per-user
+                throughput up to about 2.5x that of the Neuron 2.32 release on Trn3 with MXFP4 weights
+                and a packed FP8 KV cache, measured at batch size 128; the gain varies by batch size{' '}
+                <Cite tier={1} href={VN_REL_029} accessed={NEURON_ACCESSED}>
+                  vllm-neuron v0.29.0.1.2.0 release notes
+                </Cite>
                 . Each 2.x.0 SDK release since 2.28.0 (2026-02-26) has come 41 to 63 days after the
                 one before{' '}
                 <Cite tier={1} href={NEURON_WHATS_NEW} accessed={NEURON_ACCESSED}>
                   Neuron docs: What&apos;s New, release dates
                 </Cite>
-                : re-read the version table and rerun your benchmark at each one. The 0.29.0.1.2.0
-                release notes claim GPT-OSS-120B system-level and per-user throughput up to about 2.5x
-                that of the Neuron 2.32 release on Trn3 with MXFP4 weights and a packed FP8 KV cache,
-                measured at batch size 128; the gain varies by batch size{' '}
-                <Cite tier={1} href={VN_REL_029} accessed={NEURON_ACCESSED}>
-                  vllm-neuron v0.29.0.1.2.0 release notes
-                </Cite>
-                .
+                : re-read the version table and rerun your benchmark at each one.
               </Box>
             </div>
             <div>
               <Box variant="h3">Trn1 and Inf2: the 0.5.x line only</Box>
               <Box variant="p">
-                The 1.x plugin lists Trn2 and Trn3 only. The README lists plugin 0.5.3 (vLLM 0.16.0,
+                The README lists plugin 0.5.3 (vLLM 0.16.0,
                 Neuron 2.31) for Trn1 and Inf2, while the NxD Inference release notes say &quot;NxD
                 Inference models are now only supported on Trn2 and newer hardware&quot; and that
                 customers who need NxD Inference kernel support on Trn1 or Inf2 &quot;should pin to
@@ -689,26 +560,6 @@ export function AwsNeuron() {
               </Box>
             </div>
           </ColumnLayout>
-
-          <Alert type="warning" header="vLLM 0.29.0 on Neuron, v0.31.0 everywhere else in this dive">
-            Read every version note in this dive against 0.29.0 before you copy a GPU launch command.
-            For example, <code>--max-num-active-seqs</code>, the running-batch cap in sections 4 and
-            27, exists at v0.31.0{' '}
-            <Cite tier={1} href={vllmUrl('vllm/engine/arg_utils.py', 'L1688-L1691')} kind="code" accessed={NEURON_ACCESSED}>
-              arg_utils.py L1688-L1691
-            </Cite>{' '}
-            and does not appear in v0.29.0&apos;s argument parser{' '}
-            <Cite tier={1} href={`${VLLM_0290}/vllm/engine/arg_utils.py`} kind="code" accessed={NEURON_ACCESSED}>
-              vLLM v0.29.0 arg_utils.py
-            </Cite>
-            , so it is unavailable on a Neuron server. The queue caps{' '}
-            <code>--max-num-queued-reqs</code> and <code>--max-num-queued-tokens</code> are in
-            0.29.0&apos;s parser too{' '}
-            <Cite tier={1} href={`${VLLM_0290}/vllm/engine/arg_utils.py#L1602-L1608`} kind="code" accessed={NEURON_ACCESSED}>
-              vLLM v0.29.0 arg_utils.py L1602-L1608
-            </Cite>
-            .
-          </Alert>
 
           <ExpandableSection headerText="Three code paths and the status of each">
             <SpaceBetween size="s">
@@ -762,6 +613,26 @@ export function AwsNeuron() {
               </Box>
             </SpaceBetween>
           </ExpandableSection>
+
+          <Alert type="warning" header="vLLM 0.29.0 on Neuron, v0.31.0 everywhere else in this dive">
+            Read every version note in this dive against 0.29.0 before you copy a GPU launch command.
+            For example, <code>--max-num-active-seqs</code>, the running-batch cap in sections 4 and
+            27, exists at v0.31.0{' '}
+            <Cite tier={1} href={vllmUrl('vllm/engine/arg_utils.py', 'L1688-L1691')} kind="code" accessed={NEURON_ACCESSED}>
+              arg_utils.py L1688-L1691
+            </Cite>{' '}
+            and does not appear in v0.29.0&apos;s argument parser{' '}
+            <Cite tier={1} href={`${VLLM_0290}/vllm/engine/arg_utils.py`} kind="code" accessed={NEURON_ACCESSED}>
+              vLLM v0.29.0 arg_utils.py
+            </Cite>
+            , so it is unavailable on a Neuron server. The queue caps{' '}
+            <code>--max-num-queued-reqs</code> and <code>--max-num-queued-tokens</code> are in
+            0.29.0&apos;s parser too{' '}
+            <Cite tier={1} href={`${VLLM_0290}/vllm/engine/arg_utils.py#L1602-L1608`} kind="code" accessed={NEURON_ACCESSED}>
+              vLLM v0.29.0 arg_utils.py L1602-L1608
+            </Cite>
+            .
+          </Alert>
         </SpaceBetween>
       </Container>
 
@@ -772,7 +643,7 @@ export function AwsNeuron() {
         header={
           <Header
             variant="h2"
-            description="What a GPU vLLM design keeps, gains and loses on the 1.x plugin, so you can rule Trainium in or out before you size anything"
+            description="What a GPU vLLM design keeps and loses on the 1.x plugin, so you can rule Trainium in or out before you size anything"
           >
             Feature matrix for the 1.x plugin
           </Header>
@@ -808,39 +679,201 @@ export function AwsNeuron() {
             <Cite tier={1} href={`${VN_README}#L59-L111`} accessed={NEURON_ACCESSED}>
               vllm-neuron README L59-L111
             </Cite>
-            . The Model Runner V2 rules are in the features guide{' '}
-            <Cite tier={1} href={`${VN_FEATURES}#L112-L165`} accessed={NEURON_ACCESSED}>
-              features guide L112-L165
+            .
+          </Box>
+          <ExpandableSection headerText="Sources behind the notes column">
+            <Box variant="small" color="text-body-secondary">
+              The Model Runner V2 rules are in the features guide{' '}
+              <Cite tier={1} href={`${VN_FEATURES}#L112-L165`} accessed={NEURON_ACCESSED}>
+                features guide L112-L165
+              </Cite>
+              . The two speculative methods come from the features guide and the model runner, which
+              raises on any other{' '}
+              <Cite tier={1} href={`${VN_FEATURES}#L630-L646`} accessed={NEURON_ACCESSED}>
+                features guide L630-L646
+              </Cite>{' '}
+              <Cite tier={1} href={`${VN_RUNNER_V1}#L1229-L1245`} kind="code" accessed={NEURON_ACCESSED}>
+                neuron_model_runner.py L1229-L1245
+              </Cite>
+              . EPD keeps prefill and decode in one engine{' '}
+              <Cite tier={1} href={`${VN_FEATURES}#L948-L957`} accessed={NEURON_ACCESSED}>
+                features guide L948-L957
+              </Cite>
+              , and audio input goes through the transcription endpoint{' '}
+              <Cite tier={1} href={`${VN_FEATURES}#L839-L841`} accessed={NEURON_ACCESSED}>
+                features guide L839-L841
+              </Cite>
+              . The LoRA fallback is from the v0.21.0.1.0.0 known issues{' '}
+              <Cite tier={1} href={VN_REL_021} accessed={NEURON_ACCESSED}>
+                v0.21.0.1.0.0 release notes
+              </Cite>
+              , and its end date from the NxD Inference announcement{' '}
+              <Cite tier={1} href={EOS_NXDI} accessed={NEURON_ACCESSED}>
+                Neuron docs: NxD Inference end-of-support announcement
+              </Cite>
+              . The executor rule is in the plugin code{' '}
+              <Cite tier={1} href={`${VN_PLATFORM}#L736-L744`} kind="code" accessed={NEURON_ACCESSED}>
+                platform.py L736-L744
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Compile path, startup variables and the platform check            */}
+      {/* ---------------------------------------------------------------- */}
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Which route compiles your model, the variables that select it and keep its NEFFs across restarts, and the log line that confirms the plugin loaded"
+          >
+            Set the compile path before the first start
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <strong>How it compiles.</strong> vLLM captures each model graph with TorchDynamo. On the
+            native route, the default, the graph is lowered through AOTAutograd and torch-mlir to
+            StableHLO, the form <code>neuronx-cc</code> compiles into one NEFF per shape
+            bucket{' '}
+            <Cite tier={1} href={NEURON_VLLM_TORCHNEURON} accessed={NEURON_ACCESSED}>
+              Neuron docs: How vLLM is integrated with TorchNeuron
             </Cite>
-            . The two speculative methods come from the features guide and the model runner, which
-            raises on any other{' '}
-            <Cite tier={1} href={`${VN_FEATURES}#L630-L646`} accessed={NEURON_ACCESSED}>
-              features guide L630-L646
+            . That lowering is TorchNeuron&apos;s, packaged separately: the plugin depends on{' '}
+            <code>libtorch-neuronx-lite</code>, which carries its own copy of it, and not on{' '}
+            <code>torch-neuronx</code>{' '}
+            <Cite tier={1} href={VN_CORE_REQ} kind="code" accessed={NEURON_ACCESSED}>
+              vllm-neuron requirements/core.txt
+            </Cite>
+            , and the native route imports lite at startup{' '}
+            <Cite tier={1} href={`${VN_INIT}#L91-L96`} kind="code" accessed={NEURON_ACCESSED}>
+              vllm_neuron/__init__.py L91-L96
+            </Cite>
+            . &quot;vLLM Neuron uses its own copy of the lowering, so the two versions can be
+            different&quot;{' '}
+            <Cite tier={1} href={NEURON_VLLM_TORCHNEURON} accessed={NEURON_ACCESSED}>
+              Neuron docs: How vLLM is integrated with TorchNeuron
+            </Cite>
+            , so a fix that lands in public torch-neuronx is not evidence the plugin has it. The stack
+            runs on PyTorch 2.13: vLLM 0.29.0 pins it{' '}
+            <Cite tier={1} href={`${VLLM_0290}/requirements/cuda.txt#L7`} kind="code" accessed={NEURON_ACCESSED}>
+              vLLM v0.29.0 requirements/cuda.txt L7
             </Cite>{' '}
-            <Cite tier={1} href={`${VN_RUNNER_V1}#L1229-L1245`} kind="code" accessed={NEURON_ACCESSED}>
-              neuron_model_runner.py L1229-L1245
-            </Cite>
-            . EPD keeps prefill and decode in one engine{' '}
-            <Cite tier={1} href={`${VN_FEATURES}#L948-L957`} accessed={NEURON_ACCESSED}>
-              features guide L948-L957
-            </Cite>
-            , and audio input goes through the transcription endpoint{' '}
-            <Cite tier={1} href={`${VN_FEATURES}#L839-L841`} accessed={NEURON_ACCESSED}>
-              features guide L839-L841
-            </Cite>
-            . The LoRA fallback is from the v0.21.0.1.0.0 known issues{' '}
-            <Cite tier={1} href={VN_REL_021} accessed={NEURON_ACCESSED}>
-              v0.21.0.1.0.0 release notes
-            </Cite>
-            , and its end date from the NxD Inference announcement{' '}
-            <Cite tier={1} href={EOS_NXDI} accessed={NEURON_ACCESSED}>
-              Neuron docs: NxD Inference end-of-support announcement
-            </Cite>
-            . The executor rule is in the plugin code{' '}
-            <Cite tier={1} href={`${VN_PLATFORM}#L736-L744`} kind="code" accessed={NEURON_ACCESSED}>
-              platform.py L736-L744
+            and the lite wheel requires it{' '}
+            <Cite tier={1} href={LITE_WHEEL} kind="code" accessed={NEURON_ACCESSED}>
+              libtorch-neuronx-lite 2.13.0.1.0.3112 wheel, METADATA L12
             </Cite>
             .
+          </Box>
+          <Box variant="p">
+            <strong>Two variables to set first.</strong>{' '}
+            <code>VLLM_NEURON_BACKEND</code> selects the route: unset or <code>neuron_native</code>{' '}
+            runs the native route, and <code>vllm_neuron</code> selects the XLA route{' '}
+            <Cite tier={1} href={`${VN_ENVS}#L779-L786`} kind="code" accessed={NEURON_ACCESSED}>
+              vllm-neuron envs.py L779-L786
+            </Cite>
+            , which is deprecated and ends on Trn2 and Trn3 in Neuron 2.34{' '}
+            <Cite tier={1} href={EOS_VLLM_XLA} accessed={NEURON_ACCESSED}>
+              Neuron docs: Torch/XLA path in vLLM Neuron, end of support
+            </Cite>
+            . A misspelled value logs a warning and runs native{' '}
+            <Cite tier={1} href={NEURON_VLLM_ROUTE} accessed={NEURON_ACCESSED}>
+              Neuron docs: How to choose a compilation route
+            </Cite>
+            . Set <code>neuron_native</code> explicitly anyway, for the cache reason below. If{' '}
+            <code>torch-neuronx</code> is installed in the same environment, export{' '}
+            <code>TORCH_DEVICE_BACKEND_AUTOLOAD=0</code> before the server starts: only one package can
+            own the <code>neuron</code> device, and without it startup fails with{' '}
+            <code>Tried to register multiple backend fallbacks for the same dispatch key PrivateUse1</code>{' '}
+            <Cite tier={1} href={NEURON_VLLM_TORCHNEURON} accessed={NEURON_ACCESSED}>
+              Neuron docs: How vLLM is integrated with TorchNeuron
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            <strong>Keep the compile across restarts.</strong> Warmup compiles one NEFF per shape
+            bucket (sequence length by batch size) and caches it on disk for later restarts{' '}
+            <Cite tier={1} href={`${VN_FEATURES}#L38-L40`} accessed={NEURON_ACCESSED}>
+              vllm-neuron features guide L38-L40
+            </Cite>
+            ; budget that compile on first boot. The plugin&apos;s release notes claim up to 2x faster
+            cold start and up to 6x faster warm start from the PyTorch precompile cache{' '}
+            <Cite tier={1} href={VN_REL_029} accessed={NEURON_ACCESSED}>
+              vllm-neuron v0.29.0.1.2.0 release notes
+            </Cite>
+            . That cache turns on only when <code>VLLM_NEURON_BACKEND</code> is{' '}
+            <code>neuron_native</code> or <code>neuron</code>, so an unset variable runs the native
+            route with the cache off{' '}
+            <Cite tier={1} href={NEURON_VLLM_PRECOMPILE} accessed={NEURON_ACCESSED}>
+              Neuron docs: How to use the Precompile Cache
+            </Cite>{' '}
+            <Cite tier={1} href={LITE_WHEEL} kind="code" accessed={NEURON_ACCESSED}>
+              libtorch-neuronx-lite wheel, __init__.py L83-L104, L162-L180
+            </Cite>
+            . On a multi-node or encoder-disaggregated (EPD) deployment the Precompile Cache guide asks
+            for the cache off, with <code>TORCH_CACHING_PRECOMPILE=0</code>. Set <code>VLLM_CACHE_ROOT</code>{' '}
+            explicitly, to storage that survives a restart: the precompile cache reads from it, and the
+            NEFF cache sits under it only when the variable is set in the environment (unset, the NEFFs
+            go to <code>~/.cache/neuron_libtorch</code>; <code>NEURON_LIBTORCH_CACHE_ROOT</code>, when
+            set, takes precedence). <code>TORCH_NEURONX_NEFF_CACHE_DIR</code>{' '}
+            moves the NEFFs on their own, for example to a file system that later nodes share{' '}
+            <Cite tier={1} href={LITE_WHEEL} kind="code" accessed={NEURON_ACCESSED}>
+              libtorch-neuronx-lite wheel, envs.py L80-L138
+            </Cite>
+            .
+          </Box>
+          <ExpandableSection headerText="NEURON_COMPILED_ARTIFACTS and the TorchNeuron headline, checked against the code">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                The features guide documents <code>NEURON_COMPILED_ARTIFACTS</code> for
+                pre-compiled artifacts{' '}
+                <Cite tier={1} href={`${VN_FEATURES}#L53-L65`} accessed={NEURON_ACCESSED}>
+                  features guide L53-L65
+                </Cite>
+                , but no code in the plugin at this tag, in the libtorch-neuronx-lite 2.13.0.1.0.3112
+                wheel or in vLLM 0.29.0&apos;s <code>envs.py</code> reads that variable{' '}
+                <Cite tier={1} href={VN_TREE} kind="doc-code-conflict" accessed={NEURON_ACCESSED}>
+                  vllm-neuron at v0.29.0.1.2.0 (searched)
+                </Cite>{' '}
+                <Cite tier={1} href={LITE_WHEEL} kind="doc-code-conflict" accessed={NEURON_ACCESSED}>
+                  libtorch-neuronx-lite wheel (searched)
+                </Cite>
+                .
+              </Box>
+              <Box variant="p">
+                The release notes headline the native route as &quot;built on the TorchNeuron library&quot;{' '}
+                <Cite tier={1} href={VN_REL_029} kind="doc-code-conflict" accessed={NEURON_ACCESSED}>
+                  vllm-neuron v0.29.0.1.2.0 release notes
+                </Cite>
+                ; that holds for the lowering, and not for the package.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+          <Box variant="p">
+            <strong>Check which platform loaded.</strong> The plugin registers{' '}
+            <code>{'neuron = "vllm_neuron:register"'}</code> under the{' '}
+            <code>vllm.platform_plugins</code> entry-point group{' '}
+            <Cite tier={1} href={`${VN}/pyproject.toml#L25-L26`} kind="code" accessed={NEURON_ACCESSED}>
+              vllm-neuron pyproject.toml L25-L26
+            </Cite>
+            , the group vLLM loads when it resolves which platform it runs on{' '}
+            <Cite tier={1} href={vllmUrl('vllm/plugins/__init__.py', 'L21-L23')} kind="code" accessed={NEURON_ACCESSED}>
+              plugins/__init__.py L21-L23
+            </Cite>
+            . At startup vLLM logs{' '}
+            <code>Platform plugin neuron is activated</code> when the plugin is in use{' '}
+            <Cite tier={1} href={`${VLLM_0290}/vllm/platforms/__init__.py#L270-L272`} kind="code" accessed={NEURON_ACCESSED}>
+              vLLM v0.29.0 platforms/__init__.py L270-L272
+            </Cite>
+            ; an activated out-of-tree platform plugin takes precedence over the built-in platforms{' '}
+            <Cite tier={1} href={vllmUrl('vllm/platforms/__init__.py', 'L272-L279')} kind="code" accessed={NEURON_ACCESSED}>
+              platforms/__init__.py L272-L279
+            </Cite>
+            . If that line is missing at the default log level, vLLM did not activate the plugin.
           </Box>
         </SpaceBetween>
       </Container>
@@ -1021,8 +1054,7 @@ export function AwsNeuron() {
           </ExpandableSection>
 
           <Alert type="info" header="What carries over to a new design">
-            The blog is AWS&apos;s account of a leader/follower vLLM deployment running on Trainium
-            at very large scale. Its stack runs on Trn1, with collectives in NxD Inference, the
+            The stack in AWS&apos;s blog runs on Trn1, with collectives in NxD Inference, the
             library under today&apos;s 0.5.x maintenance line; Trn1 is outside the 1.x
             plugin&apos;s instance list. The 1.x plugin&apos;s multi-instance pattern is
             prefill/decode across instances over EFA, and its README does not list multi-node tensor
