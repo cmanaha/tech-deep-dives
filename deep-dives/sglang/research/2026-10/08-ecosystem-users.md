@@ -170,3 +170,7 @@ Benchmarks: none recorded here. Together AI's "3x better TTFT than SGLang" (C15)
 - Two logos in `adoption.png` (C1) could not be identified; the sglang.io logo strip (C2) has no caption, so its meaning (users, sponsors, event partners) is unknown.
 - CVE-2026-7301 and CVE-2026-7302 (E2, E3): advisory ranges end at 0.5.12 with no patched version; whether 0.5.13 to 0.5.21 were exposed was not tested (no code executed). v0.5.22 is the first release containing PRs #17270 and #36854.
 - Mini-SGLang's "~5,000 lines" (B5) is the project's count, not re-counted.
+
+## Errata from the scope review (2026-10-24)
+
+- Mental model 2 ("every downstream pins its own SGLang") over-generalises: RL frameworks and vendor containers freeze their own SGLang (verl 0.5.8 in B13, AReaL 0.5.10.post1 in B11, NVIDIA NGC 26.09 0.5.19 in D2, Dynamo 0.5.21 in register 06 F9), while Ray 2.59.0 pins none, KServe v0.21.0 ships no SGLang runtime, and llm-d and Miles track v0.5.22 (register 06 F13). B15 covers RL frameworks only. See `reviews/scope-review-factual.md` #61.

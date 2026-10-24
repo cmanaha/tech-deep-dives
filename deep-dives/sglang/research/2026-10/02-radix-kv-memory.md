@@ -238,3 +238,7 @@ Design choices only. The 2024 speedup ratios against vLLM v0.2.5 are attributed 
 4. **KV events**, depth tag: practical. Use a short subsection, best placed next to the router or multi-node section so the producer and the consumer appear together.
    - Opens with: one block per page, published over ZeroMQ, and nothing is sent unless `"publisher": "zmq"` is set.
    - Rows F1 to F9.
+
+## Errata from the scope review (2026-10-24)
+
+- Section recommendation 2 ("free memory after weights, divided by bytes per token per layer") overstates capacity by the layer count: divide by the bytes one token costs across all layers (rows D4, D5 carry the correct formula). See `reviews/scope-review-factual.md` #21.

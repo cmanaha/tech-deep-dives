@@ -198,3 +198,7 @@ Cross-references: register 05 (parallelism, EP, PD; block D = KV transfer over E
 - F3 [SPECULATIVE]: which DeepEP transport AWS's MoE RL post used over EFA with installer 1.49.
 - C3 [SPECULATIVE]: A10G compute capability 8.6, by equivalence with the A10 (NVIDIA's table does not list the A10G).
 - C6: memory tiers use ac.html GiB figures, not `nvidia-smi` readings on each instance.
+
+## Errata from the scope review (2026-10-24)
+
+- E3 claim header "uses an unpublished out-of-tree Neuron plugin" strengthens the evidence, which is a failed search. Correct wording: upstream Trainium work after v0.5.22 targets an out-of-tree Neuron platform plugin; no public plugin repository was located by the GitHub searches `sglang neuron`, `org:aws-neuron sglang` and `sglang trainium` on 2026-10-24. See `reviews/scope-review-factual.md` #66.

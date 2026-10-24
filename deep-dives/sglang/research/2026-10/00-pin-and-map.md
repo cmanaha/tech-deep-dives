@@ -183,3 +183,8 @@ in `/tmp/sglang-src` finds only `README.md` and one unrelated diffusion prompt f
 7. Gateway: what ships in-tree versus `smg-project/smg`, and which one the docs tell users to install.
 8. Frontend language: is it still maintained and documented at v0.5.22.
 9. AWS: SageMaker integration specifics; EFA path for PD; EKS guidance; Trainium status.
+
+## Errata from the scope review (2026-10-24)
+
+- The code-map label "L3 storage backends" for the 15 `mem_cache/storage/` directories is too broad: the registered L3 backends are the 13 names plus `dynamic` in `storage/backend_factory.py:204-276` (register 02 E12); LMCache and FlexKV are alternative tree caches.
+- README positioning row: `README.md:21` at v0.5.22 reads "optimized for agentic workloads, large-scale serving, and RL rollouts" (Tier 1, https://github.com/sgl-project/sglang/blob/v0.5.22/README.md#L21).

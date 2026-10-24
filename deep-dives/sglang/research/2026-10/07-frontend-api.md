@@ -223,3 +223,7 @@ Columns: # | Claim (short) | Location (file:line at v0.5.22) | Verdict | Evidenc
 - No row carries an UNKNOWN verdict. Three rows are code-derived and not run, and say so: A11 (`join(mode="concate_and_append")` targets a route not found in `python/sglang/srt`), C5 (unknown OpenAI fields dropped by pydantic's default), C19 (Ollama `options.seed` maps to a key `SamplingParams` does not define). Each should be confirmed on a running v0.5.22 server before it ships as observed behaviour.
 - D12: no deterministic-mode cost figure is published for v0.5.22; the only figure is the September 2025 LMSYS blog claim.
 - E3: the docs' `csgmv` 20% to 80% latency claim states no setup.
+
+## Errata from the scope review (2026-10-24)
+
+- G3 and mental model 4: "callable by anyone on the network" holds only once the server binds a non-loopback address. Correct wording: callable by any client that can reach the port; at the default `127.0.0.1` bind that is the local host only, and with `--host 0.0.0.0` (as container deployments set it) the network (row B12; register 08 E6; `arg_groups/fields/serving.py:65`). See `reviews/scope-review-factual.md` #50, #51.
