@@ -869,7 +869,8 @@ function TargetFanOutDiagram() {
 /**
  * Diagram 4. Three remote KV tiers on EFA: who drives the transfer, what
  * crosses the fabric, and where loaded KV lands. Class prefix "kvf-".
- * Coordinate rationale: deep-dives/vllm/research/2026-10-kv-tiers/authoring-efa.md.
+ * Coordinate rationale: deep-dives/vllm/research/2026-10-kv-tiers/authoring-efa.md. The band's
+ * fourth line and the 476-unit height came in the final editorial pass, logged beside it.
  */
 function KvOverFabricDiagram() {
   const lanes = [
@@ -905,7 +906,7 @@ function KvOverFabricDiagram() {
   return (
     <div style={{ overflowX: 'auto' }}>
       <svg
-        viewBox="0 0 860 456"
+        viewBox="0 0 860 476"
         role="img"
         aria-labelledby="kvf-tiers-title"
         style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
@@ -918,7 +919,8 @@ function KvOverFabricDiagram() {
           located so far register host memory. FSx for Lustre runs LNet over EFA and reaches GPU
           memory through cuFile with GPUDirect Storage, at up to 1,200 Gbps per client, or host
           memory through POSIX I/O. RDMA stacks built on reliable connected verbs queue pairs do
-          not run on EFA.
+          not run on EFA. Mooncake and the Valkey module open a libfabric RDM endpoint on the efa
+          provider, and that endpoint is the first thing to look for in a KV store&apos;s transport.
         </title>
         <style>
           {`
@@ -941,7 +943,7 @@ function KvOverFabricDiagram() {
             <path d="M0,0 L8,4 L0,8 z" fill="#5f6b7a" />
           </marker>
         </defs>
-        <rect x="0" y="0" width="860" height="456" rx="8" fill="#ffffff" />
+        <rect x="0" y="0" width="860" height="476" rx="8" fill="#ffffff" />
 
         <text className="kvf-hd" x="24" y="30">
           Three KV tiers on EFA: who drives each transfer, and where loaded KV lands
@@ -985,7 +987,7 @@ function KvOverFabricDiagram() {
           );
         })}
 
-        <rect className="kvf-band" x="24" y="372" width="812" height="68" rx="8" />
+        <rect className="kvf-band" x="24" y="372" width="812" height="88" rx="8" />
         <path className="kvf-x" d="M42,398 L58,414 M58,398 L42,414" />
         <text className="kvf-band-t" x="72" y="394">
           RC (Reliable Connected) verbs stacks do not run on EFA
@@ -995,6 +997,9 @@ function KvOverFabricDiagram() {
         </text>
         <text className="kvf-band-s" x="72" y="430">
           The EFA verbs provider accepts UD (Unreliable Datagram) and SRD queue pairs only.
+        </text>
+        <text className="kvf-band-t" x="72" y="450">
+          Mooncake and the Valkey module open a libfabric RDM endpoint on efa: look for one first.
         </text>
       </svg>
     </div>
@@ -1641,7 +1646,7 @@ export function StorageDataPaths() {
         header={
           <Header
             variant="h2"
-            description="Where an EFA cluster can keep KV cache beyond one instance, whether loaded KV lands in GPU or host memory, and the first check to run on a KV store before planning it onto the fabric."
+            description="Who drives each KV transfer over EFA, where loaded KV lands, and the first check to run before planning a KV store onto the fabric."
           >
             KV cache over the fabric
           </Header>
@@ -1658,14 +1663,24 @@ export function StorageDataPaths() {
             FSx for Lustre figures are AWS per-client maximums; matching connectors to them, and the
             core Valkey line in the bottom band, are our reading of code.
           </Box>
+          <Box variant="p">
+            Per-engine configuration is in section 7 (KV-Cache Offloading &amp; Tiers) of the{' '}
+            <Link external href="../vllm/">
+              vLLM deep dive
+            </Link>
+            ; bandwidth per GPU against the recompute break-even is on the tier ladder in section 9
+            (Flash as a Cache Tier for Inference) of the{' '}
+            <Link external href="../silicon-memory-inference/">
+              Silicon, Memory &amp; Inference deep dive
+            </Link>
+            .
+          </Box>
 
           <Box variant="h3">FSx for Lustre: the GDS figure needs a cuFile connector</Box>
           <Box variant="p">
             LNet runs over the EFA device{' '}
             <SourceRef provenance="documented" doc={docs.fsxClients} />, and an EFA client gets up to
             700 Gbps, or 1,200 Gbps with GDS <SourceRef provenance="documented" doc={docs.fsxPerf} />.
-            GDS needs a P5, P5e, P5en, P6-B200 or P6-B300 client with NVIDIA GDS driver 2.24.2 or
-            later <SourceRef provenance="documented" doc={docs.fsxClients} />.
           </Box>
           <Box variant="p">
             By our reading of the connector code, the 1,200 Gbps path needs cuFile I/O:
@@ -1679,6 +1694,12 @@ export function StorageDataPaths() {
             backend <SourceRef provenance="code-derived" code={code.sglFile} /> do POSIX I/O from
             host memory.
           </Box>
+          <ExpandableSection headerText="GDS client requirements">
+            <Box variant="p">
+              GDS needs a P5, P5e, P5en, P6-B200 or P6-B300 client with NVIDIA GDS driver 2.24.2 or
+              later <SourceRef provenance="documented" doc={docs.fsxClients} />.
+            </Box>
+          </ExpandableSection>
 
           <Box variant="h3">Pooled DRAM: who posts the RDMA operation</Box>
           <Box variant="p">
@@ -1688,34 +1709,14 @@ export function StorageDataPaths() {
             one-sided <code>fi_write</code> and <code>fi_read</code> on one RDM endpoint per EFA device{' '}
             <SourceRef provenance="code-derived" code={code.mcRmaPost} />. In a CUDA build, GPU
             buffers register with <code>FI_HMEM_CUDA</code>, so loaded KV can land in GPU memory{' '}
-            <SourceRef provenance="code-derived" code={code.mcHmem} />. Buffers go on every EFA device
-            when the page-table budget allows{' '}
-            <SourceRef provenance="code-derived" code={code.mcAllNics} />, or, for a GPU buffer, on the
-            NICs nearest its GPU with <code>MC_EFA_NIC_SELECTION=local</code>{' '}
-            <SourceRef provenance="code-derived" code={code.mcNicSelection} />{' '}
-            <SourceRef provenance="code-derived" code={code.mcLocalNics} />{' '}
-            <SourceRef provenance="code-derived" code={code.mcLocalGpuOnly} />. Install an EFA wheel
-            such as <code>mooncake-transfer-engine-efa</code>, since the default build omits the
-            transport <SourceRef provenance="code-derived" code={code.mcEfaOff} />{' '}
-            <SourceRef provenance="code-derived" code={code.mcEfaWheel} />. Mooncake&apos;s EFA guide
-            says to set <code>FI_EFA_ENABLE_SHM_TRANSFER=0</code> for same-host GPU transfers between
-            processes to avoid a crash, but a CUDA build declares <code>FI_HMEM</code>, whose absence
-            caused it, so the setting only gives up the same-host shm path{' '}
-            <SourceRef
-              provenance="doc-code-conflict"
-              code={code.mcHmemCaps}
-              doc={docs.mooncakeShm}
-              conflict="set FI_EFA_ENABLE_SHM_TRANSFER=0 for same-host GPU transfers between processes until libfabric issue 12328 is fixed"
-            />
-            .
+            <SourceRef provenance="code-derived" code={code.mcHmem} />.
           </Box>
           <Box variant="p">
             The Valkey large-object module, which stores KV cache tensors and other large objects{' '}
             <ProjectRef doc={docs.vloReadme} />, puts the server in charge. The client sends a RESP
             (Redis Serialization Protocol) command over TCP naming its registered buffer{' '}
             <SourceRef provenance="code-derived" code={code.vloTriples} />; the server posts{' '}
-            <code>fi_writemsg</code> with <code>FI_DELIVERY_COMPLETE</code> for a GET, so the reply
-            cannot overtake the payload, or <code>fi_read</code> for a SET{' '}
+            <code>fi_writemsg</code> for a GET or <code>fi_read</code> for a SET{' '}
             <SourceRef provenance="code-derived" code={code.vloServerPosts} />{' '}
             <SourceRef provenance="code-derived" code={code.vdmaRmaPost} />, over efa-direct{' '}
             <SourceRef provenance="code-derived" code={code.vdmaFabric} />. Located clients register
@@ -1728,13 +1729,42 @@ export function StorageDataPaths() {
               doc={docs.vloReadme}
               conflict="an optional EFA RDMA transport to GPU memory"
             />
-            . As of 2026-10-24 the module is unreleased{' '}
-            <ProjectRef doc={docs.vloReleases} />, with an experimental API
-            until 1.0 <ProjectRef doc={docs.vloGovernance} />, and its client
-            support is in open pull requests{' '}
-            <ProjectRef doc={docs.lmcachePr} />{' '}
-            <ProjectRef doc={docs.glidePr} />.
+            .
           </Box>
+          <ExpandableSection headerText="Mooncake NIC and shm settings, and Valkey release status">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                Mooncake buffers go on every EFA device when the page-table budget allows{' '}
+                <SourceRef provenance="code-derived" code={code.mcAllNics} />, or, for a GPU buffer, on
+                the NICs nearest its GPU with <code>MC_EFA_NIC_SELECTION=local</code>{' '}
+                <SourceRef provenance="code-derived" code={code.mcNicSelection} />{' '}
+                <SourceRef provenance="code-derived" code={code.mcLocalNics} />{' '}
+                <SourceRef provenance="code-derived" code={code.mcLocalGpuOnly} />. Mooncake&apos;s EFA
+                guide says to set <code>FI_EFA_ENABLE_SHM_TRANSFER=0</code> for same-host GPU transfers
+                between processes to avoid a crash, but a CUDA build declares <code>FI_HMEM</code>,
+                whose absence caused it, so the setting only gives up the same-host shm path{' '}
+                <SourceRef
+                  provenance="doc-code-conflict"
+                  code={code.mcHmemCaps}
+                  doc={docs.mooncakeShm}
+                  conflict="set FI_EFA_ENABLE_SHM_TRANSFER=0 for same-host GPU transfers between processes until libfabric issue 12328 is fixed"
+                />
+                .
+              </Box>
+              <Box variant="p">
+                The Valkey server posts a GET with <code>FI_DELIVERY_COMPLETE</code>, so the reply
+                cannot overtake the payload{' '}
+                <SourceRef provenance="code-derived" code={code.vloServerPosts} />{' '}
+                <SourceRef provenance="code-derived" code={code.vdmaRmaPost} />.
+              </Box>
+              <Box variant="p">
+                As of 2026-10-24 the Valkey module is unreleased{' '}
+                <ProjectRef doc={docs.vloReleases} />, with an experimental API until 1.0{' '}
+                <ProjectRef doc={docs.vloGovernance} />, and its client support is in open pull
+                requests <ProjectRef doc={docs.lmcachePr} /> <ProjectRef doc={docs.glidePr} />.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
 
           <Box variant="h3">What makes a KV store EFA-capable</Box>
           <Box variant="p">
@@ -1747,16 +1777,9 @@ export function StorageDataPaths() {
             <ProjectRef doc={docs.mooncakeNoRc} />. Core Valkey RDMA creates RC
             queue pairs <SourceRef provenance="code-derived" code={code.valkeyRcQp} />, so by our
             reading of both codebases it is another; no AWS or Valkey document stating so was located
-            during this research. Both pools above open a libfabric RDM endpoint on the efa provider{' '}
-            <SourceRef provenance="code-derived" code={code.mcRdmEndpoint} />{' '}
-            <SourceRef provenance="code-derived" code={code.vdmaRdm} />, the userspace path of this
-            section&apos;s EFA and SRD lane, and that endpoint is the first thing to look for in a KV
-            store&apos;s transport before planning it onto EFA.
+            during this research.
           </Box>
-          <ExpandableSection
-            headerText="The code behind the RC verdict"
-            headerDescription="Where each codebase sets or checks the queue-pair type, at pinned tags"
-          >
+          <ExpandableSection headerText="The code behind the RC verdict">
             <Box variant="p">
               In rdma-core {RDMA_CORE_TAG}, <code>efa_create_qp</code> and{' '}
               <code>efa_create_qp_ex</code> return EOPNOTSUPP for any type but UD{' '}
@@ -1767,18 +1790,15 @@ export function StorageDataPaths() {
               endpoint sets the same type <SourceRef provenance="code-derived" code={code.mcRcQp} />.
             </Box>
           </ExpandableSection>
-
           <Box variant="p">
-            Per-engine configuration is in section 7 (KV-Cache Offloading &amp; Tiers) of the{' '}
-            <Link external href="../vllm/">
-              vLLM deep dive
-            </Link>
-            ; bandwidth per GPU against the recompute break-even is on the tier ladder in section 9
-            (Flash as a Cache Tier for Inference) of the{' '}
-            <Link external href="../silicon-memory-inference/">
-              Silicon, Memory &amp; Inference deep dive
-            </Link>
-            .
+            Both pools above open a libfabric RDM endpoint on the efa provider{' '}
+            <SourceRef provenance="code-derived" code={code.mcRdmEndpoint} />{' '}
+            <SourceRef provenance="code-derived" code={code.vdmaRdm} />. For Mooncake, install an EFA
+            wheel such as <code>mooncake-transfer-engine-efa</code>, since the default build omits its{' '}
+            <code>efa</code> transport <SourceRef provenance="code-derived" code={code.mcEfaOff} />{' '}
+            <SourceRef provenance="code-derived" code={code.mcEfaWheel} />. That endpoint, the
+            userspace path of this section&apos;s EFA and SRD lane, is the first thing to look for in a
+            KV store&apos;s transport before planning it onto EFA.
           </Box>
         </SpaceBetween>
       </Container>
