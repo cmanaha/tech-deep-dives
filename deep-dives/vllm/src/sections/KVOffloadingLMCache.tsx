@@ -820,7 +820,12 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
             <Cite tier={1} href={`${LMCACHE_README}#L73`}>
               LMCache README v0.5.6 L73
             </Cite>
-            ; the multiprocess server reaches storage through its own L2 adapter layer behind a
+            ) and non-prefix reuse: CacheBlend reuses cached KV at any position in the prompt and
+            recomputes some tokens to recover quality{' '}
+            <Cite tier={1} href={`${LMCACHE_README}#L75`}>
+              LMCache README v0.5.6 L75
+            </Cite>
+            . Its multiprocess server reaches storage through its own L2 adapter layer behind a
             host-memory L1{' '}
             <Cite
               tier={1}
@@ -839,11 +844,6 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
               accessed="2026-10-24"
             >
               LMCache v0.5.6 l2_adapters
-            </Cite>
-            ) and non-prefix reuse: CacheBlend reuses cached KV at any position in the prompt and
-            recomputes some tokens to recover quality{' '}
-            <Cite tier={1} href={`${LMCACHE_README}#L75`}>
-              LMCache README v0.5.6 L75
             </Cite>
             . Sharing across instances is something the native <code>fs</code>, <code>obj</code>{' '}
             and <code>p2p</code> tiers also do, so it alone is no reason to add LMCache.{' '}

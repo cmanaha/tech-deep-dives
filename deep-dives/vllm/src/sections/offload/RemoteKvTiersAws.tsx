@@ -162,7 +162,7 @@ const remoteTierRows: RemoteTierRow[] = [
     tier: 'Amazon FSx for Lustre: a shared parallel file system',
     mover: (
       <>
-        The Lustre client over LNet (Lustre networking) on EFA or TCP{' '}
+        The Lustre client over LNet on EFA or TCP{' '}
         <Cite tier={1} href={`${FSX}configure-efa-clients.html`} accessed="2026-10-24">
           FSx: Configuring EFA clients
         </Cite>
@@ -215,8 +215,8 @@ const remoteTierRows: RemoteTierRow[] = [
     tier: 'Amazon S3, including S3 Express One Zone',
     mover: (
       <>
-        An HTTP client: NIXL&apos;s OBJ plugin for vLLM&apos;s <code>obj</code> tier, the AWS CRT
-        (Common Runtime) in LMCache{' '}
+        An HTTP client: NIXL&apos;s OBJ plugin for vLLM&apos;s <code>obj</code> tier, the AWS CRT in
+        LMCache{' '}
         <Cite tier={1} href={`${LM}lmcache/v1/storage_backend/connector/s3_connector.py#L10-L12`} kind="code" accessed="2026-10-24">
           s3_connector.py L10-L12
         </Cite>
@@ -376,7 +376,7 @@ function AwsRemoteKvPathsDiagram() {
 
         {/* Legend */}
         <line className="rkv-lgl" x1={24} y1={444} x2={52} y2={444} />
-        <text className="rkv-leg" x={60} y={448}>lands in GPU memory, no host hop</text>
+        <text className="rkv-leg" x={60} y={448}>lands directly in GPU memory</text>
         <line className="rkv-lal" x1={290} y1={444} x2={318} y2={444} />
         <text className="rkv-leg" x={326} y={448}>lands in host memory first</text>
         <rect className="rkv-efa" x={520} y={437} width={16} height={14} rx={3} />
@@ -393,7 +393,7 @@ export function RemoteKvTiersAws() {
         header={
           <Header
             variant="h2"
-            description="Which remote tier puts a block straight back into GPU memory, which land it in host memory first, and what each delivers per client"
+            description="Which remote tiers put a block straight back into GPU memory, which land it in host memory first, and the most each can move per client"
           >
             Remote tiers on AWS: who moves the bytes, and where they land
           </Header>
@@ -526,8 +526,8 @@ export function RemoteKvTiersAws() {
               .
             </Box>
             <Box variant="p">
-              <strong>Size transfers first:</strong> Mooncake posts each transfer request as one EFA
-              operation{' '}
+              <strong>Transfer size sets throughput:</strong> Mooncake posts each transfer request as one
+              EFA operation unless it crosses a registered-memory boundary{' '}
               <Cite tier={1} href={`${MC}mooncake-transfer-engine/src/transport/efa_transport/efa_transport.cpp#L990-L998`} kind="code" accessed="2026-10-24">
                 efa_transport.cpp L990-L998
               </Cite>
@@ -557,14 +557,15 @@ export function RemoteKvTiersAws() {
               <Box variant="p">
                 The Mooncake EFA guide still has same-host processes that exchange GPU buffers set{' '}
                 <code>FI_EFA_ENABLE_SHM_TRANSFER=0</code> to avoid a crash{' '}
-                <Cite tier={1} href={`${MC_EFA_DOC}#L393-L412`} accessed="2026-10-24">
-                  Mooncake EFA guide L393-L412
+                <Cite tier={1} href={`${MC_EFA_DOC}#L390-L412`} accessed="2026-10-24">
+                  Mooncake EFA guide L390-L412
                 </Cite>
                 , but CUDA builds at this tag declare <code>FI_HMEM</code>, the fix for that crash{' '}
                 <Cite tier={1} href={`${MC}mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp#L75-L89`} kind="doc-code-conflict" accessed="2026-10-24">
                   efa_context.cpp L75-L89
                 </Cite>
-                , so the setting only gives up libfabric&apos;s same-host shared-memory path.
+                , so on CUDA builds leave it at its default, on: setting it to 0 only gives up libfabric&apos;s
+                same-host shared-memory path.
               </Box>
             </ExpandableSection>
           </div>
@@ -595,7 +596,8 @@ export function RemoteKvTiersAws() {
             </Box>
             <Box variant="p">
               <strong>Plan for host memory:</strong> the located client stack, LMCache over
-              glide-rdma, registers LMCache&apos;s pinned host-memory L1 arena{' '}
+              glide-rdma (valkey-glide&apos;s RDMA client crate, which open pull request 7412 wires into
+              glide-core), registers LMCache&apos;s pinned host-memory L1 arena{' '}
               <Cite tier={1} href={`${LM_PR}lmcache/v1/storage_backend/valkey/rdma_worker_pool.py#L137-L159`} kind="code" accessed="2026-10-24">
                 rdma_worker_pool.py L137-L159 at PR head
               </Cite>{' '}
@@ -619,7 +621,7 @@ export function RemoteKvTiersAws() {
               </Cite>
               .
             </Box>
-            <ExpandableSection headerText="Evidence: the README's GPU-memory transport, and the module's only throughput figures">
+            <ExpandableSection headerText="Evidence: the README's GPU-memory transport, and the throughput tables located">
               <Box variant="p">
                 The module&apos;s README promises an &quot;optional EFA RDMA transport to GPU
                 memory&quot;{' '}
@@ -700,8 +702,8 @@ export function RemoteKvTiersAws() {
                   FSx: Getting started
                 </Cite>
                 , one client fed from disk needs about 91.2 TiB of EFA PERSISTENT-1000 at 700 Gbps
-                and 153.6 TiB at 1,200 Gbps (62.4 TiB when reads hit the servers&apos; cache, about
-                1.7 TiB of RAM at that size). No AWS measurement located shows one client at either
+                and 153.6 TiB at 1,200 Gbps (62.4 TiB if the hot set fits the servers&apos; RAM cache,
+                which holds about 1.7 TiB at that size). No AWS measurement located shows one client at either
                 ceiling.
               </Box>
             </ExpandableSection>
@@ -766,8 +768,8 @@ export function RemoteKvTiersAws() {
                 <Cite tier={2} href={STORAGE_BLOG} accessed="2026-10-24">
                   AWS Storage Blog, 2026-09-21
                 </Cite>
-                . Its FSx latency, &quot;100-500 μs&quot;, has no stated setup, against
-                &quot;consistent, sub-millisecond latencies&quot; in the FSx documentation{' '}
+                . Its FSx latency, &quot;100-500 μs&quot;, has no stated setup and is narrower
+                than the &quot;consistent, sub-millisecond latencies&quot; in the FSx documentation{' '}
                 <Cite tier={1} href={`${FSX}ssd-storage.html`} accessed="2026-10-24">
                   FSx: SSD storage performance
                 </Cite>
@@ -784,7 +786,7 @@ export function RemoteKvTiersAws() {
           <div>
             <Box variant="h3">S3</Box>
             <Box variant="p">
-              Every S3 path starts in host memory: vLLM&apos;s <code>obj</code> tier hands CPU-tier
+              Both S3 paths covered here start in host memory: vLLM&apos;s <code>obj</code> tier hands CPU-tier
               buffers to NIXL&apos;s OBJ plugin{' '}
               <Cite tier={1} href={vllmUrl('vllm/v1/kv_offload/tiering/obj/manager.py', 'L96-L162')} kind="code" accessed="2026-10-24">
                 tiering/obj/manager.py L96-L162
