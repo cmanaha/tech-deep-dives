@@ -260,7 +260,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'ENA', fullForm: 'Elastic Network Adapter', description: 'The standard EC2 network interface, alongside EFA on accelerated instances.' },
   { acronym: 'NKI', fullForm: 'Neuron Kernel Interface', description: 'The kernel programming interface for Trainium and Inferentia.' },
   { acronym: 'NEFF', fullForm: 'Neuron Executable File Format', description: 'The compiled program neuronx-cc produces and the Neuron runtime loads; vllm-neuron builds one per bucket.' },
-  { acronym: 'XLA', fullForm: 'Accelerated Linear Algebra', description: 'The OpenXLA compiler. The deprecated PyTorch/XLA route to Neuron ends in Neuron 2.34.' },
+  { acronym: 'XLA', fullForm: 'Accelerated Linear Algebra', description: 'The OpenXLA compiler. vLLM Neuron\'s deprecated PyTorch/XLA route ends on Trn2 and Trn3 in Neuron 2.34.' },
   { acronym: 'StableHLO', fullForm: 'StableHLO', description: 'The OpenXLA operation set for high-level ML operations; torch.compile graphs are lowered to it before neuronx-cc compiles them.' },
   { acronym: 'TorchNeuron', fullForm: 'TorchNeuron', description: 'The native PyTorch backend for Trainium. vllm-neuron compiles through libtorch-neuronx-lite, its own copy of the TorchNeuron lowering.' },
   { acronym: 'DLAMI', fullForm: 'Deep Learning Amazon Machine Image', description: 'AWS-published EC2 images with a framework stack preinstalled, including vLLM images for Neuron.' },
