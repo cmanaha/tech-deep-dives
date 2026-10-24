@@ -76,13 +76,14 @@ const remoteTierRows: RemoteTierRow[] = [
         <Cite tier={1} href={EC2_AC} accessed="2026-10-24">
           EC2 accelerated computing specifications
         </Cite>
-        ; project benchmark 365.66 GB/s at 1 MB blocks{' '}
+        ; project&apos;s Transfer Engine benchmark: up to 365.66 GB/s GPU-to-GPU write at 1 MB
+        blocks{' '}
         <Cite tier={2} href={`${MC_EFA_DOC}#L186-L384`} accessed="2026-10-24">
           Mooncake EFA guide L186-L384 (project claim)
         </Cite>
       </>
     ),
-    latency: 'None first-party located',
+    latency: 'No AWS figure located',
     maturity: (
       <>
         Released, v0.3.13.post1{' '}
@@ -104,6 +105,12 @@ const remoteTierRows: RemoteTierRow[] = [
         <code>efa-direct</code>{' '}
         <Cite tier={1} href={`${VLO}src/transport/session.rs#L36-L91`} kind="code" accessed="2026-10-24">
           session.rs L36-L91
+        </Cite>{' '}
+        <Cite tier={1} href={`${VDMA}crates/dma-libfabric/src/connection.rs#L43-L99`} kind="code" accessed="2026-10-24">
+          dma-libfabric connection.rs L43-L99
+        </Cite>{' '}
+        <Cite tier={1} href={`${VLO}src/transport/config.rs#L8-L19`} kind="code" accessed="2026-10-24">
+          transport/config.rs L8-L19
         </Cite>
       </>
     ),
@@ -119,8 +126,8 @@ const remoteTierRows: RemoteTierRow[] = [
     ),
     throughput: (
       <>
-        Pull-request author&apos;s claim: 197.8 to 198.6 Gbit/s, 16 MiB loads into host memory,
-        two c8gn.16xlarge (200 Gbit/s each){' '}
+        Pull-request author&apos;s claim: 197.8 to 198.6 Gbit/s, 16 MiB loads into host memory
+        with 4 to 16 workers, two c8gn.16xlarge (200 Gbit/s each){' '}
         <Cite tier={2} href={`${LMCACHE_PR}#issuecomment-6304983743`} accessed="2026-10-24">
           LMCache PR 5556 comment (project claim)
         </Cite>
@@ -165,20 +172,23 @@ const remoteTierRows: RemoteTierRow[] = [
         </Cite>
       </>
     ),
-    lands: "Host memory with vLLM's fs tier; GPU memory through LMCache's GDS backend or Dynamo KVBM",
+    lands: "Host memory with vLLM's fs tier; GPU memory through LMCache's GDS backend",
     reach: (
       <>
         <code>OffloadingConnector</code>, <code>TieringOffloadingSpec</code>, secondary tier{' '}
         <code>{'{"type": "fs", "root_dir": "<FSx mount>"}'}</code>{' '}
         <Cite tier={1} href={vllmUrl('vllm/v1/kv_offload/tiering/factory.py', 'L150-L172')} kind="code" accessed="2026-10-24">
           tiering/factory.py L150-L172
+        </Cite>{' '}
+        <Cite tier={1} href={vllmUrl('docs/features/kv_offloading_usage.md', 'L72-L96')} accessed="2026-10-24">
+          Usage Guide L72-L96
         </Cite>
       </>
     ),
     throughput: (
       <>
-        100 Gbps over ENA (Elastic Network Adapter), 700 Gbps over EFA, 1,200 Gbps over EFA with
-        GDS{' '}
+        Up to 100 Gbps over ENA (Elastic Network Adapter) and 5 Gbps to any one object storage
+        server, 700 Gbps over EFA, 1,200 Gbps over EFA with GDS{' '}
         <Cite tier={1} href={`${FSX}performance.html`} accessed="2026-10-24">
           FSx: Performance
         </Cite>
@@ -222,7 +232,15 @@ const remoteTierRows: RemoteTierRow[] = [
         </Cite>
       </>
     ),
-    throughput: 'No per-client figure located',
+    throughput: (
+      <>
+        &quot;Up to 100 Gb/s on a single instance&quot; for data lake applications that fill the
+        instance&apos;s network interface{' '}
+        <Cite tier={1} href={`${S3_DOCS}optimizing-performance.html`} accessed="2026-10-24">
+          S3: Optimizing performance
+        </Cite>
+      </>
+    ),
     latency: (
       <>
         Express One Zone &quot;single-digit millisecond&quot;{' '}
@@ -251,8 +269,8 @@ function AwsRemoteKvPathsDiagram() {
         <title id="rkv-paths-title">
           Two questions place each remote KV tier on AWS: who moves the bytes, and where they land.
           Mooncake Store through MooncakeStoreConnector, with the client posting one-sided EFA writes
-          and reads, and FSx for Lustre read with cuFile (GPUDirect Storage) through LMCache&apos;s GDS backend
-          or Dynamo KVBM, land KV blocks directly in GPU memory. vLLM&apos;s fs tier on FSx for Lustre, the Valkey
+          and reads, and FSx for Lustre read with cuFile (GPUDirect Storage) through LMCache&apos;s GDS
+          backend, land KV blocks directly in GPU memory. vLLM&apos;s fs tier on FSx for Lustre, the Valkey
           large-object module, whose server posts the EFA transfers, and S3 over HTTP land them in
           host memory, from where vLLM&apos;s CPU tier or LMCache&apos;s L1 copies them to the GPU.
         </title>
@@ -324,11 +342,11 @@ function AwsRemoteKvPathsDiagram() {
         <rect className="rkv-tier" x={600} y={144} width={268} height={100} rx={6} />
         <text className="rkv-t" x={734} y={178}>Amazon FSx for Lustre</text>
         <text className="rkv-s" x={734} y={196}>shared POSIX file system</text>
-        <text className="rkv-s" x={734} y={212}>EFA and GDS chosen at creation</text>
+        <text className="rkv-s" x={734} y={212}>EFA (and with it GDS) set at creation</text>
 
         <rect className="rkv-tier" x={600} y={268} width={268} height={72} rx={6} />
-        <text className="rkv-t" x={734} y={292}>Valkey BLOB node on EC2</text>
-        <text className="rkv-s" x={734} y={310}>large-object module, DRAM + NVMe</text>
+        <text className="rkv-t" x={734} y={292}>Valkey large-object node on EC2</text>
+        <text className="rkv-s" x={734} y={310}>DRAM, optional NVMe</text>
         <text className="rkv-s" x={734} y={326}>pre-release, self-managed</text>
 
         <rect className="rkv-tier" x={600} y={360} width={268} height={56} rx={6} />
@@ -342,7 +360,7 @@ function AwsRemoteKvPathsDiagram() {
 
         <path className="rkv-g" d="M598,164 L231,164" />
         <text className="rkv-lg" x={452} y={138}>cuFile (GDS) over LNet on EFA</text>
-        <text className="rkv-ls" x={452} y={152}>LMCache GDS backend or Dynamo KVBM</text>
+        <text className="rkv-ls" x={452} y={152}>LMCache GDS backend (in-process mode)</text>
 
         <path className="rkv-a" d="M598,224 L231,224" />
         <text className="rkv-la" x={452} y={198}>vLLM fs tier: POSIX from the CPU tier</text>
@@ -384,15 +402,27 @@ export function RemoteKvTiersAws() {
         <SpaceBetween size="m">
           <Box variant="p">
             A remote tier holds KV outside the instance that computed it, so another instance, or
-            the same one after a restart, loads the prefix instead of recomputing it. AWS offers
-            four: DRAM pooled by Mooncake Store over EFA (Elastic Fabric Adapter), a Valkey node
-            running the large-object module, FSx for Lustre, and S3.
+            the same one after a restart, loads the prefix instead of recomputing it.{' '}
+            <strong>
+              Two questions place each tier: who moves the bytes, and whether they land in GPU
+              memory or in host memory.
+            </strong>{' '}
+            Bytes that land in host memory reach the GPU through one more copy, by vLLM&apos;s CPU
+            tier or LMCache&apos;s L1.
           </Box>
           <Box variant="p">
-            <strong>Two questions place each tier: who moves the bytes, and where they land.</strong>{' '}
-            The mover is a client or a server posting RDMA (remote direct memory access), the
-            Lustre client, or an HTTP client. vLLM&apos;s own secondary tiers land in host memory,
-            because only its CPU tier touches GPU memory{' '}
+            Four tiers are covered here: two AWS services, FSx for Lustre and S3, and two stores you
+            run self-managed on EC2, DRAM pooled by Mooncake Store over EFA (Elastic Fabric Adapter)
+            and a Valkey node running the large-object module. SageMaker HyperPod&apos;s managed
+            tiered KV cache is covered in the flash-tier section (section 9) of{' '}
+            <Link external href="../silicon-memory-inference/">
+              Silicon, Memory &amp; Inference
+            </Link>
+            .
+          </Box>
+          <Box variant="p">
+            vLLM&apos;s own secondary tiers land in host memory, because only its CPU tier touches
+            GPU memory{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/kv_offload/tiering/base.py', 'L130-L159')} kind="code" accessed="2026-10-24">
               tiering/base.py L130-L159
             </Cite>
@@ -409,12 +439,13 @@ export function RemoteKvTiersAws() {
             <Cite tier={1} href={`${FSX}efa-file-systems.html`} accessed="2026-10-24">
               FSx: EFA-enabled file systems
             </Cite>
-            , reached through LMCache&apos;s GDS backend or Dynamo KVBM (KV Block Manager).
+            , reached through LMCache&apos;s GDS backend.
           </Box>
           <AwsRemoteKvPathsDiagram />
           <Box variant="small" color="text-body-secondary">
             Schematic, not to scale. Arrows show loads; stores reverse them. Valkey commands use a
-            separate TCP connection, not drawn.
+            separate TCP connection, not drawn. LNet is Lustre Networking; CRT is the AWS Common
+            Runtime.
           </Box>
           <Table
             variant="embedded"
@@ -424,8 +455,8 @@ export function RemoteKvTiersAws() {
               { id: 'mover', header: 'Who moves the bytes', cell: (r) => r.mover, minWidth: 190 },
               { id: 'lands', header: 'Lands in', cell: (r) => r.lands, minWidth: 150 },
               { id: 'reach', header: 'How vLLM v0.31.0 reaches it', cell: (r) => r.reach, minWidth: 210 },
-              { id: 'throughput', header: 'Throughput per client', cell: (r) => r.throughput, minWidth: 210 },
-              { id: 'latency', header: 'Latency (first-party)', cell: (r) => r.latency, minWidth: 160 },
+              { id: 'throughput', header: 'Throughput per client (maximum)', cell: (r) => r.throughput, minWidth: 210 },
+              { id: 'latency', header: 'Latency (AWS documentation)', cell: (r) => r.latency, minWidth: 160 },
               { id: 'maturity', header: 'Maturity on 2026-10-24', cell: (r) => r.maturity, minWidth: 200 },
             ]}
             items={remoteTierRows}
@@ -468,11 +499,22 @@ export function RemoteKvTiersAws() {
               <Cite tier={1} href={vllmUrl('requirements/kv_connectors.txt', 'L1-L8')} kind="code" accessed="2026-10-24">
                 requirements/kv_connectors.txt L1-L8
               </Cite>{' '}
-              <Cite tier={1} href={`${MC}.github/workflows/release.yaml#L67-L107`} kind="code" accessed="2026-10-24">
-                Mooncake release.yaml L67-L107
+              <Cite tier={1} href={`${MC}.github/workflows/_build-wheel.yaml#L60-L107`} kind="code" accessed="2026-10-24">
+                Mooncake _build-wheel.yaml L60-L107
+              </Cite>{' '}
+              <Cite tier={1} href={`${MC}mooncake-common/common.cmake#L100`} kind="code" accessed="2026-10-24">
+                Mooncake common.cmake L100
               </Cite>
-              . Install <code>mooncake-transfer-engine-efa</code>, keep the EFA installer&apos;s
-              libfabric on the library path{' '}
+              . Install <code>mooncake-transfer-engine-efa-cuda13</code>, or{' '}
+              <code>mooncake-transfer-engine-efa</code> on a CUDA 12 build: vLLM defaults to CUDA 13,
+              and a wheel for the other CUDA major fails to import{' '}
+              <Cite tier={1} href={vllmUrl('docs/features/mooncake_connector_usage.md', 'L13-L15')} accessed="2026-10-24">
+                mooncake_connector_usage.md L13-L15
+              </Cite>{' '}
+              <Cite tier={1} href="https://pypi.org/pypi/mooncake-transfer-engine-efa-cuda13/json" accessed="2026-10-24">
+                PyPI: mooncake-transfer-engine-efa-cuda13
+              </Cite>
+              . Keep the EFA installer&apos;s libfabric on the library path{' '}
               <Cite tier={1} href={`${MC_EFA_DOC}#L131`} accessed="2026-10-24">
                 Mooncake EFA guide L131
               </Cite>
@@ -484,81 +526,55 @@ export function RemoteKvTiersAws() {
               .
             </Box>
             <Box variant="p">
-              <strong>Tune block size first:</strong> one block is one EFA operation{' '}
+              <strong>Size transfers first:</strong> Mooncake posts each transfer request as one EFA
+              operation{' '}
               <Cite tier={1} href={`${MC}mooncake-transfer-engine/src/transport/efa_transport/efa_transport.cpp#L990-L998`} kind="code" accessed="2026-10-24">
                 efa_transport.cpp L990-L998
               </Cite>
-              . The project measured 97.11 GB/s at 64 KB against 352.59 GB/s at 1 MB on p5en{' '}
+              . The project&apos;s Transfer Engine benchmark reports 97.11 GB/s GPU-to-GPU write at a{' '}
+              <code>--block_size</code> of 64 KB against 352.59 GB/s at 1 MB on p5en, in its
+              block-size sweep{' '}
               <Cite tier={2} href={`${MC_EFA_DOC}#L186-L384`} accessed="2026-10-24">
                 Mooncake EFA guide L186-L384 (project claim)
               </Cite>
-              .
+              . This research did not trace which vLLM setting sizes{' '}
+              <code>MooncakeStoreConnector</code>&apos;s transfers.
             </Box>
             <Box variant="p">
-              <strong>Watch</strong> the first transfer to each new peer, a 26 ms handshake in the
-              project&apos;s p5en test; per the Mooncake docs, vLLM skips the warm-up that hides
-              it{' '}
+              <strong>Watch</strong> the first transfer to each new peer: 26 ms, handshake included,
+              in the project&apos;s p5en test{' '}
               <Cite tier={2} href={`${MC_EFA_DOC}#L435-L458`} accessed="2026-10-24">
                 Mooncake EFA guide L435-L458 (project claim)
               </Cite>
-              . Set <code>FI_EFA_ENABLE_SHM_TRANSFER=0</code> where processes on one host exchange GPU
-              buffers{' '}
-              <Cite tier={1} href={`${MC_EFA_DOC}#L388-L415`} accessed="2026-10-24">
-                Mooncake EFA guide L388-L415
+              , and vLLM v0.31.0&apos;s Mooncake connector code calls no warm-up to pay it in
+              advance{' '}
+              <Cite tier={1} href="https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/mooncake" kind="code" accessed="2026-10-24">
+                vLLM kv_connector/v1/mooncake
               </Cite>
               .
             </Box>
+            <ExpandableSection headerText="Docs versus code: the guide's FI_EFA_ENABLE_SHM_TRANSFER=0 workaround is stale at v0.3.13.post1">
+              <Box variant="p">
+                The Mooncake EFA guide still has same-host processes that exchange GPU buffers set{' '}
+                <code>FI_EFA_ENABLE_SHM_TRANSFER=0</code> to avoid a crash{' '}
+                <Cite tier={1} href={`${MC_EFA_DOC}#L393-L412`} accessed="2026-10-24">
+                  Mooncake EFA guide L393-L412
+                </Cite>
+                , but CUDA builds at this tag declare <code>FI_HMEM</code>, the fix for that crash{' '}
+                <Cite tier={1} href={`${MC}mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp#L75-L89`} kind="doc-code-conflict" accessed="2026-10-24">
+                  efa_context.cpp L75-L89
+                </Cite>
+                , so the setting only gives up libfabric&apos;s same-host shared-memory path.
+              </Box>
+            </ExpandableSection>
           </div>
 
           <div>
             <Box variant="h3">The Valkey large-object module</Box>
             <Box variant="p">
-              The module keeps objects in DRAM, or on local NVMe behind a DRAM cache{' '}
-              <Cite tier={1} href={`${VLO}src/configs.rs#L21-L24`} kind="code" accessed="2026-10-24">
-                configs.rs L21-L24
-              </Cite>
-              . RESP (Redis serialization protocol) commands over TCP carry keys and memory
-              descriptors; the server&apos;s NIC moves the bytes, <code>fi_writemsg</code> for{' '}
-              <code>BLOB.RDMA_GET</code>, <code>fi_read</code> for <code>BLOB.RDMA_SET</code>{' '}
-              <Cite tier={1} href={`${VDMA}crates/dma-libfabric/src/connection.rs#L43-L99`} kind="code" accessed="2026-10-24">
-                dma-libfabric connection.rs L43-L99
-              </Cite>
-              .
-            </Box>
-            <Box variant="p">
-              <strong>Plan for host memory.</strong> The README promises an &quot;optional EFA RDMA
-              transport to GPU memory&quot;{' '}
-              <Cite tier={1} href={`${VLO}README.md#L1-L3`} kind="doc-code-conflict" accessed="2026-10-24">
-                valkey-large-object README L1-L3
-              </Cite>
-              , and the server writes wherever a client registers{' '}
-              <Cite tier={1} href={`${VLO}src/commands/mod.rs#L22-L84`} kind="code" accessed="2026-10-24">
-                commands/mod.rs L22-L84
-              </Cite>
-              , but both clients located register host memory: LMCache&apos;s pinned L1 arena{' '}
-              <Cite tier={1} href={`${LM_PR}lmcache/v1/storage_backend/valkey/rdma_worker_pool.py#L137-L159`} kind="code" accessed="2026-10-24">
-                rdma_worker_pool.py L137-L159 at PR head
-              </Cite>
-              , via a glide crate without libfabric&apos;s GPU-memory capability{' '}
-              <Cite tier={1} href={`${GLIDE_PR}glide-rdma/src/endpoint.rs#L756-L785`} kind="code" accessed="2026-10-24">
-                glide-rdma endpoint.rs L756-L785 at PR head
-              </Cite>
-              .
-            </Box>
-            <Box variant="p">
-              <strong>Treat a node as a cache you can lose:</strong> no persistence, no replication,
-              and the NVMe directory emptied on every start{' '}
-              <Cite tier={1} href={`${VLO}src/lib.rs#L144-L155`} kind="code" accessed="2026-10-24">
-                lib.rs L144-L155
-              </Cite>{' '}
-              <Cite tier={1} href={`${VLO}tests/test_largeobj_persistence.py#L128-L277`} kind="code" accessed="2026-10-24">
-                test_largeobj_persistence.py L128-L277
-              </Cite>
-              .
-            </Box>
-            <Box variant="p">
               vLLM would reach it through <code>LMCacheMPConnector</code> and the{' '}
-              <code>valkey</code> L2 adapter, in open LMCache pull request 5556, which needs{' '}
+              <code>valkey</code> L2 adapter&apos;s <code>rdma</code> transport, added in open LMCache
+              pull request 5556, which needs{' '}
               <code>valkey-glide-sync</code> 2.6.0{' '}
               <Cite tier={1} href={`${LM_PR}lmcache/v1/storage_backend/valkey/rdma_worker_pool.py#L42-L46`} kind="code" accessed="2026-10-24">
                 rdma_worker_pool.py L42-L46 at PR head
@@ -568,18 +584,64 @@ export function RemoteKvTiersAws() {
                 PyPI: valkey-glide-sync
               </Cite>
               . No ElastiCache or MemoryDB offering of the module, RDMA or EFA was located in their
-              documentation or the What&apos;s New feed on 2026-10-24{' '}
+              documentation or What&apos;s New on 2026-10-24{' '}
               <Cite tier={1} href="https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html" accessed="2026-10-24">
                 ElastiCache: engine versions
               </Cite>{' '}
               <Cite tier={1} href="https://docs.aws.amazon.com/memorydb/latest/devguide/engine-versions.html" accessed="2026-10-24">
                 MemoryDB: engine versions
               </Cite>
-              , so run it self-managed on EC2.
+              .
             </Box>
-            <ExpandableSection headerText="Evidence: the module's only throughput figures">
+            <Box variant="p">
+              <strong>Plan for host memory:</strong> the located client stack, LMCache over
+              glide-rdma, registers LMCache&apos;s pinned host-memory L1 arena{' '}
+              <Cite tier={1} href={`${LM_PR}lmcache/v1/storage_backend/valkey/rdma_worker_pool.py#L137-L159`} kind="code" accessed="2026-10-24">
+                rdma_worker_pool.py L137-L159 at PR head
+              </Cite>{' '}
+              <Cite tier={1} href={`${LM_PR}lmcache/v1/distributed/memory_manager/l1_memory_manager.py#L1-L2`} kind="code" accessed="2026-10-24">
+                l1_memory_manager.py L1-L2 at PR head
+              </Cite>
+              .
+            </Box>
+            <Box variant="p">
+              <strong>Treat a node as a cache you can lose:</strong> it keeps objects in DRAM, or on
+              local NVMe behind a DRAM cache{' '}
+              <Cite tier={1} href={`${VLO}src/configs.rs#L15-L24`} kind="code" accessed="2026-10-24">
+                configs.rs L15-L24
+              </Cite>
+              , with no persistence, no replication, and the NVMe directory emptied on every start{' '}
+              <Cite tier={1} href={`${VLO}src/lib.rs#L144-L155`} kind="code" accessed="2026-10-24">
+                lib.rs L144-L155
+              </Cite>{' '}
+              <Cite tier={1} href={`${VLO}tests/test_largeobj_persistence.py#L128-L277`} kind="code" accessed="2026-10-24">
+                test_largeobj_persistence.py L128-L277
+              </Cite>
+              .
+            </Box>
+            <ExpandableSection headerText="Evidence: the README's GPU-memory transport, and the module's only throughput figures">
               <Box variant="p">
-                Measured by the pull request&apos;s author at adapter level, with no engine, between
+                The module&apos;s README promises an &quot;optional EFA RDMA transport to GPU
+                memory&quot;{' '}
+                <Cite tier={1} href={`${VLO}README.md#L1-L3`} kind="doc-code-conflict" accessed="2026-10-24">
+                  valkey-large-object README L1-L3
+                </Cite>
+                , and the server writes wherever a client registers{' '}
+                <Cite tier={1} href={`${VLO}src/commands/mod.rs#L22-L84`} kind="code" accessed="2026-10-24">
+                  commands/mod.rs L22-L84
+                </Cite>
+                , but the glide-rdma endpoint requests no <code>FI_HMEM</code>, libfabric&apos;s
+                GPU-memory capability, and registers memory with a plain <code>fi_mr_reg</code>{' '}
+                <Cite tier={1} href={`${GLIDE_PR}glide-rdma/src/endpoint.rs#L190-L196`} kind="code" accessed="2026-10-24">
+                  glide-rdma endpoint.rs L190-L196 at PR head
+                </Cite>{' '}
+                <Cite tier={1} href={`${GLIDE_PR}glide-rdma/src/endpoint.rs#L756-L785`} kind="code" accessed="2026-10-24">
+                  L756-L785
+                </Cite>
+                .
+              </Box>
+              <Box variant="p">
+                Reported by the pull request&apos;s author at adapter level, with no engine, between
                 two c8gn.16xlarge in one placement group{' '}
                 <Cite tier={2} href={`${LMCACHE_PR}#issuecomment-6304983743`} accessed="2026-10-24">
                   LMCache PR 5556 comment (project claim)
@@ -588,8 +650,9 @@ export function RemoteKvTiersAws() {
                 <Cite tier={1} href={EC2_CO} accessed="2026-10-24">
                   EC2 compute optimized specifications
                 </Cite>
-                : 16 MiB loads into host memory reached 197.8 to 198.6 Gbit/s over RDMA against 32.8
-                to 62.5 Gbit/s over TCP, and 256 KiB loads 63.3 against 40.5 Gbit/s.
+                : with 4 to 16 workers, 16 MiB loads into host memory reached 197.8 to 198.6 Gbit/s
+                over RDMA against 32.8 to 62.5 Gbit/s over TCP, and 256 KiB loads, at 16 workers,
+                63.3 against 40.5 Gbit/s.
               </Box>
             </ExpandableSection>
           </div>
@@ -602,6 +665,10 @@ export function RemoteKvTiersAws() {
               <Cite tier={1} href={`${FSX}efa-file-systems.html`} accessed="2026-10-24">
                 FSx: EFA-enabled file systems
               </Cite>
+              . Client setup for FSx and EFA is in the Storage Data Paths section of the{' '}
+              <Link external href="../efa/">
+                EFA deep dive
+              </Link>
               .
             </Box>
             <Box variant="p">
@@ -615,20 +682,29 @@ export function RemoteKvTiersAws() {
                 Usage Guide L168-L196
               </Cite>{' '}
               and nothing evicts them{' '}
-              <Cite tier={1} href={vllmUrl('docs/features/kv_offloading_usage.md', 'L358')} accessed="2026-10-24">
-                Usage Guide L358
-              </Cite>
-              . By our arithmetic from the per-TiB rates and 4.8 TiB steps{' '}
-              <Cite tier={1} href={`${FSX}ssd-storage.html`} accessed="2026-10-24">
-                FSx: SSD storage performance
+              <Cite tier={1} href={vllmUrl('vllm/v1/kv_offload/tiering/fs/manager.py', 'L109-L120')} kind="code" accessed="2026-10-24">
+                tiering/fs/manager.py L109-L120
               </Cite>{' '}
-              <Cite tier={1} href={`${FSX}getting-started.html`} accessed="2026-10-24">
-                FSx: Getting started
+              <Cite tier={1} href={vllmUrl('docs/features/kv_offloading_usage.md', 'L106')} accessed="2026-10-24">
+                Usage Guide L106
               </Cite>
-              , one client fed from disk needs about 91.2 TiB of EFA PERSISTENT-1000 at 700 Gbps and
-              153.6 TiB at 1,200 Gbps (62.4 TiB when reads hit the servers&apos; cache). No AWS
-              measurement located shows one client at either ceiling.
+              .
             </Box>
+            <ExpandableSection headerText="Sizing: how many TiB one client needs at 700 or 1,200 Gbps">
+              <Box variant="p">
+                By our arithmetic from the per-TiB rates and 4.8 TiB steps{' '}
+                <Cite tier={1} href={`${FSX}ssd-storage.html`} accessed="2026-10-24">
+                  FSx: SSD storage performance
+                </Cite>{' '}
+                <Cite tier={1} href={`${FSX}getting-started.html`} accessed="2026-10-24">
+                  FSx: Getting started
+                </Cite>
+                , one client fed from disk needs about 91.2 TiB of EFA PERSISTENT-1000 at 700 Gbps
+                and 153.6 TiB at 1,200 Gbps (62.4 TiB when reads hit the servers&apos; cache, about
+                1.7 TiB of RAM at that size). No AWS measurement located shows one client at either
+                ceiling.
+              </Box>
+            </ExpandableSection>
             <Box variant="p">
               <strong>The GDS paths sit outside vLLM&apos;s tree.</strong> LMCache&apos;s GDS backend
               calls cuFile by default{' '}
@@ -639,35 +715,50 @@ export function RemoteKvTiersAws() {
               <Cite tier={1} href={`${LM}docs/source/kv_cache/storage_backends/gds.rst#L1-L7`} accessed="2026-10-24">
                 LMCache gds.rst L1-L7
               </Cite>
-              . Dynamo KVBM creates NIXL&apos;s GDS_MT backend for its disk tier{' '}
-              <Cite tier={1} href={`${DY}lib/llm/src/block_manager/distributed/worker.rs#L94-L114`} kind="code" accessed="2026-10-24">
-                Dynamo worker.rs L94-L114
-              </Cite>{' '}
-              (we did not trace which backend serves each transfer), but that tier is one private
-              file per worker, deleted when the process exits{' '}
-              <Cite tier={1} href={`${DY}lib/llm/src/block_manager/storage/disk.rs#L398-L470`} kind="code" accessed="2026-10-24">
-                Dynamo disk.rs L398-L470
-              </Cite>
               . Load nvidia-fs on every GDS client, or reads fall back silently to a CPU bounce
               buffer{' '}
               <Cite tier={2} href={ML_GDS_BLOG} accessed="2026-10-24">
                 AWS ML Blog, 2026-06-01
               </Cite>
-              . llm-d&apos;s fs connector ended at vLLM 0.23, upstreamed as the fs tier without
-              its GDS mode{' '}
-              <Cite tier={1} href={`${LLMD_FS}README.md#L3-L13`} accessed="2026-10-24">
-                llmd_fs_backend README L3-L13
-              </Cite>
-              . <code>NixlConnector</code>&apos;s <code>&quot;GDS&quot;</code> backend{' '}
-              <Cite tier={1} href={vllmUrl('docs/features/disagg_prefill.md', 'L24-L28')} accessed="2026-10-24">
-                disagg_prefill.md L24-L28
-              </Cite>{' '}
-              only loads a plugin{' '}
-              <Cite tier={1} href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py', 'L560-L562')} kind="code" accessed="2026-10-24">
-                nixl/base_worker.py L560-L562
-              </Cite>
-              ; by our reading the connector registers no files, so it does not make FSx a KV tier.
+              .
             </Box>
+            <ExpandableSection headerText="Other FSx paths: per-worker, retired, or plugin-only">
+              <Box variant="p">
+                Dynamo KVBM (KV Block Manager) creates NIXL&apos;s GDS_MT backend for its disk tier{' '}
+                <Cite tier={1} href={`${DY}lib/llm/src/block_manager/distributed/worker.rs#L94-L114`} kind="code" accessed="2026-10-24">
+                  Dynamo worker.rs L94-L114
+                </Cite>{' '}
+                (we did not trace which backend serves each transfer), but that tier is one private
+                file per worker, deleted when the process exits{' '}
+                <Cite tier={1} href={`${DY}lib/llm/src/block_manager/storage/disk.rs#L398-L470`} kind="code" accessed="2026-10-24">
+                  Dynamo disk.rs L398-L470
+                </Cite>
+                . llm-d&apos;s fs connector ended at vLLM 0.23, upstreamed as the fs tier without
+                its GDS mode{' '}
+                <Cite tier={1} href={`${LLMD_FS}README.md#L3-L13`} accessed="2026-10-24">
+                  llmd_fs_backend README L3-L13
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/v1/kv_offload/tiering/fs/io.py')} kind="code" accessed="2026-10-24">
+                  tiering/fs/io.py
+                </Cite>
+                . <code>NixlConnector</code>&apos;s <code>&quot;GDS&quot;</code> backend{' '}
+                <Cite tier={1} href={vllmUrl('docs/features/disagg_prefill.md', 'L24-L28')} accessed="2026-10-24">
+                  disagg_prefill.md L24-L28
+                </Cite>{' '}
+                only loads a plugin{' '}
+                <Cite tier={1} href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py', 'L560-L562')} kind="code" accessed="2026-10-24">
+                  nixl/base_worker.py L560-L562
+                </Cite>
+                ; by our reading it registers only GPU and host memory with NIXL{' '}
+                <Cite tier={1} href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py', 'L746-L754')} kind="code" accessed="2026-10-24">
+                  nixl/base_worker.py L746-L754
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py', 'L1822-L1823')} kind="code" accessed="2026-10-24">
+                  L1822-L1823
+                </Cite>
+                , so FSx files never enter it.
+              </Box>
+            </ExpandableSection>
             <ExpandableSection headerText="The AWS Storage Blog's four-tier framing, and where it conflicts">
               <Box variant="p">
                 An AWS Storage Blog post frames HBM, host DRAM, FSx for Lustre and S3 as four KV
@@ -707,45 +798,40 @@ export function RemoteKvTiersAws() {
               <Cite tier={1} href={`${LM}lmcache/v1/storage_backend/connector/s3_connector.py#L81-L138`} kind="code" accessed="2026-10-24">
                 LMCache s3_connector.py L81-L138
               </Cite>
-              . An FSx data repository association can export to S3 Standard{' '}
-              <Cite tier={1} href={`${FSX}export-changed-data-meta-dra.html`} accessed="2026-10-24">
-                FSx: Exporting changes
-              </Cite>
-              , below vLLM and invisible to it.
+              .
             </Box>
           </div>
 
           <div>
             <Box variant="h3">The order to add them in</Box>
-            <Box variant="p">Our guidance, from the paths above:</Box>
+            <Box variant="p">
+              Our guidance, once the next container&apos;s CPU tier and local <code>fs</code> are in
+              place, with who moves the bytes, and where they land, in parentheses:
+            </Box>
             <ol>
               <li>
-                One instance: the CPU tier, plus <code>fs</code> on local NVMe (next container).
-              </li>
-              <li>
                 Several EFA GPU instances: Mooncake Store through{' '}
-                <code>MooncakeStoreConnector</code>, while the shared working set fits in DRAM peers
-                can lend.
+                <code>MooncakeStoreConnector</code> (client-side EFA, into GPU memory), while the
+                shared working set fits in DRAM peers can lend.
               </li>
               <li>
-                FSx for Lustre with <code>fs</code> once the set outgrows that DRAM or must outlive
-                its processes; LMCache&apos;s GDS backend only if the 700 Gbps host path is the
-                measured limit.
+                FSx for Lustre with <code>fs</code> (Lustre client, into host memory) once the set
+                outgrows that DRAM or must outlive its processes; LMCache&apos;s GDS backend (cuFile,
+                into GPU memory) only if the 700 Gbps host path is the measured limit.
               </li>
               <li>
-                S3 through <code>obj</code> for restarts and cold prefixes.
+                S3 through <code>obj</code> (HTTP, into host memory) for restarts and cold prefixes.
               </li>
-              <li>The Valkey module once its clients are released.</li>
+              <li>
+                The Valkey module (server-side EFA, into host memory) once its clients are
+                released.
+              </li>
             </ol>
             <Box variant="p">
               Then check the tier&apos;s bandwidth per GPU against recompute in the flash-tier
               ladder (section 9) of{' '}
               <Link external href="../silicon-memory-inference/">
                 Silicon, Memory &amp; Inference
-              </Link>
-              . FSx and EFA client setup is in the Storage Data Paths section of the{' '}
-              <Link external href="../efa/">
-                EFA deep dive
               </Link>
               .
             </Box>

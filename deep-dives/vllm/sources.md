@@ -8,7 +8,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 
 ## Tier 1: source code at a pinned ref, official documentation, API reference, release notes
 
-663 sources.
+668 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
@@ -48,7 +48,6 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [FSx: Configuring EFA clients](https://docs.aws.amazon.com/fsx/latest/LustreGuide/configure-efa-clients.html) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [FSx: Document history](https://docs.aws.amazon.com/fsx/latest/LustreGuide/doc-history.html) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [FSx: EFA-enabled file systems](https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html) | 2026-10-24 | offload/RemoteKvTiersAws |
-| [FSx: Exporting changes](https://docs.aws.amazon.com/fsx/latest/LustreGuide/export-changed-data-meta-dra.html) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [FSx: Getting started](https://docs.aws.amazon.com/fsx/latest/LustreGuide/getting-started.html) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [FSx: Performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [FSx: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-24 | offload/RemoteKvTiersAws |
@@ -218,8 +217,9 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [kubernetes-sigs/lws @ v1.0.0: site/content/en/docs/concepts/disaggregatedset/_index.md?plain=1](https://github.com/kubernetes-sigs/lws/blob/v1.0.0/site/content/en/docs/concepts/disaggregatedset/_index.md?plain=1) | 2026-10-16 | AwsEks |
 | [kubernetes/cloud-provider-aws @ v1.37.0: pkg/providers/v1/instances_v2.go](https://github.com/kubernetes/cloud-provider-aws/blob/v1.37.0/pkg/providers/v1/instances_v2.go) | 2026-10-16 | Ec2TopologyPlacement |
 | [kubernetes/cloud-provider-aws @ v1.37.0: pkg/providers/v1/well_known_labels.go](https://github.com/kubernetes/cloud-provider-aws/blob/v1.37.0/pkg/providers/v1/well_known_labels.go) | 2026-10-16 | Ec2TopologyPlacement |
-| [kvcache-ai/Mooncake @ v0.3.13.post1: .github/workflows/release.yaml](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/.github/workflows/release.yaml) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [kvcache-ai/Mooncake @ v0.3.13.post1: .github/workflows/_build-wheel.yaml](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/.github/workflows/_build-wheel.yaml) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [kvcache-ai/Mooncake @ v0.3.13.post1: docs/source/design/transfer-engine/efa_transport.md](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/docs/source/design/transfer-engine/efa_transport.md) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [kvcache-ai/Mooncake @ v0.3.13.post1: mooncake-common/common.cmake](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-common/common.cmake) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [kvcache-ai/Mooncake @ v0.3.13.post1: mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [kvcache-ai/Mooncake @ v0.3.13.post1: mooncake-transfer-engine/src/transport/efa_transport/efa_transport.cpp](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-transfer-engine/src/transport/efa_transport/efa_transport.cpp) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [kvcache-ai/Mooncake @ v0.3.13.post1: scripts/build_wheel.sh](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/scripts/build_wheel.sh) | 2026-10-24 | offload/RemoteKvTiersAws |
@@ -246,8 +246,10 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [llm-d v0.10.0 release notes](https://github.com/llm-d/llm-d/releases/tag/v0.10.0) | 2026-10-16 | LlmdKServe, NvidiaDynamo, RayServeLLM, ThesisAndFraming |
 | [llm-d (GitHub, v0.10.0)](https://github.com/llm-d/llm-d/tree/v0.10.0) | 2026-10-16 | Sources appendix |
 | [LMCache/LMCache @ 7e5987f80ada75380c31e92a186106841e999e94: lmcache/v1/distributed/l2_adapters/valkey_l2_adapter.py](https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/distributed/l2_adapters/valkey_l2_adapter.py) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [LMCache/LMCache @ 7e5987f80ada75380c31e92a186106841e999e94: lmcache/v1/distributed/memory_manager/l1_memory_manager.py](https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/distributed/memory_manager/l1_memory_manager.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [LMCache/LMCache @ 7e5987f80ada75380c31e92a186106841e999e94: lmcache/v1/storage_backend/valkey/rdma_worker_pool.py](https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/storage_backend/valkey/rdma_worker_pool.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [LMCache/LMCache @ v0.5.6: docs/source/kv_cache/storage_backends/gds.rst](https://github.com/LMCache/LMCache/blob/v0.5.6/docs/source/kv_cache/storage_backends/gds.rst) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [LMCache/LMCache @ v0.5.6: lmcache/v1/distributed/memory_manager/l1_memory_manager.py](https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/distributed/memory_manager/l1_memory_manager.py) | 2026-10-24 | KVOffloadingLMCache |
 | [LMCache/LMCache @ v0.5.6: lmcache/v1/storage_backend/connector/mooncakestore_connector.py](https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/connector/mooncakestore_connector.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [LMCache/LMCache @ v0.5.6: lmcache/v1/storage_backend/connector/s3_connector.py](https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/connector/s3_connector.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [LMCache/LMCache @ v0.5.6: lmcache/v1/storage_backend/gds_backend.py](https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/gds_backend.py) | 2026-10-24 | offload/RemoteKvTiersAws |
@@ -280,6 +282,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: src/commands/mod.rs](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/commands/mod.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: src/configs.rs](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/configs.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: src/lib.rs](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/lib.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: src/transport/config.rs](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/transport/config.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: src/transport/session.rs](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/transport/session.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: tests/test_largeobj_persistence.py](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/tests/test_largeobj_persistence.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/guidellm @ v0.8.1: README.md](https://github.com/vllm-project/guidellm/blob/v0.8.1/README.md) | 2026-10-16 | ObservabilityBench |
@@ -338,7 +341,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: docs/features/index_cache.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/index_cache.md) | 2026-10-16 | KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: docs/features/kv_offloading_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/kv_offloading_usage.md) | 2026-10-16, 2026-10-24 | DecisionGuide, KVOffloadingLMCache, offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: docs/features/lora.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/lora.md) | 2026-10-16 | LoRAServing, OperationsFailureModes, codebase/CodebaseModelLayer |
-| [vllm-project/vllm @ v0.31.0: docs/features/mooncake_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/mooncake_connector_usage.md) | 2026-10-16 | DisaggregatedServing |
+| [vllm-project/vllm @ v0.31.0: docs/features/mooncake_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/mooncake_connector_usage.md) | 2026-10-16, 2026-10-24 | DisaggregatedServing, offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: docs/features/mooncake_store_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/mooncake_store_connector_usage.md) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: docs/features/moriio_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/moriio_connector_usage.md) | 2026-10-16 | DisaggregatedServing |
 | [vllm-project/vllm @ v0.31.0: docs/features/nixl_connector_compatibility.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/nixl_connector_compatibility.md) | 2026-10-16 | DisaggregatedServing |
@@ -594,7 +597,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/base.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/base.py) | 2026-10-16, 2026-10-24 | KVOffloadingLMCache, offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/factory.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/factory.py) | 2026-10-16, 2026-10-24 | KVOffloadingLMCache, NvidiaDynamo, offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/fs/io.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/fs/io.py) | 2026-10-24 | offload/RemoteKvTiersAws |
-| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/fs/manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/fs/manager.py) | 2026-10-16 | KVOffloadingLMCache |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/fs/manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/fs/manager.py) | 2026-10-16, 2026-10-24 | KVOffloadingLMCache, offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/kvcr/manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/kvcr/manager.py) | 2026-10-16 | KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/obj/config.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/obj/config.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/obj/manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/obj/manager.py) | 2026-10-24 | offload/RemoteKvTiersAws |
@@ -661,6 +664,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: rust](https://github.com/vllm-project/vllm/tree/v0.31.0/rust) | 2026-10-16 | Sources appendix, codebase/CodebaseRust |
 | [vllm-project/vllm @ v0.31.0: rust/src/parser/src](https://github.com/vllm-project/vllm/tree/v0.31.0/rust/src/parser/src) | 2026-10-16 | codebase/CodebaseRust |
 | [vllm-project/vllm @ v0.31.0: vllm/config](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/config) | 2026-10-16 | Sources appendix, codebase/CodebaseConfig |
+| [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/mooncake](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/mooncake) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/nixl](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl) | 2026-10-16 | AwsGpuEfaNixl, codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/launchers](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/entrypoints/launchers) | 2026-10-16 | OpenAICompatServer |
 | [vllm-project/vllm @ v0.31.0: vllm/model_executor](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/model_executor) | 2026-10-16 | Sources appendix |
@@ -673,6 +677,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [Hugging Face Text Generation Inference (TGI) docs (repository archived)](https://huggingface.co/docs/text-generation-inference/index) | 2026-10-16 | Sources appendix |
 | [TensorRT-LLM documentation](https://nvidia.github.io/TensorRT-LLM/) | 2026-10-16 | Sources appendix |
 | [PyPI: nixl 1.3.2](https://pypi.org/project/nixl/1.3.2/) | 2026-10-16 | NvidiaDynamo |
+| [PyPI: mooncake-transfer-engine-efa-cuda13](https://pypi.org/pypi/mooncake-transfer-engine-efa-cuda13/json) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [PyPI: valkey-glide-sync](https://pypi.org/pypi/valkey-glide-sync/json) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [PyTorch Foundation: welcomes vLLM (May 7, 2025)](https://pytorch.org/blog/pytorch-foundation-welcomes-vllm/) | 2026-10-16 | WhenNotVllm |
 

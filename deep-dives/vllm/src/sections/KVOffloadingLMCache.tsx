@@ -400,7 +400,8 @@ export function KVOffloadingLMCache() {
           </Box>
           <Box variant="small" color="text-body-secondary">
             Verified against vLLM v0.31.0 (commit <code>db9527a4</code>) and LMCache v0.5.6 on
-            2026-10-16. The KV connector API logs that it is experimental and subject to change{' '}
+            2026-10-16; the remote tiers on AWS were verified on 2026-10-24. The KV connector API
+            logs that it is experimental and subject to change{' '}
             <Cite
               tier={1}
               href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/v1/base.py', 'L210-L211')}
@@ -820,7 +821,16 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
               LMCache README v0.5.6 L73
             </Cite>
             ; the multiprocess server reaches storage through its own L2 adapter layer behind a
-            host-memory L1, with 21 adapters at v0.5.6, among them <code>valkey</code>,{' '}
+            host-memory L1{' '}
+            <Cite
+              tier={1}
+              href="https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/distributed/memory_manager/l1_memory_manager.py#L1-L2"
+              kind="code"
+              accessed="2026-10-24"
+            >
+              LMCache v0.5.6 l1_memory_manager.py L1-L2
+            </Cite>
+            , with 21 adapters at v0.5.6, among them <code>valkey</code>,{' '}
             <code>mooncake_store</code>, <code>s3</code> and <code>sagemaker-hyperpod</code>{' '}
             <Cite
               tier={1}

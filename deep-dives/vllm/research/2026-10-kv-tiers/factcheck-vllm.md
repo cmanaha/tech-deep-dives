@@ -351,3 +351,63 @@ Project tiers (CLAUDE.md "Fact-Checking & Sources Standard") are mapped to the g
 - The projected 8/10 after the fixes.
 - The net word estimate.
 - The "by our reading" interpretations already labelled in the page (F10, H1).
+
+## Applied
+
+Date: 2026-10-24. Corrections pass (phase 1), before the leverage pass. Line numbers are in the working tree at the end of phase 1; the leverage pass (`leverage-vllm.md`) moves them again. RK = `src/sections/offload/RemoteKvTiersAws.tsx`, KO = `src/sections/KVOffloadingLMCache.tsx`. Every changed or widened citation was re-read on 2026-10-24 at its pinned tag or SHA, through raw.githubusercontent.com and unauthenticated api.github.com, with a generic User-Agent and no personal data. Downloads are in `/tmp/rk-verify/` (not committed).
+
+### Part 1 rows
+
+- **A3**: added `l1_memory_manager.py#L1-L2` at v0.5.6 ("CPU pinned-DRAM L1 memory manager.") after "host-memory L1". KO:824-832.
+- **B1** (FAILS): replaced "AWS offers four" with "Four are covered here: two AWS services, FSx for Lustre and S3, and two stores you run self-managed on EC2, DRAM pooled by Mooncake Store over EFA (Elastic Fabric Adapter) and a Valkey node running the large-object module." HyperPod is now a pointer only, per the orchestrator ruling: "SageMaker HyperPod's managed tiered KV cache is covered in the flash-tier section (section 9) of Silicon, Memory & Inference", linked to `../silicon-memory-inference/`. It adds no HyperPod fact. RK:405-414.
+- **B4 / C14**: dropped "or Dynamo KVBM (KV Block Manager)" from the prose (RK:435), the FSx "Lands in" cell (RK:175) and the SVG `<title>` (RK:268-269). Relabelled the green FSx arrow to "LMCache GDS backend (in-process mode)" (RK:363). The KVBM expansion moved to the only remaining mention (RK:708).
+- **B6**: changed the diagram label to "EFA (and with it GDS) set at creation". RK:345.
+- **B7**: changed the diagram box to "Valkey large-object node on EC2" / "DRAM, optional NVMe". BLOB no longer appears. RK:348-349. Widths: 31 chars x 7.5 = 233 units at 13px bold, and 37 chars x 6.2 = 229 at 11px, both inside the 268-unit box. The 37-char arrow label spans x 337 to 567, inside the 296 to 600 gap.
+- **C4**: changed the table cell to "project's Transfer Engine benchmark: up to 365.66 GB/s GPU-to-GPU write at 1 MB blocks" (Tier 2, project claim). RK:79-84.
+- **C5**: changed the Mooncake latency cell to "No AWS figure located" (RK:86), and the column header to "Latency (AWS documentation)" (RK:452).
+- **C7**: added vdma `connection.rs#L43-L99` at 72c3a08 and valkey-large-object `src/transport/config.rs#L8-L19` at 7510b94 to the Valkey mover cell. The latter reads "Use EFA hardware, the libfabric efa provider via efa-direct path". RK:106-115.
+- **C10**: added "with 4 to 16 workers". RK:129-130.
+- **C16**: changed the cell to "Up to 100 Gbps over ENA (Elastic Network Adapter) and 5 Gbps to any one object storage server, 700 Gbps over EFA, 1,200 Gbps over EFA with GDS", and the header to "Throughput per client (maximum)". Re-read performance.html: the table head is "Maximum throughput per client, Gbps", and the footnote is "limited to 5 Gbps". RK:190-191, RK:451.
+- **C22** (FAILS): replaced the scoped absence with `"Up to 100 Gb/s on a single instance" for data lake applications that fill the instance's network interface`, citing `optimizing-performance.html` (Tier 1). The sentence was re-read verbatim on 2026-10-24: "These data lake applications achieve single-instance transfer rates that maximize the network interface use for their Amazon EC2 instance, which can be up to 100 Gb/s on a single instance." RK:234-242.
+- **D2**: retargeted the dead `release.yaml#L67-L107` cite to `.github/workflows/_build-wheel.yaml#L60-L107`, and added `mooncake-common/common.cmake#L100`. Confirmed: no `USE_EFA` in `_build-wheel.yaml`, and L100 is `option(USE_EFA ... OFF)`. RK:495-500.
+- **D3**: changed the install step to "Install `mooncake-transfer-engine-efa-cuda13` (`mooncake-transfer-engine-efa` on a CUDA 12 build), because vLLM defaults to CUDA 13 and a wheel for the other CUDA major fails to import". It cites vLLM `mooncake_connector_usage.md#L13-L15` at v0.31.0 (confirmed: "vLLM defaults to CUDA 13 ... the wrong one fails to import") and PyPI JSON (`mooncake-transfer-engine-efa-cuda13` 0.3.13.post1, "AWS EFA, CUDA 13 version"). RK:501-511.
+- **D6**: changed the lead to "**Size transfers first:** Mooncake posts each transfer request as one EFA operation". The 64 KB and 1 MB figures are now the benchmark's `--block_size`. Added "This research did not trace which vLLM setting sizes `MooncakeStoreConnector`'s transfers", so the page implies no vLLM setting. RK:522-534.
+- **D7**: changed "The project measured" to "The project's Transfer Engine benchmark reports 97.11 GB/s GPU-to-GPU write ... against 352.59 GB/s at 1 MB on p5en, in its block-size sweep". RK:528-532.
+- **D8**: changed the text to "26 ms, handshake included, in the project's p5en test" (Tier 2). Dropped "per the Mooncake docs". The vLLM half is now "no call to the warm-up that pays it in advance appears in vLLM v0.31.0's Mooncake connector code", citing the pinned tree `vllm/tree/v0.31.0/.../kv_connector/v1/mooncake` (kind code). Tier 0 check: all 30 non-test Mooncake files in vLLM v0.31.0 were fetched, including `distributed/mooncake_store.py` and the ec_connector files, and none contains "warm". The cite is the directory rather than `store/worker.py` alone, because one file cannot bear a claim about the connector code. RK:536-546.
+- **D9** (FAILS): applied the documentation-versus-code form, per the orchestrator ruling. The text now reads: "The Mooncake EFA guide still has same-host processes that exchange GPU buffers set `FI_EFA_ENABLE_SHM_TRANSFER=0` to avoid a crash [guide], but CUDA builds at this tag declare `FI_HMEM`, the fix for that crash [efa_context.cpp L75-L89, kind doc-code-conflict], so the setting only gives up libfabric's same-host shared-memory path." The doc cite is `#L393-L412`, not the ruling's L410-L411. L410-L411 carries only the advice, while the `{warning}` block from L393 names the segfault, which "to avoid a crash" needs. Evidence: register 02 row M74. RK:546-558.
+- **E1**: changed the cite to `configs.rs#L15-L24`, which includes the doc comment "Dram (default) ... No NVMe. Tiered ...". RK:564-566.
+- **E4**: in the main read, "the located client stack, LMCache over glide-rdma, registers LMCache's pinned host-memory L1 arena", which adds `l1_memory_manager.py#L1-L2` at 7e5987f (RK:570-579). The glide clause moved to the expandable (K3) as "the glide-rdma endpoint requests no `FI_HMEM`, libfabric's GPU-memory capability, and registers memory with a plain `fi_mr_reg`". It cites `endpoint.rs#L190-L196` (caps without FI_HMEM, plus the `(*hints).caps` assignment; 0 occurrences of FI_HMEM in the file) and `#L756-L785` (RK:614-631). The range is L190-L196, not the report's L190-L195, so that the assignment is included.
+- **E6**: changed the text to "the `valkey` L2 adapter's `rdma` transport, added in open LMCache pull request 5556". RK:592-594.
+- **E8**: changed "Measured by" to "Reported by". Added "with 4 to 16 workers" before the 16 MiB ranges and "at 16 workers" on the 256 KiB pair. RK:634-646.
+- **F4**: replaced Usage Guide L358 with `tiering/fs/manager.py#L109-L120` (kind code) and Usage Guide L106. Tier 0 check: the four files in `tiering/fs/` at v0.31.0 contain no evict, capacity or quota path. Their only `os.remove` calls clean up a probe file, a failed temp write and a corrupt short read. RK:668-676.
+- **F5**: added "about 1.7 TiB of RAM at that size" (27.3 GiB/TiB x 62.4 TiB = 1,704 GiB, ssd-storage.html re-read). RK:684-686.
+- **F9** (optional): added a `tiering/fs/io.py` cite beside the llm-d README. Tier 0 grep: no gds, cufile or kvikio in `tiering/fs/`. RK:722-724.
+- **F10** (optional) with correction 17: see 17 below.
+- **C15** (optional): added Usage Guide `#L72-L96` (`TieringOffloadingSpec`, `"type": "fs"`, `root_dir`). RK:183-185.
+
+### Part 2 corrections not covered above
+
+- **14, acronyms in reading order**: the caption now reads "LNet is Lustre Networking; CRT is the AWS Common Runtime." RK:440-441.
+- **17, negative definition**: replaced "so it does not make FSx a KV tier" with "by our reading it registers only GPU and host memory with NIXL [base_worker.py L746-L754, L1822-L1823], so FSx files never enter it". L746-L754 maps the KV buffer device to `VRAM` or `DRAM`, and L1822-L1823 is the `register_memory` call. RK:732-740.
+- **18, stale verification note**: appended "; the remote tiers on AWS were verified on 2026-10-24". KO:402-404.
+
+### Cuts
+
+- **K1**: deleted "The mover is a client or a server posting RDMA ...". RDMA stays expanded at KO:559, earlier in reading order. RK:418-419.
+- **K2**: deleted the RESP sentence. Its vdma cite moved into the table (C7). The RESP glossary row is now unused; see "For the orchestrator". RK:566.
+- **K3**: demoted the README-versus-clients conflict into the Valkey expandable, renamed "Evidence: the README's GPU-memory transport, and the module's only throughput figures". The lead "Plan for host memory" keeps a one-line reason (E4). RK:570-579, RK:613-631.
+- **K4**: DECLINED. Dropping the 256 KiB pair would delete a sourced number, which the orchestrator's phase 1 rules forbid ("Keep every sourced number"). The pair stays inside the expandable with "at 16 workers".
+- **K5**: moved the KVBM, llm-d and NixlConnector notes into a new ExpandableSection, "Other FSx paths: per-worker, retired, or plugin-only". The LMCache GDS backend and nvidia-fs sentences stay in the main read. RK:689-742.
+- **K6**: deleted the FSx data repository association sentence and its `export-changed-data-meta-dra.html` cite. RK:778-779.
+- **K7**: dropped order step 1. The lead-in is now "Our guidance, once the next container's CPU tier and local `fs` are in place:", which keeps the inference label. RK:788-791.
+- **K8**: PARTLY applied. Compressed "the What's New feed" to "What's New", and "self-managed on EC2" to "on EC2" (B1 now says self-managed). "of the module, RDMA or EFA" stays: it names what was searched for, and dropping it would change the hedge's scope. RK:604-611.
+
+### Verification after phase 1
+
+All exit 0: `pnpm --filter @tech-deep-dives/vllm typecheck`, `lint` and `test` (5 of 5), plus `no-ai-tells`, `svg-a11y`, `pinned-refs` and `pre-overflow`. The exception is `gen-sources.mjs --check`, which exits 1 ("sources.md is stale"), as expected after citation changes.
+
+## For the orchestrator
+
+- **Regenerate `sources.md`**: `node deep-dives/vllm/revamp/tools/gen-sources.mjs`. Rows leaving: `FSx: Exporting changes` (export-changed-data-meta-dra.html, K6) and `Mooncake .github/workflows/release.yaml` (D2). Rows arriving: Mooncake `_build-wheel.yaml` and `common.cmake`; vLLM `mooncake_connector_usage.md`, `tiering/fs/manager.py` and the `kv_connector/v1/mooncake` tree; PyPI `mooncake-transfer-engine-efa-cuda13`; valkey-large-object `src/transport/config.rs`; LMCache `l1_memory_manager.py` at v0.5.6 and at 7e5987f; Mooncake EFA guide (same file, new range).
+- **GlossaryAndSources.tsx L212**: delete the RESP row (K2). RESP no longer appears anywhere in the dive.
+- **Register hygiene (not mine to edit)**: register 02 row M28 still names `release.yaml#L67-L107`. The correct file is `.github/workflows/_build-wheel.yaml#L60-L107` plus `mooncake-common/common.cmake#L100`.

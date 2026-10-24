@@ -209,7 +209,6 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'HBM', fullForm: 'High-Bandwidth Memory', description: 'The GPU\'s on-package memory, where vLLM keeps the paged KV cache.' },
   { acronym: 'Mooncake Store', fullForm: 'Mooncake Store (Mooncake project)', description: 'Distributed KV store that pools DRAM lent by client nodes; a master tracks metadata and the Transfer Engine moves the bytes, over EFA with the protocol set to efa.' },
   { acronym: 'Valkey large-object module', fullForm: 'valkey-io/valkey-large-object', description: 'Pre-release Valkey module that stores large objects in DRAM, optionally NVMe, and serves them with server-posted RDMA over EFA (BLOB.* commands); its located clients register host memory.' },
-  { acronym: 'RESP', fullForm: 'Redis Serialization Protocol', description: 'The request and reply protocol Valkey and Redis clients speak over TCP; the large-object module carries its commands on it.' },
   { acronym: 'LNet', fullForm: 'Lustre Networking', description: 'The Lustre network layer; on an EFA-enabled FSx for Lustre client it runs over the EFA devices.' },
   { acronym: 'CRT', fullForm: 'AWS Common Runtime', description: 'AWS\'s native client libraries; LMCache\'s S3 connector is built on its S3 client.' },
 
