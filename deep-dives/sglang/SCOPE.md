@@ -2,7 +2,7 @@
 
 **Title:** SGLang: The Serving Runtime Built Around a Shared Prefix Index
 **Subtitle:** How SGLang v0.5.22 schedules, caches and scales LLM serving, where its design differs from vLLM and why, and how to run it on AWS
-**Status:** Scoping v1 (2026-10-24). Research registers 00 to 09 complete; 10 (SGLang vs vLLM) in progress. Factual grounding review applied (see Review notes); other reviews pending.
+**Status:** Scoping v1 (2026-10-24). Research registers 00 to 10 complete. Factual grounding review applied (see Review notes); newcomer and outcome-fit reviews pending.
 **Pin:** SGLang `v0.5.22`, commit `baa9befa381511cd4d56f83980951e5a45fffc6d`, released 2026-10-19 (register 00). Accessed date 2026-10-24 on every citation.
 **Sibling dive:** vLLM (pinned to v0.31.0). The reader knows it. Shared fundamentals (the inference workload, continuous batching, paged KV memory, the parallelism vocabulary) are defined there and linked, never repeated here.
 
@@ -18,7 +18,7 @@ SGLang treats the KV cache as a shared index of token sequences. A radix tree ov
 
 Two consequences change what a reader does. First, several behaviours that look like settings are decided by the GPU and the model: the attention backend is chosen by model family then GPU generation, and it sets the page size, which sets how finely prefixes are reused, token-exact on H100 and 64-token steps on B200 for the same Llama deployment without tree speculation, by the default chain in code (03 A3, A4, B13; 02 B6, B14). Second, the default scheduling policy is first-come-first-served; the cache-aware longest-prefix-match ordering the SGLang paper introduced is opt-in and falls back to FCFS above 128 queued requests (01 C4, C7; 02 A5, C10, C11). At v0.5.22 SGLang's prefix reuse rests on the index and, when deployed, the gateway; the default FCFS queue only protects waiting requests' cached prefixes from eviction (02 C13), it does not reorder by them `[our reading]`.
 
-For a reader who knows vLLM, the differences that matter are design choices with consequences, each to be backed by code on both sides in register 10 (in progress): where the processes split; how admission and preemption work; a token-sequence tree against a hash-chained block table; PD disaggregation that always pushes KV from prefill into pages decode reserved, where vLLM's reference NIXL connector pulls and a push connector is an option (05 C8, C14, F1); a first-party cache-aware gateway in the SGLang repo, where vLLM's routers live in separate projects, one of them a fork of the SGLang gateway (06 G1); and an admin plane for RL weight sync that any client able to reach the port can call unless a key is set, with a default bind of 127.0.0.1 that container deployments replace with 0.0.0.0 (07 B12; 08 E6; 09 A9, B8). Benchmark comparisons are dated project or third-party claims with stated conditions, and the dive never computes a winner.
+For a reader who knows vLLM, the first fact is convergence: both engines page the KV cache, cache prefixes by default, overlap CPU and GPU work by default, queue requests first-come-first-served, recompute on preemption and run the same upstream kernel projects (10 B1 to B4; 10 A2). The differences that remain are in the shape of the prefix index and its reuse unit, and in what ships in the same repository (10 mental models 1 to 3): a token-sequence tree with variable-length edges against a chain of fixed-size block hashes, which reuses more finely on H100 and less finely on B200 at defaults (10 A6, A7); PD disaggregation that always pushes KV from prefill into pages decode reserved, where vLLM's reference NIXL connector pulls and a push connector is an option (05 C8, C14, F1; 10 A14); a first-party cache-aware gateway in the SGLang repo, where vLLM's routers live in separate projects, one of them a fork of the SGLang gateway (06 G1; 10 A15, B6); and an admin plane for RL weight sync that any client able to reach the port can call unless a key is set, with a default bind of 127.0.0.1 that container deployments replace with 0.0.0.0 (07 B12; 08 E6; 09 A9, B8; 10 A19). No benchmark located during this research compares SGLang v0.5.22 with vLLM v0.31.0; published comparisons are dated project or third-party claims with stated conditions, and the dive never computes a winner (10 C1 to C17).
 
 ---
 
@@ -208,10 +208,11 @@ Opens with the model: on EFA, moving KV between prefill and decode and the MoE a
 
 ### Layer G. Compare, operate, decide
 
-**25. SGLang and vLLM: design choices compared**
-Depth: mechanism plus practical
-Payoff: Know which differences change behaviour on your workload, and how to read the benchmark claims each project publishes.
-Content from register 10 (pending): the design table, convergence, attributed benchmark claims with conditions. Diagram: a side-by-side request path through each engine.
+**25. SGLang and vLLM: what differs, what converged, and how to read the benchmarks**
+Depth: practical
+Payoff: Know which differences change behaviour on your workload, which ones are gone, and why no published benchmark answers the question for your versions.
+
+Opens with the fact a vLLM reader does not expect: both engines page the KV cache, cache prefixes by default, overlap CPU and GPU work by default, queue first-come-first-served and run the same kernel projects, so "SGLang LPM against vLLM FCFS" compares a non-default SGLang mode (10 B1 to B4, A2). The design table, trimmed to the rows that change a decision, each row naming the vLLM dive section that covers the vLLM side: step composition and admission (10 A3, A5), reuse granularity by GPU, where SGLang reuses to the exact token on H100 and in 64-token pages on B200 while vLLM uses 16-token blocks on both (10 A7), structured output (10 A11), speculative defaults (10 A12), DP attention and EP (10 A13), PD direction and control plane (10 A14), router (10 A15), API surfaces (10 A16), metrics: SGLang serves `/metrics` only with `--enable-metrics`, vLLM always (10 A17), LoRA addressing (10 A18), RL routes (10 A19), AWS Neuron (10 A20). The strongest fact, landed twice: reuse granularity flips with the GPU. Convergence as an ExpandableSection (10 B5 to B17), including the shared lineage of the Rust routers and the shared bootstrap-server idea (10 B6, B7). Benchmarks as an ExpandableSection with tier badges, each with its date, versions, hardware and stated conditions: the 2024 paper and LMSYS posts (Tier 2 project claims and Tier 3 paper), the 2024 vLLM post (Tier 2), SemiAnalysis InferenceMAX and InferenceX (Tier 3; it picks one engine per model and compares hardware) (10 C1 to C17). The hedge preserved: no benchmark located during this research compares v0.5.22 with v0.31.0. Ends on the switching checklist: add `--enable-metrics`; do not copy `--gpu-memory-utilization` into `--mem-fraction-static` (different quantities); send LoRA requests as `model="<base>:<adapter>"`; map tool and reasoning parser names; move regex and EBNF constraints to SGLang's fields; match the speculative shape; set `--admin-api-key`; then benchmark both on your own traffic at matched settings (10 E9). Diagram: a side-by-side request path through each engine, marking where they split the same work and which pieces ship in the engine repository.
 
 **26. Ecosystem and Production Users**
 Depth: overview, with one practical table
@@ -226,8 +227,9 @@ Collects the operating facts from earlier sections, each pointed back: scheduler
 
 **28. Decision Guide**
 Depth: practical
-Payoff: Decide whether SGLang fits a workload, and which features to turn on first.
-From register 10 E plus the earlier sections: workload shapes, MoE scale, PD, AWS Neuron, orchestrator support, API needs. Diagram: a decision tree.
+Payoff: Decide whether SGLang fits a workload, which deployment path to take, and which features to turn on first.
+
+A decision tree driven by register 10's criteria, each leaf pointing to the section that carries the evidence: shared-prefix traffic (system prompts, few-shot templates, multi-turn chat, agent loops) and whether the GPU's page size helps or hurts it (10 E1; sections 5, 6, 23); structured output (10 E2; section 10); wide-EP MoE (10 E3; sections 16, 17, 24); PD at scale (10 E4; sections 18, 24); AWS Trainium or Inferentia, where the answer today is the vLLM dive's Neuron path (10 E5; section 22); an orchestrator already chosen and the SGLang version it installs (10 E6; section 20); API needs (10 E7; sections 12, 13, 15); the hardware fleet (10 E8; section 8). Framed as guidance with hedges preserved, never as a verdict. Then a first-week feature order for an SGLang deployment: `--enable-metrics` and `--admin-api-key` first, the gateway with `cache_aware` in front of more than one worker, HiCache when the working set exceeds GPU KV, speculative decoding only after measuring acceptance at your concurrency, PD and wide EP last. Ends on the switching checklist in section 25. Diagram: the decision tree.
 
 **29. Glossary & Sources**
 Acronym glossary and the tier-grouped sources appendix (generated sources.md mirrors it).
@@ -262,7 +264,7 @@ Acronym glossary and the tier-grouped sources appendix (generated sources.md mir
 | 22 | AWS path tree | SageMaker / HyperPod / EKS / EC2 |
 | 23 | Instance map | Family to GPU to compute capability to default backend and page size |
 | 24 | Two EFA stacks | KV transfer and expert all-to-all use different libraries; one check per layer |
-| 25 | Side-by-side request path | Where the two engines split the same work |
+| 25 | Side-by-side request path | Where the two engines split the same work, and which pieces ship in the engine repository |
 | 26 | Ecosystem map | Runtime, sgl-project projects, third-party integrations |
 | 28 | Decision tree | Workload to recommendation |
 
