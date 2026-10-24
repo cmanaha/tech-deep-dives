@@ -243,3 +243,89 @@ check. "As of 2026-10-24" and "today" are dated hedges, not changelog voice.
   history via the GitHub API; PyPI JSON for `mooncake-transfer-engine-efa` and `-efa-cuda13`.
 - [SPECULATIVE], our inference: the rdma_cm failure point for core Valkey on EFA (row 31), and
   FI_HMEM also curing the cross-process hang in libfabric issue 12328 (row 21).
+
+## Applied
+
+Corrections applied 2026-10-24 to `deep-dives/efa/src/sections/StorageDataPaths.tsx` (line numbers
+after the edit). Every changed range was re-read at its pinned tag or SHA from
+raw.githubusercontent.com before the citation was changed.
+
+- C1 / row 21: shm advice recast as a doc-code conflict, one sentence: the EFA guide says to set
+  `FI_EFA_ENABLE_SHM_TRANSFER=0` for same-host GPU transfers between processes to avoid a crash; a
+  CUDA build declares `FI_HMEM`, whose absence caused it, so the setting only gives up the same-host
+  shm path. `SourceRef provenance="doc-code-conflict"` with new `code.mcHmemCaps` (efa_context.cpp
+  L75-L89, re-read: `| FI_HMEM` under `USE_CUDA`/`USE_HIP`, SIGSEGV comment citing libfabric#12328)
+  and `docs.mooncakeShm` (L388-L415; advice at L409-L412, shm fast path at L390). The libfabric
+  blame and the ProjectRef are gone. :1700-1710, :412.
+- Ruling 2 / row 9 / C4 (llm-d half): llm-d's fs backend deleted from the cuFile list; `llmdc`,
+  `LLMD_KV_TAG` and `code.llmdGdsMode` removed as unused. No diagram label named llm-d. The
+  cufile_loader.hpp ref that row 9 proposed is declined: the clause it would support is gone.
+  :1670-1680.
+- C4 / row 10: `code.dynGdsMt` widened to L94-L145 (re-read: `build_agent(worker_id, use_gds)` with
+  `if use_gds { create_backend("GDS_MT") }`, and L144-L145 `need_disk` passed as `use_gds`). :402.
+- C3 / row 19: "or, for a GPU buffer, on the NICs nearest its GPU with `MC_EFA_NIC_SELECTION=local`",
+  new `code.mcLocalGpuOnly` (efa_transport.cpp L317-L346, re-read: "Host memory is deliberately
+  excluded"). :1693-1697, :418.
+- C5 / row 26: conflict prop now "an optional EFA RDMA transport to GPU memory" (README L3 wording).
+  :1729.
+- C2 / row 31: band line 1 "RC (Reliable Connected) verbs stacks do not run on EFA", line 2 "Core
+  Valkey RDMA and Mooncake's rdma transport are built on RC queue pairs."; prose "do not run on it";
+  SVG title "do not run on EFA". EOPNOTSUPP stays in the disclosure. :991, :994, :920-921, :1745.
+- C6 / row 40: Valkey wire label "to and from the client's buffer" (31 chars x 6.2 = 192 of 232).
+  :886.
+- C11 / row 46: boundary h2 description replaced with the three-sentence wording, "the projects'
+  own documents" (plural, since several projects are cited). :1790.
+- C8: ProjectRef popover second sentence deleted. :342.
+- C9: caption "matching connectors to them, and the core Valkey line in the bottom band, are our
+  reading of code." The band is inside the diagram, so "bottom band" replaces "band below the
+  diagram". :1657-1659.
+- C10: `code.lmcL1Host` re-pointed to l1_memory_manager.py L47-L114 instead of the prescribed
+  L109-L114: the wider range includes `create_memory_allocator` (Lazy or Mixed allocator, shm name,
+  hugepages) as well as the `mlock_on_fault` call, which is what lets the range bear "host memory".
+  :430.
+- C12: "KV cache over the fabric" moved before "The boundary of this section", which again sits
+  directly before "Choosing a path". :1640-1804.
+- C13: Mooncake: "Mooncake Store is a DRAM pool whose master allocates space and carries no data",
+  cited with new ProjectRef `docs.mooncakeStore` (docs/source/design/store/mooncake-store.md
+  L26-L34 at v0.3.13.post1: master "responsible for object space allocation", "Data transfer is
+  actually from one Client to another, bypassing the Master Service"); "from the engine side"
+  folded into "the engine-side Transfer Engine". Valkey: "which stores KV cache tensors and other
+  large objects" with ProjectRef `docs.vloReadme` (README L3). :288-293, :1685-1689, :1713-1714.
+- C14: ThreeDataPathsDiagram title "allows up to 700 Gbps per client, or 1,200 Gbps with GPUDirect
+  Storage (AWS per-client maximums)"; FSx h2 description "whether a client can reach the 700 Gbps
+  maximum". :510-511, :1197.
+- C15: "On the service side, the difference between them is one field in the create-file-system
+  call". :1186-1188.
+- C7: declined here, Sources.tsx is outside this agent's files (see below).
+
+Claim-set diff (new assertions and their sources): Mooncake Store master role (store design doc
+L26-L34); the module stores KV cache tensors and other large objects (README L3); the guide's advice
+and its crash (efa_transport.md L393-L412); FI_HMEM declared in CUDA builds and its absence causing
+the crash (efa_context.cpp L75-L89); the setting moves same-host transfers off the shm path
+(efa_transport.md L390, L411-L412); local NIC selection narrows only GPU buffers (efa_transport.cpp
+L317-L346). Nothing else was added.
+
+Word count: KV container prose rose from about 546 to about 592 words. The rise is C13's two
+introductions and C1's conflict sentence, partly offset by the llm-d deletion; popover text fell by
+about 18 words (C5, C8). No unflagged sentence was rewritten to offset it.
+
+Residual: the code narrows only a single-chunk GPU buffer (efa_transport.cpp L339); a buffer above
+the chunk limit is auto-split with a warning (L280-L291) and keeps per-chunk placement. "for a GPU
+buffer" follows the report and leaves that edge case out.
+
+Verification: `pnpm --filter @tech-deep-dives/efa typecheck` 0, `lint` 0, `test` 0 (12 passed),
+`no-ai-tells.sh` 0, `svg-a11y.sh` 0, `pinned-refs.sh` 0, `pre-overflow.sh` 0. No Playwright render
+check was run (B12 still open).
+
+## For the orchestrator
+
+- C7: Sources.tsx:287, UD glossary entry: replace "without connections or delivery guarantees" with
+  "Connectionless, best-effort verbs queue-pair type: each message is one datagram addressed to a
+  peer queue pair. EFA exposes it alongside SRD".
+- New cited document: Mooncake Store design doc,
+  https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/docs/source/design/store/mooncake-store.md
+  (accessed 2026-10-24). Appendix row 58 names only efa_transport.md. Either add a row (Tier 1
+  official-docs, matching row 58's convention) and update the sources.md counts, or widen row 58's
+  title to cover both Mooncake documents.
+- No glossary entry is added or removed by these edits. No appendix row referenced llm-d, so the
+  deletion needs no appendix change.

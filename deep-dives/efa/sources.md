@@ -13,10 +13,10 @@ Research behind the current content lives in two refresh directories:
   `04-open-items-sweep.md`), one authoring log per section group with its claim diff,
   and the adversarial fact check of every changed claim.
 
-- **Sources declared in the appendix:** 61
+- **Sources declared in the appendix:** 62
 - **Fact-check entries in the appendix:** 50, referencing 31 distinct source ids
 - **Glossary entries:** 109
-- **Orphans (no fact-check references them):** 30
+- **Orphans (no fact-check references them):** 31
 
 ## What this file does not cover
 
@@ -68,7 +68,7 @@ original build and assert only that the URL resolved when the August pass probed
 
 ---
 
-## Tier 1: Official AWS documentation, API reference and source code (40)
+## Tier 1: Official AWS documentation, API reference and source code (41)
 
 | id | Title | URL | Type | Accessed | Fact-checks |
 |---|---|---|---|---|---|
@@ -108,6 +108,7 @@ original build and assert only that the URL resolved when the August pass probed
 | 54 | vLLM speculative decoding documentation (docs/features/speculative_decoding/README.md, v0.32.0) | https://github.com/vllm-project/vllm/blob/v0.32.0/docs/features/speculative_decoding/README.md#L3 | official-docs | 2026-10-23 | 1 |
 | 57 | Mooncake repository at v0.3.13.post1 (Transfer Engine EFA transport: efa_transport.cpp, efa_context.cpp) | https://github.com/kvcache-ai/Mooncake/tree/v0.3.13.post1 | source-code | 2026-10-24 | 0 |
 | 58 | Mooncake documentation at v0.3.13.post1: EFA transport (docs/source/design/transfer-engine/efa_transport.md) | https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/docs/source/design/transfer-engine/efa_transport.md | official-docs | 2026-10-24 | 0 |
+| 63 | Mooncake documentation at v0.3.13.post1: Mooncake Store design (docs/source/design/store/mooncake-store.md) | https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/docs/source/design/store/mooncake-store.md | official-docs | 2026-10-24 | 0 |
 | 59 | valkey-io/valkey-large-object at commit 7510b948 (BLOB.RDMA_* commands, libfabric efa-direct transport) | https://github.com/valkey-io/valkey-large-object/tree/7510b9483d9837bf63b475d4a8e8fa612c65063f | source-code | 2026-10-24 | 0 |
 | 60 | Valkey 9.1.2 RDMA connection type (src/rdma.c: rdma_cm and RC queue pairs) | https://github.com/valkey-io/valkey/blob/9.1.2/src/rdma.c#L366-L381 | source-code | 2026-10-24 | 0 |
 | 61 | linux-rdma/rdma-core v65.0 EFA verbs provider (providers/efa/verbs.c: UD and SRD queue pairs) | https://github.com/linux-rdma/rdma-core/blob/v65.0/providers/efa/verbs.c | source-code | 2026-10-24 | 0 |
@@ -146,7 +147,7 @@ original build and assert only that the URL resolved when the August pass probed
 
 ## Orphan sources
 
-30 of 61 sources are referenced by no `factChecks` entry. An orphan is
+31 of 62 sources are referenced by no `factChecks` entry. An orphan is
 not dead weight by default: most of these are cited inline from section files through
 `SourceRef` and are orphans only with respect to the appendix fact-check array.
 
@@ -178,6 +179,7 @@ not dead weight by default: most of these are cited inline from section files th
 | 48 | 1 | EFA installer 1.51.0 ChangeLog.md and package list (inside aws-efa-installer-1.51.0.tar.gz) |
 | 57 | 1 | Mooncake repository at v0.3.13.post1 (Transfer Engine EFA transport: efa_transport.cpp, efa_context.cpp) |
 | 58 | 1 | Mooncake documentation at v0.3.13.post1: EFA transport (docs/source/design/transfer-engine/efa_transport.md) |
+| 63 | 1 | Mooncake documentation at v0.3.13.post1: Mooncake Store design (docs/source/design/store/mooncake-store.md) |
 | 59 | 1 | valkey-io/valkey-large-object at commit 7510b948 (BLOB.RDMA_* commands, libfabric efa-direct transport) |
 | 60 | 1 | Valkey 9.1.2 RDMA connection type (src/rdma.c: rdma_cm and RC queue pairs) |
 | 61 | 1 | linux-rdma/rdma-core v65.0 EFA verbs provider (providers/efa/verbs.c: UD and SRD queue pairs) |
