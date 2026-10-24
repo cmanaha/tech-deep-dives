@@ -968,32 +968,6 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
             ]}
             items={useCaseRows}
           />
-          <ExpandableSection headerText="Checklist: when offloading helps and when it hurts">
-            <ColumnLayout columns={2} variant="text-grid">
-              <div>
-                <Box variant="h3">Offloading helps when</Box>
-                <ul>
-                  <li>Prefixes are long and recomputing them is the bottleneck</li>
-                  <li>The same prefix is hit many times</li>
-                  <li>Reuse spans turns, sessions, replicas or restarts</li>
-                  <li>HBM pressure evicts warm prefixes early</li>
-                </ul>
-              </div>
-              <div>
-                <Box variant="h3">Offloading hurts when</Box>
-                <ul>
-                  <li>Prefixes are short, so recompute is cheaper than a load</li>
-                  <li>Hit rate is low: you pay to store KV that is never read back</li>
-                  <li>The store is slow or congested, so a load takes longer than a recompute</li>
-                  <li>
-                    Back-pressure drops stores to a slow tier: the GPU path stays fast and that
-                    tier&apos;s hit rate falls
-                  </li>
-                  <li>Stored KV comes from different weights or quantization (a correctness hazard)</li>
-                </ul>
-              </div>
-            </ColumnLayout>
-          </ExpandableSection>
           <ExpandableSection headerText="Load failures, consistency, capacity and routing">
             <SpaceBetween size="s">
               <Box variant="p">
