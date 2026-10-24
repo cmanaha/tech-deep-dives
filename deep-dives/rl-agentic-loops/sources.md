@@ -44,9 +44,19 @@ Code citations are pinned to a release tag or a 40-character commit SHA. Papers 
 - Neuron documentation at v2.32.0: what-is-neuron, pytorch-native-overview, nxd-training release notes, NxD Training archive index, archived DPO/ORPO tutorial (F06-45, F06-47) (accessed 2026-10-17) Base: https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/ (exact pages in the cited entries). (register 06)
 - Amazon Bedrock pricing; Amazon Nova pricing (F06-16) (accessed 2026-10-17) Base: https://aws.amazon.com/bedrock/pricing/ (exact pages in the cited entries). (register 06)
 - `huggingface/optimum-neuron` tag v0.4.5, `abf5985828e56167ab2e48c4d5e14a83e40b6370` (F06-48) (accessed 2026-10-17) Base: https://github.com/huggingface/optimum-neuron/tree/abf5985828e56167ab2e48c4d5e14a83e40b6370 (exact pages in the cited entries). (register 06)
+- `aws-neuron/aws-neuron-sdk` tag v2.33.0, `10832bbcc6b6920b3046a7d7aa59b6b684f6b81a`: documentation source tree, searched in F06-44 (accessed 2026-10-24) Base: https://github.com/aws-neuron/aws-neuron-sdk/tree/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a (register 06)
+- Neuron documentation at v2.33.0: what-is-neuron, TorchNeuron about page and release notes, vLLM Neuron release notes and integration page, native PyTorch inference, TorchTitan Neuron (F06-44, F06-47, F06-62, F06-63) (accessed 2026-10-24) Base: https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/ (exact pages in the cited entries). (register 06)
+- huggingface/trl `v1.16.0` (`1b5c75ed94b7387f42532adb090c935166d4878d`): `docs/source/aws_trainium.md`, `trl/trainer/grpo_config.py` (F06-61) Base: https://github.com/huggingface/trl/blob/1b5c75ed94b7387f42532adb090c935166d4878d/docs/source/aws_trainium.md; rendered at https://huggingface.co/docs/trl/v1.16.0/en/aws_trainium (accessed 2026-10-24) (register 06)
+- `vllm-project/vllm-neuron` tag v0.29.0.1.2.0, `eb6cb360f7cff6082e22a9437d8ce0ba3891304a`: `requirements/core.txt`, `vllm_neuron/vllm/model_runner_v2_policy.py` (F06-62) (accessed 2026-10-24) Base: https://github.com/vllm-project/vllm-neuron/tree/eb6cb360f7cff6082e22a9437d8ce0ba3891304a (register 06)
+- `aws-neuron/torchtitan-neuron` tag release-2.33.0, `b7582e986586051d7be85d03956afe169624aeda`: `torchtitan/experiments/rl/`, `torchtitan_neuron/` (F06-63) (accessed 2026-10-24) Base: https://github.com/aws-neuron/torchtitan-neuron/tree/b7582e986586051d7be85d03956afe169624aeda (register 06)
+- `aws-neuron/torch-neuronx` tag v2.33.0, `b1b6c66a2be28bce3bed6ef20632f0d3164119ef`: repository text search, `examples/` (F06-65) (accessed 2026-10-24) Base: https://github.com/aws-neuron/torch-neuronx/tree/b1b6c66a2be28bce3bed6ef20632f0d3164119ef (register 06)
+- `verl-project/verl` tag v0.9.1, `1876b06d0a3e4e71e06230be10af14492ca8a75b`: `verl/plugin/platform/platform_manager.py`, `verl/utils/ray_utils.py` (F06-65) (accessed 2026-10-24) Base: https://github.com/verl-project/verl/tree/1876b06d0a3e4e71e06230be10af14492ca8a75b (register 06)
 
 ## Tier 2: first-party lab and vendor posts and talks, including authors on their own methods
 
+- AWS, "Introducing TorchNeuron: Native PyTorch backend for AWS Trainium", PyTorch blog, 2026-10-19, https://pytorch.org/blog/introducing-torchneuron-native-pytorch-backend-for-aws-trainium/. Accessed 2026-10-24. Vendor statement that TRL supports Trainium upstream (F06-60). (register 06)
+- Hugging Face, "TorchNeuron: running HF models on AWS Trainium is easier than ever", 2026-10-19, https://huggingface.co/blog/hf-torchneuron. Accessed 2026-10-24. Library vendor on its own libraries (F06-48). (register 06)
+- Anthropic, "Anthropic and Amazon expand collaboration for up to 5 gigawatts of new compute", 2026-04-20, https://www.anthropic.com/news/anthropic-amazon-compute. Accessed 2026-10-24. "train and serve Claude" on Trainium2 (F06-64). (register 06)
 - Schulman, "Approximating KL Divergence", 2020-03-07, http://joschu.net/blog/kl-approx.html. Accessed 2026-10-16. Author's own post; definitions of the k1, k2, k3 estimators. (register 01)
 - Together AI and Agentica, "DeepSWE" (2025-07-02): https://www.together.ai/blog/deepswe Accessed 2026-10-16. (register 02)
 - Thinking Machines, "LoRA Without Regret" (2025-09-29): https://thinkingmachines.ai/blog/lora/ Accessed 2026-10-16. (register 02)
@@ -146,6 +156,7 @@ Code citations are pinned to a release tag or a 40-character commit SHA. Papers 
 
 ## Tier 3: preprints, other papers and third-party technical reports
 
+- SemiAnalysis (Kimbo Chen and Dylan Patel), "Amazon's Trainium Takes a Strike at the Training King", 2026-10-23, https://newsletter.semianalysis.com/p/amazons-trainium-takes-a-strike-at. Accessed 2026-10-24. Public portion only; the RL-rollouts claim is unverified (F06-64). AWS's launch post thanks SemiAnalysis for design feedback. (register 06)
 - Schulman et al., PPO, https://arxiv.org/abs/1707.06347v2. Accessed 2026-10-16. Definition, ablation. (register 01)
 - Ziegler et al., Fine-Tuning Language Models from Human Preferences, https://arxiv.org/abs/1909.08593v2. Accessed 2026-10-16. Definition, ablation. (register 01)
 - Bai et al., Constitutional AI, https://arxiv.org/abs/2212.08073v1. Accessed 2026-10-16. Method description, qualitative results. (register 01)
