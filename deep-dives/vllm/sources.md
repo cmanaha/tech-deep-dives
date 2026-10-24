@@ -8,7 +8,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 
 ## Tier 1: source code at a pinned ref, official documentation, API reference, release notes
 
-617 sources.
+631 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
@@ -17,10 +17,17 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [AWS What's New: NIXL with EFA](https://aws.amazon.com/about-aws/whats-new/2026/03/aws-support-nixl-with-efa/) | 2026-10-16 | AwsGpuEfaNixl |
 | [SageMaker AI pricing (HyperPod Spot)](https://aws.amazon.com/sagemaker/ai/pricing/) | 2026-10-16 | AwsSageMakerBedrock |
 | [AWS DLC docs: vLLM on SageMaker](https://aws.github.io/deep-learning-containers/vllm/deployment/sagemaker/) | 2026-10-16 | AwsSageMakerBedrock, Sources appendix |
-| [AWS Neuron: What's New](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/about-neuron/whats-new.html) | 2026-10-16 | AwsNeuron, Sources appendix |
-| [AWS Neuron: NxD Inference vLLM guide](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/libraries/nxd-inference/vllm/index.html) | 2026-10-16 | AwsNeuron, Sources appendix |
-| [AWS Neuron: NxD Inference release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/components/nxd-inference.html) | 2026-10-16 | AwsNeuron, Sources appendix |
-| [Neuron docs: vLLM Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/vllm-neuron/docs/index.html) | 2026-10-16 | AwsNeuron |
+| [Neuron docs: NxD Inference end-of-support announcement](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/announcements/neuron2.x/announce-eos-nxdi-nxd-core-inference.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: Torch/XLA path in vLLM Neuron, end of support](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/announcements/neuron2.x/announce-eos-vllm-neuron-torch-xla.html) | 2026-10-24 | AwsNeuron |
+| [AWS Neuron: What's New](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/whats-new.html) | 2026-10-24 | AwsNeuron, Sources appendix |
+| [AWS Neuron: vLLM User Guide for NxD Inference](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/inference-legacy/nxd-inference/developer_guides/vllm-user-guide-v1.html) | 2026-10-24 | AwsNeuron, Sources appendix |
+| [AWS Neuron: NxD Inference release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/archive/nxd-inference.html) | 2026-10-24 | AwsNeuron, Sources appendix |
+| [Neuron docs: Containers release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/containers.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: DLAMI release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/dlamis.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: How vLLM is integrated with TorchNeuron](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/vllm-neuron/docs/design/compilation/how_vllm_is_integrated_with_torchneuron.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: How to choose a compilation route](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/vllm-neuron/docs/guides/how-to-choose-compilation-route.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: How to use the Precompile Cache](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/vllm-neuron/docs/guides/how-to-precompile-cache.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: vLLM Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/vllm-neuron/docs/index.html) | 2026-10-24 | AwsNeuron |
 | [EC2 API: DescribeCapacityReservationTopology](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeCapacityReservationTopology.html) | 2026-10-16 | Ec2TopologyPlacement |
 | [EC2 API: DescribeInstanceTopology](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstanceTopology.html) | 2026-10-16 | Ec2TopologyPlacement, Sources appendix |
 | [EC2 API: InstanceTopology](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_InstanceTopology.html) | 2026-10-16 | Ec2TopologyPlacement |
@@ -74,7 +81,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vLLM compatibility guide](https://docs.ray.io/en/releases-2.59.0/serve/llm/user-guides/vllm-compatibility.html) | 2026-10-16 | RayServeLLM, Sources appendix |
 | [Ray Serve: fault tolerance, replica health-checking](https://docs.ray.io/en/releases-2.59.0/serve/production-guide/fault-tolerance.html) | 2026-10-16 | RayServeLLM |
 | [SGLang docs](https://docs.sglang.io/) | 2026-10-16 | Sources appendix, WhenNotVllm |
-| [vLLM v0.10.1 docs: AWS Neuron installation](https://docs.vllm.ai/en/v0.10.1/getting_started/installation/aws_neuron.html) | 2026-10-16 | AwsNeuron |
+| [vLLM v0.10.1 docs: AWS Neuron installation](https://docs.vllm.ai/en/v0.10.1/getting_started/installation/aws_neuron.html) | 2026-10-24 | AwsNeuron |
 | [vLLM v0.27.0 docs: Speculative Decoding](https://docs.vllm.ai/en/v0.27.0/features/speculative_decoding/) | 2026-10-16 | SpeculativeDecoding |
 | [vLLM docs: home page](https://docs.vllm.ai/en/v0.31.0/) | 2026-10-16 | Sources appendix, ThesisAndFraming |
 | [vLLM: CacheConfig API reference](https://docs.vllm.ai/en/v0.31.0/api/vllm/config/cache/) | 2026-10-16 | Sources appendix |
@@ -130,7 +137,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vLLM: Structured outputs](https://docs.vllm.ai/en/v0.31.0/features/structured_outputs/) | 2026-10-16 | OpenAICompatServer, Sources appendix |
 | [vLLM: Tool calling](https://docs.vllm.ai/en/v0.31.0/features/tool_calling/) | 2026-10-16 | OpenAICompatServer, Sources appendix |
 | [vLLM docs: Text watermarking](https://docs.vllm.ai/en/v0.31.0/features/watermarking/) | 2026-10-16 | WhenNotVllm |
-| [vLLM docs: Installation](https://docs.vllm.ai/en/v0.31.0/getting_started/installation/) | 2026-10-16 | AwsNeuron, Sources appendix, WhenNotVllm |
+| [vLLM docs: Installation](https://docs.vllm.ai/en/v0.31.0/getting_started/installation/) | 2026-10-16, 2026-10-24 | AwsNeuron, Sources appendix, WhenNotVllm |
 | [vLLM docs: Quickstart](https://docs.vllm.ai/en/v0.31.0/getting_started/quickstart/) | 2026-10-16 | ThesisAndFraming |
 | [vLLM docs: Context Parallel Deployment](https://docs.vllm.ai/en/v0.31.0/serving/context_parallel_deployment/) | 2026-10-16 | DistributedInference |
 | [vLLM: Data-parallel deployment](https://docs.vllm.ai/en/v0.31.0/serving/data_parallel_deployment/) | 2026-10-16 | DecisionGuide, DistributedInference, Sources appendix |
@@ -161,7 +168,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [ai-dynamo/dynamo @ v1.5.1: README.md](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/README.md) | 2026-10-16 | NvidiaDynamo, WhenNotVllm |
 | [NVIDIA Dynamo (GitHub: ai-dynamo/dynamo, v1.5.1)](https://github.com/ai-dynamo/dynamo/tree/v1.5.1) | 2026-10-16 | Sources appendix |
 | [aws-neuron/upstreaming-to-vllm (AWS fork, repository archived)](https://github.com/aws-neuron/upstreaming-to-vllm) | 2026-10-16 | Sources appendix |
-| [aws-neuron/upstreaming-to-vllm (archived)](https://github.com/aws-neuron/upstreaming-to-vllm/tree/c4f76254591e9113f01cbed6684efd735ba3cb81) | 2026-10-16 | AwsNeuron |
+| [aws-neuron/upstreaming-to-vllm (archived)](https://github.com/aws-neuron/upstreaming-to-vllm/tree/c4f76254591e9113f01cbed6684efd735ba3cb81) | 2026-10-24 | AwsNeuron |
 | [aws-samples/load-test-llm-with-locust](https://github.com/aws-samples/load-test-llm-with-locust/tree/72854d749cf8d88dc1f625969df1351e526a1321) | 2026-10-16 | AwsSageMakerBedrock |
 | [AWS DLC release: LMI 30.0.0](https://github.com/aws/deep-learning-containers/releases/tag/v1.0-djl-0.38.0-inf-lmi-30.0.0-cu130) | 2026-10-16 | AwsSageMakerBedrock |
 | [aws/karpenter-provider-aws @ v1.15.0: pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml](https://github.com/aws/karpenter-provider-aws/blob/v1.15.0/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml) | 2026-10-16 | AwsEks |
@@ -266,22 +273,28 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm-gguf-plugin @ v0.0.5: vllm_gguf_plugin/plugin.py](https://github.com/vllm-project/vllm-gguf-plugin/blob/v0.0.5/vllm_gguf_plugin/plugin.py) | 2026-10-16 | Quantization |
 | [vllm-metal](https://github.com/vllm-project/vllm-metal) | 2026-10-16 | WhenNotVllm |
 | [vllm-neuron](https://github.com/vllm-project/vllm-neuron) | 2026-10-16 | WhenNotVllm |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: docs/getting-started/migration-nxdi-to-vllm-neuron.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/docs/getting-started/migration-nxdi-to-vllm-neuron.md?plain=1) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: docs/guides/features-guide.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/docs/guides/features-guide.md?plain=1) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: docs/guides/reference-configuration.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/docs/guides/reference-configuration.md?plain=1) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI/run_prefill.sh](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI/run_prefill.sh) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: pyproject.toml](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/pyproject.toml) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: README.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/README.md?plain=1) | 2026-10-16 | AwsNeuron, DecisionGuide |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: vllm_neuron/vllm/platform.py](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/vllm_neuron/vllm/platform.py) | 2026-10-16 | AwsNeuron |
-| [v0.21.0.1.0.0 release notes](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.21.0.1.0.0) | 2026-10-16 | AwsNeuron |
-| [vllm-neuron v0.24.0.1.1.0 release notes](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.24.0.1.1.0) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron at v0.24.0.1.1.0](https://github.com/vllm-project/vllm-neuron/tree/v0.24.0.1.1.0) | 2026-10-16 | AwsNeuron, Sources appendix |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI](https://github.com/vllm-project/vllm-neuron/tree/v0.24.0.1.1.0/examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: vllm_neuron](https://github.com/vllm-project/vllm-neuron/tree/v0.24.0.1.1.0/vllm_neuron) | 2026-10-16 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: docs/getting-started/migration-nxdi-to-vllm-neuron.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/docs/getting-started/migration-nxdi-to-vllm-neuron.md?plain=1) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: docs/guides/features-guide.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/docs/guides/features-guide.md?plain=1) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: docs/guides/reference-configuration.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/docs/guides/reference-configuration.md?plain=1) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI/run_prefill.sh](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI/run_prefill.sh) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: pyproject.toml](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/pyproject.toml) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: README.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/README.md?plain=1) | 2026-10-16, 2026-10-24 | AwsNeuron, DecisionGuide |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: requirements/core.txt](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/requirements/core.txt) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron/__init__.py](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/vllm_neuron/__init__.py) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron/envs.py](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/vllm_neuron/envs.py) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron/vllm/model_runner_v2_policy.py](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/vllm_neuron/vllm/model_runner_v2_policy.py) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron/vllm/platform.py](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/vllm_neuron/vllm/platform.py) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron/vllm/worker/neuron_model_runner.py](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/vllm_neuron/vllm/worker/neuron_model_runner.py) | 2026-10-24 | AwsNeuron |
+| [v0.21.0.1.0.0 release notes](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.21.0.1.0.0) | 2026-10-24 | AwsNeuron |
+| [vllm-neuron v0.29.0.1.2.0 release notes](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.29.0.1.2.0) | 2026-10-24 | AwsNeuron |
+| [vllm-neuron at v0.29.0.1.2.0 (searched)](https://github.com/vllm-project/vllm-neuron/tree/v0.29.0.1.2.0) | 2026-10-24 | AwsNeuron, Sources appendix |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI](https://github.com/vllm-project/vllm-neuron/tree/v0.29.0.1.2.0/examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron](https://github.com/vllm-project/vllm-neuron/tree/v0.29.0.1.2.0/vllm_neuron) | 2026-10-24 | AwsNeuron |
 | [vllm-project/vllm @ 15652a6b703f059767d75e5a511c4a5accf969ad: vllm/model_executor/layers/quantization/__init__.py](https://github.com/vllm-project/vllm/blob/15652a6b703f059767d75e5a511c4a5accf969ad/vllm/model_executor/layers/quantization/__init__.py) | 2026-10-16 | Quantization |
-| [vllm-project/vllm @ v0.24.0: vllm/engine/arg_utils.py](https://github.com/vllm-project/vllm/blob/v0.24.0/vllm/engine/arg_utils.py) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm @ v0.24.0: vllm/platforms/__init__.py](https://github.com/vllm-project/vllm/blob/v0.24.0/vllm/platforms/__init__.py) | 2026-10-16 | AwsNeuron |
 | [vllm-project/vllm @ v0.27.0: vllm/config/speculative.py](https://github.com/vllm-project/vllm/blob/v0.27.0/vllm/config/speculative.py) | 2026-10-16 | SpeculativeDecoding |
+| [vllm-project/vllm @ v0.29.0: requirements/cuda.txt](https://github.com/vllm-project/vllm/blob/v0.29.0/requirements/cuda.txt) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm @ v0.29.0: vllm/engine/arg_utils.py](https://github.com/vllm-project/vllm/blob/v0.29.0/vllm/engine/arg_utils.py) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm @ v0.29.0: vllm/platforms/__init__.py](https://github.com/vllm-project/vllm/blob/v0.29.0/vllm/platforms/__init__.py) | 2026-10-24 | AwsNeuron |
 | [vllm-project/vllm @ v0.31.0: benchmarks/benchmark_serving.py](https://github.com/vllm-project/vllm/blob/v0.31.0/benchmarks/benchmark_serving.py) | 2026-10-16 | ObservabilityBench |
 | [vllm-project/vllm @ v0.31.0: docker/Dockerfile](https://github.com/vllm-project/vllm/blob/v0.31.0/docker/Dockerfile) | 2026-10-16 | AwsSageMakerBedrock |
 | [vllm-project/vllm @ v0.31.0: docs/configuration/optimization.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/configuration/optimization.md) | 2026-10-16 | OperationsFailureModes, PagedAttentionKV, SchedulerBatching |
@@ -403,7 +416,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/simple_cpu_offload_connector.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/simple_cpu_offload_connector.py) | 2026-10-16 | KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/parallel_state.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/parallel_state.py) | 2026-10-16 | DistributedInference, codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/utils.py) | 2026-10-16 | codebase/CodebaseConfig |
-| [vllm-project/vllm @ v0.31.0: vllm/engine/arg_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/arg_utils.py) | 2026-10-16 | AwsNeuron, DecisionGuide, DistributedInference, GatewaysAppLayer, InferenceWorkload, LoRAServing, OperationsFailureModes, PagedAttentionKV, PrefixCaching, Quantization, SchedulerBatching, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseExecution, codebase/CodebaseScheduler |
+| [vllm-project/vllm @ v0.31.0: vllm/engine/arg_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/arg_utils.py) | 2026-10-16, 2026-10-24 | AwsNeuron, DecisionGuide, DistributedInference, GatewaysAppLayer, InferenceWorkload, LoRAServing, OperationsFailureModes, PagedAttentionKV, PrefixCaching, Quantization, SchedulerBatching, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseExecution, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/engine/async_llm_engine.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/async_llm_engine.py) | 2026-10-16 | ThesisAndFraming |
 | [vllm-project/vllm @ v0.31.0: vllm/engine/llm_engine.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/llm_engine.py) | 2026-10-16 | V1Architecture, codebase/CodebaseArchitecture |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/anthropic/api_router.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/anthropic/api_router.py) | 2026-10-16 | GatewaysAppLayer |
@@ -495,13 +508,13 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/model_executor/models/transformers/base.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/model_executor/models/transformers/base.py) | 2026-10-16 | codebase/CodebaseModelLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/models/kimi_k3/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/models/kimi_k3/__init__.py) | 2026-10-16 | codebase/CodebaseModelLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/parser/metrics.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/parser/metrics.py) | 2026-10-16 | ObservabilityBench |
-| [vllm-project/vllm @ v0.31.0: vllm/platforms/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/__init__.py) | 2026-10-16 | AwsNeuron |
+| [vllm-project/vllm @ v0.31.0: vllm/platforms/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/__init__.py) | 2026-10-24 | AwsNeuron |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/cpu.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/cpu.py) | 2026-10-16 | codebase/CodebaseConfig |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/cuda.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/cuda.py) | 2026-10-16 | codebase/CodebaseExecution, codebase/CodebaseModelLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/interface.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/interface.py) | 2026-10-16 | DecisionGuide, OperationsFailureModes, PagedAttentionKV, codebase/CodebaseConfig, codebase/CodebaseModelLayer, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/rocm.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/rocm.py) | 2026-10-16 | codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/tpu.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/tpu.py) | 2026-10-16 | WhenNotVllm |
-| [vllm-project/vllm @ v0.31.0: vllm/plugins/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/plugins/__init__.py) | 2026-10-16 | AwsNeuron, LoRAServing, codebase/CodebaseModelLayer |
+| [vllm-project/vllm @ v0.31.0: vllm/plugins/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/plugins/__init__.py) | 2026-10-16, 2026-10-24 | AwsNeuron, LoRAServing, codebase/CodebaseModelLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/plugins/lora_resolvers/filesystem_resolver.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/plugins/lora_resolvers/filesystem_resolver.py) | 2026-10-16 | LoRAServing |
 | [vllm-project/vllm @ v0.31.0: vllm/plugins/lora_resolvers/hf_hub_resolver.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/plugins/lora_resolvers/hf_hub_resolver.py) | 2026-10-16 | LoRAServing |
 | [vllm-project/vllm @ v0.31.0: vllm/sampling_params.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/sampling_params.py) | 2026-10-16 | PrefixCaching, V1Architecture, codebase/CodebaseAdvanced |
@@ -627,6 +640,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/spec_decode](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/v1/worker/gpu/spec_decode) | 2026-10-16 | codebase/CodebaseAdvanced |
 | [Hugging Face Text Generation Inference (TGI) docs (repository archived)](https://huggingface.co/docs/text-generation-inference/index) | 2026-10-16 | Sources appendix |
 | [TensorRT-LLM documentation](https://nvidia.github.io/TensorRT-LLM/) | 2026-10-16 | Sources appendix |
+| [libtorch-neuronx-lite wheel (searched)](https://pip.repos.neuron.amazonaws.com/libtorch-neuronx-lite/libtorch_neuronx_lite-2.13.0.1.0.3112%2B653bc48f-cp312-cp312-linux_x86_64.whl) | 2026-10-24 | AwsNeuron |
 | [PyPI: nixl 1.3.2](https://pypi.org/project/nixl/1.3.2/) | 2026-10-16 | NvidiaDynamo |
 | [PyTorch Foundation: welcomes vLLM (May 7, 2025)](https://pytorch.org/blog/pytorch-foundation-welcomes-vllm/) | 2026-10-16 | WhenNotVllm |
 
@@ -644,7 +658,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [AWS ML Blog: multi-tenant LoRA serving](https://aws.amazon.com/blogs/machine-learning/efficient-and-cost-effective-multi-tenant-lora-serving-with-amazon-sagemaker/) | 2026-10-16 | AwsSageMakerBedrock, Sources appendix |
 | [AWS ML Blog: Multi-LoRA / MoE vLLM on SageMaker + Bedrock](https://aws.amazon.com/blogs/machine-learning/efficiently-serve-dozens-of-fine-tuned-models-with-vllm-on-amazon-sagemaker-ai-and-amazon-bedrock/) | 2026-10-16 | AwsSageMakerBedrock, Sources appendix |
 | [AWS ML Blog: Enhanced metrics for SageMaker AI endpoints](https://aws.amazon.com/blogs/machine-learning/enhanced-metrics-for-amazon-sagemaker-ai-endpoints-deeper-visibility-for-better-performance/) | 2026-10-16 | Sources appendix |
-| [AWS ML blog: How Amazon scaled Rufus](https://aws.amazon.com/blogs/machine-learning/how-amazon-scaled-rufus-by-building-multi-node-inference-using-aws-trainium-chips-and-vllm/) | 2026-10-16 | AwsNeuron, Ec2TopologyPlacement, Sources appendix |
+| [AWS ML blog: How Amazon scaled Rufus](https://aws.amazon.com/blogs/machine-learning/how-amazon-scaled-rufus-by-building-multi-node-inference-using-aws-trainium-chips-and-vllm/) | 2026-10-16, 2026-10-24 | AwsNeuron, Ec2TopologyPlacement, Sources appendix |
 | [AWS ML Blog](https://aws.amazon.com/blogs/machine-learning/introducing-disaggregated-inference-on-aws-powered-by-llm-d/) | 2026-10-16 | AwsEks, AwsGpuEfaNixl, Sources appendix |
 | [AWS ML Blog: P-EAGLE in vLLM](https://aws.amazon.com/blogs/machine-learning/p-eagle-faster-llm-inference-with-parallel-speculative-decoding-in-vllm/) | 2026-10-16 | AwsSageMakerBedrock, Sources appendix |
 | [AWS ML Blog: prefix-aware routing (vendor benchmark)](https://aws.amazon.com/blogs/machine-learning/reduce-llm-latency-with-prefix-aware-routing-on-amazon-sagemaker-inference/) | 2026-10-16 | AwsSageMakerBedrock |

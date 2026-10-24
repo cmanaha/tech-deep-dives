@@ -36,7 +36,7 @@ const PS_PARSER =
   'https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/src/vllm_router/parsers/parser.py';
 const RUST_ROUTER_README = 'https://github.com/vllm-project/router/blob/v0.1.16/README.md';
 const LLMD_DISAGG = 'https://github.com/llm-d/llm-d-router/blob/v1.0.0/docs/disaggregation.md';
-const VN_README = 'https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/README.md?plain=1';
+const VN_README = 'https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/README.md?plain=1';
 const KARP_DOC =
   'https://github.com/aws/karpenter-provider-aws/blob/v1.15.0/website/content/en/docs/concepts/nodeclasses.md?plain=1';
 const KARP_1110 = 'https://github.com/aws/karpenter-provider-aws/releases/tag/v1.11.0';
@@ -290,7 +290,7 @@ const hwRows: HwRow[] = [
   {
     workload: "A model and feature set inside the Neuron plugin's tested matrix, on Trn2 or Trn3",
     path: 'AWS Trainium through vllm-neuron (§21)',
-    why: 'Capability fit comes first: the plugin runs vLLM 0.24.0 with a narrower feature set. Cost per token depends on the model and the hardware generation, so benchmark it on your workload.',
+    why: 'Capability fit comes first: the plugin runs vLLM 0.29.0 with a narrower feature set. Cost per token depends on the model and the hardware generation, so benchmark it on your workload.',
   },
   {
     workload: 'Newest / custom models, broad kernel & quant support',
@@ -621,9 +621,9 @@ export function DecisionGuide() {
           <Box variant="p">
             The AWS hardware fork is <strong>Trainium (§21) vs GPU + EFA (§22)</strong>. Trainium
             runs vLLM through the vllm-neuron plugin, whose current line runs on Trn2 and Trn3 and
-            pins vLLM 0.24.0{' '}
-            <Cite tier={1} href={`${VN_README}#L123-L131`}>
-              vllm-neuron README L123-L131
+            pins vLLM 0.29.0{' '}
+            <Cite tier={1} href={`${VN_README}#L133-L142`}>
+              vllm-neuron README L133-L142
             </Cite>
             ; it fits when your model and features sit inside the plugin&apos;s tested matrix. GPU
             instances give the widest model, kernel, and quantization coverage and the EFA fabric
