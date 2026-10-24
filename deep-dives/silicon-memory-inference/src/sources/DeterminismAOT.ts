@@ -38,6 +38,27 @@ export const S = {
     tier: 1,
     accessed: "2026-10-24",
   },
+  torchNeuronNotes: {
+    title: "AWS Neuron 2.33.0: TorchNeuron component release notes",
+    publisher: "AWS",
+    url: "https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/torchneuron.html",
+    tier: 1,
+    accessed: "2026-10-24",
+  },
+  torchNeuronxRepo: {
+    title: "aws-neuron/torch-neuronx at release tag v2.33.0 (Apache-2.0)",
+    publisher: "AWS",
+    url: "https://github.com/aws-neuron/torch-neuronx/tree/v2.33.0",
+    tier: 1,
+    accessed: "2026-10-24",
+  },
+  nrtEnvVarRef: {
+    title: "AWS Neuron 2.33.0: Reference: Neuron Runtime environment variables",
+    publisher: "AWS",
+    url: "https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/neuron-runtime/api/nrt-env-var-reference.html",
+    tier: 1,
+    accessed: "2026-10-24",
+  },
   neuronRoundingModes: {
     title: "AWS Neuron 2.32.0: Neuron Rounding Modes (RNE and stochastic rounding)",
     publisher: "AWS",

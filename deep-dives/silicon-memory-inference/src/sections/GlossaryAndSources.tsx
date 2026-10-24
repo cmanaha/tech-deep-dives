@@ -198,7 +198,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'RL', fullForm: 'Reinforcement Learning', description: 'Training from rewards on the model\'s own outputs (rollouts).' },
   { acronym: 'GRPO', fullForm: 'Group Relative Policy Optimization', description: 'An RL algorithm that scores each sampled answer against the other answers in its group instead of against a learned value model.' },
   { acronym: 'RLOO', fullForm: 'REINFORCE Leave-One-Out', description: 'An RL algorithm whose baseline for each sample is the mean reward of the other samples for the same prompt.' },
-  { acronym: 'TRL', fullForm: 'Transformer Reinforcement Learning', description: 'Hugging Face\'s post-training library, whose trainers include GRPO and RLOO.' },
+  { acronym: 'TRL', fullForm: 'Transformers Reinforcement Learning', description: 'Hugging Face\'s post-training library, whose trainers include GRPO and RLOO.' },
   { acronym: 'TKG', fullForm: 'Token Generation', description: 'The NKI name for decode-phase kernels, as in Attention TKG.' },
   { acronym: 'CTE', fullForm: 'Context Encoding', description: 'The NKI name for prefill-phase kernels, as in attention CTE.' },
   { acronym: 'LSTM', fullForm: 'Long Short-Term Memory', description: 'A recurrent neural network layer, common in speech models before transformers.' },

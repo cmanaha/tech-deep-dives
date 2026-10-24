@@ -156,7 +156,7 @@ export const S = {
     accessed: '2026-10-24',
   },
   pytorchNeuronxNotes233: {
-    title: 'AWS Neuron 2.33.0: Component Release Notes for Neuron PyTorch Framework (XLA-based PyTorch NeuronX)',
+    title: 'AWS Neuron 2.33.0: PyTorch NeuronX (XLA build) component release notes',
     publisher: 'AWS',
     url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/pytorch.html',
     tier: 1,

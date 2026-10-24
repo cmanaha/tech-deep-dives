@@ -165,14 +165,16 @@ export function AwsCompilersAndTooling() {
           <Box variant="p">
             <strong>What the stack is.</strong> A PyTorch or JAX model reaches Trainium through the
             Neuron SDK, and one of two front ends turns it into a graph for neuronx-cc, the Neuron
-            Graph Compiler. PyTorch on Trn2 and Trn3 runs on TorchNeuron, a native PyTorch backend: it
-            takes each operator in eager mode, or a TorchDynamo graph under torch.compile, and lowers
-            it to StableHLO MLIR (Multi-Level Intermediate Representation) through a vendored
-            torch-mlir importer.
-            <Cite s={S.torchNeuron233} /> JAX, and PyTorch on Trn1 and Inf2, stay on XLA
-            (Accelerated Linear Algebra): JAX NeuronX compiles through XLA
-            <Cite s={S.whatIsNeuron233} />, and PyTorch there uses the deprecated XLA build of
-            torch-neuronx 2.9.
+            Graph Compiler. On Trn2 and Trn3, PyTorch 2.13 and 2.14 run on TorchNeuron, a native
+            PyTorch backend: it takes each operator in eager mode, or a TorchDynamo graph under
+            torch.compile, and lowers it to StableHLO MLIR (Multi-Level Intermediate Representation)
+            through a vendored torch-mlir importer.
+            <Cite s={S.torchNeuron233} />
+            <Cite s={S.whatsNew233} /> JAX stays on XLA (Accelerated Linear Algebra): JAX NeuronX
+            compiles through XLA.
+            <Cite s={S.whatIsNeuron233} /> So does PyTorch 2.9, through the deprecated XLA build of
+            torch-neuronx, which runs on Trn1, Inf2, Trn2 and Trn3 and is the only PyTorch path on
+            Trn1 and Inf2.
             <Cite s={S.pytorchXlaNotes233} /> Both front ends end the same way: neuronx-cc compiles
             the graph into a NEFF (Neuron Executable File Format), and the Neuron Runtime loads the
             NEFF and runs it.
@@ -347,9 +349,9 @@ export function AwsCompilersAndTooling() {
             the pin, for example <code>torch==2.14.0</code> with <code>torch-neuronx==2.14.*</code>,
             because earlier torch-neuronx versions are the XLA-based product.
             <Cite s={S.torchNeuronNotes} />
-            <Cite s={S.torchNeuronxRepo} /> Treat the support list as the boundary: the source
-            recognizes Trn1 and Inf2 instance types and does not refuse them, so nothing stops an
-            install outside it.
+            <Cite s={S.torchNeuronxRepo} /> Treat the support list as the boundary: the
+            torch-neuronx source at v2.33.0 maps Trn1 and Inf2 instance types and has no check that
+            refuses them, so the package itself will not stop a run outside the list.
             <Cite s={S.tnxPlatforms} />
           </Box>
         </SpaceBetween>
@@ -415,8 +417,8 @@ export function AwsCompilersAndTooling() {
               NEFF, so pad or bucket inputs to a fixed set of shapes.
               <Cite s={S.torchNeuronNotes} />
               <Cite s={S.torchCompileRef} /> The compile reference says the backend forces{' '}
-              <code>dynamic=False</code>; in the source that setting goes into an options
-              dictionary nothing reads, so set it yourself.
+              <code>dynamic=False</code>; in the torch-neuronx v2.33.0 source that setting goes
+              into an options dictionary nothing reads, so set it yourself.
               <Cite s={S.torchCompileRef} />
               <Cite s={S.tnxDynamicUnread} />
             </li>
@@ -435,12 +437,13 @@ export function AwsCompilersAndTooling() {
             </li>
             <li>
               Expect forced graph breaks at <code>torch._grouped_mm</code> and{' '}
-              <code>torch.nn.functional.grouped_mm</code> (always), at <code>torch.sort</code> over
-              more than 16,384 elements, at <code>torch.topk</code> with k of 16,384 or more, and at
-              any operation with no Neuron lowering.
+              <code>torch.nn.functional.grouped_mm</code> (always), at <code>torch.sort</code> and{' '}
+              <code>torch.argsort</code> along a dimension of more than 16,384 elements, at{' '}
+              <code>torch.topk</code> with k of 16,384 or more, and at any operation with no Neuron
+              lowering.
               <Cite s={S.torchCompileRef} /> Grouped GEMMs (general matrix multiplies) carry the
-              expert computation in MoE (mixture of experts) models, so under{' '}
-              <code>fullgraph=True</code> an MoE model raises: keep the experts outside the
+              expert computation in MoE (mixture of experts) models with grouped experts, so under{' '}
+              <code>fullgraph=True</code> such a model raises: keep the experts outside the
               compiled region.
               <Cite s={S.torchtitanAbout} />
             </li>
@@ -466,8 +469,9 @@ export function AwsCompilersAndTooling() {
             (microscaling 8-bit floating point) data type support. Real-to-complex transforms such
             as <code>torch.fft.rfft</code> run on the device; the rest of <code>torch.fft</code>{' '}
             runs on the CPU.
-            <Cite s={S.torchNeuronNotes} /> FP8 (8-bit floating point) requires Trn3, and the
-            source disables the FP8 dtype mapping on Trn2.
+            <Cite s={S.torchNeuronNotes} /> FP8 (8-bit floating point) requires Trn3, and in the
+            torch-neuronx source <code>float8_e4m3fn</code> and <code>float8_e8m0fnu</code> report
+            as unsupported on Trn2.
             <Cite s={S.torchNeuron233} />
             <Cite s={S.tnxFp8Trn2} /> AWS also excludes forward-mode automatic differentiation from
             the first release.
@@ -640,7 +644,7 @@ export TORCH_NEURONX_NEFF_CACHE_DIR="/fsx/neff_cache"`}</pre>
             Qwen3-32B, DeepSeek-V3 and GPT-OSS; its documented limits include static shapes,{' '}
             <code>mode=&quot;default&quot;</code> only, MoE grouped GEMMs outside the compiled
             graph, and TorchTitan&apos;s built-in profiler, which cannot yet profile the device.
-            <Cite s={S.torchtitanAbout} /> Hugging Face TRL (Transformer Reinforcement Learning)
+            <Cite s={S.torchtitanAbout} /> Hugging Face TRL (Transformers Reinforcement Learning)
             trainers run on TorchNeuron without code changes; on Neuron they pad sequences to a
             multiple of 128 tokens by default to limit the number of input shapes, and GRPO (Group
             Relative Policy Optimization) and RLOO (REINFORCE Leave-One-Out) generate rollouts with
@@ -716,8 +720,9 @@ export TORCH_NEURONX_NEFF_CACHE_DIR="/fsx/neff_cache"`}</pre>
             track of hardware instructions, colored by the PyTorch operator each came from, and each
             DMA (direct memory access) engine its own track of packets, so an engine that sits idle
             while another works shows as a gap.
-            <Cite s={S.explorerDeviceTrace} /> In eager mode, the Memory Viewer attributes
-            allocations to the Python source lines that made them.
+            <Cite s={S.explorerDeviceTrace} /> With a PyTorch memory snapshot in the profile, the
+            Memory Viewer attributes allocations to the Python source lines that made them, for
+            out-of-memory debugging in eager mode.
             <Cite s={S.devTools233} />
           </Box>
           <Box variant="p">

@@ -1,11 +1,12 @@
 import React from 'react';
 
-// TorchNeuron in one picture: a PyTorch program reaches the "neuron" device
-// through the dispatcher, then takes one of two paths to neuronx-cc (eager:
-// one NEFF per operator at -O1; torch.compile: one NEFF per graph at -O2).
-// NKI kernels feed both paths as custom ops. The XLA path (JAX, and PyTorch
-// 2.9 on Trn1 and Inf2) is the dashed grey lane on the left, into the same
-// compiler. Every NEFF runs on the Neuron Runtime; torch.distributed takes the
+// TorchNeuron in one picture: a PyTorch program puts its tensors on the
+// "neuron" device (PrivateUse1), then takes one of two paths to neuronx-cc
+// (eager: the dispatcher sends one ATen op at a time, one NEFF per operator at
+// -O1; torch.compile: one NEFF per graph at -O2). NKI kernels feed both paths
+// as custom ops. The XLA path (JAX, and PyTorch 2.9 through the deprecated XLA
+// build, the only PyTorch path on Trn1 and Inf2) is the dashed grey lane on
+// the left, into the same compiler. Every NEFF runs on the Neuron Runtime; torch.distributed takes the
 // right-hand corridor to the c10d "neuron" backend. Every version and level
 // drawn here is cited in the section prose around it.
 //
@@ -45,15 +46,15 @@ export function TorchNeuronStackDiagram() {
         style={{ width: '100%', minWidth: 640, height: 'auto', display: 'block' }}
       >
         <title id="tns-stack-title">
-          On TorchNeuron a PyTorch program puts its model and tensors on the device neuron, and
-          the PyTorch dispatcher hands each ATen operator to the Neuron backend registered through
-          PrivateUse1. Eager mode lowers each operator to StableHLO and compiles it with neuronx-cc
-          at -O1 into its own NEFF, cached by operator, shape and dtype. torch.compile captures an
+          On TorchNeuron a PyTorch program puts its model and tensors on the device neuron, which
+          TorchNeuron registers through PrivateUse1. In eager mode the PyTorch dispatcher hands each
+          ATen operator to the Neuron backend, which lowers it to StableHLO and compiles it with
+          neuronx-cc at -O1 into its own NEFF, cached by operator, shape and dtype. torch.compile captures an
           FX graph with TorchDynamo, generates forward and backward graphs with AOTAutograd, lowers
           them to StableHLO and compiles each at -O2 into one NEFF per graph. NKI kernels enter
-          both paths as custom ops and compile into the graph&apos;s NEFF. JAX, and PyTorch 2.9 on
-          Trn1 and Inf2 through the deprecated XLA build of torch-neuronx, reach the same
-          neuronx-cc as an XLA graph. The Neuron Runtime loads every NEFF and runs it on the
+          both paths as custom ops; under torch.compile they compile into the graph&apos;s NEFF.
+          JAX, and PyTorch 2.9 through the deprecated XLA build of torch-neuronx (the only PyTorch
+          path on Trn1 and Inf2), reach the same neuronx-cc as an XLA graph. The Neuron Runtime loads every NEFF and runs it on the
           NeuronCores, and torch.distributed uses the c10d backend neuron, on collective cores
           inside a node and EFA (Elastic Fabric Adapter) between nodes.
         </title>
@@ -112,7 +113,7 @@ export function TorchNeuronStackDiagram() {
         <text className="tns-gt" x={mid(XLA)} y={R1.y + 22}>
           XLA path
         </text>
-        {['JAX NeuronX;', 'PyTorch 2.9 on', 'Trn1 and Inf2,', 'the deprecated', 'XLA build of', 'torch-neuronx'].map(
+        {['JAX NeuronX;', 'PyTorch 2.9 on the', 'deprecated XLA build', 'of torch-neuronx,', 'the only PyTorch', 'path on Trn1, Inf2'].map(
           (line, i) => (
             <text key={line} className="tns-gs" x={mid(XLA)} y={R1.y + 42 + i * 16}>
               {line}
@@ -120,11 +121,11 @@ export function TorchNeuronStackDiagram() {
           )
         )}
 
-        {/* Row 2: dispatcher */}
+        {/* Row 2: the neuron device, registered through PrivateUse1 */}
         <line className="tns-a-blue" x1={488} y1={R1.y + R1.h} x2={488} y2={R2.y} />
         <rect className="tns-blue" x={EAGER.x} y={R2.y} width={BAND_RIGHT - EAGER.x} height={R2.h} rx={8} />
         <text className="tns-t" x={(EAGER.x + BAND_RIGHT) / 2} y={R2.y + 22}>
-          PyTorch dispatcher routes ATen ops to the Neuron backend (PrivateUse1)
+          Device &quot;neuron&quot;, registered through PrivateUse1
         </text>
 
         {/* Row 3: eager, NKI, torch.compile */}
@@ -135,7 +136,7 @@ export function TorchNeuronStackDiagram() {
         <text className="tns-t" x={mid(EAGER)} y={R3.y + 21}>
           Eager mode
         </text>
-        {['one ATen op at a time,', 'lowered to StableHLO,', 'compiled on first use'].map((line, i) => (
+        {['PyTorch dispatcher sends', 'each ATen op to StableHLO,', 'compiled on first use'].map((line, i) => (
           <text key={line} className="tns-s" x={mid(EAGER)} y={R3.y + 39 + i * 15}>
             {line}
           </text>

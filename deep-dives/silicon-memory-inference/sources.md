@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 523.
+Total distinct sources: 524.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -82,9 +82,10 @@ Total distinct sources: 523.
 | AWS | [AWS Neuron 2.33.0: Neuron Observer component release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/observer.html) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron 2.33.0: NxD Inference release notes (archived)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/archive/nxd-inference.html) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron 2.33.0: PyTorch NeuronX (XLA build) component release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/pytorch.html) | 2026-10-24 | AwsCompilersAndTooling, AwsCustomSilicon |
+| AWS | [AWS Neuron 2.33.0: Reference: Neuron Runtime environment variables](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/neuron-runtime/api/nrt-env-var-reference.html) | 2026-10-24 | DeterminismAOT |
 | AWS | [AWS Neuron 2.33.0: Release Notes (component versions)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/index.html) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron 2.33.0: torch.compile backend reference](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/compile/reference-torch-compile.html) | 2026-10-24 | AwsCompilersAndTooling, AwsCustomSilicon |
-| AWS | [AWS Neuron 2.33.0: TorchNeuron component release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/torchneuron.html) | 2026-10-24 | AwsCompilersAndTooling, CommunicationAndScaleOut |
+| AWS | [AWS Neuron 2.33.0: TorchNeuron component release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/torchneuron.html) | 2026-10-24 | AwsCompilersAndTooling, CommunicationAndScaleOut, DeterminismAOT |
 | AWS | [AWS Neuron 2.33.0: TorchNeuron, native PyTorch on AWS Neuron (what changes are needed)](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/index.html) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron 2.33.0: vLLM Neuron component release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/vllm-neuron.html) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [AWS Neuron 2.33.0: What is AWS Neuron?](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/what-is-neuron.html) | 2026-10-24 | AwsCompilersAndTooling |
@@ -97,7 +98,7 @@ Total distinct sources: 523.
 | AWS | [aws-graviton-getting-started README at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/blob/8b322a4160b827be202beedaf35ce21b4c635603/README.md) | 2026-10-16 | CapitalMarketsLens, ChipletAndInterconnect, GraceBlackwellUltraServer, GravitonDeepDive, HeterogeneityFact, MainMemoryAndCxl, MemoryHierarchyPrimer, SmallLanguageModels |
 | AWS | [aws-graviton-getting-started repository at commit 8b322a4](https://github.com/aws/aws-graviton-getting-started/tree/8b322a4160b827be202beedaf35ce21b4c635603) | 2026-10-16 | GravitonDeepDive |
 | AWS | [aws-neuron/nki-library at release tag 2.32 (Apache-2.0)](https://github.com/aws-neuron/nki-library/tree/2.32) | 2026-10-17 | AwsCompilersAndTooling |
-| AWS | [aws-neuron/torch-neuronx at release tag v2.33.0 (Apache-2.0)](https://github.com/aws-neuron/torch-neuronx/tree/v2.33.0) | 2026-10-24 | AwsCompilersAndTooling, AwsCustomSilicon, CommunicationAndScaleOut |
+| AWS | [aws-neuron/torch-neuronx at release tag v2.33.0 (Apache-2.0)](https://github.com/aws-neuron/torch-neuronx/tree/v2.33.0) | 2026-10-24 | AwsCompilersAndTooling, AwsCustomSilicon, CommunicationAndScaleOut, DeterminismAOT |
 | AWS | [aws-neuron/torchtitan-neuron at tag release-2.33.0: compile_backend.py, default backend "neuron"](https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan_neuron/compile_backend.py#L33-L36) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [aws/aws-ofi-nccl release v1.21.1](https://github.com/aws/aws-ofi-nccl/releases/tag/v1.21.1) | 2026-10-16 | CommunicationAndScaleOut |
 | AWS | [Capacity Blocks for ML: supported instance types and Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html) | 2026-10-17 | GraceBlackwellUltraServer, NvidiaHopper |
@@ -117,7 +118,7 @@ Total distinct sources: 523.
 | AWS | [torch-neuronx v2.33.0: neuron_dynamo_backend/backend.py, AOTAutograd forward and backward compilers](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/neuron_dynamo_backend/backend.py#L1893-L1904) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: neuron_dynamo_backend/backend.py, options.setdefault("dynamic", False)](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/neuron_dynamo_backend/backend.py#L1859-L1862) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: NeuronDispatcher.cpp, TORCH_NEURONX_FALLBACK_ONLY_FOR_UNIMPLEMENTED_OPS](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/csrc/core/dispatch/NeuronDispatcher.cpp#L2305-L2314) | 2026-10-24 | AwsCompilersAndTooling |
-| AWS | [torch-neuronx v2.33.0: NeuronDispatcher.cpp, TORCH_WARN when a Python lowering fails](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/csrc/core/dispatch/NeuronDispatcher.cpp#L2987-L2989) | 2026-10-24 | AwsCompilersAndTooling |
+| AWS | [torch-neuronx v2.33.0: NeuronDispatcher.cpp, TORCH_NEURONX_WARN when a Python lowering fails, then CPU fallback](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/csrc/core/dispatch/NeuronDispatcher.cpp#L2987-L2989) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: NeuronLogging.h, OPERATOR_FALLBACK log category returns without output](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/csrc/core/NeuronLogging.h#L60-L63) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: nki_hop.py, nki_op builds a torch.library custom op](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/nki_hop.py#L1248-L1258) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: PersistentCacheBackend.cpp, TORCH_NEURONX_NEFF_CACHE_DIR default /tmp/neff_cache](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/csrc/core/cache/PersistentCacheBackend.cpp#L22-L28) | 2026-10-24 | AwsCompilersAndTooling |
@@ -125,10 +126,10 @@ Total distinct sources: 523.
 | AWS | [torch-neuronx v2.33.0: PlatformUtils.cpp, instance families and compiler targets](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/csrc/core/utils/PlatformUtils.cpp#L37-L69) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: profiler/Registration.cpp, Kineto profiler factory](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/csrc/profiler/Registration.cpp#L21-L24) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: pyproject.toml, torch.backends and torch_dynamo_backends entry points](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/pyproject.toml#L12-L16) | 2026-10-24 | AwsCompilersAndTooling |
-| AWS | [torch-neuronx v2.33.0: torch_neuronx/__init__.py, NEURONXCC_VERSION from the installed compiler](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/__init__.py#L154-L158) | 2026-10-24 | AwsCompilersAndTooling |
+| AWS | [torch-neuronx v2.33.0: torch_neuronx/__init__.py, NEURONXCC_VERSION enters the persistent NEFF cache key](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/__init__.py#L151-L158) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: torch_neuronx/__init__.py, PrivateUse1 renamed to "neuron"](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/__init__.py#L268-L277) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: torch_neuronx/__init__.py, TORCH_NEURONX_DISABLE_FALLBACK_EXECUTION set to 1](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/__init__.py#L78) | 2026-10-24 | AwsCompilersAndTooling |
-| AWS | [torch-neuronx v2.33.0: utils.py, FP8 dtype mapping disabled on trn2](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/utils.py#L542-L560) | 2026-10-24 | AwsCompilersAndTooling |
+| AWS | [torch-neuronx v2.33.0: utils.py, float8_e4m3fn and float8_e8m0fnu reported unsupported on trn2](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/utils.py#L542-L560) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: utils.py, is_neff_cache_disabled() reads TORCH_NEURONX_DISABLE_NEFF_CACHE (no caller)](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/torch_neuronx/utils.py#L370-L378) | 2026-10-24 | AwsCompilersAndTooling |
 | AWS | [torch-neuronx v2.33.0: vendored torch-mlir fx_importer.py, NKI kernel as a stablehlo.custom_call](https://github.com/aws-neuron/torch-neuronx/blob/v2.33.0/third_party/torch-mlir/python/torch_mlir/extras/fx_importer.py#L1831-L1877) | 2026-10-24 | AwsCompilersAndTooling |
 | Bank for International Settlements | [BCBS d457: Minimum capital requirements for market risk (January 2019)](https://www.bis.org/bcbs/publ/d457.htm) | 2026-10-16 | CapitalMarketsLens |

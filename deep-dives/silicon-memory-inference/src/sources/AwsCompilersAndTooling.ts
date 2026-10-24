@@ -294,7 +294,7 @@ export const S = {
     accessed: '2026-10-24',
   },
   tnxLoweringFailWarn: {
-    title: 'torch-neuronx v2.33.0: NeuronDispatcher.cpp, TORCH_WARN when a Python lowering fails',
+    title: 'torch-neuronx v2.33.0: NeuronDispatcher.cpp, TORCH_NEURONX_WARN when a Python lowering fails, then CPU fallback',
     publisher: 'AWS',
     url: `${TNX}/torch_neuronx/csrc/core/dispatch/NeuronDispatcher.cpp#L2987-L2989`,
     tier: 1,
@@ -343,9 +343,9 @@ export const S = {
     accessed: '2026-10-24',
   },
   tnxNeffKeyCompilerVersion: {
-    title: 'torch-neuronx v2.33.0: torch_neuronx/__init__.py, NEURONXCC_VERSION from the installed compiler',
+    title: 'torch-neuronx v2.33.0: torch_neuronx/__init__.py, NEURONXCC_VERSION enters the persistent NEFF cache key',
     publisher: 'AWS',
-    url: `${TNX}/torch_neuronx/__init__.py#L154-L158`,
+    url: `${TNX}/torch_neuronx/__init__.py#L151-L158`,
     tier: 1,
     accessed: '2026-10-24',
   },
@@ -378,7 +378,7 @@ export const S = {
     accessed: '2026-10-24',
   },
   tnxFp8Trn2: {
-    title: 'torch-neuronx v2.33.0: utils.py, FP8 dtype mapping disabled on trn2',
+    title: 'torch-neuronx v2.33.0: utils.py, float8_e4m3fn and float8_e8m0fnu reported unsupported on trn2',
     publisher: 'AWS',
     url: `${TNX}/torch_neuronx/utils.py#L542-L560`,
     tier: 1,
