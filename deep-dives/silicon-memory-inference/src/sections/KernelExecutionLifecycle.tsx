@@ -165,8 +165,9 @@ const lanes: LaneRow[] = [
     silicon: 'AWS Trainium2',
     host: (
       <>
-        torch-neuronx traces the model into an XLA (Accelerated Linear Algebra) graph;
+        TorchNeuron lowers each eager operator, or each torch.compile graph, to StableHLO;
         neuronx-cc compiles it ahead of time into a NEFF, which the Neuron Runtime loads.
+        <Cite s={S.torchNeuron233} />
         <Cite s={S.neuronCompiler} />
       </>
     ),
@@ -443,8 +444,12 @@ export function KernelExecutionLifecycle() {
             <strong>The compiler decides what fuses.</strong> The hardware cannot tell that two
             operators belong together. The graph compiler decides which adjacent operators
             become one kernel: torch.compile with Inductor on NVIDIA, and on Trainium the XLA
-            front end of neuronx-cc, which performs operator fusion.
-            <Cite s={S.nkiOverview} /> <em>NVIDIA Compilers and Kernel Tooling</em> and{' '}
+            (Accelerated Linear Algebra) front end of neuronx-cc, which performs operator fusion.
+            <Cite s={S.nkiOverview} /> On Trainium the fusion needs a graph: in TorchNeuron&apos;s
+            eager mode each operator compiles into its own NEFF and its intermediates go through
+            HBM, while torch.compile hands neuronx-cc one graph per NEFF.
+            <Cite s={S.torchNeuron233} />
+            <Cite s={S.pytorchTorchNeuronBlog} /> <em>NVIDIA Compilers and Kernel Tooling</em> and{' '}
             <em>AWS Compilers and Kernel Tooling</em> cover the compilers that set how many
             kernels a token costs.
           </Box>

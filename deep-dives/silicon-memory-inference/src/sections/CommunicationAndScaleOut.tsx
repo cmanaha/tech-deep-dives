@@ -354,13 +354,24 @@ export function CommunicationAndScaleOut() {
             kernels shipped in 2.28.0.
             <Cite s={S.neuronWhatsNew} /> <code>torch.all_to_all_vdev_2d</code> is a PyTorch op
             built on NVIDIA&apos;s NVSHMEM
-            <Cite s={S.pytorchNvshmem} />, which the Neuron 2.32.0 TorchNeuron guide lists for a
-            future release.
-            <Cite s={S.pytorchNative} /> NVIDIA&apos;s Wide-EP (wide expert parallelism) runs over
-            GB200 multi-node NVLink
-            <Cite s={S.wideEpReadme} />; on Neuron, Wide-EP is a beta in vLLM Neuron, and NxD
-            Inference (NeuronX Distributed Inference), in maintenance
-            <Cite s={S.neuronWhatsNew} />, still documents expert parallelism over All-Gather.
+            <Cite s={S.pytorchNvshmem} />, and the torch-neuronx source at v2.33.0 has no
+            implementation of it.
+            <Cite
+              s={S.torchNeuronxRepo}
+              note="Searched the source tree at the tag for all_to_all_vdev_2d and symm_mem: no matches. Our search of the code, not an AWS statement."
+            />{' '}
+            PyTorch 2.14&apos;s TokenSwitch dispatch and combine interface is private and
+            NVIDIA-only.
+            <Cite s={S.pytorch214Blog} /> PyTorch code on TorchNeuron opens its process group with{' '}
+            <code>init_process_group(backend=&quot;neuron&quot;)</code>, which runs collectives,{' '}
+            <code>all_to_all</code> among them, on the collective cores inside a node and over EFA
+            between nodes.
+            <Cite s={S.torchNeuronNotes} /> NVIDIA&apos;s Wide-EP (wide expert parallelism) runs
+            over GB200 multi-node NVLink
+            <Cite s={S.wideEpReadme} />; on Neuron, Wide-EP is a beta in vLLM Neuron
+            <Cite s={S.neuronWhatsNew} />, and NxD Inference (NeuronX Distributed Inference),
+            which ends on Trn2 and Trn3 in Neuron 2.34
+            <Cite s={S.eosNxdInference} />, documents expert parallelism over All-Gather.
             <Cite s={S.nxdiMoe} />
           </Alert>
         </SpaceBetween>

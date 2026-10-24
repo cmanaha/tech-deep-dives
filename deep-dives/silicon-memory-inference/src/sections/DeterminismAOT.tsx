@@ -150,13 +150,19 @@ export function DeterminismAOT() {
             <Cite s={S.intranodeCollectives} />
           </Box>
           <Box variant="p">
-            <strong>Rounding.</strong> PyTorch-Neuron turns stochastic rounding
-            on when <code>XLA_USE_BF16=1</code>;{" "}
+            <strong>Rounding.</strong> The XLA-based PyTorch-Neuron turns
+            stochastic rounding on when <code>XLA_USE_BF16=1</code>;{" "}
             <code>NEURON_RT_STOCHASTIC_ROUNDING_EN=0</code> selects
             round-to-nearest-even.
-            <Cite s={S.neuronRoundingModes} /> To keep stochastic rounding, set{" "}
+            <Cite s={S.neuronRoundingModes} /> The TorchNeuron pages read for this
+            research state no rounding default, so set the variable explicitly on
+            either stack. To keep stochastic rounding, set{" "}
             <code>NEURON_RT_STOCHASTIC_ROUNDING_SEED</code> to a fixed value.
-            <Cite s={S.neuronEnvVars} />
+            <Cite s={S.neuronEnvVars} /> On TorchNeuron, keep the experimental
+            eager-mode fusion (<code>TORCH_NEURONX_ENABLE_CONCATENATION=1</code>)
+            off, its default, when runs must match, because fusion can change
+            intermediate precision.
+            <Cite s={S.torchNeuron233} />
           </Box>
           <Box variant="p">
             <strong>The bucket.</strong> vLLM Neuron compiles one decode NEFF

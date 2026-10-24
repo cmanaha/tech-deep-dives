@@ -149,6 +149,20 @@ export const S = {
     tier: 1,
     accessed: '2026-10-16',
   },
+  torchNeuron233: {
+    title: 'AWS Neuron 2.33.0: What is TorchNeuron? (public beta)',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/about-pytorch-neuron.html',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  pytorchTorchNeuronBlog: {
+    title: 'Introducing TorchNeuron: Native PyTorch backend for AWS Trainium (PyTorch blog, AWS authors)',
+    publisher: 'AWS',
+    url: 'https://pytorch.org/blog/introducing-torchneuron-native-pytorch-backend-for-aws-trainium/',
+    tier: 2,
+    accessed: '2026-10-24',
+  },
   nkiOverview: {
     title: 'AWS Neuron 2.32.0: Neuron Kernel Interface (NKI) overview, "How NKI works"',
     publisher: 'AWS',

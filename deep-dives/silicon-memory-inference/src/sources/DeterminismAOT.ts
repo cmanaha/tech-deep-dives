@@ -31,6 +31,13 @@ export const S = {
     tier: 1,
     accessed: "2026-10-17",
   },
+  torchNeuron233: {
+    title: "AWS Neuron 2.33.0: What is TorchNeuron? (public beta)",
+    publisher: "AWS",
+    url: "https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/about-pytorch-neuron.html",
+    tier: 1,
+    accessed: "2026-10-24",
+  },
   neuronRoundingModes: {
     title: "AWS Neuron 2.32.0: Neuron Rounding Modes (RNE and stochastic rounding)",
     publisher: "AWS",

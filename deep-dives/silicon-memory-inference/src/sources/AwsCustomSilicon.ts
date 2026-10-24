@@ -132,7 +132,42 @@ export const S = {
     publisher: 'AWS',
     url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/about-pytorch-neuron.html',
     tier: 1,
-    accessed: '2026-10-23',
+    accessed: '2026-10-24',
+  },
+  torchCompileRef: {
+    title: 'AWS Neuron 2.33.0: torch.compile backend reference',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/compile/reference-torch-compile.html',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  torchtitanNeuron: {
+    title: 'AWS Neuron 2.33.0: What is TorchTitan Neuron?',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/training/torchtitan/about-torchtitan-neuron.html',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  torchNeuronxRepo: {
+    title: 'aws-neuron/torch-neuronx at release tag v2.33.0 (Apache-2.0)',
+    publisher: 'AWS',
+    url: 'https://github.com/aws-neuron/torch-neuronx/tree/v2.33.0',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  pytorchNeuronxNotes233: {
+    title: 'AWS Neuron 2.33.0: Component Release Notes for Neuron PyTorch Framework (XLA-based PyTorch NeuronX)',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/pytorch.html',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  eosNxdInference: {
+    title: 'AWS Neuron 2.33.0: End of support for NxD Inference and NxD Core Inference APIs on Trn2 and Trn3 starting in Neuron 2.34',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/announcements/neuron2.x/announce-eos-nxdi-nxd-core-inference.html',
+    tier: 1,
+    accessed: '2026-10-24',
   },
 
   // EC2 instance specification (Tier 1)

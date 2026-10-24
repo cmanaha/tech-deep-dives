@@ -15,10 +15,12 @@ import '@xyflow/react/dist/style.css';
 import Box from '@cloudscape-design/components/box';
 
 // The neuronx-cc stages as AWS names them on the NKI overview page ("How NKI
-// works"): graph-level optimization in the XLA front end, loop-level
-// optimization, hardware intrinsics mapping, and the back end that allocates
-// memory and schedules instructions. NKI kernels skip the first three stages
-// and enter at the back end. Conventions mirror NvidiaCompilerStack: the
+// works", Neuron 2.33.0): graph-level optimization in the XLA front end,
+// loop-level optimization, hardware intrinsics mapping, and the back end that
+// allocates memory and schedules instructions. NKI kernels skip the first
+// three stages and enter at the back end. The input is either front end's
+// graph: StableHLO from TorchNeuron, or an XLA graph from JAX NeuronX and the
+// XLA build of torch-neuronx. Conventions mirror NvidiaCompilerStack: the
 // default path is solid, the opt-in path dashed, and a legend sits below.
 
 type Tone = 'blue' | 'green' | 'orange' | 'slate';
@@ -160,7 +162,7 @@ const frame: FrameNodeType = {
 };
 
 const stackNodes: StackNodeType[] = [
-  stack('model', 0, 0, 'blue', 'PyTorch or JAX model', ['torch-neuronx or', 'JAX NeuronX captures', 'an XLA graph'], [
+  stack('model', 0, 0, 'blue', 'PyTorch or JAX model', ['TorchNeuron: StableHLO;', 'JAX, torch-neuronx 2.9:', 'an XLA graph'], [
     h('out', 'source', Position.Bottom),
   ]),
   stack('nki', 3, 0, 'green', 'NKI kernel', ['Python, tile-level;', 'you place tiles in', 'SBUF and PSUM'], [
@@ -240,7 +242,7 @@ const green = '#037f0c';
 const slate = '#5f6b7a';
 
 const edges: Edge[] = [
-  edge('m-1', 'model', 's1', blue, { label: 'XLA graph' }),
+  edge('m-1', 'model', 's1', blue, { label: 'StableHLO or XLA graph' }),
   edge('1-2', 's1', 's2', blue),
   edge('2-3', 's2', 's3', blue),
   edge('3-4', 's3', 's4', blue),
@@ -293,8 +295,9 @@ export function AwsCompilerStack() {
           whiteSpace: 'nowrap',
         }}
       >
-        With default settings, torch-neuronx or JAX NeuronX hands an XLA graph to neuronx-cc, which
-        runs four stages in order: graph-level optimization with operator fusion, loop-level
+        TorchNeuron hands neuronx-cc a StableHLO graph, and JAX NeuronX or the XLA build of
+        torch-neuronx 2.9 hands it an XLA graph. With default settings neuronx-cc runs four stages
+        in order: graph-level optimization with operator fusion, loop-level
         optimization with layout and tiling, mapping loop nests to hardware instructions, and a back
         end that allocates memory and schedules instructions. The back end emits the NEFF, whose
         instruction order is fixed at compile time, and the Neuron Runtime loads it and runs it on
