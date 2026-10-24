@@ -12,7 +12,7 @@ analysis, an academic paper or trade press.
 Claim registers with the evidence behind each figure, including every UNKNOWN, are in
 `research/2026-10-refresh/`.
 
-Total distinct sources: 475.
+Total distinct sources: 493.
 
 ## Tier 0: our own experiment, logged in research/
 
@@ -38,9 +38,11 @@ Total distinct sources: 475.
 | AWS | [Amazon EC2 memory optimized instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/mo.html) | 2026-10-17 | AmdEpycTurin, GravitonDeepDive, IntelXeon6 |
 | AWS | [Amazon EC2 User Guide: Data protection in Amazon EC2 (encryption in transit)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html) | 2026-10-17 | IsolationNie |
 | AWS | [Amazon EFS performance specifications (performance modes: General Purpose and Max I/O)](https://docs.aws.amazon.com/efs/latest/ug/performance.html) | 2026-10-23 | FlashCacheTier |
-| AWS | [Amazon FSx for Lustre performance: throughput to individual client instances](https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html) | 2026-10-17 | FlashCacheTier, MainMemoryAndCxl, MemoryHierarchyPrimer |
-| AWS | [Amazon FSx for Lustre: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-17 | FlashCacheTier |
-| AWS | [Amazon FSx for Lustre: working with EFA-enabled file systems](https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html) | 2026-10-17 | FlashCacheTier |
+| AWS | [Amazon ElastiCache: engine versions and upgrading (Valkey 7.2.6 to 9.1)](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html) | 2026-10-24 | FlashCacheTier |
+| AWS | [Amazon FSx for Lustre performance: throughput to individual client instances](https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html) | 2026-10-24 | FlashCacheTier, MainMemoryAndCxl, MemoryHierarchyPrimer |
+| AWS | [Amazon FSx for Lustre: getting started (EFA-enabled Persistent SSD capacity in 4.8 TiB steps at 1,000 MBps/TiB)](https://docs.aws.amazon.com/fsx/latest/LustreGuide/getting-started.html) | 2026-10-24 | FlashCacheTier |
+| AWS | [Amazon FSx for Lustre: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-24 | FlashCacheTier |
+| AWS | [Amazon FSx for Lustre: working with EFA-enabled file systems](https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html) | 2026-10-24 | FlashCacheTier |
 | AWS | [Amazon S3 Express One Zone: high performance with directory buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html) | 2026-10-17 | FlashCacheTier |
 | AWS | [AWS Neuron 2.32.0: Amazon EC2 Trn2 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/about-neuron/arch/neuron-hardware/trn2-arch.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut, HeterogeneityFact, MoeAndSparseActivation |
 | AWS | [AWS Neuron 2.32.0: Amazon EC2 Trn3 Architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/about-neuron/arch/neuron-hardware/trn3-arch.html) | 2026-10-17 | AwsCustomSilicon, CommunicationAndScaleOut, MoeAndSparseActivation |
@@ -177,6 +179,7 @@ Total distinct sources: 475.
 | llm-d | [llm-d README at tag v0.10.0](https://github.com/llm-d/llm-d/blob/v0.10.0/README.md) | 2026-10-17 | DisaggregatedServingAndSpeculative |
 | llm-d | [llm-d tiered prefix cache foundations at tag v0.10.0 (TieringOffloadingSpec, secondary_tiers type: fs)](https://github.com/llm-d/llm-d/blob/v0.10.0/docs/well-lit-paths/foundations/tiered-prefix-cache.md) | 2026-10-23 | FlashCacheTier |
 | llm-d | [llm-d tiered prefix cache guides and metrics docs at tag v0.10.0](https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/README.md) | 2026-10-17 | FlashCacheTier |
+| llm-d | [llm-d/llm-d-kv-cache llmd_fs_backend README at tag v1.0.0 (shared-storage offloading spec for vLLM)](https://github.com/llm-d/llm-d-kv-cache/blob/v1.0.0/kv_connectors/llmd_fs_backend/README.md#L15-L35) | 2026-10-24 | FlashCacheTier |
 | LLVM | [AArch64InstrFormats.td at tag llvmorg-23.1.3 (SIMDThreeSameVectorMatMul, lines 9259-9265)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/AArch64/AArch64InstrFormats.td#L9259-L9265) | 2026-10-16 | GravitonDeepDive |
 | LLVM | [AArch64InstrInfo.td at tag llvmorg-23.1.3 (BFMMLA under HasBF16; SMMLA, UMMLA, USMMLA under HasMatMulInt8)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/AArch64/AArch64InstrInfo.td#L1727-L1755) | 2026-10-17 | GravitonDeepDive |
 | LLVM | [AArch64SchedNeoverseV2.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/AArch64/AArch64SchedNeoverseV2.td) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
@@ -187,7 +190,10 @@ Total distinct sources: 475.
 | LLVM | [LLVM X86RegisterInfo.td at tag llvmorg-23.1.3 (tile registers TMM0 to TMM7)](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.3/llvm/lib/Target/X86/X86RegisterInfo.td) | 2026-10-17 | IntelXeon6, KernelExecutionLifecycle |
 | LLVM | [X86SchedSapphireRapids.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/X86/X86SchedSapphireRapids.td) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
 | LLVM | [X86ScheduleZnver4.td at tag llvmorg-19.1.0 (MispredictPenalty)](https://github.com/llvm/llvm-project/blob/llvmorg-19.1.0/llvm/lib/Target/X86/X86ScheduleZnver4.td) | 2026-10-17 | HeterogeneityFact, ThesisAndFraming |
+| LMCache | [LMCache lmcache/v1/storage_backend/gds_backend.py at tag v0.5.6 (cuFile reads and writes to a file path)](https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/gds_backend.py#L218-L357) | 2026-10-24 | FlashCacheTier |
 | LMCache | [LMCache local storage backend docs at tag v0.5.6 (per-GPU disk paths, O_DIRECT, example chunk size)](https://github.com/LMCache/LMCache/blob/v0.5.6/docs/source/kv_cache/storage_backends/local_storage.rst) | 2026-10-17 | FlashCacheTier |
+| LMCache | [LMCache multiprocess fs_native L2 adapter docs at tag v0.5.6 (parallel file systems such as Lustre)](https://github.com/LMCache/LMCache/blob/v0.5.6/docs/source/mp/l2_storage/fs_native.rst#L1-L80) | 2026-10-24 | FlashCacheTier |
+| LMCache | [LMCache open PR 5556 at head 7e5987f: valkey/rdma_worker_pool.py (registers the pinned host L1 arena)](https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/storage_backend/valkey/rdma_worker_pool.py#L1-L23) | 2026-10-24 | FlashCacheTier |
 | Meta | [Llama 3.2 MODEL_CARD.md at meta-llama/llama-models commit 0e0b8c5 (sizes, context, quantization scheme, quantized-model benchmarks and on-device speed)](https://github.com/meta-llama/llama-models/blob/0e0b8c519242d5833d8c11bffc1232b77ad7f301/models/llama3_2/MODEL_CARD.md) | 2026-10-17 | SmallLanguageModels |
 | Meta | [meta-llama/Llama-3.2-1B at revision 4e20de3 (safetensors total)](https://huggingface.co/meta-llama/Llama-3.2-1B/tree/4e20de362430cd3b72f300e6b0f18e50e7166e08) | 2026-10-17 | SmallLanguageModels |
 | Meta | [meta-llama/Llama-3.2-1B-Instruct-QLORA_INT4_EO8 at revision 3fdf98b (Meta QAT plus LoRA checkpoint)](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct-QLORA_INT4_EO8/tree/3fdf98b6bc1069f632a468b0676299a0a1b65071) | 2026-10-17 | SmallLanguageModels |
@@ -199,6 +205,11 @@ Total distinct sources: 475.
 | Mistral AI | [mistralai/Ministral-3-14B-Instruct-2512 at revision 29439f8 (README, safetensors total)](https://huggingface.co/mistralai/Ministral-3-14B-Instruct-2512/tree/29439f81c2be264d8d393273f99e7db9c0961120) | 2026-10-17 | SmallLanguageModels |
 | Mistral AI | [mistralai/Ministral-3-3B-Instruct-2512 README at revision b35d4df (3.4B language model, 0.4B vision encoder, 256k context, FP8)](https://huggingface.co/mistralai/Ministral-3-3B-Instruct-2512/blob/b35d4dfe56c142746f54dbd64f579faab2744308/README.md) | 2026-10-17 | SmallLanguageModels |
 | Mistral AI | [mistralai/Ministral-3-8B-Instruct-2512 at revision 5b26027 (README, safetensors total)](https://huggingface.co/mistralai/Ministral-3-8B-Instruct-2512/tree/5b26027e7b19eeb4b7352e1fed3926375dd2cb4d) | 2026-10-17 | SmallLanguageModels |
+| Mooncake | [kvcache-ai/Mooncake efa_transport/efa_context.cpp at tag v0.3.13.post1 (GPU memory registered with FI_HMEM_CUDA)](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp#L534-L592) | 2026-10-24 | FlashCacheTier |
+| Mooncake | [kvcache-ai/Mooncake Mooncake Store design at tag v0.3.13.post1 (master service and clients that contribute memory)](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/docs/source/design/store/mooncake-store.md#L22-L50) | 2026-10-24 | FlashCacheTier |
+| Mooncake | [kvcache-ai/Mooncake mooncake-common/common.cmake at tag v0.3.13.post1 (USE_EFA defaults to OFF)](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-common/common.cmake#L100) | 2026-10-24 | FlashCacheTier |
+| Mooncake | [kvcache-ai/Mooncake mooncake-store/src/transfer_task.cpp at tag v0.3.13.post1 (openSegment and submitTransfer on the Transfer Engine)](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-store/src/transfer_task.cpp#L1091-L1110) | 2026-10-24 | FlashCacheTier |
+| Mooncake | [kvcache-ai/Mooncake scripts/build_wheel.sh at tag v0.3.13.post1 (mooncake-transfer-engine-efa package names)](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/scripts/build_wheel.sh#L264-L291) | 2026-10-24 | FlashCacheTier |
 | Nasdaq | [MoldUDP64 Protocol Specification V 1.00 (UDP multicast downstream packets)](https://www.nasdaqtrader.com/content/technicalsupport/specifications/dataproducts/moldudp64.pdf) | 2026-10-23 | CapitalMarketsLens |
 | NVIDIA | [CUDA C++ Best Practices Guide (CUDA 13.4): Occupancy](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html) | 2026-10-17 | HeterogeneityFact, NvidiaHopper, ThesisAndFraming |
 | NVIDIA | [CUDA for Tegra application note v13.4 (memory management, I/O coherency, full coherency on Thor)](https://docs.nvidia.com/cuda/cuda-for-tegra-appnote/index.html) | 2026-10-16 | EdgeSharedMemorySilicon |
@@ -262,6 +273,7 @@ Total distinct sources: 475.
 | NVIDIA Dynamo | [ai-dynamo/dynamo lib/bindings/kvbm/src/block_manager.rs at tag v1.5.1 (disk offload filter, page_size)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/bindings/kvbm/src/block_manager.rs) | 2026-10-17 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/dynamo lib/kv-router/src/scheduling/config.rs at tag v1.5.1 (cache hit weights)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/kv-router/src/scheduling/config.rs) | 2026-10-17 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/dynamo lib/llm/src/block_manager/offload/filter.rs at tag v1.5.1 (FrequencyFilter: count doubles per sighting, decays by 1)](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/llm/src/block_manager/offload/filter.rs) | 2026-10-23 | FlashCacheTier |
+| NVIDIA Dynamo | [ai-dynamo/dynamo lib/llm/src/block_manager/storage/disk.rs at tag v1.6.0 (one mkostemp file per worker, unlinked after NIXL registration)](https://github.com/ai-dynamo/dynamo/blob/v1.6.0/lib/llm/src/block_manager/storage/disk.rs#L398-L470) | 2026-10-24 | FlashCacheTier |
 | NVIDIA Dynamo | [ai-dynamo/nixl libfabric plugin README at tag v1.5.0 (validated on AWS EFA, Neuron requirements)](https://github.com/ai-dynamo/nixl/blob/v1.5.0/src/plugins/libfabric/README.md) | 2026-10-17 | CommunicationAndScaleOut |
 | NVIDIA Dynamo | [ai-dynamo/nixl README at tag v1.5.0 (point-to-point transfers for inference frameworks)](https://github.com/ai-dynamo/nixl/blob/v1.5.0/README.md) | 2026-10-16 | CommunicationAndScaleOut, DisaggregatedServingAndSpeculative |
 | NVIDIA Dynamo | [ai-dynamo/nixl storage and network plugins at tag v1.5.0](https://github.com/ai-dynamo/nixl/tree/v1.5.0/src/plugins) | 2026-10-17 | DisaggregatedServingAndSpeculative, FlashCacheTier |
@@ -314,7 +326,11 @@ Total distinct sources: 475.
 | UXL Foundation | [oneDNN src/cpu/x64/cpu_isa_traits.cpp at tag v3.13.4, lines 31-197 (MAX_CPU_ISA cap, ISA names, highest usable tier)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/cpu/x64/cpu_isa_traits.cpp#L31-L197) | 2026-10-17 | IntelXeon6 |
 | UXL Foundation | [oneDNN src/cpu/x64/cpu_isa_traits.cpp at tag v3.13.4, lines 357-374 (AMX permission request)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/cpu/x64/cpu_isa_traits.cpp#L357-L374) | 2026-10-17 | IntelXeon6, KernelExecutionLifecycle |
 | UXL Foundation | [oneDNN src/cpu/x64/cpu_isa_traits.hpp at tag v3.13.4 (AMX dispatch tiers)](https://github.com/uxlfoundation/oneDNN/blob/v3.13.4/src/cpu/x64/cpu_isa_traits.hpp) | 2026-10-16 | IntelXeon6 |
+| Valkey | [valkey-glide open PR 7412 at head 7644df8: glide-rdma/src/endpoint.rs (plain fi_mr_reg on host memory)](https://github.com/valkey-io/valkey-glide/blob/7644df8b12ee71c77a219254c98d7cd69282f79c/glide-rdma/src/endpoint.rs#L756-L785) | 2026-10-24 | FlashCacheTier |
+| Valkey | [valkey-io/valkey-large-object at commit 7510b94 (crate 0.1.0; no tags or releases on 2026-10-24)](https://github.com/valkey-io/valkey-large-object/tree/7510b9483d9837bf63b475d4a8e8fa612c65063f) | 2026-10-24 | FlashCacheTier |
+| Valkey | [valkey-io/valkey-large-object src/transport/session.rs at commit 7510b94 (server-posted DMA write and read)](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/transport/session.rs#L36-L91) | 2026-10-24 | FlashCacheTier |
 | vLLM | [vLLM docs/features/disagg_prefill.md at tag v0.31.0 (experimental; connector list)](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/disagg_prefill.md) | 2026-10-17 | DisaggregatedServingAndSpeculative |
+| vLLM | [vLLM docs/features/kv_offloading_usage.md at tag v0.31.0 (fs secondary tier, root_dir, cross-process sharing)](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/kv_offloading_usage.md#L73-L196) | 2026-10-24 | FlashCacheTier |
 | vLLM | [vLLM docs/features/speculative_decoding/draft_model.md at tag v0.31.0 (draft model method, heterogeneous vocabularies)](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/speculative_decoding/draft_model.md) | 2026-10-17 | SmallLanguageModels |
 | vLLM | [vLLM docs/features/speculative_decoding/README.md at tag v0.31.0 (method table, speculative-config keys, Gemma 4 assistant note)](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/speculative_decoding/README.md) | 2026-10-17 | SmallLanguageModels |
 | vLLM | [vLLM kv_offload metrics (offloading/metrics.py) at tag v0.31.0](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/offloading/metrics.py) | 2026-10-17 | FlashCacheTier |
@@ -341,6 +357,7 @@ Total distinct sources: 475.
 | AMD | [AMD Solarflare X4 Low Latency Using SDCI (white paper, October 2025, Rev 1)](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/white-papers/x4-sdci-whitepaper.pdf) | 2026-10-17 | AmdEpycTurin, CapitalMarketsLens |
 | Arm | [Arm Neoverse V3 product page](https://www.arm.com/products/silicon-ip-cpu/neoverse/neoverse-v3) | 2026-10-16 | GravitonDeepDive |
 | AWS | [About Amazon: AWS Graviton5 (2025-12-04, updated 2026-06-10 for GA)](https://www.aboutamazon.com/news/aws/aws-graviton-5-cpu-amazon-ec2) | 2026-10-16 | ChipletAndInterconnect, GravitonDeepDive |
+| AWS | [Accelerate inference with KV cache tiering on AWS (AWS Storage Blog, 2026-09-21; tiers T1 to T4)](https://aws.amazon.com/blogs/storage/accelerate-inference-with-kv-cache-tiering-on-aws/) | 2026-10-24 | FlashCacheTier |
 | AWS | [Amazon EC2 M8a instances](https://aws.amazon.com/ec2/instance-types/m8a/) | 2026-10-17 | HeterogeneityFact |
 | AWS | [Amazon EC2 M8i instances](https://aws.amazon.com/ec2/instance-types/m8i/) | 2026-10-17 | AmdEpycTurin, HeterogeneityFact, IntelXeon6, MainMemoryAndCxl |
 | AWS | [Amazon EC2 P5 instances](https://aws.amazon.com/ec2/instance-types/p5/) | 2026-10-17 | NvidiaHopper |
@@ -459,6 +476,7 @@ Total distinct sources: 475.
 | SK hynix | [SK hynix Presents Next Generation NAND Storage Product Strategy at OCP 2025 (2025-10-26)](https://news.skhynix.com/en/sk-hynix-presents-next-generation-nand-storage-product-strategy-at-ocp-2025/) | 2026-10-17 | HighBandwidthFlash |
 | SK hynix | [SK hynix Ships Samples of 12-Layer Next-Gen HBM4E (2026-06-18)](https://news.skhynix.com/en/sk-hynix-ships-samples-of-12-layer-next-gen-hbm4e-2/) | 2026-10-16 | HbmAndBandwidthWall, HighBandwidthFlash |
 | SK hynix | [SK hynix Showcases Next-Generation AI Memory Innovations at CES 2026 (2026-01-06)](https://news.skhynix.com/en/sk-hynix-showcases-next-generation-ai-memory-innovations-at-ces-2026/) | 2026-10-18 | ComputeInMemory |
+| Valkey | [valkey-io/valkey issue 4743, core team decision of 2026-09-21 (API experimental until a 1.0 release)](https://github.com/valkey-io/valkey/issues/4743#issuecomment-5766728140) | 2026-10-24 | FlashCacheTier |
 | VAST Data | [NVIDIA Dynamo + VAST = Scalable, Optimized Inference (2025-12-16, with CoreWeave)](https://www.vastdata.com/blog/nvidia-dynamo-vast-scalable-optimized-inference) | 2026-10-17 | FlashCacheTier |
 
 ## Tier 3: third-party analysis, academic paper or trade press
