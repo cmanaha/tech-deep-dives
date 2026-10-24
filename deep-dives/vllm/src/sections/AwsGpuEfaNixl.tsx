@@ -257,6 +257,9 @@ export function AwsGpuEfaNixl() {
               push_worker.py L714-L722
             </Cite>
             . Section 10 covers when to pick which; this section covers running either on AWS.
+            KV that outlives one request and is shared across instances (Mooncake Store over EFA,
+            FSx for Lustre, S3) is a cache tier rather than a transfer, and section 7 (KV-Cache
+            Offloading &amp; Tiers) covers its AWS options.
           </Box>
           <Box variant="p">
             The fabric itself (OS-bypass, SRD (Scalable Reliable Datagram), the libfabric EFA

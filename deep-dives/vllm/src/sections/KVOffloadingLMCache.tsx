@@ -9,6 +9,7 @@ import Alert from '@cloudscape-design/components/alert';
 import Link from '@cloudscape-design/components/link';
 import type { ReactNode } from 'react';
 import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
+import { RemoteKvTiersAws } from './offload/RemoteKvTiersAws';
 
 const OFFLOAD_DOCS = 'docs/features/kv_offloading_usage.md';
 const LMCACHE_README = 'https://github.com/LMCache/LMCache/blob/v0.5.6/README.md';
@@ -422,7 +423,8 @@ export function KVOffloadingLMCache() {
               Silicon, Memory &amp; Inference
             </Link>{' '}
             deep dive. This section covers which tier to turn on, what each buys, what it costs,
-            and how to watch it.
+            and how to watch it, including the remote tiers on AWS (Mooncake Store, the Valkey
+            large-object module, FSx for Lustre and S3) and how their bytes reach the GPU.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -467,10 +469,10 @@ export function KVOffloadingLMCache() {
             v0.31.0{' '}
             <Cite
               tier={1}
-              href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/factory.py', 'L153-L248')}
+              href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/factory.py', 'L153-L249')}
               kind="code"
             >
-              kv_connector/factory.py L153-L248
+              kv_connector/factory.py L153-L249
             </Cite>
             ; the diagram shows the seven this section discusses.
           </Box>
@@ -817,6 +819,17 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
             <Cite tier={1} href={`${LMCACHE_README}#L73`}>
               LMCache README v0.5.6 L73
             </Cite>
+            ; the multiprocess server reaches storage through its own L2 adapter layer behind a
+            host-memory L1, with 21 adapters at v0.5.6, among them <code>valkey</code>,{' '}
+            <code>mooncake_store</code>, <code>s3</code> and <code>sagemaker-hyperpod</code>{' '}
+            <Cite
+              tier={1}
+              href="https://github.com/LMCache/LMCache/tree/v0.5.6/lmcache/v1/distributed/l2_adapters"
+              kind="code"
+              accessed="2026-10-24"
+            >
+              LMCache v0.5.6 l2_adapters
+            </Cite>
             ) and non-prefix reuse: CacheBlend reuses cached KV at any position in the prompt and
             recomputes some tokens to recover quality{' '}
             <Cite tier={1} href={`${LMCACHE_README}#L75`}>
@@ -1058,6 +1071,8 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
           </ExpandableSection>
         </SpaceBetween>
       </Container>
+
+      <RemoteKvTiersAws />
 
       <Container
         header={
