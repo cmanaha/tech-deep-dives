@@ -57,6 +57,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'TPOT', fullForm: 'Time per output token', description: 'Average decode time per generated token.' },
   { acronym: 'TPS', fullForm: 'Tokens per second', description: 'A throughput measure.' },
   { acronym: 'FSM', fullForm: 'Finite state machine', description: 'The grammar state a structured-output backend advances one token at a time.' },
+  { acronym: 'JF', fullForm: 'Jump-forward decoding', description: 'Emitting the tokens a grammar forces without a model step for each. Dormant in SGLang at v0.5.22; AWS Neuron has an opt-in version.' },
   { acronym: 'EBNF', fullForm: 'Extended Backus-Naur Form', description: 'A notation for context-free grammars, accepted as a structured-output constraint.' },
   { acronym: 'MTP', fullForm: 'Multi-token prediction', description: 'Extra model heads that propose several next tokens, used as a speculative-decoding draft.' },
   { acronym: 'TBO', fullForm: 'Two-batch overlap', description: 'SGLang\'s split of a batch into two micro-batches so one computes while the other communicates. The counterpart of vLLM\'s DBO.' },

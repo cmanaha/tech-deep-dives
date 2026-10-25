@@ -260,7 +260,8 @@ export function ThesisAndFraming() {
             Both engines page the KV cache, cache prefixes by default, overlap CPU and GPU work by
             default, queue requests first-come-first-served (FCFS) and recompute on preemption,
             outside the decode mode of SGLang&apos;s PD (prefill/decode) disaggregation, and on
-            NVIDIA both run the same kernel projects, each through its own forks. By our reading of
+            NVIDIA both run the same kernel projects, FlashInfer as released and FlashAttention
+            through each project&apos;s own fork. By our reading of
             the two codebases, a feature list therefore mostly finds parity and a configuration
             comparison finds the differences; section 23, SGLang and vLLM Compared, has the full
             list.

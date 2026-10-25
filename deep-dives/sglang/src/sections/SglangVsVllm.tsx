@@ -151,7 +151,7 @@ const PATH_ROWS: PathRow[] = [
     stage: 'RL admin routes',
     status: 'differs',
     same: false,
-    sg: ['Registered on every server', '--admin-api-key splits them from inference'],
+    sg: ['Registered on every Python HTTP server', '--admin-api-key splits them from inference'],
     vl: ['Registered only with VLLM_SERVER_DEV_MODE=1', 'no key check on those routes'],
   },
 ];
@@ -169,8 +169,8 @@ function RequestPathDiagram() {
         style={{ width: '100%', minWidth: 700, height: 'auto' }}
       >
         <title id="vsvllm-path-title">
-          One request through SGLang v0.5.22 and vLLM v0.31.0, stage by stage. Both engines keep
-          HTTP and tokenization off the GPU-driving process, and both plan step N+1 while step N
+          One request through SGLang v0.5.22 and vLLM v0.31.0, stage by stage. By default both
+          engines keep HTTP and tokenization off the GPU-driving process, and both plan step N+1 while step N
           runs on the GPU. They split the rest differently: SGLang runs a scheduler in every GPU
           process and walks a radix tree for cached prefixes, while vLLM runs one EngineCore
           scheduler per data-parallel rank and looks up a chain of block hashes. Beside the
@@ -338,6 +338,9 @@ const DIFF_ROWS: DiffRow[] = [
         . A new request is charged its uncached prompt plus up to 4096 output tokens{' '}
         <Cite tier={1} href={sglangUrl(POLICY, 'L1336-L1360')}>
           schedule_policy.py L1336-L1360
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(POLICY, 'L85-L87')}>
+          schedule_policy.py L85-L87
         </Cite>
         ; retraction, SGLang&apos;s name for preemption, re-queues the requests with the fewest
         generated tokens{' '}
@@ -352,12 +355,18 @@ const DIFF_ROWS: DiffRow[] = [
         One token budget per step, shared by decodes and prefill chunks{' '}
         <Cite tier={1} href={vllmUrl('vllm/engine/arg_utils.py', 'L2858-L2887')}>
           arg_utils.py L2858-L2887
+        </Cite>{' '}
+        <Cite tier={1} href={vllmUrl('vllm/v1/core/sched/scheduler.py', 'L582-L888')}>
+          scheduler.py L582-L888
         </Cite>
         . Admits on prompt fit and grows blocks step by step{' '}
         <Cite tier={1} href={vllmUrl('vllm/v1/core/kv_cache_manager.py', 'L519-L541')}>
           kv_cache_manager.py L519-L541
         </Cite>
         ; under FCFS, preemption recomputes the most recently added request{' '}
+        <Cite tier={1} href={vllmUrl('vllm/v1/core/sched/scheduler.py', 'L765-L803')}>
+          scheduler.py L765-L803
+        </Cite>{' '}
         <Cite tier={1} href={vllmUrl('vllm/v1/core/sched/scheduler.py', 'L1538-L1581')}>
           scheduler.py L1538-L1581
         </Cite>
@@ -389,13 +398,13 @@ const DIFF_ROWS: DiffRow[] = [
           overrides.py L1125-L1137
         </Cite>
         . On B200 the default leaves <code>trtllm_mha</code> and 64-token pages for{' '}
-        <code>flashinfer</code> with page 1 when speculation is on with{' '}
+        <code>flashinfer</code> at page size 1, unless you set one, when speculation is on with{' '}
         <code>--speculative-eagle-topk</code> above 1, and also when it is on with that flag unset{' '}
         <Cite tier={1} href={sglangUrl(`${SRT}/utils/common.py`, 'L4014-L4020')}>
           utils/common.py L4014-L4020
         </Cite>{' '}
-        <Cite tier={1} href={sglangUrl(MOB, 'L303-L311')} kind="code">
-          model_override_base.py L303-L311
+        <Cite tier={1} href={sglangUrl(MOB, 'L303-L322')} kind="code">
+          model_override_base.py L303-L322
         </Cite>
         . FlashMLA models use 64-token pages{' '}
         <Cite tier={1} href={sglangUrl(OVR, 'L1085-L1152')}>
@@ -422,8 +431,10 @@ const DIFF_ROWS: DiffRow[] = [
         On H100 SGLang reuses a shared prefix to the token and vLLM to its last full 16-token
         block; on B200 at defaults the comparison flips. On AWS that is the move from P5 (H100) to
         P6 (B200 or B300): the same Llama deployment goes from token-exact reuse to 64-token pages
-        with no flag change, by our reading of the default chain (section 21, EC2 Instances,
-        Images and GPU-Dependent Behaviour).
+        with no attention or page-size flag, when speculative decoding is off, or on with an
+        explicit <code>--speculative-eagle-topk 1</code> and <code>--speculative-num-steps</code>{' '}
+        set, by our reading of the default chain (section 21, EC2 Instances, Images and
+        GPU-Dependent Behaviour).
       </>
     ),
     where: (
@@ -456,8 +467,8 @@ const DIFF_ROWS: DiffRow[] = [
         <Cite tier={1} href={vllmUrl('vllm/config/structured_outputs.py', 'L21')}>
           structured_outputs.py L21
         </Cite>{' '}
-        <Cite tier={1} href={vllmUrl('vllm/sampling_params.py', 'L1281-L1320')}>
-          sampling_params.py L1281-L1320
+        <Cite tier={1} href={vllmUrl('vllm/sampling_params.py', 'L1297-L1341')}>
+          sampling_params.py L1297-L1341
         </Cite>
         .
       </>
@@ -480,8 +491,8 @@ const DIFF_ROWS: DiffRow[] = [
         <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/fields/spec.py`, 'L31-L34')}>
           spec.py L31-L34
         </Cite>
-        . EAGLE with a Llama target and no step flags drafts a tree: 5 steps, top-k 4, 8 verified
-        nodes{' '}
+        . EAGLE with a <code>LlamaForCausalLM</code> target and no step flags drafts a tree: 5
+        steps, top-k 4, 8 verified nodes{' '}
         <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/speculative_hook.py`, 'L1340-L1371')}>
           speculative_hook.py L1340-L1371
         </Cite>
@@ -505,7 +516,8 @@ const DIFF_ROWS: DiffRow[] = [
     changes: (
       <>
         Moving an EAGLE deployment changes the verify shape, tree against chain. Compare at matched
-        settings, with <code>--speculative-eagle-topk 1</code> on SGLang.
+        settings, with <code>--speculative-eagle-topk 1</code> and{' '}
+        <code>--speculative-num-steps</code> set on SGLang.
       </>
     ),
     where: <>Section 11, Speculative Decoding; {V11_LINK}</>,
@@ -529,7 +541,7 @@ const DIFF_ROWS: DiffRow[] = [
     vllm: (
       <>
         <code>--data-parallel-size</code> replicas plus <code>--enable-expert-parallel</code>, with
-        MoE (mixture of experts) layers sharded over TP x DP{' '}
+        MoE (mixture of experts) layers sharded over TP x PCP (prefill context parallelism) x DP{' '}
         <Cite tier={1} href={vllmUrl('vllm/config/parallel.py', 'L134-L136')}>
           parallel.py L134-L136
         </Cite>
@@ -556,10 +568,18 @@ const DIFF_ROWS: DiffRow[] = [
           disagg.py L65-L71
         </Cite>
         . Prefill always pushes KV into pages decode reserved, and the gateway sends both legs at
-        once. Under the default <code>early</code> policy, prefill waits for decode&apos;s page
-        reservation, so the handshake is done before prefill finishes{' '}
+        once{' '}
+        <Cite tier={1} href={sglangUrl('sgl-model-gateway/src/routers/http/pd_router.rs', 'L701-L730')}>
+          pd_router.rs L701-L730
+        </Cite>
+        . Under the default <code>early</code> policy, with{' '}
+        <code>--optimistic-prefill-attempts</code> at its default 0, prefill waits for
+        decode&apos;s page reservation, so the handshake is done before prefill finishes{' '}
         <Cite tier={1} href={sglangUrl(PREFILL, 'L462-L537')}>
           prefill.py L462-L537
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(DISAGG, 'L122-L124')}>
+          disagg.py L122-L124
         </Cite>
         .
       </>
@@ -568,7 +588,14 @@ const DIFF_ROWS: DiffRow[] = [
       <>
         A KV connector chosen by <code>--kv-transfer-config</code>: the reference{' '}
         <code>NixlConnector</code> pulls, vLLM&apos;s reference pull proxy runs prefill first, and{' '}
-        <code>NixlPushConnector</code> pushes.
+        <code>NixlPushConnector</code> pushes{' '}
+        <Cite tier={1} href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/v1/nixl/connector.py', 'L9-L12')}>
+          nixl/connector.py L9-L12
+        </Cite>{' '}
+        <Cite tier={1} href={vllmUrl('tests/v1/kv_connector/nixl_integration/toy_proxy_server.py', 'L213-L241')}>
+          toy_proxy_server.py L213-L241
+        </Cite>
+        .
       </>
     ),
     changes: (
@@ -605,7 +632,14 @@ const DIFF_ROWS: DiffRow[] = [
     changes: (
       <>
         SGLang&apos;s default install routes cache-aware; vLLM&apos;s common Kubernetes router
-        routes round-robin until a cache-aware policy is chosen.
+        routes round-robin until a cache-aware policy is chosen{' '}
+        <Cite
+          tier={1}
+          href="https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/helm/values.yaml#L550"
+        >
+          production-stack values.yaml L550
+        </Cite>
+        .
       </>
     ),
     where: (
@@ -646,7 +680,7 @@ const DIFF_ROWS: DiffRow[] = [
         on SGLang without an error: the likeliest silent porting bug.
       </>
     ),
-    where: <>Section 12, APIs, LoRA and the Admin Plane; {V13_LINK}</>,
+    where: <>Section 12, Talking to SGLang: APIs, LoRA and the Admin Plane; {V13_LINK}</>,
   },
   {
     id: 'api',
@@ -680,10 +714,14 @@ const DIFF_ROWS: DiffRow[] = [
           cohere/api_router.py L116-L117
         </Cite>
         ; the SageMaker router on every server{' '}
-        <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L27-L31')}>
-          routers.py L27-L31
+        <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L28-L32')}>
+          routers.py L28-L32
         </Cite>
-        ; a tokens-only generate route in scale-out or render modes only.
+        ; a tokens-only generate route in scale-out or render modes only{' '}
+        <Cite tier={1} href={vllmUrl('vllm/entrypoints/scale_out/factories.py', 'L65-L94')}>
+          scale_out/factories.py L65-L94
+        </Cite>
+        .
       </>
     ),
     changes: (
@@ -692,7 +730,7 @@ const DIFF_ROWS: DiffRow[] = [
         <code>/generate</code> are SGLang-only; Cohere chat is vLLM-only.
       </>
     ),
-    where: <>Section 12, APIs, LoRA and the Admin Plane; {V12_LINK}</>,
+    where: <>Section 12, Talking to SGLang: APIs, LoRA and the Admin Plane; {V12_LINK}</>,
   },
   {
     id: 'metrics',
@@ -726,13 +764,17 @@ const DIFF_ROWS: DiffRow[] = [
     axis: 'RL and weight-sync routes',
     sglang: (
       <>
-        Weight update, memory release, pause, flush and LoRA routes on every server, split from
-        inference by an optional <code>--admin-api-key</code>{' '}
+        Weight update, memory release, pause, flush and LoRA routes on every Python HTTP server,
+        split from inference by an optional <code>--admin-api-key</code>{' '}
         <Cite tier={1} href={sglangUrl(`${SRT}/utils/auth.py`, 'L79-L151')}>
           auth.py L79-L151
         </Cite>
-        . With no key they accept any client that can reach the port: localhost at the default
-        127.0.0.1 bind{' '}
+        . With neither <code>--api-key</code> nor <code>--admin-api-key</code> set they accept any
+        client that can reach the port, the three HiCache storage routes excepted{' '}
+        <Cite tier={1} href={sglangUrl(HTTP, 'L1106-L1173')}>
+          http_server.py L1106-L1173
+        </Cite>
+        : localhost at the default 127.0.0.1 bind{' '}
         <Cite tier={1} href={sglangUrl(SERVING, 'L65')}>
           serving.py L65
         </Cite>
@@ -747,11 +789,14 @@ const DIFF_ROWS: DiffRow[] = [
       <>
         Sleep, wake-up, pause, <code>collective_rpc</code> and weight-transfer routes only with{' '}
         <code>VLLM_SERVER_DEV_MODE=1</code> (default 0), with no key check{' '}
-        <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L33-L36')}>
-          routers.py L33-L36
+        <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L34-L37')}>
+          routers.py L34-L37
         </Cite>{' '}
         <Cite tier={1} href={vllmUrl('vllm/envs.py', 'L1453')}>
           envs.py L1453
+        </Cite>{' '}
+        <Cite tier={1} href={vllmUrl('vllm/entrypoints/serve/middleware/authenticate.py', 'L11-L62')} kind="code">
+          serve/middleware/authenticate.py L11-L62
         </Cite>
         .
       </>
@@ -764,7 +809,7 @@ const DIFF_ROWS: DiffRow[] = [
     ),
     where: (
       <>
-        Section 12, APIs, LoRA and the Admin Plane; section 13, SGLang as an RL Rollout Engine;{' '}
+        Section 12, Talking to SGLang: APIs, LoRA and the Admin Plane; section 13, SGLang as an RL Rollout Engine;{' '}
         {V12_LINK}
       </>
     ),
@@ -883,9 +928,13 @@ export function SglangVsVllm() {
             <Cite tier={1} href={vllmUrl('vllm/v1/core/sched/scheduler.py', 'L1538-L1581')}>
               vLLM scheduler.py L1538-L1581
             </Cite>
-            , and, on NVIDIA, run the same kernel projects, each through its own forks{' '}
+            , and, on NVIDIA, run the same kernel projects, FlashInfer as released and
+            FlashAttention through each project&apos;s own fork{' '}
             <Cite tier={1} href={sglangUrl('python/pyproject.toml', 'L41-L88')}>
               pyproject.toml L41-L88
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/kernels/aot/CMakeLists.txt', 'L83-L89')}>
+              kernels/aot/CMakeLists.txt L83-L89
             </Cite>{' '}
             <Cite tier={1} href={vllmUrl('requirements/cuda.txt', 'L17-L18')}>
               vLLM requirements/cuda.txt L17-L18
@@ -937,20 +986,24 @@ export function SglangVsVllm() {
             <Cite tier={1} href={sglangUrl(`${SRT}/managers/detokenizer_manager.py`, 'L123-L135')}>
               detokenizer_manager.py L123-L135
             </Cite>
-            , so no per-step scheduling decision crosses a process boundary. vLLM schedules once
-            per DP (data parallelism) rank in EngineCore and sends the decision to separate GPU
-            workers, with HTTP,
-            tokenization and detokenization in its API server process{' '}
-            <Cite tier={1} href={vllmUrl('vllm/config/parallel.py', 'L989-L1034')}>
-              vLLM parallel.py L989-L1034
+            , so within a TP (tensor parallelism) group only the new requests cross the process
+            boundary and every GPU
+            process makes the scheduling decision itself. vLLM schedules once per DP (data
+            parallelism) rank in EngineCore and sends the decision to separate GPU workers, with
+            HTTP, tokenization and detokenization in its API server process{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/engine/core.py', 'L640-L641')}>
+              vLLM core.py L640-L641
+            </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/v1/executor/multiproc_executor.py', 'L340-L351')}>
+              vLLM multiproc_executor.py L340-L351
             </Cite>{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/engine/core_client.py', 'L705-L706')}>
               vLLM core_client.py L705-L706
             </Cite>{' '}
             ({V3_LINK}). Both identify a cached prefix by everything before it: SGLang walks a
             radix tree of variable-length token runs and evicts whole leaves{' '}
-            <Cite tier={1} href={sglangUrl(`${SRT}/mem_cache/radix_cache.py`, 'L503-L507')}>
-              radix_cache.py L503-L507
+            <Cite tier={1} href={sglangUrl(`${SRT}/mem_cache/radix_cache.py`, 'L552-L580')}>
+              radix_cache.py L552-L580
             </Cite>
             , vLLM follows a chain of fixed-size block hashes and evicts block by block{' '}
             <Cite tier={1} href={vllmUrl('vllm/v1/core/kv_cache_utils.py', 'L684-L714')}>
@@ -1001,13 +1054,17 @@ export function SglangVsVllm() {
                 Triton decode and prefill attention kernels, credited in their headers{' '}
                 <Cite tier={1} href={vllmUrl('vllm/v1/attention/ops/triton_decode_attention.py', 'L4-L14')}>
                   vLLM triton_decode_attention.py L4-L14
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/v1/attention/ops/triton_prefill_attention.py', 'L4-L5')}>
+                  vLLM triton_prefill_attention.py L4-L5
                 </Cite>
                 , and a vendored directory of SGLang CPU kernels{' '}
                 <Cite tier={1} href={vllmTreeUrl('csrc/cpu/sgl-kernels')}>
                   vLLM csrc/cpu/sgl-kernels
                 </Cite>
-                . In SGLang v0.5.22, 84 files under <code>python/sglang/srt</code> carry an
-                &quot;Adapted from&quot; header pointing at vLLM, by our search of the tag{' '}
+                . In SGLang v0.5.22, 80 files under <code>python/sglang/srt</code> carry the header
+                &quot;Adapted from https://github.com/vllm-project/vllm&quot;, and more credit vLLM
+                in other wording, by our search of the tag{' '}
                 <Cite tier={1} href={sglangTreeUrl(SRT)} kind="code">
                   python/sglang/srt at v0.5.22
                 </Cite>
@@ -1036,14 +1093,22 @@ export function SglangVsVllm() {
                 connector plugin.
               </li>
               <li>
-                <strong>Opt-in Rust frontends in both.</strong> SGLang&apos;s runs inside the rank-0
-                scheduler and also takes over tokenization and detokenization{' '}
+                <strong>Opt-in Rust frontends in both.</strong> Each takes over the API server,
+                tokenization and detokenization. SGLang&apos;s runs inside the rank-0 scheduler
+                process{' '}
                 <Cite tier={1} href={sglangUrl(`${SRT}/entrypoints/engine.py`, 'L1291-L1312')}>
                   engine.py L1291-L1312
                 </Cite>
-                ; vLLM&apos;s replaces its API server process{' '}
+                ; vLLM&apos;s takes the place of its API server process and still reaches the engine
+                over ZMQ (ZeroMQ){' '}
                 <Cite tier={1} href={vllmUrl('vllm/envs.py', 'L1441-L1443')}>
                   vLLM envs.py L1441-L1443
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('rust/src/text/src/lib.rs', 'L4-L8')}>
+                  vLLM rust/src/text/src/lib.rs L4-L8
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('rust/README.md', 'L3')}>
+                  vLLM rust/README.md L3
                 </Cite>
                 .
               </li>
@@ -1053,8 +1118,11 @@ export function SglangVsVllm() {
                 <Cite tier={1} href={sglangUrl(HTTP, 'L1999-L2139')}>
                   http_server.py L1999-L2139
                 </Cite>{' '}
-                <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L27-L31')}>
-                  vLLM routers.py L27-L31
+                <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L28-L32')}>
+                  vLLM routers.py L28-L32
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/entrypoints/generate/api_router.py', 'L21-L44')}>
+                  vLLM generate/api_router.py L21-L44
                 </Cite>
                 ; the one-sided surfaces are small: Ollama and native <code>/generate</code> on
                 SGLang, Cohere chat on vLLM.
@@ -1068,6 +1136,9 @@ export function SglangVsVllm() {
                 </Cite>{' '}
                 <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L38-L50')}>
                   vLLM routers.py L38-L50
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/config/parallel.py', 'L44-L58')}>
+                  vLLM parallel.py L44-L58
                 </Cite>
                 . The difference is how the widths are counted, the DP-and-EP row above.
               </li>
@@ -1090,17 +1161,21 @@ export function SglangVsVllm() {
                 <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/fields/spec.py`, 'L31-L34')}>
                   spec.py L31-L34
                 </Cite>{' '}
-                <Cite tier={1} href={vllmUrl('vllm/v1/spec_decode/dflash.py')}>
-                  vLLM spec_decode/dflash.py
+                <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/fields/spec.py`, 'L120-L121')}>
+                  spec.py L120-L121
+                </Cite>{' '}
+                <Cite tier={1} href={vllmUrl('vllm/config/speculative.py', 'L69-L85')}>
+                  vLLM speculative.py L69-L85
                 </Cite>
                 . What differs is SGLang&apos;s tree drafting, its accept-length-adaptive steps and
                 its overlap coverage.
               </li>
               <li>
                 <strong>Grammar enforcement on XGrammar.</strong> The 2024 structured-output edge,
-                jump-forward over a compressed state machine, is dormant in SGLang v0.5.22, and the
-                idea travelled: AWS&apos;s vLLM Neuron documentation credits SGLang&apos;s
-                jump-forward as inspiration{' '}
+                jump-forward over a compressed state machine, is dormant in SGLang v0.5.22. vLLM
+                Neuron has an opt-in jump-forward (JF) decoding of its own, and its documentation names
+                SGLang for one detail: &quot;Taking inspiration from the original jump-forward
+                implementation in SGLang, we disable proper logprobs for JF decoding&quot;{' '}
                 <Cite tier={1} href={NEURON_DOC}>
                   Neuron docs 2.33.0: vLLM Neuron additional config
                 </Cite>
@@ -1139,8 +1214,8 @@ export function SglangVsVllm() {
                 </Cite>
                 , so the fleet layer
                 rarely forces the engine choice. Ray Serve LLM is the exception: vLLM by default,
-                SGLang through an early-stage server class (section 18, Multi-Node and Kubernetes
-                Orchestrators).
+                SGLang through a server class whose integration Ray marks as early development
+                (section 18, Multi-Node and Kubernetes Orchestrators).
               </li>
             </ul>
           </ExpandableSection>
@@ -1176,7 +1251,7 @@ export function SglangVsVllm() {
             </Cite>
             . At the versions this dive covers, both engines page the KV cache, cache prefixes by
             default, overlap CPU and GPU work by default, queue requests FCFS, recompute on
-            preemption and, on NVIDIA, run the same kernel projects through their own forks. A gap
+            preemption and, on NVIDIA, run the same kernel projects. A gap
             measured before then includes differences that have since closed. In our reading, a
             head-to-head result tracks release dates and matched flags more than engine identity:
             the InferenceX v2 report describes steady release-to-release gains inside each engine{' '}
@@ -1190,7 +1265,7 @@ export function SglangVsVllm() {
             tags (a tagged release against a nightly is not a matched pair), the speculative method
             and its acceptance rate, the KV offload connector, the parallel layout, single-node or
             disaggregated serving, and whether the prompts share prefixes at all. Random-token
-            prompts remove prefix reuse, which is SGLang&apos;s main lever.
+            prompts remove prefix reuse, which the SGLang paper credits first for its gains.
           </Box>
 
           <Header variant="h3">Project and author claims</Header>
@@ -1269,8 +1344,9 @@ export function SglangVsVllm() {
             setup={<>Llama-7B on one A10.</>}
             result={
               <>
-                Up to 2x lower latency and 2.5x higher throughput. SGLang without jump-forward was
-                also faster, which the post suspects is &quot;due to some overhead in Outlines&quot;.
+                Up to 2x lower latency and 2.5x higher throughput. In the character generation task
+                SGLang without jump-forward also had higher throughput than Outlines on vLLM, which
+                the post suspects is &quot;due to some overhead in Outlines&quot;.
               </>
             }
             transfer={
@@ -1333,14 +1409,14 @@ export function SglangVsVllm() {
             result={
               <>
                 &quot;3x to 7x higher throughput than the baseline system&quot; with the MLA
-                optimizations, and &quot;up to a 1.5x speedup&quot; with torch.compile at batch size
-                1.
+                optimizations, and &quot;up to a 1.5x speedup&quot; with torch.compile, which the
+                post turns on for batch sizes 1 to 32.
               </>
             }
             transfer={
               <>
-                Nothing: an unversioned baseline, unmatched settings, and both engines now ship MLA
-                attention backends.
+                Nothing: an unversioned baseline, unmatched settings, and both engines ship MLA
+                attention backends at the pinned versions.
               </>
             }
           />
@@ -1365,7 +1441,7 @@ export function SglangVsVllm() {
             }
             versions={<>Unstated; the vLLM column links a moving recipes page.</>}
             setup={<>gpt-oss-120b on one reasoning test at three reasoning efforts.</>}
-            result={<>Both engines within about a point of the official score at each effort.</>}
+            result={<>Both engines within 2 points of the official GPQA score at each effort.</>}
             transfer={<>It is an accuracy check and carries no performance evidence.</>}
           />
           <Bench
@@ -1441,15 +1517,17 @@ export function SglangVsVllm() {
             result={
               <>
                 &quot;In ShareGPT and Decode-heavy dataset, vLLM achieves highest throughput on H100
-                when serving Llama-3 models&quot;, with vLLM lower on the prefill-heavy set; on A100
-                the engines have &quot;similar TTFT and TPOT&quot; (time to first token, time per
+                when serving Llama-3 models&quot;, with vLLM lower on the prefill-heavy set; for
+                Llama 3 70B on four A100 the engines have &quot;similar TTFT and TPOT&quot; (time to
+                first token, time per
                 output token).
               </>
             }
             transfer={
               <>
                 Nothing: both versions are about two years old, a tuned flag ran against defaults,
-                and the prompts were dense Llama traffic with no sharing. The vLLM blog posts from
+                and the post states nothing about prefix sharing in its dense Llama prompts. The
+                vLLM blog posts from
                 2025 and 2026 checked during this research carry no SGLang performance comparison.
               </>
             }
@@ -1463,7 +1541,7 @@ export function SglangVsVllm() {
                 SemiAnalysis, &quot;InferenceMAX: Open Source Inference Benchmarking&quot;
               </Cite>
             }
-            versions={<>vLLM, SGLang and TensorRT-LLM in per-configuration containers, run nightly.</>}
+            versions={<>vLLM, SGLang and TensorRT-LLM &quot;depending on the model&quot;, run nightly.</>}
             setup={
               <>
                 H100, H200, B200, GB200 NVL72, MI300X, MI325X and MI355X; Llama 70B, DeepSeek R1 and
@@ -1506,8 +1584,9 @@ export function SglangVsVllm() {
             }
             transfer={
               <>
-                Release-to-release movement inside one engine is large enough to swamp a
-                cross-engine gap measured months earlier.
+                On B200 with DeepSeek R1 the report has SGLang &quot;throughput per GPU doubling
+                at some interactivity levels since last October&quot;, so by our reading a
+                cross-engine gap measured months earlier can be out of date.
               </>
             }
           />
@@ -1601,8 +1680,9 @@ export function SglangVsVllm() {
             transfer={
               <>
                 The method: same GPU, model, defaults and tuning budget, with the conclusion that
-                the better engine depends on the scenario. The numbers are 12 SGLang and 20 vLLM
-                releases old, on one small dense model with no sharing and no structured output.
+                the better engine depends on the scenario. The numbers are 15 SGLang and 32 vLLM
+                GitHub releases old, on one small dense model with LongBench v2 prompts whose prefix
+                sharing the paper does not state, and no structured output.
               </>
             }
           />
@@ -1675,8 +1755,8 @@ export function SglangVsVllm() {
                 schedule.py L27-L30
               </Cite>
               , vLLM&apos;s 0.92 covers the whole instance{' '}
-              <Cite tier={1} href={vllmUrl('vllm/config/cache.py', 'L103')}>
-                vLLM cache.py L103
+              <Cite tier={1} href={vllmUrl('vllm/config/cache.py', 'L103-L111')}>
+                vLLM cache.py L103-L111
               </Cite>
               , so SGLang&apos;s computed default, about 0.81 to 0.83 on an 80 GB H100, sits below
               0.92 without reserving less in total{' '}
@@ -1701,7 +1781,8 @@ export function SglangVsVllm() {
               <strong>
                 Drop <code>--enable-auto-tool-choice</code> and map tool-call parser names.
               </strong>{' '}
-              SGLang needs only <code>--tool-call-parser</code>, or <code>auto</code>{' '}
+              SGLang has no such flag, by our search of the v0.5.22 Python source, and needs only{' '}
+              <code>--tool-call-parser</code>, or <code>auto</code>{' '}
               <Cite tier={1} href={sglangUrl(`${SRT}/server_args.py`, 'L376-L384')}>
                 server_args.py L376-L384
               </Cite>
@@ -1722,14 +1803,19 @@ export function SglangVsVllm() {
               <Cite tier={1} href={sglangUrl(`${SRT}/entrypoints/openai/protocol.py`, 'L1161-L1189')}>
                 protocol.py L1161-L1189
               </Cite>
-              , where vLLM nests them under <code>structured_outputs</code>; <code>response_format</code>{' '}
+              , where vLLM nests them under <code>structured_outputs</code>{' '}
+              <Cite tier={1} href={vllmUrl('vllm/entrypoints/openai/chat_completion/protocol.py', 'L377')}>
+                vLLM chat_completion/protocol.py L377
+              </Cite>
+              ; <code>response_format</code>{' '}
               with a JSON schema works the same on both (section 10, Structured Output; {V12_LINK}).
             </li>
             <li>
               <strong>Match the speculative shape.</strong> Set{' '}
-              <code>--speculative-eagle-topk 1</code> for chain drafting like vLLM&apos;s; on B200,
-              set <code>--speculative-num-steps</code> too, which keeps <code>trtllm_mha</code> and
-              its 64-token pages{' '}
+              <code>--speculative-eagle-topk 1</code> with <code>--speculative-num-steps</code> for
+              chain drafting like vLLM&apos;s; a top-k without a step count fails an assertion at
+              startup. On B200, leave <code>--page-size</code> unset as well, which keeps{' '}
+              <code>trtllm_mha</code> and its 64-token pages{' '}
               <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/speculative_hook.py`, 'L1068-L1090')} kind="code">
                 speculative_hook.py L1068-L1090
               </Cite>{' '}
@@ -1740,11 +1826,12 @@ export function SglangVsVllm() {
                 Set <code>--admin-api-key</code> unless the port is reachable only from the
                 trainer&apos;s network.
               </strong>{' '}
-              With no key, the admin routes accept any client that can reach the port{' '}
+              With neither <code>--api-key</code> nor <code>--admin-api-key</code> set, the admin
+              routes accept any client that can reach the port{' '}
               <Cite tier={1} href={sglangUrl(`${SRT}/utils/auth.py`, 'L79-L151')}>
                 auth.py L79-L151
               </Cite>{' '}
-              (section 12, APIs, LoRA and the Admin Plane).
+              (section 12, Talking to SGLang: APIs, LoRA and the Admin Plane).
             </li>
           </ol>
           <Box variant="p">

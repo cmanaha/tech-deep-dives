@@ -235,4 +235,4 @@ Found while writing the sections, verified in `/tmp/sglang-src` or the fetched s
 
 - A14 and B7: the handshake timing follows 05 F3 as corrected: done before prefill finishes, not while prefill computes (section 15).
 - A9: "15 backends" is superseded by the register 00 erratum: 13 plus `dynamic` (section 7).
-- B6: the router lineage is 84 files (93 lines) by grep, not "close to a hundred files" (section 23).
+- B6: the router lineage is 80 files by grep (fact check fc12 recount; an authoring count said 84), not "close to a hundred files" (section 23).

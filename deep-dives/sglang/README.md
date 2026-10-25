@@ -20,7 +20,8 @@ linked, not repeated.
 
 - **Convergence first.** SGLang v0.5.22 and vLLM v0.31.0 both page the KV cache, cache
   prefixes by default, overlap CPU and GPU work by default, queue requests first-come-first-served
-  and recompute on preemption. On NVIDIA they run the same kernel projects through their own forks.
+  and recompute on preemption. On NVIDIA they run the same kernel projects: FlashInfer as released, FlashAttention through each
+  project's own fork.
 - **The index is the first difference.** SGLang indexes the KV cache as a token tree (the radix
   cache) where vLLM chains fixed-size block hashes. A cache hit copies slot indices, eviction removes
   unheld leaves only when an allocation is short, and HiCache demotes tree nodes to host memory and
