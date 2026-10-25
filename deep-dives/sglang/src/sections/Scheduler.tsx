@@ -559,15 +559,25 @@ const SIGNAL_ROWS: SignalRow[] = [
     see: <code>sglang:new_token_ratio</code>,
     means: (
       <>
-        The bet as it stands: it drifts toward 0.098 while decode runs clean and jumps at each
-        retraction.
+        The bet at the most recent prefill batch: the gauge is set only when a prefill batch is
+        logged. It steps toward 0.098 while decode runs clean and jumps after a retraction.
       </>
     ),
-    act: <>Graph it beside the retraction rate; every jump lines up with one retraction.</>,
+    act: (
+      <>
+        Graph it beside the retraction rate; a jump with no retraction beside it is the return to
+        the start value after the server went fully idle.
+      </>
+    ),
     src: (
-      <Cite tier={1} href={sglangUrl(COLLECTOR, 'L696-L705')} kind="code">
-        metrics_collector.py L696-L705
-      </Cite>
+      <>
+        <Cite tier={1} href={sglangUrl(COLLECTOR, 'L696-L705')} kind="code">
+          metrics_collector.py L696-L705
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(REPORTER, 'L720-L722')} kind="code">
+          metrics_reporter.py L720-L722
+        </Cite>
+      </>
     ),
   },
   {
@@ -602,13 +612,21 @@ const SIGNAL_ROWS: SignalRow[] = [
     act: (
       <>
         For a dashboard, use{' '}
-        <code>rate(sglang:cached_tokens_total[5m]) / rate(sglang:prompt_tokens_total[5m])</code>.
+        <code>
+          sum(rate(sglang:cached_tokens_total[5m])) / sum(rate(sglang:prompt_tokens_total[5m]))
+        </code>
+        ; the two counters carry different labels, so sum each side before dividing.
       </>
     ),
     src: (
-      <Cite tier={1} href={sglangUrl(REPORTER, 'L803-L842')} kind="code">
-        metrics_reporter.py L803-L842
-      </Cite>
+      <>
+        <Cite tier={1} href={sglangUrl(REPORTER, 'L803-L842')} kind="code">
+          metrics_reporter.py L803-L842
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(COLLECTOR, 'L2027-L2069')} kind="code">
+          metrics_collector.py L2027-L2069
+        </Cite>
+      </>
     ),
   },
 ];
@@ -684,8 +702,8 @@ export function Scheduler() {
               scheduler.py L1939-L1972
             </Cite>
             . The overlap loop builds batch N+1 while batch N is still on the GPU, launches it
-            without waiting, and only then processes batch N&apos;s result: the finish checks, the
-            cache updates and the hand-off to detokenization{' '}
+            without waiting, and only then processes batch N&apos;s result: the finish checks
+            (such as EOS, end of sequence), the cache updates and the hand-off to detokenization{' '}
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L1974-L2040')} kind="code">
               scheduler.py L1974-L2040
             </Cite>
@@ -713,8 +731,8 @@ export function Scheduler() {
           <Box variant="p">The one-step lead costs three things, and each one shows in traces:</Box>
           <ul>
             <li>
-              <strong>One extra token after a stop.</strong> A request that samples EOS (end of
-              sequence) or a stop string in batch N is already in batch N+1, so it decodes once
+              <strong>One extra token after a stop.</strong> A request that samples EOS or a stop
+              string in batch N is already in batch N+1, so it decodes once
               more; that token is discarded and its KV slot freed. Requests that reach{' '}
               <code>max_new_tokens</code> are predicted and left out of N+1 in advance{' '}
               <Cite tier={1} href={sglangUrl(SCHEDULER, 'L4320-L4345')} kind="code">
@@ -880,7 +898,7 @@ export function Scheduler() {
 
           <Box variant="p">
             A request sent with <code>ignore_eos</code> cannot stop early, so while it runs it is
-            charged its full remaining output, at a ratio of 1.0{' '}
+            charged its remaining output, still capped at 4096, at a ratio of 1.0{' '}
             <Cite tier={1} href={sglangUrl(POLICY, 'L754-L763')} kind="code">
               schedule_policy.py L754-L763
             </Cite>
@@ -910,7 +928,8 @@ export function Scheduler() {
                 </Cite>
                 . By our arithmetic on that formula, <code>--schedule-conservativeness 1.3</code>{' '}
                 starts the bet at 0.91 and 0.3 starts it at 0.21; above about 1.43 the start is
-                capped at 1.0, which charges running requests their whole remaining output. The
+                capped at 1.0, which charges running requests their whole remaining output up to
+                the 4096 cap. The
                 knob scales only what running requests are charged: a new request is charged up to
                 4096 output tokens at any setting{' '}
                 <Cite tier={1} href={sglangUrl(POLICY, 'L1336-L1360')} kind="code">
@@ -940,6 +959,9 @@ export function Scheduler() {
             at least one{' '}
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L4335-L4416')} kind="code">
               scheduler.py L4335-L4416
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(BATCH, 'L3298-L3311')} kind="code">
+              schedule_batch.py L3298-L3311
             </Cite>
             . Under the default <code>--retraction-policy length</code>, the requests with the
             fewest generated tokens go first, and among equals the one with the longest prompt;{' '}
@@ -1067,8 +1089,8 @@ export function Scheduler() {
         <SpaceBetween size="m">
           <Box variant="p">
             Turn on <code>--enable-metrics</code> before the first load test: Prometheus metrics
-            are off by default, and with the flag the server serves <code>/metrics</code> on its own
-            port{' '}
+            are off by default, and with the flag the server serves <code>/metrics</code> on the
+            same HTTP port as its API{' '}
             <Cite tier={1} href={sglangUrl(OBS_FIELDS, 'L70')}>
               observability.py L70
             </Cite>{' '}

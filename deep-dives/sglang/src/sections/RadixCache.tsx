@@ -448,7 +448,11 @@ const policyRows: PolicyRow[] = [
       <>
         Multi-turn and agent traffic where tail TTFT matters more than hit rate. Startup fails
         unless <code>threshold</code> exceeds <code>next_prompt_estimate</code> in{' '}
-        <code>--radix-eviction-policy-config</code>.
+        <code>--radix-eviction-policy-config</code>{' '}
+        <Cite tier={1} href={sglangUrl('python/sglang/srt/arg_groups/kv_cache_hook.py', 'L385-L391')}>
+          kv_cache_hook.py L385-L391
+        </Cite>
+        .
       </>
     ),
   },
@@ -515,8 +519,8 @@ const knobRows: KnobRow[] = [
     def: 'off (cache on)',
     effect: 'Every match is empty and every insert a no-op; cache-aware queue policies run as FCFS.',
     src: (
-      <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/unified_radix_cache.py', 'L586-L590')}>
-        unified_radix_cache.py L586-L590
+      <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/unified_radix_cache.py', 'L586-L620')}>
+        unified_radix_cache.py L586-L620
       </Cite>
     ),
   },
@@ -543,9 +547,15 @@ export function RadixCache() {
           <Box variant="p">
             SGLang keeps the KV (key and value) cache of finished requests in GPU memory and indexes
             it as a radix tree of token runs, so a later request that opens with the same tokens
-            skips their prefill. The cache is on unless you pass <code>--disable-radix-cache</code>{' '}
+            skips their prefill. The cache is on by default and{' '}
+            <code>--disable-radix-cache</code> turns it off{' '}
             <Cite tier={1} href={sglangUrl(MEMFLAGS, 'L64-L70')}>
               memory.py L64-L70
+            </Cite>
+            ; startup also turns it off for some configurations, a PD (prefill/decode) decode
+            server among them{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/srt/arg_groups/pd_disaggregation_hook.py', 'L128-L134')}>
+              pd_disaggregation_hook.py L128-L134
             </Cite>
             .
           </Box>
@@ -593,8 +603,8 @@ export function RadixCache() {
             <Cite tier={1} href={sglangUrl('python/sglang/srt/arg_groups/overrides.py', 'L1304-L1326')}>
               overrides.py L1304-L1326
             </Cite>
-            . By our reading of the default chain, a Llama-style model without tree speculation
-            reuses to the exact token on H100 and in 64-token steps on B200{' '}
+            . By our reading of the default chain, a Llama-style model with speculative decoding
+            off reuses to the exact token on H100 and in 64-token steps on B200{' '}
             <Cite
               tier={1}
               href={sglangUrl('python/sglang/srt/arg_groups/model_override_base.py', 'L268-L341')}
@@ -829,6 +839,9 @@ export function RadixCache() {
             tree logic{' '}
             <Cite tier={1} href={sglangUrl('python/sglang/srt/layers/radix_attention.py', 'L98-L101')}>
               radix_attention.py L98-L101
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/srt/layers/radix_attention.py', 'L294-L302')}>
+              radix_attention.py L294-L302
             </Cite>
             . The prefix cache is a separate object; for a standard model at v0.5.22 it is{' '}
             <code>UnifiedRadixCache</code>{' '}
@@ -841,9 +854,14 @@ export function RadixCache() {
             </Cite>
             . The startup log line{' '}
             <code>Tree cache initialized: source=default impl=UnifiedRadixCache</code> confirms which
-            cache you got{' '}
+            cache class you got{' '}
             <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/registry.py', 'L297-L306')}>
               registry.py L297-L306
+            </Cite>
+            ; a cache turned off with <code>--disable-radix-cache</code> is the same class and
+            prints the same line{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/registry.py', 'L91-L99')} kind="code">
+              registry.py L91-L99
             </Cite>
             . The <code>radix_cache.py</code> lines cited here are the readable Python form of the
             same walks.
@@ -874,12 +892,12 @@ export function RadixCache() {
             <Cite tier={1} href={sglangUrl(POLICY, 'L278-L298')}>
               schedule_policy.py L278-L298
             </Cite>
-            . Decode servers in PD (prefill/decode) disaggregation skip this refresh.
+            . Decode servers in PD disaggregation skip this refresh.
           </Box>
           <Box variant="p">
             <code>--schedule-policy lpm</code> (longest prefix match) sorts the queue by matched
-            prefix length each round. SGLang&apos;s tuning guide recommends it for workloads with
-            many shared prefixes, at some scheduling overhead{' '}
+            prefix length each round. SGLang&apos;s tuning guide suggests trying it for workloads
+            with many shared prefixes, at some scheduling overhead{' '}
             <Cite tier={1} href={sglangDocsSrcUrl('advanced_features/hyperparameter_tuning', 'L82')}>
               SGLang docs: hyperparameter tuning (v0.5.22 source)
             </Cite>
@@ -998,13 +1016,13 @@ export function RadixCache() {
                 </Cite>
                 . Those survive at v0.5.22 as the page-size-1 case, the eviction heap and{' '}
                 <code>lock_ref</code>. Its cache-aware scheduling survives as <code>lpm</code>, the
-                runtime default through v0.4.3{' '}
-                <Cite tier={1} href="https://github.com/sgl-project/sglang/blob/v0.4.3/python/sglang/srt/server_args.py#L70">
-                  v0.4.3 server_args.py L70
+                runtime default through v0.4.3.post2{' '}
+                <Cite tier={1} href="https://github.com/sgl-project/sglang/blob/v0.4.3.post2/python/sglang/srt/server_args.py#L70">
+                  v0.4.3.post2 server_args.py L70
                 </Cite>{' '}
-                and gave way to <code>fcfs</code> in v0.4.4{' '}
-                <Cite tier={1} href="https://github.com/sgl-project/sglang/blob/v0.4.4/python/sglang/srt/server_args.py#L70">
-                  v0.4.4 server_args.py L70
+                and gave way to <code>fcfs</code> in v0.4.3.post3{' '}
+                <Cite tier={1} href="https://github.com/sgl-project/sglang/blob/v0.4.3.post3/python/sglang/srt/server_args.py#L71">
+                  v0.4.3.post3 server_args.py L71
                 </Cite>
                 . A benchmark that pits SGLang&apos;s longest-prefix ordering against vLLM is
                 measuring a non-default SGLang mode.
@@ -1091,8 +1109,8 @@ export function RadixCache() {
             <li>
               <strong>Eviction: <code>sglang:evicted_tokens_total</code>.</strong> It counts device
               slots freed by eviction{' '}
-              <Cite tier={1} href={sglangUrl(METRICS, 'L2464-L2470')}>
-                metrics_collector.py L2464-L2470
+              <Cite tier={1} href={sglangUrl(METRICS, 'L2467-L2474')}>
+                metrics_collector.py L2467-L2474
               </Cite>
               , and moves only when an allocation is short. Our reading: a rising eviction rate
               beside a falling cached share means the reusable working set no longer fits.
@@ -1210,7 +1228,7 @@ export function RadixCache() {
               lang/choices.py L31-L160
             </Cite>
             , which the docs warn can favour a long choice whose later tokens are easy to predict{' '}
-            <Cite tier={1} href={sglangDocsSrcUrl('references/frontend/choices_methods', 'L30')}>
+            <Cite tier={1} href={sglangDocsSrcUrl('references/frontend/choices_methods', 'L31')}>
               SGLang docs: choices methods (v0.5.22 source)
             </Cite>
             . <code>run_batch</code> traces the program and, when the constant text before the
@@ -1230,9 +1248,10 @@ export function RadixCache() {
               python/sglang/README.md L8
             </Cite>
             , and its history matches: the 15 most recent commits to{' '}
-            <code>python/sglang/lang</code> at the tag, April to September 2026, are refactor, lint
-            and docs sweeps plus one new hosted backend, and its interpreter last gained a feature in
-            October 2025{' '}
+            <code>python/sglang/lang</code> at the tag, April to September 2026, are mostly
+            repository-wide refactor, lint and docs sweeps; the rest add one hosted backend, a Gemma
+            4 chat template and a streaming-logprobs change, and its interpreter last gained a
+            feature in October 2025{' '}
             <Cite tier={1} href="https://github.com/sgl-project/sglang/commits/v0.5.22/python/sglang/lang">
               commit history of python/sglang/lang at v0.5.22
             </Cite>
