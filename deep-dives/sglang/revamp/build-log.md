@@ -33,6 +33,8 @@ Per-section author reports, for the glossary, the fact check and the final repor
 | 27 tab 2 Scheduler | codebase/CodebaseScheduler.tsx | 60 | 0 | KV, PP, TP, ZMQ, PD, EOS, FCFS, LPM, HRRN, DP | FutureMap named as section 4's relay class; 4096 and 70% charges landed twice; log-field-to-variable table. Read from code, not run: priority raising an error, NGRAM/DFLASH keeping overlap on GPU |
 | 27 tab 3 Radix & pools | codebase/CodebaseRadixMemory.tsx | 58 | 0 | KV, LRU, SWA, HiCache, PyO3, LoRA | 15 stops incl. UnifiedRadixCache Rust core; check line plus disable_radix_cache on server_args= (disabled cache prints same Tree cache line); read from code, not run |
 | 27 tab 4 Execution | codebase/CodebaseExecution.tsx | 60 | 0 | MHA, MLA, PD, GQA, SM90/SM100, NPU | 12 stops; page-size warning text verified (overrides.py L1135); author flagged section 8 radix_attention.py L290-L296, orchestrator corrected to L294-L302 |
+| 27 tab 5 Parallel & PD | codebase/CodebaseParallelPd.tsx | 61 | 0 | TP, DP, EP, PD, KV, CP, PP, MoE, ZMQ, EPLB, NIXL | 15 stops; checks: scheduler process count vs GPUs, bootstrap registry query. Code-read, not run: the bootstrap registry is a bare aiohttp app with no key check (conn.py L2615-L2624) |
+| 27 tab 6 Gateway & Rust | codebase/CodebaseRust.tsx | 46 | 0 | (see tab 5) | 6 gateway stops, 5 Rust frontend stops; cache_aware.rs header comment contradicts its code (flagged doc-code); Rust-mode prefill serves the bootstrap registry on its API port |
 
 ## Cross-section conditions to keep consistent
 
@@ -40,6 +42,8 @@ Per-section author reports, for the glossary, the fact check and the final repor
 - PD handshake timing (sections 1, 23, 26 and any Against-vLLM line): under the default `early` policy prefill waits for decode's page reservation, so the handshake is done before prefill finishes; do not write that it runs while prefill computes (section 15, read from source; corrects 05 F3 and 10 A14).
 
 ## For the final report: decisions for Carlos
+
+- **PD bootstrap registry has no key check (lower priority).** `disaggregation/common/conn.py` L2615-L2624 builds the registry as a bare aiohttp app; any client reaching the bootstrap port (8998 by default) can `PUT /route` and register a prefill rank. Read from code, not run. Tab 5 advises keeping the port on the private KV network. Worth including in the same advisory as the `/server_info` item.
 
 - **Possible unreported vulnerability (top item).** At v0.5.22 `/server_info` returns `api_key` and `admin_api_key` in plain text. Any client holding the inference key can read it; with only `--admin-api-key` set, anyone who reaches the port can. Code: `http_server.py:847` has no `@auth_level`; `server_args.py:315` `resolved_dict` does not redact the keys; `utils/auth.py:145-151` is the NORMAL policy. Read from code, not run. `__repr__` (`server_args.py:308`) also hides only the watermark keys, so the startup `server_args=` log line likely prints both keys (not verified). Section 12 ships it as a docs-vs-code conflict with defensive advice. SGLang has no SECURITY.md. Consider reporting through a GitHub private security advisory before the dive deploys.
 - The gateway (`sgl-model-gateway`, in-tree 0.3.2) serves `/server_info` in its public route group (`server.rs` L593-L605), outside its own key check, proxying to the first worker with the client's `Authorization` header. A worker with only `--admin-api-key` therefore exposes its admin key to any gateway client. Section 17 advises blocking both `/server_info` paths at the ingress.

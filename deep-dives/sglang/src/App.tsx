@@ -112,7 +112,7 @@ const sections = [
   { id: 'quant', title: '9. Quantization & KV Precision' },
   { id: 'structured', title: '10. Structured Output' },
   { id: 'spec-decode', title: '11. Speculative Decoding' },
-  { id: 'apis', title: '12. APIs, LoRA & the Admin Plane' },
+  { id: 'apis', title: '12. Talking to SGLang: APIs, LoRA & the Admin Plane' },
   { id: 'rl', title: '13. SGLang as an RL Rollout Engine' },
   { id: 'parallelism', title: '14. Parallelism: TP, DP Attention & EP' },
   { id: 'pd', title: '15. PD Disaggregation' },
