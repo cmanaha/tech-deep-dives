@@ -61,9 +61,9 @@ export function CodebaseParallelPd() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            One SGLang server spans <code>tp_size x pp_size</code> GPUs, and every parallel width
-            except <code>--dp-size</code> carves that TP (tensor parallelism) group instead of
-            adding GPUs. The carving is integer arithmetic on each scheduler&apos;s global rank, run
+            One SGLang replica spans <code>tp_size x pp_size</code> GPUs, <code>--dp-size</code>{' '}
+            multiplies replicas, and every other parallel width carves the TP (tensor parallelism)
+            group instead of adding GPUs. The carving is integer arithmetic on each scheduler&apos;s global rank, run
             once per process before any communication group exists, and its result names the
             process in <code>ps</code> and in the log. So{' '}
             <strong>
@@ -164,7 +164,7 @@ export function CodebaseParallelPd() {
               <Cite tier={1} href={sglangUrl(RTC, 'L73-L92')}>
                 runtime_context.py L73-L92
               </Cite>
-              . Owns the arithmetic, in five small functions:
+              . Owns the arithmetic, in six small functions:
               <ul>
                 <li>
                   <code>derive_attn_tp_size</code>: what is left of the TP group for attention,{' '}
@@ -277,8 +277,8 @@ export function CodebaseParallelPd() {
               </Cite>
               . Owns the padding. <code>MAX_LEN</code> pads every DP group to the longest and
               all-gathers; <code>SUM_LEN</code> pads to the total and all-reduces. An extend batch
-              spread over several ranks takes <code>SUM_LEN</code>, PPLX always takes{' '}
-              <code>MAX_LEN</code>, and otherwise the cheaper mode wins. <code>_dp_gather</code>{' '}
+              spread over several ranks takes <code>SUM_LEN</code>, the <code>pplx</code> backend
+              always takes <code>MAX_LEN</code>, and otherwise the cheaper mode wins. <code>_dp_gather</code>{' '}
               and <code>dp_scatter</code> then move every group&apos;s tokens into the MoE buffer
               and back{' '}
               <Cite tier={1} href={sglangUrl(DPA, 'L937-L1060')}>
@@ -307,7 +307,8 @@ export function CodebaseParallelPd() {
                 layer.py L162-L199
               </Cite>
               . Owns the dispatcher. <code>create_moe_dispatcher</code> gives{' '}
-              <code>--moe-a2a-backend none</code> the <code>StandardDispatcher</code>, which keeps
+              <code>--moe-a2a-backend none</code> the <code>StandardDispatcher</code> (on NPU, the
+              Ascend TP dispatcher), which keeps
               MoE on the TP group&apos;s all-reduce or all-gather, and gives <code>deepep</code>,{' '}
               <code>mooncake</code>, <code>mori</code>, <code>nixl</code> and <code>pplx</code> the
               DeepEP-style dispatcher. That dispatcher picks its kernel on every call{' '}
@@ -412,14 +413,21 @@ export function CodebaseParallelPd() {
               <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L1382-L1421')}>
                 conn.py L1382-L1421
               </Cite>
-              , and the registry files its IP and port under exactly those four keys, the stop 3
-              layout{' '}
+              , and the registry files its IP and port under four keys, the stop 3 layout: the DP
+              rank (the attention DP rank, or the replica rank under <code>--dp-size</code>), then
+              the CP, TP and PP ranks{' '}
               <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L2750-L2766')}>
                 conn.py L2750-L2766
               </Cite>
               . It refuses a rank whose allocation policy differs from the ranks before it, and it
-              expects <code>dp_size x attn_cp_size x attn_tp_size x pp_size</code> registrations
-              before it answers lookups with anything but 503{' '}
+              expects its DP rank count times <code>attn_cp_size x attn_tp_size x pp_size</code>{' '}
+              registrations before it answers lookups with anything but 503. The registry stores
+              that count as <code>dp_size</code>: the number of attention DP groups, or of replicas
+              under <code>--dp-size</code>, so <code>--tp 8 --attn-dp-size 8</code> registers a{' '}
+              <code>dp_size</code> of 8{' '}
+              <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L2724-L2725')}>
+                conn.py L2724-L2725
+              </Cite>{' '}
               <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L2652-L2664')}>
                 conn.py L2652-L2664
               </Cite>{' '}
@@ -465,7 +473,7 @@ export function CodebaseParallelPd() {
                 decode.py L1-L19
               </Cite>
               . Owns the reservation. The docstring lists the four stages: preallocation queue,
-              transfer queue, a prebuilt batch, the running batch. <code>_pre_alloc</code> takes a
+              transfer queue, waiting queue (which builds a prebuilt batch), running batch. <code>_pre_alloc</code> takes a
               request-to-token row and KV slots for the request{' '}
               <Cite tier={1} href={sglangUrl(DECODE, 'L2166-L2199')}>
                 decode.py L2166-L2199
@@ -549,7 +557,14 @@ export function CodebaseParallelPd() {
               , so by our reading of the code, not run, it checks no key: any client that reaches
               the bootstrap port can call its routes, including the <code>PUT /route</code> that
               registers a prefill rank. It binds the HTTP server&apos;s host, which is 127.0.0.1
-              unless <code>--host</code> changes it. Section 15 (PD Disaggregation) covers that
+              unless <code>--host</code> changes it{' '}
+              <Cite tier={1} href={sglangUrl(DISAGG_SVC, 'L45-L48')}>
+                disagg_service.py L45-L48
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl(`${ARGS}/fields/serving.py`, 'L65')}>
+                fields/serving.py L65
+              </Cite>
+              . Section 15 (PD Disaggregation) covers that
               bind across nodes, and section 12 (APIs, LoRA &amp; the Admin Plane) covers the server&apos;s keys,
               none of which this registry reads. Keep the bootstrap port on the private network
               that carries the KV.
@@ -598,9 +613,14 @@ export function CodebaseParallelPd() {
             ; the ranks are filled in by our reading of stop 3, not copied from a running server.
           </Box>
           <Box variant="p">
-            After launch, run <code>ps -eo pid,args | grep sglang::scheduler</code>. Expect one line
-            per GPU, eight here, carrying the labels you computed, and the same labels at the start
-            of each scheduler&apos;s log lines. <code>--tp 8 --attn-dp-size 8 --ep 8</code> also
+            After launch, run <code>ps -eo pid,args | grep &apos;[s]glang::scheduler&apos;</code>{' '}
+            (the bracket keeps grep from matching itself). Expect one line per GPU, eight here,
+            carrying the labels you computed, and the same labels, space-separated, after the
+            timestamp in each scheduler&apos;s log lines{' '}
+            <Cite tier={1} href={sglangUrl(`${SRT}/utils/common.py`, 'L2584')}>
+              utils/common.py L2584
+            </Cite>
+            . <code>--tp 8 --attn-dp-size 8 --ep 8</code> also
             gives eight lines, <code>DP0_TP0_EP0</code> to <code>DP7_TP7_EP7</code>, because 8
             GPUs is all it uses. If the count or the labels differ from your arithmetic, a hook in
             stop 2 resolved a width differently: the startup <code>server_args=</code> line prints
@@ -618,7 +638,8 @@ export function CodebaseParallelPd() {
           <Box variant="p">
             While ranks are still registering it answers 503 with{' '}
             <code>Prefill server not fully registered yet (N workers registered).</code>; once
-            complete it returns JSON with <code>dp_size</code>, <code>attn_cp_size</code>,{' '}
+            complete it returns JSON with <code>dp_size</code> (the DP rank count),{' '}
+            <code>attn_cp_size</code>,{' '}
             <code>attn_tp_size</code>, <code>pp_size</code>, <code>page_size</code> and the
             allocation policy{' '}
             <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L2789-L2821')}>

@@ -29,6 +29,9 @@ const RS_HTTP = `${RS}/api_server/http`;
 const VLLM_RUST_FRONTEND =
   'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/envs.py#L1441-L1443';
 const VLLM_ROUTER_FORK = 'https://github.com/vllm-project/router/blob/v0.1.16/README.md#L339';
+const VLLM_RUST_TEXT =
+  'https://github.com/vllm-project/vllm/blob/v0.31.0/rust/src/text/src/lib.rs#L4-L8';
+const VLLM_RUST_README = 'https://github.com/vllm-project/vllm/blob/v0.31.0/rust/README.md#L3';
 
 const ROUTER_DEFAULTS = `python -c "from sglang_router.router_args import RouterArgs as A; print(A.policy, A.cache_threshold, A.balance_abs_threshold, A.balance_rel_threshold, A.eviction_interval_secs, A.max_tree_size)"`;
 
@@ -55,8 +58,8 @@ export function CodebaseRust() {
             The gateway decides each request from two things it keeps itself: an approximate tree
             of the prompt text it has already sent to each worker, and its own count of the
             requests it has open on each one. It never asks a worker what it cached. The balance
-            check comes first: when the busiest worker is more than 64 requests and more than 1.5
-            times above the idlest, the request goes to the least-loaded worker. Otherwise a match
+            check comes first: when the busiest worker has more than 64 requests over the idlest
+            and more than 1.5 times its load, the request goes to the least-loaded worker. Otherwise a match
             over <strong>30% of the prompt</strong> sends it to the worker that received that
             prefix, and anything weaker goes to the least-loaded worker{' '}
             <Cite tier={1} href={sglangUrl(CA, 'L404-L471')}>
@@ -365,10 +368,13 @@ export function CodebaseRust() {
                   ;
                 </li>
                 <li>
-                  the OpenAI-style routes, <code>/v1/models</code>, <code>/v1/completions</code> and{' '}
-                  <code>/v1/chat/completions</code>{' '}
+                  the OpenAI-style routes, <code>/v1/models</code>, <code>/v1/models/{'{model}'}</code>,{' '}
+                  <code>/v1/completions</code> and <code>/v1/chat/completions</code>{' '}
                   <Cite tier={1} href={sglangUrl(`${RS_HTTP}/openai.rs`, 'L32-L38')}>
                     openai.rs L32-L38
+                  </Cite>{' '}
+                  <Cite tier={1} href={sglangUrl(`${RS_HTTP}/openai/models.rs`, 'L16-L17')}>
+                    openai/models.rs L16-L17
                   </Cite>
                   .
                 </li>
@@ -425,8 +431,15 @@ export function CodebaseRust() {
             <Cite tier={1} href={VLLM_RUST_FRONTEND}>
               vLLM envs.py L1441-L1443 (v0.31.0)
             </Cite>
-            , where SGLang&apos;s runs inside the GPU process and also takes over tokenization and
-            detokenization. On the routing side, <code>vllm-project/router</code> is a fork of this
+            , tokenization and detokenization included{' '}
+            <Cite tier={1} href={VLLM_RUST_TEXT}>
+              vLLM rust/src/text/src/lib.rs L4-L8 (v0.31.0)
+            </Cite>
+            , and still reaches the engine over ZMQ{' '}
+            <Cite tier={1} href={VLLM_RUST_README}>
+              vLLM rust/README.md L3 (v0.31.0)
+            </Cite>
+            ; SGLang&apos;s runs inside the GPU process itself. On the routing side, <code>vllm-project/router</code> is a fork of this
             gateway{' '}
             <Cite tier={1} href={VLLM_ROUTER_FORK}>
               vllm-project/router v0.1.16 README L339
@@ -451,13 +464,24 @@ export function CodebaseRust() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Policy defaults.</strong> The Python launcher takes its defaults from the{' '}
-            <code>RouterArgs</code> dataclass{' '}
+            <strong>Policy defaults.</strong> The Python launcher takes its routing-policy defaults
+            from the <code>RouterArgs</code> dataclass{' '}
             <Cite tier={1} href={sglangUrl(RARGS, 'L54-L63')}>
               router_args.py L54-L63
             </Cite>{' '}
-            and also prints them in <code>python -m sglang_router.launch_router --help</code>, whose
-            parser uses <code>ArgumentDefaultsHelpFormatter</code>{' '}
+            <Cite tier={1} href={sglangUrl(RARGS, 'L283-L339')}>
+              router_args.py L283-L339
+            </Cite>
+            , though not every default: its parser binds <code>--prometheus-host</code> to{' '}
+            <code>0.0.0.0</code> where the dataclass holds <code>None</code>{' '}
+            <Cite tier={1} href={sglangUrl(RARGS, 'L85')}>
+              router_args.py L85
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(RARGS, 'L486-L490')}>
+              router_args.py L486-L490
+            </Cite>
+            . <code>python -m sglang_router.launch_router --help</code> prints the parser&apos;s
+            defaults, because it uses <code>ArgumentDefaultsHelpFormatter</code>{' '}
             <Cite tier={1} href={sglangUrl(LAUNCH_ROUTER, 'L55-L60')}>
               launch_router.py L55-L60
             </Cite>
@@ -480,8 +504,8 @@ export function CodebaseRust() {
           </Box>
           <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{RUST_PROBE}</pre>
           <Box variant="p">
-            Expect 503 from <code>/health</code> during warm-up and 200 after, and no Prometheus
-            text from <code>/metrics</code>, which has no route in this mode; the native API is{' '}
+            Expect 503 from <code>/health</code> during warm-up and 200 after, and 404 from{' '}
+            <code>/metrics</code>, which has no route in this mode; the native API is{' '}
             <code>/generate</code>, <code>/health</code> and <code>/health_generate</code> (stop
             11). The log line and status codes above come from our reading of the code, not from a
             running server. If the log line is missing, the Python frontend is serving and the

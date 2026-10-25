@@ -157,8 +157,8 @@ export function CodebaseExecution() {
             the remaining platforms get <code>flashinfer</code>, or <code>triton</code> when
             FlashInfer is missing or the model uses attention sinks. For MLA (multi-head latent
             attention) models the table gives <code>fa3</code> on Hopper, <code>flashinfer</code>{' '}
-            on SM100, <code>aiter</code> on AMD for 16 or 128 KV heads and <code>triton</code> in
-            the other cases. Two checks come before both branches: an out-of-tree platform plugin
+            on SM100, <code>aiter</code> on AMD for 16 or 128 KV heads, <code>torch_native</code>{' '}
+            on Apple GPUs and <code>triton</code> in the other cases. Two checks come before both branches: an out-of-tree platform plugin
             supplies its own default, and Whisper always gets <code>flashinfer</code>.
           </Box>
           <Box variant="p">
@@ -178,8 +178,8 @@ export function CodebaseExecution() {
               speculative_hook.py L1068-L1083
             </Cite>
             . So speculation with topk left unset gives a B200 MHA model <code>flashinfer</code>;
-            pass <code>--speculative-num-steps</code> and <code>--speculative-eagle-topk 1</code> to
-            keep <code>trtllm_mha</code>.
+            pass <code>--speculative-num-steps</code> and <code>--speculative-eagle-topk 1</code>,
+            and leave <code>--page-size</code> unset, to keep <code>trtllm_mha</code>.
           </Box>
           <ol start={4}>
             <li>
@@ -193,8 +193,8 @@ export function CodebaseExecution() {
               <Cite tier={1} href={sglangUrl(`${ARGS}/fields/schedule.py`, 'L139-L141')}>
                 fields/schedule.py L139-L141
               </Cite>
-              , and each paged backend replaces any value outside its accepted set with 64, logging
-              a warning as it does:
+              , and each backend in this pass replaces any value outside its accepted set with 64,
+              logging a warning as it does:
               <ul>
                 <li>
                   <code>flashmla</code>: 64 only.
@@ -319,8 +319,8 @@ export function CodebaseExecution() {
             <Cite tier={1} href={sglangUrl(REG, 'L41-L50')}>
               attention_registry.py L41-L50
             </Cite>
-            , and the factories hold the hardware checks: <code>fa3</code> asserts SM80 for non-MLA
-            models or SM90{' '}
+            , and the factories hold the hardware checks: <code>fa3</code> asserts compute
+            capability 8.x (Ampere and Ada) for non-MLA models, or SM90{' '}
             <Cite tier={1} href={sglangUrl(REG, 'L243-L266')}>
               attention_registry.py L243-L266
             </Cite>
@@ -459,8 +459,8 @@ export function CodebaseExecution() {
               . Owns the contract every backend implements: per-batch metadata built once and
               shared by all layers, split into a part outside the CUDA graph and a part recorded
               inside it, and a <code>forward</code> that returns an empty output for an idle batch,
-              sends a decode batch to <code>forward_decode</code> and the rest to{' '}
-              <code>forward_extend</code>{' '}
+              sends a decode batch to <code>forward_decode</code>, a mixed batch on NPU builds to{' '}
+              <code>forward_mixed</code> and the rest to <code>forward_extend</code>{' '}
               <Cite tier={1} href={sglangUrl(BASE, 'L265-L307')}>
                 base_attn_backend.py L265-L307
               </Cite>
@@ -491,7 +491,8 @@ export function CodebaseExecution() {
                 base_attn_backend.py L88-L94
               </Cite>
               . The eager runner dispatches by mode and runs a mixed batch as extend, except on NPU
-              (neural processing unit) builds, which keep a mixed kernel{' '}
+              (neural processing unit) builds, which keep a mixed kernel, and under context
+              parallelism{' '}
               <Cite tier={1} href={sglangUrl(`${RUNNER}/eager_runner.py`, 'L209-L225')}>
                 eager_runner.py L209-L225
               </Cite>
