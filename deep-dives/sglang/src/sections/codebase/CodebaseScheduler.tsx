@@ -91,8 +91,9 @@ const WALK: StopRow[] = [
     owns: (
       <>
         <code>dispatch_event_loop</code> picks one of eleven loops from the PD (prefill-decode)
-        disaggregation mode, the PP size and the overlap flag. A GPU server with default flags
-        runs <code>event_loop_overlap</code>.
+        disaggregation mode, the PP size and the overlap flag, with PD multiplexing and Apple&apos;s
+        MLX as two more opt-in branches. A GPU server with default flags runs{' '}
+        <code>event_loop_overlap</code>.
       </>
     ),
   },
@@ -157,7 +158,7 @@ const WALK: StopRow[] = [
     ),
     owns: (
       <>
-        The policy enums (L168-L182) and <code>calc_priority</code> (L209-L276), which orders the
+        The policy enums (L168-L183) and <code>calc_priority</code> (L209-L276), which orders the
         waiting queue each time a prefill batch is planned.
       </>
     ),
@@ -303,12 +304,13 @@ const LOG_FIELDS: LogRow[] = [
     source: (
       <>
         <code>full_token_usage</code>{' '}
-        <Cite tier={1} href={sglangUrl(POOL_STATS, 'L104-L149')} kind="code">
-          pool_stats_observer.py L104-L149
+        <Cite tier={1} href={sglangUrl(POOL_STATS, 'L235-L245')} kind="code">
+          pool_stats_observer.py L235-L245
         </Cite>
       </>
     ),
-    reads: 'The fraction of the KV pool in use when the line prints.',
+    reads:
+      'The fraction of the KV pool in use when the line prints; evictable radix-cache entries count as free.',
   },
   {
     id: 'running',
@@ -455,8 +457,8 @@ export function CodebaseScheduler() {
               .
             </li>
             <li>
-              The copy of the result to the host runs on a separate copy stream, behind a{' '}
-              <code>copy_done</code> event (L4594-L4616).
+              Except on AMD GPUs, the copy of the result to the host runs on a separate copy
+              stream, behind a <code>copy_done</code> event (L4594-L4616).
             </li>
             <li>
               <code>batch.input_ids</code> is set to <code>None</code> (L4619-L4620). On the next
@@ -476,10 +478,14 @@ export function CodebaseScheduler() {
             .
           </Box>
           <Box variant="p">
-            <strong>Where the one-step lag shows.</strong> The CPU waits on the GPU at one point:
-            the decode result handler blocks on the previous batch&apos;s <code>copy_done</code>{' '}
+            <strong>Where the one-step lag shows.</strong> The CPU waits on the GPU when it
+            processes a result: the decode and prefill handlers block on that batch&apos;s{' '}
+            <code>copy_done</code>{' '}
             <Cite tier={1} href={sglangUrl(RESULTS, 'L947-L948')} kind="code">
               batch_result_processor.py L947-L948
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(RESULTS, 'L267-L268')} kind="code">
+              L267-L268
             </Cite>
             . A request that hit EOS (end of sequence) in batch N was already planned into batch N+1,
             so the handler skips its extra token and the over-allocated KV slot is freed with the
@@ -582,9 +588,12 @@ export function CodebaseScheduler() {
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L4417-L4418')} kind="code">
               scheduler.py L4417-L4418
             </Cite>
-            , and an idle scheduler resets it to the start{' '}
+            , and a fully idle scheduler, with nothing running or queued, resets it to the start{' '}
+            <Cite tier={1} href={sglangUrl(SCHEDULER, 'L5085-L5103')} kind="code">
+              scheduler.py L5085-L5103
+            </Cite>{' '}
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L5149')} kind="code">
-              scheduler.py L5149
+              L5149
             </Cite>
             . By our arithmetic at the default conservativeness, it falls from 0.7 to 0.098 over 600
             decode steps. The tracker reads the resolved <code>schedule_conservativeness</code>{' '}
@@ -599,7 +608,8 @@ export function CodebaseScheduler() {
               scheduler.py L4352-L4416
             </Cite>
             . Under the default <code>length</code> policy it retracts the request with the fewest
-            output tokens first, the longest prompt breaking ties, and always keeps one{' '}
+            output tokens first, the longest prompt breaking ties, and keeps at least one, which it
+            aborts if even that one cannot fit{' '}
             <Cite tier={1} href={sglangUrl(BATCH, 'L3298-L3427')} kind="code">
               schedule_batch.py L3298-L3427
             </Cite>{' '}
@@ -688,8 +698,10 @@ export function CodebaseScheduler() {
           </Box>
           <Box variant="p">
             Read three fields together on your own server. A <code>#queue-req</code> that grows
-            while <code>token usage</code> stays well below 1.0 is, by our reading of the adder, the
-            charge holding requests back: the pool is reserved for output not yet generated. A
+            while <code>token usage</code> stays well below 1.0, with <code>#running-req</code> below
+            the <code>max_running_requests</code> the scheduler printed at startup, is, by our reading
+            of the adder, the charge holding requests back: the pool is reserved for output not yet
+            generated. A
             retraction warning is the opposite case, a bet that was too low, and its ratio pair
             shows how far the tracker had to jump. A high <code>#cached-token</code> against{' '}
             <code>#new-token</code> means admission is cheap for those requests, because cached

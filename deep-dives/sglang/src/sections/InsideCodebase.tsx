@@ -60,7 +60,7 @@ export function InsideCodebase() {
             <Cite tier={1} href={sglangTreeUrl('python/sglang/srt')}>
               python/sglang/srt/
             </Cite>
-            , the Rust server crates (the opt-in Rust frontend and the radix tree core) under{' '}
+            , the Rust crates, among them the opt-in Rust frontend and the radix tree core, under{' '}
             <Cite tier={1} href={sglangTreeUrl('rust')}>
               rust/
             </Cite>

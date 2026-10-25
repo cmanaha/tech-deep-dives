@@ -20,6 +20,7 @@ const MEMORY_HOOK = `${SRT}/arg_groups/memory_hook.py`;
 const PARALLEL_HOOK = `${SRT}/arg_groups/parallel_hook.py`;
 const MODEL_HOOK = `${SRT}/arg_groups/model_hook.py`;
 const SPEC_HOOK = `${SRT}/arg_groups/speculative_hook.py`;
+const ATTN_HOOK = `${SRT}/arg_groups/attention_hook.py`;
 const SCHED_FIELDS = `${SRT}/arg_groups/fields/schedule.py`;
 const RUNTIME_CTX = `${SRT}/runtime_context.py`;
 const HTTP = `${SRT}/entrypoints/http_server.py`;
@@ -58,7 +59,7 @@ const LAUNCH_BOXES: MapBox[] = [
     w: 240,
     h: 44,
     title: 'server_args.py, arg_groups/',
-    sub: 'fields, then 81 resolution steps',
+    sub: 'fields, then 81 named hooks',
     kind: 'launch',
   },
   {
@@ -184,8 +185,8 @@ function ModuleMapDiagram() {
         <desc id="cb-arch-map-desc">
           models/ and layers/ are drawn as the largest box because they hold over 40% of the
           runtime&apos;s lines and grow with every model and kernel added. Request features such as
-          constrained/, speculative/, disaggregation/ and lora/ sit beside the path inside the
-          scheduler process. The gateway, the Rust crates and the in-tree kernel library live
+          constrained/, speculative/, disaggregation/ and lora/ sit beside the path, drawn in the
+          scheduler process, where most of their code runs. The gateway, the Rust crates and the in-tree kernel library live
           outside python/sglang/srt/.
         </desc>
         <style>{`
@@ -363,8 +364,8 @@ const LAUNCH_STOPS: StopRow[] = [
     ),
     owns: (
       <>
-        <code>sglang serve</code> loads plugins, then hands the arguments to one of two serving
-        backends, detected from the model or forced with <code>--model-type</code>: the LLM (large
+        <code>sglang serve</code> loads plugins, then hands the arguments to one of its two built-in
+        serving backends, detected from the model or forced with <code>--model-type</code>: the LLM (large
         language model) runtime, or SGLang Diffusion (L134-L147). Diffusion is a separate engine under <code>python/sglang/multimodal_gen/</code>, so
         you can leave that tree closed for text serving.
       </>
@@ -440,8 +441,9 @@ const LAUNCH_STOPS: StopRow[] = [
     ),
     owns: (
       <>
-        <code>resolve_once</code> runs the resolution pipeline once per record: 81 named steps in a
-        fixed order. The next block explains what a step does.
+        <code>resolve_once</code> runs the resolution pipeline once per record: 81 named hooks in a
+        fixed order, 83 calls in all because two run twice, with four post-process passes and one
+        finalize step among them. The next block explains what a step does.
       </>
     ),
   },
@@ -603,8 +605,13 @@ export function CodebaseArchitecture() {
           />
           <Box variant="p">
             Stop 5 settles every flag and stop 7 creates the processes that section 3 counts.
-            Resolution runs in the process you started, before any other process exists, so a
-            startup traceback that ends in <code>arg_groups/</code> failed at stop 5.
+            Resolution runs in the process you started, before any other process exists, and so
+            does the validation pass stop 7 runs before it spawns anything{' '}
+            <Cite tier={1} href={sglangUrl(ENGINE, 'L1157')} kind="code">
+              engine.py L1157
+            </Cite>
+            , so a startup traceback that ends in <code>arg_groups/</code> failed at stop 5 or in
+            that validation pass.
           </Box>
         </SpaceBetween>
       </Container>
@@ -637,7 +644,8 @@ export function CodebaseArchitecture() {
             </li>
             <li>
               <strong>A resolution step decides it.</strong> <code>resolve_once</code> runs{' '}
-              <strong>81 named steps</strong> in a fixed order{' '}
+              <strong>81 named hooks</strong> in a fixed order, 83 calls in all because two run
+              twice, with four post-process passes and one finalize step among them{' '}
               <Cite tier={1} href={sglangUrl(PIPELINE, 'L20-L353')} kind="code">
                 pipeline.py L20-L353
               </Cite>
@@ -652,7 +660,7 @@ export function CodebaseArchitecture() {
               <Cite tier={1} href={sglangUrl(OVERRIDES, 'L178-L191')}>
                 L178-L191
               </Cite>
-              . A plugin can wrap or replace any named step in its place in the order{' '}
+              . A plugin can wrap or replace any named hook in its place in the order{' '}
               <Cite tier={1} href={sglangUrl(RES_HOOKS, 'L104-L135')}>
                 resolution_hooks.py L104-L135
               </Cite>
@@ -663,8 +671,8 @@ export function CodebaseArchitecture() {
               on the memory left after the weights load, such as the KV pool&apos;s
               token count and the default <code>--max-running-requests</code>, are computed inside
               each scheduler process{' '}
-              <Cite tier={1} href={sglangUrl(KV_CONF, 'L2800-L2853')} kind="code">
-                kv_cache_configurator.py L2800-L2853
+              <Cite tier={1} href={sglangUrl(KV_CONF, 'L2800-L2871')} kind="code">
+                kv_cache_configurator.py L2800-L2871
               </Cite>
               .
             </li>
@@ -672,7 +680,7 @@ export function CodebaseArchitecture() {
           <Box variant="p">
             Runtime code reads the results through per-process configuration bags such as{' '}
             <code>get_schedule()</code> and <code>get_exec()</code>, which <code>publish</code>{' '}
-            fills once in each process{' '}
+            fills in each process at startup{' '}
             <Cite tier={1} href={sglangUrl(RUNTIME_CTX, 'L1296-L1345')}>
               runtime_context.py L1296-L1345
             </Cite>{' '}
@@ -724,8 +732,9 @@ export function CodebaseArchitecture() {
               SGLang docs: server arguments L464-L468 (v0.5.22 source)
             </Cite>
             , and the values the resolution steps decide do not appear on it. The test that keeps
-            the page current compares flag names only: it fails when a live flag has no row or a row
-            names a flag that no longer registers, and it reads only the Argument column{' '}
+            the page current compares flag names only: it fails when a live flag has no row or the
+            page names a flag that no longer registers, and its coverage check reads only the
+            Argument column{' '}
             <Cite tier={1} href={sglangUrl(DOCS_TEST, 'L1-L3')}>
               test_server_args_docs_coverage.py L1-L3
             </Cite>{' '}
@@ -844,10 +853,13 @@ export function CodebaseArchitecture() {
               <code>grep -rn &quot;chunked_prefill_size=&quot; python/sglang/srt/arg_groups/</code>{' '}
               finds each declaration, and the position of its step in <code>pipeline.py</code>{' '}
               tells you which one wins. For this flag the search finds the GPU-memory step, the
-              data-parallelism step and model-specific steps that turn chunking off for some
-              checkpoints{' '}
-              <Cite tier={1} href={sglangUrl(MODEL_HOOK, 'L215-L220')} kind="code">
-                model_hook.py L215-L220
+              data-parallelism step, and steps that turn chunking off for some checkpoints and for
+              multi-item scoring{' '}
+              <Cite tier={1} href={sglangUrl(MODEL_HOOK, 'L207-L221')} kind="code">
+                model_hook.py L207-L221
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl(ATTN_HOOK, 'L563-L569')} kind="code">
+                attention_hook.py L563-L569
               </Cite>
               .
             </li>
@@ -867,7 +879,8 @@ export function CodebaseArchitecture() {
                 scheduler.py L1229-L1241
               </Cite>
               . By our reading of the code, <code>max_running_requests=None</code> in the first line
-              is expected when you left it unset and no speculative step set it to 48{' '}
+              is expected when you left it unset and no resolution step declared it, as the speculative
+              steps do with 48{' '}
               <Cite tier={1} href={sglangUrl(SPEC_HOOK, 'L995-L1003')} kind="code">
                 speculative_hook.py L995-L1003
               </Cite>
@@ -877,7 +890,7 @@ export function CodebaseArchitecture() {
           <Box variant="p">
             Run these three reads whenever a value from a document, a blog post or another
             engine&apos;s launch line goes into yours. Between the field and the value your server
-            uses sit <strong>81 named steps</strong>, and the two startup lines show where they
+            uses sit <strong>81 named hooks</strong>, and the two startup lines show where they
             landed.
           </Box>
         </SpaceBetween>

@@ -46,8 +46,8 @@ export function CodebaseRadixMemory() {
           </Box>
           <Box variant="p">
             For a standard model at v0.5.22 both operations run in <code>UnifiedRadixCache</code>,
-            and the tree walks inside it run on a Rust tree core by default. The older{' '}
-            <code>RadixCache</code> in <code>radix_cache.py</code> is the readable Python form of
+            and the tree walks inside it run on a Rust tree core by default. The{' '}
+            <code>RadixCache</code> class in <code>radix_cache.py</code> is the readable Python form of
             the same walks, so this path reads it alongside the code that serves. Section 5
             (RadixAttention and the Radix Cache) explains the behaviour, section 6 (KV Memory and
             the Defaults Your GPU Picks) sizes the pool, and section 7 (HiCache) adds the host and
@@ -94,7 +94,8 @@ export function CodebaseRadixMemory() {
               <code>--disable-radix-cache</code>, LMCache, an external cache linker, all-sliding-window
               models (<code>PureSWARadixCache</code>) and FlexKV, and every other model falls
               through to <code>create_unified_radix_cache</code>. A disabled cache is still a{' '}
-              <code>UnifiedRadixCache</code>, built in disabled mode.{' '}
+              <code>UnifiedRadixCache</code>, built in disabled mode, except for an
+              all-sliding-window model.{' '}
               <Cite tier={1} href={sglangUrl(REGISTRY, 'L149-L226')}>
                 registry.py L149-L226
               </Cite>{' '}
@@ -236,7 +237,8 @@ export function CodebaseRadixMemory() {
               <Cite tier={1} href={sglangUrl(POOL, 'L4728-L4743')}>
                 memory_pool.py L4728-L4743
               </Cite>
-              . Page size 1 gets <code>TokenToKVPoolAllocator</code>, any other page size{' '}
+              . Page size 1 gets <code>TokenToKVPoolAllocator</code> unless DCP (decode context
+              parallelism) is on; any other page size gets{' '}
               <code>PagedTokenToKVPoolAllocator</code>{' '}
               <Cite tier={1} href={sglangUrl(`${MC}/kv_cache_configurator.py`, 'L2595-L2618')}>
                 kv_cache_configurator.py L2595-L2618
@@ -291,7 +293,8 @@ export function CodebaseRadixMemory() {
               the prompt and output ids, calls <code>match_prefix</code>, and records the matched
               length and the last matched node on the request.{' '}
               <code>UnifiedRadixCache.match_prefix</code> hands the walk to the tree core and
-              applies any action it returns, such as a node split{' '}
+              applies any action it returns, such as moving a pending write-through after a node
+              split{' '}
               <Cite tier={1} href={sglangUrl(URC, 'L580-L599')}>
                 unified_radix_cache.py L580-L599
               </Cite>
@@ -537,7 +540,12 @@ export function CodebaseRadixMemory() {
             <Cite tier={1} href={sglangUrl(REGISTRY, 'L91-L99')}>
               registry.py L91-L99
             </Cite>
-            . A PD (prefill/decode) decode server turns the cache off unless you pass{' '}
+            . Startup also turns the cache off for some configurations, multi-item scoring among
+            them{' '}
+            <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/attention_hook.py`, 'L555-L561')} kind="code">
+              attention_hook.py L555-L561
+            </Cite>
+            ; a PD (prefill/decode) decode server turns it off unless you pass{' '}
             <code>--disaggregation-decode-enable-radix-cache</code>, and logs{' '}
             <code>Radix cache is disabled for decode server</code>{' '}
             <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/pd_disaggregation_hook.py`, 'L98-L134')}>
