@@ -82,5 +82,5 @@ Every new assertion is listed with its on-page source in `reviews/leverage/lv01.
 | 26 | Decision Guide | 4/4/5/5/3 | 4/5/5/5/3 |
 | 27 | Inside the Codebase (shell; six tabs) | 4/4/5/5/5; 5/4/5/5/4 each | unchanged |
 
-Practical leverage rose in 13 sections and economy in 15. The fact-check Gate 3 scores above stand:
+Practical leverage rose in 13 sections and economy in 14. The fact-check Gate 3 scores above stand:
 the pass changed order, demotion and wording only, under the same accuracy floor.
