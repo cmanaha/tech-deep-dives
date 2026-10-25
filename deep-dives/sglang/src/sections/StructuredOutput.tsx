@@ -324,8 +324,8 @@ const REJECT_ROWS: RejectRow[] = [
     result: (
       <>
         Ends before any token. OpenAI non-streaming calls get 400 with{' '}
-        <code>Failed to compile json grammar: &lt;compiler error&gt;</code>; streaming calls get a
-        final chunk whose finish reason is an abort with the same message
+        <code>Failed to compile json grammar: &lt;compiler error&gt;</code>; streaming calls get one
+        error event with code 400 and the same message, and the stream ends
       </>
     ),
     fix: <>Fix the spec. The failure is cached, so the same string fails at once next time</>,
@@ -339,6 +339,9 @@ const REJECT_ROWS: RejectRow[] = [
         </Cite>{' '}
         <Cite tier={1} href={sglangUrl(SERVING_BASE, 'L116-L121')} kind="code">
           serving_base.py L116-L121
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(SERVING_CHAT, 'L2085-L2102')} kind="code">
+          serving_chat.py L2085-L2102
         </Cite>
       </>
     ),
@@ -352,7 +355,8 @@ const REJECT_ROWS: RejectRow[] = [
     ),
     result: (
       <>
-        400: <code>Failed to compile ebnf grammar: Unknown grammar error</code>
+        400: <code>Failed to compile ebnf grammar: Unknown grammar error</code>, with{' '}
+        <code>structural_tag</code> in place of <code>ebnf</code> for a structural tag
       </>
     ),
     fix: <>Outlines takes JSON schema and regex only; use XGrammar or llguidance</>,
@@ -843,7 +847,8 @@ export function StructuredOutput() {
             , which section 11, Speculative Decoding, covers.
           </Box>
           <Box variant="p">
-            Every constrained token costs one decode step. The SGLang paper{' '}
+            With speculative decoding off, every constrained token costs one decode step. The
+            SGLang paper{' '}
             <Cite tier={3} href={ARXIV}>
               arXiv 2312.07104v2
             </Cite>{' '}
@@ -855,8 +860,8 @@ export function StructuredOutput() {
             <Cite tier={2} href={LMSYS_FSM}>
               LMSYS blog, 2024-02-05 (project claim)
             </Cite>
-            . At v0.5.22 that path is never reached: the grammar classes still carry the
-            jump-forward interface, nothing in the runtime under <code>python/</code> calls it, the
+            . At v0.5.22 that path is never reached: the grammar classes carry the jump-forward
+            interface, nothing in the runtime under <code>python/</code> calls it, the
             Outlines backend never builds its jump-forward map, and no flag turns it on{' '}
             <Cite tier={1} href={sglangUrl(BASE, 'L119-L145')} kind="code">
               base_grammar_backend.py L119-L145
@@ -938,8 +943,8 @@ export function StructuredOutput() {
             </Cite>
             . By arithmetic on the code that is at least 50 seconds (10,000 x 5 ms), and longer
             when forward passes are slow: the code&apos;s own comment puts the real wait at the
-            iteration count times the larger of the poll interval and the forward latency. The
-            compile is cancelled, the key is cached as a failure with the message{' '}
+            iteration count times the larger of the poll interval and the forward latency. The key
+            is cached as a failure with the message{' '}
             <code>Grammar preprocessing timed out</code>, and the request is aborted{' '}
             <Cite tier={1} href={sglangUrl(GM, 'L312-L322')} kind="code">
               grammar_manager.py L312-L322
@@ -1022,15 +1027,23 @@ export function StructuredOutput() {
             .
           </Box>
           <Box variant="p">
-            XGrammar is the strict one. Before compiling, SGLang checks each JSON schema and
-            rejects keywords XGrammar 0.2.x would accept without enforcing, string formats it does
-            not implement, and string fields that combine more than one kind of string constraint;
-            the 400 names the JSON pointer and the keyword{' '}
+            XGrammar, the default, gets a pre-check. Before compiling, SGLang checks each JSON
+            schema and rejects keywords XGrammar 0.2.x would accept without enforcing, string
+            formats it does not implement, and string fields that combine more than one kind of
+            string constraint; the 400 names the JSON pointer and the keyword{' '}
             <Cite tier={1} href={sglangUrl(VALID, 'L167-L201')} kind="code">
               json_schema_validation.py L167-L201
             </Cite>
-            . SGLang 0.5.22 pins XGrammar 0.2.7 exactly and Outlines 0.1.11, and accepts llguidance
-            from 1.7.6 up to 2.0, all in the base install{' '}
+            . Outlines gets a wider keyword check of its own, which also rejects{' '}
+            <code>minimum</code>, <code>maximum</code>, <code>allOf</code> and <code>oneOf</code>{' '}
+            <Cite tier={1} href={sglangUrl(VALID, 'L66-L92')} kind="code">
+              json_schema_validation.py L66-L92
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(OUTLINES, 'L169-L182')} kind="code">
+              outlines_backend.py L169-L182
+            </Cite>
+            . SGLang 0.5.22 pins XGrammar 0.2.7 and Outlines 0.1.11 exactly, and accepts llguidance
+            from 1.7.6 to below 2.0, all in the base install{' '}
             <Cite tier={1} href={sglangUrl(PYPROJECT, 'L24-L102')}>
               pyproject.toml L24-L102
             </Cite>
@@ -1113,7 +1126,7 @@ export function StructuredOutput() {
             </Cite>
             . It is the only path that defers the grammar, so our reading is that without{' '}
             <code>--reasoning-parser</code> the schema binds from the first output token and a
-            reasoning model cannot open its think block at all.
+            reasoning model cannot write free-form reasoning before the schema-bound output.
           </Box>
           <Box variant="p">
             <code>--enable-strict-thinking</code> (off by default) applies the mask inside the think
@@ -1209,8 +1222,8 @@ export function StructuredOutput() {
             <Cite tier={1} href={vllmUrl('vllm/config/structured_outputs.py', 'L21')}>
               vLLM structured_outputs.py L21
             </Cite>{' '}
-            <Cite tier={1} href={vllmUrl('vllm/sampling_params.py', 'L1281-L1320')}>
-              vLLM sampling_params.py L1281-L1320
+            <Cite tier={1} href={vllmUrl('vllm/sampling_params.py', 'L1297-L1341')}>
+              vLLM sampling_params.py L1297-L1341
             </Cite>
             , where SGLang runs one backend for every request, so an unusual schema can pass on vLLM
             and fail with a 400 on SGLang until it runs with{' '}

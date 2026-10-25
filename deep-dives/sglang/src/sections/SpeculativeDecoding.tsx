@@ -314,7 +314,7 @@ const comboRows: ComboRow[] = [
     combo: 'PD disaggregation',
     behaviour: (
       <>
-        Both roles load the draft. Prefill runs the target prefill and the first draft step, then
+        Both roles load the draft. For the EAGLE family, prefill runs the target prefill and the first draft step, then
         ships the target KV, the draft KV, that step&apos;s top-k candidates and the last hidden state;
         decode starts its first verify from those and drafts every later step itself. Launch both
         roles with the same speculative flags (section 15, PD Disaggregation){' '}
@@ -460,8 +460,8 @@ const walkRows: WalkRow[] = [
         <Cite tier={1} href={sglangUrl(EU, 'L157-L220')}>
           eagle_utils.py L157-L220
         </Cite>{' '}
-        <Cite tier={1} href={sglangUrl(EU, 'L705-L760')}>
-          L705-L760
+        <Cite tier={1} href={sglangUrl(EU, 'L858-L1004')}>
+          L858-L1004
         </Cite>
       </>
     ),
@@ -575,8 +575,8 @@ export function SpeculativeDecoding() {
           <SpecRoundDiagram />
           <Box variant="small" color="text-body-secondary">
             Illustrative, not measured. The chain is the automatic shape for most targets: 3 draft
-            steps, top-k 1, 4 verified positions. A Llama or Grok target gets a tree instead (next
-            sections).
+            steps, top-k 1, 4 verified positions. A <code>LlamaForCausalLM</code> or Grok-1 target
+            gets a tree instead (next sections).
           </Box>
 
           <Box variant="p">
@@ -670,7 +670,8 @@ export function SpeculativeDecoding() {
             Three knobs set the shape: <code>--speculative-num-steps</code> (draft depth),{' '}
             <code>--speculative-eagle-topk</code> (branches kept per step) and{' '}
             <code>--speculative-num-draft-tokens</code> (positions verified). Leave all three unset and
-            SGLang picks them from the target architecture. A Llama or Grok target gets a tree: 5 draft
+            SGLang picks them from the target architecture. A <code>LlamaForCausalLM</code> or Grok-1
+            target gets a tree: 5 draft
             steps, top-k 4, 8 verified tokens. Every other target, and any <code>STANDALONE</code>{' '}
             draft, gets a chain: 3 steps, top-k 1, 4 verified tokens{' '}
             <Cite tier={1} href={sglangUrl(HOOK, 'L1340-L1371')}>
@@ -693,8 +694,8 @@ export function SpeculativeDecoding() {
             In a tree, each draft step keeps the k best continuations of every branch, the best nodes up
             to the draft-token count form the tree, and the target scores the whole tree in one forward
             with an attention mask that lets each node see only its own ancestors{' '}
-            <Cite tier={1} href={sglangUrl(EU, 'L145-L220')}>
-              eagle_utils.py L145-L220
+            <Cite tier={1} href={sglangUrl(EU, 'L113-L220')}>
+              eagle_utils.py L113-L220
             </Cite>
             . The kept path is the longest root-to-leaf path the target agrees with, plus the bonus
             token. A tree spends extra verify width, 8 positions per request at the Llama default
@@ -718,7 +719,8 @@ export function SpeculativeDecoding() {
             reuses in (section 8, Attention Backends and Kernels). With{' '}
             <code>--speculative-eagle-topk</code> above 1, or top-k 1 with an explicit page size above
             1, Hopper and B200 MHA (multi-head attention) models leave their defaults for{' '}
-            <code>flashinfer</code> (<code>triton</code> without FlashInfer) at page size 1{' '}
+            <code>flashinfer</code> (<code>triton</code> without FlashInfer), at page size 1 unless you set
+            one{' '}
             <Cite tier={1} href={sglangUrl(`${SRT}/utils/common.py`, 'L4014-L4020')}>
               utils/common.py L4014-L4020
             </Cite>
@@ -734,8 +736,8 @@ export function SpeculativeDecoding() {
             </Cite>
             . By our reading of the same lines, that includes targets whose automatic shape is a chain.
             To keep <code>trtllm_mha</code> under speculation on B200, set{' '}
-            <code>--speculative-num-steps</code> and <code>--speculative-eagle-topk 1</code> yourself;
-            that backend refuses top-k above 1{' '}
+            <code>--speculative-num-steps</code> and <code>--speculative-eagle-topk 1</code> yourself and
+            leave <code>--page-size</code> unset; that backend refuses top-k above 1{' '}
             <Cite tier={1} href={sglangUrl(HOOK, 'L1068-L1090')} kind="code">
               speculative_hook.py L1068-L1090
             </Cite>
@@ -759,8 +761,8 @@ export function SpeculativeDecoding() {
             A greedy request keeps a drafted token when it matches the target&apos;s own choice. A
             sampled request is verified target-only by default: each drafted token is treated as a
             certain proposal and accepted with the target&apos;s probability for it{' '}
-            <Cite tier={1} href={sglangUrl(EU, 'L705-L760')}>
-              eagle_utils.py L705-L760
+            <Cite tier={1} href={sglangUrl(EU, 'L858-L1004')}>
+              eagle_utils.py L858-L1004
             </Cite>
             . The two acceptance thresholds, <code>--speculative-accept-threshold-single</code> and{' '}
             <code>--speculative-accept-threshold-acc</code>, default to 1.0; values below 1 accept drafts
@@ -802,7 +804,7 @@ export function SpeculativeDecoding() {
             <Cite tier={1} href={RELEASE}>
               v0.5.22 release notes
             </Cite>
-            . Greedy requests verify as before.
+            . Greedy requests keep the greedy check.
           </Box>
         </SpaceBetween>
       </Container>
@@ -843,8 +845,8 @@ export function SpeculativeDecoding() {
               L914-L923
             </Cite>
             . Without speculation the cap is derived from the KV pool, per data-parallel worker:
-            KV tokens divided by context length times 512, clamped to 2048 to 4096, and never above half
-            the KV tokens{' '}
+            KV tokens divided by context length times 512, clamped to 2048 to 4096, never above half
+            the KV tokens, and on hybrid models never above what the Mamba state cache holds{' '}
             <Cite tier={1} href={sglangUrl(KVCONF, 'L2800-L2851')}>
               kv_cache_configurator.py L2800-L2851
             </Cite>
@@ -867,8 +869,8 @@ export function SpeculativeDecoding() {
           </Box>
           <Box variant="p">
             Raise the cap to the concurrency you serve, then measure, because published gains shrink as
-            batches grow. The EAGLE-3 authors report up to 6.5x speedup at small batch and a 1.38x
-            throughput gain inside SGLang at batch size 64{' '}
+            batches grow. The EAGLE-3 authors report up to 6.5x speedup against plain Hugging Face
+            decoding, and a 1.38x throughput gain inside SGLang at batch size 64{' '}
             <Cite tier={3} href={EAGLE3_PAPER}>
               EAGLE-3 paper, arXiv 2503.01840v3 (paper claim)
             </Cite>
@@ -961,11 +963,14 @@ export function SpeculativeDecoding() {
                 <Cite tier={1} href={sglangDocsSrcUrl(SPEC_DOC, 'L743-L750')} kind="doc-code-conflict">
                   SGLang docs: Speculative Decoding V2 (v0.5.22 source)
                 </Cite>
-                . The v0.5.22 argument hooks hold no such check, the worker carries tree-shape state for
-                top-k above 1, and an in-tree CI (continuous integration) test launches{' '}
+                . The v0.5.22 argument hooks hold no such check, the V2 worker that both loops run has
+                code paths for top-k above 1, and an in-tree CI (continuous integration) test launches{' '}
                 <code>EAGLE3</code> with top-k 4 under the default loop{' '}
-                <Cite tier={1} href={sglangUrl(EW2, 'L1462-L1481')}>
-                  eagle_worker_v2.py L1462-L1481
+                <Cite tier={1} href={sglangUrl(EW2, 'L1092-L1102')}>
+                  eagle_worker_v2.py L1092-L1102
+                </Cite>{' '}
+                <Cite tier={1} href={sglangUrl(EW2, 'L1209-L1215')}>
+                  L1209-L1215
                 </Cite>{' '}
                 <Cite tier={1} href={sglangUrl('test/registered/attention/test_flash_attention_4.py', 'L69-L83')}>
                   test_flash_attention_4.py L69-L83
@@ -1013,7 +1018,8 @@ export function SpeculativeDecoding() {
             .
           </Box>
           <Box variant="p">
-            Hybrid models mix attention layers with Mamba-style linear layers (section 8) and checkpoint
+            Hybrid models mix attention layers with Mamba-style linear layers (section 8, Attention
+            Backends and Kernels) and checkpoint
             their recurrent state at fixed token intervals, so the radix cache can resume a prefix. In
             v0.5.22 that boundary check counts only the tokens the grammar kept{' '}
             <Cite tier={1} href={sglangUrl(BRP, 'L1607-L1641')}>
@@ -1074,6 +1080,9 @@ export function SpeculativeDecoding() {
             </Cite>{' '}
             <Cite tier={2} href={`${SF}/blob/${SF_SHA}/README.md#L16-L60`}>
               SpecForge README at f586b1ee
+            </Cite>{' '}
+            <Cite tier={1} href={`${SF}/tree/${SF_SHA}/specforge/export`}>
+              SpecForge specforge/export at f586b1ee
             </Cite>
             . It has no tags or releases, so this dive pins commit f586b1ee (2026-10-22). At that commit
             it depends on <code>sglang==0.5.18</code> for its training-time target server, four releases
@@ -1092,20 +1101,26 @@ export function SpeculativeDecoding() {
                 <Cite tier={1} href={sglangDocsSrcUrl(SPEC_DOC, 'L122-L152')}>
                   SGLang docs: performance highlights (v0.5.22 source; project claim)
                 </Cite>
+                ; the EAGLE-3 paper prints the same three figures as batch size 1, measured by the SGLang
+                team{' '}
+                <Cite tier={3} href={EAGLE3_PAPER}>
+                  EAGLE-3 paper, arXiv 2503.01840v3, Table 4 (paper claim)
+                </Cite>
                 .
               </Box>
               <Box variant="p">
-                The EAGLE-3 authors report a speedup ratio up to 6.5x, about 1.4x over EAGLE-2, and a
-                1.38x throughput gain inside SGLang at batch size 64{' '}
+                The EAGLE-3 authors report a speedup ratio up to 6.5x against plain Hugging Face decoding,
+                about 1.4x over EAGLE-2 at batch size 1, and a 1.38x throughput gain inside SGLang at batch
+                size 64 for Llama 3.1 8B Instruct on one H100 with a 3-step chain{' '}
                 <Cite tier={3} href={EAGLE3_PAPER}>
                   EAGLE-3 paper, arXiv 2503.01840v3 (paper claim)
                 </Cite>
                 .
               </Box>
               <Box variant="p">
-                LMSYS reports, against plain autoregressive decoding: Qwen3.6-27B with a Domino draft,
-                3.34x to 5.72x on 2 A100 GPUs at concurrency 1; Qwen3.5-397B-A17B with a DFlash draft,
-                up to 4.31x on HumanEval on 8 B200 GPUs with 8-way TP (tensor parallelism), BF16
+                LMSYS reports, against plain autoregressive decoding: Qwen3.6-27B with a Domino draft at
+                block size 16, 3.34x to 5.72x on 2 A100 GPUs at concurrency 1; Qwen3.5-397B-A17B with a
+                DFlash draft at block size 16, up to 4.31x on HumanEval on 8 B200 GPUs with 8-way TP (tensor parallelism), BF16
                 (bfloat16), greedy decoding, thinking on and concurrency 1; Kimi-K3 with a DSpark draft, up to
                 3.14x on GSM8K on 8 B300 GPUs at concurrency 1 and 1.37x to 2.36x at concurrency 16. The
                 post gives no acceptance-length figures{' '}
@@ -1115,8 +1130,8 @@ export function SpeculativeDecoding() {
                 .
               </Box>
               <Box variant="p">
-                Every figure is a project or paper claim measured at low concurrency on the stated
-                hardware. Treat them as upper bounds and measure on your own traffic.
+                Every figure is a project or paper claim on the stated hardware, and the largest come from
+                concurrency 1. Treat them as upper bounds and measure on your own traffic.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -1137,7 +1152,8 @@ export function SpeculativeDecoding() {
           <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{LAUNCH}</pre>
           <Box variant="p">
             Each flag answers one part of this section. The algorithm and draft path come from the menu.
-            The two shape flags pin a chain, which also keeps <code>trtllm_mha</code> on B200. The
+            The two shape flags pin a chain, which also keeps <code>trtllm_mha</code> on a B200 MHA
+            target that would default to it. The
             explicit cap replaces the 48 that speculation would otherwise set, so the server admits the
             concurrency you planned for.
           </Box>
