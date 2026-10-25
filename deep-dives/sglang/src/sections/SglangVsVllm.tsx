@@ -865,8 +865,8 @@ export function SglangVsVllm() {
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L1974-L2040')}>
               scheduler.py L1974-L2040
             </Cite>{' '}
-            <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L592-L602')}>
-              vLLM vllm.py L592-L602
+            <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L1576-L1635')}>
+              vLLM vllm.py L1576-L1635
             </Cite>
             , queue requests first-come-first-served (FCFS){' '}
             <Cite tier={1} href={sglangUrl(SCHED_FIELDS, 'L82-L98')}>

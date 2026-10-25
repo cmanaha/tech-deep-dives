@@ -18,6 +18,7 @@ const MOB = `${SRT}/arg_groups/model_override_base.py`;
 const SPEC_HOOK = `${SRT}/arg_groups/speculative_hook.py`;
 const PD_HOOK = `${SRT}/arg_groups/pd_disaggregation_hook.py`;
 const AUTH = `${SRT}/utils/auth.py`;
+const HTTP = `${SRT}/entrypoints/http_server.py`;
 const PREFILL = `${SRT}/disaggregation/prefill.py`;
 const MOONCAKE_TE = `${SRT}/distributed/device_communicators/mooncake_transfer_engine.py`;
 const NIXL_CONN = `${SRT}/disaggregation/nixl/conn.py`;
@@ -202,7 +203,7 @@ export function ThesisAndFraming() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            SGLang is an open-source serving engine for language models, and the name covers two
+            SGLang is an open-source serving engine, and for language models the name covers two
             things its repository ships. One is a frontend language, a Python library for programs
             that make several model calls{' '}
             <Cite tier={1} href={sglangTreeUrl('python/sglang/lang')}>
@@ -212,14 +213,18 @@ export function ThesisAndFraming() {
             <Cite tier={1} href={sglangUrl('python/sglang/README.md', 'L10')}>
               python/sglang/README.md L10
             </Cite>
-            . On the evidence in the v0.5.22 tree, the runtime behind an OpenAI-compatible API is how
-            SGLang is used today: the quickstart&apos;s first request is an OpenAI chat completion,
-            and the docs file the language under References{' '}
+            . The v0.5.22 tree presents the runtime behind an OpenAI-compatible API as the way to
+            use SGLang: the quickstart&apos;s first request is an OpenAI chat completion, the docs
+            file the language under References, and the package README marks the language
+            frontend deprecated{' '}
             <Cite tier={1} href={sglangDocsSrcUrl('get-started/quickstart', 'L50-L55')}>
               SGLang docs: quickstart (v0.5.22 source)
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl('docs/docs.json', 'L1047-L1082')}>
               docs.json L1047-L1082
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/README.md', 'L8')}>
+              python/sglang/README.md L8
             </Cite>
             . This dive is about the runtime. The language appears where it explains the cache, in
             the design-intent block at the end of section 5, RadixAttention and the Radix Cache.
@@ -284,8 +289,8 @@ export function ThesisAndFraming() {
                 <Cite tier={1} href={sglangUrl(SCHEDULER, 'L1974-L2040')}>
                   scheduler.py L1974-L2040
                 </Cite>{' '}
-                <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L592-L602')}>
-                  vLLM vllm.py L592-L602
+                <Cite tier={1} href={vllmUrl('vllm/config/vllm.py', 'L1576-L1635')}>
+                  vLLM vllm.py L1576-L1635
                 </Cite>
                 .
               </li>
@@ -314,6 +319,9 @@ export function ThesisAndFraming() {
                 FlashAttention built from a fork:{' '}
                 <Cite tier={1} href={sglangUrl('python/pyproject.toml', 'L41-L88')}>
                   pyproject.toml L41-L88
+                </Cite>{' '}
+                <Cite tier={1} href={sglangUrl('python/sglang/kernels/aot/CMakeLists.txt', 'L83-L89')}>
+                  kernels/aot/CMakeLists.txt L83-L89
                 </Cite>{' '}
                 <Cite tier={1} href={vllmUrl('requirements/cuda.txt', 'L17-L18')}>
                   vLLM requirements/cuda.txt L17-L18
@@ -471,13 +479,17 @@ export function ThesisAndFraming() {
           </Box>
           <Box variant="p">
             The third is the admin plane, the routes that change a running server, among them the
-            weight updates an RL trainer calls. They are registered on every server, and with no{' '}
-            <code>--admin-api-key</code> they accept any client that can reach the port{' '}
+            weight updates an RL trainer calls. They are registered on every Python HTTP server, and
+            with neither <code>--api-key</code> nor <code>--admin-api-key</code> set they accept
+            any client that can reach the port, the three HiCache storage routes excepted{' '}
             <Cite tier={1} href={sglangUrl(AUTH, 'L79-L151')}>
               auth.py L79-L151
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl(SERVING, 'L154-L161')}>
               serving.py L154-L161
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(HTTP, 'L1106-L1173')}>
+              http_server.py L1106-L1173
             </Cite>
             . At the default 127.0.0.1 bind that is the local host{' '}
             <Cite tier={1} href={sglangUrl(SERVING, 'L65-L66')}>
@@ -487,12 +499,17 @@ export function ThesisAndFraming() {
             <Cite tier={1} href={AWS_DLC_EKS}>
               AWS Deep Learning Containers: SGLang deployment doc
             </Cite>
-            . vLLM registers its counterparts only under <code>VLLM_SERVER_DEV_MODE=1</code>{' '}
+            . vLLM registers its weight-update, cache-reset and sleep routes only under{' '}
+            <code>VLLM_SERVER_DEV_MODE=1</code>{' '}
             <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L34-L37')}>
               vLLM routers.py L34-L37
             </Cite>{' '}
+            <Cite tier={1} href={vllmUrl('vllm/entrypoints/serve/__init__.py', 'L43-L69')}>
+              vLLM serve/__init__.py L43-L69
+            </Cite>{' '}
             ({V12_LINK}). Section 17, The Model Gateway, section 15, PD Disaggregation, and section
-            12, APIs, LoRA (low-rank adaptation) and the Admin Plane, own the three pieces.
+            12, Talking to SGLang: APIs, LoRA (low-rank adaptation) and the Admin Plane, own the
+            three pieces.
           </Box>
         </SpaceBetween>
       </Container>

@@ -34,7 +34,7 @@ const SERVER_ARGS = `${SRT}/server_args.py`;
 const PREFILL = `${SRT}/disaggregation/prefill.py`;
 const LAUNCH = 'python/sglang/launch_server.py';
 const FC_PARSER = `${SRT}/function_call/function_call_parser.py`;
-const VLLM_CACHE_103 = 'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/cache.py#L103';
+const VLLM_CACHE_103 = 'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/cache.py#L103-L111';
 
 function vllmLink(n: number, title: string): ReactNode {
   return (
@@ -539,7 +539,7 @@ const DAY_ONE_ROWS: DayOneRow[] = [
     change: (
       <>
         Prometheus metrics are off by default. The flag mounts <code>/metrics</code> on the
-        server&apos;s own port{' '}
+        server&apos;s HTTP port, beside the API{' '}
         <Cite tier={1} href={sglangUrl(OBS_FIELDS, 'L70')}>
           observability.py L70
         </Cite>{' '}
@@ -563,7 +563,7 @@ const DAY_ONE_ROWS: DayOneRow[] = [
         </Cite>
         , where vLLM&apos;s <code>--gpu-memory-utilization</code> is 0.92 for the whole instance{' '}
         <Cite tier={1} href={VLLM_CACHE_103}>
-          vLLM cache.py L103 (v0.31.0)
+          vLLM cache.py L103-L111 (v0.31.0)
         </Cite>
         . Do not copy the value across.
       </>
@@ -647,9 +647,10 @@ const DAY_ONE_ROWS: DayOneRow[] = [
         </Cite>
         . The B200 figure holds with speculative decoding off, or on with{' '}
         <code>--speculative-eagle-topk 1</code> and <code>--speculative-num-steps</code> set;
-        speculation with the topk unset moves B200 to <code>flashinfer</code> and page 1{' '}
-        <Cite tier={1} href={sglangUrl(MOB, 'L303-L311')} kind="code">
-          model_override_base.py L303-L311
+        speculation with the topk above 1 or unset moves B200 to <code>flashinfer</code> and page
+        1{' '}
+        <Cite tier={1} href={sglangUrl(MOB, 'L303-L322')} kind="code">
+          model_override_base.py L303-L322
         </Cite>{' '}
         <Cite tier={1} href={sglangUrl(SPEC_HOOK, 'L1068-L1090')} kind="code">
           speculative_hook.py L1068-L1090
@@ -704,7 +705,7 @@ const DAY_ONE_ROWS: DayOneRow[] = [
       <>
         With no key, the admin routes (weight updates, cache flush, memory release, LoRA load and
         unload) accept any client that reaches the port, and with <code>--api-key</code> alone
-        they accept the inference key too. The admin key makes them accept that key alone{' '}
+        the inference key opens them. The admin key makes them accept that key alone{' '}
         <Cite tier={1} href={sglangUrl(AUTH, 'L79-L151')}>
           auth.py L79-L151
         </Cite>{' '}
@@ -762,7 +763,7 @@ export function GettingStarted() {
             </Cite>
             , against vLLM&apos;s 0.92 for <code>--gpu-memory-utilization</code>{' '}
             <Cite tier={1} href={VLLM_CACHE_103}>
-              vLLM cache.py L103 (v0.31.0)
+              vLLM cache.py L103-L111 (v0.31.0)
             </Cite>
             , and the two numbers measure different things. What follows: the concepts the dive
             builds on, the order of its mental models, the settings that change meaning, a first
@@ -850,7 +851,8 @@ export function GettingStarted() {
             </li>
             <li>
               <strong>The KV cache is a shared prefix index</strong> (section 5, RadixAttention and
-              the Radix Cache; section 7, HiCache). The cache, admission, the gateway and HiCache are
+              the Radix Cache; section 7, HiCache). The cache, admission, the gateway and HiCache (the
+              hierarchical cache) are
               all organised around it.
             </li>
             <li>
@@ -1047,9 +1049,19 @@ export function GettingStarted() {
             <Cite tier={1} href={sglangUrl(KV_CONF, 'L2800-L2851')} kind="code">
               kv_cache_configurator.py L2800-L2851
             </Cite>
-            , or 48 under EAGLE-family and NGRAM speculative decoding{' '}
+            , or 48 under EAGLE-family, NGRAM, <code>DFLASH</code> or <code>DSPARK</code>{' '}
+            speculative decoding{' '}
             <Cite tier={1} href={sglangUrl(SPEC_HOOK, 'L995-L1003')} kind="code">
               speculative_hook.py L995-L1003
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(SPEC_HOOK, 'L1204-L1212')} kind="code">
+              speculative_hook.py L1204-L1212
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(SPEC_HOOK, 'L421-L429')} kind="code">
+              speculative_hook.py L421-L429
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(SPEC_HOOK, 'L777-L785')} kind="code">
+              speculative_hook.py L777-L785
             </Cite>
             . Section 6, KV Memory and the Defaults Your GPU Picks, explains both.
           </Box>
@@ -1125,8 +1137,8 @@ export function GettingStarted() {
               12, 17, 23, 25, 26. Prefixes shared across turns put the tree (5), its host-memory
               tier (7) and the cache-aware gateway (17) at the centre, and a required or named tool
               call is enforced with a grammar, the machinery of structured output (10){' '}
-              <Cite tier={1} href={sglangUrl(FC_PARSER, 'L295-L327')} kind="code">
-                function_call_parser.py L295-L327
+              <Cite tier={1} href={sglangUrl(FC_PARSER, 'L295-L380')} kind="code">
+                function_call_parser.py L295-L380
               </Cite>
               .
             </li>

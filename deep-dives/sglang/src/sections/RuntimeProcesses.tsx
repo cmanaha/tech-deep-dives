@@ -16,10 +16,15 @@ const DP_CTRL = 'python/sglang/srt/managers/data_parallel_controller.py';
 const SERVING = 'python/sglang/srt/arg_groups/fields/serving.py';
 const RUST_APP = 'rust/sglang-server/src/api_server/http';
 
-const VLLM_PARALLEL =
-  'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/parallel.py#L989-L1034';
+const VLLM_CORE_STEP =
+  'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/engine/core.py#L640-L641';
+const VLLM_EXECUTOR_RPC =
+  'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/executor/multiproc_executor.py#L340-L351';
 const VLLM_RUST_FRONTEND =
   'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/envs.py#L1441-L1443';
+const VLLM_RUST_TEXT =
+  'https://github.com/vllm-project/vllm/blob/v0.31.0/rust/src/text/src/lib.rs#L4-L8';
+const VLLM_RUST_README = 'https://github.com/vllm-project/vllm/blob/v0.31.0/rust/README.md#L3';
 const RELEASE_NOTES = 'https://github.com/sgl-project/sglang/releases/tag/v0.5.22';
 
 function RuntimePipelineDiagram() {
@@ -447,6 +452,9 @@ export function RuntimeProcesses() {
             <Cite tier={1} href={sglangUrl(ENGINE, 'L889-L987')} kind="code">
               engine.py L889-L987
             </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(ENGINE, 'L1315-L1321')} kind="code">
+              engine.py L1315-L1321
+            </Cite>{' '}
             <Cite tier={1} href={sglangUrl(SERVING, 'L50-L57')}>
               serving.py L50-L57
             </Cite>
@@ -516,7 +524,8 @@ export function RuntimeProcesses() {
             .
           </Box>
           <Box variant="p">
-            Only one scheduler reads the input socket: the first rank of the first pipeline stage.
+            Without attention DP, only one scheduler reads the input socket: the first rank of the
+            first pipeline stage.
             It drains the socket without blocking, then broadcasts the new requests over the TP
             group&apos;s CPU process group, so every rank runs the same scheduling step on the same
             input and builds the same batch{' '}
@@ -543,7 +552,7 @@ export function RuntimeProcesses() {
           </Box>
 
           <Box variant="p">
-            Each process sets a title, so the listing can be read line by line{' '}
+            Every child process sets a title, so the listing can be read line by line{' '}
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L6045-L6060')}>
               scheduler.py L6045-L6060
             </Cite>{' '}
@@ -628,7 +637,8 @@ export function RuntimeProcesses() {
             </Cite>
             . <code>--attn-dp-size</code> stays inside one TP group: the engine starts the
             schedulers itself and the controller only routes. The default{' '}
-            <code>--load-balance-method auto</code> resolves to <code>round_robin</code>{' '}
+            <code>--load-balance-method auto</code> resolves to <code>round_robin</code> (to{' '}
+            <code>follow_bootstrap_room</code> on a PD prefill server){' '}
             <Cite
               tier={1}
               href={sglangUrl('python/sglang/srt/arg_groups/fields/parallel.py', 'L91-L103')}
@@ -672,8 +682,8 @@ export function RuntimeProcesses() {
                 </Cite>
                 . In v0.5.22&apos;s code every rank-0 scheduler publishes a load snapshot whether or
                 not attention DP is on{' '}
-                <Cite tier={1} href={sglangUrl(SCHEDULER, 'L815-L832')}>
-                  scheduler.py L815-L832
+                <Cite tier={1} href={sglangUrl(SCHEDULER, 'L817-L833')}>
+                  scheduler.py L817-L833
                 </Cite>{' '}
                 <Cite
                   tier={1}
@@ -707,6 +717,9 @@ export function RuntimeProcesses() {
             below follow the launch code{' '}
             <Cite tier={1} href={sglangUrl(ENGINE, 'L889-L987')} kind="code">
               engine.py L889-L987
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(ENGINE, 'L1315-L1321')} kind="code">
+              engine.py L1315-L1321
             </Cite>
             ; the last three are our count from the same code with the worker and frontend flags
             applied{' '}
@@ -735,22 +748,31 @@ export function RuntimeProcesses() {
           />
           <Box variant="p">
             On a multi-node launch, node 0 runs the processes above for its own GPUs. Every other
-            node runs only its schedulers, and the launched process there serves a stub HTTP app on{' '}
-            <code>--port</code> whose <code>/health</code>, <code>/health_generate</code> and{' '}
-            <code>/ping</code> always answer 200{' '}
+            node runs only its schedulers, plus a DataParallelController when there is more than one
+            DP rank{' '}
+            <Cite tier={1} href={sglangUrl(ENGINE, 'L904-L906')}>
+              engine.py L904-L906
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(DP_CTRL, 'L617-L618')}>
+              data_parallel_controller.py L617-L618
+            </Cite>
+            . On the Python frontend, the launched process there waits for its schedulers to load,
+            then serves a stub HTTP app on <code>--port</code> whose <code>/health</code>,{' '}
+            <code>/health_generate</code> and <code>/ping</code> always answer 200{' '}
             <Cite tier={1} href={sglangUrl(ENGINE, 'L1228-L1281')}>
               engine.py L1228-L1281
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl('python/sglang/srt/utils/common.py', 'L3678-L3702')}>
               common.py L3678-L3702
             </Cite>
-            . A health probe on a follower node therefore reports that the stub is up, and says
-            nothing about the model.
+            . A health probe on a follower node therefore reports that the node finished loading,
+            and after that says nothing about the model.
           </Box>
           <Box variant="p">
-            <strong>CPU cores.</strong> Every process is its own Python interpreter. The rank-0
-            scheduler polls its sockets without blocking, and the idle sleeper that would wait on
-            them is created only with <code>--sleep-on-idle</code>, which is off by default{' '}
+            <strong>CPU cores.</strong> Every process is its own Python interpreter. On the Python
+            frontend, the rank-0 scheduler polls its sockets without blocking, and the idle sleeper
+            that would wait on them is created only with <code>--sleep-on-idle</code>, which is off
+            by default{' '}
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L835-L850')}>
               scheduler.py L835-L850
             </Cite>{' '}
@@ -803,7 +825,7 @@ export function RuntimeProcesses() {
           </Box>
           <Box variant="p">
             <strong>Ports.</strong> On one node without attention DP the ring uses{' '}
-            <code>ipc://</code> files, so the TCP ports are the HTTP port (<code>--port</code>,
+            <code>ipc://</code> files, so the TCP ports SGLang itself binds are the HTTP port (<code>--port</code>,
             default 30000, bound to <code>--host</code>, default 127.0.0.1){' '}
             <Cite tier={1} href={sglangUrl(SERVING, 'L65-L66')}>
               serving.py L65-L66
@@ -836,8 +858,8 @@ export function RuntimeProcesses() {
                 take six consecutive ports starting one above the base (below it, if that would pass
                 port 65535): tokenizer, detokenizer, RPC, metrics, the controller&apos;s input and
                 load snapshots{' '}
-                <Cite tier={1} href={sglangUrl(SERVER_ARGS, 'L802-L850')}>
-                  server_args.py L802-L850
+                <Cite tier={1} href={sglangUrl(SERVER_ARGS, 'L803-L893')}>
+                  server_args.py L803-L893
                 </Cite>
                 ; the Rust frontend adds one per DP rank to that block. On a multi-node launch,
                 node 0 also listens 13 above the <code>--dist-init-addr</code> port to hand worker
@@ -914,8 +936,8 @@ export function RuntimeProcesses() {
           <Box variant="p">
             Its HTTP router mounts <code>/generate</code>, <code>/health</code>,{' '}
             <code>/health_generate</code>, <code>/v1/models</code>, <code>/v1/completions</code>,{' '}
-            <code>/v1/chat/completions</code>, <code>/server_info</code> and{' '}
-            <code>/get_model_info</code>{' '}
+            <code>/v1/models/&#123;model&#125;</code>, <code>/v1/chat/completions</code>,{' '}
+            <code>/server_info</code>, <code>/get_model_info</code> and <code>/model_info</code>{' '}
             <Cite tier={1} href={sglangUrl(`${RUST_APP}/app.rs`, 'L77-L81')} kind="code">
               app.rs L77-L81
             </Cite>{' '}
@@ -924,6 +946,9 @@ export function RuntimeProcesses() {
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl(`${RUST_APP}/openai.rs`, 'L32-L38')}>
               openai.rs L32-L38
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(`${RUST_APP}/openai/models.rs`, 'L16-L17')}>
+              openai/models.rs L16-L17
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl(`${RUST_APP}/info.rs`, 'L22-L32')}>
               info.rs L22-L32
@@ -940,8 +965,8 @@ export function RuntimeProcesses() {
             , which is why section 19, SGLang on SageMaker AI and HyperPod, keeps the variable
             unset. The router is assembled with no authentication layer, and the start path passes
             none in{' '}
-            <Cite tier={1} href={sglangUrl(`${RUST_APP}/app.rs`, 'L77-L89')} kind="code">
-              app.rs L77-L89
+            <Cite tier={1} href={sglangUrl(`${RUST_APP}/app.rs`, 'L77-L92')} kind="code">
+              app.rs L77-L92
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl('rust/sglang-server/src/lib.rs', 'L188-L198')} kind="code">
               lib.rs L188-L198
@@ -964,23 +989,31 @@ export function RuntimeProcesses() {
             </Cite>{' '}
             <Cite
               tier={1}
-              href={sglangUrl('python/sglang/srt/rust_server/server.py', 'L108-L111')}
+              href={sglangUrl('python/sglang/srt/rust_server/server.py', 'L109-L112')}
             >
-              rust_server/server.py L108-L111
+              rust_server/server.py L109-L112
             </Cite>
             . vLLM&apos;s off-by-default Rust frontend, <code>VLLM_USE_RUST_FRONTEND=1</code>, takes
-            the place of its API server process{' '}
+            the place of its API server process, tokenization and detokenization included, and still
+            reaches the engine over ZMQ{' '}
             <Cite tier={1} href={VLLM_RUST_FRONTEND}>
               vLLM envs.py L1441-L1443 (v0.31.0)
+            </Cite>{' '}
+            <Cite tier={1} href={VLLM_RUST_TEXT}>
+              vLLM rust/src/text/src/lib.rs L4-L8 (v0.31.0)
+            </Cite>{' '}
+            <Cite tier={1} href={VLLM_RUST_README}>
+              vLLM rust/README.md L3 (v0.31.0)
             </Cite>
-            ; SGLang&apos;s also takes over tokenization and detokenization, inside the GPU process (
+            ; SGLang&apos;s runs inside the GPU process itself (
             <Link href="../vllm/">vLLM dive, section 3: The V1 Engine Architecture</Link>).
           </Box>
           <Box variant="p">
             gRPC comes in two forms. <code>--grpc-port N</code> (or <code>SGLANG_GRPC_PORT</code>,
             off by default) starts a native gRPC server next to the HTTP server, inside the
             TokenizerManager process, so the process count does not change. It is refused with{' '}
-            <code>--tokenizer-worker-num</code> above 1, with <code>--use-ray</code>, and with{' '}
+            <code>--tokenizer-worker-num</code> above 1, with <code>--use-ray</code>, with{' '}
+            <code>--encoder-only</code>, and with{' '}
             <code>--api-key</code> or <code>--admin-api-key</code>, because the gRPC listener
             bypasses the HTTP auth middleware{' '}
             <Cite
@@ -1025,8 +1058,8 @@ export function RuntimeProcesses() {
             the nodes.
           </Box>
           <Box variant="p">
-            <strong>Against vLLM:</strong> SGLang never ships a per-step scheduling decision across
-            a process boundary, because every GPU process schedules for itself{' '}
+            <strong>Against vLLM:</strong> within a TP group, SGLang ships only the new requests
+            across the process boundary, and every GPU process makes the scheduling decision itself{' '}
             <Cite
               tier={1}
               href={sglangUrl(
@@ -1037,10 +1070,13 @@ export function RuntimeProcesses() {
               request_receiver.py L162-L216
             </Cite>
             ; vLLM schedules once per DP rank and sends the decision to its GPU workers{' '}
-            <Cite tier={1} href={VLLM_PARALLEL}>
-              vLLM parallel.py L989-L1034 (v0.31.0)
+            <Cite tier={1} href={VLLM_CORE_STEP}>
+              vLLM v1/engine/core.py L640-L641 (v0.31.0)
+            </Cite>{' '}
+            <Cite tier={1} href={VLLM_EXECUTOR_RPC}>
+              vLLM multiproc_executor.py L340-L351 (v0.31.0)
             </Cite>
-            . Both keep HTTP and tokenization off the GPU-driving process (
+            . By default both keep HTTP and tokenization off the GPU-driving process (
             <Link href="../vllm/">vLLM dive, section 3: The V1 Engine Architecture</Link>).
           </Box>
         </SpaceBetween>
