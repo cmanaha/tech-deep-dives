@@ -203,9 +203,21 @@ export function ThesisAndFraming() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            SGLang is an open-source serving engine, and for language models the name covers two
-            things its repository ships. One is a frontend language, a Python library for programs
-            that make several model calls{' '}
+            SGLang is an open-source serving engine, and it describes itself as &quot;optimized for
+            agentic workloads, large-scale serving, and RL rollouts&quot;{' '}
+            <Cite tier={1} href={sglangUrl('README.md', 'L21')}>
+              README.md L21
+            </Cite>
+            , where RL is reinforcement learning. Our reading of that list: all three send long
+            prefixes again and again. An agent resends its system prompt and tool schemas on every
+            call, a chat resends its history every turn, and an RL rollout samples many answers from
+            one prompt. The challenge is to compute each shared prefix once. SGLang&apos;s bet is to
+            index the KV cache by token sequence, so that a prefix computed for one
+            request is found by every later request that opens with the same tokens.
+          </Box>
+          <Box variant="p">
+            For language models the name covers two things its repository ships. One is a frontend
+            language, a Python library for programs that make several model calls{' '}
             <Cite tier={1} href={sglangTreeUrl('python/sglang/lang')}>
               python/sglang/lang/
             </Cite>
@@ -229,19 +241,6 @@ export function ThesisAndFraming() {
             . This dive is about the runtime. The language appears where it explains the cache, in
             the design-intent block at the end of section 5, RadixAttention and the Radix Cache.
           </Box>
-          <Box variant="p">
-            SGLang describes itself as &quot;optimized for agentic workloads, large-scale serving,
-            and RL rollouts&quot;{' '}
-            <Cite tier={1} href={sglangUrl('README.md', 'L21')}>
-              README.md L21
-            </Cite>
-            , where RL is reinforcement learning. Our reading of that list: all three send long
-            prefixes again and again. An agent resends its system prompt and tool schemas on every
-            call, a chat resends its history every turn, and an RL rollout samples many answers from
-            one prompt. The challenge is to compute each shared prefix once. SGLang&apos;s bet is to
-            index the KV cache by token sequence, so that a prefix computed for one
-            request is found by every later request that opens with the same tokens.
-          </Box>
         </SpaceBetween>
       </Container>
 
@@ -258,13 +257,12 @@ export function ThesisAndFraming() {
         <SpaceBetween size="m">
           <Box variant="p">
             Both engines page the KV cache, cache prefixes by default, overlap CPU and GPU work by
-            default, queue requests first-come-first-served (FCFS) and recompute on preemption,
-            outside the decode mode of SGLang&apos;s PD (prefill/decode) disaggregation, and on
-            NVIDIA both run the same kernel projects, FlashInfer as released and FlashAttention
-            through each project&apos;s own fork. By our reading of
-            the two codebases, a feature list therefore mostly finds parity and a configuration
-            comparison finds the differences; section 23, SGLang and vLLM Compared, has the full
-            list.
+            default and queue requests first-come-first-served (FCFS). Both recompute on
+            preemption, outside the decode mode of SGLang&apos;s PD (prefill/decode)
+            disaggregation. On NVIDIA both run the same kernel projects: FlashInfer as released,
+            and FlashAttention through each project&apos;s own fork. By our reading of the two
+            codebases, a feature list therefore mostly finds parity and a configuration comparison
+            finds the differences; section 23, SGLang and vLLM Compared, has the full list.
           </Box>
           <ExpandableSection headerText="Where each shared default sits in both codebases">
             <ul>
@@ -316,8 +314,8 @@ export function ThesisAndFraming() {
                 .
               </li>
               <li>
-                Same kernel projects through forks, FlashInfer 0.7.x pinned on both sides and
-                FlashAttention built from a fork:{' '}
+                Same kernel projects, FlashInfer 0.7.x pinned on both sides and FlashAttention
+                built from each project&apos;s own fork:{' '}
                 <Cite tier={1} href={sglangUrl('python/pyproject.toml', 'L41-L88')}>
                   pyproject.toml L41-L88
                 </Cite>{' '}
@@ -510,7 +508,7 @@ export function ThesisAndFraming() {
             </Cite>{' '}
             ({V12_LINK}). Section 17, The Model Gateway, section 15, PD Disaggregation, and section
             12, Talking to SGLang: APIs, LoRA (low-rank adaptation) and the Admin Plane, own the
-            three pieces.
+            three pieces; read section 12&apos;s key matrix before a server binds 0.0.0.0.
           </Box>
         </SpaceBetween>
       </Container>

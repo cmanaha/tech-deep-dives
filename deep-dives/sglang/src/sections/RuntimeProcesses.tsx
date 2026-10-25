@@ -637,8 +637,8 @@ export function RuntimeProcesses() {
             </Cite>
             . <code>--attn-dp-size</code> stays inside one TP group: the engine starts the
             schedulers itself and the controller only routes. The default{' '}
-            <code>--load-balance-method auto</code> resolves to <code>round_robin</code> (to{' '}
-            <code>follow_bootstrap_room</code> on a PD prefill server){' '}
+            <code>--load-balance-method auto</code> resolves to <code>round_robin</code>, or to{' '}
+            <code>follow_bootstrap_room</code> on a PD (prefill/decode) prefill server{' '}
             <Cite
               tier={1}
               href={sglangUrl('python/sglang/srt/arg_groups/fields/parallel.py', 'L91-L103')}
@@ -769,10 +769,11 @@ export function RuntimeProcesses() {
             and after that says nothing about the model.
           </Box>
           <Box variant="p">
-            <strong>CPU cores.</strong> Every process is its own Python interpreter. On the Python
-            frontend, the rank-0 scheduler polls its sockets without blocking, and the idle sleeper
-            that would wait on them is created only with <code>--sleep-on-idle</code>, which is off
-            by default{' '}
+            <strong>CPU cores.</strong> Budget at least one core per process, 10 for{' '}
+            <code>--tp 8</code>, before the tokenization load, which lands on the main process.
+            Every process is its own Python interpreter. On the Python frontend, the rank-0
+            scheduler polls its sockets without blocking, and the idle sleeper that would wait on
+            them is created only with <code>--sleep-on-idle</code>, which is off by default{' '}
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L835-L850')}>
               scheduler.py L835-L850
             </Cite>{' '}
@@ -784,10 +785,8 @@ export function RuntimeProcesses() {
             </Cite>
             . Our reading of the code is that rank 0 keeps a core busy with no traffic, and the
             other ranks loop at its pace through the per-step broadcast; CPU use was not measured
-            for this dive. So budget at least one core per process, 10 for <code>--tp 8</code>,
-            before the tokenization load, which lands on the main process. With{' '}
-            <code>--sleep-on-idle</code>, an idle rank 0 waits on its sockets for up to one second at
-            a time{' '}
+            for this dive. With <code>--sleep-on-idle</code>, an idle rank 0 waits on its sockets
+            for up to one second at a time{' '}
             <Cite
               tier={1}
               href={sglangUrl(
@@ -905,7 +904,23 @@ export function RuntimeProcesses() {
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L2331-L2360')}>
               scheduler.py L2331-L2360
             </Cite>
-            . Under attention DP the first rank of each DP group hosts a listener, on{' '}
+            . vLLM&apos;s off-by-default Rust frontend, <code>VLLM_USE_RUST_FRONTEND=1</code>, takes
+            the place of its API server process, tokenization and detokenization included, and still
+            reaches the engine over ZMQ{' '}
+            <Cite tier={1} href={VLLM_RUST_FRONTEND}>
+              vLLM envs.py L1441-L1443 (v0.31.0)
+            </Cite>{' '}
+            <Cite tier={1} href={VLLM_RUST_TEXT}>
+              vLLM rust/src/text/src/lib.rs L4-L8 (v0.31.0)
+            </Cite>{' '}
+            <Cite tier={1} href={VLLM_RUST_README}>
+              vLLM rust/README.md L3 (v0.31.0)
+            </Cite>
+            ; SGLang&apos;s runs inside the GPU process itself (
+            <Link href="../vllm/">vLLM dive, section 3: The V1 Engine Architecture</Link>).
+          </Box>
+          <Box variant="p">
+            Under attention DP the first rank of each DP group hosts a listener, on{' '}
             <code>--port</code> plus its DP rank on the node{' '}
             <Cite
               tier={1}
@@ -934,31 +949,10 @@ export function RuntimeProcesses() {
             .
           </Box>
           <Box variant="p">
-            Its HTTP router mounts <code>/generate</code>, <code>/health</code>,{' '}
-            <code>/health_generate</code>, <code>/v1/models</code>, <code>/v1/completions</code>,{' '}
-            <code>/v1/models/&#123;model&#125;</code>, <code>/v1/chat/completions</code>,{' '}
-            <code>/server_info</code>, <code>/get_model_info</code> and <code>/model_info</code>{' '}
-            <Cite tier={1} href={sglangUrl(`${RUST_APP}/app.rs`, 'L77-L81')} kind="code">
-              app.rs L77-L81
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(`${RUST_APP}/native_api.rs`, 'L78-L113')}>
-              native_api.rs L78-L113
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(`${RUST_APP}/openai.rs`, 'L32-L38')}>
-              openai.rs L32-L38
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(`${RUST_APP}/openai/models.rs`, 'L16-L17')}>
-              openai/models.rs L16-L17
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(`${RUST_APP}/info.rs`, 'L22-L32')}>
-              info.rs L22-L32
-            </Cite>
-            , plus the KV bootstrap registry on a PD (prefill/decode) prefill server{' '}
-            <Cite tier={1} href={sglangUrl(`${RUST_APP}/app.rs`, 'L95-L104')}>
-              app.rs L95-L104
-            </Cite>
-            . A search of the <code>rust/</code> tree at v0.5.22 finds no <code>/metrics</code>,{' '}
-            <code>/ping</code>, <code>/invocations</code>, <code>/v1/messages</code> or admin route{' '}
+            A deployment that scrapes <code>/metrics</code> or relies on a key keeps the Python
+            frontend. A search of the <code>rust/</code> tree at v0.5.22 finds no{' '}
+            <code>/metrics</code>, <code>/ping</code>, <code>/invocations</code>,{' '}
+            <code>/v1/messages</code> or admin route{' '}
             <Cite tier={1} href={sglangTreeUrl('rust')} kind="code">
               rust/ at v0.5.22
             </Cite>
@@ -972,9 +966,36 @@ export function RuntimeProcesses() {
               lib.rs L188-L198
             </Cite>
             , so our reading of the code, not run, is that <code>--api-key</code> protects none of
-            these routes in this mode. A deployment that scrapes <code>/metrics</code> or relies on
-            a key keeps the Python frontend.
+            its routes in this mode.
           </Box>
+          <ExpandableSection headerText="The routes the Rust frontend mounts">
+            <Box variant="p">
+              Its HTTP router mounts <code>/generate</code>, <code>/health</code>,{' '}
+              <code>/health_generate</code>, <code>/v1/models</code>, <code>/v1/completions</code>,{' '}
+              <code>/v1/models/&#123;model&#125;</code>, <code>/v1/chat/completions</code>,{' '}
+              <code>/server_info</code>, <code>/get_model_info</code> and <code>/model_info</code>{' '}
+              <Cite tier={1} href={sglangUrl(`${RUST_APP}/app.rs`, 'L77-L81')} kind="code">
+                app.rs L77-L81
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl(`${RUST_APP}/native_api.rs`, 'L78-L113')}>
+                native_api.rs L78-L113
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl(`${RUST_APP}/openai.rs`, 'L32-L38')}>
+                openai.rs L32-L38
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl(`${RUST_APP}/openai/models.rs`, 'L16-L17')}>
+                openai/models.rs L16-L17
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl(`${RUST_APP}/info.rs`, 'L22-L32')}>
+                info.rs L22-L32
+              </Cite>
+              , plus the KV bootstrap registry on a PD prefill server{' '}
+              <Cite tier={1} href={sglangUrl(`${RUST_APP}/app.rs`, 'L95-L104')}>
+                app.rs L95-L104
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             The Rust frontend also changes the CPU budget. On Linux it splits the rank-0 scheduler&apos;s
             allowed CPU set: up to 2 cores for the scheduler loop, and a pool of up to 8 for the
@@ -993,20 +1014,7 @@ export function RuntimeProcesses() {
             >
               rust_server/server.py L109-L112
             </Cite>
-            . vLLM&apos;s off-by-default Rust frontend, <code>VLLM_USE_RUST_FRONTEND=1</code>, takes
-            the place of its API server process, tokenization and detokenization included, and still
-            reaches the engine over ZMQ{' '}
-            <Cite tier={1} href={VLLM_RUST_FRONTEND}>
-              vLLM envs.py L1441-L1443 (v0.31.0)
-            </Cite>{' '}
-            <Cite tier={1} href={VLLM_RUST_TEXT}>
-              vLLM rust/src/text/src/lib.rs L4-L8 (v0.31.0)
-            </Cite>{' '}
-            <Cite tier={1} href={VLLM_RUST_README}>
-              vLLM rust/README.md L3 (v0.31.0)
-            </Cite>
-            ; SGLang&apos;s runs inside the GPU process itself (
-            <Link href="../vllm/">vLLM dive, section 3: The V1 Engine Architecture</Link>).
+            .
           </Box>
           <Box variant="p">
             gRPC comes in two forms. <code>--grpc-port N</code> (or <code>SGLANG_GRPC_PORT</code>,

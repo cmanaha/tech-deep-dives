@@ -24,6 +24,7 @@ const VALIDATION = 'python/sglang/srt/arg_groups/validation_hook.py';
 const MEMORY_HOOK = 'python/sglang/srt/arg_groups/memory_hook.py';
 const ENVIRON = 'python/sglang/srt/environ.py';
 const BUDGET = 'python/sglang/srt/mem_cache/prefill_budget.py';
+const KV_CONF = 'python/sglang/srt/mem_cache/kv_cache_configurator.py';
 const COLLECTOR = 'python/sglang/srt/observability/metrics_collector.py';
 const HTTP_SERVER = 'python/sglang/srt/entrypoints/http_server.py';
 const TUNING = 'advanced_features/hyperparameter_tuning';
@@ -513,7 +514,9 @@ const SIGNAL_ROWS: SignalRow[] = [
     id: 'cautious',
     see: (
       <>
-        <code>#queue-req</code> above 0 while <code>token usage</code> stays below 0.9
+        <code>#queue-req</code> above 0 while <code>token usage</code> stays below 0.9, with{' '}
+        <code>#running-req</code> below the <code>max_running_requests</code> the scheduler
+        printed at startup
       </>
     ),
     means: (
@@ -528,9 +531,24 @@ const SIGNAL_ROWS: SignalRow[] = [
       </>
     ),
     src: (
-      <Cite tier={1} href={sglangDocsSrcUrl(TUNING, 'L22-L27')}>
-        SGLang docs: Hyperparameter Tuning L22-L27
-      </Cite>
+      <>
+        <Cite tier={1} href={sglangDocsSrcUrl(TUNING, 'L22-L27')}>
+          SGLang docs: Hyperparameter Tuning L22-L27
+        </Cite>
+        ; the <code>#running-req</code> condition:{' '}
+        <Cite tier={1} href={sglangUrl(SCHEDULER, 'L1229-L1241')} kind="code">
+          scheduler.py L1229-L1241
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(KV_CONF, 'L704-L708')} kind="code">
+          kv_cache_configurator.py L704-L708
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(SCHEDULER, 'L3907-L3925')} kind="code">
+          scheduler.py L3907-L3925
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(SCHEDULER, 'L4098-L4103')} kind="code">
+          scheduler.py L4098-L4103
+        </Cite>
+      </>
     ),
   },
   {
@@ -886,7 +904,10 @@ export function Scheduler() {
               scheduler.py L5072-L5149
             </Cite>
             . So a server that has run clean for a while charges its running requests less, and
-            admits more.
+            admits more. The same charge is one reason a server queues requests while its KV pool
+            is partly empty: part of the free room is reserved for output the running requests
+            have not generated yet. The first row of the table in Reading the scheduler is that
+            signal, and its third row is the gauge that reports the ratio.
           </Box>
 
           <AdmissionBetDiagram />
@@ -983,9 +1004,14 @@ export function Scheduler() {
             <Cite tier={1} href={sglangUrl(BATCH, 'L2242-L2277')} kind="code">
               schedule_batch.py L2242-L2277
             </Cite>
-            . That recompute is the price, and both engines pay it ({VLLM_SCHEDULER_LINK}). On a PD
-            (prefill/decode) decode server the KV is copied to host memory first, so the request
-            resumes without recompute (section 15, PD Disaggregation).
+            . That recompute is the price, and both engines pay it ({VLLM_SCHEDULER_LINK});{' '}
+            <code>sglang:num_retracted_output_tokens_total</code> counts the generated tokens that
+            retracted requests take back to the queue{' '}
+            <Cite tier={1} href={sglangUrl(COLLECTOR, 'L544-L565')} kind="code">
+              metrics_collector.py L544-L565
+            </Cite>
+            . On a PD (prefill/decode) decode server the KV is copied to host memory first, so the
+            request resumes without recompute (section 15, PD Disaggregation).
           </Box>
           <Box variant="p">
             Then the scheduler moves the bet. It sets <code>new_token_ratio</code> to the
@@ -1040,7 +1066,15 @@ export function Scheduler() {
               memory_hook.py L132-L140
             </Cite>
             , and section 6, KV Memory and the Defaults Your GPU Picks, has the full table. A long
-            prompt pauses decoding once for each of its chunks.
+            prompt pauses decoding once for each of its chunks, and each of those prefill steps
+            prints its own <code>Prefill batch</code> line in the log{' '}
+            <Cite tier={1} href={sglangUrl(RESULTS, 'L509-L515')} kind="code">
+              batch_result_processor.py L509-L515
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(REPORTER, 'L730-L782')} kind="code">
+              metrics_reporter.py L730-L782
+            </Cite>
+            .
           </Box>
           <Box variant="p">
             <code>--enable-mixed-chunk</code> (default off) adds one decode token for every running

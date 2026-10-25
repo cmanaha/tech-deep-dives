@@ -765,9 +765,7 @@ export function GettingStarted() {
             <Cite tier={1} href={VLLM_CACHE_103}>
               vLLM cache.py L103-L111 (v0.31.0)
             </Cite>
-            , and the two numbers measure different things. What follows: the concepts the dive
-            builds on, the order of its mental models, the settings that change meaning, a first
-            launch, and four routes through the 28 sections.
+            , and the two numbers measure different things.
           </Box>
         </SpaceBetween>
       </Container>
@@ -877,7 +875,7 @@ export function GettingStarted() {
             or on demand.
           </Box>
           <Box variant="p">
-            These links between sections are the arrows on the reading map at the end of this page:
+            These links between sections are the arrows on the reading map below:
           </Box>
           <ul>
             <li>
@@ -921,6 +919,64 @@ export function GettingStarted() {
         header={
           <Header
             variant="h2"
+            description="Pick the route that matches your workload and read its sections in order; section 23 is on every one"
+          >
+            Four routes through the dive
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Each route is a reading order through the sections one kind of workload needs. All four
+            open with sections 1 and 2 and pass through section 23, SGLang and vLLM Compared, which
+            keeps the long-form comparison. Every mechanism section also ends on an &quot;Against
+            vLLM&quot; line, so a reader moving forward meets the differences where they arise.
+          </Box>
+          <ul>
+            <li>
+              <strong>A: I serve agentic or multi-turn traffic.</strong> 1, 2, 3, 4, 5, 6, 7, 8, 10,
+              12, 17, 23, 25, 26. Prefixes shared across turns put the tree (5), its host-memory
+              tier (7) and the cache-aware gateway (17) at the centre, and a required or named tool
+              call is enforced with a grammar, the machinery of structured output (10){' '}
+              <Cite tier={1} href={sglangUrl(FC_PARSER, 'L295-L380')} kind="code">
+                function_call_parser.py L295-L380
+              </Cite>
+              .
+            </li>
+            <li>
+              <strong>M: I run large MoE models at scale.</strong> 1, 2, 3, 4, 5, 6, 8, 11, 14, 15,
+              16, 17, 18, 23, 26; on AWS add 20, 21, 22. The route centres on how SGLang counts and
+              carves GPUs (14), splits prefill from decode (15) and spreads experts (16).
+            </li>
+            <li>
+              <strong>W: I deploy on AWS this quarter.</strong> 1, 2, 3, 5, 6, 8, 12, 19, 20, 21,
+              23, 25, 26; for PD or wide EP add 14, 15, 16, 18, 22. The AWS sections rest on the
+              defaults the GPU sets (6, 8), and section 12 sets the keys each platform needs.
+            </li>
+            <li>
+              <strong>V: I am moving a vLLM deployment.</strong> 1, 2, 4, 6, 9, 10, 12, 23, 25. The
+              route covers what a configuration port touches: scheduler defaults (4), the memory
+              fraction (6), KV precision (9), and the request fields clients send (10, 12).
+            </li>
+          </ul>
+          <Tabs
+            ariaLabel="Reading routes"
+            tabs={[
+              { id: 'all', label: 'All routes', content: <ReadingMapTab view="all" /> },
+              ...ROUTES.map((r) => ({
+                id: r.id,
+                label: r.tab,
+                content: <ReadingMapTab view={r.id} />,
+              })),
+            ]}
+          />
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
             description="Move a vLLM habit across without a silent change in behaviour: nine settings and signals, each with the section that owns it"
           >
             What a vLLM user types differently
@@ -930,9 +986,9 @@ export function GettingStarted() {
         <SpaceBetween size="m">
           <Box variant="p">
             Each row is a setting whose meaning changes on the way from vLLM, or a signal to watch
-            in its place. Section 23, SGLang and vLLM, has the long-form switching checklist,
-            including tool-call parser names, regex and EBNF (Extended Backus-Naur Form) fields and
-            the speculative draft shape.
+            in its place. Section 23, SGLang and vLLM Compared, has the long-form switching
+            checklist, including tool-call parser names, regex and EBNF (Extended Backus-Naur Form)
+            fields and the speculative draft shape.
           </Box>
           <Table
             variant="embedded"
@@ -1111,64 +1167,6 @@ export function GettingStarted() {
             </Cite>{' '}
             (section 5, RadixAttention and the Radix Cache).
           </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Pick the route that matches your workload and read its sections in order; section 23 is on every one"
-          >
-            Four routes through the dive
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            Each route is a reading order through the sections one kind of workload needs. All four
-            open with sections 1 and 2 and pass through section 23, SGLang and vLLM, which keeps
-            the long-form comparison. Every mechanism section also ends on an &quot;Against
-            vLLM&quot; line, so a reader moving forward meets the differences where they arise.
-          </Box>
-          <ul>
-            <li>
-              <strong>A: I serve agentic or multi-turn traffic.</strong> 1, 2, 3, 4, 5, 6, 7, 8, 10,
-              12, 17, 23, 25, 26. Prefixes shared across turns put the tree (5), its host-memory
-              tier (7) and the cache-aware gateway (17) at the centre, and a required or named tool
-              call is enforced with a grammar, the machinery of structured output (10){' '}
-              <Cite tier={1} href={sglangUrl(FC_PARSER, 'L295-L380')} kind="code">
-                function_call_parser.py L295-L380
-              </Cite>
-              .
-            </li>
-            <li>
-              <strong>M: I run large MoE models at scale.</strong> 1, 2, 3, 4, 5, 6, 8, 11, 14, 15,
-              16, 17, 18, 23, 26; on AWS add 20, 21, 22. The route centres on how SGLang counts and
-              carves GPUs (14), splits prefill from decode (15) and spreads experts (16).
-            </li>
-            <li>
-              <strong>W: I deploy on AWS this quarter.</strong> 1, 2, 3, 5, 6, 8, 12, 19, 20, 21,
-              23, 25, 26; for PD or wide EP add 14, 15, 16, 18, 22. The AWS sections rest on the
-              defaults the GPU sets (6, 8), and section 12 sets the keys each platform needs.
-            </li>
-            <li>
-              <strong>V: I am moving a vLLM deployment.</strong> 1, 2, 4, 6, 9, 10, 12, 23, 25. The
-              route covers what a configuration port touches: scheduler defaults (4), the memory
-              fraction (6), KV precision (9), and the request fields clients send (10, 12).
-            </li>
-          </ul>
-          <Tabs
-            ariaLabel="Reading routes"
-            tabs={[
-              { id: 'all', label: 'All routes', content: <ReadingMapTab view="all" /> },
-              ...ROUTES.map((r) => ({
-                id: r.id,
-                label: r.tab,
-                content: <ReadingMapTab view={r.id} />,
-              })),
-            ]}
-          />
           <Box variant="p">
             <strong>Your next step:</strong> open the first section of your route that you have not
             read. On routes A, M and W that is section 3, The SGLang Runtime; on route V it is
