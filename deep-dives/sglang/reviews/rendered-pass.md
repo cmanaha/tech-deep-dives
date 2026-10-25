@@ -192,3 +192,7 @@ Both in `shared/`, which this pass did not edit because every dive renders it:
    tier definitions are AWS-centric, it shows a Tier 4 card this dive does not use, and its
    badge colours differ from the dive's inline Cite badges. The `no-ai-tells` gate does not
    scan `shared/`.
+
+Orchestrator follow-up: `revamp/tools/shoot.mjs` now waits until the `main h1` number matches the
+active nav entry before expanding sections. A multi-section run of `thesis,radix,kernels` then
+measures all three `radix` diagrams (1440 and 390, 0 overlap, 0 clip).
