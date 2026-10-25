@@ -501,6 +501,11 @@ const DEPLOY_ROWS: DeployRow[] = [
         <Cite tier={1} href={sglangUrl('docker/serve', 'L4-L34')}>
           docker/serve L4-L34
         </Cite>
+        . The key travels in the <code>Environment</code> map, which AWS advises keeping free of
+        sensitive data{' '}
+        <Cite tier={1} href="https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html">
+          SageMaker API: ContainerDefinition
+        </Cite>
         ; section 19 covers the rest.
       </>
     ),
