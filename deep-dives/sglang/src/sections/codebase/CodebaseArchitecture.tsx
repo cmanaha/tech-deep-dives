@@ -157,7 +157,7 @@ function StepMark({ n, x, y }: { n: number; x: number; y: number }) {
   return (
     <g>
       <circle cx={x} cy={y} r={8} className="cb-arch-step" />
-      <text x={x} y={y + 3.5} className="cb-arch-step-t">
+      <text x={x} y={y + 4} className="cb-arch-step-t">
         {n}
       </text>
     </g>
@@ -210,7 +210,7 @@ function ModuleMapDiagram() {
           .cb-arch-path { stroke: #0972d3; stroke-width: 1.8; fill: none; }
           .cb-arch-path-t { fill: #065299; font: 600 11px sans-serif; }
           .cb-arch-step { fill: #0972d3; }
-          .cb-arch-step-t { fill: #ffffff; font: 600 10px sans-serif; text-anchor: middle; }
+          .cb-arch-step-t { fill: #ffffff; font: 600 11px sans-serif; text-anchor: middle; }
         `}</style>
         <defs>
           <marker
