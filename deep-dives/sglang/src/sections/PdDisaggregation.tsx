@@ -31,6 +31,8 @@ const DISAGG_UTILS = `${SRT}/disaggregation/utils.py`;
 const MOONCAKE_CONN = `${SRT}/disaggregation/mooncake/conn.py`;
 const MOONCAKE_TE = `${SRT}/distributed/device_communicators/mooncake_transfer_engine.py`;
 const NIXL_CONN = `${SRT}/disaggregation/nixl/conn.py`;
+const MORI_CONN = `${SRT}/disaggregation/mori/conn.py`;
+const OVERRIDES = `${SRT}/arg_groups/overrides.py`;
 const KV_BUILDER = `${SRT}/mem_cache/kv_cache_builder.py`;
 const METRICS = `${SRT}/observability/metrics_collector.py`;
 const GW = 'sgl-model-gateway/src';
@@ -310,7 +312,8 @@ const BACKEND_ROWS: BackendRow[] = [
     what: (
       <>
         NIXL (NVIDIA Inference Xfer Library). The NIXL plugin comes from{' '}
-        <code>SGLANG_DISAGGREGATION_NIXL_BACKEND</code>, default <code>UCX</code>{' '}
+        <code>SGLANG_DISAGGREGATION_NIXL_BACKEND</code>, default <code>UCX</code> (Unified
+        Communication X){' '}
         <Cite tier={1} href={sglangUrl(ENVIRON, 'L713-L714')}>
           environ.py L713-L714
         </Cite>
@@ -326,6 +329,10 @@ const BACKEND_ROWS: BackendRow[] = [
         AMD&apos;s MORI library, for AMD GPUs on the ROCm stack{' '}
         <Cite tier={1} href={sglangDocsSrcUrl(EP_DOC, 'L50-L53')}>
           expert_parallelism.mdx L50-L53
+        </Cite>
+        ; the PD backend uses its <code>mori.io</code> transfer module{' '}
+        <Cite tier={1} href={sglangUrl(MORI_CONN, 'L17-L28')} kind="code">
+          mori/conn.py L17-L28
         </Cite>
         .
       </>
@@ -401,11 +408,10 @@ export function PdDisaggregation() {
               disagg.py L55-L58
             </Cite>
             , with a gateway in front that pairs one server of each kind per request. Both servers
-            get the request at once, so decode reserves pages and finishes its handshake before
-            prefill has finished the prompt, and the KV transfer overlaps the prefill chunks. The
-            price is that decode capacity gates prefill admission under the default{' '}
-            <code>early</code> policy, and in our reading that coupling is the rule to size the
-            two pools by.
+            get the request at once, so under the default <code>early</code> policy decode reserves
+            pages and finishes its handshake before prefill has finished the prompt, and the KV
+            transfer overlaps the prefill chunks. The price is that decode capacity gates prefill
+            admission, and in our reading that coupling is the rule to size the two pools by.
           </Box>
           <Box variant="p">
             The same documentation names a second motivation: under DP (data parallelism)
@@ -432,7 +438,8 @@ export function PdDisaggregation() {
           <PdSequenceDiagram />
           <Box variant="small" color="text-body-secondary">
             Illustrative, not measured: the order of events for one request at v0.5.22 under the
-            default <code>early</code> policy, with the Mooncake or NIXL backend. Step 0 runs once,
+            default <code>early</code> policy, with the Mooncake or NIXL (NVIDIA Inference Xfer
+            Library) backend. Step 0 runs once,
             when the prefill server starts; 8998 is the default bootstrap port.
           </Box>
           <Box variant="p">
@@ -459,8 +466,9 @@ export function PdDisaggregation() {
               disagg_service.py L21-L50
             </Cite>
             . Every prefill rank registers its transfer endpoint there at startup, and the registry
-            answers 503 until all <code>dp_size x attn_cp_size x attn_tp_size x pp_size</code>{' '}
-            ranks are in, so a decode server cannot pair with a half-started prefill server{' '}
+            answers 503 until all of the server&apos;s ranks are in, its DP rank count times{' '}
+            <code>attn_cp_size x attn_tp_size x pp_size</code>, so a decode server cannot pair with
+            a half-started prefill server{' '}
             <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L2650-L2664')}>
               conn.py L2650-L2664
             </Cite>{' '}
@@ -525,7 +533,8 @@ export function PdDisaggregation() {
           </Box>
           <Box variant="p">
             With DP on a prefill server, the in-process controller routes by room id,{' '}
-            <code>bootstrap_room % dp_size</code>, because <code>--load-balance-method auto</code>{' '}
+            <code>bootstrap_room</code> modulo the DP rank count, because{' '}
+            <code>--load-balance-method auto</code>{' '}
             resolves to <code>follow_bootstrap_room</code> on a PD prefill server{' '}
             <Cite tier={1} href={sglangUrl(SERVING_HOOK, 'L208-L227')}>
               serving_hook.py L208-L227
@@ -666,9 +675,14 @@ export function PdDisaggregation() {
               conn.py L1183-L1199
             </Cite>
             . The attention backend sets the page size (section 8): by our reading of the default
-            chain, a dense Llama-style model gets 1-token pages on H100 and 64-token pages on B200{' '}
+            chain, a dense Llama-style model gets 1-token pages on H100 and 64-token pages on B200
+            when speculative decoding is off, or on with an explicit{' '}
+            <code>--speculative-eagle-topk 1</code> and <code>--speculative-num-steps</code> set{' '}
             <Cite tier={1} href={sglangUrl(ATTN_DEFAULTS, 'L268-L324')} kind="code">
               model_override_base.py L268-L324
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(OVERRIDES, 'L1125-L1137')} kind="code">
+              overrides.py L1125-L1137
             </Cite>
             , so pools on those two generations fail this check unless both roles get the same
             explicit <code>--page-size</code>. Set the reservation policy on both roles too{' '}
@@ -776,7 +790,8 @@ export function PdDisaggregation() {
             ; the benchmark behind it ran the opt-in <code>prefill_complete</code> policy against{' '}
             <code>early</code> on 12 Rubin GPUs serving GLM-5.2-NVFP4 with MTP (multi-token
             prediction) speculative decoding, with decode KV deliberately capped at 163,840 tokens
-            per rank and a mix of 131,072-token and 4,096-token prompts, two runs per policy, and in
+            per rank, optimistic prefill set to 1 under both policies, a mix of 131,072-token and
+            4,096-token prompts and two runs per policy, and in
             those runs ITL (inter-token latency) p99 was 93% worse{' '}
             <Cite tier={2} href={PR_40703}>
               PR #40703 benchmark (project claim)
@@ -852,6 +867,9 @@ export function PdDisaggregation() {
           room from that prefill as failed with <code>Lost connection with prefill instance</code>{' '}
           <Cite tier={1} href={sglangUrl(ENVIRON, 'L708-L709')}>
             environ.py L708-L709
+          </Cite>{' '}
+          <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L433-L439')}>
+            conn.py L433-L439
           </Cite>{' '}
           <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L1817-L1858')}>
             conn.py L1817-L1858
@@ -977,8 +995,8 @@ export function PdDisaggregation() {
           </Box>
           <Box variant="p">
             <strong>Against vLLM:</strong> SGLang always pushes KV into pages decode preallocated,
-            and both legs start at once, so the handshake is done before prefill finishes. In
-            vLLM, PD is a KV connector chosen
+            and both legs start at once, so under the default <code>early</code> policy the
+            handshake is done before prefill finishes. In vLLM, PD is a KV connector chosen
             by <code>--kv-transfer-config</code>: the reference <code>NixlConnector</code> pulls,
             vLLM&apos;s reference pull proxy runs prefill first, and <code>NixlPushConnector</code>{' '}
             pushes. The bootstrap-server idea and its port 8998 are shared: vLLM&apos;s Mooncake

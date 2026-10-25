@@ -31,6 +31,8 @@ const PP_DOC = 'advanced_features/pipeline_parallelism';
 const RELEASE_NOTES = 'https://github.com/sgl-project/sglang/releases/tag/v0.5.22';
 const VLLM_PARALLEL =
   'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/parallel.py#L134-L136';
+const VLLM_WORLD =
+  'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/parallel.py#L899-L903';
 
 const LAUNCH_NODES = `# node 0
 sglang serve --model-path <model> --tp 16 --nnodes 2 --node-rank 0 \\
@@ -113,9 +115,9 @@ function ParallelismMapDiagram() {
           GPUs, eight TP ranks on each of two nodes. The attention layers carve the TP group into
           four data-parallel groups of four GPUs, each with its own requests and KV cache and its
           attention heads split four ways, and the MoE layers carve the same 16 GPUs into 16 expert
-          shards. The token exchange at the MoE boundary is the traffic that crosses the network
-          between the nodes. Only --dp-size copies a replica onto more GPUs, and it is rejected next
-          to an attention-DP width above 1.
+          shards. The token exchange at the MoE boundary crosses the network between the nodes,
+          while attention traffic stays inside each node. Only --dp-size copies a replica onto more
+          GPUs, and it is rejected next to an attention-DP width above 1.
         </title>
         <defs>
           <marker
@@ -364,7 +366,7 @@ function ParallelismMapDiagram() {
           fill={amber}
           fontFamily={font}
         >
-          network between the nodes: only the MoE exchange crosses it
+          network between the nodes: the MoE exchange crosses it, attention stays inside each node
         </text>
 
         {/* What adds GPUs instead */}
@@ -710,9 +712,13 @@ export function Parallelism() {
             <Cite tier={1} href={sglangUrl(DPA, 'L1225-L1226')}>
               dp_attention.py L1225-L1226
             </Cite>
-            . By our reading of the rank formulas, the MoE exchange is then the traffic that crosses
-            the network in this layout, every MoE layer, while attention traffic stays inside a node.
-            The same 16 GPUs launched as plain <code>--tp 16</code> would also all-reduce attention
+            . By our reading of the rank formulas, the MoE exchange crosses the network in this
+            layout, every MoE layer, while attention traffic stays inside a node. A dense
+            feed-forward layer, which by default stays tensor parallel over the whole TP group, crosses it too{' '}
+            <Cite tier={1} href={sglangUrl(PAR_FIELDS, 'L81-L90')}>
+              parallel.py L81-L90
+            </Cite>
+            . The same 16 GPUs launched as plain <code>--tp 16</code> would also all-reduce attention
             across both nodes.
           </Box>
           <ExpandableSection headerText="Why an idle group still pays for the exchange">
@@ -984,9 +990,14 @@ export function Parallelism() {
             The terms map onto vLLM&apos;s: SGLang&apos;s prefill CP (<code>--attn-cp-size</code>) is
             the counterpart of vLLM&apos;s PCP (prefill context parallelism), and DCP exists in both
             engines, <code>--dcp-size</code> here and <code>-dcp</code> in vLLM (
-            <Link href="../vllm/">vLLM dive, section 9: Distributed Inference</Link>). The two
-            prefill-CP implementations were not compared for this dive, so read them as
-            counterparts whose internals may differ.
+            <Link href="../vllm/">vLLM dive, section 9: Distributed Inference</Link>). They count
+            GPUs differently: vLLM&apos;s PCP multiplies its world size{' '}
+            <Cite tier={1} href={VLLM_WORLD}>
+              vLLM parallel.py L899-L903
+            </Cite>
+            , while <code>--attn-cp-size</code> carves the TP group, so <code>-tp 8 -pcp 2</code> on
+            vLLM is 16 GPUs and <code>--tp 8 --attn-cp-size 2</code> here is 8. Their internals
+            were not compared for this dive.
           </Box>
         </SpaceBetween>
       </Container>
@@ -1083,7 +1094,7 @@ export function Parallelism() {
             <strong>Against vLLM:</strong> attention DP is a width inside SGLang&apos;s TP group and
             EP spans that group, while vLLM&apos;s DP attention is <code>--data-parallel-size</code>{' '}
             replicas plus <code>--enable-expert-parallel</code>, with the MoE layers sharded over TP
-            x DP{' '}
+            x PCP x DP{' '}
             <Cite tier={1} href={VLLM_PARALLEL}>
               vLLM parallel.py L134-L136
             </Cite>
