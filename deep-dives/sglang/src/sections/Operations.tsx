@@ -29,6 +29,10 @@ const DECODE = `${SRT}/disaggregation/decode.py`;
 const COMMON_CONN = `${SRT}/disaggregation/common/conn.py`;
 const ENVIRON = `${SRT}/environ.py`;
 const CUSTOM_LP = `${SRT}/sampling/custom_logit_processor.py`;
+const WATERMARK = `${SRT}/sampling/watermarking/core.py`;
+const DG_CONF = `${SRT}/layers/deep_gemm_wrapper/configurer.py`;
+const FP8_UTILS = `${SRT}/layers/quantization/fp8_utils.py`;
+const JIT_CACHE = 'python/sglang/kernels/jit/utils/compile/cache.py';
 const MM_ARGS = 'python/sglang/multimodal_gen/runtime/server_args/server_args.py';
 const MM_UPLOAD = 'python/sglang/multimodal_gen/runtime/entrypoints/openai/utils.py';
 const MM_SCHED = 'python/sglang/multimodal_gen/runtime/managers/scheduler.py';
@@ -49,6 +53,10 @@ const SM_VARIANT =
   'https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ProductionVariant.html';
 const K8S_PROBES =
   'https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/';
+const DLC_ENTRYPOINT =
+  'https://github.com/aws/deep-learning-containers/blob/23970abd5b8919ea3e1add74692a0d056b2fcbd9/scripts/docker/sglang/sagemaker_entrypoint.sh#L17-L32';
+const NVD_3059 = 'https://nvd.nist.gov/vuln/detail/CVE-2026-3059';
+const NVD_7669 = 'https://nvd.nist.gov/vuln/detail/CVE-2026-7669';
 const DLC_EKS =
   'https://github.com/aws/deep-learning-containers/blob/23970abd5b8919ea3e1add74692a0d056b2fcbd9/docs/sglang/deployment/eks.md#L24-L55';
 const PD_SAMPLE =
@@ -107,7 +115,10 @@ const METRIC_ROWS: SymptomRow[] = [
     fix: (
       <>
         <C>--enable-metrics</C>; on the SageMaker DLC (Deep Learning Container),{' '}
-        <C>SM_SGLANG_ENABLE_METRICS=true</C>
+        <C>SM_SGLANG_ENABLE_METRICS=true</C>{' '}
+        <Cite tier={1} href={DLC_ENTRYPOINT}>
+          DLC sagemaker_entrypoint.sh L17-L32
+        </Cite>
       </>
     ),
     section: 'Section 4, The Scheduler; section 19, SGLang on SageMaker AI and HyperPod',
@@ -117,7 +128,7 @@ const METRIC_ROWS: SymptomRow[] = [
     symptom: (
       <>
         Frequent <C>KV cache pool is full. Retract requests.</C> warnings with{' '}
-        <C>token usage</C> high, and <C>sglang:new_token_ratio</C> jumping at each one
+        <C>token usage</C> high, and <C>sglang:new_token_ratio</C> jumping after them
       </>
     ),
     cause: (
@@ -241,9 +252,13 @@ const START_ROWS: SymptomRow[] = [
           scheduler.py L1098-L1111
         </Cite>
         . With <C>--api-key</C> set, <C>/ping</C> fails too: it is not exempt from the
-        key and SageMaker sends none (read from source, not run){' '}
+        key (read from source, not run){' '}
         <Cite tier={1} href={sglangUrl(AUTH, 'L101-L106')} kind="code">
           auth.py L101-L106
+        </Cite>
+        , and AWS names no way to attach a token to the health check{' '}
+        <Cite tier={1} href={SM_CONTRACT}>
+          SageMaker docs: custom inference code with hosting services
         </Cite>
       </>
     ),
@@ -353,9 +368,9 @@ const START_ROWS: SymptomRow[] = [
     ),
     cause: (
       <>
-        Every node after node 0 serves a stub app on <C>--port</C> whose{' '}
-        <C>/health</C>, <C>/health_generate</C> and <C>/ping</C> answer 200
-        whatever the model&apos;s state{' '}
+        On the Python frontend, every node after node 0 waits for its schedulers to load, then
+        serves a stub app on <C>--port</C> whose <C>/health</C>, <C>/health_generate</C> and{' '}
+        <C>/ping</C> always answer 200{' '}
         <Cite tier={1} href={sglangUrl(ENGINE, 'L1228-L1281')} kind="code">
           engine.py L1228-L1281
         </Cite>{' '}
@@ -411,7 +426,8 @@ const REQUEST_ROWS: SymptomRow[] = [
     symptom: <>A request meant for a LoRA adapter answers like the base model, with no error</>,
     cause: (
       <>
-        The OpenAI handlers take the adapter from the right side of the first colon in{' '}
+        The chat and completions handlers take the adapter from the right side of the first
+        colon in{' '}
         <C>model</C>; the bare adapter name that <C>/v1/models</C> lists selects no
         adapter, and the model name is not checked{' '}
         <Cite tier={1} href={sglangUrl(SERVING_BASE, 'L40-L71')}>
@@ -494,8 +510,8 @@ const SCALE_ROWS: SymptomRow[] = [
         <Cite tier={1} href={sglangUrl(ENVIRON, 'L708-L709')}>
           environ.py L708-L709
         </Cite>{' '}
-        <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L1817-L1858')}>
-          conn.py L1817-L1858
+        <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L1817-L1916')}>
+          conn.py L1817-L1916
         </Cite>
       </>
     ),
@@ -615,8 +631,8 @@ const KEY_GAP_ROWS: SymptomRow[] = [
           SGLang docs: server arguments (v0.5.22 source)
         </Cite>
         . v0.5.22&apos;s code gives it and the deprecated <C>/get_server_info</C> no admin level{' '}
-        <Cite tier={1} href={sglangUrl(HTTP, 'L837-L848')} kind="code">
-          http_server.py L837-L848
+        <Cite tier={1} href={sglangUrl(HTTP, 'L837-L874')} kind="code">
+          http_server.py L837-L874
         </Cite>
         , so both follow the inference rule{' '}
         <Cite tier={1} href={sglangUrl(AUTH, 'L145-L151')} kind="code">
@@ -629,6 +645,10 @@ const KEY_GAP_ROWS: SymptomRow[] = [
         </Cite>{' '}
         <Cite tier={1} href={sglangUrl(COMMON, 'L3640-L3650')} kind="code">
           common.py L3640-L3650
+        </Cite>
+        , with only watermark secrets redacted{' '}
+        <Cite tier={1} href={sglangUrl(WATERMARK, 'L26-L104')} kind="code">
+          watermarking/core.py L26-L104
         </Cite>
         . Read from source, not run
       </>
@@ -699,8 +719,8 @@ const KEY_GAP_ROWS: SymptomRow[] = [
     cause: (
       <>
         Its router has no authentication layer, so <C>--api-key</C> protects nothing{' '}
-        <Cite tier={1} href={sglangUrl(RUST_APP, 'L77-L89')} kind="code">
-          app.rs L77-L89
+        <Cite tier={1} href={sglangUrl(RUST_APP, 'L77-L92')} kind="code">
+          app.rs L77-L92
         </Cite>
         , and it mounts no admin route and no <C>/metrics</C>{' '}
         <Cite tier={1} href={sglangTreeUrl('rust')} kind="code">
@@ -872,6 +892,10 @@ export function Operations() {
             <Cite tier={1} href={sglangUrl(SERVING, 'L154-L161')}>
               serving.py L154-L161
             </Cite>
+            , the three HiCache storage routes excepted, which refuse to run without an admin key{' '}
+            <Cite tier={1} href={sglangUrl(HTTP, 'L1106-L1173')}>
+              http_server.py L1106-L1173
+            </Cite>
             . The last block of this section closes that plane.
           </Box>
         </SpaceBetween>
@@ -994,10 +1018,17 @@ export function Operations() {
           </Box>
           <Box variant="p">
             One start cost belongs at build time instead. On SM90 (compute capability 9.0, Hopper)
-            or newer, block-quantized FP8 (8-bit floating point) linear layers run on DeepGEMM,
-            whose kernels compile for each new weight shape inside startup{' '}
-            <Cite tier={1} href={sglangUrl(DG, 'L59-L113')}>
-              compile_utils.py L59-L113
+            or newer, block-quantized FP8 (8-bit floating point) linear layers run on DeepGEMM by
+            default wherever the installed DeepGEMM build supports the GPU{' '}
+            <Cite tier={1} href={sglangUrl(DG_CONF, 'L32-L56')}>
+              configurer.py L32-L56
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(FP8_UTILS, 'L1025-L1053')}>
+              fp8_utils.py L1025-L1053
+            </Cite>
+            , and its kernels compile for each new weight shape inside startup{' '}
+            <Cite tier={1} href={sglangUrl(DG, 'L42-L113')}>
+              compile_utils.py L42-L113
             </Cite>
             . SGLang&apos;s own log warning estimates that compile at 10 to 20 minutes, with no
             hardware or model stated{' '}
@@ -1013,7 +1044,11 @@ export function Operations() {
             </Cite>
             , and keep <code>SGLANG_CACHE_DIR</code> and <code>SGLANG_JIT_CACHE_DIR</code> on
             persistent storage, since the JIT (just-in-time) kernel cache does not follow the first
-            variable (section 8, Attention Backends and Kernels).
+            variable{' '}
+            <Cite tier={1} href={sglangUrl(JIT_CACHE, 'L302')} kind="code">
+              kernels/jit cache.py L302
+            </Cite>{' '}
+            (section 8, Attention Backends and Kernels).
           </Box>
         </SpaceBetween>
       </Container>
@@ -1084,8 +1119,8 @@ export function Operations() {
             . From then on, open means open to the network.
           </Box>
           <Box variant="p">
-            The v0.5.22 release notes list <code>/load_lora_adapter_from_tensors</code> and{' '}
-            <code>/set_trace_level</code> under &quot;Require admin auth&quot;{' '}
+            The v0.5.22 release notes carry the fix &quot;Require admin auth for{' '}
+            <code>/load_lora_adapter_from_tensors</code> and <code>/set_trace_level</code>&quot;{' '}
             <Cite tier={1} href={REL_0522} kind="doc-code-conflict">
               SGLang v0.5.22 release notes
             </Cite>
@@ -1136,7 +1171,7 @@ export function Operations() {
             So keep the diffusion server, EPD and <code>--enable-custom-logit-processor</code> off
             exposed hosts, and run v0.5.22 or later. v0.5.22 is the first release with the hardening
             for the surfaces CVE-2026-7301 and CVE-2026-7302 name: the diffusion scheduler&apos;s
-            socket no longer follows a wildcard <code>--host</code> onto the network{' '}
+            socket stays on loopback when <code>--host</code> is a wildcard{' '}
             <Cite tier={1} href={sglangUrl(MM_ARGS, 'L3289-L3312')}>
               multimodal_gen server_args.py L3289-L3312
             </Cite>
@@ -1169,7 +1204,7 @@ export function Operations() {
                   ),
                   minWidth: 200,
                 },
-                { id: 'severity', header: 'Severity', cell: (r) => r.severity, minWidth: 120 },
+                { id: 'severity', header: 'Severity (GitHub)', cell: (r) => r.severity, minWidth: 120 },
                 { id: 'where', header: 'Where', cell: (r) => r.where, minWidth: 200 },
                 { id: 'affected', header: 'Affected', cell: (r) => r.affected, minWidth: 130 },
                 { id: 'patched', header: 'Patched in', cell: (r) => r.patched, minWidth: 120 },
@@ -1177,14 +1212,22 @@ export function Operations() {
             />
           </ExpandableSection>
           <Box variant="p">
-            As of 2026-10-24, SGLang publishes no security policy or private disclosure channel on
-            GitHub, and no repository security advisories{' '}
+            As of 2026-10-24, SGLang publishes no security policy file and no repository security
+            advisories on GitHub, and its security page offers GitHub&apos;s private vulnerability
+            reporting{' '}
             <Cite tier={1} href={SECURITY_POLICY}>
               sgl-project/sglang security policy page
             </Cite>
             . Its CVEs reach you through the GitHub Advisory Database and the NVD (National
-            Vulnerability Database), filed by outside reporters, so watch those feeds for the{' '}
-            <code>sglang</code> pip package.
+            Vulnerability Database), filed by outside reporters: the NVD records name the CERT
+            Coordination Center or VulDB as their source{' '}
+            <Cite tier={1} href={NVD_3059}>
+              NVD: CVE-2026-3059
+            </Cite>{' '}
+            <Cite tier={1} href={NVD_7669}>
+              NVD: CVE-2026-7669
+            </Cite>
+            . Watch those feeds for the <code>sglang</code> pip package.
           </Box>
           <Box variant="p">
             Section 12, Talking to SGLang, holds the key matrix for each deployment: SageMaker, EKS

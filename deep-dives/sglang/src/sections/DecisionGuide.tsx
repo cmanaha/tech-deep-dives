@@ -81,7 +81,7 @@ function DecisionTreeDiagram() {
     { x: 15, title: 'Shared prefixes', lines: ['shortlist SGLang,', 'then measure both', 'P6 pages: 64 tokens'], sec: 'sections 5, 6, 21' },
     { x: 189, title: 'Structured output', lines: ['no reason to pick', 'either engine;', 'test your schemas'], sec: 'section 10' },
     { x: 363, title: 'Wide-EP MoE', lines: ['decide on operations:', 'widths, PD stack,', 'model recipes'], sec: 'sections 14, 16, 22' },
-    { x: 537, title: 'PD at scale', lines: ['all parts in SGLang;', "HyperPod's native PD", 'runs vLLM only'], sec: 'sections 15, 19, 22' },
+    { x: 537, title: 'PD at scale', lines: ['all parts in SGLang;', "HyperPod's native PD", 'documents vLLM only'], sec: 'sections 15, 19, 22' },
     { x: 711, title: 'API needs', lines: ['Ollama, /generate:', 'SGLang; Cohere chat:', 'vLLM; OpenAI: both'], sec: 'sections 12, 13' },
   ];
   const w = 154;
@@ -268,7 +268,7 @@ const BRANCH_ROWS: BranchRow[] = [
         <Cite tier={1} href={DYNAMO_PYPROJECT}>
           Dynamo pyproject.toml L76-L78
         </Cite>
-        , Ray 2.59.0 installs whatever pip resolves{' '}
+        , Ray 2.59.0&apos;s guide installs whatever pip resolves{' '}
         <Cite tier={1} href={RAY_SGLANG_DOC}>
           Ray sglang.md L27
         </Cite>
@@ -308,7 +308,7 @@ const BRANCH_ROWS: BranchRow[] = [
         Shortlist SGLang and measure both engines. For a dense Llama-style model, the P5 family
         (H100, H200) reuses a shared prefix to the exact token and P6 (B200, B300) in 64-token
         pages, when speculative decoding is off or on with an explicit{' '}
-        <code>--speculative-eagle-topk 1</code> and <code>--speculative-num-steps</code>{' '}
+        <code>--speculative-eagle-topk 1</code> and <code>--speculative-num-steps</code> set{' '}
         <Cite tier={1} href={sglangUrl(MOB, 'L293-L315')} kind="code">
           model_override_base.py L293-L315
         </Cite>{' '}
@@ -334,7 +334,11 @@ const BRANCH_ROWS: BranchRow[] = [
         <Cite tier={1} href={sglangUrl(`${GW}/main.rs`, 'L150-L151')}>
           main.rs L150-L151
         </Cite>{' '}
-        and HiCache inside the tree (section 7). vLLM caches prefixes by default too. What any of this is worth
+        and HiCache inside the tree (section 7). vLLM caches prefixes by default too{' '}
+        <Cite tier={1} href={vllmUrl('vllm/config/cache.py', 'L142')}>
+          vLLM cache.py L142
+        </Cite>
+        . What any of this is worth
         depends on your hit rate and prefix lengths; no current-version measurement was located
         during this research.
       </>
@@ -397,8 +401,8 @@ const BRANCH_ROWS: BranchRow[] = [
         </Cite>
         , so decide on operations (section 23 lists the shared mechanisms). Widths are counted differently: SGLang&apos;s{' '}
         <code>--attn-dp-size</code> sits inside the TP (tensor parallelism) group, where vLLM
-        counts <code>--data-parallel-size</code> replicas and shards experts over TP x DP (data
-        parallelism){' '}
+        counts <code>--data-parallel-size</code> replicas and shards experts over TP x PCP
+        (prefill context parallelism) x DP (data parallelism){' '}
         <Cite tier={1} href={sglangUrl(`${SRT}/runtime_context.py`, 'L73-L87')}>
           runtime_context.py L73-L87
         </Cite>{' '}
@@ -469,8 +473,8 @@ const BRANCH_ROWS: BranchRow[] = [
           vLLM cohere/api_router.py L116-L117
         </Cite>
         ; OpenAI, Anthropic Messages and the SageMaker contract work on both. For RL
-        (reinforcement learning) rollouts both expose weight sync: SGLang registers it on every
-        server behind an optional key{' '}
+        (reinforcement learning) rollouts both expose weight sync: SGLang&apos;s Python frontend
+        registers it on every server behind an optional key{' '}
         <Cite tier={1} href={sglangUrl(AUTH, 'L79-L151')}>
           auth.py L79-L151
         </Cite>
@@ -547,7 +551,7 @@ const COST_ROWS: CostRow[] = [
       <>
         A dense Llama-style model on P6 pages at 64 tokens when speculative decoding is off or on
         with an explicit <code>--speculative-eagle-topk 1</code> and{' '}
-        <code>--speculative-num-steps</code>{' '}
+        <code>--speculative-num-steps</code> set{' '}
         <Cite tier={1} href={sglangUrl(OVR, 'L1124-L1137')} kind="code">
           overrides.py L1124-L1137
         </Cite>
