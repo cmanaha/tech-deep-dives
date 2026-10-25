@@ -423,18 +423,29 @@ const IMAGE_ROWS: ImageRow[] = [
         <Cite tier={1} href={sglangUrl(DOCKERFILE, 'L16')}>
           Dockerfile L16
         </Cite>
-        , and a DeepEP V1 set up for IBGDA (GPU-initiated RDMA, remote direct memory access, over
-        InfiniBand) on mlx5 NICs{' '}
+        , and <code>sgl-deep-ep</code> 0.1.2.post1{' '}
+        <Cite tier={1} href={sglangUrl(PYPROJECT, 'L79')}>
+          pyproject.toml L79
+        </Cite>
+        , whose V1 path the image sets up for IBGDA (GPU-initiated RDMA, remote direct memory
+        access, over InfiniBand) on mlx5 NICs{' '}
         <Cite tier={1} href={sglangUrl(DOCKERFILE, 'L149-L150')}>
           Dockerfile L149-L150
-        </Cite>
-        . Upgrade NCCL and install the fork.
+        </Cite>{' '}
+        and whose V2 hybrid kernels are the ordered ones only. Upgrade NCCL and install the fork.
       </>
     ),
   },
   {
     id: 'ubuntu',
-    image: 'AWS Ubuntu DLC, built from the upstream v0.5.22 image (amd64 only)',
+    image: (
+      <>
+        AWS Ubuntu DLC, built from the upstream v0.5.22 image (amd64 only){' '}
+        <Cite tier={1} href={`${DLC}/.github/config/image/sglang/ec2-ubuntu.yml#L1-L16`}>
+          DLC ec2-ubuntu.yml L1-L16
+        </Cite>
+      </>
+    ),
     kv: (
       <>
         NIXL over LIBFABRIC: the EFA installer, <code>latest</code> at build time, supplies
@@ -507,7 +518,7 @@ export function PdWideEpOverEfa() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            PD disaggregation and wide EP are the two SGLang features that put sustained traffic on
+            PD disaggregation and wide EP are two SGLang features that put sustained traffic on
             the network between GPU nodes. PD moves each request&apos;s KV cache from a
             prefill server to a decode server; wide EP runs an all-to-all exchange on every layer
             of an MoE (mixture of experts) model. On AWS that traffic crosses EFA, and the
@@ -553,10 +564,15 @@ export function PdWideEpOverEfa() {
         <SpaceBetween size="m">
           <Box variant="p">
             KV transfer runs on libfabric and its EFA provider. SGLang has two routes there: the
-            Mooncake transfer engine with Mooncake&apos;s EFA wheel, which refuses CUDA VMM (CUDA
-            virtual memory management) allocators, and <code>MOONCAKE_PROTOCOL=efa</code>{' '}
+            Mooncake transfer engine with Mooncake&apos;s EFA wheel and{' '}
+            <code>MOONCAKE_PROTOCOL=efa</code>{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(PD_DOC, 'L112-L132')}>
               SGLang docs: PD Disaggregation, AWS EFA (v0.5.22 source)
+            </Cite>
+            , a route on which SGLang refuses CUDA VMM (CUDA virtual memory management)
+            allocators{' '}
+            <Cite tier={1} href={sglangUrl(MC_UTILS, 'L40-L61')}>
+              mooncake/utils.py L40-L61
             </Cite>
             , or NIXL (NVIDIA Inference Xfer Library) with{' '}
             <code>SGLANG_DISAGGREGATION_NIXL_BACKEND=LIBFABRIC</code>{' '}
@@ -572,7 +588,7 @@ export function PdWideEpOverEfa() {
             <Cite tier={1} href={sglangUrl(ENVIRON, 'L824')}>
               environ.py L824
             </Cite>
-            , and the NIXL backend to <code>UCX</code>{' '}
+            , and the NIXL backend to <code>UCX</code> (Unified Communication X){' '}
             <Cite tier={1} href={sglangUrl(ENVIRON, 'L713-L714')}>
               environ.py L713-L714
             </Cite>
@@ -705,13 +721,17 @@ export function PdWideEpOverEfa() {
             <Cite tier={1} href={sglangUrl(MC_CONN, 'L255-L260')}>
               mooncake/conn.py L255-L260
             </Cite>
-            . It also turns off post-capture KV sizing for Mooncake over EFA and falls back to the
-            regular <code>cudaMalloc</code> pool{' '}
+            . It also keeps post-capture KV sizing off for Mooncake over EFA and uses the regular{' '}
+            <code>cudaMalloc</code> pool{' '}
             <Cite tier={1} href={sglangUrl(OVERRIDES, 'L1764-L1769')}>
               overrides.py L1764-L1769
             </Cite>
-            , so the KV pool is sized up front and can come out slightly more conservative than on
-            InfiniBand. The last rule is yours to keep: the documentation says to leave{' '}
+            ; that sizing is an opt-in, <code>SGLANG_ENABLE_POST_CAPTURE_KV_SIZING</code>, off by
+            default{' '}
+            <Cite tier={1} href={sglangUrl(ENVIRON, 'L588-L589')}>
+              environ.py L588-L589
+            </Cite>
+            , so on defaults the KV pool is sized the same way as on InfiniBand. The last rule is yours to keep: the documentation says to leave{' '}
             <code>MC_FORCE_MNNVL</code> and <code>NCCL_MNNVL_ENABLE</code> unset, since they select MNNVL (multi-node NVLink), a transport EFA does not provide, and the
             startup check reads neither{' '}
             <Cite tier={1} href={sglangUrl(MC_UTILS, 'L40-L61')} kind="code">
@@ -741,11 +761,18 @@ export function PdWideEpOverEfa() {
           <Box variant="p">
             The NIXL route takes <code>--disaggregation-transfer-backend nixl</code> and{' '}
             <code>SGLANG_DISAGGREGATION_NIXL_BACKEND=LIBFABRIC</code>. SGLang creates the named NIXL
-            backend, checks the name against the agent&apos;s plugin list, raises a{' '}
-            <code>ValueError</code> at startup when the plugin is missing, and logs{' '}
+            backend at startup and logs{' '}
             <code>NIXL KVManager initialized with backend: LIBFABRIC</code> when it is present{' '}
             <Cite tier={1} href={sglangUrl(NIXL_CONN, 'L473-L519')}>
               nixl/conn.py L473-L519
+            </Cite>
+            . When the plugin is missing, startup fails on NIXL&apos;s own not-found error from that
+            create call, ahead of SGLang&apos;s plugin-list check{' '}
+            <Cite tier={1} href={`${NIXL}/src/core/nixl_agent.cpp#L333-L339`} kind="code">
+              NIXL nixl_agent.cpp L333-L339
+            </Cite>{' '}
+            <Cite tier={1} href={`${NIXL}/src/bindings/python/nixl_bindings.cpp#L601-L608`} kind="code">
+              nixl_bindings.cpp L601-L608
             </Cite>
             . The <code>nixl</code> wheel builds its LIBFABRIC plugin against an EFA-enabled
             libfabric and leaves libfabric and libefa out of the wheel, so it loads whatever
@@ -799,8 +826,8 @@ export function PdWideEpOverEfa() {
             <Box variant="p">
               Mooncake&apos;s in-repo transfer-engine benchmark reports, between two p5.48xlarge
               instances in one placement group, a GPU-to-GPU write peak of 388.90 GB/s and a read
-              peak of 381.64 GB/s with 1 MB blocks, 32 threads and batch 128, which it puts at
-              about 97% of the 400 GB/s line rate of 32 x 100 Gbps{' '}
+              peak of 381.64 GB/s with 1 MB blocks, 32 threads and batch 128, and puts the write
+              peak at about 97% of the 400 GB/s line rate of 32 x 100 Gbps{' '}
               <Cite tier={2} href={MC_BENCH}>
                 Mooncake efa_transport.md L354-L385 (project claim)
               </Cite>
@@ -866,7 +893,7 @@ export function PdWideEpOverEfa() {
             . The amazon-contributing/DeepEP fork adds unordered hybrid kernels that need neither,
             makes them the default, and prints{' '}
             <code>DeepEP hybrid kernel selection: unordered</code> when a process selects them{' '}
-            <Cite tier={2} href={`${FORK_SELECT}#L25-L52`}>
+            <Cite tier={1} href={`${FORK_SELECT}#L25-L52`}>
               AWS DeepEP fork kernel_select.hpp L25-L52
             </Cite>
             . Install the fork; the AWS Amazon Linux 2023 DLC builds it at commit{' '}
@@ -1015,7 +1042,7 @@ export function PdWideEpOverEfa() {
                 .
               </Box>
               <Box variant="p">
-                The other backends: <code>none</code> keeps MoE on NCCL collectives through
+                Of the other backends, <code>none</code> keeps MoE on NCCL collectives through
                 aws-ofi-nccl; <code>mooncake</code> and <code>nixl</code> have no EFA path, as
                 above; <code>mori</code> is for AMD GPUs{' '}
                 <Cite tier={1} href={sglangDocsSrcUrl('advanced_features/expert_parallelism', 'L50-L53')}>
@@ -1060,17 +1087,19 @@ export function PdWideEpOverEfa() {
                 <strong>RL (reinforcement learning) rollout, P5en.</strong> AWS&apos;s blog of 2026-09-25 claims
                 &quot;enabling DeepEP over EFA increased aggregate RL rollout throughput by 40
                 percent&quot; across 48 P5en instances, 16 for training and 32 for inference, with
-                SGLang 0.5.17 on the AWS SGLang DLC, DeepEP 2.0.0, NCCL 2.31.2 and EFA installer
-                1.49{' '}
+                SGLang 0.5.17, DeepEP 2.0.0, NCCL 2.31.2 and EFA installer 1.49{' '}
                 <Cite tier={2} href={AWS_RL_BLOG}>
                   AWS ML blog, 2026-09-25 (vendor claim)
                 </Cite>
                 . The baseline also differs in CUDA (12.9), PyTorch (2.9.1), NCCL (2.27), SGLang
                 (0.5.9) and RL framework, so the 40 percent cannot be attributed to DeepEP alone.
-                Installer 1.49 bundles aws-ofi-nccl 1.20.0, older than the 1.21 release that adds
-                GIN{' '}
+                Installer 1.49 bundles aws-ofi-nccl 1.20.0{' '}
                 <Cite tier={1} href={EFA_CHANGELOG}>
                   AWS docs: EFA release notes
+                </Cite>
+                , older than the 1.21 release that adds GIN{' '}
+                <Cite tier={1} href={`${GIN_DOC}#L3`}>
+                  aws-ofi-nccl GIN guide L3
                 </Cite>
                 , and the post does not say which GIN backend carried the traffic.
               </Box>
@@ -1098,13 +1127,14 @@ export function PdWideEpOverEfa() {
             <Cite tier={1} href={PLACEMENT_DOC}>
               AWS docs: Placement strategies
             </Cite>
-            ; Capacity Blocks cover p4d, p4de, p5.4xlarge, p5, p5e, p5en, p6-b200 and p6-b300,
-            plus P6e-GB200 UltraServers{' '}
+            ; among GPU types, Capacity Blocks cover p4d, p4de, p5.4xlarge, p5, p5e, p5en, p6-b200
+            and p6-b300, plus P6e-GB200 UltraServers{' '}
             <Cite tier={1} href={CAPACITY_BLOCKS_DOC}>
               AWS docs: Capacity Blocks for ML
             </Cite>
-            . <code>DescribeInstanceTopology</code> returns three network-node levels for p4d to
-            p5en, g6e, g7e and p6e-gb200, and four for p6-b200 and p6-b300{' '}
+            . <code>DescribeInstanceTopology</code> returns three network-node levels for p4d,
+            p4de, p5.48xlarge, p5e, p5en, g6e, g7e and p6e-gb200, and four for p6-b200 and
+            p6-b300{' '}
             <Cite tier={1} href={TOPOLOGY_DOC}>
               AWS docs: EC2 topology prerequisites
             </Cite>
@@ -1159,7 +1189,7 @@ export function PdWideEpOverEfa() {
           <Box variant="p">
             With every check passing on both stacks, return to section 15, PD Disaggregation, for
             the queue gauges that size the pair, and to section 16, Wide Expert Parallelism, for
-            the DeepEP mode on each role and the EPLB cadence.
+            the DeepEP mode on each role and the EPLB (expert-parallel load balancer) cadence.
           </Box>
         </SpaceBetween>
       </Container>

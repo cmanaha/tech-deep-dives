@@ -76,6 +76,10 @@ const AREAL =
 const VERL = 'https://github.com/verl-project/verl/blob/1876b06d0a3e4e71e06230be10af14492ca8a75b';
 const ROLL =
   'https://github.com/alibaba/ROLL/blob/581046abce143e643221f8e292895c46a3b20112/requirements_torch280_sglang.txt#L10';
+const AREAL_README =
+  'https://github.com/areal-project/AReaL/blob/ecc8b0e4dfb4e3965f67121a5c87866a07c390ae/README.md#L143';
+const TUNIX_SAMPLER =
+  'https://github.com/google/tunix/blob/ce63a9fd65f02c4c398e74f000f98371c1575eb6/tunix/generate/sglang_jax_sampler.py#L28';
 const TUNIX =
   'https://github.com/google/tunix/blob/ce63a9fd65f02c4c398e74f000f98371c1575eb6/tunix/rl/rollout/sglang_jax_rollout.py#L28-L41';
 
@@ -283,7 +287,7 @@ const RUNGS: Rung[] = [
     tag: 'first-party engineering posts, Tier 2',
     lines: [
       "LinkedIn ranking: 69% lower latency to rank 50 items (LinkedIn's own measurement)",
-      'Cloudflare: Clef decision models. Also Baseten (per model) and Novita (GLM models)',
+      'Cloudflare: its Clef decision model. Also Baseten (per model) and Novita (GLM models)',
       'The source can know: what it runs in production, and under which conditions',
     ],
   },
@@ -328,7 +332,7 @@ function EvidenceLadderDiagram() {
           An adoption claim is worth what its source can know. Strongest: companies that run their own
           product on SGLang, in their own engineering posts: LinkedIn&apos;s ranking, where
           multi-item scoring cut latency for ranking 50 items by 69% by LinkedIn&apos;s own
-          measurement, Cloudflare&apos;s Clef models, Baseten and Novita. Middle: cloud and hardware
+          measurement, Cloudflare&apos;s Clef model, Baseten and Novita. Middle: cloud and hardware
           vendors that offer SGLang to customers, which can know what they ship but not who runs it.
           Weakest: the project&apos;s logo walls and the scale figures from LMSYS and RadixArk, which
           name no workload, date or scale. Off the ladder: DeepSeek recommends SGLang for its open
@@ -433,9 +437,14 @@ const PIN_ROWS: PinRow[] = [
       </>
     ),
     src: (
-      <Cite tier={1} href={`${MILES}/docker/Dockerfile#L13-L19`}>
-        miles Dockerfile L13-L19
-      </Cite>
+      <>
+        <Cite tier={1} href={`${MILES}/docker/Dockerfile#L13-L19`}>
+          miles Dockerfile L13-L19
+        </Cite>{' '}
+        <Cite tier={1} href={`${MILES}/docker/Dockerfile#L213-L226`}>
+          L213-L226
+        </Cite>
+      </>
     ),
   },
   {
@@ -445,14 +454,19 @@ const PIN_ROWS: PinRow[] = [
     sglang: <>0.5.15.post1, patched</>,
     how: (
       <>
-        Image built on <code>v0.5.15.post1</code> with slime&apos;s own SGLang patches
-        (deterministic inference, weight pull, Megatron alignment)
+        Image built on slime&apos;s own <code>v0.5.15.post1</code> SGLang image, then patched
+        with slime&apos;s SGLang patches (among them deterministic inference and weight pull)
       </>
     ),
     src: (
-      <Cite tier={1} href={`${SLIME}/docker/Dockerfile#L1-L6`}>
-        slime Dockerfile L1-L6
-      </Cite>
+      <>
+        <Cite tier={1} href={`${SLIME}/docker/Dockerfile#L1-L6`}>
+          slime Dockerfile L1-L6
+        </Cite>{' '}
+        <Cite tier={1} href={`${SLIME}/docker/Dockerfile#L141-L158`}>
+          L141-L158
+        </Cite>
+      </>
     ),
   },
   {
@@ -467,9 +481,14 @@ const PIN_ROWS: PinRow[] = [
       </>
     ),
     src: (
-      <Cite tier={1} href={AREAL}>
-        AReaL pyproject.toml L145-L149
-      </Cite>
+      <>
+        <Cite tier={1} href={AREAL}>
+          AReaL pyproject.toml L145-L149
+        </Cite>{' '}
+        <Cite tier={1} href={AREAL_README}>
+          AReaL README L143
+        </Cite>
+      </>
     ),
   },
   {
@@ -517,9 +536,14 @@ const PIN_ROWS: PinRow[] = [
     sglang: <>None: SGL-JAX</>,
     how: <>Rolls out through SGL-JAX, the TPU engine; the PyTorch <code>sglang</code> package is not used</>,
     src: (
-      <Cite tier={1} href={TUNIX}>
-        tunix sglang_jax_rollout.py L28-L41
-      </Cite>
+      <>
+        <Cite tier={1} href={TUNIX}>
+          tunix sglang_jax_rollout.py L28-L41
+        </Cite>{' '}
+        <Cite tier={1} href={TUNIX_SAMPLER}>
+          sglang_jax_sampler.py L28
+        </Cite>
+      </>
     ),
   },
   {
@@ -677,8 +701,8 @@ export function EcosystemUsers() {
             .
           </Box>
           <Box variant="p">
-            Around the package sit separately released projects, two of them engines for Google
-            TPUs (Tensor Processing Units), and further out the third-party code that installs a
+            Around the package sit separately released projects, two of them for Google TPUs
+            (Tensor Processing Units), and further out the third-party code that installs a
             pinned SGLang: RL frameworks and vendor containers. The map shows each piece with the
             SGLang release it runs.
           </Box>
@@ -765,9 +789,13 @@ export function EcosystemUsers() {
             works beside it.
           </Box>
           <Box variant="p">
-            <strong>Against vLLM:</strong> SGLang is a PyTorch ecosystem project hosted by LMSYS{' '}
+            <strong>Against vLLM:</strong> SGLang is a PyTorch ecosystem project{' '}
             <Cite tier={2} href={PYTORCH_POST}>
               PyTorch blog, by the SGLang team, 2025-03-19
+            </Cite>{' '}
+            hosted by LMSYS{' '}
+            <Cite tier={1} href={sglangUrl(README, 'L97')}>
+              README.md L97
             </Cite>
             ; vLLM is hosted by the PyTorch Foundation itself ({VLLM_GOVERNANCE_LINK}).
           </Box>
@@ -809,7 +837,7 @@ export function EcosystemUsers() {
             variant="h2"
             description="See what a production statement on SGLang looks like, and carry its conditions with it when you quote it"
           >
-            The top rung: LinkedIn ranks with SGLang, Cloudflare serves its Clef models on it
+            The top rung: LinkedIn ranks with SGLang, Cloudflare serves its Clef model on it
           </Header>
         }
       >
@@ -855,7 +883,7 @@ export function EcosystemUsers() {
             .
           </Box>
           <Box variant="p">
-            In October 2026 Cloudflare reported moving the serving of its Clef models,
+            In October 2026 Cloudflare reported moving the serving of Clef, one of
             &quot;Cloudflare&apos;s open-weight decision models&quot;, to SGLang, and upstreaming
             Clef support as pull request #42721, which shipped in v0.5.22{' '}
             <Cite tier={2} href={CLOUDFLARE_CLEF}>
@@ -947,7 +975,7 @@ export function EcosystemUsers() {
               OCI docs: Compatible Models for Import
             </Cite>
             . Alibaba Cloud&apos;s PAI (Platform for AI) EAS (Elastic Algorithm Service) lets a
-            customer pick SGLang or vLLM for an LLM endpoint{' '}
+            customer pick vLLM, SGLang or PAI&apos;s own BladeLLM for an LLM endpoint{' '}
             <Cite tier={1} href={ALIBABA_PAI}>
               Alibaba Cloud docs: Deploy LLMs on PAI-EAS
             </Cite>
@@ -976,7 +1004,8 @@ export function EcosystemUsers() {
                 release it installs.
               </Box>
               <Box variant="p">
-                AMD documents SGLang for Instinct MI300 to MI355X and Radeon RX 9000-series GPUs
+                AMD documents SGLang for Instinct MI300 to MI355X GPUs and for Radeon RX 7000 and 9000
+                series, Radeon PRO and Radeon AI PRO cards
                 and publishes its own <code>rocm/sgl-dev</code> images; its guide&apos;s image is
                 v0.5.15.post1, while SGLang publishes its own per-generation ROCm (AMD&apos;s GPU
                 software stack) images such as <code>v0.5.22-rocm10-mi30x</code> and{' '}
@@ -1038,11 +1067,11 @@ export function EcosystemUsers() {
               RadixArk blog, 2026-05-05 (maintainer claim)
             </Cite>
             . Neither gives a method or a date range. The &quot;over 400,000 GPUs&quot; figure
-            that third-party articles repeat comes from the README up to v0.5.21{' '}
+            comes from the README up to v0.5.21{' '}
             <Cite tier={2} href={README_V0521}>
               README.md L72-L88 at v0.5.21 (project claim)
             </Cite>
-            , and the v0.5.22 README no longer carries it{' '}
+            , and the v0.5.22 README does not carry it{' '}
             <Cite tier={1} href={sglangUrl(README, 'L106-L110')}>
               README.md L106-L110
             </Cite>
@@ -1084,7 +1113,8 @@ export function EcosystemUsers() {
               SGLang docs: Post-Training Integration (v0.5.22 source, project claim)
             </Cite>
             . Each RL framework and vendor image freezes the SGLang it installs, and SGLang moves
-            fast: its last ten releases came 13 to 17 days apart{' '}
+            fast: its ten releases from v0.5.13 to v0.5.22, not counting a post release, came 13 to
+            17 days apart{' '}
             <Cite tier={1} href={SGLANG_RELEASES}>
               SGLang releases
             </Cite>
@@ -1100,10 +1130,13 @@ export function EcosystemUsers() {
             <Cite tier={1} href={AREAL}>
               AReaL pyproject.toml L145-L149
             </Cite>
-            . Of the vendor images, the AWS Ubuntu DLC pushed its first v0.5.22 image a day after
-            the upstream release{' '}
+            . Of the vendor images, the AWS Ubuntu DLC pushed its first v0.5.22 image the day after
+            SGLang&apos;s GitHub release{' '}
             <Cite tier={1} href={ECR_GALLERY}>
               ECR Public Gallery: deep-learning-containers/sglang
+            </Cite>{' '}
+            <Cite tier={1} href={SGLANG_RELEASE}>
+              SGLang v0.5.22 release notes
             </Cite>
             , while NVIDIA&apos;s 26.09 container{' '}
             <Cite tier={1} href={NVIDIA_2609}>
@@ -1136,6 +1169,9 @@ export function EcosystemUsers() {
             <code>sglang-miles</code> branch, so the code that runs is that branch&apos;s{' '}
             <Cite tier={1} href={`${MILES}/docker/Dockerfile#L13-L19`}>
               miles Dockerfile L13-L19
+            </Cite>{' '}
+            <Cite tier={1} href={`${MILES}/docker/Dockerfile#L213-L226`}>
+              L213-L226
             </Cite>
             . A team that runs RL rollouts on one of these frameworks and serves production traffic
             on current SGLang should plan for two SGLang versions in its estate, with different
