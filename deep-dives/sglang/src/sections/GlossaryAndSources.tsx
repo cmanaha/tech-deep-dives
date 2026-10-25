@@ -36,7 +36,7 @@ const sources: Source[] = [
 
 const glossary: GlossaryEntry[] = [
   // Runtime and scheduling
-  { acronym: 'SGLang', fullForm: 'SGLang (project name)', description: 'Open-source LLM serving runtime and frontend language from the sgl-project organisation, hosted by LMSYS.' },
+  { acronym: 'SGLang', fullForm: 'SGLang (project name)', description: 'Open-source LLM serving runtime from the sgl-project organisation, hosted by LMSYS. Its repository also carries a frontend language, marked deprecated at v0.5.22.' },
   { acronym: 'SRT', fullForm: 'SGLang Runtime', description: 'The serving engine inside SGLang: tokenizer, per-GPU schedulers and detokenizer. This dive is about the runtime.' },
   { acronym: 'RadixAttention', fullForm: 'RadixAttention', description: 'The attention layer every SGLang model calls. The prefix cache it is named after is a separate object, the radix cache.' },
   { acronym: 'HiCache', fullForm: 'Hierarchical cache', description: 'SGLang\'s tiering of the radix tree across GPU memory (L1), host memory (L2) and a storage backend (L3).' },
