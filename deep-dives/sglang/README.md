@@ -16,23 +16,46 @@ Technical leads and solution architects who have read the sibling vLLM dive
 continuous batching, paged KV memory, the parallelism vocabulary) are defined there and
 linked, not repeated.
 
+## Key takeaways
+
+- **Convergence first.** SGLang v0.5.22 and vLLM v0.31.0 both page the KV cache, cache
+  prefixes by default, overlap CPU and GPU work by default, queue requests first-come-first-served
+  and recompute on preemption. On NVIDIA they run the same kernel projects through their own forks.
+- **The index is the first difference.** SGLang indexes the KV cache as a token tree (the radix
+  cache) where vLLM chains fixed-size block hashes. A cache hit copies slot indices, eviction removes
+  unheld leaves only when an allocation is short, and HiCache demotes tree nodes to host memory and
+  storage rather than deleting them.
+- **The GPU sets the reuse unit.** The attention backend is chosen by model family, then GPU
+  generation, and it sets the page size: token-exact on H100, 64-token pages on B200 for the same
+  dense Llama deployment, when speculation is off or set explicitly to a single-branch draft.
+- **Admission is a bet on early stopping.** The scheduler charges each request a forecast of its
+  output and, when memory runs out, retracts the requests with the fewest generated tokens. vLLM
+  protects early arrivals; SGLang protects long generations.
+- **More ships in the engine repository.** A cache-aware model gateway, a PD control plane that
+  always pushes KV from prefill into pages decode reserved, and an admin plane for RL weight sync
+  that any client able to reach the port can call unless a key is set.
+- **No current head-to-head benchmark was located.** Published comparisons are dated project or
+  third-party claims with stated conditions; the dive reports them with their conditions and does
+  not compute a winner.
+
 ## Section map
 
-29 sections in the left navigation.
+28 sections in the left navigation.
 
 - Framing (1-2): Thesis & Framing, Getting Started.
-- Runtime and the index (3-9): the runtime's processes, the scheduler, RadixAttention and
-  the radix cache, KV memory and GPU-picked defaults, HiCache, attention backends and
-  kernels, quantization and KV precision.
-- Request features (10-15): structured output, speculative decoding, the API surfaces,
-  LoRA, the frontend language, SGLang as an RL rollout engine.
-- Scale-out (16-20): parallelism, wide expert parallelism, PD disaggregation, the model
-  gateway, multi-node and Kubernetes.
-- Inside the code (21): eight tabbed reading paths through the source at the tag.
-- SGLang on AWS (22-24): deployment paths, EC2 instances and GPU-dependent behaviour, PD
-  and wide EP over EFA.
-- Compare, operate, decide (25-29): SGLang and vLLM compared, ecosystem and production
-  users, operations, decision guide, glossary and sources.
+- Runtime and the index (3-9): the runtime's processes, the scheduler, RadixAttention and the
+  radix cache, KV memory and the defaults your GPU picks, HiCache, attention backends and kernels,
+  quantization and KV precision.
+- Request features (10-13): structured output, speculative decoding, APIs with LoRA adapters and
+  the admin plane, SGLang as an RL rollout engine.
+- Scale-out (14-18): parallelism, PD disaggregation, wide expert parallelism, the model gateway,
+  multi-node and Kubernetes orchestrators.
+- SGLang on AWS (19-22): SageMaker AI and HyperPod, EKS and EC2, EC2 instances and GPU-dependent
+  behaviour, PD and wide EP over EFA.
+- Compare, operate, decide (23-26): SGLang and vLLM compared, ecosystem and production users,
+  operations and failure signatures, decision guide.
+- Inside the code (27): six tabbed reading paths through the source at the tag.
+- Glossary & Sources (28).
 
 ## Layout
 
