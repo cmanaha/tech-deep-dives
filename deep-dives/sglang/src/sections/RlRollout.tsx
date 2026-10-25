@@ -390,8 +390,8 @@ const PATH_ROWS: PathRow[] = [
     bytes: <>IPC handles in the body; the server maps the trainer&apos;s GPU memory and copies</>,
     session: <>Required</>,
     src: (
-      <Cite tier={1} href={sglangUrl(WSYNC, 'L16-L60')}>
-        weight_sync/utils.py L16-L60
+      <Cite tier={1} href={sglangUrl(WSYNC, 'L16-L105')}>
+        weight_sync/utils.py L16-L105
       </Cite>
     ),
   },
@@ -405,7 +405,7 @@ const PATH_ROWS: PathRow[] = [
         (0.1.2) installed
       </>
     ),
-    bytes: <>Broadcast or peer-to-peer over CUDA IPC from torchrun-managed loader processes</>,
+    bytes: <>Broadcast or peer-to-peer from torchrun-managed loader processes, handed over by IPC</>,
     session: <>Not needed</>,
     src: (
       <>
@@ -415,7 +415,7 @@ const PATH_ROWS: PathRow[] = [
         <Cite tier={1} href={sglangUrl(WU, 'L265-L289')}>
           weight_updater.py L265-L289
         </Cite>{' '}
-        <Cite tier={1} href={sglangDocsSrcUrl('advanced_features/checkpoint_engine', 'L24-L35')}>
+        <Cite tier={1} href={sglangDocsSrcUrl('advanced_features/checkpoint_engine', 'L6-L35')}>
           SGLang docs: checkpoint engine
         </Cite>
       </>
@@ -456,7 +456,12 @@ const FLAG_ROWS: FlagRow[] = [
         <code>None</code>
       </>
     ),
-    effect: <>When set, the refit and memory routes accept only this key (section 12)</>,
+    effect: (
+      <>
+        When set on a single-tokenizer server, the refit and memory routes accept only this key
+        (section 12)
+      </>
+    ),
     src: (
       <Cite tier={1} href={sglangUrl(SERVING, 'L158-L161')}>
         serving.py L158-L161
@@ -480,9 +485,14 @@ const FLAG_ROWS: FlagRow[] = [
     def: <>False</>,
     effect: <>Batch-invariant kernels; a reported 34.35% average slowdown (2025 project claim)</>,
     src: (
-      <Cite tier={1} href={sglangUrl(EXEC, 'L1073-L1075')}>
-        exec_.py L1073-L1075
-      </Cite>
+      <>
+        <Cite tier={1} href={sglangUrl(EXEC, 'L1073-L1075')}>
+          exec_.py L1073-L1075
+        </Cite>{' '}
+        <Cite tier={2} href={LMSYS_DET}>
+          LMSYS blog, 2025-09-22 (project claim)
+        </Cite>
+      </>
     ),
   },
   {
@@ -551,7 +561,7 @@ export function RlRollout() {
         header={
           <Header
             variant="h1"
-            description="The launch flags and the five-call refit a trainer needs to push new weights into SGLang without any later request reusing KV computed with the old ones (verified against SGLang v0.5.22, commit baa9befa, 2026-10-24)"
+            description="The launch flags and the five-call refit a trainer needs to push new weights into SGLang without any later request reusing KV (key-value) cache computed with the old ones (verified against SGLang v0.5.22, commit baa9befa, 2026-10-24)"
           >
             13. SGLang as an RL Rollout Engine
           </Header>
@@ -567,7 +577,7 @@ export function RlRollout() {
               README.md L21
             </Cite>
             . On the serving side the challenge is the moment of the refit: once the weights change,
-            no later request may reuse KV (key-value) cache entries computed with the old weights,
+            no later request may reuse KV cache entries computed with the old weights,
             and every request in flight needs a defined outcome.
           </Box>
           <Box variant="p">
@@ -575,7 +585,8 @@ export function RlRollout() {
             session, sends the new weights in buckets (over NCCL, the NVIDIA Collective
             Communications Library, or as CUDA IPC, inter-process communication, handles), closes
             the session and resumes. Each update
-            call flushes the radix cache by default, and the pause is what lets that flush succeed.
+            call flushes the radix cache by default, and the pause lets that flush succeed while
+            requests are still queued.
             This section covers the server side: the calls, the flags, and what each one guarantees.
             Which RL frameworks drive these calls, and the SGLang release each pins, is in section
             24, Ecosystem and Production Users.
@@ -587,7 +598,7 @@ export function RlRollout() {
         header={
           <Header
             variant="h2"
-            description="Follow five calls in order, and see why the pause is what lets the cache flush succeed"
+            description="Follow five calls in order, and see how the pause lets the cache flush succeed with requests still queued"
           >
             A refit is a bracket
           </Header>
@@ -597,9 +608,9 @@ export function RlRollout() {
           <RefitSequenceDiagram />
           <Box variant="small" color="text-body-secondary">
             Illustrative, not measured: the call order at v0.5.22. Every call is an HTTP POST to an
-            admin route. The shaded band is the weight-update session. Without step 1, a request
-            still queued at step 3 makes the flush fail, and the call returns 400 after the weights
-            changed.
+            admin route. The shaded band is the weight-update session. Without step 1, each update
+            call first waits for every in-flight request to finish (our reading of the lock code,
+            below).
           </Box>
           <Box variant="p">
             The pause comes first because a flush needs an idle scheduler.{' '}
@@ -660,11 +671,11 @@ export function RlRollout() {
           <ExpandableSection headerText="What the flush and the update lock check, in code">
             <SpaceBetween size="s">
               <Box variant="p">
-                The scheduler counts as idle when its running batch is empty, no chunked prefill is
-                in progress, no overlapped result is pending and, unless the engine is paused, the
-                waiting queue is empty{' '}
-                <Cite tier={1} href={sglangUrl(SCHED, 'L5168-L5200')} kind="code">
-                  scheduler.py L5168-L5200
+                The scheduler counts as idle only when its running batch is empty, no chunked prefill
+                is in progress, no overlapped result is pending, the grammar queue is empty and,
+                unless the engine is paused, the waiting queue is empty, among other checks{' '}
+                <Cite tier={1} href={sglangUrl(SCHED, 'L5168-L5215')} kind="code">
+                  scheduler.py L5168-L5215
                 </Cite>
                 . A refused flush logs <code>Cache not flushed because there are pending
                 requests</code> with the queue and running counts, the line to search for when a
@@ -676,8 +687,8 @@ export function RlRollout() {
               </Box>
               <Box variant="p">
                 Without a pause, a tensor or NCCL update takes the TokenizerManager&apos;s writer lock{' '}
-                <Cite tier={1} href={sglangUrl(TCM, 'L499-L529')} kind="code">
-                  tokenizer_control_mixin.py L499-L529
+                <Cite tier={1} href={sglangUrl(TCM, 'L499-L591')} kind="code">
+                  tokenizer_control_mixin.py L499-L591
                 </Cite>
                 , and every generate request holds the reader lock from tokenization until its
                 response completes{' '}
@@ -758,8 +769,8 @@ export function RlRollout() {
             <code>sglang.srt.weight_sync.utils.update_weights</code> turns each tensor into a CUDA
             IPC handle, gathers the handles per inference TP (tensor parallelism) rank and sends
             them through <code>update_weights_from_tensor</code>{' '}
-            <Cite tier={1} href={sglangUrl(WSYNC, 'L16-L60')}>
-              weight_sync/utils.py L16-L60
+            <Cite tier={1} href={sglangUrl(WSYNC, 'L16-L105')}>
+              weight_sync/utils.py L16-L105
             </Cite>
             . A trainer that embeds the engine in its own process calls the same operations as{' '}
             <code>sgl.Engine</code> methods; <code>engine.py</code> at the tag defines no pause or
@@ -808,8 +819,8 @@ export function RlRollout() {
             <Cite tier={1} href={sglangUrl(ENGINE, 'L1667-L1689')}>
               engine.py L1667-L1689
             </Cite>
-            . If a bucket&apos;s load raises, the call reports that the weights are partially
-            updated and should be discarded{' '}
+            . On the NCCL path, if a bucket&apos;s load raises, the call reports that the weights
+            are partially updated and should be discarded{' '}
             <Cite tier={1} href={sglangUrl(MR_WU, 'L330-L346')} kind="code">
               weight_updater.py (model runner) L330-L346
             </Cite>
@@ -994,8 +1005,8 @@ export function RlRollout() {
               PyTorch&apos;s <code>mm</code>, <code>addmm</code>, <code>_log_softmax</code> and{' '}
               <code>mean.dim</code> (and <code>bmm</code>) are replaced by batch-invariant
               kernels{' '}
-              <Cite tier={1} href={sglangUrl(BIO, 'L1004-L1021')}>
-                batch_invariant_ops.py L1004-L1021
+              <Cite tier={1} href={sglangUrl(BIO, 'L1004-L1029')}>
+                batch_invariant_ops.py L1004-L1029
               </Cite>{' '}
               <Cite tier={1} href={sglangUrl(RUNNER, 'L825-L829')}>
                 model_runner.py L825-L829
@@ -1003,7 +1014,8 @@ export function RlRollout() {
               .
             </li>
             <li>
-              The sampler is forced to PyTorch, and FlashInfer all-reduce fusion is turned off{' '}
+              The sampler is forced to PyTorch (an Ascend sampler is kept), and FlashInfer all-reduce
+              fusion is turned off{' '}
               <Cite tier={1} href={sglangUrl(OVERRIDES, 'L988-L1031')}>
                 overrides.py L988-L1031
               </Cite>
@@ -1062,7 +1074,8 @@ export function RlRollout() {
             <Cite tier={1} href={sglangDocsSrcUrl(DET_DOCS, 'L40-L54')}>
               SGLang docs: backend compatibility table
             </Cite>
-            . On Blackwell the unset backend resolves to <code>flashinfer</code>, so by our reading
+            . On Blackwell the unset backend resolves to <code>flashinfer</code> for models outside
+            the DeepSeek family, so by our reading
             of the code, not run, a deterministic rollout server there runs with no prefix reuse
             unless <code>--attention-backend</code> names another accepted backend that the GPU
             supports (section 8, Attention Backends and Kernels).
@@ -1103,7 +1116,8 @@ export function RlRollout() {
                   SGLang docs: server arguments
                 </Cite>
                 . The code picks <code>fa3</code> only on Hopper and older GPUs and{' '}
-                <code>flashinfer</code> on Blackwell, which also turns the radix cache off{' '}
+                <code>flashinfer</code> on Blackwell outside the DeepSeek family, which also turns
+                the radix cache off{' '}
                 <Cite tier={1} href={sglangUrl(OVERRIDES, 'L1041-L1052')}>
                   overrides.py L1041-L1052
                 </Cite>
@@ -1131,8 +1145,8 @@ export function RlRollout() {
             and memory route is an admin route: with no key set they accept any client that can
             reach the port, which is the local host at the default 127.0.0.1 bind and the network
             once <code>--host 0.0.0.0</code> is set{' '}
-            <Cite tier={1} href={sglangUrl(HTTP, 'L1423-L1453')}>
-              http_server.py L1423-L1453
+            <Cite tier={1} href={sglangUrl(HTTP, 'L1265-L1553')}>
+              http_server.py L1265-L1553
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl(AUTH, 'L133-L143')}>
               auth.py L133-L143
@@ -1182,9 +1196,10 @@ export function RlRollout() {
               server.rs L609
             </Cite>
             . Check which SGLang your RL framework installs: each pins its own release, and of the
-            frameworks checked for this dive only Miles tracks v0.5.22 (section 24, Ecosystem and
-            Production Users). By our reading of the v0.5.21 release note, a framework pinned to an
-            earlier release must add the session bracket before it can drive a v0.5.22 server. After
+            frameworks checked for this dive only Miles starts from v0.5.22, and it then installs
+            SGLang from its own branch (section 24, Ecosystem and Production Users). By our reading of the v0.5.21 release note, a framework pinned to an
+            earlier release must add the session bracket before it can refit a v0.5.22 server over
+            tensors or NCCL. After
             the first refit, confirm that a response reports the new <code>weight_version</code>{' '}
             and, when colocated, that the release freed GPU memory.
           </Box>
@@ -1194,9 +1209,16 @@ export function RlRollout() {
             routes only when <code>VLLM_SERVER_DEV_MODE=1</code> (default 0), with no key check{' '}
             <Cite
               tier={1}
-              href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L33-L36')}
+              href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L34-L37')}
             >
-              vLLM routers.py L33-L36
+              vLLM routers.py L34-L37
+            </Cite>{' '}
+            <Cite
+              tier={1}
+              href={vllmUrl('vllm/entrypoints/serve/middleware/authenticate.py', 'L11-L62')}
+              kind="code"
+            >
+              vLLM authenticate.py L11-L62
             </Cite>{' '}
             <Cite tier={1} href={vllmUrl('vllm/envs.py', 'L1453')}>
               vLLM envs.py L1453

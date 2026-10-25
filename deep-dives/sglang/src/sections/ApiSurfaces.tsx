@@ -40,6 +40,8 @@ const RUST_APP = 'rust/sglang-server/src/api_server/http/app.rs';
 const RELEASE_NOTES = 'https://github.com/sgl-project/sglang/releases/tag/v0.5.22';
 const AWS_DLC_EKS =
   'https://github.com/aws/deep-learning-containers/blob/23970abd5b8919ea3e1add74692a0d056b2fcbd9/docs/sglang/deployment/eks.md#L8-L55';
+const AWS_SM_PING =
+  'https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-inference-code.html#your-algorithms-inference-algo-ping-requests';
 
 function vllmUrl(path: string, lines: string): string {
   return `https://github.com/vllm-project/vllm/blob/v0.31.0/${path}#${lines}`;
@@ -385,8 +387,8 @@ const ADMIN_ROWS: AdminRow[] = [
     watch: (
       <>
         <code>mode</code>: <code>abort</code> (default) returns in-flight requests,{' '}
-        <code>retract</code> re-queues them, <code>in_place</code> keeps them and their KV, which
-        makes a later flush fail{' '}
+        <code>retract</code> re-queues them, <code>in_place</code> keeps them and their KV
+        (key-value) cache, which makes a later flush fail{' '}
         <Cite tier={1} href={sglangUrl(IO, 'L1921-L1940')}>
           io_struct.py L1921-L1940
         </Cite>
@@ -405,7 +407,7 @@ const ADMIN_ROWS: AdminRow[] = [
     watch: (
       <>
         Flushes the radix cache after loading; section 13, SGLang as an RL Rollout Engine, covers
-        the call sequence and memory release{' '}
+        the RL (reinforcement learning) call sequence and memory release{' '}
         <Cite tier={1} href={sglangUrl(HTTP, 'L1265-L1491')}>
           http_server.py L1265-L1491
         </Cite>
@@ -426,6 +428,9 @@ const ADMIN_ROWS: AdminRow[] = [
         No restart needed; <code>/configure_logging</code> changes log levels the same way{' '}
         <Cite tier={1} href={sglangUrl(HTTP, 'L1186-L1263')}>
           http_server.py L1186-L1263
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(HTTP, 'L1676-L1684')}>
+          L1676-L1684
         </Cite>
       </>
     ),
@@ -489,12 +494,17 @@ const DEPLOY_ROWS: DeployRow[] = [
     ),
     why: (
       <>
-        <code>/ping</code> is not exempt from <code>--api-key</code> and the platform sends no
-        token, so an inference key fails the health check; read from source, not executed{' '}
+        <code>/ping</code> is not exempt from <code>--api-key</code>{' '}
         <Cite tier={1} href={sglangUrl(AUTH, 'L101-L106')} kind="code">
           auth.py L101-L106
         </Cite>
-        . With only the admin key, our reading of the code is that <code>/ping</code> and{' '}
+        , and AWS documents the health check as a periodic <code>GET /ping</code> and names no way
+        to attach a token{' '}
+        <Cite tier={1} href={AWS_SM_PING}>
+          SageMaker docs: custom inference code, health check
+        </Cite>
+        , so by our reading of the code, not executed, an inference key fails the health check.
+        With only the admin key, our reading of the code is that <code>/ping</code> and{' '}
         <code>/invocations</code> stay unkeyed, and IAM (Identity and Access Management) on{' '}
         <code>InvokeEndpoint</code> guards inference. The entrypoint turns{' '}
         <code>SM_SGLANG_</code> variables into flags{' '}
@@ -512,7 +522,7 @@ const DEPLOY_ROWS: DeployRow[] = [
   },
   {
     id: 'eks',
-    where: 'Amazon EKS (Elastic Kubernetes Service) or EC2 (Elastic Compute Cloud)',
+    where: 'Amazon EKS or EC2 (Elastic Compute Cloud)',
     keys: (
       <>
         Both keys, with <code>--host 0.0.0.0</code> in the container
@@ -678,8 +688,8 @@ export function ApiSurfaces() {
             . Chat passes <code>max_completion_tokens</code> or <code>max_tokens</code>; with both
             unset, the scheduler treats the limit as unbounded and clips it to the context left
             after the prompt{' '}
-            <Cite tier={1} href={sglangUrl(PROTOCOL, 'L1149')}>
-              protocol.py L1149
+            <Cite tier={1} href={sglangUrl(PROTOCOL, 'L1150')}>
+              protocol.py L1150
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L2585-L2608')}>
               scheduler.py L2585-L2608
@@ -731,8 +741,14 @@ export function ApiSurfaces() {
             .
           </Box>
           <Box variant="p">
-            The native API is the one SGLang&apos;s own router and RL (reinforcement learning)
-            integrations speak. It takes <code>text</code>, pre-tokenized <code>input_ids</code> or{' '}
+            The native API is the one SGLang&apos;s own frontend language and gateway speak{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/lang/backend/runtime_endpoint.py', 'L184-L189')}>
+              runtime_endpoint.py L184-L189
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl('sgl-model-gateway/src/server.rs', 'L545')}>
+              gateway server.rs L545
+            </Cite>
+            . It takes <code>text</code>, pre-tokenized <code>input_ids</code> or{' '}
             <code>input_embeds</code>, and a list in any field makes one call a batch{' '}
             <Cite tier={1} href={sglangUrl(IO, 'L177-L380')}>
               io_struct.py L177-L380
@@ -792,9 +808,10 @@ export function ApiSurfaces() {
             <Cite tier={1} href={sglangUrl(ENGINE, 'L209-L238')}>
               engine.py L209-L238
             </Cite>
-            . Porting a vLLM launch line, drop <code>--enable-auto-tool-choice</code>, a flag
-            SGLang v0.5.22 does not define{' '}
-            <Cite tier={1} href={sglangUrl(SERVER_ARGS, 'L376-L384')}>
+            . Porting a vLLM launch line, drop <code>--enable-auto-tool-choice</code>: a search of
+            v0.5.22&apos;s Python source finds no such flag, and <code>--tool-call-parser</code> is
+            the one to set{' '}
+            <Cite tier={1} href={sglangUrl(SERVER_ARGS, 'L376-L384')} kind="code">
               server_args.py L376-L384
             </Cite>
             , and check the parser name, because the two engines name parsers differently (
@@ -823,7 +840,7 @@ export function ApiSurfaces() {
             <Cite tier={1} href={sglangUrl(PROTOCOL, 'L958-L959')}>
               protocol.py L958-L959
             </Cite>{' '}
-            <Cite tier={1} href={sglangDocsSrcUrl('advanced_features/separate_reasoning', 'L99-L125')}>
+            <Cite tier={1} href={sglangDocsSrcUrl('advanced_features/separate_reasoning', 'L99-L186')}>
               SGLang docs: separate reasoning (v0.5.22 source)
             </Cite>
             . A hard cap on thinking tokens needs <code>--enable-strict-thinking</code> plus a
@@ -883,6 +900,9 @@ export function ApiSurfaces() {
             <Cite tier={1} href={sglangUrl(SERVING_RESP, 'L296-L306')}>
               serving_responses.py L296-L306
             </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(SERVING_RESP, 'L1581-L1586')}>
+              L1581-L1586
+            </Cite>{' '}
             <Cite tier={1} href={sglangUrl(SERVING, 'L26-L31')}>
               serving.py L26-L31
             </Cite>
@@ -897,8 +917,9 @@ export function ApiSurfaces() {
             </Cite>
             . The handler translates onto the chat path, so it inherits that path&apos;s tool and
             reasoning parsers. <code>thinking.budget_tokens</code> is accepted, logged as not
-            enforced, and ignored; use strict thinking for a hard cap{' '}
-            <Cite tier={1} href={sglangUrl(ANTHROPIC, 'L565-L640')}>
+            enforced, and ignored, and by our reading of the code no Messages field reaches strict
+            thinking&apos;s per-request budget, so a hard cap needs the chat or native route{' '}
+            <Cite tier={1} href={sglangUrl(ANTHROPIC, 'L565-L640')} kind="code">
               anthropic/serving.py L565-L640
             </Cite>
             . Both engines serve this API.
@@ -946,9 +967,13 @@ export function ApiSurfaces() {
             the one it wants, so a batch can mix adapters and base-model requests. The model is a
             fixed set of GPU slots. Adapters live in CPU memory and are copied into
             one of <code>--max-loras-per-batch</code> preallocated GPU slots when a batch needs
-            them, evicting an idle adapter by LRU (least recently used) when no slot is free{' '}
+            them, evicting an idle adapter, LRU (least recently used) by default, when no slot is
+            free{' '}
             <Cite tier={1} href={sglangUrl(LORA_POOL, 'L782-L860')} kind="code">
               mem_pool.py L782-L860
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(LORA_FIELDS, 'L70-L76')}>
+              lora.py L70-L76
             </Cite>
             . The slot buffers are sized once, from slot count, maximum rank and target modules,
             whatever the loaded adapters weigh{' '}
@@ -1034,6 +1059,13 @@ export function ApiSurfaces() {
             with the other algorithms; the draft runs without the adapter{' '}
             <Cite tier={1} href={sglangUrl(LORA_HOOK, 'L160-L185')}>
               lora_hook.py L160-L185
+            </Cite>{' '}
+            <Cite
+              tier={1}
+              href={sglangUrl('python/sglang/srt/model_executor/model_runner.py', 'L821-L822')}
+              kind="code"
+            >
+              model_runner.py L821-L822
             </Cite>
             , so our reading is that acceptance can drop for an adapter that moves the output far
             from the base model.
@@ -1067,9 +1099,9 @@ export function ApiSurfaces() {
             <strong>
               Select an adapter with <code>model: &quot;base:adapter&quot;</code>
             </strong>
-            , or with <code>lora_path</code> in <code>extra_body</code>. The OpenAI handlers split{' '}
-            <code>model</code> at its first colon and take the right side as the adapter; a model
-            string without a colon selects no adapter{' '}
+            , or with <code>lora_path</code> in <code>extra_body</code>. The chat and completions
+            handlers split <code>model</code> at its first colon and take the right side as the
+            adapter; a model string without a colon selects no adapter{' '}
             <Cite tier={1} href={sglangUrl(SERVING_BASE, 'L40-L71')}>
               serving_base.py L40-L71
             </Cite>
@@ -1077,8 +1109,8 @@ export function ApiSurfaces() {
             <Cite tier={1} href={sglangUrl(HTTP, 'L1926-L1956')}>
               http_server.py L1926-L1956
             </Cite>
-            , and sending that bare name runs the base model with no error, because the handlers do
-            not check the model name. Client code written for vLLM, where the bare adapter name is
+            , and sending that bare name runs the base model with no error, because those handlers
+            do not check the model name. Client code written for vLLM, where the bare adapter name is
             the model ({VLLM_LORA_LINK}), meets exactly this. On <code>/generate</code>, name the
             adapter in <code>lora_path</code>, per item in a batch{' '}
             <Cite tier={1} href={sglangUrl(IO, 'L277')}>
@@ -1109,8 +1141,12 @@ export function ApiSurfaces() {
             <Cite tier={1} href={sglangUrl(AUTH, 'L21-L26')}>
               auth.py L21-L26
             </Cite>
-            , and the Python frontend registers them on every server. The ones operators reach for
-            first:
+            , and the Python frontend registers 42 of them on every server; the 43rd, a debug
+            dumper route, exists only with <code>DUMPER_SERVER_PORT=reuse</code>{' '}
+            <Cite tier={1} href={sglangUrl(HTTP, 'L891-L894')} kind="code">
+              http_server.py L891-L894
+            </Cite>
+            . The ones operators reach for first:
           </Box>
           <Table
             variant="embedded"
@@ -1152,7 +1188,7 @@ export function ApiSurfaces() {
             . The documentation describes only <code>/health_generate</code> as generating{' '}
             <Cite
               tier={1}
-              href={sglangDocsSrcUrl('basic_usage/native_api', 'L106-L108')}
+              href={sglangDocsSrcUrl('basic_usage/native_api', 'L108-L110')}
               kind="doc-code-conflict"
             >
               SGLang docs: health check (v0.5.22 source)
@@ -1230,7 +1266,7 @@ export function ApiSurfaces() {
             ; containers pass <code>--host 0.0.0.0</code>, and from then on open means open to the
             network{' '}
             <Cite tier={1} href={AWS_DLC_EKS}>
-              AWS Deep Learning Containers: SGLang on EKS
+              AWS Deep Learning Containers: SGLang on EKS (Elastic Kubernetes Service)
             </Cite>
             . vLLM registers its sleep, pause and weight-transfer routes only with{' '}
             <code>VLLM_SERVER_DEV_MODE=1</code> and checks no key on them{' '}
@@ -1239,6 +1275,13 @@ export function ApiSurfaces() {
               href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L34-L37')}
             >
               vLLM routers.py L34-L37 (v0.31.0)
+            </Cite>{' '}
+            <Cite
+              tier={1}
+              href={vllmUrl('vllm/entrypoints/serve/middleware/authenticate.py', 'L11-L62')}
+              kind="code"
+            >
+              vLLM authenticate.py L11-L62 (v0.31.0)
             </Cite>
             ; SGLang registers its admin routes on every server and offers the second key (
             {VLLM_SERVER_LINK}).
@@ -1280,6 +1323,9 @@ export function ApiSurfaces() {
               . Both keys are fields of that record{' '}
               <Cite tier={1} href={sglangUrl(SERVER_ARGS, 'L508-L549')} kind="code">
                 server_args.py L508-L549
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl(SERVING, 'L154-L161')} kind="code">
+                serving.py L154-L161
               </Cite>
               , so by our reading they are part of the response.
             </Box>
