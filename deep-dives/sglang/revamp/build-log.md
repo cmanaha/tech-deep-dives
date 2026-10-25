@@ -28,6 +28,8 @@ Per-section author reports, for the glossary, the fact check and the final repor
 | 24 Ecosystem | EcosystemUsers.tsx | 76 | 2, 0 overlap/clip | RL, LLM, TPU, LMSYS, SMG, OME, RBG, FA3, MoE, DLC, AL2023, EFA, OCI, PAI, EAS, ROCm | 08 C3 'on H100' wrong for the 69% (Dec 2025 LinkedIn post names no GPU; H100 belongs to Feb 2026 post's production table): shipped 'against single-item scoring with prefix caching', no H100. SCOPE strongest-number line carries the wrong H100 condition. 08 B14 line numbers off by one (L6, L19-L29). NVIDIA container named 26.09, not 'October 2026' |
 | 25 Operations | Operations.tsx | 79 (28 code, 2 doc-code) | 0 (tables scroll at 390) | LoRA, TP, DP, PD, EKS, EC2, DLC, EOS, KV, SM90, FP8, JIT, TTFT, NCCL, OFI, EFA, EP, RL, CVE, EPD, LLM, NVD | All five code findings verified, marked read from source not run; 18-row symptom table; four-row key-reach table |
 | 26 Decision guide | DecisionGuide.tsx | 60 | 1, 0 overlap/clip (scrolls at 390, min 680) | PD, EP, MoE, KV, EC2, DLC, EKS, EFA, FCFS, LPM, TP, DP, EBNF, RL, LoRA, LMSYS, FP8, SM90 | Used section 18's Ray wording, not 10 E6 'early-stage' |
+| 27 tab 3 Radix & pools | codebase/CodebaseRadixMemory.tsx | 58 | 0 | KV, LRU, SWA, HiCache, PyO3, LoRA | 15 stops incl. UnifiedRadixCache Rust core; check line plus disable_radix_cache on server_args= (disabled cache prints same Tree cache line); read from code, not run |
+| 27 tab 4 Execution | codebase/CodebaseExecution.tsx | 60 | 0 | MHA, MLA, PD, GQA, SM90/SM100, NPU | 12 stops; page-size warning text verified (overrides.py L1135); author flagged section 8 radix_attention.py L290-L296, orchestrator corrected to L294-L302 |
 
 ## Cross-section conditions to keep consistent
 

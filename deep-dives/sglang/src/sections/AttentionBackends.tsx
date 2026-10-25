@@ -769,8 +769,8 @@ export function AttentionBackends() {
             An attention backend is the module that computes attention over the paged KV (key and
             value) cache. Every model calls one attention layer, <code>RadixAttention</code>, and that
             layer hands the work to whichever backend the server chose at startup{' '}
-            <Cite tier={1} href={sglangUrl(`${SRT}/layers/radix_attention.py`, 'L290-L296')}>
-              radix_attention.py L290-L296
+            <Cite tier={1} href={sglangUrl(`${SRT}/layers/radix_attention.py`, 'L294-L302')}>
+              radix_attention.py L294-L302
             </Cite>
             . Three flags can name it, <code>--attention-backend</code> and the per-phase{' '}
             <code>--prefill-attention-backend</code> and <code>--decode-attention-backend</code>, and
