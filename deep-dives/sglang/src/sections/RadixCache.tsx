@@ -367,7 +367,7 @@ function ForkOntoTreeDiagram() {
             <line x1={210} y1={158} x2={x + 54} y2={176} className="radix-fork-arr" />
             <rect x={x} y={178} width={108} height={44} rx={6} className="radix-fork-prog" />
             <text x={x + 54} y={204} className="radix-fork-t">{`branch ${i + 1}: gen`}</text>
-            <line x1={x + 54} y1={222} x2={210} y2={250} className="radix-fork-arr" />
+            <line x1={x + 54} y1={222} x2={150 + i * 60} y2={250} className="radix-fork-arr" />
           </g>
         ))}
         <rect x={30} y={252} width={360} height={56} rx={6} className="radix-fork-prog" />

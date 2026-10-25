@@ -71,7 +71,12 @@ async function openSection(page, id) {
   await page.waitForFunction(
     (target) => {
       const cur = document.querySelector('a[href^="#"][aria-current="page"]');
-      return cur?.getAttribute('href') === `#${target}` && document.querySelector('main h1');
+      if (cur?.getAttribute('href') !== `#${target}`) return false;
+      // The previous section can stay mounted after the nav updates: wait for the new h1,
+      // whose number matches the nav entry's, so the expand-all loop below clicks the right page.
+      const h1 = document.querySelector('main h1');
+      const num = cur.textContent?.match(/^\s*(\d+)\./)?.[1];
+      return Boolean(h1) && (!num || (h1.textContent ?? '').trim().startsWith(`${num}.`));
     },
     id,
     { timeout: 45000 }

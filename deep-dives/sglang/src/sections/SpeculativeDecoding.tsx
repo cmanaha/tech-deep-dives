@@ -1197,9 +1197,9 @@ export function SpeculativeDecoding() {
           variant="embedded"
           wrapLines
           columnDefinitions={[
-            { id: 'file', header: 'File and lines', cell: (r: WalkRow) => r.file },
-            { id: 'what', header: 'What to look at', cell: (r: WalkRow) => r.what },
-            { id: 'why', header: 'Why it matters', cell: (r: WalkRow) => r.why },
+            { id: 'file', header: 'File and lines', cell: (r: WalkRow) => r.file, minWidth: 220 },
+            { id: 'what', header: 'What to look at', cell: (r: WalkRow) => r.what, minWidth: 220 },
+            { id: 'why', header: 'Why it matters', cell: (r: WalkRow) => r.why, minWidth: 180 },
           ]}
           items={walkRows}
         />

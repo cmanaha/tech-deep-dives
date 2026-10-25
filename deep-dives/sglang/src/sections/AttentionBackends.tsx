@@ -959,9 +959,14 @@ export function AttentionBackends() {
             variant="embedded"
             wrapLines
             columnDefinitions={[
-              { id: 'backend', header: 'Backend', cell: (r: PageRow) => <code>{r.backend}</code> },
-              { id: 'page', header: 'Page size it sets', cell: (r: PageRow) => r.page },
-              { id: 'src', header: 'Source', cell: (r: PageRow) => r.src },
+              {
+                id: 'backend',
+                header: 'Backend',
+                minWidth: 170,
+                cell: (r: PageRow) => <code>{r.backend}</code>,
+              },
+              { id: 'page', header: 'Page size it sets', minWidth: 240, cell: (r: PageRow) => r.page },
+              { id: 'src', header: 'Source', minWidth: 200, cell: (r: PageRow) => r.src },
             ]}
             items={pageRows}
           />
@@ -1046,11 +1051,17 @@ export function AttentionBackends() {
               {
                 id: 'backend',
                 header: 'Backend',
+                minWidth: 150,
                 cell: (r: SourceRow) => (r.plain ? r.backend : <code>{r.backend}</code>),
               },
-              { id: 'from', header: 'Kernels come from', cell: (r: SourceRow) => r.from },
-              { id: 'pin', header: 'Package and pin at v0.5.22', cell: (r: SourceRow) => r.pin },
-              { id: 'src', header: 'Source', cell: (r: SourceRow) => r.src },
+              { id: 'from', header: 'Kernels come from', minWidth: 240, cell: (r: SourceRow) => r.from },
+              {
+                id: 'pin',
+                header: 'Package and pin at v0.5.22',
+                minWidth: 200,
+                cell: (r: SourceRow) => r.pin,
+              },
+              { id: 'src', header: 'Source', minWidth: 200, cell: (r: SourceRow) => r.src },
             ]}
             items={sourceRows}
           />
@@ -1320,8 +1331,13 @@ python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --tru
               wrapLines
               columnDefinitions={[
                 { id: 'platform', header: 'Platform', minWidth: 150, cell: (r: PlatformRow) => r.platform },
-                { id: 'path', header: 'What SGLang v0.5.22 runs', cell: (r: PlatformRow) => r.path },
-                { id: 'src', header: 'Source', cell: (r: PlatformRow) => r.src },
+                {
+                  id: 'path',
+                  header: 'What SGLang v0.5.22 runs',
+                  minWidth: 280,
+                  cell: (r: PlatformRow) => r.path,
+                },
+                { id: 'src', header: 'Source', minWidth: 200, cell: (r: PlatformRow) => r.src },
               ]}
               items={platformRows}
             />
@@ -1369,10 +1385,15 @@ python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --tru
             wrapLines
             header={<Header variant="h3">The knobs this section explains</Header>}
             columnDefinitions={[
-              { id: 'flag', header: 'Flag or variable', cell: (r: KnobRow) => <code>{r.flag}</code> },
-              { id: 'def', header: 'Default at v0.5.22', cell: (r: KnobRow) => r.def },
-              { id: 'effect', header: 'What it changes', cell: (r: KnobRow) => r.effect },
-              { id: 'src', header: 'Source', cell: (r: KnobRow) => r.src },
+              {
+                id: 'flag',
+                header: 'Flag or variable',
+                minWidth: 220,
+                cell: (r: KnobRow) => <code>{r.flag}</code>,
+              },
+              { id: 'def', header: 'Default at v0.5.22', minWidth: 170, cell: (r: KnobRow) => r.def },
+              { id: 'effect', header: 'What it changes', minWidth: 220, cell: (r: KnobRow) => r.effect },
+              { id: 'src', header: 'Source', minWidth: 190, cell: (r: KnobRow) => r.src },
             ]}
             items={knobRows}
           />

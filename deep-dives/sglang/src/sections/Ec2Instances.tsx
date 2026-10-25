@@ -648,9 +648,9 @@ export function Ec2Instances() {
                 columnDefinitions={[
                   { id: 'size', header: 'Size', cell: (r) => <code>{r.size}</code>, minWidth: 150 },
                   { id: 'gpus', header: 'GPUs', cell: (r) => r.gpus, minWidth: 150 },
-                  { id: 'per', header: 'Memory per GPU (GiB)', cell: (r) => r.perGpu },
-                  { id: 'total', header: 'GPU memory (GiB)', cell: (r) => r.total },
-                  { id: 'net', header: 'Network (Gbps)', cell: (r) => r.net },
+                  { id: 'per', header: 'Memory per GPU (GiB)', cell: (r) => r.perGpu, minWidth: 120 },
+                  { id: 'total', header: 'GPU memory (GiB)', cell: (r) => r.total, minWidth: 120 },
+                  { id: 'net', header: 'Network (Gbps)', cell: (r) => r.net, minWidth: 110 },
                   { id: 'cpu', header: 'Host CPU', cell: (r) => r.cpu, minWidth: 160 },
                 ]}
               />
