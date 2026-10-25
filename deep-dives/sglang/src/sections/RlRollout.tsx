@@ -586,10 +586,9 @@ export function RlRollout() {
             Communications Library, or as CUDA IPC, inter-process communication, handles), closes
             the session and resumes. Each update
             call flushes the radix cache by default, and the pause lets that flush succeed while
-            requests are still queued.
-            This section covers the server side: the calls, the flags, and what each one guarantees.
-            Which RL frameworks drive these calls, and the SGLang release each pins, is in section
-            24, Ecosystem and Production Users.
+            requests are still queued. This section covers the server side; which RL frameworks
+            drive these calls, and the SGLang release each pins, is in section 24, Ecosystem and
+            Production Users.
           </Box>
         </SpaceBetween>
       </Container>
@@ -662,6 +661,12 @@ export function RlRollout() {
             <Cite tier={1} href={sglangUrl(WU, 'L120-L133')}>
               weight_updater.py L120-L133
             </Cite>
+            . The scheduler logs the refusal as <code>Cache not flushed because there are pending
+            requests</code> with the queue and running counts, the line to search for when a refit
+            returns 400{' '}
+            <Cite tier={1} href={sglangUrl(SCHED, 'L5368-L5375')} kind="code">
+              scheduler.py L5368-L5375
+            </Cite>
             . The documented order is pause, update, continue{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(RL_DOCS, 'L618')}>
               SGLang docs: SGLang for RL L618
@@ -676,12 +681,6 @@ export function RlRollout() {
                 unless the engine is paused, the waiting queue is empty, among other checks{' '}
                 <Cite tier={1} href={sglangUrl(SCHED, 'L5168-L5215')} kind="code">
                   scheduler.py L5168-L5215
-                </Cite>
-                . A refused flush logs <code>Cache not flushed because there are pending
-                requests</code> with the queue and running counts, the line to search for when a
-                refit returns 400{' '}
-                <Cite tier={1} href={sglangUrl(SCHED, 'L5368-L5375')} kind="code">
-                  scheduler.py L5368-L5375
                 </Cite>
                 .
               </Box>
@@ -739,7 +738,7 @@ export function RlRollout() {
             <Cite tier={1} href={sglangDocsSrcUrl(RL_DOCS, 'L110-L114')}>
               SGLang docs: how to choose
             </Cite>
-            . NCCL carries the disaggregated path, and CUDA IPC handles carry the colocated one.
+            .
           </Box>
           <Table
             variant="embedded"
@@ -1062,6 +1061,20 @@ export function RlRollout() {
             .
           </Box>
           <Box variant="p">
+            <strong>What it costs.</strong> On the LMSYS (Large Model Systems Organization) blog in
+            September 2025, the SGLang team reported an average slowdown of 34.35% with the
+            FlashInfer and FA3 (FlashAttention 3) backends, against 61.5% for Thinking Machines
+            Lab&apos;s batch-invariant kernels, whose conditions the post does not state. The setup
+            was Qwen3-8B at TP 1 on one H200, end-to-end latency over three RL rollout workloads of
+            256 requests at lengths of 1,024, 4,096 and 8,192, with the radix cache disabled for all
+            benchmarks{' '}
+            <Cite tier={2} href={LMSYS_DET}>
+              LMSYS blog, 2025-09-22 (project claim)
+            </Cite>
+            . The v0.5.22 deterministic-inference docs publish no cost figure, and the claim
+            predates v0.5.22. Budget the mode as a real slowdown and measure it on your own model.
+          </Box>
+          <Box variant="p">
             <strong>Keeping the radix cache.</strong> Deterministic mode keeps the radix cache only
             with <code>fa3</code>, <code>fa4</code>, <code>triton</code> or <code>ascend</code>;
             with <code>flashinfer</code> it turns the cache off{' '}
@@ -1075,24 +1088,10 @@ export function RlRollout() {
               SGLang docs: backend compatibility table
             </Cite>
             . On Blackwell the unset backend resolves to <code>flashinfer</code> for models outside
-            the DeepSeek family, so by our reading
-            of the code, not run, a deterministic rollout server there runs with no prefix reuse
-            unless <code>--attention-backend</code> names another accepted backend that the GPU
-            supports (section 8, Attention Backends and Kernels).
-          </Box>
-          <Box variant="p">
-            <strong>What it costs.</strong> On the LMSYS (Large Model Systems Organization) blog in
-            September 2025, the SGLang team reported an average slowdown of 34.35% with the
-            FlashInfer and FA3 (FlashAttention 3) backends, against 61.5% for Thinking Machines
-            Lab&apos;s batch-invariant kernels, whose conditions the post does not state. The setup
-            was Qwen3-8B at TP 1 on one H200, end-to-end latency over three RL rollout workloads of
-            256 requests at lengths of 1,024, 4,096 and 8,192, with the radix cache disabled for all
-            benchmarks{' '}
-            <Cite tier={2} href={LMSYS_DET}>
-              LMSYS blog, 2025-09-22 (project claim)
-            </Cite>
-            . The v0.5.22 deterministic-inference docs publish no cost figure, and the claim
-            predates v0.5.22. Budget the mode as a real slowdown and measure it on your own model.
+            the DeepSeek family, so by our reading of the code, not run, a deterministic rollout
+            server there runs with no prefix reuse unless <code>--attention-backend</code> names
+            another accepted backend that the GPU supports (section 8, Attention Backends and
+            Kernels).
           </Box>
           <ExpandableSection headerText="Where the deterministic-inference docs and v0.5.22's code disagree">
             <SpaceBetween size="s">
@@ -1197,11 +1196,11 @@ export function RlRollout() {
             </Cite>
             . Check which SGLang your RL framework installs: each pins its own release, and of the
             frameworks checked for this dive only Miles starts from v0.5.22, and it then installs
-            SGLang from its own branch (section 24, Ecosystem and Production Users). By our reading of the v0.5.21 release note, a framework pinned to an
-            earlier release must add the session bracket before it can refit a v0.5.22 server over
-            tensors or NCCL. After
-            the first refit, confirm that a response reports the new <code>weight_version</code>{' '}
-            and, when colocated, that the release freed GPU memory.
+            SGLang from its own branch (section 24, Ecosystem and Production Users). By our reading
+            of the v0.5.21 release note, a framework pinned to an earlier release must add the
+            session bracket before it can refit a v0.5.22 server over tensors or NCCL. After the
+            first refit, confirm that a response reports the new <code>weight_version</code> and,
+            when colocated, that the release freed GPU memory.
           </Box>
           <Box variant="p">
             <strong>Against vLLM:</strong> both engines expose what an RL trainer needs. vLLM

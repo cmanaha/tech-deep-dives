@@ -414,8 +414,8 @@ export function PdDisaggregation() {
             admission, and in our reading that coupling is the rule to size the two pools by.
           </Box>
           <Box variant="p">
-            The same documentation names a second motivation: under DP (data parallelism)
-            attention, one DP worker prefilling while another decodes raises decode latency{' '}
+            A second motivation comes from DP (data parallelism) attention, where one DP worker
+            prefilling while another decodes raises decode latency{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(PD_DOC, 'L15')}>
               SGLang docs: PD Disaggregation L15
             </Cite>
@@ -530,6 +530,24 @@ export function PdDisaggregation() {
               decode_schedule_batch_mixin.py L21-L27
             </Cite>
             .
+          </Box>
+          <Box variant="p">
+            Three things cross the wire per request: the KV pages, addressed by page index; a small
+            metadata record with the first output token, which prefill has already sampled, its
+            logprobs and, for speculative decoding, the draft&apos;s hidden states; and, for the
+            hybrid models defined in section 8, Attention Backends and Kernels, per-request state
+            that is not paged KV, such as Mamba state or a sliding-window ring{' '}
+            <Cite tier={1} href={sglangUrl(BASE_CONN, 'L17-L37')}>
+              base/conn.py L17-L37
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(DISAGG_UTILS, 'L366-L440')}>
+              disaggregation/utils.py L366-L440
+            </Cite>
+            . Prefill runs each request with <code>max_new_tokens = 1</code>{' '}
+            <Cite tier={1} href={sglangUrl(PREFILL, 'L455-L459')}>
+              prefill.py L455-L459
+            </Cite>
+            , so decode generates from the second token on.
           </Box>
           <Box variant="p">
             With DP on a prefill server, the in-process controller routes by room id,{' '}
@@ -648,24 +666,6 @@ export function PdDisaggregation() {
               main.rs L24-L52
             </Cite>
             ; section 17, The Model Gateway, covers that form and the routing policy for each role.
-          </Box>
-          <Box variant="p">
-            Three things cross the wire per request: the KV pages, addressed by page index; a small
-            metadata record with the first output token, which prefill has already sampled, its
-            logprobs and, for speculative decoding, the draft&apos;s hidden states; and, for the
-            hybrid models defined in section 8, Attention Backends and Kernels, per-request state
-            that is not paged KV, such as Mamba state or a sliding-window ring{' '}
-            <Cite tier={1} href={sglangUrl(BASE_CONN, 'L17-L37')}>
-              base/conn.py L17-L37
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(DISAGG_UTILS, 'L366-L440')}>
-              disaggregation/utils.py L366-L440
-            </Cite>
-            . Prefill runs each request with <code>max_new_tokens = 1</code>{' '}
-            <Cite tier={1} href={sglangUrl(PREFILL, 'L455-L459')}>
-              prefill.py L455-L459
-            </Cite>
-            , so decode generates from the second token on.
           </Box>
           <Box variant="p">
             Some settings must match across the roles. The decode server refuses a prefill server
@@ -860,40 +860,45 @@ export function PdDisaggregation() {
           </Header>
         }
       >
-        <Box variant="p">
-          Decode sends a heartbeat to each prefill bootstrap server every 5 seconds (
-          <code>SGLANG_DISAGGREGATION_HEARTBEAT_INTERVAL</code>, floor 2) and, after 2 failures in
-          a row (<code>SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE</code>), marks every unfinished
-          room from that prefill as failed with <code>Lost connection with prefill instance</code>{' '}
-          <Cite tier={1} href={sglangUrl(ENVIRON, 'L708-L709')}>
-            environ.py L708-L709
-          </Cite>{' '}
-          <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L433-L439')}>
-            conn.py L433-L439
-          </Cite>{' '}
-          <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L1817-L1858')}>
-            conn.py L1817-L1858
-          </Cite>{' '}
-          <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L1873-L1913')}>
-            conn.py L1873-L1913
-          </Cite>
-          , some 10 seconds at the defaults. Prefill waits up to 300 seconds for destination
-          indices (<code>SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT</code>) and decode up to 300
-          seconds for the KV (<code>SGLANG_DISAGGREGATION_WAITING_TIMEOUT</code>){' '}
-          <Cite tier={1} href={sglangUrl(ENVIRON, 'L706-L710')}>
-            environ.py L706-L710
-          </Cite>
-          . A failed transfer aborts the request on decode with HTTP 500{' '}
-          <Cite tier={1} href={sglangUrl(DECODE, 'L2760-L2786')}>
-            decode.py L2760-L2786
-          </Cite>
-          . When the prefill leg fails, the gateway drops the paired decode request instead of
-          leaving it to wait out that timeout{' '}
-          <Cite tier={1} href={sglangUrl(`${GW}/routers/http/pd_router.rs`, 'L732-L745')} kind="code">
-            pd_router.rs L732-L745
-          </Cite>
-          ; the gateway&apos;s other reliability features are in section 17.
-        </Box>
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Decode sends a heartbeat to each prefill bootstrap server every 5 seconds (
+            <code>SGLANG_DISAGGREGATION_HEARTBEAT_INTERVAL</code>, floor 2) and, after 2 failures in
+            a row (<code>SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE</code>), marks every unfinished
+            room from that prefill as failed with <code>Lost connection with prefill instance</code>{' '}
+            <Cite tier={1} href={sglangUrl(ENVIRON, 'L708-L709')}>
+              environ.py L708-L709
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L433-L439')}>
+              conn.py L433-L439
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L1817-L1858')}>
+              conn.py L1817-L1858
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(COMMON_CONN, 'L1873-L1913')}>
+              conn.py L1873-L1913
+            </Cite>
+            , some 10 seconds at the defaults.
+          </Box>
+          <Box variant="p">
+            Prefill waits up to 300 seconds for destination indices (
+            <code>SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT</code>) and decode up to 300 seconds for
+            the KV (<code>SGLANG_DISAGGREGATION_WAITING_TIMEOUT</code>){' '}
+            <Cite tier={1} href={sglangUrl(ENVIRON, 'L706-L710')}>
+              environ.py L706-L710
+            </Cite>
+            . A failed transfer aborts the request on decode with HTTP 500{' '}
+            <Cite tier={1} href={sglangUrl(DECODE, 'L2760-L2786')}>
+              decode.py L2760-L2786
+            </Cite>
+            . When the prefill leg fails, the gateway drops the paired decode request instead of
+            leaving it to wait out that timeout{' '}
+            <Cite tier={1} href={sglangUrl(`${GW}/routers/http/pd_router.rs`, 'L732-L745')} kind="code">
+              pd_router.rs L732-L745
+            </Cite>
+            ; the gateway&apos;s other reliability features are in section 17.
+          </Box>
+        </SpaceBetween>
       </Container>
 
       <Container

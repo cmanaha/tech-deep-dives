@@ -437,7 +437,7 @@ export function WideExpertParallelism() {
         header={
           <Header
             variant="h1"
-            description="Run a large MoE model across nodes with the right all-to-all mode on each role, and set the load balancer's cadence in the unit the code counts (verified against SGLang v0.5.22, commit baa9befa, 2026-10-24)"
+            description="Run a large MoE (mixture of experts) model across nodes with the right all-to-all mode on each role, and set the load balancer's cadence in the unit the code counts (verified against SGLang v0.5.22, commit baa9befa, 2026-10-24)"
           >
             16. Wide Expert Parallelism: DeepEP, EPLB and overlap
           </Header>
@@ -445,8 +445,8 @@ export function WideExpertParallelism() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Wide EP (expert parallelism) spreads the experts of a large MoE (mixture of experts)
-            model, such as DeepSeek-V3, over many GPUs and usually several nodes. Each GPU holds a
+            Wide EP (expert parallelism) spreads the experts of a large MoE model, such as
+            DeepSeek-V3, over many GPUs and usually several nodes. Each GPU holds a
             few experts, and every MoE layer sends each token to the GPUs that own its chosen
             experts and brings the results back. That exchange is an all-to-all collective, and
             running it well is the challenge here: which all-to-all library and mode each server
@@ -703,25 +703,9 @@ export function WideExpertParallelism() {
             <Cite tier={1} href={sglangUrl(EXEC_FIELDS, 'L851-L879')}>
               exec_.py L851-L879
             </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            <code>--enable-eplb</code> alone starts it. It sets the expert-distribution recorder to{' '}
-            <code>stat</code> and the dispatch algorithm to <code>static</code>, or{' '}
-            <code>dynamic</code> with <code>--moe-a2a-backend none</code>, and it is rejected
-            without EP above 1{' '}
+            . <code>--enable-eplb</code> alone starts it, and it is rejected without EP above 1{' '}
             <Cite tier={1} href={sglangUrl(PAR_HOOK, 'L689-L731')}>
               parallel_hook.py L689-L731
-            </Cite>
-            . The solver defaults to DeepSeek&apos;s EPLB, in its hierarchical form (expert groups to
-            nodes, then experts to GPUs) when the model&apos;s expert groups divide evenly by the node
-            count{' '}
-            <Cite tier={1} href={sglangUrl(EPLB_ALGOS, 'L75-L87')}>
-              eplb_algorithms/__init__.py L75-L87
-            </Cite>
-            ; elastic EP switches it to an elasticity-aware variant{' '}
-            <Cite tier={1} href={sglangUrl(PAR_HOOK, 'L496-L513')}>
-              parallel_hook.py L496-L513
             </Cite>
             .
           </Box>
@@ -811,6 +795,27 @@ export function WideExpertParallelism() {
             </Cite>
             .
           </Box>
+          <ExpandableSection headerText="What --enable-eplb sets, and which solver it runs">
+            <Box variant="p">
+              <code>--enable-eplb</code> sets the expert-distribution recorder to <code>stat</code>{' '}
+              and the dispatch algorithm to <code>static</code>, or <code>dynamic</code> with{' '}
+              <code>--moe-a2a-backend none</code>{' '}
+              <Cite tier={1} href={sglangUrl(PAR_HOOK, 'L689-L731')}>
+                parallel_hook.py L689-L731
+              </Cite>
+              . The solver defaults to DeepSeek&apos;s EPLB, in its hierarchical form (expert groups
+              to nodes, then experts to GPUs) when the model&apos;s expert groups divide evenly by the
+              node count{' '}
+              <Cite tier={1} href={sglangUrl(EPLB_ALGOS, 'L75-L87')}>
+                eplb_algorithms/__init__.py L75-L87
+              </Cite>
+              ; elastic EP switches it to an elasticity-aware variant{' '}
+              <Cite tier={1} href={sglangUrl(PAR_HOOK, 'L496-L513')}>
+                parallel_hook.py L496-L513
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <ExpandableSection headerText="The one platform where the counter skips passes">
             <Box variant="p">
               The tick is gated by <code>should_advance_eplb_counter</code>, which returns true on
@@ -970,7 +975,7 @@ export function WideExpertParallelism() {
             <strong>Against vLLM:</strong> attention DP is a width inside SGLang&apos;s TP group and
             EP spans that group, while vLLM&apos;s DP attention is <code>--data-parallel-size</code>{' '}
             replicas plus <code>--enable-expert-parallel</code>, with the MoE layers sharded over TP
-            x DP{' '}
+            x PCP (prefill context parallelism) x DP{' '}
             <Cite tier={1} href={`${VLLM_CFG}#L134-L136`}>
               vLLM parallel.py L134-L136
             </Cite>
@@ -1028,19 +1033,29 @@ export function WideExpertParallelism() {
             are deployed together: each side stays in its own DeepEP mode (our reading of the
             lockstep rule). In order, from there:
           </Box>
-          <Box variant="p">
-            <strong>1.</strong> Bring up the PD pair from section 15 with an all-to-all backend on
-            both roles, and count GPUs with section 14&apos;s rule.{' '}
-            <strong>2.</strong> On Mooncake EP or NIXL-EP, pass <code>--deepep-mode low_latency</code>{' '}
-            on both roles. <strong>3.</strong> Add <code>--enable-eplb</code> with{' '}
-            <code>--expert-balancedness-report-mode prometheus</code>, read{' '}
-            <code>sglang:eplb_balancedness</code>, and size{' '}
-            <code>--eplb-rebalance-num-iterations</code> in steps:{' '}
-            <strong>the default rebalances every 1000 forward passes</strong>.{' '}
-            <strong>4.</strong> Turn on <code>--enable-two-batch-overlap</code> if your model has a
-            TBO strategy. <strong>5.</strong> For the transport underneath, including DeepEP over
-            EFA (Elastic Fabric Adapter) on AWS, continue to section 22, PD and Wide EP over EFA.
-          </Box>
+          <ol>
+            <li>
+              Bring up the PD pair from section 15 with an all-to-all backend on both roles, and
+              count GPUs with section 14&apos;s rule.
+            </li>
+            <li>
+              On Mooncake EP or NIXL-EP, pass <code>--deepep-mode low_latency</code> on both roles.
+            </li>
+            <li>
+              Add <code>--enable-eplb</code> with{' '}
+              <code>--expert-balancedness-report-mode prometheus</code>, read{' '}
+              <code>sglang:eplb_balancedness</code>, and size{' '}
+              <code>--eplb-rebalance-num-iterations</code> in steps:{' '}
+              <strong>the default rebalances every 1000 forward passes</strong>.
+            </li>
+            <li>
+              Turn on <code>--enable-two-batch-overlap</code> if your model has a TBO strategy.
+            </li>
+            <li>
+              For the transport underneath, including DeepEP over EFA (Elastic Fabric Adapter) on
+              AWS, continue to section 22, PD and Wide EP over EFA.
+            </li>
+          </ol>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

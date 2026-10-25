@@ -838,24 +838,7 @@ export function Parallelism() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The case for attention DP sits in the KV cache sizing code. For MLA models, the bytes
-            per token are the latent dimension times
-            layers times element size, with no TP term{' '}
-            <Cite tier={1} href={sglangUrl(POOL, 'L349-L380')}>
-              pool_configurator.py L349-L380
-            </Cite>
-            . For MHA and GQA (multi-head and grouped-query attention) models, they scale with the
-            KV heads divided by the attention TP width, down to one head per GPU{' '}
-            <Cite tier={1} href={sglangUrl(POOL, 'L464-L470')}>
-              pool_configurator.py L464-L470
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(MODEL_CONFIG, 'L1591-L1602')}>
-              model_config.py L1591-L1602
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            So under plain TP 8, every GPU of an MLA model stores the same latent KV for the same
+            Under plain TP 8, every GPU of an MLA model stores the same latent KV for the same
             batch: eight copies. Attention DP turns those eight copies into eight different batches,
             each group holding KV for its own requests only{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(DPA_DOC, 'L23-L29')}>
@@ -866,6 +849,22 @@ export function Parallelism() {
             deep_gemm</code>, 8 GPUs{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(DPA_DOC, 'L77-L87')}>
               SGLang docs: recommended setup for DeepSeek (v0.5.22 source)
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            The reason is in the KV cache sizing code. For MLA models, the bytes per token are the
+            latent dimension times layers times element size, with no TP term{' '}
+            <Cite tier={1} href={sglangUrl(POOL, 'L349-L380')}>
+              pool_configurator.py L349-L380
+            </Cite>
+            . For MHA and GQA (multi-head and grouped-query attention) models, they scale with the
+            KV heads divided by the attention TP width, down to one head per GPU{' '}
+            <Cite tier={1} href={sglangUrl(POOL, 'L464-L470')}>
+              pool_configurator.py L464-L470
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(MODEL_CONFIG, 'L1591-L1602')}>
+              model_config.py L1591-L1602
             </Cite>
             .
           </Box>
@@ -1048,7 +1047,10 @@ export function Parallelism() {
             <Cite tier={1} href={sglangUrl(PP_MIXIN, 'L101')}>
               scheduler_pp_mixin.py L101
             </Cite>
-            . Replicas from <code>--dp-size</code> exchange nothing during a request{' '}
+            .
+          </Box>
+          <Box variant="p">
+            Replicas from <code>--dp-size</code> exchange nothing during a request{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(DPA_DOC, 'L15-L17')}>
               SGLang docs: DP key characteristics (v0.5.22 source)
             </Cite>
