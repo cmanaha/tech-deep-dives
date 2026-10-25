@@ -341,9 +341,9 @@ const BRANCH_ROWS: BranchRow[] = [
     ),
     where: (
       <>
-        Section 5, RadixAttention and the Radix Cache; section 6, KV Memory and GPU-Picked Defaults;
+        Section 5, RadixAttention and the Radix Cache; section 6, KV Memory and the Defaults Your GPU Picks;
         section 7, HiCache: GPU, Host and Storage; section 17, The Model Gateway; section 21, EC2
-        Instances, Images and GPU Defaults
+        Instances, Images and GPU-Dependent Behaviour
       </>
     ),
   },
@@ -568,7 +568,7 @@ const COST_ROWS: CostRow[] = [
         . The throughput effect of smaller pages was not measured in this research.
       </>
     ),
-    where: 'Section 6, KV Memory and GPU-Picked Defaults; section 21, EC2 Instances, Images and GPU Defaults',
+    where: 'Section 6, KV Memory and the Defaults Your GPU Picks; section 21, EC2 Instances, Images and GPU-Dependent Behaviour',
   },
   {
     id: 'compile',

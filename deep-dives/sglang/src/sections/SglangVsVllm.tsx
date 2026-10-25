@@ -423,7 +423,7 @@ const DIFF_ROWS: DiffRow[] = [
         block; on B200 at defaults the comparison flips. On AWS that is the move from P5 (H100) to
         P6 (B200 or B300): the same Llama deployment goes from token-exact reuse to 64-token pages
         with no flag change, by our reading of the default chain (section 21, EC2 Instances,
-        Images and GPU Defaults).
+        Images and GPU-Dependent Behaviour).
       </>
     ),
     where: (
@@ -1683,7 +1683,7 @@ export function SglangVsVllm() {
               <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/memory_hook.py`, 'L283-L345')}>
                 memory_hook.py L283-L345
               </Cite>{' '}
-              (section 6, KV Memory and GPU-Picked Defaults; {V27_LINK}).
+              (section 6, KV Memory and the Defaults Your GPU Picks; {V27_LINK}).
             </li>
             <li>
               <strong>

@@ -395,7 +395,7 @@ export function ThesisAndFraming() {
               vLLM cache.py L333-L334
             </Cite>
             , SGLang reuses more finely on H100 and less finely on B200. Section 5, RadixAttention
-            and the Radix Cache, covers the tree; section 6, KV Memory and GPU-Picked Defaults, and
+            and the Radix Cache, covers the tree; section 6, KV Memory and the Defaults Your GPU Picks, and
             section 8, Attention Backends and Kernels, cover the page size and when to set it.
           </Box>
           <Box variant="p">
