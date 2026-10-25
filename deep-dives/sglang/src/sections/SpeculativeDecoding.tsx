@@ -576,7 +576,7 @@ export function SpeculativeDecoding() {
           <Box variant="small" color="text-body-secondary">
             Illustrative, not measured. The chain is the automatic shape for most targets: 3 draft
             steps, top-k 1, 4 verified positions. A <code>LlamaForCausalLM</code> or Grok-1 target
-            gets a tree instead (next sections).
+            gets a tree instead (see &quot;Draft shape&quot; below).
           </Box>
 
           <Box variant="p">
@@ -622,7 +622,15 @@ export function SpeculativeDecoding() {
         <SpaceBetween size="m">
           <Box variant="p">
             The first question is what supplies the draft, because it decides what you download, train
-            or skip. <code>--speculative-algorithm</code> resolves a name as a built-in first, then the{' '}
+            or skip, and the answers group three ways. A separate draft checkpoint drives{' '}
+            <code>EAGLE</code>, <code>EAGLE3</code>, <code>STANDALONE</code> and <code>DFLASH</code>.
+            Heads or drafts that ship with the target drive <code>NEXTN</code>, <code>DSPARK</code>{' '}
+            and <code>UNO</code>. <code>NGRAM</code> needs no model at all. The two newer families
+            appear in prose as DFlash and DSpark; the flags spell them <code>DFLASH</code> and{' '}
+            <code>DSPARK</code>.
+          </Box>
+          <Box variant="p">
+            <code>--speculative-algorithm</code> resolves a name as a built-in first, then the{' '}
             <code>NEXTN</code> alias, then any algorithm a plugin registered{' '}
             <Cite tier={1} href={sglangUrl(INFO, 'L32-L65')}>
               spec_info.py L32-L65
@@ -645,12 +653,107 @@ export function SpeculativeDecoding() {
             ]}
             items={algoRows}
           />
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Size --max-running-requests yourself before speculation goes on, because an unset cap drops to 48"
+          >
+            What speculation costs in concurrency
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
           <Box variant="p">
-            The rows group three ways. A separate draft checkpoint drives <code>EAGLE</code>,{' '}
-            <code>EAGLE3</code>, <code>STANDALONE</code> and <code>DFLASH</code>. Heads or drafts that
-            ship with the target drive <code>NEXTN</code>, <code>DSPARK</code> and <code>UNO</code>.{' '}
-            <code>NGRAM</code> needs no model at all. The two newer families appear in prose as DFlash
-            and DSpark; the flags spell them <code>DFLASH</code> and <code>DSPARK</code>.
+            <strong>
+              With <code>--max-running-requests</code> unset, turning on EAGLE-family, NGRAM,{' '}
+              <code>DFLASH</code> or <code>DSPARK</code> speculation resets it to 48, from 2048 to 4096
+              otherwise
+            </strong>{' '}
+            <Cite tier={1} href={sglangUrl(HOOK, 'L995-L1003')} kind="code">
+              speculative_hook.py L995-L1003
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(KVCONF, 'L2800-L2851')}>
+              kv_cache_configurator.py L2800-L2851
+            </Cite>
+            . On a server sized for thousands of concurrent requests, speculation therefore runs 48
+            at once and queues the rest. Raise the cap to the concurrency you serve, then measure,
+            because published gains shrink as batches grow. The EAGLE-3 authors report up to 6.5x
+            speedup against plain Hugging Face decoding, and a 1.38x throughput gain inside SGLang at
+            batch size 64{' '}
+            <Cite tier={3} href={EAGLE3_PAPER}>
+              EAGLE-3 paper, arXiv 2503.01840v3 (paper claim)
+            </Cite>
+            . LMSYS (Large Model Systems Organization) reports 1.37x to 2.36x for Kimi-K3 with a DSpark
+            draft at 16 concurrent requests on 8 B300 GPUs, against up to 3.14x at one{' '}
+            <Cite tier={2} href={LMSYS_SF}>
+              LMSYS blog, 2026-08-04 (project claim)
+            </Cite>
+            . An explicit value is cut down, with a warning, if the KV pool cannot hold it{' '}
+            <Cite tier={1} href={sglangUrl(KVCONF, 'L2800-L2851')}>
+              kv_cache_configurator.py L2800-L2851
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            The EAGLE family here is <code>EAGLE</code>, <code>EAGLE3</code>, <code>NEXTN</code>,{' '}
+            <code>STANDALONE</code> and frozen-KV MTP, and each hook logs a warning when it applies the
+            reset{' '}
+            <Cite tier={1} href={sglangUrl(HOOK, 'L995-L1003')} kind="code">
+              speculative_hook.py L995-L1003
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(HOOK, 'L1204-L1213')} kind="code">
+              L1204-L1213
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(HOOK, 'L421-L430')} kind="code">
+              L421-L430
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(HOOK, 'L777-L786')} kind="code">
+              L777-L786
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(HOOK, 'L914-L923')} kind="code">
+              L914-L923
+            </Cite>
+            . Without speculation the cap is derived from the KV pool, per data-parallel worker:
+            KV tokens divided by context length times 512, clamped to 2048 to 4096, never above half
+            the KV tokens, and on hybrid models never above what the Mamba state cache holds{' '}
+            <Cite tier={1} href={sglangUrl(KVCONF, 'L2800-L2851')}>
+              kv_cache_configurator.py L2800-L2851
+            </Cite>
+            . <code>UNO</code> is the one built-in whose hook leaves the cap alone, by our reading of its
+            resolution code{' '}
+            <Cite tier={1} href={sglangUrl(HOOK, 'L432-L596')} kind="code">
+              speculative_hook.py L432-L596
+            </Cite>
+            . With attention DP the cut goes further. The reset writes the flag itself, and an
+            explicit value is divided across attention-DP ranks, so by our reading of the two code
+            paths 8 ranks run 6 requests each{' '}
+            <Cite tier={1} href={sglangUrl(KVCONF, 'L2807-L2810')} kind="code">
+              kv_cache_configurator.py L2807-L2810
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            Opt-in adaptive speculation (<code>--speculative-adaptive</code>, <code>EAGLE</code> or{' '}
+            <code>EAGLE3</code> chains only) changes the draft depth with load. It smooths the observed
+            accept length and picks the steps per batch-size band. With its built-in table a batch of 1
+            to 7 requests may draft up to 7 steps, 8 to 31 at most 3, 32 to 63 at most 1, and batches of
+            64 or more drop to zero draft steps{' '}
+            <Cite tier={1} href={sglangUrl(ADAPT, 'L27-L52')}>
+              adaptive_spec_params.py L27-L52
+            </Cite>
+            . With top-k above 1, attention DP, multi-layer EAGLE, two-batch overlap or PD (prefill/decode) multiplexing
+            it falls back to static settings with a warning{' '}
+            <Cite tier={1} href={sglangUrl(ADAPT, 'L55-L91')}>
+              adaptive_spec_params.py L55-L91
+            </Cite>{' '}
+            <Cite tier={1} href={sglangDocsSrcUrl('advanced_features/adaptive_speculative_decoding', 'L10-L14')}>
+              SGLang docs: adaptive speculative decoding (v0.5.22 source)
+            </Cite>
+            .
           </Box>
         </SpaceBetween>
       </Container>
@@ -813,104 +916,6 @@ export function SpeculativeDecoding() {
         header={
           <Header
             variant="h2"
-            description="Size --max-running-requests yourself before speculation goes on, because an unset cap drops to 48"
-          >
-            What speculation costs in concurrency
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            <strong>
-              With <code>--max-running-requests</code> unset, turning on EAGLE-family, NGRAM,{' '}
-              <code>DFLASH</code> or <code>DSPARK</code> speculation resets it to 48, from 2048 to 4096
-              otherwise.
-            </strong>{' '}
-            The EAGLE family here is <code>EAGLE</code>, <code>EAGLE3</code>, <code>NEXTN</code>,{' '}
-            <code>STANDALONE</code> and frozen-KV MTP, and each hook logs a warning when it applies the
-            reset{' '}
-            <Cite tier={1} href={sglangUrl(HOOK, 'L995-L1003')} kind="code">
-              speculative_hook.py L995-L1003
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(HOOK, 'L1204-L1213')} kind="code">
-              L1204-L1213
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(HOOK, 'L421-L430')} kind="code">
-              L421-L430
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(HOOK, 'L777-L786')} kind="code">
-              L777-L786
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(HOOK, 'L914-L923')} kind="code">
-              L914-L923
-            </Cite>
-            . Without speculation the cap is derived from the KV pool, per data-parallel worker:
-            KV tokens divided by context length times 512, clamped to 2048 to 4096, never above half
-            the KV tokens, and on hybrid models never above what the Mamba state cache holds{' '}
-            <Cite tier={1} href={sglangUrl(KVCONF, 'L2800-L2851')}>
-              kv_cache_configurator.py L2800-L2851
-            </Cite>
-            . <code>UNO</code> is the one built-in whose hook leaves the cap alone, by our reading of its
-            resolution code{' '}
-            <Cite tier={1} href={sglangUrl(HOOK, 'L432-L596')} kind="code">
-              speculative_hook.py L432-L596
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            On a server sized for thousands of concurrent requests, speculation therefore runs 48 at
-            once and queues the rest. With attention DP the cut goes further. The reset writes the flag
-            itself, and an explicit value is divided across attention-DP ranks, so by our reading of the
-            two code paths 8 ranks run 6 requests each{' '}
-            <Cite tier={1} href={sglangUrl(KVCONF, 'L2807-L2810')} kind="code">
-              kv_cache_configurator.py L2807-L2810
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            Raise the cap to the concurrency you serve, then measure, because published gains shrink as
-            batches grow. The EAGLE-3 authors report up to 6.5x speedup against plain Hugging Face
-            decoding, and a 1.38x throughput gain inside SGLang at batch size 64{' '}
-            <Cite tier={3} href={EAGLE3_PAPER}>
-              EAGLE-3 paper, arXiv 2503.01840v3 (paper claim)
-            </Cite>
-            . LMSYS (Large Model Systems Organization) reports 1.37x to 2.36x for Kimi-K3 with a DSpark
-            draft at 16 concurrent requests on 8 B300 GPUs, against up to 3.14x at one{' '}
-            <Cite tier={2} href={LMSYS_SF}>
-              LMSYS blog, 2026-08-04 (project claim)
-            </Cite>
-            . An explicit value is cut down, with a warning, if the KV pool cannot hold it{' '}
-            <Cite tier={1} href={sglangUrl(KVCONF, 'L2800-L2851')}>
-              kv_cache_configurator.py L2800-L2851
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            Opt-in adaptive speculation (<code>--speculative-adaptive</code>, <code>EAGLE</code> or{' '}
-            <code>EAGLE3</code> chains only) changes the draft depth with load. It smooths the observed
-            accept length and picks the steps per batch-size band. With its built-in table a batch of 1
-            to 7 requests may draft up to 7 steps, 8 to 31 at most 3, 32 to 63 at most 1, and batches of
-            64 or more drop to zero draft steps{' '}
-            <Cite tier={1} href={sglangUrl(ADAPT, 'L27-L52')}>
-              adaptive_spec_params.py L27-L52
-            </Cite>
-            . With top-k above 1, attention DP, multi-layer EAGLE, two-batch overlap or PD (prefill/decode) multiplexing
-            it falls back to static settings with a warning{' '}
-            <Cite tier={1} href={sglangUrl(ADAPT, 'L55-L91')}>
-              adaptive_spec_params.py L55-L91
-            </Cite>{' '}
-            <Cite tier={1} href={sglangDocsSrcUrl('advanced_features/adaptive_speculative_decoding', 'L10-L14')}>
-              SGLang docs: adaptive speculative decoding (v0.5.22 source)
-            </Cite>
-            .
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
             description="Check the combinations a production launch line runs into before you ship it: the overlap scheduler, JSON mode, hybrid models, PD and data-parallel attention"
           >
             Speculation beside the rest of the engine
@@ -927,9 +932,11 @@ export function SpeculativeDecoding() {
             <Cite tier={1} href={sglangUrl(`${SRT}/managers/scheduler.py`, 'L495-L500')}>
               scheduler.py L495-L500
             </Cite>
-            . <code>--disable-overlap-schedule</code> gives the synchronous loop with the same worker
-            (section 4, The Scheduler). The documentation lists more overlap restrictions than
-            v0.5.22&apos;s code applies; both sides are below.
+            . Plan for overlap on with every algorithm on GPU, and pass{' '}
+            <code>--disable-overlap-schedule</code> when you want the synchronous loop, which runs
+            the same worker (section 4, The Scheduler). The documentation lists more overlap
+            restrictions than v0.5.22&apos;s code applies; both sides are below, and the code side was
+            read, not run.
           </Box>
           <ExpandableSection headerText="Where the documentation and v0.5.22's code differ on overlap, top-k and devices">
             <SpaceBetween size="s">
@@ -987,9 +994,7 @@ export function SpeculativeDecoding() {
                 <Cite tier={1} href={sglangUrl(HOOK, 'L1195-L1202')}>
                   speculative_hook.py L1195-L1202
                 </Cite>
-                . Runtime behaviour on CPU and XPU was not exercised in this research. Plan for overlap
-                on with every algorithm on GPU, and pass <code>--disable-overlap-schedule</code> when
-                you want the synchronous loop.
+                . Runtime behaviour on CPU and XPU was not exercised in this research.
               </Box>
             </SpaceBetween>
           </ExpandableSection>

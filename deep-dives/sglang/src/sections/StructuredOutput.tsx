@@ -847,21 +847,16 @@ export function StructuredOutput() {
             , which section 11, Speculative Decoding, covers.
           </Box>
           <Box variant="p">
-            With speculative decoding off, every constrained token costs one decode step. The
-            SGLang paper{' '}
+            With speculative decoding off, every constrained token costs one decode step. Our
+            reading: size a JSON workload by its full output token count, the keys and braces the
+            schema fixes included. The SGLang paper{' '}
             <Cite tier={3} href={ARXIV}>
               arXiv 2312.07104v2
             </Cite>{' '}
-            and a February 2024 LMSYS (Large Model Systems Organization) post describe jump-forward
-            decoding over a compressed FSM (finite state machine): where the grammar allows only
-            one continuation, the runtime appends the whole forced string in one step. The post
-            reports up to 2x lower latency and up to 2.5x higher throughput on Llama-7B on one
-            NVIDIA A10, against guidance with llama.cpp and Outlines with vLLM v0.2.7{' '}
-            <Cite tier={2} href={LMSYS_FSM}>
-              LMSYS blog, 2024-02-05 (project claim)
-            </Cite>
-            . At v0.5.22 that path is never reached: the grammar classes carry the jump-forward
-            interface, nothing in the runtime under <code>python/</code> calls it, the
+            describes jump-forward decoding over a compressed FSM (finite state machine): where the
+            grammar allows only one continuation, the runtime appends the whole forced string in
+            one step. At v0.5.22 that path is never reached: the grammar classes carry the
+            jump-forward interface, nothing in the runtime under <code>python/</code> calls it, the
             Outlines backend never builds its jump-forward map, and no flag turns it on{' '}
             <Cite tier={1} href={sglangUrl(BASE, 'L119-L145')} kind="code">
               base_grammar_backend.py L119-L145
@@ -869,9 +864,20 @@ export function StructuredOutput() {
             <Cite tier={1} href={sglangUrl(OUTLINES, 'L148-L161')} kind="code">
               outlines_backend.py L148-L161
             </Cite>
-            . Our reading: size a JSON workload by its full output token count, the keys and braces
-            the schema fixes included.
+            .
           </Box>
+          <ExpandableSection headerText="The 2024 jump-forward figures">
+            <Box variant="p">
+              A February 2024 LMSYS (Large Model Systems Organization) post on jump-forward decoding
+              over a compressed FSM reports up to 2x lower latency and up to 2.5x higher throughput
+              on Llama-7B on one NVIDIA A10, against guidance with llama.cpp and Outlines with vLLM
+              v0.2.7{' '}
+              <Cite tier={2} href={LMSYS_FSM}>
+                LMSYS blog, 2024-02-05 (project claim)
+              </Cite>
+              . They measure the path that v0.5.22 does not reach.
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -1027,34 +1033,6 @@ export function StructuredOutput() {
             .
           </Box>
           <Box variant="p">
-            XGrammar, the default, gets a pre-check. Before compiling, SGLang checks each JSON
-            schema and rejects keywords XGrammar 0.2.x would accept without enforcing, string
-            formats it does not implement, and string fields that combine more than one kind of
-            string constraint; the 400 names the JSON pointer and the keyword{' '}
-            <Cite tier={1} href={sglangUrl(VALID, 'L167-L201')} kind="code">
-              json_schema_validation.py L167-L201
-            </Cite>
-            . Outlines gets a wider keyword check of its own, which also rejects{' '}
-            <code>minimum</code>, <code>maximum</code>, <code>allOf</code> and <code>oneOf</code>{' '}
-            <Cite tier={1} href={sglangUrl(VALID, 'L66-L92')} kind="code">
-              json_schema_validation.py L66-L92
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(OUTLINES, 'L169-L182')} kind="code">
-              outlines_backend.py L169-L182
-            </Cite>
-            . SGLang 0.5.22 pins XGrammar 0.2.7 and Outlines 0.1.11 exactly, and accepts llguidance
-            from 1.7.6 to below 2.0, all in the base install{' '}
-            <Cite tier={1} href={sglangUrl(PYPROJECT, 'L24-L102')}>
-              pyproject.toml L24-L102
-            </Cite>
-            . The llguidance backend gets no such pre-check, so its own compiler decides what it
-            accepts{' '}
-            <Cite tier={1} href={sglangUrl(LLG, 'L272-L284')} kind="code">
-              llguidance_backend.py L272-L284
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
             On <code>/generate</code> and the offline <code>Engine</code>, a request carries one of{' '}
             <code>json_schema</code>, <code>regex</code>, <code>ebnf</code> or{' '}
             <code>structural_tag</code> in <code>sampling_params</code>{' '}
@@ -1091,6 +1069,34 @@ export function StructuredOutput() {
               { id: 'src', header: 'Source', cell: (r) => r.src, minWidth: 170 },
             ]}
           />
+          <Box variant="p">
+            XGrammar, the default, gets a pre-check. Before compiling, SGLang checks each JSON
+            schema and rejects keywords XGrammar 0.2.x would accept without enforcing, string
+            formats it does not implement, and string fields that combine more than one kind of
+            string constraint; the 400 names the JSON pointer and the keyword{' '}
+            <Cite tier={1} href={sglangUrl(VALID, 'L167-L201')} kind="code">
+              json_schema_validation.py L167-L201
+            </Cite>
+            . Outlines gets a wider keyword check of its own, which also rejects{' '}
+            <code>minimum</code>, <code>maximum</code>, <code>allOf</code> and <code>oneOf</code>{' '}
+            <Cite tier={1} href={sglangUrl(VALID, 'L66-L92')} kind="code">
+              json_schema_validation.py L66-L92
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(OUTLINES, 'L169-L182')} kind="code">
+              outlines_backend.py L169-L182
+            </Cite>
+            . SGLang 0.5.22 pins XGrammar 0.2.7 and Outlines 0.1.11 exactly, and accepts llguidance
+            from 1.7.6 to below 2.0, all in the base install{' '}
+            <Cite tier={1} href={sglangUrl(PYPROJECT, 'L24-L102')}>
+              pyproject.toml L24-L102
+            </Cite>
+            . The llguidance backend gets no such pre-check, so its own compiler decides what it
+            accepts{' '}
+            <Cite tier={1} href={sglangUrl(LLG, 'L272-L284')} kind="code">
+              llguidance_backend.py L272-L284
+            </Cite>
+            .
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -1206,17 +1212,6 @@ export function StructuredOutput() {
             ]}
           />
           <Box variant="p">
-            <strong>Where to start:</strong> launch with <code>--enable-metrics</code>, and search
-            the startup log for <code>Grammar backend disabled</code> before trusting JSON mode on a
-            new model. Send your production schemas through a staging server and fix every 400 the
-            pre-check returns; on a reasoning model, set <code>--reasoning-parser</code>. Then watch{' '}
-            <code>sglang:num_grammar_queue_reqs</code>. A request that stays in that queue is
-            heading for the 10,000-poll deadline, at least 50 seconds, after which its schema stays
-            cached as a failure until <code>/flush_cache</code> or a restart. Give very large
-            schemas a higher <code>SGLANG_GRAMMAR_MAX_POLL_ITERATIONS</code> before they reach
-            production.
-          </Box>
-          <Box variant="p">
             <strong>Against vLLM:</strong> both engines mask with XGrammar first. vLLM&apos;s
             default <code>auto</code> backend falls back per request when XGrammar rejects a schema{' '}
             <Cite tier={1} href={vllmUrl('vllm/config/structured_outputs.py', 'L21')}>
@@ -1231,6 +1226,17 @@ export function StructuredOutput() {
             grammar constraints: SGLang takes <code>regex</code> and <code>ebnf</code> as top-level{' '}
             <code>extra_body</code> fields, where vLLM nests its constraints under{' '}
             <code>structured_outputs</code> ({VLLM_SERVER_LINK}).
+          </Box>
+          <Box variant="p">
+            <strong>Where to start:</strong> launch with <code>--enable-metrics</code>, and search
+            the startup log for <code>Grammar backend disabled</code> before trusting JSON mode on a
+            new model. Send your production schemas through a staging server and fix every 400 the
+            pre-check returns; on a reasoning model, set <code>--reasoning-parser</code>. Then watch{' '}
+            <code>sglang:num_grammar_queue_reqs</code>. A request that stays in that queue is
+            heading for the 10,000-poll deadline, at least 50 seconds, after which its schema stays
+            cached as a failure until <code>/flush_cache</code> or a restart. Give very large
+            schemas a higher <code>SGLANG_GRAMMAR_MAX_POLL_ITERATIONS</code> before they reach
+            production.
           </Box>
         </SpaceBetween>
       </Container>

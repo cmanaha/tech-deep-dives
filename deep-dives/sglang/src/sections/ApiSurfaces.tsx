@@ -964,11 +964,36 @@ export function ApiSurfaces() {
         <SpaceBetween size="m">
           <Box variant="p">
             Multi-LoRA serving runs one base model with many small adapters, and each request names
-            the one it wants, so a batch can mix adapters and base-model requests. The model is a
-            fixed set of GPU slots. Adapters live in CPU memory and are copied into
-            one of <code>--max-loras-per-batch</code> preallocated GPU slots when a batch needs
-            them, evicting an idle adapter, LRU (least recently used) by default, when no slot is
-            free{' '}
+            the one it wants, so a batch can mix adapters and base-model requests.
+          </Box>
+          <Box variant="p">
+            <strong>
+              Select an adapter with <code>model: &quot;base:adapter&quot;</code>
+            </strong>
+            , or with <code>lora_path</code> in <code>extra_body</code>. The chat and completions
+            handlers split <code>model</code> at its first colon and take the right side as the
+            adapter; a model string without a colon selects no adapter{' '}
+            <Cite tier={1} href={sglangUrl(SERVING_BASE, 'L40-L71')}>
+              serving_base.py L40-L71
+            </Cite>
+            . <code>/v1/models</code> lists each loaded adapter by its bare name{' '}
+            <Cite tier={1} href={sglangUrl(HTTP, 'L1926-L1956')}>
+              http_server.py L1926-L1956
+            </Cite>
+            , and sending that bare name runs the base model with no error, because those handlers
+            do not check the model name. Client code written for vLLM, where the bare adapter name is
+            the model ({VLLM_LORA_LINK}), meets exactly this. On <code>/generate</code>, name the
+            adapter in <code>lora_path</code>, per item in a batch{' '}
+            <Cite tier={1} href={sglangUrl(IO, 'L277')}>
+              io_struct.py L277
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            Underneath, adapters share a fixed set of GPU slots. They live in CPU memory and are
+            copied into one of <code>--max-loras-per-batch</code> preallocated GPU slots when a
+            batch needs them, evicting an idle adapter, LRU (least recently used) by default, when
+            no slot is free{' '}
             <Cite tier={1} href={sglangUrl(LORA_POOL, 'L782-L860')} kind="code">
               mem_pool.py L782-L860
             </Cite>{' '}
@@ -1091,30 +1116,6 @@ export function ApiSurfaces() {
             ;{' '}
             <Cite tier={1} href={sglangUrl(LORA_HOOK, 'L25-L33')}>
               lora_hook.py L25-L33
-            </Cite>
-            .
-          </Box>
-
-          <Box variant="p">
-            <strong>
-              Select an adapter with <code>model: &quot;base:adapter&quot;</code>
-            </strong>
-            , or with <code>lora_path</code> in <code>extra_body</code>. The chat and completions
-            handlers split <code>model</code> at its first colon and take the right side as the
-            adapter; a model string without a colon selects no adapter{' '}
-            <Cite tier={1} href={sglangUrl(SERVING_BASE, 'L40-L71')}>
-              serving_base.py L40-L71
-            </Cite>
-            . <code>/v1/models</code> lists each loaded adapter by its bare name{' '}
-            <Cite tier={1} href={sglangUrl(HTTP, 'L1926-L1956')}>
-              http_server.py L1926-L1956
-            </Cite>
-            , and sending that bare name runs the base model with no error, because those handlers
-            do not check the model name. Client code written for vLLM, where the bare adapter name is
-            the model ({VLLM_LORA_LINK}), meets exactly this. On <code>/generate</code>, name the
-            adapter in <code>lora_path</code>, per item in a batch{' '}
-            <Cite tier={1} href={sglangUrl(IO, 'L277')}>
-              io_struct.py L277
             </Cite>
             .
           </Box>
@@ -1287,12 +1288,28 @@ export function ApiSurfaces() {
             {VLLM_SERVER_LINK}).
           </Box>
           <Box variant="p">
-            One read route undoes the split if clients can reach it. <code>/server_info</code> and
-            its deprecated <code>/get_server_info</code> sit with the inference routes, and our
-            reading of the code, not run, is that their response carries <code>api_key</code> and{' '}
-            <code>admin_api_key</code> in plain text, so any client allowed to call inference routes
-            can read the admin key. Block both paths at the gateway or ingress for everyone but
-            operators.
+            The platform decides which state you can use, and two serving modes change what the
+            keys do at all:
+          </Box>
+          <Table
+            variant="embedded"
+            wrapLines
+            trackBy="id"
+            header={<Header variant="h3">The key matrix by deployment</Header>}
+            items={DEPLOY_ROWS}
+            columnDefinitions={[
+              { id: 'where', header: 'Deployment', cell: (r) => r.where, minWidth: 160 },
+              { id: 'keys', header: 'Keys to set', cell: (r) => r.keys, minWidth: 170 },
+              { id: 'why', header: 'Why', cell: (r) => r.why, minWidth: 300 },
+            ]}
+          />
+          <Box variant="p">
+            One read route undoes the split if clients can reach it, so block{' '}
+            <code>/server_info</code> and its deprecated <code>/get_server_info</code> at the
+            gateway or ingress for everyone but operators. Both paths sit with the inference
+            routes, and our reading of the code, not run, is that their response carries{' '}
+            <code>api_key</code> and <code>admin_api_key</code> in plain text, so any client allowed
+            to call inference routes can read the admin key.
           </Box>
           <ExpandableSection headerText="Why /server_info carries the keys">
             <Box variant="p">
@@ -1330,22 +1347,6 @@ export function ApiSurfaces() {
               , so by our reading they are part of the response.
             </Box>
           </ExpandableSection>
-          <Box variant="p">
-            The platform decides which state you can use, and two serving modes change what the
-            keys do at all:
-          </Box>
-          <Table
-            variant="embedded"
-            wrapLines
-            trackBy="id"
-            header={<Header variant="h3">The key matrix by deployment</Header>}
-            items={DEPLOY_ROWS}
-            columnDefinitions={[
-              { id: 'where', header: 'Deployment', cell: (r) => r.where, minWidth: 160 },
-              { id: 'keys', header: 'Keys to set', cell: (r) => r.keys, minWidth: 170 },
-              { id: 'why', header: 'Why', cell: (r) => r.why, minWidth: 300 },
-            ]}
-          />
           <Box variant="p">
             Before the port leaves the host, check the state from a client&apos;s seat. On a split
             server, a <code>POST /flush_cache</code> sent with the inference key returns 401 by the

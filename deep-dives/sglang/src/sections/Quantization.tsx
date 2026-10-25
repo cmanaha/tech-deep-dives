@@ -442,15 +442,18 @@ export function Quantization() {
             floating point).
           </Box>
           <Box variant="p">
-            One figure is worth carrying through the section. FP8 E4M3, with 4 exponent bits and 3 mantissa bits, is the type SGLang stores an FP8 KV cache in
-            on NVIDIA GPUs unless you ask for E5M2, and its largest value is 448{' '}
+            One figure is worth carrying through the section: 448. It is the largest value of FP8
+            E4M3 (4 exponent bits, 3 mantissa bits), the type SGLang stores an FP8 KV cache in on
+            NVIDIA GPUs unless you ask for E5M2{' '}
             <Cite tier={1} href={sglangUrl(KV_DTYPE, 'L56-L60')} kind="code">
               kv_cache_dtype.py L56-L60
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl(FP8_KERNEL, 'L583')} kind="code">
               fp8_kernel.py L583
             </Cite>
-            . SGLang&apos;s quantized KV cache page gives 240{' '}
+            , and by our reading of the scale path in the KV precision block, the figure an FP8 KV
+            cache&apos;s scales on NVIDIA are worked out against. SGLang&apos;s quantized KV cache
+            page gives 240{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(KVQ_DOC, 'L24-L25')} kind="doc-code-conflict">
               quantized_kv_cache.mdx L24-L25
             </Cite>
@@ -459,8 +462,7 @@ export function Quantization() {
             <Cite tier={1} href={sglangUrl(SPARSE_MLA, 'L25')} kind="code">
               triton_sparse_mla.py L25
             </Cite>
-            . Scales for an FP8 KV cache on NVIDIA are worked out against 448, as the KV precision
-            block shows.
+            .
           </Box>
         </SpaceBetween>
       </Container>
@@ -477,9 +479,15 @@ export function Quantization() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            SGLang reads <code>quant_method</code> from the <code>quantization_config</code> in the
-            checkpoint&apos;s <code>config.json</code> (or from ModelSlim metadata on Ascend) and
-            picks the loader itself. Where a faster kernel serves the same checkpoint, it switches:
+            For a pre-quantized model, leave <code>--quantization</code> off; the documentation
+            recommends pre-quantized checkpoints over online quantization{' '}
+            <Cite tier={1} href={sglangDocsSrcUrl(QUANT_DOC, 'L15-L17')}>
+              quantization.mdx L15-L17
+            </Cite>
+            . SGLang reads <code>quant_method</code> from the <code>quantization_config</code> in
+            the checkpoint&apos;s <code>config.json</code> (or from ModelSlim metadata on Ascend)
+            and picks the loader itself. Where a faster kernel serves the same checkpoint, it
+            switches:
             a Marlin-compatible GPTQ or AWQ (activation-aware weight quantization) checkpoint, both
             weight-only formats computed offline
             from a calibration set, loads as <code>gptq_marlin</code> or <code>awq_marlin</code>{' '}
@@ -491,11 +499,6 @@ export function Quantization() {
             </Cite>{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(QUANT_DOC, 'L8-L9')}>
               quantization.mdx L8-L9
-            </Cite>
-            . For a pre-quantized model, leave <code>--quantization</code> off. The documentation
-            says so in bold and recommends pre-quantized checkpoints over online quantization{' '}
-            <Cite tier={1} href={sglangDocsSrcUrl(QUANT_DOC, 'L15-L17')}>
-              quantization.mdx L15-L17
             </Cite>
             .
           </Box>
@@ -534,7 +537,8 @@ export function Quantization() {
             .
           </Box>
           <Box variant="p">
-            Plain GPTQ is on the menu with no loader on GPUs. <code>--quantization gptq</code> passes
+            Plain GPTQ is on the menu with no loader on GPUs, so leave{' '}
+            <code>--quantization gptq</code> off or pass <code>gptq_marlin</code>. The flag passes
             argument parsing; on NVIDIA and AMD GPUs the loader then logs that it is forcing{' '}
             <code>gptq</code>, and model setup fails with <code>Unknown quantization method</code>,
             because at v0.5.22 the plain GPTQ loader is registered only on Ascend, CPU and Intel XPU
@@ -548,7 +552,7 @@ export function Quantization() {
             <Cite tier={1} href={sglangUrl(MODEL_CONFIG, 'L2038-L2043')} kind="code">
               model_config.py L2038-L2043
             </Cite>
-            . Leave the flag off, or pass <code>gptq_marlin</code>.
+            .
           </Box>
           <Box variant="p">
             Formats outside SGLang&apos;s list of optimized methods log{' '}
@@ -653,31 +657,33 @@ export function Quantization() {
             </Cite>
             .
           </Box>
-          <Box variant="p">
-            Three flags choose the GEMM (matrix multiply) kernels, all <code>auto</code> by
-            default. <code>--fp8-gemm-backend auto</code> serves block-quantized FP8 weights
-            (DeepSeek-style 128x128 blocks) with DeepGEMM first, then FlashInfer&apos;s TRT-LLM
-            (TensorRT-LLM) GEMM on Blackwell, then the remaining kernels in a fixed order with
-            Triton last; on H100 and B200 with the default install those layers run DeepGEMM, and on
-            SM120 <code>auto</code> becomes <code>cutlass</code>{' '}
-            <Cite tier={1} href={sglangUrl(FP8_UTILS, 'L1025-L1065')}>
-              fp8_utils.py L1025-L1065
-            </Cite>
-            . DeepGEMM compiles each new shape at first start; section 8, Attention Backends and
-            Kernels, moves that compile to build time. <code>--fp4-gemm-backend auto</code> picks
-            the NVFP4 kernel in the table above.{' '}
-            <code>--bf16-gemm-backend auto</code> applies to unquantized models too: on SM100 and
-            SM103 it selects <code>cutedsl</code>, which routes each shape to SGLang&apos;s own
-            just-in-time compiled GEMM kernels or to cuBLAS, and{' '}
-            <code>--bf16-gemm-backend torch</code> restores plain cuBLAS{' '}
-            <Cite tier={1} href={sglangUrl(UNQUANT, 'L248-L254')}>
-              unquant.py L248-L254
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(EXEC_FIELDS, 'L223-L248')}>
-              exec_.py L223-L248
-            </Cite>
-            .
-          </Box>
+          <ExpandableSection headerText="Which GEMM kernels the three backend flags pick">
+            <Box variant="p">
+              Three flags choose the GEMM (matrix multiply) kernels, all <code>auto</code> by
+              default. <code>--fp8-gemm-backend auto</code> serves block-quantized FP8 weights
+              (DeepSeek-style 128x128 blocks) with DeepGEMM first, then FlashInfer&apos;s TRT-LLM
+              (TensorRT-LLM) GEMM on Blackwell, then the remaining kernels in a fixed order with
+              Triton last; on H100 and B200 with the default install those layers run DeepGEMM,
+              and on SM120 <code>auto</code> becomes <code>cutlass</code>{' '}
+              <Cite tier={1} href={sglangUrl(FP8_UTILS, 'L1025-L1065')}>
+                fp8_utils.py L1025-L1065
+              </Cite>
+              . DeepGEMM compiles each new shape at first start; section 8, Attention Backends and
+              Kernels, moves that compile to build time. <code>--fp4-gemm-backend auto</code> picks
+              the NVFP4 kernel in the format table.{' '}
+              <code>--bf16-gemm-backend auto</code> applies to unquantized models too: on SM100 and
+              SM103 it selects <code>cutedsl</code>, which routes each shape to SGLang&apos;s own
+              just-in-time compiled GEMM kernels or to cuBLAS, and{' '}
+              <code>--bf16-gemm-backend torch</code> restores plain cuBLAS{' '}
+              <Cite tier={1} href={sglangUrl(UNQUANT, 'L248-L254')}>
+                unquant.py L248-L254
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl(EXEC_FIELDS, 'L223-L248')}>
+                exec_.py L223-L248
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <ExpandableSection headerText="Where the documentation's compatibility table differs from the code">
             <SpaceBetween size="s">
               <Box variant="p">
