@@ -19,6 +19,7 @@ const MOE_UTILS = `${SRT}/layers/moe/utils.py`;
 const DEEPEP = `${SRT}/layers/moe/token_dispatcher/deepep.py`;
 const MOONCAKE = `${SRT}/layers/moe/token_dispatcher/mooncake.py`;
 const NIXL = `${SRT}/layers/moe/token_dispatcher/nixl.py`;
+const MORI = `${SRT}/layers/moe/token_dispatcher/moriep.py`;
 const MOE_LAYER = `${SRT}/layers/moe/fused_moe_triton/layer.py`;
 const FP8 = `${SRT}/layers/quantization/fp8.py`;
 const DP_ATTN = `${SRT}/managers/scheduler_components/dp_attn.py`;
@@ -155,7 +156,7 @@ function DeepEpModeTimeline() {
           Under DP attention with --deepep-mode auto, the EP group runs one DeepEP mode per step for
           every rank. On any step where one DP rank runs a prefill chunk, all ranks use normal mode
           and none can use the decode CUDA graph, so the ranks that were only decoding lose
-          low-latency mode on that step. With prefill and decode on separate PD servers, the prefill
+          low-latency mode on that step. With prefill and decode on separate PD (prefill/decode) servers, the prefill
           server runs normal mode on every step and the decode server runs low-latency mode with its
           decode CUDA graph on every step.
         </title>
@@ -245,7 +246,7 @@ function DeepEpModeTimeline() {
           strokeWidth={1.2}
         />
         <text x={28} y={bTop + 20} fontSize={12} fontWeight={600} fill={slate} fontFamily={font}>
-          B. Split by PD: each server stays in one mode on every step
+          B. Split by PD (prefill/decode): each server stays in one mode on every step
         </text>
 
         {rowLabel(bPrefillY, 'Prefill server')}
@@ -320,11 +321,16 @@ const backendRows: BackendRow[] = [
         <code>mori</code> (MORI-EP, AMD GPUs)
       </>
     ),
-    modes: <code>normal</code>,
+    modes: (
+      <>
+        <code>normal</code>; <code>low_latency</code> only on its v1 kernels
+      </>
+    ),
     auto: 'Rewritten to normal at startup, logged',
     rule: (
       <>
-        Its v2 kernels also map <code>low_latency</code> to <code>normal</code>
+        Its v2 kernels, the default where supported, map <code>low_latency</code> to{' '}
+        <code>normal</code>
       </>
     ),
   },
@@ -374,7 +380,8 @@ const backendRows: BackendRow[] = [
     auto: 'Not used; layout is picked per batch by phase',
     rule: (
       <>
-        <code>direct</code> is single-node NVLink and is rejected above one node; no TBO or SBO
+        <code>direct</code> is single-node NVLink and is rejected above one node; no two-batch or
+        single-batch overlap
       </>
     ),
   },
@@ -618,6 +625,9 @@ export function WideExpertParallelism() {
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl(EXEC_FIELDS, 'L813-L820')}>
               exec_.py L813-L820
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(MORI, 'L1625-L1672')} kind="code">
+              moriep.py L1625-L1672
             </Cite>
             , and the dispatchers cited below.
           </Box>
@@ -734,8 +744,8 @@ export function WideExpertParallelism() {
               exec_.py L861-L863
             </Cite>
             . So set the flag in steps. <strong>EPLB rebalances every 1000 forward passes</strong>,
-            and the interval in seconds is 1000 divided by your server&apos;s forward passes per
-            second: at a few hundred passes a second, every few seconds (our arithmetic).
+            and the interval in seconds is 1000 times your server&apos;s step time: 50 seconds at a
+            50 ms step (our arithmetic).
           </Box>
           <Table
             variant="embedded"
@@ -768,6 +778,9 @@ export function WideExpertParallelism() {
             layers, so 1.0 is perfectly even{' '}
             <Cite tier={1} href={sglangUrl(EXPERT_DIST, 'L1153-L1168')} kind="code">
               expert_distribution.py L1153-L1168
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(EXPERT_DIST, 'L830-L835')} kind="code">
+              expert_distribution.py L830-L835
             </Cite>
             . The skip threshold compares its average over a recent window against{' '}
             <code>--eplb-min-rebalancing-utilization-threshold</code>, and at the default 1.0 the
@@ -788,7 +801,8 @@ export function WideExpertParallelism() {
             <code>--eplb-rebalance-layers-per-chunk</code> if it does not fit.{' '}
             <code>--expert-balancedness-report-mode prometheus</code>, with{' '}
             <code>--enable-metrics</code>, exports <code>sglang:eplb_balancedness</code>, labelled
-            by forward mode, from EP rank 0{' '}
+            by forward mode, from EP rank 0. It is a Prometheus summary, so read the mean as its{' '}
+            <code>_sum</code> rate over its <code>_count</code> rate{' '}
             <Cite tier={1} href={sglangUrl(METRICS, 'L993-L998')} kind="code">
               metrics_collector.py L993-L998
             </Cite>{' '}
@@ -842,8 +856,14 @@ export function WideExpertParallelism() {
             <Cite tier={1} href={`${VLLM_CFG}#L228`}>
               vLLM parallel.py L228
             </Cite>
-            ; this dive did not compare the two implementations. The documentation&apos;s &quot;up
-            to 2x throughput&quot; is a project claim that points at the LMSYS blog below.
+            ; this dive did not compare the two implementations. The documentation promises &quot;up
+            to 2x throughput&quot; and points at the LMSYS (Large Model Systems Organization) blog
+            below, whose own TBO figures are smaller: a 27% to 35% prefill throughput gain (project
+            claim){' '}
+            <Cite tier={2} href={LMSYS_EP}>
+              LMSYS blog, 2025-05-05 (project claim)
+            </Cite>
+            .
           </Box>
           <Box variant="p">
             TBO is model-specific. It needs an operation strategy for the model&apos;s decoder layer,
@@ -960,9 +980,9 @@ export function WideExpertParallelism() {
           <ExpandableSection headerText="What the PD plus wide-EP stack was built for: the LMSYS 96-H100 deployment (project claim, May 2025)">
             <SpaceBetween size="s">
               <Box variant="p">
-                LMSYS (Large Model Systems Organization) reports, in a May 2025 post by the SGLang
+                LMSYS reports, in a May 2025 post by the SGLang
                 team on an older SGLang release, DeepSeek-V3 on 96 H100 GPUs across 12 nodes with
-                PD (prefill/decode) disaggregation and large-scale EP: 52.3k input and 22.3k output
+                PD disaggregation and large-scale EP: 52.3k input and 22.3k output
                 tokens per second per node for 2,000-token inputs, up to 5x the output throughput
                 of vanilla TP on the same resources, and a cost the post puts at $0.20 per million
                 output tokens{' '}
@@ -975,7 +995,7 @@ export function WideExpertParallelism() {
               <Box variant="p">
                 The post states its limits: TTFT (time to first token) of 2 to 5 seconds and ITL
                 around 100 ms, a throughput setting; short sequences; in-distribution data for EPLB;
-                and Hopper GPUs only. v0.5.22 adds a FlashInfer MegaMoE all-to-all that requires
+                and Hopper GPUs only. v0.5.22 also has a FlashInfer MegaMoE all-to-all that requires
                 SM100 (compute capability 10.0, Blackwell){' '}
                 <Cite tier={1} href={sglangUrl(MOE_HOOK, 'L285-L291')}>
                   moe_hook.py L285-L291

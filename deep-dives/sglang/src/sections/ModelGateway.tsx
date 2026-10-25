@@ -385,9 +385,11 @@ const POLICY_ROWS: PolicyRow[] = [
     policy: <code>consistent_hashing</code>,
     routes: (
       <>
-        A hash ring keyed on <code>X-SMG-Routing-Key</code>, so scaling moves about 1/N of keys;
-        random without the header{' '}
-        <Cite tier={1} href={sglangUrl(`${POL}/consistent_hashing.rs`, 'L110-L167')}>
+        A hash ring keyed on <code>X-SMG-Routing-Key</code>, so scaling moves about 1/N of keys.
+        Without that header it hashes the <code>Authorization</code>,{' '}
+        <code>X-Forwarded-For</code> or <code>Cookie</code> header, and picks at random only when
+        none is present, so clients sharing one gateway key land on one worker (our reading){' '}
+        <Cite tier={1} href={sglangUrl(`${POL}/consistent_hashing.rs`, 'L110-L167')} kind="code">
           consistent_hashing.rs L110-L167
         </Cite>
       </>
@@ -399,8 +401,8 @@ const POLICY_ROWS: PolicyRow[] = [
     policy: <code>bucket</code>,
     routes: (
       <>
-        Gives each prefill worker a band of prompt lengths, re-cut every 5 s to equal total
-        characters; prefill only{' '}
+        Gives each prefill worker a band of prompt lengths, checked every 5 s and re-cut to equal
+        total characters when the share per worker has moved more than 2x; prefill only{' '}
         <Cite tier={1} href={sglangUrl(`${POL}/bucket.rs`, 'L209-L280')}>
           bucket.rs L209-L280
         </Cite>{' '}
@@ -488,13 +490,20 @@ const OPS_ROWS: OpsRow[] = [
     feature: 'Retries',
     behaviour: (
       <>
-        Up to 5 on 408, 429, 500, 502, 503 and 504, backoff 50 ms x1.5 to 30 s with 20% jitter, a
-        new worker each attempt{' '}
+        Up to 5 attempts in all, the first included, on 408, 429, 500, 502, 503 and 504, backoff
+        50 ms x1.5 to 30 s with 20% jitter, and the policy picks again on each attempt, which can
+        return the same worker{' '}
         <Cite tier={1} href={sglangUrl(MAIN, 'L357-L379')}>
           main.rs L357-L379
         </Cite>{' '}
         <Cite tier={1} href={sglangUrl(`${GW}/src/core/retry.rs`, 'L10-L20')}>
           retry.rs L10-L20
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(`${GW}/src/core/retry.rs`, 'L99-L113')} kind="code">
+          retry.rs L99-L113
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(HTTP_ROUTER, 'L217-L222')} kind="code">
+          router.rs L217-L222
         </Cite>
       </>
     ),
@@ -531,10 +540,17 @@ const OPS_ROWS: OpsRow[] = [
     feature: 'Admission control',
     behaviour: (
       <>
-        Off by default. <code>--max-concurrent-requests N</code> admits N at a time per gateway
-        process; the rest queue (100 deep, 60 s, then 408; 429 when full){' '}
-        <Cite tier={1} href={sglangUrl(`${GW}/src/app_context.rs`, 'L375-L390')}>
+        Off by default. <code>--max-concurrent-requests N</code> builds a token bucket of N per
+        gateway process: a request takes a token and returns it when its response ends, and the
+        bucket also refills at N tokens a second (<code>--rate-limit-tokens-per-second</code>,
+        where 0 falls back to N), so it caps bursts and the admission rate rather than requests
+        in flight (read from source, not run). Requests without a token queue (100 deep, 60 s, then
+        408; 429 when full){' '}
+        <Cite tier={1} href={sglangUrl(`${GW}/src/app_context.rs`, 'L375-L390')} kind="code">
           app_context.rs L375-L390
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(`${GW}/src/core/token_bucket.rs`, 'L38-L90')} kind="code">
+          token_bucket.rs L38-L90
         </Cite>{' '}
         <Cite tier={1} href={sglangUrl(MW, 'L420-L612')}>
           middleware.rs L420-L612
@@ -547,11 +563,18 @@ const OPS_ROWS: OpsRow[] = [
     feature: 'Metrics',
     behaviour: (
       <>
-        <code>smg_*</code> on port 29000: latency, TTFT (time to first token) and TPOT (time per
-        output token) seen at the gateway, and per-worker active requests, health, breaker state
-        and retries. Engine metrics stay on each worker&apos;s <code>/metrics</code>{' '}
+        <code>smg_*</code> on port 29000: request latency, and per-worker active requests, health,
+        breaker state and retries. TTFT (time to first token) and TPOT (time per output token) are
+        recorded only on the gRPC routers, so HTTP workers leave them empty (read from source, not
+        run). Engine metrics stay on each worker&apos;s <code>/metrics</code>{' '}
         <Cite tier={1} href={sglangUrl(METRICS, 'L151-L331')}>
           metrics.rs L151-L331
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(METRICS, 'L726-L763')} kind="code">
+          metrics.rs L726-L763
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(`${GW}/src/routers/grpc/regular/streaming.rs`, 'L593')} kind="code">
+          grpc/regular/streaming.rs L593
         </Cite>{' '}
         <Cite tier={1} href={sglangUrl(MAIN, 'L269-L275')}>
           main.rs L269-L275
@@ -620,10 +643,18 @@ const OPS_ROWS: OpsRow[] = [
     feature: 'Gateway replicas',
     behaviour: (
       <>
-        <code>--enable-mesh</code> (port 39527) syncs the cache-aware trees between replicas;
-        without it each replica learns its own tree and load{' '}
-        <Cite tier={1} href={sglangUrl(CA, 'L219-L298')}>
-          cache_aware.rs L219-L298
+        Each replica learns its own tree and load. <code>--enable-mesh</code> (port 39527) links
+        replicas, but by our reading of the code, not run, it does not share the cache-aware
+        trees: the policy built from the command line never receives the mesh manager, and the
+        path that would apply a peer&apos;s tree updates has no caller{' '}
+        <Cite tier={1} href={sglangUrl(`${POL}/registry.rs`, 'L56-L59')} kind="code">
+          registry.rs L56-L59
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(SERVER, 'L959-L973')} kind="code">
+          server.rs L959-L973
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(CA, 'L263-L298')} kind="code">
+          cache_aware.rs L263-L298
         </Cite>{' '}
         <Cite tier={1} href={sglangUrl(MAIN, 'L617-L628')}>
           main.rs L617-L628
@@ -729,8 +760,7 @@ export function ModelGateway() {
 
           <Box variant="p">
             The tree is one radix tree per worker pool and model. It holds the raw characters of the
-            request text, every chat message included, and tags each node with the workers that
-            received it{' '}
+            request text and tags each node with the workers that received it{' '}
             <Cite tier={1} href={sglangUrl(CA, 'L76-L101')}>
               cache_aware.rs L76-L101
             </Cite>{' '}
@@ -1015,7 +1045,8 @@ export function ModelGateway() {
             <Cite tier={1} href={sglangUrl(PD_ROUTER, 'L825-L890')}>
               pd_router.rs L825-L890
             </Cite>
-            . A retry picks a new pair and a new room{' '}
+            . A retry runs the pair selection again, which can return the same pair, with a new
+            room{' '}
             <Cite tier={1} href={sglangUrl(PD_ROUTER, 'L369-L430')}>
               pd_router.rs L369-L430
             </Cite>
@@ -1182,9 +1213,10 @@ export function ModelGateway() {
             .
           </Box>
           <Box variant="p">
-            One route needs blocking in front of the gateway. <code>/server_info</code> and{' '}
-            <code>/get_server_info</code> sit outside every gateway key check, and the HTTP routers
-            answer them by proxying to the first worker{' '}
+            One route needs blocking in front of the gateway. Read from code, not run:{' '}
+            <code>/server_info</code> and <code>/get_server_info</code> sit in the gateway&apos;s
+            public route group, outside every gateway key check, and the HTTP routers answer them by
+            proxying to the first worker{' '}
             <Cite tier={1} href={sglangUrl(SERVER, 'L593-L605')} kind="code">
               server.rs L593-L605
             </Cite>{' '}
@@ -1286,9 +1318,12 @@ export function ModelGateway() {
             <code>--kv-events-config</code> on every worker turns recording on{' '}
             <Cite tier={1} href={sglangUrl('python/sglang/srt/arg_groups/fields/observability.py', 'L144-L147')}>
               observability.py L144-L147
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/srt/managers/scheduler.py', 'L577-L582')}>
+              scheduler.py L577-L582
             </Cite>
-            , but the publisher defaults to <code>null</code>, so <code>{`'{}'`}</code> records and
-            sends nothing; publish with{' '}
+            , but the publisher defaults to <code>null</code>, so <code>{`'{}'`}</code> records
+            events and publishes none; publish with{' '}
             <code>{`--kv-events-config '{"publisher":"zmq","endpoint":"tcp://*:5557"}'`}</code>{' '}
             <Cite tier={1} href={sglangUrl(KV_EVENTS, 'L684-L732')}>
               kv_events.py L684-L732
@@ -1393,7 +1428,8 @@ export function ModelGateway() {
                 <Cite tier={1} href={PYPI_ROUTER}>
                   PyPI: sglang-router 0.3.2
                 </Cite>
-                , and the image tags date from 2026-05-27{' '}
+                , and the image&apos;s <code>latest</code> and <code>v0.3.2</code> tags were
+                last pushed on 2026-05-27{' '}
                 <Cite tier={1} href={DOCKER_GW}>
                   Docker Hub: lmsysorg/sgl-model-gateway tags
                 </Cite>

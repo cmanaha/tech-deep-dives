@@ -213,3 +213,7 @@ Found while writing the sections, verified in `/tmp/sglang-src` or the fetched s
 
 - New, read from source: the gateway serves `/server_info` and `/get_server_info` in its public route group, outside its own key check, by proxying to the first worker with the client's `Authorization` header (`sgl-model-gateway/src/server.rs` L593-L605; `routers/http/router.rs` L92-L131) (section 17).
 - New, read from source: `launch_router` binds its metrics to 127.0.0.1 (`lib.rs` L1000-L1006). llm-d's `--enable-ep-moe` flag does not exist in v0.5.22 (section 18).
+
+## Errata from the fact check (2026-10-24)
+
+- D10 (and the mental-model and knob-table lines that repeat it): at v0.5.22 the gateway's high-availability mesh does not share cache-aware trees between gateway replicas; the tree sync is not wired in code (fact check fc08, `reviews/factcheck/fc08-ep-gateway.md`). Each replica routes from its own tree.
