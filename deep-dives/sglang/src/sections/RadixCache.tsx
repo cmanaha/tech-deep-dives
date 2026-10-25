@@ -1225,7 +1225,11 @@ export function RadixCache() {
             .
           </Box>
           <Box variant="p">
-            The language is maintained and little developed: the 15 most recent commits to{' '}
+            The language frontend is deprecated and no longer actively maintained{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/README.md', 'L8')}>
+              python/sglang/README.md L8
+            </Cite>
+            , and its history matches: the 15 most recent commits to{' '}
             <code>python/sglang/lang</code> at the tag, April to September 2026, are refactor, lint
             and docs sweeps plus one new hosted backend, and its interpreter last gained a feature in
             October 2025{' '}
@@ -1252,8 +1256,9 @@ export function RadixCache() {
             Our reading of the same evidence: the language still fits multi-call programs that
             branch and score against an SGLang server, such as a fork over candidate continuations
             followed by a <code>select</code>, and few-shot batch runs that share a long header.
-            Point it at an SGLang server, because there the program tells the cache what it will
-            share before it shares it. A hosted API loses that: the OpenAI backend keeps the base
+            If you keep it, point it at an SGLang server, because there the program tells the
+            cache what it will share before it shares it. A hosted API loses that: the OpenAI
+            backend keeps the base
             class&apos;s empty prefix-hint methods{' '}
             <Cite tier={1} href={sglangUrl('python/sglang/lang/backend/base_backend.py', 'L20-L36')} kind="code">
               lang/backend/base_backend.py L20-L36
