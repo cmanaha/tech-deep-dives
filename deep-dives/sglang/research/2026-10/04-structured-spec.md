@@ -187,3 +187,10 @@ vLLM side is taken from the vLLM dive (`deep-dives/vllm/src/sections/*.tsx`) and
 - [SPECULATIVE] inferences carried in rows: radix-cache reuse of draft KV through the shared allocator (D8); the exactness of SGLang's default tree-sampling verify (F5); memory growth of the unbounded grammar cache (B10).
 - SpecForge has no tags or releases; it is pinned to a commit, and its `version.txt` (0.2.0) disagrees with its README's "v0.3.0" announcement (E2).
 - The vLLM-side list of speculative methods that disable async scheduling was not re-verified (F7).
+
+## Errata from authoring (2026-10-24)
+
+Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
+
+- A6: GLM-4.7's tool parser is an exception to the 400 rejection (section 10).
+- A15: holds more narrowly than the row states. Section 10 carries the verified scope.

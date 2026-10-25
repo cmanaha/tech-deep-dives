@@ -202,3 +202,16 @@ Cross-references: register 05 (parallelism, EP, PD; block D = KV transfer over E
 ## Errata from the scope review (2026-10-24)
 
 - E3 claim header "uses an unpublished out-of-tree Neuron plugin" strengthens the evidence, which is a failed search. Correct wording: upstream Trainium work after v0.5.22 targets an out-of-tree Neuron platform plugin; no public plugin repository was located by the GitHub searches `sglang neuron`, `org:aws-neuron sglang` and `sglang trainium` on 2026-10-24. See `reviews/scope-review-factual.md` #66.
+
+## Errata from authoring (2026-10-24)
+
+Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
+
+- D7: the EFA installer 1.50.0 floor is at L35-L44, not L7-L15 (section 20).
+- C8: NVIDIA's driver table is now Table 2 (section 20).
+- B10: three samples pin v0.5.12.post1; `dsr1` is a custom 0.5.13.post1 build (section 20).
+- B1: the EKS overview names SGLang four times (section 20).
+- D15: the AWS results file shows EP16 on two nodes, not four (section 22).
+- D17: the AL2023 DLC's Dockerfile installs the `latest` EFA installer; the changelog wording is used (section 22).
+- A18: the LMI pages do not state that LMI ships vLLM and TensorRT-LLM. Write "SGLang not found on the LMI pages read" (section 19).
+- New, read from source, not run: `/health` waits one second before answering, while Kubernetes probes time out after one second by default. A generation pause over 20 seconds fails `/health` (section 20).

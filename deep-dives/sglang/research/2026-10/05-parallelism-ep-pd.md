@@ -209,3 +209,11 @@ Defaults that differ from docs: EPLB cadence counts forward passes, not requests
 - Code-derived, not executed (C11): `prefill_complete` plus DP attention at TP > 1 appears rejected by `_validate_prefill_complete` reading the cleared `enable_dp_attention` field. Confirm on hardware before publishing as fact; publish as "read from source".
 - SPECULATIVE (D10): whether the libfabric CUDA VMM limitation also bites the NIXL LIBFABRIC route. SGLang does not guard it.
 - Not stated by the source (B20): how the LMSYS blog's 12 nodes split between prefill and decode; the blog reports prefill on 4 nodes and decode on 9 nodes as separate measurements.
+
+## Errata from authoring (2026-10-24)
+
+Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
+
+- F3: "the handshake runs while prefill computes" is wrong in code. Under the default `early` policy prefill waits for decode's page reservation, so the handshake is done before prefill finishes (section 15).
+- B2: `ascend_tp` does not reset EP to TP, so "only `none`" is dropped (section 14).
+- A16: the documentation says startup checks `tp % dcp`. The code does so only for Intel XPU (section 14).

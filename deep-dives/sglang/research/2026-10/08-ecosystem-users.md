@@ -174,3 +174,11 @@ Benchmarks: none recorded here. Together AI's "3x better TTFT than SGLang" (C15)
 ## Errata from the scope review (2026-10-24)
 
 - Mental model 2 ("every downstream pins its own SGLang") over-generalises: RL frameworks and vendor containers freeze their own SGLang (verl 0.5.8 in B13, AReaL 0.5.10.post1 in B11, NVIDIA NGC 26.09 0.5.19 in D2, Dynamo 0.5.21 in register 06 F9), while Ray 2.59.0 pins none, KServe v0.21.0 ships no SGLang runtime, and llm-d and Miles track v0.5.22 (register 06 F13). B15 covers RL frameworks only. See `reviews/scope-review-factual.md` #61.
+
+## Errata from authoring (2026-10-24)
+
+Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
+
+- C3: "on H100" is wrong for the 69%. The December 2025 LinkedIn post names no GPU; H100 belongs to the February 2026 post's production table. Ship the 69% as "against single-item scoring with prefix caching" (section 24).
+- B14: line numbers are off by one; the correct lines are L6 and L19-L29 (section 24).
+- NVIDIA's container is release 26.09. The release notes do not support "October 2026" (section 24).

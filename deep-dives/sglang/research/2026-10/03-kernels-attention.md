@@ -275,3 +275,11 @@ Design differences only. Each names the vLLM dive section that covers the vLLM s
    - Carries: F1 to F7 and A15. The Trainium row stays hedged to "in progress, plugin not located at v0.5.22".
 5. **"Inside the Codebase", tab "Kernels & Attention"** (mechanism): the 12-stop walk above.
 6. Block E rows E2 to E4 are attention-specific graph facts. They should sit beside register 01's CUDA graph material (01 D9 to D14) rather than in a separate section.
+
+## Errata from authoring (2026-10-24)
+
+Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
+
+- B13: on B200 the default leaves `trtllm_mha` and its 64-token pages when speculation is on with topk above 1, and also when speculation is on with `--speculative-eagle-topk` unset. The topk-1 case also needs `--speculative-num-steps` set (`speculative_hook.py` L1068-L1072) (sections 8, 21).
+- F5: "TPU via SGLang-JAX only" is too strong. The README also names SGL-torchtpu, which has no code at v0.5.22 (section 8).
+- Apple MPS gets its backend from the generic selection step, not a platform hook (section 8).

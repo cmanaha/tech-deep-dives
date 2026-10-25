@@ -228,3 +228,11 @@ These override the rows they name. Source: `reviews/scope-review-factual.md` fol
 - A14 and B7, "default `NixlConnector` pulls" and "the default (pull for vLLM's NIXL connector)": vLLM PD is a connector chosen by `--kv-transfer-config`, with no single default (05 F1, F2). Correct wording: "the reference `NixlConnector` pulls", "vLLM's reference pull proxy runs prefill first", "the reference connector's pull". Do not copy "default" from A14. (#82)
 - A19, "with no key they are open", and Practical knobs, "callable on a default SGLang server": the default bind is 127.0.0.1 (08 E6; `arg_groups/fields/serving.py:65`). Correct wording: "with no key they accept any client that can reach the port (localhost at the default bind)"; knobs: "callable by any client that reaches the port on a server with no key". (#83)
 - E5 and A20, "use vLLM with the vLLM Neuron plugin ... or NxD Inference": add "NxD Inference, which the vLLM register records as in maintenance mode (09 E5)". (#84)
+
+## Errata from authoring (2026-10-24)
+
+Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
+
+- A14 and B7: the handshake timing follows 05 F3 as corrected: done before prefill finishes, not while prefill computes (section 15).
+- A9: "15 backends" is superseded by the register 00 erratum: 13 plus `dynamic` (section 7).
+- B6: the router lineage is 84 files (93 lines) by grep, not "close to a hundred files" (section 23).

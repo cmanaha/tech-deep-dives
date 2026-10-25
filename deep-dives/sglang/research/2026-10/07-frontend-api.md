@@ -227,3 +227,14 @@ Columns: # | Claim (short) | Location (file:line at v0.5.22) | Verdict | Evidenc
 ## Errata from the scope review (2026-10-24)
 
 - G3 and mental model 4: "callable by anyone on the network" holds only once the server binds a non-loopback address. Correct wording: callable by any client that can reach the port; at the default `127.0.0.1` bind that is the local host only, and with `--host 0.0.0.0` (as container deployments set it) the network (row B12; register 08 E6; `arg_groups/fields/serving.py:65`). See `reviews/scope-review-factual.md` #50, #51.
+
+## Errata from authoring (2026-10-24)
+
+Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
+
+- D12: the LMSYS deterministic-inference post measured end-to-end latency, not throughput (section 13).
+- D3: the offline `Engine` has no pause or continue method (section 13).
+- D7: "keeps virtual addresses" is not shown by SGLang's code and is dropped (section 13).
+- C15: the "404" did not hold in code and is dropped. B19 is narrowed to `/generate` (section 12).
+- New, read from source: `/server_info` has no `@auth_level`, so it runs at the NORMAL level. It returns `server_args.resolved_dict()`, which includes `api_key` and `admin_api_key`; only watermark keys are redacted (`entrypoints/http_server.py` L847; `server_args.py` L315; `utils/auth.py` L145-L151). The documentation says the admin key guards it (`server_arguments.mdx` L1095) (section 12).
+- New, read from source: in multi-tokenizer mode the key middleware is never installed, and the Rust frontend has no auth layer (sections 3, 12).

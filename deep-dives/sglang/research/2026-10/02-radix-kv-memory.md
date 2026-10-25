@@ -242,3 +242,10 @@ Design choices only. The 2024 speedup ratios against vLLM v0.2.5 are attributed 
 ## Errata from the scope review (2026-10-24)
 
 - Section recommendation 2 ("free memory after weights, divided by bytes per token per layer") overstates capacity by the layer count: divide by the bytes one token costs across all layers (rows D4, D5 carry the correct formula). See `reviews/scope-review-factual.md` #21.
+
+## Errata from authoring (2026-10-24)
+
+Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
+
+- D5: the cited L880-L889 is the hybrid-SWA path. The default path is `pool_configurator.py` L614-L624 (section 6).
+- C14: `sglang:cache_hit_rate` holds only the last batch. For a hit rate, follow 01 E8 as corrected above (section 5).

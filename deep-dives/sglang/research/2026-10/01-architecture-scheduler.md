@@ -217,3 +217,11 @@ Metrics to watch: `sglang:num_queue_reqs`, `sglang:num_running_reqs`, `sglang:to
 - A11 (`total_tokens` with plain DP replicas): code shows no restriction; not exercised.
 - D3 and the memory-fraction examples are arithmetic on the code formula with assumed `nvidia-smi` totals; confirm on an instance before shipping exact values.
 - No row carries an UNKNOWN verdict.
+
+## Errata from authoring (2026-10-24)
+
+Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
+
+- D4: the 0.95 fallback applies more narrowly than the row says. On CUDA a failed `nvidia-smi` falls back to PyTorch's memory query first (section 6).
+- E8: the hit-rate query divides two counters that carry different labels, so it returns nothing. Use `sum(rate(...)) / sum(rate(...))` (section 5).
+- Several line ranges in blocks B and C are off by a few lines. Sections 4 and 6 cite the verified lines.

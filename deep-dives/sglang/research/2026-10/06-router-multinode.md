@@ -206,3 +206,10 @@ Related register: `05-parallelism-ep-pd.md` (PD disaggregation, bootstrap handsh
 - Not checked: whether the PyPI `sglang-router` 0.3.2 Rust extension matches the in-tree code beyond the Python CLI (only `router_args.py` choices and the `prefix_hash` string in the `.so` were inspected, A6).
 - SMG v1.13.0 performance statements (A4) are project claims and were not evaluated.
 - llm-d performance claim in `docs/docs/advanced_features/llm-d.mdx` ("3x higher output throughput and 2x faster TTFT", Llama 3.1 70B, vs round-robin) is an llm-d project claim; the page does not say it was measured on SGLang ("The mechanism carries over directly to SGLang"), so it is not an SGLang result.
+
+## Errata from authoring (2026-10-24)
+
+Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
+
+- New, read from source: the gateway serves `/server_info` and `/get_server_info` in its public route group, outside its own key check, by proxying to the first worker with the client's `Authorization` header (`sgl-model-gateway/src/server.rs` L593-L605; `routers/http/router.rs` L92-L131) (section 17).
+- New, read from source: `launch_router` binds its metrics to 127.0.0.1 (`lib.rs` L1000-L1006). llm-d's `--enable-ep-moe` flag does not exist in v0.5.22 (section 18).
