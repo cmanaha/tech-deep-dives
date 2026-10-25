@@ -776,6 +776,17 @@ export function KvMemory() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
+            <code>--mem-fraction-static</code> covers the weights and the KV pool, and the server
+            uses the rest for activations and CUDA graphs. vLLM&apos;s{' '}
+            <code>--gpu-memory-utilization</code>, 0.92 by default, is the share of GPU memory the
+            vLLM instance may use for everything: weights, activations, the CUDA graph pool and the
+            KV cache ({VLLM_OPS_LINK}). SGLang&apos;s computed 0.83 sits below vLLM&apos;s 0.92
+            because it counts fewer things. Do not copy one value into the other engine. By our
+            arithmetic, 0.92 in SGLang would leave 6.4 GiB of an 80 GB H100 for activations and
+            graphs, under half of the worked example&apos;s 13.6 GiB reserve, which the formula
+            below computes.
+          </Box>
+          <Box variant="p">
             Left unset, <code>--mem-fraction-static</code>{' '}
             <Cite tier={1} href={sglangUrl(SCHED_FIELDS, 'L27-L30')}>
               schedule.py L27-L30
@@ -793,16 +804,6 @@ export function KvMemory() {
             term, so a small and a large dense MHA or GQA text model at the same TP on the same
             NVIDIA GPU get the same fraction, and the model decides only how that share splits
             between weights and pool.
-          </Box>
-          <Box variant="p">
-            <code>--mem-fraction-static</code> covers the weights and the KV pool, and the server
-            uses the rest for activations and CUDA graphs. vLLM&apos;s{' '}
-            <code>--gpu-memory-utilization</code>, 0.92 by default, is the share of GPU memory the
-            vLLM instance may use for everything: weights, activations, the CUDA graph pool and the
-            KV cache ({VLLM_OPS_LINK}). SGLang&apos;s computed 0.83 sits below vLLM&apos;s 0.92
-            because it counts fewer things. Do not copy one value into the other engine. By our
-            arithmetic, 0.92 in SGLang would leave 6.4 GiB of an 80 GB H100 for activations and
-            graphs, under half of the 13.6 GiB the default formula reserves there.
           </Box>
           <Box variant="p">
             To tune it, SGLang&apos;s tuning guide recommends reading <code>available_gpu_mem</code>{' '}
@@ -901,8 +902,7 @@ export function KvMemory() {
           <Box variant="p">
             The chunked-prefill size and the decode CUDA-graph maximum batch both follow the GPU
             memory size SGLang reads, and the fraction is computed from them, so all three move
-            together when the instance family changes. Section 21, EC2 Instances, Images and
-            GPU-Dependent Behaviour, links back to this table.
+            together when the instance family changes.
           </Box>
           <Table
             variant="embedded"
@@ -1014,8 +1014,8 @@ export function KvMemory() {
             <Cite tier={1} href={sglangUrl(RADIX, 'L406-L438')} kind="code">
               radix_cache.py L406-L438
             </Cite>
-            . Section 5, RadixAttention and the Radix Cache, explains the tree; this block is about
-            which page size you get. <code>--page-size</code> is unset by default and resolves to 1
+            ; section 5, RadixAttention and the Radix Cache, explains the tree.{' '}
+            <code>--page-size</code> is unset by default and resolves to 1
             on NVIDIA GPUs{' '}
             <Cite tier={1} href={sglangUrl(SCHED_FIELDS, 'L139-L141')}>
               schedule.py L139-L141
@@ -1054,7 +1054,10 @@ export function KvMemory() {
             <Cite tier={1} href={sglangUrl(MODEL_BASE, 'L303-L315')} kind="code">
               model_override_base.py L303-L315
             </Cite>
-            . The startup log names the backend in{' '}
+            .
+          </Box>
+          <Box variant="p">
+            The startup log names the backend in{' '}
             <code>Attention backend not specified. Use fa3 backend by default.</code> (with{' '}
             <code>trtllm_mha</code> on a P6){' '}
             <Cite tier={1} href={sglangUrl(OVERRIDES, 'L1076-L1079')} kind="code">

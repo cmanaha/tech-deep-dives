@@ -668,7 +668,9 @@ export function RadixCache() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            When the scheduler admits a request it locks the request&apos;s matched node{' '}
+            Eviction never pulls KV out from under a running request, and a shared system prompt
+            stays resident while any request that uses it runs, because admission locks the whole
+            path. When the scheduler admits a request it locks the request&apos;s matched node{' '}
             <Cite tier={1} href={sglangUrl(POLICY, 'L1591')}>
               schedule_policy.py L1591
             </Cite>
@@ -686,8 +688,7 @@ export function RadixCache() {
             <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/common.py', 'L408-L414')}>
               common.py L408-L414
             </Cite>
-            . Eviction can therefore never pull KV out from under a running request, and a shared
-            system prompt stays resident while any request that uses it runs.
+            .
           </Box>
           <Box variant="p">
             Eviction pops the lowest-ranked leaf with no lock from a heap, frees its whole KV run,
@@ -743,8 +744,8 @@ export function RadixCache() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Both engines identify a cached prefix by everything before it. The differences come from
-            the shape of the index.
+            Both engines identify a cached prefix by everything before it; the shape of the index
+            decides the rest.
           </Box>
           <ul>
             <li>
@@ -833,39 +834,41 @@ export function RadixCache() {
             token position up to the context length.
           </Box>
 
-          <Box variant="p">
-            <strong>Where the names point in the code.</strong> <code>RadixAttention</code> is the
-            attention layer every model calls; it dispatches to an attention backend and holds no
-            tree logic{' '}
-            <Cite tier={1} href={sglangUrl('python/sglang/srt/layers/radix_attention.py', 'L98-L101')}>
-              radix_attention.py L98-L101
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl('python/sglang/srt/layers/radix_attention.py', 'L294-L302')}>
-              radix_attention.py L294-L302
-            </Cite>
-            . The prefix cache is a separate object; for a standard model at v0.5.22 it is{' '}
-            <code>UnifiedRadixCache</code>{' '}
-            <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/registry.py', 'L83-L146')}>
-              registry.py L83-L146
-            </Cite>
-            , whose match, insert, lock and eviction walks run on a Rust tree core by default{' '}
-            <Cite tier={1} href={sglangUrl('python/sglang/srt/environ.py', 'L688')}>
-              environ.py L688
-            </Cite>
-            . The startup log line{' '}
-            <code>Tree cache initialized: source=default impl=UnifiedRadixCache</code> confirms which
-            cache class you got{' '}
-            <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/registry.py', 'L297-L306')}>
-              registry.py L297-L306
-            </Cite>
-            ; a cache turned off with <code>--disable-radix-cache</code> is the same class and
-            prints the same line{' '}
-            <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/registry.py', 'L91-L99')} kind="code">
-              registry.py L91-L99
-            </Cite>
-            . The <code>radix_cache.py</code> lines cited here are the readable Python form of the
-            same walks.
-          </Box>
+          <ExpandableSection headerText="Where the names point in the code">
+            <Box variant="p">
+              <code>RadixAttention</code> is the
+              attention layer every model calls; it dispatches to an attention backend and holds no
+              tree logic{' '}
+              <Cite tier={1} href={sglangUrl('python/sglang/srt/layers/radix_attention.py', 'L98-L101')}>
+                radix_attention.py L98-L101
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl('python/sglang/srt/layers/radix_attention.py', 'L294-L302')}>
+                radix_attention.py L294-L302
+              </Cite>
+              . The prefix cache is a separate object; for a standard model at v0.5.22 it is{' '}
+              <code>UnifiedRadixCache</code>{' '}
+              <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/registry.py', 'L83-L146')}>
+                registry.py L83-L146
+              </Cite>
+              , whose match, insert, lock and eviction walks run on a Rust tree core by default{' '}
+              <Cite tier={1} href={sglangUrl('python/sglang/srt/environ.py', 'L688')}>
+                environ.py L688
+              </Cite>
+              . The startup log line{' '}
+              <code>Tree cache initialized: source=default impl=UnifiedRadixCache</code> confirms which
+              cache class you got{' '}
+              <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/registry.py', 'L297-L306')}>
+                registry.py L297-L306
+              </Cite>
+              ; a cache turned off with <code>--disable-radix-cache</code> is the same class and
+              prints the same line{' '}
+              <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/registry.py', 'L91-L99')} kind="code">
+                registry.py L91-L99
+              </Cite>
+              . The <code>radix_cache.py</code> lines cited here are the readable Python form of the
+              same walks.
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -908,20 +911,22 @@ export function RadixCache() {
             </Cite>
             , so it stops reordering when the queue is deepest.
           </Box>
-          <Box variant="p">
-            The other cache-aware policies are <code>dfs-weight</code> (siblings that share a
-            prefix run together), <code>hrrn</code> (highest response ratio next, which also falls
-            back above 128) and the experimental <code>shortest-prefill-first</code>{' '}
-            <Cite tier={1} href={sglangUrl(POLICY, 'L168-L276')}>
-              schedule_policy.py L168-L276
-            </Cite>
-            . With the radix cache disabled, <code>lpm</code>, <code>dfs-weight</code> and{' '}
-            <code>hrrn</code> run as FCFS and <code>shortest-prefill-first</code> refuses to start{' '}
-            <Cite tier={1} href={sglangUrl(POLICY, 'L320-L340')}>
-              schedule_policy.py L320-L340
-            </Cite>
-            .
-          </Box>
+          <ExpandableSection headerText="The other cache-aware queue policies">
+            <Box variant="p">
+              The other cache-aware policies are <code>dfs-weight</code> (siblings that share a
+              prefix run together), <code>hrrn</code> (highest response ratio next, which also falls
+              back above 128) and the experimental <code>shortest-prefill-first</code>{' '}
+              <Cite tier={1} href={sglangUrl(POLICY, 'L168-L276')}>
+                schedule_policy.py L168-L276
+              </Cite>
+              . With the radix cache disabled, <code>lpm</code>, <code>dfs-weight</code> and{' '}
+              <code>hrrn</code> run as FCFS and <code>shortest-prefill-first</code> refuses to start{' '}
+              <Cite tier={1} href={sglangUrl(POLICY, 'L320-L340')}>
+                schedule_policy.py L320-L340
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             For shared-prefix traffic whose queue stays under 128, test{' '}
             <code>--schedule-policy lpm</code> and compare <code>#cached-token</code> with{' '}
@@ -935,72 +940,7 @@ export function RadixCache() {
             . No measurement of its effect was located during this research, so your own comparison
             is the evidence.
           </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Choose which idle prefixes go first when memory is short; every policy orders leaves with no lock, and none of them pins KV"
-          >
-            Eviction policy: one flag, five orderings
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            <code>--radix-eviction-policy</code> defaults to <code>lru</code>{' '}
-            <Cite tier={1} href={sglangUrl(MEMFLAGS, 'L25-L42')}>
-              memory.py L25-L42
-            </Cite>
-            . Each policy is a sort key over evictable leaves, lowest first, so a policy decides
-            the order of eviction and never protects KV from it{' '}
-            <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/evict_policy.py', 'L16-L100')}>
-              evict_policy.py L16-L100
-            </Cite>
-            . The table follows the eviction-policy guide{' '}
-            <Cite tier={1} href={sglangDocsSrcUrl('advanced_features/radix_eviction_policy', 'L19-L32')}>
-              SGLang docs: radix eviction policy (v0.5.22 source)
-            </Cite>
-            ; <code>lfu</code> is least frequently used, <code>slru</code> segmented LRU and{' '}
-            <code>tlru</code> tail-optimized LRU, where TTFT is time to first token.
-          </Box>
-          <Table
-            variant="embedded"
-            wrapLines
-            columnDefinitions={[
-              { id: 'policy', header: 'Policy', cell: (r: PolicyRow) => <code>{r.policy}</code> },
-              { id: 'first', header: 'Evicts first', cell: (r: PolicyRow) => r.first },
-              { id: 'when', header: 'Use when', cell: (r: PolicyRow) => r.when },
-            ]}
-            items={policyRows}
-          />
-          <Box variant="p">
-            One exception to the default, and one gap in the docs. A profiled Qwen3-VL path on large Hopper GPUs switches the
-            default to <code>priority</code> unless you pass the flag yourself{' '}
-            <Cite
-              tier={1}
-              href={sglangUrl('python/sglang/srt/arg_groups/model_overrides/qwen3_vl.py', 'L122-L126')}
-            >
-              qwen3_vl.py L122-L126
-            </Cite>
-            . And the server-arguments reference lists four choices{' '}
-            <Cite
-              tier={1}
-              href={sglangDocsSrcUrl('advanced_features/server_arguments', 'L559-L564')}
-              kind="doc-code-conflict"
-            >
-              SGLang docs: server arguments (v0.5.22 source)
-            </Cite>
-            , while v0.5.22&apos;s code also accepts <code>tlru</code>{' '}
-            <Cite tier={1} href={sglangUrl('python/sglang/srt/arg_groups/choices.py', 'L187')}>
-              choices.py L187
-            </Cite>
-            , so trust the eviction-policy guide over that table.
-          </Box>
-
-          <ExpandableSection headerText="Where the name comes from: the 2024 paper and its numbers">
+          <ExpandableSection headerText="The 2024 paper, its numbers, and when lpm was the default">
             <SpaceBetween size="s">
               <Box variant="p">
                 The SGLang paper, &quot;SGLang: Efficient Execution of Structured Language Model
@@ -1063,6 +1003,70 @@ export function RadixCache() {
         header={
           <Header
             variant="h2"
+            description="Choose which idle prefixes go first when memory is short; every policy orders leaves with no lock, and none of them pins KV"
+          >
+            Eviction policy: one flag, five orderings
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            <code>--radix-eviction-policy</code> defaults to <code>lru</code>{' '}
+            <Cite tier={1} href={sglangUrl(MEMFLAGS, 'L25-L42')}>
+              memory.py L25-L42
+            </Cite>
+            . Each policy is a sort key over evictable leaves, lowest first, so a policy decides
+            the order of eviction and never protects KV from it{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/srt/mem_cache/evict_policy.py', 'L16-L100')}>
+              evict_policy.py L16-L100
+            </Cite>
+            . The table follows the eviction-policy guide{' '}
+            <Cite tier={1} href={sglangDocsSrcUrl('advanced_features/radix_eviction_policy', 'L19-L32')}>
+              SGLang docs: radix eviction policy (v0.5.22 source)
+            </Cite>
+            ; <code>lfu</code> is least frequently used, <code>slru</code> segmented LRU and{' '}
+            <code>tlru</code> tail-optimized LRU, where TTFT is time to first token.
+          </Box>
+          <Table
+            variant="embedded"
+            wrapLines
+            columnDefinitions={[
+              { id: 'policy', header: 'Policy', cell: (r: PolicyRow) => <code>{r.policy}</code> },
+              { id: 'first', header: 'Evicts first', cell: (r: PolicyRow) => r.first },
+              { id: 'when', header: 'Use when', cell: (r: PolicyRow) => r.when },
+            ]}
+            items={policyRows}
+          />
+          <Box variant="p">
+            A profiled Qwen3-VL path on large Hopper GPUs switches the default to{' '}
+            <code>priority</code> unless you pass the flag yourself{' '}
+            <Cite
+              tier={1}
+              href={sglangUrl('python/sglang/srt/arg_groups/model_overrides/qwen3_vl.py', 'L122-L126')}
+            >
+              qwen3_vl.py L122-L126
+            </Cite>
+            . The server-arguments reference lists four choices{' '}
+            <Cite
+              tier={1}
+              href={sglangDocsSrcUrl('advanced_features/server_arguments', 'L559-L564')}
+              kind="doc-code-conflict"
+            >
+              SGLang docs: server arguments (v0.5.22 source)
+            </Cite>
+            , while v0.5.22&apos;s code also accepts <code>tlru</code>{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/srt/arg_groups/choices.py', 'L187')}>
+              choices.py L187
+            </Cite>
+            , so trust the eviction-policy guide over that table.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
             description="Which series shows the cache working, which one looks like it is not, and the flags to change after reading them"
           >
             Read the gauges first, then the knobs
@@ -1112,7 +1116,8 @@ export function RadixCache() {
               <Cite tier={1} href={sglangUrl(METRICS, 'L2467-L2474')}>
                 metrics_collector.py L2467-L2474
               </Cite>
-              , and moves only when an allocation is short. Our reading: a rising eviction rate
+              , and moves only when an allocation is short. Our reading: since whole leaves go at
+              once, one step can far exceed the shortfall that caused it, and a rising eviction rate
               beside a falling cached share means the reusable working set no longer fits.
             </li>
           </ul>

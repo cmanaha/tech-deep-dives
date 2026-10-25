@@ -531,10 +531,9 @@ export function HiCache() {
             .
           </Box>
           <Box variant="p">
-            Most of what follows is about where a hit comes from. One number deserves a place in
-            your latency budget first: a request whose prefix sits in L3 waits in the queue while
-            that prefix is fetched, and in v0.5.22 a 128K-token fetch may hold it for about 33 s,
-            where the documentation states a 30 s cap{' '}
+            Put one number in your latency budget before the tiers: a request whose prefix sits in
+            L3 waits in the queue while that prefix is fetched, and in v0.5.22 a 128K-token fetch
+            may hold it for about 33 s, where the documentation states a 30 s cap{' '}
             <Cite tier={1} href={sglangUrl(HYBRID_CTRL, 'L392-L396')} kind="code">
               hybrid_cache_controller.py L392-L396
             </Cite>{' '}
@@ -775,7 +774,9 @@ export function HiCache() {
             ; v0.5.22&apos;s code uses the larger defaults, applies no cap and reads no such key, so
             budget TTFT (time to first token) for the code&apos;s formula, and set{' '}
             <code>prefetch_timeout_base</code> and <code>prefetch_timeout_per_ki_token</code>{' '}
-            yourself when 33 s is too long.
+            yourself when 33 s is too long. To size the two keys, take the longest L3 hit you
+            expect and the longest queue wait your TTFT budget allows for it, and solve{' '}
+            <code>wait = base + per_ki_token * tokens / 1024</code>.
           </Box>
           <ExpandableSection headerText="The timeout in the documentation and in the code">
             <SpaceBetween size="s">
@@ -797,11 +798,6 @@ export function HiCache() {
                 . A search for <code>timeout_max</code> across v0.5.22&apos;s{' '}
                 <code>python/sglang/srt</code> finds nothing, so a <code>prefetch_timeout_max</code>{' '}
                 you pass goes to the backend with the other keys and caps nothing.
-              </Box>
-              <Box variant="p">
-                To size the two keys, take the longest L3 hit you expect and the longest queue wait
-                your TTFT budget allows for it, and solve{' '}
-                <code>wait = base + per_ki_token * tokens / 1024</code>.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -831,19 +827,7 @@ export function HiCache() {
             <Cite tier={1} href={sglangUrl(BACKEND_FACTORY, 'L204-L276')} kind="code">
               backend_factory.py L204-L276
             </Cite>
-            . The documentation covers fewer: the design page lists <code>file</code>,{' '}
-            <code>mooncake</code>, <code>hf3fs</code>, <code>nixl</code>, <code>aibrix</code> and{' '}
-            <code>dynamic</code>{' '}
-            <Cite tier={1} href={sglangDocsSrcUrl(DESIGN, 'L208')} kind="doc-code-conflict">
-              hicache_design.mdx L208
-            </Cite>
-            , and the server-arguments table adds <code>eic</code> and <code>simm</code>{' '}
-            <Cite tier={1} href={sglangDocsSrcUrl(SERVER_ARGS, 'L2130-L2133')} kind="doc-code-conflict">
-              server_arguments.mdx L2130-L2133
-            </Cite>
-            . The six registered names neither page lists are <code>sim</code>,{' '}
-            <code>npu_memcache</code>, <code>mori</code>, <code>shm</code>, <code>tensorcast</code>{' '}
-            and <code>seaweedfs</code>. LMCache and FlexKV plug in one level higher:{' '}
+            ; the documentation lists fewer. LMCache and FlexKV plug in one level higher:{' '}
             <code>--enable-lmcache</code> and <code>--enable-flexkv</code> select a different tree
             cache with its own tiers{' '}
             <Cite tier={1} href={sglangUrl(REGISTRY, 'L101-L144')} kind="code">
@@ -854,6 +838,26 @@ export function HiCache() {
             </Cite>
             .
           </Box>
+          <ExpandableSection headerText="The backends the documentation lists, and the six it does not">
+            <Box variant="p">
+              The design page lists <code>file</code>, <code>mooncake</code>, <code>hf3fs</code>,{' '}
+              <code>nixl</code>, <code>aibrix</code> and <code>dynamic</code>{' '}
+              <Cite tier={1} href={sglangDocsSrcUrl(DESIGN, 'L208')} kind="doc-code-conflict">
+                hicache_design.mdx L208
+              </Cite>
+              , and the server-arguments table adds <code>eic</code> and <code>simm</code>{' '}
+              <Cite tier={1} href={sglangDocsSrcUrl(SERVER_ARGS, 'L2130-L2133')} kind="doc-code-conflict">
+                server_arguments.mdx L2130-L2133
+              </Cite>
+              . The six registered names neither page lists are <code>sim</code>,{' '}
+              <code>npu_memcache</code>, <code>mori</code>, <code>shm</code>, <code>tensorcast</code>{' '}
+              and <code>seaweedfs</code>{' '}
+              <Cite tier={1} href={sglangUrl(BACKEND_FACTORY, 'L204-L276')} kind="code">
+                backend_factory.py L204-L276
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             <code>file</code> is the demonstration backend. It writes to <code>/tmp/hicache</code>{' '}
             unless <code>SGLANG_HICACHE_FILE_BACKEND_STORAGE_DIR</code> or{' '}

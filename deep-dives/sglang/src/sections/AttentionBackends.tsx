@@ -861,69 +861,73 @@ export function AttentionBackends() {
             which have no default, fall through to <code>triton</code>. After this tree, the page-size
             rules in the next block run and can raise the page size further.
           </Box>
-          <Box variant="p">
-            The DeepSeek V3 family on SM100 gets <code>trtllm_mla</code>, a rule also registered
-            for Kimi K2.5, Mistral Large 3 and other MLA models{' '}
-            <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/deepseek_v2.py`, 'L35-L50')}>
-              deepseek_v2.py L35-L50
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/deepseek_v2.py`, 'L179-L191')}>
-              deepseek_v2.py L179-L191
-            </Cite>
-            . Models with DeepSeek Sparse Attention (DSA), such as DeepSeek V3.2 and GLM-5, get{' '}
-            <code>dsa</code>{' '}
-            <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/deepseek_v2.py`, 'L99-L112')}>
-              deepseek_v2.py L99-L112
-            </Cite>
-            , and DeepSeek V4 always gets <code>dsv4</code>{' '}
-            <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/deepseek_v4.py`, 'L20-L24')}>
-              deepseek_v4.py L20-L24
-            </Cite>
-            . GPT-OSS has a rule per platform: <code>trtllm_mha</code> on SM100, <code>fa3</code> on
-            SM90, <code>aiter</code> on ROCm, <code>intel_xpu</code> on Intel GPUs and{' '}
-            <code>triton</code> on other GPUs{' '}
-            <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/gpt_oss.py`, 'L24-L44')}>
-              gpt_oss.py L24-L44
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            Hybrid models mix full-attention layers with linear-attention layers, and take a second
-            backend for the linear-attention layers, <code>--linear-attn-backend</code>, default{' '}
-            <code>triton</code>{' '}
-            <Cite tier={1} href={sglangUrl(EXEC, 'L480-L486')}>
-              exec_.py L480-L486
-            </Cite>
-            . For the Qwen3.5 and Qwen3-Next hybrids on SM100, the full-attention layers get{' '}
-            <code>triton</code> with page size 1 when token-level prefix caching is possible (radix
-            cache on, no Mamba extra buffer, no speculation). Otherwise they get{' '}
-            <code>trtllm_mha</code> with 64-token pages when the generic table would pick it, and stay
-            on <code>triton</code> with page size 1 when it would not{' '}
-            <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/qwen3_5.py`, 'L17-L48')}>
-              qwen3_5.py L17-L48
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            The choice can also be split by phase. Different values for the two per-phase flags build
-            both backends inside one <code>HybridAttnBackend</code>, which sends decode batches to the
-            decode backend and prefill batches to the prefill backend, and SGLang logs that the split
-            is experimental{' '}
-            <Cite
-              tier={1}
-              href={sglangUrl(`${SRT}/model_executor/model_runner_components/attention_backend_setup.py`, 'L199-L247')}
-            >
-              attention_backend_setup.py L199-L247
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(`${SRT}/layers/attention/hybrid_attn_backend.py`, 'L64-L88')}>
-              hybrid_attn_backend.py L64-L88
-            </Cite>
-            . The documented example pairs FA4 prefill with TRT-LLM MLA decode on Blackwell{' '}
-            <Cite tier={1} href={sglangDocsSrcUrl(AB_DOC, 'L512-L524')}>
-              SGLang docs: attention backend (v0.5.22 source)
-            </Cite>
-            .
-          </Box>
+          <ExpandableSection headerText="The family rules in full, hybrid models and per-phase backends">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                The DeepSeek V3 family on SM100 gets <code>trtllm_mla</code>, a rule also registered
+                for Kimi K2.5, Mistral Large 3 and other MLA models{' '}
+                <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/deepseek_v2.py`, 'L35-L50')}>
+                  deepseek_v2.py L35-L50
+                </Cite>{' '}
+                <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/deepseek_v2.py`, 'L179-L191')}>
+                  deepseek_v2.py L179-L191
+                </Cite>
+                . Models with DeepSeek Sparse Attention (DSA), such as DeepSeek V3.2 and GLM-5, get{' '}
+                <code>dsa</code>{' '}
+                <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/deepseek_v2.py`, 'L99-L112')}>
+                  deepseek_v2.py L99-L112
+                </Cite>
+                , and DeepSeek V4 always gets <code>dsv4</code>{' '}
+                <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/deepseek_v4.py`, 'L20-L24')}>
+                  deepseek_v4.py L20-L24
+                </Cite>
+                . GPT-OSS has a rule per platform: <code>trtllm_mha</code> on SM100, <code>fa3</code> on
+                SM90, <code>aiter</code> on ROCm, <code>intel_xpu</code> on Intel GPUs and{' '}
+                <code>triton</code> on other GPUs{' '}
+                <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/gpt_oss.py`, 'L24-L44')}>
+                  gpt_oss.py L24-L44
+                </Cite>
+                .
+              </Box>
+              <Box variant="p">
+                Hybrid models mix full-attention layers with linear-attention layers, and take a second
+                backend for the linear-attention layers, <code>--linear-attn-backend</code>, default{' '}
+                <code>triton</code>{' '}
+                <Cite tier={1} href={sglangUrl(EXEC, 'L480-L486')}>
+                  exec_.py L480-L486
+                </Cite>
+                . For the Qwen3.5 and Qwen3-Next hybrids on SM100, the full-attention layers get{' '}
+                <code>triton</code> with page size 1 when token-level prefix caching is possible (radix
+                cache on, no Mamba extra buffer, no speculation). Otherwise they get{' '}
+                <code>trtllm_mha</code> with 64-token pages when the generic table would pick it, and stay
+                on <code>triton</code> with page size 1 when it would not{' '}
+                <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/qwen3_5.py`, 'L17-L48')}>
+                  qwen3_5.py L17-L48
+                </Cite>
+                .
+              </Box>
+              <Box variant="p">
+                The choice can also be split by phase. Different values for the two per-phase flags build
+                both backends inside one <code>HybridAttnBackend</code>, which sends decode batches to the
+                decode backend and prefill batches to the prefill backend, and SGLang logs that the split
+                is experimental{' '}
+                <Cite
+                  tier={1}
+                  href={sglangUrl(`${SRT}/model_executor/model_runner_components/attention_backend_setup.py`, 'L199-L247')}
+                >
+                  attention_backend_setup.py L199-L247
+                </Cite>{' '}
+                <Cite tier={1} href={sglangUrl(`${SRT}/layers/attention/hybrid_attn_backend.py`, 'L64-L88')}>
+                  hybrid_attn_backend.py L64-L88
+                </Cite>
+                . The documented example pairs FA4 prefill with TRT-LLM MLA decode on Blackwell{' '}
+                <Cite tier={1} href={sglangDocsSrcUrl(AB_DOC, 'L512-L524')}>
+                  SGLang docs: attention backend (v0.5.22 source)
+                </Cite>
+                .
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -1103,22 +1107,11 @@ export function AttentionBackends() {
             .
           </Box>
           <Box variant="p">
-            Its kernels are specialised per GEMM shape and per token count. The first time a server
-            meets a weight shape, the first rank on each node compiles that shape for every token
-            count from 1 to 16,384 when the chunked prefill size is 8,192 or less, and up to twice the
-            chunk size above that, into <code>~/.cache/sglang/deep_gemm</code>{' '}
-            <Cite tier={1} href={sglangUrl(DG, 'L42-L113')}>
-              compile_utils.py L42-L113
-            </Cite>
-            . At the default chunk sizes that is 1 to 16,384 on H100 (8,192) and 1 to 32,768 on B200
-            (16,384){' '}
-            <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/memory_hook.py`, 'L130-L168')} kind="code">
-              memory_hook.py L130-L168
-            </Cite>
-            . The compile runs inside startup, before the server is ready.{' '}
+            A first start on such a checkpoint compiles DeepGEMM kernels before the server is
+            ready.{' '}
             <strong>
-              SGLang&apos;s own log warning estimates it at 10 to 20 minutes, with no hardware or
-              model stated
+              SGLang&apos;s own log warning estimates the compile at 10 to 20 minutes, with no
+              hardware or model stated
             </strong>
             , and the same code&apos;s per-shape log line says about 1 second once the precompile has
             run{' '}
@@ -1131,6 +1124,22 @@ export function AttentionBackends() {
             </Cite>
             . Health checks and autoscaler timeouts have to allow for it, or the cache has to exist
             before the server starts.
+          </Box>
+          <Box variant="p">
+            DeepGEMM&apos;s kernels are specialised per GEMM shape and per token count. The first
+            time a server meets a weight shape, the first rank on each node compiles that shape for
+            every token count from 1 to 16,384 when the chunked prefill size is 8,192 or less, and up
+            to twice the chunk size above that, into{' '}
+            <code>~/.cache/sglang/deep_gemm</code>{' '}
+            <Cite tier={1} href={sglangUrl(DG, 'L42-L113')}>
+              compile_utils.py L42-L113
+            </Cite>
+            . At the default chunk sizes that is 1 to 16,384 on H100 (8,192) and 1 to 32,768 on B200
+            (16,384){' '}
+            <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/memory_hook.py`, 'L130-L168')} kind="code">
+              memory_hook.py L130-L168
+            </Cite>
+            .
           </Box>
           <Box variant="p">
             <code>python -m sglang.compile_deep_gemm</code> builds that cache. It takes the same
