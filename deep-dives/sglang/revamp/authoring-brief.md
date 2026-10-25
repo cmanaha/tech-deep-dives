@@ -180,6 +180,11 @@ grep -noiE '(^|[^[:alnum:]_-])(delve|tapestry|seamless|robust|leverag|boast|unde
 Typecheck and lint may report errors in files other agents are editing at the same moment. Only
 errors in your file are yours to fix.
 
+## Save early
+
+Sessions can stop without warning (usage limits). Write a first complete draft of your file to disk
+as soon as you have one, then refine it in place, so a stop loses as little as possible.
+
 ## Self-check and report
 
 Diff the claim set: list every assertion in your text with the register row or file:line it came
