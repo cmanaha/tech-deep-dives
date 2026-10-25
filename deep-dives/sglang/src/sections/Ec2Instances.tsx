@@ -338,7 +338,7 @@ const IMAGE_ROWS: ImageRow[] = [
         . Keeps upstream&apos;s standard Mooncake wheel.
       </>
     ),
-    pick: 'x86 families on the current release, including PD (prefill/decode) disaggregation over EFA through NIXL (NVIDIA Inference Xfer Library).',
+    pick: 'x86 families on the current release, including PD (prefill/decode) disaggregation over EFA through NIXL.',
   },
   {
     id: 'al2023',
@@ -799,6 +799,21 @@ export function Ec2Instances() {
             <code>--chunked-prefill-size</code> and <code>--cuda-graph-max-bs-decode</code>, or
             the comparison measures two sets of defaults.
           </Box>
+          <Box variant="p">
+            <strong>Against vLLM:</strong> for a dense model both engines run FlashAttention 3 on
+            H100 and FlashInfer kernels on B200, SGLang through its <code>trtllm_mha</code>{' '}
+            wrapper{' '}
+            <Cite tier={1} href={VLLM_CUDA}>
+              vLLM v0.31.0 platforms/cuda.py L154-L179
+            </Cite>
+            . The family move changes SGLang&apos;s page from 1 token to 64, where vLLM keeps its
+            16-token default block on both{' '}
+            <Cite tier={1} href={VLLM_CACHE}>
+              vLLM v0.31.0 config/cache.py L333-L334
+            </Cite>
+            . The NIXL (NVIDIA Inference Xfer Library) and EFA (Elastic Fabric Adapter) installer
+            material in the {VLLM_AWS_LINK} carries over.
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -814,15 +829,14 @@ export function Ec2Instances() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            This block compares three images; section 19, SGLang on SageMaker AI and HyperPod,
-            named the two AWS ones. The upstream <code>lmsysorg/sglang:v0.5.22</code> image is a
-            CUDA 13.0 build for amd64 and arm64, so the AMI (Amazon Machine Image) under it needs an NVIDIA driver from
-            the 580 branch or later{' '}
+            The upstream <code>lmsysorg/sglang:v0.5.22</code> image is a CUDA 13.0 build for amd64
+            and arm64, so the AMI (Amazon Machine Image) under it needs an NVIDIA driver from the
+            580 branch or later{' '}
             <Cite tier={1} href={CUDA_NOTES}>
               NVIDIA: CUDA Toolkit release notes, Table 3
             </Cite>
             . The AWS SGLang DLCs (Deep Learning Containers) trade freshness for features. The
-            Ubuntu line is the upstream image plus the EFA (Elastic Fabric Adapter) installer, and
+            Ubuntu line is the upstream image plus the EFA installer, and
             its first v0.5.22 tag was pushed on 2026-10-20, a day after the upstream release of
             2026-10-19{' '}
             <Cite tier={1} href={ECR_GALLERY}>
@@ -844,10 +858,10 @@ export function Ec2Instances() {
             items={IMAGE_ROWS}
             columnDefinitions={[
               { id: 'image', header: 'Image', cell: (r) => r.image, minWidth: 200 },
+              { id: 'pick', header: 'Pick it for', cell: (r) => r.pick, minWidth: 180 },
               { id: 'sglang', header: 'SGLang', cell: (r) => r.sglang, minWidth: 120 },
               { id: 'arch', header: 'CPU architecture', cell: (r) => r.arch, minWidth: 140 },
               { id: 'carries', header: 'What it carries', cell: (r) => r.carries, minWidth: 260 },
-              { id: 'pick', header: 'Pick it for', cell: (r) => r.pick, minWidth: 180 },
             ]}
           />
           <Box variant="p">
@@ -890,10 +904,6 @@ export function Ec2Instances() {
         }
       >
         <SpaceBetween size="m">
-          <Box variant="p">
-            Each row names the feature the workload depends on, the families that keep it, and the
-            constraint to check before you commit capacity.
-          </Box>
           <Table
             variant="embedded"
             wrapLines
@@ -938,20 +948,6 @@ export function Ec2Instances() {
               common.py L4014-L4020
             </Cite>
             . Section 6 sets out when the smaller page pays.
-          </Box>
-          <Box variant="p">
-            <strong>Against vLLM:</strong> for a dense model both engines run FlashAttention 3 on
-            H100 and FlashInfer kernels on B200, SGLang through its <code>trtllm_mha</code>{' '}
-            wrapper{' '}
-            <Cite tier={1} href={VLLM_CUDA}>
-              vLLM v0.31.0 platforms/cuda.py L154-L179
-            </Cite>
-            . The family move changes SGLang&apos;s page from 1 token to 64, where vLLM keeps its
-            16-token default block on both{' '}
-            <Cite tier={1} href={VLLM_CACHE}>
-              vLLM v0.31.0 config/cache.py L333-L334
-            </Cite>
-            . The NIXL and EFA installer material in the {VLLM_AWS_LINK} carries over.
           </Box>
           <Box variant="p">
             <strong>The pre-migration checklist.</strong>

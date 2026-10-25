@@ -808,20 +808,6 @@ export function PdWideEpOverEfa() {
             . The CUDA VMM limit belongs to the libfabric EFA provider, so our reading is that the
             Mooncake allocator settings apply on the NIXL route too; this was not tested.
           </Box>
-          <Box variant="p">
-            Which image carries which route, across both stacks:
-          </Box>
-          <Table
-            variant="embedded"
-            wrapLines
-            trackBy="id"
-            items={IMAGE_ROWS}
-            columnDefinitions={[
-              { id: 'image', header: 'Image', cell: (r) => r.image, minWidth: 160 },
-              { id: 'kv', header: 'KV transfer over EFA', cell: (r) => r.kv, minWidth: 240 },
-              { id: 'ep', header: 'Expert all-to-all over EFA', cell: (r) => r.ep, minWidth: 220 },
-            ]}
-          />
           <ExpandableSection headerText="Mooncake's published EFA ceiling (project claim, not reproduced)">
             <Box variant="p">
               Mooncake&apos;s in-repo transfer-engine benchmark reports, between two p5.48xlarge
@@ -1004,7 +990,8 @@ export function PdWideEpOverEfa() {
               <Box variant="p">
                 <strong>DeepEP V1 on NVSHMEM&apos;s libfabric transport</strong>{' '}
                 (<code>--moe-a2a-backend deepep</code>). DeepEP V1&apos;s internode kernels were
-                written for IBGDA, which EFA does not provide. AWS&apos;s sample rewrites them onto
+                written for IBGDA (GPU-initiated RDMA, remote direct memory access, over
+                InfiniBand), which EFA does not provide. AWS&apos;s sample rewrites them onto
                 NVSHMEM host-proxy paths and runs DeepSeek-R1 on two p5.48xlarge or p5en.48xlarge
                 nodes with DeepEP <code>567632d</code> plus the EFA patch, NVSHMEM 3.7.0 built with
                 only the libfabric transport, <code>NVSHMEM_REMOTE_TRANSPORT=libfabric</code>,{' '}
@@ -1172,6 +1159,20 @@ export function PdWideEpOverEfa() {
             </Cite>. Pick the instance family and image line first, in section 21, EC2 Instances, Images and
             GPU-Dependent Behaviour.
           </Box>
+          <Box variant="p">
+            Which image carries which route, across both stacks:
+          </Box>
+          <Table
+            variant="embedded"
+            wrapLines
+            trackBy="id"
+            items={IMAGE_ROWS}
+            columnDefinitions={[
+              { id: 'image', header: 'Image', cell: (r) => r.image, minWidth: 160 },
+              { id: 'kv', header: 'KV transfer over EFA', cell: (r) => r.kv, minWidth: 240 },
+              { id: 'ep', header: 'Expert all-to-all over EFA', cell: (r) => r.ep, minWidth: 220 },
+            ]}
+          />
           <Box variant="p">
             <strong>KV transfer, for PD.</strong> Run it on prefill and decode alike:
           </Box>

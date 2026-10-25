@@ -375,8 +375,10 @@ const DIFF_ROWS: DiffRow[] = [
     ),
     changes: (
       <>
-        ITL (inter-token latency) spikes under prefill load look different, and{' '}
-        <code>--enable-mixed-chunk</code> is the closer match to vLLM&apos;s default. SGLang
+        SGLang gives prefill a step of its own whenever one can be formed, where vLLM shares one
+        token budget between decodes and prefill chunks, so ITL (inter-token latency) spikes under
+        prefill load look different, and <code>--enable-mixed-chunk</code> is the closer match to
+        vLLM&apos;s default. SGLang
         protects long generations where vLLM protects early arrivals: watch{' '}
         <code>sglang:num_retracted_requests_total</code> where you watched{' '}
         <code>vllm:num_preemptions</code>.
@@ -475,7 +477,8 @@ const DIFF_ROWS: DiffRow[] = [
     ),
     changes: (
       <>
-        Both mask with XGrammar first. An unusual schema can pass on vLLM and fail on SGLang until
+        Both mask with XGrammar first; vLLM falls back per request and SGLang does not. An
+        unusual schema can pass on vLLM and fail on SGLang until
         it runs with <code>--grammar-backend llguidance</code>, and regex and EBNF (Extended
         Backus-Naur Form) constraints ride in different request fields.
       </>
@@ -600,6 +603,7 @@ const DIFF_ROWS: DiffRow[] = [
     ),
     changes: (
       <>
+        SGLang&apos;s prefill always pushes KV, where vLLM&apos;s reference connector pulls.
         SGLang gives PD from one project, and decode capacity gates prefill admission. vLLM offers
         a wider connector choice and takes pairing from a proxy, llm-d or Dynamo.
       </>
@@ -756,7 +760,12 @@ const DIFF_ROWS: DiffRow[] = [
         .
       </>
     ),
-    changes: <>A Prometheus scrape config copied from vLLM finds nothing on a default SGLang server.</>,
+    changes: (
+      <>
+        A Prometheus scrape config copied from vLLM finds nothing on a default SGLang server, which
+        mounts <code>/metrics</code> only with <code>--enable-metrics</code>.
+      </>
+    ),
     where: <>Section 4, The Scheduler; {V20_LINK}</>,
   },
   {
@@ -891,8 +900,7 @@ export function SglangVsVllm() {
             A team that runs vLLM and is weighing SGLang has three things to separate: differences
             that change what its workload does, differences that have since closed, and benchmark
             numbers measured on versions neither engine ships today. This section compares SGLang
-            v0.5.22 with vLLM v0.31.0, with vLLM read at commit <code>db9527a4</code>, and ends
-            with the checklist for moving a vLLM launch line and its clients.
+            v0.5.22 with vLLM v0.31.0, with vLLM read at commit <code>db9527a4</code>.
           </Box>
           <Box variant="p">
             Start with the convergence. Both engines page the KV (key-value) cache{' '}
@@ -970,8 +978,8 @@ export function SglangVsVllm() {
           <RequestPathDiagram />
           <Box variant="small" color="text-body-secondary">
             Illustrative, not measured. Stage placement from each engine&apos;s code at the pinned
-            versions; the facts behind each cell are cited in the paragraph below and in the table
-            that follows.
+            versions; the facts behind each cell are cited in the paragraph below and in the
+            defaults disclosure of the next block.
           </Box>
           <Box variant="p">
             SGLang runs HTTP and the tokenizer in the main process, a scheduler in every GPU
@@ -1030,9 +1038,9 @@ export function SglangVsVllm() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Each of these twelve rows changes what a reader types, chooses or watches. Each row
-            states the SGLang default at v0.5.22, the vLLM default at v0.31.0, and what the gap
-            does to a workload.
+            Each of these twelve rows changes what a reader types, chooses or watches, and says
+            what the gap does to a workload. The defaults behind each row, SGLang at v0.5.22 and
+            vLLM at v0.31.0, sit with their sources in the disclosure under the table.
           </Box>
           <Table
             variant="embedded"
@@ -1041,12 +1049,28 @@ export function SglangVsVllm() {
             items={DIFF_ROWS}
             columnDefinitions={[
               { id: 'axis', header: 'Axis', cell: (r: DiffRow) => <strong>{r.axis}</strong>, minWidth: 140 },
-              { id: 'sglang', header: 'SGLang v0.5.22', cell: (r: DiffRow) => r.sglang, minWidth: 260 },
-              { id: 'vllm', header: 'vLLM v0.31.0', cell: (r: DiffRow) => r.vllm, minWidth: 220 },
-              { id: 'changes', header: 'What it changes for you', cell: (r: DiffRow) => r.changes, minWidth: 220 },
+              {
+                id: 'changes',
+                header: 'What differs, and what it changes for you',
+                cell: (r: DiffRow) => r.changes,
+                minWidth: 300,
+              },
               { id: 'where', header: 'Covered in', cell: (r: DiffRow) => r.where, minWidth: 180 },
             ]}
           />
+          <ExpandableSection headerText="The defaults behind each row, SGLang v0.5.22 against vLLM v0.31.0, with sources">
+            <Table
+              variant="embedded"
+              wrapLines
+              trackBy="id"
+              items={DIFF_ROWS}
+              columnDefinitions={[
+                { id: 'axis', header: 'Axis', cell: (r: DiffRow) => <strong>{r.axis}</strong>, minWidth: 140 },
+                { id: 'sglang', header: 'SGLang v0.5.22', cell: (r: DiffRow) => r.sglang, minWidth: 280 },
+                { id: 'vllm', header: 'vLLM v0.31.0', cell: (r: DiffRow) => r.vllm, minWidth: 240 },
+              ]}
+            />
+          </ExpandableSection>
           <ExpandableSection headerText="What else converged: shared code, one router origin, the PD bootstrap port, API dialects and the large-scale vocabulary">
             <ul>
               <li>

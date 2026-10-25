@@ -656,9 +656,7 @@ export function EcosystemUsers() {
             <Cite tier={2} href={LINKEDIN_RANKING}>
               LinkedIn Engineering, 2025-12-09
             </Cite>
-            . This section maps the project and its family, grades the adoption evidence by what
-            each source can know, and ends with the version check to run before relying on a
-            v0.5.22 behaviour.
+            .
           </Box>
         </SpaceBetween>
       </Container>
