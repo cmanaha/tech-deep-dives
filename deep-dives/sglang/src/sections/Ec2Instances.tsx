@@ -40,6 +40,8 @@ const DLC_UBUNTU = 'docker/sglang/Dockerfile';
 const DLC_AL2023 = 'docker/sglang/Dockerfile.amzn2023';
 const DLC_UBUNTU_CFG = '.github/config/image/sglang/sagemaker-ubuntu.yml';
 const DLC_AL2023_CFG = '.github/config/image/sglang/sagemaker-amzn2023.yml';
+const DLC_UBUNTU_EC2_CFG = '.github/config/image/sglang/ec2-ubuntu.yml';
+const DLC_AL2023_EC2_CFG = '.github/config/image/sglang/ec2-amzn2023.yml';
 const DLC_CHANGELOG = 'docs/sglang/changelog/index.md';
 
 const VLLM_AWS_LINK = (
@@ -117,8 +119,9 @@ function InstanceMapDiagram() {
       >
         <title id="ec2-map-title">
           The EC2 family name stands in for a compute capability, and the capability sets
-          SGLang&apos;s defaults. For a dense Llama-style model with no attention flag, and
-          speculative decoding off or at an explicit topk of 1: P4d, P4de, G5, G6 and G6e (SM80 to
+          SGLang&apos;s defaults. For a dense Llama-style model with no attention or page-size flag,
+          and speculative decoding off or at an explicit topk of 1 with the step count set: P4d,
+          P4de, G5, G6 and G6e (SM80 to
           SM89) get flashinfer with 1-token pages; P5, P5e and P5en (SM90, Hopper) get fa3 with
           1-token pages; P6-B200, P6e-GB200, P6-B300 and P6e-GB300 (SM100 and SM103, datacenter
           Blackwell) get trtllm_mha with 64-token pages; G7 and G7e (SM120) carry Blackwell GPUs
@@ -313,18 +316,24 @@ const IMAGE_ROWS: ImageRow[] = [
         amd64 only{' '}
         <Cite tier={1} href={dlcUrl(DLC_UBUNTU_CFG, 'L10')}>
           sagemaker-ubuntu.yml L10
+        </Cite>{' '}
+        <Cite tier={1} href={dlcUrl(DLC_UBUNTU_EC2_CFG, 'L9')}>
+          ec2-ubuntu.yml L9
         </Cite>
       </>
     ),
     carries: (
       <>
-        Adds the EFA installer, at its latest version when the image is built, plus the SageMaker
-        entrypoint{' '}
+        Adds the EFA installer, at its latest version when the image is built{' '}
         <Cite tier={1} href={dlcUrl(DLC_UBUNTU, 'L13')}>
           DLC Dockerfile L13
         </Cite>{' '}
         <Cite tier={1} href={dlcUrl(DLC_UBUNTU, 'L72-L73')}>
           L72-L73
+        </Cite>
+        , plus a SageMaker or EC2 entrypoint per tag{' '}
+        <Cite tier={1} href={dlcUrl(DLC_UBUNTU, 'L129-L161')}>
+          L129-L161
         </Cite>
         . Keeps upstream&apos;s standard Mooncake wheel.
       </>
@@ -352,6 +361,9 @@ const IMAGE_ROWS: ImageRow[] = [
         amd64 only{' '}
         <Cite tier={1} href={dlcUrl(DLC_AL2023_CFG, 'L11')}>
           sagemaker-amzn2023.yml L11
+        </Cite>{' '}
+        <Cite tier={1} href={dlcUrl(DLC_AL2023_EC2_CFG, 'L10')}>
+          ec2-amzn2023.yml L10
         </Cite>
       </>
     ),
@@ -464,8 +476,14 @@ const CHOOSE_ROWS: ChooseRow[] = [
           PyPI: mooncake-transfer-engine-efa-cuda13 0.3.13.post1
         </Cite>
         , so on a Grace host Mooncake has no EFA build, by our reading. On the AWS DLCs, NIXL&apos;s
-        LIBFABRIC backend finds the EFA installer&apos;s libfabric, and Mooncake over EFA needs a
-        wheel swap{' '}
+        LIBFABRIC backend finds the EFA installer&apos;s libfabric{' '}
+        <Cite tier={1} href={dlcUrl(DLC_UBUNTU, 'L72-L73')}>
+          DLC Dockerfile L72-L73
+        </Cite>{' '}
+        <Cite tier={1} href={dlcUrl(DLC_AL2023, 'L484-L490')}>
+          Dockerfile.amzn2023 L484-L490
+        </Cite>
+        , and Mooncake over EFA needs a wheel swap{' '}
         <Cite tier={1} href={dlcUrl(DLC_AL2023, 'L168-L170')}>
           Dockerfile.amzn2023 L168-L170
         </Cite>
@@ -525,10 +543,11 @@ export function Ec2Instances() {
           <Box variant="p">
             Choosing an EC2 (Elastic Compute Cloud) GPU family for SGLang also chooses a set of
             defaults. At startup SGLang reads the GPU&apos;s compute capability and branches on it:
-            the capability picks the attention backend, the backend picks the KV page size, and the
-            page size sets how finely the radix cache reuses prefixes. The same capability decides
-            whether an FP8 checkpoint runs FP8 math, and memory per GPU sets the prefill chunk and
-            decode graph sizes. The family name is a proxy for compute capability and memory.
+            the capability picks the attention backend, the backend picks the KV (key-value) page
+            size, and the page size sets how finely the radix cache reuses prefixes. The same
+            capability decides whether an FP8 (8-bit floating point) checkpoint runs FP8 math, and
+            memory per GPU sets the prefill chunk and decode graph sizes. The family name is a
+            proxy for compute capability and memory.
           </Box>
           <Box variant="p">
             Section 6, KV Memory and the Defaults Your GPU Picks, and section 8, Attention Backends
@@ -540,9 +559,13 @@ export function Ec2Instances() {
               Moving a dense Llama-style model from P5 to P6 changes its attention backend from{' '}
               <code>fa3</code> to <code>trtllm_mha</code> and its KV page from 1 token to 64, with no
               flag change, when speculative decoding is off or on with an explicit{' '}
-              <code>--speculative-eagle-topk 1</code>.
+              <code>--speculative-eagle-topk 1</code> and <code>--speculative-num-steps</code> set.
             </strong>{' '}
-            That is our reading of the default chain in code, not a documented statement{' '}
+            The documentation names both backend defaults; the 64-token page and the speculation
+            conditions are our reading of the default chain in code{' '}
+            <Cite tier={1} href={sglangDocsSrcUrl(AB_DOC, 'L551-L554')}>
+              SGLang docs: attention backend (v0.5.22 source)
+            </Cite>{' '}
             <Cite tier={1} href={sglangUrl(MOB, 'L293-L315')} kind="code">
               model_override_base.py L293-L315
             </Cite>{' '}
@@ -587,8 +610,9 @@ export function Ec2Instances() {
             </Cite>
             ; memory per GPU in GiB as EC2 lists it. Defaults are for a dense Llama-style model,
             MHA or GQA (multi-head or grouped-query attention) with equal K and V head widths, no
-            attention flag set, and speculative decoding off or at an explicit{' '}
-            <code>--speculative-eagle-topk 1</code>; read from the default chain in code, not run.
+            attention or page-size flag set, and speculative decoding off or at an explicit{' '}
+            <code>--speculative-eagle-topk 1</code> with <code>--speculative-num-steps</code> set;
+            read from the default chain in code, not run.
             P6e-GB300 is generally available{' '}
             <Cite tier={2} href={GB300_GA}>
               AWS What&apos;s New, 2025-12
@@ -679,7 +703,7 @@ export function Ec2Instances() {
               Moving a dense Llama-style model from P5 to P6 changes attention from <code>fa3</code>{' '}
               to <code>trtllm_mha</code> and KV pages from 1 token to 64, with no flag change, when
               speculative decoding is off or on with an explicit{' '}
-              <code>--speculative-eagle-topk 1</code>.
+              <code>--speculative-eagle-topk 1</code> and <code>--speculative-num-steps</code> set.
             </strong>{' '}
             On SM90 with CUDA 12.3 or later the chain returns <code>fa3</code>, and on SM100 and
             SM103 it returns <code>trtllm_mha</code>, or <code>fa4</code> when K and V head widths
@@ -804,8 +828,9 @@ export function Ec2Instances() {
             <Cite tier={1} href={ECR_GALLERY}>
               Amazon ECR (Elastic Container Registry) Public Gallery: deep-learning-containers/sglang
             </Cite>
-            . The AL2023 line carries DeepEP V2 over EFA with the NCCL (NVIDIA Collective
-            Communications Library) version that backend checks at runtime, and runs SGLang 0.5.19,
+            . The Amazon Linux 2023 (AL2023) line carries DeepEP V2 over EFA with the NCCL
+            (NVIDIA Collective Communications Library) version that backend checks at runtime, and
+            runs SGLang 0.5.19,
             three releases behind{' '}
             <Cite tier={1} href={dlcUrl(DLC_CHANGELOG, 'L7-L22')}>
               DLC changelog L7-L22

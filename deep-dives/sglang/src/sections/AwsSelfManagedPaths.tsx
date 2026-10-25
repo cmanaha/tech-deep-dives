@@ -30,6 +30,7 @@ const DLC =
 const DLC_EKS = `${DLC}/docs/sglang/deployment/eks.md#L24-L55`;
 const DLC_EC2 = `${DLC}/docs/sglang/deployment/ec2.md#L29-L42`;
 const DLC_DOCKERFILE = `${DLC}/docker/sglang/Dockerfile`;
+const DLC_EC2_CFG = `${DLC}/.github/config/image/sglang/ec2-ubuntu.yml#L9`;
 const DLC_ENTRY = `${DLC}/scripts/docker/sglang/dockerd_entrypoint.sh#L1-L6`;
 const DLC_GALLERY = 'https://gallery.ecr.aws/deep-learning-containers/sglang';
 
@@ -50,6 +51,8 @@ const EKS_BP_COMPUTE = 'https://docs.aws.amazon.com/eks/latest/best-practices/ai
 const EFA_CHANGELOG = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-changelog.html';
 const OFI_GIN =
   'https://github.com/aws/aws-ofi-nccl/blob/v1.22.0/doc/gin-getting-started.md#L35-L44';
+const OFI_GIN_MODES =
+  'https://github.com/aws/aws-ofi-nccl/blob/v1.22.0/doc/gin-getting-started.md#L5-L8';
 const K8S_PROBES =
   'https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/';
 const CUDA_NOTES = 'https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html';
@@ -675,7 +678,7 @@ export function AwsSelfManagedPaths() {
             <Cite tier={1} href={EKS_EFA}>
               EKS User Guide: EFA DRA driver vs. EFA device plugin
             </Cite>
-            ; the SGLang manifests cited in this section use the device plugin.
+            ; AWS&apos;s SGLang PD sample cited in this section uses the device plugin.
           </Box>
           <Box variant="p">
             AWS&apos;s SGLang PD sample for p6-b200 and p6-b300 nodes shows the rest of an EFA pod{' '}
@@ -720,8 +723,8 @@ export function AwsSelfManagedPaths() {
             </Cite>
             . The AWS DLC <code>0.5.22-gpu-py312-cu130-ubuntu24.04-ec2</code> is the upstream
             v0.5.22 image plus the EFA installer and AWS patches{' '}
-            <Cite tier={1} href={`${DLC_DOCKERFILE}#L1-L13`}>
-              AWS DLC Dockerfile L1-L13
+            <Cite tier={1} href={`${DLC_DOCKERFILE}#L1-L73`}>
+              AWS DLC Dockerfile L1-L73
             </Cite>{' '}
             <Cite tier={1} href={DLC_GALLERY}>
               AWS public image gallery: deep-learning-containers/sglang
@@ -807,6 +810,9 @@ export function AwsSelfManagedPaths() {
             <Cite tier={1} href={`${DLC_DOCKERFILE}#L148-L161`}>
               AWS DLC Dockerfile L148-L161
             </Cite>{' '}
+            <Cite tier={1} href={DLC_EC2_CFG}>
+              AWS DLC ec2-ubuntu.yml L9
+            </Cite>{' '}
             <Cite tier={1} href={DLC_GALLERY}>
               AWS public image gallery: deep-learning-containers/sglang
             </Cite>
@@ -849,7 +855,12 @@ export function AwsSelfManagedPaths() {
               AWS sample README L35-L47
             </Cite>
             . GPU-initiated NCCL traffic over EFA, which DeepEP V2&apos;s expert all-to-all uses
-            (section 22), needs P5en, P6-B200 or P6-B300 and EFA installer 1.50.0 or later{' '}
+            (section 22), has two modes: a proxy mode in which a CPU thread assists, and EFA-GDA
+            (Elastic Fabric Adapter GPU Direct Async), in which the kernel drives the network
+            directly and which needs P5en, P6-B200 or P6-B300 and EFA installer 1.50.0 or later{' '}
+            <Cite tier={1} href={OFI_GIN_MODES}>
+              aws-ofi-nccl v1.22.0: GIN getting started, modes
+            </Cite>{' '}
             <Cite tier={1} href={OFI_GIN}>
               aws-ofi-nccl v1.22.0: GIN getting started
             </Cite>
