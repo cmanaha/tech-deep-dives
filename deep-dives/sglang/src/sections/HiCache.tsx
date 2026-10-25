@@ -32,6 +32,7 @@ const MEM_UTILS = 'python/sglang/srt/mem_cache/utils.py';
 const HASH_CPP = 'python/sglang/srt/mem_cache/cpp_utils/hash_binding.cpp';
 const SPARSITY_FACTORY = 'python/sglang/srt/mem_cache/sparsity/factory.py';
 const SCHEDULER = 'python/sglang/srt/managers/scheduler.py';
+const SCHEDULE_BATCH = 'python/sglang/srt/managers/schedule_batch.py';
 const HTTP_SERVER = 'python/sglang/srt/entrypoints/http_server.py';
 const KV_EVENTS = 'python/sglang/srt/disaggregation/kv_events.py';
 const COLLECTOR = 'python/sglang/srt/observability/metrics_collector.py';
@@ -584,11 +585,14 @@ export function HiCache() {
             . The tree keeps exact addresses for L1 and L2 and no record of L3. For the rest of the
             prompt, the scheduler asks the storage backend, by page hash, how many further pages it
             holds as soon as the request arrives and its local match is done{' '}
+            <Cite tier={1} href={sglangUrl(SCHEDULER, 'L3361-L3366')} kind="code">
+              scheduler.py L3361-L3366
+            </Cite>{' '}
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L3215-L3260')} kind="code">
               scheduler.py L3215-L3260
             </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(URC, 'L1950-L1989')} kind="code">
-              unified_radix_cache.py L1950-L1989
+            <Cite tier={1} href={sglangUrl(CONTROLLER, 'L1247-L1270')} kind="code">
+              cache_controller.py L1247-L1270
             </Cite>{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(DESIGN, 'L71')}>
               hicache_design.mdx L71
@@ -639,8 +643,8 @@ export function HiCache() {
             <Cite tier={1} href={sglangUrl(URC, 'L1785-L1795')} kind="code">
               unified_radix_cache.py L1785-L1795
             </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(URC, 'L3442-L3478')} kind="code">
-              unified_radix_cache.py L3442-L3478
+            <Cite tier={1} href={sglangUrl(URC, 'L3442-L3480')} kind="code">
+              unified_radix_cache.py L3442-L3480
             </Cite>
             .
           </Box>
@@ -712,8 +716,8 @@ export function HiCache() {
             holds at least 256 tokens beyond the local match, a threshold the{' '}
             <code>prefetch_threshold</code> key of <code>--hicache-storage-backend-extra-config</code>{' '}
             changes{' '}
-            <Cite tier={1} href={sglangUrl(URC, 'L3044-L3049')} kind="code">
-              unified_radix_cache.py L3044-L3049
+            <Cite tier={1} href={sglangUrl(URC, 'L3045-L3053')} kind="code">
+              unified_radix_cache.py L3045-L3053
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl(HYBRID_CTRL, 'L392')} kind="code">
               hybrid_cache_controller.py L392
@@ -792,7 +796,7 @@ export function HiCache() {
                 </Cite>
                 . A search for <code>timeout_max</code> across v0.5.22&apos;s{' '}
                 <code>python/sglang/srt</code> finds nothing, so a <code>prefetch_timeout_max</code>{' '}
-                you pass travels to the backend unused.
+                you pass goes to the backend with the other keys and caps nothing.
               </Box>
               <Box variant="p">
                 To size the two keys, take the longest L3 hit you expect and the longest queue wait
@@ -842,8 +846,8 @@ export function HiCache() {
             and <code>seaweedfs</code>. LMCache and FlexKV plug in one level higher:{' '}
             <code>--enable-lmcache</code> and <code>--enable-flexkv</code> select a different tree
             cache with its own tiers{' '}
-            <Cite tier={1} href={sglangUrl(REGISTRY, 'L101-L143')} kind="code">
-              registry.py L101-L143
+            <Cite tier={1} href={sglangUrl(REGISTRY, 'L101-L144')} kind="code">
+              registry.py L101-L144
             </Cite>{' '}
             <Cite tier={1} href={sglangUrl(MEM_FIELDS, 'L237-L255')}>
               memory.py L237-L255
@@ -860,6 +864,9 @@ export function HiCache() {
             </Cite>{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(DESIGN, 'L65')}>
               hicache_design.mdx L65
+            </Cite>{' '}
+            <Cite tier={1} href={sglangDocsSrcUrl(DESIGN, 'L173')}>
+              hicache_design.mdx L173
             </Cite>
             .
           </Box>
@@ -890,12 +897,15 @@ export function HiCache() {
             <Cite tier={1} href={sglangUrl(MEM_UTILS, 'L142-L175')} kind="code">
               utils.py L142-L175
             </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(HASH_CPP, 'L22-L73')} kind="code">
-              hash_binding.cpp L22-L73
+            <Cite tier={1} href={sglangUrl(HASH_CPP, 'L62-L75')} kind="code">
+              hash_binding.cpp L62-L75
             </Cite>
             . A request for a LoRA (low-rank adaptation) adapter carries an <code>extra_key</code>,
             and a tenant can set a <code>cache_salt</code>; either one starts the chain from a seed
             derived from that namespace, so L3 never mixes adapters or tenants{' '}
+            <Cite tier={1} href={sglangUrl(SCHEDULE_BATCH, 'L1132-L1139')} kind="code">
+              schedule_batch.py L1132-L1139
+            </Cite>{' '}
             <Cite tier={1} href={sglangUrl(MEM_UTILS, 'L125-L152')} kind="code">
               utils.py L125-L152
             </Cite>
@@ -919,16 +929,16 @@ export function HiCache() {
             contents cleared, through <code>PUT /hicache/storage-backend</code>,{' '}
             <code>DELETE /hicache/storage-backend</code> and{' '}
             <code>POST /hicache/storage-backend/clear</code>{' '}
-            <Cite tier={1} href={sglangUrl(HTTP_SERVER, 'L1086-L1160')}>
-              http_server.py L1086-L1160
+            <Cite tier={1} href={sglangUrl(HTTP_SERVER, 'L1086-L1163')}>
+              http_server.py L1086-L1163
             </Cite>
             . Attach and detach work only on a server started with <code>--admin-api-key</code>{' '}
             and only while the scheduler is idle, with nothing queued or running{' '}
-            <Cite tier={1} href={sglangUrl(HTTP_SERVER, 'L1107-L1117')} kind="code">
-              http_server.py L1107-L1117
+            <Cite tier={1} href={sglangUrl(HTTP_SERVER, 'L1107-L1149')} kind="code">
+              http_server.py L1107-L1149
             </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(SCHEDULER, 'L5245-L5261')} kind="code">
-              scheduler.py L5245-L5261
+            <Cite tier={1} href={sglangUrl(SCHEDULER, 'L5245-L5317')} kind="code">
+              scheduler.py L5245-L5317
             </Cite>
             . Section 12, Talking to SGLang: APIs, LoRA adapters and the admin plane, covers the
             keys.
@@ -1052,7 +1062,8 @@ export function HiCache() {
               <Cite tier={1} href={sglangUrl(HISPARSE_HOOK, 'L100-L111')} kind="code">
                 hisparse_hook.py L100-L111
               </Cite>
-              ; the documentation runs it with PD disaggregation, on the decode instance{' '}
+              ; the documentation says it currently requires PD disaggregation and is enabled on
+              the decode instance only{' '}
               <Cite tier={1} href={sglangDocsSrcUrl(HISPARSE_DOC, 'L9')}>
                 hisparse_guide.mdx L9
               </Cite>

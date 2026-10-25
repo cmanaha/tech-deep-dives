@@ -447,13 +447,13 @@ const PAGE_ROWS: PageRow[] = [
     id: 'trtmha',
     backend: <code>trtllm_mha</code>,
     page: '16, 32, 64 or 128 accepted; any other value becomes 64',
-    when: 'MHA and GQA default on SM100 and SM103 without tree speculation',
+    when: 'MHA and GQA default on SM100 and SM103 with speculative decoding off, or on with --speculative-eagle-topk 1 and --speculative-num-steps set',
   },
   {
     id: 'fa4',
     backend: <code>fa4</code>,
     page: '128 on SM100 and SM103 for non-MLA models, unless EAGLE topk is above 1',
-    when: 'SM100 and SM103 default when K and V head widths differ',
+    when: 'SM100 and SM103 default when K and V head widths differ, under the same speculation condition',
   },
   {
     id: 'mla',
@@ -653,8 +653,8 @@ export function KvMemory() {
                 pool_configurator.py L464-L471
               </Cite>
               . The pool is one K tensor and one V tensor per layer, with a row per token slot{' '}
-              <Cite tier={1} href={sglangUrl(MEMORY_POOL, 'L2518-L2530')} kind="code">
-                memory_pool.py L2518-L2530
+              <Cite tier={1} href={sglangUrl(MEMORY_POOL, 'L2518-L2582')} kind="code">
+                memory_pool.py L2518-L2582
               </Cite>
               . KV heads per rank are the model&apos;s KV heads divided by TP, never fewer than one{' '}
               <Cite tier={1} href={sglangUrl(MODEL_CONFIG, 'L1591-L1602')} kind="code">
@@ -686,6 +686,14 @@ export function KvMemory() {
             <Cite tier={1} href={sglangUrl(KV_DTYPE, 'L38-L48')} kind="code">
               kv_cache_dtype.py L38-L48
             </Cite>
+            . DeepSeek V4, and DeepSeek&apos;s sparse-attention models on Blackwell, also resolve{' '}
+            <code>auto</code> to FP8 E4M3{' '}
+            <Cite tier={1} href={sglangUrl(OVERRIDES, 'L508-L513')} kind="code">
+              overrides.py L508-L513
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(OVERRIDES, 'L878-L880')} kind="code">
+              overrides.py L878-L880
+            </Cite>
             . An FP8 cache halves the cell of a BF16 (bfloat16) model and doubles its token count;
             section 9, Quantization and KV Precision, covers the options.
           </Box>
@@ -706,7 +714,7 @@ export function KvMemory() {
               arg_groups/model_overrides/
             </Cite>{' '}
             found no override registered for its architecture, <code>Qwen3ForCausalLM</code>, so it
-            takes the generic defaults. The table is our arithmetic on the v0.5.22 code formula at
+            takes the generic memory and attention defaults. The table is our arithmetic on the v0.5.22 code formula at
             TP 1, not an observation on hardware. It assumes the GPU totals shown and that the whole
             GPU is free before the weights load, so the KV figures are upper bounds.
           </Box>
@@ -782,9 +790,9 @@ export function KvMemory() {
             . The fraction therefore falls as TP, chunk size and graph size grow: by our arithmetic,
             0.830 on an H100 at TP 1, 0.812 at TP 8, where the decode graph doubles to 512 and the
             TP term grows, and 0.854 on a B200 at TP 1. Our reading of the formula: it has no weight
-            term, so a small and a large dense text model at the same TP on the same GPU get the
-            same fraction, and the model decides only how that share splits between weights and
-            pool.
+            term, so a small and a large dense MHA or GQA text model at the same TP on the same
+            NVIDIA GPU get the same fraction, and the model decides only how that share splits
+            between weights and pool.
           </Box>
           <Box variant="p">
             <code>--mem-fraction-static</code> covers the weights and the KV pool, and the server
@@ -843,15 +851,19 @@ export function KvMemory() {
                 <Cite tier={1} href={sglangUrl(COMMON, 'L953-L980')} kind="code">
                   common.py L953-L980
                 </Cite>
+                , and on CPU when <code>SGLANG_CPU_OMP_THREADS_BIND</code> is set{' '}
+                <Cite tier={1} href={sglangUrl(COMMON, 'L862-L865')} kind="code">
+                  common.py L862-L865
+                </Cite>
                 .
               </Box>
               <Box variant="p">
-                The resolution function&apos;s own docstring still describes an older reserve, chunk
-                size times 1.5 plus decode batch times 2{' '}
+                The resolution function&apos;s own docstring gives a two-term reserve, chunk size
+                times 1.5 plus decode batch times 2, in GB{' '}
                 <Cite tier={1} href={sglangUrl(MEMORY_HOOK, 'L66-L67')} kind="code">
                   memory_hook.py L66-L67
                 </Cite>
-                . The code after it is what runs. In full, the reserve is 512 MiB, plus 1.5 MiB per
+                . The code after it works in MiB, adds more terms, and is what runs. In full, the reserve is 512 MiB, plus 1.5 MiB per
                 activation token (the chunked-prefill size, at least 2048), plus 1,024 MiB times TP
                 times PP divided by 8, plus 2 MiB per decode batch slot up to the graph maximum,
                 plus 8 MiB per captured prefill size (1.5 GiB in total on MLA backends), floored at
@@ -865,8 +877,8 @@ export function KvMemory() {
                 . DP (data parallelism) attention adds more per decode slot, the all-to-all buffers
                 of DeepEP, the expert-parallel communication library, add 2 GiB on top of the floor,
                 and multimodal models take a further cut sized to the vision tower{' '}
-                <Cite tier={1} href={sglangUrl(MEMORY_HOOK, 'L404-L416')} kind="code">
-                  memory_hook.py L404-L416
+                <Cite tier={1} href={sglangUrl(MEMORY_HOOK, 'L404-L464')} kind="code">
+                  memory_hook.py L404-L464
                 </Cite>
                 .
               </Box>
@@ -998,6 +1010,9 @@ export function KvMemory() {
             match and insert{' '}
             <Cite tier={1} href={sglangUrl(RADIX, 'L147-L151')} kind="code">
               radix_cache.py L147-L151
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(RADIX, 'L406-L438')} kind="code">
+              radix_cache.py L406-L438
             </Cite>
             . Section 5, RadixAttention and the Radix Cache, explains the tree; this block is about
             which page size you get. <code>--page-size</code> is unset by default and resolves to 1
@@ -1024,11 +1039,20 @@ export function KvMemory() {
               model_override_base.py L293-L324
             </Cite>
             . So the same model reuses prefixes to the exact token on a P5 and in 64-token pages on
-            a P6. This is an inference from the default chain in code, not a documented statement,
-            and it holds without tree speculation: EAGLE with topk above 1 moves both GPUs to{' '}
-            <code>flashinfer</code>, or <code>triton</code> where FlashInfer is missing{' '}
-            <Cite tier={1} href={sglangUrl(COMMON, 'L4012-L4017')} kind="code">
-              common.py L4012-L4017
+            a P6, by our reading of the default chain in code. It holds with speculative decoding
+            off, or on with an explicit <code>--speculative-eagle-topk 1</code> and{' '}
+            <code>--speculative-num-steps</code> set{' '}
+            <Cite tier={1} href={sglangUrl(SPEC_HOOK, 'L1068-L1072')} kind="code">
+              speculative_hook.py L1068-L1072
+            </Cite>
+            . EAGLE with topk above 1 moves both GPUs to <code>flashinfer</code>, or{' '}
+            <code>triton</code> where FlashInfer is missing{' '}
+            <Cite tier={1} href={sglangUrl(COMMON, 'L4014-L4020')} kind="code">
+              common.py L4014-L4020
+            </Cite>
+            , and on a P6 so does speculation with <code>--speculative-eagle-topk</code> unset{' '}
+            <Cite tier={1} href={sglangUrl(MODEL_BASE, 'L303-L315')} kind="code">
+              model_override_base.py L303-L315
             </Cite>
             . The startup log names the backend in{' '}
             <code>Attention backend not specified. Use fa3 backend by default.</code> (with{' '}
@@ -1041,7 +1065,8 @@ export function KvMemory() {
             <Cite tier={1} href={sglangUrl(OVERRIDES, 'L1124-L1137')} kind="code">
               overrides.py L1124-L1137
             </Cite>
-            . The table lists every backend that changes the page size.
+            . The table lists the attention backends whose resolution rules change the page size
+            on NVIDIA and Intel GPUs.
           </Box>
           <Table
             variant="embedded"
@@ -1104,8 +1129,8 @@ export function KvMemory() {
             full. The throughput effect of smaller pages was not measured in this research. Watch
             for one interaction: with EAGLE at topk 1, an explicit page size above 1 also moves an
             MHA model off <code>fa3</code> or <code>trtllm_mha</code> to <code>flashinfer</code>{' '}
-            <Cite tier={1} href={sglangUrl(COMMON, 'L4012-L4017')} kind="code">
-              common.py L4012-L4017
+            <Cite tier={1} href={sglangUrl(COMMON, 'L4014-L4020')} kind="code">
+              common.py L4014-L4020
             </Cite>
             .
           </Box>
@@ -1116,8 +1141,8 @@ export function KvMemory() {
               <Cite tier={1} href={sglangDocsSrcUrl(BACKEND_DOC, 'L325')} kind="doc-code-conflict">
                 SGLang docs: attention backend (v0.5.22 source)
               </Cite>
-              . v0.5.22&apos;s code also accepts 128 and turns any other value, including the
-              default 1, into 64 with a warning{' '}
+              . v0.5.22&apos;s code also accepts 128 and turns any other value, including an
+              explicit 1 or an unset page size, into 64 with a warning{' '}
               <Cite tier={1} href={sglangUrl(OVERRIDES, 'L1124-L1137')} kind="code">
                 overrides.py L1124-L1137
               </Cite>
@@ -1190,7 +1215,7 @@ export function KvMemory() {
           <Box variant="p">
             <strong>Against vLLM:</strong> <code>--mem-fraction-static</code> counts weights and KV,
             where <code>--gpu-memory-utilization</code> counts the whole instance ({VLLM_OPS_LINK});
-            and for a dense Llama-style model at defaults and without tree speculation, SGLang
+            and for a dense Llama-style model at defaults with speculative decoding off, SGLang
             reuses prefixes to the token on H100 and in 64-token pages on B200, where vLLM uses
             16-token blocks on both and neither caches the trailing partial unit ({VLLM_PAGED_LINK}
             ).
