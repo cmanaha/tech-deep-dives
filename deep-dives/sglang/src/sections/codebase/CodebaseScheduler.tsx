@@ -438,7 +438,11 @@ export function CodebaseScheduler() {
             <Cite tier={1} href={sglangUrl(SCHEDULER, 'L1617-L1639')}>
               scheduler.py L1617-L1639
             </Cite>
-            . One overlapped step, in <code>run_batch</code>:
+            . One overlapped step, in <code>run_batch</code>, with bare line numbers in{' '}
+            <Cite tier={1} href={sglangUrl(SCHEDULER, 'L4530-L4627')} kind="code">
+              scheduler.py L4530-L4627
+            </Cite>
+            :
           </Box>
           <ol>
             <li>
@@ -470,13 +474,6 @@ export function CodebaseScheduler() {
               , so the CPU plans step N+1 without ever reading step N&apos;s token values.
             </li>
           </ol>
-          <Box variant="p">
-            Line numbers in this list are in{' '}
-            <Cite tier={1} href={sglangUrl(SCHEDULER, 'L4530-L4627')} kind="code">
-              scheduler.py L4530-L4627
-            </Cite>
-            .
-          </Box>
           <Box variant="p">
             <strong>Where the one-step lag shows.</strong> The CPU waits on the GPU when it
             processes a result: the decode and prefill handlers block on that batch&apos;s{' '}

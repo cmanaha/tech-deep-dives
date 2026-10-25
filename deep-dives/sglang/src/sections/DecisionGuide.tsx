@@ -23,6 +23,7 @@ const MEM_FIELDS = `${SRT}/arg_groups/fields/memory.py`;
 const SCHED_FIELDS = `${SRT}/arg_groups/fields/schedule.py`;
 const POLICY = `${SRT}/managers/schedule_policy.py`;
 const METRICS_REPORTER = `${SRT}/managers/scheduler_components/metrics_reporter.py`;
+const METRICS_COLLECTOR = `${SRT}/observability/metrics_collector.py`;
 const HICACHE_HOOK = `${SRT}/arg_groups/hicache_hook.py`;
 const AUTO_SIZE = `${SRT}/mem_cache/hicache_auto_size.py`;
 const TREE_CORE = `${SRT}/mem_cache/unified_cache/unified_tree_core.py`;
@@ -230,12 +231,13 @@ const BRANCH_ROWS: BranchRow[] = [
     branch: 'Hardware',
     guidance: (
       <>
-        SGLang v0.5.22 has no Trainium or Inferentia support; its README lists AWS Trainium under
-        integrations in progress{' '}
+        Serve Trainium and Inferentia with vLLM and its Neuron plugin ({V21_LINK}): SGLang v0.5.22
+        has no Trainium or Inferentia support, and its README lists AWS Trainium under integrations
+        in progress{' '}
         <Cite tier={1} href={sglangUrl('README.md', 'L58')}>
           README.md L58
         </Cite>
-        . Serve Trainium and Inferentia with vLLM and its Neuron plugin ({V21_LINK}). On EC2
+        . On EC2
         (Elastic Compute Cloud), SGLang&apos;s path is NVIDIA GPUs: its ROCm images build for AMD
         Instinct, and the EC2 accelerated-computing spec page read for this dive lists no AMD
         Instinct instance{' '}
@@ -399,7 +401,9 @@ const BRANCH_ROWS: BranchRow[] = [
         <Cite tier={1} href={vllmUrl('vllm/entrypoints/launchers/api_server/routers.py', 'L38-L50')}>
           vLLM routers.py L38-L50
         </Cite>
-        , so decide on operations (section 23 lists the shared mechanisms). Widths are counted differently: SGLang&apos;s{' '}
+        , so decide on operations (section 23 lists the shared mechanisms): weigh the PD and
+        routing stack you will run (next row) and which engine the model publisher documents a
+        recipe for. Widths are counted differently: SGLang&apos;s{' '}
         <code>--attn-dp-size</code> sits inside the TP (tensor parallelism) group, where vLLM
         counts <code>--data-parallel-size</code> replicas and shards experts over TP x PCP
         (prefill context parallelism) x DP (data parallelism){' '}
@@ -409,8 +413,8 @@ const BRANCH_ROWS: BranchRow[] = [
         <Cite tier={1} href={vllmUrl('vllm/config/parallel.py', 'L134-L136')}>
           vLLM parallel.py L134-L136
         </Cite>
-        . Weigh the PD and routing stack you will run (next row) and which engine the model
-        publisher documents a recipe for. LMSYS (Large Model Systems Organization) reports its
+        , so move a layout between the engines by its GPU count (section 14&apos;s translation
+        rule). LMSYS (Large Model Systems Organization) reports its
         96-H100 wide-EP results for an older SGLang release{' '}
         <Cite tier={2} href={LMSYS_EP}>
           LMSYS blog, 2025-05-05 (project claim)
@@ -539,7 +543,13 @@ const COST_ROWS: CostRow[] = [
         <Cite tier={1} href={sglangUrl(PREFILL, 'L462-L537')}>
           prefill.py L462-L537
         </Cite>
-        . A decode pool sized too small leaves prefill GPUs idle.
+        . A decode pool sized too small leaves prefill GPUs idle; by section 15&apos;s reading of
+        the queue design, it shows as a growing{' '}
+        <code>sglang:num_prefill_bootstrap_queue_reqs</code>{' '}
+        <Cite tier={1} href={sglangUrl(METRICS_COLLECTOR, 'L574-L676')}>
+          metrics_collector.py L574-L676
+        </Cite>
+        , the gauge to watch.
       </>
     ),
     where: 'Section 15, PD Disaggregation',
@@ -691,8 +701,8 @@ export function DecisionGuide() {
           </Box>
           <Box variant="p">
             Read the tree from the top. Hardware is a hard criterion, so it comes first. A platform
-            already in place narrows the question to the SGLang release it runs. The workload
-            branches are not exclusive: an agent product with a JSON tool schema follows both the
+            already in place narrows the question to the SGLang release it runs. Several workload
+            branches can apply at once: an agent product with a JSON tool schema follows both the
             shared-prefix and the structured-output rows.
           </Box>
           <Table

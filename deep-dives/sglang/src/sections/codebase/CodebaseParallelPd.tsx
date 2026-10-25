@@ -647,7 +647,8 @@ export function CodebaseParallelPd() {
             </Cite>
             . By our reading of stop 3 and stop 11, the product of the four widths equals the
             prefill server&apos;s GPU count, one registration per scheduler. Read from source, not
-            run. If the 503 does not clear, N tells you how many prefill ranks are missing; check
+            run. If the 503 does not clear, N is the count registered so far, and its gap to the
+            count you computed is the number of prefill ranks missing; check
             the logs of the schedulers whose labels you computed, then read section 15&apos;s queue
             gauges once the count is complete.
           </Box>

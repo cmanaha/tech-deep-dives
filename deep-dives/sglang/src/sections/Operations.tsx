@@ -269,7 +269,8 @@ const START_ROWS: SymptomRow[] = [
         <Cite tier={1} href={SM_VARIANT}>
           SageMaker API: ProductionVariant
         </Cite>
-        , prebuild the DeepGEMM cache, and set the admin key alone
+        , prebuild the DeepGEMM cache, and set the admin key alone, without{' '}
+        <C>--api-key</C>
       </>
     ),
     section: 'Section 19, SGLang on SageMaker AI and HyperPod',
@@ -757,8 +758,8 @@ function SymptomTable({
       items={rows}
       columnDefinitions={[
         { id: 'symptom', header: firstHeader, cell: (r) => r.symptom, minWidth: 180 },
-        { id: 'cause', header: 'Cause', cell: (r) => r.cause, minWidth: 260 },
         { id: 'fix', header: 'Flag or fix', cell: (r) => r.fix, minWidth: 220 },
+        { id: 'cause', header: 'Cause', cell: (r) => r.cause, minWidth: 260 },
         { id: 'section', header: 'Section', cell: (r) => r.section, minWidth: 140 },
       ]}
     />
@@ -874,13 +875,11 @@ export function Operations() {
           <Box variant="p">
             Running SGLang day to day comes down to reading the signals the server already emits.
             Most of the failures in this dive have one log line or one gauge that names them, and
-            the earlier sections each own a few. This section collects them by symptom, keeps the
-            conditions each section established, and points back to the section that holds the
-            mechanism.
+            the earlier sections each own a few. This section collects them by symptom, each with
+            its fix and the section that holds the mechanism.
           </Box>
           <Box variant="p">
-            One decision comes before any symptom can show, and the rest of the section builds to
-            it.{' '}
+            One decision comes before any symptom can show.{' '}
             <strong>
               With no key set, the admin routes accept any client that can reach the port
             </strong>
@@ -988,8 +987,9 @@ export function Operations() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A loading SGLang server answers nothing. The HTTP server starts only after the
-            weights are loaded and the CUDA graphs captured{' '}
+            Measure your model&apos;s cold start on the instance you will run, then size the start
+            window above it. A loading SGLang server answers nothing. The HTTP server starts only
+            after the weights are loaded and the CUDA graphs captured{' '}
             <Cite tier={1} href={sglangUrl(ENGINE, 'L1336-L1338')}>
               engine.py L1336-L1338
             </Cite>
@@ -1008,13 +1008,12 @@ export function Operations() {
             <Cite tier={1} href={K8S_PROBES}>
               Kubernetes docs: startup probe
             </Cite>
-            . AWS&apos;s SGLang PD sample allows 1,800 seconds for a DeepSeek-V4.1-Flash engine with
-            weights pre-staged on local disk{' '}
+            . For reference, AWS&apos;s SGLang PD sample allows 1,800 seconds for a DeepSeek-V4.1-Flash
+            engine with weights pre-staged on local disk{' '}
             <Cite tier={2} href={`${PD_SAMPLE}#L215-L228`}>
               AWS sample prefill.yaml L215-L228
             </Cite>
-            . Measure your model&apos;s cold start on the instance you will run, then size the
-            window above it.
+            .
           </Box>
           <Box variant="p">
             One start cost belongs at build time instead. On SM90 (compute capability 9.0, Hopper)
@@ -1057,7 +1056,7 @@ export function Operations() {
         header={
           <Header
             variant="h2"
-            description="Find the log line or gauge you are looking at, read its cause, and apply the flag that fixes it, with the section that holds the mechanism"
+            description="Find the log line or gauge you are looking at and apply the flag or fix beside it; the cause and the section that holds the mechanism follow"
           >
             Match the symptom to its cause
           </Header>
@@ -1212,22 +1211,23 @@ export function Operations() {
             />
           </ExpandableSection>
           <Box variant="p">
-            As of 2026-10-24, SGLang publishes no security policy file and no repository security
-            advisories on GitHub, and its security page offers GitHub&apos;s private vulnerability
-            reporting{' '}
-            <Cite tier={1} href={SECURITY_POLICY}>
-              sgl-project/sglang security policy page
-            </Cite>
-            . Its CVEs reach you through the GitHub Advisory Database and the NVD (National
-            Vulnerability Database), filed by outside reporters: the NVD records name the CERT
-            Coordination Center or VulDB as their source{' '}
+            Watch the GitHub Advisory Database and the NVD (National Vulnerability Database) for the{' '}
+            <code>sglang</code> pip package: that is where its CVEs reach you, filed by outside
+            reporters, and the NVD records name the CERT Coordination Center or VulDB as their
+            source{' '}
             <Cite tier={1} href={NVD_3059}>
               NVD: CVE-2026-3059
             </Cite>{' '}
             <Cite tier={1} href={NVD_7669}>
               NVD: CVE-2026-7669
             </Cite>
-            . Watch those feeds for the <code>sglang</code> pip package.
+            . As of 2026-10-24, SGLang publishes no security policy file and no repository security
+            advisories on GitHub, and its security page offers GitHub&apos;s private vulnerability
+            reporting{' '}
+            <Cite tier={1} href={SECURITY_POLICY}>
+              sgl-project/sglang security policy page
+            </Cite>
+            .
           </Box>
           <Box variant="p">
             Section 12, Talking to SGLang, holds the key matrix for each deployment: SageMaker, EKS

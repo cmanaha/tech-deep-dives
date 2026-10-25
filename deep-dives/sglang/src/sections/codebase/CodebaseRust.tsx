@@ -491,8 +491,9 @@ export function CodebaseRust() {
           <Box variant="p">
             By our reading of the v0.5.22 source, not run, a build from the tag prints{' '}
             <code>cache_aware 0.3 64 1.5 60 67108864</code>. Those are the values of the decision
-            in stop 5: a fleet more than 64 requests and 1.5 times out of balance routes by load,
-            and a balanced one routes by prefix only above 30% of the prompt. The standalone binary carries the same thresholds with a
+            in stop 5: a fleet whose busiest worker has more than 64 requests over the idlest and
+            more than 1.5 times its load routes by load, and a balanced one routes by prefix only
+            above 30% of the prompt. The standalone binary carries the same thresholds with a
             120-second <code>--eviction-interval</code>{' '}
             <Cite tier={1} href={sglangUrl(MAIN, 'L150-L171')}>
               main.rs L150-L171
