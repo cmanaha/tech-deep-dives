@@ -709,6 +709,9 @@ export function MultiNodeKubernetes() {
                 with tokens divided by page size{' '}
                 <Cite tier={1} href={sglangUrl(MEM_EVENTS, 'L161-L217')}>
                   events.py L161-L217
+                </Cite>{' '}
+                <Cite tier={1} href={sglangUrl(MEM_EVENTS, 'L95-L124')}>
+                  L95-L124
                 </Cite>
                 . Dynamo&apos;s example SGLang worker runs with <code>--page-size 16</code>{' '}
                 <Cite tier={1} href={`${DYNAMO}/examples/backends/sglang/deploy/agg_router.yaml#L30-L31`}>
@@ -719,10 +722,17 @@ export function MultiNodeKubernetes() {
                 <Cite tier={1} href={sglangUrl(KV_PUB, 'L98-L105')}>
                   kv_events_publisher.py L98-L105
                 </Cite>
-                . With HiCache (section 7), a demotion arrives as a GPU removal plus a store on the
-                host medium, so a router can tell an evicted prefix from one a tier down{' '}
+                . With HiCache (section 7), every event names its storage medium: a finished host
+                backup sends a store on the host medium and a device eviction sends a GPU removal,
+                so a router can tell an evicted prefix from one a tier down{' '}
                 <Cite tier={1} href={sglangUrl(KV_EVENTS, 'L261-L267')}>
                   kv_events.py L261-L267
+                </Cite>{' '}
+                <Cite tier={1} href={sglangUrl(`${SRT}/mem_cache/unified_cache/unified_tree_core.py`, 'L2758-L2767')}>
+                  unified_tree_core.py L2758-L2767
+                </Cite>{' '}
+                <Cite tier={1} href={sglangUrl(`${SRT}/mem_cache/unified_cache/unified_tree_core.py`, 'L2050')}>
+                  L2050
                 </Cite>
                 .
               </Box>
@@ -773,8 +783,8 @@ export function MultiNodeKubernetes() {
             <Cite tier={1} href={SGLANG_RELEASE}>
               SGLang v0.5.22 release
             </Cite>{' '}
-            and trails it by one release. KServe&apos;s default-branch runtime is eight releases
-            behind. Section 24, Ecosystem and Production Users, runs the same check for RL
+            and trails it by one release. KServe&apos;s default-branch runtime pins v0.5.14, eight
+            versions behind. Section 24, Ecosystem and Production Users, runs the same check for RL
             (reinforcement learning) frameworks and vendor containers.
           </Box>
         </SpaceBetween>
@@ -1074,7 +1084,7 @@ export function MultiNodeKubernetes() {
                 fail argument parsing (not run).
               </Box>
               <Box variant="p">
-                The page&apos;s wide-EP line names <code>--enable-dp-attention</code> and{' '}
+                The page&apos;s wide-EP (expert parallelism) line names <code>--enable-dp-attention</code> and{' '}
                 <code>--enable-ep-moe</code>{' '}
                 <Cite tier={1} href={`${LLMD_SGLANG_DOC}#L61`} kind="doc-code-conflict">
                   llm-d sglang.md L61
@@ -1100,10 +1110,13 @@ export function MultiNodeKubernetes() {
             <Cite tier={1} href={`${DYNAMO}/components/src/dynamo/sglang/args.py#L645-L650`}>
               args.py L645-L650
             </Cite>
-            , and turns KV routing on when <code>--kv-events-config</code> names a publisher other
-            than <code>null</code>{' '}
+            , and relays the worker&apos;s KV events to its router when{' '}
+            <code>--kv-events-config</code> names a publisher other than <code>null</code>{' '}
             <Cite tier={1} href={`${DYNAMO}/components/src/dynamo/sglang/args.py#L913-L936`}>
               args.py L913-L936
+            </Cite>{' '}
+            <Cite tier={1} href={`${DYNAMO}/components/src/dynamo/sglang/publisher.py#L628-L632`}>
+              publisher.py L628-L632
             </Cite>
             . Dynamo v1.6.0 pins SGLang 0.5.21{' '}
             <Cite tier={1} href={`${DYNAMO}/pyproject.toml#L76-L78`}>
@@ -1177,6 +1190,9 @@ export function MultiNodeKubernetes() {
             way the worker does{' '}
             <Cite tier={1} href={sglangUrl(`${XR}/src/state/kv_events/subscriber.rs`, 'L1-L25')}>
               subscriber.rs L1-L25
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(`${XR}/src/state/kv_events/hash.rs`, 'L1-L17')}>
+              hash.rs L1-L17
             </Cite>
             , so it follows the actual cache. On Kubernetes it reads a Service&apos;s
             EndpointSlices, readiness applied and port taken from the slice (30000 when absent){' '}
@@ -1184,8 +1200,11 @@ export function MultiNodeKubernetes() {
               k8s.rs L86-L120
             </Cite>
             , and a new replica can copy the index from a warm sibling before it reports ready{' '}
-            <Cite tier={1} href={sglangUrl(`${XR}/src/server/routes/cache.rs`, 'L107-L160')}>
-              cache.rs L107-L160
+            <Cite tier={1} href={sglangUrl(`${XR}/src/server/routes/cache.rs`, 'L90-L160')}>
+              cache.rs L90-L160
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(`${XR}/src/state/kv_events/bootstrap/tracker.rs`, 'L274-L282')}>
+              tracker.rs L274-L282
             </Cite>
             .
           </Box>
@@ -1269,17 +1288,21 @@ export function MultiNodeKubernetes() {
           </Box>
           <Box variant="p">
             <strong>5. Metrics.</strong> The gateway serves its <code>smg_*</code> metrics on port
-            29000, bound to 0.0.0.0 by the standalone binary{' '}
+            29000, bound to 0.0.0.0 by both the standalone binary and{' '}
+            <code>python -m sglang_router.launch_router</code>, which both documented recipes use{' '}
             <Cite tier={1} href={sglangUrl(`${GW}/main.rs`, 'L269-L275')}>
               main.rs L269-L275
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(`${GW_PY}/sglang_router/router_args.py`, 'L480-L490')}>
+              router_args.py L480-L490
             </Cite>
-            . <code>python -m sglang_router.launch_router</code>, which both documented recipes use,
-            binds 127.0.0.1 unless you pass <code>--prometheus-host 0.0.0.0</code>{' '}
+            . A router built in Python code without <code>prometheus_host</code> binds 127.0.0.1
+            instead{' '}
             <Cite tier={1} href={sglangUrl(`${GW_PY}/lib.rs`, 'L1000-L1006')} kind="code">
               lib.rs L1000-L1006
-            </Cite>{' '}
-            (not run), and Prometheus in another pod cannot reach a loopback bind.
-            Workers expose <code>sglang:*</code> gauges only with <code>--enable-metrics</code>.
+            </Cite>
+            , which Prometheus in another pod cannot reach. Workers expose <code>sglang:*</code>{' '}
+            gauges only with <code>--enable-metrics</code>.
           </Box>
           <Box variant="p">
             <strong>6. KV events</strong>, if your router reads them:{' '}

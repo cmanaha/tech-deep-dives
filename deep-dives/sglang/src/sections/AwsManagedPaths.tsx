@@ -65,6 +65,9 @@ const BLOG_LLMD = `${ML_BLOG}/introducing-disaggregated-inference-on-aws-powered
 const PR_45897 = 'https://github.com/sgl-project/sglang/pull/45897';
 const PR_45986 = 'https://github.com/sgl-project/sglang/pull/45986';
 
+const FASTAPI_ROUTING = 'https://github.com/fastapi/fastapi/blob/0.162.0/fastapi/routing.py';
+const FASTAPI_0132 = 'https://github.com/fastapi/fastapi/releases/tag/0.132.0';
+
 const VLLM_SM_ROUTER =
   'https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/serve/sagemaker/api_router.py#L82-L110';
 const VLLM_PLUGINS =
@@ -346,8 +349,8 @@ const ENTRYPOINT_ROWS: EntrypointRow[] = [
         <Cite tier={1} href={dlcUrl('scripts/docker/sglang/sagemaker_entrypoint.sh', 'L17-L32')}>
           sagemaker_entrypoint.sh L17-L32
         </Cite>{' '}
-        <Cite tier={1} href={dlcUrl('docker/sglang/Dockerfile.amzn2023', 'L530-L542')}>
-          Dockerfile.amzn2023 L530-L542
+        <Cite tier={1} href={dlcUrl('docker/sglang/Dockerfile.amzn2023', 'L529-L541')}>
+          Dockerfile.amzn2023 L529-L541
         </Cite>
       </>
     ),
@@ -422,7 +425,7 @@ export function AwsManagedPaths() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            AWS offers four places to run an open-weight model, and they differ in how much of the
+            AWS offers five places to run an open-weight model, and they differ in how much of the
             serving engine you control. Amazon Bedrock runs imported weights with no engine choice.
             SageMaker AI runs your container behind a managed endpoint. SageMaker HyperPod and
             Amazon EKS (Elastic Kubernetes Service) give you Kubernetes, and Amazon EC2 (Elastic
@@ -564,8 +567,20 @@ export function AwsManagedPaths() {
             <Cite tier={1} href={sglangUrl(HTTP, 'L679-L692')}>
               http_server.py L679-L692
             </Cite>
-            ; <code>/invocations</code> skips that check, so clients on the OpenAI path must send
-            the header and clients on <code>InvokeEndpoint</code> need not.
+            . <code>/invocations</code> skips that check, but FastAPI parses its body as JSON only
+            when the header names JSON, and FastAPI 0.132.0 and later refuse a missing header too{' '}
+            <Cite tier={1} href={`${FASTAPI_ROUTING}#L458-L475`} kind="code">
+              FastAPI routing.py L458-L475 (0.162.0)
+            </Cite>{' '}
+            <Cite tier={1} href={FASTAPI_0132}>
+              FastAPI 0.132.0 release notes
+            </Cite>
+            , so send <code>Content-Type: application/json</code> on both paths, as SGLang&apos;s
+            own <code>invoke_endpoint</code> example does{' '}
+            <Cite tier={1} href={sglangDocsSrcUrl(SM_DOC, 'L105-L113')}>
+              SGLang docs: Amazon SageMaker AI L105-L113
+            </Cite>
+            .
           </Box>
           <ExpandableSection headerText="Two smaller contract details: GET-only /ping and streaming">
             <SpaceBetween size="s">
@@ -635,6 +650,9 @@ export function AwsManagedPaths() {
             </Cite>{' '}
             <Cite tier={1} href={dlcUrl('.github/config/image/sglang/sagemaker-ubuntu.yml', 'L1-L20')}>
               sagemaker-ubuntu.yml L1-L20
+            </Cite>{' '}
+            <Cite tier={1} href={dlcUrl('docs/src/data/sglang/0.5.22-gpu-sagemaker.yml', 'L10-L14')}>
+              0.5.22-gpu-sagemaker.yml L10-L14
             </Cite>
             . The Amazon Linux 2023 &quot;server&quot; line, <code>server-sagemaker-cuda</code>,
             runs SGLang 0.5.19{' '}
@@ -712,21 +730,27 @@ export function AwsManagedPaths() {
           </Box>
           <Box variant="p">
             The host AMI (Amazon Machine Image) has to match the image&apos;s CUDA version.
-            SGLang&apos;s SageMaker page requires{' '}
-            <code>InferenceAmiVersion=al2023-ami-sagemaker-inference-gpu-4-1</code>, because the
-            default host AMI&apos;s NVIDIA drivers do not fit CUDA 13 images{' '}
+            SGLang&apos;s SageMaker page requires an <code>InferenceAmiVersion</code>, because the
+            default host AMI&apos;s NVIDIA drivers do not fit CUDA 13 images, and its examples set{' '}
+            <code>al2023-ami-sagemaker-inference-gpu-4-1</code>{' '}
             <Cite tier={1} href={sglangDocsSrcUrl(SM_DOC, 'L137-L140')}>
               SGLang docs: Amazon SageMaker AI L137-L140
+            </Cite>{' '}
+            <Cite tier={1} href={sglangDocsSrcUrl(SM_DOC, 'L98')}>
+              L98
             </Cite>
-            , and that AMI carries NVIDIA driver 580 and CUDA 13.0{' '}
+            . That AMI carries NVIDIA driver 580 and CUDA 13.0{' '}
             <Cite tier={1} href={SM_VARIANT}>
               SageMaker API: ProductionVariant
             </Cite>
             ; the DLC tag above is a CUDA 13 build (<code>cu130</code>). The repository&apos;s
-            example deploy script still names <code>al2-ami-sagemaker-inference-gpu-3-1</code>,
-            NVIDIA driver 550 and CUDA 12.4{' '}
+            example deploy script names <code>al2-ami-sagemaker-inference-gpu-3-1</code>{' '}
             <Cite tier={1} href={sglangUrl('examples/sagemaker/deploy_and_serve_endpoint.py', 'L32-L38')}>
               deploy_and_serve_endpoint.py L32-L38
+            </Cite>
+            , which carries NVIDIA driver 550 and CUDA 12.4{' '}
+            <Cite tier={1} href={SM_VARIANT}>
+              SageMaker API: ProductionVariant
             </Cite>
             ; use gpu-4-1.
           </Box>
@@ -750,16 +774,21 @@ export function AwsManagedPaths() {
             <Cite tier={1} href={sglangUrl(AUTH, 'L101-L106')} kind="code">
               auth.py L101-L106
             </Cite>
-            . <code>/ping</code> is not one of them and SageMaker&apos;s health check sends no
-            token, so a server started with <code>--api-key</code> (<code>SM_SGLANG_API_KEY</code>)
+            . <code>/ping</code> is not one of them, and AWS names no way to attach a token to
+            SageMaker&apos;s health check{' '}
+            <Cite tier={1} href={SM_CONTRACT}>
+              SageMaker docs: custom inference code with hosting services
+            </Cite>
+            , so a server started with <code>--api-key</code> (<code>SM_SGLANG_API_KEY</code>)
             is expected to fail its first <code>/ping</code> and never reach InService; read from
             code, not run. Callers already need IAM (Identity and Access Management) permission for{' '}
             <code>sagemaker:InvokeEndpoint</code> on the endpoint{' '}
             <Cite tier={1} href={SM_OPENAI}>
               SageMaker docs: OpenAI-compatible APIs
             </Cite>
-            . Section 12, Talking to SGLang, gives the key matrix, which sets the admin key alone on
-            SageMaker. That key travels in the <code>Environment</code> map with every other{' '}
+            . Section 12, Talking to SGLang, gives the key matrix: on SageMaker set only the admin
+            key, as <code>SM_SGLANG_ADMIN_API_KEY</code>, which by our reading of the code leaves{' '}
+            <code>/ping</code> and <code>/invocations</code> unkeyed behind IAM. That key travels in the <code>Environment</code> map with every other{' '}
             <code>SM_SGLANG_</code> variable, and AWS advises keeping sensitive data out of that map{' '}
             <Cite tier={1} href={SM_CONTAINER_DEF}>
               SageMaker API: ContainerDefinition
@@ -1000,8 +1029,9 @@ export function AwsManagedPaths() {
             <Cite tier={1} href={sglangTreeUrl('python')} kind="code">
               python/ at v0.5.22
             </Cite>
-            . The Neuron SDK documentation&apos;s one SGLang reference credits SGLang&apos;s
-            jump-forward decoding as the model for vLLM Neuron&apos;s version{' '}
+            . The one SGLang reference a search of the Neuron SDK documentation returned is vLLM
+            Neuron disabling logprobs for jump-forward decoding, &quot;taking inspiration from the
+            original jump-forward implementation in SGLang&quot;{' '}
             <Cite tier={1} href={NEURON_DOC}>
               Neuron docs 2.33.0: vLLM Neuron additional config
             </Cite>
@@ -1123,8 +1153,8 @@ export function AwsManagedPaths() {
               <code>al2023-ami-sagemaker-inference-gpu-4-1</code>.
             </li>
             <li>
-              Keys: no <code>SM_SGLANG_API_KEY</code>; the admin key as section 12&apos;s matrix
-              gives it.
+              Keys: no <code>SM_SGLANG_API_KEY</code>; only <code>SM_SGLANG_ADMIN_API_KEY</code>,
+              as section 12&apos;s matrix gives it.
             </li>
             <li>
               Metrics: <code>SM_SGLANG_ENABLE_METRICS=true</code> on the DLC, an empty value on a{' '}
@@ -1137,7 +1167,7 @@ export function AwsManagedPaths() {
             </li>
             <li>
               Clients: OpenAI chat bodies on <code>/invocations</code>, and{' '}
-              <code>Content-Type: application/json</code> on the OpenAI-compatible path.
+              <code>Content-Type: application/json</code> on both paths.
             </li>
           </ol>
           <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>

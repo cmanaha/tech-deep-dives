@@ -212,7 +212,7 @@ Related register: `05-parallelism-ep-pd.md` (PD disaggregation, bootstrap handsh
 Found while writing the sections, verified in `/tmp/sglang-src` or the fetched source. These override the rows they name.
 
 - New, read from source: the gateway serves `/server_info` and `/get_server_info` in its public route group, outside its own key check, by proxying to the first worker with the client's `Authorization` header (`sgl-model-gateway/src/server.rs` L593-L605; `routers/http/router.rs` L92-L131) (section 17).
-- New, read from source: `launch_router` binds its metrics to 127.0.0.1 (`lib.rs` L1000-L1006). llm-d's `--enable-ep-moe` flag does not exist in v0.5.22 (section 18).
+- New, read from source: `launch_router` binds its metrics to 0.0.0.0 by default (`--prometheus-host`, `router_args.py` L486-L490); only a router built directly in Python code falls back to 127.0.0.1 (`lib.rs` L1000-L1006). Corrected by fact check fc09. llm-d's `--enable-ep-moe` flag does not exist in v0.5.22 (section 18).
 
 ## Errata from the fact check (2026-10-24)
 
