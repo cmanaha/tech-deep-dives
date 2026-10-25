@@ -335,7 +335,7 @@ const pageRows: PageRow[] = [
   },
   {
     backend: 'dsa',
-    page: '64 times the indexer pool on CUDA and ROCm GPUs (64 for DeepSeek V3.2); 128 on Intel GPUs.',
+    page: '64 times the indexer pool on CUDA and ROCm GPUs (64 for DeepSeek V3.2), except 1 on ROCm when AITER\'s preshuffle indexer kernel is unavailable; 128 on Intel GPUs.',
     src: (
       <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/deepseek_v2.py`, 'L145-L178')}>
         deepseek_v2.py L145-L178
@@ -613,7 +613,7 @@ const platformRows: PlatformRow[] = [
     platform: 'Huawei Ascend NPUs',
     path: (
       <>
-        The largest non-CUDA backend in the tree: attention, MoE,
+        The largest platform directory under <code>hardware_backend/</code>: attention, MoE,
         quantization, a graph runner and an <code>ascend</code> KV transfer engine for PD
         (prefill/decode) disaggregation, with kernels in the separate <code>sgl-kernel-npu</code>{' '}
         project. It has its own Dockerfile and no image in the v0.5.22 release table.
@@ -698,7 +698,7 @@ const knobRows: KnobRow[] = [
   {
     flag: '--linear-attn-backend',
     def: 'triton',
-    effect: 'Kernels for the linear layers of hybrid models.',
+    effect: 'Kernels for the linear-attention layers of hybrid models.',
     src: (
       <Cite tier={1} href={sglangUrl(EXEC, 'L480-L486')}>
         exec_.py L480-L486
@@ -718,7 +718,7 @@ const knobRows: KnobRow[] = [
   {
     flag: 'SGLANG_JIT_DEEPGEMM_FAST_WARMUP',
     def: 'off',
-    effect: '1 compiles about 3,000 sampled token counts per shape instead of every one.',
+    effect: '1 compiles a sample of token counts per shape (about 3,000 at a 16,384-token chunk) instead of every one.',
     src: (
       <Cite tier={1} href={sglangUrl(DG, 'L66-L92')}>
         compile_utils.py L66-L92
@@ -835,7 +835,8 @@ export function AttentionBackends() {
             capability 10.0 and 10.3, datacenter Blackwell: B200, GB200, B300) give MHA models{' '}
             <code>trtllm_mha</code>, the TensorRT-LLM (TRT-LLM) attention kernels, or <code>fa4</code>{' '}
             (FlashAttention 4) when the model&apos;s K and V head widths differ, and give MLA models{' '}
-            <code>flashinfer</code>. ROCm GPUs get <code>aiter</code>, and Apple MPS (Metal
+            <code>flashinfer</code>. ROCm GPUs get <code>aiter</code> (for MLA models only at 16 or 128
+            KV heads per rank, otherwise <code>triton</code>), and Apple MPS (Metal
             Performance Shaders) gets <code>torch_native</code>. Everything else takes the last
             branch: <code>flashinfer</code> for MHA, or <code>triton</code> when
             FlashInfer is missing or the model has attention sinks, and <code>triton</code> for MLA{' '}
@@ -878,24 +879,26 @@ export function AttentionBackends() {
             <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/deepseek_v4.py`, 'L20-L24')}>
               deepseek_v4.py L20-L24
             </Cite>
-            . GPT-OSS has a rule per platform, because the generic table avoids FlashInfer for models
-            with attention sinks{' '}
+            . GPT-OSS has a rule per platform: <code>trtllm_mha</code> on SM100, <code>fa3</code> on
+            SM90, <code>aiter</code> on ROCm, <code>intel_xpu</code> on Intel GPUs and{' '}
+            <code>triton</code> on other GPUs{' '}
             <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/gpt_oss.py`, 'L24-L44')}>
               gpt_oss.py L24-L44
             </Cite>
             .
           </Box>
           <Box variant="p">
-            Hybrid models mix full-attention layers with linear-attention or state-space layers, and
-            take a second backend for the linear layers, <code>--linear-attn-backend</code>, default{' '}
+            Hybrid models mix full-attention layers with linear-attention layers, and take a second
+            backend for the linear-attention layers, <code>--linear-attn-backend</code>, default{' '}
             <code>triton</code>{' '}
             <Cite tier={1} href={sglangUrl(EXEC, 'L480-L486')}>
               exec_.py L480-L486
             </Cite>
             . For the Qwen3.5 and Qwen3-Next hybrids on SM100, the full-attention layers get{' '}
             <code>triton</code> with page size 1 when token-level prefix caching is possible (radix
-            cache on, no Mamba extra buffer, no speculation), and <code>trtllm_mha</code> with 64-token
-            pages otherwise{' '}
+            cache on, no Mamba extra buffer, no speculation). Otherwise they get{' '}
+            <code>trtllm_mha</code> with 64-token pages when the generic table would pick it, and stay
+            on <code>triton</code> with page size 1 when it would not{' '}
             <Cite tier={1} href={sglangUrl(`${MODEL_OVR}/qwen3_5.py`, 'L17-L48')}>
               qwen3_5.py L17-L48
             </Cite>
@@ -989,7 +992,7 @@ export function AttentionBackends() {
             </Cite>
             . With <code>--speculative-eagle-topk</code> above 1, or topk 1 with an explicit page size
             above 1, Hopper and B200 MHA models drop to <code>flashinfer</code> (<code>triton</code>{' '}
-            without FlashInfer) and page size 1{' '}
+            without FlashInfer), at page size 1 unless you set one{' '}
             <Cite tier={1} href={sglangUrl(`${SRT}/utils/common.py`, 'L4014-L4020')}>
               utils/common.py L4014-L4020
             </Cite>
@@ -1004,7 +1007,9 @@ export function AttentionBackends() {
               pipeline.py L232-L294
             </Cite>
             . To keep <code>trtllm_mha</code> under speculation on B200, set{' '}
-            <code>--speculative-num-steps</code> and <code>--speculative-eagle-topk 1</code> yourself{' '}
+            <code>--speculative-num-steps</code> and <code>--speculative-eagle-topk 1</code> yourself
+            and leave <code>--page-size</code> unset. Topk 1 without{' '}
+            <code>--speculative-num-steps</code> fails an assertion at startup{' '}
             <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/speculative_hook.py`, 'L1068-L1090')} kind="code">
               speculative_hook.py L1068-L1090
             </Cite>
@@ -1050,6 +1055,9 @@ export function AttentionBackends() {
             <code>sgl_kernel</code>, with its source at <code>python/sglang/kernels/aot/</code>{' '}
             <Cite tier={1} href={sglangUrl(`${AOT}/pyproject.toml`, 'L10-L11')}>
               aot/pyproject.toml L10-L11
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(`${AOT}/pyproject.toml`, 'L42')}>
+              aot/pyproject.toml L42
             </Cite>
             . It compiles in pinned NVIDIA CUTLASS (CUDA Templates for Linear Algebra Subroutines), parts of FlashInfer and SGLang&apos;s FlashAttention
             3 and FlashMLA forks{' '}
@@ -1081,7 +1089,8 @@ export function AttentionBackends() {
         <SpaceBetween size="m">
           <Box variant="p">
             DeepGEMM is DeepSeek&apos;s FP8 GEMM library for linear layers. SGLang uses its fork whenever the GPU is SM90 or newer, the
-            package imports and <code>SGLANG_ENABLE_JIT_DEEPGEMM</code> is not set to 0{' '}
+            package imports and <code>SGLANG_ENABLE_JIT_DEEPGEMM</code> is not set to 0 (on SM120 the
+            installed build must also carry the SM120 kernels){' '}
             <Cite tier={1} href={sglangUrl(`${SRT}/layers/deep_gemm_wrapper/configurer.py`, 'L32-L56')}>
               configurer.py L32-L56
             </Cite>
@@ -1096,9 +1105,15 @@ export function AttentionBackends() {
           <Box variant="p">
             Its kernels are specialised per GEMM shape and per token count. The first time a server
             meets a weight shape, the first rank on each node compiles that shape for every token
-            count from 1 to 16,384 at default chunk sizes, into <code>~/.cache/sglang/deep_gemm</code>{' '}
-            <Cite tier={1} href={sglangUrl(DG, 'L59-L113')}>
-              compile_utils.py L59-L113
+            count from 1 to 16,384 when the chunked prefill size is 8,192 or less, and up to twice the
+            chunk size above that, into <code>~/.cache/sglang/deep_gemm</code>{' '}
+            <Cite tier={1} href={sglangUrl(DG, 'L42-L113')}>
+              compile_utils.py L42-L113
+            </Cite>
+            . At the default chunk sizes that is 1 to 16,384 on H100 (8,192) and 1 to 32,768 on B200
+            (16,384){' '}
+            <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/memory_hook.py`, 'L130-L168')} kind="code">
+              memory_hook.py L130-L168
             </Cite>
             . The compile runs inside startup, before the server is ready.{' '}
             <strong>
@@ -1135,6 +1150,9 @@ export function AttentionBackends() {
             Inductor, CUDA, TileLang and FlashInfer caches at <code>SGLANG_CACHE_DIR</code> (default{' '}
             <code>~/.cache/sglang</code>) unless those variables are already set, and the DeepGEMM
             cache lives under it too{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/__init__.py', 'L11-L14')}>
+              sglang/__init__.py L11-L14
+            </Cite>{' '}
             <Cite tier={1} href={sglangUrl(ENV, 'L2053-L2081')}>
               environ.py L2053-L2081
             </Cite>{' '}
@@ -1371,8 +1389,8 @@ python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --tru
                 </Cite>
                 ; in v0.5.22&apos;s code that holds for SM100 and SM103 only, SM120 gets{' '}
                 <code>flashinfer</code> for MHA and <code>triton</code> for MLA, MHA models with
-                differing K and V widths get <code>fa4</code>, and speculation with topk unset also
-                leaves <code>trtllm_mha</code>{' '}
+                differing K and V widths get <code>fa4</code>, and speculation with topk unset, or
+                topk 1 with an explicit page size above 1, also leaves <code>trtllm_mha</code>{' '}
                 <Cite tier={1} href={sglangUrl(MOB, 'L293-L341')}>
                   model_override_base.py L293-L341
                 </Cite>
@@ -1380,8 +1398,11 @@ python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --tru
               </li>
               <li>
                 The support matrix still lists Cutlass MLA (page 128) and Dual Chunk FlashAttention{' '}
+                <Cite tier={1} href={sglangDocsSrcUrl(AB_DOC, 'L116')} kind="doc-code-conflict">
+                  SGLang docs: attention backend L116 (v0.5.22 source)
+                </Cite>{' '}
                 <Cite tier={1} href={sglangDocsSrcUrl(AB_DOC, 'L325-L330')} kind="doc-code-conflict">
-                  SGLang docs: attention backend (v0.5.22 source)
+                  SGLang docs: attention backend L325-L330 (v0.5.22 source)
                 </Cite>
                 ; both were removed in v0.5.20{' '}
                 <Cite tier={1} href="https://github.com/sgl-project/sglang/releases/tag/v0.5.20">
@@ -1434,8 +1455,8 @@ python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --tru
                   SGLang docs: attention backend (v0.5.22 source)
                 </Cite>
                 ; v0.5.22&apos;s FP4 KV check accepts only <code>flashinfer</code> or{' '}
-                <code>trtllm_mla</code> for MLA, so <code>flashmla</code> with an FP4 KV cache fails at
-                startup{' '}
+                <code>trtllm_mla</code> for MLA, so <code>flashmla</code> as the single backend with an
+                FP4 KV cache fails at startup{' '}
                 <Cite tier={1} href={sglangUrl(`${SRT}/arg_groups/kv_cache_hook.py`, 'L254-L310')}>
                   kv_cache_hook.py L254-L310
                 </Cite>

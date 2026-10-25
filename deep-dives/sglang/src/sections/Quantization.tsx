@@ -83,8 +83,9 @@ const FORMAT_ROWS: FormatRow[] = [
     refused: 'None',
     runs: (
       <>
-        SM80 to SM88 (P4d, P4de, G5): FP8 weights, 16-bit math through Marlin. SM89 and newer: FP8
-        math; block-FP8 layers run DeepGEMM on H100 and B200, <code>cutlass</code> on SM120
+        SM80 to SM88 (P4d, P4de, G5): FP8 weights, 16-bit math through Marlin in the linear layers.
+        SM89 and newer: FP8 math; block-FP8 layers run DeepGEMM on H100 and B200,{' '}
+        <code>cutlass</code> on SM120
       </>
     ),
     src: (
@@ -318,6 +319,9 @@ const KV_ROWS: KvRow[] = [
         <Cite tier={1} href={sglangUrl(KV_DTYPE, 'L49-L55')}>
           kv_cache_dtype.py L49-L55
         </Cite>{' '}
+        <Cite tier={1} href={sglangDocsSrcUrl(KVQ_DOC, 'L24')}>
+          quantized_kv_cache.mdx L24
+        </Cite>{' '}
         <Cite tier={1} href={sglangUrl(OVERRIDES, 'L1225-L1233')} kind="code">
           overrides.py L1225-L1233
         </Cite>
@@ -332,11 +336,25 @@ const KV_ROWS: KvRow[] = [
       </>
     ),
     stores: 'BF16',
-    where: 'Everywhere; keeps BF16 when auto would pick FP8',
+    where: (
+      <>
+        Keeps BF16 when auto would pick FP8. Both spellings work in most paths, but the{' '}
+        <code>trtllm_mla</code> check accepts only <code>bf16</code> and the DeepSeek V4 check
+        only <code>bfloat16</code>
+      </>
+    ),
     src: (
-      <Cite tier={1} href={sglangUrl(KV_DTYPE, 'L63-L64')}>
-        kv_cache_dtype.py L63-L64
-      </Cite>
+      <>
+        <Cite tier={1} href={sglangUrl(KV_DTYPE, 'L63-L64')}>
+          kv_cache_dtype.py L63-L64
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(OVERRIDES, 'L1164-L1167')} kind="code">
+          overrides.py L1164-L1167
+        </Cite>{' '}
+        <Cite tier={1} href={sglangUrl(OVERRIDES, 'L878-L886')} kind="code">
+          overrides.py L878-L886
+        </Cite>
+      </>
     ),
   },
   {
@@ -425,7 +443,7 @@ export function Quantization() {
           </Box>
           <Box variant="p">
             One figure is worth carrying through the section. FP8 E4M3, with 4 exponent bits and 3 mantissa bits, is the type SGLang stores an FP8 KV cache in
-            on NVIDIA GPUs, and its largest value is 448{' '}
+            on NVIDIA GPUs unless you ask for E5M2, and its largest value is 448{' '}
             <Cite tier={1} href={sglangUrl(KV_DTYPE, 'L56-L60')} kind="code">
               kv_cache_dtype.py L56-L60
             </Cite>{' '}
@@ -462,7 +480,8 @@ export function Quantization() {
             SGLang reads <code>quant_method</code> from the <code>quantization_config</code> in the
             checkpoint&apos;s <code>config.json</code> (or from ModelSlim metadata on Ascend) and
             picks the loader itself. Where a faster kernel serves the same checkpoint, it switches:
-            a Marlin-compatible GPTQ or AWQ checkpoint, both weight-only formats computed offline
+            a Marlin-compatible GPTQ or AWQ (activation-aware weight quantization) checkpoint, both
+            weight-only formats computed offline
             from a calibration set, loads as <code>gptq_marlin</code> or <code>awq_marlin</code>{' '}
             <Cite tier={1} href={sglangUrl(MODEL_CONFIG, 'L1964-L1995')}>
               model_config.py L1964-L1995
@@ -515,7 +534,7 @@ export function Quantization() {
             .
           </Box>
           <Box variant="p">
-            One name on the menu has no loader on GPUs. <code>--quantization gptq</code> passes
+            Plain GPTQ is on the menu with no loader on GPUs. <code>--quantization gptq</code> passes
             argument parsing; on NVIDIA and AMD GPUs the loader then logs that it is forcing{' '}
             <code>gptq</code>, and model setup fails with <code>Unknown quantization method</code>,
             because at v0.5.22 the plain GPTQ loader is registered only on Ascend, CPU and Intel XPU
@@ -617,7 +636,7 @@ export function Quantization() {
           />
           <Box variant="p">
             The FP8 row holds the practical surprise. On P4d, P4de and G5 an FP8 checkpoint still
-            loads: SGLang switches to the Marlin kernel, keeps the weights in FP8 and computes in
+            loads: SGLang switches its linear layers to the Marlin kernel, keeps the weights in FP8 and computes in
             16-bit, so FP8 saves weight memory there without FP8 math, and the startup log says{' '}
             <code>Your GPU does not have native support for FP8 computation</code>{' '}
             <Cite tier={1} href={sglangUrl(FP8_UTILS, 'L2540-L2546')} kind="code">
@@ -648,7 +667,8 @@ export function Quantization() {
             Kernels, moves that compile to build time. <code>--fp4-gemm-backend auto</code> picks
             the NVFP4 kernel in the table above.{' '}
             <code>--bf16-gemm-backend auto</code> applies to unquantized models too: on SM100 and
-            SM103 it selects SGLang&apos;s own just-in-time compiled GEMM kernels, and{' '}
+            SM103 it selects <code>cutedsl</code>, which routes each shape to SGLang&apos;s own
+            just-in-time compiled GEMM kernels or to cuBLAS, and{' '}
             <code>--bf16-gemm-backend torch</code> restores plain cuBLAS{' '}
             <Cite tier={1} href={sglangUrl(UNQUANT, 'L248-L254')}>
               unquant.py L248-L254
@@ -665,10 +685,14 @@ export function Quantization() {
                 <Cite tier={1} href={sglangDocsSrcUrl(QUANT_DOC, 'L53-L58')} kind="doc-code-conflict">
                   quantization.mdx L53-L58
                 </Cite>
-                ; v0.5.22&apos;s code registers it with a floor of SM100 on NVIDIA and gfx95x on
-                AMD, and the same page documents MXFP8 GEMM backends on SM100{' '}
+                ; v0.5.22&apos;s code registers it with a floor of SM100 on NVIDIA, and on AMD runs
+                it natively on gfx95x and on gfx942 after converting the weights to block FP8, and
+                the same page documents MXFP8 GEMM backends on SM100{' '}
                 <Cite tier={1} href={sglangUrl(FP8, 'L323-L333')}>
                   fp8.py L323-L333
+                </Cite>{' '}
+                <Cite tier={1} href={sglangUrl('python/sglang/srt/utils/common.py', 'L4736-L4747')} kind="code">
+                  utils/common.py L4736-L4747
                 </Cite>{' '}
                 <Cite tier={1} href={sglangDocsSrcUrl(QUANT_DOC, 'L262')}>
                   quantization.mdx L262
@@ -728,8 +752,8 @@ export function Quantization() {
           </Box>
           <Box variant="p">
             <code>auto</code> means the model dtype, with two routes to FP8 that need no flag. A
-            checkpoint whose quantization config declares an FP8 KV cache, as ModelOpt checkpoints
-            do with <code>kv_cache_quant_algo: FP8</code>, gets an FP8 E4M3 pool{' '}
+            checkpoint whose quantization config declares an FP8 KV cache, as a ModelOpt checkpoint
+            does with <code>kv_cache_quant_algo: FP8</code>, gets an FP8 E4M3 pool{' '}
             <Cite tier={1} href={sglangUrl(KV_DTYPE, 'L38-L48')} kind="code">
               kv_cache_dtype.py L38-L48
             </Cite>
@@ -743,7 +767,12 @@ export function Quantization() {
             <Cite tier={1} href={sglangUrl(OVERRIDES, 'L867-L889')} kind="code">
               overrides.py L867-L889
             </Cite>
-            . Pass <code>--kv-cache-dtype bf16</code> to keep a BF16 pool, and confirm the result in
+            . Pass <code>--kv-cache-dtype bf16</code> to keep a BF16 pool (DeepSeek V4&apos;s check
+            accepts only the long name, <code>bfloat16</code>{' '}
+            <Cite tier={1} href={sglangUrl(OVERRIDES, 'L878-L886')} kind="code">
+              overrides.py L878-L886
+            </Cite>
+            ), and confirm the result in
             the startup line <code>KV Cache is allocated. dtype: ..., #tokens: ...</code>, which
             reports the dtype and token count the pool got{' '}
             <Cite tier={1} href={sglangUrl(MEM_POOL, 'L2087-L2112')} kind="code">
@@ -841,7 +870,8 @@ export function Quantization() {
             magnitude divided by 448 on NVIDIA.
           </Box>
           <Box variant="p">
-            Each default backend a dense Llama-style model gets on EC2, <code>fa3</code> on P5,{' '}
+            Each default backend a dense Llama-style model gets on EC2 with speculative decoding
+            off, <code>fa3</code> on P5,{' '}
             <code>trtllm_mha</code> on P6 and <code>flashinfer</code> on the other families{' '}
             <Cite tier={1} href={sglangUrl(ATTN_DEFAULTS, 'L268-L324')} kind="code">
               model_override_base.py L268-L324
@@ -946,11 +976,19 @@ export function Quantization() {
           </ExpandableSection>
           <Box variant="p">
             <strong>Against vLLM:</strong> both engines read the format from the checkpoint and both
-            run FP8 checkpoints on Ampere as Marlin weight-only. For online FP8, SGLang keeps the
-            plain <code>--quantization fp8</code> name, while vLLM v0.31.0 uses scheme names such
-            as <code>fp8_per_tensor</code>, which SGLang&apos;s argument parser does not accept;
-            and SGLang&apos;s KV dtypes add MXFP8 and two FP4 recipes but no integer KV cache,
-            where vLLM v0.31.0 lists per-token-head INT8 and INT4 formats ({VLLM_QUANT_LINK}).
+            run the linear layers of an FP8 checkpoint on Ampere as Marlin weight-only. For online
+            FP8, SGLang keeps the plain <code>--quantization fp8</code> name, while vLLM v0.31.0
+            uses scheme names such as <code>fp8_per_tensor</code>, which SGLang&apos;s argument
+            parser does not accept; and SGLang&apos;s KV dtypes offer MXFP8 and two FP4 recipes but
+            no integer KV cache, where vLLM v0.31.0 lists NVFP4 and per-token-head INT8 and INT4
+            formats{' '}
+            <Cite
+              tier={1}
+              href="https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/config/cache.py#L39-L58"
+            >
+              vLLM cache.py L39-L58
+            </Cite>{' '}
+            ({VLLM_QUANT_LINK}).
           </Box>
         </SpaceBetween>
       </Container>
@@ -994,7 +1032,8 @@ export function Quantization() {
               Choose the KV dtype on purpose. Look for <code>kv_cache_quant_algo</code> in the
               checkpoint&apos;s quantization config and check whether the model is a DeepSeek
               sparse-attention model or DeepSeek V4, because each turns <code>auto</code> into FP8.
-              Pass <code>bf16</code> to keep BF16, or <code>fp8_e4m3</code> to opt in; on P5 prefer
+              Pass <code>bf16</code> to keep BF16 (<code>bfloat16</code> on DeepSeek V4), or{' '}
+              <code>fp8_e4m3</code> to opt in; on P5 prefer
               it to <code>fp8_e5m2</code>, which moves attention off FA3. Set the same value on
               prefill and decode servers.
             </li>
