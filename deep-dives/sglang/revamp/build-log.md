@@ -27,6 +27,7 @@ Per-section author reports, for the glossary, the fact check and the final repor
 | 23 SGLang vs vLLM | SglangVsVllm.tsx | 118 (99 T1, 9 T2, 10 T3) | 1, 0 overlap/clip | KV, FCFS, PD, LPM, RL, DP, TP, EP, MoE, ITL, EBNF, LoRA, MLA, DCP, LMSYS, TGI, BF16, FP8, FP4, FP16, TTFT, TPOT, TPS | Register 10 lineage 'close to a hundred files' is 84 files (93 lines) by grep; NxD Inference left out of Neuron row (follows section 19). 16 benchmarks, tier-badged, no winner |
 | 24 Ecosystem | EcosystemUsers.tsx | 76 | 2, 0 overlap/clip | RL, LLM, TPU, LMSYS, SMG, OME, RBG, FA3, MoE, DLC, AL2023, EFA, OCI, PAI, EAS, ROCm | 08 C3 'on H100' wrong for the 69% (Dec 2025 LinkedIn post names no GPU; H100 belongs to Feb 2026 post's production table): shipped 'against single-item scoring with prefix caching', no H100. SCOPE strongest-number line carries the wrong H100 condition. 08 B14 line numbers off by one (L6, L19-L29). NVIDIA container named 26.09, not 'October 2026' |
 | 25 Operations | Operations.tsx | 79 (28 code, 2 doc-code) | 0 (tables scroll at 390) | LoRA, TP, DP, PD, EKS, EC2, DLC, EOS, KV, SM90, FP8, JIT, TTFT, NCCL, OFI, EFA, EP, RL, CVE, EPD, LLM, NVD | All five code findings verified, marked read from source not run; 18-row symptom table; four-row key-reach table |
+| 26 Decision guide | DecisionGuide.tsx | 60 | 1, 0 overlap/clip (scrolls at 390, min 680) | PD, EP, MoE, KV, EC2, DLC, EKS, EFA, FCFS, LPM, TP, DP, EBNF, RL, LoRA, LMSYS, FP8, SM90 | Used section 18's Ray wording, not 10 E6 'early-stage' |
 
 ## Cross-section conditions to keep consistent
 
