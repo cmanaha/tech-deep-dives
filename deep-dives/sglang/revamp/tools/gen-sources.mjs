@@ -80,7 +80,8 @@ const unresolved = [];
 // template literals, small helper functions), so the generator parses each file with the
 // TypeScript compiler and evaluates the side-effect-free subset of expressions the dive
 // uses: string and template literals, identifiers, `+`, property access, object literals,
-// calls to the sglang*Url helpers and to single-expression local functions. Anything else
+// calls to the sglang*Url helpers and to local functions whose body is `const` bindings
+// and one return. Anything else
 // is reported as unresolved rather than guessed.
 const SK = ts.SyntaxKind;
 const FAIL = Symbol('unresolved');
@@ -105,9 +106,15 @@ function propName(name, env) {
 function makeFn(node, env) {
   const params = node.parameters.map((p) => (ts.isIdentifier(p.name) ? p.name.text : null));
   let body = node.body;
+  // A block body may hold `const` bindings before its single trailing `return`.
+  let locals = [];
   if (body && ts.isBlock(body)) {
-    const ret = body.statements.length === 1 && ts.isReturnStatement(body.statements[0]) ? body.statements[0] : null;
-    body = ret ? ret.expression : null;
+    const stmts = body.statements;
+    const last = stmts[stmts.length - 1];
+    const lead = stmts.slice(0, -1);
+    const plain = lead.every((st) => ts.isVariableStatement(st));
+    body = last && ts.isReturnStatement(last) && last.expression && plain ? last.expression : null;
+    locals = plain ? lead.flatMap((st) => st.declarationList.declarations) : [];
   }
   if (!body) return FAIL;
   return (...args) => {
@@ -115,6 +122,12 @@ function makeFn(node, env) {
     params.forEach((p, i) => {
       if (p) scope[p] = args[i];
     });
+    for (const d of locals) {
+      if (!ts.isIdentifier(d.name) || !d.initializer) throw new Error('unresolved');
+      const lv = eva(d.initializer, scope);
+      if (lv === FAIL) throw new Error('unresolved');
+      scope[d.name.text] = lv;
+    }
     const v = eva(body, scope);
     if (v === FAIL) throw new Error('unresolved');
     return v;
@@ -181,6 +194,11 @@ function eva(node, env) {
       } catch {
         return FAIL;
       }
+    }
+    case SK.ConditionalExpression: {
+      const c = eva(node.condition, env);
+      if (c === FAIL) return FAIL;
+      return eva(c ? node.whenTrue : node.whenFalse, env);
     }
     case SK.ArrayLiteralExpression:
       return node.elements.map((el) => eva(el, env));
