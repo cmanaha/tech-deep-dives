@@ -939,30 +939,32 @@ export function ModelGateway() {
             </Cite>
             .
           </Box>
-          <Box variant="p">
-            The documentation lists <code>--eviction-interval-secs</code> at 120{' '}
-            <Cite tier={1} href={sglangDocsSrcUrl(GW_DOC, 'L932-L934')} kind="doc-code-conflict">
-              SGLang docs: eviction interval (v0.5.22 source)
-            </Cite>
-            ; 120 holds for the binary, whose flag is <code>--eviction-interval</code>{' '}
-            <Cite tier={1} href={sglangUrl(MAIN, 'L165-L167')}>
-              main.rs L165-L167
-            </Cite>
-            , while the Python launcher takes <code>--eviction-interval-secs</code> and defaults to
-            60{' '}
-            <Cite tier={1} href={sglangUrl(RARGS, 'L62')}>
-              router_args.py L62
-            </Cite>
-            . It calls <code>--max-tree-size</code> a node count{' '}
-            <Cite tier={1} href={sglangDocsSrcUrl(GW_DOC, 'L937-L939')} kind="doc-code-conflict">
-              SGLang docs: max tree size (v0.5.22 source)
-            </Cite>
-            ; the code counts characters per worker and prunes only at each interval{' '}
-            <Cite tier={1} href={sglangUrl(TREE, 'L718-L775')}>
-              tree.rs L718-L775
-            </Cite>
-            .
-          </Box>
+          <ExpandableSection headerText="Where the documentation's knob table differs from the code">
+            <Box variant="p">
+              The documentation lists <code>--eviction-interval-secs</code> at 120{' '}
+              <Cite tier={1} href={sglangDocsSrcUrl(GW_DOC, 'L932-L934')} kind="doc-code-conflict">
+                SGLang docs: eviction interval (v0.5.22 source)
+              </Cite>
+              ; 120 holds for the binary, whose flag is <code>--eviction-interval</code>{' '}
+              <Cite tier={1} href={sglangUrl(MAIN, 'L165-L167')}>
+                main.rs L165-L167
+              </Cite>
+              , while the Python launcher takes <code>--eviction-interval-secs</code> and defaults to
+              60{' '}
+              <Cite tier={1} href={sglangUrl(RARGS, 'L62')}>
+                router_args.py L62
+              </Cite>
+              . It calls <code>--max-tree-size</code> a node count{' '}
+              <Cite tier={1} href={sglangDocsSrcUrl(GW_DOC, 'L937-L939')} kind="doc-code-conflict">
+                SGLang docs: max tree size (v0.5.22 source)
+              </Cite>
+              ; the code counts characters per worker and prunes only at each interval{' '}
+              <Cite tier={1} href={sglangUrl(TREE, 'L718-L775')}>
+                tree.rs L718-L775
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">Two traps, read from source and not run:</Box>
           <ul>
             <li>
@@ -1094,28 +1096,6 @@ export function ModelGateway() {
         header={
           <Header
             variant="h2"
-            description="Know the retry, breaker and health defaults before a worker dies, and where the gateway reports them"
-          >
-            Operating the gateway
-          </Header>
-        }
-      >
-        <Table
-          variant="embedded"
-          wrapLines
-          trackBy="id"
-          items={OPS_ROWS}
-          columnDefinitions={[
-            { id: 'feature', header: 'Feature', cell: (r) => r.feature, minWidth: 130 },
-            { id: 'behaviour', header: 'Default behaviour at v0.5.22', cell: (r) => r.behaviour, minWidth: 380 },
-          ]}
-        />
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
             description="Put the client-facing key on the gateway, keep the worker admin plane out of reach, and block the one route it passes through"
           >
             Authenticate at the gateway
@@ -1124,27 +1104,27 @@ export function ModelGateway() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The gateway serves a fixed list of paths and answers 404 to any other{' '}
-            <Cite tier={1} href={sglangUrl(SERVER, 'L544-L692')} kind="code">
-              server.rs L544-L692
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(SERVER, 'L94-L96')} kind="code">
-              server.rs L94-L96
+            The gateway&apos;s own authentication has two layers, both off by default, so set a key
+            before the port is reachable. Our reading of the code, not run: without one, every route
+            is open, <code>POST /workers</code> included, which adds a worker URL to the routing
+            set{' '}
+            <Cite tier={1} href={sglangUrl(SERVER, 'L633-L638')} kind="code">
+              server.rs L633-L638
             </Cite>
-            . A worker&apos;s weight-update, memory and pause routes (section 12, Talking to SGLang)
-            are not on that list, and a search of the gateway&apos;s source found no call to them;
-            it does fan the worker&apos;s <code>/flush_cache</code> out to every worker, behind its
-            own key check{' '}
-            <Cite tier={1} href={sglangUrl(SERVER, 'L401-L405')}>
-              server.rs L401-L405
+            , and both launchers bind 0.0.0.0 by default{' '}
+            <Cite tier={1} href={sglangUrl(MAIN, 'L136-L138')}>
+              main.rs L136-L138
             </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(`${GW}/src/core/worker_manager.rs`, 'L36-L67')}>
-              worker_manager.rs L36-L67
+            <Cite tier={1} href={sglangUrl(RARGS, 'L41')}>
+              router_args.py L41
+            </Cite>
+            , where an SGLang server binds 127.0.0.1{' '}
+            <Cite tier={1} href={sglangUrl('python/sglang/srt/arg_groups/fields/serving.py', 'L65-L66')}>
+              serving.py L65-L66
             </Cite>
             .
           </Box>
           <Box variant="p">
-            The gateway&apos;s own authentication has two layers, both off by default.{' '}
             <code>--api-key</code> sets one bearer key on the inference, admin, worker-management and
             mesh routes{' '}
             <Cite tier={1} href={sglangUrl(MW, 'L107-L147')}>
@@ -1189,26 +1169,26 @@ export function ModelGateway() {
             <Cite tier={1} href={sglangUrl(MAIN, 'L537-L545')}>
               main.rs L537-L545
             </Cite>
-            . A multi-tokenizer server, which cannot use its own keys (section 12), authenticates
-            here.
+            . A multi-tokenizer server, which cannot use its own keys (section 12, Talking to
+            SGLang), authenticates here.
           </Box>
           <Box variant="p">
-            Set the key before the port is reachable. Our reading of the code, not run: without
-            one, every route is open, <code>POST /workers</code> included, which adds a worker URL
-            to the routing set{' '}
-            <Cite tier={1} href={sglangUrl(SERVER, 'L633-L638')} kind="code">
-              server.rs L633-L638
-            </Cite>
-            , and both launchers bind 0.0.0.0 by default{' '}
-            <Cite tier={1} href={sglangUrl(MAIN, 'L136-L138')}>
-              main.rs L136-L138
+            The gateway serves a fixed list of paths and answers 404 to any other{' '}
+            <Cite tier={1} href={sglangUrl(SERVER, 'L544-L692')} kind="code">
+              server.rs L544-L692
             </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(RARGS, 'L41')}>
-              router_args.py L41
+            <Cite tier={1} href={sglangUrl(SERVER, 'L94-L96')} kind="code">
+              server.rs L94-L96
             </Cite>
-            , where an SGLang server binds 127.0.0.1{' '}
-            <Cite tier={1} href={sglangUrl('python/sglang/srt/arg_groups/fields/serving.py', 'L65-L66')}>
-              serving.py L65-L66
+            . A worker&apos;s weight-update, memory and pause routes (section 12) are not on that
+            list, and a search of the gateway&apos;s source found no call to them;
+            it does fan the worker&apos;s <code>/flush_cache</code> out to every worker, behind its
+            own key check{' '}
+            <Cite tier={1} href={sglangUrl(SERVER, 'L401-L405')}>
+              server.rs L401-L405
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(`${GW}/src/core/worker_manager.rs`, 'L36-L67')}>
+              worker_manager.rs L36-L67
             </Cite>
             .
           </Box>
@@ -1251,6 +1231,28 @@ export function ModelGateway() {
             </Box>
           </ExpandableSection>
         </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Know the retry, breaker and health defaults before a worker dies, and where the gateway reports them"
+          >
+            Operating the gateway
+          </Header>
+        }
+      >
+        <Table
+          variant="embedded"
+          wrapLines
+          trackBy="id"
+          items={OPS_ROWS}
+          columnDefinitions={[
+            { id: 'feature', header: 'Feature', cell: (r) => r.feature, minWidth: 130 },
+            { id: 'behaviour', header: 'Default behaviour at v0.5.22', cell: (r) => r.behaviour, minWidth: 380 },
+          ]}
+        />
       </Container>
 
       <Container
@@ -1364,6 +1366,28 @@ export function ModelGateway() {
         }
       >
         <SpaceBetween size="m">
+          <Box variant="p">
+            Use the gateway inside <code>lmsysorg/sglang:v0.5.22</code>: the image builds the{' '}
+            <code>sgl-model-gateway</code> binary onto <code>PATH</code> and installs the{' '}
+            <code>sglang_router</code> package, both from the tag, so one image serves as worker and
+            as gateway{' '}
+            <Cite tier={1} href={sglangUrl('docker/Dockerfile', 'L351-L377')}>
+              Dockerfile L351-L377
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl('docker/Dockerfile', 'L623-L627')}>
+              Dockerfile L623-L627
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl('docker/Dockerfile', 'L741')}>
+              Dockerfile L741
+            </Cite>
+            . Elsewhere, build <code>sgl-model-gateway/</code> from the v0.5.22 tag rather than{' '}
+            <code>pip install sglang-router</code>, which gives the January 2026 build on PyPI
+            (Python Package Index){' '}
+            <Cite tier={1} href={PYPI_ROUTER}>
+              PyPI: sglang-router 0.3.2
+            </Cite>
+            .
+          </Box>
           <ExpandableSection headerText="What ships where, and why two gateways share one name">
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1422,7 +1446,7 @@ export function ModelGateway() {
                 <Cite tier={1} href={sglangDocsSrcUrl(GW_DOC, 'L1702-L1712')}>
                   SGLang docs: Python bindings (v0.5.22 source)
                 </Cite>
-                , both stopped at 0.3.2. The PyPI (Python Package Index) wheel dates from 2026-01-15
+                , both stopped at 0.3.2. The PyPI wheel dates from 2026-01-15
                 and its <code>--policy</code> lacks <code>bucket</code>,{' '}
                 <code>consistent_hashing</code> and <code>prefix_hash</code>{' '}
                 <Cite tier={1} href={PYPI_ROUTER}>
@@ -1445,27 +1469,6 @@ export function ModelGateway() {
               </Box>
             </SpaceBetween>
           </ExpandableSection>
-          <Box variant="p">
-            Use the gateway inside <code>lmsysorg/sglang:v0.5.22</code>: the image builds the{' '}
-            <code>sgl-model-gateway</code> binary onto <code>PATH</code> and installs the{' '}
-            <code>sglang_router</code> package, both from the tag, so one image serves as worker and
-            as gateway{' '}
-            <Cite tier={1} href={sglangUrl('docker/Dockerfile', 'L351-L377')}>
-              Dockerfile L351-L377
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl('docker/Dockerfile', 'L623-L627')}>
-              Dockerfile L623-L627
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl('docker/Dockerfile', 'L741')}>
-              Dockerfile L741
-            </Cite>
-            . Elsewhere, build <code>sgl-model-gateway/</code> from the v0.5.22 tag rather than{' '}
-            <code>pip install sglang-router</code>, which gives the January 2026 build{' '}
-            <Cite tier={1} href={PYPI_ROUTER}>
-              PyPI: sglang-router 0.3.2
-            </Cite>
-            .
-          </Box>
           <Box variant="p">
             Then start with <code>cache_aware</code>, set <code>--api-key</code>, and measure what
             share of a typical prompt&apos;s characters your requests have in common. Affinity

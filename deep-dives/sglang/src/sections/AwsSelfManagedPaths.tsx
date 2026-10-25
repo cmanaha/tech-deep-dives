@@ -388,7 +388,7 @@ export function AwsSelfManagedPaths() {
             . Whatever fronts SGLang or its gateway, whether a Service, an Ingress or a load
             balancer, keep <code>/server_info</code> and <code>/get_server_info</code> off the
             client path: section 12 reads their response as carrying both keys, and section 17, The
-            Model Gateway, found that the gateway serves them outside its own key check.
+            Model Gateway, reads the gateway&apos;s code as serving them outside its own key check.
           </Box>
         </SpaceBetween>
       </Container>
@@ -419,6 +419,23 @@ export function AwsSelfManagedPaths() {
             . SageMaker&apos;s <code>/ping</code> is a static 200 by comparison (section 19, SGLang
             on SageMaker AI and HyperPod).
           </Box>
+          <Table
+            variant="embedded"
+            wrapLines
+            trackBy="id"
+            header={
+              <Header variant="h3">
+                A probe plan for one server, built from the handler&apos;s behaviour (our reading)
+              </Header>
+            }
+            items={PROBE_ROWS}
+            columnDefinitions={[
+              { id: 'probe', header: 'Probe', cell: (r) => r.probe, minWidth: 100 },
+              { id: 'path', header: 'Path', cell: (r) => r.path, minWidth: 90 },
+              { id: 'means', header: 'A 200 means', cell: (r) => r.means, minWidth: 200 },
+              { id: 'set', header: 'What to set', cell: (r) => r.set, minWidth: 220 },
+            ]}
+          />
           <Box variant="p">
             A loading server answers nothing. The HTTP server starts only after the model has loaded
             and the CUDA graphs are captured{' '}
@@ -523,23 +540,6 @@ export function AwsSelfManagedPaths() {
             . Point the liveness probe at <code>/health_generate</code> in that mode, or it stops
             seeing a hung engine.
           </Box>
-          <Table
-            variant="embedded"
-            wrapLines
-            trackBy="id"
-            header={
-              <Header variant="h3">
-                A probe plan for one server, built from the handler&apos;s behaviour (our reading)
-              </Header>
-            }
-            items={PROBE_ROWS}
-            columnDefinitions={[
-              { id: 'probe', header: 'Probe', cell: (r) => r.probe, minWidth: 100 },
-              { id: 'path', header: 'Path', cell: (r) => r.path, minWidth: 90 },
-              { id: 'means', header: 'A 200 means', cell: (r) => r.means, minWidth: 200 },
-              { id: 'set', header: 'What to set', cell: (r) => r.set, minWidth: 220 },
-            ]}
-          />
           <ExpandableSection headerText="How the published manifests set their probes">
             <SpaceBetween size="s">
               <Box variant="p">

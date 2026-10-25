@@ -769,6 +769,17 @@ export function AwsManagedPaths() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
+            Section 12, Talking to SGLang, gives the key matrix: on SageMaker set only the admin
+            key, as <code>SM_SGLANG_ADMIN_API_KEY</code>, which by our reading of the code leaves{' '}
+            <code>/ping</code> and <code>/invocations</code> unkeyed behind IAM (Identity and Access
+            Management). That key travels in the <code>Environment</code> map with every other{' '}
+            <code>SM_SGLANG_</code> variable, and AWS advises keeping sensitive data out of that map{' '}
+            <Cite tier={1} href={SM_CONTAINER_DEF}>
+              SageMaker API: ContainerDefinition
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
             SGLang&apos;s key check lets three path prefixes through without a token:{' '}
             <code>/health</code>, <code>/ready</code> and <code>/metrics</code>{' '}
             <Cite tier={1} href={sglangUrl(AUTH, 'L101-L106')} kind="code">
@@ -781,17 +792,10 @@ export function AwsManagedPaths() {
             </Cite>
             , so a server started with <code>--api-key</code> (<code>SM_SGLANG_API_KEY</code>)
             is expected to fail its first <code>/ping</code> and never reach InService; read from
-            code, not run. Callers already need IAM (Identity and Access Management) permission for{' '}
+            code, not run. Callers already need IAM permission for{' '}
             <code>sagemaker:InvokeEndpoint</code> on the endpoint{' '}
             <Cite tier={1} href={SM_OPENAI}>
               SageMaker docs: OpenAI-compatible APIs
-            </Cite>
-            . Section 12, Talking to SGLang, gives the key matrix: on SageMaker set only the admin
-            key, as <code>SM_SGLANG_ADMIN_API_KEY</code>, which by our reading of the code leaves{' '}
-            <code>/ping</code> and <code>/invocations</code> unkeyed behind IAM. That key travels in the <code>Environment</code> map with every other{' '}
-            <code>SM_SGLANG_</code> variable, and AWS advises keeping sensitive data out of that map{' '}
-            <Cite tier={1} href={SM_CONTAINER_DEF}>
-              SageMaker API: ContainerDefinition
             </Cite>
             .
           </Box>
@@ -1004,89 +1008,6 @@ export function AwsManagedPaths() {
             </Cite>
             ; section 17, The Model Gateway, covers that router.
           </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Route Trainium and Inferentia work to vLLM now, and know the hook an SGLang Neuron backend would use"
-          >
-            Trainium and Inferentia: serve with vLLM today
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            SGLang v0.5.22 has no Trainium or Inferentia support. Its README lists AWS Trainium
-            under integrations in progress{' '}
-            <Cite tier={1} href={sglangUrl('README.md', 'L58')}>
-              README.md L58
-            </Cite>
-            , and a search of the tag&apos;s Python tree for Trainium, Inferentia and Neuron terms
-            finds no backend code{' '}
-            <Cite tier={1} href={sglangTreeUrl('python')} kind="code">
-              python/ at v0.5.22
-            </Cite>
-            . The one SGLang reference a search of the Neuron SDK documentation returned is vLLM
-            Neuron disabling logprobs for jump-forward decoding, &quot;taking inspiration from the
-            original jump-forward implementation in SGLang&quot;{' '}
-            <Cite tier={1} href={NEURON_DOC}>
-              Neuron docs 2.33.0: vLLM Neuron additional config
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            Out-of-tree hardware enters SGLang through a platform plugin: a pip package that
-            registers an entry point in the <code>sglang.srt.platforms</code> group, loaded when{' '}
-            <code>SGLANG_PLATFORM</code> names it, with startup failing if the named plugin is not
-            installed{' '}
-            <Cite tier={1} href={sglangUrl(`${SRT}/plugins/__init__.py`, 'L28')}>
-              plugins/__init__.py L28
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(`${SRT}/platforms/__init__.py`, 'L95-L130')}>
-              platforms/__init__.py L95-L130
-            </Cite>
-            . Upstream Trainium work after v0.5.22 targets an out-of-tree Neuron platform plugin.
-            PR #45897, merged on 2026-10-23 after the tag, lets such platforms bind group devices
-            and custom ops and was tested on &quot;AWS trn3, 2 NeuronCores&quot;{' '}
-            <Cite tier={2} href={PR_45897}>
-              PR #45897 (project statement)
-            </Cite>
-            , and the open PR #45986 was motivated by per-shape compiles on Trainium through that
-            plugin{' '}
-            <Cite tier={2} href={PR_45986}>
-              PR #45986 (project statement)
-            </Cite>
-            . No public repository for the plugin was located by the GitHub searches{' '}
-            <code>sglang neuron</code>, <code>org:aws-neuron sglang</code> and{' '}
-            <code>sglang trainium</code> on 2026-10-24.
-          </Box>
-          <Box variant="p">
-            <strong>Against vLLM:</strong> both engines take out-of-tree hardware through Python
-            entry points, <code>vllm.platform_plugins</code> in vLLM{' '}
-            <Cite tier={1} href={VLLM_PLUGINS}>
-              vLLM plugins/__init__.py L23 (v0.31.0)
-            </Cite>{' '}
-            and <code>sglang.srt.platforms</code> in SGLang. To serve on Trainium or Inferentia
-            now, use vLLM with its Neuron plugin ({VLLM_NEURON_LINK}); on AWS, SGLang is a GPU
-            choice.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Leave with a SageMaker endpoint configured to pass /ping inside its window with metrics on, or with the path that fits better"
-          >
-            Next step: an endpoint that passes its first health check
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
           <ExpandableSection headerText="AWS-authored SGLang material, dated">
             <ul>
               <li>
@@ -1139,6 +1060,96 @@ export function AwsManagedPaths() {
               </li>
             </ul>
           </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Route Trainium and Inferentia work to vLLM now, and know the hook an SGLang Neuron backend would use"
+          >
+            Trainium and Inferentia: serve with vLLM today
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            SGLang v0.5.22 has no Trainium or Inferentia support. Its README lists AWS Trainium
+            under integrations in progress{' '}
+            <Cite tier={1} href={sglangUrl('README.md', 'L58')}>
+              README.md L58
+            </Cite>
+            , and a search of the tag&apos;s Python tree for Trainium, Inferentia and Neuron terms
+            finds no backend code{' '}
+            <Cite tier={1} href={sglangTreeUrl('python')} kind="code">
+              python/ at v0.5.22
+            </Cite>
+            .
+          </Box>
+          <ExpandableSection headerText="Where a Neuron backend would plug in, and what this research found of one">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                Out-of-tree hardware enters SGLang through a platform plugin: a pip package that
+                registers an entry point in the <code>sglang.srt.platforms</code> group, loaded when{' '}
+                <code>SGLANG_PLATFORM</code> names it, with startup failing if the named plugin is not
+                installed{' '}
+                <Cite tier={1} href={sglangUrl(`${SRT}/plugins/__init__.py`, 'L28')}>
+                  plugins/__init__.py L28
+                </Cite>{' '}
+                <Cite tier={1} href={sglangUrl(`${SRT}/platforms/__init__.py`, 'L95-L130')}>
+                  platforms/__init__.py L95-L130
+                </Cite>
+                . Upstream Trainium work after v0.5.22 targets an out-of-tree Neuron platform plugin.
+                PR #45897, merged on 2026-10-23 after the tag, lets such platforms bind group devices
+                and custom ops and was tested on &quot;AWS trn3, 2 NeuronCores&quot;{' '}
+                <Cite tier={2} href={PR_45897}>
+                  PR #45897 (project statement)
+                </Cite>
+                , and the open PR #45986 was motivated by per-shape compiles on Trainium through that
+                plugin{' '}
+                <Cite tier={2} href={PR_45986}>
+                  PR #45986 (project statement)
+                </Cite>
+                . No public repository for the plugin was located by the GitHub searches{' '}
+                <code>sglang neuron</code>, <code>org:aws-neuron sglang</code> and{' '}
+                <code>sglang trainium</code> on 2026-10-24.
+              </Box>
+              <Box variant="p">
+                The one SGLang reference a search of the Neuron SDK documentation returned is vLLM
+                Neuron disabling logprobs for jump-forward decoding, &quot;taking inspiration from the
+                original jump-forward implementation in SGLang&quot;{' '}
+                <Cite tier={1} href={NEURON_DOC}>
+                  Neuron docs 2.33.0: vLLM Neuron additional config
+                </Cite>
+                .
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
+          <Box variant="p">
+            <strong>Against vLLM:</strong> both engines take out-of-tree hardware through Python
+            entry points, <code>vllm.platform_plugins</code> in vLLM{' '}
+            <Cite tier={1} href={VLLM_PLUGINS}>
+              vLLM plugins/__init__.py L23 (v0.31.0)
+            </Cite>{' '}
+            and <code>sglang.srt.platforms</code> in SGLang. To serve on Trainium or Inferentia
+            now, use vLLM with its Neuron plugin ({VLLM_NEURON_LINK}); on AWS, SGLang is a GPU
+            choice.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Leave with a SageMaker endpoint configured to pass /ping inside its window with metrics on, or with the path that fits better"
+          >
+            Next step: an endpoint that passes its first health check
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
           <Box variant="p">
             For a SageMaker AI endpoint, set these before the first deploy:
           </Box>

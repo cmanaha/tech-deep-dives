@@ -912,7 +912,8 @@ export function MultiNodeKubernetes() {
             per-role policies are section 17, The Model Gateway.
           </Box>
           <Box variant="p">
-            The gateway takes the bootstrap host from the prefill URL{' '}
+            Our reading of the code, not run: add port 8998 to the prefill Service, and keep one LWS
+            group behind each Service. The gateway takes the bootstrap host from the prefill URL{' '}
             <Cite tier={1} href={sglangUrl(`${GW}/core/worker_builder.rs`, 'L136')} kind="code">
               worker_builder.rs L136
             </Cite>
@@ -926,10 +927,8 @@ export function MultiNodeKubernetes() {
             <Cite tier={1} href={sglangDocsSrcUrl(LWS_PD, 'L650-L663')}>
               lws_pd_deploy.mdx L650-L663
             </Cite>
-            . Our reading of the code, not run: add port 8998 to the prefill Service, and keep one
-            LWS group behind each Service. A Service over several groups shows the gateway one
-            worker, and it can route the bootstrap lookup to a different leader than the prefill
-            request.
+            . By the same reading, a Service over several groups shows the gateway one worker, and it
+            can route the bootstrap lookup to a different leader than the prefill request.
           </Box>
           <Box variant="p">
             RBG wraps the same pieces in one object: prefill and decode roles that run as
@@ -1175,39 +1174,40 @@ export function MultiNodeKubernetes() {
             </Link>
             ).
           </Box>
-          <Box variant="p">
-            <strong>SGLang&apos;s experimental router.</strong> <code>experimental/sgl-router</code>{' '}
-            is a second Rust router in the SGLang repository: version 0.1.0, unpublished, built from
-            source{' '}
-            <Cite tier={1} href={sglangUrl(`${XR}/Cargo.toml`, 'L1-L20')}>
-              Cargo.toml L1-L20
-            </Cite>
-            , and called experimental in the release notes{' '}
-            <Cite tier={1} href={SGLANG_RELEASE}>
-              SGLang v0.5.22 release notes
-            </Cite>
-            . It subscribes to every worker&apos;s KV events and hashes each prompt page by page the
-            way the worker does{' '}
-            <Cite tier={1} href={sglangUrl(`${XR}/src/state/kv_events/subscriber.rs`, 'L1-L25')}>
-              subscriber.rs L1-L25
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(`${XR}/src/state/kv_events/hash.rs`, 'L1-L17')}>
-              hash.rs L1-L17
-            </Cite>
-            , so it follows the actual cache. On Kubernetes it reads a Service&apos;s
-            EndpointSlices, readiness applied and port taken from the slice (30000 when absent){' '}
-            <Cite tier={1} href={sglangUrl(`${XR}/src/discovery/k8s.rs`, 'L86-L120')}>
-              k8s.rs L86-L120
-            </Cite>
-            , and a new replica can copy the index from a warm sibling before it reports ready{' '}
-            <Cite tier={1} href={sglangUrl(`${XR}/src/server/routes/cache.rs`, 'L90-L160')}>
-              cache.rs L90-L160
-            </Cite>{' '}
-            <Cite tier={1} href={sglangUrl(`${XR}/src/state/kv_events/bootstrap/tracker.rs`, 'L274-L282')}>
-              tracker.rs L274-L282
-            </Cite>
-            .
-          </Box>
+          <ExpandableSection headerText="SGLang's experimental router: version 0.1.0, built from source">
+            <Box variant="p">
+              <code>experimental/sgl-router</code> is a second Rust router in the SGLang repository:
+              version 0.1.0, unpublished, built from source{' '}
+              <Cite tier={1} href={sglangUrl(`${XR}/Cargo.toml`, 'L1-L20')}>
+                Cargo.toml L1-L20
+              </Cite>
+              , and called experimental in the release notes{' '}
+              <Cite tier={1} href={SGLANG_RELEASE}>
+                SGLang v0.5.22 release notes
+              </Cite>
+              . It subscribes to every worker&apos;s KV events and hashes each prompt page by page the
+              way the worker does{' '}
+              <Cite tier={1} href={sglangUrl(`${XR}/src/state/kv_events/subscriber.rs`, 'L1-L25')}>
+                subscriber.rs L1-L25
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl(`${XR}/src/state/kv_events/hash.rs`, 'L1-L17')}>
+                hash.rs L1-L17
+              </Cite>
+              , so it follows the actual cache. On Kubernetes it reads a Service&apos;s
+              EndpointSlices, readiness applied and port taken from the slice (30000 when absent){' '}
+              <Cite tier={1} href={sglangUrl(`${XR}/src/discovery/k8s.rs`, 'L86-L120')}>
+                k8s.rs L86-L120
+              </Cite>
+              , and a new replica can copy the index from a warm sibling before it reports ready{' '}
+              <Cite tier={1} href={sglangUrl(`${XR}/src/server/routes/cache.rs`, 'L90-L160')}>
+                cache.rs L90-L160
+              </Cite>{' '}
+              <Cite tier={1} href={sglangUrl(`${XR}/src/state/kv_events/bootstrap/tracker.rs`, 'L274-L282')}>
+                tracker.rs L274-L282
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             <strong>Against vLLM:</strong> both ecosystems find a cached prefix the same two ways.
             A router remembers where it sent text, as the SGLang gateway and production-stack&apos;s{' '}
@@ -1305,12 +1305,32 @@ export function MultiNodeKubernetes() {
             gauges only with <code>--enable-metrics</code>.
           </Box>
           <Box variant="p">
-            <strong>6. KV events</strong>, if your router reads them:{' '}
+            <strong>6. Prefix reuse.</strong> Starting from the documented LWS or RBG recipe, remove{' '}
+            <code>--disable-radix-cache</code> from the prefill servers, since as written neither
+            recipe reuses a prefix whatever the router decides{' '}
+            <Cite tier={1} href={sglangDocsSrcUrl(LWS_PD, 'L68')}>
+              lws_pd_deploy.mdx L68
+            </Cite>{' '}
+            <Cite tier={1} href={sglangDocsSrcUrl(RBG_PD, 'L61')}>
+              deepseekv32_pd.mdx L61
+            </Cite>{' '}
+            <Cite tier={1} href={sglangUrl(DISAGG_FIELDS, 'L85-L88')}>
+              disagg.py L85-L88
+            </Cite>
+            , and replace the RBG router&apos;s <code>--policy random</code> with the default{' '}
+            <code>cache_aware</code>{' '}
+            <Cite tier={1} href={sglangDocsSrcUrl(RBG_PD, 'L479-L502')}>
+              deepseekv32_pd.mdx L479-L502
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            <strong>7. KV events</strong>, if your router reads them:{' '}
             <code>--kv-events-config</code> with <code>&quot;publisher&quot;:&quot;zmq&quot;</code>,
             and ports 5557 + DP rank open from every worker to the router.
           </Box>
           <Box variant="p">
-            <strong>7. Version.</strong> Read the image tag or pin in the orchestrator&apos;s
+            <strong>8. Version.</strong> Read the image tag or pin in the orchestrator&apos;s
             manifests before you copy them. <strong>llm-d is the one orchestrator in the table that
             installs v0.5.22</strong>; Dynamo runs 0.5.21, and Ray installs whatever pip resolves.
           </Box>
