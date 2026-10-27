@@ -238,3 +238,12 @@ No assertion in the after lacks a source.
   - KernelExecutionLifecycle cites `trn2Arch` for "NeuronCore-v3 still supports dynamic shapes
     and control flow"; the register (S22) and this section source that to the Trainium2
     architecture page (`trainium2Arch`).
+
+## 2026-10-24 TorchNeuron update (stream trainium, orchestrator edit)
+
+Evidence: `research/2026-10-torchneuron/` rows E6, P10, P14, P23, P38, P52, C14, SA24; plan item 2 in `revamp/TORCHNEURON-2026-10.md`.
+
+Claim-set diff:
+- Removed: "`torch.all_to_all_vdev_2d` ... which the Neuron 2.32.0 TorchNeuron guide lists for future releases" (E6 STALE).
+- Added: TorchNeuron supports `torch._grouped_mm` and MoE dispatch and combine on `neuron` (P10, about page); a grouped GEMM always forces a torch.compile graph break (P38, compile reference); on TorchTitan Neuron keep the expert computation out of the compiled region, and its EP dispatch runs on an NKI all-to-all-v collective (P52, SA24 evidence, TorchTitan Neuron page); `torch.all_to_all_vdev_2d` has no implementation in torch-neuronx at v2.33.0 (C14, our search, labelled in the Cite note).
+- Trn1 and Inf2: PyTorch stays on the deprecated XLA build 2.9.0.2.15.32035 (P23); TorchNeuron supports Trn2 and Trn3 (P14). Replaced "NxD Inference dropped them in Neuron 2.29.0, so serving either with it pins to Neuron 2.28" with the 2.33.0 statement that NxD Inference stays in maintenance mode on Inf2 and Trn1 at Neuron SDK 2.31 (EOS announcement page, fetched 2026-10-24). The two AWS statements differ; the newer page governs.

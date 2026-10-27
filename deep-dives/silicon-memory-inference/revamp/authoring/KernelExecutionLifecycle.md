@@ -257,3 +257,11 @@ path is labelled as our model.
 - Cross-links by name: Memory Hierarchy Primer, NVIDIA Hopper, Determinism: NEFF and
   GPU Reproducibility, KV Cache and FlashAttention, NVIDIA Compilers and Kernel
   Tooling, AWS Compilers and Kernel Tooling.
+
+## 2026-10-24 TorchNeuron update (stream trainium, orchestrator edit)
+
+Evidence: `research/2026-10-torchneuron/` rows P4, P5, P6, P62, C5, C9.
+
+Claim-set diff:
+- Trainium2 host row: "torch-neuronx traces the model into an XLA graph" (true only of the XLA lineage) replaced by "TorchNeuron lowers each eager operator, or each torch.compile graph, to StableHLO; neuronx-cc compiles it ... into a NEFF" (P4, P5, P6, about page). XLA's expansion moved to its next use.
+- Added to "The compiler decides what fuses": in eager mode each operator compiles into its own NEFF and its intermediates go through HBM (P62, PyTorch blog, Tier 2 technical description), while torch.compile hands neuronx-cc one graph per NEFF (P5, about page).

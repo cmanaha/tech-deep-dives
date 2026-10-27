@@ -74,12 +74,33 @@ export const S = {
     tier: 1,
     accessed: '2026-10-16',
   },
-  pytorchNative: {
-    title: 'AWS Neuron 2.32.0: Native PyTorch for AWS Trainium (TorchNeuron)',
+  torchNeuronNotes: {
+    title: 'AWS Neuron 2.33.0: TorchNeuron component release notes',
     publisher: 'AWS',
-    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/frameworks/torch/pytorch-native-overview.html',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/torchneuron.html',
     tier: 1,
-    accessed: '2026-10-23',
+    accessed: '2026-10-24',
+  },
+  torchNeuronxRepo: {
+    title: 'aws-neuron/torch-neuronx at release tag v2.33.0 (Apache-2.0)',
+    publisher: 'AWS',
+    url: 'https://github.com/aws-neuron/torch-neuronx/tree/v2.33.0',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  eosNxdInference: {
+    title: 'AWS Neuron 2.33.0: End of support for NxD Inference and NxD Core Inference APIs on Trn2 and Trn3 starting in Neuron 2.34',
+    publisher: 'AWS',
+    url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/announcements/neuron2.x/announce-eos-nxdi-nxd-core-inference.html',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  pytorch214Blog: {
+    title: 'PyTorch 2.14 release blog (TokenSwitch)',
+    publisher: 'PyTorch',
+    url: 'https://pytorch.org/blog/pytorch-2-14-release-blog/',
+    tier: 2,
+    accessed: '2026-10-24',
   },
 
   // Collective and transfer libraries, pinned to release tags (Tier 1)

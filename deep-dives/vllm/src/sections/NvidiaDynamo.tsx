@@ -7,6 +7,7 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Table from '@cloudscape-design/components/table';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import Alert from '@cloudscape-design/components/alert';
+import Link from '@cloudscape-design/components/link';
 import { Cite, vllmUrl } from '../components/Cite';
 
 /** Dynamo v1.5.1 (commit 2093662a4d4e5fd318732935213dde08dc7be818), the newest stable release. */
@@ -621,7 +622,11 @@ export function NvidiaDynamo() {
           <Box variant="p">
             Keep the altitudes straight when comparing options. Choosing SGLang or TensorRT-LLM
             instead of vLLM is an <strong>engine</strong> choice, the subject of{' '}
-            <strong>section 26 (When Not vLLM)</strong>. Dynamo is an <em>orchestration</em>{' '}
+            <strong>section 26 (When Not vLLM)</strong> and, for SGLang, of the{' '}
+            <Link external href="../sglang/">
+              SGLang dive, section 23: SGLang and vLLM Compared
+            </Link>
+            . Dynamo is an <em>orchestration</em>{' '}
             choice, a way to operate a fleet of whichever engine you picked. Its real alternatives
             are the Production-Stack router (section 16), llm-d (section 17) and Ray Serve (section
             15): the things that turn a set of engines into a service.

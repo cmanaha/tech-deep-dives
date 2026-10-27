@@ -7,7 +7,9 @@ import type { Source } from '../components/Cite';
  * Records shared with another section file reuse its URL, title, publisher and
  * tier. Records for the two instance store pages, the Llama 3 paper and the LMCache
  * local storage page were fetched during authoring on 2026-10-17. Records accessed
- * 2026-10-23 were added or re-pinned during verification.
+ * 2026-10-23 were added or re-pinned during verification. Records accessed 2026-10-24
+ * carry the AWS remote KV tier rows of research/2026-10-kv-tiers/01..03 (Vn, Mn, Fn)
+ * and were fetched again at their pinned tag or SHA on that date.
  */
 export const S = {
   // AWS documentation (Tier 1)
@@ -37,21 +39,35 @@ export const S = {
     publisher: 'AWS',
     url: 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html',
     tier: 1,
-    accessed: '2026-10-17',
+    accessed: '2026-10-24',
   },
   fsxEfa: {
     title: 'Amazon FSx for Lustre: working with EFA-enabled file systems',
     publisher: 'AWS',
     url: 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html',
     tier: 1,
-    accessed: '2026-10-17',
+    accessed: '2026-10-24',
   },
   fsxSsd: {
     title: 'Amazon FSx for Lustre: SSD storage performance',
     publisher: 'AWS',
     url: 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html',
     tier: 1,
-    accessed: '2026-10-17',
+    accessed: '2026-10-24',
+  },
+  fsxGettingStarted: {
+    title: 'Amazon FSx for Lustre: getting started (EFA-enabled Persistent SSD capacity in 4.8 TiB steps at 1,000 MBps/TiB)',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/getting-started.html',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  elasticacheVersions: {
+    title: 'Amazon ElastiCache: engine versions and upgrading (Valkey 7.2.6 to 9.1)',
+    publisher: 'AWS',
+    url: 'https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html',
+    tier: 1,
+    accessed: '2026-10-24',
   },
   s3Express: {
     title: 'Amazon S3 Express One Zone: high performance with directory buckets',
@@ -173,6 +189,105 @@ export const S = {
     url: 'https://github.com/llm-d/llm-d/blob/v0.10.0/guides/tiered-prefix-cache/manifests/backends/aws/README.md',
     tier: 1,
     accessed: '2026-10-23',
+  },
+
+  dynamoKvbmDisk: {
+    title: 'ai-dynamo/dynamo lib/llm/src/block_manager/storage/disk.rs at tag v1.6.0 (one mkostemp file per worker, unlinked after NIXL registration)',
+    publisher: 'NVIDIA Dynamo',
+    url: 'https://github.com/ai-dynamo/dynamo/blob/v1.6.0/lib/llm/src/block_manager/storage/disk.rs#L398-L470',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  vllmFsTierDoc: {
+    title: 'vLLM docs/features/kv_offloading_usage.md at tag v0.31.0 (fs secondary tier, root_dir, cross-process sharing)',
+    publisher: 'vLLM',
+    url: 'https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/kv_offloading_usage.md#L73-L196',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  lmcacheGds: {
+    title: 'LMCache lmcache/v1/storage_backend/gds_backend.py at tag v0.5.6 (contains() looks for the key\'s metadata file under every gds_path)',
+    publisher: 'LMCache',
+    url: 'https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/gds_backend.py#L531-L547',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  lmcacheFsNative: {
+    title: 'LMCache multiprocess fs_native L2 adapter docs at tag v0.5.6 (parallel file systems such as Lustre)',
+    publisher: 'LMCache',
+    url: 'https://github.com/LMCache/LMCache/blob/v0.5.6/docs/source/mp/l2_storage/fs_native.rst#L1-L80',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  lmcacheFsNativeExists: {
+    title: 'LMCache csrc/storage_backends/fs/connector.cpp at tag v0.5.6 (fs_native\'s FSConnector: a key exists when its file exists under base_path)',
+    publisher: 'LMCache',
+    url: 'https://github.com/LMCache/LMCache/blob/v0.5.6/csrc/storage_backends/fs/connector.cpp#L218-L221',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  mooncakeStoreDesign: {
+    title: 'kvcache-ai/Mooncake Mooncake Store design at tag v0.3.13.post1 (master service and clients that contribute memory)',
+    publisher: 'Mooncake',
+    url: 'https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/docs/source/design/store/mooncake-store.md#L22-L50',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  mooncakeTransferTask: {
+    title: 'kvcache-ai/Mooncake mooncake-store/src/transfer_task.cpp at tag v0.3.13.post1 (openSegment and submitTransfer on the Transfer Engine)',
+    publisher: 'Mooncake',
+    url: 'https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-store/src/transfer_task.cpp#L1091-L1110',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  mooncakeEfaMr: {
+    title: 'kvcache-ai/Mooncake efa_transport/efa_context.cpp at tag v0.3.13.post1 (GPU memory registered with FI_HMEM_CUDA)',
+    publisher: 'Mooncake',
+    url: 'https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp#L534-L592',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  mooncakeEfaBuild: {
+    title: 'kvcache-ai/Mooncake mooncake-common/common.cmake at tag v0.3.13.post1 (USE_EFA defaults to OFF)',
+    publisher: 'Mooncake',
+    url: 'https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-common/common.cmake#L100',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  mooncakeEfaWheel: {
+    title: 'kvcache-ai/Mooncake scripts/build_wheel.sh at tag v0.3.13.post1 (mooncake-transfer-engine-efa package names)',
+    publisher: 'Mooncake',
+    url: 'https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/scripts/build_wheel.sh#L264-L291',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  valkeyLargeObject: {
+    title: 'valkey-io/valkey-large-object at commit 7510b94 (crate 0.1.0; no tags or releases on 2026-10-24)',
+    publisher: 'Valkey',
+    url: 'https://github.com/valkey-io/valkey-large-object/tree/7510b9483d9837bf63b475d4a8e8fa612c65063f',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  lmcacheValkeyPr: {
+    title: 'LMCache open PR 5556 at head 7e5987f: valkey/rdma_worker_pool.py (each worker registers the whole L1 arena once)',
+    publisher: 'LMCache',
+    url: 'https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/storage_backend/valkey/rdma_worker_pool.py#L1-L23',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  lmcacheValkeyL1: {
+    title: 'LMCache open PR 5556 at head 7e5987f: distributed/memory_manager/l1_memory_manager.py (CPU pinned-DRAM L1 memory manager)',
+    publisher: 'LMCache',
+    url: 'https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/distributed/memory_manager/l1_memory_manager.py#L1-L2',
+    tier: 1,
+    accessed: '2026-10-24',
+  },
+  glideRdma: {
+    title: 'valkey-glide open PR 7412 at head 7644df8: glide-rdma/src/endpoint.rs (plain fi_mr_reg on host memory)',
+    publisher: 'Valkey',
+    url: 'https://github.com/valkey-io/valkey-glide/blob/7644df8b12ee71c77a219254c98d7cd69282f79c/glide-rdma/src/endpoint.rs#L756-L785',
+    tier: 1,
+    accessed: '2026-10-24',
   },
 
   // NVIDIA and device documentation (Tier 1)
@@ -367,6 +482,20 @@ export const S = {
     url: 'https://aws.amazon.com/blogs/machine-learning/managed-tiered-kv-cache-and-intelligent-routing-for-amazon-sagemaker-hyperpod/',
     tier: 2,
     accessed: '2026-10-17',
+  },
+  awsStorageKvBlog: {
+    title: 'Accelerate inference with KV cache tiering on AWS (AWS Storage Blog, 2026-09-21; tiers T1 to T4)',
+    publisher: 'AWS',
+    url: 'https://aws.amazon.com/blogs/storage/accelerate-inference-with-kv-cache-tiering-on-aws/',
+    tier: 2,
+    accessed: '2026-10-24',
+  },
+  valkeyAcceptance: {
+    title: 'valkey-io/valkey issue 4743, core team decision of 2026-09-21 (API experimental until a 1.0 release)',
+    publisher: 'Valkey',
+    url: 'https://github.com/valkey-io/valkey/issues/4743#issuecomment-5766728140',
+    tier: 2,
+    accessed: '2026-10-24',
   },
   dynamoAgenticBlog: {
     title: 'Full-Stack Optimizations for Agentic Inference with Dynamo (in-repo blog at Dynamo tag v1.5.1)',

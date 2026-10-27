@@ -55,7 +55,7 @@ const sources: Source[] = [
   { id: 34, title: 'vLLM source: benchmarks/', url: 'https://github.com/vllm-project/vllm/tree/v0.31.0/benchmarks', tier: 1, type: 'source-code', accessDate: '2026-10-16' },
   { id: 35, title: 'vLLM source: Prometheus + Grafana example', url: 'https://github.com/vllm-project/vllm/tree/v0.31.0/examples/observability/prometheus_grafana', tier: 1, type: 'source-code', accessDate: '2026-10-16' },
   { id: 36, title: 'vLLM source: OpenTelemetry example', url: 'https://github.com/vllm-project/vllm/tree/v0.31.0/examples/observability/opentelemetry', tier: 1, type: 'source-code', accessDate: '2026-10-16' },
-  { id: 37, title: 'vllm-project/vllm-neuron (Neuron plugin, v0.24.0.1.1.0)', url: 'https://github.com/vllm-project/vllm-neuron/tree/v0.24.0.1.1.0', tier: 1, type: 'source-code', accessDate: '2026-10-16' },
+  { id: 37, title: 'vllm-project/vllm-neuron (Neuron plugin, v0.29.0.1.2.0)', url: 'https://github.com/vllm-project/vllm-neuron/tree/v0.29.0.1.2.0', tier: 1, type: 'source-code', accessDate: '2026-10-24' },
   { id: 38, title: 'aws-neuron/upstreaming-to-vllm (AWS fork, repository archived)', url: 'https://github.com/aws-neuron/upstreaming-to-vllm', tier: 1, type: 'source-code', accessDate: '2026-10-16' },
   { id: 39, title: 'vllm-project/production-stack (vllm-stack-0.1.13)', url: 'https://github.com/vllm-project/production-stack/tree/vllm-stack-0.1.13', tier: 1, type: 'source-code', accessDate: '2026-10-16' },
   { id: 40, title: 'vllm-project/guidellm (benchmark tool, v0.8.1)', url: 'https://github.com/vllm-project/guidellm/tree/v0.8.1', tier: 1, type: 'source-code', accessDate: '2026-10-16' },
@@ -79,9 +79,9 @@ const sources: Source[] = [
   { id: 57, title: 'AWS EKS: Load and serve models on Amazon EKS (vLLM inference guide)', url: 'https://docs.aws.amazon.com/eks/latest/userguide/ml-inference-load-serve-model.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
   { id: 58, title: 'AWS EKS: AI/ML compute best practices', url: 'https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
   { id: 59, title: 'AWS Deep Learning Containers: vLLM on SageMaker', url: 'https://aws.github.io/deep-learning-containers/vllm/deployment/sagemaker/', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
-  { id: 60, title: 'AWS Neuron: What\'s New', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/about-neuron/whats-new.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
-  { id: 61, title: 'AWS Neuron: NxD Inference vLLM guide', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/libraries/nxd-inference/vllm/index.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
-  { id: 62, title: 'AWS Neuron: NxD Inference release notes', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/components/nxd-inference.html', tier: 1, type: 'official-docs', accessDate: '2026-10-16' },
+  { id: 60, title: 'AWS Neuron: What\'s New', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/whats-new.html', tier: 1, type: 'official-docs', accessDate: '2026-10-24' },
+  { id: 61, title: 'AWS Neuron: vLLM User Guide for NxD Inference', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/inference-legacy/nxd-inference/developer_guides/vllm-user-guide-v1.html', tier: 1, type: 'official-docs', accessDate: '2026-10-24' },
+  { id: 62, title: 'AWS Neuron: NxD Inference release notes', url: 'https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/archive/nxd-inference.html', tier: 1, type: 'official-docs', accessDate: '2026-10-24' },
   { id: 63, title: 'awslabs/ml-container-creator (SageMaker BYOC)', url: 'https://github.com/awslabs/ml-container-creator/tree/bb89cf9de839f0b6e027f011d2264f326138fb0c', tier: 1, type: 'aws-open-source', accessDate: '2026-10-16' },
 
   // AWS: blogs / announcements / product pages (Tier 2)
@@ -204,6 +204,13 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'UCX', fullForm: 'Unified Communication X', description: 'Communication framework that NIXL uses as its default transport backend.' },
   { acronym: 'SRD', fullForm: 'Scalable Reliable Datagram', description: 'The EFA transport protocol: reliable delivery without in-order delivery.' },
   { acronym: 'GDS', fullForm: 'GPUDirect Storage', description: 'NVIDIA path for moving data between storage and GPU memory without a host bounce buffer.' },
+  { acronym: 'GDS_MT', fullForm: 'NIXL multi-threaded GPUDirect Storage plugin', description: 'The NIXL file backend that Dynamo KVBM creates for its disk tier, next to POSIX.' },
+  { acronym: 'cuFile', fullForm: 'NVIDIA cuFile API', description: 'The GPUDirect Storage file API; LMCache\'s GDS backend calls it to read and write KV files straight from GPU memory.' },
+  { acronym: 'HBM', fullForm: 'High-Bandwidth Memory', description: 'The GPU\'s on-package memory, where vLLM keeps the paged KV cache.' },
+  { acronym: 'Mooncake Store', fullForm: 'Mooncake Store (Mooncake project)', description: 'Distributed KV store that pools DRAM lent by client nodes; a master tracks metadata and the Transfer Engine moves the bytes, over EFA with the protocol set to efa.' },
+  { acronym: 'Valkey large-object module', fullForm: 'valkey-io/valkey-large-object', description: 'Pre-release Valkey module that stores large objects in DRAM, optionally NVMe, and serves them with server-posted RDMA over EFA (BLOB.* commands); its located clients register host memory.' },
+  { acronym: 'LNet', fullForm: 'Lustre Networking', description: 'The Lustre network layer; on an EFA-enabled FSx for Lustre client it runs over the EFA devices.' },
+  { acronym: 'CRT', fullForm: 'AWS Common Runtime', description: 'AWS\'s native client libraries; LMCache\'s S3 connector is built on its S3 client.' },
 
   // Precision & quantization
   { acronym: 'FP8 (E4M3 / E5M2)', fullForm: '8-bit Floating Point', description: 'Forward-pass / wider-range 8-bit float formats supported for weights, activations, and KV cache on Ada/Hopper+.' },
@@ -249,16 +256,22 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'CRIU', fullForm: 'Checkpoint/Restore In Userspace', description: 'Linux process checkpoint tool. vllm snapshot uses it with its CUDA plugin to capture an initialized engine and restore it on the same host.' },
 
   // AWS
-  { acronym: 'Trainium / Inferentia', fullForm: 'AWS Trainium / Inferentia', description: 'AWS custom AI accelerators; vLLM runs on them through the vllm-neuron hardware plugin.' },
-  { acronym: 'Neuron / NxDI', fullForm: 'AWS Neuron SDK / NxD Inference', description: 'The AWS Neuron SDK, and NxD Inference (neuronx-distributed-inference), its inference library, which is in maintenance mode. The vllm-neuron 1.x plugin ships its own model code and does not depend on NxD Inference; the 0.5.x plugin line runs on it.' },
+  { acronym: 'Trainium / Inferentia', fullForm: 'AWS Trainium / Inferentia', description: 'AWS custom AI accelerators. vLLM runs on them through the vllm-neuron hardware plugin: the 1.x line on Trn2 and Trn3, and the 0.5.x line, in maintenance, on Trn1, Trn2, Trn3 and Inf2.' },
+  { acronym: 'Neuron / NxDI', fullForm: 'AWS Neuron SDK / NxD Inference', description: 'The AWS Neuron SDK, and NxD Inference (neuronx-distributed-inference), its inference library. NxD Inference support on Trn2 and Trn3 ends in Neuron 2.34; on Trn1 and Inf2 it stays in maintenance at Neuron 2.31. The vllm-neuron 1.x plugin ships its own model code and does not depend on NxD Inference; the 0.5.x plugin line runs on it.' },
   { acronym: 'EKS', fullForm: 'Elastic Kubernetes Service', description: 'AWS managed Kubernetes; the canonical place to run vLLM with DLCs, Karpenter, and LeaderWorkerSet.' },
   { acronym: 'DLC', fullForm: 'Deep Learning Container', description: 'AWS-published, pre-built vLLM container images on ECR Public.' },
   { acronym: 'ECR', fullForm: 'Elastic Container Registry', description: 'AWS container registry; DLC images are published on ECR Public.' },
   { acronym: 'SOCI', fullForm: 'Seekable OCI', description: 'Lazy loading for container images, so a large vLLM image starts before it is fully pulled.' },
   { acronym: 'ALB', fullForm: 'Application Load Balancer', description: 'AWS layer-7 load balancer, commonly in front of vLLM on EKS.' },
-  { acronym: 'FSx', fullForm: 'Amazon FSx for Lustre', description: 'Managed parallel file system used to stage model weights close to the nodes.' },
+  { acronym: 'FSx', fullForm: 'Amazon FSx for Lustre', description: 'Managed parallel file system used to stage model weights close to the nodes, and, mounted on every instance, a shared KV cache tier.' },
+  { acronym: 'S3 Express One Zone', fullForm: 'Amazon S3 Express One Zone', description: 'Single-zone S3 storage class built for single-digit millisecond access.' },
   { acronym: 'ENA', fullForm: 'Elastic Network Adapter', description: 'The standard EC2 network interface, alongside EFA on accelerated instances.' },
   { acronym: 'NKI', fullForm: 'Neuron Kernel Interface', description: 'The kernel programming interface for Trainium and Inferentia.' },
+  { acronym: 'NEFF', fullForm: 'Neuron Executable File Format', description: 'The compiled program neuronx-cc produces and the Neuron runtime loads; vllm-neuron builds one per bucket.' },
+  { acronym: 'XLA', fullForm: 'Accelerated Linear Algebra', description: 'The OpenXLA compiler. vLLM Neuron\'s deprecated PyTorch/XLA route ends on Trn2 and Trn3 in Neuron 2.34.' },
+  { acronym: 'StableHLO', fullForm: 'StableHLO', description: 'The OpenXLA operation set for high-level ML operations; torch.compile graphs are lowered to it before neuronx-cc compiles them.' },
+  { acronym: 'TorchNeuron', fullForm: 'TorchNeuron', description: 'The native PyTorch backend for Trainium. vllm-neuron compiles through libtorch-neuronx-lite, its own copy of the TorchNeuron lowering.' },
+  { acronym: 'DLAMI', fullForm: 'Deep Learning Amazon Machine Image', description: 'AWS-published EC2 images with a framework stack preinstalled, including vLLM images for Neuron.' },
   { acronym: 'LWS', fullForm: 'LeaderWorkerSet', description: 'A Kubernetes API for grouping a leader + worker pods together for multi-node serving.' },
   { acronym: 'LMI', fullForm: 'Large Model Inference', description: 'The SageMaker DJL-Serving container family that runs vLLM as its backend (async mode by default since LMI v17).' },
   { acronym: 'ODCR', fullForm: 'On-Demand Capacity Reservation', description: 'Reserved EC2 capacity; created inside a cluster placement group to control co-location.' },
@@ -299,11 +312,12 @@ export function GlossaryAndSources() {
         <SpaceBetween size="m">
           <Box variant="p">
             This deep dive describes vLLM <strong>v0.31.0</strong>. Documentation
-            claims are dated <strong>accessed 2026-10-16</strong>, and code-level
+            claims are dated <strong>accessed 2026-10-16</strong> (2026-10-24 for AWS
+            Neuron), and code-level
             claims link to the <code>v0.31.0</code> release tag (commit{' '}
             <code>db9527a4</code>), so each one can be checked against the exact
             source it describes. Where a section describes an older release (configs
-            copied from v0.27.0 docs, or the vLLM 0.24.0 that vllm-neuron pins), it
+            copied from v0.27.0 docs, or the vLLM 0.29.0 that vllm-neuron pins), it
             cites that release instead. Source quality is graded by
             tier: Tier 1 (official documentation, API reference, source code) is
             ground truth; Tier 2 is vendor blogs, announcements, and product pages;

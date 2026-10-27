@@ -241,6 +241,10 @@ export function AwsGpuEfaNixl() {
             <Cite tier={1} href={AWS_NIXL_NEWS}>
               AWS What&apos;s New: NIXL with EFA, Mar 19, 2026
             </Cite>
+            . SGLang&apos;s two EFA routes, Mooncake and NIXL, are covered in the{' '}
+            <Link external href="../sglang/">
+              SGLang dive, section 22: PD and Wide EP over EFA
+            </Link>
             . In vLLM the transfer is a KV connector. The default <code>NixlConnector</code> is the
             pull connector: the decoder issues RDMA (remote direct memory access) READs that copy
             the prefiller&apos;s KV blocks, over EFA when NIXL&apos;s <code>LIBFABRIC</code> backend
@@ -257,6 +261,9 @@ export function AwsGpuEfaNixl() {
               push_worker.py L714-L722
             </Cite>
             . Section 10 covers when to pick which; this section covers running either on AWS.
+            KV that outlives one request and is shared across instances (Mooncake Store over EFA,
+            FSx for Lustre, S3) is a cache tier rather than a transfer, and section 7 (KV-Cache
+            Offloading &amp; Tiers) covers its AWS options.
           </Box>
           <Box variant="p">
             The fabric itself (OS-bypass, SRD (Scalable Reliable Datagram), the libfabric EFA

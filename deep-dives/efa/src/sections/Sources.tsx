@@ -68,6 +68,14 @@ const sources: Source[] = [
   { id: 38, title: 'vLLM NixlConnector Source (kv_connector/v1/nixl, v0.32.0)', url: 'https://github.com/vllm-project/vllm/tree/v0.32.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
   { id: 46, title: 'NIXL libfabric backend: host-posted fi_writemsg and fi_readmsg (src/utils/libfabric/libfabric_rail.cpp, v1.5.0)', url: 'https://github.com/ai-dynamo/nixl/blob/v1.5.0/src/utils/libfabric/libfabric_rail.cpp#L1310-L1336', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
   { id: 47, title: 'NVIDIA/nccl point-to-point plan selects a device kernel (src/enqueue/enqueue.cc, scheduleP2pTasksToPlan, v2.32.3-1)', url: 'https://github.com/NVIDIA/nccl/blob/v2.32.3-1/src/enqueue/enqueue.cc#L1241-L1249', tier: 1, type: 'source-code', accessDate: '2026-10-23' },
+  // Remote KV cache tiers over EFA (StorageDataPaths, KV cache over the fabric)
+  { id: 57, title: 'Mooncake repository at v0.3.13.post1 (Transfer Engine EFA transport: efa_transport.cpp, efa_context.cpp)', url: 'https://github.com/kvcache-ai/Mooncake/tree/v0.3.13.post1', tier: 1, type: 'source-code', accessDate: '2026-10-24' },
+  { id: 58, title: 'Mooncake documentation at v0.3.13.post1: EFA transport (docs/source/design/transfer-engine/efa_transport.md)', url: 'https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/docs/source/design/transfer-engine/efa_transport.md', tier: 1, type: 'official-docs', accessDate: '2026-10-24' },
+  { id: 63, title: 'Mooncake documentation at v0.3.13.post1: Mooncake Store design (docs/source/design/store/mooncake-store.md)', url: 'https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/docs/source/design/store/mooncake-store.md', tier: 1, type: 'official-docs', accessDate: '2026-10-24' },
+  { id: 59, title: 'valkey-io/valkey-large-object at commit 7510b948 (BLOB.RDMA_* commands, libfabric efa-direct transport)', url: 'https://github.com/valkey-io/valkey-large-object/tree/7510b9483d9837bf63b475d4a8e8fa612c65063f', tier: 1, type: 'source-code', accessDate: '2026-10-24' },
+  { id: 60, title: 'Valkey 9.1.2 RDMA connection type (src/rdma.c: rdma_cm and RC queue pairs)', url: 'https://github.com/valkey-io/valkey/blob/9.1.2/src/rdma.c#L366-L381', tier: 1, type: 'source-code', accessDate: '2026-10-24' },
+  { id: 61, title: 'linux-rdma/rdma-core v65.0 EFA verbs provider (providers/efa/verbs.c: UD and SRD queue pairs)', url: 'https://github.com/linux-rdma/rdma-core/blob/v65.0/providers/efa/verbs.c', tier: 1, type: 'source-code', accessDate: '2026-10-24' },
+  { id: 62, title: 'LMCache v0.5.6 GDS backend (lmcache/v1/storage_backend/gds_backend.py: cuFile reads and writes)', url: 'https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/gds_backend.py#L1015-L1097', tier: 1, type: 'source-code', accessDate: '2026-10-24' },
 ];
 
 /**
@@ -276,6 +284,9 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'DIM', fullForm: 'Dynamic Interrupt Moderation', description: 'Adaptive tuning of interrupt coalescing against observed traffic' },
   { acronym: 'XDP', fullForm: 'eXpress Data Path', description: 'Kernel eBPF hook at the driver receive path. Supported on ENA; the EFA data path bypasses the kernel' },
   { acronym: 'NIC', fullForm: 'Network Interface Card', description: 'The network adapter itself. On EFA-capable instances a network card can present both an ENA and an EFA device' },
+  { acronym: 'RC', fullForm: 'Reliable Connected', description: 'Verbs queue-pair type with a hardware connection per peer. The EFA verbs provider does not create it, so RDMA stacks built on RC queue pairs do not run on EFA' },
+  { acronym: 'UD', fullForm: 'Unreliable Datagram', description: 'Connectionless, best-effort verbs queue-pair type: each message is one datagram addressed to a peer queue pair. EFA exposes it alongside SRD' },
+  { acronym: 'RESP', fullForm: 'Redis Serialization Protocol', description: 'The request and reply protocol of Redis and Valkey. In the Valkey large-object module it carries the command over TCP while the object bytes move by RDMA' },
   { acronym: 'RMA', fullForm: 'Remote Memory Access', description: 'One-sided read and write into a peer address space. The libfabric DGRAM endpoint type omits it' },
   { acronym: 'AEAD', fullForm: 'Authenticated Encryption with Associated Data', description: 'Encryption class that authenticates as it encrypts. Used by the Nitro in-transit encryption applied to EFA traffic' },
 

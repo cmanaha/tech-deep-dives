@@ -8,19 +8,30 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 
 ## Tier 1: source code at a pinned ref, official documentation, API reference, release notes
 
-617 sources.
+682 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
+| [GitHub API: tags](https://api.github.com/repos/valkey-io/valkey-large-object/tags) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [What's New: SageMaker AI bidirectional streaming](https://aws.amazon.com/about-aws/whats-new/2025/11/sagemaker-ai-inference-bidirectional-streaming/) | 2026-10-16 | AwsSageMakerBedrock |
 | [AWS What's New: P6e-GB300 UltraServers, Dec 2, 2025](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available/) | 2026-10-16 | AwsGpuEfaNixl |
 | [AWS What's New: NIXL with EFA](https://aws.amazon.com/about-aws/whats-new/2026/03/aws-support-nixl-with-efa/) | 2026-10-16 | AwsGpuEfaNixl |
 | [SageMaker AI pricing (HyperPod Spot)](https://aws.amazon.com/sagemaker/ai/pricing/) | 2026-10-16 | AwsSageMakerBedrock |
 | [AWS DLC docs: vLLM on SageMaker](https://aws.github.io/deep-learning-containers/vllm/deployment/sagemaker/) | 2026-10-16 | AwsSageMakerBedrock, Sources appendix |
-| [AWS Neuron: What's New](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/about-neuron/whats-new.html) | 2026-10-16 | AwsNeuron, Sources appendix |
-| [AWS Neuron: NxD Inference vLLM guide](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/libraries/nxd-inference/vllm/index.html) | 2026-10-16 | AwsNeuron, Sources appendix |
-| [AWS Neuron: NxD Inference release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/release-notes/components/nxd-inference.html) | 2026-10-16 | AwsNeuron, Sources appendix |
-| [Neuron docs: vLLM Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/vllm-neuron/docs/index.html) | 2026-10-16 | AwsNeuron |
+| [Neuron docs: NxD Inference end-of-support announcement](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/announcements/neuron2.x/announce-eos-nxdi-nxd-core-inference.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: Torch/XLA path in vLLM Neuron, end of support](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/announcements/neuron2.x/announce-eos-vllm-neuron-torch-xla.html) | 2026-10-24 | AwsNeuron |
+| [AWS Neuron: What's New](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/about-neuron/whats-new.html) | 2026-10-24 | AwsNeuron, Sources appendix |
+| [AWS Neuron: vLLM User Guide for NxD Inference](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/inference-legacy/nxd-inference/developer_guides/vllm-user-guide-v1.html) | 2026-10-24 | AwsNeuron, Sources appendix |
+| [AWS Neuron: NxD Inference release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/archive/nxd-inference.html) | 2026-10-24 | AwsNeuron, Sources appendix |
+| [Neuron docs: Containers release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/containers.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: DLAMI release notes](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/release-notes/components/dlamis.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: How vLLM is integrated with TorchNeuron](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/vllm-neuron/docs/design/compilation/how_vllm_is_integrated_with_torchneuron.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: How to choose a compilation route](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/vllm-neuron/docs/guides/how-to-choose-compilation-route.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: How to use the Precompile Cache](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/vllm-neuron/docs/guides/how-to-precompile-cache.html) | 2026-10-24 | AwsNeuron |
+| [Neuron docs: vLLM Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/vllm-neuron/docs/index.html) | 2026-10-24 | AwsNeuron |
+| [ElastiCache: engine versions](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [S3: High performance workloads](https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [S3: Optimizing performance](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [EC2 API: DescribeCapacityReservationTopology](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeCapacityReservationTopology.html) | 2026-10-16 | Ec2TopologyPlacement |
 | [EC2 API: DescribeInstanceTopology](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstanceTopology.html) | 2026-10-16 | Ec2TopologyPlacement, Sources appendix |
 | [EC2 API: InstanceTopology](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_InstanceTopology.html) | 2026-10-16 | Ec2TopologyPlacement |
@@ -35,11 +46,19 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [AWS EC2: Placement strategies](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html) | 2026-10-16 | Ec2TopologyPlacement, Sources appendix |
 | [Bedrock: Custom Model Import](https://docs.aws.amazon.com/bedrock/latest/userguide/model-customization-import-model.html) | 2026-10-16 | AwsSageMakerBedrock, DecisionGuide |
 | [AWS Decision Guide](https://docs.aws.amazon.com/decision-guides/latest/decision-guides/bedrock-or-sagemaker.html) | 2026-10-16 | AwsSageMakerBedrock |
-| [EC2 accelerated computing instance specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html) | 2026-10-16 | AwsGpuEfaNixl |
+| [EC2 accelerated computing specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html) | 2026-10-16, 2026-10-24 | AwsGpuEfaNixl, offload/RemoteKvTiersAws |
+| [EC2 compute optimized specifications](https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [EKS Best Practices: AI/ML Compute](https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html) | 2026-10-16 | AwsEks, AwsSageMakerBedrock, Sources appendix |
 | [EKS User Guide: Create a Node Class](https://docs.aws.amazon.com/eks/latest/userguide/create-node-class.html) | 2026-10-18 | AwsEks |
 | [EKS User Guide: Load & Serve Models on Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/ml-inference-load-serve-model.html) | 2026-10-16 | AwsEks, Sources appendix |
 | [Amazon EKS User Guide: EFA](https://docs.aws.amazon.com/eks/latest/userguide/node-efa.html) | 2026-10-16 | AwsGpuEfaNixl |
+| [FSx: Configuring EFA clients](https://docs.aws.amazon.com/fsx/latest/LustreGuide/configure-efa-clients.html) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [FSx: Document history](https://docs.aws.amazon.com/fsx/latest/LustreGuide/doc-history.html) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [FSx: EFA-enabled file systems](https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [FSx: Getting started](https://docs.aws.amazon.com/fsx/latest/LustreGuide/getting-started.html) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [FSx: Performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [FSx: SSD storage performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [MemoryDB: engine versions](https://docs.aws.amazon.com/memorydb/latest/devguide/engine-versions.html) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [SageMaker API: InvokeEndpoint](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_runtime_InvokeEndpoint.html) | 2026-10-18 | AwsSageMakerBedrock |
 | [SageMaker API: InvokeEndpointWithResponseStream](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_runtime_InvokeEndpointWithResponseStream.html) | 2026-10-18 | AwsSageMakerBedrock |
 | [AWS SageMaker: Inference deployment options](https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model-options.html) | 2026-10-16 | Sources appendix |
@@ -74,7 +93,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vLLM compatibility guide](https://docs.ray.io/en/releases-2.59.0/serve/llm/user-guides/vllm-compatibility.html) | 2026-10-16 | RayServeLLM, Sources appendix |
 | [Ray Serve: fault tolerance, replica health-checking](https://docs.ray.io/en/releases-2.59.0/serve/production-guide/fault-tolerance.html) | 2026-10-16 | RayServeLLM |
 | [SGLang docs](https://docs.sglang.io/) | 2026-10-16 | Sources appendix, WhenNotVllm |
-| [vLLM v0.10.1 docs: AWS Neuron installation](https://docs.vllm.ai/en/v0.10.1/getting_started/installation/aws_neuron.html) | 2026-10-16 | AwsNeuron |
+| [vLLM v0.10.1 docs: AWS Neuron installation](https://docs.vllm.ai/en/v0.10.1/getting_started/installation/aws_neuron.html) | 2026-10-24 | AwsNeuron |
 | [vLLM v0.27.0 docs: Speculative Decoding](https://docs.vllm.ai/en/v0.27.0/features/speculative_decoding/) | 2026-10-16 | SpeculativeDecoding |
 | [vLLM docs: home page](https://docs.vllm.ai/en/v0.31.0/) | 2026-10-16 | Sources appendix, ThesisAndFraming |
 | [vLLM: CacheConfig API reference](https://docs.vllm.ai/en/v0.31.0/api/vllm/config/cache/) | 2026-10-16 | Sources appendix |
@@ -130,7 +149,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vLLM: Structured outputs](https://docs.vllm.ai/en/v0.31.0/features/structured_outputs/) | 2026-10-16 | OpenAICompatServer, Sources appendix |
 | [vLLM: Tool calling](https://docs.vllm.ai/en/v0.31.0/features/tool_calling/) | 2026-10-16 | OpenAICompatServer, Sources appendix |
 | [vLLM docs: Text watermarking](https://docs.vllm.ai/en/v0.31.0/features/watermarking/) | 2026-10-16 | WhenNotVllm |
-| [vLLM docs: Installation](https://docs.vllm.ai/en/v0.31.0/getting_started/installation/) | 2026-10-16 | AwsNeuron, Sources appendix, WhenNotVllm |
+| [vLLM docs: Installation](https://docs.vllm.ai/en/v0.31.0/getting_started/installation/) | 2026-10-16, 2026-10-24 | AwsNeuron, Sources appendix, WhenNotVllm |
 | [vLLM docs: Quickstart](https://docs.vllm.ai/en/v0.31.0/getting_started/quickstart/) | 2026-10-16 | ThesisAndFraming |
 | [vLLM docs: Context Parallel Deployment](https://docs.vllm.ai/en/v0.31.0/serving/context_parallel_deployment/) | 2026-10-16 | DistributedInference |
 | [vLLM: Data-parallel deployment](https://docs.vllm.ai/en/v0.31.0/serving/data_parallel_deployment/) | 2026-10-16 | DecisionGuide, DistributedInference, Sources appendix |
@@ -159,9 +178,12 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [ai-dynamo/dynamo @ v1.5.1: lib/bindings/kvbm/python/kvbm/vllm_integration/connector/dynamo_connector.py](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/lib/bindings/kvbm/python/kvbm/vllm_integration/connector/dynamo_connector.py) | 2026-10-16 | NvidiaDynamo |
 | [ai-dynamo/dynamo @ v1.5.1: pyproject.toml](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/pyproject.toml) | 2026-10-16 | NvidiaDynamo, RayServeLLM, ThesisAndFraming, WhenNotVllm |
 | [ai-dynamo/dynamo @ v1.5.1: README.md](https://github.com/ai-dynamo/dynamo/blob/v1.5.1/README.md) | 2026-10-16 | NvidiaDynamo, WhenNotVllm |
+| [ai-dynamo/dynamo @ v1.6.0: lib/llm/src/block_manager/distributed/worker.rs](https://github.com/ai-dynamo/dynamo/blob/v1.6.0/lib/llm/src/block_manager/distributed/worker.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [ai-dynamo/dynamo @ v1.6.0: lib/llm/src/block_manager/storage/disk.rs](https://github.com/ai-dynamo/dynamo/blob/v1.6.0/lib/llm/src/block_manager/storage/disk.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [NVIDIA Dynamo (GitHub: ai-dynamo/dynamo, v1.5.1)](https://github.com/ai-dynamo/dynamo/tree/v1.5.1) | 2026-10-16 | Sources appendix |
+| [ai-dynamo/nixl @ v1.5.0: src/plugins/obj/s3/engine_impl.h](https://github.com/ai-dynamo/nixl/blob/v1.5.0/src/plugins/obj/s3/engine_impl.h) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [aws-neuron/upstreaming-to-vllm (AWS fork, repository archived)](https://github.com/aws-neuron/upstreaming-to-vllm) | 2026-10-16 | Sources appendix |
-| [aws-neuron/upstreaming-to-vllm (archived)](https://github.com/aws-neuron/upstreaming-to-vllm/tree/c4f76254591e9113f01cbed6684efd735ba3cb81) | 2026-10-16 | AwsNeuron |
+| [aws-neuron/upstreaming-to-vllm (archived)](https://github.com/aws-neuron/upstreaming-to-vllm/tree/c4f76254591e9113f01cbed6684efd735ba3cb81) | 2026-10-24 | AwsNeuron |
 | [aws-samples/load-test-llm-with-locust](https://github.com/aws-samples/load-test-llm-with-locust/tree/72854d749cf8d88dc1f625969df1351e526a1321) | 2026-10-16 | AwsSageMakerBedrock |
 | [AWS DLC release: LMI 30.0.0](https://github.com/aws/deep-learning-containers/releases/tag/v1.0-djl-0.38.0-inf-lmi-30.0.0-cu130) | 2026-10-16 | AwsSageMakerBedrock |
 | [aws/karpenter-provider-aws @ v1.15.0: pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml](https://github.com/aws/karpenter-provider-aws/blob/v1.15.0/pkg/apis/crds/karpenter.k8s.aws_ec2nodeclasses.yaml) | 2026-10-16 | AwsEks |
@@ -202,6 +224,14 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [kubernetes-sigs/lws @ v1.0.0: site/content/en/docs/concepts/disaggregatedset/_index.md?plain=1](https://github.com/kubernetes-sigs/lws/blob/v1.0.0/site/content/en/docs/concepts/disaggregatedset/_index.md?plain=1) | 2026-10-16 | AwsEks |
 | [kubernetes/cloud-provider-aws @ v1.37.0: pkg/providers/v1/instances_v2.go](https://github.com/kubernetes/cloud-provider-aws/blob/v1.37.0/pkg/providers/v1/instances_v2.go) | 2026-10-16 | Ec2TopologyPlacement |
 | [kubernetes/cloud-provider-aws @ v1.37.0: pkg/providers/v1/well_known_labels.go](https://github.com/kubernetes/cloud-provider-aws/blob/v1.37.0/pkg/providers/v1/well_known_labels.go) | 2026-10-16 | Ec2TopologyPlacement |
+| [kvcache-ai/Mooncake @ v0.3.13.post1: .github/workflows/_build-wheel.yaml](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/.github/workflows/_build-wheel.yaml) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [kvcache-ai/Mooncake @ v0.3.13.post1: docs/source/design/transfer-engine/efa_transport.md](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/docs/source/design/transfer-engine/efa_transport.md) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [kvcache-ai/Mooncake @ v0.3.13.post1: mooncake-common/common.cmake](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-common/common.cmake) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [kvcache-ai/Mooncake @ v0.3.13.post1: mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-transfer-engine/src/transport/efa_transport/efa_context.cpp) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [kvcache-ai/Mooncake @ v0.3.13.post1: mooncake-transfer-engine/src/transport/efa_transport/efa_transport.cpp](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/mooncake-transfer-engine/src/transport/efa_transport/efa_transport.cpp) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [kvcache-ai/Mooncake @ v0.3.13.post1: scripts/build_wheel.sh](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/scripts/build_wheel.sh) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [Mooncake release v0.3.13.post1](https://github.com/kvcache-ai/Mooncake/releases/tag/v0.3.13.post1) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [llm-d/llm-d-kv-cache @ v1.0.0: kv_connectors/llmd_fs_backend/README.md](https://github.com/llm-d/llm-d-kv-cache/blob/v1.0.0/kv_connectors/llmd_fs_backend/README.md) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [llm-d/llm-d-router @ v1.0.0: docs/architecture.md](https://github.com/llm-d/llm-d-router/blob/v1.0.0/docs/architecture.md) | 2026-10-16 | LlmdKServe |
 | [llm-d/llm-d-router @ v1.0.0: docs/disaggregation.md](https://github.com/llm-d/llm-d-router/blob/v1.0.0/docs/disaggregation.md) | 2026-10-16 | DecisionGuide, LlmdKServe |
 | [llm-d/llm-d-router @ v1.0.0: pkg/epp/framework/plugins/datalayer/attribute/topology/README.md?plain=1](https://github.com/llm-d/llm-d-router/blob/v1.0.0/pkg/epp/framework/plugins/datalayer/attribute/topology/README.md?plain=1) | 2026-10-16 | Ec2TopologyPlacement |
@@ -222,8 +252,18 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [llm-d/llm-d @ v0.10.0: README.md](https://github.com/llm-d/llm-d/blob/v0.10.0/README.md) | 2026-10-16 | LlmdKServe |
 | [llm-d v0.10.0 release notes](https://github.com/llm-d/llm-d/releases/tag/v0.10.0) | 2026-10-16 | LlmdKServe, NvidiaDynamo, RayServeLLM, ThesisAndFraming |
 | [llm-d (GitHub, v0.10.0)](https://github.com/llm-d/llm-d/tree/v0.10.0) | 2026-10-16 | Sources appendix |
+| [LMCache/LMCache @ 7e5987f80ada75380c31e92a186106841e999e94: lmcache/v1/distributed/l2_adapters/valkey_l2_adapter.py](https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/distributed/l2_adapters/valkey_l2_adapter.py) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [LMCache/LMCache @ 7e5987f80ada75380c31e92a186106841e999e94: lmcache/v1/distributed/memory_manager/l1_memory_manager.py](https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/distributed/memory_manager/l1_memory_manager.py) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [LMCache/LMCache @ 7e5987f80ada75380c31e92a186106841e999e94: lmcache/v1/storage_backend/valkey/rdma_worker_pool.py](https://github.com/LMCache/LMCache/blob/7e5987f80ada75380c31e92a186106841e999e94/lmcache/v1/storage_backend/valkey/rdma_worker_pool.py) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [LMCache/LMCache @ v0.5.6: docs/source/kv_cache/storage_backends/gds.rst](https://github.com/LMCache/LMCache/blob/v0.5.6/docs/source/kv_cache/storage_backends/gds.rst) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [LMCache/LMCache @ v0.5.6: lmcache/v1/distributed/memory_manager/l1_memory_manager.py](https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/distributed/memory_manager/l1_memory_manager.py) | 2026-10-24 | KVOffloadingLMCache |
+| [LMCache/LMCache @ v0.5.6: lmcache/v1/storage_backend/connector/mooncakestore_connector.py](https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/connector/mooncakestore_connector.py) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [LMCache/LMCache @ v0.5.6: lmcache/v1/storage_backend/connector/s3_connector.py](https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/connector/s3_connector.py) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [LMCache/LMCache @ v0.5.6: lmcache/v1/storage_backend/gds_backend.py](https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/storage_backend/gds_backend.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [LMCache/LMCache @ v0.5.6: README.md](https://github.com/LMCache/LMCache/blob/v0.5.6/README.md) | 2026-10-16 | KVOffloadingLMCache |
 | [LMCache release v0.5.6](https://github.com/LMCache/LMCache/releases/tag/v0.5.6) | 2026-10-16 | KVOffloadingLMCache |
+| [LMCache/LMCache @ v0.5.6: lmcache/v1/distributed/l2_adapters](https://github.com/LMCache/LMCache/tree/v0.5.6/lmcache/v1/distributed/l2_adapters) | 2026-10-24 | KVOffloadingLMCache |
+| [momentohq/vdma @ 72c3a088fcfd111f21d96cfa43c05ea5bd40ae18: crates/dma-libfabric/src/connection.rs](https://github.com/momentohq/vdma/blob/72c3a088fcfd111f21d96cfa43c05ea5bd40ae18/crates/dma-libfabric/src/connection.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [NVIDIA/TensorRT-LLM @ v1.2.1: README.md](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/README.md) | 2026-10-16 | WhenNotVllm |
 | [NVIDIA/TensorRT-LLM @ v1.2.1: tensorrt_llm/commands/serve.py](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/tensorrt_llm/commands/serve.py) | 2026-10-16 | WhenNotVllm |
 | [NVIDIA/TensorRT-LLM @ v1.2.1: tensorrt_llm/llmapi/llm.py](https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1/tensorrt_llm/llmapi/llm.py) | 2026-10-16 | WhenNotVllm |
@@ -243,6 +283,15 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [ray-project/ray @ ray-2.59.0: python/setup.py](https://github.com/ray-project/ray/blob/ray-2.59.0/python/setup.py) | 2026-10-16 | RayServeLLM |
 | [sgl-project/sglang @ v0.5.21: python/sglang/srt/mem_cache/radix_cache.py](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/mem_cache/radix_cache.py) | 2026-10-16 | WhenNotVllm |
 | [sgl-project/sglang @ v0.5.21: README.md](https://github.com/sgl-project/sglang/blob/v0.5.21/README.md) | 2026-10-16 | WhenNotVllm |
+| [valkey-io/valkey-glide @ 7644df8b12ee71c77a219254c98d7cd69282f79c: glide-rdma/src/endpoint.rs](https://github.com/valkey-io/valkey-glide/blob/7644df8b12ee71c77a219254c98d7cd69282f79c/glide-rdma/src/endpoint.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: Cargo.toml](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/Cargo.toml) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: README.md](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/README.md) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: src/commands/mod.rs](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/commands/mod.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: src/configs.rs](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/configs.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: src/lib.rs](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/lib.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: src/transport/config.rs](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/transport/config.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: src/transport/session.rs](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/src/transport/session.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: tests/test_largeobj_persistence.py](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/tests/test_largeobj_persistence.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/guidellm @ v0.8.1: README.md](https://github.com/vllm-project/guidellm/blob/v0.8.1/README.md) | 2026-10-16 | ObservabilityBench |
 | [vllm-project/guidellm (benchmark tool, v0.8.1)](https://github.com/vllm-project/guidellm/tree/v0.8.1) | 2026-10-16 | Sources appendix |
 | [vllm-project/production-stack @ vllm-stack-0.1.13: helm/Chart.yaml](https://github.com/vllm-project/production-stack/blob/vllm-stack-0.1.13/helm/Chart.yaml) | 2026-10-16 | ProductionStack |
@@ -266,22 +315,28 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm-gguf-plugin @ v0.0.5: vllm_gguf_plugin/plugin.py](https://github.com/vllm-project/vllm-gguf-plugin/blob/v0.0.5/vllm_gguf_plugin/plugin.py) | 2026-10-16 | Quantization |
 | [vllm-metal](https://github.com/vllm-project/vllm-metal) | 2026-10-16 | WhenNotVllm |
 | [vllm-neuron](https://github.com/vllm-project/vllm-neuron) | 2026-10-16 | WhenNotVllm |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: docs/getting-started/migration-nxdi-to-vllm-neuron.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/docs/getting-started/migration-nxdi-to-vllm-neuron.md?plain=1) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: docs/guides/features-guide.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/docs/guides/features-guide.md?plain=1) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: docs/guides/reference-configuration.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/docs/guides/reference-configuration.md?plain=1) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI/run_prefill.sh](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI/run_prefill.sh) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: pyproject.toml](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/pyproject.toml) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: README.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/README.md?plain=1) | 2026-10-16 | AwsNeuron, DecisionGuide |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: vllm_neuron/vllm/platform.py](https://github.com/vllm-project/vllm-neuron/blob/v0.24.0.1.1.0/vllm_neuron/vllm/platform.py) | 2026-10-16 | AwsNeuron |
-| [v0.21.0.1.0.0 release notes](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.21.0.1.0.0) | 2026-10-16 | AwsNeuron |
-| [vllm-neuron v0.24.0.1.1.0 release notes](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.24.0.1.1.0) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron at v0.24.0.1.1.0](https://github.com/vllm-project/vllm-neuron/tree/v0.24.0.1.1.0) | 2026-10-16 | AwsNeuron, Sources appendix |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI](https://github.com/vllm-project/vllm-neuron/tree/v0.24.0.1.1.0/examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm-neuron @ v0.24.0.1.1.0: vllm_neuron](https://github.com/vllm-project/vllm-neuron/tree/v0.24.0.1.1.0/vllm_neuron) | 2026-10-16 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: docs/getting-started/migration-nxdi-to-vllm-neuron.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/docs/getting-started/migration-nxdi-to-vllm-neuron.md?plain=1) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: docs/guides/features-guide.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/docs/guides/features-guide.md?plain=1) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: docs/guides/reference-configuration.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/docs/guides/reference-configuration.md?plain=1) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI/run_prefill.sh](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI/run_prefill.sh) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: pyproject.toml](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/pyproject.toml) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: README.md?plain=1](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/README.md?plain=1) | 2026-10-16, 2026-10-24 | AwsNeuron, DecisionGuide |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: requirements/core.txt](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/requirements/core.txt) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron/__init__.py](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/vllm_neuron/__init__.py) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron/envs.py](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/vllm_neuron/envs.py) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron/vllm/model_runner_v2_policy.py](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/vllm_neuron/vllm/model_runner_v2_policy.py) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron/vllm/platform.py](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/vllm_neuron/vllm/platform.py) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron/vllm/worker/neuron_model_runner.py](https://github.com/vllm-project/vllm-neuron/blob/v0.29.0.1.2.0/vllm_neuron/vllm/worker/neuron_model_runner.py) | 2026-10-24 | AwsNeuron |
+| [v0.21.0.1.0.0 release notes](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.21.0.1.0.0) | 2026-10-24 | AwsNeuron |
+| [vllm-neuron v0.29.0.1.2.0 release notes](https://github.com/vllm-project/vllm-neuron/releases/tag/v0.29.0.1.2.0) | 2026-10-24 | AwsNeuron |
+| [vllm-neuron at v0.29.0.1.2.0 (searched)](https://github.com/vllm-project/vllm-neuron/tree/v0.29.0.1.2.0) | 2026-10-24 | AwsNeuron, Sources appendix |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI](https://github.com/vllm-project/vllm-neuron/tree/v0.29.0.1.2.0/examples/vllm_neuron/models/gpt_oss/120b/mxfp4/multinode_DI) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm-neuron @ v0.29.0.1.2.0: vllm_neuron](https://github.com/vllm-project/vllm-neuron/tree/v0.29.0.1.2.0/vllm_neuron) | 2026-10-24 | AwsNeuron |
 | [vllm-project/vllm @ 15652a6b703f059767d75e5a511c4a5accf969ad: vllm/model_executor/layers/quantization/__init__.py](https://github.com/vllm-project/vllm/blob/15652a6b703f059767d75e5a511c4a5accf969ad/vllm/model_executor/layers/quantization/__init__.py) | 2026-10-16 | Quantization |
-| [vllm-project/vllm @ v0.24.0: vllm/engine/arg_utils.py](https://github.com/vllm-project/vllm/blob/v0.24.0/vllm/engine/arg_utils.py) | 2026-10-16 | AwsNeuron |
-| [vllm-project/vllm @ v0.24.0: vllm/platforms/__init__.py](https://github.com/vllm-project/vllm/blob/v0.24.0/vllm/platforms/__init__.py) | 2026-10-16 | AwsNeuron |
 | [vllm-project/vllm @ v0.27.0: vllm/config/speculative.py](https://github.com/vllm-project/vllm/blob/v0.27.0/vllm/config/speculative.py) | 2026-10-16 | SpeculativeDecoding |
+| [vllm-project/vllm @ v0.29.0: requirements/cuda.txt](https://github.com/vllm-project/vllm/blob/v0.29.0/requirements/cuda.txt) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm @ v0.29.0: vllm/engine/arg_utils.py](https://github.com/vllm-project/vllm/blob/v0.29.0/vllm/engine/arg_utils.py) | 2026-10-24 | AwsNeuron |
+| [vllm-project/vllm @ v0.29.0: vllm/platforms/__init__.py](https://github.com/vllm-project/vllm/blob/v0.29.0/vllm/platforms/__init__.py) | 2026-10-24 | AwsNeuron |
 | [vllm-project/vllm @ v0.31.0: benchmarks/benchmark_serving.py](https://github.com/vllm-project/vllm/blob/v0.31.0/benchmarks/benchmark_serving.py) | 2026-10-16 | ObservabilityBench |
 | [vllm-project/vllm @ v0.31.0: docker/Dockerfile](https://github.com/vllm-project/vllm/blob/v0.31.0/docker/Dockerfile) | 2026-10-16 | AwsSageMakerBedrock |
 | [vllm-project/vllm @ v0.31.0: docs/configuration/optimization.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/configuration/optimization.md) | 2026-10-16 | OperationsFailureModes, PagedAttentionKV, SchedulerBatching |
@@ -295,11 +350,12 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: docs/design/hybrid_kv_cache_manager.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/design/hybrid_kv_cache_manager.md) | 2026-10-16 | PagedAttentionKV |
 | [vllm-project/vllm @ v0.31.0: docs/design/metrics.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/design/metrics.md) | 2026-10-16 | ObservabilityBench |
 | [vllm-project/vllm @ v0.31.0: docs/design/paged_attention.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/design/paged_attention.md) | 2026-10-16 | PagedAttentionKV |
-| [vllm-project/vllm @ v0.31.0: docs/features/disagg_prefill.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/disagg_prefill.md) | 2026-10-16 | DisaggregatedServing, KVOffloadingLMCache |
+| [vllm-project/vllm @ v0.31.0: docs/features/disagg_prefill.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/disagg_prefill.md) | 2026-10-16, 2026-10-24 | DisaggregatedServing, KVOffloadingLMCache, offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: docs/features/index_cache.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/index_cache.md) | 2026-10-16 | KVOffloadingLMCache |
-| [vllm-project/vllm @ v0.31.0: docs/features/kv_offloading_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/kv_offloading_usage.md) | 2026-10-16 | DecisionGuide, KVOffloadingLMCache |
+| [vllm-project/vllm @ v0.31.0: docs/features/kv_offloading_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/kv_offloading_usage.md) | 2026-10-16, 2026-10-24 | DecisionGuide, KVOffloadingLMCache, offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: docs/features/lora.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/lora.md) | 2026-10-16 | LoRAServing, OperationsFailureModes, codebase/CodebaseModelLayer |
-| [vllm-project/vllm @ v0.31.0: docs/features/mooncake_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/mooncake_connector_usage.md) | 2026-10-16 | DisaggregatedServing |
+| [vllm-project/vllm @ v0.31.0: docs/features/mooncake_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/mooncake_connector_usage.md) | 2026-10-16, 2026-10-24 | DisaggregatedServing, offload/RemoteKvTiersAws |
+| [vllm-project/vllm @ v0.31.0: docs/features/mooncake_store_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/mooncake_store_connector_usage.md) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: docs/features/moriio_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/moriio_connector_usage.md) | 2026-10-16 | DisaggregatedServing |
 | [vllm-project/vllm @ v0.31.0: docs/features/nixl_connector_compatibility.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/nixl_connector_compatibility.md) | 2026-10-16 | DisaggregatedServing |
 | [vllm-project/vllm @ v0.31.0: docs/features/nixl_connector_usage.md](https://github.com/vllm-project/vllm/blob/v0.31.0/docs/features/nixl_connector_usage.md) | 2026-10-16 | AwsGpuEfaNixl, DisaggregatedServing |
@@ -318,7 +374,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: examples/observability/prometheus_grafana/prometheus.yaml](https://github.com/vllm-project/vllm/blob/v0.31.0/examples/observability/prometheus_grafana/prometheus.yaml) | 2026-10-16 | ObservabilityBench |
 | [vllm-project/vllm @ v0.31.0: requirements/common.txt](https://github.com/vllm-project/vllm/blob/v0.31.0/requirements/common.txt) | 2026-10-16 | AwsSageMakerBedrock |
 | [vllm-project/vllm @ v0.31.0: requirements/kv_connectors_cu12.txt](https://github.com/vllm-project/vllm/blob/v0.31.0/requirements/kv_connectors_cu12.txt) | 2026-10-16 | KVOffloadingLMCache |
-| [vllm-project/vllm @ v0.31.0: requirements/kv_connectors.txt](https://github.com/vllm-project/vllm/blob/v0.31.0/requirements/kv_connectors.txt) | 2026-10-16 | KVOffloadingLMCache |
+| [vllm-project/vllm @ v0.31.0: requirements/kv_connectors.txt](https://github.com/vllm-project/vllm/blob/v0.31.0/requirements/kv_connectors.txt) | 2026-10-16, 2026-10-24 | KVOffloadingLMCache, offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: rust/Cargo.toml](https://github.com/vllm-project/vllm/blob/v0.31.0/rust/Cargo.toml) | 2026-10-16 | codebase/CodebaseRust |
 | [vllm-project/vllm @ v0.31.0: rust/proto/control.proto](https://github.com/vllm-project/vllm/blob/v0.31.0/rust/proto/control.proto) | 2026-10-16 | codebase/CodebaseRust |
 | [vllm-project/vllm @ v0.31.0: rust/README.md](https://github.com/vllm-project/vllm/blob/v0.31.0/rust/README.md) | 2026-10-16 | codebase/CodebaseRust |
@@ -386,10 +442,11 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/base.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/base.py) | 2026-10-16 | KVOffloadingLMCache, codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/lmcache_connector.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/lmcache_connector.py) | 2026-10-16 | KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/lmcache_mp_connector.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/lmcache_mp_connector.py) | 2026-10-16 | KVOffloadingLMCache |
-| [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/mooncake/mooncake_connector.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/mooncake/mooncake_connector.py) | 2026-10-16 | DisaggregatedServing |
+| [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/mooncake/mooncake_connector.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/mooncake/mooncake_connector.py) | 2026-10-16, 2026-10-24 | DisaggregatedServing, offload/RemoteKvTiersAws |
+| [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/mooncake/store/worker.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/mooncake/store/worker.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/moriio/moriio_engine.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/moriio/moriio_engine.py) | 2026-10-16 | DisaggregatedServing |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_scheduler.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_scheduler.py) | 2026-10-16 | AwsGpuEfaNixl, codebase/CodebaseDistributed |
-| [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py) | 2026-10-16 | AwsGpuEfaNixl, DisaggregatedServing, NvidiaDynamo, codebase/CodebaseDistributed |
+| [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py) | 2026-10-16, 2026-10-24 | AwsGpuEfaNixl, DisaggregatedServing, NvidiaDynamo, codebase/CodebaseDistributed, offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/nixl/connector.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl/connector.py) | 2026-10-16 | AwsGpuEfaNixl, DisaggregatedServing, Ec2TopologyPlacement, NvidiaDynamo, codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/nixl/metadata.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl/metadata.py) | 2026-10-16 | AwsGpuEfaNixl, DisaggregatedServing, codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/nixl/pull_scheduler.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl/pull_scheduler.py) | 2026-10-16 | AwsGpuEfaNixl |
@@ -401,9 +458,10 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/offloading/metrics.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/offloading/metrics.py) | 2026-10-16 | KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/offloading/scheduler.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/offloading/scheduler.py) | 2026-10-16 | KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/simple_cpu_offload_connector.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/simple_cpu_offload_connector.py) | 2026-10-16 | KVOffloadingLMCache |
+| [vllm-project/vllm @ v0.31.0: vllm/distributed/mooncake_store.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/mooncake_store.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/parallel_state.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/parallel_state.py) | 2026-10-16 | DistributedInference, codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/distributed/utils.py) | 2026-10-16 | codebase/CodebaseConfig |
-| [vllm-project/vllm @ v0.31.0: vllm/engine/arg_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/arg_utils.py) | 2026-10-16 | AwsNeuron, DecisionGuide, DistributedInference, GatewaysAppLayer, InferenceWorkload, LoRAServing, OperationsFailureModes, PagedAttentionKV, PrefixCaching, Quantization, SchedulerBatching, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseExecution, codebase/CodebaseScheduler |
+| [vllm-project/vllm @ v0.31.0: vllm/engine/arg_utils.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/arg_utils.py) | 2026-10-16, 2026-10-24 | AwsNeuron, DecisionGuide, DistributedInference, GatewaysAppLayer, InferenceWorkload, LoRAServing, OperationsFailureModes, PagedAttentionKV, PrefixCaching, Quantization, SchedulerBatching, V1Architecture, codebase/CodebaseAdvanced, codebase/CodebaseArchitecture, codebase/CodebaseConfig, codebase/CodebaseExecution, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/engine/async_llm_engine.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/async_llm_engine.py) | 2026-10-16 | ThesisAndFraming |
 | [vllm-project/vllm @ v0.31.0: vllm/engine/llm_engine.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/engine/llm_engine.py) | 2026-10-16 | V1Architecture, codebase/CodebaseArchitecture |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/anthropic/api_router.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/entrypoints/anthropic/api_router.py) | 2026-10-16 | GatewaysAppLayer |
@@ -495,13 +553,13 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/model_executor/models/transformers/base.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/model_executor/models/transformers/base.py) | 2026-10-16 | codebase/CodebaseModelLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/models/kimi_k3/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/models/kimi_k3/__init__.py) | 2026-10-16 | codebase/CodebaseModelLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/parser/metrics.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/parser/metrics.py) | 2026-10-16 | ObservabilityBench |
-| [vllm-project/vllm @ v0.31.0: vllm/platforms/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/__init__.py) | 2026-10-16 | AwsNeuron |
+| [vllm-project/vllm @ v0.31.0: vllm/platforms/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/__init__.py) | 2026-10-24 | AwsNeuron |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/cpu.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/cpu.py) | 2026-10-16 | codebase/CodebaseConfig |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/cuda.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/cuda.py) | 2026-10-16 | codebase/CodebaseExecution, codebase/CodebaseModelLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/interface.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/interface.py) | 2026-10-16 | DecisionGuide, OperationsFailureModes, PagedAttentionKV, codebase/CodebaseConfig, codebase/CodebaseModelLayer, codebase/CodebaseScheduler |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/rocm.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/rocm.py) | 2026-10-16 | codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/platforms/tpu.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/platforms/tpu.py) | 2026-10-16 | WhenNotVllm |
-| [vllm-project/vllm @ v0.31.0: vllm/plugins/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/plugins/__init__.py) | 2026-10-16 | AwsNeuron, LoRAServing, codebase/CodebaseModelLayer |
+| [vllm-project/vllm @ v0.31.0: vllm/plugins/__init__.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/plugins/__init__.py) | 2026-10-16, 2026-10-24 | AwsNeuron, LoRAServing, codebase/CodebaseModelLayer |
 | [vllm-project/vllm @ v0.31.0: vllm/plugins/lora_resolvers/filesystem_resolver.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/plugins/lora_resolvers/filesystem_resolver.py) | 2026-10-16 | LoRAServing |
 | [vllm-project/vllm @ v0.31.0: vllm/plugins/lora_resolvers/hf_hub_resolver.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/plugins/lora_resolvers/hf_hub_resolver.py) | 2026-10-16 | LoRAServing |
 | [vllm-project/vllm @ v0.31.0: vllm/sampling_params.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/sampling_params.py) | 2026-10-16 | PrefixCaching, V1Architecture, codebase/CodebaseAdvanced |
@@ -549,10 +607,13 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/cpu/spec.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/cpu/spec.py) | 2026-10-16 | KVOffloadingLMCache, ObservabilityBench |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/file_mapper.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/file_mapper.py) | 2026-10-16 | KVOffloadingLMCache |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/backpressure.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/backpressure.py) | 2026-10-16 | KVOffloadingLMCache |
-| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/base.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/base.py) | 2026-10-16 | KVOffloadingLMCache |
-| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/factory.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/factory.py) | 2026-10-16 | KVOffloadingLMCache, NvidiaDynamo |
-| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/fs/manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/fs/manager.py) | 2026-10-16 | KVOffloadingLMCache |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/base.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/base.py) | 2026-10-16, 2026-10-24 | KVOffloadingLMCache, offload/RemoteKvTiersAws |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/factory.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/factory.py) | 2026-10-16, 2026-10-24 | KVOffloadingLMCache, NvidiaDynamo, offload/RemoteKvTiersAws |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/fs/io.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/fs/io.py) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/fs/manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/fs/manager.py) | 2026-10-16, 2026-10-24 | KVOffloadingLMCache, offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/kvcr/manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/kvcr/manager.py) | 2026-10-16 | KVOffloadingLMCache |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/obj/config.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/obj/config.py) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/obj/manager.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/obj/manager.py) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/p2p/session/session.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/p2p/session/session.py) | 2026-10-16 | PrefixCaching |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/kv_offload/tiering/spec.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/kv_offload/tiering/spec.py) | 2026-10-16 | KVOffloadingLMCache, ObservabilityBench |
 | [vllm-project/vllm @ v0.31.0: vllm/v1/metrics/loggers.py](https://github.com/vllm-project/vllm/blob/v0.31.0/vllm/v1/metrics/loggers.py) | 2026-10-16 | AwsEks, DecisionGuide, InferenceWorkload, KVOffloadingLMCache, LlmdKServe, LoRAServing, ObservabilityBench, OperationsFailureModes, PagedAttentionKV, PrefixCaching, ProductionStack, SchedulerBatching, V1Architecture, codebase/CodebaseConfig, codebase/CodebaseScheduler |
@@ -616,6 +677,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: rust](https://github.com/vllm-project/vllm/tree/v0.31.0/rust) | 2026-10-16 | Sources appendix, codebase/CodebaseRust |
 | [vllm-project/vllm @ v0.31.0: rust/src/parser/src](https://github.com/vllm-project/vllm/tree/v0.31.0/rust/src/parser/src) | 2026-10-16 | codebase/CodebaseRust |
 | [vllm-project/vllm @ v0.31.0: vllm/config](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/config) | 2026-10-16 | Sources appendix, codebase/CodebaseConfig |
+| [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/mooncake](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/mooncake) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: vllm/distributed/kv_transfer/kv_connector/v1/nixl](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/distributed/kv_transfer/kv_connector/v1/nixl) | 2026-10-16 | AwsGpuEfaNixl, codebase/CodebaseDistributed |
 | [vllm-project/vllm @ v0.31.0: vllm/entrypoints/launchers](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/entrypoints/launchers) | 2026-10-16 | OpenAICompatServer |
 | [vllm-project/vllm @ v0.31.0: vllm/model_executor](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/model_executor) | 2026-10-16 | Sources appendix |
@@ -627,33 +689,43 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [vllm-project/vllm @ v0.31.0: vllm/v1/worker/gpu/spec_decode](https://github.com/vllm-project/vllm/tree/v0.31.0/vllm/v1/worker/gpu/spec_decode) | 2026-10-16 | codebase/CodebaseAdvanced |
 | [Hugging Face Text Generation Inference (TGI) docs (repository archived)](https://huggingface.co/docs/text-generation-inference/index) | 2026-10-16 | Sources appendix |
 | [TensorRT-LLM documentation](https://nvidia.github.io/TensorRT-LLM/) | 2026-10-16 | Sources appendix |
+| [libtorch-neuronx-lite wheel (searched)](https://pip.repos.neuron.amazonaws.com/libtorch-neuronx-lite/libtorch_neuronx_lite-2.13.0.1.0.3112%2B653bc48f-cp312-cp312-linux_x86_64.whl) | 2026-10-24 | AwsNeuron |
 | [PyPI: nixl 1.3.2](https://pypi.org/project/nixl/1.3.2/) | 2026-10-16 | NvidiaDynamo |
+| [PyPI: mooncake-transfer-engine-efa-cuda13](https://pypi.org/pypi/mooncake-transfer-engine-efa-cuda13/json) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [PyPI: valkey-glide-sync](https://pypi.org/pypi/valkey-glide-sync/json) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [PyTorch Foundation: welcomes vLLM (May 7, 2025)](https://pytorch.org/blog/pytorch-foundation-welcomes-vllm/) | 2026-10-16 | WhenNotVllm |
 
 ## Tier 2: vendor and project blogs, talks, product pages (vendor figures are vendor claims)
 
-24 sources.
+31 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
 | [AWS What's New: NIXL with EFA (Mar 2026)](https://aws.amazon.com/about-aws/whats-new/2026/03/aws-support-nixl-with-efa/) | 2026-10-16 | Sources appendix |
 | [Amazon Bedrock (product page)](https://aws.amazon.com/bedrock/) | 2026-10-16 | Sources appendix |
+| [AWS ML Blog, 2026-06-01](https://aws.amazon.com/blogs/machine-learning/accelerate-llm-model-loading-and-increase-context-windows-with-gpudirect-on-amazon-fsx-for-lustre-and-turboquant/) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [AWS ML Blog: faster auto-scaling for generative AI models](https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-inference-launches-faster-auto-scaling-for-generative-ai-models/) | 2026-10-16 | AwsSageMakerBedrock, Sources appendix |
 | [AWS ML Blog: Real-time voice with SageMaker AI + vLLM (streaming)](https://aws.amazon.com/blogs/machine-learning/build-real-time-voice-applications-with-amazon-sagemaker-ai-and-vllm/) | 2026-10-16 | Sources appendix |
 | [AWS ML Blog](https://aws.amazon.com/blogs/machine-learning/deploy-llms-on-amazon-eks-using-vllm-deep-learning-containers/) | 2026-10-16 | AwsEks, AwsGpuEfaNixl, Sources appendix |
 | [AWS ML Blog: multi-tenant LoRA serving](https://aws.amazon.com/blogs/machine-learning/efficient-and-cost-effective-multi-tenant-lora-serving-with-amazon-sagemaker/) | 2026-10-16 | AwsSageMakerBedrock, Sources appendix |
 | [AWS ML Blog: Multi-LoRA / MoE vLLM on SageMaker + Bedrock](https://aws.amazon.com/blogs/machine-learning/efficiently-serve-dozens-of-fine-tuned-models-with-vllm-on-amazon-sagemaker-ai-and-amazon-bedrock/) | 2026-10-16 | AwsSageMakerBedrock, Sources appendix |
 | [AWS ML Blog: Enhanced metrics for SageMaker AI endpoints](https://aws.amazon.com/blogs/machine-learning/enhanced-metrics-for-amazon-sagemaker-ai-endpoints-deeper-visibility-for-better-performance/) | 2026-10-16 | Sources appendix |
-| [AWS ML blog: How Amazon scaled Rufus](https://aws.amazon.com/blogs/machine-learning/how-amazon-scaled-rufus-by-building-multi-node-inference-using-aws-trainium-chips-and-vllm/) | 2026-10-16 | AwsNeuron, Ec2TopologyPlacement, Sources appendix |
+| [AWS ML blog: How Amazon scaled Rufus](https://aws.amazon.com/blogs/machine-learning/how-amazon-scaled-rufus-by-building-multi-node-inference-using-aws-trainium-chips-and-vllm/) | 2026-10-16, 2026-10-24 | AwsNeuron, Ec2TopologyPlacement, Sources appendix |
 | [AWS ML Blog](https://aws.amazon.com/blogs/machine-learning/introducing-disaggregated-inference-on-aws-powered-by-llm-d/) | 2026-10-16 | AwsEks, AwsGpuEfaNixl, Sources appendix |
 | [AWS ML Blog: P-EAGLE in vLLM](https://aws.amazon.com/blogs/machine-learning/p-eagle-faster-llm-inference-with-parallel-speculative-decoding-in-vllm/) | 2026-10-16 | AwsSageMakerBedrock, Sources appendix |
 | [AWS ML Blog: prefix-aware routing (vendor benchmark)](https://aws.amazon.com/blogs/machine-learning/reduce-llm-latency-with-prefix-aware-routing-on-amazon-sagemaker-inference/) | 2026-10-16 | AwsSageMakerBedrock |
+| [AWS Storage Blog, 2026-09-21](https://aws.amazon.com/blogs/storage/accelerate-inference-with-kv-cache-tiering-on-aws/) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [EC2 P6 product page](https://aws.amazon.com/ec2/instance-types/p6/) | 2026-10-17 | AwsGpuEfaNixl |
 | [NVIDIA blog: Introducing NVIDIA Dynamo](https://developer.nvidia.com/blog/introducing-nvidia-dynamo-a-low-latency-distributed-inference-framework-for-scaling-reasoning-ai-models/) | 2026-10-16 | NvidiaDynamo, Sources appendix |
 | [NVIDIA blog: Dynamo accelerates llm-d](https://developer.nvidia.com/blog/nvidia-dynamo-accelerates-llm-d-community-initiatives-for-advancing-large-scale-distributed-inference/) | 2026-10-16 | NvidiaDynamo, Sources appendix |
 | [LiteLLM security update](https://docs.litellm.ai/blog/security-update-march-2026) | 2026-10-16 | GatewaysAppLayer, Sources appendix |
 | [aws-samples/load-test-llm-with-locust (sagemaker_vllm_loadtest.ipynb)](https://github.com/aws-samples/load-test-llm-with-locust) | 2026-10-16 | Sources appendix |
+| [kvcache-ai/Mooncake @ v0.3.13.post1: docs/source/design/transfer-engine/efa_transport.md](https://github.com/kvcache-ai/Mooncake/blob/v0.3.13.post1/docs/source/design/transfer-engine/efa_transport.md) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [LMCache/LMCache @ v0.5.6: README.md](https://github.com/LMCache/LMCache/blob/v0.5.6/README.md) | 2026-10-16 | KVOffloadingLMCache |
+| [LMCache PR 5556](https://github.com/LMCache/LMCache/pull/5556) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [LMCache PR 5556 comment (project claim)](https://github.com/LMCache/LMCache/pull/5556#issuecomment-6304983743) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [valkey-glide PR 7412](https://github.com/valkey-io/valkey-glide/pull/7412) | 2026-10-24 | offload/RemoteKvTiersAws |
+| [Valkey core team decision](https://github.com/valkey-io/valkey/issues/4743#issuecomment-5766728140) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [vllm-project/vllm @ v0.31.0: rust/src/bench/README.md](https://github.com/vllm-project/vllm/blob/v0.31.0/rust/src/bench/README.md) | 2026-10-16 | ObservabilityBench |
 | [llm-d production blog (vendor claim)](https://llm-d.ai/blog/production-grade-llm-inference-at-scale-kserve-llm-d-vllm) | 2026-10-16 | LlmdKServe, Sources appendix |
 | [vLLM blog: vLLM Router release](https://vllm-project.github.io/2025/12/13/vllm-router-release.html) | 2026-10-16 | ProductionStack, Sources appendix |

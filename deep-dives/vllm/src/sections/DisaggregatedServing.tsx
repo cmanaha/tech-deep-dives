@@ -643,10 +643,10 @@ export function DisaggregatedServing() {
             </Cite>{' '}
             <Cite
               tier={1}
-              href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/factory.py', 'L153-L248')}
+              href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/factory.py', 'L153-L249')}
               kind="code"
             >
-              kv_connector/factory.py L153-L248
+              kv_connector/factory.py L153-L249
             </Cite>{' '}
             <Cite tier={1} href={vllmUrl('docs/features/mooncake_connector_usage.md', 'L24-L49')}>
               mooncake_connector_usage.md L24-L49

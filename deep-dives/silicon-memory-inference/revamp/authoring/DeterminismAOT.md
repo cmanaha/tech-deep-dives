@@ -240,3 +240,11 @@ Claim-set diff (assertions in the after that were not in the before):
 - `sources.md` needs regenerating for the new records (the sources snapshot test will flag it).
 - Capital Markets Lens already says "fix the batch shape or turn on batch-invariant serving
   ... on Trainium, also pin the NEFF and set a fixed rounding seed"; this section matches it.
+
+## 2026-10-24 TorchNeuron update (stream trainium, orchestrator edit)
+
+Evidence: v2.33.0 rounding-modes page (fetched 2026-10-24: the `XLA_USE_BF16` note sits beside `device='xla:1'` examples); TorchNeuron about, best-practices and env-vars pages at v2.33.0 searched for "stochastic" and "rounding" with no rounding default found; P7.
+
+Claim-set diff:
+- Scoped "PyTorch-Neuron turns stochastic rounding on when `XLA_USE_BF16=1`" to the XLA-based build.
+- Added: the TorchNeuron pages read state no rounding default, so set `NEURON_RT_STOCHASTIC_ROUNDING_EN` explicitly (scoped silence claim); keep the experimental eager fusion (`TORCH_NEURONX_ENABLE_CONCATENATION=1`) off when runs must match, because fusion can change intermediate precision (P7, about page).

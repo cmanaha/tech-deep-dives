@@ -196,3 +196,216 @@ New assertions in the after, each with its source:
   - `RooflineAndArithmeticIntensity.tsx:542` names "NxD Inference on Trainium" as a serving stack; NxD
     Inference is in maintenance mode and vLLM Neuron is the serving path.
 - No change needed in `App.tsx`, `sources/index.ts` or `sectionTitles` (the section test passes).
+
+---
+
+## 2026-10-24 TorchNeuron update (Neuron SDK 2.33.0)
+
+Scope: bring the section current for Neuron 2.33.0, released 2026-10-19, with TorchNeuron in public
+beta. Evidence comes from three registers: `research/2026-10-torchneuron/01-primary-sources.md` (P
+rows), `02-code.md` (C rows, torch-neuronx tag v2.33.0) and `03-semianalysis.md` (SA rows). TRL comes
+from `deep-dives/rl-agentic-loops/research/2026-10/06-aws-paths.md` F06-61, at the coordinator's
+request. Before integration, each phrase below was re-read on 2026-10-24 at its `/en/v2.33.0/` page
+or pinned tag.
+
+### Section shape after the edit
+
+1. h1: two front ends (TorchNeuron to StableHLO on Trn2/Trn3; XLA for JAX and for Trn1/Inf2), one NEFF
+   and one runtime at the end.
+2. The default path, and where NKI enters: AwsCompilerStack, with its labels changed to "StableHLO or
+   XLA graph". The four-stage paragraph is kept, the "PyTorch path is moving" paragraph is removed, and
+   the component table moves to 2.33.0.
+3. TorchNeuron: Trainium as the PyTorch device neuron (new, mental model). It holds
+   TorchNeuronStackDiagram and paragraphs on eager mode, torch.compile, NKI, c10d, and one package name
+   for two products.
+4. Getting a PyTorch model onto neuron and through torch.compile (new, practical). It covers porting,
+   the eager-fallback conflict, the best-practices code block, compile rules, the support boundary,
+   and a maturity ExpandableSection.
+5. Two settings to choose before the first compile. The matmul precision paragraph is re-cited and
+   now covers TorchNeuron. The XLA cache is scoped, and a TorchNeuron NEFF cache paragraph is added.
+6. Which library to serve and train on. vLLM Neuron on libtorch-neuronx-lite, the AUTOLOAD pitfall,
+   the 2.34 end dates, TorchTitan Neuron and TRL.
+7. Profiling. torch.profiler with PrivateUse1, the 5 GB DEVICE reservation, per-engine device tracks,
+   the Memory Viewer, and Neuron Observer.
+8. Writing a kernel in NKI. NKI 0.7.0, and the section ends on "Then call it from PyTorch".
+
+Prose grows from about 1,000 to about 3,000 words (rough count of rendered text, citations and code
+excluded).
+
+### Claim-set diff
+
+Changed:
+- "PyTorch 2.9 is the last version on PyTorch/XLA": re-cited from the 2.32.0 PyTorch notes (E1) to
+  What's New 2.33.0 (P29).
+- Component table: 2.32.0 to 2.33.0 values (P21). NxD Inference row: "no 2.33.0 release; last
+  0.10.18399 in Neuron 2.31.0" (P36).
+- "Training moves to TorchNeuron ... TorchTitan with minimal code changes" (E4) becomes TorchTitan
+  Neuron 0.2.2+neuron.1, a beta fork, with its validated configurations and limits (P26, P51, P52, C24).
+- Serving: NxD Inference "maintenance" becomes "ends on Trn2/Trn3 in Neuron 2.34", together with NxD
+  Core inference APIs and PyTorch/XLA inference (P29, P32).
+- Matmul precision: TorchNeuron's graph compiles pass `--auto-cast=none` themselves (C9). The documented
+  BF16 route on TorchNeuron is the dtype or autocast (about page). NEURON_CC_FLAGS reaches neuronx-cc on
+  TorchNeuron (P39).
+- The XLA compile cache paragraph is scoped to the XLA path.
+- neuron-explorer capture is re-cited to the 2.33.0 dev-tools page (P49).
+
+Added (assertion: source row):
+- PrivateUse1 device `neuron`, dispatcher routing: P1-P3 / torchNeuron233, whatsNew233, C1
+  (tnxDeviceRegistration).
+- Autoload through the torch.backends entry point: P74, C2 (tnxEntryPoints).
+- Eager mode: per-op StableHLO, NEFF on first use, async enqueue: P4. -O1: C5 (tnxEagerOptLevel). "-O1
+  minimizes compile time": compilerCli v2.33.0. Cache key of op, shapes, dtypes, strides: C5
+  (tnxDispatchCacheKey). HBM intermediates: pytorchBlog. Concatenation is experimental and off: P7.
+- torch.compile: Dynamo FX, then AOTAutograd, then StableHLO, then one NEFF, no Inductor: P5, P6, C9
+  (tnxAotAutograd). -O2 with `--model-type transformer --auto-cast=none`: C9 (tnxGraphCompileFlags).
+  Graph breaks leave less context: about page.
+- NKI: plain @nki.jit call or nki_op; use nki_op only for autograd or a named op: P9, best practices,
+  C13, C32. custom_call inside the same NEFF, no graph break: C13 (tnxNkiCustomCall), best practices.
+- c10d `neuron`: collectives, parallelism list, EFA: P16, P8, C14. Shard by NeuronCores; TP takes a
+  NeuronCore count; FSDP needs no change: torch/index.html, about page.
+- Package families, Python and Ubuntu: P13. XLA build 2.9.0.2.15.32035 deprecated: pytorchXlaNotes233.
+  Keep the pin, because earlier versions are the XLA product: P57. The code does not refuse Trn1/Inf2:
+  C18 (tnxPlatforms).
+- Porting checklist: P74. Moving off torch_xla and xm.xla_device(): P19.
+- Eager fallback doc conflict (warns versus silent): P18, P53. Code: the log line is dropped
+  (tnxFallbackLogDropped), and one TORCH_WARN fires on a lowering that raises (tnxLoweringFailWarn), C8.
+  FALLBACK_ONLY_FOR_UNIMPLEMENTED_OPS: best practices, C8 (tnxFallbackOnlyUnimplemented).
+- Code block: best practices practice 1, plus `import torch_neuronx` (P74 says the import is needed
+  only for its own APIs).
+- Compile rules:
+  - dynamic=False doc-code conflict: P41, C10 (tnxDynamicUnread);
+  - fullgraph=True recommended; raises torch._dynamo.exc.Unsupported: P37, compile reference;
+  - mode default only: P37, C9;
+  - forced graph breaks, including ops with no Neuron lowering: P38, compile reference;
+  - MoE experts outside the compiled region: P52;
+  - compile failures raise by default, and the best practices advise keeping that: P39, C11
+    (tnxCompileRaises), best practices;
+  - compile the hot regions: best practices.
+- Support boundary:
+  - torch.sparse, func, nested, distributions; TorchAO and composite MXFP8; fft: P17;
+  - FP8 requires Trainium 3: about page; the code disables the FP8 mapping on trn2 (C17, tnxFp8Trn2);
+  - forward-mode AD out of the first release: P65.
+- Maturity ExpandableSection:
+  - 95.6% / 96.6% with the undefined pass criterion: P63 (vendor-claim);
+  - ATen 94.7% of enabled tests and about 39K Neuron skips: P64 (vendor-claim);
+  - Hugging Face 89% versus 46%: P71 (vendor-claim);
+  - SemiAnalysis: 11,099 versus 14,156 tok/s, about 1.28x, and the 184.6 s / 255.7 s first step: SA21,
+    SA27 (measured, Tier 3);
+  - the first step is compilation, which the NEFF cache saves later: P52, SA27;
+  - disclosure: SA4 plus the pytorchBlog thanks.
+- NEFF cache:
+  - /tmp/neff_cache, keyed on compiler version; pin versions: P41, C6;
+  - FSx and the lock dir on local POSIX: compile reference;
+  - TORCH_NEURONX_NEFF_DISABLE_CACHE in both code and compile reference, against
+    TORCH_NEURONX_DISABLE_NEFF_CACHE in docs/environment_variables.md L84, read only by the uncalled
+    utils.py helper (tnxEnvVarsDoc, tnxDisableNeffCacheHelper).
+- vLLM Neuron:
+  - torch.compile is the default path: P24;
+  - libtorch-neuronx-lite on PyTorch 2.13: design page, C26 (vllmNeuronCoreReq, vllmTorchPin);
+  - one package owns `neuron`, so set AUTOLOAD=0: design page;
+  - migration targets: P29.
+- Training:
+  - XLA training unsupported from 2.30: P35;
+  - TorchTitan Neuron: P26, P51, P52; its default backend is `neuron`: C24 (torchtitanCompileBackend);
+  - TRL without code changes, 128-token padding, GRPO/RLOO generating with Transformers: F06-61
+    (trlTrainium, Tier 2 here, quotes re-read at the v1.16.0 docs URL on 2026-10-24).
+- Profiling:
+  - torch.profiler PrivateUse1, default session, NeuronConfig: torchNeuronNotes, about page, C20
+    (tnxProfilerPlugin);
+  - DEVICE reserves about 5 GB HBM on Trn2: P49;
+  - per-engine instruction tracks colored by PyTorch operator, per-DMA-engine packet tracks: Device
+    Trace Viewer page;
+  - Memory Viewer line attribution: P50;
+  - Observer: P27.
+- NKI 0.7.0 in 2.33.0: P21. Calling a kernel from PyTorch and register_autograd: P9.
+
+Removed:
+- The "The PyTorch path is moving" paragraph. Its content is replaced by the TorchNeuron h2s.
+- "TorchNeuron closed beta" in the table (E3).
+- The torch-neuronx 2.9 / PyTorch-XLA sentence inside the four-stage paragraph. The XLA front-end
+  stage name stays, as the v2.33.0 NKI overview still describes it.
+
+### Sources
+
+Removed keys:
+- compilerNotes
+- neuronReleaseNotes (2.32)
+- pytorchNotes (2.32)
+- jaxNeuronx (2.32)
+- pytorchNative (2.32)
+
+Re-pinned to /en/v2.33.0/ after re-reading each claim there:
+- neuronCompiler
+- compilerCli
+- nkiOverview
+
+Accessed date updated: torchNeuron233 and torchNeuronxRepo. vllmNeuronRepo moves to release
+v0.29.0.1.2.0.
+
+Added, Tier 1 Neuron docs at v2.33.0:
+- whatsNew233, releaseNotes233, whatIsNeuron233, pytorchXlaNotes233
+- noXlaTraining, nxdiArchive
+- torchIndex233, torchNeuronNotes, torchCompileRef, torchBestPractices
+- torchtitanAbout
+- vllmNeuronNotes233, vllmTorchNeuronDesign
+- devTools233, explorerCapture, explorerDeviceTrace, observerNotes
+
+Added, Tier 1 code:
+- vllmNeuronCoreReq, vllmTorchPin
+- 22 `tnx*` rows at `torch-neuronx/blob/v2.33.0`
+- nkiTorchHook (the published nki 0.7.0 wheel)
+- torchtitanCompileBackend (release-2.33.0)
+
+Added, Tier 2:
+- pytorchBlog (AWS)
+- hfBlog (Hugging Face)
+- trlTrainium (Hugging Face)
+
+Added, Tier 3: semiAnalysis.
+
+### Decisions
+
+- Dropped the C7 and C16 counts (eager lowering library size and upstream skip-registry counts). They
+  are our static counts. They give the reader no way to think about the backend and nothing to do.
+- Omitted the P58 compatibility-table clause, where the repo table marks JVP as native, against the
+  blog. The blog's "not in the first release" is the reader-facing fact.
+- No claim on the override order of NEURON_CC_FLAGS against TorchNeuron's built-in
+  `--auto-cast=none`. The code passes both, and the evidence does not settle which wins.
+- c10d is drawn without a runtime arrow, because the registers do not show how the collectives path
+  meets the Neuron Runtime.
+- "/tmp is often cleared" was dropped. It was our inference (C6), with no doc behind it. The page
+  instead uses the compile reference's own reason to move the cache: reuse across runs and instances.
+- SemiAnalysis profiler superlatives (SA36, opinion) were not used.
+- The int64 handling conflict (P52 note) was left out of this section. It is a data-type detail with no
+  decision attached here.
+
+### Diagram and render check
+
+- TorchNeuronStackDiagram:
+  - viewBox 900x476, prefix `tns-`, `role="img"` with a `<title>`;
+  - house `overflowX: auto` wrapper with minWidth 640;
+  - shows the XLA lane (dashed grey), the eager and compile lanes (solid blue), NKI entering both
+    (dashed green), the neuronx-cc band, the NEFF boxes, the runtime, NeuronCores and c10d.
+- `node scripts/shoot.mjs --sections aws-compilers --widths 1440,390`, run on a fresh vite build,
+  reported 3 SVG and 1 React Flow, "ok" at both widths, exit 0.
+- PNGs read at both widths: no overlap, clipping or page overflow.
+
+### Orchestrator actions
+
+- Glossary: add the following.
+  - MLIR (Multi-Level Intermediate Representation)
+  - StableHLO (the stable High Level Operations opset that TorchNeuron lowers to)
+  - AOTAutograd (ahead-of-time autograd)
+  - DDP (Distributed Data Parallel)
+  - FSDP2 (Fully Sharded Data Parallel, version 2)
+  - DTensor (Distributed Tensor)
+  - c10d (PyTorch's distributed communication library)
+  - MXFP8 (microscaling 8-bit floating point)
+  - FP8 (8-bit floating point)
+  - GEMM (general matrix multiply)
+  - DMA (direct memory access)
+  - EFA (Elastic Fabric Adapter)
+  - TRL (Transformer Reinforcement Learning)
+  - GRPO (Group Relative Policy Optimization)
+  - RLOO (REINFORCE Leave-One-Out)
+- sources.md must be regenerated. The sources snapshot test fails until it is.
