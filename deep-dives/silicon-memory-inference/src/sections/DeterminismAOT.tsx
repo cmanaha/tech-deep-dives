@@ -150,13 +150,27 @@ export function DeterminismAOT() {
             <Cite s={S.intranodeCollectives} />
           </Box>
           <Box variant="p">
-            <strong>Rounding.</strong> PyTorch-Neuron turns stochastic rounding
-            on when <code>XLA_USE_BF16=1</code>;{" "}
+            <strong>Rounding.</strong> Set{" "}
+            <code>NEURON_RT_STOCHASTIC_ROUNDING_EN</code> on both PyTorch stacks,
+            so the launch script records the mode. The XLA-based PyTorch-Neuron
+            turns stochastic rounding on when <code>XLA_USE_BF16=1</code>;{" "}
             <code>NEURON_RT_STOCHASTIC_ROUNDING_EN=0</code> selects
             round-to-nearest-even.
-            <Cite s={S.neuronRoundingModes} /> To keep stochastic rounding, set{" "}
+            <Cite s={S.neuronRoundingModes} /> The torch-neuronx source at v2.33.0
+            never sets <code>NEURON_RT_STOCHASTIC_ROUNDING_EN</code>
+            <Cite
+              s={S.torchNeuronxRepo}
+              note="Searched the source tree at the tag for ROUNDING_EN and stochastic: no runtime setting, only RNG and decomposition code. Our search of the code, not an AWS statement."
+            />, so on TorchNeuron the Neuron Runtime default applies: off, which is
+            round-to-nearest-even.
+            <Cite s={S.nrtEnvVarRef} /> To keep stochastic rounding, set{" "}
             <code>NEURON_RT_STOCHASTIC_ROUNDING_SEED</code> to a fixed value.
-            <Cite s={S.neuronEnvVars} />
+            <Cite s={S.neuronEnvVars} /> On TorchNeuron, keep the experimental
+            eager-mode fusion (<code>TORCH_NEURONX_ENABLE_CONCATENATION=1</code>)
+            off, its default, when runs must match, because fusion can change
+            intermediate precision.
+            <Cite s={S.torchNeuron233} />
+            <Cite s={S.torchNeuronNotes} />
           </Box>
           <Box variant="p">
             <strong>The bucket.</strong> vLLM Neuron compiles one decode NEFF

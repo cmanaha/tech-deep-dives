@@ -247,3 +247,11 @@ Claim-set diff (assertions in the after that were not in the before, with source
     Relevant to Disaggregated Serving's Trainium block.
   - The AWS HPC blog does not say SRD reassembles at the receiver; ordering is left to higher
     layers. Any section saying "reassembles out of order" should change.
+
+## 2026-10-24 TorchNeuron update (stream trainium, orchestrator edit)
+
+Evidence: `research/2026-10-torchneuron/` rows E6, P16, P29, P32, C14, SA23.
+
+Claim-set diff:
+- Removed: `torch.all_to_all_vdev_2d` "which the Neuron 2.32.0 TorchNeuron guide lists for a future release" (E6 STALE).
+- Added: no implementation in torch-neuronx at v2.33.0 (C14, our search); PyTorch 2.14's TokenSwitch is private and NVIDIA-only (SA23 evidence, PyTorch 2.14 release blog, fetched 2026-10-24); TorchNeuron's `neuron` c10d backend runs collectives on the collective cores inside a node and over EFA between nodes (P16, TorchNeuron release notes, fetched 2026-10-24); NxD Inference ends on Trn2 and Trn3 in Neuron 2.34 (P32), replacing "in maintenance".

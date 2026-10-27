@@ -17,7 +17,7 @@ Wave 1 produced six claim registers, each with a header of pinned sources, numbe
 | `research/2026-10/03-learning-in-words.md` | Reflexion, self-correction, experience and memory loops, skill libraries, textual gradients, prompt optimisers including GEPA, ACE, Training-Free GRPO, evolutionary search, Advisor Models | 112 |
 | `research/2026-10/04-theory-limits.md` | In-context RL, exploration, credit assignment, context limits and caching, the weights-versus-context boundary, autoresearch, Ralph, the adaptation taxonomy | 80 |
 | `research/2026-10/05-rl-systems.md` | The RL step as a system, verl, OpenRLHF, TRL with vLLM, asynchronous designs, cost of named runs, DGX Spark feasibility | 48 |
-| `research/2026-10/06-aws-paths.md` | Bedrock reinforcement fine-tuning, Nova customisation, SageMaker AI model customisation, HyperPod recipes, Trainium, AgentCore Memory and optimization, Bedrock prompt optimization | 59 |
+| `research/2026-10/06-aws-paths.md` | Bedrock reinforcement fine-tuning, Nova customisation, SageMaker AI model customisation, HyperPod recipes, Trainium, AgentCore Memory and optimization, Bedrock prompt optimization | 65 |
 
 Tiers used throughout. Tier 0: our experiments. Tier 1: source code at a pinned tag or 40-character SHA, official framework documentation, first-party AWS documentation and pricing pages. Tier 2: first-party lab or vendor posts and talks, including an author's own post about their own method. Tier 3: academic papers, with peer-reviewed venue or preprint marked, and third-party technical analysis. Tier 4: tutorials, summaries and press, used only to locate primary sources. Code is the authority over documentation, and documentation over blogs.
 
@@ -41,7 +41,7 @@ Questions:
 3. Would a GRPO configuration tuned for 100 to 300 training examples close GEPA's gap? Is there any ablation of GRPO budget at small data? (03 U2)
 4. Which reflection model did GEPA's Qwen3 8B runs use: the same 8B model or a stronger one? Check the gepa repo's experiment configs at a pinned SHA. (03 U1)
 5. Named RL run compute is in research 05 (F05-37 to F05-42). Still open: DAPO's run hours, the GPU count behind the Skywork-OR1-32B timing table, and the GPU count behind PipelineRL's 2x figure (research 05 UNKNOWN register).
-6. HyperPod recipes, Trainium support and AgentCore Memory are in research 06 (F06-37 to F06-59). Still open: how AWS measured the "up to 66%" RFT figure, Nova RFT hourly pricing, RFT quotas, and whether RL runs on the TorchNeuron beta (research 06 UNKNOWN register).
+6. HyperPod recipes, Trainium support and AgentCore Memory are in research 06 (F06-37 to F06-65). Still open: how AWS measured the "up to 66%" RFT figure, Nova RFT hourly pricing, RFT quotas, and, for Trainium, an AWS-documented GRPO procedure and a validated verl or vLLM-rollout configuration (research 06, U16).
 7. Does AgentCore Memory's episodic reflection improve task success over episodes, measured anywhere? AWS describes it as learning from history (F06-51) and publishes no figure in the pages read.
 8. Has any frontier lab published base-versus-RL pass@k at large k? (02 U1) What is the same-scaffold base pass@16 for DeepSWE's Qwen3-32B? (02 U2)
 9. Do first-party OpenAI docs describe a memory or skills feature with a learning loop? (03 U8)

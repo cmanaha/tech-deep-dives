@@ -39,6 +39,19 @@ describe('source registry', () => {
     expect(conflicts).toEqual([]);
   });
 
+  it('gives one URL the same title everywhere it is cited', () => {
+    const titleByUrl = new Map<string, string>();
+    const conflicts: string[] = [];
+    for (const { section, source } of files) {
+      const seen = titleByUrl.get(source.url);
+      if (seen !== undefined && seen !== source.title) {
+        conflicts.push(`${source.url}: "${seen}" vs "${source.title}" in ${section}`);
+      }
+      titleByUrl.set(source.url, source.title);
+    }
+    expect(conflicts).toEqual([]);
+  });
+
   it('keeps sources.md in sync with the registry', async () => {
     await expect(renderSourcesMarkdown(collectSources())).toMatchFileSnapshot(
       '../../sources.md'
