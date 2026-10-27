@@ -7,6 +7,7 @@ import Table from '@cloudscape-design/components/table';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import Alert from '@cloudscape-design/components/alert';
 import Badge from '@cloudscape-design/components/badge';
+import Link from '@cloudscape-design/components/link';
 import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
 
 // External engines pinned to the releases resolved on 2026-10-16
@@ -373,7 +374,11 @@ export function WhenNotVllm() {
                 disaggregation, speculative decoding and multi-LoRA batching, so the reason to pick
                 it is the prefix cache and scheduler rather than feature count. vLLM caches
                 prefixes too (<strong>Section 6</strong>): the edge is{' '}
-                <strong>workload-dependent</strong>, so benchmark both on your traffic.
+                <strong>workload-dependent</strong>, so benchmark both on your traffic. The{' '}
+                <Link external href="../sglang/">
+                  SGLang dive, section 23: SGLang and vLLM Compared
+                </Link>{' '}
+                sets the two engines side by side.
               </Box>
             </div>
             <div>
