@@ -9,6 +9,7 @@ import Alert from '@cloudscape-design/components/alert';
 import Link from '@cloudscape-design/components/link';
 import type { ReactNode } from 'react';
 import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
+import { RemoteKvTiersAws } from './offload/RemoteKvTiersAws';
 
 const OFFLOAD_DOCS = 'docs/features/kv_offloading_usage.md';
 const LMCACHE_README = 'https://github.com/LMCache/LMCache/blob/v0.5.6/README.md';
@@ -399,7 +400,8 @@ export function KVOffloadingLMCache() {
           </Box>
           <Box variant="small" color="text-body-secondary">
             Verified against vLLM v0.31.0 (commit <code>db9527a4</code>) and LMCache v0.5.6 on
-            2026-10-16. The KV connector API logs that it is experimental and subject to change{' '}
+            2026-10-16; the remote tiers on AWS were verified on 2026-10-24. The KV connector API
+            logs that it is experimental and subject to change{' '}
             <Cite
               tier={1}
               href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/v1/base.py', 'L210-L211')}
@@ -422,7 +424,8 @@ export function KVOffloadingLMCache() {
               Silicon, Memory &amp; Inference
             </Link>{' '}
             deep dive. This section covers which tier to turn on, what each buys, what it costs,
-            and how to watch it.
+            and how to watch it, including the remote tiers on AWS (Mooncake Store, the Valkey
+            large-object module, FSx for Lustre and S3) and how their bytes reach the GPU.
           </Alert>
         </SpaceBetween>
       </Container>
@@ -467,10 +470,10 @@ export function KVOffloadingLMCache() {
             v0.31.0{' '}
             <Cite
               tier={1}
-              href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/factory.py', 'L153-L248')}
+              href={vllmUrl('vllm/distributed/kv_transfer/kv_connector/factory.py', 'L153-L249')}
               kind="code"
             >
-              kv_connector/factory.py L153-L248
+              kv_connector/factory.py L153-L249
             </Cite>
             ; the diagram shows the seven this section discusses.
           </Box>
@@ -822,6 +825,26 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
             <Cite tier={1} href={`${LMCACHE_README}#L75`}>
               LMCache README v0.5.6 L75
             </Cite>
+            . Its multiprocess server reaches storage through its own L2 adapter layer behind a
+            host-memory L1{' '}
+            <Cite
+              tier={1}
+              href="https://github.com/LMCache/LMCache/blob/v0.5.6/lmcache/v1/distributed/memory_manager/l1_memory_manager.py#L1-L2"
+              kind="code"
+              accessed="2026-10-24"
+            >
+              LMCache v0.5.6 l1_memory_manager.py L1-L2
+            </Cite>
+            , with 21 adapters at v0.5.6, among them <code>valkey</code>,{' '}
+            <code>mooncake_store</code>, <code>s3</code> and <code>sagemaker-hyperpod</code>{' '}
+            <Cite
+              tier={1}
+              href="https://github.com/LMCache/LMCache/tree/v0.5.6/lmcache/v1/distributed/l2_adapters"
+              kind="code"
+              accessed="2026-10-24"
+            >
+              LMCache v0.5.6 l2_adapters
+            </Cite>
             . Sharing across instances is something the native <code>fs</code>, <code>obj</code>{' '}
             and <code>p2p</code> tiers also do, so it alone is no reason to add LMCache.{' '}
             <code>MultiConnector</code> runs an ordered list of connectors on one engine, for
@@ -945,32 +968,6 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
             ]}
             items={useCaseRows}
           />
-          <ExpandableSection headerText="Checklist: when offloading helps and when it hurts">
-            <ColumnLayout columns={2} variant="text-grid">
-              <div>
-                <Box variant="h3">Offloading helps when</Box>
-                <ul>
-                  <li>Prefixes are long and recomputing them is the bottleneck</li>
-                  <li>The same prefix is hit many times</li>
-                  <li>Reuse spans turns, sessions, replicas or restarts</li>
-                  <li>HBM pressure evicts warm prefixes early</li>
-                </ul>
-              </div>
-              <div>
-                <Box variant="h3">Offloading hurts when</Box>
-                <ul>
-                  <li>Prefixes are short, so recompute is cheaper than a load</li>
-                  <li>Hit rate is low: you pay to store KV that is never read back</li>
-                  <li>The store is slow or congested, so a load takes longer than a recompute</li>
-                  <li>
-                    Back-pressure drops stores to a slow tier: the GPU path stays fast and that
-                    tier&apos;s hit rate falls
-                  </li>
-                  <li>Stored KV comes from different weights or quantization (a correctness hazard)</li>
-                </ul>
-              </div>
-            </ColumnLayout>
-          </ExpandableSection>
           <ExpandableSection headerText="Load failures, consistency, capacity and routing">
             <SpaceBetween size="s">
               <Box variant="p">
@@ -1058,6 +1055,8 @@ vllm serve <model> --kv-offloading-size <GiB> --kv-offloading-backend lmcache`}<
           </ExpandableSection>
         </SpaceBetween>
       </Container>
+
+      <RemoteKvTiersAws />
 
       <Container
         header={

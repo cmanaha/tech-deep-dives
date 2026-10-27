@@ -3,18 +3,32 @@ import React from 'react';
 // The KV tier ladder on an 8-GPU AWS instance, per GPU: read bandwidth on a log
 // scale and capacity. Rows follow research/2026-10-refresh/flash-cache-tier.md
 // table 6b (L1 to L6) plus one High Bandwidth Flash stack (H1, H2) drawn hollow
-// because it is a roadmap part. The dashed line is the break-even bandwidth for
-// a dense 70B on 8x H100 (row M1, 8K prefix). The section caption carries the
-// citations.
+// because it is a roadmap part. The three FSx for Lustre rows are the documented
+// per-client ceilings (research/2026-10-kv-tiers/03-fsx-lustre-kv-tier.md, F20):
+// 1,200 Gb/s with EFA and GDS, 700 Gb/s over EFA without GDS, 100 Gb/s without
+// EFA (an ENA client or a file system created without EFA), each divided by
+// 8 bits and 8 GPUs. EFA can be enabled only when the file system is created, so
+// the FSx rows show a create-time choice on either side of the break-even line.
+// The peer DRAM row names the two pools reachable over EFA on AWS: Mooncake
+// Store (02-mooncake-remote-tiers.md, M6, M17) and the pre-release Valkey BLOB
+// module (01-valkey-large-object.md, V1, V37); its bar is the EFA line rate, a
+// ceiling. The dashed line is the break-even bandwidth for a dense 70B on 8x
+// H100 (row M1, 8K prefix). The section caption carries the citations.
+//
+// Layout: 9 rows of ROW_H 40 keep the viewBox at 472 units high. The longest
+// left-column label is the peer DRAM sub-label, 39 chars at 11px (about 242
+// units at 6.2 per char), which ends before BAR_X. A bar label sits inside its
+// bar when the bar is wider than the label (about 7 units per char at 12px bold
+// plus padding), otherwise just right of the bar end or the break-even line.
 //
 // On a phone the SVG keeps a 640 px minimum width and the wrapper scrolls.
 
 const VB_W = 860;
-const VB_H = 420;
+const VB_H = 472;
 const BAR_X = 270;
 const PER_DECADE = 100; // 1 GB/s at BAR_X, 10,000 GB/s at BAR_X + 400
 const ROW_TOP = 46;
-const ROW_H = 44;
+const ROW_H = 40;
 
 function xBw(gbps: number): number {
   return BAR_X + Math.log10(gbps) * PER_DECADE;
@@ -44,9 +58,11 @@ const ROWS: Row[] = [
     hollow: true,
   },
   { name: 'Host DRAM', sub: 'PCIe Gen5 x16 line rate, p5en', gbps: 64, label: '64 GB/s', capacity: '256 GiB', fill: '#414d5c', stroke: '#414d5c' },
-  { name: 'Peer DRAM over EFA', sub: 'pooled cache, 3,200 Gb/s per p5en', gbps: 50, label: '50 GB/s', capacity: 'pool size', fill: '#5f6b7a', stroke: '#5f6b7a' },
+  { name: 'Peer DRAM over EFA', sub: 'Mooncake Store; pre-release Valkey BLOB', gbps: 50, label: '50 GB/s', capacity: 'pool size', fill: '#5f6b7a', stroke: '#5f6b7a' },
   { name: 'FSx for Lustre', sub: 'EFA + GDS, 1,200 Gb/s per client', gbps: 18.75, label: '18.75 GB/s', capacity: 'file system size', fill: '#037f0c', stroke: '#037f0c' },
+  { name: 'FSx for Lustre', sub: 'EFA without GDS, 700 Gb/s per client', gbps: 700 / 64, label: '10.9 GB/s', capacity: 'file system size', fill: '#037f0c', stroke: '#037f0c' },
   { name: 'NVMe instance store', sub: '4 KiB IOPS floor, ceiling unpublished', gbps: 2.25, label: 'at least 2.25 GB/s', capacity: '3.8 TB', fill: '#037f0c', stroke: '#037f0c' },
+  { name: 'FSx for Lustre', sub: 'without EFA, 100 Gb/s per client', gbps: 100 / 64, label: '1.56 GB/s', capacity: 'file system size', fill: '#ec7211', stroke: '#ec7211' },
   { name: 'EBS', sub: '12.5 GB/s per-instance cap / 8', gbps: 1.56, label: '1.56 GB/s', capacity: 'volume size', fill: '#ec7211', stroke: '#ec7211' },
 ];
 
@@ -71,10 +87,11 @@ export function FlashTierLadder() {
       >
         <title id="flash-ladder-title">
           Per GPU on an 8-GPU AWS instance, read bandwidth falls from 4,800 GB/s in HBM to 64 GB/s
-          over the host link and to at least 2.25 GB/s from the NVMe instance store, while capacity
-          grows from 141 GB to 256 GiB to 3.8 TB. The instance store sits at the 2.1 GB/s per GPU
-          break-even for a dense 70B on H100. A High Bandwidth Flash stack, a roadmap part, sits
-          near HBM in bandwidth.
+          over the host link, 50 GB/s from pooled peer DRAM over EFA and at least 2.25 GB/s from the
+          NVMe instance store, while capacity grows from 141 GB to 256 GiB to 3.8 TB. FSx for Lustre
+          clears the 2.1 GB/s per GPU break-even for a dense 70B on H100 only over EFA: 18.75 GB/s
+          with GPUDirect Storage and 10.9 GB/s without it, against 1.56 GB/s without EFA, level with
+          EBS. A High Bandwidth Flash stack, a roadmap part, sits near HBM in bandwidth.
         </title>
         <style>{`
           .ftl-h { fill: #16191f; font: 600 12px sans-serif; }
@@ -102,19 +119,19 @@ export function FlashTierLadder() {
         {ROWS.map((r, i) => {
           const top = ROW_TOP + i * ROW_H;
           const end = xBw(r.gbps);
-          const inside = end - BAR_X > 110;
+          const inside = end - BAR_X > r.label.length * 7 + 16;
           return (
-            <g key={r.name}>
+            <g key={`${r.name}-${r.sub}`}>
               {i % 2 === 0 && <rect x="8" y={top} width="844" height={ROW_H} fill="#f8f9fa" />}
-              <text className="ftl-n" x="16" y={top + 19}>
+              <text className="ftl-n" x="16" y={top + 17}>
                 {r.name}
               </text>
-              <text className="ftl-s" x="16" y={top + 35}>
+              <text className="ftl-s" x="16" y={top + 32}>
                 {r.sub}
               </text>
               <rect
                 x={BAR_X}
-                y={top + 10}
+                y={top + 8}
                 width={end - BAR_X}
                 height="24"
                 rx="3"
@@ -124,15 +141,15 @@ export function FlashTierLadder() {
                 strokeDasharray={r.hollow ? '5 3' : undefined}
               />
               {inside ? (
-                <text className={r.hollow ? 'ftl-in-dark' : 'ftl-in'} x={end - 8} y={top + 27} textAnchor="end">
+                <text className={r.hollow ? 'ftl-in-dark' : 'ftl-in'} x={end - 8} y={top + 25} textAnchor="end">
                   {r.label}
                 </text>
               ) : (
-                <text className="ftl-out" x={breakEvenX + 10} y={top + 27}>
+                <text className="ftl-out" x={Math.max(end, breakEvenX) + 10} y={top + 25}>
                   {r.label}
                 </text>
               )}
-              <text className="ftl-cap" x="700" y={top + 27}>
+              <text className="ftl-cap" x="700" y={top + 25}>
                 {r.capacity}
               </text>
             </g>
