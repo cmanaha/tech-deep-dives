@@ -20,10 +20,10 @@ report lands (see `build-log.md`).
 | 14 | 14. Optimising the Prompt | PromptOptimization.tsx | prompt-opt | 4514 | popt | MIPRO expansion; Pareto set on validation; reflector = Qwen3 8B (U5) | done |
 | 15 | 15. Your Loops Through the RL Lens | YourLoops.tsx | your-loops | 4515 | loops | autoresearch at SHA; wall-clock stop; FunSearch 10^6 | done |
 | 16 | 16. Hybrids | Hybrids.tsx | hybrids | 4516 | hyb | advisor 70% derived | done |
-| 17 | 17. Where Words Fall Short | WhereWordsFallShort.tsx | words-limits | 4517 | wfs | DPT correction (W4 row 23); TRAIL hedge U14 | dispatched |
+| 17 | 17. Where Words Fall Short | WhereWordsFallShort.tsx | words-limits | 4517 | wfs | DPT correction (W4 row 23); TRAIL hedge U14 | done |
 | 18 | 18. What Lives in Weights & What Lives in Context | WeightsVsContext.tsx | weights-context | 4518 | wvc | two-column map, contested rows marked | dispatched |
 | 19 | 19. An RL Step Is an Inference Job Inside a Training Job | RlStepAsSystem.tsx | rl-systems | 4519 | sys | E0 Tier 0 points per wave2-systems-cost | dispatched |
-| 20 | 20. Cost per Improvement | CostPerImprovement.tsx (+ src/lib/breakeven.ts, src/__tests__/breakeven.test.ts) | cost | 4520 | cost | interactive calculator; Nova $80 too | |
+| 20 | 20. Cost per Improvement | CostPerImprovement.tsx (+ src/lib/breakeven.ts, src/__tests__/breakeven.test.ts) | cost | 4520 | cost | interactive calculator; Nova $80 too | dispatched |
 | 21 | 21. Side by Side on a DGX Spark | SideBySideLab.tsx | lab | 4521 | lab | E0 results; E1 protocol and predictions | |
 | 22 | 22. Choosing a Text Loop, a Hybrid or a Weight Update | Choosing.tsx | choosing | 4522 | choose | three questions; paths; SageMaker distillation | |
 | 23 | 23. RL & Learning Loops on AWS | RlOnAws.tsx | aws | 4523 | aws | two stacks; AgentCore vendor test; rank-32 LoRA | |
