@@ -19,6 +19,7 @@ Per-section author reports, for the glossary, the fact check and the final repor
 | 15 Your loops | YourLoops.tsx | 34 | 1 (three loops x five RL parts grid; search loops marked 'costly: paid in samples', no missing part), 0 overlap/clip (scrolls at 390, min 700) | RL; val_bpb glossed | FunSearch 'on the order of 10^6' quote is in the main text, not Methods (wave2-limits G2 and section 11's cite say Methods: fc05 fix section 11 cite text). Hedge U11 ships. Strongest number: about 100 experiments a night, one reading each (four landings) |
 | 16 Hybrids | Hybrids.tsx | 36 | 1 (advisor and student), 0 overlap/clip (scrolls at 390, min 680) | RL, GRPO, MTOB, PAG, GEPA, PPO, UCB, TRL; chrF, MATH-500, regret, soft Q-learning glossed | EVOLvE confirmed ICML 2025 (PMLR 267); BetterTogether EMNLP 2024 (ACL Anthology). Ending has a TRL reward-function sketch marked 'Illustrative, not run'. Strongest number about 70% (our arithmetic), three landings |
 | 17 Words limits | WhereWordsFallShort.tsx | 31 | 1 (RULER GPT-4 row measured + schematic marked illustrative), 0 overlap/clip | RL, AD, ED, DPT, UCB, GRPO, TRAIL, MAB (in a quote); RULER, SWE-bench glossed | Greedy Agents paper intro gives 64% where Fig. 5 gives 58%: page states the discrepancy (fc07 check). verl L143-L148 and core_algos L304-L331 at v0.9.1. Tool use in F04-17 tested on GPT-4 family only (page says so). U14 hedge ships. Strongest number 87% / 58% vs 21% (three landings) |
+| 19 RL systems | RlStepAsSystem.tsx | 80 (T0 9, T1 35, T2 2, T3 34) | 1 (sync vs async timelines, illustrative), 0 overlap/clip (scrolls at 390, min 680) | RL, PPO, GRPO, KL, TRL, DAPO, MTP, KV, RLHF, RLVR; AIME glossed | MemAvailable drop is 23.1/23.9 GiB (23,694/24,472 MiB): build-log cross-section block corrected. Min IS ratio 0.0 confirmed in logs (run 1 steps 8-10, run 2 steps 8 and 16). DeepSeekMath GRPO quote is in Sec 4.1.1, not Sec 1 (register fix). verl reproduction 67.4% re-summed from the public W&B record. Strongest number 8x GPUs for 45% cut (three landings) |
 
 ## Cross-section conditions to keep consistent
 
@@ -35,7 +36,7 @@ section and source are named so the fact check can trace it.
   62.9% of summed step time, training 29.9% and 29.5%, other preparation 6.8% and 6.5%, weight sync
   17 ms (0.9% and 0.8%). Mean reward 0.044; 9 and 10 of 20 steps had every group all zero (no gradient).
   Entropy 0.19 to 0.32. Log-probability difference vLLM against trainer averaged 0.011, largest 0.92 and
-  1.14. `MemAvailable` drop about 23.7 and 24.5 GB; `torch.cuda.max_memory_allocated` 17.23 and 17.89
+  1.14. `MemAvailable` drop 23,694 and 24,472 MiB (23.1 and 23.9 GiB); `torch.cuda.max_memory_allocated` 17.23 and 17.89
   GiB. E0 shows the mechanism, not learning: the reward did not move.
 - **Generation share at scale** (sections 19, 20): 72.1% for Skywork-OR1-32B (register 05 F05-42);
   verl's public reproduction logged generation at 67.4% (wave2-systems-cost G1). E0's 62% is a 0.5B
