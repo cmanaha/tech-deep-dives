@@ -23,6 +23,7 @@ Per-section author reports, for the glossary, the fact check and the final repor
 | 18 Weights vs context | WeightsVsContext.tsx | 24 | 1 (two-column map, contested rows amber, legend), 0 overlap/clip (scrolls at 390, min 640) | RL, RAG, SFT, KL, RLVR, GRPO; MMLU, AIME glossed | New beyond rows, logged in claims: GPT-4 calibration error 0.007 vs 0.074 read off Fig. 8 (fc07 verify the read-off); 0.810 for fine-tuning plus retrieval; FormatSpread works without weight access. DeepSeek-R1 Table 16 not re-opened (rests on wave 2) |
 | 20 Cost | CostPerImprovement.tsx (+ lib/breakeven.ts, breakeven.test.ts) | about 45 | 1 (live SVG cost lines from the calculator), 0 overlap/clip (scrolls at 390; breakeven point off-screen until scrolled, result text states it) | RL, GRPO, Dr. GRPO, ProRL, DAPO, GEPA, LoRA, RFT, ACE, SFT; AIME, MATH-500 glossed | 26 tests pass; mutating the formula failed 5. W&B DAPO run re-checked (159.6 h, 489 steps). Strongest number about 665,000 with cross-model caveat (two landings) |
 | 21 Lab | SideBySideLab.tsx | 29 | 2 (E0 step-time stacked bars; E1 arms labelled protocol), 0 overlap/clip | RL, GRPO, TRL, LoRA, GEPA, ACE, bf16 | All E0 figures checked against raw logs; memory 23.1/23.9 GiB (wave2-systems-cost's '23.7/24.5' is MiB/1000: register fix). F05-44 NVIDIA Spark GRPO playbook checks out. Strongest number 9 and 10 of 20 steps with no gradient at a 4% base rate (three landings) |
+| 22 Choosing | Choosing.tsx | 29 (T0 4, T1 14, T3 11) | 1 (decision tree), 0 overlap/clip (scrolls at 390, min 680) | RL, GRPO, RFT, SFT, DAPO, TRL, GEPA, LoRA, RLVR; pass@k, advantage, MATH-500, AIME 2024, AIME-2025 glossed | New beyond rows: eligible existing OpenAI customers can create training jobs until January 6, 2027 (read at source). AWS service for sampling, advisor and playbook distillation marked our reading. Written before sections 20 and 23 existed: fc09 check consistency with both. E0 9/10 of 20 landed five times (leverage: maybe too many) |
 
 ## Cross-section conditions to keep consistent
 
@@ -70,6 +71,8 @@ section and source are named so the fact check can trace it.
   episodic memory test on tau2-bench is AWS's own (Tier 2, vendor claim).
 - **BOND, WARM, WARP** (section 6): Best-of-N Distillation, Weight Averaged Reward Models, Weight Averaged
   Rewarded Policies (arXiv titles 2407.14622v1, 2401.12187v1, 2406.16768v1, checked 2026-10-30).
+- **MTOB** is "Machine Translation from One Book" (the benchmark's own abstract, arXiv 2309.16575); section 16
+  wrote "with One Book" (fc06 fix).
 - **Venues**: RL's Razor ICLR 2026; F04-53 ACL Findings 2024; DeepSeek-R1 Nature; Yue et al. NeurIPS
   2025; Spurious Rewards ICML 2026; Gao et al. ICML 2023; RLOO ACL 2024; Math-Shepherd ACL 2024;
   Ovadia et al. EMNLP 2024; Shen et al. ICML 2024 (position paper).
