@@ -541,8 +541,9 @@ export function TwoLeashes() {
             the policy after the update.
           </Box>
           <Box variant="p">
-            The two leashes interact. The clip controls how fast the policy changes, and that also
-            makes the KL to the starting model grow much more slowly{' '}
+            The two leashes interact. The clip controls how fast the policy changes, and in a
+            well-tuned implementation that also makes the KL to the starting model grow much more
+            slowly{' '}
             <Cite tier={3} href={GAO} venue="ICML 2023">
               Gao et al., Section 3.6
             </Cite>
@@ -714,10 +715,10 @@ export function TwoLeashes() {
             </Box>{' '}
             In a 1.3B ablation, a KL coefficient 100x larger did not fix the regressions on SQuADv2
             and DROP (two reading-comprehension benchmarks) and cost validation reward; mixing
-            pretraining data into the RL updates did fix them. In the full InstructGPT models the
+            pretraining data into the RL updates did fix them. In the main InstructGPT models the
             mix reduced those regressions without removing them{' '}
             <Cite tier={3} href={INSTRUCTGPT} venue="NeurIPS 2022">
-              InstructGPT, Appendix E.6 and Section 5.3
+              InstructGPT, Appendix E.6 and Sections 4.2 and 5.4
             </Cite>
             .
           </Box>
@@ -755,6 +756,9 @@ export function TwoLeashes() {
             of the model (our reading of the code){' '}
             <Cite tier={1} href={trl('grpo_trainer.py', 'L987-L990')} kind="code">
               TRL grpo_trainer.py L987-L990
+            </Cite>{' '}
+            <Cite tier={1} href={trl('grpo_trainer.py', 'L2722-L2737')} kind="code">
+              TRL grpo_trainer.py L2722-L2737
             </Cite>
             .
           </Box>
@@ -769,8 +773,8 @@ export function TwoLeashes() {
               <Box variant="p">
                 InstructGPT&apos;s ablation raised the KL reward coefficient to 2.0, &quot;100 times
                 of the default value&quot;, and the regressions &quot;still cannot be fixed&quot;;
-                a pretraining loss coefficient of 20 or more recovered them on the 1.3B model. At
-                full scale the PPO-ptx model (PPO with the pretraining mix) still lagged GPT-3 on
+                a pretraining loss coefficient of 20 or more recovered them on the 1.3B model. In
+                the main results the PPO-ptx model (PPO with the pretraining mix) still lagged GPT-3 on
                 DROP, SQuADv2 and translation{' '}
                 <Cite tier={3} href={INSTRUCTGPT} venue="NeurIPS 2022">
                   InstructGPT, Section 4.2 and Appendix E.6, Figures 33 and 34

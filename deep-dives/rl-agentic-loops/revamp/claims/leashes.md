@@ -16,7 +16,7 @@ E0 links point at dive commit bcf5a9edc0c77ee9c26c76ce73d98ab037903f67 (files un
 
 ## Two leashes (diagram and following paragraph)
 
-- The clip controls how fast the policy changes, which makes KL to the initial policy grow much more slowly | https://arxiv.org/abs/2210.10760v1 (Sec. 3.6) | F01-28; wave2-foundations row 17
+- The clip controls how fast the policy changes, which in a well-tuned implementation makes KL to the initial policy grow much more slowly | https://arxiv.org/abs/2210.10760v1 (Sec. 3.6, "providing the implementation is well-tuned") | F01-28; wave2-foundations row 17 (fc02 restored the hedge 2026-10-30)
 - Diagram numbers: epsilon 0.2 (PPO paper, TRL), beta 0.02 (InstructGPT), beta 0 in TRL GRPO, no reference model at beta 0, clip works only with 2+ updates per batch | as cited in the clip and KL rows below | F01-27, F01-37, F01-39; DSM24 A.1.5; TRL code
 - KL acts on the reward in PPO and on the loss in GRPO | https://arxiv.org/abs/2402.03300v3 (Sec. 4.1.1, Eq. 2 and the GRPO objective paragraph) | DSM24 re-read 2026-10-30 (F01-38 evidence quotes the same sentence)
 
@@ -40,11 +40,11 @@ E0 links point at dive commit bcf5a9edc0c77ee9c26c76ce73d98ab037903f67 (files un
 - InstructGPT objective: reward minus beta times per-token log-ratio to the SFT model, plus optional pretraining term; beta 0.02 | https://arxiv.org/abs/2203.02155v1 (Sec. 3.5, Eq. 2; App. C.4) | F01-37; wave2-foundations row 17
 - Penalty in the reward at every token to mitigate over-optimisation of the reward model (an imperfect proxy) | https://arxiv.org/abs/2203.02155v1 (Sec. 3.5); https://arxiv.org/abs/2210.10760v1 (abstract) | F01-37; Gao abstract re-read 2026-10-30
 - GRPO adds the KL to the loss instead of the reward | https://arxiv.org/abs/2402.03300v3 (Sec. 4.1.1) | DSM24 re-read 2026-10-30 (quoted in F01-38)
-- 1.3B ablation: KL coefficient 100x (2.0) did not fix SQuADv2 and DROP regressions and cut validation reward; pretraining mix (coefficient 20 or more) fixed them; at full scale the mix reduced without removing them (PPO-ptx still lags GPT-3 on DROP, SQuADv2, translation) | https://arxiv.org/abs/2203.02155v1 (App. E.6, Fig. 33-34; Sec. 4.2; Sec. 5.3) | F01-40; wave2-foundations row 19 (SCOPE NARROWER applied)
+- 1.3B ablation: KL coefficient 100x (2.0) did not fix SQuADv2 and DROP regressions and cut validation reward; pretraining mix (coefficient 20 or more) fixed them; at full scale the mix reduced without removing them (PPO-ptx still lags GPT-3 on DROP, SQuADv2, translation) | https://arxiv.org/abs/2203.02155v1 (App. E.6, Fig. 33-34; Sec. 4.2; Sec. 5.4) | F01-40; wave2-foundations row 19 (SCOPE NARROWER applied; fc02 2026-10-30: Sec. 5.3 carries no regression text, the "does not completely mitigate" sentence is Sec. 5.4; "at full scale" narrowed to "in the main results")
 - Synthetic study (fixed 6B gold RM standing in for humans, labels train a proxy RM): KL penalty acted like early stopping; gold score converged earlier; frontier unchanged; authors flag hyperparameter sensitivity | https://arxiv.org/abs/2210.10760v1 (abstract, Sec. 1, Sec. 3.6) | F01-41; wave2-foundations row 20 (SCOPE NARROWER applied)
 - TRL GRPO (v1.16.0) beta default 0; at 0 the reference model is not loaded | https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_config.py#L681-L688 ; https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_trainer.py#L983-L986 | F01-39, F02-29; wave2-foundations row 21 (tag applied)
 - TRL RLOO beta default 0.05 | https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/rloo_config.py#L502-L508 | F01-39; re-read 2026-10-30
-- With an adapter (PEFT model, e.g. LoRA) TRL disables the adapter to recover the initial model, so beta above 0 loads no second copy (our reading) | https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_trainer.py#L987-L990 | code read 2026-10-30, kind=code
+- With an adapter (PEFT model, e.g. LoRA) TRL disables the adapter to recover the initial model, so beta above 0 loads no second copy (our reading) | https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_trainer.py#L987-L990 ; https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_trainer.py#L2722-L2737 | code read 2026-10-30, kind=code (fc02 added L2722-L2737: the adapter switch-off is code there; at L987-L990 it is only a comment)
 - Our reading: beta sets distance and charges reward for it; in the 1.3B ablation general skills needed pretraining data | synthesis of F01-40, F01-41 | labelled "our reading" on the page
 
 ## Gradient table

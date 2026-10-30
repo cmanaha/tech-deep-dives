@@ -349,8 +349,8 @@ export function PreferencesToRewards() {
             number. RLHF learns a reward model from the pairs and runs PPO (Proximal Policy
             Optimization) against it. DPO folds the reward model into the policy and trains on the
             pairs with a classification loss, offline. In a controlled 13B comparison, PPO came out
-            ahead of DPO by 0.7 points on average and took about 8 times the wall-clock to train,
-            in our arithmetic from the authors&apos; training times{' '}
+            ahead of DPO by 0.7 points on average and took about 8 times the wall-clock to train
+            on the dataset the authors timed, in our arithmetic from their training times{' '}
             <Cite tier={3} href={IVISON} venue="NeurIPS 2024">
               Ivison et al., Table 2 and Appendix K
             </Cite>
@@ -363,7 +363,7 @@ export function PreferencesToRewards() {
         header={
           <Header
             variant="h2"
-            description="See where the human judgment enters, what the pipeline cost next to pretraining, and why a run holds four models at once"
+            description="See where the human judgment enters, what the pipeline cost next to pretraining, and why a PPO run can hold four models at once"
           >
             RLHF: fit a reward model to the pairs, then run PPO against it
           </Header>
@@ -430,7 +430,7 @@ export function PreferencesToRewards() {
               InstructGPT, Section 5.1
             </Cite>
             . In our arithmetic that is under 2% of the pretraining compute, (4.9 + 60) / 3,640; the
-            reward model&apos;s training is in neither the 4.9 nor the 60.
+            paper gives no separate compute figure for training the reward model.
           </Box>
           <Box variant="p">
             The heavier cost is in the run itself. PPO in this setting holds up to four models at
@@ -478,7 +478,8 @@ export function PreferencesToRewards() {
             <code>pi*(y | x) = pi_ref(y | x) * exp(r(x, y) / beta) / Z(x)</code>
           </Box>
           <Box variant="p">
-            Z(x) only normalises, and depends on the prompt alone. Read the equation as a mental
+            Z(x) only normalises; it depends on the prompt and not on the response. Read the
+            equation as a mental
             model: the policy RLHF aims for is the starting model with its own answers re-weighted,
             more probability on what the reward likes and less on what it does not. A response the
             reference gives zero probability stays at zero.
@@ -659,7 +660,7 @@ export function PreferencesToRewards() {
         header={
           <Header
             variant="h2"
-            description="Weigh a 0.7-point average gain against about 8 times the wall-clock before you build a PPO pipeline"
+            description="Weigh a gain of about a point against about 8 times the training wall-clock before you build a PPO pipeline"
           >
             PPO or DPO: what the head-to-head comparisons show
           </Header>
@@ -689,18 +690,22 @@ export function PreferencesToRewards() {
             The controlled comparison puts a size on the gap. Training a 13B model (Tulu 2 13B) with
             DPO and with PPO on the same preference datasets, the authors found better preference
             data gave the largest improvements, followed by the choice of learning algorithm. PPO
-            beat DPO by an average of 0.7 points, most of it in reasoning, coding and chat, and by up
-            to 2.5% in math{' '}
+            beat DPO by an average of 0.7 points, most of it in reasoning, coding and safety, and by
+            up to 2.5% in math{' '}
             <Cite tier={3} href={IVISON} venue="NeurIPS 2024">
               Ivison et al., abstract and Table 2
             </Cite>
-            . PPO with a 13B reward model and a 13B policy took 3 days on a TPU (tensor processing
-            unit) v3 pod the authors describe as 256-size, plus about 10 hours to train the reward
-            model; DPO on the same roughly 60,000 pairs took 9 hours{' '}
+            . On the UltraFeedback set, PPO with a 13B reward model and a 13B policy took 3 days on
+            a TPU (tensor processing unit) v3 pod the authors describe as 256-size, plus about 10
+            hours to train the reward model; DPO on the same roughly 60,000 pairs took 9 hours{' '}
             <Cite tier={3} href={IVISON} venue="NeurIPS 2024">
               Ivison et al., Appendix K
             </Cite>
-            . That is 0.7 points for about 8 times the wall-clock, in our arithmetic.
+            . On UltraFeedback, the dataset they timed, PPO led DPO by 1.2 points{' '}
+            <Cite tier={3} href={IVISON} venue="NeurIPS 2024">
+              Ivison et al., Table 2
+            </Cite>
+            , so the trade is about a point for about 8 times the wall-clock, in our arithmetic.
           </Box>
           <ExpandableSection headerText="The wall-clock arithmetic, and what it leaves out">
             <Box variant="p">
@@ -710,6 +715,12 @@ export function PreferencesToRewards() {
               wall-clock hours on hardware that may differ between the two runs{' '}
               <Cite tier={3} href={IVISON} venue="NeurIPS 2024">
                 Ivison et al., Appendix K
+              </Cite>
+              . The timings are for UltraFeedback alone, where PPO led by 1.2 points (62.2 against
+              61.0). The 0.7 is the average over five datasets, all subsampled to the same size but
+              one; no timings are given for the other four{' '}
+              <Cite tier={3} href={IVISON} venue="NeurIPS 2024">
+                Ivison et al., Table 2
               </Cite>
               .
             </Box>
@@ -811,7 +822,7 @@ export function PreferencesToRewards() {
             weight update to try when the signal is pairwise, and on-policy RL (training on fresh
             samples from the current model) earns its cost when a verifier, a program that checks an
             answer, can score fresh samples. The gap PPO bought in the controlled study was 0.7
-            points on average for about 8 times the wall-clock, and better preference data moved the
+            points on average, and 1.2 on the one dataset timed at about 8 times the wall-clock, and better preference data moved the
             results more than the choice of algorithm did{' '}
             <Cite tier={3} href={IVISON} venue="NeurIPS 2024">
               Ivison et al., abstract and Appendix K

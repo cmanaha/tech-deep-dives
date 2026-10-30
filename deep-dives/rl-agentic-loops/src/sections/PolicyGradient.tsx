@@ -218,7 +218,7 @@ const TABLE_ROWS: TableRow[] = [
     method: ['RLOO or GRPO'],
     samples: ['A group of samples per', 'prompt from the current', 'model'],
     scorer: ['A reward model in both', 'papers; a program in', 'section 7'],
-    weight: ['Reward minus a baseline', 'from the other samples;', 'can be negative'],
+    weight: ['Reward minus a baseline', 'from the group;', 'can be negative'],
   },
 ];
 
@@ -264,7 +264,7 @@ function GradientTableDiagram() {
           minus a baseline, as the weight. Rejection-sampling fine-tuning uses the model&apos;s own
           samples, a rule that checks the answer, and a weight of 1 for a pass and 0 for a failure.
           RLOO or GRPO uses a group of samples per prompt from the current model, a reward model, and
-          the reward minus a baseline from the other samples, which can be negative. Sections 5 and 6
+          the reward minus a baseline taken from the group, which can be negative. Sections 5 and 6
           add rows for PPO and DPO.
         </title>
         <style>{`
@@ -399,7 +399,8 @@ export function PolicyGradient() {
           <Box variant="p">
             This section builds that update in four steps: REINFORCE, the baseline that makes it
             usable, the two ways to get a baseline, and a table that sets SFT, REINFORCE,
-            rejection-sampling fine-tuning and RLOO or GRPO side by side. Every later method in the
+            rejection-sampling fine-tuning and RLOO (REINFORCE Leave-One-Out) or GRPO side by side.
+            Every later method in the
             dive then reads as three choices: which samples, which scorer, which weight.
           </Box>
         </SpaceBetween>
@@ -522,7 +523,7 @@ export function PolicyGradient() {
               GAE, Section 2
             </Cite>
             , so a positive advantage pushes a response up and a negative one pushes it down. The
-            diagram compares plain REINFORCE with RLOO (REINFORCE Leave-One-Out), which takes each
+            diagram compares plain REINFORCE with RLOO, which takes each
             sample&apos;s baseline from the other samples for the same prompt.
           </Box>
           <BaselineWeightsDiagram />
@@ -644,8 +645,8 @@ export function PolicyGradient() {
           <Box variant="p">
             DeepSeekMath&apos;s authors give two reasons for dropping the critic: in PPO it is
             typically a model of comparable size to the policy, a substantial memory and compute
-            burden, and with only the last token rewarded it is hard to train a critic that is
-            accurate at every token{' '}
+            burden, and since usually only the last token gets a reward, that may complicate
+            training a critic that is accurate at every token{' '}
             <Cite tier={3} href={DSM} venue="preprint">
               DeepSeekMath, Section 4.1.1
             </Cite>
@@ -771,7 +772,7 @@ export function PolicyGradient() {
             fresh samples from the current model. The weight moves from 1 everywhere, to 1 or 0, to a
             signed advantage that pushes failures down.
           </Box>
-          <ExpandableSection headerText="Evidence that the columns move results: DeepSeekMath's comparison">
+          <ExpandableSection headerText="Evidence that two of the columns move results: DeepSeekMath's comparison">
             <Box variant="p">
               The authors trained DeepSeekMath-Instruct 1.3B with several rows of this table and
               evaluated on GSM8K (grade-school math word problems) and MATH (competition-level math
@@ -785,7 +786,8 @@ export function PolicyGradient() {
               credit to its positive and negative coefficients; in that comparison GRPO&apos;s scorer
               also differed, a reward model trained on the rule&apos;s judgments where online
               rejection sampling used the rule itself. One model size and two math benchmarks:
-              evidence from one study that each column moves the result.
+              evidence from one study that the sample-source and weight columns move the result;
+              the scorer column was not isolated.
             </Box>
           </ExpandableSection>
           <Box variant="p">

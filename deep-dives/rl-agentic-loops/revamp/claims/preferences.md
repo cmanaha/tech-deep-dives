@@ -4,7 +4,7 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 
 ## Intro
 - In a controlled 13B comparison PPO beat DPO by 0.7 points on average | https://arxiv.org/abs/2406.09279v2 (Table 2 caption) | F01-73; wave2-foundations row 31
-- PPO took about 8x the wall-clock of DPO (72 h vs 9 h, our arithmetic) | https://arxiv.org/abs/2406.09279v2 (App. K) | F01-73; wave2-foundations row 32 (derived); wave2-systems-cost row 32
+- PPO took about 8x the wall-clock of DPO (72 h vs 9 h, our arithmetic) on the dataset the authors timed (UltraFeedback, where PPO led by 1.2 points, 62.2 vs 61.0; the 0.7 is the five-dataset average) | https://arxiv.org/abs/2406.09279v2 (App. K; Table 2) | F01-73; wave2-foundations row 32 (derived); wave2-systems-cost row 32 (fc02 2026-10-30: timing scope stated)
 
 ## RLHF
 - Three steps: SFT on demonstrations, reward model on comparisons, PPO against the reward model; steps 2 and 3 can iterate on the current best policy | https://arxiv.org/abs/2203.02155v1 (Sec. 3.1) | F01-46; wave2-foundations row 22
@@ -15,12 +15,12 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 - On the authors' prompt distribution, 1.3B InstructGPT preferred to 175B GPT-3, over 100x more parameters | https://arxiv.org/abs/2203.02155v1 (abstract; Sec. 1 "over 100x fewer") | F01-50; wave2-foundations row 23
 - 4.9 PF/s-days (175B SFT), 60 (175B PPO-ptx), 3,640 (GPT-3 pretraining) | https://arxiv.org/abs/2203.02155v1 (Sec. 5.1) | F01-52; wave2-foundations row 24
 - PPO-ptx = PPO with pretraining gradients mixed in | https://arxiv.org/abs/2203.02155v1 (Sec. 3.5) | F01-52 context
-- Under 2% of pretraining compute: (4.9 + 60) / 3,640 = 1.78%; reward-model training excluded from both figures | our arithmetic from the same | wave2-foundations row 24 note (derived)
+- Under 2% of pretraining compute: (4.9 + 60) / 3,640 = 1.78%; the paper gives no separate compute figure for reward-model training | our arithmetic from the same | wave2-foundations row 24 note (derived; fc02 2026-10-30: "excluded from both figures" is not stated in the paper)
 - PPO holds up to 4 models: policy, reference, critic, reward model | https://arxiv.org/abs/2402.14740v2 (Sec. 1) | F01-32; wave2-foundations row 25
 - TRL v1.12.0 PPO trainer iterates over policy, ref, value and reward models at setup | https://github.com/huggingface/trl/blob/v1.12.0/trl/experimental/ppo/ppo_trainer.py#L489 | F01-32; wave2-foundations row 25
 
 ## DPO
-- KL-regularised objective has a closed-form optimum `pi_ref * exp(r / beta) / Z(x)` | https://arxiv.org/abs/2305.18290v3 (Sec. 4, Eq. 4) | F01-58; wave2-foundations row 26
+- KL-regularised objective has a closed-form optimum `pi_ref * exp(r / beta) / Z(x)`; Z(x) depends on the prompt, not the response | https://arxiv.org/abs/2305.18290v3 (Sec. 4, Eq. 4) | F01-58; wave2-foundations row 26 (fc02 2026-10-30: "depends on the prompt alone" narrowed)
 - Mental-model reading of Eq. 4 (re-weighting of the reference; zero stays zero) | same, our reading of the equation | F01-58 "Use in dive"
 - Reward = beta log(pi / pi_ref) + beta log Z; Z cancels in Bradley-Terry; DPO loss Eq. 7 | https://arxiv.org/abs/2305.18290v3 (Sec. 4, Eqs. 5-7) | F01-59
 - Classification loss; policy network represents both LM and reward | https://arxiv.org/abs/2305.18290v3 (abstract; Sec. 4) | F01-59; wave2-foundations row 26
@@ -55,7 +55,7 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 - PPO surpassed other alignment methods in all cases, dialogue to code competitions | https://arxiv.org/abs/2404.10719v3 (abstract) | F01-72; wave2-foundations row 30
 - Key factors: advantage normalisation, large batch size, EMA update of the reference model | https://arxiv.org/abs/2404.10719v3 (Sec. 5) | F01-72; wave2-foundations row 30
 - Venue ICML 2024 for Xu et al. | https://proceedings.mlr.press/v235/xu24h.html | wave2-foundations G2
-- Better preference data largest gain, then learning algorithm; PPO beats DPO by 0.7 average, up to 2.5% math; gains mostly reasoning, coding, chat | https://arxiv.org/abs/2406.09279v2 (abstract; Table 2 caption) | F01-73; wave2-foundations row 31
+- Better preference data largest gain, then learning algorithm; PPO beats DPO by 0.7 average, up to 2.5% math; gains mostly reasoning, coding, safety | https://arxiv.org/abs/2406.09279v2 (abstract; Table 2 deltas +1.3, +2.9, +2.3; Sec. 3.2) | F01-73; wave2-foundations row 31 (fc02 2026-10-30: the Table 2 caption says "chat", but the table has no chat column and Sec. 3.2 says safety)
 - PPO 3 days on a 256-size TPUv3 pod plus about 10 h reward model; DPO about 60,000 samples 9 h | https://arxiv.org/abs/2406.09279v2 (App. K) | F01-73; wave2-foundations row 32
 - 72 / 9 = 8.0; (72 + 10) / 9 = 9.1; DPO pod size unstated, so wall-clock only | our arithmetic | wave2-foundations row 32
 
