@@ -652,7 +652,7 @@ export function SideBySideLab() {
           </Box>
           <Box variant="p">
             <strong>Memory, read the way unified memory needs.</strong> Per-process memory from{' '}
-            <code>nvidia-smi</code> read zero for the run&apos;s processes, so E0 read{' '}
+            <code style={{ whiteSpace: 'nowrap' }}>nvidia-smi</code> read zero for the run&apos;s processes, so E0 read{' '}
             <code>MemAvailable</code> from the operating system and PyTorch&apos;s own counters.
             Available memory fell 23,694 MiB and 24,472 MiB (23.1 and 23.9 GiB) at its lowest point,
             and <code>torch.cuda.max_memory_allocated</code> peaked at 17.23 and 17.89 GiB. vLLM

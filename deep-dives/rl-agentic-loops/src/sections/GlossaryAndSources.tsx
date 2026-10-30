@@ -2,7 +2,8 @@ import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
-import { Glossary, GlossaryEntry, SourcesAppendix, Source } from '@tech-deep-dives/shared';
+import type { GlossaryEntry, Source } from '@tech-deep-dives/shared';
+import { GlossaryTable, KeySourcesTable } from '../components/AppendixTables';
 import { Cite, E0_URL, researchUrl } from '../components/Cite';
 
 // Source tiers (RESEARCH-GUIDE.md section 1):
@@ -249,8 +250,8 @@ export function GlossaryAndSources() {
           </Box>
         </SpaceBetween>
       </Container>
-      <Glossary entries={glossary} />
-      <SourcesAppendix sources={sources} />
+      <GlossaryTable entries={glossary} />
+      <KeySourcesTable sources={sources} />
     </SpaceBetween>
   );
 }

@@ -74,6 +74,11 @@ function primeRl(path: string, lines: string): string {
   return gh('PrimeIntellect-ai/prime-rl', PRIME_RL_TAG, path, lines);
 }
 
+/** A command-line flag kept on one line, so its leading "--" never wraps away from the name. */
+function Flag({ children }: { children: string }) {
+  return <code style={{ whiteSpace: 'nowrap' }}>{children}</code>;
+}
+
 /* ------------------------------------------------------------------------ */
 /* Diagram: synchronous and asynchronous steps on one time axis             */
 /* ------------------------------------------------------------------------ */
@@ -794,7 +799,7 @@ export function RlStepAsSystem() {
           </ExpandableSection>
           <Box variant="p">
             OpenRLHF ships a correction of the same kind switched off:{' '}
-            <code>--algo.advantage.is_correction_level</code> defaults to <code>off</code>, and its
+            <Flag>--algo.advantage.is_correction_level</Flag> defaults to <code>off</code>, and its
             sequence level gates on the geometric mean of the token ratios, with bounds of 0.5 and
             5.0{' '}
             <Cite tier={1} href={openrlhf('L256-L290')}>
@@ -966,8 +971,8 @@ export function RlStepAsSystem() {
               </Box>
               <Box variant="p">
                 <strong>OpenRLHF v0.11.2.</strong> The three colocation flags,{' '}
-                <code>--train.colocate_actor_ref</code>, <code>--train.colocate_critic_reward</code>{' '}
-                and <code>--train.colocate_all</code>, all default to off{' '}
+                <Flag>--train.colocate_actor_ref</Flag>, <Flag>--train.colocate_critic_reward</Flag>{' '}
+                and <Flag>--train.colocate_all</Flag>, all default to off{' '}
                 <Cite tier={1} href={openrlhf('L206-L228')}>
                   train_ppo_ray.py L206-L228
                 </Cite>
@@ -984,21 +989,21 @@ export function RlStepAsSystem() {
                 <Cite tier={1} href={openrlhf('L240')}>
                   train_ppo_ray.py L240
                 </Cite>
-                , and vLLM sleep mode is switched off unless <code>--train.colocate_all</code> is set{' '}
+                , and vLLM sleep mode is switched off unless <Flag>--train.colocate_all</Flag> is set{' '}
                 <Cite tier={1} href={openrlhf('L707-L709')} kind="code">
                   train_ppo_ray.py L707-L709
                 </Cite>
                 .
               </Box>
               <Box variant="p">
-                <strong>slime v0.4.0.</strong> <code>--colocate</code> is off by default, so
+                <strong>slime v0.4.0.</strong> <Flag>--colocate</Flag> is off by default, so
                 inference gets its own GPU pool and the actor 8 GPUs per node{' '}
                 <Cite tier={1} href={slime('slime/utils/arguments.py', 'L40-L79')}>
                   arguments.py L40-L79
                 </Cite>
-                . Under <code>--colocate</code>, offloading the trainer and the rollout engine is the
-                default when unset; an explicit <code>--no-offload-train</code> is kept, and{' '}
-                <code>--release-train</code> releases the trainer instead of offloading it{' '}
+                . Under <Flag>--colocate</Flag>, offloading the trainer and the rollout engine is the
+                default when unset; an explicit <Flag>--no-offload-train</Flag> is kept, and{' '}
+                <Flag>--release-train</Flag> releases the trainer instead of offloading it{' '}
                 <Cite tier={1} href={slime('slime/utils/arguments.py', 'L2115-L2130')} kind="code">
                   arguments.py L2115-L2130
                 </Cite>
@@ -1008,7 +1013,7 @@ export function RlStepAsSystem() {
                 <Cite tier={1} href={slime('train.py', 'L47-L97')}>
                   train.py L47-L97
                 </Cite>
-                . The <code>--use-tis</code> mismatch correction is off by default{' '}
+                . The <Flag>--use-tis</Flag> mismatch correction is off by default{' '}
                 <Cite tier={1} href={slime('slime/utils/arguments.py', 'L1165-L1174')}>
                   arguments.py L1165-L1174
                 </Cite>

@@ -871,9 +871,9 @@ export function RlOnAws() {
             wrapLines
             header={<Header variant="h3">Each path from section 22, and where it runs on AWS</Header>}
             columnDefinitions={[
-              { id: 'path', header: 'Path (section 22)', cell: (r) => r.path },
-              { id: 'service', header: 'Where it runs on AWS', cell: (r) => r.service },
-              { id: 'bring', header: 'What you bring', cell: (r) => r.bring },
+              { id: 'path', header: 'Path (section 22)', cell: (r) => r.path, minWidth: 160 },
+              { id: 'service', header: 'Where it runs on AWS', cell: (r) => r.service, minWidth: 260 },
+              { id: 'bring', header: 'What you bring', cell: (r) => r.bring, minWidth: 220 },
             ]}
             items={PATH_ROWS}
           />

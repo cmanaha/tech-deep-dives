@@ -281,10 +281,10 @@ function ChrfTable() {
       trackBy="id"
       items={CHRF_ROWS}
       columnDefinitions={[
-        { id: 'arm', header: 'Arm (MTOB, Kalamang to English)', cell: (r) => r.arm },
-        { id: 'trained', header: 'Weights that moved', cell: (r) => r.trained },
-        { id: 'chrf', header: 'chrF', cell: (r) => r.chrf },
-        { id: 'gain', header: 'Gain over baseline', cell: (r) => r.gain },
+        { id: 'arm', header: 'Arm (MTOB, Kalamang to English)', cell: (r) => r.arm, minWidth: 200 },
+        { id: 'trained', header: 'Weights that moved', cell: (r) => r.trained, minWidth: 140 },
+        { id: 'chrf', header: 'chrF', cell: (r) => r.chrf, minWidth: 80 },
+        { id: 'gain', header: 'Gain over baseline', cell: (r) => r.gain, minWidth: 110 },
       ]}
     />
   );

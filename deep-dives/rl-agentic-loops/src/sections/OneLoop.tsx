@@ -292,9 +292,11 @@ function StoreTable() {
           minWidth: 130,
           cell: (r) => <Box variant="strong">{r.decides}</Box>,
         },
-        { id: 'weights', header: 'The weights', minWidth: 200, cell: (r) => r.weights },
-        { id: 'context', header: 'The context', minWidth: 200, cell: (r) => r.context },
-        { id: 'small', header: 'A small trained model', minWidth: 200, cell: (r) => r.small },
+        // 240 px data columns: on a phone the clip lands mid-way through "The weights", so the
+        // cut-off text shows the table scrolls on to two more columns.
+        { id: 'weights', header: 'The weights', minWidth: 240, cell: (r) => r.weights },
+        { id: 'context', header: 'The context', minWidth: 240, cell: (r) => r.context },
+        { id: 'small', header: 'A small trained model', minWidth: 240, cell: (r) => r.small },
       ]}
     />
   );

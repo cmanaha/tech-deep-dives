@@ -16,6 +16,12 @@ const DSM = arxiv('2402.03300v3');
 /** Shenfeld, Pari and Agrawal, RL's Razor. */
 const RAZOR = arxiv('2509.04259v1');
 
+/**
+ * One line of a multi-line formula block. On a narrow screen a long line wraps; the hanging
+ * indent keeps its continuation visibly part of the same equation instead of reading as a new one.
+ */
+const FORMULA_LINE = { display: 'block', paddingLeft: '2ch', textIndent: '-2ch' } as const;
+
 /* ------------------------------------------------------------------------ */
 /* Diagram: what a baseline does to the weights of four samples             */
 /* ------------------------------------------------------------------------ */
@@ -635,9 +641,8 @@ export function PolicyGradient() {
             .
           </Box>
           <Box variant="p">
-            <code>RLOO:  A_i = r_i - (sum of the other k - 1 rewards) / (k - 1)</code>
-            <br />
-            <code>GRPO:  A_i = (r_i - mean(r_1, ..., r_G)) / std(r_1, ..., r_G)</code>
+            <code style={FORMULA_LINE}>RLOO:  A_i = r_i - (sum of the other k - 1 rewards) / (k - 1)</code>
+            <code style={FORMULA_LINE}>GRPO:  A_i = (r_i - mean(r_1, ..., r_G)) / std(r_1, ..., r_G)</code>
           </Box>
           <Box variant="p">
             DeepSeekMath&apos;s authors give two reasons for dropping the critic: in PPO it is
@@ -662,11 +667,9 @@ export function PolicyGradient() {
                 . Gamma discounts later rewards. The two ends:
               </Box>
               <Box variant="p">
-                <code>delta_t = r_t + gamma * V(s_t+1) - V(s_t)</code>
-                <br />
-                <code>lambda = 0:  A_t = delta_t</code>
-                <br />
-                <code>lambda = 1:  A_t = (sum over l of gamma^l * r_t+l) - V(s_t)</code>
+                <code style={FORMULA_LINE}>delta_t = r_t + gamma * V(s_t+1) - V(s_t)</code>
+                <code style={FORMULA_LINE}>lambda = 0:  A_t = delta_t</code>
+                <code style={FORMULA_LINE}>lambda = 1:  A_t = (sum over l of gamma^l * r_t+l) - V(s_t)</code>
               </Box>
               <Box variant="p">
                 The lambda = 1 line is the return from token t minus the critic&apos;s value, so the
