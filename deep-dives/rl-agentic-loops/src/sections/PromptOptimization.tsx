@@ -577,8 +577,8 @@ export function PromptOptimization() {
             </Code>{' '}
             <Code href={artifactCode('scripts/experiment_configs.py', 'L152-L171')}>
               L152-L171
-            </Code>
-            . GEPA&apos;s budget was capped per task at what the
+            </Code>{' '}
+            <Gepa>GEPA, Appendix E.4</Gepa>. GEPA&apos;s budget was capped per task at what the
             MIPROv2 baseline spent <Gepa>GEPA, Appendix E.4</Gepa>. The reflection model, the LLM
             that reads traces and writes the new instruction, was Qwen3 8B itself: the
             paper&apos;s reproduction code defaults it to the task model, and no experiment
@@ -620,7 +620,7 @@ export function PromptOptimization() {
                 The project README advertises &quot;35x faster than RL&quot;, with
                 &quot;100-500 evaluations vs. 5,000-25,000+ for GRPO&quot;{' '}
                 <Cite
-                  tier={3}
+                  tier={2}
                   href={gepaCode('README.md', 'L42')}
                   kind="vendor-claim"
                 >
@@ -806,15 +806,15 @@ export function PromptOptimization() {
             training did; here the weight update won.
           </Box>
           <Box variant="p">
-            The optimiser&apos;s own capability bounds the loop as well. OPRO worked poorly with
-            LLaMa-2 and Mistral 7B as optimisers, with &quot;limited inference capabilities
+            The optimiser&apos;s own capability bounds the loop as well. OPRO showed limited
+            effectiveness with LLaMa-2 and Mistral 7B as optimisers, with &quot;limited inference capabilities
             constraining optimization ability&quot;{' '}
             <Cite tier={3} href={REVISITING_OPRO} venue="ACL Findings 2024">
               Revisiting OPRO, abstract
             </Cite>
             . GEPA&apos;s Qwen3 8B results, though, came from the 8B model reflecting on its own
-            traces, so the optimiser&apos;s capability bounds a text loop without a fixed size
-            threshold. DSPy&apos;s GEPA wrapper requires a reflection model (unless you supply
+            traces, so in our reading the optimiser&apos;s capability bounds a text loop without a
+            fixed size threshold. DSPy&apos;s GEPA wrapper requires a reflection model (unless you supply
             your own proposer) and its docstring recommends a strong one{' '}
             <Code href={dspyCode('dspy/teleprompt/gepa/gepa.py', 'L262-L264')}>
               DSPy gepa.py L262-L264

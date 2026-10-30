@@ -73,7 +73,7 @@ Notes for the fact checkers:
 
 - An LLM writes candidates (frozen, pretrained in FunSearch); an evaluator runs and scores each | https://www.nature.com/articles/s41586-023-06924-6 (FunSearch overview; Pretrained LLM) | F03-92
 - Both keep a scored population, ask the LLM for variants of high scorers, store variants the evaluator accepts | FunSearch Methods; https://arxiv.org/abs/2506.13131v1 (Figure 2) | wave2-limits row 12 (replacement text)
-- FunSearch: pretrained code model, no fine-tuning, new versions of one function; "Programs that are correct are sent to the programs database to be stored" | FunSearch, Methods (Distributed system) | F03-92; wave2-limits row 12, G2
+- FunSearch: pretrained code model, no fine-tuning, new versions of one function; "Programs that are correct are sent to the programs database to be stored" | FunSearch, Pretrained LLM ("without any fine-tuning") and Methods (Distributed system) for the quote; cite label widened by fact check fc06 | F03-92; wave2-limits row 12, G2
 - AlphaEvolve: "promising solutions are registered back into the Program database" | https://arxiv.org/abs/2506.13131v1 (Figure 2 caption) | wave2-limits row 12
 - Selection via sampling into prompts; neither keeps a candidate because it beat its parent; no revert | FunSearch; AlphaEvolve | wave2-limits row 12
 - FunSearch samples an island then a program, "favouring higher-scoring and shorter programs" | FunSearch, Programs database (main text) | wave2-limits row 12

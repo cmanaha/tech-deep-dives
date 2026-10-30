@@ -20,3 +20,6 @@ scored.
 | 13 | Memories, Playbooks & Skill Libraries | AccumulatingExperience.tsx | fc05 | 9 |
 | 17 | Where Words Fall Short | WhereWordsFallShort.tsx | fc07 | 9 |
 | 18 | What Lives in Weights & What Lives in Context | WeightsVsContext.tsx | fc07 | 9 |
+| 14 | Optimising the Prompt | PromptOptimization.tsx | fc06 | 9 |
+| 15 | Your Loops Through the RL Lens | YourLoops.tsx | fc06 | 9 |
+| 16 | Hybrids | Hybrids.tsx | fc06 | 9 |

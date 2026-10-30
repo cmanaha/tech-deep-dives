@@ -34,7 +34,7 @@ Authored 2026-10-30. Every source below was re-opened on 2026-10-30: arXiv paper
 - Six tasks and their glosses (HotpotQA, HoVer, IFBench, PUPA, AIME-2025, LiveBench-Math) | https://arxiv.org/abs/2507.19457v2 (Sec 4, App. E.1) | F03-61
 - Every module of each program ran on the same model | https://arxiv.org/abs/2507.19457v2 (App. E.2) | wave2-words G1
 - GRPO arm ran through DSPy's GRPO optimiser, LoRA (`"lora": True`), beta 0.01, lr 1e-5, max_grad_norm 0.1, 500 steps, group 12 | https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/scripts/experiment_configs.py#L11-L31 and #L152-L171 | beyond the register (read at pinned SHA); consistent with F03-64
-- GRPO rank-16 LoRA, 500 steps, fixed 24,000 rollouts | https://arxiv.org/abs/2507.19457v2 (App. E.4) | F03-64
+- GRPO rank-16 LoRA, 500 steps, fixed 24,000 rollouts | https://arxiv.org/abs/2507.19457v2 (App. E.4; cite added on the page by fact check fc06, since the artifact lines carry `"lora": True` and 500 steps but not the rank or the 24,000) | F03-64
 - GEPA budget capped per task at MIPROv2's spend | https://arxiv.org/abs/2507.19457v2 (App. E.4) | wave2-words row 2
 - Reflection model in the Qwen3 8B runs was Qwen3 8B itself; both arms used one model | https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/gepa_artifact/gepa/gepa.py#L540-L546 ; .../scripts/run_experiments.py#L373-L374 | wave2-words G1, row 10; U5 closed
 - Per-task table: base, GRPO, GEPA and GEPA budgets (6,871 / 3,593 / 7,051 / 2,426 / 1,839 / 1,839; average 3,936) | https://arxiv.org/abs/2507.19457v2 (Table 1) | F03-61; wave2-words rows 1, 2
@@ -48,7 +48,7 @@ Authored 2026-10-30. Every source below was re-opened on 2026-10-30: arXiv paper
 - KL gloss (beta weights the KL penalty keeping the model near the original) | definition | section 5 terms
 
 ### Expandable: which budget to quote
-- README: "35x faster than RL", "100-500 evaluations vs. 5,000-25,000+ for GRPO" (hyphens normalised) | https://github.com/gepa-ai/gepa/blob/v0.1.4/README.md#L42 | F03-73; wave2-words row 8 (cited Tier 3 per register, marked vendor-claim)
+- README: "35x faster than RL", "100-500 evaluations vs. 5,000-25,000+ for GRPO" (hyphens normalised) | https://github.com/gepa-ai/gepa/blob/v0.1.4/README.md#L42 | F03-73; wave2-words row 8 (cited Tier 2 as a first-party project claim, marked vendor-claim; fact check fc06 moved it from Tier 3)
 - Most of GEPA's budget is validation, "utilized solely for candidate selection and not for producing learning signals" | https://arxiv.org/abs/2507.19457v2 (Observation 1) | F03-65
 - 79 to 737 training rollouts to reach best result | https://arxiv.org/abs/2507.19457v2 (Observation 1) | F03-65; wave2-words row 8
 - IFBench best prompt after 678 rollouts; 24,000 / 678 = 35.4 (our arithmetic) | https://arxiv.org/abs/2507.19457v2 (Table 1 caption) | F03-65 [derived]
@@ -84,9 +84,9 @@ Authored 2026-10-30. Every source below was re-opened on 2026-10-30: arXiv paper
 - AIME feedback in the reproduction code: right/wrong, the correct answer, and the full worked solution where the dataset has one; GEPA runs use metric_with_feedback by default (run_experiments.py L278-L297, read, not cited) | https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/gepa_artifact/benchmarks/AIME/__init__.py#L16-L39 ; .../AIME/AIME_data.py#L8-L16 | beyond the registers (read at pinned SHA)
 - AIME-2025: base 27.33, GEPA 32.00, GRPO 38.00 | https://arxiv.org/abs/2507.19457v2 (Table 1) | F03-61, F03-62
 - "an instruction carries what a model can be told ... here the weight update won" (our reading) | our reading; register F03-62 use and M3 | F03-62
-- OPRO poor with LLaMa-2 and Mistral 7B as optimisers, "limited inference capabilities constraining optimization ability" | https://arxiv.org/abs/2405.10276v2 (abstract) | F04-53; wave2-words row 40
+- OPRO showed "limited effectiveness" with LLaMa-2 and Mistral 7B as optimisers, "limited inference capabilities constraining optimization ability" (wording narrowed from "worked poorly" by fact check fc06) | https://arxiv.org/abs/2405.10276v2 (abstract) | F04-53; wave2-words row 40
 - Revisiting OPRO venue ACL Findings 2024 | arXiv journal-ref | wave2-words row 40, G5
-- GEPA's Qwen3 8B results came from the 8B model reflecting on its own traces; no fixed size threshold | wave2-words G1 | wave2-words row 40
+- GEPA's Qwen3 8B results came from the 8B model reflecting on its own traces; no fixed size threshold (the threshold clause is labelled "in our reading" on the page, fact check fc06) | wave2-words G1 | wave2-words row 40
 - DSPy GEPA wrapper requires a reflection LM (unless a custom proposer) and recommends a strong one | https://github.com/stanfordnlp/dspy/blob/3.4.1/dspy/teleprompt/gepa/gepa.py#L262-L264 (assert at L462) | F03-70
 - U12 hedge: target-size scaling, optimiser fixed, not measured in any study located | RESEARCH-GUIDE U12 (accept-as-hedge) | wave2-limits G8
 

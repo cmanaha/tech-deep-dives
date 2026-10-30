@@ -546,7 +546,7 @@ export function YourLoops() {
             model with no fine-tuning writes new versions of one function, and &quot;Programs that
             are correct are sent to the programs database to be stored&quot;{' '}
             <Cite tier={3} href={FUNSEARCH} venue="Nature 2023">
-              FunSearch, Methods (Distributed system)
+              FunSearch, Pretrained LLM and Methods (Distributed system)
             </Cite>
             ; in AlphaEvolve &quot;promising solutions are registered back into the Program
             database&quot;{' '}
