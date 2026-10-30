@@ -2,7 +2,7 @@
 
 **Title:** Learning From Feedback: RL and Agentic Learning Loops
 **Subtitle:** What reinforcement learning does to a language model, which part of that effect a loop can reproduce in words with a frozen model, where the words fall short, and how to choose between them
-**Status:** Scoping v2 (2026-10-17). Research wave 1 complete; three adversarial reviews and a factual re-check applied (notes at the end); app not built.
+**Status:** Scoping v2.1 (2026-10-30). Research waves 1 and 2 complete; three adversarial reviews, a factual re-check and the wave 2 refutation applied; E0 ran on the DGX Spark; Gate 1 passed (RESEARCH-GUIDE section 7); app build in progress.
 **Predecessor deep dives:** vLLM Inference Engine (the rollout engine inside every RL step), Caching (prefix reuse, which an evolving context defeats), Silicon, Memory and Modern Inference (the DGX Spark used for the Tier 0 lab)
 
 **How to read the evidence markers.** Bracketed IDs such as (F03-61) point to claim-register entries in `research/2026-10/NN-*.md`. Each entry carries the pinned source (arXiv ID with version, release tag or 40-character SHA, or first-party doc URL), its tier, its evidence kind, and a verbatim quote. `[derived]` marks arithmetic we did on sourced inputs. `[vendor claim]` marks a vendor performance figure. `[our reading]` marks a synthesis no single source states. Where a figure comes from a lab or vendor blog rather than a paper, the text names the tier.

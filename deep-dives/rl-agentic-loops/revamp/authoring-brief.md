@@ -46,6 +46,8 @@ User-Agent, URL or query string.** If a site demands a contact address, use a Wa
   an attempt did than expected").
 - The page reads as current for a reader meeting it for the first time. No changelog voice: no
   "Correction:", no "previously", no "an earlier version", no "what changed" boxes.
+- The h1 Header text is the section's navigation title exactly, starting with its number (for example
+  `7. RLVR &amp; GRPO`; see the titles list below and `src/App.tsx`). The screenshot harness waits for it.
 - The h1 Header description states the payoff and ends with the provenance "(sources read
   2026-10-30)". If the section cites framework code, name the pinned versions instead, for example
   "(TRL v1.16.0 and verl v0.9.1, read 2026-10-30)".
