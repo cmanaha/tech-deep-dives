@@ -383,7 +383,7 @@ export function OneLoop() {
             that needs none, pays on every query instead: a training-free sampler nearly matched
             the single-shot score of GRPO on a math benchmark, at about 8.84 times the tokens per
             answer{' '}
-            <Cite tier={3} href={SAMPLING} venue="preprint">
+            <Cite tier={3} href={SAMPLING} venue="ICLR 2026">
               Reasoning with Sampling, Table 1 and Section 5.3
             </Cite>
             . The closing block of section 8, What RL Does to a Model, prices that route.
@@ -482,7 +482,7 @@ export function OneLoop() {
             Context to Hybrids. The short answer: a frozen model can buy part of the sharpening
             back by sampling more and choosing well, at a price paid on every query, about 8.84
             times the tokens per answer for one training-free sampler{' '}
-            <Cite tier={3} href={SAMPLING} venue="preprint">
+            <Cite tier={3} href={SAMPLING} venue="ICLR 2026">
               Reasoning with Sampling, Table 1 and Section 5.3
             </Cite>
             . A text loop captures missing instructions and procedures cheaply.

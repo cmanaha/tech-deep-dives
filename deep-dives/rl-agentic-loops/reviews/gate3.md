@@ -11,3 +11,7 @@ scored.
 | 4 | Policy Gradient | PolicyGradient.tsx | fc02 | 9 |
 | 5 | Two Leashes: PPO's Clip & the KL | TwoLeashes.tsx | fc02 | 9 |
 | 6 | From Preferences to Rewards | PreferencesToRewards.tsx | fc02 | 8 |
+| 7 | RLVR & GRPO | RlvrAndGrpo.tsx | fc03 | 8 |
+| 8 | What RL Does to a Model | WhatRlDoes.tsx | fc03 | 8 |
+| 9 | Agentic RL | AgenticRl.tsx | fc04 | 9 |
+| 10 | The Reward Is a Proxy | RewardIsAProxy.tsx | fc04 | 9 |

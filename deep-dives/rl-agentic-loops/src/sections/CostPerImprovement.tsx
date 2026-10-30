@@ -103,7 +103,7 @@ const SOURCES: readonly SourceRef[] = [
   { id: 'dapo-run', tier: 2, href: DAPO_RUN, label: 'verl team, DAPO-Qwen2.5-32B run record (Weights & Biases)' },
   { id: 'bedrock-pricing', tier: 1, href: BEDROCK_PRICING, label: 'Amazon Bedrock pricing, reinforcement fine-tuning' },
   { id: 'bedrock-price-list', tier: 1, href: BEDROCK_PRICE_LIST, label: 'AWS Price List API, Nova 2 Lite RFT training hours' },
-  { id: 'sampling', tier: 3, href: SAMPLING, venue: 'preprint', label: 'Reasoning with Sampling, Section 5.3' },
+  { id: 'sampling', tier: 3, href: SAMPLING, venue: 'ICLR 2026', label: 'Reasoning with Sampling, Section 5.3' },
   { id: 'cheatsheet', tier: 3, href: CHEATSHEET, venue: 'EACL 2026', label: 'Dynamic Cheatsheet, Section 5, footnote 13' },
 ];
 

@@ -506,7 +506,7 @@ export function Choosing() {
             advantage, how much better an answer did than its group&apos;s average, is zero for
             every answer when all of them score the same, all passing or all failing, and a zero
             advantage gives a zero gradient{' '}
-            <Cite tier={3} href={DAPO} venue="preprint">
+            <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
               DAPO, Section 3.2
             </Cite>{' '}
             <Cite tier={1} href={SM_MTRL}>
@@ -552,7 +552,7 @@ export function Choosing() {
                 the resulting advantage for this group is zero. A zero advantage results in zero
                 policy gradients&quot;. Its fix is to &quot;over-sample and filter out prompts with
                 the accuracy equal to 1 and 0&quot;{' '}
-                <Cite tier={3} href={DAPO} venue="preprint">
+                <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
                   DAPO, Section 3.2
                 </Cite>
                 .
@@ -608,7 +608,7 @@ export function Choosing() {
             the normal price per query. Inference-time sharpening is paid on every query: one
             training-free sampler took about 8.84 times the tokens per answer in its
             authors&apos; MATH-500 setting (500 competition mathematics problems){' '}
-            <Cite tier={3} href={SAMPLING} venue="preprint">
+            <Cite tier={3} href={SAMPLING} venue="ICLR 2026">
               Reasoning with Sampling, Section 5.3
             </Cite>
             . A text loop pays for its instructions on every call; section 17, Where Words Fall

@@ -76,7 +76,9 @@ section and source are named so the fact check can trace it.
   Rewarded Policies (arXiv titles 2407.14622v1, 2401.12187v1, 2406.16768v1, checked 2026-10-30).
 - **MTOB** is "Machine Translation from One Book" (the benchmark's own abstract, arXiv 2309.16575); section 16
   wrote "with One Book" (fc06 fix).
-- **Venues**: RL's Razor ICLR 2026; F04-53 ACL Findings 2024; DeepSeek-R1 Nature; Yue et al. NeurIPS
+- **Venues**: DAPO NeurIPS 2025; Reasoning with Sampling ICLR 2026; f(g(x)) ICLR 2026; Guru NeurIPS 2025
+  Datasets and Benchmarks; Let's Verify Step by Step ICLR 2024; ReTool ICLR 2026; ImpossibleBench ICLR
+  2026; Search-R1 COLM 2025 (fact checks fc03, fc04); RL's Razor ICLR 2026; F04-53 ACL Findings 2024; DeepSeek-R1 Nature; Yue et al. NeurIPS
   2025; Spurious Rewards ICML 2026; Gao et al. ICML 2023; RLOO ACL 2024; Math-Shepherd ACL 2024;
   Ovadia et al. EMNLP 2024; Shen et al. ICML 2024 (position paper).
 - **OpenAI's fine-tuning platform is closed to new users** (wave2-foundations G3): any section naming
