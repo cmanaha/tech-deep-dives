@@ -10,11 +10,11 @@ report lands (see `build-log.md`).
 | 4 | 4. Policy Gradient | PolicyGradient.tsx | policy-gradient | 4504 | pg | gradient table rows 1 to 4 | done 2d1d25d |
 | 5 | 5. Two Leashes: PPO's Clip & the KL | TwoLeashes.tsx | leashes | 4505 | leash | PPO row; E0 entropy optional | done |
 | 6 | 6. From Preferences to Rewards | PreferencesToRewards.tsx | preferences | 4506 | pref | DPO row completes the table; Llama 3 DPO-over-PPO (wave2-foundations G3); relatives per W1 row 29 | done |
-| 7 | 7. RLVR & GRPO | RlvrAndGrpo.tsx | rlvr | 4507 | rlvr | successor table; E0 zero-gradient steps as Tier 0 point | dispatched |
+| 7 | 7. RLVR & GRPO | RlvrAndGrpo.tsx | rlvr | 4507 | rlvr | successor table; E0 zero-gradient steps as Tier 0 point | done |
 | 8 | 8. What RL Does to a Model | WhatRlDoes.tsx | what-rl-does | 4508 | wrd | schematic pass@k curves; sparsity debate per W2 rows 30-31; RL's Razor ICLR 2026 | done |
 | 9 | 9. Agentic RL | AgenticRl.tsx | agentic-rl | 4509 | agentic | DeepSWE 23% to 42.2%, 71.0% pass@16 vendor claim; F02-62 scope | dispatched |
 | 10 | 10. The Reward Is a Proxy | RewardIsAProxy.tsx | reward-proxy | 4510 | proxy | grader checklist owned here; U18 hedge | dispatched |
-| 11 | 11. A Text Loop Is RL on the Context | TextLoopAsRl.tsx | text-loop | 4511 | textloop | three stores x two signals grid; signal axis gloss per W3 row 35 | |
+| 11 | 11. A Text Loop Is RL on the Context | TextLoopAsRl.tsx | text-loop | 4511 | textloop | three stores x two signals grid; signal axis gloss per W3 row 35 | dispatched |
 | 12 | 12. Verbal Reinforcement & Self-Correction | VerbalReinforcement.tsx | verbal | 4512 | verbal | SCoRe (U8) as weight-side counterpart | |
 | 13 | 13. Memories, Playbooks & Skill Libraries | AccumulatingExperience.tsx | experience | 4513 | exp | ReTool includes SFT stage (W3 row 11); Anthropic wording (row 30) | |
 | 14 | 14. Optimising the Prompt | PromptOptimization.tsx | prompt-opt | 4514 | popt | MIPRO expansion; Pareto set on validation; reflector = Qwen3 8B (U5) | |
