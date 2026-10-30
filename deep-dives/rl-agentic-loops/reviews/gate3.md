@@ -39,3 +39,15 @@ section below 7/10 and the average is at least 8/10. Every fact-check correction
 committed (fc01 to fc09); the venue badges they settled are applied across all sections and the
 glossary (one deliberate exception: section 7 cites DeepSeek-R1 v1 as the preprint it was, beside the
 Nature 2025 version).
+
+## Leverage pass
+
+Five axes, one to five each: mental model, practical leverage, rigor, accuracy, economy. Accuracy must
+stay at 5. Before and after, per section; moves and claim diffs in `reviews/leverage/<group>.md`.
+
+| # | Section | Group | Before | After |
+|---|---|---|---|---|
+| 5 | Two Leashes: PPO's Clip & the KL | lv02 | 4/4/5/5/4 | 5/4/5/5/5 |
+| 6 | From Preferences to Rewards | lv02 | 4/4/5/5/3 | 5/4/5/5/4 |
+| 7 | RLVR & GRPO | lv02 | 4/5/5/5/3 | 4/5/5/5/3 |
+| 8 | What RL Does to a Model | lv02 | 4/4/5/5/3 | 5/4/5/5/4 |
