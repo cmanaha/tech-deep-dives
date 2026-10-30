@@ -126,6 +126,10 @@ Sections 1 and 2 summarise the others: fc01 checks every number they repeat agai
 section and its source.
 
 Known items to settle in the named group (logged during authoring, see `build-log.md`):
+- All groups: venues settled by fc03 and fc04 (DAPO NeurIPS 2025; Reasoning with Sampling ICLR 2026;
+  f(g(x)) ICLR 2026; Guru NeurIPS 2025 Datasets and Benchmarks; Let's Verify Step by Step ICLR 2024;
+  ReTool ICLR 2026; ImpossibleBench ICLR 2026; Search-R1 COLM 2025). The orchestrator already fixed
+  these badges in sections 1, 20 and 22; apply them to any other badge in your files.
 - fc01: section 3's strongest number comes from E0 (one 0/1 reward per 124 to 164-token
   completion); Sutton and Barto section 2.9; TRL v1.12.0 `ppo_trainer.py` L786-L798 and
   `ppo_config.py` L264-L267 were checked beyond the register.
