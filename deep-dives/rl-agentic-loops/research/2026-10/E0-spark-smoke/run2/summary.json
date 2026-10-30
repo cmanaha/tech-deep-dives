@@ -1,0 +1,26 @@
+{
+  "train_wall_s": 41.26,
+  "global_step": 20,
+  "torch_max_alloc_gib": 17.894,
+  "torch_max_reserved_gib": 18.541,
+  "min_avail_mib": 28874,
+  "timer_totals_s": {
+    "weight_sync": 0.34,
+    "vllm_generate": 25.92,
+    "generate_single_turn": 26.26,
+    "generate": 26.36,
+    "logprob_forward": 5.11,
+    "score": 0.01,
+    "prepare_total": 29.06
+  },
+  "timer_calls": {
+    "weight_sync": 20,
+    "vllm_generate": 20,
+    "generate_single_turn": 20,
+    "generate": 20,
+    "logprob_forward": 40,
+    "score": 20,
+    "prepare_total": 20
+  },
+  "status": "PASS"
+}
