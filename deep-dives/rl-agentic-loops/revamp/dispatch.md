@@ -8,10 +8,10 @@ report lands (see `build-log.md`).
 |---|---|---|---|---|---|---|---|
 | 3 | 3. The Language Model Is Already a Policy | LanguageModelAsPolicy.tsx | policy | 4503 | policy | TRL PPO at v1.12.0 (`TRL_PPO_TAG`) | done c6c80f3 |
 | 4 | 4. Policy Gradient | PolicyGradient.tsx | policy-gradient | 4504 | pg | gradient table rows 1 to 4 | done 2d1d25d |
-| 5 | 5. Two Leashes: PPO's Clip & the KL | TwoLeashes.tsx | leashes | 4505 | leash | PPO row; E0 entropy optional | dispatched |
+| 5 | 5. Two Leashes: PPO's Clip & the KL | TwoLeashes.tsx | leashes | 4505 | leash | PPO row; E0 entropy optional | done |
 | 6 | 6. From Preferences to Rewards | PreferencesToRewards.tsx | preferences | 4506 | pref | DPO row completes the table; Llama 3 DPO-over-PPO (wave2-foundations G3); relatives per W1 row 29 | dispatched |
 | 7 | 7. RLVR & GRPO | RlvrAndGrpo.tsx | rlvr | 4507 | rlvr | successor table; E0 zero-gradient steps as Tier 0 point | dispatched |
-| 8 | 8. What RL Does to a Model | WhatRlDoes.tsx | what-rl-does | 4508 | wrd | schematic pass@k curves; sparsity debate per W2 rows 30-31; RL's Razor ICLR 2026 | |
+| 8 | 8. What RL Does to a Model | WhatRlDoes.tsx | what-rl-does | 4508 | wrd | schematic pass@k curves; sparsity debate per W2 rows 30-31; RL's Razor ICLR 2026 | dispatched |
 | 9 | 9. Agentic RL | AgenticRl.tsx | agentic-rl | 4509 | agentic | DeepSWE 23% to 42.2%, 71.0% pass@16 vendor claim; F02-62 scope | |
 | 10 | 10. The Reward Is a Proxy | RewardIsAProxy.tsx | reward-proxy | 4510 | proxy | grader checklist owned here; U18 hedge | |
 | 11 | 11. A Text Loop Is RL on the Context | TextLoopAsRl.tsx | text-loop | 4511 | textloop | three stores x two signals grid; signal axis gloss per W3 row 35 | |
