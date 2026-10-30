@@ -397,11 +397,9 @@ export function PolicyGradient() {
             reward model can.
           </Box>
           <Box variant="p">
-            This section builds that update in four steps: REINFORCE, the baseline that makes it
-            usable, the two ways to get a baseline, and a table that sets SFT, REINFORCE,
-            rejection-sampling fine-tuning and RLOO (REINFORCE Leave-One-Out) or GRPO side by side.
-            Every later method in the
-            dive then reads as three choices: which samples, which scorer, which weight.
+            The section ends on a table that sets SFT, REINFORCE, rejection-sampling fine-tuning
+            and RLOO (REINFORCE Leave-One-Out) or GRPO side by side. Every later method in the dive
+            then reads as three choices: which samples, which scorer, which weight.
           </Box>
         </SpaceBetween>
       </Container>
@@ -439,8 +437,7 @@ export function PolicyGradient() {
               Sutton and Barto, Section 13.3
             </Cite>
             . A response that scored high is made much more likely; a response that scored 0 does not
-            move. A fine-tuning step that treats y as a target follows the same direction, with no
-            score attached.
+            move.
           </Box>
           <Box variant="p">
             Fix R at 1 and take y from a dataset instead of from the model, and the update is SFT,

@@ -357,9 +357,10 @@ export function LanguageModelAsPolicy() {
             that code.
           </Box>
           <Box variant="p">
-            The response view treats the whole response as one action. InstructGPT describes its RL
-            stage this way: the environment is a bandit environment that presents a random customer
-            prompt, expects a response, scores it with the reward model and ends the episode{' '}
+            The response view treats the whole response as one action. InstructGPT&apos;s RL stage
+            takes this view: its environment is a bandit environment that presents a random
+            customer prompt, expects a response, scores it with the reward model and ends the
+            episode{' '}
             <Cite tier={3} href={OUY22} venue="NeurIPS 2022">
               InstructGPT, section 3.5
             </Cite>
@@ -596,9 +597,8 @@ export function LanguageModelAsPolicy() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Every term above has a counterpart in a generation call, and papers write them with a
-            small set of symbols. The table is the map; the notation column shows the common
-            spellings.
+            Every term above has a counterpart in a generation call. The table maps each one, with
+            the symbols papers commonly write it in.
           </Box>
           <Table
             variant="embedded"
@@ -634,14 +634,9 @@ export function LanguageModelAsPolicy() {
             the token view lets each token carry its own.
           </Box>
           <Box variant="p">
-            Running code mixes the two. TRL shipped its PPO trainer for the last time in v1.12.0,
-            before removing it in v1.13.0{' '}
-            <Cite tier={1} href={TRL_113_NOTES}>
-              TRL v1.13.0 release notes: PPO is removed
-            </Cite>
-            . In that trainer every token gets a KL penalty, a charge for drifting from the
-            reference model the run started from, and the reward model&apos;s score
-            is added at the end of the response{' '}
+            Running code mixes the two. In TRL&apos;s PPO trainer at v1.12.0, every token gets a KL
+            penalty, a charge for drifting from the reference model the run started from, and the
+            reward model&apos;s score is added at the end of the response{' '}
             <Cite tier={1} href={gh(TRL, TRL_PPO_TAG, PPO_TRAINER, 'L771-L779')} kind="code">
               TRL v1.12.0 ppo_trainer.py L771-L779
             </Cite>
@@ -655,15 +650,15 @@ export function LanguageModelAsPolicy() {
             <Cite tier={1} href={gh(TRL, TRL_PPO_TAG, PPO_TRAINER, 'L786-L798')} kind="code">
               TRL v1.12.0 ppo_trainer.py L786-L798
             </Cite>
-            . Whether a per-token term exists is a setting: E0 ran GRPO with its KL coefficient at
-            0.0, TRL v1.16.0&apos;s default, so one number per completion of 124 to 164 tokens on
+            . Whether a per-token term exists is a setting: E0 ran GRPO with its KL coefficient,{' '}
+            <code>beta</code>, at 0.0, TRL v1.16.0&apos;s default, so one number per completion of 124 to 164 tokens on
             average was the only reward the run had{' '}
             <Cite tier={0} href={E0_URL}>
               E0 log: GRPO smoke test on a DGX Spark
             </Cite>
             .
           </Box>
-          <ExpandableSection headerText="The reward vector in TRL v1.12.0, line by line">
+          <ExpandableSection headerText="The reward vector in TRL v1.12.0, the last release with a PPO trainer, line by line">
             <SpaceBetween size="s">
               <Box variant="p">
                 The block that builds the per-token reward, from{' '}
@@ -692,7 +687,12 @@ rewards[actual_start, actual_end] += scores`}</code>
                 <Cite tier={1} href={gh(TRL, TRL_PPO_TAG, PPO_CONFIG, 'L264-L267')}>
                   TRL v1.12.0 ppo_config.py L264-L267
                 </Cite>
-                . In that release the class lives under <code>trl.experimental.ppo</code>; the
+                . TRL shipped its PPO trainer for the last time in v1.12.0, before removing it in
+                v1.13.0{' '}
+                <Cite tier={1} href={TRL_113_NOTES}>
+                  TRL v1.13.0 release notes: PPO is removed
+                </Cite>
+                . In v1.12.0 the class lives under <code>trl.experimental.ppo</code>; the
                 top-level <code>from trl import PPOTrainer</code> had already stopped working in
                 v1.10{' '}
                 <Cite tier={1} href={TRL_113_NOTES}>

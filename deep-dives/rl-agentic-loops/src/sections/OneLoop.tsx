@@ -3,6 +3,7 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import Table from '@cloudscape-design/components/table';
+import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, arxiv } from '../components/Cite';
 
 /* ------------------------------------------------------------------------ */
@@ -354,33 +355,39 @@ export function OneLoop() {
             model, as in Advisor Models and Retroformer, and the large model stays frozen.
           </Box>
           <OneLoopDiagram />
-          <Box variant="p">
-            The rest of the dive sorts the same way. <Box variant="strong" display="inline">The
-            weights</Box> hold policy gradient, the update behind PPO and GRPO (section 4);
-            PPO&apos;s limits on each step (section 5); RLHF (RL from human feedback) and DPO
-            (Direct Preference Optimization), which learn from pairs of responses where one was
-            judged better (section 6); GRPO and its successors, scored by a program that checks
-            each answer (section 7); agentic RL such as Search-R1 and DeepSWE, where one attempt is
-            a multi-turn episode with tools (section 9); and SCoRe (Self-Correction via
-            Reinforcement Learning), which trains a model to correct its own answers (section 12).
-          </Box>
-          <Box variant="p">
-            <Box variant="strong" display="inline">The context</Box> holds reflection and
-            self-critique, Reflexion and Self-Refine (section 12); memories, playbooks and skill
-            libraries such as ExpeL, ACE (Agentic Context Engineering), Dynamic Cheatsheet, Voyager
-            and Training-Free GRPO, a text loop named after the RL method (section 13); prompt
-            optimisers, GEPA among them (section 14); and loops you may already run, Ralph and
-            autoresearch, beside the program-search loops FunSearch and AlphaEvolve (section 15).
-          </Box>
-          <Box variant="p">
-            <Box variant="strong" display="inline">A small trained model</Box> holds Advisor Models
-            and Retroformer, which train the model that writes the advice or the reflection, and
-            Memento, which trains the retrieval over a bank of past cases (section 16).
-          </Box>
+          <ExpandableSection headerText="The rest of the dive, sorted by store and section">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                <Box variant="strong" display="inline">The weights</Box> hold policy gradient, the
+                update behind PPO and GRPO (section 4); PPO&apos;s limits on each step (section 5);
+                RLHF (RL from human feedback) and DPO (Direct Preference Optimization), which learn
+                from pairs of responses where one was judged better (section 6); GRPO and its
+                successors, scored by a program that checks each answer (section 7); agentic RL
+                such as Search-R1 and DeepSWE, where one attempt is a multi-turn episode with tools
+                (section 9); and SCoRe (Self-Correction via Reinforcement Learning), which trains a
+                model to correct its own answers (section 12).
+              </Box>
+              <Box variant="p">
+                <Box variant="strong" display="inline">The context</Box> holds reflection and
+                self-critique, Reflexion and Self-Refine (section 12); memories, playbooks and skill
+                libraries such as ExpeL, ACE (Agentic Context Engineering), Dynamic Cheatsheet,
+                Voyager and Training-Free GRPO, a text loop named after the RL method (section 13);
+                prompt optimisers, GEPA among them (section 14); and loops you may already run,
+                Ralph and autoresearch, beside the program-search loops FunSearch and AlphaEvolve
+                (section 15).
+              </Box>
+              <Box variant="p">
+                <Box variant="strong" display="inline">A small trained model</Box> holds Advisor
+                Models and Retroformer, which train the model that writes the advice or the
+                reflection, and Memento, which trains the retrieval over a bank of past cases
+                (section 16).
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
           <Box variant="p">
             A fourth route stores nothing. Sampling a frozen model several times and choosing among
-            the attempts, with a verifier (a program that checks each answer) or with a sampler
-            that needs none, pays on every query instead: a training-free sampler nearly matched
+            the attempts, with a verifier (a checker that recognises a correct answer) or with a
+            sampler that needs none, pays on every query instead: a training-free sampler nearly matched
             the single-shot score of GRPO on a math benchmark, at about 8.84 times the tokens per
             answer{' '}
             <Cite tier={3} href={SAMPLING} venue="ICLR 2026">
@@ -403,8 +410,7 @@ export function OneLoop() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The table puts the sections that follow side by side. Read across a row and the trade
-            shows: the weights pay once and hold what must be fast, calibrated or general; the
+            Read across a row of the table and the trade shows: the weights pay once and hold what must be fast, calibrated or general; the
             context pays on every query and holds what is specific, recent and auditable; a small
             trained model buys a weight update for a large model you can only call.
           </Box>
@@ -433,8 +439,9 @@ export function OneLoop() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The second axis the dive uses is where the signal comes from, taken from a survey of
-            agent adaptation: execution-grounded (the result of a tool call or code run: tests, a
+            In every store the score decides whether anything is learned, and it is the surface an
+            optimiser learns to game. The second axis the dive uses is where the signal comes
+            from, taken from a survey of agent adaptation: execution-grounded (the result of a tool call or code run: tests, a
             compiler, an environment) or output-evaluated (a score on the final output: an
             exact-match check against a gold answer, a rubric, or a judge){' '}
             <Cite tier={3} href={SURVEY} venue="preprint">
@@ -445,10 +452,8 @@ export function OneLoop() {
             on the grid the two axes make.
           </Box>
           <Box variant="p">
-            In every store the score decides whether anything is learned, and it is the surface an
-            optimiser learns to game. Section 10, The Reward Is a Proxy, builds a grader for a
-            training run and a text loop alike; section 12, Verbal Reinforcement &amp;
-            Self-Correction, shows what a loop learns with no signal from outside the model. The
+            Section 10, The Reward Is a Proxy, builds a grader for a training run and a text loop
+            alike; section 12, Verbal Reinforcement &amp; Self-Correction, shows what a loop learns with no signal from outside the model. The
             second of section 22&apos;s three decision questions starts here: what signal do you
             have?
           </Box>
@@ -492,7 +497,8 @@ export function OneLoop() {
             <Box variant="strong" display="inline">
               Where do the words fall short?
             </Box>{' '}
-            Section 17, Where Words Fall Short. The short answer, our reading of the studies the
+            Section 17, Where Words Fall Short, with reasoning skill in section 18 and behaviour that
+            varies from input to input in section 16. The short answer, our reading of the studies the
             dive draws on: where the gap is reasoning skill, behaviour that varies from input to input,
             exploration, or working out which step of a long run earned the result.
           </Box>

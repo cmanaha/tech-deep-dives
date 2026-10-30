@@ -15,7 +15,7 @@ autoresearch and the SageMaker HyperPod recipes at commit SHAs. arXiv links carr
 1. What does RL do to a model? (section 8)
 2. Which part of that effect can a loop reproduce in words with a frozen model? (the end of
    section 8, then sections 11 to 16)
-3. Where do the words fall short? (section 17)
+3. Where do the words fall short? (section 17, with sections 16 and 18)
 4. How do you choose between a text loop, a hybrid and a weight update? (section 22)
 
 ## Key takeaways

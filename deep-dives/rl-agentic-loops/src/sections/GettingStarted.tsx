@@ -369,8 +369,6 @@ export function GettingStarted() {
             The dive runs to 24 sections, from the RL (reinforcement learning) vocabulary to a
             choice of method and the AWS services that run it. A reader with one question needs a
             subset of them, and the challenge is choosing that subset without losing the thread.
-            This section sets out what the dive assumes you know, the four ideas every later
-            section leans on, and three shorter routes, each built around one reason to read.
           </Box>
         </SpaceBetween>
       </Container>
@@ -429,8 +427,8 @@ export function GettingStarted() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Every later section leans on four ideas. Each gets two sentences here, and the section
-            named under it defines it with its evidence.
+            Every later section leans on four ideas. The section named under each one defines it
+            with its evidence.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <IdeaCard
@@ -541,16 +539,7 @@ export function GettingStarted() {
         }
       >
         <SpaceBetween size="m">
-          <Box variant="p">
-            The map lays the sections out by stage. Arrows show the path from stage to stage, and
-            a lettered mark inside a section shows which shorter route reads it.
-          </Box>
-          <ReadingMapDiagram />
-          <Box variant="small" color="text-body-secondary">
-            Sections read left to right within a stage. Section 21, Side by Side on a DGX Spark,
-            is on no shorter route: it runs one RL step on hardware you can own and sets out the
-            protocol for running the comparison there.
-          </Box>
+          <Box variant="p">Each shorter route is built around one reason to read.</Box>
           <ul>
             <li>
               <Box variant="p">
@@ -580,10 +569,19 @@ export function GettingStarted() {
             </li>
           </ul>
           <Box variant="p">
+            The map lays the sections out by stage. Arrows show the path from stage to stage, and
+            a lettered mark inside a section shows which shorter route reads it.
+          </Box>
+          <ReadingMapDiagram />
+          <Box variant="small" color="text-body-secondary">
+            Sections read left to right within a stage. Section 21, Side by Side on a DGX Spark,
+            is on no shorter route: it runs one RL step on hardware you can own and sets out the
+            protocol for running the comparison there.
+          </Box>
+          <Box variant="p">
             Where a section on the first two routes names a method from a section you skipped,
             look for a one-clause gloss with a pointer beside it, as when section 22 introduces
-            GEPA as &quot;Genetic-Pareto, the reflective prompt optimiser of section 14&quot;. The
-            glossary in section 24 catches any term that still arrives out of order.
+            GEPA as &quot;Genetic-Pareto, the reflective prompt optimiser of section 14&quot;.
           </Box>
           <ExpandableSection headerText="What each shorter route keeps from the RL half, and why">
             <SpaceBetween size="s">

@@ -66,3 +66,7 @@ stay at 5. Before and after, per section; moves and claim diffs in `reviews/leve
 | 21 | Side by Side on a DGX Spark | lv06 | 4/5/5/5/4 | 4/5/5/5/4 |
 | 22 | Choosing a Text Loop, a Hybrid or a Weight Update | lv06 | 4/4/5/5/3 | 5/4/5/5/4 |
 | 23 | RL & Learning Loops on AWS | lv06 | 4/4/5/5/3 | 4/4/5/5/4 |
+| 1 | One Loop, Three Places to Keep What It Learns | lv01 | 5/4/5/5/4 | 5/4/5/5/5 |
+| 2 | Getting Started | lv01 | 4/4/5/5/4 | 4/4/5/5/5 |
+| 3 | The Language Model Is Already a Policy | lv01 | 5/4/5/5/4 | 5/5/5/5/4 |
+| 4 | Policy Gradient | lv01 | 5/4/5/5/4 | 5/4/5/5/5 |
