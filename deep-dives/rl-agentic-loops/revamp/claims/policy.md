@@ -35,7 +35,7 @@ One line per claim: `claim | source URL | register or wave 2 row`.
 - Return = sum of rewards from step t to the end of the episode | http://incompleteideas.net/book/RLbook2020.pdf (section 3.3, Eq. 3.7) | F01-5; wave2-foundations row 4
 - With one end reward and discount 1, every token's return equals the final score | arithmetic from SB 3.3 and STI20 fn 8 | derived, stated as such on page
 - Credit assignment problem: long delay between actions and their effect on rewards | https://arxiv.org/abs/1506.02438v6 (section 1) | F01-12; wave2-foundations row 3
-- Usually only the last token gets a reward score, which complicates a value function accurate at each token | https://arxiv.org/abs/2402.03300v3 (section 4.1.1) | F01-12; wave2-foundations row 3
+- Usually only the last token gets a reward score, which may complicate training a value function accurate at each token (the source's hedge "may complicate" kept; critic glossed at first use) | https://arxiv.org/abs/2402.03300v3 (section 4.1.1) | F01-12; wave2-foundations row 3; fc01 restored the hedge
 - Value = expected return from a state under the policy | http://incompleteideas.net/book/RLbook2020.pdf (section 3.5) | F01-10; wave2-foundations row 4
 - PPO trains a value model over incomplete responses | https://arxiv.org/abs/2406.09279v2 (appendix F.2) | F01-10
 - Q = expected return after taking the action, then following the policy | http://incompleteideas.net/book/RLbook2020.pdf (section 3.5) | F01-10 (q definition read 2026-10-30)

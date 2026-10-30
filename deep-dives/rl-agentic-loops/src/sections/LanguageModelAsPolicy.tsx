@@ -285,7 +285,7 @@ export function LanguageModelAsPolicy() {
         header={
           <Header
             variant="h1"
-            description="Read any reinforcement learning paper's equations by mapping them onto the sampling you already run (TRL v1.12.0 and papers, read 2026-10-30)"
+            description="Read any reinforcement learning paper's equations by mapping them onto the sampling you already run (TRL v1.12.0 and v1.16.0, papers read 2026-10-30)"
           >
             3. The Language Model Is Already a Policy
           </Header>
@@ -449,9 +449,10 @@ export function LanguageModelAsPolicy() {
             <Cite tier={3} href={GAE} venue="ICLR 2016">
               Schulman et al., Generalized Advantage Estimation, section 1
             </Cite>
-            . For language models it is also why a per-token critic is hard to train: usually only
-            the last token is assigned a reward score by the reward model, which complicates
-            training a value function that is accurate at each token{' '}
+            . For language models it also makes a per-token critic, a model that predicts the final
+            score from each token, harder to train: usually only the last token is assigned a reward
+            score by the reward model, which may complicate training a value function that is
+            accurate at each token{' '}
             <Cite tier={3} href={DSM24} venue="preprint">
               DeepSeekMath, section 4.1.1
             </Cite>

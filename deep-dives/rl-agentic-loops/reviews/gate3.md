@@ -8,6 +8,9 @@ scored.
 
 | # | Section | File | Fact-check group | Score |
 |---|---|---|---|---|
+| 1 | One Loop, Three Places to Keep What It Learns | OneLoop.tsx | fc01 | 9 |
+| 2 | Getting Started | GettingStarted.tsx | fc01 | 8 |
+| 3 | The Language Model Is Already a Policy | LanguageModelAsPolicy.tsx | fc01 | 9 |
 | 4 | Policy Gradient | PolicyGradient.tsx | fc02 | 9 |
 | 5 | Two Leashes: PPO's Clip & the KL | TwoLeashes.tsx | fc02 | 9 |
 | 6 | From Preferences to Rewards | PreferencesToRewards.tsx | fc02 | 8 |

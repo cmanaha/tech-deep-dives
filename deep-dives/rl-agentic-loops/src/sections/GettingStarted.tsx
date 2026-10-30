@@ -412,7 +412,7 @@ export function GettingStarted() {
           <Box variant="p">
             Each section defines the RL terms it uses when it first uses them. If a shorter route
             brings you to a term out of order, section 24, Glossary &amp; Sources, lists every
-            acronym the dive uses and every source it cites.
+            acronym the dive uses and its reading list, grouped by authority.
           </Box>
         </SpaceBetween>
       </Container>
@@ -548,7 +548,8 @@ export function GettingStarted() {
           <ReadingMapDiagram />
           <Box variant="small" color="text-body-secondary">
             Sections read left to right within a stage. Section 21, Side by Side on a DGX Spark,
-            is on no shorter route: it runs the comparison on hardware you own.
+            is on no shorter route: it runs one RL step on hardware you can own and sets out the
+            protocol for running the comparison there.
           </Box>
           <ul>
             <li>

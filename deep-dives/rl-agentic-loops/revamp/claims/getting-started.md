@@ -18,7 +18,7 @@ One line per claim: `claim | source URL | register or wave 2 row`.
 - Assumed: context window as everything a frozen model conditions on, with effective length and prefix caching as its cost rules; no calculus beyond a gradient step nudging weights | SCOPE.md section 2 block | n/a
 - Section 17 applies effective length and prefix caching to learning loops | src/sections/WhereWordsFallShort.tsx:565-617, :661 | n/a
 - The vLLM dive's section 6 is Automatic Prefix Caching (sibling link) | authoring-brief.md, sibling-dive link list | n/a
-- Section 24 lists every acronym the dive uses and every source it cites | src/sections/GlossaryAndSources.tsx h1 description; SCOPE.md section 24 block | n/a
+- Section 24 lists every acronym the dive uses and its reading list, grouped by authority | src/sections/GlossaryAndSources.tsx h1 description ("Every acronym in the dive, our own experiment, and the reading list grouped by authority") | n/a; fc01 narrowed from "every source it cites" (fc07: five sources cited in sections 17 and 18 have no glossary row)
 - Policy: a probability distribution sampled at each call; defined in section 3 | src/sections/LanguageModelAsPolicy.tsx:295-307 | F01-1, F01-2
 - Reward: one number per attempt, usually only at the end; section 3 | src/sections/LanguageModelAsPolicy.tsx:419-433 | F01-6
 - Advantage: how much better or worse than expected, its sign sets direction; defined in 3, estimated two ways in 4 | src/sections/LanguageModelAsPolicy.tsx:471-494; src/sections/PolicyGradient.tsx:518-524, :552-556 | F01-13, F01-18
@@ -30,7 +30,7 @@ One line per claim: `claim | source URL | register or wave 2 row`.
 - Section 10's second half uses Ralph, autoresearch and Reflexion and points ahead to sections 12 and 15 | src/sections/RewardIsAProxy.tsx:812-896 | n/a
 - The capability result comes before the words track because it sets what a loop would have to reproduce | SCOPE.md section 2 block (design rationale) | n/a
 - Three routes, section lists verbatim from the scope | SCOPE.md section 2 block, "Three shorter routes" | n/a
-- Section 21 is on no shorter route and runs the comparison on hardware you own | SCOPE.md route lists; src/sections/SideBySideLab.tsx:531 | n/a
+- Section 21 is on no shorter route; it runs one RL step (E0) on hardware you can own and sets out the protocol (E1, not run in this build) for running the comparison there | SCOPE.md route lists; src/sections/SideBySideLab.tsx:531, :542, :773 | n/a; fc01 narrowed from "runs the comparison"
 - Section 22 introduces GEPA as "Genetic-Pareto, the reflective prompt optimiser of section 14" | src/sections/Choosing.tsx:653-654 | n/a
 - Section 3's closing block is the bridge section 11 builds on | src/sections/LanguageModelAsPolicy.tsx:715-742; src/sections/TextLoopAsRl.tsx:800 | F04-54
 - Section 18 points to section 8 for sharpening | src/sections/WeightsVsContext.tsx:527-530 | n/a

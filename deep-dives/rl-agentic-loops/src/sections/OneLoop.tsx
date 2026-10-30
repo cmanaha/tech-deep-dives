@@ -263,8 +263,8 @@ const STORE_ROWS: StoreRow[] = [
     weights:
       'Some old ability is forgotten, more the further training moves the model from its base; RL moves it less than SFT (supervised fine-tuning) does (sections 8 and 18)',
     context:
-      'Every old ability, since the weights never move; the text can be read, edited and removed, and a store fed misleading feedback degrades (sections 13 and 18)',
-    small: "Every ability of the large model; only the small model's weights move (section 16)",
+      'Every old ability once the text is removed, since the weights never move; the text can be read, edited and removed, and a store fed misleading feedback degrades (sections 13 and 18)',
+    small: "Every ability of the large model once the advice is removed; only the small model's weights move (section 16)",
   },
   {
     id: 'learn',
@@ -356,7 +356,7 @@ export function OneLoop() {
           <OneLoopDiagram />
           <Box variant="p">
             The rest of the dive sorts the same way. <Box variant="strong" display="inline">The
-            weights</Box> hold policy gradient, the update every RL method shares (section 4);
+            weights</Box> hold policy gradient, the update behind PPO and GRPO (section 4);
             PPO&apos;s limits on each step (section 5); RLHF (RL from human feedback) and DPO
             (Direct Preference Optimization), which learn from pairs of responses where one was
             judged better (section 6); GRPO and its successors, scored by a program that checks
@@ -440,8 +440,9 @@ export function OneLoop() {
             <Cite tier={3} href={SURVEY} venue="preprint">
               Adaptation of Agentic AI, Section 1
             </Cite>
-            . The axis crosses all three stores, and section 11, A Text Loop Is RL on the Context,
-            places every method of the words track on the grid the two axes make.
+            . In this dive the axis crosses all three stores, an extension of the survey&apos;s frame,
+            and section 11, A Text Loop Is RL on the Context, places every method of the words track
+            on the grid the two axes make.
           </Box>
           <Box variant="p">
             In every store the score decides whether anything is learned, and it is the surface an
@@ -469,8 +470,8 @@ export function OneLoop() {
             <Box variant="strong" display="inline">
               What does RL do to a model?
             </Box>{' '}
-            Section 8, What RL Does to a Model. The short answer: on the models and benchmarks
-            tested so far, RL with verifiable rewards mostly makes a model more reliable at answers
+            Section 8, What RL Does to a Model. The short answer: on the models and benchmarks in
+            the studies the dive read, RL with verifiable rewards mostly makes a model more reliable at answers
             it could already produce some of the time. That is sharpening, and the weight change
             behind it is small.
           </Box>
