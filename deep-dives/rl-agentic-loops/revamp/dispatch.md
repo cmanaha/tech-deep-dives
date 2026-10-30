@@ -27,6 +27,6 @@ report lands (see `build-log.md`).
 | 21 | 21. Side by Side on a DGX Spark | SideBySideLab.tsx | lab | 4521 | lab | E0 results; E1 protocol and predictions | done |
 | 22 | 22. Choosing a Text Loop, a Hybrid or a Weight Update | Choosing.tsx | choosing | 4522 | choose | three questions; paths; SageMaker distillation | done |
 | 23 | 23. RL & Learning Loops on AWS | RlOnAws.tsx | aws | 4523 | aws | two stacks; AgentCore vendor test; rank-32 LoRA | done |
-| 1 | 1. One Loop, Three Places to Keep What It Learns | OneLoop.tsx | one-loop | 4501 | oneloop | written last-but-one, after the body exists | dispatched |
+| 1 | 1. One Loop, Three Places to Keep What It Learns | OneLoop.tsx | one-loop | 4501 | oneloop | written last-but-one, after the body exists | done |
 | 2 | 2. Getting Started | GettingStarted.tsx | getting-started | 4502 | gs | reading map, three routes | dispatched |
 | 24 | 24. Glossary & Sources | GlossaryAndSources.tsx | sources | | | orchestrator | draft |
