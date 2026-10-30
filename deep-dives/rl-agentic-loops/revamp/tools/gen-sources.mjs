@@ -336,7 +336,7 @@ for (const file of walk(SRC)) {
     const tier = Number(attrs.tier);
     const href = attrs.href;
     if (typeof href !== 'string' || !Number.isInteger(tier)) return false;
-    if (/arxiv\.org\/(abs|html|pdf)\/\d{4}\.\d{4,5}(?!v\d)/.test(href)) badArxiv.push(`${rel}: ${href}`);
+    if (/arxiv\.org\/(abs|html|pdf)\/\d{4}\.\d{4,5}(?![v\d])/.test(href)) badArxiv.push(`${rel}: ${href}`);
     const accessed = typeof attrs.accessed === 'string' ? attrs.accessed : DEFAULT_ACCESSED;
     // One row per (file URL, tier): a source cited at two tiers stays visible as both.
     const url = href.replace(/#L[0-9-L]+$/, '');
