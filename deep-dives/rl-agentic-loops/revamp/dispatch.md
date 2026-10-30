@@ -17,10 +17,10 @@ report lands (see `build-log.md`).
 | 11 | 11. A Text Loop Is RL on the Context | TextLoopAsRl.tsx | text-loop | 4511 | textloop | three stores x two signals grid; signal axis gloss per W3 row 35 | done |
 | 12 | 12. Verbal Reinforcement & Self-Correction | VerbalReinforcement.tsx | verbal | 4512 | verbal | SCoRe (U8) as weight-side counterpart | done |
 | 13 | 13. Memories, Playbooks & Skill Libraries | AccumulatingExperience.tsx | experience | 4513 | exp | ReTool includes SFT stage (W3 row 11); Anthropic wording (row 30) | done |
-| 14 | 14. Optimising the Prompt | PromptOptimization.tsx | prompt-opt | 4514 | popt | MIPRO expansion; Pareto set on validation; reflector = Qwen3 8B (U5) | dispatched |
+| 14 | 14. Optimising the Prompt | PromptOptimization.tsx | prompt-opt | 4514 | popt | MIPRO expansion; Pareto set on validation; reflector = Qwen3 8B (U5) | done |
 | 15 | 15. Your Loops Through the RL Lens | YourLoops.tsx | your-loops | 4515 | loops | autoresearch at SHA; wall-clock stop; FunSearch 10^6 | dispatched |
 | 16 | 16. Hybrids | Hybrids.tsx | hybrids | 4516 | hyb | advisor 70% derived | dispatched |
-| 17 | 17. Where Words Fall Short | WhereWordsFallShort.tsx | words-limits | 4517 | wfs | DPT correction (W4 row 23); TRAIL hedge U14 | |
+| 17 | 17. Where Words Fall Short | WhereWordsFallShort.tsx | words-limits | 4517 | wfs | DPT correction (W4 row 23); TRAIL hedge U14 | dispatched |
 | 18 | 18. What Lives in Weights & What Lives in Context | WeightsVsContext.tsx | weights-context | 4518 | wvc | two-column map, contested rows marked | |
 | 19 | 19. An RL Step Is an Inference Job Inside a Training Job | RlStepAsSystem.tsx | rl-systems | 4519 | sys | E0 Tier 0 points per wave2-systems-cost | |
 | 20 | 20. Cost per Improvement | CostPerImprovement.tsx (+ src/lib/breakeven.ts, src/__tests__/breakeven.test.ts) | cost | 4520 | cost | interactive calculator; Nova $80 too | |
