@@ -326,7 +326,7 @@ export function WhatRlDoes() {
         header={
           <Header
             variant="h1"
-            description="Read an RL gain as a pass@k curve before you trust it, and know what a frozen model can buy back: one training-free sampler did it at about 8.84 times the tokens per answer (sources read 2026-10-30)"
+            description="Read an RL gain as a pass@k curve before you trust it, and know what a frozen model can buy back per query, and at what price (sources read 2026-10-30)"
           >
             8. What RL Does to a Model
           </Header>
@@ -463,9 +463,9 @@ export function WhatRlDoes() {
             .
           </Box>
           <Box variant="p">
-            Our reading of these studies: three findings show the boundary moving, each in a
-            controlled or small setting, and in each the training supplied something the base model
-            could not reach by sampling alone.
+            Our reading of these studies: RL sharpens by default, and it widens the boundary when
+            training gives the model something it cannot reach by sampling itself. Three findings
+            show the boundary moving, each in a controlled or small setting.
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">
@@ -514,12 +514,6 @@ export function WhatRlDoes() {
               Pass@(k,T), Sections 3 and 4.2
             </Cite>
             . Section 9, Agentic RL, covers that study.
-          </Box>
-          <Box variant="p">
-            Our reading: RL sharpens by default, and it widens the boundary when training gives the
-            model something it cannot reach by sampling itself, whether a reward for a combination
-            it never built, data at the edge of what it can do, or information from a teacher or a
-            tool.
           </Box>
           <ExpandableSection headerText="How far the evidence reaches">
             <SpaceBetween size="s">
@@ -580,17 +574,16 @@ export function WhatRlDoes() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The size of the update follows from how little a reward says. On Thinking
-            Machines&apos; information argument, SFT (supervised fine-tuning, training on target
-            answers token by token) arguably supplies information on every token of its target,
-            while policy gradient, the RL update driven by the advantage (how much better an
-            attempt scored than expected), supplies only O(1) bits per attempt, a constant that
-            does not grow with the length of the answer. Assuming one bit per completion, their
-            run on MATH, a competition-math benchmark, with about 10,000 problems and 32 samples
-            each had about 320,000 bits to absorb,
-            against about 3M parameters in a rank-1 LoRA adapter on Llama-3.1-8B. In their runs
-            (Llama-3.1-8B base, MATH and grade-school math), rank-1 LoRA matched full fine-tuning
-            for policy gradient{' '}
+            In Thinking Machines&apos; runs (Llama-3.1-8B base; MATH, a competition-math
+            benchmark, and grade-school math), rank-1 LoRA matched full fine-tuning for policy
+            gradient, the RL update driven by the advantage (how much better an attempt scored than
+            expected). The size of the update follows from how little a reward says. On their
+            information argument, SFT (supervised fine-tuning, training on target answers token by
+            token) arguably supplies information on every token of its target, while policy gradient
+            supplies only O(1) bits per attempt, a constant that does not grow with the length of
+            the answer. Assuming one bit per completion, their run on MATH with about
+            10,000 problems and 32 samples each had about 320,000 bits to absorb, against about 3M
+            parameters in a rank-1 LoRA adapter on Llama-3.1-8B{' '}
             <Cite tier={2} href={LORA_BLOG}>
               Thinking Machines, LoRA Without Regret (lab blog), Reinforcement learning
             </Cite>
@@ -759,7 +752,7 @@ export function WhatRlDoes() {
         header={
           <Header
             variant="h2"
-            description="Price the inference-time route before you train: sharpening bought per query, at about 8.84 times the tokens for one sampler, up to the ceiling the base model's own curve sets"
+            description="Price the inference-time route before you train: sharpening bought per query, up to the ceiling the base model's own curve sets"
           >
             What a frozen model can buy back
           </Header>
@@ -851,8 +844,8 @@ export function WhatRlDoes() {
           <Box variant="p">
             Our reading, which sets the choice: inference-time sharpening is paid on every query,
             where RL is paid once in training and then served at the normal price. Best-of-K needs
-            the verifier at serving time; the sampler needs none and multiplies the tokens, about
-            8.84 times in the paper&apos;s setting. Neither reaches past the base model&apos;s own
+            the verifier at serving time; the sampler needs none and multiplies the tokens. Neither
+            reaches past the base model&apos;s own
             pass@K. Where RL went beyond it in the studies read, with a new combination of skills
             (string functions on Llama-3.1-8B-Instruct) and with tool use that widened coverage
             (one small study on Qwen2.5-7B-Instruct), the starting model&apos;s pass@k, the ceiling

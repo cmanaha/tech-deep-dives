@@ -482,7 +482,7 @@ export function TwoLeashes() {
         header={
           <Header
             variant="h2"
-            description="See why reusing one batch of samples for several updates is where a policy gets wrecked"
+            description="See why a batch reused for several updates needs a limit on how far each update moves the policy"
           >
             Samples go stale as soon as the policy moves
           </Header>
@@ -589,21 +589,15 @@ export function TwoLeashes() {
             .
           </Box>
           <Box variant="p">
-            The 0.2 comes from robot control. PPO&apos;s ablation ran seven simulated robotics
-            tasks (MuJoCo physics engine, one million timesteps, three seeds each): epsilon 0.2
-            scored 0.82 on the normalised average, against 0.76 at 0.1 and 0.70 at 0.3, and running
-            with no clipping or penalty scored -0.39{' '}
+            The 0.2 comes from robot control{' '}
             <Cite tier={3} href={PPO} venue="preprint">
               PPO paper, Section 6.1, Table 1
             </Cite>
-            . Language-model trainers kept the value: TRL&apos;s GRPO default is 0.2{' '}
+            , and language-model trainers kept the value: TRL&apos;s GRPO default is 0.2{' '}
             <Cite tier={1} href={trl('grpo_config.py', 'L693-L696')}>
               TRL grpo_config.py L693-L696
             </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            On language models the clip rarely binds. In one RLHF study on 6.9B and 7B models, the
+            . On language models the clip rarely binds. In one RLHF study on 6.9B and 7B models, the
             loss was clipped on average under 5% of the time per batch, and removing the clip gave,
             if anything, a slight boost{' '}
             <Cite tier={3} href={BACK_TO_BASICS} venue="ACL 2024">
@@ -676,6 +670,18 @@ export function TwoLeashes() {
               </Box>
             </SpaceBetween>
           </ExpandableSection>
+          <ExpandableSection headerText="The robotics ablation behind epsilon 0.2">
+            <Box variant="p">
+              PPO&apos;s ablation ran seven simulated robotics tasks (MuJoCo physics engine, one
+              million timesteps, three seeds each): epsilon 0.2 scored 0.82 on the normalised
+              average, against 0.76 at 0.1 and 0.70 at 0.3, and running with no clipping or penalty
+              scored -0.39{' '}
+              <Cite tier={3} href={PPO} venue="preprint">
+                PPO paper, Section 6.1, Table 1
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -707,7 +713,8 @@ export function TwoLeashes() {
           </Box>
           <Box variant="p">
             Three results show what the tether does and does not protect, and they are what sets
-            the knob.
+            the knob. Our reading of them: beta sets how far a run may travel from where it started
+            and charges reward for the distance.
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">
@@ -761,12 +768,6 @@ export function TwoLeashes() {
               TRL grpo_trainer.py L2722-L2737
             </Cite>
             .
-          </Box>
-          <Box variant="p">
-            Our reading of these results: beta sets how far a run may travel from where it started
-            and charges reward for the distance. In InstructGPT&apos;s 1.3B ablation, keeping
-            general skills took pretraining data in the mix, which a tighter tether did not
-            provide.
           </Box>
           <ExpandableSection headerText="The settings behind each result">
             <SpaceBetween size="s">

@@ -658,12 +658,6 @@ export function RlvrAndGrpo() {
             </Cite>
             .
           </Box>
-          <Box variant="p">
-            The section builds GRPO from one group of eight answers, maps each successor method and
-            each trainer setting onto the GRPO term it changes, and ends on the arithmetic that
-            predicts, from a base rate you can measure today, how much of a run will produce no
-            gradient.
-          </Box>
         </SpaceBetween>
       </Container>
 
@@ -876,19 +870,19 @@ export function RlvrAndGrpo() {
             columnDefinitions={[
               { id: 'term', header: 'GRPO term', cell: (r) => r.term, minWidth: 150 },
               { id: 'change', header: 'The change', cell: (r) => r.change, minWidth: 220 },
-              { id: 'without', header: 'What goes wrong without it', cell: (r) => r.without, minWidth: 260 },
+              { id: 'without', header: 'What it addresses', cell: (r) => r.without, minWidth: 260 },
               { id: 'source', header: 'Source', cell: (r) => r.source, minWidth: 170 },
             ]}
           />
           <Box variant="p">
-            A response length that keeps growing during a run is not, on its own, proof of longer
-            reasoning: Dr. GRPO&apos;s authors argue that GRPO&apos;s length
-            growth is partly the length divisor at work, and their version kept length from growing
-            wildly during training{' '}
+            Read the response-length curve with the loss in mind: Dr. GRPO&apos;s authors argue that
+            GRPO&apos;s length growth is partly the length divisor at work, and their version kept
+            length from growing wildly during training{' '}
             <Cite tier={3} href={DRG} venue="COLM 2025">
               Dr. GRPO, Section 3.2
             </Cite>
-            . Check how your trainer averages the loss before reading the length curve.
+            . Check how your trainer averages the loss before you read a growing length as longer
+            reasoning.
           </Box>
           <ExpandableSection headerText="Evidence: what each DAPO change did in one ablation, and GSPO's mixture-of-experts case">
             <SpaceBetween size="s">

@@ -381,6 +381,15 @@ export function PreferencesToRewards() {
             .
           </Box>
           <Box variant="p">
+            On the authors&apos; own prompt distribution, human raters preferred the outputs of the
+            1.3B InstructGPT model to those of 175B GPT-3, a model with over 100 times as many
+            parameters{' '}
+            <Cite tier={3} href={INSTRUCTGPT} venue="NeurIPS 2022">
+              InstructGPT, abstract and Section 1
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
             The reward model reads a prompt and a response and returns one number. It learns from
             pairs through the Bradley-Terry model, which turns two scores into the probability that
             one answer is preferred: the difference in reward is the log-odds that a person picks the
@@ -417,13 +426,7 @@ export function PreferencesToRewards() {
             10, The Reward Is a Proxy, what happens when the policy finds where the scorer is wrong.
           </Box>
           <Box variant="p">
-            On the authors&apos; own prompt distribution, human raters preferred the outputs of the
-            1.3B InstructGPT model to those of 175B GPT-3, a model with over 100 times as many
-            parameters{' '}
-            <Cite tier={3} href={INSTRUCTGPT} venue="NeurIPS 2022">
-              InstructGPT, abstract and Section 1
-            </Cite>
-            . The post-training was cheap next to pretraining: 4.9 petaflop/s-days for the 175B SFT
+            The post-training was cheap next to pretraining: 4.9 petaflop/s-days for the 175B SFT
             model and 60 for the 175B PPO-ptx model (PPO with pretraining data mixed into the
             updates), against 3,640 for GPT-3&apos;s pretraining{' '}
             <Cite tier={3} href={INSTRUCTGPT} venue="NeurIPS 2022">
@@ -464,6 +467,11 @@ export function PreferencesToRewards() {
         }
       >
         <SpaceBetween size="m">
+          <PipelinesDiagram />
+          <Box variant="small" color="text-body-secondary">
+            Schematic. The stages follow InstructGPT and the DPO paper; the memory lines follow
+            Ahmadian et al. for PPO and TRL&apos;s DPO configuration, cited in this section.
+          </Box>
           <Box variant="p">
             DPO starts from the objective RLHF optimises, maximise the reward while paying a KL
             penalty to the reference model, and uses the fact that it has an exact solution: the
@@ -512,11 +520,6 @@ export function PreferencesToRewards() {
               DPO paper, Section 4
             </Cite>
             .
-          </Box>
-          <PipelinesDiagram />
-          <Box variant="small" color="text-body-secondary">
-            Schematic. The stages follow InstructGPT and the DPO paper; the memory lines follow
-            Ahmadian et al. for PPO and TRL&apos;s DPO configuration, cited in this section.
           </Box>
           <Box variant="p">
             DPO removes the separate reward model, the critic, and sampling from the model during
@@ -850,31 +853,33 @@ export function PreferencesToRewards() {
             </Cite>
             .
           </Box>
-          <Box variant="p">
-            Open-weight labs publish their recipes. Besides Llama 3&apos;s DPO, Qwen3&apos;s
-            reasoning stage used GRPO on 3,995 query-verifier pairs{' '}
-            <Cite tier={3} href={QWEN3} venue="preprint">
-              Qwen3 report, Section 4.2
-            </Cite>
-            , and Gemma 3&apos;s RL stage built on improved versions of BOND (best-of-N
-            distillation), WARM (weight-averaged reward models) and WARP (weight-averaged rewarded
-            policies){' '}
-            <Cite tier={3} href={GEMMA3} venue="preprint">
-              Gemma 3 report, Section 3
-            </Cite>
-            . OpenAI and Anthropic name no current post-training algorithm in the first-party pages
-            read for this dive: OpenAI&apos;s reinforcement fine-tuning guide describes a grader and
-            a weight update without naming the optimiser{' '}
-            <Cite tier={1} href={OPENAI_RFT}>
-              OpenAI API docs: reinforcement fine-tuning
-            </Cite>
-            , and Anthropic&apos;s Constitutional AI paper names RLAIF and no policy-optimisation
-            algorithm{' '}
-            <Cite tier={3} href={CAI} venue="preprint">
-              Constitutional AI
-            </Cite>
-            .
-          </Box>
+          <ExpandableSection headerText="Other labs' post-training recipes, in the reports and pages read">
+            <Box variant="p">
+              Open-weight labs publish their recipes. Besides Llama 3&apos;s DPO, Qwen3&apos;s
+              reasoning stage used GRPO on 3,995 query-verifier pairs{' '}
+              <Cite tier={3} href={QWEN3} venue="preprint">
+                Qwen3 report, Section 4.2
+              </Cite>
+              , and Gemma 3&apos;s RL stage built on improved versions of BOND (best-of-N
+              distillation), WARM (weight-averaged reward models) and WARP (weight-averaged rewarded
+              policies){' '}
+              <Cite tier={3} href={GEMMA3} venue="preprint">
+                Gemma 3 report, Section 3
+              </Cite>
+              . OpenAI and Anthropic name no current post-training algorithm in the first-party pages
+              read for this dive: OpenAI&apos;s reinforcement fine-tuning guide describes a grader and
+              a weight update without naming the optimiser{' '}
+              <Cite tier={1} href={OPENAI_RFT}>
+                OpenAI API docs: reinforcement fine-tuning
+              </Cite>
+              , and Anthropic&apos;s Constitutional AI paper names RLAIF and no policy-optimisation
+              algorithm{' '}
+              <Cite tier={3} href={CAI} venue="preprint">
+                Constitutional AI
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             On AWS, SageMaker AI model customisation offers DPO on preferred and rejected response
             pairs{' '}
