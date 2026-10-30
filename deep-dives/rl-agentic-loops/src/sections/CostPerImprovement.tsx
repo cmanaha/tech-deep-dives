@@ -57,6 +57,8 @@ const BEDROCK_PRICING = 'https://aws.amazon.com/bedrock/pricing/';
 const BEDROCK_PRICE_LIST =
   'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/20261030160456/us-east-1/index.json';
 const RFT_JOB = 'https://docs.aws.amazon.com/bedrock/latest/userguide/rft-submit-job.html';
+/** Bedrock user guide page with the table of base models supported for reinforcement fine-tuning. */
+const RFT_MODELS = 'https://docs.aws.amazon.com/bedrock/latest/userguide/reinforcement-fine-tuning.html';
 const RFT_BEST_PRACTICES =
   'https://aws.amazon.com/blogs/machine-learning/reinforcement-fine-tuning-on-amazon-bedrock-best-practices/';
 
@@ -97,7 +99,7 @@ const SOURCES: readonly SourceRef[] = [
   { id: 'tfgrpo-table3', tier: 3, href: TF_GRPO, venue: 'preprint', label: 'Training-Free GRPO, Table 3' },
   { id: 'gepa-table1', tier: 3, href: GEPA, venue: 'ICLR 2026', label: 'GEPA, Table 1' },
   { id: 'r1-cost', tier: 3, href: R1, venue: 'Nature 2025', label: 'DeepSeek-R1, Appendix B.4.4 and Table 7' },
-  { id: 'prorl', tier: 3, href: PRORL, venue: 'preprint', label: 'ProRL, Sections 1 and 3.2' },
+  { id: 'prorl', tier: 3, href: PRORL, venue: 'NeurIPS 2025', label: 'ProRL, Sections 1 and 3.2' },
   { id: 'deepswe', tier: 2, href: DEEPSWE, kind: 'vendor-claim', label: 'DeepSWE post (Agentica and Together AI)' },
   { id: 'drgrpo', tier: 3, href: DR_GRPO, venue: 'COLM 2025', label: 'Dr. GRPO, Section 1' },
   { id: 'dapo-run', tier: 2, href: DAPO_RUN, label: 'verl team, DAPO-Qwen2.5-32B run record (Weights & Biases)' },
@@ -1031,8 +1033,8 @@ export function CostPerImprovement() {
             divided by the difference in score.
           </Box>
           <Box variant="p">
-            Three of the four inputs are yours alone. Published runs give quantities, GPU-hours, rollouts or tokens,
-            measured on someone else&apos;s hardware at someone else&apos;s prices; your rates turn them into
+            Three of the four inputs are yours alone. Published runs give quantities, GPU-hours, rollouts (one run
+            of the system on one example) or tokens, measured on someone else&apos;s hardware at someone else&apos;s prices; your rates turn them into
             dollars. No paper knows your query volume over the artifact&apos;s life or the quality gap on your own
             grader.
           </Box>
@@ -1059,8 +1061,10 @@ export function CostPerImprovement() {
         <SpaceBetween size="m">
           <Box variant="p">
             The published runs collected here range from a few hundred GPU-hours to well over a hundred thousand, and
-            model size alone does not set the bill. A minimal recipe of Dr. GRPO (GRPO Done Right) on
-            Qwen2.5-Math-7B took 27 hours on 8 A100s <SourceCite id="drgrpo" />, 216 GPU-hours by our arithmetic. ProRL (prolonged RL) trained a 1.5B
+            model size alone does not set the bill. A minimal recipe of Dr. GRPO (GRPO Done Right), the
+            GRPO variant of section 7 that drops the division by each answer&apos;s length and by the
+            group&apos;s standard deviation, on Qwen2.5-Math-7B took 27 hours on 8 A100s{' '}
+            <SourceCite id="drgrpo" />, 216 GPU-hours by our arithmetic. ProRL (prolonged RL) trained a 1.5B
             model for more than 2,000 steps in about 16k H100 GPU-hours <SourceCite id="prorl" />, 74 times the 7B
             recipe&apos;s GPU-hours, on a newer GPU (our arithmetic). DeepSeek-R1&apos;s post-training took 147K H800
             GPU-hours, which its authors price at $294K under an assumed $2 per GPU-hour; R1-Zero&apos;s pure RL run
@@ -1068,24 +1072,29 @@ export function CostPerImprovement() {
           </Box>
           <Box variant="p">
             Two 32B runs sit between them. Agentica and Together AI report that DeepSWE&apos;s RL run on Qwen3-32B
-            took 64 H100s for six days <SourceCite id="deepswe" />. verl&apos;s public reproduction of DAPO (Decoupled
-            Clip and Dynamic sAmpling Policy Optimization) on Qwen2.5-32B logged 159.6 hours of step time over 489
-            steps on 16 nodes of 8 GPUs <SourceCite id="dapo-run" />, about 20,400 GPU-hours by our arithmetic; that
+            took 64 H100s for six days <SourceCite id="deepswe" />. DAPO (Decoupled Clip and Dynamic sAmpling Policy
+            Optimization) is the GRPO variant of section 7 that raises the upper clip bound, keeps only prompts whose
+            group of answers is neither all right nor all wrong, and averages the loss over every token in the batch.
+            verl&apos;s public reproduction of it on Qwen2.5-32B logged 159.6 hours of step time over 489 steps on 16
+            nodes of 8 GPUs <SourceCite id="dapo-run" />, about 20,400 GPU-hours by our arithmetic; that
             record is the verl team&apos;s run, not the DAPO authors&apos;.
           </Box>
           <Box variant="p">
             The calculator&apos;s one same-model pair of training budgets is GEPA (Genetic-Pareto), the reflective
             prompt optimiser of section 14, Optimising the Prompt, against GRPO with LoRA (Low-Rank Adaptation) on
             Qwen3 8B. GRPO is the RL method that samples a group of answers per prompt and reinforces those that beat
-            the group&apos;s average. GEPA spent 1,839 to 7,051 rollouts per task, a rollout being one run on one
-            example, against 24,000 for GRPO, and led across six tasks in aggregate, 54.85 to 48.91, while trailing on
-            AIME-2025, a US competition-math exam <SourceCite id="gepa-table1" />. Price each side&apos;s rollouts
+            the group&apos;s average. GEPA spent 1,839 to 7,051 rollouts per task against 24,000 for GRPO, and led
+            across six tasks in aggregate, 54.85 to 48.91, while trailing on AIME-2025, a US competition-math exam <SourceCite id="gepa-table1" />. Price each side&apos;s rollouts
             separately: a GRPO rollout also pays for its share of the weight update.
           </Box>
           <Box variant="p">
             Managed RL is billed by the hour. Bedrock RFT (reinforcement fine-tuning) charges $80.00 per training hour
             for each of its three base models: gpt-oss-20b and Qwen3 32B on the pricing page, Nova 2 Lite in the AWS
-            Price List <SourceCite id="bedrock-pricing" /> <SourceCite id="bedrock-price-list" />. The hours are the
+            Price List <SourceCite id="bedrock-pricing" /> <SourceCite id="bedrock-price-list" />{' '}
+            <Cite tier={1} href={RFT_MODELS}>
+              Bedrock user guide, RFT supported models
+            </Cite>
+            . The hours are the
             unknown. A Nova job &quot;can take a few hours depending on the size of your training data, number of
             epochs, and complexity of your reward functions&quot;{' '}
             <Cite tier={1} href={RFT_JOB}>

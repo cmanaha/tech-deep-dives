@@ -41,9 +41,9 @@ autoresearch and the SageMaker HyperPod recipes at commit SHAs. arXiv links carr
 ## Our own experiment (Tier 0)
 
 E0, a GRPO smoke test on a DGX Spark (2026-10-30): TRL 1.16.0 with vLLM 0.28.0 colocated trained
-Qwen2.5-0.5B-Instruct on one GB10 at about 2.1 s per step, with 62% of step time in generation, a
-6.5% to 6.8% extra forward pass for the default vLLM-trainer mismatch correction, and 17 ms of
-weight sync. At a 4% base rate, 9 and 10 of 20 steps carried no gradient. Results, scripts and raw
+Qwen2.5-0.5B-Instruct on one GB10 at about 2.1 s per step, with 62% of step time in generation, 6.5% to 6.8% in preparation outside generation (the
+trainer's extra forward pass for the default vLLM-trainer mismatch correction, plus the advantages),
+and 17 ms of weight sync. At a 4% base rate, 9 and 10 of 20 steps carried no gradient. Results, scripts and raw
 logs: `research/2026-10/E0-spark-smoke.md` and `research/2026-10/E0-spark-smoke/`. Sections 3, 5,
 7, 19, 21 and 22 place E0's figures. E1 (one task, three learners) ships as a protocol with
 predictions in section 21; it was not run.

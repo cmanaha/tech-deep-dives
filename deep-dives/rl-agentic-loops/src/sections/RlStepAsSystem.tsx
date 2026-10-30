@@ -29,11 +29,11 @@ const HYBRIDFLOW = arxiv('2409.19256v2');
 const AREAL = arxiv('2505.24298v5');
 /** Skywork-OR1 technical report. */
 const SKYWORK = arxiv('2505.22312v2');
-/** PipelineRL: in-flight weight updates. */
+/** PipelineRL: in-flight weight updates (TMLR 2026). */
 const PIPELINERL = arxiv('2509.19128v2');
 /** DeepSeek-R1 (Nature 2025), arXiv v2 with the supplementary appendices. */
 const R1 = arxiv('2501.12948v2');
-/** OpenRLHF paper. */
+/** OpenRLHF paper (EMNLP 2025 System Demonstrations). */
 const OPENRLHF_PAPER = arxiv('2405.11143v6');
 /** Ahmadian et al., Back to Basics (RLOO), ACL 2024. */
 const AHM24 = arxiv('2402.14740v2');
@@ -348,7 +348,7 @@ export function RlStepAsSystem() {
         <SpaceBetween size="m">
           <Box variant="p">
             An RL (reinforcement learning) step runs two workloads on one set of weights. A batch
-            inference job writes the attempts, a training job learns from their scores, and the new
+            inference job writes the attempts (rollouts), a training job learns from their scores, and the new
             weights go back to the inference engine before the next batch of attempts starts. For a
             reader who runs inference engines most of the step is familiar work; what is new is the
             barrier at the end of generation and the copy at the end of training.
@@ -380,7 +380,7 @@ export function RlStepAsSystem() {
             , and a fourth appears whenever generation and training hold separate copies of the
             weights{' '}
             <Cite tier={3} href={HYBRIDFLOW} venue="EuroSys 2025">
-              HybridFlow, Section 2.2
+              HybridFlow, Section 2.3
             </Cite>
             :
           </Box>
@@ -390,7 +390,7 @@ export function RlStepAsSystem() {
               next to the critic), decodes responses to a batch of prompts. Autoregressive decoding
               is memory-bound{' '}
               <Cite tier={3} href={HYBRIDFLOW} venue="EuroSys 2025">
-                HybridFlow, Section 2.2
+                HybridFlow, Section 2.3
               </Cite>
               , and its batching mechanics are those of any serving engine:{' '}
               <Link href="../vllm/">vLLM dive, section 4: Scheduler &amp; Continuous Batching</Link>.
@@ -410,7 +410,7 @@ export function RlStepAsSystem() {
               compute-bound, so the parallelism layout that suits it underuses the GPUs during
               generation{' '}
               <Cite tier={3} href={HYBRIDFLOW} venue="EuroSys 2025">
-                HybridFlow, Sections 2.1 and 2.2
+                HybridFlow, Sections 2.1 and 2.3
               </Cite>
               .
             </li>
@@ -418,7 +418,7 @@ export function RlStepAsSystem() {
               <strong>Weight sync.</strong> The updated actor weights move from training to
               generation before the next batch is sampled{' '}
               <Cite tier={3} href={HYBRIDFLOW} venue="EuroSys 2025">
-                HybridFlow, Section 2.2
+                HybridFlow, Section 2.3
               </Cite>
               . In TRL (Transformers Reinforcement Learning, Hugging Face&apos;s post-training
               library) with a colocated vLLM, that is a loop loading every parameter into the engine,
@@ -507,7 +507,7 @@ export function RlStepAsSystem() {
             not located. One 13B PPO study on TPUv3 states that rollout took more than 95% of training time,
             without a breakdown{' '}
             <Cite tier={3} href={IVI24} venue="NeurIPS 2024">
-              Unpacking DPO and PPO, Appendix G
+              Unpacking DPO and PPO, Appendices G and K
             </Cite>
             .
           </Box>
@@ -520,7 +520,7 @@ export function RlStepAsSystem() {
               {E0_TITLE}
             </Cite>
             : the same order of stages, at a scale where training is relatively larger. In the
-            sources read, measured generation shares run from 62% (our 0.5B run) to 78%
+            sources read, the stage-by-stage breakdowns put generation at 62% (our 0.5B run) to 78%
             (Skywork&apos;s 7B ablation), and no general figure was located.
           </Box>
           <Box variant="p">
@@ -542,12 +542,12 @@ export function RlStepAsSystem() {
                 HybridFlow&apos;s often-quoted 58.9% counts generation and actor training together,
                 as the share of the two actor nodes in its own run{' '}
                 <Cite tier={3} href={HYBRIDFLOW} venue="EuroSys 2025">
-                  HybridFlow, Section 2.2
+                  HybridFlow, Section 2.3
                 </Cite>
                 . The OpenRLHF paper&apos;s statement that inference &quot;often accounts for over
                 90%&quot; of RLHF (RL from human feedback) or RLVR (RL with verifiable rewards)
-                runtime is a sentence in its introduction with no measurement behind it{' '}
-                <Cite tier={3} href={OPENRLHF_PAPER} venue="preprint">
+                runtime is a sentence in its introduction with no measurement in the paper behind it{' '}
+                <Cite tier={3} href={OPENRLHF_PAPER} venue="EMNLP 2025 System Demonstrations">
                   OpenRLHF, Section 1
                 </Cite>
                 .
@@ -557,7 +557,7 @@ export function RlStepAsSystem() {
                 iteration when training and generation sit on different devices, is a figure
                 HybridFlow quotes from OpenRLHF&apos;s 2023 system (its reference 30){' '}
                 <Cite tier={3} href={HYBRIDFLOW} venue="EuroSys 2025">
-                  HybridFlow, Section 2.2
+                  HybridFlow, Section 2.3
                 </Cite>
                 .
               </Box>
@@ -573,8 +573,8 @@ export function RlStepAsSystem() {
                 <Cite tier={2} href={VERL_DAPO_RUN}>
                   verl team, W&amp;B run record DAPO-Qwen2.5-32B
                 </Cite>
-                . Our run&apos;s shares are of summed step time over 20 steps; the remainder is
-                6.8% and 6.5% other preparation and 0.9% and 0.8% weight sync{' '}
+                . Our run&apos;s shares are of summed step time over 20 steps; most of the remainder
+                is 6.8% and 6.5% other preparation and 0.9% and 0.8% weight sync{' '}
                 <Cite tier={0} href={E0_URL}>
                   {E0_TITLE}
                 </Cite>
@@ -608,7 +608,7 @@ export function RlStepAsSystem() {
             <Cite tier={3} href={AREAL} venue="NeurIPS 2025">
               AReaL, Section 3.2
             </Cite>{' '}
-            <Cite tier={3} href={PIPELINERL} venue="preprint">
+            <Cite tier={3} href={PIPELINERL} venue="TMLR 2026">
               PipelineRL, Section 3
             </Cite>
             .
@@ -638,7 +638,7 @@ export function RlStepAsSystem() {
             </Cite>
             ; on one H100, a 7B model&apos;s decode throughput rose almost linearly up to a batch of
             128{' '}
-            <Cite tier={3} href={PIPELINERL} venue="preprint">
+            <Cite tier={3} href={PIPELINERL} venue="TMLR 2026">
               PipelineRL, Section 3
             </Cite>
             . And rollout time is set by &quot;the time required to generate the longest
@@ -715,7 +715,7 @@ export function RlStepAsSystem() {
           <Box variant="p">
             PipelineRL updates weights mid-sequence: the generation engine &quot;only briefly
             pauses to receive the model weights&quot; and then continues the sequences in progress{' '}
-            <Cite tier={3} href={PIPELINERL} venue="preprint">
+            <Cite tier={3} href={PIPELINERL} venue="TMLR 2026">
               PipelineRL, Section 1
             </Cite>
             , so one response can carry tokens from two policy versions. prime-rl trains rollouts up
@@ -750,7 +750,8 @@ export function RlStepAsSystem() {
             vLLM and the trainer compute slightly different probabilities for the same tokens under
             the same weights, so a run that is on-policy on paper trains on data from a slightly
             different policy. TRL recomputes the trainer&apos;s log-probability of every sampled
-            token whenever vLLM generates, because &quot;the distribution mismatch between vLLM and
+            token whenever vLLM generates and the mismatch correction is on (the default), because
+            &quot;the distribution mismatch between vLLM and
             the training model can be large and harm the training&quot;{' '}
             <Cite tier={1} href={trlTrainer('L2640-L2655')} kind="code">
               TRL grpo_trainer.py L2640-L2655
@@ -777,7 +778,7 @@ export function RlStepAsSystem() {
             </Cite>
             . In the default mode, <code>sequence_mask</code>, the ratio is the exponential of the
             summed per-token differences, a sequence above the cap gets a weight of zero, and no
-            lower bound applies. The docstring&apos;s list of modes still tags{' '}
+            lower bound applies. The docstring&apos;s list of modes tags{' '}
             <code>token_truncate</code> as the default{' '}
             <Cite tier={1} href={trlCfg('L327-L331')} kind="doc-code-conflict">
               TRL grpo_config.py docstring L327-L331
@@ -800,7 +801,8 @@ export function RlStepAsSystem() {
           </Box>
           <Box variant="p">
             Two numbers make the correction visible on a run. Its extra trainer forward pass over
-            every completion took 6.8% and 6.5% of step time on our run{' '}
+            every completion sits in the preparation time outside generation, which together with
+            the advantage computation took 6.8% and 6.5% of step time on our run{' '}
             <Cite tier={0} href={E0_URL}>
               {E0_TITLE}
             </Cite>{' '}
@@ -869,7 +871,7 @@ export function RlStepAsSystem() {
               , against up to 36.4% of an iteration that HybridFlow quotes for a 70B actor moved
               across devices{' '}
               <Cite tier={3} href={HYBRIDFLOW} venue="EuroSys 2025">
-                HybridFlow, Section 2.2
+                HybridFlow, Section 2.3
               </Cite>
               . Our reading: the cost grows with parameter count and with whether the copy crosses a
               device boundary. Our run tested colocated loading only; sleep mode and server mode
@@ -877,14 +879,14 @@ export function RlStepAsSystem() {
             </li>
             <li>
               <strong>The log-probability recompute that the default mismatch correction adds</strong>
-              : 6.5% to 6.8% of step time on our run, with its logged minimum ratio, where 0.0 marks
-              a masked sequence.
+              : on our run it sits in the 6.5% to 6.8% of step time spent on preparation outside
+              generation, and its logged minimum ratio reads 0.0 when a sequence was masked.
             </li>
           </ul>
           <Box variant="p">
             On a DGX Spark, read free memory from the operating system. vLLM 0.28.0 sized its share
             from all 121.69 GiB of device memory: our 0.12 fraction gave 14.6 GiB while other
-            services held about 70 GB, and <code>torch.cuda.mem_get_info()</code> reported 11.9
+            services held about 70 GiB, and <code>torch.cuda.mem_get_info()</code> reported 11.9
             GiB free where <code>free</code> reported 52 GiB available{' '}
             <Cite tier={0} href={E0_URL}>
               {E0_TITLE}
@@ -968,8 +970,8 @@ export function RlStepAsSystem() {
                 <Cite tier={1} href={openrlhf('L201-L216')}>
                   train_ppo_ray.py L201-L216
                 </Cite>
-                . vLLM&apos;s memory fraction defaults to 0.95, a value that assumes vLLM owns its
-                GPUs{' '}
+                . vLLM&apos;s memory fraction defaults to 0.95, a value that, on our reading,
+                assumes vLLM owns its GPUs{' '}
                 <Cite tier={1} href={openrlhf('L250-L255')}>
                   train_ppo_ray.py L250-L255
                 </Cite>
@@ -990,8 +992,8 @@ export function RlStepAsSystem() {
                   arguments.py L40-L79
                 </Cite>
                 . Under <code>--colocate</code>, offloading the trainer and the rollout engine is the
-                default when unset; an explicit <code>--no-offload-train</code> is kept unless{' '}
-                <code>--release-train</code> is on{' '}
+                default when unset; an explicit <code>--no-offload-train</code> is kept, and{' '}
+                <code>--release-train</code> releases the trainer instead of offloading it{' '}
                 <Cite tier={1} href={slime('slime/utils/arguments.py', 'L2115-L2130')} kind="code">
                   arguments.py L2115-L2130
                 </Cite>
@@ -1026,7 +1028,7 @@ export function RlStepAsSystem() {
             </SpaceBetween>
           </ExpandableSection>
           <Box variant="p">
-            On a single machine colocation is the only placement, and it is where to start: run the
+            On a single GPU colocation is the only placement, and it is where to start: run the
             colocated default and measure the five numbers. When you add GPUs, spend them on a
             larger rollout budget before a shorter step, since eight times the GPUs bought only a
             45% cut in rollout time. Our reading of the runs above: a tail that dominates the step,

@@ -69,7 +69,7 @@ const sources: Source[] = [
   { id: 47, title: 'Shenfeld et al., RL\'s Razor: Why Online Reinforcement Learning Forgets Less, arXiv 2509.04259v1, ICLR 2026', url: 'https://arxiv.org/abs/2509.04259v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 48, title: 'Karan et al., Reasoning with Sampling: Your Base Model is Smarter Than You Think, arXiv 2510.14901v1, ICLR 2026', url: 'https://arxiv.org/abs/2510.14901v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 49, title: 'Shao et al., Spurious Rewards: Rethinking Training Signals in RLVR, arXiv 2506.10947v2, ICML 2026', url: 'https://arxiv.org/abs/2506.10947v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
-  { id: 50, title: 'Liu et al., ProRL: Prolonged Reinforcement Learning Expands Reasoning Boundaries in Large Language Models, arXiv 2505.24864v1, preprint', url: 'https://arxiv.org/abs/2505.24864v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
+  { id: 50, title: 'Liu et al., ProRL: Prolonged Reinforcement Learning Expands Reasoning Boundaries in Large Language Models, arXiv 2505.24864v1, NeurIPS 2025', url: 'https://arxiv.org/abs/2505.24864v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   // Tier 3: agentic RL and reward hacking
   { id: 51, title: 'Jin et al., Search-R1 (RL training of LLMs to reason with a search engine), arXiv 2503.09516v5, COLM 2025', url: 'https://arxiv.org/abs/2503.09516v5', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 52, title: 'Feng et al., ReTool: Reinforcement Learning for Strategic Tool Use in LLMs, arXiv 2504.11536v2, ICLR 2026', url: 'https://arxiv.org/abs/2504.11536v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
@@ -112,9 +112,9 @@ const sources: Source[] = [
   { id: 87, title: 'Sclar et al., Quantifying Language Models\' Sensitivity to Spurious Features in Prompt Design, arXiv 2310.11324v2, ICLR 2024', url: 'https://arxiv.org/abs/2310.11324v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   // Tier 3: RL systems
   { id: 88, title: 'Sheng et al., HybridFlow: A Flexible and Efficient RLHF Framework (verl), arXiv 2409.19256v2, EuroSys 2025', url: 'https://arxiv.org/abs/2409.19256v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
-  { id: 89, title: 'Hu et al., OpenRLHF: An Easy-to-use, Scalable and High-performance RLHF Framework, arXiv 2405.11143v6, preprint', url: 'https://arxiv.org/abs/2405.11143v6', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
+  { id: 89, title: 'Hu et al., OpenRLHF: An Easy-to-use, Scalable and High-performance RLHF Framework, arXiv 2405.11143v6, EMNLP 2025 System Demonstrations', url: 'https://arxiv.org/abs/2405.11143v6', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 90, title: 'Fu et al., AReaL: A Large-Scale Asynchronous Reinforcement Learning System for Language Reasoning, arXiv 2505.24298v5, NeurIPS 2025', url: 'https://arxiv.org/abs/2505.24298v5', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
-  { id: 91, title: 'Piché et al., PipelineRL: Faster On-policy Reinforcement Learning for Long Sequence Generation, arXiv 2509.19128v2, preprint', url: 'https://arxiv.org/abs/2509.19128v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
+  { id: 91, title: 'Piché et al., PipelineRL: Faster On-policy Reinforcement Learning for Long Sequence Generation, arXiv 2509.19128v2, TMLR 2026', url: 'https://arxiv.org/abs/2509.19128v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 92, title: 'He et al., Skywork Open Reasoner 1 Technical Report, arXiv 2505.22312v2, preprint', url: 'https://arxiv.org/abs/2505.22312v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
 ];
 

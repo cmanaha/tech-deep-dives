@@ -26,3 +26,5 @@ scored.
 | 14 | Optimising the Prompt | PromptOptimization.tsx | fc06 | 9 |
 | 15 | Your Loops Through the RL Lens | YourLoops.tsx | fc06 | 9 |
 | 16 | Hybrids | Hybrids.tsx | fc06 | 9 |
+| 19 | An RL Step Is an Inference Job Inside a Training Job | RlStepAsSystem.tsx | fc08 | 9 |
+| 20 | Cost per Improvement | CostPerImprovement.tsx | fc08 | 9 |

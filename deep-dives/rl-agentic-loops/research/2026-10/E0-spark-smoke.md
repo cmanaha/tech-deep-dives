@@ -12,8 +12,8 @@ Scripts and raw outputs: `E0-spark-smoke/` next to this file (`train.py`, `run.s
 ## Setup
 
 **Hardware.** One NVIDIA DGX Spark: GB10, aarch64, Ubuntu 24.04, unified memory. vLLM reported
-121.69 GiB of device memory. The machine is a live shared host: other services held about 70 GB of
-memory throughout, and `free` reported 52 GiB available before each run.
+121.69 GiB of device memory. The machine is a live shared host: other services held about 70 GiB of
+memory throughout (121.69 GiB device memory less 52.1 GiB `MemAvailable`), and `free` reported 52 GiB available before each run.
 
 **Software** (exact versions from `pip freeze` in the run's virtual environment):
 
@@ -133,7 +133,7 @@ tokens". Model weights took 0.93 GiB in vLLM. TRL passed `max_num_seqs` 16 and
 `max_num_batched_tokens` 4096 to vLLM.
 
 On unified memory the two ways of reading free memory disagreed: before run 1, `torch.cuda.mem_get_info()`
-returned 11.9 GiB free of 121.7 GiB while `free` reported 52 GiB available; vLLM's startup line
+(read during the preflight; that output was not kept in the raw files) returned 11.9 GiB free of 121.7 GiB while `free` reported 52 GiB available; vLLM's startup line
 reported 49.35 GiB free. The 0.12 fraction applied to the full 121.69 GiB (14.6 GiB), and vLLM started
 without complaint. Per-process memory from `nvidia-smi --query-compute-apps` read zero for the run's
 processes, so the table uses `MemAvailable` and PyTorch's counters.
