@@ -7,6 +7,7 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 - SWE-Bench Verified gloss (human-validated GitHub issues scored by the repository's tests) | SCOPE.md section 9 wording; SWE-RL Sec 1 "a human-verified subset of SWE-bench" | scope gloss
 
 ## One episode, one reward
+- Most setups pay one reward per episode at the end; RAGEN also pays a reward at each step (fact check: the intro and loop text said every setup) | https://arxiv.org/abs/2504.20073v2 (Sec 2.2.2 Eq. 3; App. C.1) | F02-72
 - TRL builds a tool mask with 0 for tool-result tokens | https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_trainer.py#L2146-L2154 (also L1950 comment "0 for tool result tokens, 1 elsewhere") | F02-33; wave2-rlvr row 43
 - TRL multiplies the tool mask into the loss mask | https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_trainer.py#L3027 (used in loss aggregation L3154-L3179) | F02-33; wave2-rlvr row 43 (row cites L2497, the same product for the token count)
 - verl marks assistant tokens 1 and context tokens 0 | https://github.com/volcengine/verl/blob/v0.9.1/verl/utils/tokenizer/continuous_token.py#L398-L413 | F02-38; wave2-rlvr row 43 optional note
@@ -28,14 +29,14 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 - RAGEN: bi-arm bandit, Sokoban, FrozenLake, WebShop; `<think>` then `<answer>` moves; up to 5 turns and 10 actions in training; next state and step reward; Sokoban +1/-1/+10/-0.1; FrozenLake +1 else 0; -0.1 format penalty | https://arxiv.org/abs/2504.20073v2 (Sec 2.2.2 Eq. 3, Sec 3.2, Appendix C.1, C.2) | F02-72 (fields beyond the register quote; read at the pinned version)
 - SWE-RL: issue plus full file contents plus merged patch; search/replace edits; single turn; -1 bad format else difflib.SequenceMatcher similarity 0 to 1 | https://arxiv.org/abs/2502.18449v2 (Sec 1, Sec 2.1 Eq. 1, Figure 2) | F02-73
 - DeepSWE: R2E-Gym, one Docker image per problem, terminal and filesystem; four tools (bash, search, file editor, finish); tool stdout/stderr; 1 if patch passes a selected sample of tests within 5 minutes (official 30), else 0 | https://www.together.ai/blog/deepswe (Secs 2.1, 2.2) | F02-75
-- Venues: Search-R1 "COLM 2025" from the v5 PDF running header ("Published as a conference paper at COLM 2025"); SWE-RL NeurIPS 2025 (arXiv comment and PDF footer); ReTool, RAGEN, Kimi K2, Pass@(k,T) preprint (no venue in the arXiv metadata read 2026-10-30) | arXiv metadata API and PDFs | wave2-rlvr G3 said Search-R1 stays preprint: CONFLICT, see note below
+- Venues: Search-R1 "COLM 2025" from the v5 PDF running header and the COLM 2025 accepted-papers list (https://colmweb.org/2025/AcceptedPapers.html, fact check 2026-10-30); SWE-RL NeurIPS 2025 (arXiv comment and PDF footer); ReTool ICLR 2026 (https://iclr.cc/virtual/2026/poster/10006978, fact check 2026-10-30); RAGEN, Kimi K2, Pass@(k,T) preprint (no venue located) | arXiv metadata API, PDFs, venue pages | wave2-rlvr G3 said Search-R1 stays preprint: superseded by the COLM list
 
 ## Reading across the rows
 - No reward pays for tool use; ReTool omits an executability reward to limit reward hacking | https://arxiv.org/abs/2504.11536v2 (Sec 2.3) | F02-71
 - Search-R1 uses no format reward and no learned reward model | https://arxiv.org/abs/2503.09516v5 (Sec 3.4) | F02-70
 - The model learns to call a tool to the extent it raises the outcome score | our reading | labelled
 - SWE-RL: Llama3-SWE-RL-70B on Llama-3.3-70B-Instruct, 41.0% on SWE-Bench Verified with Agentless Mini | https://arxiv.org/abs/2502.18449v2 (Sec 1, Sec 3.1) | F02-73
-- SWE-RL: exact-match (discrete) reward stayed approximately zero to the end of training because real patches are diverse | https://arxiv.org/abs/2502.18449v2 (Figure 5 and text) | F02-73 (beyond the register quote; read at the pinned version)
+- SWE-RL: exact-match (discrete) reward stayed approximately zero to the end of training because real patches are diverse, and repair (oracle) came out lower, 29.0 against 34.8 for the continuous reward; page says the graded similarity gave partial credit (fact check: "what made that reward learnable" was an overreach, the discrete variant still trained) | https://arxiv.org/abs/2502.18449v2 (Sec 3.6, Figure 5) | F02-73 (beyond the register quote; read at the pinned version)
 - DeepSWE runs a terminal in each task's Docker image and grades by running tests | https://www.together.ai/blog/deepswe (Secs 2.1, 2.2) | F02-75
 - Kimi K2: Gym-like framework, unified interface inspired by OpenAI Gym, verifiable-reward tasks plus self-critique rubric reward with pairwise comparison against rubrics for subjective tasks (creative writing) | https://arxiv.org/abs/2507.20534v2 (Secs 3.2, 3.2.2, 3.3.4) | F02-76; wave2-rlvr row 39
 
@@ -50,7 +51,7 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 - Authors attribute the gap to the learning signal (same 200 problems for SFT and RL) | https://arxiv.org/abs/2604.14877v1 (Sec 4.1) | F02-62
 - Mechanism: RL reweights existing strategies toward those whose later reasoning more often reaches a correct answer; gain in integrating retrieved information, not in what is searched | https://arxiv.org/abs/2604.14877v1 (abstract) | F02-62 (beyond the register quote; read at the pinned version)
 - Fits section 8's tool condition; clearest boundary expansion located in the agentic setting in this research | our reading; SCOPE section 9 | labelled
-- One model; authors did not repeat on other models; on comparison (independent) questions RL behaved as in static reasoning | https://arxiv.org/abs/2604.14877v1 (abstract; limitations) | F02-62, U11
+- One model; authors did not repeat on other models; on comparison (independent) questions RL's lead over the base was largest at small k and narrowed as k grew, but it still ended about four problems ahead at k = 64 (0.86 vs 0.82, net +4); only on bridge questions did the gap widen with k (fact check: the abstract's "on simpler categories RL behaves as prior work predicts" conflicts with Sec 4.1; the page follows the body) | https://arxiv.org/abs/2604.14877v1 (Secs 4.1, 4.2, 6; Table 2) | F02-62, U11
 - Four problems is about one binomial standard error: sqrt(0.8 x 0.2 / 100) = 0.04 | our arithmetic | wave2-rlvr row 41 (derived)
 - k stops at 64, below the sample counts of section 8's static-reasoning studies | wave2-rlvr row 41 (128 to 1,024 in Yue et al.) | F02-40, F02-62
 
@@ -61,7 +62,7 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 - DeepSWE compact filtering masks trajectories at max context, max steps or timeout; stumbling on correct patches reinforced later steps and led to collapse; reward only when the agent deliberately submits | https://www.together.ai/blog/deepswe (Sec 2.3) | F02-75
 - RAGEN Echo Trap: reward variability collapse, entropy drop, gradient spikes | https://arxiv.org/abs/2504.20073v2 (Sec 1 findings, Sec 4.1) | F02-72
 - Uncertainty filter: under PPO, keeping 75% of rollouts extends FrozenLake stability from 100 to 140 steps; 50% avoids collapse | https://arxiv.org/abs/2504.20073v2 (Sec 4.2) | F02-72
-- Equal-reward group has zero advantage and no gradient (section 7's rule) | https://arxiv.org/abs/2503.14476v2 (Sec 3.2); SageMaker MTRL hyperparameters page | F02-22, F06-34 (owned by section 7; stated here as a pointer, no Cite)
+- Under GRPO, an equal-reward group has zero advantage and no gradient (section 7's rule); the RAGEN 100 to 140 step result is under PPO, so the page scopes the pointer to GRPO | https://arxiv.org/abs/2503.14476v2 (Sec 3.2); RAGEN v2 Eq. 5 | F02-22, F06-34 (owned by section 7; stated here as a pointer, no Cite)
 
 ## What you bring to managed multi-turn RL
 - SageMaker sends prompts to your agent; the agent calls the policy model, takes actions such as calling tools, reports a reward for the complete rollout; the policy model is the model being trained | https://docs.aws.amazon.com/sagemaker/latest/dg/model-customize-mtrl-agent.html ("Agent code integration overview"; API table: Sample, CompleteRollout, UpdateReward) | F06-30; wave2-aws row 16

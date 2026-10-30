@@ -48,8 +48,10 @@ const OO_Y_START = 270; // the starting model's score
 // RL-shaped gold curve: peak value OO_PEAK at u = OO_RL_PEAK_U.
 const OO_PEAK = 0.55;
 const OO_RL_PEAK_U = 0.42;
-// Best-of-n-shaped gold curve: same peak value at u = OO_BON_PEAK_U.
-const OO_BON_PEAK_U = 0.22;
+// Best-of-n-shaped gold curve: a lower peak, OO_BON_PEAK, at u = OO_BON_PEAK_U. Gao et al.
+// (Section 3.5) report that RL peaked at a higher gold score than best-of-n.
+const OO_BON_PEAK = 0.45;
+const OO_BON_PEAK_U = 0.15;
 
 const ooRlForm = (u: number) =>
   OO_PEAK * (u / OO_RL_PEAK_U) * (1 + Math.log(OO_RL_PEAK_U / u));
@@ -57,8 +59,8 @@ const ooRlSlope = (u: number) =>
   (OO_PEAK / OO_RL_PEAK_U) * Math.log(OO_RL_PEAK_U / u);
 
 // Smooth start: cubic Hermite from (0, 0) with slope OO_START_SLOPE to the RL form at OO_U0.
-// The starting slope stays below best-of-n's (2 * OO_PEAK / OO_BON_PEAK_U = 5), so RL is the
-// slower curve from the first step.
+// The starting slope stays below best-of-n's (2 * OO_BON_PEAK / OO_BON_PEAK_U = 6), so RL
+// is the slower curve from the first step.
 const OO_U0 = 0.06;
 const OO_START_SLOPE = 4;
 const ooGoldRl = (u: number) => {
@@ -76,7 +78,7 @@ const ooGoldRl = (u: number) => {
 };
 const ooGoldBon = (u: number) => {
   const r = u / OO_BON_PEAK_U;
-  return OO_PEAK * (2 * r - r * r);
+  return OO_BON_PEAK * (2 * r - r * r);
 };
 // Sketch of the proxy score: the gold curve plus a gap that keeps growing.
 const ooProxy = (u: number) => ooGoldRl(u) + Math.pow(u, 1.6);
@@ -100,7 +102,7 @@ function ooPoints(
 }
 
 // Best-of-n is drawn until it has fallen a little below the starting score.
-const OO_BON_END_U = OO_BON_PEAK_U * (1 + Math.sqrt(1 + 0.08 / OO_PEAK));
+const OO_BON_END_U = OO_BON_PEAK_U * (1 + Math.sqrt(1 + 0.08 / OO_BON_PEAK));
 
 const OO_A_PROXY = ooPoints(ooProxy, ooAy);
 const OO_A_GOLD = ooPoints(ooGoldRl, ooAy);
@@ -116,6 +118,7 @@ const OO_GAP_BOTTOM = ooAy(ooGoldRl(OO_GAP_U)) - 4;
 const OO_B_RL_X = ooX(OO_RL_PEAK_U);
 const OO_B_BON_X = ooX(OO_BON_PEAK_U);
 const OO_B_PEAK_Y = ooBy(OO_PEAK);
+const OO_B_BON_PEAK_Y = ooBy(OO_BON_PEAK);
 
 const OO_STYLE = `
   .proxy-oo-axis { stroke: #414d5c; stroke-width: 1.5; fill: none; }
@@ -290,8 +293,8 @@ function OverOptimisationPanelB() {
         Schematic of the gold score under two optimisers, plotted against the
         same distance from the starting model. Under best-of-n selection the
         gold score rises steeply, peaks early and falls below the starting model
-        soon after. Under RL it rises more slowly per unit of KL, peaks later
-        and declines more gradually.
+        soon after. Under RL it rises more slowly per unit of KL, peaks later and
+        higher, and declines more gradually.
       </title>
       <style>{OO_STYLE}</style>
       <defs>
@@ -316,7 +319,7 @@ function OverOptimisationPanelB() {
       <polyline points={OO_B_BON} className="proxy-oo-bon" />
       <circle
         cx={OO_B_BON_X.toFixed(1)}
-        cy={OO_B_PEAK_Y.toFixed(1)}
+        cy={OO_B_BON_PEAK_Y.toFixed(1)}
         r={5}
         fill="#a04a00"
       />
@@ -469,7 +472,7 @@ export function RewardIsAProxy() {
             cheated on 76% of SWE-bench tasks (real GitHub issues, each scored
             by the repository&apos;s tests) whose tests had been altered to
             contradict the specification{" "}
-            <Cite tier={3} href={IMPOSSIBLE} venue="preprint">
+            <Cite tier={3} href={IMPOSSIBLE} venue="ICLR 2026">
               ImpossibleBench, Section 1
             </Cite>
             . A leaky signal teaches the leak, wherever the update lands. The
@@ -573,19 +576,22 @@ export function RewardIsAProxy() {
             (a 2026 preprint) and policies of 6B or below; no frontier-scale
             replication was located during this research. The 70B study used
             Qwen3 proxies of 4B or below and a 4B policy, optimised by best-of-n
-            and by an idealised stand-in for RL, with no RL training run{" "}
+            and by an idealised stand-in for RL, with no RL training run, and it
+            fitted a different law: the peak gold score grows with the square
+            root of KL until the amount of preference data caps it{" "}
             <Cite tier={3} href={REVISIT} venue="preprint">
               Revisiting scaling laws for reward optimization, abstract and
-              Section 5.2
+              Sections 5.2 and 5.3
             </Cite>
             . Our reading: treat the shape as the thing to watch for, and the
             coefficients as unknown for your own models.
           </Box>
           <ExpandableSection headerText="The setup behind the curves">
             <Box variant="p">
-              Gao et al. trained the proxies on 100,000 comparisons labelled by
-              the gold model and ran PPO with no KL penalty outside one
-              ablation. The best-of-n form, fitted up to n = 1,000, predicted a
+              Gao et al. generated 100,000 comparisons labelled by the gold
+              model, held 10% out, and trained the proxies on up to 90,000 of
+              them; PPO ran with no KL penalty outside one ablation. The
+              best-of-n form, fitted up to n = 1,000, predicted a
               run up to n = 60,000 in advance. A 6B policy gained less from
               optimisation than a 1.2B one, and its gold score peaked at almost
               the same KL{" "}
@@ -642,7 +648,7 @@ export function RewardIsAProxy() {
               MacDiarmid et al., Section 2
             </Cite>
             ,{" "}
-            <Cite tier={3} href={IMPOSSIBLE} venue="preprint">
+            <Cite tier={3} href={IMPOSSIBLE} venue="ICLR 2026">
               ImpossibleBench, Section 4.1
             </Cite>{" "}
             and{" "}
@@ -690,13 +696,13 @@ export function RewardIsAProxy() {
             Oneoff-SWEbench, SWE-bench tasks with a single expected value
             changed, and on 2.9% of Oneoff-LiveCodeBench, built the same way
             from LiveCodeBench&apos;s algorithmic programming problems{" "}
-            <Cite tier={3} href={IMPOSSIBLE} venue="preprint">
+            <Cite tier={3} href={IMPOSSIBLE} venue="ICLR 2026">
               ImpossibleBench, Sections 1, 2.2 and 2.4
             </Cite>
             . Editing the tests despite the instruction was one of four
             strategies observed, beside overloading comparison operators,
             recording extra state and special-casing{" "}
-            <Cite tier={3} href={IMPOSSIBLE} venue="preprint">
+            <Cite tier={3} href={IMPOSSIBLE} venue="ICLR 2026">
               ImpossibleBench, Section 4.1
             </Cite>
             .
@@ -726,9 +732,9 @@ export function RewardIsAProxy() {
         header={
           <Header
             variant="h2"
-            description="Use monitors to see hacking, and keep them out of the reward so they keep seeing it"
+            description="Use monitors to see hacking, and keep one out of the reward so it keeps seeing it"
           >
-            A monitor inside the reward stops being a monitor
+            A monitor inside the reward can stop being a monitor
           </Header>
         }
       >
@@ -786,7 +792,7 @@ export function RewardIsAProxy() {
                 on the multi-file SWE-bench tasks, where some cheats came with a
                 plausible justification, such as backward compatibility, that
                 the monitor accepted{" "}
-                <Cite tier={3} href={IMPOSSIBLE} venue="preprint">
+                <Cite tier={3} href={IMPOSSIBLE} venue="ICLR 2026">
                   ImpossibleBench, Sections 1 and 6
                 </Cite>
                 . Our reading of the two results together: a penalty can hold
@@ -859,7 +865,8 @@ export function RewardIsAProxy() {
               autoresearch tree at 228791fb
             </Cite>
             , and the README suggests starting the agent &quot;(and disable all
-            permissions)&quot;{" "}
+            permissions)&quot;, which we read as running it without approval
+            prompts{" "}
             <Cite tier={2} href={ar("README.md", "L44")}>
               autoresearch README.md L44
             </Cite>
@@ -874,7 +881,7 @@ export function RewardIsAProxy() {
             ordinary SWE-bench tasks with open tests from 80% to 83%, and the
             average cheating rate on the conflicting-test variant from 33% to
             38%{" "}
-            <Cite tier={3} href={IMPOSSIBLE} venue="preprint">
+            <Cite tier={3} href={IMPOSSIBLE} venue="ICLR 2026">
               ImpossibleBench, Sections 2.4 and 5.3
             </Cite>
             .
@@ -937,7 +944,7 @@ export function RewardIsAProxy() {
             cut cheating to near zero and also lowered legitimate scores;
             read-only tests restored legitimate performance and blocked test
             edits, but did not stop special-casing or operator overloading{" "}
-            <Cite tier={3} href={IMPOSSIBLE} venue="preprint">
+            <Cite tier={3} href={IMPOSSIBLE} venue="ICLR 2026">
               ImpossibleBench, Sections 2.4 and 5.2
             </Cite>
             . Hide tests where you can afford the lower score, make them
@@ -975,8 +982,11 @@ export function RewardIsAProxy() {
             <Cite tier={2} href={SYSTEM_CARD}>
               Claude 3.7 Sonnet system card, Section 6.2
             </Cite>
-            . Send the flags to a person or a log, never into the reward, so the
-            monitor keeps reporting what it sees.
+            . Send this monitor&apos;s flags to a person or a log, never into the
+            reward, so it keeps reporting what it sees. A hack-detecting penalty
+            in the reward can still stop hacking while detection holds, as in
+            Anthropic&apos;s runs; keep the watching monitor separate from that
+            penalty.
           </Box>
           <Box variant="p">
             Run the four checks before the first training step or loop

@@ -372,7 +372,7 @@ const ENV_ROWS: EnvRow[] = [
     id: 'retool',
     name: 'ReTool',
     source: (
-      <Cite tier={3} href={RETOOL} venue="preprint">
+      <Cite tier={3} href={RETOOL} venue="ICLR 2026">
         ReTool, Section 2.3
       </Cite>
     ),
@@ -495,8 +495,8 @@ export function AgenticRl() {
             writes a tool call, a sandbox runs it, the output is appended to the context, and the
             model continues, turn after turn, until it submits. The policy, the model being trained
             seen as a probability distribution over its next token, learns through the same loop as
-            single-answer RL: sample attempts, score them, make the better ones more likely. The
-            reward, one number per episode, still arrives once, at the end.
+            single-answer RL: sample attempts, score them, make the better ones more likely. In
+            most setups the reward is still one number per episode, and it arrives at the end.
           </Box>
           <Box variant="p">
             That moves the work into the environment: a sandbox to act in, tool interfaces the
@@ -528,17 +528,18 @@ export function AgenticRl() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Every setup in this section has the shape below. The policy writes reasoning and a tool
+            Every setup in this section runs the loop below. The policy writes reasoning and a tool
             call. The environment executes the call and returns its output as text, which joins
             the context, so the model reads it on the next turn. Those tokens belong to the
             environment: the model conditions on them and did not choose them. The episode ends
             when the model submits, or when it hits a turn, length or time limit, and the grader
-            scores the end state.
+            scores the end state; RAGEN, in the table below, also pays a reward at each step.
           </Box>
           <AgentLoopDiagram />
           <Box variant="small" color="text-body-secondary">
-            Segment lengths are illustrative, not measured. The mask values follow TRL and verl at
-            the pinned tags; the advantage row follows verl&apos;s GRPO estimator.
+            Segment lengths are illustrative, not measured. The mask values follow the code of the
+            two frameworks named below at the pinned tags; the advantage row follows verl&apos;s
+            group-relative estimator.
           </Box>
           <Box variant="p">
             The trainer separates the two kinds of token with a loss mask, one 0 or 1 per token
@@ -572,7 +573,7 @@ export function AgenticRl() {
             <Cite tier={3} href={SEARCH_R1} venue="COLM 2025">
               Search-R1, Section 3.1
             </Cite>{' '}
-            <Cite tier={3} href={RETOOL} venue="preprint">
+            <Cite tier={3} href={RETOOL} venue="ICLR 2026">
               ReTool, Section 2.3.2
             </Cite>
             . The mask shows in results. In Search-R1&apos;s ablation on Qwen2.5-7B with PPO
@@ -679,7 +680,7 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
           <Box variant="p">
             Every reward checks the outcome, and none pays for calling a tool. ReTool leaves out a
             reward for code that runs, to limit reward hacking{' '}
-            <Cite tier={3} href={RETOOL} venue="preprint">
+            <Cite tier={3} href={RETOOL} venue="ICLR 2026">
               ReTool, Section 2.3
             </Cite>
             , and Search-R1 uses neither a format reward nor a learned reward model{' '}
@@ -698,11 +699,12 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
             <Cite tier={3} href={SWE_RL} venue="NeurIPS 2025">
               SWE-RL, Sections 1 and 3.1
             </Cite>
-            . The graded similarity is what made that reward learnable: with an exact-match reward
-            instead, the average reward stayed near zero to the end of training, because real
-            patches vary too much to match exactly{' '}
+            . The graded similarity gave the reward partial credit to climb on: with an exact-match
+            reward instead, the average reward stayed near zero to the end of training, because real
+            patches vary too much to match exactly, and the repair score came out lower, 29.0 against
+            34.8{' '}
             <Cite tier={3} href={SWE_RL} venue="NeurIPS 2025">
-              SWE-RL, Figure 5
+              SWE-RL, Section 3.6 and Figure 5
             </Cite>
             . At the other end, DeepSWE&apos;s environment executes everything: it gives the agent
             a terminal in each task&apos;s own Docker image and grades the submitted patch by
@@ -742,13 +744,13 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
             Qwen2.5-32B-Instruct, ReTool reports 67.0% on AIME 2024 (a US competition-math exam
             whose integer answers a rule can check) after 400 RL steps, against 40.0% after 1,080
             steps of RL without the code tool, with responses about 40% shorter after RL{' '}
-            <Cite tier={3} href={RETOOL} venue="preprint">
+            <Cite tier={3} href={RETOOL} venue="ICLR 2026">
               ReTool, Section 1
             </Cite>
             . Its RL starts from a cold start, SFT (supervised fine-tuning) on code-augmented
             reasoning traces, and that stage alone reached 40.9%, from 26.7% for the untrained
             model{' '}
-            <Cite tier={3} href={RETOOL} venue="preprint">
+            <Cite tier={3} href={RETOOL} venue="ICLR 2026">
               ReTool, Section 1
             </Cite>
             . In our arithmetic from those figures, the cold start accounts for 14.2 of the 40.3
@@ -807,10 +809,12 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
               <Box variant="p">
                 One base model, 200 training problems and 100 test problems per category; the
                 authors did not repeat the pipeline on other models. On comparison questions, where
-                the two searches are independent, RL behaved as in static reasoning, and the
-                expansion appeared only on the sequential bridge questions{' '}
+                the two searches are independent, RL&apos;s lead over the base was largest at small k
+                and narrowed as k grew, the static-reasoning pattern, though it still ended about four
+                problems ahead at k = 64; only on the sequential bridge questions did the gap widen
+                with k{' '}
                 <Cite tier={3} href={PASS_KT} venue="preprint">
-                  Pass@(k,T), abstract and limitations
+                  Pass@(k,T), Sections 4.1, 4.2 and 6, Table 2
                 </Cite>
                 .
               </Box>
@@ -879,8 +883,9 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
             <Cite tier={3} href={RAGEN} venue="preprint">
               RAGEN, Sections 4.1 and 4.2
             </Cite>
-            . The filter applies section 7&apos;s rule to whole episodes: a group whose episodes
-            all score the same has zero advantage and carries no gradient.
+            . Under GRPO the filter also drops the groups that section 7&apos;s rule already makes
+            useless: a group whose episodes all score the same has zero advantage and carries no
+            gradient.
           </Box>
         </SpaceBetween>
       </Container>

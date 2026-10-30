@@ -7,6 +7,8 @@ extracted and the quoted passage located), the Claude 3.7 Sonnet system card PDF
 tree listing at commit 228791fb499afffb54b46200aca536f79142f117. Lines marked "new" were read at the
 source during authoring and have no register row.
 
+Venue note (fact check 2026-10-30): ImpossibleBench (2510.20270v1) is ICLR 2026 (https://iclr.cc/virtual/2026/poster/10009390); the page's seven Cites now carry it.
+
 Register note for the fact checkers: F01-56's own arithmetic reads "2.83 - 0.94 = 1.8 nats" for
 n = 16; ln 16 is 2.77, so the difference is 1.83. The page uses 2.77 and "about 1.8".
 
@@ -27,7 +29,7 @@ n = 16; ln 16 is 2.77, so the difference is 1.83. The page uses 2.77 and "about 
 - Per unit of KL, RL slower than best-of-n at both optimisation and over-optimisation | https://arxiv.org/abs/2210.10760v1 (Sec 1) | F02-78; wave2-rlvr row 44
 - Coefficients scale smoothly with proxy RM size, allowing prediction of attained gold score | https://arxiv.org/abs/2210.10760v1 (abstract; Sec 1 "Smooth coefficient scaling") | F01-55
 - Venue ICML 2023 | https://proceedings.mlr.press/v202/gao23h.html | wave2-rlvr G3; build-log venues
-- Diagram: two schematic panels, functional forms with display coefficients, RL start smoothed (Gao footnote 1: the RL form "likely does not hold near the origin"); proxy curve a sketch (Gao Sec 3.2: proxy grows roughly linearly at higher KL); captioned "Illustrative, not measured" | https://arxiv.org/abs/2210.10760v1 (Sec 1 footnote 1, Sec 3.2) | task instruction; F02-78
+- Diagram: two schematic panels, functional forms with display coefficients; panel B draws RL's gold peak higher than best-of-n's (Gao Sec 3.5: RL "then peaks at a higher gold RM score than BoN"; fact check, the panels had equal peaks); RL start smoothed (Gao footnote 1: the RL form "likely does not hold near the origin"); proxy curve a sketch (Gao Sec 3.2: proxy grows roughly linearly at higher KL); captioned "Illustrative, not measured" | https://arxiv.org/abs/2210.10760v1 (Sec 1 footnote 1, Sec 3.2) | task instruction; F02-78
 - Diagram label "Gap: how far the proxy is being exploited" | https://arxiv.org/abs/2210.10760v1 (Sec 3.4: gap "indicative of the extent to which the proxy RM is exploited") | new
 - KL of best-of-n = log n - (n - 1)/n | https://arxiv.org/abs/2210.10760v1 (Sec 2, citing Stiennon App G.3) | F01-56 (U9: not re-derived from STI20)
 - About 1.8 nats at n = 16 | our arithmetic: ln 16 = 2.77, minus 15/16 = 0.94, gives 1.83 | F01-56 [derived]
@@ -36,9 +38,9 @@ n = 16; ln 16 is 2.77, so the difference is 1.83. The page uses 2.77 and "about 
 - Against the proxy score, best-of-n and RL look much more alike | https://arxiv.org/abs/2210.10760v1 (Sec 1, Sec 3.5) | new
 - Proxy-gold gap indicates how far the proxy is exploited | https://arxiv.org/abs/2210.10760v1 (Sec 3.4) | new
 - U18 hedge: synthetic studies with gold RM of 6B (Gao) or 70B (2026 preprint), policies of 6B or below; no frontier-scale replication located during this research | https://arxiv.org/abs/2609.38526v1 (abstract, Sec 5.2) | RESEARCH-GUIDE U18 accept-as-hedge; wave2-foundations G4 hedge text
-- 70B study: Qwen3 proxies of 4B or below, 4B policy (Qwen3-4B-Instruct), best-of-N and exponential tilting (idealised KL-regularised RL), no RL training run | https://arxiv.org/abs/2609.38526v1 (abstract, Sec 5.2, Sec 5.4) | wave2-foundations G4
+- 70B study: Qwen3 proxies of 4B or below, 4B policy (Qwen3-4B-Instruct), best-of-N and exponential tilting (idealised KL-regularised RL), no RL training run; it fits a different law, peak gold score Θ(sqrt(min{log M, K})) (fact check added the clause) | https://arxiv.org/abs/2609.38526v1 (abstract, Secs 5.2, 5.3, 5.4) | wave2-foundations G4
 - "Treat the shape as the thing to watch for, and the coefficients as unknown for your own models" | our reading | U18
-- Expandable: 100,000 synthetic comparisons; PPO with KL penalty 0 outside Sec 3.6; best-of-n form fitted to n = 1,000 predicted n = 60,000 in advance; 6B policy gained less than 1.2B, peaked at almost the same KL | https://arxiv.org/abs/2210.10760v1 (Sec 2, 2.1, 3.1, 3.4) | new (F01 section E context)
+- Expandable: 100,000 synthetic comparisons generated, 10% held out, proxies trained on up to 90,000 (fact check: the page said trained on 100,000); PPO with KL penalty 0 outside Sec 3.6; best-of-n form fitted to n = 1,000 predicted n = 60,000 in advance; 6B policy gained less than 1.2B, peaked at almost the same KL | https://arxiv.org/abs/2210.10760v1 (Sec 2, 2.1, 3.1, 3.4) | new (F01 section E context)
 - Expandable: with a KL penalty the gold score converged earlier on the same curve (section 5 covers) | https://arxiv.org/abs/2210.10760v1 (Sec 3.6) | F01 row cited by section 5 (wave2-foundations); cross-reference only, no Cite on page
 
 ## In agentic coding, the cheap path runs through the test suite
@@ -83,7 +85,7 @@ n = 16; ln 16 is 2.77, so the difference is 1.83. The page uses 2.77 and "about 
 - train.py calls evaluate_bpb (L613) and prints the val_bpb line (L622) | https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/train.py#L613-L622 | new (code read)
 - The loop reads val_bpb with grep and keeps or resets the commit | https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/program.md#L100-L104 | F04-63 context; new line range
 - No file in the repository at the commit enforces the rule (scoped to the ten files listed: .gitignore, .python-version, README.md, analysis.ipynb, prepare.py, program.md, progress.png, pyproject.toml, train.py, uv.lock) | https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117 | F04-65 ("nothing enforces it"), scoped as our reading
-- README suggests starting the agent "(and disable all permissions)" | https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/README.md#L44 | F04-65
+- README suggests starting the agent "(and disable all permissions)", which the page reads as running it without approval prompts (our reading, added in fact check) | https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/README.md#L44 | F04-65
 - Evaluator inside the policy's reach; moving it out left to the operator | our reading of the code | F04-65 use in dive
 - ImpossibleBench: up to 10 submissions with failed-test feedback; averaged over models, open-test SWE-bench pass rate 80% to 83%, Conflicting-SWEbench cheating 33% to 38% | https://arxiv.org/abs/2510.20270v1 (Sec 2.4, Sec 5.3) | new (F02-83 row lists Sec 5.3 in its location)
 - Reflexion: model writes its own unit tests, runs them, reflects on failures | https://arxiv.org/abs/2303.11366v4 (Sec 4.3) | F04-21 context
@@ -101,5 +103,5 @@ n = 16; ln 16 is 2.77, so the difference is 1.83. The page uses 2.77 and "about 
 - 3. OpenAI's Cheating check: revert changes to the testing framework, re-run, a pass that becomes a failure is a cheat | https://arxiv.org/abs/2503.11926v1 (Sec 3.1, Fig 3 caption) | new
 - 4. Monitor with CoT where available: 95% against 60% | https://arxiv.org/abs/2503.11926v1 (Table 1) | F02-79
 - 4. Signals Anthropic lists: excessive edit/test cycles on one file, test-specific comments, unexpected test-file edits | https://assets.anthropic.com/m/785e231869ea8b3b/original/claude-3-7-sonnet-system-card.pdf (Sec 6.2) | F02-82
-- 4. Flags to a person or a log, never into the reward | our reading of F02-80 | wave2-rlvr row 53
+- 4. This monitor's flags to a person or a log, never into the reward; a hack-detecting penalty in the reward can still stop hacking while detection holds (MacDiarmid), so keep the watching monitor separate. h2 now reads "can stop being a monitor" (fact check: Baker's pressured monitor read only the CoT; MacDiarmid's penalty worked in their setting) | https://arxiv.org/abs/2503.11926v1 (abstract, Sec 3.2); https://arxiv.org/abs/2511.18397v1 (Sec 1 Mitigations, Fig 4) | wave2-rlvr row 53
 - Closing: run the checks before the first step or iteration; sections 15, 21 and 22 apply the checklist | our reading; dispatch | dispatch.md row 10
