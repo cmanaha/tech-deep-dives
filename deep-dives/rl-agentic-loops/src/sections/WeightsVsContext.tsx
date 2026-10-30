@@ -654,7 +654,7 @@ export function WeightsVsContext() {
             FormatSpread estimates that range from a sample of formats &quot;without accessing
             model weights&quot;, so it applies to a model you reach only through an API{' '}
             <Cite tier={3} href={FORMAT} venue="ICLR 2024">
-              Sclar et al., abstract
+              Sclar et al., abstract and Section 1
             </Cite>
             .
           </Box>
@@ -665,7 +665,7 @@ export function WeightsVsContext() {
         header={
           <Header
             variant="h2"
-            description="Recognise the two gaps a prompt did not close in these studies: outputs whose spread or confidence is wrong, and instructions paid for on every call"
+            description="Recognise the two gaps these studies place in the weights: outputs whose spread a prompt did not fix or whose confidence training moved, and instructions paid for on every call"
           >
             Calibration and token cost: weights
           </Header>
@@ -715,8 +715,8 @@ export function WeightsVsContext() {
             benchmark across academic subjects, and post-training &quot;hurts calibration
             significantly&quot;: the calibration error printed on the report&apos;s two plots rose
             from 0.007 to 0.074{' '}
-            <Cite tier={2} href={GPT4}>
-              GPT-4 Technical Report, Section 5 and Figure 8 (lab report)
+            <Cite tier={2} href={GPT4} venue="technical report">
+              GPT-4 Technical Report (OpenAI), Section 5 and Figure 8
             </Cite>
             . Our reading of both studies: the spread and confidence of outputs are properties of
             the probabilities the weights assign, which training set and training moved, and in

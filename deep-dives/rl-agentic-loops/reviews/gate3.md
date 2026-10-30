@@ -18,3 +18,5 @@ scored.
 | 11 | A Text Loop Is RL on the Context | TextLoopAsRl.tsx | fc05 | 9 |
 | 12 | Verbal Reinforcement & Self-Correction | VerbalReinforcement.tsx | fc05 | 9 |
 | 13 | Memories, Playbooks & Skill Libraries | AccumulatingExperience.tsx | fc05 | 9 |
+| 17 | Where Words Fall Short | WhereWordsFallShort.tsx | fc07 | 9 |
+| 18 | What Lives in Weights & What Lives in Context | WeightsVsContext.tsx | fc07 | 9 |

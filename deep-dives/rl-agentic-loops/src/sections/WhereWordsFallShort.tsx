@@ -260,17 +260,17 @@ export function WhereWordsFallShort() {
             A text loop asks a frozen model to do three jobs that RL (reinforcement learning) does
             with weight updates and statistics over many attempts: explore, by trying options of
             unknown value; assign credit, by working out which step earned the result; and carry
-            what it has learned in a context window. The studies read for this dive say a frozen
-            model proposes well and keeps score poorly, and that its context behaves like a
+            what it has learned in a context window. In our reading of the studies collected here,
+            a frozen model proposes well and keeps score poorly, and its context behaves like a
             working set with a cliff.
           </Box>
           <Box variant="p">
             One measurement carries the section. Asked to compute a standard exploration rule
             before each choice, Gemma2 27B computed it correctly in 87% of its rationales, and
-            even when its rationale was correct it chose the greedy action more often than the
-            optimal one, 58% against 21%{' '}
-            <Cite tier={3} href={GREEDY} venue="preprint">
-              LLMs are Greedy Agents, Section 4.2
+            even with a correct rationale it chose the greedy action more often than the optimal
+            one, in 58% of all its actions against 21%{' '}
+            <Cite tier={3} href={GREEDY} venue="ICLR 2026">
+              LLMs are Greedy Agents, Section 4.2 and Figure 5
             </Cite>
             . The blocks below take the evidence gap by gap, each with the loop design that covers
             it, and the last block turns them into three changes to make.
@@ -408,15 +408,15 @@ export function WhereWordsFallShort() {
             A second study found the pattern in Gemma2 from 2B to 27B parameters. On ten-armed
             bandits the 2B model tried 40% of the options and the 9B and 27B models 65%, and
             &quot;the model prematurely commits to a greedy strategy&quot;{' '}
-            <Cite tier={3} href={GREEDY} venue="preprint">
+            <Cite tier={3} href={GREEDY} venue="ICLR 2026">
               LLMs are Greedy Agents, Section 4.2
             </Cite>
             . The same study measured a knowing-doing gap on one model. Gemma2 27B was asked to
             write out the UCB (Upper Confidence Bound) rule, which adds a bonus to options tried
             less often, compute its values, and act on them. It computed them correctly in 87% of
-            its rationales, and even when its rationale was correct it chose the greedy action
-            more often than the optimal one: 58% against 21%{' '}
-            <Cite tier={3} href={GREEDY} venue="preprint">
+            its rationales, and even with a correct rationale it chose the greedy action more
+            often than the optimal one: in 58% of all its actions against 21%{' '}
+            <Cite tier={3} href={GREEDY} venue="ICLR 2026">
               LLMs are Greedy Agents, Section 4.2 and Figure 5
             </Cite>
             . Writing the rule down did not make the model follow it.
@@ -452,7 +452,7 @@ export function WhereWordsFallShort() {
             <SpaceBetween size="s">
               <Box variant="p">
                 The exploration failure was measured on GPT-3.5, GPT-4 and Llama2 in a NeurIPS 2024
-                paper and on Gemma2 in a 2025 preprint. A rerun of the same bandit protocol on 2026
+                paper and on Gemma2 in an ICLR 2026 paper. A rerun of the same bandit protocol on 2026
                 reasoning models was not located during this research. In the exploitation-only
                 test, GPT-5-family reasoning models did best and still trailed a linear regression
                 on contextual bandits. Its authors connect the two results (MAB is their
@@ -477,11 +477,13 @@ export function WhereWordsFallShort() {
               </Box>
               <Box variant="p">
                 The knowing-doing gap was measured on Gemma2 27B only, over 64 parallel
-                environments for 50 steps each. The paper&apos;s introduction gives the greedy
-                share as 64% of actions when the rationale is correct; Section 4.2 and Figure 5
-                give 58% greedy against 21% optimal, the figures used here{' '}
-                <Cite tier={3} href={GREEDY} venue="preprint">
-                  LLMs are Greedy Agents, Introduction and Section 4.2
+                environments for 50 steps each. Figure 5 is a matrix over all actions: 58.1% were
+                greedy and 21.6% optimal with a correct rationale. As a share of the
+                correct-rationale actions alone, greedy is 64%, the figure the paper&apos;s
+                introduction gives (our arithmetic: 58.1 of the row&apos;s 90.3). That row sums to
+                90.3%, where the text gives 87% correct rationales{' '}
+                <Cite tier={3} href={GREEDY} venue="ICLR 2026">
+                  LLMs are Greedy Agents, Introduction, Section 4.2 and Figure 5
                 </Cite>
                 .
               </Box>
@@ -527,11 +529,11 @@ export function WhereWordsFallShort() {
           <Box variant="p">
             A text loop assigns credit by reading one log, and it has to name the step that
             mattered. On failure logs from 127 LLM multi-agent systems, the Who&amp;When dataset,
-            the best automated method
-            identified the responsible agent 53.5% of the time and the decisive step 14.2% of the
-            time, with some methods below random{' '}
+            the best automated method at naming the responsible agent was right 53.5% of the
+            time, and the best at finding the decisive step, a different method, 14.2%, with some
+            methods below random{' '}
             <Cite tier={3} href={WHO_WHEN} venue="ICML 2025">
-              Which Agent Causes Task Failures and When?, Abstract
+              Which Agent Causes Task Failures and When?, Abstract and Table 1
             </Cite>
             . Accuracy fell as logs grew, step-level accuracy most, and at the longest contexts all
             three methods tested converged to near 0%{' '}
@@ -586,7 +588,7 @@ export function WhereWordsFallShort() {
             . Position matters inside that length too. Performance is &quot;often highest when
             relevant information occurs at the beginning or end of the input context&quot;, and it
             degrades when the model must use information in the middle{' '}
-            <Cite tier={3} href={MIDDLE} venue="TACL 2023">
+            <Cite tier={3} href={MIDDLE} venue="TACL 2024">
               Lost in the Middle, Abstract
             </Cite>
             .
@@ -676,10 +678,11 @@ export function WhereWordsFallShort() {
             </Box>{' '}
             Let code count attempts, average scores and apply the choice rule; give the model the
             summary and ask it for candidates. A model that computed the UCB rule correctly in 87%
-            of its rationales still chose the greedy action over the optimal one when its
-            rationale was correct, 58% against 21%, so the rule belongs in code. When the history needs shortening, extract it
-            mechanically: in the compaction study, mechanical extraction kept 79.1% of recurring
-            details against at most 16.0% for LLM summaries.
+            of its rationales still chose the greedy action over the optimal one with a correct
+            rationale, in 58% of all its actions against 21%, so the rule belongs in code. When the
+            history needs shortening, extract its details mechanically rather than asking a model
+            to summarise them (our reading): in the compaction study, a mechanical extraction
+            reference kept 79.1% of recurring details against at most 16.0% for LLM summaries.
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">

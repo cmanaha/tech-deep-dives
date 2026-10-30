@@ -8,7 +8,8 @@ version"); arXiv PDF 2404.10859v2 (header "Published as a conference paper at CO
 Sections 4, 4.1, 4.2, 5, footnote 6); arXiv PDF 2303.08774v6 (Section 5 Limitations, Figure 8 plot
 labels and caption); arXiv abstract 2209.15189v1 (no venue on the record); arXiv abstract
 2509.04259v1; arXiv abstract 2504.13837v5 (journal ref "NeurIPS 2025 Oral"). DeepSeek-R1 Table 16
-was not re-opened; it rests on wave2-rlvr row 10 and wave2-aws row 35 (both read 2026-10-30).
+was re-opened by fc07 in the v2 PDF (Supplementary F.1): Distill-Qwen-32B 72.6 / 83.3 / 94.3 / 62.1 / 57.2
+against Qwen2.5-32B-Zero 47.0 / 60.0 / 91.6 / 55.0 / 40.2.
 
 Notes for the fact checkers:
 - The two ECE values (0.007 pre-train, 0.074 post-trained) are printed on the Figure 8 plots of the
@@ -66,10 +67,11 @@ Notes for the fact checkers:
 - A format rule a text loop finds may not survive a model change; part of what a loop learns about format is search over layouts | our reading | SCOPE section 18 row 4; F04-52 use-in-dive
 - Whether training one specific format into the weights makes it reliable was not measured in the sources read | hedge | SCOPE section 18 row 4 ([our reading])
 - Report accuracy as a range across plausible formats; FormatSpread estimates it "without accessing model weights" | https://arxiv.org/abs/2310.11324v2 (abstract) | new
-- "so it applies to a model you reach only through an API" | our inference from "without accessing model weights" | -
+- "so it applies to a model you reach only through an API" | https://arxiv.org/abs/2310.11324v2 (Section 1: "does not require access to the model weights, allowing its use on API-gated models"; cite now abstract and Section 1, fc07) | -
 
 ## Calibration and token cost
 
+- h2 description: the two gaps these studies place in the weights, outputs whose spread a prompt did not fix (Zhang et al.) or whose confidence training moved (GPT-4 report), and instructions paid for on every call | our reading of the rows below | fc07 narrowed (no prompt was tested on calibration)
 - Diffuse distribution and calibration definitions | https://arxiv.org/abs/2303.08774v6 (Section 5: "predicted confidence in an answer generally matches the probability of being correct"); 2404.10859v2 Section 2 | definition; SCOPE review R1 (diffuse example)
 - Llama-2-13B-chat disproportionately favours five when asked for a uniform 1 to 10 pick | https://arxiv.org/abs/2404.10859v2 (abstract) | F04-50; wave2-limits row 36
 - Temperature one; Gemma and Llama-2 put over 60% on five; in 1,000 samples none of the three models produced all ten | https://arxiv.org/abs/2404.10859v2 (Sections 4, 4.1) | F04-50; wave2-limits row 36
@@ -78,7 +80,8 @@ Notes for the fact checkers:
 - Untuned models need temperature above 10 to match the tuned entropy; higher temperature rarely used because of degeneration | https://arxiv.org/abs/2404.10859v2 (footnote 6) | F04-50; wave2-limits row 36
 - Tuned on five tasks, more diffuse output on a held-out sixth | https://arxiv.org/abs/2404.10859v2 (Section 5) | new
 - GPT-4 pre-trained model highly calibrated on an MMLU subset; post-training "hurts calibration significantly" | https://arxiv.org/abs/2303.08774v6 (Section 5, Figure 8) | F04-51; wave2-limits row 37 (one direction only)
-- Calibration error printed on the plots 0.007 (pre-train) and 0.074 (post-trained) | https://arxiv.org/abs/2303.08774v6 (Figure 8 plot labels) | new
+- Calibration error printed on the plots 0.007 (pre-train) and 0.074 (post-trained) | https://arxiv.org/abs/2303.08774v6 (Figure 8 plot labels "ECE: 0.007" and "ECE: 0.074", text in the PDF, checked by fc07) | new
+- GPT-4 report Cite: Tier 2 (first-party lab measuring its own model) with a "technical report" badge, no peer-reviewed venue | https://arxiv.org/abs/2303.08774v6 | fc07 (known item)
 - Spread and confidence are properties of the probabilities the weights assign; the instruction did not produce the distribution | our reading | F04-50, F04-51 use-in-dive
 - Test the row by sampling one prompt 1,000 times and counting distinct answers | derived from the study protocol (Section 4: 1,000 generations per task) | -
 - Gains from instructions or a scratchpad disappear "when the context tokens are gone" | https://arxiv.org/abs/2209.15189v1 (abstract) | F04-45; wave2-limits row 38
