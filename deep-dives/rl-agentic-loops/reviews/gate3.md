@@ -47,6 +47,10 @@ stay at 5. Before and after, per section; moves and claim diffs in `reviews/leve
 
 | # | Section | Group | Before | After |
 |---|---|---|---|---|
+| 1 | One Loop, Three Places to Keep What It Learns | lv01 | 5/4/5/5/4 | 5/4/5/5/5 |
+| 2 | Getting Started | lv01 | 4/4/5/5/4 | 4/4/5/5/5 |
+| 3 | The Language Model Is Already a Policy | lv01 | 5/4/5/5/4 | 5/5/5/5/4 |
+| 4 | Policy Gradient | lv01 | 5/4/5/5/4 | 5/4/5/5/5 |
 | 5 | Two Leashes: PPO's Clip & the KL | lv02 | 4/4/5/5/4 | 5/4/5/5/5 |
 | 6 | From Preferences to Rewards | lv02 | 4/4/5/5/3 | 5/4/5/5/4 |
 | 7 | RLVR & GRPO | lv02 | 4/5/5/5/3 | 4/5/5/5/3 |
@@ -66,7 +70,10 @@ stay at 5. Before and after, per section; moves and claim diffs in `reviews/leve
 | 21 | Side by Side on a DGX Spark | lv06 | 4/5/5/5/4 | 4/5/5/5/4 |
 | 22 | Choosing a Text Loop, a Hybrid or a Weight Update | lv06 | 4/4/5/5/3 | 5/4/5/5/4 |
 | 23 | RL & Learning Loops on AWS | lv06 | 4/4/5/5/3 | 4/4/5/5/4 |
-| 1 | One Loop, Three Places to Keep What It Learns | lv01 | 5/4/5/5/4 | 5/4/5/5/5 |
-| 2 | Getting Started | lv01 | 4/4/5/5/4 | 4/4/5/5/5 |
-| 3 | The Language Model Is Already a Policy | lv01 | 5/4/5/5/4 | 5/5/5/5/4 |
-| 4 | Policy Gradient | lv01 | 5/4/5/5/4 | 5/4/5/5/5 |
+
+All 23 sections ran the pass (lv01 to lv06). Accuracy stayed at 5 in every section, and every claim
+diff traced each after-only assertion to a source already on the page (0 unsourced). Axis averages,
+before and after: mental model 4.43 to 4.78, practical leverage 4.22 to 4.35, rigor 5.0 to
+5.0, accuracy 5.0 to 5.0, economy 3.52 to 4.22. Orchestrator checks on every group's diff: no
+number left a file, no venue badge changed, and no source stopped being cited (citations dropped only
+where a repeated landing of the same source was cut). The Gate 3 result above stands.
