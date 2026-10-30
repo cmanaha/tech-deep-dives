@@ -163,7 +163,9 @@ Known items to settle in the named group (logged during authoring, see `build-lo
   report, so `venue="preprint"` or a "technical report" wording.
 - fc08: section 19: the memory drop is 23.1 and 23.9 GiB; the DeepSeekMath GRPO quote is in
   Section 4.1.1; the logged minimum importance-sampling ratio of 0.0 (run 1 steps 8 to 10, run 2
-  steps 8 and 16). Section 20: the calculator's tests (26) and every preset's scope wording.
+  steps 8 and 16). Section 20: the calculator's tests (26) and every preset's scope wording; it names DAPO and Dr. GRPO
+  without a one-clause gloss, which readers on a shorter route need (section 2 promises glosses): add
+  one per method at first mention, worded as section 7 defines them.
 - fc09: section 21: every E0 figure against the raw logs. Section 22 was written before sections 20
   and 23 existed: check every pointer to them, and every repeated number, against those files; the
   OpenAI cutoff of January 6, 2027 was added beyond the rows. Section 23: the HyperPod recipe tally
