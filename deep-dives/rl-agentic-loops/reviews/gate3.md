@@ -59,3 +59,7 @@ stay at 5. Before and after, per section; moves and claim diffs in `reviews/leve
 | 14 | Optimising the Prompt | lv04 | 4/5/5/5/3 | 5/5/5/5/4 |
 | 15 | Your Loops Through the RL Lens | lv04 | 5/5/5/5/4 | 5/5/5/5/4 |
 | 16 | Hybrids | lv04 | 4/4/5/5/3 | 5/4/5/5/4 |
+| 17 | Where Words Fall Short | lv05 | 4/4/5/5/4 | 5/4/5/5/4 |
+| 18 | What Lives in Weights & What Lives in Context | lv05 | 4/4/5/5/4 | 5/4/5/5/4 |
+| 19 | An RL Step Is an Inference Job Inside a Training Job | lv05 | 5/5/5/5/3 | 5/5/5/5/4 |
+| 20 | Cost per Improvement | lv05 | 5/5/5/5/3 | 5/5/5/5/4 |

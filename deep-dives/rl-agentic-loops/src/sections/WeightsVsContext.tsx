@@ -514,7 +514,7 @@ export function WeightsVsContext() {
         <SpaceBetween size="m">
           <Box variant="p">
             Each row is a kind of improvement a team might want from a model, and each column a
-            store. The legend under the map gives the meaning of each mark.
+            store.
           </Box>
           <BoundaryMapDiagram />
           <Box variant="small" color="text-body-secondary">
@@ -531,6 +531,44 @@ export function WeightsVsContext() {
             failure and long-horizon credit assignment (working out which step earned the result)
             are weak in a general model&apos;s context; section 17, Where Words Fall Short, carries
             that evidence. The blocks below carry the evidence for the other six rows.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Predict where a gap with no study of its own belongs, by asking whether it must be fast, calibrated or general, or specific, recent and auditable"
+          >
+            One way to hold the map
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Read down the green cells and a pattern appears. Our reading of the studies behind the
+            map: weights hold what must be fast, calibrated or general. Fast, because a distilled
+            instruction costs no tokens on any call. Calibrated, because the spread and the
+            confidence of outputs are set by the probabilities training produces. General, because
+            a weight change applies to every input, including tasks the tuning never saw, as the
+            held-out task in the number-picking study below showed.
+          </Box>
+          <Box variant="p">
+            Context holds what is specific, recent and auditable. Specific, because one
+            task&apos;s facts and procedures sit in that task&apos;s context and touch nothing
+            else. Recent, because a document added today is read on the next call. Auditable,
+            because a person can read the instruction or the retrieved passage behind an answer,
+            and remove it.
+          </Box>
+          <Box variant="p">
+            One property belongs to neither store yet. Neither delivered stability under changes
+            to prompt format in the sources read: format sensitivity survived instruction tuning{' '}
+            <Cite tier={3} href={FORMAT} venue="ICLR 2024">
+              Sclar et al., abstract
+            </Cite>
+            . Treat that row as a measurement to repeat on each model rather than a store to
+            choose.
           </Box>
         </SpaceBetween>
       </Container>
@@ -808,44 +846,6 @@ export function WeightsVsContext() {
             context side, when a prompt optimiser and RL changed the same 8B model, the optimiser
             fell short on AIME, a competition-math exam, and came within a point of RL on the
             other math benchmark; section 14 reports both.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Predict where a gap with no study of its own belongs, by asking whether it must be fast, calibrated or general, or specific, recent and auditable"
-          >
-            One way to hold the map
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            Read down the green cells and a pattern appears. Our reading of these studies: weights
-            hold what must be fast, calibrated or general. Fast, because a distilled instruction
-            costs no tokens on any call. Calibrated, because the spread and the confidence of
-            outputs are set by the probabilities training produces. General, because a weight
-            change applies to every input, including tasks the tuning never saw, as the held-out
-            task in the number study showed.
-          </Box>
-          <Box variant="p">
-            Context holds what is specific, recent and auditable. Specific, because one
-            task&apos;s facts and procedures sit in that task&apos;s context and touch nothing
-            else. Recent, because a document added today is read on the next call. Auditable,
-            because a person can read the instruction or the retrieved passage behind an answer,
-            and remove it.
-          </Box>
-          <Box variant="p">
-            One property belongs to neither store yet. Neither delivered stability under changes
-            to prompt format in the sources read: format sensitivity survived instruction tuning{' '}
-            <Cite tier={3} href={FORMAT} venue="ICLR 2024">
-              Sclar et al., abstract
-            </Cite>
-            . Treat that row as a measurement to repeat on each model rather than a store to
-            choose.
           </Box>
         </SpaceBetween>
       </Container>

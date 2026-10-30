@@ -483,7 +483,9 @@ export function RlStepAsSystem() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The measured breakdowns agree on the order of the stages. Over the 1,000 training steps
+            The measured breakdowns agree on the order of the stages. In the sources read, the
+            stage-by-stage breakdowns put generation at 62% (our 0.5B run) to 78% (Skywork&apos;s
+            7B ablation), and no general figure was located. Over the 1,000 training steps
             of Skywork-OR1-32B, rollout took 223 of 309 hours, 72.1%, and the policy update 8.7%{' '}
             <Cite tier={3} href={SKYWORK} venue="preprint">
               Skywork-OR1, Section 5.1, Table 7
@@ -504,12 +506,7 @@ export function RlStepAsSystem() {
               verl-recipe dapo/README.md L45
             </Cite>
             . The run is the verl team&apos;s reproduction; the DAPO authors&apos; own hours were
-            not located. One 13B PPO study on TPUv3 states that rollout took more than 95% of training time,
-            without a breakdown{' '}
-            <Cite tier={3} href={IVI24} venue="NeurIPS 2024">
-              Unpacking DPO and PPO, Appendices G and K
-            </Cite>
-            .
+            not located.
           </Box>
           <Box variant="p">
             Our own run sits at the short end. On a DGX Spark (hardware in the{' '}
@@ -519,9 +516,7 @@ export function RlStepAsSystem() {
             <Cite tier={0} href={E0_URL}>
               {E0_TITLE}
             </Cite>
-            : the same order of stages, at a scale where training is relatively larger. In the
-            sources read, the stage-by-stage breakdowns put generation at 62% (our 0.5B run) to 78%
-            (Skywork&apos;s 7B ablation), and no general figure was located.
+            : the same order of stages, at a scale where training is relatively larger.
           </Box>
           <Box variant="p">
             Every later stage runs over the tokens generation wrote. Preparation is one forward pass
@@ -549,6 +544,11 @@ export function RlStepAsSystem() {
                 runtime is a sentence in its introduction with no measurement in the paper behind it{' '}
                 <Cite tier={3} href={OPENRLHF_PAPER} venue="EMNLP 2025 System Demonstrations">
                   OpenRLHF, Section 1
+                </Cite>
+                . One 13B PPO study on TPUv3 states that rollout took more than 95% of training
+                time, without a breakdown{' '}
+                <Cite tier={3} href={IVI24} venue="NeurIPS 2024">
+                  Unpacking DPO and PPO, Appendices G and K
                 </Cite>
                 .
               </Box>
@@ -727,9 +727,8 @@ export function RlStepAsSystem() {
           </Box>
           <Box variant="p">
             Our reading of these designs: everything asynchronous in RL systems exists to hide two
-            waits, the straggler tail and the weight broadcast, and staleness is what it costs. The
-            size of the prize is the section&apos;s strongest number. When{' '}
-            <strong>eight times the GPUs buys only a 45% cut in rollout time</strong>, removing the
+            waits, the straggler tail and the weight broadcast, and staleness is what it costs.
+            When <strong>eight times the GPUs buys only a 45% cut in rollout time</strong>, removing the
             wait is worth more than adding devices.
           </Box>
         </SpaceBetween>
@@ -778,17 +777,21 @@ export function RlStepAsSystem() {
             </Cite>
             . In the default mode, <code>sequence_mask</code>, the ratio is the exponential of the
             summed per-token differences, a sequence above the cap gets a weight of zero, and no
-            lower bound applies. The docstring&apos;s list of modes tags{' '}
-            <code>token_truncate</code> as the default{' '}
-            <Cite tier={1} href={trlCfg('L327-L331')} kind="doc-code-conflict">
-              TRL grpo_config.py docstring L327-L331
-            </Cite>
-            ; the field default is <code>sequence_mask</code>{' '}
-            <Cite tier={1} href={trlCfg('L934-L935')}>
-              TRL grpo_config.py L934-L935
-            </Cite>
-            .
+            lower bound applies.
           </Box>
+          <ExpandableSection headerText="Which mode is the default: TRL's docstring and its code disagree">
+            <Box variant="p">
+              The docstring&apos;s list of modes tags <code>token_truncate</code> as the default{' '}
+              <Cite tier={1} href={trlCfg('L327-L331')} kind="doc-code-conflict">
+                TRL grpo_config.py docstring L327-L331
+              </Cite>
+              ; the field default is <code>sequence_mask</code>{' '}
+              <Cite tier={1} href={trlCfg('L934-L935')}>
+                TRL grpo_config.py L934-L935
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             OpenRLHF ships a correction of the same kind switched off:{' '}
             <code>--algo.advantage.is_correction_level</code> defaults to <code>off</code>, and its
@@ -883,17 +886,19 @@ export function RlStepAsSystem() {
               generation, and its logged minimum ratio reads 0.0 when a sequence was masked.
             </li>
           </ul>
-          <Box variant="p">
-            On a DGX Spark, read free memory from the operating system. vLLM 0.28.0 sized its share
-            from all 121.69 GiB of device memory: our 0.12 fraction gave 14.6 GiB while other
-            services held about 70 GiB, and <code>torch.cuda.mem_get_info()</code> reported 11.9
-            GiB free where <code>free</code> reported 52 GiB available{' '}
-            <Cite tier={0} href={E0_URL}>
-              {E0_TITLE}
-            </Cite>
-            . The fraction is a share of the whole pool, whatever other processes hold, so size it
-            against what <code>free</code> reports.
-          </Box>
+          <ExpandableSection headerText="On a DGX Spark, size vLLM's memory fraction against free memory">
+            <Box variant="p">
+              On a DGX Spark, read free memory from the operating system. vLLM 0.28.0 sized its share
+              from all 121.69 GiB of device memory: our 0.12 fraction gave 14.6 GiB while other
+              services held about 70 GiB, and <code>torch.cuda.mem_get_info()</code> reported 11.9
+              GiB free where <code>free</code> reported 52 GiB available{' '}
+              <Cite tier={0} href={E0_URL}>
+                {E0_TITLE}
+              </Cite>
+              . The fraction is a share of the whole pool, whatever other processes hold, so size it
+              against what <code>free</code> reports.
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             Then let cluster size pick the placement. In HybridFlow&apos;s PPO runs on A100-80GB
             GPUs, colocating every model on the same GPUs won from 16 to 64 GPUs; split placement,

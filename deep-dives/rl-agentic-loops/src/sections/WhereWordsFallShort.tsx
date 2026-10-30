@@ -272,8 +272,7 @@ export function WhereWordsFallShort() {
             <Cite tier={3} href={GREEDY} venue="ICLR 2026">
               LLMs are Greedy Agents, Section 4.2 and Figure 5
             </Cite>
-            . The blocks below take the evidence gap by gap, each with the loop design that covers
-            it, and the last block turns them into three changes to make.
+            .
           </Box>
         </SpaceBetween>
       </Container>
@@ -391,6 +390,11 @@ export function WhereWordsFallShort() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
+            Our reading of the studies below: a frozen model is a strong proposer and a weak
+            statistician. It suggests plausible options well, and it does not reliably turn a
+            history of numbers into the right next choice, even when it can state the rule.
+          </Box>
+          <Box variant="p">
             The cleanest test of exploration is a multi-armed bandit: repeated choices among
             options with unknown payoffs, where each round the agent either explores, trying an
             option it knows little about, or exploits, taking the option with the best average
@@ -441,12 +445,9 @@ export function WhereWordsFallShort() {
             .
           </Box>
           <Box variant="p">
-            Our reading of these studies: a frozen model is a strong proposer and a weak
-            statistician. It suggests plausible options well, and it does not reliably turn a
-            history of numbers into the right next choice, even when it can state the rule. The
-            design that follows keeps the counts, the averages and the choice rule in code and
-            hands the model a summary, which is the one configuration that explored in the first
-            study.
+            The design that follows from that reading keeps the counts, the averages and the
+            choice rule in code and hands the model a summary, which is the one configuration that
+            explored in the first study.
           </Box>
           <ExpandableSection headerText="The scope of the bandit results, and what has not been rerun">
             <SpaceBetween size="s">
@@ -668,9 +669,7 @@ export function WhereWordsFallShort() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Where a gap survives these changes, section 18, What Lives in Weights &amp; What Lives
-            in Context, maps which improvements belong in the weights instead. For the loop you
-            run on a frozen model, make these three changes.
+            For the loop you run on a frozen model, make these three changes.
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">
@@ -706,6 +705,10 @@ export function WhereWordsFallShort() {
               Amazon Bedrock user guide: prompt caching
             </Cite>
             .
+          </Box>
+          <Box variant="p">
+            Where a gap survives these changes, section 18, What Lives in Weights &amp; What Lives
+            in Context, maps which improvements belong in the weights instead.
           </Box>
         </SpaceBetween>
       </Container>

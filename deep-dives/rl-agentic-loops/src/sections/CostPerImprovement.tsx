@@ -329,7 +329,7 @@ const PRESETS: readonly Preset[] = [
     side: 'b',
     label: 'Inference-time sampling, no training (section 8)',
     scope:
-      "No training run. About 8.84 times the tokens of standard inference per answer, in the paper's MATH-500 setting; the multiplier moves with output length and the sampler's settings. The cost per query starts from the weight-update column's, as if both columns served the same model.",
+      "No training run. The multiplier is the paper's ratio of tokens per answer to standard inference, in its MATH-500 setting; it moves with output length and the sampler's settings. The cost per query starts from the weight-update column's, as if both columns served the same model.",
     sources: ['sampling'],
     unit: 'dollars',
     fill: {
@@ -1070,15 +1070,17 @@ export function CostPerImprovement() {
             GPU-hours, which its authors price at $294K under an assumed $2 per GPU-hour; R1-Zero&apos;s pure RL run
             is 101K of those hours, on 512 GPUs <SourceCite id="r1-cost" />.
           </Box>
-          <Box variant="p">
-            Two 32B runs sit between them. Agentica and Together AI report that DeepSWE&apos;s RL run on Qwen3-32B
-            took 64 H100s for six days <SourceCite id="deepswe" />. DAPO (Decoupled Clip and Dynamic sAmpling Policy
-            Optimization) is the GRPO variant of section 7 that raises the upper clip bound, keeps only prompts whose
-            group of answers is neither all right nor all wrong, and averages the loss over every token in the batch.
-            verl&apos;s public reproduction of it on Qwen2.5-32B logged 159.6 hours of step time over 489 steps on 16
-            nodes of 8 GPUs <SourceCite id="dapo-run" />, about 20,400 GPU-hours by our arithmetic; that
-            record is the verl team&apos;s run, not the DAPO authors&apos;.
-          </Box>
+          <ExpandableSection headerText="Two 32B runs: DeepSWE and verl's DAPO reproduction">
+            <Box variant="p">
+              Two 32B runs sit between them. Agentica and Together AI report that DeepSWE&apos;s RL run on Qwen3-32B
+              took 64 H100s for six days <SourceCite id="deepswe" />. DAPO (Decoupled Clip and Dynamic sAmpling Policy
+              Optimization) is the GRPO variant of section 7 that raises the upper clip bound, keeps only prompts whose
+              group of answers is neither all right nor all wrong, and averages the loss over every token in the batch.
+              verl&apos;s public reproduction of it on Qwen2.5-32B logged 159.6 hours of step time over 489 steps on 16
+              nodes of 8 GPUs <SourceCite id="dapo-run" />, about 20,400 GPU-hours by our arithmetic; that
+              record is the verl team&apos;s run, not the DAPO authors&apos;.
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             The calculator&apos;s one same-model pair of training budgets is GEPA (Genetic-Pareto), the reflective
             prompt optimiser of section 14, Optimising the Prompt, against GRPO with LoRA (Low-Rank Adaptation) on
