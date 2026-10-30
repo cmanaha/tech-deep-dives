@@ -588,7 +588,13 @@ export function RlRollout() {
             call flushes the radix cache by default, and the pause lets that flush succeed while
             requests are still queued. This section covers the server side; which RL frameworks
             drive these calls, and the SGLang release each pins, is in section 24, Ecosystem and
-            Production Users.
+            Production Users. What the trainer on the other side of the refit does, and where an
+            RL step spends its time, is in the{' '}
+            <Link href="../rl-agentic-loops/">
+              RL and agentic learning loops dive, section 19: An RL Step Is an Inference Job Inside
+              a Training Job
+            </Link>
+            .
           </Box>
         </SpaceBetween>
       </Container>
