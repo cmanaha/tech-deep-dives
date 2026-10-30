@@ -31,7 +31,9 @@ Each wave lists the questions it must answer and what counts as done. A wave is 
 
 Answered: what each method's state, update rule and feedback signal are; which same-model comparisons between RL and text loops exist; what the evidence says about RL sharpening versus expanding; where frozen models fail; how RL runs as a system; which AWS services offer RL or managed memory. Output: the six registers above.
 
-### Wave 2. Verification and gap fill
+### Wave 2. Verification and gap fill (complete, 2026-10-30)
+
+Result: six refutation files `research/2026-10/wave2-foundations.md`, `wave2-rlvr.md`, `wave2-words.md`, `wave2-limits.md`, `wave2-systems-cost.md` and `wave2-aws.md`, from the shared brief `wave2-brief.md`. 242 verdict rows: 199 HOLDS, 36 SCOPE NARROWER, 7 WRONG, 0 UNVERIFIABLE. Every WRONG is fixed in `SCOPE.md` and every SCOPE NARROWER re-hedged there (commits on 2026-10-30). Gap-fill answers to questions 2 to 10 are in the G sections of those files.
 
 Purpose: make every load-bearing claim in `SCOPE.md` survive an attempt to refute it, and close the UNKNOWNs that a section depends on.
 
@@ -121,7 +123,9 @@ Only what the repo documents. An NVIDIA DGX Spark: GB10 superchip, 20 Arm cores,
 
 What is documented for the Spark (research 05, section 4): vLLM `v0.28.0` ships CUDA 13.0 wheels for arm64 and GB10 tuning configs, NVIDIA's own Spark vLLM playbook uses that release, and it sits inside TRL `v1.16.0`'s supported vLLM range of 0.22.0 to 0.31.0 (F05-45, F05-21). TRL `v1.16.0` states no architecture requirement (F05-46). NVIDIA ships one Spark playbook that runs GRPO, through TRL and Unsloth on a 7B vision-language model with LoRA, at up to about 2 hours per 100 steps (F05-44); its container pins `trl==0.26.1` and `datasets==4.3.0`, which conflicts with TRL 1.16.0's `datasets>=4.7.0` (F05-46). On unified memory, `nvidia-smi --query-gpu` memory fields read N/A, so memory is read from plain `nvidia-smi` and `free` (F05-48). On one device, colocating training and rollout is the only placement (F05-5). Not documented, and therefore measured in E0: step time and its split by stage, peak memory, how vLLM's memory fraction behaves on unified memory, and whether vLLM sleep mode and weight loading work on GB10.
 
-### E0. Smoke test: does the stack run on the Spark?
+### E0. Smoke test: does the stack run on the Spark? (ran 2026-10-30: PASS)
+
+Result in `research/2026-10/E0-spark-smoke.md`: two runs of 20 GRPO steps each with TRL 1.16.0 and vLLM 0.28.0 colocated (PyPI aarch64 wheels, torch 2.13.0+cu130), Qwen2.5-0.5B-Instruct, about 2.1 s per step, generation 62% of step time, about 24 GiB of unified memory at the lowest point, vLLM's 0.12 fraction applied to all 121.69 GiB. E1 to E4 are not run in this build.
 
 Question: can TRL's GRPO trainer with vLLM in colocate mode train a 0.5B to 1.5B model on the DGX Spark? Steps: build a clean environment with TRL `v1.16.0` and vLLM `0.28.0` rather than NVIDIA's older Unsloth container, because of the `datasets` pin conflict; run 20 GRPO steps on a rule-checked reward with `use_vllm=True` and the colocate default; record per-step wall-clock by stage (rollout, scoring, training, weight sync), peak unified-memory use and the response-length distribution. Pass condition: 20 steps complete with logged metrics. If it fails, record the failure and fall back to TRL without vLLM (`use_vllm=False`, F05-18), accepting slower generation. Tear the environment down afterwards. This gates E1 and section 21 of the scope.
 
@@ -153,33 +157,33 @@ Question: does the exploration failure measured on large models (F04-8 to F04-12
 
 ## 6. Open questions and UNKNOWN register
 
-Consolidated from the six registers. Each item names its source register, why it matters to a section, and how it closes.
+Consolidated from the six registers. Each item names its source register, why it matters to a section, and how it closes. The last two columns record the Gate 1 check 3 triage on 2026-10-30, from the wave 2 files `research/2026-10/wave2-*.md`. An accept-as-hedge item ships with the hedge text its wave 2 file gives; a cut item does not ship.
 
-| ID | Open question | Register | Feeds section | Closes by |
-|---|---|---|---|---|
-| U1 | Frontier-scale base-versus-RL pass@k at large k: not located in first-party publications | 02 U1 | 8 | Wave 2 search; otherwise the page keeps the scoped hedge |
-| U2 | DeepSWE's same-scaffold base pass@16, so whether RL widened coverage on SWE tasks | 02 U2 | 9 | Wave 2 search |
-| U3 | Mechanism of spurious-reward gains: clipping bias, contamination and pre-existing behaviour not tested jointly on clean data | 02 U6 | 8 | Accept as an open debate on the page; E1's non-Qwen control gives a local data point |
-| U4 | Whether R1's "aha" marks new capability: word-frequency evidence on both sides | 02 U12 | 7 | Accept as open |
-| U5 | GEPA's reflection model in the Qwen3 8B runs | 03 U1 | 14 | Wave 2: pinned gepa repo configs |
-| U6 | Whether a small-data-tuned GRPO closes GEPA's gap | 03 U2 | 14 | Wave 2 search; E1 gives one local data point |
-| U7 | Same-model, same-budget comparisons with RL for Reflexion, ExpeL, ACE, ReasoningBank, Dynamic Cheatsheet, Training-Free GRPO: none located | 03 U3 | 13, 22 | E1 arm (d) |
-| U8 | SCoRe, RL-trained self-correction | 03 U4 | 12, 16 | Wave 2 read |
-| U9 | Long-run growth of append-only memories over thousands of tasks | 03 U5 | 13 | Accept as open; scoped hedge |
-| U10 | Prefix-cache hit rate for a context that evolves during adaptation | 04 U-1 | 13, 17, 20 | E3 |
-| U11 | Run-to-run noise of autoresearch's metric | 04 U-2 | 15 | E2 |
-| U12 | How prompt-optimisation gains scale with the target model's size, optimiser held fixed | 04 U-4 | 14, 18 | Wave 2 search; otherwise open |
-| U13 | Fresh-context loop against one long compacted session on the same coding task | 04 U-5 | 15, 17 | Accept as open; candidate for a later Tier 0 experiment |
-| U14 | Blame-attribution accuracy of self-reflection in single-agent coding loops with test feedback | 04 U-6 | 17 | Wave 2 search |
-| U15 | Whether 2026 reasoning models close the explore-exploit gap in the original bandit protocol | 04 U-7 | 17 | Wave 2 search; E4 gives a small-model data point |
-| U16 | Measured memory in GB for PPO's four models at a given size | 01 U3 | 6, 19 | E0 measures the GRPO case on the Spark |
-| U17 | Which algorithms frontier labs use in production post-training, from first-party sources | 01 U4 | 6, 7 | Accept as open unless a first-party source appears |
-| U18 | Whether reward over-optimisation's functional forms hold at frontier scale | 01 U6 | 10 | Accept as open |
-| U19 | Weight-update sparsity at full precision, including optimiser state | 02 U7 | 8 | Accept as an open debate |
-| U20 | Remaining systems and AWS UNKNOWNs | 05, 06 | 19, 20, 23 | Listed in those registers after their completion |
-| U21 | FunSearch's own sample count; the "millions" figure is AlphaEvolve's description of it | 03 U11 | 15 | Wave 2 read of the FunSearch paper |
-| U22 | Typical job length, and so total cost, for an open-weight Bedrock RFT run billed at $80.00 per training hour; the Nova job page says only "a few hours" (F06-11) | 06 | 20 | Wave 2 search; otherwise the calculator takes hours as an input |
-| U23 | Acronym expansions for DAPO, GSPO, IPO, KTO, SimPO, MIPROv2, ProTeGi and OPRO are taken from the paper titles, not from register quotes | 01, 02, 03 | 6, 7, 14, 24 | Wave 2 glossary pass against each paper's first page |
+| ID | Open question | Register | Feeds section | Closes by | Gate 1 triage (2026-10-30) | Evidence |
+|---|---|---|---|---|---|---|
+| U1 | Frontier-scale base-versus-RL pass@k at large k: not located in first-party publications | 02 U1 | 8 | Wave 2 search; otherwise the page keeps the scoped hedge | accept-as-hedge | No first-party frontier-lab large-k comparison located; open comparisons stop at 32B, where the answer depends on the benchmark (wave2-rlvr G1). Page: "no frontier lab has published, in the sources located, a base-versus-RL comparison at large k". |
+| U2 | DeepSWE's same-scaffold base pass@16, so whether RL widened coverage on SWE tasks | 02 U2 | 9 | Wave 2 search | close-in-wave-2 (pass@1); accept-as-hedge (pass@16) | DeepSWE's post gives 23% pass@1 at the start of RL and 71.0% pass@16 after; a base pass@16 was not located (wave2-rlvr G2, row 40b). |
+| U3 | Mechanism of spurious-reward gains: clipping bias, contamination and pre-existing behaviour not tested jointly on clean data | 02 U6 | 8 | Accept as an open debate on the page; E1's non-Qwen control gives a local data point | accept-as-hedge | Clipping-bias and contamination explanations both stand; both agree the effect does not carry to Llama or OLMo (wave2-rlvr G5). |
+| U4 | Whether R1's "aha" marks new capability: word-frequency evidence on both sides | 02 U12 | 7 | Accept as open | accept-as-hedge | R1 defines the moment by the frequency of "wait"; the same words appear in the base before RL (F02-10, F02-17). |
+| U5 | GEPA's reflection model in the Qwen3 8B runs | 03 U1 | 14 | Wave 2: pinned gepa repo configs | close-in-wave-2 | GEPA's reproduction code defaults the reflection model to the task model, so Qwen3 8B reflected on its own traces (wave2-words G1). |
+| U6 | Whether a small-data-tuned GRPO closes GEPA's gap | 03 U2 | 14 | Wave 2 search; E1 gives one local data point | accept-as-hedge | No small-data-tuned GRPO re-run of GEPA's tasks located; GEPA tuned only LR, beta and clipping (wave2-words G3). |
+| U7 | Same-model, same-budget comparisons with RL for Reflexion, ExpeL, ACE, ReasoningBank, Dynamic Cheatsheet, Training-Free GRPO: none located | 03 U3 | 13, 22 | E1 arm (d) | accept-as-hedge | No same-model, same-budget RL comparison located for the memory and playbook loops; E1 arm (d) would close it and is not run in this build (wave2-words U7). |
+| U8 | SCoRe, RL-trained self-correction | 03 U4 | 12, 16 | Wave 2 read | close-in-wave-2 | SCoRe: +4.4 against -1.0 for Self-Refine on MATH (Gemini 1.5 Flash), +12.2 against -1.2 on HumanEval (Gemini 1.0 Pro), preprint (wave2-words G2). Added to section 12. |
+| U9 | Long-run growth of append-only memories over thousands of tasks | 03 U5 | 13 | Accept as open; scoped hedge | accept-as-hedge | No long-run study located; nearest evidence is retrieval count (ReasoningBank) and Memento's saturation at about 3k cases (wave2-words U9). |
+| U10 | Prefix-cache hit rate for a context that evolves during adaptation | 04 U-1 | 13, 17, 20 | E3 | accept-as-hedge | E3 not run in this build; no measurement while a loop edits its context located; ACE's 91.8% was measured frozen (wave2-limits U10). |
+| U11 | Run-to-run noise of autoresearch's metric | 04 U-2 | 15 | E2 | accept-as-hedge | E2 not run; no first-party noise figure; the wall-clock stop in train.py is a code-level reason to expect noise (wave2-limits U11, row 10). |
+| U12 | How prompt-optimisation gains scale with the target model's size, optimiser held fixed | 04 U-4 | 14, 18 | Wave 2 search; otherwise open | accept-as-hedge | No controlled study located (wave2-limits G8). |
+| U13 | Fresh-context loop against one long compacted session on the same coding task | 04 U-5 | 15, 17 | Accept as open; candidate for a later Tier 0 experiment | accept-as-hedge | No controlled comparison located; Compact-Bench measures mid-task compaction only (wave2-limits G5). |
+| U14 | Blame-attribution accuracy of self-reflection in single-agent coding loops with test feedback | 04 U-6 | 17 | Wave 2 search | accept-as-hedge (narrowed) | Not measured for self-reflection with test feedback; TRAIL gives 23.8% for a separate model reading single-agent SWE-bench traces (wave2-limits G3). |
+| U15 | Whether 2026 reasoning models close the explore-exploit gap in the original bandit protocol | 04 U-7 | 17 | Wave 2 search; E4 gives a small-model data point | accept-as-hedge | E4 not run; no rerun of the protocol on 2026 reasoning models located; F04-17 covers exploitation only (wave2-limits G6). |
+| U16 | Measured memory in GB for PPO's four models at a given size | 01 U3 | 6, 19 | E0 measures the GRPO case on the Spark | accept-as-hedge | E0 measured GRPO with beta 0 (one trained model plus a colocated vLLM copy, about 24 GiB at 0.5B), not PPO's four models (wave2-systems-cost U16). |
+| U17 | Which algorithms frontier labs use in production post-training, from first-party sources | 01 U4 | 6, 7 | Accept as open unless a first-party source appears | accept-as-hedge (partly closed) | Open-weight labs name their algorithms (Llama 3 DPO over PPO, Qwen3 GRPO, Gemma 3 BOND/WARM/WARP); OpenAI and Anthropic name none in the first-party pages read (wave2-foundations G3). |
+| U18 | Whether reward over-optimisation's functional forms hold at frontier scale | 01 U6 | 10 | Accept as open | accept-as-hedge | Largest replication located: 70B gold reward model, proxies and policy of 4B or below, no RL run (wave2-foundations G4). |
+| U19 | Weight-update sparsity at full precision, including optimiser state | 02 U7 | 8 | Accept as an open debate | close-in-wave-2 | Three-position debate with scope: sparsity measured in bf16 checkpoints, an optimisation-bias reading, and no sparsity in float32 (RL's Razor); optimiser state unmeasured (wave2-rlvr G4). |
+| U20 | Remaining systems and AWS UNKNOWNs | 05, 06 | 19, 20, 23 | Listed in those registers after their completion | triaged item by item | Register 05: U2 reproduction closed, U4 closed, U8/U9 (0.5B)/U13 closed by E0, U10 partly closed by E0, U11 cut, the rest accept-as-hedge (wave2-systems-cost). Register 06: U3 Nova RFT price closed ($80.00 per hour), U19 cut if it appears, the rest accept-as-hedge (wave2-aws). |
+| U21 | FunSearch's own sample count; the "millions" figure is AlphaEvolve's description of it | 03 U11 | 15 | Wave 2 read of the FunSearch paper | close-in-wave-2 | FunSearch's own paper: "on the order of 10^6" samples (wave2-limits G2). |
+| U22 | Typical job length, and so total cost, for an open-weight Bedrock RFT run billed at $80.00 per training hour; the Nova job page says only "a few hours" (F06-11) | 06 | 20 | Wave 2 search; otherwise the calculator takes hours as an input | accept-as-hedge | No typical job length located; the one AWS example gives 67 steps and no duration; early stopping makes length data-dependent; the calculator takes hours as an input (wave2-aws G4). |
+| U23 | Acronym expansions for DAPO, GSPO, IPO, KTO, SimPO, MIPROv2, ProTeGi and OPRO are taken from the paper titles, not from register quotes | 01, 02, 03 | 6, 7, 14, 24 | Wave 2 glossary pass against each paper's first page | close-in-wave-2 | All expansions checked at each paper's first page; MIPROv2 corrected to MIPRO (Multi-prompt Instruction PRoposal Optimizer); PRM and ORM use the cited paper's "process-supervised" and "outcome-supervised"; REINFORCE++ is a name, not an acronym (wave2-foundations, wave2-rlvr G6, wave2-words G6). |
 
 ---
 
@@ -193,10 +197,20 @@ The iteration flywheel (ADR-003) puts Gate 1 between research and build. For thi
 4. **Tier 0 decision.** E0 has run. If it passed, E1 is scheduled and section 21 stays; if it failed and the fallback also failed, section 21 is cut from the scope.
 5. **Human approval.** Carlos reads `SCOPE.md` and this guide and approves the section list, or names cuts. The v1 search-loop section is already merged into section 15. The candidate cuts if scope must shrink further: (1) fold section 19 (the RL step as a system) into its measurement list and its straggler figure; (2) reduce section 6 to the RLHF pipeline and the DPO decision. Section 21 (the lab) stays conditional on E0 and E1 only, because it is the dive's one source of Tier 0 evidence.
 
+### Gate 1 record (2026-10-30): PASS
+
+| Check | Result | Evidence |
+|---|---|---|
+| 1. Scope held | PASS (2026-10-17) | Three adversarial reviews and a factual re-check, `reviews/2026-10/R1-newcomer.md`, `R2-factual-grounding.md`, `R2b-recheck.md`, `R3-outcome-fit.md`; v2 applies their fixes and records them in SCOPE.md's review notes. |
+| 2. Load-bearing claims verified | PASS | Wave 2 refutation, six agents (at most three at once), `research/2026-10/wave2-*.md`: 242 rows, 199 HOLDS, 36 SCOPE NARROWER, 7 WRONG, 0 UNVERIFIABLE. The seven WRONG items fixed in SCOPE.md: the lambda = 1 advantage still subtracts the critic's baseline (section 4); the 32B base that responded to RL was Qwen's, in DeepSeek's experiments (7); the sparsity dispute is an optimisation-bias reading, not a precision artefact (8); DeepSWE's post does give a 23% base pass@1 (9); MIPROv2's expansion is MIPRO, Multi-prompt Instruction PRoposal Optimizer (14); DPT trains on interaction datasets, not learning histories (17); the Neuron documentation pin is v2.33.0 (key sources). All 36 SCOPE NARROWER items re-hedged with the replacement text their files give. |
+| 3. UNKNOWNs triaged | PASS | Section 6: all 23 items carry a triage. Closed in wave 2: U5, U8, U19, U21, U23, and U2's pass@1 half. Accept-as-hedge: U1, U3, U4, U6, U7, U9 to U18, U22, and U2's pass@16 half. U20 triaged item by item (register 05: U2, U4, U8, U13 closed, U9 and U10 partly closed by E0, U11 cut; register 06: U3 closed, U19 cut if it appears; the rest accept-as-hedge). |
+| 4. Tier 0 decision | PASS | E0 ran on the DGX Spark on 2026-10-30 and passed (`research/2026-10/E0-spark-smoke.md`). Section 21 stays, showing E0's measured results and E1 as a protocol with its predictions; E1 to E4 are out of scope for this build. |
+| 5. Human approval | PASS | On 2026-10-30 Carlos told the build job to go ahead. The 24-section list of SCOPE.md v2 is approved with no cuts (the job's `updates.md` names none). |
+
 After Gate 1, the build starts from `deep-dives/_template/`, with `.gates.json` opting the dive into every Tier 1 gate from the first commit of `src/` (no-ai-tells, svg-a11y, pinned-refs, pinned-refs-research, required-files, pre-overflow), so the ratchet holds from day one. Gates 2 (human review on device) and 3 (no section below 7 of 10, average at least 8) follow the flywheel unchanged.
 
 ---
 
 ## 8. Budget record
 
-Wave 1 used 9 research-agent dispatches: 5 in the first fan-out, 2 re-dispatches of area 05 after a usage stop (split into systems and AWS), and 2 completion agents for those two files. Three agents in the first fan-out and both re-dispatches were cut off by account usage limits; every file they had written to disk was kept and committed, and only unwritten work was re-dispatched. The scope review used 3 reviewer agents (newcomer path, factual grounding, outcome fit) and 1 re-check agent. Wave 2 is budgeted at 6 agents, at most 3 at a time, each writing to disk as it goes.
+Wave 1 used 9 research-agent dispatches: 5 in the first fan-out, 2 re-dispatches of area 05 after a usage stop (split into systems and AWS), and 2 completion agents for those two files. Three agents in the first fan-out and both re-dispatches were cut off by account usage limits; every file they had written to disk was kept and committed, and only unwritten work was re-dispatched. The scope review used 3 reviewer agents (newcomer path, factual grounding, outcome fit) and 1 re-check agent. Wave 2 is budgeted at 6 agents, at most 3 at a time, each writing to disk as it goes. Wave 2 used exactly 6 agents, at most 3 at a time, with 359 fetches in total (45, 62, 63, 49, 63, 67 plus searches); E0 ran in the orchestrator, with no agent.
