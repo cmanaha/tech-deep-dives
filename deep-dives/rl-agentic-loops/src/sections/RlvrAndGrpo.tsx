@@ -234,7 +234,7 @@ const SUCCESSOR_ROWS: SuccessorRow[] = [
     change: 'Dr. GRPO removes both',
     without: (
       <>
-        The length divisor penalises long wrong answers less, so the policy drifts toward them. The
+        The length divisor penalises long wrong answers less, so the model drifts toward them. The
         standard-deviation divisor gives questions nearly always or never solved more weight.
       </>
     ),
@@ -261,7 +261,7 @@ const SUCCESSOR_ROWS: SuccessorRow[] = [
       </>
     ),
     source: (
-      <Cite tier={3} href={DAPO} venue="preprint">
+      <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
         DAPO, Sections 1, 3.1 and 4.1
       </Cite>
     ),
@@ -282,7 +282,7 @@ const SUCCESSOR_ROWS: SuccessorRow[] = [
       </>
     ),
     source: (
-      <Cite tier={3} href={DAPO} venue="preprint">
+      <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
         DAPO, Section 3.2
       </Cite>
     ),
@@ -298,7 +298,7 @@ const SUCCESSOR_ROWS: SuccessorRow[] = [
       </>
     ),
     source: (
-      <Cite tier={3} href={DAPO} venue="preprint">
+      <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
         DAPO, Section 3.3
       </Cite>
     ),
@@ -400,6 +400,9 @@ const KNOB_ROWS: KnobRow[] = [
         <code>rloo</code> or <code>reinforce_plus_plus</code>{' '}
         <Cite tier={1} href={gh(VERL, VERL_TAG, VERL_PPO, 'L77-L78')}>
           ppo_trainer.yaml L77-L78
+        </Cite>{' '}
+        <Cite tier={1} href={gh(VERL, VERL_TAG, VERL_ALGOS, 'L97-L110')}>
+          core_algos.py L97-L110
         </Cite>
       </>
     ),
@@ -439,11 +442,15 @@ const KNOB_ROWS: KnobRow[] = [
     ),
     verl: (
       <>
-        <code>actor_rollout_ref.actor.loss_agg_mode: token-mean</code>;{' '}
-        <code>seq-mean-token-sum-norm</code> divides by a constant, Dr. GRPO&apos;s form in our
+        <code>actor_rollout_ref.actor.loss_agg_mode: token-mean</code>{' '}
+        <Cite tier={1} href={gh(VERL, VERL_TAG, VERL_ACTOR, 'L85-L90')}>
+          actor.yaml L85-L90
+        </Cite>
+        ; <code>seq-mean-token-sum-norm</code> divides by a fixed length, <code>loss_scale_factor</code>{' '}
+        or, when that is unset, the response length of the loss mask: Dr. GRPO&apos;s form in our
         reading of the code{' '}
-        <Cite tier={1} href={gh(VERL, VERL_TAG, VERL_ALGOS, 'L1181-L1193')} kind="code">
-          core_algos.py L1181-L1193
+        <Cite tier={1} href={gh(VERL, VERL_TAG, VERL_ALGOS, 'L1180-L1193')} kind="code">
+          core_algos.py L1180-L1193
         </Cite>
       </>
     ),
@@ -502,6 +509,11 @@ const KNOB_ROWS: KnobRow[] = [
         <code>{'importance_sampling_level="token"'}</code>; set <code>{'"sequence"'}</code>{' '}
         <Cite tier={1} href={gh(TRL, TRL_TAG, TRL_CFG, 'L760-L761')}>
           grpo_config.py L760-L761
+        </Cite>{' '}
+        together with <code>{'loss_type="grpo"'}</code>: with the default <code>{'"dapo"'}</code> the
+        trainer warns that each answer is weighted by its length{' '}
+        <Cite tier={1} href={gh(TRL, TRL_TAG, TRL_TR, 'L928-L934')}>
+          grpo_trainer.py L928-L934
         </Cite>
       </>
     ),
@@ -632,9 +644,10 @@ export function RlvrAndGrpo() {
           <Box variant="p">
             The challenge is to spend each step on prompts that can teach the model something. A
             checker hands out 0s and 1s, and GRPO learns only from the differences inside a group: a
-            group whose answers all score the same gets an advantage of 0 for every answer, and the
-            step spends its rollouts on that prompt for no gradient{' '}
-            <Cite tier={3} href={DAPO} venue="preprint">
+            group whose answers all score the same gives every answer an advantage, its score
+            relative to the group, of 0, and the step spends its rollouts on that prompt for no
+            gradient{' '}
+            <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
               DAPO, Section 3.2
             </Cite>
             . On our DGX Spark run of the GRPO trainer in TRL (Transformers Reinforcement Learning,
@@ -700,7 +713,7 @@ export function RlvrAndGrpo() {
             .
           </Box>
           <Box variant="p">
-            The result depends on the base. In DeepSeek&apos;s experiments, RL from a base model failed
+            The result depends on the base. In DeepSeek&apos;s early experiments, RL from a base model failed
             to give meaningful AIME gains on a 7B dense and a 16B MoE (mixture of experts) base, which
             drifted into repetition as their responses grew, and worked on a 32B dense base (Qwen&apos;s)
             and on 230B and 671B MoE bases. DeepSeek recommends that work testing RL from scratch use
@@ -721,8 +734,12 @@ export function RlvrAndGrpo() {
             .
           </Box>
           <Box variant="p">
-            A 7B base did respond to RL in other work. The minimal recipe of Dr. GRPO (GRPO Done
-            Right), a variant the next blocks return to, took
+            A 7B math base did respond to RL, in DeepSeek&apos;s own later run on Qwen2-Math-7B{' '}
+            <Cite tier={3} href={R1} venue="Nature 2025">
+              DeepSeek-R1, Supplementary F.1, Table 17
+            </Cite>{' '}
+            and in other work. The minimal recipe of Dr. GRPO (GRPO Done Right), a variant the next
+            blocks return to, took
             Qwen2.5-Math-7B to 43.3% on AIME 2024 in 27 hours on 8 A100 GPUs{' '}
             <Cite tier={3} href={DRG} venue="COLM 2025">
               Dr. GRPO, abstract and Section 1
@@ -796,16 +813,24 @@ export function RlvrAndGrpo() {
             deviations, and a failing one sits 0.72 standard deviations below it. Prompt B&apos;s eight
             answers all pass: every reward equals the mean, and every advantage is 0. A zero advantage
             gives zero policy gradient{' '}
-            <Cite tier={3} href={DAPO} venue="preprint">
+            <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
               DAPO, Section 3.2
             </Cite>
             . TRL&apos;s defaults switch off the KL (Kullback-Leibler divergence) penalty of section 5
-            and the entropy bonus, so under them prompt B contributes nothing to the step{' '}
+            and the entropy bonus, so under them prompt B adds no gradient to the step{' '}
             <Cite tier={1} href={gh(TRL, TRL_TAG, TRL_CFG, 'L681-L687')}>
               grpo_config.py L681-L687
             </Cite>{' '}
             <Cite tier={1} href={gh(TRL, TRL_TAG, TRL_CFG, 'L876-L877')}>
               grpo_config.py L876-L877
+            </Cite>
+            . Its tokens still count in the default loss&apos;s divisor, the number of completion
+            tokens in the batch, so a silent group also shrinks the update the other groups make{' '}
+            <Cite tier={1} href={gh(TRL, TRL_TAG, TRL_TR, 'L2497-L2498')}>
+              grpo_trainer.py L2497-L2498
+            </Cite>{' '}
+            <Cite tier={1} href={gh(TRL, TRL_TAG, TRL_TR, 'L3168-L3173')}>
+              grpo_trainer.py L3168-L3173
             </Cite>
             .
           </Box>
@@ -873,12 +898,12 @@ export function RlvrAndGrpo() {
                 filtering, 38 with Clip-Higher, 41 with a soft penalty for overlong answers, 42 with the
                 token-level loss and 50 with dynamic sampling, against 47 for DeepSeek&apos;s
                 R1-Zero-Qwen-32B{' '}
-                <Cite tier={3} href={DAPO} venue="preprint">
+                <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
                   DAPO, Table 1
                 </Cite>
                 . Dynamic sampling draws more samples per batch; the authors report that convergence
                 still took less time, because fewer training steps were needed{' '}
-                <Cite tier={3} href={DAPO} venue="preprint">
+                <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
                   DAPO, Sections 3.2 and 4.2, Figure 6
                 </Cite>
                 . One base model and one benchmark.
@@ -1049,17 +1074,17 @@ export function RlvrAndGrpo() {
           <Box variant="p">
             A group whose answers all earn the same reward contributes no gradient, whether every
             answer passed or every answer failed{' '}
-            <Cite tier={3} href={DAPO} venue="preprint">
+            <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
               DAPO, Section 3.2
             </Cite>{' '}
             <Cite tier={1} href={MTRL}>
               SageMaker AI multi-turn RL hyperparameters reference
             </Cite>
             , yet each such prompt still costs a full group of rollouts. In
-            DAPO&apos;s run the share of such prompts grew as training went on: as the model solved more
+            DAPO&apos;s run the share of always-solved prompts grew as training went on: as the model solved more
             prompts, fewer prompts per batch carried signal and the batch gradient got noisier, which is
             why DAPO refills each batch with prompts whose accuracy is strictly between 0 and 1{' '}
-            <Cite tier={3} href={DAPO} venue="preprint">
+            <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
               DAPO, Section 3.2
             </Cite>
             .
@@ -1120,7 +1145,7 @@ export function RlvrAndGrpo() {
                 prompts solved 10% to 90% of the time and barely moves it at 1% or 99%, where the
                 always-solved and never-solved prompts sit.
                 For sparse rewards, SageMaker AI&apos;s guidance is a moderate group size with a larger
-                batch or more steps, and a lower learning rate, because each step&apos;s useful gradient
+                batch or more steps, or a lower learning rate, because each step&apos;s useful gradient
                 is diluted{' '}
                 <Cite tier={1} href={MTRL}>
                   SageMaker AI multi-turn RL hyperparameters reference

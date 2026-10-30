@@ -32,10 +32,11 @@ ab728f05d81de9af38d0ca155a84166b037e355a ("accepted as a Spotlight paper at ICML
 - "Three findings show the boundary moving, each in a controlled or small setting" | our reading | SCOPE section 8 [our reading]; register 02 mental model 3
 - Composition, Llama-3.1-8B-Instruct, string functions: unseen level 3 near zero to 30%, level 4 to 15%; rejection fine-tuning on same level-2 problems does not generalise | https://arxiv.org/abs/2509.25123v3 (Sec. 1) | F02-50; wave2-rlvr row 25
 - On hard levels the pass@k gap widens with k | https://arxiv.org/abs/2509.25123v3 (Fig. 5 caption) | F02-50
-- 100M-parameter models from scratch on synthetic data; real pass@128 gains only with pretraining headroom and edge-of-competence RL data | https://arxiv.org/abs/2512.07783v1 (abstract) | F02-49; wave2-rlvr row 26; venue ICML 2026 per authors' README
+- 100M-parameter models from scratch on synthetic data; real pass@128 gains only with pretraining headroom and edge-of-competence RL data | https://arxiv.org/abs/2512.07783v1 (abstract; 100M in Sec. 2.4) | F02-49; wave2-rlvr row 26; venue ICML 2026 confirmed on OpenReview ("ICML 2026 spotlight", venueid ICML.cc/2026/Conference) by fc03
 - Teacher-guided curriculum RL: average pass@256 +9.8 points over base across five model settings | https://arxiv.org/abs/2606.22317v1 (abstract, Sec. 4.1) | F02-61; wave2-rlvr row 27
 - Pass@(k,T): Qwen2.5-7B-Instruct, LoRA GRPO on 200 problems, 100 test problems per category, k up to 64; multi-hop (bridge) 0.81 vs 0.77 at k = 64, about four problems, gap widened with k | https://arxiv.org/abs/2604.14877v1 (Sec. 3, Sec. 4.2, Table 2) | F02-62; wave2-rlvr row 41 (replacement text used)
 - Synthesis: RL sharpens by default, widens with a new combination, edge data, or outside information | our reading | register 02 mental model 3
+- "The open comparisons located stop at 32B" (scope word added by fc03)
 - U1 hedge: no frontier lab large-k base-vs-RL comparison located in the sources for this research; Yue name proprietary models as the limit | https://arxiv.org/abs/2504.13837v5 (Sec. 7) | RESEARCH-GUIDE U1 (accept-as-hedge); F02-44; wave2-rlvr G1
 - At 32B the answer depends on the benchmark: Yue base ahead at k = 128 on Minerva; Guru Qwen2.5-32B-Base RL above base at every sampled k on AIME, 7B curves cross at k = 64 | https://arxiv.org/abs/2506.14965v1 (Sec. 4.3) | wave2-rlvr G1
 - AIME on a Qwen2.5 base carries the family caveat | our reading | wave2-rlvr G1 [our reading]
@@ -61,6 +62,7 @@ ab728f05d81de9af38d0ca155a84166b037e355a ("accepted as a Spotlight paper at ICML
 - Qwen2.5-Math-7B, MATH-500: random rewards +21.4, incorrect labels +24.1, ground truth +29.1; spurious rewards often fail on Llama3 and OLMo2 | https://arxiv.org/abs/2506.10947v2 (abstract, Sec. 2.2) | F02-53; wave2-rlvr row 33; venue ICML 2026 per wave2-rlvr G3
 - 60% prefix: Qwen2.5-Math-7B 54.60% exact match vs Llama3.1-8B 3.8%; LiveMathBench 202505 completion 0.0% | https://arxiv.org/abs/2507.10532v3 (Sec. 1) | F02-56; wave2-rlvr row 34
 - On generated arithmetic only accurate rewards pass the base boundary | https://arxiv.org/abs/2507.10532v3 (abstract) | F02-56
+- Llama or OLMo non-transfer in Reasoning or Memorization is in Sec. 2.1 (Sec. 1 names Llama only); cite text now "Sections 1 and 2.1" (fc03)
 - U3 hedge: mechanism still argued, clipping bias amplifying existing behaviour (code reasoning without execution) vs contamination; both agree no carry to Llama or OLMo | https://arxiv.org/abs/2506.10947v2 (abstract); https://arxiv.org/abs/2507.10532v3 (abstract, Sec. 1) | RESEARCH-GUIDE U3 (accept-as-hedge); F02-54; wave2-rlvr G5
 - Three checks as questions (family, contamination, k) | our reading | SCOPE section 8 trust check
 
@@ -77,3 +79,8 @@ ab728f05d81de9af38d0ca155a84166b037e355a ("accepted as a Spotlight paper at ICML
 - Table rows: best-of-K needs verifier, K samples and K verifier calls, capped by base pass@K; power sampling needs only base, ~8.84x; trigger prompt few tokens, helped Qwen2.5-Math and Qwen2.5-1.5B (+10.0, Table 2), hurt Llama, OLMo2, Qwen2.5-7B | as cited in the items above | F02-55, F02-58, F02-64
 - Landing: per-query vs once-in-training; neither reaches past base pass@K; where RL went beyond (composition, tool use) the starting model's pass@k stayed below RL at the largest k measured | https://arxiv.org/abs/2509.25123v3 (Fig. 5); https://arxiv.org/abs/2604.14877v1 (Sec. 4.2) | register 02 mental model 4 [our reading]; R2b scope fix (studies read only)
 - Next action: measure base pass@k at the affordable K before training; flat curve means the gap needs new information | our reading | SCOPE section 8 item 5
+
+## fc03 fact check (2026-10-30)
+- Venues corrected from "preprint": f(g(x)) 2509.25123v3 ICLR 2026 (https://proceedings.iclr.cc/paper_files/paper/2026/hash/eeae43a68515325cad64c0f54b2d0c70-Abstract-Conference.html); Reasoning with Sampling 2510.14901v1 ICLR 2026 (https://proceedings.iclr.cc/paper_files/paper/2026/hash/01498f17142547dadb60999c39bd0a09-Abstract-Conference.html); Guru 2506.14965v1 NeurIPS 2025 Datasets and Benchmarks (https://papers.nips.cc/paper_files/paper/2025/hash/c2f71567cd53464161cab3336e8fc865-Abstract-Datasets_and_Benchmarks_Track.html); Let's Verify Step by Step 2305.20050v1 ICLR 2024 (https://proceedings.iclr.cc/paper_files/paper/2024/hash/aca97732e30bcf1303bc22ac3924fd16-Abstract-Conference.html).
+- Intro scope narrowed: "in the studies read here" replaces "tested so far".
+- LoRA expansion moved ahead of its first use; MATH glossed at first use.

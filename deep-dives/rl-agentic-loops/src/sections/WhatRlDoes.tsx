@@ -345,12 +345,12 @@ export function WhatRlDoes() {
             The term it turns on is the capability boundary: the set of problems a model solves in
             at least one of k samples when k is large. RL can move probability inside that set,
             which is sharpening, or it can widen the set. A pass@k curve shows which happened. On
-            the models and benchmarks tested so far, RLVR mostly sharpens, and a frozen model can
+            the models and benchmarks in the studies read here, RLVR mostly sharpens, and a frozen model can
             buy part of the sharpening back when it answers: a training-free sampler nearly matched
             the single-shot score of GRPO (Group Relative Policy Optimization, the RL algorithm
             that scores each answer against the others sampled for the same prompt) on a math
             benchmark, at about 8.84 times the tokens per answer{' '}
-            <Cite tier={3} href={SAMPLING} venue="preprint">
+            <Cite tier={3} href={SAMPLING} venue="ICLR 2026">
               Reasoning with Sampling, Table 1 and Section 5.3
             </Cite>
             .
@@ -475,11 +475,11 @@ export function WhatRlDoes() {
             two-function compositions lifted unseen three-function problems from near zero to 30%
             and four-function problems to 15%. Rejection fine-tuning, training on the model&apos;s
             own correct answers, did not generalise this way on the same problems{' '}
-            <Cite tier={3} href={COMPOSE} venue="preprint">
+            <Cite tier={3} href={COMPOSE} venue="ICLR 2026">
               From f(x) and g(x) to f(g(x)), Section 1
             </Cite>
             . On the hard levels the pass@k gap over the starting model widened as k grew{' '}
-            <Cite tier={3} href={COMPOSE} venue="preprint">
+            <Cite tier={3} href={COMPOSE} venue="ICLR 2026">
               From f(x) and g(x) to f(g(x)), Figure 5
             </Cite>
             .
@@ -492,7 +492,7 @@ export function WhatRlDoes() {
             produced real pass@128 gains only when pretraining left headroom on the task and the RL
             data sat at the model&apos;s edge of competence, hard but not yet out of reach{' '}
             <Cite tier={3} href={INTERPLAY} venue="ICML 2026">
-              Interplay of pre-training, mid-training and RL, abstract
+              Interplay of pre-training, mid-training and RL, abstract and Section 2.4
             </Cite>
             .
           </Box>
@@ -505,15 +505,15 @@ export function WhatRlDoes() {
             <Cite tier={3} href={CURRICULUM} venue="preprint">
               Curriculum RL beyond the base model, abstract and Section 4.1
             </Cite>
-            . In one small study (Qwen2.5-7B-Instruct trained with LoRA GRPO on 200 problems, 100
-            test problems per category, k up to 64), tool-use RL on multi-hop search ended above
-            the base at large k, 0.81 against 0.77 at k = 64, a margin of about four problems, and
-            the gap widened as k grew{' '}
+            . LoRA (Low-Rank Adaptation) trains a small add-on to frozen weights. In one small
+            study (Qwen2.5-7B-Instruct trained with LoRA GRPO on 200 problems, 100 test problems per
+            category, k up to 64), tool-use RL on multi-hop search ended above the base at large k,
+            0.81 against 0.77 at k = 64, a margin of about four problems, and the gap widened as k
+            grew{' '}
             <Cite tier={3} href={PASS_KT} venue="preprint">
               Pass@(k,T), Sections 3 and 4.2
             </Cite>
-            . LoRA (Low-Rank Adaptation) trains a small add-on to frozen weights. Section 9,
-            Agentic RL, covers that study.
+            . Section 9, Agentic RL, covers that study.
           </Box>
           <Box variant="p">
             Our reading: RL sharpens by default, and it widens the boundary when training gives the
@@ -534,7 +534,7 @@ export function WhatRlDoes() {
                 .
               </Box>
               <Box variant="p">
-                The open comparisons stop at 32B, and there the answer depends on the benchmark.
+                The open comparisons located stop at 32B, and there the answer depends on the benchmark.
                 The base model was ahead at k = 128 on Minerva{' '}
                 <Cite tier={3} href={YUE} venue="NeurIPS 2025">
                   Yue et al., Section 3.1
@@ -542,7 +542,7 @@ export function WhatRlDoes() {
                 ; in another study, RL from Qwen2.5-32B-Base stayed above the base at every
                 sampled k on AIME (a US competition-math exam whose integer answers a rule can
                 check), while at 7B the curves crossed at k = 64{' '}
-                <Cite tier={3} href={GURU} venue="preprint">
+                <Cite tier={3} href={GURU} venue="NeurIPS 2025 Datasets and Benchmarks">
                   Guru cross-domain RL study, Section 4.3
                 </Cite>
                 . AIME on a Qwen2.5 base carries the model-family caveat of the trust check below
@@ -586,7 +586,8 @@ export function WhatRlDoes() {
             while policy gradient, the RL update driven by the advantage (how much better an
             attempt scored than expected), supplies only O(1) bits per attempt, a constant that
             does not grow with the length of the answer. Assuming one bit per completion, their
-            MATH run of about 10,000 problems with 32 samples each had about 320,000 bits to absorb,
+            run on MATH, a competition-math benchmark, with about 10,000 problems and 32 samples
+            each had about 320,000 bits to absorb,
             against about 3M parameters in a rank-1 LoRA adapter on Llama-3.1-8B. In their runs
             (Llama-3.1-8B base, MATH and grade-school math), rank-1 LoRA matched full fine-tuning
             for policy gradient{' '}
@@ -723,7 +724,7 @@ export function WhatRlDoes() {
               Spurious Rewards, abstract
             </Cite>{' '}
             <Cite tier={3} href={MEMORIZATION} venue="AAAI 2026">
-              Reasoning or Memorization, Section 1
+              Reasoning or Memorization, Sections 1 and 2.1
             </Cite>
             .
           </Box>
@@ -791,20 +792,20 @@ export function WhatRlDoes() {
             power, 4 in the paper, a sharpened version of what the model already samples. It uses
             MCMC (Markov chain Monte Carlo) to resample blocks of tokens according to their
             base-model likelihoods, and needs no training data and no verifier{' '}
-            <Cite tier={3} href={SAMPLING} venue="preprint">
+            <Cite tier={3} href={SAMPLING} venue="ICLR 2026">
               Reasoning with Sampling, Sections 1 and 4
             </Cite>
             . On Qwen2.5-Math-7B and MATH-500 it scored 0.748, against 0.496 for the base model and
             0.785 for GRPO trained on MATH; the authors tested it on Qwen2.5-Math-7B, Qwen2.5-7B
             and Phi-3.5-mini-instruct{' '}
-            <Cite tier={3} href={SAMPLING} venue="preprint">
+            <Cite tier={3} href={SAMPLING} venue="ICLR 2026">
               Reasoning with Sampling, Section 5.1 and Table 1
             </Cite>
             . The price is about 8.84 times the tokens of standard inference, which the authors
             compute for MATH-500 from their sampler settings (10 MCMC steps, a 679-token average
             output, 192-token blocks); the multiplier moves with output length and those
             settings{' '}
-            <Cite tier={3} href={SAMPLING} venue="preprint">
+            <Cite tier={3} href={SAMPLING} venue="ICLR 2026">
               Reasoning with Sampling, Section 5.3
             </Cite>
             .
@@ -833,7 +834,7 @@ export function WhatRlDoes() {
             problem, against 72.4% for an ORM (outcome-supervised reward model, which scores only
             the final answer) and 69.6% for majority voting. The generator was never trained with
             RL{' '}
-            <Cite tier={3} href={LIGHTMAN} venue="preprint">
+            <Cite tier={3} href={LIGHTMAN} venue="ICLR 2024">
               Let&apos;s Verify Step by Step, Sections 1 to 3 and Figure 3
             </Cite>
             . DeepSeek dropped PRMs as a training reward: steps are hard to define, step
@@ -856,7 +857,7 @@ export function WhatRlDoes() {
             (string functions on Llama-3.1-8B-Instruct) and with tool use that widened coverage
             (one small study on Qwen2.5-7B-Instruct), the starting model&apos;s pass@k, the ceiling
             for resampling it, stayed below the RL model&apos;s at the largest k measured{' '}
-            <Cite tier={3} href={COMPOSE} venue="preprint">
+            <Cite tier={3} href={COMPOSE} venue="ICLR 2026">
               From f(x) and g(x) to f(g(x)), Figure 5
             </Cite>{' '}
             <Cite tier={3} href={PASS_KT} venue="preprint">
