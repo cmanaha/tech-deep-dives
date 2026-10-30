@@ -219,8 +219,8 @@ const E0_ENTROPY_RUN2 = [
 function EntropyChart() {
   const x0 = 80;
   const x1 = 820;
-  const yTop = 50;
-  const yBase = 250;
+  const yTop = 70;
+  const yBase = 270;
   const yMax = 0.4;
   const sx = (step: number) => x0 + ((step - 1) * (x1 - x0)) / 19;
   const sy = (v: number) => yBase - (v / yMax) * (yBase - yTop);
@@ -233,7 +233,7 @@ function EntropyChart() {
   return (
     <div style={{ overflowX: 'auto' }}>
       <svg
-        viewBox="0 0 860 300"
+        viewBox="0 0 860 320"
         role="img"
         aria-labelledby="leashes-entropy-title"
         style={{ width: '100%', minWidth: 640, height: 'auto' }}
@@ -243,7 +243,7 @@ function EntropyChart() {
           seed. TRL&apos;s mean per-token entropy stays between 0.19 and 0.32 at every step and
           wanders with no trend. The two runs match for steps 1 to 8 and separate after that.
         </title>
-        <rect x={0} y={0} width={860} height={300} rx={8} fill="#ffffff" />
+        <rect x={0} y={0} width={860} height={320} rx={8} fill="#ffffff" />
 
         {yTicks.map((t) => (
           <g key={t}>
@@ -282,7 +282,7 @@ function EntropyChart() {
         ))}
         <text
           x={(x0 + x1) / 2}
-          y={292}
+          y={312}
           fill="#414d5c"
           fontSize={11}
           fontFamily="sans-serif"
@@ -294,23 +294,23 @@ function EntropyChart() {
           Mean per-token entropy (TRL entropy metric)
         </text>
 
-        {/* Legend */}
-        <line x1={600} x2={630} y1={24} y2={24} stroke={blue} strokeWidth={2} />
-        <circle cx={615} cy={24} r={4} fill={blue} />
-        <text x={638} y={28} fill="#16191f" fontSize={11} fontFamily="sans-serif">
+        {/* Legend, under the title at the left so a phone shows it without scrolling */}
+        <line x1={80} x2={110} y1={46} y2={46} stroke={blue} strokeWidth={2} />
+        <circle cx={95} cy={46} r={4} fill={blue} />
+        <text x={118} y={50} fill="#16191f" fontSize={11} fontFamily="sans-serif">
           Run 1
         </text>
         <line
-          x1={700}
-          x2={730}
-          y1={24}
-          y2={24}
+          x1={180}
+          x2={210}
+          y1={46}
+          y2={46}
           stroke={orange}
           strokeWidth={2}
           strokeDasharray="6 4"
         />
-        <rect x={711} y={20} width={8} height={8} fill={orange} />
-        <text x={738} y={28} fill="#16191f" fontSize={11} fontFamily="sans-serif">
+        <rect x={191} y={42} width={8} height={8} fill={orange} />
+        <text x={218} y={50} fill="#16191f" fontSize={11} fontFamily="sans-serif">
           Run 2
         </text>
 
@@ -409,6 +409,7 @@ function GradientTable() {
         {
           id: 'method',
           header: 'Method',
+          minWidth: 150,
           cell: (r) =>
             r.isNew ? (
               <>
@@ -421,9 +422,9 @@ function GradientTable() {
               r.method
             ),
         },
-        { id: 'source', header: 'Sample source', cell: (r) => r.source },
-        { id: 'scorer', header: 'Scorer', cell: (r) => r.scorer },
-        { id: 'weight', header: 'Weight on the log-probability gradient', cell: (r) => r.weight },
+        { id: 'source', header: 'Sample source', cell: (r) => r.source, minWidth: 220 },
+        { id: 'scorer', header: 'Scorer', cell: (r) => r.scorer, minWidth: 220 },
+        { id: 'weight', header: 'Weight on the log-probability gradient', cell: (r) => r.weight, minWidth: 260 },
       ]}
     />
   );

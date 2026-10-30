@@ -291,7 +291,7 @@ function AblationTable() {
       trackBy="id"
       items={ABLATION_ROWS}
       columnDefinitions={[
-        { id: 'setup', header: 'Setup', cell: (r) => r.setup },
+        { id: 'setup', header: 'Setup', cell: (r) => r.setup, minWidth: 150 },
         { id: 'tests', header: 'Self-written tests', cell: (r) => r.tests },
         { id: 'reflection', header: 'Written reflection', cell: (r) => r.reflection },
         {
@@ -392,11 +392,11 @@ function ScoreTable() {
       trackBy="id"
       items={SCORE_ROWS}
       columnDefinitions={[
-        { id: 'setting', header: 'Benchmark and model', cell: (r) => r.setting },
-        { id: 'method', header: 'Method', cell: (r) => r.method },
-        { id: 'first', header: 'First attempt', cell: (r) => r.first },
-        { id: 'second', header: 'Second attempt', cell: (r) => r.second },
-        { id: 'delta', header: 'Change (points)', cell: (r) => r.delta },
+        { id: 'setting', header: 'Benchmark and model', cell: (r) => r.setting, minWidth: 150 },
+        { id: 'method', header: 'Method', cell: (r) => r.method, minWidth: 200 },
+        { id: 'first', header: 'First attempt', cell: (r) => r.first, minWidth: 110 },
+        { id: 'second', header: 'Second attempt', cell: (r) => r.second, minWidth: 120 },
+        { id: 'delta', header: 'Change (points)', cell: (r) => r.delta, minWidth: 110 },
       ]}
     />
   );

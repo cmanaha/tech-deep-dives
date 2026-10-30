@@ -297,6 +297,7 @@ function GradientTable() {
         {
           id: 'method',
           header: 'Method',
+          minWidth: 150,
           cell: (r) =>
             r.isNew ? (
               <>
@@ -309,9 +310,9 @@ function GradientTable() {
               r.method
             ),
         },
-        { id: 'source', header: 'Sample source', cell: (r) => r.source },
-        { id: 'scorer', header: 'Scorer', cell: (r) => r.scorer },
-        { id: 'weight', header: 'Weight on the log-probability gradient', cell: (r) => r.weight },
+        { id: 'source', header: 'Sample source', cell: (r) => r.source, minWidth: 220 },
+        { id: 'scorer', header: 'Scorer', cell: (r) => r.scorer, minWidth: 220 },
+        { id: 'weight', header: 'Weight on the log-probability gradient', cell: (r) => r.weight, minWidth: 260 },
       ]}
     />
   );

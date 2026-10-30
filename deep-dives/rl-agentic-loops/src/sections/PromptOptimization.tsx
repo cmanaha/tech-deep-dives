@@ -404,7 +404,7 @@ function ResultTable() {
       trackBy="id"
       items={RESULT_ROWS}
       columnDefinitions={[
-        { id: 'task', header: 'Task', cell: (r) => r.task },
+        { id: 'task', header: 'Task', cell: (r) => r.task, minWidth: 155 },
         { id: 'base', header: 'Base model', cell: (r) => r.base },
         {
           id: 'grpo',

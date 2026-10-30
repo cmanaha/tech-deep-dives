@@ -1037,7 +1037,7 @@ export function RlvrAndGrpo() {
             trackBy="id"
             items={MTRL_ROWS}
             columnDefinitions={[
-              { id: 'setting', header: 'Setting', cell: (r) => r.setting, minWidth: 170 },
+              { id: 'setting', header: 'Setting', cell: (r) => r.setting, minWidth: 250 },
               { id: 'def', header: 'Default', cell: (r) => r.def, minWidth: 100 },
               { id: 'choices', header: 'Choices', cell: (r) => r.choices, minWidth: 220 },
               { id: 'term', header: 'Term in this section', cell: (r) => r.term, minWidth: 240 },
@@ -1127,9 +1127,9 @@ export function RlvrAndGrpo() {
                   { p: '50%', g8: '0.8%', g16: 'under 0.01%' },
                 ]}
                 columnDefinitions={[
-                  { id: 'p', header: 'Chance one answer passes', cell: (r) => r.p, minWidth: 180 },
-                  { id: 'g8', header: 'No gradient, G = 8', cell: (r) => r.g8, minWidth: 140 },
-                  { id: 'g16', header: 'No gradient, G = 16', cell: (r) => r.g16, minWidth: 140 },
+                  { id: 'p', header: 'Chance one answer passes', cell: (r) => r.p, minWidth: 94 },
+                  { id: 'g8', header: 'No gradient, G = 8', cell: (r) => r.g8, minWidth: 107 },
+                  { id: 'g16', header: 'No gradient, G = 16', cell: (r) => r.g16, minWidth: 107 },
                 ]}
               />
               <Box variant="p">

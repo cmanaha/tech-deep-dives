@@ -740,9 +740,9 @@ function FiveFieldTable() {
             </SpaceBetween>
           ),
         },
-        { id: 'state', header: 'State that persists', cell: (m) => m.state, minWidth: 160 },
+        { id: 'state', header: 'State that persists', cell: (m) => m.state, minWidth: 200 },
         { id: 'update', header: 'Update rule', cell: (m) => m.update, minWidth: 200 },
-        { id: 'signal', header: 'Feedback signal', cell: (m) => m.signal, minWidth: 170 },
+        { id: 'signal', header: 'Feedback signal', cell: (m) => m.signal, minWidth: 160 },
         { id: 'frozen', header: 'What stays frozen', cell: (m) => m.frozen, minWidth: 160 },
         { id: 'cost', header: 'Cost', cell: (m) => m.cost, minWidth: 170 },
       ]}

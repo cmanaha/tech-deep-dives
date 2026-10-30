@@ -455,6 +455,7 @@ function EnvironmentsTable() {
         {
           id: 'name',
           header: 'Setup',
+          minWidth: 170,
           cell: (r) => (
             <SpaceBetween size="xxs">
               <Box variant="strong">{r.name}</Box>
@@ -462,10 +463,10 @@ function EnvironmentsTable() {
             </SpaceBetween>
           ),
         },
-        { id: 'env', header: 'Environment', cell: (r) => r.env },
-        { id: 'action', header: 'Action', cell: (r) => r.action },
-        { id: 'obs', header: 'Observation', cell: (r) => r.obs },
-        { id: 'reward', header: 'Reward', cell: (r) => r.reward },
+        { id: 'env', header: 'Environment', cell: (r) => r.env, minWidth: 220 },
+        { id: 'action', header: 'Action', cell: (r) => r.action, minWidth: 200 },
+        { id: 'obs', header: 'Observation', cell: (r) => r.obs, minWidth: 200 },
+        { id: 'reward', header: 'Reward', cell: (r) => r.reward, minWidth: 240 },
       ]}
     />
   );

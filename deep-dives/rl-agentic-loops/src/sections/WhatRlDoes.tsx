@@ -304,10 +304,10 @@ function BuyBackTable() {
       variant="embedded"
       wrapLines
       columnDefinitions={[
-        { id: 'route', header: 'Route', cell: (r) => r.route },
-        { id: 'needs', header: 'Needs', cell: (r) => r.needs },
-        { id: 'perQuery', header: 'Paid on every query', cell: (r) => r.perQuery },
-        { id: 'scope', header: 'Where it was shown', cell: (r) => r.scope },
+        { id: 'route', header: 'Route', cell: (r) => r.route, minWidth: 150 },
+        { id: 'needs', header: 'Needs', cell: (r) => r.needs, minWidth: 220 },
+        { id: 'perQuery', header: 'Paid on every query', cell: (r) => r.perQuery, minWidth: 200 },
+        { id: 'scope', header: 'Where it was shown', cell: (r) => r.scope, minWidth: 240 },
       ]}
       items={BUY_BACK}
       header={<Header variant="h3">Three ways to buy sharpening back per query</Header>}
