@@ -7,3 +7,53 @@ Per-section author reports, for the glossary, the fact check and the final repor
 | 3 Policy | LanguageModelAsPolicy.tsx | 43 | 1, 0 overlap/clip | RL, GRPO, EOS, PPO, TRL, KL, RLOO, GAE | Strongest number from E0 (one 0/1 reward per 124-164-token completion); Sutton and Barto 2.9 and TRL v1.12.0 ppo_trainer L786-L798, ppo_config L264-L267 checked beyond register |
 | 4 Policy gradient | PolicyGradient.tsx | 43 | 2 (baseline weights chart, illustrative; gradient table), 0 overlap/clip | RL, SFT, PPO, GRPO, RLOO, GAE, RLHF, DPO, KL, HH; GSM8K, MATH glossed | Added DeepSeekMath 1.3B comparison (F01-71) in an expandable beyond the block; 'critic' worded per Sutton and Barto. Found generator regex bug (fixed) |
 | 5 Two leashes | TwoLeashes.tsx | 42 | 2 (two-leash SVG; E0 entropy chart), 0 overlap/clip (both scroll at 390, min 640) | RL, PPO, KL, TRL, GRPO, RLHF, TRPO, SFT, RLOO, LoRA, GAE, DPO, RFT | Beyond block, sourced: clip acts only when one batch feeds more than one update (DeepSeekMath A.1.5, TRL num_iterations, E0 clip_ratio/region_mean 0.0); LoRA with beta above 0 loads no second copy (TRL code); TRL RLOO beta default 0.05 |
+
+## Cross-section conditions to keep consistent
+
+Facts that more than one section states. A section that contradicts one of these is wrong; the owner
+section and source are named so the fact check can trace it.
+
+- **TRL defaults at v1.16.0** (sections 5, 7, 19, 21): GRPOTrainer `loss_type` `dapo`, `beta` 0.0 (no
+  KL term and no reference model loaded), `epsilon` 0.2, `num_generations` 8, `scale_rewards`
+  `group`, `num_iterations` 1, `vllm_importance_sampling_correction` True. TRL's PPO trainer is read at
+  v1.12.0; it was removed in v1.13.0 and is absent at v1.16.0 (wave2-foundations row 6).
+- **E0 numbers** (sections 3, 5, 7, 19, 21; source `research/2026-10/E0-spark-smoke.md`): Qwen2.5-0.5B-
+  Instruct, full fine-tuning, TRL 1.16.0 and vLLM 0.28.0 colocate on one GB10; 20 steps of 16
+  completions (2 prompts x 8), up to 256 tokens. Median step 2.087 s and 2.110 s; generation 62.0% and
+  62.9% of summed step time, training 29.9% and 29.5%, other preparation 6.8% and 6.5%, weight sync
+  17 ms (0.9% and 0.8%). Mean reward 0.044; 9 and 10 of 20 steps had every group all zero (no gradient).
+  Entropy 0.19 to 0.32. Log-probability difference vLLM against trainer averaged 0.011, largest 0.92 and
+  1.14. `MemAvailable` drop about 23.7 and 24.5 GB; `torch.cuda.max_memory_allocated` 17.23 and 17.89
+  GiB. E0 shows the mechanism, not learning: the reward did not move.
+- **Generation share at scale** (sections 19, 20): 72.1% for Skywork-OR1-32B (register 05 F05-42);
+  verl's public reproduction logged generation at 67.4% (wave2-systems-cost G1). E0's 62% is a 0.5B
+  model with short outputs: different scale, same ordering of stages.
+- **DeepSWE** (sections 9, 20): Qwen3-32B, RL only, 64 H100s, six days; 23% pass@1 at the start of RL to
+  42.2% pass@1 on SWE-Bench Verified, 71.0% pass@16, all Agentica and Together AI's claims
+  (`kind="vendor-claim"`); a base pass@16 was not located (wave2-rlvr rows 40, 40b).
+- **The 32B base in the DeepSeek-R1 distillation comparison is Qwen's** (Qwen2.5-32B), not DeepSeek's
+  (wave2-rlvr row 9).
+- **pass@(k,T)** (sections 8, 9): "large k" means k up to 64, the RL arm is LoRA GRPO on
+  Qwen2.5-7B-Instruct, and the multi-hop gap is 0.81 against 0.77 (wave2-rlvr row 41).
+- **Sparsity** (section 8 only): 68.5% to 96.0% across ten public checkpoints and seven methods at a
+  1e-5 bf16 tolerance; F02-85 names an optimisation bias that bf16 amplifies ("sparsity cannot be
+  explained by precision alone"); RL's Razor (ICLR 2026) found none in float32 (wave2-rlvr rows 30, 31).
+- **GEPA** (sections 11, 14, 16, 20, 21): its GRPO baseline used 24,000 rollouts; the full fine-tuning
+  comparison is one task (a 2-hop HoVer program); the Pareto front is over the validation set; GEPA's
+  reflector in the paper's open-model runs was Qwen3 8B (wave2-words rows 3, 6, 40).
+- **MIPRO** expands as "Multi-prompt Instruction PRoposal Optimizer" (wave2-words row 38).
+- **ReTool's** RL lift includes a cold-start SFT stage, and 67.0 is ReTool's own figure (wave2-words
+  row 11).
+- **GAE at lambda = 1** still subtracts the critic as a baseline; the critic stops standing in for
+  future reward but is not ignored (wave2-foundations row 12).
+- **DPT** predicts optimal actions from in-context datasets that may be random; only Algorithm
+  Distillation trains on learning histories (wave2-limits row 23).
+- **FunSearch** used "on the order of 10^6" samples (wave2-limits, U21 closed).
+- **AWS** (sections 20, 22, 23): Amazon Nova 2 Lite RFT is $80.00 per training hour (wave2-aws G2);
+  Bedrock RFT trains rank-32 LoRA adapters (AWS ML blog, Tier 2 vendor statement); Neuron documentation pinned at v2.33.0; AgentCore's
+  episodic memory test on tau2-bench is AWS's own (Tier 2, vendor claim).
+- **Venues**: RL's Razor ICLR 2026; F04-53 ACL Findings 2024; DeepSeek-R1 Nature; Yue et al. NeurIPS
+  2025; Spurious Rewards ICML 2026; Gao et al. ICML 2023; RLOO ACL 2024; Math-Shepherd ACL 2024;
+  Ovadia et al. EMNLP 2024; Shen et al. ICML 2024 (position paper).
+- **OpenAI's fine-tuning platform is closed to new users** (wave2-foundations G3): any section naming
+  OpenAI RFT as an option says so.
