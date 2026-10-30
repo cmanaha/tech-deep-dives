@@ -182,6 +182,10 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'TPU', fullForm: 'Tensor processing unit', description: 'Google\'s machine-learning accelerator.' },
   { acronym: 'EOS', fullForm: 'End of sequence', description: 'The token that ends a generation, where an outcome reward is usually attached.' },
   { acronym: 'HH', fullForm: 'Helpful and harmless', description: 'Anthropic\'s preference dataset of helpfulness and harmlessness comparisons.' },
+  { acronym: 'NxD', fullForm: 'NeuronX Distributed', description: 'AWS Neuron\'s distributed training library for Trainium; its training package (NxD Training) has reached end of support.' },
+  { acronym: 'DGX Spark', fullForm: 'NVIDIA DGX Spark (GB10)', description: 'A desktop system with one GB10 chip and unified CPU-GPU memory; the host of this dive\'s E0 run.' },
+  { acronym: 'E0, E1', fullForm: 'Experiment 0, Experiment 1', description: 'This dive\'s own experiments. E0 (a GRPO smoke test on a DGX Spark) ran; E1 (one task, three learners) ships as a protocol in section 21.' },
+  { acronym: 'REINFORCE', fullForm: 'REINFORCE (algorithm name)', description: 'Williams\'s Monte Carlo policy-gradient algorithm: weight each sampled action\'s log-probability gradient by its return. RLOO and REINFORCE++ build on it.' },
   // Benchmarks and metrics
   { acronym: 'pass@k', fullForm: 'Pass at k', description: 'The chance that at least one of k samples solves a problem; pass@1 is the single-attempt success rate.' },
   { acronym: 'AIME', fullForm: 'American Invitational Mathematics Examination', description: 'A US competition-math exam with integer answers, used as an RLVR benchmark.' },
@@ -195,7 +199,23 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'RULER', fullForm: 'RULER', description: 'A synthetic benchmark that measures the context length at which a model still performs.' },
   { acronym: 'MTOB', fullForm: 'Machine Translation from One Book', description: 'Translating Kalamang, a low-resource language, from one grammar book.' },
   { acronym: 'chrF', fullForm: 'Character n-gram F-score', description: 'A translation score based on character overlap with a reference.' },
+  { acronym: 'tau2-bench', fullForm: 'tau2-bench', description: 'Customer-service agent tasks in retail and airline domains with a simulated user; AWS used it for its AgentCore episodic-memory test.' },
+  { acronym: 'Pass^k', fullForm: 'Pass hat k', description: 'In AWS\'s AgentCore test, as its post defines them: Pass^1 counts a task solved if any of four attempts succeeds, Pass^3 if at least three of four do.' },
   { acronym: 'val_bpb', fullForm: 'Validation bits per byte', description: 'autoresearch\'s one metric; lower is better.' },
+  // Publication venues (shown as badges on paper citations)
+  { acronym: 'NeurIPS', fullForm: 'Conference on Neural Information Processing Systems', description: 'Peer-reviewed machine-learning conference.' },
+  { acronym: 'ICML', fullForm: 'International Conference on Machine Learning', description: 'Peer-reviewed machine-learning conference.' },
+  { acronym: 'ICLR', fullForm: 'International Conference on Learning Representations', description: 'Peer-reviewed machine-learning conference.' },
+  { acronym: 'ACL', fullForm: 'Annual Meeting of the Association for Computational Linguistics', description: 'Peer-reviewed natural-language-processing conference; ACL Findings is its companion track.' },
+  { acronym: 'EMNLP', fullForm: 'Conference on Empirical Methods in Natural Language Processing', description: 'Peer-reviewed natural-language-processing conference.' },
+  { acronym: 'EACL', fullForm: 'Conference of the European Chapter of the ACL', description: 'Peer-reviewed natural-language-processing conference.' },
+  { acronym: 'COLM', fullForm: 'Conference on Language Modeling', description: 'Peer-reviewed conference on language models.' },
+  { acronym: 'AAAI', fullForm: 'AAAI Conference on Artificial Intelligence', description: 'Peer-reviewed AI conference of the Association for the Advancement of Artificial Intelligence.' },
+  { acronym: 'UAI', fullForm: 'Conference on Uncertainty in Artificial Intelligence', description: 'Peer-reviewed AI conference.' },
+  { acronym: 'AISTATS', fullForm: 'International Conference on Artificial Intelligence and Statistics', description: 'Peer-reviewed machine-learning conference.' },
+  { acronym: 'EuroSys', fullForm: 'European Conference on Computer Systems', description: 'Peer-reviewed systems conference.' },
+  { acronym: 'TMLR', fullForm: 'Transactions on Machine Learning Research', description: 'Peer-reviewed machine-learning journal.' },
+  { acronym: 'TACL', fullForm: 'Transactions of the Association for Computational Linguistics', description: 'Peer-reviewed natural-language-processing journal.' },
 ];
 
 export function GlossaryAndSources() {
