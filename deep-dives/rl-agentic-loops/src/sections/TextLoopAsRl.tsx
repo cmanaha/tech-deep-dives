@@ -942,8 +942,8 @@ export function TextLoopAsRl() {
             <Cite tier={3} href={REFLEXION} venue="NeurIPS 2023">
               Reflexion, Sections 4.2 and 4.3
             </Cite>
-            . The 0.52 against 0.68 above is the coding case: the same loop with and without its
-            execution-grounded signal.
+            . The ablation in this section&apos;s opening is the coding case: the same loop with and
+            without its execution-grounded signal.
           </Box>
           <Box variant="p">
             The dashed chips mark the loops that grade their own output with no ground truth:
@@ -1034,8 +1034,8 @@ export function TextLoopAsRl() {
         <SpaceBetween size="m">
           <Box variant="p">
             <Box variant="strong">Signal.</Box> RL learns from the reward and from nothing else.
-            The text version: Reflexion reflecting without its tests scored 0.52, below 0.60 with
-            no loop at all, and 0.68 with the tests it writes and runs{' '}
+            The text version is the ablation this section opened with: reflecting without its
+            tests, Reflexion scored below no loop at all{' '}
             <Cite tier={3} href={REFLEXION} venue="NeurIPS 2023">
               Reflexion, Table 3
             </Cite>

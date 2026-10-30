@@ -51,3 +51,7 @@ stay at 5. Before and after, per section; moves and claim diffs in `reviews/leve
 | 6 | From Preferences to Rewards | lv02 | 4/4/5/5/3 | 5/4/5/5/4 |
 | 7 | RLVR & GRPO | lv02 | 4/5/5/5/3 | 4/5/5/5/3 |
 | 8 | What RL Does to a Model | lv02 | 4/4/5/5/3 | 5/4/5/5/4 |
+| 9 | Agentic RL | lv03 | 4/4/5/5/4 | 4/5/5/5/4 |
+| 10 | The Reward Is a Proxy | lv03 | 5/4/5/5/3 | 5/5/5/5/4 |
+| 11 | A Text Loop Is RL on the Context | lv03 | 5/3/5/5/3 | 5/3/5/5/4 |
+| 12 | Verbal Reinforcement & Self-Correction | lv03 | 5/4/5/5/4 | 5/4/5/5/5 |

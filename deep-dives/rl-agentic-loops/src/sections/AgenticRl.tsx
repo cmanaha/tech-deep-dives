@@ -543,9 +543,23 @@ export function AgenticRl() {
           </Box>
           <Box variant="p">
             The trainer separates the two kinds of token with a loss mask, one 0 or 1 per token
-            that decides whether the token counts in the training loss. TRL (Transformers
-            Reinforcement Learning, Hugging Face&apos;s post-training library) gives every
-            tool-result token a 0 and multiplies that mask into the loss{' '}
+            that decides whether the token counts in the training loss. The mask shows in results.
+            Search-R1 masks retrieved passages and ReTool masks its interpreter output{' '}
+            <Cite tier={3} href={SEARCH_R1} venue="COLM 2025">
+              Search-R1, Section 3.1
+            </Cite>{' '}
+            <Cite tier={3} href={RETOOL} venue="ICLR 2026">
+              ReTool, Section 2.3.2
+            </Cite>
+            , and in Search-R1&apos;s ablation on Qwen2.5-7B with PPO (Proximal Policy
+            Optimization), the average over seven question-answering datasets was 0.431 with
+            retrieved tokens masked and 0.343 without{' '}
+            <Cite tier={3} href={SEARCH_R1} venue="COLM 2025">
+              Search-R1, Table 4
+            </Cite>
+            . Both frameworks build the mask in code. TRL (Transformers Reinforcement Learning,
+            Hugging Face&apos;s post-training library) gives every tool-result token a 0 and
+            multiplies that mask into the loss{' '}
             <Cite tier={1} href={trl('grpo_trainer.py', 'L2146-L2154')} kind="code">
               TRL grpo_trainer.py L2146-L2154
             </Cite>{' '}
@@ -567,20 +581,6 @@ export function AgenticRl() {
               kind="code"
             >
               verl tool_agent_loop.py L386-L397
-            </Cite>
-            . The papers make the same choice: Search-R1 masks retrieved passages and ReTool masks
-            its interpreter output{' '}
-            <Cite tier={3} href={SEARCH_R1} venue="COLM 2025">
-              Search-R1, Section 3.1
-            </Cite>{' '}
-            <Cite tier={3} href={RETOOL} venue="ICLR 2026">
-              ReTool, Section 2.3.2
-            </Cite>
-            . The mask shows in results. In Search-R1&apos;s ablation on Qwen2.5-7B with PPO
-            (Proximal Policy Optimization), the average over seven question-answering datasets was
-            0.431 with retrieved tokens masked and 0.343 without{' '}
-            <Cite tier={3} href={SEARCH_R1} venue="COLM 2025">
-              Search-R1, Table 4
             </Cite>
             .
           </Box>
@@ -770,11 +770,10 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
           <Box variant="p">
             Section 8, What RL Does to a Model, reads that difference as a curve: pass@k is the
             chance that at least one of k attempts succeeds, and on static reasoning the base model
-            tends to catch up as k grows. One small study asked the question of a search agent.
-            Qwen2.5-7B-Instruct got one tool, a keyword search over ten paragraphs per question
-            (two relevant, eight distractors), and was trained with LoRA (Low-Rank Adaptation, a
-            small trainable add-on to frozen weights) GRPO on 200 problems, with 100 test problems
-            per category, k up to 64 and up to five tool rounds{' '}
+            tends to catch up as k grows. One small study asked the question of a search agent:
+            Qwen2.5-7B-Instruct with one keyword-search tool, trained with LoRA (Low-Rank
+            Adaptation, a small trainable add-on to frozen weights) GRPO on 200 problems, and
+            evaluated at k up to 64{' '}
             <Cite tier={3} href={PASS_KT} venue="preprint">
               Pass@(k,T), Section 3
             </Cite>
@@ -807,8 +806,17 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
           <ExpandableSection headerText="How far the pass@(k,T) result reaches">
             <SpaceBetween size="s">
               <Box variant="p">
-                One base model, 200 training problems and 100 test problems per category; the
-                authors did not repeat the pipeline on other models. On comparison questions, where
+                The setup: the search covers ten paragraphs per question, two relevant and eight
+                distractors; each category has 100 test problems; an episode allows up to five tool
+                rounds{' '}
+                <Cite tier={3} href={PASS_KT} venue="preprint">
+                  Pass@(k,T), Section 3
+                </Cite>
+                .
+              </Box>
+              <Box variant="p">
+                One base model; the authors did not repeat the pipeline on other models. On
+                comparison questions, where
                 the two searches are independent, RL&apos;s lead over the base was largest at small k
                 and narrowed as k grew, the static-reasoning pattern, though it still ended about four
                 problems ahead at k = 64; only on the sequential bridge questions did the gap widen
@@ -875,9 +883,10 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
             .
           </Box>
           <Box variant="p">
-            RAGEN names a recurring collapse in multi-turn training the Echo Trap: the spread of
-            rewards within a group collapses, entropy (how spread out the model&apos;s next-token
-            distribution is) drops, and gradients spike. Training only on the prompts whose
+            RAGEN names a recurring collapse in multi-turn training the Echo Trap, with three signs
+            to watch in a run: the spread of rewards within a group collapses,
+            entropy (how spread out the model&apos;s next-token distribution is) drops, and
+            gradients spike. Training only on the prompts whose
             episodes disagree most delays it. Under PPO, keeping 75% of rollouts extended stable
             training on FrozenLake from 100 to 140 steps, and keeping 50% avoided collapse{' '}
             <Cite tier={3} href={RAGEN} venue="preprint">
@@ -925,7 +934,8 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
               DeepSWE post, Figure 2 (Agentica and Together AI)
             </Cite>
             ; a task the model never solves gives every episode in a group the same zero, and
-            leaves RL nothing to learn from.
+            leaves RL nothing to learn from. Once training runs, section 7, RLVR &amp; GRPO, names
+            the TRL metric that tracks such groups.
           </Box>
         </SpaceBetween>
       </Container>

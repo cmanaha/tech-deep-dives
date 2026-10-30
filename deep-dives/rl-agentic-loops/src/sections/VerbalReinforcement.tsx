@@ -476,9 +476,8 @@ export function VerbalReinforcement() {
           </Box>
           <Box variant="p">
             In RL (reinforcement learning) terms, the policy, whatever decides the next action, is
-            the model plus its memory text: the paper defines it as &quot;an agent&apos;s memory
-            encoding paired with a choice of LLM parameters&quot;{' '}
-            <Reflexion>Reflexion, Section 1</Reflexion>. The weights never move, so the only thing
+            the model plus its memory text <Reflexion>Reflexion, Section 1</Reflexion>. The
+            weights never move, so the only thing
             a trial can change is the memory. The reflector does credit assignment, the work of
             finding which step caused the result, in words: given a failure signal, it infers which
             earlier action led the attempt astray and states what to do instead{' '}
@@ -525,10 +524,9 @@ export function VerbalReinforcement() {
           </Box>
           <AblationTable />
           <Box variant="p">
-            The loop without its tests scored 0.52 against 0.60 for GPT-4 with no loop. In the
-            authors&apos; reading, the agent could not tell whether its current code was correct,
-            so it ran through every trial with no option to stop early, &quot;performing harmful
-            edits to the implementation&quot;. With tests and no reflection, the tests and the
+            In the authors&apos; reading, the loop without its tests could not tell whether its
+            current code was correct, so it ran through every trial with no option to stop early,
+            &quot;performing harmful edits to the implementation&quot;. With tests and no reflection, the tests and the
             compiler caught errors but the fixes did not follow from them, and the score stayed
             at the baseline. Only the loop with both a grounded signal and a written diagnosis
             gained <Reflexion>Reflexion, Section 4.3, ablation study</Reflexion>.
@@ -747,9 +745,9 @@ export function VerbalReinforcement() {
           </Box>
           <Box variant="p">
             So before tuning a reflection prompt, write down what your loop&apos;s signal is. If it
-            is execution-grounded (the result of a tool call or code run: tests, a compiler, an
-            environment) or output-evaluated (a score on the final output: an exact-match check
-            against a gold answer, a rubric, or a judge), the loop has something to learn from. If
+            is execution-grounded (tests, a compiler, an environment) or output-evaluated (an
+            exact-match check against a gold answer, a rubric, or a judge), the loop has something
+            to learn from. If
             it is the model&apos;s own opinion of its own answer, the studies above give the
             outcome to plan for: flat on GSM8K with GPT-3.5, and a fall from 75.8 to 38.1 on
             CommonSenseQA. Where no checker exists at deployment but labelled training problems

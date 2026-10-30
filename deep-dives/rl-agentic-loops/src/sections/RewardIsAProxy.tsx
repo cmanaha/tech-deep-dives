@@ -559,18 +559,6 @@ export function RewardIsAProxy() {
             of this kind without a weight changing.
           </Box>
           <Box variant="p">
-            Two readings of the curve are things you can watch. Plotted against
-            the proxy score instead of KL, best-of-n and RL looked much more
-            alike, and the gap between proxy and gold scores indicates how far
-            the proxy is being exploited{" "}
-            <Cite tier={3} href={GAO} venue="ICML 2023">
-              Gao et al., Sections 3.4 and 3.5
-            </Cite>
-            . Both need a second score the optimiser never sees, plotted beside
-            the one it does: the held-out metric of the checklist at the end of
-            this section.
-          </Box>
-          <Box variant="p">
             How far the functional forms carry is open. The curves come from
             synthetic studies with a gold reward model of 6B (Gao et al.) or 70B
             (a 2026 preprint) and policies of 6B or below; no frontier-scale
@@ -585,6 +573,18 @@ export function RewardIsAProxy() {
             </Cite>
             . Our reading: treat the shape as the thing to watch for, and the
             coefficients as unknown for your own models.
+          </Box>
+          <Box variant="p">
+            Two readings of the curve are things you can watch. Plotted against
+            the proxy score instead of KL, best-of-n and RL looked much more
+            alike, and the gap between proxy and gold scores indicates how far
+            the proxy is being exploited{" "}
+            <Cite tier={3} href={GAO} venue="ICML 2023">
+              Gao et al., Sections 3.4 and 3.5
+            </Cite>
+            . Both need a second score the optimiser never sees, plotted beside
+            the one it does: the held-out metric of the checklist at the end of
+            this section.
           </Box>
           <ExpandableSection headerText="The setup behind the curves">
             <Box variant="p">
@@ -833,15 +833,12 @@ export function RewardIsAProxy() {
             .
           </Box>
           <Box variant="p">
-            Karpathy&apos;s autoresearch shows where a loop&apos;s leak can sit.
-            The agent edits one training script and keeps a change only if
-            val_bpb (validation bits per byte, lower is better) improves. Its
-            instructions list modifying <code>prepare.py</code> and the
-            evaluation function under &quot;What you CANNOT do&quot;{" "}
-            <Cite tier={1} href={ar("program.md", "L28-L31")}>
-              autoresearch program.md L28-L31
-            </Cite>
-            . The evaluation scores by calling the model&apos;s own forward pass{" "}
+            Karpathy&apos;s autoresearch shows where a loop&apos;s leak can sit:
+            in RL terms, its evaluator sits inside the policy&apos;s reach (our
+            reading of the code). The agent edits one training script and keeps
+            a change only if val_bpb (validation bits per byte, lower is better)
+            improves. The evaluation scores by calling the model&apos;s own
+            forward pass{" "}
             <Cite tier={1} href={ar("prepare.py", "L340-L359")} kind="code">
               autoresearch prepare.py L340-L359
             </Cite>
@@ -859,8 +856,14 @@ export function RewardIsAProxy() {
             <Cite tier={1} href={ar("program.md", "L100-L104")}>
               autoresearch program.md L100-L104
             </Cite>
-            . The rule is a sentence in the instructions: no file in the
-            repository at that commit enforces it (our reading of its ten files){" "}
+            . The rule against changing the evaluation is a sentence in the
+            instructions, which list modifying <code>prepare.py</code> and the
+            evaluation function under &quot;What you CANNOT do&quot;{" "}
+            <Cite tier={1} href={ar("program.md", "L28-L31")}>
+              autoresearch program.md L28-L31
+            </Cite>
+            : no file in the repository at that commit enforces it (our reading
+            of its ten files){" "}
             <Cite tier={1} href={AR_TREE} kind="code">
               autoresearch tree at 228791fb
             </Cite>
@@ -870,9 +873,8 @@ export function RewardIsAProxy() {
             <Cite tier={2} href={ar("README.md", "L44")}>
               autoresearch README.md L44
             </Cite>
-            . In RL terms the evaluator sits inside the policy&apos;s reach;
-            moving it out, to a separate process or a read-only mount, is left
-            to the operator (our reading of the code).
+            . Moving the evaluator out, to a separate process or a read-only
+            mount, is left to the operator (our reading of the code).
           </Box>
           <Box variant="p">
             Retrying with test feedback is a small loop of this kind, and on
@@ -899,8 +901,7 @@ export function RewardIsAProxy() {
               Reflexion, Section 4.3 and Table 3
             </Cite>
             . Section 12, Verbal Reinforcement &amp; Self-Correction, takes up
-            that result; section 15, Your Loops Through the RL Lens, maps Ralph
-            and autoresearch onto RL.
+            that result.
           </Box>
         </SpaceBetween>
       </Container>
