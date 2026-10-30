@@ -63,3 +63,6 @@ stay at 5. Before and after, per section; moves and claim diffs in `reviews/leve
 | 18 | What Lives in Weights & What Lives in Context | lv05 | 4/4/5/5/4 | 5/4/5/5/4 |
 | 19 | An RL Step Is an Inference Job Inside a Training Job | lv05 | 5/5/5/5/3 | 5/5/5/5/4 |
 | 20 | Cost per Improvement | lv05 | 5/5/5/5/3 | 5/5/5/5/4 |
+| 21 | Side by Side on a DGX Spark | lv06 | 4/5/5/5/4 | 4/5/5/5/4 |
+| 22 | Choosing a Text Loop, a Hybrid or a Weight Update | lv06 | 4/4/5/5/3 | 5/4/5/5/4 |
+| 23 | RL & Learning Loops on AWS | lv06 | 4/4/5/5/3 | 4/4/5/5/4 |

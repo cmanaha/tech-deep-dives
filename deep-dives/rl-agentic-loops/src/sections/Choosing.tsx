@@ -386,14 +386,9 @@ export function Choosing() {
             order.
           </Box>
           <Box variant="p">
-            One measurement sits under every path: today&apos;s score on your grader. On our DGX
-            Spark run of GRPO (Group Relative Policy Optimization, the RL algorithm that scores
-            each answer against the others sampled for the same prompt), a base rate of about 4%
-            left 9 of 20 steps in one run and 10 of 20 in the other with no gradient at all{' '}
-            <Cite tier={0} href={E0_URL}>
-              E0 log: GRPO smoke test on a DGX Spark
-            </Cite>
-            . The section ends where the choice starts in practice, with the grader.
+            One measurement sits under every path: today&apos;s score on your grader. It decides
+            whether RL has a gradient, and it is the baseline any text loop has to beat. The
+            section ends where the choice starts in practice, with the grader.
           </Box>
         </SpaceBetween>
       </Container>
@@ -415,7 +410,8 @@ export function Choosing() {
             learn and whether RL has anything to push on. Weight access and query volume decide
             between paying once in training and paying on every query. Questions 2 and 3 apply to
             every column of the tree, and the amber exits of question 2 send you to fix the signal
-            or the starting point before any path.
+            or the starting point before any path. In the tree, SFT is supervised fine-tuning
+            (training on target answers) and RFT is reinforcement fine-tuning.
           </Box>
           <DecisionTreeDiagram />
           <Box variant="small" color="text-body-secondary">
@@ -485,7 +481,7 @@ export function Choosing() {
         header={
           <Header
             variant="h2"
-            description="Measure today's score on your grader before you pay for a run: at a 4% base rate, about half the steps of our small GRPO run carried no gradient"
+            description="Measure today's score on your grader before you pay for a run: near 0% RL has nothing to push on, and near 100% nothing is left to learn"
           >
             2. What signal do you have, and what does the model score on it today?
           </Header>
@@ -502,7 +498,8 @@ export function Choosing() {
           </Box>
           <Box variant="p">
             Then score the starting model on that grader. Today&apos;s score decides whether RL has
-            a gradient. GRPO learns from differences inside a group of answers to one prompt. The
+            a gradient. GRPO (Group Relative Policy Optimization) learns from differences inside a
+            group of answers to one prompt. The
             advantage, how much better an answer did than its group&apos;s average, is zero for
             every answer when all of them score the same, all passing or all failing, and a zero
             advantage gives a zero gradient{' '}
@@ -516,17 +513,17 @@ export function Choosing() {
             nearly every group passes together and nothing is left to learn.
           </Box>
           <Box variant="p">
-            AWS&apos;s triage rule for RFT (reinforcement fine-tuning) sets the same two
-            thresholds: if rewards are consistently 0 percent, use SFT (supervised fine-tuning,
-            training on target answers) first to establish basic capabilities; if they are above
-            95 percent, RFT might be unnecessary{' '}
+            AWS&apos;s triage rule for RFT sets the same two thresholds: if rewards are
+            consistently 0 percent, use SFT first to establish basic capabilities; if they are
+            above 95 percent, RFT might be unnecessary{' '}
             <Cite tier={1} href={BEDROCK_RFT}>
               Bedrock user guide: reinforcement fine-tuning best practices
             </Cite>
             .
           </Box>
           <Box variant="p">
-            Our own run shows the low end on a live trainer. Qwen2.5-0.5B-Instruct on fresh
+            Our own run (section 21, Side by Side on a DGX Spark) shows the low end on a live
+            trainer. Qwen2.5-0.5B-Instruct on fresh
             synthetic arithmetic, scored 1 for the exact integer, in two runs of 20 steps with two
             prompts and 8 completions per prompt in each step: the mean reward was 0.044, a base
             rate of about 4%. On 9 of 20 steps in the first run and 10 of 20 in the second, every

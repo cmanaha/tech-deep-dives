@@ -771,10 +771,12 @@ export function SideBySideLab() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            E1 is a protocol, not a result: this build did not run it. It asks how a base model, a
+            E1 is a protocol, which this build did not run. It asks how a base model, a
             GRPO-trained model and a frozen model with a learned prompt or playbook compare on one
             task, at pass@1 (the chance a single attempt passes) and at pass@k for large k (the
-            chance at least one of k attempts passes).
+            chance at least one of k attempts passes). The prompt comes from GEPA (Genetic-Pareto,
+            a prompt optimiser that reflects on scored attempts and evolves the prompt), the
+            playbook from a loop in the ACE (Agentic Context Engineering) pattern.
           </Box>
           <Box variant="p">
             <strong>The task carries two kinds of gap.</strong> One is the skill itself; the other
@@ -812,14 +814,13 @@ export function SideBySideLab() {
               next-token probabilities are) per step.
             </li>
             <li>
-              <strong>(c) GEPA</strong> (Genetic-Pareto, a prompt optimiser that reflects on scored
-              attempts and evolves the prompt) through DSPy 3.4.1, with the same model as the task
+              <strong>(c) GEPA</strong> through DSPy 3.4.1, with the same model as the task
               model. Record the reflection model; label any run with a larger local reflector as
               such.
             </li>
             <li>
-              <strong>(d) A playbook loop</strong> in the ACE (Agentic Context Engineering)
-              pattern, on the same model: delta updates, where the model writes only new or changed
+              <strong>(d) A playbook loop</strong> in the ACE pattern, on the same model: delta
+              updates, where the model writes only new or changed
               entries and code merges them, with duplicates pruned. Record the reflection model here
               too.
             </li>
@@ -957,9 +958,8 @@ export function SideBySideLab() {
             loops run with a 0.5B reflector unless you record a larger one, and section 14 shows the
             optimiser&apos;s own capability bounds a text loop. The comparison between GRPO and the
             text loops on the unstated rule is therefore the result most likely to move at 7B to 8B.
-            Re-run arms (b), (c) and (d) there before you generalise. Measure the base rate again
-            there as well: E0&apos;s 4% left 9 and 10 of 20 steps with no gradient, and the rate
-            belongs to the model and the task together.
+            Re-run arms (b), (c) and (d) there before you generalise, and measure the base rate
+            there first, because the rate belongs to the model and the task together.
           </Box>
           <Box variant="p">
             Then take the three readings to section 22, Choosing a Text Loop, a Hybrid or a Weight

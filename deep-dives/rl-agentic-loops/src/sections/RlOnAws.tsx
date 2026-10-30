@@ -360,7 +360,9 @@ export function RlOnAws() {
               Bedrock user guide, how Advanced Prompt Optimization works
             </Cite>
             . Our reading of the two services: one grader, two update targets. The grader you write
-            first can drive a weight update or a prompt rewrite.
+            first can drive a weight update or a prompt rewrite. The pages read do not say one
+            Lambda runs unchanged in both, so check each service&apos;s input and output format
+            before reusing one.
           </Box>
         </SpaceBetween>
       </Container>
@@ -615,17 +617,6 @@ export function RlOnAws() {
             .
           </Box>
           <Box variant="p">
-            Every GRPO recipe at this release targets P5 or P4 instances. Across the 149{' '}
-            <code>verl-grpo-*</code> files the instance types are <code>ml.p5.48xlarge</code>,{' '}
-            <code>ml.p5e.48xlarge</code>, <code>ml.p5en.48xlarge</code>,{' '}
-            <code>ml.p4de.24xlarge</code> and <code>ml.p4d.24xlarge</code>, and no path in the
-            repository names Trainium or Neuron{' '}
-            <Cite tier={1} href={ghTree(RECIPES, HYPERPOD_RECIPES_SHA, RECIPE_ROOT)} kind="code">
-              HyperPod recipes 2.0.11, fine-tuning recipe tree
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
             The Nova 2 Lite RFT recipe runs asynchronous rollouts, with{' '}
             <code>rollout_strategy.type: off_policy_async</code> and <code>age_tolerance: 2</code>{' '}
             <Cite tier={1} href={gh(RECIPES, HYPERPOD_RECIPES_SHA, NOVA_RFT_RECIPE, 'L29-L34')} kind="code">
@@ -635,6 +626,17 @@ export function RlOnAws() {
             Our reading is that <code>age_tolerance: 2</code> lets a rollout be about two policy
             versions old when it is trained on, the asynchronous design of section 19, An RL Step Is
             an Inference Job Inside a Training Job; the recipe does not define the unit.
+          </Box>
+          <Box variant="p">
+            Every GRPO recipe at this release targets P5 or P4 instances. Across the 149{' '}
+            <code>verl-grpo-*</code> files the instance types are <code>ml.p5.48xlarge</code>,{' '}
+            <code>ml.p5e.48xlarge</code>, <code>ml.p5en.48xlarge</code>,{' '}
+            <code>ml.p4de.24xlarge</code> and <code>ml.p4d.24xlarge</code>, and no path in the
+            repository names Trainium or Neuron{' '}
+            <Cite tier={1} href={ghTree(RECIPES, HYPERPOD_RECIPES_SHA, RECIPE_ROOT)} kind="code">
+              HyperPod recipes 2.0.11, fine-tuning recipe tree
+            </Cite>
+            .
           </Box>
           <Box variant="p">
             On Trainium, GRPO and PPO were not found in the Neuron v2.33.0 documentation searched{' '}
@@ -759,23 +761,26 @@ export function RlOnAws() {
             </Cite>
             .
           </Box>
-          <Box variant="p">
-            AWS has measured it in its own test, a vendor claim. A Claude 3.7 agent worked tasks
-            sampled from tau2-bench, customer-service scenarios in retail and airline domains where
-            the agent helps a user reach a specific goal, after memory was extracted from a set of
-            historical interactions; each task was attempted four times. In retail, the agent
-            succeeded at least once in four attempts, the blog&apos;s Pass^1, on 77.2% of tasks with
-            cross-episode reflections against 65.8% with no memory. In airline, at the stricter
-            Pass^3, at least three successes in four, stored episodes retrieved as in-context
-            examples reached 43.0% against 41% for reflections and 24% with no memory{' '}
-            <Cite tier={2} href={EPISODIC_BLOG} kind="vendor-claim">
-              AWS Machine Learning Blog, AgentCore episodic memory, performance evaluation
-            </Cite>
-            . The blog&apos;s Pass^1 counts a task solved if any of four attempts succeeds, which
-            this dive would write pass@4 (our reading). The test builds memory once and evaluates
-            once, with no curve over successive episodes, and the blog reports no task counts or
-            seeds, so it shows what retrieved experience added at one point in time.
-          </Box>
+          <ExpandableSection headerText="AWS's own test of episodic memory on tau2-bench (a vendor claim)">
+            <Box variant="p">
+              AWS has measured it in its own test, a vendor claim. A Claude 3.7 agent worked tasks
+              sampled from tau2-bench, customer-service scenarios in retail and airline domains
+              where the agent helps a user reach a specific goal, after memory was extracted from a
+              set of historical interactions; each task was attempted four times. In retail, the
+              agent succeeded at least once in four attempts, the blog&apos;s Pass^1, on 77.2% of
+              tasks with cross-episode reflections against 65.8% with no memory. In airline, at the
+              stricter Pass^3, at least three successes in four, stored episodes retrieved as
+              in-context examples reached 43.0% against 41% for reflections and 24% with no
+              memory{' '}
+              <Cite tier={2} href={EPISODIC_BLOG} kind="vendor-claim">
+                AWS Machine Learning Blog, AgentCore episodic memory, performance evaluation
+              </Cite>
+              . The blog&apos;s Pass^1 counts a task solved if any of four attempts succeeds, which
+              this dive would write pass@4 (our reading). The test builds memory once and evaluates
+              once, with no curve over successive episodes, and the blog reports no task counts or
+              seeds, so it shows what retrieved experience added at one point in time.
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             The signal behind each record is an LLM&apos;s verdict. The default episode-extraction
             prompt asks the model to &quot;Start with Yes or No&quot; on whether the acting party
@@ -861,21 +866,6 @@ export function RlOnAws() {
         }
       >
         <SpaceBetween size="m">
-          <Box variant="p">
-            Across the two stacks the same grader types recur. A rule-based Lambda or an LLM judge
-            scores Bedrock RFT&apos;s samples and drives a weight update{' '}
-            <Cite tier={1} href={BR_REWARD_NOVA}>
-              Bedrock user guide, reward functions for Nova models
-            </Cite>
-            ; a Lambda function or an LLM-as-a-judge rubric scores Advanced Prompt
-            Optimization&apos;s candidates and drives a prompt rewrite{' '}
-            <Cite tier={1} href={BR_APO}>
-              Bedrock user guide, how Advanced Prompt Optimization works
-            </Cite>
-            . Our reading: one grader, two update targets. The pages read do not say one Lambda runs
-            unchanged in both, so check each service&apos;s input and output format before reusing
-            one.
-          </Box>
           <Table<PathRow>
             variant="embedded"
             wrapLines
