@@ -26,7 +26,7 @@ report lands (see `build-log.md`).
 | 20 | 20. Cost per Improvement | CostPerImprovement.tsx (+ src/lib/breakeven.ts, src/__tests__/breakeven.test.ts) | cost | 4520 | cost | interactive calculator; Nova $80 too | done |
 | 21 | 21. Side by Side on a DGX Spark | SideBySideLab.tsx | lab | 4521 | lab | E0 results; E1 protocol and predictions | done |
 | 22 | 22. Choosing a Text Loop, a Hybrid or a Weight Update | Choosing.tsx | choosing | 4522 | choose | three questions; paths; SageMaker distillation | done |
-| 23 | 23. RL & Learning Loops on AWS | RlOnAws.tsx | aws | 4523 | aws | two stacks; AgentCore vendor test; rank-32 LoRA | dispatched |
+| 23 | 23. RL & Learning Loops on AWS | RlOnAws.tsx | aws | 4523 | aws | two stacks; AgentCore vendor test; rank-32 LoRA | done |
 | 1 | 1. One Loop, Three Places to Keep What It Learns | OneLoop.tsx | one-loop | 4501 | oneloop | written last-but-one, after the body exists | dispatched |
 | 2 | 2. Getting Started | GettingStarted.tsx | getting-started | 4502 | gs | reading map, three routes | dispatched |
 | 24 | 24. Glossary & Sources | GlossaryAndSources.tsx | sources | | | orchestrator | draft |
