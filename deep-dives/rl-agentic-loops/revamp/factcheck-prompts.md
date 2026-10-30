@@ -135,6 +135,40 @@ Known items to settle in the named group (logged during authoring, see `build-lo
   (DeepSeekMath appendix A.1.5, TRL `num_iterations`, E0 `clip_ratio/region_mean` 0.0); LoRA with
   beta above 0 loads no second model copy (TRL code); TRL's RLOO defaults beta to 0.05. Verify each
   at the pin or cut it.
+- fc03: section 7: R1 v1's 71.0% was carried from wave2-rlvr row 8 without re-opening; reading
+  `reinforce_pp` as REINFORCE++ is our reading; the TRL paper-index Dr. GRPO recipe omits
+  `scale_rewards="none"` (stated as a doc-code conflict) and verl's default `rollout.n=1` reduces its
+  GRPO advantage to the raw reward: verify both at the pins. Section 8: the Guru 32B counter-example
+  (wave2-rlvr G1) was added beyond the block; Interplay's venue "ICML 2026" comes from the authors'
+  README only; 8.84x is landed five times (report it, do not cut: the leverage pass owns repetition).
+- fc04: section 9: Search-R1's venue "COLM 2025" comes from its v5 PDF (wave 2 said preprint);
+  F02-70's "41%" conflicts with v5's 24% and was left out; check every four-field profile (Search-R1,
+  ReTool, RAGEN, SWE-RL, DeepSWE, Kimi K2) against its paper, since wave 2 did not. Section 10: the
+  MacDiarmid finding that a hack-detecting penalty in the reward stopped hacking sits beside the
+  checklist item "monitors kept out of the reward": check the framing is fair to the source.
+- fc05: section 11: TextGrad's venue "Nature 2025" is from Crossref with the quote from arXiv v1;
+  the Retroformer quote is in Section 3 of v3; FunSearch's "on the order of 10^6" is in the Nature
+  paper's main text, not Methods (fix any citation text that says Methods). Section 12: additions
+  beyond the rows (16.3% on MBPP against 1.4% on HumanEval for self-written tests; oracle stopping
+  89.7). Section 13: Dynamic Cheatsheet's text (6.7%) and its Table 2 (13.3) disagree for GPT-4o
+  full history; the page does not use the figure; ACE appendix numbers 76.2 to 67.3.
+- fc06: section 14: additions (gepa-artifact GRPO arm is DSPy GRPO with LoRA on all six tasks; AIME
+  feedback includes the worked solution). Section 16: MTOB is "Machine Translation from One Book"
+  (the benchmark's own abstract, arXiv 2309.16575); the page says "with One Book": fix. Section 15:
+  the search-loop column has no "missing" mark by design.
+- fc07: section 17: the Greedy Agents paper's introduction gives 64% where Figure 5 gives 58%, and
+  the page states the discrepancy: check it reads as a source conflict, not page history. Section 18:
+  GPT-4 calibration error 0.007 against 0.074 was read off a figure; 0.810 for fine-tuning plus
+  retrieval; the GPT-4 technical report (2303.08774v6) carries no venue badge: it is a technical
+  report, so `venue="preprint"` or a "technical report" wording.
+- fc08: section 19: the memory drop is 23.1 and 23.9 GiB; the DeepSeekMath GRPO quote is in
+  Section 4.1.1; the logged minimum importance-sampling ratio of 0.0 (run 1 steps 8 to 10, run 2
+  steps 8 and 16). Section 20: the calculator's tests (26) and every preset's scope wording.
+- fc09: section 21: every E0 figure against the raw logs. Section 22 was written before sections 20
+  and 23 existed: check every pointer to them, and every repeated number, against those files; the
+  OpenAI cutoff of January 6, 2027 was added beyond the rows. Section 23: the HyperPod recipe tally
+  (149 GRPO recipes, 68 set `adv_estimator: grpo` directly, one uses `n: 16`), and the rank-32 LoRA
+  source is the best-practices post of 08 APR 2026.
 
 The orchestrator owns `GlossaryAndSources.tsx`, `App.tsx`, `README.md`, `sources.md`, `SCOPE.md`,
 `RESEARCH-GUIDE.md`, the registers and `.gates.json`. Fact-check agents report problems in those
