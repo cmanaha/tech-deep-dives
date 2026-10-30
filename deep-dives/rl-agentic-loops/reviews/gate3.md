@@ -31,3 +31,11 @@ scored.
 | 21 | Side by Side on a DGX Spark | SideBySideLab.tsx | fc09 | 9 |
 | 22 | Choosing a Text Loop, a Hybrid or a Weight Update | Choosing.tsx | fc09 | 9 |
 | 23 | RL & Learning Loops on AWS | RlOnAws.tsx | fc09 | 9 |
+
+## Result on the fact-check scores
+
+23 scored sections, lowest 8 (sections 2, 6, 7 and 8), sum 203, average 8.83. Gate 3 passes: no
+section below 7/10 and the average is at least 8/10. Every fact-check correction is applied and
+committed (fc01 to fc09); the venue badges they settled are applied across all sections and the
+glossary (one deliberate exception: section 7 cites DeepSeek-R1 v1 as the preprint it was, beside the
+Nature 2025 version).
