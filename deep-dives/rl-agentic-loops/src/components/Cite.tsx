@@ -42,7 +42,7 @@ export const HYPERPOD_RECIPES_SHA = 'a6030c319908c8a1b74cb619b00476f8e6baa04f';
  * Commit of this repository that holds the Tier 0 experiment logs. Tier 0 links point at it,
  * so the log a reader opens is the one the page describes.
  */
-export const DIVE_REPO_SHA = 'bcf5a9edc0c77ee9c26c76ce73d98ab037903f67';
+export const DIVE_REPO_SHA = 'b763d34a9a5a1e3e28a33daf44b67fb03781a757';
 
 export type Tier = 0 | 1 | 2 | 3;
 
