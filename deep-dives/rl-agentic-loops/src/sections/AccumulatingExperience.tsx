@@ -340,7 +340,7 @@ const RULE_ROWS: RuleRow[] = [
     band: 'Append',
     rule: 'Each program GPT-4 writes and verifies is added to a skill library keyed by an embedding of its description; the 5 most relevant are retrieved for a new task.',
     source: (
-      <Cite tier={3} href={VOYAGER} venue="TMLR">
+      <Cite tier={3} href={VOYAGER} venue="TMLR 2024">
         Voyager, Section 2.2 and Figure 4
       </Cite>
     ),
@@ -548,6 +548,13 @@ export function AccumulatingExperience() {
             .
           </Box>
           <Box variant="p">
+            <Box variant="strong">In between: itemised steps.</Box> ACE&apos;s own ablation
+            measures the middle of the scale. On AppWorld with DeepSeek-V3.1, offline adaptation
+            with incremental delta updates reached 76.2 task goal completion on the test-normal
+            split; the same method with its delta updates removed reached 67.3, against 63.7 with
+            no adaptation <Ace>ACE, Appendix A.5 and Table 18</Ace>.
+          </Box>
+          <Box variant="p">
             <Box variant="strong">Curate, with a model that can fill the store.</Box> Curation
             needs good entries to curate. GPT-4o-mini under both Dynamic Cheatsheet variants scored
             13.3% on AIME 2024, below its own 16.7% baseline. The authors&apos; explanation:
@@ -556,13 +563,6 @@ export function AccumulatingExperience() {
             <Cheatsheet>Dynamic Cheatsheet, Section 4.5 and Table 3</Cheatsheet>. In our reading,
             a store learns from tasks the model already solves some of the time, the condition
             section 7 sets for a GRPO group to carry any gradient.
-          </Box>
-          <Box variant="p">
-            <Box variant="strong">In between: itemised steps.</Box> ACE&apos;s own ablation
-            measures the middle of the scale. On AppWorld with DeepSeek-V3.1, offline adaptation
-            with incremental delta updates reached 76.2 task goal completion on the test-normal
-            split; the same method with its delta updates removed reached 67.3, against 63.7 with
-            no adaptation <Ace>ACE, Appendix A.5 and Table 18</Ace>.
           </Box>
         </SpaceBetween>
       </Container>
@@ -585,7 +585,7 @@ export function AccumulatingExperience() {
             its library only after a GPT-4 check that the task succeeded. Removing that
             self-verification cut the count of items the agent discovered in Minecraft by 73%, and
             the authors call it the most important of their feedback types{' '}
-            <Cite tier={3} href={VOYAGER} venue="TMLR">
+            <Cite tier={3} href={VOYAGER} venue="TMLR 2024">
               Voyager, Sections 2.3 and 3.4
             </Cite>
             .
@@ -623,13 +623,11 @@ export function AccumulatingExperience() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            No same-model, same-budget comparison against RL was located for these memory and
-            playbook loops in this research. The one RL comparison on offer, in the Training-Free
-            GRPO paper, pairs different base models: ReTool on Qwen2.5-32B-Instruct against the
-            text loop on Qwen3-32B, both on AIME 2024 with a code interpreter{' '}
-            <TfGrpo>Training-Free GRPO, Table 3</TfGrpo>. ReTool is a fine-tuning-plus-RL pipeline:
-            supervised fine-tuning on code-augmented reasoning traces as a cold start, then RL
-            with task outcomes as the reward{' '}
+            The one RL comparison on offer, in the Training-Free GRPO paper, pairs different base
+            models: ReTool on Qwen2.5-32B-Instruct against the text loop on Qwen3-32B, both on
+            AIME 2024 with a code interpreter <TfGrpo>Training-Free GRPO, Table 3</TfGrpo>. ReTool
+            is a fine-tuning-plus-RL pipeline: supervised fine-tuning on code-augmented reasoning
+            traces as a cold start, then RL with task outcomes as the reward{' '}
             <Cite tier={3} href={RETOOL} venue="ICLR 2026">
               ReTool, abstract
             </Cite>
@@ -641,15 +639,21 @@ export function AccumulatingExperience() {
             <TfGrpo>Training-Free GRPO, Table 3</TfGrpo>. Our arithmetic from the papers&apos;
             figures: the fine-tuning-plus-RL pipeline lifted its model by 67.0 - 29.6 = 37.4
             points, and the text loop lifted a different 32B model by 33.5 - 29.1 = 4.4 points.
-            The table is captioned as Mean@32, accuracy averaged over 32 independent runs of each
-            problem <TfGrpo>Training-Free GRPO, Section 3.1 and Table 3</TfGrpo>, and its 67.0
-            for ReTool matches the figure ReTool reports for its own 32B model, &quot;67% accuracy
-            with 400 training steps&quot;{' '}
-            <Cite tier={3} href={RETOOL} venue="ICLR 2026">
-              ReTool, abstract
-            </Cite>
-            .
+            No same-model, same-budget comparison against RL was located for these memory and
+            playbook loops in this research.
           </Box>
+          <ExpandableSection headerText="What the 67.0 and the 33.5 measure">
+            <Box variant="p">
+              The table is captioned as Mean@32, accuracy averaged over 32 independent runs of
+              each problem <TfGrpo>Training-Free GRPO, Section 3.1 and Table 3</TfGrpo>, and its
+              67.0 for ReTool matches the figure ReTool reports for its own 32B model, &quot;67%
+              accuracy with 400 training steps&quot;{' '}
+              <Cite tier={3} href={RETOOL} venue="ICLR 2026">
+                ReTool, abstract
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             The cost runs the other way. Training-Free GRPO was cheap to learn and dearer per
             query, again on a pair that compares different base models{' '}
@@ -719,12 +723,6 @@ export function AccumulatingExperience() {
         }
       >
         <SpaceBetween size="m">
-          <Box variant="p">
-            The model behind the checklist, in our reading of these studies: the design of the
-            state and its update rule set the step size, and the signal decides what each step
-            writes. Small, itemised steps keep what was learned; a full rewrite can erase it in
-            one move.
-          </Box>
           <ul>
             <li>
               <Box variant="p">

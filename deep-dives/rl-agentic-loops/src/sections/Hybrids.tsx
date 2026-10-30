@@ -381,56 +381,64 @@ export function Hybrids() {
             back to the advisor, after every action or at regular intervals, for the next round of
             advice <Advisor>Advisor Models, Section 3 and Figure 2</Advisor>.
           </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Know how much of an RL gain to expect when you can reach the model only through its API"
-          >
-            About 70% of the gain, without the big model&apos;s weights
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            The authors expect direct RL to beat an advisor whenever the student&apos;s weights
-            are available, and ran one test to measure by how much. The task was MTOB (Machine
-            Translation from One Book{' '}
-            <Cite tier={3} href={MTOB} venue="ICLR 2024">
-              MTOB, abstract
-            </Cite>
-            ): translating Kalamang, an extremely low-resource language,
-            into English, scored in chrF, a character-overlap measure of string similarity between
-            the generated and the reference translation{' '}
-            <Advisor>Advisor Models, Section 4</Advisor>. A Qwen2.5 3B Instruct advisor advised a
-            Qwen2.5 7B Instruct student, against GRPO run directly on Qwen2.5 7B Instruct, with the
-            same hyperparameters for 20 epochs{' '}
-            <Advisor>Advisor Models, Section 4.4.3 and Appendix D.4</Advisor>.
-          </Box>
-          <ChrfTable />
-          <Box variant="p">
-            The advisor gained 7.81 chrF points where direct RL gained 11.21, so it recovered about
-            70% of the gain while the 7B model&apos;s weights never moved (our arithmetic from the
-            paper&apos;s figures). The authors&apos; own summary: direct RL &quot;remains the
-            better option&quot;, and the advisor pipeline makes up &quot;most of the improvement
-            over baseline&quot; <Advisor>Advisor Models, Section 4.4.3</Advisor>. The advisor in
-            this test was the smaller of the two models, 3B against the 7B that direct RL trained.
-          </Box>
-          <ExpandableSection headerText="The arithmetic, and why 70% is a snapshot rather than a ceiling">
+          <ExpandableSection headerText="The same split in other designs: a small trained part next to a model that stays fixed">
             <SpaceBetween size="s">
               <Box variant="p">
-                <code>(38.98 - 31.17) / (42.38 - 31.17) = 7.81 / 11.21 = 0.697</code>, about 70%.
-                The three chrF values are the paper&apos;s; the ratio is ours{' '}
-                <Advisor>Advisor Models, Section 4.4.3 and Figure 9</Advisor>.
+                Other designs train a small component and leave the large model frozen. Retroformer
+                trains the reflector. A frozen model&apos;s reflection, in the paper&apos;s example,
+                &quot;only rephrases the prior failed actions sequences as the proposed plan&quot;, and
+                the agent repeats the same wrong actions on the next trial{' '}
+                <Retroformer>Retroformer, Figure 1</Retroformer>. Retroformer keeps the actor frozen and
+                fine-tunes a smaller local reflector with PPO (Proximal Policy Optimization), rating
+                each reflection by the change in episode return between one trial and the next{' '}
+                <Retroformer>Retroformer, Section 4</Retroformer>. Section 12, Verbal
+                Reinforcement &amp; Self-Correction, covers the frozen-reflection side of that example.
               </Box>
               <Box variant="p">
-                The training curves differ in shape. Direct RL learns fast early and then flattens;
-                the advisor improves steadily throughout; and both are still climbing when training
-                ends <Advisor>Advisor Models, Appendix D.4 and Figure 14</Advisor>. The 70% is the
-                ratio at 20 epochs, on one task and one pair of models.
+                Memento trains the retrieval. It keeps a case bank of past experiences and learns
+                which case to retrieve with soft Q-learning, an RL method that learns a value for each
+                choice, while the LLM component stays fixed{' '}
+                <Cite tier={3} href={MEMENTO} venue="preprint">
+                  Memento, Section 3
+                </Cite>
+                .
+              </Box>
+              <Box variant="p">Three ways to move a context-side behaviour into weights:</Box>
+              <Box variant="p">
+                <strong>Exploration.</strong> RL fine-tuning of Gemma2 2B and 9B on bandit tasks
+                (pick one of several options, see its reward, repeat) raised exploration and
+                lowered regret, the reward lost against always picking the best option; the
+                exploration it learned stayed sub-optimal, and for the 2B model RL narrowed the gap
+                to UCB (Upper Confidence Bound), a classical bandit algorithm{' '}
+                <Cite tier={3} href={GREEDY_AGENTS} venue="ICLR 2026">
+                  Schmied et al., Sections 1 and 4.3
+                </Cite>
+                . Distilling a bandit algorithm into the model, through in-context demonstrations
+                and fine-tuning on data generated by the algorithm, let smaller models explore
+                better than larger ones on various tasks{' '}
+                <Cite tier={3} href={EVOLVE} venue="ICML 2025">
+                  EVOLvE, abstract and Section 4
+                </Cite>
+                . Section 17, Where Words Fall Short, covers the exploration failure these address.
+              </Box>
+              <Box variant="p">
+                <strong>Context distillation.</strong> A model performs better with instructions
+                or a scratchpad in its context, and the gain disappears when those tokens are gone.
+                Context distillation fine-tunes the model to give, from the task input alone, the
+                answer it gave with the instructions, so the gain is internalised into the weights{' '}
+                <Cite tier={3} href={CONTEXT_DISTILLATION} venue="preprint">
+                  Snell et al., abstract
+                </Cite>
+                .
+              </Box>
+              <Box variant="p">
+                <strong>Alternating prompts and weights.</strong> BetterTogether optimises a
+                pipeline&apos;s prompts and the weights of its model in turn, so that the same model
+                teaches itself{' '}
+                <Cite tier={3} href={BETTER_TOGETHER} venue="EMNLP 2024">
+                  BetterTogether, abstract
+                </Cite>
+                .
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -468,9 +476,9 @@ export function Hybrids() {
             <Advisor>Advisor Models, Section 4.3.1</Advisor>.
           </Box>
           <Box variant="p">
-            That is the mental model for the whole section: when the right behaviour depends on
-            something hidden per instance, some weights have to learn it. A hybrid lets those
-            weights be small and yours while the model doing the work stays frozen.
+            When the right behaviour depends on something hidden per instance, some weights have
+            to learn it. A hybrid lets those weights be small and yours while the model doing the
+            work stays frozen.
           </Box>
         </SpaceBetween>
       </Container>
@@ -511,70 +519,47 @@ export function Hybrids() {
         header={
           <Header
             variant="h2"
-            description="Recognise the same split in other designs: a small trained part next to a model that stays fixed"
+            description="Know how much of an RL gain to expect when you can reach the model only through its API"
           >
-            The same split, elsewhere
+            About 70% of the gain, without the big model&apos;s weights
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Other designs train a small component and leave the large model frozen. Retroformer
-            trains the reflector. A frozen model&apos;s reflection, in the paper&apos;s example,
-            &quot;only rephrases the prior failed actions sequences as the proposed plan&quot;, and
-            the agent repeats the same wrong actions on the next trial{' '}
-            <Retroformer>Retroformer, Figure 1</Retroformer>. Retroformer keeps the actor frozen and
-            fine-tunes a smaller local reflector with PPO (Proximal Policy Optimization), rating
-            each reflection by the change in episode return between one trial and the next{' '}
-            <Retroformer>Retroformer, Section 4</Retroformer>. Section 12, Verbal
-            Reinforcement &amp; Self-Correction, covers the frozen-reflection side of that example.
-          </Box>
-          <Box variant="p">
-            Memento trains the retrieval. It keeps a case bank of past experiences and learns
-            which case to retrieve with soft Q-learning, an RL method that learns a value for each
-            choice, while the LLM component stays fixed{' '}
-            <Cite tier={3} href={MEMENTO} venue="preprint">
-              Memento, Section 3
+            The authors expect direct RL to beat an advisor whenever the student&apos;s weights
+            are available, and ran one test to measure by how much. The task was MTOB (Machine
+            Translation from One Book{' '}
+            <Cite tier={3} href={MTOB} venue="ICLR 2024">
+              MTOB, abstract
             </Cite>
-            .
+            ): translating Kalamang, an extremely low-resource language, into English, scored in
+            chrF <Advisor>Advisor Models, Section 4</Advisor>. A Qwen2.5 3B Instruct advisor advised a
+            Qwen2.5 7B Instruct student, against GRPO run directly on Qwen2.5 7B Instruct, with the
+            same hyperparameters for 20 epochs{' '}
+            <Advisor>Advisor Models, Section 4.4.3 and Appendix D.4</Advisor>.
           </Box>
-          <ExpandableSection headerText="Three ways to move a context-side behaviour into weights">
+          <ChrfTable />
+          <Box variant="p">
+            The advisor gained 7.81 chrF points where direct RL gained 11.21, so it recovered about
+            70% of the gain while the 7B model&apos;s weights never moved (our arithmetic from the
+            paper&apos;s figures). The authors&apos; own summary: direct RL &quot;remains the
+            better option&quot;, and the advisor pipeline makes up &quot;most of the improvement
+            over baseline&quot; <Advisor>Advisor Models, Section 4.4.3</Advisor>. The advisor in
+            this test was the smaller of the two models, 3B against the 7B that direct RL trained.
+          </Box>
+          <ExpandableSection headerText="The arithmetic, and why 70% is a snapshot rather than a ceiling">
             <SpaceBetween size="s">
               <Box variant="p">
-                <strong>Exploration.</strong> RL fine-tuning of Gemma2 2B and 9B on bandit tasks
-                (pick one of several options, see its reward, repeat) raised exploration and
-                lowered regret, the reward lost against always picking the best option; the
-                exploration it learned stayed sub-optimal, and for the 2B model RL narrowed the gap
-                to UCB (Upper Confidence Bound), a classical bandit algorithm{' '}
-                <Cite tier={3} href={GREEDY_AGENTS} venue="ICLR 2026">
-                  Schmied et al., Sections 1 and 4.3
-                </Cite>
-                . Distilling a bandit algorithm into the model, through in-context demonstrations
-                and fine-tuning on data generated by the algorithm, let smaller models explore
-                better than larger ones on various tasks{' '}
-                <Cite tier={3} href={EVOLVE} venue="ICML 2025">
-                  EVOLvE, abstract and Section 4
-                </Cite>
-                . Section 17, Where Words Fall Short, covers the exploration failure these address.
+                <code>(38.98 - 31.17) / (42.38 - 31.17) = 7.81 / 11.21 = 0.697</code>, about 70%.
+                The three chrF values are the paper&apos;s; the ratio is ours{' '}
+                <Advisor>Advisor Models, Section 4.4.3 and Figure 9</Advisor>.
               </Box>
               <Box variant="p">
-                <strong>Context distillation.</strong> A model performs better with instructions
-                or a scratchpad in its context, and the gain disappears when those tokens are gone.
-                Context distillation fine-tunes the model to give, from the task input alone, the
-                answer it gave with the instructions, so the gain is internalised into the weights{' '}
-                <Cite tier={3} href={CONTEXT_DISTILLATION} venue="preprint">
-                  Snell et al., abstract
-                </Cite>
-                .
-              </Box>
-              <Box variant="p">
-                <strong>Alternating prompts and weights.</strong> BetterTogether optimises a
-                pipeline&apos;s prompts and the weights of its model in turn, so that the same model
-                teaches itself{' '}
-                <Cite tier={3} href={BETTER_TOGETHER} venue="EMNLP 2024">
-                  BetterTogether, abstract
-                </Cite>
-                .
+                The training curves differ in shape. Direct RL learns fast early and then flattens;
+                the advisor improves steadily throughout; and both are still climbing when training
+                ends <Advisor>Advisor Models, Appendix D.4 and Figure 14</Advisor>. The 70% is the
+                ratio at 20 epochs, on one task and one pair of models.
               </Box>
             </SpaceBetween>
           </ExpandableSection>

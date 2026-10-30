@@ -488,7 +488,7 @@ const METHODS: MethodRow[] = [
     name: 'Voyager',
     section: 'Section 13',
     source: (
-      <Cite tier={3} href={VOYAGER} venue="TMLR">
+      <Cite tier={3} href={VOYAGER} venue="TMLR 2024">
         Voyager, Sections 2 and 4
       </Cite>
     ),

@@ -479,7 +479,7 @@ export function PromptOptimization() {
             something. They differ in two places: what the optimiser reads from an attempt, a
             score or text that explains the score, and how it chooses which candidate to build on
             next. Section 11, A Text Loop Is RL on the Context, places each of them in the
-            dive&apos;s shared vocabulary; here the question is what each one adds.
+            dive&apos;s shared vocabulary.
           </Box>
           <Box variant="p">
             ProTeGi (Prompt Optimization with Textual Gradients; its arXiv listing calls it
@@ -578,8 +578,7 @@ export function PromptOptimization() {
             <Code href={artifactCode('scripts/experiment_configs.py', 'L152-L171')}>
               L152-L171
             </Code>{' '}
-            <Gepa>GEPA, Appendix E.4</Gepa>. GEPA&apos;s budget was capped per task at what the
-            MIPROv2 baseline spent <Gepa>GEPA, Appendix E.4</Gepa>. The reflection model, the LLM
+            <Gepa>GEPA, Appendix E.4</Gepa>. The reflection model, the LLM
             that reads traces and writes the new instruction, was Qwen3 8B itself: the
             paper&apos;s reproduction code defaults it to the task model, and no experiment
             configuration overrides it{' '}
@@ -648,6 +647,77 @@ export function PromptOptimization() {
               </Box>
             </SpaceBetween>
           </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Predict which gaps an optimised prompt can close, and recognise the ones that need weights"
+          >
+            What one prompt can hold
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Every input reads the same instruction, so what a prompt optimiser learns is what
+            every input shares: task facts, rules, and a strategy that works across examples.
+            Two results fit that picture. Prompts optimised with and for Qwen3 8B, applied
+            unchanged to GPT-4.1 Mini, raised its aggregate by 9.00 points across the six
+            tasks <Gepa>GEPA, Table 2 and Observation 6</Gepa>; the instruction carried task
+            knowledge another model could read. And GEPA&apos;s prompts were up to 9.2 times
+            shorter than MIPROv2&apos;s, which carry optimised few-shot demonstrations, so they
+            cost less on every call that reads them <Gepa>GEPA, Observation 4</Gepa>.
+          </Box>
+          <Box variant="p">
+            The same property sets the limit. A static prompt is one policy, the rule that maps an
+            input to an output, for every input. When the right behaviour depends on a variable
+            hidden in each instance, such as one user&apos;s preferences, one instruction cannot
+            carry it: on three personalisation tasks GEPA landed &quot;marginally above the
+            un-optimized baselines, if at all&quot;, while a 7B advisor model trained with RL
+            learned the preferences{' '}
+            <Cite tier={3} href={ADVISOR} venue="ICML 2026">
+              Advisor Models, Section 4.3.1 and Figure 5
+            </Cite>
+            . Section 16, Hybrids, covers putting weights in front of a frozen model for that
+            case.
+          </Box>
+          <Box variant="p">
+            Reasoning skill is the other gap. GRPO&apos;s AIME win came although the feedback GEPA
+            read there was as rich as text gets: the reproduction code&apos;s AIME feedback says
+            whether the answer was right, gives the correct answer, and, where the dataset has
+            one, appends the full worked solution{' '}
+            <Code href={artifactCode('gepa_artifact/benchmarks/AIME/__init__.py', 'L16-L39')}>
+              gepa-artifact AIME __init__.py L16-L39
+            </Code>{' '}
+            <Code href={artifactCode('gepa_artifact/benchmarks/AIME/AIME_data.py', 'L8-L16')}>
+              AIME_data.py L8-L16
+            </Code>
+            . GEPA moved AIME-2025 from 27.33 to 32.00 and GRPO to 38.00{' '}
+            <Gepa>GEPA, Table 1</Gepa>. Our reading: an instruction carries what a model can be
+            told, and reading worked solutions during optimisation moved this task less than
+            training did; here the weight update won.
+          </Box>
+          <Box variant="p">
+            The optimiser&apos;s own capability bounds the loop as well. OPRO showed limited
+            effectiveness with LLaMa-2 and Mistral 7B as optimisers, with &quot;limited inference capabilities
+            constraining optimization ability&quot;{' '}
+            <Cite tier={3} href={REVISITING_OPRO} venue="ACL Findings 2024">
+              Revisiting OPRO, abstract
+            </Cite>
+            . GEPA&apos;s Qwen3 8B results, though, came from the 8B model reflecting on its own
+            traces, so in our reading the optimiser&apos;s capability bounds a text loop without a
+            fixed size threshold. DSPy&apos;s GEPA wrapper requires a reflection model (unless you supply
+            your own proposer) and its docstring recommends a strong one{' '}
+            <Code href={dspyCode('dspy/teleprompt/gepa/gepa.py', 'L262-L264')}>
+              DSPy gepa.py L262-L264
+            </Code>
+            ; the headline result did not use one. How prompt-optimisation gains change with the
+            size of the target model, optimiser held fixed, was not measured in any study located
+            during this research.
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -750,78 +820,6 @@ export function PromptOptimization() {
             for always building on the best candidate and 5.11 for a beam of four candidates, the
             selection ProTeGi uses. Building on the best stalled after one improvement{' '}
             <Gepa>GEPA, Observation 3, Table 3 and Figure 6</Gepa>.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Predict which gaps an optimised prompt can close, and recognise the ones that need weights"
-          >
-            What one prompt can hold
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            A prompt optimiser is the text loop with the smallest state: one instruction set,
-            scored on a validation set. Every input reads the same instruction, so what it learns
-            is what every input shares: task facts, rules, and a strategy that works across
-            examples. Two results fit that picture. Prompts optimised with and for Qwen3 8B,
-            applied unchanged to GPT-4.1 Mini, raised its aggregate by 9.00 points across the six
-            tasks <Gepa>GEPA, Table 2 and Observation 6</Gepa>; the instruction carried task
-            knowledge another model could read. And GEPA&apos;s prompts were up to 9.2 times
-            shorter than MIPROv2&apos;s, which carry optimised few-shot demonstrations, so they
-            cost less on every call that reads them <Gepa>GEPA, Observation 4</Gepa>.
-          </Box>
-          <Box variant="p">
-            The same property sets the limit. A static prompt is one policy, the rule that maps an
-            input to an output, for every input. When the right behaviour depends on a variable
-            hidden in each instance, such as one user&apos;s preferences, one instruction cannot
-            carry it: on three personalisation tasks GEPA landed &quot;marginally above the
-            un-optimized baselines, if at all&quot;, while a 7B advisor model trained with RL
-            learned the preferences{' '}
-            <Cite tier={3} href={ADVISOR} venue="ICML 2026">
-              Advisor Models, Section 4.3.1 and Figure 5
-            </Cite>
-            . Section 16, Hybrids, covers putting weights in front of a frozen model for that
-            case.
-          </Box>
-          <Box variant="p">
-            Reasoning skill is the other gap. GRPO&apos;s AIME win came although the feedback GEPA
-            read there was as rich as text gets: the reproduction code&apos;s AIME feedback says
-            whether the answer was right, gives the correct answer, and, where the dataset has
-            one, appends the full worked solution{' '}
-            <Code href={artifactCode('gepa_artifact/benchmarks/AIME/__init__.py', 'L16-L39')}>
-              gepa-artifact AIME __init__.py L16-L39
-            </Code>{' '}
-            <Code href={artifactCode('gepa_artifact/benchmarks/AIME/AIME_data.py', 'L8-L16')}>
-              AIME_data.py L8-L16
-            </Code>
-            . GEPA moved AIME-2025 from 27.33 to 32.00 and GRPO to 38.00{' '}
-            <Gepa>GEPA, Table 1</Gepa>. Our reading: an instruction carries what a model can be
-            told, and reading worked solutions during optimisation moved this task less than
-            training did; here the weight update won.
-          </Box>
-          <Box variant="p">
-            The optimiser&apos;s own capability bounds the loop as well. OPRO showed limited
-            effectiveness with LLaMa-2 and Mistral 7B as optimisers, with &quot;limited inference capabilities
-            constraining optimization ability&quot;{' '}
-            <Cite tier={3} href={REVISITING_OPRO} venue="ACL Findings 2024">
-              Revisiting OPRO, abstract
-            </Cite>
-            . GEPA&apos;s Qwen3 8B results, though, came from the 8B model reflecting on its own
-            traces, so in our reading the optimiser&apos;s capability bounds a text loop without a
-            fixed size threshold. DSPy&apos;s GEPA wrapper requires a reflection model (unless you supply
-            your own proposer) and its docstring recommends a strong one{' '}
-            <Code href={dspyCode('dspy/teleprompt/gepa/gepa.py', 'L262-L264')}>
-              DSPy gepa.py L262-L264
-            </Code>
-            ; the headline result did not use one. How prompt-optimisation gains change with the
-            size of the target model, optimiser held fixed, was not measured in any study located
-            during this research.
           </Box>
         </SpaceBetween>
       </Container>

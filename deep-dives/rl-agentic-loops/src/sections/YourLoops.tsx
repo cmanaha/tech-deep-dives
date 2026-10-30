@@ -358,8 +358,7 @@ export function YourLoops() {
             <Cite tier={1} href={ar('program.md', 'L114')}>
               autoresearch program.md L114
             </Cite>
-            . Section 10, The Reward Is a Proxy, covered how a loop&apos;s evaluator gets gamed;
-            this section maps each loop whole and ends on a checklist.
+            .
           </Box>
         </SpaceBetween>
       </Container>
@@ -376,9 +375,8 @@ export function YourLoops() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The map below places each loop on the five parts. Each column is developed in the
-            blocks that follow, with its sources; the marked cells are what the checklist at the
-            end supplies.
+            The map below places each loop on the five parts; the marked cells are what the
+            checklist at the end supplies.
           </Box>
           <LoopsMapDiagram />
           <Box variant="small" color="text-body-secondary">
@@ -443,15 +441,7 @@ export function YourLoops() {
             <Cite tier={1} href={ar('program.md', 'L96-L98')}>
               autoresearch program.md L96-L98
             </Cite>
-            , so a change owns its score. The shipped training script fixes its seed at 42{' '}
-            <Cite tier={1} href={ar('train.py', 'L458-L459')}>
-              autoresearch train.py L458-L459
-            </Cite>
-            , in the file where &quot;Everything is fair game&quot; for the agent{' '}
-            <Cite tier={1} href={ar('program.md', 'L26')}>
-              autoresearch program.md L26
-            </Cite>
-            .
+            , so a change owns its score.
           </Box>
           <Box variant="p">
             The reward has no noise floor, the amount a score moves between runs of identical
@@ -461,7 +451,15 @@ export function YourLoops() {
             <Cite tier={1} href={ar('program.md', 'L37')}>
               autoresearch program.md L37
             </Cite>{' '}
-            Training stops on wall-clock time, after the step that takes the run past its budget{' '}
+            The shipped training script fixes its seed at 42{' '}
+            <Cite tier={1} href={ar('train.py', 'L458-L459')}>
+              autoresearch train.py L458-L459
+            </Cite>
+            , in the file where &quot;Everything is fair game&quot; for the agent{' '}
+            <Cite tier={1} href={ar('program.md', 'L26')}>
+              autoresearch program.md L26
+            </Cite>
+            . Training stops on wall-clock time, after the step that takes the run past its budget{' '}
             <Cite tier={1} href={ar('train.py', 'L603-L604')} kind="code">
               autoresearch train.py L603-L604
             </Cite>
