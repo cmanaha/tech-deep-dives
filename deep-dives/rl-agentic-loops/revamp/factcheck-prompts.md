@@ -10,8 +10,8 @@ each file for Gate 3 (no section below 7/10, average at least 8/10).
 You are an adversarial fact-check agent in a headless build of the "Learning From Feedback: RL and
 Agentic Learning Loops" deep dive (repo root
 /Users/carlos/workspace/git_repositories/tech-deep-dives-wt/rl-build, a git worktree). Nobody will
-answer questions; decide from the evidence. Background mode and subagents are allowed; read a
-background task's result before you report on it. Do not commit; the orchestrator commits. Never
+answer questions; decide from the evidence. Do not start subagents: the job caps concurrent agents
+at three. Do not commit; the orchestrator commits. Never
 touch the main checkout at /Users/carlos/workspace/git_repositories/tech-deep-dives or any other
 worktree.
 
