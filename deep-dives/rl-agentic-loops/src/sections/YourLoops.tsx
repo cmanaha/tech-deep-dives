@@ -490,8 +490,8 @@ export function YourLoops() {
               <Box variant="p">
                 At commit 228791fb, <code>train.py</code> seeds once, computes its schedules from
                 elapsed training time, and breaks out of the loop once elapsed training time
-                reaches the budget. The keep rule in <code>program.md</code> compares one reading with the
-                current best.
+                reaches the budget. The keep rule in <code>program.md</code> compares one reading
+                with the current best.
               </Box>
               <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>
                 <code>{`# train.py
@@ -540,9 +540,9 @@ export function YourLoops() {
           <Box variant="p">
             FunSearch and AlphaEvolve search for programs: an LLM writes candidates (a frozen,
             pretrained one in FunSearch), and an evaluator, code that runs each candidate and
-            scores it, decides what the loop learns.
-            Both keep a scored population of programs, ask the LLM to write variants of the high
-            scorers, and store the variants the evaluator accepts. In FunSearch a pretrained code
+            scores it, decides what the loop learns. Both keep a scored population of programs, ask
+            the LLM to write variants of the high scorers, and store the variants the evaluator
+            accepts. In FunSearch a pretrained code
             model with no fine-tuning writes new versions of one function, and &quot;Programs that
             are correct are sent to the programs database to be stored&quot;{' '}
             <Cite tier={3} href={FUNSEARCH} venue="Nature 2023">
