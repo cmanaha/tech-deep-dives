@@ -405,7 +405,7 @@ const METHODS: MethodRow[] = [
     state: 'One to three written reflections',
     update: 'Append a lesson after each failed trial',
     signal: 'Exact match against the gold answer, or the unit tests it writes and runs',
-    frozen: 'Actor, evaluator and reflector LLMs',
+    frozen: 'Actor and reflector LLMs; the evaluator too, where it is an LLM',
     cost: 'No cost figures reported',
   },
   {
@@ -481,7 +481,7 @@ const METHODS: MethodRow[] = [
     update: 'A curator rewrites it after, or before, each query',
     signal: "The model's own check of its answer, with no labels",
     frozen: 'One model answers and curates (GPT-4o, Claude 3.5 Sonnet)',
-    cost: 'AIME 2024 (competition math) with Claude Sonnet: 1,035 to 1,831 tokens per answer, against 370 without it',
+    cost: 'AIME 2024 (competition math) with Claude Sonnet: an average of 1,035 to 1,831 tokens per problem, against 370 without it',
   },
   {
     id: 'voyager',
@@ -639,7 +639,7 @@ const METHODS: MethodRow[] = [
     source: (
       <SpaceBetween size="xxs">
         <Cite tier={3} href={FUNSEARCH} venue="Nature 2023">
-          FunSearch, Methods
+          FunSearch, main text
         </Cite>
         <Cite tier={3} href={ALPHAEVOLVE} venue="preprint">
           AlphaEvolve, Section 2 and Table 1
@@ -673,7 +673,7 @@ const METHODS: MethodRow[] = [
     section: 'Section 16',
     source: (
       <Cite tier={3} href={RETROFORMER} venue="ICLR 2024">
-        Retroformer, Sections 4.2 and 5.2, Appendix C.1
+        Retroformer, Sections 4.1, 4.2 and 5.2, Appendices C.1 and C.3
       </Cite>
     ),
     state: 'LoRA (Low-Rank Adaptation) weights of a 7B reflection model',
@@ -710,7 +710,7 @@ const METHODS: MethodRow[] = [
     update: 'Append each case; soft Q-learning, an RL method that learns a value per choice, learns which case to retrieve',
     signal: 'A binary task reward',
     frozen: 'GPT-4.1 plans; o3 or o4-mini executes',
-    cost: 'Up to 121k input tokens per task at the hardest level of GAIA (questions for general assistants)',
+    cost: 'About 121k input tokens per task on average, over 10 sampled tasks at the hardest level of GAIA (questions for general assistants)',
   },
 ];
 
@@ -783,8 +783,8 @@ export function TextLoopAsRl() {
             an attempt worked, and RL says nothing can be learned. Reflexion&apos;s own ablation
             shows a loop doing worse than that: on the 50 hardest HumanEval problems in Rust
             (programming tasks checked by unit tests), GPT-4 reflecting without its self-written
-            tests scored 0.52, below the 0.60 of no reflection at all, while the full loop with
-            tests reached 0.68{' '}
+            tests scored 0.52, below the 0.60 of no loop at all, while the full loop with tests
+            reached 0.68{' '}
             <Cite tier={3} href={REFLEXION} venue="NeurIPS 2023">
               Reflexion, Table 3
             </Cite>
@@ -926,7 +926,8 @@ export function TextLoopAsRl() {
             same prompt and calls the difference its advantage; ACE is Agentic Context
             Engineering; GEPA is Genetic-Pareto; OPRO is Optimization by PROmpting; ProTeGi is
             Prompt Optimization with Textual Gradients; MIPROv2 is DSPy&apos;s implementation of
-            MIPRO (Multi-prompt Instruction PRoposal Optimizer).
+            MIPRO (Multi-prompt Instruction PRoposal Optimizer); ExpeL is the Experiential Learning
+            agent; CLIN is a continually learning language agent.
           </Box>
           <StoreSignalDiagram />
           <Box variant="small" color="text-body-secondary">
@@ -971,7 +972,7 @@ export function TextLoopAsRl() {
                 &quot;optimized independently of any agent&quot; or &quot;adapted under the
                 supervision of a fixed agent&quot;{' '}
                 <Cite tier={3} href={SURVEY} venue="preprint">
-                  Adaptation of Agentic AI, Section 3.2
+                  Adaptation of Agentic AI, Section 3.2 and footnote 1
                 </Cite>
                 . Applying the execution-or-output split to the context and the small-model rows
                 is our extension of its frame. It is the question section 22, Choosing a Text Loop,
@@ -1008,7 +1009,8 @@ export function TextLoopAsRl() {
             instruction (GEPA). Whether the context is a prompt or a playbook sets the scale: a
             prompt optimiser replaces one instruction set, a playbook loop adds and edits items in
             a growing list. Prompt optimisers take few, large steps: on Qwen3 8B, GEPA called its
-            reflection model 17 to 90 times per task, each call proposing a new instruction, while
+            reflection model 17 to 90 times in a whole optimisation run on one benchmark, each call
+            proposing a new instruction, while
             the GRPO baseline in the same paper ran 500 training steps over 24,000 rollouts{' '}
             <Cite tier={3} href={GEPA} venue="ICLR 2026">
               GEPA, Appendix E.4 and Table 4
@@ -1033,7 +1035,7 @@ export function TextLoopAsRl() {
           <Box variant="p">
             <Box variant="strong">Signal.</Box> RL learns from the reward and from nothing else.
             The text version: Reflexion reflecting without its tests scored 0.52, below 0.60 with
-            no reflection, and 0.68 with the tests it writes and runs{' '}
+            no loop at all, and 0.68 with the tests it writes and runs{' '}
             <Cite tier={3} href={REFLEXION} venue="NeurIPS 2023">
               Reflexion, Table 3
             </Cite>

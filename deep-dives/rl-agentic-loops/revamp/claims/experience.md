@@ -32,21 +32,22 @@ Authored 2026-10-30. Sources re-opened on 2026-10-30: arXiv HTML for ACE 2510.04
 - ACE ablation, AppWorld, DeepSeek-V3.1, offline, test-normal task goal completion: with incremental updates 76.2, without 67.3, ReAct 63.7 | https://arxiv.org/abs/2510.04618v3 (Appendix A.5, Table 18) | beyond the register; read at the pinned version 2026-10-30 (Appendix C.2 restates it as -11.7% TGC relative)
 
 ## The signal decides what gets kept
-- Voyager: removing self-verification, -73% discovered item count; "the most important among all the feedback types" | https://arxiv.org/abs/2305.16291v2 (Sec 3.4) | F03-38; wave2-words row 27
+- Voyager: removing self-verification, -73% discovered item count; "the most important among all the feedback types" | https://arxiv.org/abs/2305.16291v2 (Sec 3.4; admission rule Sec 2.3, cite label now names both: fc05) | F03-38; wave2-words row 27
 - Voyager self-verification is a GPT-4 check that the task succeeded before the skill is added | https://arxiv.org/abs/2305.16291v2 (Sec 2.2, Figure 4) | F03-36
-- ACE AppWorld online, no GT labels: 59.5 vs ReAct 42.4 (DeepSeek-V3.1) | https://arxiv.org/abs/2510.04618v3 (Table 1) | F03-76
+- ACE AppWorld online, no GT labels: average 59.5 vs ReAct 42.4 over test-normal and test-challenge TGC and SGC (DeepSeek-V3.1; 'averaged' added: fc05) | https://arxiv.org/abs/2510.04618v3 (Table 1) | F03-76
 - FiNER gloss: label each token of XBRL financial documents with one of 139 entity types | https://arxiv.org/abs/2510.04618v3 (Sec 4.1) | F03-77 (gloss beyond the register quote)
-- ACE FiNER online: no labels 67.3 vs base 70.7; with labels 76.7 | https://arxiv.org/abs/2510.04618v3 (Table 2) | F03-77; wave2-words row 28
+- ACE FiNER online: no labels 67.3 vs base 70.7; online with labels 76.7 (offline with labels 78.3; 'online' added: fc05) | https://arxiv.org/abs/2510.04618v3 (Table 2) | F03-77; wave2-words row 28
 - Authors' quote: "when ground-truth supervision or reliable execution signals are absent", "the constructed context can be polluted by spurious or misleading signals" | https://arxiv.org/abs/2510.04618v3 (Sec 4.4) | F03-77; wave2-words row 28
 
 ## What a store buys against a weight update
 - U7 hedge: no same-model, same-budget RL comparison located for the memory and playbook loops; the one on offer pairs different base models | https://arxiv.org/abs/2510.08191v1 (Table 3) | RESEARCH-GUIDE U7; wave2-words U7
+- ReTool venue ICLR 2026 (proceedings PDF header; fc05 fix from 'preprint') | https://proceedings.iclr.cc/paper_files/paper/2026/file/4038c9208dfc22644c60ad39c24e5c53-Paper-Conference.pdf | fc04, fc05
 - Table 3: Qwen2.5-32B-Instruct ReAct 29.6, ReTool 67.0; Qwen3-32B (non-thinking) ReAct 29.1, Training-Free GRPO 33.5; tool CI for all | https://arxiv.org/abs/2510.08191v1 (Table 3) | F03-90; wave2-words row 11
 - Derived lifts, our arithmetic: 67.0 - 29.6 = 37.4; 33.5 - 29.1 = 4.4 | derived from Table 3 | wave2-words row 11
 - ReTool pipeline: cold-start fine-tuning on code-augmented long-form reasoning traces, then RL with task outcomes as rewards; "Our 32B model achieves 67% accuracy with 400 training steps" | https://arxiv.org/abs/2504.11536v2 (abstract) | wave2-words row 11
 - Table 3 captioned Mean@32; Mean@32 = 32 independent runs per problem, average pass@1 | https://arxiv.org/abs/2510.08191v1 (Sec 3.1, Table 3 caption) | F03-87 (definition beyond the register quote)
 - Training-Free GRPO cheap to train, dearer per query, cross-model pair; priced in section 20 | https://arxiv.org/abs/2510.08191v1 (Sec 4.2) | F03-91; wave2-words row 13
-- ACE 91.8% of input tokens served from cache, during evaluation (playbook frozen) | https://arxiv.org/abs/2510.04618v3 (Sec 4.7) | F03-79, F04-41; wave2-systems-cost row 27
+- ACE 91.8% of input tokens served from cache, during evaluation (playbook frozen), prompt-caching study with GPT-5.1 through the OpenAI API (model added: fc05) | https://arxiv.org/abs/2510.04618v3 (Sec 4.7) | F03-79, F04-41; wave2-systems-cost row 27
 - U10 hedge: no measurement of cache hit rate while a loop edits its own context located | RESEARCH-GUIDE U10; wave2-limits U10 | -
 - Playbook rides in every prompt (prepended to future calls) | https://arxiv.org/abs/2510.08191v1 (Sec 2); https://arxiv.org/abs/2510.04618v3 (Sec 4.7) | F03-86, F03-79
 

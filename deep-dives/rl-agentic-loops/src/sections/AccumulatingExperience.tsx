@@ -586,18 +586,19 @@ export function AccumulatingExperience() {
             self-verification cut the count of items the agent discovered in Minecraft by 73%, and
             the authors call it the most important of their feedback types{' '}
             <Cite tier={3} href={VOYAGER} venue="TMLR">
-              Voyager, Section 3.4
+              Voyager, Sections 2.3 and 3.4
             </Cite>
             .
           </Box>
           <Box variant="p">
             ACE shows the same split inside one paper, on one model (DeepSeek-V3.1). On AppWorld,
             where running the agent&apos;s code returns execution feedback, ACE adapting online
-            without ground-truth labels reached 59.5 against 42.4 for the ReAct baseline (an agent
-            that interleaves reasoning and tool calls) <Ace>ACE, Table 1</Ace>. On FiNER, which
+            without ground-truth labels averaged 59.5 across AppWorld&apos;s test splits against
+            42.4 for the ReAct baseline (an agent that interleaves reasoning and tool calls){' '}
+            <Ace>ACE, Table 1</Ace>. On FiNER, which
             tags each token of a financial filing with one of 139 entity types, label-free online
-            ACE fell to 67.3 against the base model&apos;s 70.7, while ACE with labels reached
-            76.7 <Ace>ACE, Section 4.1 and Table 2</Ace>. The authors trace the drop to the
+            ACE fell to 67.3 against the base model&apos;s 70.7, while online ACE with labels
+            reached 76.7 <Ace>ACE, Section 4.1 and Table 2</Ace>. The authors trace the drop to the
             signal: when &quot;ground-truth supervision or reliable execution signals are
             absent&quot;, &quot;the constructed context can be polluted by spurious or misleading
             signals&quot; <Ace>ACE, Section 4.4</Ace>.
@@ -629,7 +630,7 @@ export function AccumulatingExperience() {
             <TfGrpo>Training-Free GRPO, Table 3</TfGrpo>. ReTool is a fine-tuning-plus-RL pipeline:
             supervised fine-tuning on code-augmented reasoning traces as a cold start, then RL
             with task outcomes as the reward{' '}
-            <Cite tier={3} href={RETOOL} venue="preprint">
+            <Cite tier={3} href={RETOOL} venue="ICLR 2026">
               ReTool, abstract
             </Cite>
             .
@@ -644,7 +645,7 @@ export function AccumulatingExperience() {
             problem <TfGrpo>Training-Free GRPO, Section 3.1 and Table 3</TfGrpo>, and its 67.0
             for ReTool matches the figure ReTool reports for its own 32B model, &quot;67% accuracy
             with 400 training steps&quot;{' '}
-            <Cite tier={3} href={RETOOL} venue="preprint">
+            <Cite tier={3} href={RETOOL} venue="ICLR 2026">
               ReTool, abstract
             </Cite>
             .
@@ -655,9 +656,10 @@ export function AccumulatingExperience() {
             <TfGrpo>Training-Free GRPO, Section 4.2</TfGrpo>; section 20, Cost per Improvement,
             prices it. Part of the per-query cost is the playbook itself, which rides in every
             prompt, and prefix caching decides how much of it is billed (
-            <Link href="../vllm/">vLLM dive, section 6: Automatic Prefix Caching</Link>). ACE
-            served 91.8% of its input tokens from cache, measured during evaluation with the
-            playbook frozen <Ace>ACE, Section 4.7</Ace>. No measurement of the cache hit rate
+            <Link href="../vllm/">vLLM dive, section 6: Automatic Prefix Caching</Link>). In a
+            prompt-caching study with GPT-5.1 through the OpenAI API, ACE served 91.8% of its input
+            tokens from cache, measured during evaluation with the playbook frozen{' '}
+            <Ace>ACE, Section 4.7</Ace>. No measurement of the cache hit rate
             while a loop edits its own context was located in this research.
           </Box>
         </SpaceBetween>

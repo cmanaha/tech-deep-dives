@@ -15,3 +15,6 @@ scored.
 | 8 | What RL Does to a Model | WhatRlDoes.tsx | fc03 | 8 |
 | 9 | Agentic RL | AgenticRl.tsx | fc04 | 9 |
 | 10 | The Reward Is a Proxy | RewardIsAProxy.tsx | fc04 | 9 |
+| 11 | A Text Loop Is RL on the Context | TextLoopAsRl.tsx | fc05 | 9 |
+| 12 | Verbal Reinforcement & Self-Correction | VerbalReinforcement.tsx | fc05 | 9 |
+| 13 | Memories, Playbooks & Skill Libraries | AccumulatingExperience.tsx | fc05 | 9 |

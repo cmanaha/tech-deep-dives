@@ -40,7 +40,7 @@ function Reflexion({ children }: { children: ReactNode }) {
 
 function Score({ children }: { children: ReactNode }) {
   return (
-    <Cite tier={3} href={SCORE} venue="preprint">
+    <Cite tier={3} href={SCORE} venue="ICLR 2025">
       {children}
     </Cite>
   );
@@ -337,7 +337,7 @@ const SCORE_ROWS: ScoreRow[] = [
   {
     id: 'm-star',
     setting: 'MATH, Gemini 1.5 Flash',
-    method: 'SFT on successful correction traces',
+    method: 'Supervised fine-tuning (SFT) on successful correction traces',
     first: '53.6%',
     second: '54.0%',
     delta: '+0.4',
@@ -433,8 +433,9 @@ export function VerbalReinforcement() {
             API. The challenge is knowing when it learns. The studies in this section point one
             way: the signal does the work. With a signal from outside the model, reflection gains;
             without one, the same loop stays flat or loses accuracy. In Reflexion&apos;s own
-            ablation on the 50 hardest HumanEval Rust problems, GPT-4 in the loop with its unit
-            tests removed scored 0.52, below the 0.60 it scored with no loop at all{' '}
+            ablation on the 50 hardest HumanEval problems in Rust (programming tasks checked by
+            unit tests), GPT-4 in the loop with its unit tests removed scored 0.52, below the 0.60
+            it scored with no loop at all{' '}
             <Reflexion>Reflexion, Table 3</Reflexion>.
           </Box>
         </SpaceBetween>
@@ -452,9 +453,10 @@ export function VerbalReinforcement() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Reflexion splits the work across three roles, each a prompted LLM: an Actor that
-            attempts the task, an Evaluator that scores the attempt, and a Self-Reflection model
-            that turns a failure into advice <Reflexion>Reflexion, Section 3</Reflexion>. One
+            Reflexion splits the work across three roles: an Actor, a prompted LLM that attempts
+            the task; an Evaluator that scores the attempt, by exact match, a hand-written heuristic
+            or another LLM; and a Self-Reflection model, also an LLM, that turns a failure into
+            advice <Reflexion>Reflexion, Section 3</Reflexion>. One
             trial runs in five steps. The actor acts. The evaluator returns a reward, the number
             the loop is trying to raise; in Reflexion it is a success bit or a scalar score. On a
             failure, the reflector reads the attempt and its score and writes a lesson in plain
@@ -516,8 +518,7 @@ export function VerbalReinforcement() {
         <SpaceBetween size="m">
           <Box variant="p">
             Reflexion&apos;s ablation separates the signal from the reflection. On the 50 hardest
-            HumanEval problems translated to Rust (HumanEval is a set of programming problems
-            scored by unit tests), with GPT-4, the authors removed the agent&apos;s self-written
+            HumanEval problems translated to Rust, with GPT-4, the authors removed the agent&apos;s self-written
             tests, its written reflections, or both, and measured pass@1, the share of problems
             that the one submitted solution solves{' '}
             <Reflexion>Reflexion, Table 3 and Table 2 caption</Reflexion>.
@@ -537,10 +538,11 @@ export function VerbalReinforcement() {
             pass ends the loop early with a wrong answer. With GPT-4, Reflexion raised HumanEval
             Python pass@1 from 80.1 to 91.0 and lowered MBPP Python (short Python programming
             problems) from 80.1 to 77.1 <Reflexion>Reflexion, Table 1</Reflexion>. The authors
-            trace the difference to the tests: they passed a wrong solution 16.3% of the time on
-            MBPP against 1.4% on HumanEval <Reflexion>Reflexion, Section 4.3</Reflexion>. On
-            their analysis, the false-positive rate of the grader decided whether the same loop
-            on the same model helped or hurt.
+            trace the difference to the tests: of the solutions that passed all their own tests,
+            16.3% were wrong on MBPP against 1.4% on HumanEval{' '}
+            <Reflexion>Reflexion, Section 4.3</Reflexion>. On their analysis, the grader&apos;s
+            false-positive rate explains why the same loop on the same model helped on one
+            benchmark and hurt on the other.
           </Box>
         </SpaceBetween>
       </Container>
@@ -584,7 +586,7 @@ export function VerbalReinforcement() {
             Huang et al. call the setting intrinsic self-correction: the model reviews and revises
             its own answer with no external feedback, and decides by itself when to stop{' '}
             <Cite tier={3} href={HUANG} venue="ICLR 2024">
-              Huang et al., Section 2
+              Huang et al., Sections 2 and 3.2
             </Cite>
             . On CommonSenseQA (multiple-choice commonsense questions), GPT-3.5 fell from 75.8 to
             38.1 after one round, at three model calls per question instead of one{' '}
@@ -623,7 +625,7 @@ export function VerbalReinforcement() {
             mathematics problems) gained 4.4 points from first to second attempt after SCoRe
             training, where Self-Refine prompting lost 1.0; Gemini 1.0 Pro on HumanEval gained
             12.2 against Self-Refine&apos;s loss of 1.2 <Score>SCoRe, Tables 2 and 3</Score>.
-            Those results cover one round of correction on two Gemini models, in a preprint.
+            Those results cover one round of correction on two Gemini models.
           </Box>
           <Box variant="p">
             SCoRe still learns from an outside signal; it spends that signal during training. Its
@@ -640,7 +642,7 @@ export function VerbalReinforcement() {
                 trained on MBPP <Score>SCoRe, Section 6 and Tables 2 and 3</Score>. SCoRe also
                 raised the first attempt on MATH, from 52.6% to 60.0%, so its 64.4% second attempt
                 against Self-Refine&apos;s 51.8% mixes better first answers with better
-                corrections. Supervised fine-tuning (SFT) on correction traces generated offline
+                corrections. SFT on correction traces generated offline
                 moved the MATH change only to +0.4 and +1.8 points. Prompted correction also
                 breaks right answers: Self-Refine&apos;s second attempt turned 4.2% of MATH
                 problems from correct to incorrect and 3.2% from incorrect to correct{' '}

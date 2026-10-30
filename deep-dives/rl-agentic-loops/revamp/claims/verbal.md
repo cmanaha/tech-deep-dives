@@ -8,7 +8,7 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 - Strongest number, landing 1: 50 hardest HumanEval Rust problems, GPT-4, loop without unit tests 0.52 vs 0.60 with no loop | https://arxiv.org/abs/2303.11366v4 (Table 3) | F04-21, F03-5; wave2-limits row 3; wave2-rlvr row 52
 
 ## The Reflexion loop
-- Three roles (Actor, Evaluator, Self-Reflection), each an LLM | https://arxiv.org/abs/2303.11366v4 (Sec 3) | F03-1 (beyond the register quote; read at the pinned version)
+- Three roles (Actor, Evaluator, Self-Reflection); actor and reflector are LLMs, the evaluator is exact match, a heuristic or an LLM (fc05 fix from 'each an LLM') | https://arxiv.org/abs/2303.11366v4 (Sec 3) | F03-1 (beyond the register quote; read at the pinned version)
 - Evaluator reward is a binary success status or a scalar score | https://arxiv.org/abs/2303.11366v4 (Sec 3, "Self-reflection" and "The Reflexion process") | F03-1
 - Memory bounded at Omega "usually set to 1-3" to adhere to max context limits | https://arxiv.org/abs/2303.11366v4 (Sec 3, Memory) | F03-1, F04-20; wave2-words row 19
 - Loop runs until the evaluator passes the attempt or the trial limit | https://arxiv.org/abs/2303.11366v4 (Sec 3; Algorithm 1) | F03-1
@@ -31,7 +31,7 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 - Without reflection: tests and compilation catch errors, fixes do not reflect them, no gain over baseline | https://arxiv.org/abs/2303.11366v4 (Sec 4.3 Ablation study) | F03-5
 - A false pass ends the loop early with an invalid submission | https://arxiv.org/abs/2303.11366v4 (Sec 4.3 Analysis: "the agent will prematurely report an invalid submission") | F03-4
 - GPT-4 HumanEval Python 80.1 to 91.0; MBPP Python 80.1 to 77.1 | https://arxiv.org/abs/2303.11366v4 (Table 1) | F03-4
-- False positive rate 16.3% MBPP Python vs 1.4% HumanEval Python; authors attribute the MBPP result to it | https://arxiv.org/abs/2303.11366v4 (Sec 4.3 Analysis) | F03-4, F04-22
+- False positive rate 16.3% MBPP Python vs 1.4% HumanEval Python, defined as P(solution wrong given all tests pass); authors attribute the MBPP result to it ('explains', not 'decided': fc05 fix) | https://arxiv.org/abs/2303.11366v4 (Sec 4.3 Analysis) | F03-4, F04-22
 
 ## Self-correction needs a signal from outside the model
 - Self-Refine: one LLM as generator, refiner and feedback provider, no training | https://arxiv.org/abs/2303.17651v2 (abstract) | F03-8
@@ -39,7 +39,7 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 - Math reasoning (GSM8K) GPT-3.5 64.1 to 64.1 | https://arxiv.org/abs/2303.17651v2 (Table 1; Appendix O names GSM-8k) | F03-9; wave2-words row 21
 - Flat math traced to error detection; ChatGPT feedback "everything looks good" for 94% of instances | https://arxiv.org/abs/2303.17651v2 (Sec 3.3) | F03-9
 - Oracle feedback (refine only when wrong): GPT-3.5 64.06 to 68.9 | https://arxiv.org/abs/2303.17651v2 (Appendix H.1, Table 9) | F03-10; wave2-words row 21
-- Intrinsic self-correction defined: no external or human feedback, model decides when to stop | https://arxiv.org/abs/2310.01798v2 (Sec 2; Sec 3.2) | F03-12
+- Intrinsic self-correction defined: no external or human feedback, model decides when to stop | https://arxiv.org/abs/2310.01798v2 (Sec 2; Sec 3.2; page cite label now names both: fc05) | F03-12
 - Huang et al. venue ICLR 2024 | PDF running header "Published as a conference paper at ICLR 2024" | register 03 pinned sources
 - GPT-3.5 CommonSenseQA 75.8 to 38.1 after round 1, 3 calls vs 1 | https://arxiv.org/abs/2310.01798v2 (Table 3) | F03-12; wave2-words row 22
 - Oracle stopping: GPT-3.5 CommonSenseQA 75.8 to 89.7; oracle run uses the correct label to decide when to stop | https://arxiv.org/abs/2310.01798v2 (Sec 3.2, Table 2) | F03-13
@@ -50,7 +50,7 @@ Authored 2026-10-30. Every arXiv source below was re-fetched at the pinned versi
 - SCoRe: multi-turn RL on self-generated two-attempt episodes; second-attempt instruction asks the model to look for a mistake | https://arxiv.org/abs/2409.12917v2 (Sec 3, Sec 5, Sec 6 evaluation prompts) | wave2-words G2
 - Gemini 1.5 Flash MATH: SCoRe +4.4 vs Self-Refine -1.0, first to second attempt | https://arxiv.org/abs/2409.12917v2 (Table 2; Sec 6 Models) | wave2-words G2, U8
 - Gemini 1.0 Pro HumanEval: SCoRe +12.2 vs Self-Refine -1.2 | https://arxiv.org/abs/2409.12917v2 (Table 3; Sec 6 Models) | wave2-words G2, U8
-- Scope: one correction round, two Gemini models, preprint | https://arxiv.org/abs/2409.12917v2 (Sec 6 "one round of self-correction"; no venue in arXiv record) | wave2-words G2, G5 note, U8 hedge
+- Scope: one correction round, two Gemini models; venue ICLR 2025 (oral), proceedings.iclr.cc hash 871ac99fdc5282d0301934d23945ebaa (fc05 fix: was 'preprint') | https://arxiv.org/abs/2409.12917v2 (Sec 6 "one round of self-correction") | wave2-words G2, G5 note, U8 hedge
 - Training reward binary from ground truth (MATH) or passing all tests (code); no oracle at test time; second-attempt instruction does not reveal correctness | https://arxiv.org/abs/2409.12917v2 (Sec 3: "we do not assume access to this oracle at test-time"; Sec 6 Tasks and Evaluation prompts) | wave2-words G2 (setting quote)
 - Expandable table: MATH base 52.6/41.4/-11.2; Self-Refine 52.8/51.8/-1.0; SFT successful traces (STaR) 53.6/54.0/+0.4; SFT paired traces (Pair-SFT) 52.4/54.2/+1.8; SCoRe 60.0/64.4/+4.4 | https://arxiv.org/abs/2409.12917v2 (Table 2) | wave2-words G2
 - Expandable table: HumanEval base 53.7/56.7/+3.0; Self-Refine 53.7/52.5/-1.2; SCoRe 52.4/64.6/+12.2 | https://arxiv.org/abs/2409.12917v2 (Table 3) | wave2-words G2
