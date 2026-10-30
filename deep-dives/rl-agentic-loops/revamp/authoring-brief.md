@@ -62,8 +62,12 @@ User-Agent, URL or query string.** If a site demands a contact address, use a Wa
 - Links to other sections of this dive are plain text ("section 8, What RL Does to a Model"): the app
   has no in-page anchors. Links to sibling dives are plain navigational `Link`s, never `Cite`:
   `<Link href="../vllm/">vLLM dive, section 4: Scheduler &amp; Continuous Batching</Link>`,
-  `<Link href="../sglang/">SGLang dive, section 13: SGLang as an RL Rollout Engine</Link>`,
-  `<Link href="../caching/">Caching dive</Link>`. Do not re-explain what a sibling dive covers.
+  `<Link href="../sglang/">SGLang dive, section 13: SGLang as an RL Rollout Engine</Link>`. The scope's
+  "Caching dive" is not published; for prefix caching link
+  `<Link href="../vllm/">vLLM dive, section 6: Automatic Prefix Caching</Link>`, and for the DGX Spark
+  hardware `<Link href="../silicon-memory-inference/">Silicon, Memory &amp; Inference dive</Link>`.
+  Published sibling dives: `../efa/`, `../silicon-memory-inference/`, `../vllm/`, `../sglang/`; link
+  nothing else. Do not re-explain what a sibling dive covers.
 
 ### Section titles (for cross-references)
 
