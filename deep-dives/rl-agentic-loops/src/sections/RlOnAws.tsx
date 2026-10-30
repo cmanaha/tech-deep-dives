@@ -331,7 +331,7 @@ export function RlOnAws() {
         header={
           <Header
             variant="h1"
-            description="Find the AWS service for each path from section 22 and what you bring to it: one grader can drive a weight update or a prompt rewrite, and managed RL costs $80.00 per training hour (AWS pages, HyperPod recipes 2.0.11, Neuron v2.33.0 and TRL v1.16.0, read 2026-10-30)"
+            description="Find the AWS service for each path from section 22 and what you bring to it: one grader can drive a weight update or a prompt rewrite, and Bedrock's managed RL costs $80.00 per training hour (AWS pages, HyperPod recipes 2.0.11, Neuron v2.33.0 and TRL v1.16.0, read 2026-10-30)"
           >
             23. RL &amp; Learning Loops on AWS
           </Header>

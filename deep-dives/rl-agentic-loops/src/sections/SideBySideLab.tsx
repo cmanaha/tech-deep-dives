@@ -152,9 +152,9 @@ function StepTimeDiagram() {
       >
         <title id="lab-steptime-title">
           Where a GRPO step&apos;s time went on one DGX Spark, in two runs of 20 steps: generation
-          took 62.0% and 62.9% of summed step time, training 29.9% and 29.5%, the trainer&apos;s
-          log-probability recompute for the mismatch correction 6.8% and 6.5%, and the weight sync
-          into vLLM 0.9% and 0.8%. The median step took 2.087 s and 2.110 s.
+          took 62.0% and 62.9% of summed step time, training 29.9% and 29.5%, other preparation (the
+          trainer&apos;s log-probability recompute for the mismatch correction plus the advantage
+          computation) 6.8% and 6.5%, and the weight sync into vLLM 0.9% and 0.8%. The median step took 2.087 s and 2.110 s.
         </title>
         <desc id="lab-steptime-desc">
           Measured on our own run (Tier 0): Qwen2.5-0.5B-Instruct, 16 completions per step capped at
@@ -268,7 +268,7 @@ function StepTimeDiagram() {
                 fontSize="11"
                 textAnchor="end"
               >
-                {`Log-probability recompute for the mismatch correction ${run.recompute}, 0.136 s median`}
+                {`Other preparation: log-probability recompute and advantages ${run.recompute}, 0.136 s median`}
               </text>
               <line
                 x1={syncMid}
@@ -539,8 +539,8 @@ export function SideBySideLab() {
             This section is the dive&apos;s lab, where its claims meet hardware a reader can own. It
             has two parts. E0, which we ran, asks whether an RL (reinforcement learning) training
             loop runs on one NVIDIA DGX Spark and where each step&apos;s time goes. E1, which this
-            build did not run, is a protocol: one task, one verifier and one rollout budget put in
-            front of a base model, an RL-trained model, two text loops and best-of-n sampling, so
+            build did not run, is a protocol: one task, one verifier and one rollout budget (a
+            rollout is one sampled attempt) put in front of a base model, an RL-trained model, two text loops and best-of-n sampling, so
             you can watch sharpening (probability moving toward answers the model could already
             produce) and instruction-learning (picking up a rule the prompt never stated) on the
             same chart. The machine itself is covered in the{' '}
@@ -585,10 +585,11 @@ export function SideBySideLab() {
             The median step took 2.087 s in the first run and 2.110 s in the second, over steps 2 to
             20 (step 1 carries warm-up). Generation took 62.0% and 62.9% of summed step time and
             training (the loss forward pass, the backward pass and the optimizer step) 29.9% and
-            29.5%. The trainer&apos;s extra forward pass, which recomputes the log-probability of
-            every sampled token so TRL can correct for vLLM and the trainer disagreeing about them
-            (the mismatch correction), took 6.8% and 6.5%, and copying the
-            updated weights into vLLM took 17 ms per step, 0.9% and 0.8% <E0>E0 log</E0>{' '}
+            29.5%. The rest of the preparation took 6.8% and 6.5%: the trainer&apos;s extra
+            forward pass, which recomputes the log-probability of every sampled token so TRL can
+            correct for vLLM and the trainer disagreeing about them (the mismatch correction),
+            together with the advantage computation. Copying the updated weights into vLLM took 17
+            ms per step, 0.9% and 0.8% <E0>E0 log</E0>{' '}
             <Cite tier={1} href={trlCode('trl/trainer/grpo_trainer.py', 'L2640-L2655')} kind="code">
               TRL grpo_trainer.py L2640-L2655
             </Cite>
@@ -607,8 +608,8 @@ export function SideBySideLab() {
             seed and two runs, TRL 1.16.0 with vLLM 0.28.0 colocated. E0 shows the mechanism, not
             learning: twenty steps at a learning rate of 1e-6 from a 4% base rate test whether the
             loop runs, and the reward did not move and was not expected to <E0>E0 log</E0>. A larger model,
-            longer outputs, LoRA, vLLM&apos;s sleep mode and vLLM&apos;s server mode were not
-            tested.
+            longer outputs, LoRA (Low-Rank Adaptation, which trains small added matrices instead of
+            every weight), vLLM&apos;s sleep mode and vLLM&apos;s server mode were not tested.
           </Box>
         </SpaceBetween>
       </Container>
@@ -635,8 +636,8 @@ export function SideBySideLab() {
               E0 run 2 logs.jsonl
             </Cite>
             . On those steps the advantage, how much better an answer did than its group&apos;s
-            average, was zero for every answer, so nothing moved. Section 7, RLVR &amp; GRPO,
-            derives that share from the base rate; on your own run it is the first number to check.
+            average, was zero for every answer, so nothing moved. Section 7, RLVR &amp; GRPO
+            (RLVR: RL with verifiable rewards), derives that share from the base rate; on your own run it is the first number to check.
           </Box>
           <Box variant="p">
             <strong>Two engines, one set of weights.</strong> vLLM and the trainer disagree slightly
@@ -679,7 +680,7 @@ export function SideBySideLab() {
           <Box variant="p">
             E0 ran in a fresh virtual environment from the PyPI wheels; the install resolved in
             about three minutes with no build from source <E0 />. NVIDIA&apos;s Unsloth playbook
-            container pins <code>trl==0.26.1</code> and <code>datasets==4.3.0</code>{' '}
+            installs <code>trl==0.26.1</code> and <code>datasets==4.3.0</code> inside its container{' '}
             <Cite tier={1} href={playbook('nvidia/playbook-unsloth/README.md', 'L121')}>
               NVIDIA playbook-unsloth README L121
             </Cite>
@@ -715,8 +716,8 @@ export function SideBySideLab() {
               TRL grpo_config.py L656-L657
             </Cite>
             , which on the Spark&apos;s 121.69 GiB would ask for about 36.5 GiB (our arithmetic:
-            0.3 x 121.69). Each run took 180 s from start to exit with the model download and the
-            first compile, and 81 s with the compile cache warm <E0>E0 log</E0>.
+            0.3 x 121.69). The first run took 180 s from start to exit, with the model download and
+            the first compile, and the second took 81 s with the compile cache warm <E0>E0 log</E0>.
           </Box>
           <ExpandableSection headerText="How to run it on a machine other people are using">
             <SpaceBetween size="s">
@@ -805,8 +806,7 @@ export function SideBySideLab() {
               against.
             </li>
             <li>
-              <strong>(b) GRPO</strong> with TRL at 1.16.0 and LoRA (Low-Rank Adaptation, which
-              trains small added matrices instead of every weight), with <code>loss_type</code> and{' '}
+              <strong>(b) GRPO</strong> with TRL at 1.16.0 and LoRA, with <code>loss_type</code> and{' '}
               <code>beta</code> stated and rollouts counted. Log{' '}
               <code>frac_reward_zero_std</code> and the policy entropy (how spread the model&apos;s
               next-token probabilities are) per step.
@@ -839,7 +839,8 @@ export function SideBySideLab() {
           </Box>
           <Box variant="p">
             <strong>An optional point at 7B to 8B.</strong> That is the size where GEPA beat GRPO
-            on the same model, Qwen3 8B, across six tasks <Gepa>GEPA, Table 1</Gepa>. NVIDIA&apos;s
+            on the same model, Qwen3 8B, on a six-task aggregate, while GRPO kept the lead on
+            AIME-2025 <Gepa>GEPA, Table 1</Gepa>. NVIDIA&apos;s
             own Spark playbook already runs GRPO with LoRA on a 7B model, Qwen2.5-VL-7B-Instruct (a
             vision-language model), with rank-32 adapters through Unsloth{' '}
             <Cite tier={1} href={playbook(`${VLM_PLAYBOOK}/assets/ui_image/src/train.yaml`)}>
@@ -849,7 +850,11 @@ export function SideBySideLab() {
             <Cite tier={1} href={playbook(`${VLM_PLAYBOOK}/README.md`, 'L222')} kind="vendor-claim">
               NVIDIA playbook-vlm-finetuning README L222
             </Cite>
-            . Its script samples 2 answers per prompt and does not set <code>use_vllm</code>{' '}
+            . Its shipped configuration samples 2 answers per prompt{' '}
+            <Cite tier={1} href={playbook(`${VLM_PLAYBOOK}/assets/ui_image/src/train.yaml`, 'L9')} kind="code">
+              train.yaml L9
+            </Cite>{' '}
+            and its script does not set <code>use_vllm</code>{' '}
             <Cite
               tier={1}
               href={playbook(`${VLM_PLAYBOOK}/assets/ui_image/src/train_image_vlm.py`, 'L164-L188')}

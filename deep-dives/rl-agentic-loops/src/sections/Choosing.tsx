@@ -540,7 +540,8 @@ export function Choosing() {
           </Box>
           <Box variant="p">
             Read the score per prompt as well as on average. A prompt that passes every time or
-            never costs a full group of rollouts at every step and teaches nothing, so drop or
+            never costs a full group of rollouts (sampled answers) at every step and teaches
+            nothing, so drop or
             replace those prompts before a run. The same measurement is the baseline any text
             loop has to beat.
           </Box>
@@ -597,7 +598,8 @@ export function Choosing() {
             the API model&apos;s context. Fine-tuning run by the model&apos;s vendor counts as
             weight access only while the vendor offers it. OpenAI is winding down its fine-tuning
             platform: it is no longer accessible to new users, and eligible existing customers can
-            create training jobs until January 6, 2027{' '}
+            create training jobs until January 6, 2027, unless the base model shuts down
+            earlier{' '}
             <Cite tier={1} href={OPENAI_RFT}>
               OpenAI API docs: reinforcement fine-tuning
             </Cite>
@@ -698,7 +700,7 @@ export function Choosing() {
             <Box variant="strong" display="inline">
               SFT or distillation from a stronger model.
             </Box>{' '}
-            When the base scores near zero on your grader{' '}
+            When the base scores a consistent 0% on your grader{' '}
             <Cite tier={1} href={BEDROCK_RFT}>
               Bedrock user guide: reinforcement fine-tuning best practices
             </Cite>

@@ -28,3 +28,6 @@ scored.
 | 16 | Hybrids | Hybrids.tsx | fc06 | 9 |
 | 19 | An RL Step Is an Inference Job Inside a Training Job | RlStepAsSystem.tsx | fc08 | 9 |
 | 20 | Cost per Improvement | CostPerImprovement.tsx | fc08 | 9 |
+| 21 | Side by Side on a DGX Spark | SideBySideLab.tsx | fc09 | 9 |
+| 22 | Choosing a Text Loop, a Hybrid or a Weight Update | Choosing.tsx | fc09 | 9 |
+| 23 | RL & Learning Loops on AWS | RlOnAws.tsx | fc09 | 9 |

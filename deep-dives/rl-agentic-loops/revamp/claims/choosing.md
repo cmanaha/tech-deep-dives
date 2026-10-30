@@ -56,10 +56,10 @@ Notes for the fact checkers:
 
 ## Question 3
 - With an API model: text loop, inference-time sampling, advisor [our synthesis] | sections 8, 14, 16 | SCOPE section 22
-- OpenAI is winding down its fine-tuning platform; no longer accessible to new users; eligible existing customers can create training jobs until January 6, 2027 | https://developers.openai.com/api/docs/guides/reinforcement-fine-tuning | wave2-foundations G3 (date new, read at source)
+- OpenAI is winding down its fine-tuning platform; no longer accessible to new users; eligible existing customers can create training jobs until January 6, 2027, unless the base model shuts down earlier (clause restored by fc09) | https://developers.openai.com/api/docs/guides/reinforcement-fine-tuning | wave2-foundations G3 (date new, read at source)
 - Weight update paid once, served at normal price; inference-time sharpening paid per query [section 8's reading] | src/sections/WhatRlDoes.tsx L848-L856 | SCOPE section 8
 - One training-free sampler: about 8.84x the tokens per answer in the MATH-500 setting | https://arxiv.org/abs/2510.14901v1 (Sec 5.3) | F02-58
-- A text loop pays for instructions on every call; section 17 covers prompt caching [pointer] | src/sections/WeightsVsContext.tsx L90-L95, L740-L746 | F04-45
+- A text loop pays for instructions on every call; section 17 covers prompt caching [pointer] | src/sections/WhereWordsFallShort.tsx L603-L607 (fc09: section 17 owns prompt caching; the earlier pointer named section 18's file) | F04-45
 - Low volume favours per-query paths; high volume favours paying once [our reading] | SCOPE section 20 mental model | SCOPE section 20
 
 ## Six paths
@@ -72,7 +72,7 @@ Notes for the fact checkers:
 - AgentCore Memory episodic strategy writes reflections across episodes | https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/episodic-memory-strategy.html | F06-51; wave2-aws row 30
 - Advisor: API model, per-input behaviour; in the one same-model test about 70% of direct RL's gain [derived: (38.98 - 31.17) / (42.38 - 31.17)] | https://arxiv.org/abs/2510.02453v3 (Sec 4.4.3) | F03-108; wave2-words row 15
 - Advisor on AWS: small open-weight model trained with SageMaker AI RFT or training session APIs (full control of the training loop without managing GPUs) in front of a Bedrock model [our reading] | https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models-training-sessions.html | F06-24, F06-31; wave2-aws rows 18, 19
-- SFT or distillation when base scores near zero | https://docs.aws.amazon.com/bedrock/latest/userguide/reinforcement-fine-tuning.html | F06-9; wave2-aws row 35
+- SFT or distillation when base scores a consistent 0% (Bedrock: "consistently 0 percent"; fc09 narrowed "near zero") | https://docs.aws.amazon.com/bedrock/latest/userguide/reinforcement-fine-tuning.html | F06-9; wave2-aws row 35
 - At 32B, DeepSeek-R1-Distill-Qwen-32B (SFT on R1 outputs, no RL stage) beat Qwen2.5-32B (Qwen's base) after over 10K RL steps on every benchmark in Table 16; 72.6 vs 47.0 AIME 2024 pass@1 | https://arxiv.org/abs/2501.12948v2 (Supplementary F.1, Table 16) | F02-12; wave2-aws row 35; wave2-rlvr rows 9, 10
 - That RL run worked, so distillation beat RL from a base RL could train [our reading, per wave 2] | same | wave2-aws row 35
 - SageMaker AI model customisation lists SFT and Distillation ("Transfer knowledge from a teacher model to a student model") | https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models.html | F06-22; wave2-aws row 13, G7 item 2
@@ -102,3 +102,6 @@ Notes for the fact checkers:
 - Run the cheapest loop first; move to a hybrid or weight update when gains stop clearing the floor and Q1, Q3 point there [our reading] | - | SCOPE section 22 ending
 
 Cited claims: 29 `Cite` elements on the page (Tier 0: 4; Tier 1: 14; Tier 3: 11).
+
+## Prose fixes (fc09, 2026-10-30)
+- Rollout glossed at first use ("rollouts (sampled answers)") | authoring brief | -

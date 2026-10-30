@@ -16,11 +16,11 @@ Authored 2026-10-30. Every E0 figure was re-derived from the raw files in `resea
 - Task `(a + b) * c - d`, reward 1 for exact tagged integer else 0 | E0-spark-smoke/train.py L37-L65 | Tier 0 E0
 - Both runs completed 20 of 20 steps | run1/summary.json, run2/summary.json (`global_step: 20`, `status: PASS`) | Tier 0 E0
 - Median step 2.087 s and 2.110 s over steps 2 to 20; step 1 warm-up (3.02 s, 2.60 s) | run*/steps.jsonl (recomputed) ; E0-spark-smoke.md | Tier 0 E0
-- Generation 62.0% / 62.9%; training 29.9% / 29.5%; log-prob recompute 6.8% / 6.5%; weight sync 0.9% / 0.8% of summed step time | E0-spark-smoke.md (stage table); recomputed from run*/steps.jsonl and summary.json timer totals | Tier 0 E0; wave2-systems-cost row S19 table
+- Generation 62.0% / 62.9%; training 29.9% / 29.5%; other preparation (the log-prob recompute for the mismatch correction plus the advantage computation, `prepare_total - generate - score`) 6.8% / 6.5% (run 1 is 6.84% from summary.json timers, 6.87% from per-step sums; fc09 aligned the wording with section 19 per fc08); weight sync 0.9% / 0.8% of summed step time | E0-spark-smoke.md (stage table); recomputed from run*/steps.jsonl and summary.json timer totals | Tier 0 E0; wave2-systems-cost row S19 table
 - Weight sync 17 ms per step (median 0.017 s both runs) | run*/steps.jsonl | Tier 0 E0
 - Training = loss forward + backward + optimizer step (step wall-clock minus preparation path) | E0-spark-smoke.md (Stage timing) | Tier 0 E0
 - TRL runs the extra trainer forward pass for `old_per_token_logps` whenever vLLM generates and the correction is on | https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_trainer.py#L2640-L2655 | F05-22; wave2-systems-cost rows 13, S19 table
-- Diagram 1 medians: generation 1.319 s / 1.341 s; training 0.604 s / 0.605 s; recompute 0.136 s both; sync 0.017 s both | E0-spark-smoke.md (stage table); recomputed | Tier 0 E0
+- Diagram 1 medians: generation 1.319 s / 1.341 s; training 0.604 s / 0.605 s; other preparation 0.136 s both (diagram label "Other preparation: log-probability recompute and advantages"); sync 0.017 s both | E0-spark-smoke.md (stage table); recomputed | Tier 0 E0
 - Caption: four stages sum to 99.6% and 99.7%; remainder is scoring (under 0.1%) and time outside the timed calls | arithmetic on the table; scoring share from E0-spark-smoke.md; remainder = `generate` wrapper minus `vllm_generate` minus `weight_sync` (0.31% / 0.25%) plus score, our reading of the timers | Tier 0 E0
 - Conditions: bf16 full fine-tuning, single seed, two runs | E0-spark-smoke.md (Model; Run command) | Tier 0 E0
 - E0 shows mechanism not learning: 20 steps at lr 1e-6 from a 4% base rate; reward did not move and was not expected to | E0-spark-smoke.md (What this run does not show) | Tier 0 E0
@@ -41,7 +41,7 @@ Authored 2026-10-30. Every E0 figure was re-derived from the raw files in `resea
 
 ## Reproduce E0
 - Fresh venv from PyPI wheels; install resolved in about three minutes, no build from source | E0-spark-smoke.md (Software) | Tier 0 E0
-- NVIDIA Unsloth playbook pins `trl==0.26.1` and `datasets==4.3.0` | https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-unsloth/README.md#L121 | F05-46
+- NVIDIA Unsloth playbook installs `trl==0.26.1` and `datasets==4.3.0` inside its container (README L121 is the install step "Inside the container:"; fc09 corrected "container pins") | https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-unsloth/README.md#L121 | F05-46
 - TRL 1.16.0 requires `datasets>=4.7.0` | https://github.com/huggingface/trl/blob/v1.16.0/pyproject.toml#L32 | F05-46
 - Environment pinned in pip-freeze.txt (trl 1.16.0, vllm 0.28.0, torch 2.13.0, transformers 5.22.1) | E0-spark-smoke/pip-freeze.txt | Tier 0 E0
 - Install lines | E0-spark-smoke.md (Software, install block) | Tier 0 E0
@@ -51,7 +51,7 @@ Authored 2026-10-30. Every E0 figure was re-derived from the raw files in `resea
 - TRL default `vllm_gpu_memory_utilization` 0.3 | https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_config.py#L656-L657 | F05-19
 - 0.3 x 121.69 = about 36.5 GiB on the Spark | our arithmetic on the two cited figures | derived
 - E0 set 0.12 as a job ceiling | E0-spark-smoke.md (trainer table: "set (job ceiling)") | Tier 0 E0
-- Start to exit 180 s (download and first compile) and 81 s (compile cache warm) | E0-spark-smoke.md (Pass condition table) | Tier 0 E0
+- Start to exit: run 1 180 s (download and first compile), run 2 81 s (compile cache warm); run*/start to mem.log train_exit (fc09 corrected "each run took") | E0-spark-smoke.md (Pass condition table) | Tier 0 E0
 - Shared host: other services held about 70 GB throughout | E0-spark-smoke.md (Hardware) | Tier 0 E0
 - Preflight: at least 40 GiB required, 52 GiB found | E0-spark-smoke.md (Host safety record) | Tier 0 E0
 - Everything in one run directory (venv, HOME, TMPDIR, HF_HOME, pip cache, logs); no sudo, no service touched | E0-spark-smoke.md (Host safety record); E0-spark-smoke/run.sh L6 | Tier 0 E0
@@ -68,10 +68,10 @@ Authored 2026-10-30. Every E0 figure was re-derived from the raw files in `resea
 - ACE delta updates = model writes only new or changed entries, code merges them, duplicates pruned | section 13 (AccumulatingExperience.tsx design checklist, ACE Section 2.2) | F03 ACE rows (pointer)
 - GEPA's GRPO baseline: 500 steps, fixed 24,000 rollouts | https://arxiv.org/abs/2507.19457v2 (Appendix E.4: "GRPO optimization run for 500 training steps, amounting to fixed 24,000 rollouts") | F03-61; wave2-words row 2
 - 24,000 / 16 = 1,500 steps x 2.1 s = 3,150 s, about 53 minutes of step time, before scaling to longer outputs or a larger model | our arithmetic; E0-spark-smoke.md (Implications for E1) | derived
-- GEPA beat GRPO on Qwen3 8B across six tasks | https://arxiv.org/abs/2507.19457v2 (Table 1: 54.85 vs 48.91) | F03-61; wave2-words row 1
+- GEPA beat GRPO on Qwen3 8B on the six-task aggregate, GRPO kept the lead on AIME-2025 | https://arxiv.org/abs/2507.19457v2 (Table 1: aggregate 54.85 vs 48.91; AIME-2025 32.00 vs 38.00; fc09 corrected "across six tasks") | F03-61; wave2-words row 1
 - NVIDIA Spark playbook runs GRPO with LoRA on Qwen2.5-VL-7B-Instruct, rank 32, through Unsloth | https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-vlm-finetuning/assets/ui_image/src/train.yaml (`model_id: unsloth/Qwen2.5-VL-7B-Instruct`, `rank: 32`, `use_lora: true`) | F05-44
 - NVIDIA README: about 100 steps can take up to about 2 hours (vendor claim, attributed) | https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-vlm-finetuning/README.md#L222 | F05-44
-- Playbook samples 2 answers per prompt and its script does not set `use_vllm` | train.yaml L9 (`num_generations: 2`); https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-vlm-finetuning/assets/ui_image/src/train_image_vlm.py#L164-L188 (no use_vllm; grep of the file finds none) | F05-44; wave2-systems-cost 05 U11 (cut: no claim about Unsloth's generation path)
+- Playbook's shipped configuration samples 2 answers per prompt (now cited at train.yaml L9; the UI default `image_vlm_config.yaml` also sets 2, while README L218 lists 4) and its script does not set `use_vllm` | train.yaml L9 (`num_generations: 2`); https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-vlm-finetuning/assets/ui_image/src/train_image_vlm.py#L164-L188 (no use_vllm; grep of the file finds none) | F05-44; wave2-systems-cost 05 U11 (cut: no claim about Unsloth's generation path)
 - Metrics: held-out test set of at least 500 problems; pass@1 and pass@k at k = 1, 4, 16, 64, 256; tokens per query incl. learned prompt or playbook; training wall-clock; rollouts used | RESEARCH-GUIDE.md E1 Budget and Metrics | -
 - Diagram 2 labels (arms, budget R, measures) | RESEARCH-GUIDE.md E1 | protocol
 
@@ -90,3 +90,8 @@ Authored 2026-10-30. Every E0 figure was re-derived from the raw files in `resea
 - Optimiser's own capability bounds a text loop (section 14); 0.5B loops run with a 0.5B reflector unless recorded otherwise; GRPO vs text loops on the rule is the result most likely to move at 7B to 8B | section 14 (Revisiting OPRO; GEPA reflector = task model); RESEARCH-GUIDE E1 Models ("small-model result alone would understate the text loop") | F04-53, wave2-words G1 (pointer); our reading
 - Re-measure the base rate on the larger model; E0's 4% left 9 and 10 of 20 steps with no gradient | E0 logs | Tier 0 E0
 - Next action: take the readings to section 22's three decision questions | SCOPE section 22 | -
+
+## Prose fixes (fc09, 2026-10-30)
+- LoRA expanded at its first prose use (E0 conditions paragraph) instead of the E1 list | CLAUDE.md Acronym Standard | -
+- RLVR expanded after the section 7 title, its only use in the section | CLAUDE.md Acronym Standard | -
+- Rollout defined at first use ("a rollout is one sampled attempt") | authoring brief | -
