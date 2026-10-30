@@ -8,7 +8,8 @@ log to `deep-dives/rl-agentic-loops/reviews/leverage/<group>.md`, and edits only
 
 You are running the leverage pass on part of the "Learning From Feedback: RL and Agentic Learning
 Loops" deep dive (repo root /Users/carlos/workspace/git_repositories/tech-deep-dives-wt/rl-build, a
-git worktree). Nobody will answer questions; decide from the page and its sources. Do not commit;
+git worktree). Nobody will answer questions; decide from the page and its sources. Do not start
+subagents: the job caps concurrent agents at three. Do not commit;
 the orchestrator commits. Never touch the main checkout at
 /Users/carlos/workspace/git_repositories/tech-deep-dives or any other worktree.
 
