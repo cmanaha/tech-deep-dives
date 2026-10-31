@@ -1,6 +1,10 @@
 {
   "gates": {
+    "no-ai-tells": true,
+    "svg-a11y": true,
+    "pinned-refs": true,
+    "pinned-refs-research": true,
     "required-files": true,
-    "pinned-refs-research": true
+    "pre-overflow": true
   }
 }
