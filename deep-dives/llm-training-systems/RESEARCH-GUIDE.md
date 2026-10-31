@@ -24,8 +24,8 @@ Tiers used throughout. Tier 0: our experiments (none yet). Tier 1: source code a
 
 What wave 1 settled that the scope builds on:
 - The two bills reproduce published arithmetic exactly: Llama 3.1's parameter counts with a 128,256-entry vocabulary (01 W1, C01-1), 6ND against Llama 3 405B's 3.8e25 budget (01 W7), PaLM's MFU and Megatron-LM's 34-day GPT-3 estimate (01 W9).
-- The parallelism procedure has a source for every step and two worked examples that land on published layouts (02 section 3.5, T02-50, T03-24).
-- Three defaults that change a reader's numbers, each read in code: FSDP2 communicates on every accumulation micro-batch (T03-2), `async_save` called bare stages synchronously into pageable memory (T04-21), Megatron's `--async-save` is silently off without a second flag (T04-38).
+- The parallelism procedure has a source for every step, and its worked examples reproduce one published layout (TorchTitan's TP 8 x FSDP 32 for 70B) and check another (Megatron Bridge's 70B recipe) (02 section 3.5, T02-50, T03-24).
+- Three defaults that change a reader's numbers, each read in code: FSDP2 communicates on every accumulation micro-batch (T03-2), `async_save` called bare stages synchronously into pageable memory (T04-21), Megatron's `--async-save` is turned off, with only a rank-0 warning, without a second flag (T04-38).
 - Four documentation errors or drifts the page must handle: Megatron's MoE GPU-count formula (T02-72), the EC2 page's 512 GiB per Trainium2 chip (C05-1), the HyperPod Trainium tutorial calling a removed script (C06-4), and AWS's tiered-checkpointing example against PyTorch's CPU-backend check (C04-3, a code reading, untested).
 - The AWS cost structure: SageMaker training jobs at 1.15 times EC2, HyperPod at 1.20 times on P5 and P6, training plans at 1.15 times the Capacity Block rate, Capacity Blocks at or below On-Demand (T05-22 to T05-24), plus path fees (T06-36, T06-40, T06-41).
 
@@ -55,6 +55,7 @@ Seven areas, at most three agents at a time, each writing one register (table ab
 - Does any first-party source publish achieved MFU for dense Llama-class training on B200, H200 or Trainium2 (MLPerf Training results, NVIDIA or AWS performance pages)? The scope uses 40% as a labelled assumption everywhere (U01-5).
 - Is there a peer-reviewed parallelism planner or simulator whose inputs and outputs match Calculator C closely enough to cite as a cross-check (U02-14)?
 - What does each AWS path document about NCCL and EFA versions it pins, so section 31's bring-up can name them (T05-43 to T05-45 cover the images; the managed paths are not read)?
+- From the adversarial reviews (`reviews/2026-10/`): which frameworks support uneven first and last pipeline stages, under which settings, and how DeepSeek-V3 split 61 layers across 16 stages (R3 finding 2; section 10, step 5 of section 14); whether launchers other than Megatron Core number ranks so consecutive ranks share an instance (R1 finding 1; section 7); an independent recomputation of section 14's second worked example, Llama 3.1 70B on four p5en.48xlarge, which the R3 reviewer derived (about 85 GB per GPU at TP 8 x DP 4 with ZeRO-1); and a factual re-check of SCOPE v2's changed sentences, which no reviewer has read since the fixes were applied.
 
 **Done when.** Every scope number has a row; every WRONG item is fixed in `SCOPE.md`; every SCOPE NARROWER item is re-hedged with the replacement text; every wave 2 UNKNOWN is closed or moved to accept-as-hedge with its hedge text.
 
@@ -70,22 +71,23 @@ Calculator specifications (inputs, formulas with entry IDs, presets, validation 
 
 ## 3. Reading path for Carlos
 
-Read in this order. Each item says what it gives and which sections it unlocks. arXiv versions are the pinned ones.
+Read in this order. Each item says what it gives and which sections it feeds. arXiv versions are the pinned ones.
 
-1. **Llama 3, "The Llama 3 Herd of Models", 2407.21783v3, Section 3.3 (infrastructure, scaling and efficiency).** The whole dive in twenty pages from one frontier run: the 4D layout and why it is nested that way (T02-46, T02-47), the batch schedule (T01-8), MFU at three scales (T01-6), the interruption table and the 90% effective training time (T04-1, T04-2). Read it first and every later source fills in one paragraph of it. Unlocks 1, 4, 10, 13, 17.
-2. **ZeRO, 1910.02054v3, Sections 3 and 5.** Where the 16 bytes per parameter come from and how each stage removes a slice of them at what communication cost (T01-9, T02-6, T02-7). Unlocks 5 and 8.
-3. **Megatron-LM PTD-P, 2104.04473v5, Sections 2 and 3.** Tensor and pipeline parallelism, the bubble, the interleaved schedule and the three takeaways that become steps 4 and 5 of the procedure (T02-13, T02-14, T02-28, T02-30, T02-43). Unlocks 9, 10, 13, 14.
-4. **Korthikanti et al., "Reducing Activation Recomputation", 2205.05198v1, Sections 3 and 4.** The activation-memory formula, sequence parallelism and selective recomputation (T01-31 to T01-34, T02-16 to T02-18). Read with register 01's W3, which adapts the formula to Llama's layer. Unlocks 5 and 9.
-5. **PaLM, 2204.02311v5, Appendix B.** The MFU definition and why it beats HFU as a comparison (T01-18 to T01-20). Short. Unlocks 4 and 29.
-6. **PyTorch FSDP, 2304.11277v2, Sections 3 and 4.** Sharding factor, hybrid sharding and why smaller all-reduces behave better (T02-8 to T02-10). Then PyTorch v2.15.0's `fully_shard` docstring for what the defaults do today (T03-1 to T03-4). Unlocks 8.
-7. **TorchTitan, 2410.06511v3 (ICLR 2025), and the v0.4.0 repository's benchmark document.** How the four dimensions compose on one device mesh in PyTorch-native code, with measured memory and throughput (T02-49, T02-50, T03-10 to T03-14; the paper and repository numbers differ, C02-3). Unlocks 13, 14, 15.
-8. **Meta, "Revisiting Reliability in Large-Scale Machine Learning Research Clusters", 2410.21680v2.** The failure-rate model, ETTR and the checkpoint interval formula (T04-7 to T04-12). Unlocks 17 and 18.
-9. **MegaScale, 2402.15627v1.** A production team's view of MFU, stragglers, fault detection and two-stage checkpointing at more than 10,000 GPUs (T01-24, T04-13 to T04-16). Unlocks 17 to 19 and 29.
-10. **DeepSeek-V3, 2412.19437v2, Section 3 (infrastructure).** FP8 training with fine-grained scales, DualPipe, node-limited expert routing and a layout with no tensor parallelism (T01-46, T01-47, T02-34, T02-39, T02-40). Read after 3, because it departs from Megatron's takeaways for reasons it states. Unlocks 6, 10, 12.
-11. **AWS: the SageMaker HyperPod resiliency pages, the PCS user guide's cluster and pricing pages, the EKS AI/ML pages, and the EC2 Capacity Blocks pages.** In that order, with register 06's ownership matrix open beside them (T06-4 to T06-7, T06-31 to T06-37, T06-41 to T06-47, T05-26, T05-27). Unlocks 20 to 28.
-12. **nccl-tests `doc/PERFORMANCE.md` at its pinned tag.** Algorithm against bus bandwidth, the one page needed to read any collective benchmark (T02-60, T02-61). Unlocks 7 and 31.
+1. **Llama 3, "The Llama 3 Herd of Models", 2407.21783v3, Section 3.3 (infrastructure, scaling and efficiency).** The whole dive in twenty pages from one frontier run: the 4D layout and why it is nested that way (T02-46, T02-47), the batch schedule (T01-8), MFU at three scales (T01-6), the interruption table and the 90% effective training time (T04-1, T04-2). Read it first and every later source fills in one paragraph of it. Feeds sections 1, 4, 10, 13, 17.
+2. **PaLM, 2204.02311v5, Appendix B.** The MFU definition and why it beats HFU as a comparison, read early because item 1 reports MFU at three scales (T01-18 to T01-20). Short. Feeds sections 4 and 29.
+3. **nccl-tests `doc/PERFORMANCE.md` at its pinned tag.** Algorithm against bus bandwidth and the 2(n-1)/n factor, the one page needed to read any collective benchmark, read before the papers that price their collectives with it (T02-60, T02-61). Feeds sections 7 and 31.
+4. **ZeRO, 1910.02054v3, Sections 3 and 5.** Where the 16 bytes per parameter come from and how each stage removes a slice of them at what communication cost (T01-9, T02-6, T02-7). Feeds sections 5 and 8.
+5. **Megatron-LM PTD-P, 2104.04473v5, Sections 2 and 3.** Tensor and pipeline parallelism, the bubble, the interleaved schedule and the three takeaways that become steps 4 and 5 of the procedure (T02-13, T02-14, T02-28, T02-30, T02-43). Feeds sections 9, 10, 13, 14.
+6. **Korthikanti et al., "Reducing Activation Recomputation", 2205.05198v1, Sections 3 and 4.** The activation-memory formula, sequence parallelism and selective recomputation (T01-31 to T01-34, T02-16 to T02-18). Read with register 01's W3, which adapts the formula to Llama's layer. Feeds sections 5 and 9.
+7. **PyTorch FSDP, 2304.11277v2, Sections 3 and 4.** Sharding factor, hybrid sharding and why smaller all-reduces behave better (T02-8 to T02-10). Then PyTorch v2.15.0's `fully_shard` docstring for what the defaults do today (T03-1 to T03-4). Feeds sections 8.
+8. **TorchTitan, 2410.06511v3 (ICLR 2025), and the v0.4.0 repository's benchmark document.** How the four dimensions compose on one device mesh in PyTorch-native code, with measured memory and throughput (T02-49, T02-50, T03-10 to T03-14; the paper and repository numbers differ, C02-3). Feeds sections 13, 14, 15.
+9. **DeepSeek-V3, 2412.19437v2, Section 3 (infrastructure).** FP8 training with fine-grained scales, DualPipe, node-limited expert routing and a layout with no tensor parallelism (T01-46, T01-47, T02-34, T02-39, T02-40). Read after Megatron PTD-P, because it departs from Megatron's takeaways for reasons it states. Feeds sections 6, 10, 12.
+10. **Meta, "Revisiting Reliability in Large-Scale Machine Learning Research Clusters", 2410.21680v2.** The failure-rate model, ETTR and the checkpoint interval formula (T04-7 to T04-12). Feeds sections 17 and 18.
+11. **MegaScale, 2402.15627v1.** A production team's view of MFU, stragglers, fault detection and two-stage checkpointing at more than 10,000 GPUs (T01-24, T04-13 to T04-16). Feeds sections 17 to 19 and 29.
+12. **TorchTitan `torchtitan/observability/metrics.py` and PyTorch `ProcessGroupNCCL.hpp` lines 60 to 165, both at their pinned tags (v0.4.0 and v2.15.0).** What a modern trainer logs every step and how tokens per second and MFU are computed, then the hang machinery read in code because the tutorial's defaults are stale (T07-1, T07-2, T07-5, T07-7, T07-8, T07-12); register 07 section 7 continues the path. Feeds sections 29 and 30.
+13. **AWS: the SageMaker HyperPod resiliency pages, the PCS user guide's cluster and pricing pages, the EKS AI/ML pages, and the EC2 Capacity Blocks pages.** In that order, with register 06's ownership matrix open beside them (T06-4 to T06-7, T06-31 to T06-37, T06-41 to T06-47, T05-26, T05-27). Feeds sections 20 to 28.
 
-Optional, for depth: GPipe 1811.06965v5 and Zero Bubble 2401.10241v1 (pipeline schedules); Ring Attention 2310.01889v4 and DeepSpeed-Ulysses 2309.14509v2 (context parallelism); the FP8 formats paper 2209.05433v2 and NVIDIA's NVFP4 pretraining paper 2509.25149v2 (precision); the ByteDance straggler study 2505.05713v2 (stragglers).
+Optional, for depth: Kaplan et al. 2001.08361v1 (where 6N per token comes from, section 3); GPipe 1811.06965v5 and Zero Bubble 2401.10241v1 (pipeline schedules); Ring Attention 2310.01889v4 and DeepSpeed-Ulysses 2309.14509v2 (context parallelism); the FP8 formats paper 2209.05433v2 and NVIDIA's NVFP4 pretraining paper 2509.25149v2 (precision); the ByteDance straggler study 2505.05713v2 (stragglers).
 
 ---
 
@@ -254,10 +256,18 @@ The iteration flywheel (ADR-003) puts Gate 1 between research and build. For thi
 
 ### Gate 1 record (2026-10-30): OPEN
 
-(Filled at the end of this job.)
+| Check | Result | Evidence |
+|---|---|---|
+| 1. Scope held | PASS, fixes not yet re-checked | Three independent reviews of Scoping v1: `reviews/2026-10/R1-newcomer.md` (PASS WITH FIXES, 1 blocker, 10 major, 14 minor), `R2-factual-grounding.md` (PASS WITH FIXES, 0 blockers, 6 major, 14 minor; 63 claims hold, 46 checked at the primary source), `R3-outcome-fit.md` (PASS WITH FIXES, 1 blocker, 7 major, 11 minor; mean section score 7.9). Both blockers fixed; every finding applied or recorded as partly taken, not taken or backlog in SCOPE.md's "Adversarial review notes". No reviewer has re-read v2; wave 2 carries that re-check. |
+| 2. Load-bearing claims verified | OPEN | Wave 2 not run. R2 is a partial down payment: 46 claims checked at the primary source, all R2 fixes applied, and two register corrections (02 section 3.2's result sentence, T04-12). |
+| 3. UNKNOWNs triaged | OPEN | Section 6 carries a proposed triage for all 77 UNKNOWNs: 9 closed in wave 1, 29 wave 2, 7 wave 2 then experiment, 7 experiment, 17 hedge, 2 hedge then experiment, 6 cut. The triage awaits Carlos's approval and the wave 2 items are not closed. |
+| 4. Tier 0 decision | OPEN | Carlos's decision. Proposed: E1 to E4 on the DGX Spark (no spend); A0 to A5 on AWS at about $1,400 to $2,950 in total (section 5). No section depends on an experiment, so "none" is a valid answer and leaves the hedges in place. |
+| 5. Human approval | OPEN | Carlos reads SCOPE.md v2 and this guide and approves the 32-section list or names cuts (candidates in check 5 above). |
+
+This job stopped here, as its brief required: no `package.json` or `src/` exists.
 
 ---
 
 ## 8. Budget record
 
-(Filled at the end of this job.)
+Wave 1 used 7 research-agent dispatches, at most three running at once, one per register, with no re-dispatch. Tool uses as reported by each agent: 01 176, 02 163, 03 184, 04 139 (about 70 web fetches), 05 157 (about 85), 06 128 (about 80), 07 137 (about 85); agents 01 to 03 did not report a fetch count. Phase 4 used 3 reviewer dispatches running together: R1 25 tool uses and no web access, R2 107 tool uses and about 45 of its 60 allowed fetches, R3 30 tool uses. The orchestrator made one web request (the AWS Price List FSx offer, T00-1) and read the registers, the sibling dives and the repository standards locally. No experiment ran, no AWS resource was created, and no machine was reached over ssh. Sections modified by the review pass: 31 of the 32 section blocks (all but section 28, Choosing your path) were touched by at least one fix, and the thesis, the calculators block, the depth note and the connections list were revised; section count unchanged.
