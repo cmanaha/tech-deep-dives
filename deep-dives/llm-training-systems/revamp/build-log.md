@@ -5,6 +5,7 @@ Per-section author reports, for the glossary, the fact check and the final repor
 | Section | File | Cites | Diagrams (harness 1440/390) | Acronyms expanded | Open items for fact check |
 | --- | --- | --- | --- | --- | --- |
 | 3 Training step | TrainingStep.tsx | 34 | 1 (step timeline drawn to scale, narrow layout at 390), 0 overlap/clip/overflow | FLOPs, MFU, BF16, FP32, TFLOPS, ZeRO, MLP; FP16 glossed | 18-byte row cites Megatron's table without claiming it is the default; strongest number 128.5 GB (1.6 x one H100) landed five times |
+| 6 Precision | Precision.tsx | 75 | 1 (scale ladder: model, tensor, block and tile, runs of 32 and 16; stacked below 680px), 0 overlap/clip/overflow | FP8, BF16, FP16, FP32, TFLOPS, MXFP8, NVFP4, OCP, MX, MFU, cFP8, TF32 | C03-10 (MXFP8 on Neuron: release notes against the fork's code) open, hedged; U01-13 (two Trainium2 peaks) hedged; uses a source outside the register, Megatron Bridge 0.7.0 performance archive (731 TFLOP/s per GPU, 70B FP8 on 64 H100), labelled vendor claim, proposed T01-64: fact check must open it |
 | 7 Collectives | Collectives.tsx | 47 | 4 figures (9 SVGs: before-and-after grids, all-reduce decomposition, link hierarchy, crossing count; narrow layouts), harness 0/0/0 | NCCL, EFA, DDP, ZeRO, AMI, BF16, TP | Per-instance pricing of the crossing is our reading (AWS nccl-tests sample as evidence); keeps 0.62 s only as the per-GPU count in an expandable; A1 protocol marked not yet run |
 
 ## Calculators (`src/lib/`, 2026-10-31)
