@@ -1,210 +1,260 @@
-# Sources: RL and Agentic Learning Loops
+# RL and agentic learning loops deep dive: sources
 
-Every source used in research wave 1, grouped by tier. Accessed 2026-10-16, 2026-10-17 or 2026-10-24 as stated on each entry.
-Generated from the tiered source lists at the end of each claim register in `research/2026-10/`; the register named in brackets holds the claims each source supports, with verbatim quotes and locations.
-Code citations are pinned to a release tag or a 40-character commit SHA. Papers are pinned by arXiv ID with version. Vendor performance figures are vendor claims.
+Generated from the inline citations in `src/` by `revamp/tools/gen-sources.mjs`. Do not edit by hand;
+change the citation in the section and regenerate.
 
-## Tier 1: source code at a pinned tag or SHA, official framework docs, first-party AWS and vendor docs
+Code citations are pinned to release tags or commits (TRL `v1.16.0`, verl `v0.9.1`, OpenRLHF
+`v0.11.2`, DSPy `3.4.1`, gepa `v0.1.4`, autoresearch `228791fb499afffb54b46200aca536f79142f117`, among others),
+and arXiv links to a paper version. Code links are listed per file; the sections link to exact line ranges.
+Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their venue, or "preprint".
 
-- TRL v1.12.0, SHA 59c4a8e104413fa9f4ca1a54eaf2ff93c0f299be: https://github.com/huggingface/trl/blob/59c4a8e104413fa9f4ca1a54eaf2ff93c0f299be/trl/experimental/ppo/ppo_trainer.py (L489, L771-L779, L786-L797, L843-L847) and https://github.com/huggingface/trl/blob/59c4a8e104413fa9f4ca1a54eaf2ff93c0f299be/trl/experimental/ppo/ppo_config.py (L231-L271). Accessed 2026-10-16. Code behaviour. (register 01)
-- TRL v1.13.0, SHA 3d9261f1fec9f9a8140099c78a65c7da73dce79c: release notes https://github.com/huggingface/trl/releases/tag/v1.13.0 and tree https://github.com/huggingface/trl/tree/v1.13.0/trl/experimental. Accessed 2026-10-16. Docs plus code behaviour (absence). (register 01)
-- TRL v1.16.0, SHA 1b5c75ed94b7387f42532adb090c935166d4878d: https://github.com/huggingface/trl/blob/1b5c75ed94b7387f42532adb090c935166d4878d/trl/trainer/dpo_config.py (L227-L233, L245-L252, L297-L298), https://github.com/huggingface/trl/blob/1b5c75ed94b7387f42532adb090c935166d4878d/trl/trainer/dpo_trainer.py (L1349-L1351, L1387-L1404), https://github.com/huggingface/trl/blob/1b5c75ed94b7387f42532adb090c935166d4878d/trl/trainer/grpo_config.py (L681-L695), https://github.com/huggingface/trl/blob/1b5c75ed94b7387f42532adb090c935166d4878d/trl/trainer/rloo_config.py (L502-L507). Accessed 2026-10-16. Code behaviour. (register 01)
-- huggingface/trl `v1.16.0` (`1b5c75ed94b7387f42532adb090c935166d4878d`): https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_config.py ; https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_trainer.py ; https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/rloo_trainer.py ; https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/rloo_config.py Accessed 2026-10-16. (register 02)
-- volcengine/verl `v0.9.1` (`1876b06d0a3e4e71e06230be10af14492ca8a75b`): https://github.com/volcengine/verl/blob/v0.9.1/verl/trainer/ppo/core_algos.py ; https://github.com/volcengine/verl/blob/v0.9.1/verl/trainer/config/actor/actor.yaml ; https://github.com/volcengine/verl/blob/v0.9.1/verl/trainer/config/ppo_trainer.yaml ; https://github.com/volcengine/verl/blob/v0.9.1/verl/experimental/agent_loop/agent_loop.py ; https://github.com/volcengine/verl/blob/v0.9.1/verl/experimental/agent_loop/tool_agent_loop.py ; https://github.com/volcengine/verl/blob/v0.9.1/verl/utils/tokenizer/continuous_token.py Accessed 2026-10-16. (register 02)
-- AWS: https://docs.aws.amazon.com/bedrock/latest/userguide/reinforcement-fine-tuning.html ; https://docs.aws.amazon.com/nova/latest/nova2-userguide/nova-implementing-reward-functions.html ; https://docs.aws.amazon.com/nova/latest/nova2-userguide/nova-forge-sdk.html Accessed 2026-10-16. (register 02)
-- stanfordnlp/dspy at 3.4.1 (099982b3c3eec9fc4ec4796d49915af42367a253): https://github.com/stanfordnlp/dspy/blob/3.4.1/dspy/teleprompt/gepa/gepa.py ; https://github.com/stanfordnlp/dspy/blob/3.4.1/dspy/teleprompt/grpo.py ; https://github.com/stanfordnlp/dspy/blob/3.4.1/dspy/teleprompt/bettertogether.py ; https://github.com/stanfordnlp/dspy/blob/3.4.1/pyproject.toml . Accessed 2026-10-16. (register 03)
-- gepa-ai/gepa at v0.1.4 (8b0ce6cd99a234f6b74daf37558a2ac0ce18f975): https://github.com/gepa-ai/gepa/blob/v0.1.4/src/gepa/api.py ; https://github.com/gepa-ai/gepa/blob/v0.1.4/src/gepa/strategies/acceptance.py ; https://github.com/gepa-ai/gepa/blob/v0.1.4/src/gepa/strategies/instruction_proposal.py ; https://github.com/gepa-ai/gepa/blob/v0.1.4/src/gepa/gepa_utils.py . Accessed 2026-10-16. (register 03)
-- algorithmicsuperintelligence/openevolve at v0.4.0 (f7b633986c0b3dbd0a171f6eb0cb0f0ba4fdfb0c): https://github.com/algorithmicsuperintelligence/openevolve/blob/v0.4.0/openevolve/config.py ; https://github.com/algorithmicsuperintelligence/openevolve/blob/v0.4.0/openevolve/evaluator.py ; https://github.com/algorithmicsuperintelligence/openevolve/blob/v0.4.0/openevolve/database.py . Accessed 2026-10-16. (register 03)
-- SakanaAI/ShinkaEvolve at v0.0.7 (c4568adde253cacf185be3a8412c3c2142761ebe): https://github.com/SakanaAI/ShinkaEvolve/tree/v0.0.7 . Tag pinned, not read. Accessed 2026-10-16. (register 03)
-- google-deepmind/funsearch at cc53f274237d7ab05c19df939edbc1f9616a7c19: https://github.com/google-deepmind/funsearch/tree/cc53f274237d7ab05c19df939edbc1f9616a7c19 . SHA pinned, not read. Accessed 2026-10-16. (register 03)
-- Anthropic, Agent Skills overview: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview . Accessed 2026-10-16. (register 03)
-- Anthropic, Memory tool: https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool . Accessed 2026-10-16. (register 03)
-- karpathy/autoresearch @ 228791fb499afffb54b46200aca536f79142f117: program.md, prepare.py, train.py. https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117 (accessed 2026-10-16) (register 04)
-- ghuntley/how-to-ralph-wiggum @ 88d488a148af97e4a3f22b11b4c3598c79d6a577: files/loop.sh (code behaviour only; authored by Clayton Farr). https://github.com/ghuntley/how-to-ralph-wiggum/blob/88d488a148af97e4a3f22b11b4c3598c79d6a577/files/loop.sh (accessed 2026-10-16) (register 04)
-- GitHub API repository metadata for ghuntley/how-to-ralph-wiggum (fork parent). (accessed 2026-10-16) (register 04)
-- Anthropic prompt caching documentation. https://platform.claude.com/docs/en/build-with-claude/prompt-caching (accessed 2026-10-16) (register 04)
-- Amazon Bedrock prompt caching documentation. https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html (accessed 2026-10-16) (register 04)
-- volcengine/verl `v0.9.1` (`1876b06d0a3e4e71e06230be10af14492ca8a75b`): F05-24 to F05-27 Base: https://github.com/volcengine/verl/tree/1876b06d0a3e4e71e06230be10af14492ca8a75b (exact pages in the cited entries). Accessed 2026-10-17. (register 05)
-- verl-project/verl-recipe `e7f889574b8301cc0f0fc1d57c6d67f31ffeb689`: F05-40 (script is code; README is a run report) Base: https://github.com/verl-project/verl-recipe/tree/e7f889574b8301cc0f0fc1d57c6d67f31ffeb689 (exact pages in the cited entries). Accessed 2026-10-17. (register 05)
-- OpenRLHF/OpenRLHF `v0.11.2` (`17fd4a79cc87dfb2f6185ffac634066525bcd917`): F05-14 to F05-16 Base: https://github.com/OpenRLHF/OpenRLHF/tree/17fd4a79cc87dfb2f6185ffac634066525bcd917 (exact pages in the cited entries). Accessed 2026-10-17. (register 05)
-- huggingface/trl `v1.16.0` (`1b5c75ed94b7387f42532adb090c935166d4878d`): F05-18 to F05-22, F05-46 Base: https://github.com/huggingface/trl/tree/1b5c75ed94b7387f42532adb090c935166d4878d (exact pages in the cited entries). Accessed 2026-10-17. (register 05)
-- PrimeIntellect-ai/prime-rl `v0.10.0` (`9e15490dcab1d506ce3462e69b8aa5dde45c6b3a`): F05-32 Base: https://github.com/PrimeIntellect-ai/prime-rl/tree/9e15490dcab1d506ce3462e69b8aa5dde45c6b3a (exact pages in the cited entries). Accessed 2026-10-17. (register 05)
-- THUDM/slime `v0.4.0` (`0b0c277d5b4cc66efc3b6db269e2e5184e8f3b1e`): F05-33, F05-34 Base: https://github.com/THUDM/slime/tree/0b0c277d5b4cc66efc3b6db269e2e5184e8f3b1e (exact pages in the cited entries). Accessed 2026-10-17. (register 05)
-- vllm-project/vllm `v0.28.0` release notes and assets (`2cf0a6915ce544dc493a0990f2ea38d81601128a`): F05-45 Base: https://github.com/vllm-project/vllm/tree/2cf0a6915ce544dc493a0990f2ea38d81601128a (exact pages in the cited entries). Accessed 2026-10-17. (register 05)
-- NVIDIA/dgx-spark-playbooks `c035e0ac7d211509ec131b79b5b6f0f824a9e421` (first-party vendor; code and playbook docs): F05-44 to F05-48 Base: https://github.com/NVIDIA/dgx-spark-playbooks/tree/c035e0ac7d211509ec131b79b5b6f0f824a9e421 (exact pages in the cited entries). Accessed 2026-10-17. (register 05)
-- Unsloth docs, DGX Spark page and RL guide (framework vendor docs; all figures are vendor claims; unversioned): F05-47 Base: https://docs.unsloth.ai/ (exact pages in the cited entries). Accessed 2026-10-17. (register 05)
-- `aws/sagemaker-hyperpod-recipes` release 2.0.11, `a6030c319908c8a1b74cb619b00476f8e6baa04f`: recipe YAML files cited in F06-37 to F06-43 (accessed 2026-10-17) Base: https://github.com/aws/sagemaker-hyperpod-recipes/tree/a6030c319908c8a1b74cb619b00476f8e6baa04f (exact pages in the cited entries). (register 06)
-- `aws-neuron/neuronx-distributed-training` tag v2.27.0, `0fdb38b627719ecbeaac8b310e946e20474a6dbc`: `base_dpo.py` (F06-46) (accessed 2026-10-17) Base: https://github.com/aws-neuron/neuronx-distributed-training/tree/0fdb38b627719ecbeaac8b310e946e20474a6dbc (exact pages in the cited entries). (register 06)
-- `aws-neuron/aws-neuron-sdk` tag v2.32.0, `a3247f5b8c305f9b70a19993acb306122e736eec`: documentation source tree, searched in F06-44 (accessed 2026-10-17) Base: https://github.com/aws-neuron/aws-neuron-sdk/tree/a3247f5b8c305f9b70a19993acb306122e736eec (exact pages in the cited entries). (register 06)
-- Bedrock User Guide: reinforcement-fine-tuning, fine-tuning-openai-apis, reward-functions, reward-functions-open-weight, rft-prepare-data, rft-nova-models, rft-submit-job, custom-models, prompt-management-optimize, advanced-prompt-optimization-how, prompt-management (F06-1 to F06-13, F06-21, F06-56 to F06-58) (accessed 2026-10-17) Base: https://docs.aws.amazon.com/bedrock/latest/userguide/ (exact pages in the cited entries). (register 06)
-- AWS General Reference: Bedrock endpoints and quotas (F06-17) (accessed 2026-10-17) Base: https://docs.aws.amazon.com/general/latest/gr/ (exact pages in the cited entries). (register 06)
-- Amazon Nova User Guide for Nova 2: nova-customization-techniques-2, nova-multi-turn-rl, toc-contents.json (F06-18 to F06-20) (accessed 2026-10-17) Base: https://docs.aws.amazon.com/nova/latest/nova2-userguide/ (exact pages in the cited entries). (register 06)
-- SageMaker AI Developer Guide: customizing-models, customize-model, model-customize-open-weight, customizing-models-rft, model-customize-mtrl, model-customize-mtrl-agent, model-customize-mtrl-hyperparams, customizing-models-training-sessions, training-sessions-sdk (F06-21 to F06-35) (accessed 2026-10-17) Base: https://docs.aws.amazon.com/sagemaker/latest/dg/ (exact pages in the cited entries). (register 06)
-- AgentCore Developer Guide: memory-types, memory-strategies, built-in-strategies, semantic-memory-strategy, user-preference-memory-strategy, summary-strategy, memory-custom-strategy, memory-self-managed-strategies, episodic-memory-strategy, memory-episodic-prompt, optimization, optimization-how-it-works, recommendations-system-prompt, evaluations, built-in-evaluators-overview, toc-contents.json (F06-49 to F06-55) (accessed 2026-10-17) Base: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/ (exact pages in the cited entries). (register 06)
-- Neuron documentation at v2.32.0: what-is-neuron, pytorch-native-overview, nxd-training release notes, NxD Training archive index, archived DPO/ORPO tutorial (F06-45, F06-47) (accessed 2026-10-17) Base: https://awsdocs-neuron.readthedocs-hosted.com/en/v2.32.0/ (exact pages in the cited entries). (register 06)
-- Amazon Bedrock pricing; Amazon Nova pricing (F06-16) (accessed 2026-10-17) Base: https://aws.amazon.com/bedrock/pricing/ (exact pages in the cited entries). (register 06)
-- `huggingface/optimum-neuron` tag v0.4.5, `abf5985828e56167ab2e48c4d5e14a83e40b6370` (F06-48) (accessed 2026-10-17) Base: https://github.com/huggingface/optimum-neuron/tree/abf5985828e56167ab2e48c4d5e14a83e40b6370 (exact pages in the cited entries). (register 06)
-- `aws-neuron/aws-neuron-sdk` tag v2.33.0, `10832bbcc6b6920b3046a7d7aa59b6b684f6b81a`: documentation source tree, searched in F06-44 (accessed 2026-10-24) Base: https://github.com/aws-neuron/aws-neuron-sdk/tree/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a (register 06)
-- Neuron documentation at v2.33.0: what-is-neuron, TorchNeuron about page and release notes, vLLM Neuron release notes and integration page, native PyTorch inference, TorchTitan Neuron release notes and about page, release notes index, NxDT and NxD Core training end-of-support announcement (F06-47, F06-48, F06-62, F06-63, U18) (accessed 2026-10-24) Base: https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/ (exact pages in the cited entries). (register 06)
-- huggingface/trl `v1.16.0` (`1b5c75ed94b7387f42532adb090c935166d4878d`): `docs/source/aws_trainium.md`, `trl/trainer/grpo_config.py` (F06-61) Base: https://github.com/huggingface/trl/blob/1b5c75ed94b7387f42532adb090c935166d4878d/docs/source/aws_trainium.md; rendered at https://huggingface.co/docs/trl/v1.16.0/en/aws_trainium (accessed 2026-10-24) (register 06)
-- `vllm-project/vllm-neuron` tag v0.29.0.1.2.0, `eb6cb360f7cff6082e22a9437d8ce0ba3891304a`: `requirements/core.txt`, `vllm_neuron/vllm/model_runner_v2_policy.py` (F06-62) (accessed 2026-10-24) Base: https://github.com/vllm-project/vllm-neuron/tree/eb6cb360f7cff6082e22a9437d8ce0ba3891304a (register 06)
-- `aws-neuron/torchtitan-neuron` tag release-2.33.0, `b7582e986586051d7be85d03956afe169624aeda`: `torchtitan/experiments/rl/`, `torchtitan_neuron/` (F06-63) (accessed 2026-10-24) Base: https://github.com/aws-neuron/torchtitan-neuron/tree/b7582e986586051d7be85d03956afe169624aeda (register 06)
-- `aws-neuron/torch-neuronx` tag v2.33.0, `b1b6c66a2be28bce3bed6ef20632f0d3164119ef`: repository text search, `examples/` (F06-65) (accessed 2026-10-24) Base: https://github.com/aws-neuron/torch-neuronx/tree/b1b6c66a2be28bce3bed6ef20632f0d3164119ef (register 06)
-- `vllm-project/vllm` tag v0.29.0, `98dff2a81d747d1dba01a47f939f48c3526d4206`: `requirements/cuda.txt` (F06-62) (accessed 2026-10-24) Base: https://github.com/vllm-project/vllm/blob/98dff2a81d747d1dba01a47f939f48c3526d4206/requirements/cuda.txt (register 06)
-- `libtorch-neuronx-lite` 2.13.0.1.0.3112 wheel from the Neuron pip index, a published artifact rather than a git tag, sha256 `05b984920136399a14c022fd99a1e545c459d7e17508201da5260d6f31b735bc`: `*.dist-info/METADATA` (F06-62) (accessed 2026-10-24) Base: https://pip.repos.neuron.amazonaws.com/libtorch-neuronx-lite/ (register 06)
-- TRL issue tracker, status record only: https://github.com/huggingface/trl/issues/7660 (F06-61) (accessed 2026-10-24) (register 06)
-- `verl-project/verl` tag v0.9.1, `1876b06d0a3e4e71e06230be10af14492ca8a75b`: `verl/plugin/platform/platform_manager.py`, `verl/utils/ray_utils.py` (F06-65) (accessed 2026-10-24) Base: https://github.com/verl-project/verl/tree/1876b06d0a3e4e71e06230be10af14492ca8a75b (register 06)
+## Tier 0: our own experiments (logs in research/)
 
-## Tier 2: first-party lab and vendor posts and talks, including authors on their own methods
+9 sources.
 
-- AWS, "Introducing TorchNeuron: Native PyTorch backend for AWS Trainium", PyTorch blog, 2026-10-19, https://pytorch.org/blog/introducing-torchneuron-native-pytorch-backend-for-aws-trainium/. Accessed 2026-10-24. Vendor statement that TRL supports Trainium upstream (F06-60). (register 06)
-- Hugging Face, "TorchNeuron: running HF models on AWS Trainium is easier than ever", 2026-10-19, https://huggingface.co/blog/hf-torchneuron. Accessed 2026-10-24. Library vendor on its own libraries (F06-48). (register 06)
-- Anthropic, "Anthropic and Amazon expand collaboration for up to 5 gigawatts of new compute", 2026-04-20, https://www.anthropic.com/news/anthropic-amazon-compute. Accessed 2026-10-24. "train and serve Claude" on Trainium2 (F06-64). (register 06)
-- AWS, Trainium customers page, https://aws.amazon.com/ai/machine-learning/trainium/customers/. Accessed 2026-10-24. Customer quote from Anthropic on Trainium2 (F06-64). (register 06)
-- Schulman, "Approximating KL Divergence", 2020-03-07, http://joschu.net/blog/kl-approx.html. Accessed 2026-10-16. Author's own post; definitions of the k1, k2, k3 estimators. (register 01)
-- Together AI and Agentica, "DeepSWE" (2025-07-02): https://www.together.ai/blog/deepswe Accessed 2026-10-16. (register 02)
-- Thinking Machines, "LoRA Without Regret" (2025-09-29): https://thinkingmachines.ai/blog/lora/ Accessed 2026-10-16. (register 02)
-- Anthropic, Claude 3.7 Sonnet System Card: https://assets.anthropic.com/m/785e231869ea8b3b/original/claude-3-7-sonnet-system-card.pdf Accessed 2026-10-16. (register 02)
-- Anthropic Engineering, "Equipping agents for the real world with Agent Skills" (Oct 16, 2025): https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills . Accessed 2026-10-16. (register 03)
-- Databricks, "Building state-of-the-art enterprise agents 90x cheaper with automated prompt optimization" (September 24, 2025; authors include the GEPA, MIPROv2 and DSPy authors): https://www.databricks.com/blog/building-state-art-enterprise-agents-90x-cheaper-automated-prompt-optimization . Accessed 2026-10-16. (register 03)
-- Huntley, "Ralph Wiggum as a 'software engineer'" (2025-07-14). https://ghuntley.com/ralph/ (accessed 2026-10-16) (register 04)
-- Huntley, "everything is a ralph loop" (2026-01-17). https://ghuntley.com/loop/ (accessed 2026-10-16) (register 04)
-- Karpathy, autoresearch README.md at the pinned SHA. https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/README.md (accessed 2026-10-16) (register 04)
-- Anthropic engineering, "Effective context engineering for AI agents" (2025-09-29). https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents (accessed 2026-10-16) (register 04)
-- OpenAI, GPT-4 Technical Report (arXiv 2303.08774v6). https://arxiv.org/abs/2303.08774v6 (accessed 2026-10-16) (register 04)
-- Bedrock RFT launch, 2025-12-03; Bedrock RFT open-weight and OpenAI-compatible APIs, 2026-02-17 (F06-14, F06-15) (accessed 2026-10-17) Base: https://aws.amazon.com/about-aws/whats-new/ (exact posts in the cited entries). (register 06)
-- SageMaker serverless model customisation, 2025-12-03; SageMaker multi-turn RL, 2026-06-03 (F06-36) (accessed 2026-10-17) Base: https://aws.amazon.com/about-aws/whats-new/ (exact posts in the cited entries). (register 06)
-- AgentCore Policy and Evaluations preview with episodic memory, 2025-12-02; AgentCore Evaluations GA, 2026-03-31 (headline only); AgentCore optimization preview, 2026-04-30; AgentCore optimization GA, 2026-06-17; Bedrock Advanced Prompt Optimization, 2026-05-14 (F06-54, F06-55, F06-57, F06-59) (accessed 2026-10-17) Base: https://aws.amazon.com/about-aws/whats-new/ (exact posts in the cited entries). (register 06)
+| Source | Accessed | Cited in |
+| --- | --- | --- |
+| [cmanaha/tech-deep-dives @ b763d34a9a5a1e3e28a33daf44b67fb03781a757: deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke.md](https://github.com/cmanaha/tech-deep-dives/blob/b763d34a9a5a1e3e28a33daf44b67fb03781a757/deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke.md) | 2026-10-30 | Choosing, GlossaryAndSources, LanguageModelAsPolicy, RlStepAsSystem, RlvrAndGrpo, SideBySideLab, TwoLeashes |
+| [cmanaha/tech-deep-dives @ b763d34a9a5a1e3e28a33daf44b67fb03781a757: deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/](https://github.com/cmanaha/tech-deep-dives/blob/b763d34a9a5a1e3e28a33daf44b67fb03781a757/deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/) | 2026-10-30 | GlossaryAndSources |
+| [cmanaha/tech-deep-dives @ b763d34a9a5a1e3e28a33daf44b67fb03781a757: deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/pip-freeze.txt](https://github.com/cmanaha/tech-deep-dives/blob/b763d34a9a5a1e3e28a33daf44b67fb03781a757/deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/pip-freeze.txt) | 2026-10-30 | SideBySideLab |
+| [cmanaha/tech-deep-dives @ b763d34a9a5a1e3e28a33daf44b67fb03781a757: deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/run.sh](https://github.com/cmanaha/tech-deep-dives/blob/b763d34a9a5a1e3e28a33daf44b67fb03781a757/deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/run.sh) | 2026-10-30 | SideBySideLab |
+| [cmanaha/tech-deep-dives @ b763d34a9a5a1e3e28a33daf44b67fb03781a757: deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/run1/logs.jsonl](https://github.com/cmanaha/tech-deep-dives/blob/b763d34a9a5a1e3e28a33daf44b67fb03781a757/deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/run1/logs.jsonl) | 2026-10-30 | RlStepAsSystem, RlvrAndGrpo, SideBySideLab, TwoLeashes |
+| [cmanaha/tech-deep-dives @ b763d34a9a5a1e3e28a33daf44b67fb03781a757: deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/run1/meta.json](https://github.com/cmanaha/tech-deep-dives/blob/b763d34a9a5a1e3e28a33daf44b67fb03781a757/deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/run1/meta.json) | 2026-10-30 | SideBySideLab |
+| [cmanaha/tech-deep-dives @ b763d34a9a5a1e3e28a33daf44b67fb03781a757: deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/run2/logs.jsonl](https://github.com/cmanaha/tech-deep-dives/blob/b763d34a9a5a1e3e28a33daf44b67fb03781a757/deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/run2/logs.jsonl) | 2026-10-30 | RlStepAsSystem, RlvrAndGrpo, SideBySideLab, TwoLeashes |
+| [cmanaha/tech-deep-dives @ b763d34a9a5a1e3e28a33daf44b67fb03781a757: deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/run2/train.log](https://github.com/cmanaha/tech-deep-dives/blob/b763d34a9a5a1e3e28a33daf44b67fb03781a757/deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/run2/train.log) | 2026-10-30 | SideBySideLab |
+| [cmanaha/tech-deep-dives @ b763d34a9a5a1e3e28a33daf44b67fb03781a757: deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/train.py](https://github.com/cmanaha/tech-deep-dives/blob/b763d34a9a5a1e3e28a33daf44b67fb03781a757/deep-dives/rl-agentic-loops/research/2026-10/E0-spark-smoke/train.py) | 2026-10-30 | SideBySideLab |
 
-## Tier 3: peer-reviewed papers
+## Tier 1: source code at a pinned ref, official framework documentation, first-party AWS documentation and pricing
 
-- Sutton and Barto, Reinforcement Learning: An Introduction, 2nd ed., MIT Press 2018. http://incompleteideas.net/book/the-book-2nd.html (PDF RLbook2020.pdf). Accessed 2026-10-16. Definitions, theory. (register 01)
-- Williams 1992, Machine Learning 8(3-4):229-256, https://doi.org/10.1007/BF00992696. Accessed 2026-10-16 (not readable, see U1). (register 01)
-- Schulman et al., TRPO, ICML 2015, https://arxiv.org/abs/1502.05477v5. Accessed 2026-10-16. Theory. (register 01)
-- Schulman et al., GAE, ICLR 2016, https://arxiv.org/abs/1506.02438v6. Accessed 2026-10-16. Definition, theory, ablation. (register 01)
-- Christiano et al., Deep RL from Human Preferences, NeurIPS 2017, https://arxiv.org/abs/1706.03741v4; venue page https://proceedings.neurips.cc/paper_files/paper/2017/hash/d5e2c0adad503c91f91df240d0cd4e49-Abstract.html. Accessed 2026-10-16. Definition, benchmark. (register 01)
-- Stiennon et al., Learning to summarize from human feedback, NeurIPS 2020, https://arxiv.org/abs/2009.01325v3. Accessed 2026-10-16. Production report, ablation, benchmark. (register 01)
-- Ouyang et al., InstructGPT, NeurIPS 2022, https://arxiv.org/abs/2203.02155v1; venue page https://proceedings.neurips.cc/paper_files/paper/2022/hash/b1efde53be364a73914f58805a001731-Abstract-Conference.html. Accessed 2026-10-16. Production report, benchmark, ablation. (register 01)
-- Gao, Schulman, Hilton, Scaling Laws for Reward Model Overoptimization, ICML 2023, https://arxiv.org/abs/2210.10760v1; venue page https://proceedings.mlr.press/v202/gao23h.html. Accessed 2026-10-16. Scaling study (synthetic), ablation. (register 01)
-- Rafailov et al., DPO, NeurIPS 2023, https://arxiv.org/abs/2305.18290v3. Accessed 2026-10-16. Theory, benchmark. (register 01)
-- Zheng et al., Judging LLM-as-a-Judge, NeurIPS 2023 Datasets and Benchmarks, https://arxiv.org/abs/2306.05685v4. Accessed 2026-10-16. Benchmark. (register 01)
-- Lee et al., RLAIF vs. RLHF, ICML 2024, https://arxiv.org/abs/2309.00267v3. Accessed 2026-10-16. Benchmark with human evaluation. (register 01)
-- Gheshlaghi Azar et al., IPO (A General Theoretical Paradigm ...), AISTATS 2024, https://arxiv.org/abs/2310.12036v2; venue page https://proceedings.mlr.press/v238/gheshlaghi-azar24a.html. Accessed 2026-10-16. Theory, toy experiments. (register 01)
-- Ethayarajh et al., KTO, ICML 2024, https://arxiv.org/abs/2402.01306v5. Accessed 2026-10-16. Benchmark. (register 01)
-- Ahmadian et al., Back to Basics (REINFORCE, RLOO), ACL 2024, https://arxiv.org/abs/2402.14740v2; venue page https://aclanthology.org/2024.acl-long.662/. Accessed 2026-10-16. Ablation, benchmark. (register 01)
-- Hong et al., ORPO, EMNLP 2024, https://arxiv.org/abs/2403.07691v2; venue page https://aclanthology.org/2024.emnlp-main.626/. Accessed 2026-10-16. Definition, benchmark. (register 01)
-- Xu et al., Is DPO Superior to PPO for LLM Alignment?, ICML 2024, https://arxiv.org/abs/2404.10719v3. Accessed 2026-10-16. Theory/proof, ablation, benchmark. (register 01)
-- Meng et al., SimPO, NeurIPS 2024, https://arxiv.org/abs/2405.14734v3. Accessed 2026-10-16. Definition, benchmark. (register 01)
-- Ivison et al., Unpacking DPO and PPO, NeurIPS 2024, https://arxiv.org/abs/2406.09279v2. Accessed 2026-10-16. Ablation, production report. (register 01)
-- Chu et al., SFT Memorizes, RL Generalizes, ICML 2025, https://arxiv.org/abs/2501.17161v2. Accessed 2026-10-16. Benchmark, ablation. (register 01)
-- Mukherjee et al., RL Finetunes Small Subnetworks, NeurIPS 2025 (per arXiv comment), https://arxiv.org/abs/2505.11711v2. Accessed 2026-10-16. Measurement study. (register 01)
-- DeepSeek-R1, Nature 645, 633-638 (2025): https://www.nature.com/articles/s41586-025-09422-z ; arXiv https://arxiv.org/abs/2501.12948v2 (v1 for one figure: https://arxiv.org/abs/2501.12948v1) Accessed 2026-10-16. (register 02)
-- Yue et al., NeurIPS 2025 Oral (arXiv journal-ref): https://arxiv.org/abs/2504.13837v5 Accessed 2026-10-16. (register 02)
-- Dr. GRPO, COLM 2025 (authors' repo bibtex): https://arxiv.org/abs/2503.20783v2 Accessed 2026-10-16. (register 02)
-- One-shot RLVR, NeurIPS 2025 (authors' repo README): https://arxiv.org/abs/2504.20571v3 Accessed 2026-10-16. (register 02)
-- Interplay of pre-, mid-training and RL, ICML 2026 Spotlight (authors' repo README): https://arxiv.org/abs/2512.07783v1 Accessed 2026-10-16. (register 02)
-- SWE-RL, NeurIPS 2025 (arXiv comments): https://arxiv.org/abs/2502.18449v2 Accessed 2026-10-16. (register 02)
-- SWE-Gym, ICML 2025 (arXiv comments): https://arxiv.org/abs/2412.21139v2 Accessed 2026-10-16. (register 02)
-- RL Finetunes Small Subnetworks, NeurIPS 2025 (arXiv comments): https://arxiv.org/abs/2505.11711v2 Accessed 2026-10-16. (register 02)
-- High-entropy minority tokens, NeurIPS 2025 (arXiv comments): https://arxiv.org/abs/2506.01939v2 Accessed 2026-10-16. (register 02)
-- Echo Chamber, COLM 2025 (arXiv comments): https://arxiv.org/abs/2504.07912v2 Accessed 2026-10-16. (register 02)
-- Reasoning or Memorization, AAAI 2026 (arXiv comments): https://arxiv.org/abs/2507.10532v3 Accessed 2026-10-16. (register 02)
-- RL Squeezes, SFT Expands, ICLR 2026 (arXiv comments): https://arxiv.org/abs/2509.21128v2 Accessed 2026-10-16. (register 02)
-- The Path Not Taken, preliminary version a NeurIPS 2025 workshop spotlight (arXiv comments): https://arxiv.org/abs/2511.08567v1 Accessed 2026-10-16. (register 02)
-- Shinn et al., Reflexion, NeurIPS 2023 [venue per Semantic Scholar]: https://arxiv.org/abs/2303.11366v4 . Accessed 2026-10-16. (register 03)
-- Madaan et al., Self-Refine, NeurIPS 2023 [venue per Semantic Scholar]: https://arxiv.org/abs/2303.17651v2 . Accessed 2026-10-16. (register 03)
-- Huang et al., Large Language Models Cannot Self-Correct Reasoning Yet, ICLR 2024: https://arxiv.org/abs/2310.01798v2 . Accessed 2026-10-16. (register 03)
-- Kamoi et al., When Can LLMs Actually Correct Their Own Mistakes?, TACL 2024: https://arxiv.org/abs/2406.01297v3 . Accessed 2026-10-16. (register 03)
-- Zhao et al., ExpeL, AAAI-24: https://arxiv.org/abs/2308.10144v3 . Accessed 2026-10-16. (register 03)
-- Wang et al., Agent Workflow Memory, ICML [venue per Semantic Scholar]: https://arxiv.org/abs/2409.07429v1 . Accessed 2026-10-16. (register 03)
-- Ouyang et al., ReasoningBank, ICLR 2026: https://arxiv.org/abs/2509.25140v2 . Accessed 2026-10-16. (register 03)
-- Suzgun et al., Dynamic Cheatsheet, EACL [venue per Semantic Scholar]: https://arxiv.org/abs/2504.07952v1 . Accessed 2026-10-16. (register 03)
-- Wang et al., Voyager, TMLR [venue per Semantic Scholar]: https://arxiv.org/abs/2305.16291v2 . Accessed 2026-10-16. (register 03)
-- Yuksekgonul et al., TextGrad, arXiv v1 read; journal version Nature 639, 609-616 (2025): https://arxiv.org/abs/2406.07496v1 ; https://www.nature.com/articles/s41586-025-08661-4 (located, not read). Accessed 2026-10-16. (register 03)
-- Pryzant et al., ProTeGi, EMNLP 2023: https://arxiv.org/abs/2305.03495v2 . Accessed 2026-10-16. (register 03)
-- Yang et al., OPRO, ICLR 2024: https://arxiv.org/abs/2309.03409v3 . Accessed 2026-10-16. (register 03)
-- Zhou et al., APE, ICLR [venue per Semantic Scholar]: https://arxiv.org/abs/2211.01910v2 . Accessed 2026-10-16. (register 03)
-- Opsahl-Ong et al., MIPROv2, EMNLP 2024: https://arxiv.org/abs/2406.11695v2 . Accessed 2026-10-16. (register 03)
-- Agrawal et al., GEPA, ICLR 2026 Oral: https://arxiv.org/abs/2507.19457v2 (and v1 for the version comparison, https://arxiv.org/abs/2507.19457v1). Accessed 2026-10-16. (register 03)
-- Soylu et al., BetterTogether, EMNLP 2024: https://arxiv.org/abs/2407.10930v2 . Accessed 2026-10-16. (register 03)
-- Zhang et al., ACE, ICLR 2026: https://arxiv.org/abs/2510.04618v3 . Accessed 2026-10-16. (register 03)
-- Xu et al., A-Mem, NeurIPS 2025: https://arxiv.org/abs/2502.12110v11 . Accessed 2026-10-16. (register 03)
-- Romera-Paredes et al., FunSearch, Nature 625, 468-475 (2024): https://doi.org/10.1038/s41586-023-06924-6 . Accessed 2026-10-16. (register 03)
-- Asawa et al., How to Train Your Advisor, ICML 2026: https://arxiv.org/abs/2510.02453v3 . Accessed 2026-10-16. (register 03)
-- Laskin et al., Algorithm Distillation, ICLR 2023. https://arxiv.org/abs/2210.14215v1 (accessed 2026-10-16) (register 04)
-- Lee et al., Decision-Pretrained Transformer, NeurIPS 2023. https://arxiv.org/abs/2306.14892v1 (accessed 2026-10-16) (register 04)
-- Krishnamurthy et al., Can LLMs explore in-context?, NeurIPS 2024. https://arxiv.org/abs/2403.15371v3 (accessed 2026-10-16) (register 04)
-- Nie et al., EVOLvE, ICML 2025. https://arxiv.org/abs/2410.06238v2 (accessed 2026-10-16) (register 04)
-- Monea et al., LLMs Are In-Context Bandit RL Learners, COLM 2025. https://arxiv.org/abs/2410.05362v4 (accessed 2026-10-16) (register 04)
-- Harris and Slivkins, Should You Use Your LLM to Explore or Exploit?, UAI 2026. https://arxiv.org/abs/2502.00225v4 (accessed 2026-10-16) (register 04)
-- Shinn et al., Reflexion, NeurIPS 2023. https://arxiv.org/abs/2303.11366v4 (accessed 2026-10-16) (register 04)
-- Yao et al., Retroformer, ICLR 2024. https://arxiv.org/abs/2308.02151v3 (accessed 2026-10-16) (register 04)
-- Zhang et al., Which Agent Causes Task Failures and When?, ICML 2025. https://arxiv.org/abs/2505.00212v3 (accessed 2026-10-16) (register 04)
-- Huang et al., LLMs Cannot Self-Correct Reasoning Yet, ICLR 2024. https://arxiv.org/abs/2310.01798v2 (accessed 2026-10-16) (register 04)
-- Kamoi et al., When Can LLMs Actually Correct Their Own Mistakes?, TACL 2024. https://arxiv.org/abs/2406.01297v3 (accessed 2026-10-16) (register 04)
-- Liu et al., Lost in the Middle, TACL 2023. https://arxiv.org/abs/2307.03172v3 (accessed 2026-10-16) (register 04)
-- Hsieh et al., RULER, COLM 2024. https://arxiv.org/abs/2404.06654v3 (accessed 2026-10-16) (register 04)
-- Modarressi et al., NoLiMa, ICML 2025. https://arxiv.org/abs/2502.05167v3 (accessed 2026-10-16) (register 04)
-- Zhang et al., ACE, ICLR 2026. https://arxiv.org/abs/2510.04618v3 (accessed 2026-10-16) (register 04)
-- Agrawal et al., GEPA, ICLR 2026 Oral. https://arxiv.org/abs/2507.19457v2 (accessed 2026-10-16) (register 04)
-- Chu et al., SFT Memorizes, RL Generalizes, ICML 2025. https://arxiv.org/abs/2501.17161v2 (accessed 2026-10-16) (register 04)
-- Zhang et al., Forcing Diffuse Distributions out of Language Models, COLM 2024. https://arxiv.org/abs/2404.10859v2 (accessed 2026-10-16) (register 04)
-- Sclar et al., Sensitivity to Spurious Features in Prompt Design, ICLR 2024. https://arxiv.org/abs/2310.11324v2 (accessed 2026-10-16) (register 04)
-- Yang et al., OPRO, ICLR 2024. https://arxiv.org/abs/2309.03409v3 (accessed 2026-10-16) (register 04)
-- Yuksekgonul et al., TextGrad, Nature 639 (2025); arXiv preprint https://arxiv.org/abs/2406.07496v1; journal https://www.nature.com/articles/s41586-025-08661-4 (accessed 2026-10-16) (register 04)
-- von Oswald et al., Transformers learn in-context by gradient descent, ICML 2023. https://arxiv.org/abs/2212.07677v2 (accessed 2026-10-16) (register 04)
-- Dai et al., Why Can GPT Learn In-Context?, ACL 2023 Findings. https://arxiv.org/abs/2212.10559v3 (accessed 2026-10-16) (register 04)
-- Lampinen et al., Generalization from ICL and finetuning, NeurIPS 2025 FoRLM workshop. https://arxiv.org/abs/2505.00661v3 (accessed 2026-10-16) (register 04)
-- Yue et al., Does RL Really Incentivize Reasoning Capacity Beyond the Base Model?. https://arxiv.org/abs/2504.13837v5 NeurIPS 2025 Oral per the arXiv journal reference (accessed 2026-10-16; venue checked 2026-10-17) (register 04)
-- Peer-reviewed: HybridFlow 2409.19256v2 (https://arxiv.org/abs/2409.19256v2) (EuroSys '25); AReaL 2505.24298v5 (https://arxiv.org/abs/2505.24298v5) (NeurIPS 2025); DeepSeek-R1 2501.12948v2 (https://arxiv.org/abs/2501.12948v2) with Nature Supplementary Information (Nature 645, 2025). Accessed 2026-10-17. (register 05)
+98 sources.
 
-## Tier 3: preprints, other papers and third-party technical reports
+| Source | Accessed | Cited in |
+| --- | --- | --- |
+| [Amazon Bedrock pricing, reinforcement fine-tuning](https://aws.amazon.com/bedrock/pricing/) | 2026-10-30 | CostPerImprovement, RlOnAws, Sources appendix |
+| [Neuron v2.33.0, NxD Training archive notice](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/archive/nxd-training/index.html) | 2026-10-30 | RlOnAws |
+| [Neuron v2.33.0, What is TorchNeuron](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/about-pytorch-neuron.html) | 2026-10-30 | RlOnAws |
+| [OpenAI API docs: reinforcement fine-tuning](https://developers.openai.com/api/docs/guides/reinforcement-fine-tuning) | 2026-10-30 | Choosing, PreferencesToRewards |
+| [Amazon Bedrock AgentCore: episodic memory strategy](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/episodic-memory-strategy.html) | 2026-10-30 | Choosing, RlOnAws, Sources appendix |
+| [AgentCore developer guide, evaluations](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/evaluations.html) | 2026-10-30 | RlOnAws |
+| [AgentCore developer guide, built-in strategies with overrides](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-custom-strategy.html) | 2026-10-30 | RlOnAws |
+| [AgentCore developer guide, episodic memory system prompt](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-episodic-prompt.html) | 2026-10-30 | RlOnAws |
+| [AgentCore developer guide, self-managed strategies](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-self-managed-strategies.html) | 2026-10-30 | RlOnAws |
+| [AgentCore developer guide, how optimization works](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/optimization-how-it-works.html) | 2026-10-30 | RlOnAws |
+| [Amazon Bedrock AgentCore: optimization](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/optimization.html) | 2026-10-30 | Choosing, RlOnAws, Sources appendix |
+| [Bedrock user guide: how Advanced Prompt Optimization works](https://docs.aws.amazon.com/bedrock/latest/userguide/advanced-prompt-optimization-how.html) | 2026-10-30 | Choosing, RlOnAws, Sources appendix |
+| [Bedrock user guide, customisation methods](https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models.html) | 2026-10-30 | RlOnAws |
+| [Amazon Bedrock user guide: prompt caching](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html) | 2026-10-30 | Sources appendix, WhereWordsFallShort, YourLoops |
+| [Bedrock user guide, benefits of RFT](https://docs.aws.amazon.com/bedrock/latest/userguide/reinforcement-fine-tuning.html) | 2026-10-30 | Choosing, CostPerImprovement, RlOnAws, RlvrAndGrpo, Sources appendix |
+| [Bedrock user guide, reward functions for open-weight models](https://docs.aws.amazon.com/bedrock/latest/userguide/reward-functions-open-weight.html) | 2026-10-30 | RlOnAws |
+| [Bedrock user guide, reward functions for Nova models](https://docs.aws.amazon.com/bedrock/latest/userguide/reward-functions.html) | 2026-10-30 | RlOnAws |
+| [Bedrock user guide, RFT data for open-weight models](https://docs.aws.amazon.com/bedrock/latest/userguide/rft-prepare-data-open-weight.html) | 2026-10-30 | RlOnAws |
+| [Bedrock user guide, RFT data for Nova models](https://docs.aws.amazon.com/bedrock/latest/userguide/rft-prepare-data.html) | 2026-10-30 | RlOnAws |
+| [Bedrock user guide: create an RFT job](https://docs.aws.amazon.com/bedrock/latest/userguide/rft-submit-job.html) | 2026-10-30 | CostPerImprovement, RlvrAndGrpo, Sources appendix, TwoLeashes |
+| [Amazon SageMaker AI: training sessions](https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models-training-sessions.html) | 2026-10-30 | Choosing, RlOnAws, Sources appendix |
+| [SageMaker AI developer guide: Model customization](https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models.html) | 2026-10-30 | Choosing, PreferencesToRewards, RlOnAws, Sources appendix |
+| [SageMaker AI Developer Guide: Preparing your agent](https://docs.aws.amazon.com/sagemaker/latest/dg/model-customize-mtrl-agent.html) | 2026-10-30 | AgenticRl, RlOnAws, Sources appendix |
+| [SageMaker AI multi-turn RL hyperparameters reference](https://docs.aws.amazon.com/sagemaker/latest/dg/model-customize-mtrl-hyperparams.html) | 2026-10-30 | Choosing, RlOnAws, RlvrAndGrpo |
+| [SageMaker AI developer guide: Open weight model customization](https://docs.aws.amazon.com/sagemaker/latest/dg/model-customize-open-weight.html) | 2026-10-30 | PreferencesToRewards, RlOnAws |
+| [SageMaker AI developer guide, training sessions SDK reference](https://docs.aws.amazon.com/sagemaker/latest/dg/training-sessions-sdk.html) | 2026-10-30 | RlOnAws |
+| [Neuron documentation source, v2.33.0](https://github.com/aws-neuron/aws-neuron-sdk/tree/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a) | 2026-10-30 | RlOnAws |
+| [aws/sagemaker-hyperpod-recipes @ a6030c319908c8a1b74cb619b00476f8e6baa04f: hyperpod_recipes/recipes_src/fine-tuning/hydra_config/verl-0_7_0/ppo_trainer.yaml](https://github.com/aws/sagemaker-hyperpod-recipes/blob/a6030c319908c8a1b74cb619b00476f8e6baa04f/hyperpod_recipes/recipes_src/fine-tuning/hydra_config/verl-0_7_0/ppo_trainer.yaml) | 2026-10-30 | RlOnAws |
+| [aws/sagemaker-hyperpod-recipes @ a6030c319908c8a1b74cb619b00476f8e6baa04f: hyperpod_recipes/recipes_src/fine-tuning/hydra_config/verl-0_7_0/rollout/rollout.yaml](https://github.com/aws/sagemaker-hyperpod-recipes/blob/a6030c319908c8a1b74cb619b00476f8e6baa04f/hyperpod_recipes/recipes_src/fine-tuning/hydra_config/verl-0_7_0/rollout/rollout.yaml) | 2026-10-30 | RlOnAws |
+| [aws/sagemaker-hyperpod-recipes @ a6030c319908c8a1b74cb619b00476f8e6baa04f: hyperpod_recipes/recipes_src/fine-tuning/nova/nova_2_0/nova_lite/RFT/nova_lite_2_0_p5_gpu_rft.yaml](https://github.com/aws/sagemaker-hyperpod-recipes/blob/a6030c319908c8a1b74cb619b00476f8e6baa04f/hyperpod_recipes/recipes_src/fine-tuning/nova/nova_2_0/nova_lite/RFT/nova_lite_2_0_p5_gpu_rft.yaml) | 2026-10-30 | RlOnAws |
+| [aws/sagemaker-hyperpod-recipes @ a6030c319908c8a1b74cb619b00476f8e6baa04f: hyperpod_recipes/recipes_src/fine-tuning/qwen-0_7_0/verl-grpo-rlvr-qwen-3-32b-lora.yaml](https://github.com/aws/sagemaker-hyperpod-recipes/blob/a6030c319908c8a1b74cb619b00476f8e6baa04f/hyperpod_recipes/recipes_src/fine-tuning/qwen-0_7_0/verl-grpo-rlvr-qwen-3-32b-lora.yaml) | 2026-10-30 | RlOnAws |
+| [SageMaker HyperPod recipes at commit a6030c3 (release 2.0.11): verl GRPO and Nova RFT recipes](https://github.com/aws/sagemaker-hyperpod-recipes/tree/a6030c319908c8a1b74cb619b00476f8e6baa04f) | 2026-10-30 | Sources appendix |
+| [aws/sagemaker-hyperpod-recipes @ a6030c319908c8a1b74cb619b00476f8e6baa04f: hyperpod_recipes/recipes_src/fine-tuning](https://github.com/aws/sagemaker-hyperpod-recipes/tree/a6030c319908c8a1b74cb619b00476f8e6baa04f/hyperpod_recipes/recipes_src/fine-tuning) | 2026-10-30 | Choosing, RlOnAws |
+| [gepa-ai/gepa-artifact @ cbefbc1aa0f43dd39874ec4bf42211365dbda42e: gepa_artifact/benchmarks/AIME/__init__.py](https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/gepa_artifact/benchmarks/AIME/__init__.py) | 2026-10-30 | PromptOptimization |
+| [gepa-ai/gepa-artifact @ cbefbc1aa0f43dd39874ec4bf42211365dbda42e: gepa_artifact/benchmarks/AIME/AIME_data.py](https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/gepa_artifact/benchmarks/AIME/AIME_data.py) | 2026-10-30 | PromptOptimization |
+| [gepa-ai/gepa-artifact @ cbefbc1aa0f43dd39874ec4bf42211365dbda42e: gepa_artifact/gepa/gepa.py](https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/gepa_artifact/gepa/gepa.py) | 2026-10-30 | PromptOptimization |
+| [gepa-ai/gepa-artifact @ cbefbc1aa0f43dd39874ec4bf42211365dbda42e: scripts/experiment_configs.py](https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/scripts/experiment_configs.py) | 2026-10-30 | PromptOptimization |
+| [gepa-ai/gepa-artifact @ cbefbc1aa0f43dd39874ec4bf42211365dbda42e: scripts/run_experiments.py](https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/scripts/run_experiments.py) | 2026-10-30 | PromptOptimization |
+| [gepa-ai/gepa @ v0.1.4: src/gepa/api.py](https://github.com/gepa-ai/gepa/blob/v0.1.4/src/gepa/api.py) | 2026-10-30 | PromptOptimization |
+| [gepa-ai/gepa @ v0.1.4: src/gepa/core/engine.py](https://github.com/gepa-ai/gepa/blob/v0.1.4/src/gepa/core/engine.py) | 2026-10-30 | PromptOptimization |
+| [gepa-ai/gepa @ v0.1.4: src/gepa/core/state.py](https://github.com/gepa-ai/gepa/blob/v0.1.4/src/gepa/core/state.py) | 2026-10-30 | PromptOptimization |
+| [gepa-ai/gepa @ v0.1.4: src/gepa/gepa_utils.py](https://github.com/gepa-ai/gepa/blob/v0.1.4/src/gepa/gepa_utils.py) | 2026-10-30 | PromptOptimization |
+| [gepa-ai/gepa @ v0.1.4: src/gepa/strategies/acceptance.py](https://github.com/gepa-ai/gepa/blob/v0.1.4/src/gepa/strategies/acceptance.py) | 2026-10-30 | PromptOptimization |
+| [gepa-ai/gepa @ v0.1.4: src/gepa/strategies/instruction_proposal.py](https://github.com/gepa-ai/gepa/blob/v0.1.4/src/gepa/strategies/instruction_proposal.py) | 2026-10-30 | PromptOptimization |
+| [gepa at v0.1.4, the version DSPy 3.4.1 pins](https://github.com/gepa-ai/gepa/tree/v0.1.4) | 2026-10-30 | Sources appendix |
+| [huggingface/trl @ v1.12.0: trl/experimental/ppo/ppo_config.py](https://github.com/huggingface/trl/blob/v1.12.0/trl/experimental/ppo/ppo_config.py) | 2026-10-30 | LanguageModelAsPolicy |
+| [huggingface/trl @ v1.12.0: trl/experimental/ppo/ppo_trainer.py](https://github.com/huggingface/trl/blob/v1.12.0/trl/experimental/ppo/ppo_trainer.py) | 2026-10-30 | LanguageModelAsPolicy, PreferencesToRewards, RlStepAsSystem |
+| [huggingface/trl @ v1.12.0: trl/trainer/ppo_trainer.py](https://github.com/huggingface/trl/blob/v1.12.0/trl/trainer/ppo_trainer.py) | 2026-10-30 | Sources appendix |
+| [huggingface/trl @ v1.16.0: docs/source/aws_trainium.md](https://github.com/huggingface/trl/blob/v1.16.0/docs/source/aws_trainium.md) | 2026-10-30 | RlOnAws |
+| [huggingface/trl @ v1.16.0: docs/source/grpo_trainer.md](https://github.com/huggingface/trl/blob/v1.16.0/docs/source/grpo_trainer.md) | 2026-10-30 | RlvrAndGrpo |
+| [huggingface/trl @ v1.16.0: docs/source/paper_index.md](https://github.com/huggingface/trl/blob/v1.16.0/docs/source/paper_index.md) | 2026-10-30 | RlvrAndGrpo |
+| [huggingface/trl @ v1.16.0: pyproject.toml](https://github.com/huggingface/trl/blob/v1.16.0/pyproject.toml) | 2026-10-30 | SideBySideLab |
+| [huggingface/trl @ v1.16.0: trl/generation/vllm_generation.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/generation/vllm_generation.py) | 2026-10-30 | RlStepAsSystem |
+| [huggingface/trl @ v1.16.0: trl/trainer/dpo_config.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/dpo_config.py) | 2026-10-30 | PreferencesToRewards |
+| [huggingface/trl @ v1.16.0: trl/trainer/dpo_trainer.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/dpo_trainer.py) | 2026-10-30 | PreferencesToRewards |
+| [huggingface/trl @ v1.16.0: trl/trainer/grpo_config.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_config.py) | 2026-10-30 | RlOnAws, RlStepAsSystem, RlvrAndGrpo, SideBySideLab, Sources appendix, TwoLeashes |
+| [huggingface/trl @ v1.16.0: trl/trainer/grpo_trainer.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_trainer.py) | 2026-10-30 | AgenticRl, Hybrids, RlStepAsSystem, RlvrAndGrpo, SideBySideLab, Sources appendix, TwoLeashes |
+| [huggingface/trl @ v1.16.0: trl/trainer/kto_trainer.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/kto_trainer.py) | 2026-10-30 | PreferencesToRewards |
+| [huggingface/trl @ v1.16.0: trl/trainer/rloo_config.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/rloo_config.py) | 2026-10-30 | TwoLeashes |
+| [huggingface/trl @ v1.16.0: trl/trainer/rloo_trainer.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/rloo_trainer.py) | 2026-10-30 | RlvrAndGrpo |
+| [huggingface/trl @ v1.16.0: trl/trainer/utils.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/utils.py) | 2026-10-30 | RlvrAndGrpo |
+| [TRL v1.13.0 release notes](https://github.com/huggingface/trl/releases/tag/v1.13.0) | 2026-10-30 | LanguageModelAsPolicy |
+| [huggingface/trl @ v1.16.0: trl/trainer](https://github.com/huggingface/trl/tree/v1.16.0/trl/trainer) | 2026-10-30 | LanguageModelAsPolicy |
+| [karpathy/autoresearch @ 228791fb499afffb54b46200aca536f79142f117: prepare.py](https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/prepare.py) | 2026-10-30 | RewardIsAProxy, TextLoopAsRl, YourLoops |
+| [karpathy/autoresearch @ 228791fb499afffb54b46200aca536f79142f117: program.md](https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/program.md) | 2026-10-30 | RewardIsAProxy, TextLoopAsRl, YourLoops |
+| [karpathy/autoresearch @ 228791fb499afffb54b46200aca536f79142f117: train.py](https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/train.py) | 2026-10-30 | RewardIsAProxy, YourLoops |
+| [autoresearch tree at 228791fb](https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117) | 2026-10-30 | RewardIsAProxy, Sources appendix |
+| [NVIDIA/dgx-spark-playbooks @ c035e0ac7d211509ec131b79b5b6f0f824a9e421: nvidia/playbook-unsloth/README.md](https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-unsloth/README.md) | 2026-10-30 | SideBySideLab |
+| [NVIDIA/dgx-spark-playbooks @ c035e0ac7d211509ec131b79b5b6f0f824a9e421: nvidia/playbook-vlm-finetuning/assets/ui_image/src/train_image_vlm.py](https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-vlm-finetuning/assets/ui_image/src/train_image_vlm.py) | 2026-10-30 | SideBySideLab |
+| [NVIDIA/dgx-spark-playbooks @ c035e0ac7d211509ec131b79b5b6f0f824a9e421: nvidia/playbook-vlm-finetuning/assets/ui_image/src/train.yaml](https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-vlm-finetuning/assets/ui_image/src/train.yaml) | 2026-10-30 | SideBySideLab |
+| [NVIDIA/dgx-spark-playbooks @ c035e0ac7d211509ec131b79b5b6f0f824a9e421: nvidia/playbook-vlm-finetuning/README.md](https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-vlm-finetuning/README.md) | 2026-10-30 | SideBySideLab |
+| [OpenRLHF/OpenRLHF @ v0.11.2: openrlhf/cli/train_ppo_ray.py](https://github.com/OpenRLHF/OpenRLHF/blob/v0.11.2/openrlhf/cli/train_ppo_ray.py) | 2026-10-30 | RlStepAsSystem |
+| [OpenRLHF at v0.11.2](https://github.com/OpenRLHF/OpenRLHF/tree/v0.11.2) | 2026-10-30 | Sources appendix |
+| [PrimeIntellect-ai/prime-rl @ v0.10.0: packages/prime-rl-configs/src/prime_rl/configs/orchestrator.py](https://github.com/PrimeIntellect-ai/prime-rl/blob/v0.10.0/packages/prime-rl-configs/src/prime_rl/configs/orchestrator.py) | 2026-10-30 | RlStepAsSystem |
+| [PrimeIntellect-ai/prime-rl @ v0.10.0: pyproject.toml](https://github.com/PrimeIntellect-ai/prime-rl/blob/v0.10.0/pyproject.toml) | 2026-10-30 | RlStepAsSystem |
+| [prime-rl at v0.10.0](https://github.com/PrimeIntellect-ai/prime-rl/tree/v0.10.0) | 2026-10-30 | Sources appendix |
+| [stanfordnlp/dspy @ 3.4.1: dspy/teleprompt/gepa/gepa.py](https://github.com/stanfordnlp/dspy/blob/3.4.1/dspy/teleprompt/gepa/gepa.py) | 2026-10-30 | PromptOptimization |
+| [stanfordnlp/dspy @ 3.4.1: dspy/teleprompt/grpo.py](https://github.com/stanfordnlp/dspy/blob/3.4.1/dspy/teleprompt/grpo.py) | 2026-10-30 | PromptOptimization |
+| [stanfordnlp/dspy @ 3.4.1: dspy/teleprompt/mipro_optimizer_v2.py](https://github.com/stanfordnlp/dspy/blob/3.4.1/dspy/teleprompt/mipro_optimizer_v2.py) | 2026-10-30 | PromptOptimization |
+| [DSPy at 3.4.1 (MIPROv2 and the GEPA integration)](https://github.com/stanfordnlp/dspy/tree/3.4.1) | 2026-10-30 | Sources appendix |
+| [stanfordnlp/dspy @ 3.4.1: dspy/teleprompt](https://github.com/stanfordnlp/dspy/tree/3.4.1/dspy/teleprompt) | 2026-10-30 | PromptOptimization |
+| [THUDM/slime @ v0.4.0: slime/utils/arguments.py](https://github.com/THUDM/slime/blob/v0.4.0/slime/utils/arguments.py) | 2026-10-30 | RlStepAsSystem |
+| [THUDM/slime @ v0.4.0: train.py](https://github.com/THUDM/slime/blob/v0.4.0/train.py) | 2026-10-30 | RlStepAsSystem |
+| [slime at v0.4.0](https://github.com/THUDM/slime/tree/v0.4.0) | 2026-10-30 | Sources appendix |
+| [verl-project/verl-recipe @ e7f889574b8301cc0f0fc1d57c6d67f31ffeb689: dapo/README.md](https://github.com/verl-project/verl-recipe/blob/e7f889574b8301cc0f0fc1d57c6d67f31ffeb689/dapo/README.md) | 2026-10-30 | RlStepAsSystem |
+| [vLLM at v0.28.0, the rollout engine in the E0 run](https://github.com/vllm-project/vllm/tree/v0.28.0) | 2026-10-30 | Sources appendix |
+| [volcengine/verl @ v0.9.1: verl/experimental/agent_loop/agent_loop.py](https://github.com/volcengine/verl/blob/v0.9.1/verl/experimental/agent_loop/agent_loop.py) | 2026-10-30 | AgenticRl, WhereWordsFallShort |
+| [volcengine/verl @ v0.9.1: verl/experimental/agent_loop/tool_agent_loop.py](https://github.com/volcengine/verl/blob/v0.9.1/verl/experimental/agent_loop/tool_agent_loop.py) | 2026-10-30 | AgenticRl |
+| [volcengine/verl @ v0.9.1: verl/trainer/config/actor/actor.yaml](https://github.com/volcengine/verl/blob/v0.9.1/verl/trainer/config/actor/actor.yaml) | 2026-10-30 | RlvrAndGrpo |
+| [volcengine/verl @ v0.9.1: verl/trainer/config/ppo_trainer.yaml](https://github.com/volcengine/verl/blob/v0.9.1/verl/trainer/config/ppo_trainer.yaml) | 2026-10-30 | RlStepAsSystem, RlvrAndGrpo |
+| [volcengine/verl @ v0.9.1: verl/trainer/config/rollout/rollout.yaml](https://github.com/volcengine/verl/blob/v0.9.1/verl/trainer/config/rollout/rollout.yaml) | 2026-10-30 | RlStepAsSystem, RlvrAndGrpo |
+| [volcengine/verl @ v0.9.1: verl/trainer/ppo/core_algos.py](https://github.com/volcengine/verl/blob/v0.9.1/verl/trainer/ppo/core_algos.py) | 2026-10-30 | AgenticRl, RlvrAndGrpo, WhereWordsFallShort |
+| [volcengine/verl @ v0.9.1: verl/utils/tokenizer/continuous_token.py](https://github.com/volcengine/verl/blob/v0.9.1/verl/utils/tokenizer/continuous_token.py) | 2026-10-30 | AgenticRl |
+| [verl at v0.9.1](https://github.com/volcengine/verl/tree/v0.9.1) | 2026-10-30 | Sources appendix |
+| [Claude docs: Agent Skills overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) | 2026-10-30 | AccumulatingExperience, Sources appendix |
+| [Claude docs: memory tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool) | 2026-10-30 | AccumulatingExperience, Sources appendix |
+| [Anthropic docs: prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) | 2026-10-30 | Sources appendix, WhereWordsFallShort |
+| [AWS Price List API, Nova 2 Lite RFT training hours](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/20261030160456/us-east-1/index.json) | 2026-10-30 | CostPerImprovement, RlOnAws |
 
-- SemiAnalysis (Kimbo Chen and Dylan Patel), "Amazon's Trainium Takes a Strike at the Training King", 2026-10-23, https://newsletter.semianalysis.com/p/amazons-trainium-takes-a-strike-at. Accessed 2026-10-24. Public portion only; the RL-rollouts claim is unverified (F06-64). AWS's launch post thanks SemiAnalysis for design feedback. (register 06)
-- Schulman et al., PPO, https://arxiv.org/abs/1707.06347v2. Accessed 2026-10-16. Definition, ablation. (register 01)
-- Ziegler et al., Fine-Tuning Language Models from Human Preferences, https://arxiv.org/abs/1909.08593v2. Accessed 2026-10-16. Definition, ablation. (register 01)
-- Bai et al., Constitutional AI, https://arxiv.org/abs/2212.08073v1. Accessed 2026-10-16. Method description, qualitative results. (register 01)
-- Shao et al., DeepSeekMath (GRPO), https://arxiv.org/abs/2402.03300v3. Accessed 2026-10-16. Method, framework, benchmark analysis. (register 01)
-- Shenfeld, Pari, Agrawal, RL's Razor, https://arxiv.org/abs/2509.04259v1. Accessed 2026-10-16. Ablation, theory in a simplified setting. (register 01)
-- First-party lab: DeepSeekMath https://arxiv.org/abs/2402.03300v3 ; GSPO (Qwen) https://arxiv.org/abs/2507.18071v2 ; Kimi k1.5 https://arxiv.org/abs/2501.12599v4 ; Kimi K2 https://arxiv.org/abs/2507.20534v2 ; ReTool (ByteDance) https://arxiv.org/abs/2504.11536v2 ; Baker et al. (OpenAI) https://arxiv.org/abs/2503.11926v1 ; MacDiarmid et al. (Anthropic) https://arxiv.org/abs/2511.18397v1 ; Lightman et al. (OpenAI) https://arxiv.org/abs/2305.20050v1 ; Uesato et al. (DeepMind) https://arxiv.org/abs/2211.14275v1 ; Gao et al. (OpenAI) https://arxiv.org/abs/2210.10760v1 ; Math-Shepherd https://arxiv.org/abs/2312.08935v3 Accessed 2026-10-16. (register 02)
-- Other: DAPO https://arxiv.org/abs/2503.14476v2 ; RLOO https://arxiv.org/abs/2402.14740v2 ; REINFORCE++ https://arxiv.org/abs/2501.03262v9 ; VAPO https://arxiv.org/abs/2504.05118v3 ; ProRL https://arxiv.org/abs/2505.24864v1 ; Invisible Leash https://arxiv.org/abs/2507.14843v5 ; Spurious Rewards https://arxiv.org/abs/2506.10947v2 ; f(g(x)) https://arxiv.org/abs/2509.25123v3 ; Reasoning with Sampling https://arxiv.org/abs/2510.14901v1 ; chess pretraining-to-RL https://arxiv.org/abs/2607.16097v2 ; Diversity collapse via overtraining https://arxiv.org/abs/2606.15455v1 ; Curriculum RL beyond the base https://arxiv.org/abs/2606.22317v1 ; Pass@(k,T) https://arxiv.org/abs/2604.14877v1 ; Search-R1 https://arxiv.org/abs/2503.09516v5 ; RAGEN https://arxiv.org/abs/2504.20073v2 ; ImpossibleBench https://arxiv.org/abs/2510.20270v1 ; Entropy mechanism https://arxiv.org/abs/2505.22617v1 ; RL's Razor https://arxiv.org/abs/2509.04259v1 ; Math transferability https://arxiv.org/abs/2507.00432v2 ; SFT Memorizes, RL Generalizes https://arxiv.org/abs/2501.17161v2 Accessed 2026-10-16. (register 02)
-- Majumder et al., CLIN: https://arxiv.org/abs/2310.10134v1 . Accessed 2026-10-16. (register 03)
-- Khattab et al., DSPy: https://arxiv.org/abs/2310.03714v1 . Accessed 2026-10-16. (register 03)
-- Memento: https://arxiv.org/abs/2508.16153v2 . Accessed 2026-10-16. (register 03)
-- Packer et al., MemGPT: https://arxiv.org/abs/2310.08560v2 . Accessed 2026-10-16. (register 03)
-- Cai et al., Training-Free GRPO (Tencent Youtu Lab): https://arxiv.org/abs/2510.08191v1 . Accessed 2026-10-16. (register 03)
-- Novikov et al., AlphaEvolve white paper: https://arxiv.org/abs/2506.13131v1 . Accessed 2026-10-16. (register 03)
-- ShinkaEvolve (abstract only): https://arxiv.org/abs/2509.19349v1 . Accessed 2026-10-16. (register 03)
-- Schmied et al., LLMs are Greedy Agents. https://arxiv.org/abs/2504.16078v1 (accessed 2026-10-16) (register 04)
-- Reward Is Enough: LLMs Are In-Context RL Learners. https://arxiv.org/abs/2506.06303v6 (accessed 2026-10-16) (register 04)
-- LLM-Enhanced Multi-Armed Bandits. https://arxiv.org/abs/2502.01118v1 (accessed 2026-10-16) (register 04)
-- Semantic Bandits. https://arxiv.org/abs/2608.16707v1 (accessed 2026-10-16) (register 04)
-- Renze and Guven, Self-Reflection in LLM Agents. https://arxiv.org/abs/2405.06682v3 (accessed 2026-10-16) (register 04)
-- Accurate Failure Prediction in Agents Does Not Imply Effective Failure Prevention. https://arxiv.org/abs/2602.03338v1 (accessed 2026-10-16) (register 04)
-- Where LLM Agents Fail and How They Can Learn From Failures (AgentDebug). https://arxiv.org/abs/2509.25370v1 (accessed 2026-10-16) (register 04)
-- Ovadia et al., Fine-Tuning or Retrieval?. https://arxiv.org/abs/2312.05934v3 (accessed 2026-10-16) (register 04)
-- Snell et al., Learning by Distilling Context. https://arxiv.org/abs/2209.15189v1 (accessed 2026-10-16) (register 04)
-- Shenfeld et al., RL's Razor. https://arxiv.org/abs/2509.04259v1 (accessed 2026-10-16) (register 04)
-- Liu et al., ProRL. https://arxiv.org/abs/2505.24864v1 (accessed 2026-10-16) (register 04)
-- Zhang et al., Revisiting OPRO. https://arxiv.org/abs/2405.10276v2 (accessed 2026-10-16) (register 04)
-- Shen et al., Do pretrained Transformers Learn In-Context by Gradient Descent?. https://arxiv.org/abs/2310.08540v5 (accessed 2026-10-16) (register 04)
-- Jiang et al., Adaptation of Agentic AI: A Survey of Post-Training, Memory, and Skills. https://arxiv.org/abs/2512.16301v3 (accessed 2026-10-16) (register 04)
-- Hong, Troynikov, Huber (Chroma), Context Rot (2025-07-14), vendor report, not peer-reviewed. https://research.trychroma.com/context-rot (accessed 2026-10-16) (register 04)
-- Preprints: OpenRLHF 2405.11143v6 (https://arxiv.org/abs/2405.11143v6); INTELLECT-2 2505.07291v1 (https://arxiv.org/abs/2505.07291v1); PipelineRL 2509.19128v2 (https://arxiv.org/abs/2509.19128v2); DAPO 2503.14476v2 (https://arxiv.org/abs/2503.14476v2); ProRL 2505.24864v1 (https://arxiv.org/abs/2505.24864v1); Skywork-OR1 2505.22312v2 (https://arxiv.org/abs/2505.22312v2). Accessed 2026-10-17. (register 05)
-- Cross-referenced only, via 03-learning-in-words.md: GEPA 2507.19457v2 (https://arxiv.org/abs/2507.19457v2); Training-Free GRPO 2510.08191v1 (https://arxiv.org/abs/2510.08191v1). Accessed 2026-10-17. (register 05)
+## Tier 2: first-party lab and vendor posts and talks (their performance figures are claims)
 
-## Tier 3: in-repo docs and code comments (orientation only)
+14 sources.
 
-- gepa README at v0.1.4: https://github.com/gepa-ai/gepa/blob/v0.1.4/README.md . Accessed 2026-10-16. (register 03)
-- Docstrings and comments in DSPy `gepa.py`, DSPy `bettertogether.py`, gepa `acceptance.py`, OpenEvolve `config.py`, cited only alongside the code lines they annotate. Accessed 2026-10-16. (register 03)
-- `aws/sagemaker-hyperpod-recipes` README.md at `a6030c319908c8a1b74cb619b00476f8e6baa04f` (F06-37, F06-38, F06-42, F06-43) (accessed 2026-10-17) Base: https://github.com/aws/sagemaker-hyperpod-recipes/tree/a6030c319908c8a1b74cb619b00476f8e6baa04f (exact pages in the cited entries). (register 06)
+| Source | Accessed | Cited in |
+| --- | --- | --- |
+| [GPT-4 Technical Report (OpenAI), Section 5 and Figure 8](https://arxiv.org/abs/2303.08774v6) | 2026-10-30 | WeightsVsContext |
+| [Claude 3.7 Sonnet system card, Section 6](https://assets.anthropic.com/m/785e231869ea8b3b/original/claude-3-7-sonnet-system-card.pdf) | 2026-10-30 | RewardIsAProxy, Sources appendix |
+| [AWS What's New, Bedrock RFT launch, 2025-12-03](https://aws.amazon.com/about-aws/whats-new/2025/12/bedrock-reinforcement-fine-tuning-66-base-models/) | 2026-10-30 | RlOnAws |
+| [AWS What's New, AgentCore optimization preview, 2026-04-30](https://aws.amazon.com/about-aws/whats-new/2026/05/bedrock-agentcore-optimization-preview/) | 2026-10-30 | RlOnAws |
+| [AWS What's New, AgentCore optimization GA, 2026-06-17](https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-bedrock-agentcore-new-optimization-capabilities/) | 2026-10-30 | RlOnAws |
+| [AWS Machine Learning Blog, AgentCore episodic memory, performance evaluation](https://aws.amazon.com/blogs/machine-learning/build-agents-to-learn-from-experiences-using-amazon-bedrock-agentcore-episodic-memory/) | 2026-10-30 | RlOnAws |
+| [AWS Machine Learning Blog, RFT on Bedrock best practices](https://aws.amazon.com/blogs/machine-learning/reinforcement-fine-tuning-on-amazon-bedrock-best-practices/) | 2026-10-30 | CostPerImprovement, RlOnAws, Sources appendix |
+| [Huntley, Ralph (author's post)](https://ghuntley.com/ralph/) | 2026-10-30 | RewardIsAProxy, Sources appendix, TextLoopAsRl, YourLoops |
+| [gepa-ai/gepa @ v0.1.4: README.md](https://github.com/gepa-ai/gepa/blob/v0.1.4/README.md) | 2026-10-30 | PromptOptimization |
+| [karpathy/autoresearch @ 228791fb499afffb54b46200aca536f79142f117: README.md](https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/README.md) | 2026-10-30 | RewardIsAProxy, YourLoops |
+| [Thinking Machines, LoRA Without Regret (lab blog)](https://thinkingmachines.ai/blog/lora/) | 2026-10-30 | Sources appendix, WhatRlDoes |
+| [verl team, W&B run record DAPO-Qwen2.5-32B](https://wandb.ai/verl-org/DAPO%20Reproduction%20on%20verl/runs/0qjd0wap) | 2026-10-30 | CostPerImprovement, RlStepAsSystem |
+| [Anthropic Engineering, Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) | 2026-10-30 | AccumulatingExperience, Sources appendix |
+| [DeepSWE post, Sections 2.1 and 2.2](https://www.together.ai/blog/deepswe) | 2026-10-30 | AgenticRl, CostPerImprovement, Sources appendix |
 
-## Tier 4: located sources only, never cited as fact
+## Tier 3: papers (venue or preprint shown) and third-party technical analysis
 
-- Search-engine result summaries (WebSearch), used to find 2511.18397, 2512.07783, 2607.16097, the 2026 capability papers and AWS doc URLs. Every fact taken from them was re-read in the primary source above, or logged as UNKNOWN (U3). Accessed 2026-10-16. (register 02)
-- Authors' GitHub README files, used only to state venue: https://github.com/sail-sg/understand-r1-zero ; https://github.com/ypwang61/One-Shot-RLVR ; https://github.com/Interplay-LM-Reasoning/Interplay-LM-Reasoning Accessed 2026-10-16. (register 02)
-- Semantic Scholar Graph API batch lookup for venue metadata: https://api.semanticscholar.org/graph/v1/paper/batch . Accessed 2026-10-16. (register 03)
-- Web search used only to locate ReasoningBank's arXiv ID and the TextGrad Nature DOI; no claims taken from search summaries. Accessed 2026-10-16. (register 03)
-- Clayton Farr, The Ralph Playbook (README of ghuntley/how-to-ralph-wiggum, fork of ClaytonFarr/ralph-playbook). https://github.com/ghuntley/how-to-ralph-wiggum/blob/88d488a148af97e4a3f22b11b4c3598c79d6a577/README.md (accessed 2026-10-16) (register 04)
-- karpathy/autoresearch issue #599 (metric integrity) and pull request #560 (noise floor), by third parties. https://github.com/karpathy/autoresearch/issues/599 and https://github.com/karpathy/autoresearch/pull/560 (accessed 2026-10-16) (register 04)
-- AWS What's New search API (`aws.amazon.com/api/dirs/items/search`), the Bedrock User Guide TOC JSON, GitHub code search (accessed 2026-10-17). The Nova 2 TOC (F06-19) and the AgentCore TOC (F06-55) are cited as Tier 1 evidence for page titles. Base: https://docs.aws.amazon.com/bedrock/latest/userguide/ ; https://aws.amazon.com/about-aws/whats-new/ (exact pages in the cited entries). (register 06)
+102 sources.
+
+| Source | Venue | Accessed | Cited in |
+| --- | --- | --- | --- |
+| [Sutton and Barto, chapter 2](http://incompleteideas.net/book/RLbook2020.pdf) | textbook | 2026-10-30 | LanguageModelAsPolicy, PolicyGradient |
+| [TRPO paper, Section 4](https://arxiv.org/abs/1502.05477v5) | ICML 2015 | 2026-10-30 | TwoLeashes |
+| [GAE, Eq. 18](https://arxiv.org/abs/1506.02438v6) | ICLR 2016 | 2026-10-30 | LanguageModelAsPolicy, PolicyGradient, Sources appendix |
+| [Christiano et al., Section 2.2.3](https://arxiv.org/abs/1706.03741v4) | NeurIPS 2017 | 2026-10-30 | PreferencesToRewards |
+| [PPO paper, Section 3](https://arxiv.org/abs/1707.06347v2) | preprint | 2026-10-30 | Sources appendix, TwoLeashes |
+| [Ziegler et al., section 2](https://arxiv.org/abs/1909.08593v2) | preprint | 2026-10-30 | LanguageModelAsPolicy |
+| [Stiennon et al., section 3.4, footnote 8](https://arxiv.org/abs/2009.01325v3) | NeurIPS 2020 | 2026-10-30 | LanguageModelAsPolicy, RewardIsAProxy |
+| [InstructGPT, Eq. 1](https://arxiv.org/abs/2203.02155v1) | NeurIPS 2022 | 2026-10-30 | LanguageModelAsPolicy, PreferencesToRewards, Sources appendix, TwoLeashes |
+| [Snell et al., abstract](https://arxiv.org/abs/2209.15189v1) | preprint | 2026-10-30 | Choosing, Hybrids, WeightsVsContext |
+| [Gao et al., Section 2](https://arxiv.org/abs/2210.10760v1) | ICML 2023 | 2026-10-30 | RewardIsAProxy, Sources appendix, TwoLeashes |
+| [Algorithm Distillation, Abstract](https://arxiv.org/abs/2210.14215v1) | ICLR 2023 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
+| [von Oswald et al., Abstract](https://arxiv.org/abs/2212.07677v2) | ICML 2023 | 2026-10-30 | TextLoopAsRl |
+| [Constitutional AI](https://arxiv.org/abs/2212.08073v1) | preprint | 2026-10-30 | PreferencesToRewards |
+| [Reflexion, title](https://arxiv.org/abs/2303.11366v4) | NeurIPS 2023 | 2026-10-30 | AccumulatingExperience, GettingStarted, LanguageModelAsPolicy, RewardIsAProxy, Sources appendix, TextLoopAsRl, VerbalReinforcement |
+| [Self-Refine, Table 1](https://arxiv.org/abs/2303.17651v2) | NeurIPS 2023 | 2026-10-30 | Sources appendix, TextLoopAsRl, VerbalReinforcement |
+| [ProTeGi, Sections 2 and 3](https://arxiv.org/abs/2305.03495v2) | EMNLP 2023 | 2026-10-30 | PromptOptimization, TextLoopAsRl |
+| [Voyager, Sections 2 and 4](https://arxiv.org/abs/2305.16291v2) | TMLR 2024 | 2026-10-30 | AccumulatingExperience, Sources appendix, TextLoopAsRl |
+| [DPO paper, Section 4](https://arxiv.org/abs/2305.18290v3) | NeurIPS 2023 | 2026-10-30 | PreferencesToRewards, Sources appendix |
+| [Let's Verify Step by Step, Sections 1 to 3 and Figure 3](https://arxiv.org/abs/2305.20050v1) | ICLR 2024 | 2026-10-30 | WhatRlDoes |
+| [DPT, Abstract](https://arxiv.org/abs/2306.14892v1) | NeurIPS 2023 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
+| [Lost in the Middle, Abstract](https://arxiv.org/abs/2307.03172v3) | TACL 2024 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
+| [Retroformer, Figure 1](https://arxiv.org/abs/2308.02151v3) | ICLR 2024 | 2026-10-30 | Hybrids, Sources appendix, TextLoopAsRl, VerbalReinforcement |
+| [ExpeL, Section 4.2](https://arxiv.org/abs/2308.10144v3) | AAAI 2024 | 2026-10-30 | AccumulatingExperience, Sources appendix, TextLoopAsRl, VerbalReinforcement |
+| [Lee et al., abstract](https://arxiv.org/abs/2309.00267v3) | ICML 2024 | 2026-10-30 | PreferencesToRewards, Sources appendix |
+| [OPRO, Table 1](https://arxiv.org/abs/2309.03409v3) | ICLR 2024 | 2026-10-30 | PromptOptimization, Sources appendix, TextLoopAsRl |
+| [MTOB, abstract](https://arxiv.org/abs/2309.16575v2) | ICLR 2024 | 2026-10-30 | Hybrids |
+| [Huang et al., Table 3](https://arxiv.org/abs/2310.01798v2) | ICLR 2024 | 2026-10-30 | Sources appendix, VerbalReinforcement |
+| [Shen et al., Abstract](https://arxiv.org/abs/2310.08540v5) | ICML 2024, position paper | 2026-10-30 | TextLoopAsRl |
+| [CLIN, Section 3.2](https://arxiv.org/abs/2310.10134v1) | COLM 2024 | 2026-10-30 | AccumulatingExperience, TextLoopAsRl |
+| [Sclar et al., abstract](https://arxiv.org/abs/2310.11324v2) | ICLR 2024 | 2026-10-30 | Choosing, Sources appendix, WeightsVsContext |
+| [IPO paper, Sections 1 and 4.2](https://arxiv.org/abs/2310.12036v2) | AISTATS 2024 | 2026-10-30 | PreferencesToRewards |
+| [Ovadia et al., Table 2](https://arxiv.org/abs/2312.05934v3) | EMNLP 2024 | 2026-10-30 | Sources appendix, WeightsVsContext |
+| [KTO paper, Section 1](https://arxiv.org/abs/2402.01306v5) | ICML 2024 | 2026-10-30 | PreferencesToRewards |
+| [DeepSeekMath, Eq. 3](https://arxiv.org/abs/2402.03300v3) | preprint | 2026-10-30 | LanguageModelAsPolicy, PolicyGradient, PreferencesToRewards, RlStepAsSystem, RlvrAndGrpo, Sources appendix, TwoLeashes |
+| [RLOO, Section 2.3](https://arxiv.org/abs/2402.14740v2) | ACL 2024 | 2026-10-30 | LanguageModelAsPolicy, PolicyGradient, PreferencesToRewards, RlStepAsSystem, RlvrAndGrpo, Sources appendix, TwoLeashes |
+| [ORPO paper, abstract](https://arxiv.org/abs/2403.07691v2) | EMNLP 2024 | 2026-10-30 | PreferencesToRewards |
+| [Krishnamurthy et al., Abstract](https://arxiv.org/abs/2403.15371v3) | NeurIPS 2024 | 2026-10-30 | Sources appendix, TextLoopAsRl, WhereWordsFallShort, YourLoops |
+| [RULER, Table 3](https://arxiv.org/abs/2404.06654v3) | COLM 2024 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
+| [Xu et al., abstract](https://arxiv.org/abs/2404.10719v3) | ICML 2024 | 2026-10-30 | PreferencesToRewards |
+| [Zhang et al., abstract](https://arxiv.org/abs/2404.10859v2) | COLM 2024 | 2026-10-30 | WeightsVsContext |
+| [Revisiting OPRO, abstract](https://arxiv.org/abs/2405.10276v2) | ACL Findings 2024 | 2026-10-30 | PromptOptimization |
+| [OpenRLHF, Section 1](https://arxiv.org/abs/2405.11143v6) | EMNLP 2025 System Demonstrations | 2026-10-30 | RlStepAsSystem, Sources appendix |
+| [SimPO paper, abstract and Section 2.2](https://arxiv.org/abs/2405.14734v3) | NeurIPS 2024 | 2026-10-30 | PreferencesToRewards |
+| [Kamoi et al., Section 4 and Table 4](https://arxiv.org/abs/2406.01297v3) | TACL 2024 | 2026-10-30 | VerbalReinforcement |
+| [TextGrad (arXiv v1), Section 2](https://arxiv.org/abs/2406.07496v1) | Nature 2025 | 2026-10-30 | PromptOptimization, Sources appendix, TextLoopAsRl |
+| [Ivison et al., Table 2](https://arxiv.org/abs/2406.09279v2) | NeurIPS 2024 | 2026-10-30 | LanguageModelAsPolicy, PreferencesToRewards, RlStepAsSystem, Sources appendix |
+| [MIPRO, Section 3](https://arxiv.org/abs/2406.11695v2) | EMNLP 2024 | 2026-10-30 | PromptOptimization, Sources appendix, TextLoopAsRl |
+| [BetterTogether, abstract](https://arxiv.org/abs/2407.10930v2) | EMNLP 2024 | 2026-10-30 | Hybrids |
+| [Llama 3 report, Section 4.1.4](https://arxiv.org/abs/2407.21783v3) | preprint | 2026-10-30 | PreferencesToRewards, Sources appendix |
+| [Kumar et al., Training Language Models to Self-Correct via Reinforcement Learning (SCoRe), arXiv 2409.12917v2, ICLR 2025](https://arxiv.org/abs/2409.12917v2) | ICLR 2025 | 2026-10-30 | Sources appendix, VerbalReinforcement |
+| [HybridFlow, Section 2.1](https://arxiv.org/abs/2409.19256v2) | EuroSys 2025 | 2026-10-30 | RlStepAsSystem, Sources appendix |
+| [EVOLvE, abstract and Section 4](https://arxiv.org/abs/2410.06238v2) | ICML 2025 | 2026-10-30 | Hybrids |
+| [REINFORCE++, abstract](https://arxiv.org/abs/2501.03262v9) | preprint | 2026-10-30 | RlvrAndGrpo |
+| [DeepSeek-R1 v1, Section 2.2.4](https://arxiv.org/abs/2501.12948v1) | preprint | 2026-10-30 | RlvrAndGrpo |
+| [DeepSeek-R1, Section 1](https://arxiv.org/abs/2501.12948v2) | Nature 2025 | 2026-10-30 | Choosing, CostPerImprovement, RlStepAsSystem, RlvrAndGrpo, Sources appendix, WeightsVsContext, WhatRlDoes |
+| [Should You Use Your LLM to Explore or Exploit?, Section 2](https://arxiv.org/abs/2502.00225v4) | UAI 2026 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
+| [SWE-RL, Section 2.1](https://arxiv.org/abs/2502.18449v2) | NeurIPS 2025 | 2026-10-30 | AgenticRl, Sources appendix |
+| [Search-R1, Table 4](https://arxiv.org/abs/2503.09516v5) | COLM 2025 | 2026-10-30 | AgenticRl, Sources appendix |
+| [Baker et al., Table 1](https://arxiv.org/abs/2503.11926v1) | preprint | 2026-10-30 | RewardIsAProxy, Sources appendix |
+| [DAPO, Table 1](https://arxiv.org/abs/2503.14476v2) | NeurIPS 2025 | 2026-10-30 | Choosing, RlvrAndGrpo, Sources appendix |
+| [Gemma 3 report, Section 3](https://arxiv.org/abs/2503.19786v1) | preprint | 2026-10-30 | PreferencesToRewards |
+| [Dr. GRPO, Section 1](https://arxiv.org/abs/2503.20783v2) | COLM 2025 | 2026-10-30 | CostPerImprovement, RlvrAndGrpo, Sources appendix |
+| [Dynamic Cheatsheet, Sections 2 and 5](https://arxiv.org/abs/2504.07952v1) | EACL 2026 | 2026-10-30 | AccumulatingExperience, CostPerImprovement, Sources appendix, TextLoopAsRl |
+| [ReTool, abstract](https://arxiv.org/abs/2504.11536v2) | ICLR 2026 | 2026-10-30 | AccumulatingExperience, AgenticRl, Sources appendix |
+| [Yue et al., abstract](https://arxiv.org/abs/2504.13837v5) | NeurIPS 2025 | 2026-10-30 | LanguageModelAsPolicy, Sources appendix, WeightsVsContext, WhatRlDoes |
+| [Schmied et al., Sections 1 and 4.3](https://arxiv.org/abs/2504.16078v1) | ICLR 2026 | 2026-10-30 | Hybrids, Sources appendix, WhereWordsFallShort |
+| [RAGEN, Sections 4.1 and 4.2](https://arxiv.org/abs/2504.20073v2) | preprint | 2026-10-30 | AgenticRl, Sources appendix |
+| [Which Agent Causes Task Failures and When?, Section 4.4](https://arxiv.org/abs/2505.00212v3) | ICML 2025 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
+| [TRAIL (Trace Reasoning and Agentic Issue Localization), Table 1](https://arxiv.org/abs/2505.08638v3) | preprint | 2026-10-30 | WhereWordsFallShort |
+| [Qwen3 report, Section 4.2](https://arxiv.org/abs/2505.09388v1) | preprint | 2026-10-30 | PreferencesToRewards |
+| [RL Finetunes Small Subnetworks, Table 6](https://arxiv.org/abs/2505.11711v2) | NeurIPS 2025 | 2026-10-30 | WhatRlDoes |
+| [Skywork-OR1, Table 5](https://arxiv.org/abs/2505.22312v2) | preprint | 2026-10-30 | RlStepAsSystem, Sources appendix |
+| [The Entropy Mechanism of RL for Reasoning, Sections 2.3 and 2.4](https://arxiv.org/abs/2505.22617v1) | preprint | 2026-10-30 | WhatRlDoes |
+| [AReaL, Section 1](https://arxiv.org/abs/2505.24298v5) | NeurIPS 2025 | 2026-10-30 | RlStepAsSystem, Sources appendix |
+| [ProRL, Sections 1 and 3.2](https://arxiv.org/abs/2505.24864v1) | NeurIPS 2025 | 2026-10-30 | CostPerImprovement, Sources appendix |
+| [Spurious Rewards, abstract](https://arxiv.org/abs/2506.10947v2) | ICML 2026 | 2026-10-30 | RlvrAndGrpo, Sources appendix, WhatRlDoes |
+| [AlphaEvolve, Table 1](https://arxiv.org/abs/2506.13131v1) | preprint | 2026-10-30 | Choosing, Sources appendix, TextLoopAsRl, YourLoops |
+| [Guru cross-domain RL study, Section 4.3](https://arxiv.org/abs/2506.14965v1) | NeurIPS 2025 Datasets and Benchmarks | 2026-10-30 | WhatRlDoes |
+| [Reasoning or Memorization, abstract](https://arxiv.org/abs/2507.10532v3) | AAAI 2026 | 2026-10-30 | WhatRlDoes |
+| [The Invisible Leash, Section 3.2](https://arxiv.org/abs/2507.14843v5) | preprint | 2026-10-30 | WhatRlDoes |
+| [GSPO, Sections 5.1 to 5.3](https://arxiv.org/abs/2507.18071v2) | preprint | 2026-10-30 | RlvrAndGrpo, Sources appendix |
+| [GEPA, Table 1](https://arxiv.org/abs/2507.19457v2) | ICLR 2026 | 2026-10-30 | Choosing, CostPerImprovement, PromptOptimization, SideBySideLab, Sources appendix, TextLoopAsRl |
+| [Kimi K2 report, Section 3.2.1](https://arxiv.org/abs/2507.20534v2) | preprint | 2026-10-30 | AgenticRl, Sources appendix |
+| [Memento, Section 3](https://arxiv.org/abs/2508.16153v2) | preprint | 2026-10-30 | AccumulatingExperience, Hybrids, TextLoopAsRl |
+| [RL's Razor, abstract](https://arxiv.org/abs/2509.04259v1) | ICLR 2026 | 2026-10-30 | PolicyGradient, Sources appendix, WeightsVsContext, WhatRlDoes |
+| [PipelineRL, Section 3](https://arxiv.org/abs/2509.19128v2) | TMLR 2026 | 2026-10-30 | RlStepAsSystem, Sources appendix |
+| [From f(x) and g(x) to f(g(x)), Figure 5](https://arxiv.org/abs/2509.25123v3) | ICLR 2026 | 2026-10-30 | WhatRlDoes |
+| [ReasoningBank, Section 3.2](https://arxiv.org/abs/2509.25140v2) | ICLR 2026 | 2026-10-30 | AccumulatingExperience, Sources appendix, TextLoopAsRl, VerbalReinforcement |
+| [Advisor Models, Section 4.4.3](https://arxiv.org/abs/2510.02453v3) | ICML 2026 | 2026-10-30 | Choosing, Hybrids, PromptOptimization, Sources appendix, TextLoopAsRl |
+| [ACE, Section 4.7](https://arxiv.org/abs/2510.04618v3) | ICLR 2026 | 2026-10-30 | AccumulatingExperience, CostPerImprovement, Sources appendix, TextLoopAsRl |
+| [Training-Free GRPO, Table 3](https://arxiv.org/abs/2510.08191v1) | preprint | 2026-10-30 | AccumulatingExperience, CostPerImprovement, GettingStarted, Sources appendix, TextLoopAsRl, VerbalReinforcement |
+| [Reasoning with Sampling, Section 5.3](https://arxiv.org/abs/2510.14901v1) | ICLR 2026 | 2026-10-30 | Choosing, CostPerImprovement, OneLoop, Sources appendix, WhatRlDoes |
+| [ImpossibleBench, Section 1](https://arxiv.org/abs/2510.20270v1) | ICLR 2026 | 2026-10-30 | RewardIsAProxy, Sources appendix |
+| [The Path Not Taken, abstract and Section 2.3](https://arxiv.org/abs/2511.08567v1) | preprint | 2026-10-30 | WhatRlDoes |
+| [MacDiarmid et al., abstract](https://arxiv.org/abs/2511.18397v1) | preprint | 2026-10-30 | RewardIsAProxy, Sources appendix |
+| [Interplay of pre-training, mid-training and RL, abstract and Section 2.4](https://arxiv.org/abs/2512.07783v1) | ICML 2026 | 2026-10-30 | WhatRlDoes |
+| [Adaptation of Agentic AI, Section 1](https://arxiv.org/abs/2512.16301v3) | preprint | 2026-10-30 | OneLoop, TextLoopAsRl |
+| [Pass@(k,T), abstract](https://arxiv.org/abs/2604.14877v1) | preprint | 2026-10-30 | AgenticRl, Sources appendix, WhatRlDoes |
+| [Curriculum RL beyond the base model, abstract and Section 4.1](https://arxiv.org/abs/2606.22317v1) | preprint | 2026-10-30 | WhatRlDoes |
+| [Revisiting scaling laws for reward optimization, abstract and Sections 5.2 and 5.3](https://arxiv.org/abs/2609.38526v1) | preprint | 2026-10-30 | RewardIsAProxy |
+| [Compact-Bench, Abstract](https://arxiv.org/abs/2610.31710v2) | preprint | 2026-10-30 | WhereWordsFallShort |
+| [FunSearch, main text](https://www.nature.com/articles/s41586-023-06924-6) | Nature 2023 | 2026-10-30 | Sources appendix, TextLoopAsRl, YourLoops |

@@ -6,6 +6,7 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import Table from '@cloudscape-design/components/table';
 import Alert from '@cloudscape-design/components/alert';
+import Link from '@cloudscape-design/components/link';
 import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
 
 // Paths and docs pages cited more than once on this page (all pinned to v0.31.0 by Cite helpers).
@@ -621,7 +622,13 @@ client = OpenAI(base_url="http://localhost:8000/v1",
             <Cite tier={1} href={vllmUrl(ROUTERS, 'L34-L37')} kind="code">
               routers.py L34-L37
             </Cite>{' '}
-            <Cite tier={1} href={vllmUrl(README, 'L167-L209')}>README.md L167-L209</Cite>. The security
+            <Cite tier={1} href={vllmUrl(README, 'L167-L209')}>README.md L167-L209</Cite>. How an RL
+            trainer uses the weight-transfer path, and what its step costs, is in the{' '}
+            <Link href="../rl-agentic-loops/">
+              RL and agentic learning loops dive, section 19: An RL Step Is an Inference Job Inside a
+              Training Job
+            </Link>
+            . The security
             guide lists pause, resume and weight updates as present on every generative server; the
             code registers them only in dev mode{' '}
             <Cite tier={1} href={vllmUrl('vllm/entrypoints/serve/__init__.py', 'L43-L69')} kind="code">

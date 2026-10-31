@@ -1,0 +1,45 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "steps": 20,
+  "use_vllm": true,
+  "versions": {
+    "trl": "1.16.0",
+    "vllm": "0.28.0",
+    "torch": "2.13.0",
+    "transformers": "5.22.1",
+    "accelerate": "1.15.0",
+    "datasets": "5.1.0",
+    "python": "3.12.3",
+    "cuda_runtime_torch": "13.0",
+    "gpu": "NVIDIA GB10"
+  },
+  "config": {
+    "loss_type": "dapo",
+    "beta": 0.0,
+    "num_generations": 8,
+    "per_device_train_batch_size": 16,
+    "steps_per_generation": 1,
+    "generation_batch_size": 16,
+    "num_iterations": 1,
+    "epsilon": 0.2,
+    "epsilon_high": null,
+    "max_completion_length": 256,
+    "vllm_mode": "colocate",
+    "vllm_gpu_memory_utilization": 0.12,
+    "vllm_enable_sleep_mode": false,
+    "learning_rate": 1e-06,
+    "temperature": 1.0,
+    "scale_rewards": "group",
+    "importance_sampling_level": "token",
+    "mask_truncated_completions": false
+  },
+  "timers_wrapped": [
+    "GRPOTrainer._generate_and_score_completions -> prepare_total",
+    "GRPOTrainer._generate -> generate",
+    "GRPOTrainer._generate_single_turn -> generate_single_turn",
+    "GRPOTrainer._calculate_rewards -> score",
+    "GRPOTrainer._get_per_token_logps_and_entropies -> logprob_forward",
+    "VLLMGeneration.sync_weights -> weight_sync",
+    "VLLMGeneration.generate -> vllm_generate"
+  ]
+}
