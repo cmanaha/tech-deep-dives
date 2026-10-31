@@ -12,7 +12,7 @@ import { Cite, vllmUrl, vllmDocsUrl } from '../components/Cite';
 
 // External engines pinned to the releases resolved on 2026-10-16
 // (research/2026-10-refresh/05-ecosystem.md, external pins table).
-const SG = 'https://github.com/sgl-project/sglang/blob/v0.5.21';
+const SG = 'https://github.com/sgl-project/sglang/blob/v0.5.22';
 const TRT = 'https://github.com/NVIDIA/TensorRT-LLM/blob/v1.2.1';
 const TGI_SHA = 'b4adbf2f6e2e721280bd0ea5f91d70f7d033f5ed';
 const TGI = `https://github.com/huggingface/text-generation-inference/blob/${TGI_SHA}`;
@@ -43,11 +43,11 @@ const engineRows: EngineRow[] = [
   {
     engine: 'SGLang',
     builtAround:
-      'RadixAttention, a radix tree of prior KV that reuses shared prefixes across requests automatically, plus a zero-overhead CPU scheduler. Also ships prefill/decode (P/D) disaggregation, speculative decoding, structured outputs and multi-LoRA batching.',
+      'RadixAttention, a radix-tree prefix cache that reuses shared prefixes to the token on Hopper and offers several eviction policies, plus a cache-aware router (SGLang Model Gateway) and prefill/decode (P/D) disaggregation built into the scheduler. Also ships speculative decoding, structured outputs, multi-LoRA batching and always-on weight-sync APIs for RL.',
     tradeOff:
       'Its distinguishing mechanism pays off only when prefixes are actually shared. vLLM caches prefixes too, so the gap depends on your traffic.',
     bestWhen:
-      'Traffic dominated by shared prefixes: long system prompts, few-shot templates, agent loops and multi-turn chat, structured or constrained decoding.',
+      'Traffic dominated by shared prefixes: long system prompts, few-shot templates, agent loops and multi-turn chat; or a team that wants the router, P/D pairing and RL weight-sync APIs to come from the engine project.',
     hardware: 'NVIDIA, AMD, Intel Xeon, Google TPU, Ascend NPU (neural processing unit), Moore Threads MUSA accelerators.',
   },
   {
@@ -259,7 +259,7 @@ export function WhenNotVllm() {
         header={
           <Header
             variant="h1"
-            description="Four situations where another engine is the better pick, the reason each one wins, and the default for everything else (verified against vLLM v0.31.0, commit db9527a4, with SGLang v0.5.21, TensorRT-LLM v1.2.1 and TGI v3.3.7, 2026-10-16)"
+            description="Four situations where another engine is the better pick, the reason each one wins, and the default for everything else (verified against vLLM v0.31.0, commit db9527a4, TensorRT-LLM v1.2.1 and TGI v3.3.7 on 2026-10-16, and SGLang v0.5.22, commit baa9befa, on 2026-10-30)"
           >
             26. When Not vLLM
           </Header>
@@ -364,15 +364,17 @@ export function WhenNotVllm() {
               <Box variant="h3">Pick SGLang if…</Box>
               <Box variant="p">
                 Your traffic is dominated by <strong>shared prefixes</strong>: long fixed system
-                prompts, few-shot templates reused across requests, agent loops, multi-turn chat,
-                or structured decoding. RadixAttention keeps prior KV in a radix tree and reuses
+                prompts, few-shot templates reused across requests, agent loops or multi-turn chat.
+                RadixAttention keeps prior KV in a radix tree and reuses
                 it automatically{' '}
-                <Cite tier={1} href={`${SG}/python/sglang/srt/mem_cache/radix_cache.py#L249-L280`} kind="code">
-                  SGLang radix_cache.py L249-L280
+                <Cite tier={1} href={`${SG}/python/sglang/srt/mem_cache/radix_cache.py#L250-L278`} kind="code">
+                  SGLang radix_cache.py L250-L278
                 </Cite>
-                , so the shared prefill is paid once. SGLang also ships P/D
-                disaggregation, speculative decoding and multi-LoRA batching, so the reason to pick
-                it is the prefix cache and scheduler rather than feature count. vLLM caches
+                , so the shared prefill is paid once. The reason to pick it is how it reuses
+                prefixes: a radix-tree cache with token-level reuse on Hopper, opt-in cache-aware
+                queue ordering, and a cache-aware router that ships with the engine. P/D
+                disaggregation, speculative decoding and multi-LoRA batching exist in both engines.
+                vLLM caches
                 prefixes too (<strong>Section 6</strong>): the edge is{' '}
                 <strong>workload-dependent</strong>, so benchmark both on your traffic. The{' '}
                 <Link external href="../sglang/">
@@ -450,7 +452,11 @@ export function WhenNotVllm() {
               <Cite tier={1} href={vllmUrl('vllm/config/diffusion.py', 'L11-L24')} kind="code">
                 diffusion.py L11-L24
               </Cite>
-              . SGLang serves them too, so a dLLM is no reason to switch.
+              . SGLang serves them too{' '}
+              <Cite tier={1} href={`${SG}/python/sglang/srt/arg_groups/fields/exec_.py#L1045-L1050`} kind="code">
+                SGLang exec_.py L1045-L1050
+              </Cite>
+              , so a dLLM is no reason to switch.
             </Box>
           </div>
           <div>
@@ -493,16 +499,19 @@ export function WhenNotVllm() {
             Xeon, Google TPU, Ascend NPU, and Moore Threads MUSA accelerators&quot;{' '}
             <Cite tier={1} href="https://docs.sglang.io/">
               SGLang docs
+            </Cite>{' '}
+            <Cite tier={1} href={`${SG}/docs/index.mdx#L43-L53`}>
+              SGLang docs/index.mdx L43-L53
             </Cite>
-            . Its README lists RadixAttention for prefix caching, a zero-overhead CPU scheduler,
-            prefill-decode disaggregation, speculative decoding, structured outputs and multi-LoRA
-            batching{' '}
-            <Cite tier={1} href={`${SG}/README.md#L69-L71`}>
-              SGLang README L69-L71
+            . Its README describes it as optimized for agentic workloads, large-scale serving and
+            RL rollouts{' '}
+            <Cite tier={1} href={`${SG}/README.md#L21`}>
+              SGLang README L21
             </Cite>
-            , and announces diffusion LLM support (LLaDA 2.0){' '}
-            <Cite tier={1} href={`${SG}/README.md#L38`}>
-              SGLang README L38
+            , and it serves diffusion LLMs such as LLaDA 2.0 (<code>models/llada2.py</code>,{' '}
+            <code>--dllm-algorithm</code>){' '}
+            <Cite tier={1} href={`${SG}/python/sglang/srt/arg_groups/fields/exec_.py#L1045-L1050`} kind="code">
+              SGLang exec_.py L1045-L1050
             </Cite>
             .
           </Box>

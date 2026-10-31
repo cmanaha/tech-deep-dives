@@ -8,7 +8,7 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 
 ## Tier 1: source code at a pinned ref, official documentation, API reference, release notes
 
-682 sources.
+684 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
@@ -281,8 +281,10 @@ the sections link to exact line ranges. Tiers follow CLAUDE.md "Fact-Checking & 
 | [ray-project/ray @ ray-2.59.0: python/ray/serve/llm/request_router.py](https://github.com/ray-project/ray/blob/ray-2.59.0/python/ray/serve/llm/request_router.py) | 2026-10-16 | RayServeLLM |
 | [ray-project/ray @ ray-2.59.0: python/requirements/llm/llm-requirements.txt](https://github.com/ray-project/ray/blob/ray-2.59.0/python/requirements/llm/llm-requirements.txt) | 2026-10-16 | DecisionGuide, NvidiaDynamo, RayServeLLM, ThesisAndFraming |
 | [ray-project/ray @ ray-2.59.0: python/setup.py](https://github.com/ray-project/ray/blob/ray-2.59.0/python/setup.py) | 2026-10-16 | RayServeLLM |
-| [sgl-project/sglang @ v0.5.21: python/sglang/srt/mem_cache/radix_cache.py](https://github.com/sgl-project/sglang/blob/v0.5.21/python/sglang/srt/mem_cache/radix_cache.py) | 2026-10-16 | WhenNotVllm |
-| [sgl-project/sglang @ v0.5.21: README.md](https://github.com/sgl-project/sglang/blob/v0.5.21/README.md) | 2026-10-16 | WhenNotVllm |
+| [sgl-project/sglang @ v0.5.22: docs/index.mdx](https://github.com/sgl-project/sglang/blob/v0.5.22/docs/index.mdx) | 2026-10-16 | WhenNotVllm |
+| [sgl-project/sglang @ v0.5.22: python/sglang/srt/arg_groups/fields/exec_.py](https://github.com/sgl-project/sglang/blob/v0.5.22/python/sglang/srt/arg_groups/fields/exec_.py) | 2026-10-16 | WhenNotVllm |
+| [sgl-project/sglang @ v0.5.22: python/sglang/srt/mem_cache/radix_cache.py](https://github.com/sgl-project/sglang/blob/v0.5.22/python/sglang/srt/mem_cache/radix_cache.py) | 2026-10-16 | WhenNotVllm |
+| [sgl-project/sglang @ v0.5.22: README.md](https://github.com/sgl-project/sglang/blob/v0.5.22/README.md) | 2026-10-16 | WhenNotVllm |
 | [valkey-io/valkey-glide @ 7644df8b12ee71c77a219254c98d7cd69282f79c: glide-rdma/src/endpoint.rs](https://github.com/valkey-io/valkey-glide/blob/7644df8b12ee71c77a219254c98d7cd69282f79c/glide-rdma/src/endpoint.rs) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: Cargo.toml](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/Cargo.toml) | 2026-10-24 | offload/RemoteKvTiersAws |
 | [valkey-io/valkey-large-object @ 7510b9483d9837bf63b475d4a8e8fa612c65063f: README.md](https://github.com/valkey-io/valkey-large-object/blob/7510b9483d9837bf63b475d4a8e8fa612c65063f/README.md) | 2026-10-24 | offload/RemoteKvTiersAws |

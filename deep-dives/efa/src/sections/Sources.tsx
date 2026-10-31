@@ -302,7 +302,7 @@ const glossary: GlossaryEntry[] = [
 export function Sources() {
   return (
     <SpaceBetween size="l">
-      <SourcesAppendix sources={sources} factChecks={factChecks} />
+      <SourcesAppendix sources={sources} factChecks={factChecks} headerVariant="h1" />
       <Glossary entries={glossary} />
     </SpaceBetween>
   );

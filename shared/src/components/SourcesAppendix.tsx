@@ -44,13 +44,15 @@ export interface FactCheckItem {
 interface SourcesAppendixProps {
   sources: Source[];
   factChecks?: FactCheckItem[];
+  /** h1 when this appendix is the section's own title, h2 when the section already has one. */
+  headerVariant?: 'h1' | 'h2';
 }
 
 const tierConfig: Record<SourceTier, { label: string; color: 'green' | 'blue' | 'grey' | 'red'; description: string }> = {
-  1: { label: 'Tier 1', color: 'green', description: 'Official AWS docs, API reference, source code' },
-  2: { label: 'Tier 2', color: 'blue', description: 'AWS blog posts, announcements, product pages' },
+  1: { label: 'Tier 1', color: 'green', description: 'Official documentation, API reference, source code at a pinned version' },
+  2: { label: 'Tier 2', color: 'blue', description: 'First-party blog posts, announcements, product pages' },
   3: { label: 'Tier 3', color: 'grey', description: 'Third-party technical analysis, academic papers, benchmarks' },
-  4: { label: 'Tier 4', color: 'red', description: 'Blog posts, tutorials — inspiration only, never cited as fact' },
+  4: { label: 'Tier 4', color: 'red', description: 'Blog posts and tutorials: inspiration only, never cited as fact' },
 };
 
 const typeLabels: Record<SourceType, string> = {
@@ -69,7 +71,10 @@ const typeLabels: Record<SourceType, string> = {
   'tutorial': 'Tutorial',
 };
 
-export function SourcesAppendix({ sources, factChecks }: SourcesAppendixProps) {
+// Long titles, URLs and code identifiers would otherwise widen a column past a phone screen.
+const breakAnywhere: React.CSSProperties = { overflowWrap: 'anywhere' };
+
+export function SourcesAppendix({ sources, factChecks, headerVariant = 'h2' }: SourcesAppendixProps) {
   const tierCounts = sources.reduce(
     (acc, s) => {
       acc[s.tier] = (acc[s.tier] || 0) + 1;
@@ -83,8 +88,8 @@ export function SourcesAppendix({ sources, factChecks }: SourcesAppendixProps) {
       <Container
         header={
           <Header
-            variant="h1"
-            description="Every source graded by authority — Tier 1 sources are ground truth, Tier 4 sources are never cited as fact"
+            variant={headerVariant}
+            description="Every source graded by authority. Tier 1 sources are ground truth; Tier 4 sources are never cited as fact."
           >
             Sources & Fact-Check Register
           </Header>
@@ -92,7 +97,7 @@ export function SourcesAppendix({ sources, factChecks }: SourcesAppendixProps) {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Source quality determines report accuracy. If you see Tier 3-4 sources backing
+            Source quality determines report accuracy. If you see Tier 3 or 4 sources backing
             critical claims, treat those claims with appropriate skepticism.
           </Box>
           <ColumnLayout columns={4} variant="text-grid">
@@ -122,43 +127,29 @@ export function SourcesAppendix({ sources, factChecks }: SourcesAppendixProps) {
             id: 'id',
             header: '#',
             cell: (item) => item.id,
-            width: 60,
+            width: 56,
           },
           {
-            id: 'title',
-            header: 'Title',
+            id: 'source',
+            header: 'Source',
             cell: (item) => (
-              <Link href={item.url} external>
-                {item.title}
-              </Link>
+              <span style={breakAnywhere}>
+                <Link href={item.url} external>
+                  {item.title}
+                </Link>
+                <Box variant="small" display="block">
+                  <Badge color={tierConfig[item.tier].color}>{tierConfig[item.tier].label}</Badge>{' '}
+                  {typeLabels[item.type] || item.type}, accessed {item.accessDate}
+                </Box>
+              </span>
             ),
-          },
-          {
-            id: 'tier',
-            header: 'Tier',
-            cell: (item) => (
-              <Badge color={tierConfig[item.tier].color}>
-                {tierConfig[item.tier].label}
-              </Badge>
-            ),
-            width: 100,
-          },
-          {
-            id: 'type',
-            header: 'Type',
-            cell: (item) => typeLabels[item.type] || item.type,
-            width: 160,
-          },
-          {
-            id: 'accessDate',
-            header: 'Accessed',
-            cell: (item) => item.accessDate,
-            width: 120,
+            minWidth: 230,
           },
         ]}
         items={sources}
+        wrapLines
         sortingDisabled
-        variant="full-page"
+        variant="container"
       />
 
       {factChecks && factChecks.length > 0 && (
@@ -176,7 +167,12 @@ export function SourcesAppendix({ sources, factChecks }: SourcesAppendixProps) {
             {
               id: 'claim',
               header: 'Claim',
-              cell: (item) => <strong>{item.claim}</strong>,
+              cell: (item) => (
+                <span style={breakAnywhere}>
+                  <strong>{item.claim}</strong>
+                </span>
+              ),
+              minWidth: 120,
             },
             {
               id: 'source',
@@ -191,27 +187,26 @@ export function SourcesAppendix({ sources, factChecks }: SourcesAppendixProps) {
                   );
                 }
                 return (
-                  <SpaceBetween size="xxs" direction="horizontal">
-                    <Badge color={tierConfig[source.tier].color}>
-                      #{source.id}
-                    </Badge>
+                  <span style={breakAnywhere}>
+                    <Badge color={tierConfig[source.tier].color}>#{source.id}</Badge>{' '}
                     <Link href={source.url} external>
                       {source.title}
                     </Link>
-                  </SpaceBetween>
+                  </span>
                 );
               },
             },
             {
               id: 'section',
               header: 'Section',
-              cell: (item) => item.section,
-              width: 200,
+              cell: (item) => <span style={breakAnywhere}>{item.section}</span>,
+              minWidth: 100,
             },
           ]}
           items={factChecks}
+          wrapLines
           sortingDisabled
-          variant="full-page"
+          variant="container"
         />
       )}
     </SpaceBetween>

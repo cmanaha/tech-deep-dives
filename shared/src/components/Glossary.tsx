@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Table from '@cloudscape-design/components/table';
 import TextFilter from '@cloudscape-design/components/text-filter';
 import Header from '@cloudscape-design/components/header';
+import Box from '@cloudscape-design/components/box';
 
 export interface GlossaryEntry {
   acronym: string;
@@ -13,6 +14,9 @@ export interface GlossaryProps {
   entries: GlossaryEntry[];
   title?: string;
 }
+
+// Long code identifiers and flags would otherwise widen a column past a phone screen.
+const breakAnywhere: React.CSSProperties = { overflowWrap: 'anywhere' };
 
 export function Glossary({ entries, title = 'Glossary of Acronyms' }: GlossaryProps) {
   const [filterText, setFilterText] = useState('');
@@ -32,7 +36,7 @@ export function Glossary({ entries, title = 'Glossary of Acronyms' }: GlossaryPr
   return (
     <Table
       header={
-        <Header counter={`(${filtered.length})`}>
+        <Header variant="h2" counter={`(${filtered.length})`}>
           {title}
         </Header>
       }
@@ -40,31 +44,32 @@ export function Glossary({ entries, title = 'Glossary of Acronyms' }: GlossaryPr
         <TextFilter
           filteringText={filterText}
           onChange={({ detail }) => setFilterText(detail.filteringText)}
-          filteringPlaceholder="Search acronyms..."
+          filteringPlaceholder="Search terms"
         />
       }
       columnDefinitions={[
         {
-          id: 'acronym',
-          header: 'Acronym',
-          cell: (item) => <strong>{item.acronym}</strong>,
-          width: 120,
-          sortingField: 'acronym',
-        },
-        {
-          id: 'fullForm',
-          header: 'Full Form',
-          cell: (item) => item.fullForm,
-          width: 300,
-          sortingField: 'fullForm',
+          id: 'term',
+          header: 'Term',
+          cell: (item) => (
+            <span style={breakAnywhere}>
+              <strong>{item.acronym}</strong>
+              <Box variant="small" display="block">
+                {item.fullForm}
+              </Box>
+            </span>
+          ),
+          width: 150,
         },
         {
           id: 'description',
           header: 'Description',
-          cell: (item) => item.description,
+          cell: (item) => <span style={breakAnywhere}>{item.description}</span>,
+          minWidth: 170,
         },
       ]}
       items={filtered}
+      wrapLines
       sortingDisabled
       variant="embedded"
     />
