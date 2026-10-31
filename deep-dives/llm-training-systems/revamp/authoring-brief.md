@@ -163,8 +163,12 @@ EC2, EKS, S3 and FSx expand at first use. Report every acronym you used so the g
 JSX: raw `<` and `>` in text fail lint; write `&lt;` `&gt;` or wrap in `<code>`. Every `<pre>` carries
 `style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}` (gate `pre-overflow`). Equations: write
 them in plain text inside `<code>` (for example `<code>time = 6ND / (accelerators x peak x MFU)</code>`)
-or as an inline SVG; no LaTeX and no new math dependency. Tables: Cloudscape `Table` or a plain
-`<table>` inside `<div style={{ overflowX: 'auto' }}>` so a phone scrolls the table, not the page.
+or as an inline SVG; no LaTeX and no new math dependency. Tables must fit their container at 390px
+without scrolling: Cloudscape `Table` with `wrapLines`, or a plain `<table>` with `width: '100%'`
+and cells that wrap (short headers, no `whiteSpace: 'nowrap'` on prose cells, numbers in their own
+narrow columns); keep a table to about four columns, or split it, or render it as a
+`KeyValuePairs` / stacked list when narrow. Keep the `<div style={{ overflowX: 'auto' }}>`
+wrapper as a safety net, but the harness reports any table that actually scrolls.
 
 ## Diagrams
 
@@ -176,9 +180,14 @@ or as an inline SVG; no LaTeX and no new math dependency. Tables: Cloudscape `Ta
   across the app: prefix slugs with your section id (for example `memory-stack-title`).
 - Every number inside a diagram matches a cited claim in the prose. Schematic diagrams carry an
   "Illustrative, not measured" caption in a `Box variant="small"` below the SVG.
-- Phone legibility: a 900-unit viewBox scales by about 0.37 at a 390px viewport. If the smallest label
-  would paint under 8px there, wrap the SVG in `<div style={{ overflowX: 'auto' }}>` and give it
-  `style={{ width: '100%', minWidth: 640, height: 'auto' }}`, or split it.
+- Phone legibility without sideways scrolling: no table or diagram may be wider than its container
+  at 390px (the harness fails a diagram that scrolls, so never give an SVG a `minWidth`). A
+  900-unit viewBox scales by about 0.37 at a 390px viewport; if the smallest label would paint
+  under 8px there, give the diagram a narrow layout instead: `import { useNarrow } from
+  '../components/useNarrow'`, measure the wrapping `<div ref={ref}>`, and when narrow render a
+  second viewBox (about 400 units wide, taller, fewer columns, shorter labels) from the same data.
+  `src/sections/TrainingStep.tsx` (section 3) is the worked example. Splitting a wide diagram into
+  two stacked ones is the other option.
 - **Verify the rendered output** of every diagram you add. Build into a private directory and run the
   harness with the port and slug from your task, so parallel agents do not collide (never run
   `pnpm build`, it writes the shared `dist/`):
