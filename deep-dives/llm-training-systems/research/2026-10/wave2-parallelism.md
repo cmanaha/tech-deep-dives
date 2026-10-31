@@ -193,3 +193,19 @@ SCOPE NARROWER:
 - W2-52 (14, example 2): H200 is 141 GB at NVIDIA and 141 GiB at AWS; HSDP's 141.1 GB fails once activations are added.
 - W2-55 (14, example 2): on H100 the TP 8 x DP 4 layout fails only without recomputation (64.1 GB with it).
 - W2-56 (14 step 5 and Calculator C): uneven stages are supported; name the settings instead of the hedge.
+
+## Orchestrator addendum (2026-10-31, build): cross-instance collectives are priced per instance
+
+Raised by the section 7 author during the build and checked by the orchestrator against AWS's own sample output. It changes the verdicts of W2-9, W2-15 and W2-51 from HOLDS to WRONG on the bandwidth model (their arithmetic reproduces; the divisor does not).
+
+**Evidence.** https://raw.githubusercontent.com/aws-samples/awsome-distributed-training/3a1002576ccef26e66ba714303b10ccdaa645691/micro-benchmarks/nccl-tests/README.md (accessed 2026-10-31), the table under "All_reduce ... 8B to 16GB on 2x p5.48xlarge": the 17179869184-byte row reads `66132  259.78  487.09` (time in us, algbw and busbw in GB/s). A per-GPU count over 50 GB/s of EFA per GPU predicts at least 2 x 15/16 x 17.18 GB / 50 GB/s = 0.64 s for that row; the run took 66 ms.
+
+**Model.** NCCL builds several rings or trees per collective and spreads the hops that cross the instance boundary over all of the instance's network cards, so the binding resource for a collective whose group has several members per instance is the instance's EFA bandwidth (3,200 Gb/s = 400 GB/s on p5.48xlarge and p5en.48xlarge, T05-3), not one GPU's share. Lower bound per instance for a group spanning M instances: (M-1)/M x S for an all-gather or reduce-scatter of S bytes, 2(M-1)/M x S for an all-reduce; a flat ring moves (n-1)/n x S per instance for a group of n ranks. For the AWS row: at least 2 x 1/2 x 17.18 = 17.2 GB per instance, 43 ms at 400 GB/s, which the measured 66 ms respects; the flat-ring count, 32.2 GB and 80 ms, is above it, so NCCL did better than a flat ring there [derived, our reading of the sample]. Where a group has one member per instance (DP in TP 8 x PP 4 x DP 8, FSDP in TP 8 x FSDP 32, HSDP's replica all-reduce), eight such groups share the instance and the per-instance count equals the per-GPU count over 50 GB/s, so W2-42 and W2-44 stand unchanged.
+
+| Row | Old (per GPU over 50 GB/s) | Recount (per instance over 400 GB/s) | Replacement text in SCOPE.md |
+|---|---|---|---|
+| W2-9 (section 7) | 31.1 GB per GPU, 0.62 s, ten times the in-instance 62 ms | at least 2 x 3/4 x 16.06 = 24.1 GB per instance, about 60 ms | Section 7 worked number now counts per instance and cites this addendum |
+| W2-15 (section 8) | flat 373 GB vs HSDP 24.1 GB per GPU at defaults (factor 15.5); deferred 155.6 vs 3.01 GB (51.7); FP32 reduce 497.9 GB | defaults: flat at least 24 x 12.05 = 289 GB (373 GB flat ring), 0.72 s; HSDP 8 x 24.09 = 193 GB, 0.48 s; factor 1.5 (1.9 for a flat ring). Deferred: flat at least 10 x 12.05 = 120 GB (156 GB flat ring) vs HSDP 24.1 GB, factor 5 (6.5). FP32 reduce: 16 x 12.05 + 8 x 24.09 = 385 GB (498 GB flat ring). HSDP deferred against flat at defaults: 289 / 24.1 = 12 | Section 8 worked example and its expandable block |
+| W2-51 (section 14, example 2) | 410.1 GB per micro-batch per GPU, 8.20 s against 11.68 s of compute, 70% | at least 3 x 3/4 x 141.1 = 317.5 GB per instance per micro-batch, 0.79 s; flat ring 410.1 GB, 1.03 s; 6.8% to 8.8% of 11.68 s | Section 14 example 2 |
+
+S = 8.030e9 x 2 B = 16.06 GB for Llama 3.1 8B in BF16; S = 70.55e9 x 2 B = 141.1 GB for 70B. Calculator C prices groups with several members per instance this way; A1 (on hold) would measure it on current releases.

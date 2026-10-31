@@ -101,7 +101,12 @@ full = sum over dimensions of bytes per link / link bandwidth (TP 8bsh(t-1)/t el
 per micro-batch in BF16 over NVLink, T02-13; DP and FSDP bytes per section 8 and E3's counts:
 default 2 all-gathers and 1 reduce-scatter per unit per micro-batch, deferred k + 1 all-gathers
 and 1 reduce-scatter; PP bsh/t per micro-batch per boundary over EFA, T02-31; CP K and V per
-attention layer). Ranks survivors by the midpoint of the range and shows per-link shares.
+attention layer). Cross-instance collectives are priced per instance (wave2-parallelism, orchestrator
+addendum of 2026-10-31): a group spanning M instances with g members on each moves at least
+(M-1)/M x S per all-gather or reduce-scatter and 2(M-1)/M x S per all-reduce out of each instance,
+8/g such groups share the instance's EFA bandwidth (400 GB/s on p5.48xlarge and p5en.48xlarge), and
+a flat ring's (n-1)/n x S per instance is the upper value. For g = 1 this equals the per-GPU count
+over 50 GB/s. In-instance traffic stays per GPU over NVLink. Ranks survivors by the midpoint of the range and shows per-link shares.
 MoE mode: model state per GPU on the attention grid and the expert grid, expert-parallel bytes per
 token per MoE layer with node-limited routing (02 section 3.4: about 172 KB forward
 dispatch-plus-combine for DeepSeek-V3), the world-size check on both grids (T02-41, T02-72);
@@ -118,9 +123,13 @@ Validation tests:
   with ZeRO-1 about 85 GB passes (about 103 GB with FP32 gradients); TP 8 x PP 2 x DP 2 about 67 GB
   passes; on 32 H100 the same TP 8 x DP 4 fails at 85 GB and fits at about 64 GB only with full
   recomputation (W2-55).
-- Section 8: Llama 3.1 8B on 4 p5.48xlarge, 8 micro-batches: flat FSDP 32 about 373 GB per GPU per
-  step across EFA at defaults, HSDP about 24 GB; deferred: about 156 GB and about 3 GB; 498 GB with
-  FP32 reduce (03 W1, E3).
+- Section 8: Llama 3.1 8B on 4 p5.48xlarge, 8 micro-batches, per instance per step across EFA:
+  flat FSDP 32 at least 289 GB at defaults (373 GB flat ring), HSDP 193 GB; deferred: at least
+  120 GB (156 GB flat ring) and 24.1 GB; FP32 reduce at least 385 GB (498 GB flat ring)
+  (03 W1, E3, wave2-parallelism addendum on W2-15).
+- Section 14 example 2: flat FSDP 32 for 70B on 4 p5en.48xlarge with full recomputation, at least
+  317.5 GB per instance per micro-batch (410.1 GB flat ring), 0.79 to 1.03 s against 11.68 s of
+  compute, 6.8% to 8.8% (wave2-parallelism addendum on W2-51).
 - T03-38: trn2.48xlarge, TP 4 x FSDP 16 for Llama3-8B on 64 ranks of 24 GiB passes the memory check.
 
 ## Calculator D: checkpoint interval and storage (`src/lib/checkpoint.ts`, section 18)

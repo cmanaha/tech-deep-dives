@@ -4,6 +4,30 @@ Per-section author reports, for the glossary, the fact check and the final repor
 
 | Section | File | Cites | Diagrams (harness 1440/390) | Acronyms expanded | Open items for fact check |
 | --- | --- | --- | --- | --- | --- |
+| 3 Training step | TrainingStep.tsx | 34 | 1 (step timeline drawn to scale, narrow layout at 390), 0 overlap/clip/overflow | FLOPs, MFU, BF16, FP32, TFLOPS, ZeRO, MLP; FP16 glossed | 18-byte row cites Megatron's table without claiming it is the default; strongest number 128.5 GB (1.6 x one H100) landed five times |
+| 7 Collectives | Collectives.tsx | 47 | 4 figures (9 SVGs: before-and-after grids, all-reduce decomposition, link hierarchy, crossing count; narrow layouts), harness 0/0/0 | NCCL, EFA, DDP, ZeRO, AMI, BF16, TP | Per-instance pricing of the crossing is our reading (AWS nccl-tests sample as evidence); keeps 0.62 s only as the per-GPU count in an expandable; A1 protocol marked not yet run |
+
+## Calculators (`src/lib/`, 2026-10-31)
+
+presets.ts, runtime.ts (A), memory.ts (B), parallelism.ts (C), checkpoint.ts (D); 156 tests plus the 8
+Cite tests, `Tests  164 passed (164)`. Mutation check (each restored, suite green after): memory 34 to
+35 sbh fails 18 tests; runtime 6N to 5N fails 20; checkpoint sqrt(2w) to sqrt(w) fails 7; parallelism
+bubble (p-1) to p fails 2. Calculator C prices cross-instance collectives per instance (condition
+below); W2-44's shares stay about 6%, 94% and DP 0.88%.
+
+Discrepancies the calculator author recorded (spec or register against recomputation), for the
+owning sections and the fact check:
+- 01 W4: 1.377 GB from E1's measured 41.03 sbh, 1.376 GB from the rounded 41.0 (both tested).
+- Section 16: 1,129 GB at 16 bytes per parameter against register 03 W4's 1,270 GB at 18 bytes; the
+  section must say which basis it prints.
+- W1-23: TP 8 x FSDP 32 at 16 sequences with full recomputation, 38.8 GB in the register (FP32 logits
+  only, V = 128,000, 34 sbh) against 43.0 GB in the calculator (FP32 and BF16 logits, V = 128,256,
+  33.5 sbh); both fit.
+- G7: flat FSDP 32 with full recomputation, 58.0 GB with 3.42 GB of gathered layers counted, 54.6 GB
+  in the calculator, which leaves gathered layers to headroom; section 14 must say which it prints.
+- G5: the "2.7 to 15 minutes" dt* range is not wholly below u_0 (15 min = 900 s against a 600 s
+  restart); it is below 3 x u_0, so the regime warning still fires; section 18 words it that way.
+- W4-22: 117,749 parts from the rounded 987.75 GB; the exact byte count needs 117,750.
 
 ## Cross-section conditions to keep consistent
 
@@ -45,3 +69,13 @@ section and source are named so the fact check can trace it.
   are GPU-only (wave2-aws U06-11).
 - **AWS experiments** (sections 7, 8, 18, 22, 23, 25, 27, 31): A0 to A5 are protocols marked "not yet
   run"; never present a prediction as a result.
+- **Cross-instance pricing** (sections 7, 8, 14, 21, 31, Calculator C): traffic between instances is
+  counted per instance over the instance's EFA bandwidth (400 GB/s on p5.48xlarge and p5en.48xlarge),
+  at least (M-1)/M x S per all-gather or reduce-scatter and 2(M-1)/M x S per all-reduce across M
+  instances, a flat ring (n-1)/n x S; inside the instance, per GPU over NVLink at 450 GB/s. Groups with
+  one member per instance give the same answer as 50 GB/s per GPU. Worked numbers: 8B gradients across
+  four p5.48xlarge at least 24.1 GB per instance, about 60 ms (section 7); section 8 flat FSDP at least
+  289 GB per instance per step at defaults (373 GB flat ring) against HSDP 193 GB, deferred at least
+  120 GB (156 GB) against 24.1 GB; section 14 example 2 flat FSDP 32 7% to 9% of compute. Evidence:
+  AWS's nccl-tests sample, 16 GiB all-reduced across two p5.48xlarge in 66 ms (wave2-parallelism,
+  orchestrator addendum). Labelled our reading; A1 (not yet run) would measure it.

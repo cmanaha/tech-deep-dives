@@ -298,6 +298,8 @@ The 2026-10-30 record left checks 2 to 5 open. Carlos's decisions of 2026-10-31,
 
 Gate 1 passed on 2026-10-31. The build (package, sections, calculators) starts after the commit that records this table.
 
+Build addendum (2026-10-31): the section 7 author found that W2-9, W2-15 and W2-51 divide cross-instance bytes by one GPU's 50 GB/s share where AWS's own nccl-tests sample shows the whole instance's 400 GB/s carrying the crossing. They are re-graded WRONG on the bandwidth model, with recounted numbers and replacement text in the orchestrator addendum at the end of `research/2026-10/wave2-parallelism.md`; SCOPE.md sections 7, 8 and 14 and the calculator spec carry the recount.
+
 ---
 
 ## 8. Budget record
