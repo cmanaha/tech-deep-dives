@@ -273,6 +273,15 @@ describe('section 8, 03 W1 and E3: 8B on 4 p5.48xlarge, 8 micro-batches', () => 
     expect(at('fsdp', 'everyMicroBatch').memory.modelState.unshardedGradientBytes).toBe(0);
     expect(Math.abs(gb(at('fsdp', 'deferred').memory.modelState.unshardedGradientBytes) - 16.06)).toBeLessThan(0.005);
   });
+
+  it('DeepSpeed v0.19.9 stage_1_and_2.py L2294: ZeRO-2 reduce-scatters on every micro-batch, ZeRO-1 once per step', () => {
+    const zero = (sharding: 'zero1' | 'zero2') =>
+      evaluateLayout(in8, layout({ dp: 32, sharding, gradientSync: 'oncePerStep' }));
+    // ZeRO-1: one reduce-scatter plus one all-gather, 2 x 3/4 x 16.06 = 24.1 GB per instance.
+    expect(Math.abs(efaGB(zero('zero1'), 'DP') - 24.1)).toBeLessThan(0.05);
+    // ZeRO-2: 8 reduce-scatters plus one all-gather, 9 x 12.05 = 108.4 GB per instance.
+    expect(Math.abs(efaGB(zero('zero2'), 'DP') - 108.4)).toBeLessThan(0.05);
+  });
 });
 
 describe("collective pricing (our reading, supported by AWS's nccl-tests sample)", () => {

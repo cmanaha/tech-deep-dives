@@ -16,6 +16,7 @@ import {
   TORCHTITAN_TAG,
   NEMO_2_TAG,
   NCCL_TESTS_TAG,
+  DEEPSPEED_TAG,
 } from '../components/Cite';
 
 /* ------------------------------------------------------------------------ */
@@ -57,6 +58,7 @@ function fsdpApi(lines: string): string {
   return gh('pytorch/pytorch', PYTORCH_TAG, 'torch/distributed/fsdp/_fully_shard/_fsdp_api.py', lines);
 }
 /** TorchTitan: fsdp_defer_gradient_reduction default, and what the trainer does when it is set. */
+const DS_ZERO2_REDUCE = gh('deepspeedai/DeepSpeed', DEEPSPEED_TAG, 'deepspeed/runtime/zero/stage_1_and_2.py', 'L2293-L2295');
 const TT_DEFER_DEFAULT = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/config/parallelism.py', 'L61-L62');
 const TT_DEFER_ENGINE = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/training_engine.py', 'L772-L776');
 /** NeMo 2.x auto-configurator heuristics: global batch 256 for 8B-class models at 8,192 tokens. */
@@ -671,7 +673,7 @@ export function DataParallel() {
         header={
           <Header
             variant="h2"
-            description="Choose a ZeRO stage from two numbers: the bytes per parameter it leaves on each GPU, and the extra traffic it costs, which is none for stages 1 and 2"
+            description="Choose a ZeRO stage from two numbers: the bytes per parameter it leaves on each GPU, and the extra traffic it costs, which is none for stage 1"
           >
             ZeRO: shard the copies one class at a time
           </Header>
@@ -701,6 +703,12 @@ export function DataParallel() {
             all-gathers the updated weights, N plus N elements per step{' '}
             <Cite tier={3} href={ZERO} venue="preprint">
               ZeRO, Section 7.2.1
+            </Cite>
+            . That holds for one micro-batch per step. Under gradient accumulation DeepSpeed reduces
+            stage 2&apos;s partitioned gradients on every backward pass, where stage 1 waits for the
+            accumulation boundary, so stage 2 sends one gradient reduce-scatter per micro-batch{' '}
+            <Cite tier={1} href={DS_ZERO2_REDUCE}>
+              DeepSpeed stage_1_and_2.py L2293-L2295
             </Cite>
             . Stage 3 keeps no full copy of the weights to compute with, so it all-gathers them
             before the forward pass and again before the backward pass, on top of the gradient

@@ -11,7 +11,8 @@
  * 1F1B schedule (2104.04473v5, T02-30), and exposed communication as a range from 0 (full overlap)
  * to the sum over dimensions of bytes per link / link bandwidth (no overlap). Per-link bytes:
  * TP 8bsh(t-1)/t elements per layer per micro-batch (T02-13); PP bsh/t per micro-batch per
- * boundary per direction (T02-31); DP and ZeRO-1/2 a reduce-scatter plus an all-gather per step
+ * boundary per direction (T02-31); DP and ZeRO-1 a reduce-scatter plus an all-gather per step, ZeRO-2 a
+ * gradient reduce-scatter per micro-batch (DeepSpeed v0.19.9) plus one all-gather per step
  * (T02-7); FSDP at PyTorch 2.15.0 defaults 2 all-gathers and 1 reduce-scatter per unit per
  * micro-batch, deferred k + 1 all-gathers and 1 reduce-scatter (E3); HSDP an in-instance
  * gather and scatter plus a cross-instance all-reduce of the shard (2304.11277v2, W2-14, W2-15).
@@ -453,8 +454,18 @@ function evaluateValid(ctx: Context, layout: Layout, microBatches: number): Cand
     } else if (layout.sharding === 'ddp') {
       // Gradient all-reduce once per step (T02-4, T02-60).
       addCollectives('DP', 'gradient all-reduce once per step', group, [{ bytes: gradBytes, kind: 'allReduce', count: 1 }]);
+    } else if (layout.sharding === 'zero2') {
+      // ZeRO-2 partitions gradients, so DeepSpeed reduces them on every backward pass, not only at the
+      // accumulation boundary: `reduce_ready_partitions_and_remove_grads` runs the reduction when
+      // `partition_gradients` is set (deepspeed/runtime/zero/stage_1_and_2.py L2293-L2295 at v0.19.9).
+      // One gradient reduce-scatter per micro-batch, one parameter all-gather per step.
+      addCollectives('DP', `${microBatches} gradient reduce-scatters and one parameter all-gather per step`, group, [
+        { bytes: gradBytes, kind: 'reduceScatter', count: microBatches },
+        { bytes: paramBytes, kind: 'allGather', count: 1 },
+      ]);
     } else {
-      // ZeRO-1/2: reduce-scatter of gradients plus all-gather of updated BF16 parameters per step (T02-7, W2-43).
+      // ZeRO-1: reduce-scatter of gradients at the accumulation boundary plus all-gather of updated
+      // BF16 parameters, once per step (T02-7, W2-43; stage_1_and_2.py L2294 at v0.19.9).
       addCollectives('DP', 'gradient reduce-scatter and parameter all-gather once per step', group, [
         { bytes: gradBytes, kind: 'reduceScatter', count: 1 },
         { bytes: paramBytes, kind: 'allGather', count: 1 },

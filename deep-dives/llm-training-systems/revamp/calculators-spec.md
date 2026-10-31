@@ -106,7 +106,8 @@ addendum of 2026-10-31): a group spanning M instances with g members on each mov
 (M-1)/M x S per all-gather or reduce-scatter and 2(M-1)/M x S per all-reduce out of each instance,
 8/g such groups share the instance's EFA bandwidth (400 GB/s on p5.48xlarge and p5en.48xlarge), and
 a flat ring's (n-1)/n x S per instance is the upper value. For g = 1 this equals the per-GPU count
-over 50 GB/s. In-instance traffic stays per GPU over NVLink. Ranks survivors by the midpoint of the range and shows per-link shares.
+over 50 GB/s. In-instance traffic stays per GPU over NVLink. ZeRO-2 reduce-scatters gradients once per micro-batch (DeepSpeed v0.19.9
+stage_1_and_2.py L2293-L2295), ZeRO-1 once per step. Ranks survivors by the midpoint of the range and shows per-link shares.
 MoE mode: model state per GPU on the attention grid and the expert grid, expert-parallel bytes per
 token per MoE layer with node-limited routing (02 section 3.4: about 172 KB forward
 dispatch-plus-combine for DeepSeek-V3), the world-size check on both grids (T02-41, T02-72);
