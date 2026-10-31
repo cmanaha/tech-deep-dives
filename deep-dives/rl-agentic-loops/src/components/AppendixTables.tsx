@@ -9,10 +9,9 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import type { GlossaryEntry, Source, SourceType } from '@tech-deep-dives/shared';
 
-// Dive-local glossary and source tables. The shared Glossary and SourcesAppendix render
-// without line wrapping (descriptions and titles run off the right edge at 1440 and 390),
-// add a second h1 inside this section, and describe a Tier 1 to 4 scheme with em-dashes
-// where this dive uses Tier 0 to 3. These keep the shared data types and fix the layout.
+// Dive-local glossary and source tables. This dive grades sources Tier 0 to 3, where the
+// shared SourcesAppendix describes a Tier 1 to 4 scheme, so it keeps its own tables built on
+// the shared data types.
 
 export function GlossaryTable({ entries }: { entries: GlossaryEntry[] }) {
   const [filterText, setFilterText] = useState('');
