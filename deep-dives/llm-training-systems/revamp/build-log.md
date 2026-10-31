@@ -5,6 +5,7 @@ Per-section author reports, for the glossary, the fact check and the final repor
 | Section | File | Cites | Diagrams (harness 1440/390) | Acronyms expanded | Open items for fact check |
 | --- | --- | --- | --- | --- | --- |
 | 3 Training step | TrainingStep.tsx | 34 | 1 (step timeline drawn to scale, narrow layout at 390), 0 overlap/clip/overflow | FLOPs, MFU, BF16, FP32, TFLOPS, ZeRO, MLP; FP16 glossed | 18-byte row cites Megatron's table without claiming it is the default; strongest number 128.5 GB (1.6 x one H100) landed five times |
+| 5 Memory budget | MemoryBudget.tsx | 65 (37 sources) | 1 (stacked bars, seven layouts against 60, 80 and 141 GB, values from `memoryBudget`; narrow layout), 0 overlap/clip/overflow; lever table stacks on narrow screens | BF16, FP32, FP8, ZeRO, FSDP, DDP, TP, SP, PP, CP, 1F1B, MLP, FLOPs, HFU, MFU, EFA, HSDP | Prints the papers' recomputation cost as 30% to 40% (no paper states 25%); U02-8 hedged until A2; Megatron's Muon state layout unread; 43.0 GB (calculator, BF16 logits added) against the register's 39 GB |
 | 6 Precision | Precision.tsx | 75 | 1 (scale ladder: model, tensor, block and tile, runs of 32 and 16; stacked below 680px), 0 overlap/clip/overflow | FP8, BF16, FP16, FP32, TFLOPS, MXFP8, NVFP4, OCP, MX, MFU, cFP8, TF32 | C03-10 (MXFP8 on Neuron: release notes against the fork's code) open, hedged; U01-13 (two Trainium2 peaks) hedged; uses a source outside the register, Megatron Bridge 0.7.0 performance archive (731 TFLOP/s per GPU, 70B FP8 on 64 H100), labelled vendor claim, proposed T01-64: fact check must open it |
 | 7 Collectives | Collectives.tsx | 47 | 4 figures (9 SVGs: before-and-after grids, all-reduce decomposition, link hierarchy, crossing count; narrow layouts), harness 0/0/0 | NCCL, EFA, DDP, ZeRO, AMI, BF16, TP | Per-instance pricing of the crossing is our reading (AWS nccl-tests sample as evidence); keeps 0.62 s only as the per-GPU count in an expandable; A1 protocol marked not yet run |
 
@@ -49,8 +50,9 @@ section and source are named so the fact check can trace it.
   GB10 in E1; the logits' transient peak (8.5 GB forward, 11.6 GB backward at 8K) is above their 4.2
   GB saved size.
 - **Recomputation price** (sections 4, 5): FLOP cost about 33%; E2 measured +14% to +16% step time
-  for full recomputation on one GB10 (1B Llama shape, 2,048 tokens); the papers' 25% to 40% stays
-  theirs.
+  for full recomputation on one GB10 (1B Llama shape, 2,048 tokens); the papers' figures stay theirs:
+  about 30% extra runtime (Chen et al., T01-36) and 36% to 39% for full-layer recomputation
+  (Korthikanti et al., T01-34), printed as "30% to 40%". No paper states 25%.
 - **FSDP2 collective counts** (sections 8, 14, 30): default two all-gathers and one reduce-scatter per
   unit per micro-batch; with gradient sync deferred, k + 1 all-gathers and one reduce-scatter per unit
   for k micro-batches (E3). Flight recorder 2,000 entries is about 2.5 steps for the 8B example at
