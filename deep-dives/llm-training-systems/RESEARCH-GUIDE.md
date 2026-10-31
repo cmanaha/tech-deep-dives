@@ -18,7 +18,7 @@ Wave 1 produced seven claim registers, each with a header of pinned sources, num
 | `04-reliability-checkpointing-data.md` | First-party failure statistics, MTTF against node count, ETTR and the Young-Daly interval, checkpoint contents and bytes, DCP and async save from code, tiered and in-memory designs, restart, determinism, stragglers, data-loading arithmetic | 52 | 6 | 12 |
 | `05-aws-infrastructure.md` | Training instances with per-accelerator figures, vendor peaks, dated EC2, Capacity Block and SageMaker rates, capacity paths and their limits, placement, storage, images | 48 | 7 | 8 |
 | `06-aws-orchestration.md` | Self-managed EC2 and EKS, SageMaker training jobs, HyperPod Slurm and EKS, PCS, Batch, Trainium on each path, the ownership matrix and fee arithmetic | 53 | 8 | 13 |
-| `07-observability.md` | (filled when register 07 lands) | | | |
+| `07-observability.md` | What to measure in a run (TorchTitan's metric set, MFU, memory, gradient norm as the leading indicator), hang detection in PyTorch v2.15.0 (collective timeout, heartbeat, flight recorder, `torchfrtrace`), NCCL RAS, DCGM fields and dcgm-exporter defaults, the Xid catalog, loss-spike handling in published runs, and the AWS telemetry layer per path | 41 | 8 | 8 |
 
 Tiers used throughout. Tier 0: our experiments (none yet). Tier 1: source code at a pinned tag or 40-character SHA, official framework documentation, first-party AWS and NVIDIA documentation, spec sheets and price files (a spec sheet's peak FLOPS is a vendor specification and is labelled so). Tier 2: first-party lab or vendor posts and talks. Tier 3: papers, peer-reviewed with venue or preprint, and third-party technical analysis (the Ultra-Scale Playbook is Tier 3). Tier 4: tutorials, summaries and press, used only to locate primary sources. Code is the authority over documentation, documentation over blogs.
 
@@ -49,7 +49,7 @@ Seven areas, at most three agents at a time, each writing one register (table ab
 3. Sections 15, 16 and 27 (register 03): close U03-3, U03-6, U03-7; re-check every maturity label against the tag.
 4. Sections 17 to 19 and 23 (register 04): close U04-1, U04-4 (read the `amzn-sagemaker-checkpointing` 1.1.3 wheel), U04-5 (NCCL determinism documentation), U04-7, U04-8, U04-11.
 5. Sections 20 to 22 and 24 to 26 and 28 (registers 05 and 06): re-read every price and status line on its page; close U05-3, U05-4, U06-1, U06-3, U06-4, U06-7, U06-8, U06-10 to U06-12.
-6. Sections 29 to 31 (register 07): the wave 2 questions register 07 leaves.
+6. Sections 29 to 31 (register 07): close U07-3 (documentation half), U07-4, U07-5, U07-6, U07-8; re-read the PyTorch defaults of T07-5 to T07-11 against the tag the dive pins at build time.
 
 **Specific questions beyond the UNKNOWN register.**
 - Does any first-party source publish achieved MFU for dense Llama-class training on B200, H200 or Trainium2 (MLPerf Training results, NVIDIA or AWS performance pages)? The scope uses 40% as a labelled assumption everywhere (U01-5).
@@ -231,7 +231,14 @@ Every UNKNOWN from the seven registers, with a proposed triage: **closed** (clos
 | U06-12 | Launch dates of HyperPod features | wave 2 | AWS What's New posts |
 | U06-13 | PCS Region count | cut | Not needed by any section |
 
-(Register 07's UNKNOWNs are added when it lands.)
+| U07-1 | Whether the flight recorder's 2,000 entries cover one step of a large FSDP or 4D job | experiment | E3's collective count per step, divided into 2,000; until then "2,000 collectives, the default" with no coverage claim |
+| U07-2 | Whether DCGM's NVLink byte fields include protocol headers (C07-6) | hedge, then experiment | "DCGM's header and user guide disagree on what the NVLink byte counters include"; A1 with DCGM sampling |
+| U07-3 | Whether the HyperPod observability add-on's default mode exports the DCGM fields its own alerts use (C07-8) | wave 2, then experiment | The add-on's metrics reference page; A4 queries AMP for the three fields |
+| U07-4 | Whether a single-node smoke run before scale-out is a stated first-party practice | wave 2 | TorchTitan docs, the awsome-distributed-ai README at a SHA and the HyperPod recipes README; section 31 carries it as [our reading] until then |
+| U07-5 | Which breakdowns Holistic Trace Analysis v0.6.1 computes | wave 2 | Read `hta/trace_analysis.py` at the pinned SHA; section 30 names HTA only after it is read |
+| U07-6 | Recommended Nsight Systems and `NCCL_DEBUG` settings for a run, and their overhead | wave 2 | NCCL environment variables page at a pinned NCCL version and the Nsight Systems user guide |
+| U07-7 | When SageMaker Debugger closed to new customers | hedge | "Closed to new customers as of 2026-10-30" |
+| U07-8 | Neuron counterparts to the NCCL watchdog and flight recorder | wave 2 | Neuron 2.33 documentation on collective timeouts and neuron-monitor; link the silicon dive |
 
 ---
 
