@@ -1,0 +1,107 @@
+{
+ "info": {
+  "torch": "2.15.0+cu132",
+  "cuda": "13.2",
+  "device": "NVIDIA GB10"
+ },
+ "gemm": [
+  {
+   "n": 2048,
+   "tflops": 88.50906233853694
+  },
+  {
+   "n": 4096,
+   "tflops": 87.27030194329937
+  },
+  {
+   "n": 6144,
+   "tflops": 91.52106952781931
+  },
+  {
+   "n": 8192,
+   "tflops": 93.73590165966056
+  },
+  {
+   "n": 12288,
+   "tflops": 96.18382221912566
+  },
+  {
+   "n": 16384,
+   "tflops": 85.34184828970966
+  },
+  {
+   "m": 8192,
+   "k": 2048,
+   "n": 8192,
+   "tflops": 89.95398284847528
+  },
+  {
+   "m": 8192,
+   "k": 8192,
+   "n": 2048,
+   "tflops": 89.10672319280842
+  },
+  {
+   "m": 8192,
+   "k": 2048,
+   "n": 32064,
+   "tflops": 94.84844551914313
+  }
+ ],
+ "peak_measured_tflops": 96.18382221912566,
+ "seq": 2048,
+ "mb": 1,
+ "acc": 4,
+ "steps": 50,
+ "warm": 5,
+ "runs": {
+  "none": {
+   "mode": "none",
+   "n_params": 1235814400,
+   "n_mm": 1235746816,
+   "step_s": 2.1808552474197413,
+   "tokens_per_s": 3756.324501450653,
+   "peak_GB": 29.64627712,
+   "loss_first": 12.185949325561523,
+   "loss_last": 12.089094161987305,
+   "model_tflops_6N": 27.85119625518259,
+   "model_tflops_6N_attn_causal": 29.363692275828907,
+   "model_tflops_6N_attn_nocausal": 30.876188296475227,
+   "mfu_vs_measured_gemm_6N": 0.2895621697350734,
+   "mfu_vs_measured_gemm_6N_attn_causal": 0.30528722604652414,
+   "mfu_vs_measured_gemm_6N_attn_nocausal": 0.3210122823579749
+  },
+  "full": {
+   "mode": "full",
+   "n_params": 1235814400,
+   "n_mm": 1235746816,
+   "step_s": 2.536143383466535,
+   "tokens_per_s": 3230.101284258913,
+   "peak_GB": 24.272046592,
+   "loss_first": 12.167457580566406,
+   "loss_last": 12.131897926330566,
+   "model_tflops_6N": 23.94952426428278,
+   "model_tflops_6N_attn_causal": 25.250134831032117,
+   "model_tflops_6N_attn_nocausal": 26.55074539778146,
+   "mfu_vs_measured_gemm_6N": 0.24899742713198747,
+   "mfu_vs_measured_gemm_6N_attn_causal": 0.26251956148620653,
+   "mfu_vs_measured_gemm_6N_attn_nocausal": 0.27604169584042565
+  },
+  "selective": {
+   "mode": "selective",
+   "n_params": 1235814400,
+   "n_mm": 1235746816,
+   "step_s": 2.428033096467455,
+   "tokens_per_s": 3373.9243554457885,
+   "peak_GB": 25.955027456,
+   "loss_first": 12.1778564453125,
+   "loss_last": 12.122507095336914,
+   "model_tflops_6N": 25.015897678001913,
+   "model_tflops_6N_attn_causal": 26.37441906229731,
+   "model_tflops_6N_attn_nocausal": 27.732940446592703,
+   "mfu_vs_measured_gemm_6N": 0.26008425430433385,
+   "mfu_vs_measured_gemm_6N_attn_causal": 0.27420847346044536,
+   "mfu_vs_measured_gemm_6N_attn_nocausal": 0.2883326926165568
+  }
+ }
+}

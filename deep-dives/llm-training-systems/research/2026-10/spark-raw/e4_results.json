@@ -1,0 +1,117 @@
+{
+ "torch": "2.15.0+cu132",
+ "state_dict_GB": 4.02653184,
+ "runs": [
+  {
+   "mode": "dcp.save",
+   "i": 0,
+   "blocking_s": 4.347023153677583,
+   "total_s": 4.347023153677583
+  },
+  {
+   "mode": "dcp.save",
+   "i": 1,
+   "blocking_s": 2.536512454971671,
+   "total_s": 2.536512454971671
+  },
+  {
+   "mode": "dcp.save",
+   "i": 2,
+   "blocking_s": 2.6034798119217157,
+   "total_s": 2.6034798119217157
+  },
+  {
+   "mode": "async_save bare (thread, default stager)",
+   "i": 0,
+   "blocking_s": 35.85592906922102,
+   "total_s": 38.43438166566193,
+   "returned": "Future"
+  },
+  {
+   "mode": "async_save bare (thread, default stager)",
+   "i": 1,
+   "blocking_s": 36.19775293767452,
+   "total_s": 41.75125331617892,
+   "returned": "Future"
+  },
+  {
+   "mode": "async_save bare (thread, default stager)",
+   "i": 2,
+   "blocking_s": 8.809753810986876,
+   "total_s": 12.157411482185125,
+   "returned": "Future"
+  },
+  {
+   "mode": "async_save pinned stager (THREAD)",
+   "i": 0,
+   "blocking_s": 0.0009336695075035095,
+   "staged_s": 2.524796912446618,
+   "total_s": 7.073877049610019,
+   "returned": "AsyncSaveResponse"
+  },
+  {
+   "mode": "async_save pinned stager (THREAD)",
+   "i": 1,
+   "blocking_s": 0.000690896064043045,
+   "staged_s": 2.85848250053823,
+   "total_s": 5.3920338824391365,
+   "returned": "AsyncSaveResponse"
+  },
+  {
+   "mode": "async_save pinned stager (THREAD)",
+   "i": 2,
+   "blocking_s": 0.000833394005894661,
+   "staged_s": 0.1363755352795124,
+   "total_s": 2.5930513460189104,
+   "returned": "AsyncSaveResponse"
+  },
+  {
+   "mode": "async_save pinned stager (PROCESS)",
+   "i": 0,
+   "blocking_s": 0.038824211806058884,
+   "staged_s": 1.072757886722684,
+   "total_s": 8.43835218064487,
+   "returned": "AsyncSaveResponse"
+  },
+  {
+   "mode": "async_save pinned stager (PROCESS)",
+   "i": 1,
+   "blocking_s": 0.000601157546043396,
+   "staged_s": 0.07022383622825146,
+   "total_s": 2.597634620964527,
+   "returned": "AsyncSaveResponse"
+  },
+  {
+   "mode": "async_save pinned stager (PROCESS)",
+   "i": 2,
+   "blocking_s": 0.001008322462439537,
+   "staged_s": 0.06974896788597107,
+   "total_s": 2.4868776984512806,
+   "returned": "AsyncSaveResponse"
+  },
+  {
+   "mode": "raw D2H copy pinned=False",
+   "i": 0,
+   "seconds": 28.086614610627294,
+   "GBps": 0.14336123793561284
+  },
+  {
+   "mode": "raw D2H copy pinned=False",
+   "i": 1,
+   "seconds": 0.0679029282182455,
+   "GBps": 59.298353482759985
+  },
+  {
+   "mode": "raw D2H copy pinned=True",
+   "i": 0,
+   "seconds": 0.06815719977021217,
+   "GBps": 59.07713130197845
+  },
+  {
+   "mode": "raw D2H copy pinned=True",
+   "i": 1,
+   "seconds": 0.06810436770319939,
+   "GBps": 59.122960476598664
+  }
+ ]
+}

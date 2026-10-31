@@ -1,0 +1,4 @@
+{
+ "pg_backend": "nccl",
+ "raised": "AssertionError: A CPU backend must be enabled for async save; try initializing process group with 'cpu:gloo,cuda:nccl'"
+}
