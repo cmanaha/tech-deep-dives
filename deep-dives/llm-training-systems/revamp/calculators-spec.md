@@ -43,13 +43,17 @@ Validation tests (each with its register reference in the test name):
   W1-13). No overhead factor is applied anywhere.
 - 01 W8: Llama 3.1 70B on 1T tokens at 40% MFU on H100 = about 297,000 H100-hours, 48 days on 256
   GPUs; 70B on 15T tokens = about 4.46M H100-hours.
-- 07 W1: tokens per second per H100 at 40% MFU: about 8,200 for 8B and about 935 for 70B (state the
-  attention mode the register used).
+- 07 W1: tokens per second per H100 at 40% MFU: about 8,200 for 8B and about 935 for 70B with 6N
+  only (full N, no attention term); with TorchTitan's FLOP count (attention added, embedding table
+  left out) at s = 8,192: about 6,800 for 8B and about 820 for 70B, and 4,000 tokens per second for
+  8B reads as about 23% MFU (wave2-observability W6-9). The UI states which count it uses.
 - 01 W6 attention share for 8B at 8,192 tokens: 12.5% (causal) and 22% (no discount) of per-token
   FLOPs; crossover at about 57K (causal) and 29K tokens.
 - FP8 upper bound (section 6): 297,000 falls to about 148,500 at the same MFU against the FP8 peak.
 - Cost panel (section 22): 4.46M H100-hours priced at about $30.7M On-Demand and $26.6M on Capacity
-  Blocks for p5.48xlarge, and about 91 days at 2,048 GPUs.
+  Blocks for p5.48xlarge, and about 91 days at 2,048 GPUs. Every price row carries its Region (the Trn2
+  block rate is Ohio, the P6e-GB200 rate the Dallas Local Zone; wave2-aws W5-11). SageMaker managed
+  Spot training publishes no rate, so the panel takes it as a user-entered discount (U05-4).
 
 ## Calculator B: the memory budget (`src/lib/memory.ts`, section 5; reused by 14 and 16)
 
@@ -126,20 +130,29 @@ node count, failure rate (preset or custom, failures per thousand node-days), st
 (synchronous or asynchronous), blocking time w_cp, restart time, drain budget for asynchronous saves.
 Outputs: MTTF = 1 / (N_nodes x r_f); Young-Daly interval dt* = sqrt(2 w_cp / (N_nodes r_f)) in time
 and in steps; expected ETTR using the same model 04 W3 uses (state the formula in the code
-comment, from 2410.21680v2 Eq. 3 and Appendix A); a validity warning when MTTF falls below 0.1 day;
+comment, from 2410.21680v2 Eq. 3 and Appendix A); two regime warnings (wave2-reliability G5): job
+MTTF below 0.1 day (the regime Meta checked against Monte Carlo, not a stated bound), and dt* below
+about three times the restart time u_0 (Appendix A assumes dt >> u_0);
 storage write bandwidth target (bytes / w_cp when synchronous, bytes / drain budget when
-asynchronous); FSx for Lustre PERSISTENT-1000 capacity that delivers it (1,000 MBps per TiB, with
-the decimal or binary unit wave2-reliability settles for U04-7) and its monthly cost at $0.600 per
-GB-month (T00-1).
+asynchronous); FSx for Lustre PERSISTENT-1000 capacity that delivers it (1,000 MBps per TiB; AWS
+does not define the MB in bytes, so compute with decimal MB and show two significant digits,
+U04-7), rounded up to a valid size (1,200 GiB, 2,400 GiB, then increments of 2,400 GiB; W4-21),
+and its monthly cost at $0.600 per GB-month on the provisioned size (T00-1); S3 part uploads at the
+connector's 8 MiB default part size (U04-8) and the seconds of one prefix's 3,500 PUT per second.
 Validation tests (04 W1 to W3, wave2-reliability, 00-orchestrator-notes):
 - 256-GPU job (32 p5.48xlarge) MTTF 2 to 13 days across the presets; 16,384 GPUs 0.7 to 5 hours.
 - 70B checkpoint at 14 bytes per parameter about 988 GB, 3.86 GB per GPU on 256 GPUs.
-- 70B on 256 GPUs: interval 2.0 hours for a 60 s blocking save, 21.5 minutes for 2 s; ETTR 0.982
-  against 0.996 (at the restart time 04 W3 states).
+- 70B on 256 GPUs at r_f 6.50 and u_0 = 10 minutes: interval 2.0 hours (7,060 s) for a 60 s
+  blocking save, 21.5 minutes (1,289 s) for 2 s; ETTR 0.98171 and 0.99546, printed 0.982 and 0.995
+  (W4-18; 0.996 was a rounding error).
 - 16K GPUs: ETTR 0.79 (60 s save) against 0.88 (2 s save) at a 10-minute restart, 0.93 at 5 minutes;
-  MTTF 1.8 hours triggers the validity warning.
-- 16.5 GB/s for a 60 s save of the 70B checkpoint; about 16.5 TiB at PERSISTENT-1000; on the order
-  of $10,000 a month.
+  MTTF 1.8 hours triggers both warnings (dt* 2.7 to 15 minutes is below u_0).
+- 16.46 GB/s for a 60 s save of the 70B checkpoint; 16.46 TiB at PERSISTENT-1000 (decimal MB),
+  rounded up to 19,200 GiB; $11,520 a month at $0.600 on 19,200 GB-months (W4-21: "on the order of
+  $10,000 to $12,000").
+- Asynchronous drain target for the 2 s row: 987.75 GB over its 1,289 s interval = 0.77 GB/s
+  (wave2-reliability G9, replacing 04 W2's 0.34 GB/s).
+- S3 at 8 MiB parts: 987.75 GB is 117,749 part uploads, 33.6 s at 3,500 PUT per second (W4-22).
 
 ## Tests
 
