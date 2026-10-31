@@ -32,15 +32,38 @@ All accessed 2026-10-30.
 
 | arXiv | Paper | Venue | Entries |
 |---|---|---|---|
+| 2204.02311v5 | PaLM: Scaling Language Modeling with Pathways | preprint (no venue in arXiv metadata), first-party lab | T07-13 |
+| 2205.01068v4 | OPT: Open Pre-trained Transformer Language Models | preprint, first-party lab | T07-14 |
+| 2407.21783v3 | The Llama 3 Herd of Models | preprint, first-party lab | T07-16 |
+| 2412.19437v2 | DeepSeek-V3 Technical Report | preprint, first-party lab | T07-17 |
+| 2501.00656v3 | 2 OLMo 2 Furious | peer-reviewed, COLM 2025 (shorter version, per arXiv comments), first-party lab | T07-18 |
 
 **Code (tag and 40-char SHA)**
 
 | Repository | Tag | SHA | Files read | Entries |
 |---|---|---|---|---|
+| pytorch/pytorch | v2.15.0 | 31a77fc9c0a7c6fff15a1ff58c743f53b1a9d457 | `torch/csrc/distributed/c10d/ProcessGroupNCCL.hpp`, `ProcessGroupNCCL.cpp`, `ProcessGroup.hpp`, `FlightRecorder.hpp`, `FlightRecorder.cpp`; `torch/distributed/constants.py`, `distributed_c10d.py`, `flight_recorder/fr_trace.py`, `flight_recorder/components/{types,utils,config_manager,builder}.py`; `pyproject.toml`; `torch/cuda/memory.py`; `torch/nn/utils/clip_grad.py`; `docs/source/torch_nccl_environment_variables.md`, `docs/source/torch_cuda_memory.md` | T07-3 to T07-11, T07-30 |
+| pytorch/pytorch | v2.5.0, v2.7.0, v2.8.0, v2.9.0, v2.10.0, v2.11.0, v2.12.0, v2.13.0, v2.14.0 | 32f585d9346e316e554c8d9bf7548af9f62141fc, 134179474539648ba7dee1317959529fbd0e7f89, ba56102387ef21a3b04b357e5b183d48f0afefc7, 0fabc3ba44823f257e70ce397d989c8de5e362c1, 449b1768410104d3ed79d3bcfe4ba1d65c7f22c0, 70d99e998b4955e0049d13a98d77ae1b14db1f45, 0d62256a2b23365f8e1604297eb23a6545102aa8, cf30153c4c131c8164ee7798e5022d810682e2cb, 2b3ec34829036a65cd9d1398ea72a0167dc37470 | `ProcessGroupNCCL.cpp` (v2.5.0, v2.7.0, v2.9.0), `FlightRecorder.hpp` (v2.7.0 to v2.14.0) | T07-10 |
+| pytorch/torchtitan | v0.4.0 | 45e33cd413b64cb37a7840cfd3c9765d3c639ae1 | `torchtitan/observability/metrics.py`, `torchtitan/observability/METRICS.md`, `torchtitan/tools/utils.py`, `torchtitan/components/optim/optim.py`, `torchtitan/distributed/utils.py`, `torchtitan/training_engine.py`, `torchtitan/trainer.py` | T07-1, T07-2, T07-19 |
+| NVIDIA/Megatron-LM | core_v0.20.0 | 685fb8bd970185e9ac3283fe32a5d6667bf4b268 | `megatron/training/arguments.py`, `megatron/training/config/resilience_config.py`, `megatron/core/rerun_state_machine.py`, `megatron/training/training.py` | T07-20 |
+| NVIDIA/DCGM | v4.7.0 | 9fae2867e6e5264fa0fca22a07dc898d591baa21 | `dcgmlib/dcgm_fields.h` | T07-21, T07-22, T07-26 |
+| NVIDIA/dcgm-exporter | 4.8.4 | fafd151148052628061a80450b4ee037a5fa0c3c | `etc/default-counters.csv`, `etc/dcp-metrics-included.csv` | T07-24, T07-32 |
+| facebookresearch/metaseq | none (no tags; HEAD on 2026-10-30, as register 04) | f7ffa5fd61cf90f498a36d365c13dd7f1a912ff7 | `projects/OPT/chronicles/10_percent_update.md`, `56_percent_update.md` | T07-15 |
+| facebookresearch/HolisticTraceAnalysis | v0.6.1 | c925565fbe1e796433d3b5506f3ee925811d4569 | none (pinned only) | U07-5 |
 
 **Documentation (unversioned web pages unless a version is given)**
 
-**Cross-file inputs (not re-researched):** register 01 T01-18, T01-19, T01-27 to T01-30, T01-63; register 02 T02-60, T02-61; register 04 T04-6, T04-13 to T04-17; register 06 T06-4, T06-5, T06-8, T06-9, T06-12, T06-43, U06-9.
+- https://docs.pytorch.org/tutorials/unstable/flight_recorder_tutorial.html (page header v2.15.0+cu132) (T07-12)
+- https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/feature-overview.html (T07-23)
+- https://docs.nvidia.com/deploy/xid-errors/analyzing-xid-catalog.html (last updated 2026-09-09) (T07-25)
+- https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/troubleshooting/ras.html (NCCL 2.32.3 documentation) (T07-27)
+- https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-metrics-enhanced-EKS.html (T07-28)
+- https://docs.aws.amazon.com/eks/latest/best-practices/aiml-observability.html (T07-29, T07-30)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-observability-addon.html, `hyperpod-observability-cluster-metrics.html`, `hyperpod-observability-addon-alerts.html`, `sagemaker-hyperpod-eks-cluster-observability.html`, `sagemaker-hyperpod-cluster-observability-slurm.html` (T07-31, T07-32)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/monitoring-cloudwatch.html, `training-metrics.html` (T07-33)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/train-debugger.html, `debugger-availability-change.html`, `train-use-sagemaker-profiler.html`, `profiler-availability-change.html`, `debugger-profiling-report.html`, `mlflow.html` (T07-34)
+
+**Cross-file inputs (not re-researched):** register 01 T01-3, T01-6, T01-14, T01-18, T01-19, T01-27 to T01-30, T01-63; register 02 T02-60, T02-61; register 04 T04-4, T04-6, T04-9, T04-13 to T04-17; register 05 (p5.48xlarge GPU count); register 06 T06-4, T06-5, T06-8, T06-9, T06-12, T06-43, U06-9.
 
 ---
 
@@ -90,7 +113,7 @@ All accessed 2026-10-30.
 - Use in dive: mental model. A hang in synchronous training is a rank that never reached (or never finished) a collective that every other rank is waiting in. The watchdog turns "stuck forever" into "crash at 10 minutes with evidence on disk from every rank", which is what an orchestrator's restart logic needs.
 
 **T07-7. `TORCH_NCCL_*` error-handling variables and their defaults at PyTorch v2.15.0, read from code: `ASYNC_ERROR_HANDLING=3` (tear the process down without aborting the communicator), `BLOCKING_WAIT=0` (setting it removes the watchdog thread), `DUMP_ON_TIMEOUT=1`, `TRACE_BUFFER_SIZE=2000`, `ENABLE_MONITORING=1`, `HEARTBEAT_TIMEOUT_SEC=480`, `WAIT_TIMEOUT_DUMP_MILSEC=15000`, `COORD_CHECK_MILSEC=1000`, `DESYNC_DEBUG=0` (forced on by `TORCH_DISTRIBUTED_DEBUG=DETAIL`), `ENABLE_TIMING=0`, `NAN_CHECK=0`, `PROPAGATE_ERROR=0`, `RETHROW_CUDA_ERRORS=1`, `TEARDOWN_ON_TIMEOUT=0`, `TRACE_CPP_STACK=0`.**
-- Location: pytorch v2.15.0, `torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp` lines 971 to 991 (constructor), 1000 to 1005 (blocking wait), 1771 to 1785 (heartbeat monitor), 2122 to 2125 (watchdog); `torch/csrc/distributed/c10d/FlightRecorder.hpp` lines 109 to 112; `docs/source/torch_nccl_environment_variables.md` lines 11 to 40.
+- Location: pytorch v2.15.0, `torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp` lines 971 to 991 (constructor), 995 to 999 (blocking wait), 1771 to 1785 (heartbeat monitor), 2122 to 2125 (watchdog); `torch/csrc/distributed/c10d/FlightRecorder.hpp` lines 109 to 112; `docs/source/torch_nccl_environment_variables.md` lines 11 to 40.
 - Verdict: NEW
 - Evidence: https://github.com/pytorch/pytorch/blob/31a77fc9c0a7c6fff15a1ff58c743f53b1a9d457/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp | Tier 1, code at pinned tag | default value | "blockingWait_ = getCvarBool(TORCH_NCCL_BLOCKING_WAIT, false);" "getCvarInt(TORCH_NCCL_ASYNC_ERROR_HANDLING, 3 /*SkipCleanUp*/)"; "enableNanCheck_ = getCvarBool(TORCH_NCCL_NAN_CHECK, false);" "traceBufferSize_ = getCvarInt(TORCH_NCCL_TRACE_BUFFER_SIZE, 2000);" "auto desyncDebug = getCvarBool(TORCH_NCCL_DESYNC_DEBUG, false) || (dist_debug_level_ >= DebugLevel::Detail);" "getCvarBool(TORCH_NCCL_ENABLE_TIMING, false) || desyncDebug"; ""TORCH_NCCL_BLOCKING_WAIT is enabled, NO watchdog thread is created."" "getCvarInt(TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC, 60 * 8 /*8 Mins*/)"; "getCvarInt(TORCH_NCCL_WAIT_TIMEOUT_DUMP_MILSEC, 15 * 1000 /*15 Sec*/)"; "getCvarInt(TORCH_NCCL_COORD_CHECK_MILSEC, 1000)"; "dumpOnTimeoutOrEx_ = getCvarBool(TORCH_NCCL_DUMP_ON_TIMEOUT, true);" "getCvarBool(TORCH_NCCL_ENABLE_MONITORING, true)"; "rethrowCUDAErrors_ = getCvarBool(TORCH_NCCL_RETHROW_CUDA_ERRORS, true); tearDownOnTimeout_ = getCvarBool(TORCH_NCCL_TEARDOWN_ON_TIMEOUT, false); propagatePgError_ = getCvarBool(TORCH_NCCL_PROPAGATE_ERROR, false);". https://github.com/pytorch/pytorch/blob/31a77fc9c0a7c6fff15a1ff58c743f53b1a9d457/docs/source/torch_nccl_environment_variables.md | Tier 1, official documentation at pinned tag | definition | "If set to 0, no handling of asynchronous NCCL errors. If set to 1, aborting NCCL communicator and tearing down process upon error. If set to 2, only abort NCCL communicator and if set to 3, tearing down process without aborting NCCL communicator. By default, it is set to 3." (accessed 2026-10-30)
 - Use in dive: practical, a defaults table for the hang section. Two consequences worth stating: the defaults already give a 10-minute timeout plus a per-rank dump, so most users need to set nothing; and `TORCH_NCCL_BLOCKING_WAIT=1`, still found in older guides, removes the watchdog and with it the automatic dump. `TORCH_NCCL_ENABLE_TIMING=1` adds per-collective durations to the trace, at a hang risk the header comment names (T07-8).
@@ -114,7 +137,7 @@ All accessed 2026-10-30.
 - Use in dive: practical. The HyperPod training operator's documented PyTorch range ends at 2.7.1 (register 06 T06-9), which falls in the window where the recorder needs `TORCH_NCCL_TRACE_BUFFER_SIZE` set explicitly to record anything [our reading]. Recommend setting it explicitly on any version below 2.11.
 
 **T07-11. The flight recorder analyser (`torchfrtrace`, an installed console script at v2.15.0, or `python fr_trace.py`) reads every rank's dump from one directory, matches each collective across ranks by process group and sequence number, and reports the first mismatch: a rank missing from a collective ("Not all ranks joining collective"), or a collective whose type, sizes, dtypes or state differ between ranks. `-j` prints raw entries; `--selected-ranks` and `--pg-filters` narrow the output.**
-- Location: pytorch v2.15.0, `pyproject.toml` line 445; `torch/distributed/flight_recorder/fr_trace.py` lines 1 to 28; `components/types.py` lines 57 to 87 (`MatchState`); `components/utils.py` lines 470 to 495 (`error_analysis`); `components/config_manager.py` lines 29 to 86.
+- Location: pytorch v2.15.0, `pyproject.toml` line 445; `torch/distributed/flight_recorder/fr_trace.py` lines 1 to 28; `components/types.py` lines 57 to 87 (`MatchState`); `components/utils.py` lines 469 to 495 (`error_analysis`); `components/config_manager.py` lines 29 to 86.
 - Verdict: NEW
 - Evidence: https://github.com/pytorch/pytorch/blob/31a77fc9c0a7c6fff15a1ff58c743f53b1a9d457/torch/distributed/flight_recorder/fr_trace.py | Tier 1, code at pinned tag | code behaviour | "This script primarily merges data from individual flight recorder buffers from individual ranks in a PyTorch Distributed program into a flattened database format"; "it is necessary to perform some analysis in order to match operators on one rank with corresponding operators on other ranks ... such as where the first mismatch occurs in cases of desync (when not all ranks issue a compatible collective in a particular process group)." pyproject.toml: "torchfrtrace = "torch.distributed.flight_recorder.fr_trace:main"". types.py: "COLLECTIVE_TYPE_MISMATCH: The types of the collective operations differ."; "SIZE_OR_SYNTAX_MISMATCH: There is a mismatch in input/output sizes or violation of collective syntax."; "COLLECTIVE_STATE_MISMATCH: The states of the collective not same, such as one finished while another just started or scheduled."; "COLLECTIVE_DTYPE_MISMATCH". utils.py: "# case one: not every rank join the collective or in the flight recorder." "logger_msg = "Not all ranks joining collective, sequence number: %s"". (accessed 2026-10-30)
 - Use in dive: practical, the hang-diagnosis procedure: (1) collect every rank's dump into one directory; (2) run `torchfrtrace <dir>`; (3) the first collective where a rank is missing or mismatched names the culprit rank and, from its frames, the code path; (4) map that rank to a host and check its hardware health (group E) [procedure is our reading of T07-6, T07-9, T07-11]. Code comment caveat: when the culprit is the reporting rank, "users will see lots of normal ranks reported as culprit".
@@ -273,3 +296,149 @@ All accessed 2026-10-30.
 - Verdict: STALE (for any guidance that recommends Debugger or Profiler for new training work; boundary: Debugger closed to new customers by 2026-10-30, date of change not stated on the pages read; Profiler end of support 2027-06-30)
 - Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-availability-change.html | Tier 1, first-party AWS documentation | documentation of support | "Amazon SageMaker Debugger is no longer open to new customers. Existing customers can continue to use the service as normal. AWS continues to invest in security and availability improvements for Debugger, but we do not plan to introduce new features." "These capabilities are now better served by a combination of Amazon SageMaker AI MLflow, TensorBoard on SageMaker, and Amazon CloudWatch". Mapping rows: "Gradient, activation, and weight analysis TensorBoard"; "System resource profiling (CPU, GPU, memory, disk) Amazon CloudWatch"; "Automated training diagnostics Amazon CloudWatch Alarms + MLflow Monitor any logged metric such as loss convergence, gradient norms, resource utilization and alert on threshold breaches." https://docs.aws.amazon.com/sagemaker/latest/dg/profiler-availability-change.html | "End of support notice: On June 30, 2027, AWS will end support for Amazon SageMaker Profiler." "GPU kernel traces, CPU/GPU utilization, sync analysis, kernel launch-to-execution latency PyTorch Profiler / TensorFlow Profiler + TensorBoard". https://docs.aws.amazon.com/sagemaker/latest/dg/train-use-sagemaker-profiler.html | "Amazon SageMaker Profiler is currently in preview release and available at no cost in supported AWS Regions." https://docs.aws.amazon.com/sagemaker/latest/dg/training-metrics.html | "If you want to profile your training job with a finer resolution down to 100-millisecond (0.1 second) granularity ... consider using Amazon SageMaker Debugger." https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow.html | "Fully managed MLflow on Amazon SageMaker AI enables you to accelerate generative AI by making it easier to track experiments and monitor performance of models". (accessed 2026-10-30)
 - Use in dive: practical. The dive should not teach Debugger or Profiler as the SageMaker observability path; it should teach the framework-native stack (T07-1 to T07-4, PyTorch profiler) shipped to MLflow, TensorBoard and CloudWatch. The training-metrics tip is a section 5 contradiction inside AWS's own documentation.
+
+### G. Best practices that more than one first-party source states
+
+Each entry below is a synthesis: the practice is [our reading] of the cited entries, and every source named states it in its own words. A practice stated by only one source is not listed here (see U07-4).
+
+**T07-35. Validate GPUs and the fabric before a run, and every node that joins one. Stated by AWS (HyperPod deep health checks: DCGM diagnostics level 4 plus a multi-node NCCL all_reduce, run when nodes join), by Meta's OPT team ("Adding GPU burn-in testing to detect memory errors", "Automating IB testing") and by ByteDance's MegaScale (diagnostic tests run after every detected fault, under 10 minutes to detect and diagnose).**
+- Location: register 06 T06-5; register 04 T04-17 and T04-13.
+- Verdict: CORRECT (a commonly repeated practice; three first-party operators state it)
+- Evidence: see T06-5 (https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-deep-health-checks.html as cited in register 06, Tier 1; not re-fetched here), T04-17 (metaseq `27_percent_update.md` at f7ffa5fd61cf90f498a36d365c13dd7f1a912ff7, Tier 2) and T04-13 (2402.15627v1, Tier 3, peer-reviewed NSDI 2024) | production report and documentation of support | quotes in those entries (accessed 2026-10-30)
+- Use in dive: practical, the first item in the "before you start" checklist. The pass criterion for the collective test is the bus bandwidth nccl-tests reports for that instance type (register 02 T02-60, T02-61; EFA dive for per-instance EFA bandwidth).
+- Link: register 06 T06-5; register 02 T02-60, T02-61.
+
+**T07-36. Track throughput and MFU every logging step and alert on a sustained drop. Stated in code by TorchTitan (logs tokens per second, TFLOPS and MFU each step, T07-1, T07-2) and Megatron (`log_straggler` per-GPU throughput, T07-20); by AWS (HyperPod training operator throughput-threshold rule, register 06 T06-12; EKS Best Practices "Training Throughput and Processing Rate", T07-29); and in production by MegaScale, which treated a gradual MFU decline as a bug and traced it to late-launching ranks (register 04 T04-15).**
+- Location: T07-1, T07-2, T07-20, T07-29; register 06 T06-12; register 04 T04-15.
+- Verdict: CORRECT
+- Evidence: entries cited | Tier 1 (code, AWS docs) and Tier 3 (MegaScale) | code behaviour, documentation of support, production report (accessed 2026-10-30)
+- Use in dive: practical. Throughput per accelerator is the unit; MFU is its normalised form (T07-2). A drop with unchanged loss is an infrastructure signal (straggler, throttling T07-26, data loader T07-41), not a model signal.
+
+**T07-37. Alert on gradient norm, and on its drift, rather than on loss alone. Stated by AI2 (OLMo 2: gradient-norm spikes are more frequent than loss spikes and often precede them; slow growth correlates with divergence, T07-18), by Meta's OPT team (grad-norm and activation-norm drift led the loss and drove LR cuts, T07-15; the paper's loss-scale and activation-norm signals, T07-14), and by AWS (the Debugger replacement guidance names "gradient norms" as a metric for CloudWatch alarms and MLflow, T07-34). Megatron ships an opt-in large-gradient check (T07-20).**
+- Location: T07-14, T07-15, T07-18, T07-20, T07-34.
+- Verdict: CORRECT
+- Evidence: entries cited | Tier 1 (AWS docs, code), Tier 2 (OPT notes), Tier 3 (OLMo 2, OPT paper) | production report and documentation of support (accessed 2026-10-30)
+- Use in dive: practical. A defensible starting threshold is OLMo 2's spike score (7 sigma over a 1,000-step rolling window, T07-18); Megatron's 10x-of-observed-max (T07-20) is a cruder backstop. Log the pre-clip norm (T07-19).
+
+**T07-38. Treat a NaN, Inf or loss spike as an event to attribute and recover from, with a rollback path ready. PaLM restarted about 100 steps earlier and skipped 200 to 500 batches (T07-13); OPT lowered the learning rate and restarted from an earlier healthy checkpoint (T07-14); TorchTitan stops before the update on non-finite loss or gradient norm (T07-19); Megatron re-runs the step to separate a maths problem from a faulty GPU (T07-20).**
+- Location: T07-13, T07-14, T07-19, T07-20.
+- Verdict: CORRECT
+- Evidence: entries cited | Tier 1 (code), Tier 3 (papers) | production report and code behaviour (accessed 2026-10-30)
+- Use in dive: mental model. Recovery needs checkpoints close enough to roll back about 100 steps and a data loader that can skip a batch range deterministically (register 04, deterministic resumption).
+- Link: register 04 (checkpoint interval, deterministic resumption).
+
+**T07-39. Keep hang evidence from every rank automatically. PyTorch's defaults record the last 2,000 collectives per rank and dump them on timeout (T07-7, T07-9, from v2.11.0 without configuration, T07-10); Meta's Llama 3 team relied on that recorder and dumped on watchdog or heartbeat timeout (T07-16); NVIDIA's NCCL ships an always-on RAS query service for live hangs (T07-27); MegaScale learned to set the NCCL timeout explicitly (register 04 T04-16).**
+- Location: T07-7, T07-9, T07-10, T07-16, T07-27; register 04 T04-16.
+- Verdict: CORRECT
+- Evidence: entries cited | Tier 1 (code, NVIDIA docs), Tier 3 (Llama 3, MegaScale) | code behaviour and production report (accessed 2026-10-30)
+- Use in dive: practical. Point `TORCH_FR_DUMP_TEMP_FILE` at shared storage with a job-specific prefix so evidence survives node replacement [our reading]; on PyTorch below 2.11 set `TORCH_NCCL_TRACE_BUFFER_SIZE` explicitly (T07-10).
+
+**T07-40. Judge GPU efficiency by hardware activity counters, not by "GPU utilization". Stated by AWS (EKS Best Practices: utilization only shows whether any kernel ran; target SM activity 0.8, T07-29) and by NVIDIA (DCGM guide: SM activity 0.8 or more necessary but not sufficient, below 0.5 likely ineffective, T07-23). SageMaker's `GPUUtilization` is the coarse metric (T07-33).**
+- Location: T07-23, T07-29, T07-33.
+- Verdict: CORRECT
+- Evidence: entries cited | Tier 1 (AWS and NVIDIA docs) | documentation of support (accessed 2026-10-30)
+- Use in dive: practical. Dashboard default: tensor activity (DCGM 1004) as the efficiency line, SM activity (1002) as the floor alarm; both need adding to dcgm-exporter's default set or are already in it (T07-24).
+
+**T07-41. Measure data-loading time as a share of step time. TorchTitan logs it every step (`time_metrics/data_loading(%)`, T07-1); the EKS Best Practices Guide sets 20% as the level above which to optimise the pipeline (T07-29).**
+- Location: T07-1, T07-29.
+- Verdict: CORRECT
+- Evidence: entries cited | Tier 1 (code, AWS docs) | code behaviour and documentation of support (accessed 2026-10-30)
+- Use in dive: practical. For text LLM pre-training the required bytes per second per GPU is small (register 04 data-loading arithmetic), so a high share usually points at the loader's CPU work or a storage stall rather than raw bandwidth [our reading].
+- Link: register 04 (data-loading arithmetic).
+
+---
+
+## 3. Worked numbers
+
+**W1. Tokens per second per H100 that a given MFU implies (6N only, attention FLOPs excluded).** FLOPs per token = 6N (T01-14), N from T01-3, peak 989e12 dense BF16 (T01-27; TorchTitan's table T07-2). Tokens/s/GPU = MFU x 989e12 / (6N).
+- Llama 3.1 8B, N = 8,030,261,248: 6N = 4.818e10 FLOPs per token. At 35%, 40%, 45% MFU: 7,184, 8,211, 9,237 tokens/s/GPU [derived].
+- Llama 3.1 70B, N = 70,553,706,496: 6N = 4.233e11. At 35%, 40%, 45%: 818, 935, 1,051 tokens/s/GPU [derived].
+- Cross-check: Llama 3 405B's published 430 TFLOPs/GPU at 43% MFU (T01-6) gives 430 / 989 = 43.5% [derived], consistent with a 989 TFLOPS dense peak.
+- Use: a reader who sees 8B on p5.48xlarge at 4,000 tokens/s/GPU in TorchTitan's log knows the run sits near 20% MFU before reading the MFU column. The attention term (T01-18) raises FLOPs per token at long sequence, so the same MFU means fewer tokens per second at 8K and above.
+
+**W2. How long a hang takes to become a crash at PyTorch v2.15.0 defaults.** Collective timeout 600 s (T07-5) plus the post-detection wait of 4 x 15 s = 60 s for every rank to dump (T07-6, T07-7): about 660 s, 11 minutes, from the stuck collective's start to process teardown [derived]. If the watchdog itself is stuck, the heartbeat monitor acts at 480 s (T07-8).
+- Against Llama 3's observed one unexpected interruption every 3.1 hours (register 04 T04-4), an 11-minute detection latency per hang is about 5.9% of the mean time between interruptions [derived: 11 / 186 minutes]. That is the case for not raising the timeout without a reason (MegaScale's reason, link flaps, is in T04-16).
+
+**W3. Reading SageMaker's GPU metrics on an 8-GPU instance.** On p5.48xlarge (8 GPUs, register 05), `GPUUtilization` and `GPUMemoryUtilization` range 0 to 800% per host, and `GPUUtilizationNormalized` divides by 8 (T07-33) [derived]. A 64-node job's default CloudWatch view is the mean of 64 per-host values, so one idle host moves it by at most 1/64, about 1.6 percentage points of the normalised value [derived].
+
+---
+
+## 4. Mental models worth teaching
+
+1. **A synchronous training step runs at the pace of its slowest rank, so most "slow" and "stuck" symptoms are one rank behind.** A hang is a rank that never joined a collective; a slowdown is a rank that joined late. The flight recorder (T07-9, T07-11), NCCL RAS (T07-27) and per-GPU throughput logging (T07-20) all answer the same question: which rank. (T07-6, T07-26; register 04 T04-6, T04-15.)
+2. **Three layers of signal, each with its own tool.** Model health (loss, gradient norm, activation norm: T07-13 to T07-18), job efficiency (tokens per second, MFU, step-time shares: T07-1, T07-2, T07-41) and hardware health (Xid, ECC, throttling, NVLink: T07-21 to T07-26). A drop in efficiency with healthy loss is infrastructure; a loss spike with steady throughput is the model or the data, or a silent hardware fault (T07-20).
+3. **Gradient norm is the leading indicator; loss is the lagging one.** (T07-15, T07-18.)
+4. **"GPU utilization" answers "did any kernel run", not "were the tensor cores busy".** Use tensor and SM activity from DCGM (T07-21, T07-23, T07-29); MFU from software FLOP counts is the efficiency number (T07-2).
+5. **Timeouts turn hangs into crashes with evidence.** The 10-minute collective timeout and 8-minute heartbeat timeout are what make a hung job restartable by an orchestrator, and the trace each rank dumps is what makes it diagnosable (T07-5 to T07-9; W2).
+6. **Loss spikes at scale are a property of data and parameter state together, and are handled operationally: roll back, skip, or lower the learning rate.** (T07-13, T07-14, T07-15.)
+7. **Managed telemetry on AWS is mostly opt-in for training-specific signals.** The HyperPod add-on leaves training KPIs, EFA and Neuron metrics off by default (T07-31); dcgm-exporter's default set leaves out SM activity and the throttling and ECC counters (T07-24); SageMaker's own profilers are being retired (T07-34).
+
+## 5. Contradictions
+
+| ID | Side A | Side B | Resolution |
+|---|---|---|---|
+| C1 | PyTorch flight recorder tutorial (docs.pytorch.org, built against v2.15.0): `TORCH_NCCL_DUMP_ON_TIMEOUT` default false; dump default `/tmp/nccl_trace_rank_`; three variables "required" (T07-12) | PyTorch v2.15.0 code: default true; default path `$XDG_CACHE_HOME` or `$HOME/.cache` + `/torch/comm_lib_trace_rank_`; recorder on with no variables from v2.11.0 (T07-7, T07-9, T07-10) | Code wins. The tutorial matches v2.5.0-era defaults. |
+| C2 | PyTorch in-repo env-var doc: `TORCH_NCCL_DUMP_ON_TIMEOUT` "must be set together with TORCH_NCCL_TRACE_BUFFER_SIZE larger than 0"; header comment adds `TORCH_NCCL_ENABLE_MONITORING=1` (T07-7) | Both are on by default in code (T07-7) | Not a conflict in behaviour; the docs omit defaults, which reads as "off". |
+| C3 | TorchTitan v0.4.0 `MetricsProcessor.log` docstring: "grad_norm: Gradient norm after clipping" (T07-1) | Code logs the total norm computed before clipping (T07-19) | Code wins: the logged value is pre-clip. |
+| C4 | EKS Best Practices Prometheus example: GPU memory = `memory_allocated + memory_reserved` (T07-30) | PyTorch: reserved is the allocator's pool that contains allocated memory (T07-3, T07-30) | PyTorch definitions win; the example double counts. |
+| C5 | dcgm-exporter 4.8.4 help text: `DCGM_FI_PROF_PIPE_TENSOR_ACTIVE` is "Ratio of cycles the tensor (HMMA) pipe is active" (T07-24) | DCGM v4.7.0 header: field 1004 is "any tensor pipe"; HMMA alone is field 1014. NVIDIA's user guide says "tensor (HMMA / IMMA) pipe" (T07-21, T07-23) | The DCGM header is the API definition; the exporter's help string is narrower than the field. |
+| C6 | DCGM user guide: NVLink bandwidth fields are "not including protocol headers" (T07-23 page) | DCGM v4.7.0 header: NVLink TX and RX bytes "including both header and payload" (T07-21) | Unresolved (U07-2). Header comments are not behaviour; needs a measurement. |
+| C7 | SageMaker `training-metrics.html` tip: use SageMaker Debugger for 100 ms profiling (T07-34) | `debugger-availability-change.html`: Debugger closed to new customers, no new features (T07-34) | The availability notice is newer; the tip is stale. |
+| C8 | HyperPod preconfigured alerts rely on `ECC_DBE_VOL_TOTAL`, `POWER_VIOLATION`, `THERMAL_VIOLATION` (T07-32) | dcgm-exporter's `dcp-metrics-included.csv` at 4.8.4, which AWS names as the "Limited" default set, ships those commented out (T07-32) | Unresolved (U07-3): the add-on may ship its own counter list. |
+
+## 6. UNKNOWN register
+
+| ID | Question | What was tried | What would close it |
+|---|---|---|---|
+| U07-1 | Is the flight recorder's 2,000-entry buffer enough to cover one training step for a large FSDP or 4D job, so the dump still holds the stuck collective's predecessors? Entries are per collective with state updates (T07-9), but the per-step collective count depends on layers and parallel layout. | Read buffer and entry code (T07-9). | Tier 0: run a small FSDP job on a DGX Spark with `torchfrtrace -j` and count entries per step; or accept the hedge "size the buffer to at least a few steps of collectives". |
+| U07-2 | Do DCGM NVLink byte fields (1011, 1012) include protocol headers? (C6) | Read the DCGM v4.7.0 header and the user guide; they disagree. | Tier 0: an nccl-tests all_reduce of known size on one node with DCGM sampling, compare bytes. |
+| U07-3 | Does the HyperPod observability add-on in its default ("Limited") mode export `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`, `POWER_VIOLATION` and `THERMAL_VIOLATION`, which its own preconfigured alerts use? (C8, T07-32) | Read AWS's metrics and alerts pages and the upstream dcgm-exporter CSV at 4.8.4. | A small AWS experiment: install the add-on on a one-node HyperPod EKS cluster and query AMP for those series; or wave 2 fetch of the add-on's shipped DCGM counter config if AWS publishes it. |
+| U07-4 | Is a single-node smoke run before scaling out stated as a practice by two or more first-party sources? | Not located in the sources read in this pass (TorchTitan, Megatron, AWS observability pages, the run reports). | Wave 2: TorchTitan docs and `awsome-distributed-training` README at a SHA, HyperPod recipes README. Until then, the dive states it as [our reading]. |
+| U07-5 | Holistic Trace Analysis (HTA) and the PyTorch profiler: which breakdowns (temporal, communication-computation overlap, idle time, kernel) HTA computes at a pinned tag, and how they map to the step-time breakdown. | Tag pinned only: facebookresearch/HolisticTraceAnalysis v0.6.1, SHA c925565fbe1e796433d3b5506f3ee925811d4569; files not read (budget). | Wave 2: read `hta/trace_analysis.py` and the docs at that SHA. |
+| U07-6 | Nsight Systems and NCCL's `NCCL_DEBUG` / `NCCL_DEBUG_SUBSYS` output: recommended settings for a training run and their overhead. | Not fetched (budget). | Wave 2: NCCL environment variables page at 2.32.3 and the Nsight Systems user guide, versioned. |
+| U07-7 | When SageMaker Debugger closed to new customers (date). | Read the availability-change page; it gives no date. | Wave 2: AWS What's New or the SageMaker release notes. Hedge until then: "closed to new customers as of 2026-10-30". |
+| U07-8 | Neuron-side equivalents for the hang tooling (a Neuron counterpart to the NCCL watchdog and flight recorder for collectives on Trainium). | Not researched; Neuron metrics via Container Insights only (T07-28). | Wave 2: Neuron 2.33 docs on collective timeouts and neuron-monitor; link the silicon dive. |
+
+## 7. Reading path for a newcomer
+
+1. **TorchTitan `torchtitan/observability/metrics.py` at v0.4.0 (T07-1, T07-2).** One short file that shows what a modern trainer logs every step and how tokens per second and MFU are computed. Everything after this is "how to get each number, and what it means when it moves".
+2. **PyTorch `torch/cuda/memory.py` `memory_stats` docstring and `docs/source/torch_cuda_memory.md` at v2.15.0 (T07-3, T07-4).** The memory numbers and the snapshot tool, before the first OOM.
+3. **PaLM Sec 5.1 and OPT Sec 2.5 (T07-13, T07-14), then OPT's `56_percent_update.md` (T07-15).** Two pages that show what loss spikes look like at scale and what operators did about them.
+4. **OLMo 2 Sec 3 (T07-18).** The modern, quantified version: gradient norm leads loss, and a spike-score definition to alert on.
+5. **PyTorch `ProcessGroupNCCL.hpp` lines 60 to 165 at v2.15.0 (T07-5, T07-7, T07-8), then the flight recorder analyser `fr_trace.py` (T07-11).** The hang machinery, read in code because the tutorial's defaults are stale (T07-12).
+6. **Llama 3 Sec 3.3.4 (T07-16; register 04 T04-1 to T04-6).** How a 16K-GPU operator used that machinery.
+7. **NVIDIA DCGM user guide "Profiling Metrics" (T07-23), then `dcgm_fields.h` IDs (T07-21) and the Xid catalog (T07-25).** What the hardware counters mean and which errors end a run.
+8. **AWS: EKS Best Practices AI/ML Observability (T07-29), Container Insights metric list (T07-28), HyperPod observability metrics and alerts (T07-31, T07-32), SageMaker job metrics and the Debugger/Profiler status (T07-33, T07-34).** Where each signal lands on AWS and which ones must be switched on.
+
+## 8. Source list by tier
+
+**Tier 1: code at a pinned tag or SHA**
+- pytorch/pytorch v2.15.0 (31a77fc9c0a7c6fff15a1ff58c743f53b1a9d457): `torch/csrc/distributed/c10d/ProcessGroupNCCL.hpp`, `ProcessGroupNCCL.cpp`, `ProcessGroup.hpp`, `FlightRecorder.hpp`, `FlightRecorder.cpp`, `torch/distributed/constants.py`, `torch/distributed/distributed_c10d.py`, `torch/distributed/flight_recorder/fr_trace.py`, `components/types.py`, `components/utils.py`, `components/config_manager.py`, `components/builder.py`, `pyproject.toml`, `torch/cuda/memory.py`, `torch/nn/utils/clip_grad.py`, `docs/source/torch_nccl_environment_variables.md`, `docs/source/torch_cuda_memory.md` (T07-3 to T07-11, T07-30).
+- pytorch/pytorch older tags for T07-10: v2.5.0 (32f585d9346e316e554c8d9bf7548af9f62141fc), v2.7.0 (134179474539648ba7dee1317959529fbd0e7f89), v2.8.0 (ba56102387ef21a3b04b357e5b183d48f0afefc7), v2.9.0 (0fabc3ba44823f257e70ce397d989c8de5e362c1), v2.10.0 (449b1768410104d3ed79d3bcfe4ba1d65c7f22c0), v2.11.0 (70d99e998b4955e0049d13a98d77ae1b14db1f45), v2.12.0 (0d62256a2b23365f8e1604297eb23a6545102aa8), v2.13.0 (cf30153c4c131c8164ee7798e5022d810682e2cb), v2.14.0 (2b3ec34829036a65cd9d1398ea72a0167dc37470): `ProcessGroupNCCL.cpp` and/or `FlightRecorder.hpp`.
+- pytorch/torchtitan v0.4.0 (45e33cd413b64cb37a7840cfd3c9765d3c639ae1): `torchtitan/observability/metrics.py`, `torchtitan/observability/METRICS.md`, `torchtitan/tools/utils.py`, `torchtitan/components/optim/optim.py`, `torchtitan/distributed/utils.py`, `torchtitan/training_engine.py`, `torchtitan/trainer.py` (T07-1, T07-2, T07-19).
+- NVIDIA/Megatron-LM core_v0.20.0 (685fb8bd970185e9ac3283fe32a5d6667bf4b268): `megatron/training/arguments.py`, `megatron/training/config/resilience_config.py`, `megatron/core/rerun_state_machine.py`, `megatron/training/training.py` (T07-20).
+- NVIDIA/DCGM v4.7.0 (9fae2867e6e5264fa0fca22a07dc898d591baa21): `dcgmlib/dcgm_fields.h` (T07-21, T07-22, T07-26).
+- NVIDIA/dcgm-exporter 4.8.4 (fafd151148052628061a80450b4ee037a5fa0c3c): `etc/default-counters.csv`, `etc/dcp-metrics-included.csv` (T07-24, T07-32).
+- facebookresearch/HolisticTraceAnalysis v0.6.1 (c925565fbe1e796433d3b5506f3ee925811d4569): tag pinned, not read (U07-5).
+
+**Tier 1: first-party documentation**
+- PyTorch tutorial "Flight Recorder for Debugging Stuck Jobs": https://docs.pytorch.org/tutorials/unstable/flight_recorder_tutorial.html (T07-12)
+- NVIDIA DCGM User Guide, Feature Overview: https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/feature-overview.html (T07-23)
+- NVIDIA Xid catalog: https://docs.nvidia.com/deploy/xid-errors/analyzing-xid-catalog.html (T07-25)
+- NVIDIA NCCL 2.32.3 RAS: https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/troubleshooting/ras.html (T07-27)
+- Amazon CloudWatch, Container Insights enhanced observability metrics for EKS: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Container-Insights-metrics-enhanced-EKS.html (T07-28)
+- Amazon EKS Best Practices Guide, AI/ML Observability: https://docs.aws.amazon.com/eks/latest/best-practices/aiml-observability.html (T07-29, T07-30)
+- SageMaker AI Developer Guide: `sagemaker-hyperpod-observability-addon.html`, `hyperpod-observability-cluster-metrics.html`, `hyperpod-observability-addon-alerts.html`, `sagemaker-hyperpod-eks-cluster-observability.html`, `sagemaker-hyperpod-cluster-observability-slurm.html`, `monitoring-cloudwatch.html`, `training-metrics.html`, `train-debugger.html`, `debugger-availability-change.html`, `train-use-sagemaker-profiler.html`, `profiler-availability-change.html`, `debugger-profiling-report.html`, `mlflow.html`, all under https://docs.aws.amazon.com/sagemaker/latest/dg/ (T07-31 to T07-34)
+
+**Tier 2: first-party team notes**
+- facebookresearch/metaseq at f7ffa5fd61cf90f498a36d365c13dd7f1a912ff7 (no tags; HEAD on 2026-10-30, same SHA as register 04): `projects/OPT/chronicles/10_percent_update.md`, `56_percent_update.md` (T07-15).
+
+**Tier 3: papers (first-party lab reports)**
+- 2204.02311v5, PaLM, preprint (T07-13)
+- 2205.01068v4, OPT, preprint (T07-14)
+- 2407.21783v3, The Llama 3 Herd of Models, preprint (T07-16)
+- 2412.19437v2, DeepSeek-V3 Technical Report, preprint (T07-17)
+- 2501.00656v3, 2 OLMo 2 Furious, peer-reviewed (COLM 2025, shorter version, per arXiv comments) (T07-18)
+- Via other registers: 2402.15627v1, MegaScale, peer-reviewed NSDI 2024 (register 04)
+
+**Tier 4:** none used.
