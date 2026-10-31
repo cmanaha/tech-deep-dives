@@ -1,0 +1,126 @@
+# Section 15, The Framework Map: claims
+
+One line per claim: claim | source URL | register, wave 2 row or experiment. Accessed 2026-10-31 unless marked; register rows cited without re-opening carry 2026-10-30. "NEW" marks a code or doc line read for this section with no register row.
+
+Three engines implement the parallelism (PyTorch distributed, Megatron Core, DeepSpeed); the other frameworks here are front ends that configure one of them; choosing a framework is mostly choosing an engine [our reading, labelled] | assembled from the cites below | T03-16, T03-23, T03-26, T03-42, T03-50; W3-27 (label kept)
+FSDP2 (fully_shard) shards each layer's parameters, all-gathers them before compute and reduce-scatters gradients after | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/fsdp/_fully_shard/_fully_shard.py#L117-L123 | T03-1
+DTensor is one logical tensor sharded or replicated across a device mesh | https://github.com/pytorch/pytorch/blob/v2.15.0/docs/source/distributed.tensor.md#L30-L38 | T03-6 (definition); scope section 15 wording
+Megatron Core is "a composable library with GPU-optimized building blocks for custom training frameworks" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/README.md#L16-L22 | T03-16; W3-16
+DeepSpeed implements ZeRO stages set in a JSON configuration, a pipeline engine and Ulysses sequence parallelism | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/deepspeed/runtime/zero/config.py#L95-L100 | T03-29, T03-30, T03-31
+TorchTitan composes FSDP2 with TP, PP, CP and EP | https://github.com/pytorch/torchtitan/blob/v0.4.0/README.md#L130-L134 | T03-11
+TorchTitan Neuron is AWS's fork of TorchTitan for Trainium | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L50-L56 | T03-37
+Megatron-LM is "a reference example that includes Megatron Core plus pre-configured training scripts" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/README.md#L16-L22 | T03-16; W3-16
+Megatron Bridge runs its training loop on Megatron Core and converts Hugging Face checkpoints both ways | https://github.com/NVIDIA-NeMo/Megatron-Bridge/blob/v0.7.0/README.md#L68-L72 | T03-23
+NeMo AutoModel composes PyTorch FSDP2, HSDP, TP, CP, SP and PP | https://github.com/NVIDIA-NeMo/Automodel/blob/v0.7.0/README.md#L165 | T03-28
+Accelerate configures DDP, FSDP1, FSDP2 or DeepSpeed | https://github.com/huggingface/accelerate/blob/v1.15.0/src/accelerate/parallelism_config.py#L34-L76 | T03-39
+Accelerate has a Megatron-LM plugin | https://github.com/huggingface/accelerate/blob/v1.15.0/docs/source/usage_guides/megatron_lm.md#L26 | T03-41
+The transformers Trainer requires Accelerate to train with PyTorch | https://github.com/huggingface/transformers/blob/v5.22.1/src/transformers/training_args.py#L1811-L1814 | T03-42
+NeMo RL trains through a DTensor or a Megatron (Bridge) backend | https://github.com/NVIDIA-NeMo/RL/blob/v0.7.0/README.md#L87-L88 | T03-49, T03-50
+Axolotl trains through FSDP2 or DeepSpeed | https://github.com/axolotl-ai-cloud/axolotl/blob/v0.21.1/README.md#L102 | T03-46; W3-25
+Every post-training framework read in this research reuses an engine (scope narrowed to "read in this research") | assembled from the two cites above | T03-50; W3-26 replacement text
+Nanotron is "a production training codebase used at Hugging Face" (Ultra-Scale Playbook, Tier 3) | https://huggingface.co/spaces/nanotron/ultrascale-playbook/tree/c93890dd4b22356ee18ed9b863e6f2d0909729bc | U03-9 (boundary: Playbook code only); T02-57 source
+Nanotron repository at its pinned tag | https://github.com/huggingface/nanotron/tree/v0.5 | U03-9
+Megatron Bridge pins Megatron Core as a git submodule | https://github.com/NVIDIA-NeMo/Megatron-Bridge/blob/v0.7.0/README.md#L100 | T03-23; NEW detail (expandable)
+Bridge support matrix: Bridge Megatron-based, AutoModel DTensor-based, NeMo RL post-training with both backends | https://github.com/NVIDIA-NeMo/Megatron-Bridge/blob/v0.7.0/README.md#L79-L81 | T03-26
+Megatron-FSDP sharding strategy "supports DDP, ZeRO-1 (optimizer), ZeRO-2 (optimizer and gradients), and ZeRO-3 (optimizer, gradients, and parameters)" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/user-guide/features/megatron_fsdp.md#L435 | T03-18; W3-10
+DeepSpeed stage 0 is disabled and is the default; stages 1 to 3 partition optimizer, gradients, parameters | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/deepspeed/runtime/zero/config.py#L95-L100 | T03-29; W3-11
+Megatron-FSDP --data-parallel-sharding-strategy defaults to optim_grads_params | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L3136-L3138 | T03-18; W3-10
+Megatron distributed optimizer is opt-in (--use-distributed-optimizer, store_true) | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L3102-L3103 | T03-17; W3-9
+fully_shard with reshard_after_forward=False keeps unsharded parameters from forward to backward (closest to ZeRO-2) [our reading for the mapping] | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/fsdp/_fully_shard/_fully_shard.py#L190-L200 | mental model 2 of register 03 (our reading)
+Megatron's FSDP2 flag --torch-fsdp2-no-reshard-after-forward reads "Set to enable FSDP ZeRO-2" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L3183-L3185 | NEW (code, core_v0.20.0)
+fully_shard on a 2D mesh gives HSDP | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/fsdp/_fully_shard/_fully_shard.py#L182-L188 | T03-1
+Distributed optimizer table: bf16 params, fp32 grads: 18 bytes/param unsharded vs 6 + 12/d; ZeRO-1 by our arithmetic | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/user-guide/features/dist_optimizer.md#L16-L19 | T03-17; register 03 mental model 2
+DTensor is "alpha" | https://github.com/pytorch/pytorch/blob/v2.15.0/docs/source/distributed.tensor.md#L9 | T03-6; W3-1
+torch.distributed.pipelining is "alpha" | https://github.com/pytorch/pytorch/blob/v2.15.0/docs/source/distributed.pipelining.md#L9 | T03-6; W3-2
+Tensor Parallelism APIs are "experimental and subject to change" | https://github.com/pytorch/pytorch/blob/v2.15.0/docs/source/distributed.tensor.parallel.md#L12 | T03-6; W3-3
+context_parallel is "a prototype feature" | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/tensor/experimental/_context_parallel/_attention.py#L1573-L1575 | T03-6; W3-4
+DCP async_save is "experimental" | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/checkpoint/state_dict_saver.py#L228-L237 | T03-6; W3-5
+The fully_shard doc page carries no maturity label and directs FSDP1 users to migrate | https://github.com/pytorch/pytorch/blob/v2.15.0/docs/source/distributed.fsdp.fully_shard.md#L1-L13 | NEW (doc read 2026-10-31)
+TorchTitan pins each stable release to "the nightly versions of torch and torchao it was validated against" | https://github.com/pytorch/torchtitan/blob/v0.4.0/README.md#L219-L220 | T03-10; W3-15
+TorchTitan Neuron forked from upstream commit 7cdf0aa9 dated 2026-07-08, before v0.4.0 shipped 2026-10-28; check upstream changes against the fork [our reading of the dates] | https://github.com/pytorch/torchtitan/commit/7cdf0aa9f9788ed39521edb192e0dcd2815a374e | T03-37; W3-14 (release date); NEW (commit date)
+TorchTitan Neuron fork at release-2.33.0 | https://github.com/aws-neuron/torchtitan-neuron/tree/release-2.33.0 | T03-37; W3-43
+TorchTitan v0.4.0 release (aligns with PyTorch 2.15; legacy Float8 removed) | https://github.com/pytorch/torchtitan/releases/tag/v0.4.0 | T03-10, T03-13; W3-14
+TorchTitan: "under active development" | https://github.com/pytorch/torchtitan/blob/v0.4.0/README.md#L38-L39 | T03-10; W3-15
+TorchTitan Neuron 0.2.2+neuron.1 (Beta), tag release-2.33.0, runs on torch-neuronx 2.14 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/torchtitan-neuron.rst#L11-L36 | T03-37; W3-32, W3-43
+TorchNeuron is a "public beta" in Neuron 2.33.0 on Trainium2 or Trainium3 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/torchneuron.rst#L20-L22 | T03-36; W3-31
+Megatron Core "a composable library", Megatron-LM "a reference example" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/README.md#L16-L22 | T03-16; W3-16
+Megatron dev branch: "Early access branch with experimental features" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/README.md#L59 | T03-16; W3-16
+Megatron Bridge: "a refactor of the previous NeMo training stack" | https://github.com/NVIDIA-NeMo/Megatron-Bridge/blob/v0.7.0/README.md#L68-L72 | T03-23
+NeMo AutoModel, DeepSpeed, transformers Trainer: no maturity label recorded in this research | register 03 comparison table | register 03 section 3 table
+Accelerate sequence-parallel API is "still in its experimental stage" | https://github.com/huggingface/accelerate/blob/v1.15.0/docs/source/concept_guides/sequence_parallelism.md#L212 | T03-39
+Best-fit column for every framework [our reading] | register 03 comparison table, best-fit column | register 03 section 3 table
+NVIDIA/NeMo v3.0.0 is titled "NVIDIA NeMo Speech" and "has pivoted to focus on audio, speech, and multimodal LLM" | https://github.com/NVIDIA/NeMo/blob/v3.0.0/README.md#L10-L33 | T03-25; W3-17
+NeMo v3.0.0 collections are asr, audio, common, speechlm2, tts | https://github.com/NVIDIA/NeMo/tree/v3.0.0/nemo/collections | T03-25; W3-17
+NeMo LLM training moved to Megatron Bridge, AutoModel and NeMo RL; read NeMo 2 tutorials as history [our reading] | https://github.com/NVIDIA-NeMo/Megatron-Bridge/blob/v0.7.0/README.md#L79-L81 | T03-26
+torchtune "is no longer actively maintained" | https://github.com/meta-pytorch/torchtune/blob/bd2a0fc7c31430972728494fa01aaeeb0ebf1ba1/README.md#L4 | T03-48; W3-18
+NxD Training "reached end-of-support as of Neuron 2.32" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/archive/nxd-training/index.rst#L23-L25 | T03-34; W3-28
+AWS recommends "native PyTorch with standard distributed primitives (DTensor, FSDP, DDP) and TorchTitan" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/announcements/neuron2.x/announce-maintenance-nxdt-nxd-core-training.rst#L12 | T03-35; W3-30
+PyTorch context_parallel uses all-gather of keys and values by default | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/tensor/experimental/_context_parallel/_attention.py#L77 | T03-8
+PyTorch pipelining schedules: 1F1B, Interleaved1F1B, GPipe, LoopedBFS, InterleavedZeroBubble, ZBVZeroBubble, DualPipeV | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/pipelining/schedules.py#L5228-L5236 | T03-7
+TorchTitan MXFP8 and NVFP4 need a torchao nightly | https://github.com/pytorch/torchtitan/blob/v0.4.0/README.md#L228-L230 | T03-13
+TorchTitan PP default schedule is 1F1B | https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/config/parallelism.py#L114 | T03-11
+TorchTitan: MXFP8 dense and MoE and NVFP4 (experimental) on Blackwell; parameters and checkpoint state stay high precision | https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/quantization/README.md#L5-L13 | T03-13
+TorchTitan Neuron: FSDP2, SimpleFSDP, TP, CP (ring), EP supported; PP "Supported by TorchNeuron" but "Not covered by the TorchTitan tutorials" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L62-L95 | T03-37; W3-32 replacement text
+TorchNeuron: bfloat16 is the training baseline; "FP8 and MXFP8 require Trainium 3" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/torch/about-pytorch-neuron.rst#L115-L118 | T03-36, T03-53
+Megatron CP communication type defaults to p2p | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L3186 | T03-21
+Megatron PP: 1F1B, interleaved virtual stages, combined 1F1B module | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/pipeline_parallel/schedules.py | T03-20
+Megatron FP8 recipes delayed (default), tensorwise, blockwise on Hopper; mxfp8 and nvfp4 on Blackwell; via Transformer Engine | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/user-guide/features/low_precision_training.md#L41-L45 | T03-19
+Megatron FP8 is off until --fp8-format is set (fp8 default None); recipe default "delayed" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/transformer/transformer_config.py#L664-L673 | T03-19
+AutoModel: FP8 via torchao or Transformer Engine; MXFP8 MoE on GB200 | https://github.com/NVIDIA-NeMo/Automodel/blob/v0.7.0/README.md#L168-L169 | T03-28
+DeepSpeed ZeRO-Infinity offloads to CPU and NVMe | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/docs/_tutorials/zero.md#L20 | T03-29
+DeepSpeed pipeline engine: "ZeRO-2 and ZeRO-3 are incompatible with pipeline parallelism" | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/deepspeed/runtime/pipe/engine.py#L76-L77 | T03-30
+DeepSpeed documents a DualPipeV schedule | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/docs/_tutorials/pipeline.md#L322 | T03-30
+DeepSpeed AutoTP works with ZeRO stage 0, 1 or 2 | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/docs/_tutorials/autotp-training.md#L21 | T03-31
+DeepSpeed Ulysses and ALST (Arctic Long Sequence Training) for Hugging Face Transformers | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/docs/_tutorials/ulysses-alst-sequence-parallelism.md#L2-L7 | T03-31
+Accelerate: DDP, FSDP1 or FSDP2, HSDP, TP; CP with FSDP2; SP through DeepSpeed; no pipeline field | https://github.com/huggingface/accelerate/blob/v1.15.0/src/accelerate/parallelism_config.py#L34-L76 | T03-39
+Accelerate FP8 through Transformer Engine or torchao | https://github.com/huggingface/accelerate/blob/v1.15.0/docs/source/usage_guides/low_precision_training.md#L33-L35 | T03-41
+DeepSpeed configuration has no FP8 switch; FP8 comes from Transformer Engine layers; DeepSpeed's test trains a TE layer under fp8_autocast at ZeRO 0 to 3 on Hopper or later and checks losses match; no full-model FP8 recipe located | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/tests/unit/runtime/half_precision/test_fp8.py#L20-L92 | T03-33; W3-13 replacement text; U03-5
+Megatron combined 1F1B: "the forward pass of Transformer layers for one micro-batch runs in parallel with the backward pass of another" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/pipeline_parallel/combined_1f1b.py#L55-L58 | T03-20
+Megatron has no Zero Bubble or DualPipe schedule by name [our reading of the code] | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/pipeline_parallel/schedules.py | T03-20; U03-6 (closed)
+Megatron MoE overlap flags --overlap-moe-expert-parallel-comm and --delay-wgrad-compute default False | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/transformer/moe/README.md#L563-L564 | U03-6 (closed); section 12 owns
+DCP "handles load-time resharding which enables saving in one cluster topology and loading into another", at least one file per rank | https://github.com/pytorch/pytorch/blob/v2.15.0/docs/source/distributed.checkpoint.md#L9-L14 | T03-9; W3-6
+TorchTitan reads and writes Hugging Face safetensors directly | https://github.com/pytorch/torchtitan/blob/v0.4.0/README.md#L161 | T03-14
+AutoModel saves DCP or SafeTensors, merges and reshards | https://github.com/NVIDIA-NeMo/Automodel/blob/v0.7.0/README.md#L174 | T03-28
+DeepSpeed: save a regular ZeRO checkpoint, convert to Universal format (ds_to_universal.py), load with checkpoint.load_universal | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/docs/_tutorials/universal-checkpointing.md#L21-L47 | T03-32; W3-12
+DeepSpeed: "ZeRO-3 elastic checkpointing is no longer supported" | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/deepspeed/runtime/zero/config.py#L158-L162 | T03-32; W3-12
+Megatron weights reshard across TP, PP and DP at load | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/api-guide/core/dist_checkpointing.md#L17-L20 | T03-22; W3-7
+Megatron dp_reshardable "allows checkpoint resharding only in DP dimension" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/optimizer/distrib_optimizer.py#L1596-L1602 | T03-22; W3-7
+dist_ckpt_optim_fully_reshardable defaults False, "(TP/PP/EP/DP)" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/config/training_config.py#L659-L660 | T03-22; W3-7
+fully_reshardable is slower than dp_reshardable; enabled by --dist-ckpt-optim-fully-reshardable | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/api-guide/core/dist_checkpointing.md#L102-L110 | T03-22; C03-3
+A node-count change that keeps TP and PP is data-parallel and loads from the default format; a TP or PP change on dp_reshardable raises an error | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/checkpointing.py#L2904-L2914 | W3-8 replacement text; wave2-frameworks U03-3 (closed)
+Docs workflow says change parallelism then "Resume training with --dist-ckpt-optim-fully-reshardable" (doc side of the conflict) | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/api-guide/core/dist_checkpointing.md#L112-L121 | C03-3
+The save records fully_reshardable or dp_reshardable in checkpoint metadata | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/checkpointing.py#L620-L627 | C03-3; W3-7
+Flag at resume decides the next save; the load reads the recorded format [our reading of the code] | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/checkpointing.py#L2904-L2914 | C03-3; U03-3 (closed)
+The error says "Please use --ckpt-fully-parallel-save flag during checkpoint saving."; that flag's help reads "Deprecated: see --no-ckpt-fully-parallel-save." | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L2979-L2981 | C03-3; U03-3 (closed)
+The other optimizer load error names --dist-ckpt-optim-fully-reshardable or --no-load-optim "to start from a fresh optimizer" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/checkpointing.py#L2894-L2903 | NEW (code, core_v0.20.0)
+--no-load-optim skips loading the optimizer state | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/checkpointing.py#L2864-L2872 | T03-22; NEW line
+Save fully reshardable before a planned TP, PP or EP change, then return to the default; a dp_reshardable checkpoint resumes under new TP or PP only with --no-load-optim [practical rule, assembled] | from the Megatron cites above | W3-8 replacement text; C03-3
+Accelerate FSDP plugin fsdp_version defaults to 1 | https://github.com/huggingface/accelerate/blob/v1.15.0/src/accelerate/utils/dataclasses.py#L1591-L1593 | T03-40; C03-6; W3-44
+Accelerate reads FSDP_VERSION env, default "1", when unset | https://github.com/huggingface/accelerate/blob/v1.15.0/src/accelerate/utils/dataclasses.py#L1830-L1831 | T03-40; C03-6
+transformers Trainer passes fsdp_config.get("version", 2) | https://github.com/huggingface/transformers/blob/v5.22.1/src/transformers/training_args.py#L2780 | T03-40; C03-6; W3-44
+Accelerate ParallelismConfig docstring: cp_size "Currently not supported" (doc side) | https://github.com/huggingface/accelerate/blob/v1.15.0/src/accelerate/parallelism_config.py#L52-L53 | C03-5
+Accelerator.context_parallel works with FSDP2 and cp_size above 1, otherwise has no effect and raises no exception (code side) | https://github.com/huggingface/accelerate/blob/v1.15.0/src/accelerate/accelerator.py#L4175-L4177 | C03-5
+TorchTitan config is a Python function returning Trainer.Config; no general --section.option command line; NGPU must match the product of degrees; run_train.sh launches torchrun | https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/config/README.md#L3-L22 | T03-12
+awsome-distributed-ai has a TorchTitan example (Slurm only), plus FSDP, Megatron-LM, Megatron Bridge, DeepSpeed examples | https://github.com/awslabs/awsome-distributed-ai/tree/3a1002576ccef26e66ba714303b10ccdaa645691/examples/training | T06-39, T03-52 (accessed 2026-10-30)
+TorchTitan Neuron: one rank per logical NeuronCore, 64 ranks per trn2.48xlarge at default LNC=2 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L203-L208 | T03-38
+TorchTitan Neuron validated TP 4 x FSDP 16 on one trn2.48xlarge for Llama3-8B and Qwen3-32B | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L176-L186 | T03-38
+Neuron 2.33.0 adds a torch-neuronx 2.14.3.0 DLAMI including TorchTitan | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/dlamis.rst#L28 | T03-52; NEW line
+Megatron-LM is configured by command-line flags | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py | T03-16
+Megatron Bridge recipes return a ConfigContainer | https://github.com/NVIDIA-NeMo/Megatron-Bridge/blob/v0.7.0/docs/nemo2-migration-guide.md#L3-L7 | T03-23
+Bridge Llama 3 70B recipe on 32 H100: TP 4, PP 4, VP 5, CP 2 | https://github.com/NVIDIA-NeMo/Megatron-Bridge/blob/v0.7.0/src/megatron/bridge/recipes/llama/h100/llama3.py#L717-L739 | T03-24
+AutoModel: YAML recipes with command-line overrides | https://github.com/NVIDIA-NeMo/Automodel/blob/v0.7.0/README.md#L107 | T03-28
+AutoModel launchers: Slurm, SkyPilot, Kubernetes via SkyPilot | https://github.com/NVIDIA-NeMo/Automodel/blob/v0.7.0/README.md#L177 | T03-28
+DeepSpeed launcher reads a hostfile of hosts reached over passwordless SSH | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/docs/_tutorials/getting-started.md#L175-L190 | T03-33
+DeepSpeed can launch once per node with --no_ssh | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/docs/_tutorials/getting-started.md#L230-L248 | T03-33
+Trainer takes TrainingArguments with fsdp_config or a DeepSpeed JSON path | https://github.com/huggingface/transformers/blob/v5.22.1/src/transformers/training_args.py#L1428-L1443 | T03-42
+AWS PyTorch 2.14 DLC for EC2 lists torch==2.14.0 and deepspeed==0.19.6 as direct dependencies; Accelerate, transformers, Megatron Core, TorchTitan not among them (lock file not read) | https://github.com/aws/deep-learning-containers/blob/156076c639a310c6e86ddae64a6e1fce8a34087c/docker/pytorch/2.14/cuda/pyproject.toml#L5-L10 | T03-52, T05-44; U03-7 (closed)
+DLC build configuration sets Transformer Engine 2.18.0 | https://github.com/aws/deep-learning-containers/blob/156076c639a310c6e86ddae64a6e1fce8a34087c/.github/config/image/pytorch/2.14-ec2-cuda.yml#L20-L25 | T03-52, T05-44; U03-7 (closed)
+Each DLC version sits behind this dive's pins (PyTorch v2.15.0, DeepSpeed v0.19.9, Transformer Engine v2.21.0) [comparison] | Cite.tsx pins; build-log cross-section conditions | W3-43
+NxD Training no longer included in Neuron DLAMIs since Neuron 2.31.0 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/dlamis.rst#L74 | T03-34; NEW line
+Index: TorchTitan v0.4.0 removed legacy Float8 (section 6) | https://github.com/pytorch/torchtitan/releases/tag/v0.4.0 | T03-13; W3-14
+Index: FSDP2 and TorchTitan synchronise gradients every micro-batch by default (section 8) | section 8 cites | T03-2, T03-3; W3-45
+Index: Megatron distributed optimizer off by default (section 14, Set My Ranks) | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L3102-L3103 | T03-17; W3-9
+Index: Megatron disables --async-save with a warning unless --use-persistent-ckpt-worker (section 18) | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L1808-L1814 | T03-22 (async opt-in); NEW line
+Chooser: each answer combines facts cited above; the pairing is our reading. Trainium answer: TorchTitan Neuron (Beta) on TorchNeuron (public beta), Neuron 2.33.0 with torch-neuronx 2.14 and the release-2.33.0 tag, BF16, supported models Llama3, Qwen3, DeepSeek-V3, GPT-OSS, validated TP 4 x FSDP 16, no PP tutorial; no library or config front end for Trainium read | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/torchtitan-neuron.rst#L11-L36 | T03-36 to T03-38, T03-53 (our reading for the pairing)
+Chooser: Bridge v0.7.0 with the Megatron Core commit its submodule pins | https://github.com/NVIDIA-NeMo/Megatron-Bridge/blob/v0.7.0/README.md#L100 | T03-23
+Chooser: no config-file front end with a documented dense MXFP8 path on B200 was read in this research; AutoModel documents MXFP8 for MoE on GB200 | https://github.com/NVIDIA-NeMo/Automodel/blob/v0.7.0/README.md#L168-L169 | T03-28 (hedge scoped to this research)
