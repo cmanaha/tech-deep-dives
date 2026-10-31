@@ -7,6 +7,7 @@ import ColumnLayout from '@cloudscape-design/components/column-layout';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import Alert from '@cloudscape-design/components/alert';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
+import Link from '@cloudscape-design/components/link';
 import { SourceRef } from '@tech-deep-dives/shared';
 import type { CodeRef, DocRef } from '@tech-deep-dives/shared';
 
@@ -256,7 +257,12 @@ export function AIMLTraining() {
                 <SourceRef provenance="documented" doc={docs.nvlink} />, either of which far exceeds
                 the inter-node fabric) while <strong>PP and DP go inter-node</strong> (EFA).
                 EFA&apos;s job is to make the inter-node links fast enough to keep the intra-node
-                compute busy.
+                compute busy. Sizing each degree for a given model, and what each costs in bytes per
+                link, is in the{' '}
+                <Link href="../llm-training-systems/">
+                  LLM training systems dive, section 14: Set My Ranks: The Sizing Procedure
+                </Link>
+                .
               </Box>
               <StatusIndicator type="success">
                 EFA essential for the inter-node communication layer

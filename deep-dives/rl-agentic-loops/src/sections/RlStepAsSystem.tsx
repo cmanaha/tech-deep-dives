@@ -417,6 +417,10 @@ export function RlStepAsSystem() {
               <Cite tier={3} href={HYBRIDFLOW} venue="EuroSys 2025">
                 HybridFlow, Sections 2.1 and 2.3
               </Cite>
+              . Choosing and sizing that training layout is in the{' '}
+              <Link href="../llm-training-systems/">
+                LLM training systems dive, section 14: Set My Ranks: The Sizing Procedure
+              </Link>
               .
             </li>
             <li>
