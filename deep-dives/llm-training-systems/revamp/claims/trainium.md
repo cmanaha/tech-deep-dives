@@ -1,0 +1,117 @@
+# Claims: section 27, Trainium: The Neuron Path
+
+File: `src/sections/Trainium.tsx`. Re-opened on 2026-10-31: raw files of aws-neuron-sdk at 10832bbcc6b6920b3046a7d7aa59b6b684f6b81a (the TorchTitan Neuron overview and tutorial, the TorchNeuron and TorchTitan Neuron release notes, the TorchNeuron overview, the NxD Training archive and the three NxD announcements, the DLAMI release notes, the Logical NeuronCore, Trn2, Trainium2, Trainium3 and NeuronCore-v3 pages, the Trn3 sizing include); the aws-neuron/torchtitan-neuron fork at tag release-2.33.0 (`torchtitan/tools/utils.py`, `torchtitan_neuron/docs/dense-tutorials.md`, `torchtitan_neuron/tests/README.md`, `assets/version.txt`, the repository tree and the 18 files of `.github/workflows`); the sagemaker-hyperpod-recipes trees at 2.0.11, v2.0.0 and v1.5.1 (GitHub tree API); and these AWS pages, fetched with curl (default user agent, no identifying headers) and stripped to text locally: HyperPod EKS deep health checks, HyperPod Slurm deep health checks, HyperPod Slurm auto-resume, the HyperPod Trainium Slurm tutorial, the SageMaker Trainium training-jobs tutorial, SageMaker training plans, EKS Neuron device management, EKS ML compute management, FSx for Lustre EFA file systems, the PCS pricing page and the EC2 Capacity Blocks pricing page. Every price, peak, rank count and memory figure the page prints is imported from `src/lib/presets.ts` (INSTANCES, PRICES, SOURCES, DENSE_MODELS) or computed with `evaluateLayout` (`src/lib/parallelism.ts`) and `modelStateBytes` (`src/lib/memory.ts`). Rows cited without re-opening carry `accessed="2026-10-30"`: the AmazonSageMaker us-east-2 price file, the TorchTitan v0.4.0 release and H100 benchmark, the Trainium and H100 spec pages, SageMaker warm pools.
+
+Format: claim | source URL | register, wave 2 row or experiment
+
+## Intro
+
+- Trainium is AWS's family of training accelerators and Neuron the stack that compiles and runs models on it; chip internals and compiler belong to the silicon dive sections 19 and 20 | ../silicon-memory-inference/ (sibling link, titles read from its App.tsx) | SCOPE section 27 (sibling link)
+- AWS moved Trainium training to a new software path between December 2025 and October 2026 | dates from the 2025-12-16 announcement and the 2026-10-19 TorchNeuron public beta, cited below | T03-35, T03-36 [derived from the dated rows]
+- Two AWS Trainium tutorials call recipe paths that no longer exist | see "What each AWS path gives" | T06-52, T06-53, C06-4, W5-58
+- 64 ranks per trn2.48xlarge (h1 description, h2 title and description, diagram, ending) | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L203-L209 | T03-38 (presets INSTANCES trn2.48xlarge ranksPerInstance)
+
+## The training stack
+
+- NxD Training and the XLA-based torch-neuronx training flow "have reached end-of-support as of Neuron 2.32" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/archive/nxd-training/index.rst#L21-L27 | T03-34
+- AWS recommends "native PyTorch with standard distributed primitives (DTensor, FSDP, DDP) and TorchTitan" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/announcements/neuron2.x/announce-maintenance-nxdt-nxd-core-training.rst#L1-L14 | T02-65; W3-30
+- The announced end moved twice: no support from 2.29, maintenance mode from 2.30, end-of-support as of 2.32 (h2 text; the "four end dates" wording is not used) | the three announcement files and the archive, below | T03-35, C03-4; W3-29 (fixed in SCOPE) [our reading]
+- 2025-12-16 notice quotes ("Neuron support for PyTorch 2.9 will be the last to include", "Starting with Neuron support for PyTorch 2.10") | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/announcements/neuron2.x/announcement-end-of-support-nxdt-nxd-core.rst#L1-L15 | T03-35; W3-29
+- 2026-02-26 notice quotes ("will be the last release to include", no support from 2.29, "should stay on Neuron SDK 2.28 (PyTorch 2.9) until ready to migrate") | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/announcements/neuron2.x/announce-eos-nxdt-nxd-core-training.rst#L1-L15 | T03-35; W3-29
+- 2026-05-20 notice: maintenance mode "Starting with Neuron Release 2.30.0", critical security fixes only, "and we will gradually end support"; native PyTorch with TorchTitan from 2.31 and PyTorch 2.12 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/announcements/neuron2.x/announce-maintenance-nxdt-nxd-core-training.rst#L1-L14 | T02-65, T03-35; W3-29
+- NxD Training no longer in the Neuron DLAMIs from 2.31.0 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/dlamis.rst#L74 | W3-29
+- The December and February notices name one end in two units; the end became gradual from 2.30 and was set at 2.32 | the five pages above | W3-29 [our reading]
+- TorchNeuron adds a `neuron` device through PrivateUse1; Neuron 2.33.0 introduces it as a public beta | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/torchneuron.rst#L15-L22 | T03-36
+- TorchNeuron is supported on trn2 and trn3 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/torch/about-pytorch-neuron.rst#L12-L16 | T03-36
+- TorchTitan Neuron 0.2.2+neuron.1 (Beta), on torch-neuronx 2.14 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/torchtitan-neuron.rst#L11-L36 | T03-37
+- Support matrix: Neuron SDK 2.33.0, PyTorch 2.14.0, torch-neuronx 2.14.3.0, fork of upstream TorchTitan | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L37-L60 | T03-37
+- TorchTitan expresses every parallel dimension with DeviceMesh, DTensor, fully_shard and torch.distributed collectives; TorchNeuron registers the `neuron` device and process-group backend that implement them | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L19-L26 | T03-36
+- The Neuron 2.33.0 DLAMI ships torch-neuronx 2.14.3.0 with TorchTitan | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/dlamis.rst#L28 | wave2-brief (DLAMI note for U03-4)
+- FSDP2, TP, CP and EP "Supported"; PP "Supported by TorchNeuron" and "Not covered by the TorchTitan tutorials" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L62-L99 | T03-37; W3-32
+- No file in the fork's `torchtitan_neuron/` folder is named for pipeline parallelism | https://github.com/aws-neuron/torchtitan-neuron/tree/release-2.33.0/torchtitan_neuron | W3-32 (wave 2 read of the tree) [our check of its tree]
+- GPU stack: TorchTitan v0.4.0, aligned with PyTorch 2.15 | https://github.com/pytorch/torchtitan/releases/tag/v0.4.0 | section 15 pin (accessed 2026-10-30)
+- NCCL reaches EFA through the aws-ofi-nccl plugin | ../efa/ section 9 (sibling link) | sibling link
+- Neuron path: TorchNeuron over the Neuron compiler, runtime and collectives (diagram layers) | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L102-L162 | T03-36, T03-37
+- p5.48xlarge and trn2.48xlarge carry 3,200 Gbps of EFA | https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html | T05-10 (presets efaGbpsPerInstance), section 21
+- Diagram (two stacks, rank unit): each layer restates a claim above; 8 ranks per p5.48xlarge and TP 8 within one instance; 4 ranks per chip, 64 per trn2.48xlarge, TP 4 = one chip | as above and "Counting ranks" | schematic; presets INSTANCES
+
+## Counting ranks the Neuron way
+
+- A Trainium2 chip has 8 physical NeuronCore-v3; LNC=2 (default) gives 4 logical cores; LNC=1 exposes all 8; only 1 or 2 are valid | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/arch/neuron-features/logical-neuroncore-config.rst#L12-L14 | T03-38
+- "On a trn2.48xlarge with the default LNC=2, that is 64 ranks per node: 16 Trainium2 devices with 4 logical cores each" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L203-L209 | T03-38
+- The process count "maps to NeuronCores"; NGPU=64 on a trn2.48xlarge | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/tutorials/tutorial-basic-training.rst#L166-L178 | T03-38
+- Each logical core's two physical cores share one of the chip's four HBM banks | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/arch/neuron-features/logical-neuroncore-config.rst#L51-L66 | 03 W3
+- 24 GiB per rank = 96 GiB / 4 (Calculators B and C capacity for trn2) | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/arch/neuron-hardware/trainium2.rst#L19-L32 | T05-17; 03 W3 [derived] (presets hbmPerRank)
+- Changing LNC changes the ranks per node and "triggers a recompile" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L234-L257 | T03-38
+- The counts are for Trn2; recalculate for Trn3 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/includes/torch/trn3-sizing-note.txt#L1-L11 | NEW
+- Ranks on one chip communicate fastest, then one node, then across nodes; "TP=4 matches the 4 logical NeuronCores of a Trainium2 device at LNC=2"; FSDP "can span devices and nodes" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L234-L257 | T03-38
+- Section 14's procedure carries over with 64 ranks of 24 GiB and TP 4 on one chip | SCOPE section 27 | T03-38 [our reading]
+- Llama3-8B TP4 x FSDP16 on one trn2.48xlarge (eager, torch.compile, SimpleFSDP + torch.compile); Qwen3-32B dense TP4 x FSDP16 with full activation checkpointing | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L165-L200 | T03-38
+- Qwen3-32B's TP 4 x FSDP 16 is 64 ranks, so one trn2.48xlarge | arithmetic on the row above | T03-38 [derived]
+- Qwen3-8B validated on one trn2.48xlarge (TP4 x FSDP16) and on two (TP4 x FSDP32), eager mode with selective activation checkpointing | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/tutorials/tutorial-basic-training.rst#L59-L65 | T03-38
+- DeepSeek-V3 and GPT-OSS pre-training listed without a layout; other models "are expected to run, but they don't have a validated TorchNeuron configuration yet" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L165-L200 | T03-38
+- Llama 3.1 8B model state at 16 bytes per parameter is 2.0 GB per rank at TP 4 x FSDP 16, of a 25.8 GB (24 GiB) rank | `evaluateLayout` in src/lib/parallelism.ts (Calculator C), presets DENSE_MODELS llama-3.1-8b | T03-38; 03 W3 [derived]
+- Calculator C puts the whole layout at 12.7 GB per rank at 8,192 tokens, micro-batch 1, no recomputation (assumed inputs; estimate) | `evaluateLayout` in src/lib/parallelism.ts | [derived; inputs our assumption]
+- TorchTitan's H100 runs train the 8B model at FSDP 8 with no TP | https://github.com/pytorch/torchtitan/blob/v0.4.0/docs/benchmarks/llama3_h100_202412_torchtitan.md | T02-50 (accessed 2026-10-30)
+- TP 4 at 8B comes from the placement rule, since memory alone would allow less | rows above | [our reading]
+
+## BF16 on Trainium2, and where to buy
+
+- "bfloat16 is the training baseline"; "FP8 and MXFP8 require Trainium 3" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/torch/about-pytorch-neuron.rst#L115-L118 | T03-36; W5-27 (Trainium2 lists no MXFP8 rate)
+- Trainium2 lists 1,299 FP8 and 667 BF16 TFLOPS, 96 GiB | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/arch/neuron-hardware/trainium2.rst#L19-L32 | T05-17 (vendor claim)
+- TorchNeuron 2.33.0 has no "TorchAO integration or composite MXFP8 data type support" | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/torchneuron.rst#L186-L187 | T03-36; C03-10
+- 16 Trainium2 per trn2.48xlarge in a 4x4 2D torus on NeuronLink-v3; four trn2u.48xlarge form a 64-chip UltraServer | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/arch/neuron-hardware/trn2-arch.rst#L27-L54 | T05-10, T05-11
+- 3,200 Gbps EFA per trn2.48xlarge, 200 per chip | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/arch/neuron-hardware/trn2-arch.rst#L55-L105 | T05-10 [derived: 3,200 / 16]
+- FSx for Lustre EFA clients "excluding the trn2 instance family" | https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html | T05-37
+- No EC2 On-Demand rate for trn2.48xlarge in any US Region; the only one is Hyderabad's $103.157 | https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/20261029175634/index.csv (presets SOURCES.ec2PriceAllRegions) | T05-21; W5-7, U05-3
+- Capacity Block $35.7608 per trn2.48xlarge-hour in US East (Ohio) and Asia Pacific (Hyderabad), read 2026-10-31 | https://aws.amazon.com/ec2/capacityblocks/pricing/ | T05-22; W5-8, W5-19
+- A Capacity Block is charged at the rate prevailing at purchase | https://aws.amazon.com/ec2/capacityblocks/pricing/ | T05-22
+- SageMaker ml.trn2.48xlarge in Ohio: $97.52 training jobs; training plan up-front hourly fee $41.12492 | presets SOURCES.sagemakerUse2 (AmazonSageMaker offer 20261029165009, us-east-2) | T05-24 (accessed 2026-10-30)
+- $3.35 per peak BF16 PFLOP-hour for the Ohio trn2 block = 35.7608 / (16 x 0.667) | Capacity Blocks page and Trainium2 page above | 05 section 3.2 [derived]
+- Second-cheapest block row: Trn1 $3.14 (9.532 / (16 x 0.190)) and p5.48xlarge $6.03 (47.757 / (8 x 989.5 / 1,000)), both N. Virginia | https://aws.amazon.com/ec2/capacityblocks/pricing/; https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium.html; https://www.nvidia.com/en-us/data-center/h100/ | T05-19, T01-27, T05-22; 05 section 3.2 [derived]
+
+## What each AWS path gives a Trainium run
+
+- On Trainium the path decides who builds the software around the training stack; the training stack is the team's on every path read | the table's sources | SCOPE mental model [our reading]
+- EC2: Capacity Blocks in Ohio and Hyderabad; the Neuron 2.33.0 DLAMI with TorchTitan | Capacity Blocks page; dlamis.rst#L28 | T05-22; T06-53
+- PCS bills Trn instances at the advanced node-management tier | https://aws.amazon.com/pcs/pricing/ | T06-36, T06-53
+- PCS: a Trainium node group runs an AMI you build | section 24, The Slurm Family | U06-10 via section 24 [our reading]
+- EKS: Neuron DRA driver recommended from Kubernetes 1.34, not on EKS Auto Mode, or the Neuron device plugin, which needs the Neuron scheduler extension for contiguous devices on a trn2.48xlarge | https://docs.aws.amazon.com/eks/latest/userguide/device-management-neuron.html | T06-45
+- HyperPod Slurm checks read Neuron sysfs counters and test EFA | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-auto-resume.html | T06-52
+- HyperPod Slurm deep health checks list GPU instances only | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-deep-health-checks.html | T06-52; U06-11
+- HyperPod Trainium Slurm tutorial launches `launcher_scripts/llama/run_hf_llama3_8b_seq8k_trn1x4_pretrain.sh`, no longer shipped | https://docs.aws.amazon.com/sagemaker/latest/dg/hyperpod-trainium-slurm-cluster-pretrain-tutorial.html | T06-52, C06-4
+- HyperPod EKS deep health checks for Trainium: Neuron sysfs, a Neuron hardware check that "Runs a training workload and verifies the results", NCCOM local and cluster tests | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-deep-health-checks.html | U06-11 (closed); build-log cross-section condition
+- Training plans cover "AWS Trainium chips" | https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html | T06-53
+- Training-jobs Trainium tutorial sets `training_recipe="training/llama/hf_llama3_70b_seq8k_trn1x16_pretrain"`, removed at v2.0.0 | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-trainium-sagemaker-training-jobs-pretrain-tutorial.html | W5-58, C06-4
+- HyperPod recipes have no Trainium path at 2.0.11 (3,788 paths) or v2.0.0 (1,031 paths); v1.5.1 carries both tutorial paths | https://github.com/aws/sagemaker-hyperpod-recipes/tree/2.0.11; https://github.com/aws/sagemaker-hyperpod-recipes/tree/v2.0.0; https://github.com/aws/sagemaker-hyperpod-recipes/tree/v1.5.1 | T06-53, C06-4 [our check of the three trees]
+
+## The one published step
+
+- AWS publishes no Trainium2 throughput or MFU benchmark for TorchTitan Neuron | fork benchmarks/ and the Neuron docs read | U03-4; W3-42
+- The fork's benchmarks/ holds only upstream GPU reports | https://github.com/aws-neuron/torchtitan-neuron/tree/release-2.33.0/benchmarks | W3-42
+- None of the fork's 18 CI workflows names neuron, trainium or trn | https://github.com/aws-neuron/torchtitan-neuron/tree/release-2.33.0/.github/workflows | U03-4 (wave 2 read) [our check]
+- Tests README: "prefer CPU-runnable config and registry tests" | https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan_neuron/tests/README.md#L1-L15 | U03-4
+- The sample line, shown as what "A healthy step looks like" (step 3, 587 tps, 30.92 TFLOPS, 19.57% MFU, 9.38 GiB at 26.07%) | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/tutorials/tutorial-basic-training.rst#L145-L158 | W3-42
+- The tutorial runs eager mode; the page names no instance | tutorial-basic-training.rst#L45-L57 and #L145-L158 | W3-42
+- Memory field implies 36 GiB per rank (9.38 / 0.2607), matching Trainium3's 144 GiB over four logical cores (eight NeuronCore-v4 at LNC=2), against Trainium2's 24 GiB | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/arch/neuron-hardware/trainium3.rst#L27-L35 | NEW [derived; that the line came from Trainium3 is our reading, not verified]
+- MFU divides by 79e12 x 2 = 158 TFLOPS per rank for trn2, trn2n, trn2u, trn3 and trn3u | https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan/tools/utils.py#L194-L206 | W3-42
+- The line confirms it: 30.92 / 0.1957 = 158 | sample line above | W3-42 [derived]
+- 158 per rank = 632 per chip = 79 per NeuronCore-v3 x 8 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/about-neuron/arch/neuron-hardware/neuron-core-v3.rst#L21-L26 | W3-42; section 21 "Two Trainium2 peaks"
+- A TorchTitan Neuron MFU reads about 5.5% higher than one against 667 (667 / 632 = 1.055); conversion printed x 632 / 667 | rows above | section 4 agreement [derived]
+- At LNC=1 the printed MFU would be half the true share (the function ignores LNC) | utils.py#L194-L206 | NEW [our reading of the code]
+- The calculators' 40% MFU on Trainium2 is an assumption; no first-party MFU for dense Llama-class training on Trainium2 was located | section 22 wording | build-log cross-section conditions; U03-4
+- A5 protocol (not yet run): 200 steps of Llama3-8B TP 4 x FSDP 16 on one ml.trn2.48xlarge in us-east-2, MFU against 667; about three hours at $97.52, about $293; job ends itself, warm-pool keep-alive 0 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L165-L200; presets SOURCES.sagemakerUse2; https://docs.aws.amazon.com/sagemaker/latest/dg/train-warm-pools.html | experiment A5 (on hold); section 4 copy
+
+## Start the run
+
+- Pin Neuron SDK 2.33.0, torch-neuronx 2.14.3.0, PyTorch 2.14.0, fork at release-2.33.0 | about-torchtitan-neuron.rst#L37-L60 | T03-37
+- The fork tracks an upstream commit older than v0.4.0 | section 15, The Framework Map | T03-37 (section 15)
+- One-node command (NGPU=64, MODULE=torchtitan_neuron.models.qwen3, CONFIG=qwen3_8b_tp4_fsdp16_sac); the config sets TP4 x FSDP16, batch size and sequence length | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/tutorials/tutorial-basic-training.rst#L102-L117 | T03-38
+- First step can take several minutes to compile; later steps and runs reuse the cache; static shapes for torch.compile, each new input shape compiles again | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L262-L274 | NEW
+- A healthy run: finite loss trending down over the first several steps | tutorial-basic-training.rst#L145-L158 | W3-42
+- Two-node command (mpirun, CCOM_SOCKET_IFNAME, NEURON_LOGICAL_NC_CONFIG=2, NEURON_RT_NUM_CORES=64, NNODES=2), EFA check with fi_info must count more than zero endpoints, FSDP grows to 32 | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/tutorials/tutorial-basic-training.rst#L182-L246 | T03-38
+- For four nodes, change -np and NNODES to 4 and nothing else; validated on one and two only | tutorial-basic-training.rst#L182-L246 and #L59-L65 | T03-38
+- The fork's unvalidated four-node Llama 3.1 70B command at TP 4 x FSDP 64, 256 ranks, full activation checkpointing | https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan_neuron/docs/dense-tutorials.md#L121-L143 | U03-4 (narrowed)
+- 64 processes per node fits a trn2.48xlarge | rows above | [our reading]
+- 70B model state 4.4 GB per rank = 70.55e9 x 16 / 256 | `modelStateBytes` in src/lib/memory.ts, presets DENSE_MODELS llama-3.1-70b | [derived]
+- Run it as section 31's measured step, record as section 29 sets out, and replace the 40% in Calculator A | sections 4, 29, 31 | SCOPE ending
