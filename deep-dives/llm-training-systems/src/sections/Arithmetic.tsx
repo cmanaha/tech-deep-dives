@@ -820,8 +820,9 @@ function CalculatorA() {
               <Cite tier={3} href={LLAMA3} venue="preprint">
                 Llama 3 Herd of Models, Table 4
               </Cite>
-              . No first-party MFU for dense Llama-class training on H200 or Trainium2 was located in
-              this research.
+              . No first-party MFU benchmark for dense Llama-class training on H200 or Trainium2 was
+              located in this research; for Trainium2 there is only a sample step line in AWS&apos;s Neuron
+              setup guide (section 27).
             </>
           }
         >

@@ -116,3 +116,4 @@ Format: claim | source URL | register, wave 2 row or experiment. "NEW" marks a f
 ## Note for the fact checkers
 
 W6-31 proposes naming the Xid alert "any Xid whose catalog bucket is RESET_GPU, RESTART_BM or CONTACT_SUPPORT". That list mixes the immediate and investigatory columns and misses Xid 48, whose buckets are WORKFLOW_XID_48 in both columns, and Xid 74's immediate WORKFLOW_NVLINK_ERR. The page names the immediate column instead: RESET_GPU, RESTART_BM or a WORKFLOW_ bucket.
+- Xid 45 is logged whenever an application is aborted (Control-C, sigkill, GPU resets); WORKFLOW_XID_45 is RESTART_FM alone, IGNORE with other Xids | https://docs.nvidia.com/deploy/xid-errors/analyzing-xid-catalog.html | read 2026-10-31

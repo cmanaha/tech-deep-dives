@@ -1213,7 +1213,14 @@ export function WhatToMeasure() {
             </li>
             <li>
               <strong>Any Xid whose immediate bucket asks for more than an application restart</strong>:
-              RESET_GPU, RESTART_BM, or a WORKFLOW_ bucket such as those of Xid 48 and Xid 74.
+              RESET_GPU, RESTART_BM, or a WORKFLOW_ bucket such as those of Xid 48 and Xid 74. Treat
+              Xid 45 apart: the driver logs it whenever an application is aborted, Control-C, sigkill
+              and GPU resets included, so follow the other Xid when one arrives with it, and act only
+              on Xid 45 alone, where the catalog's action is RESTART_FM{' '}
+              <Cite tier={1} href={XID_CATALOG}>
+                NVIDIA Xid catalog, Xid 45 and WORKFLOW_XID_45
+              </Cite>
+              .
             </li>
           </ol>
           <Box variant="p">

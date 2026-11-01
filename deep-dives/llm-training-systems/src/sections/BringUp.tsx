@@ -882,8 +882,9 @@ NGPU=256 COMM_BACKEND=fake MODULE=my_recipes CONFIG=my_target_layout ./run_train
             <Cite tier={1} href={XID_CATALOG}>
               NVIDIA Xid catalog
             </Cite>
-            , an alert rule that is our reading of the catalog, and the default-off signals that section 30, The
-            Telemetry Stack on AWS, turns on for your path. On a short test job, check that every signal reports and
+            , with Xid 45 acted on only when it arrives alone (an alert rule that is our reading of the
+            catalog), and the default-off signals that section 30, The Telemetry Stack on AWS, turns on
+            for your path. On a short test job, check that every signal reports and
             every alert has data to read, then start the long run.
           </Box>
         </SpaceBetween>

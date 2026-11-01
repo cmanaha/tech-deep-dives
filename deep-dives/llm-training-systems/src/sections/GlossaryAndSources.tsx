@@ -218,6 +218,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'HTA', fullForm: 'Holistic Trace Analysis', description: 'A PyTorch tool that reads profiler traces from every rank to break down compute, communication and idle time. Section 30.' },
   { acronym: 'NaN, Inf', fullForm: 'not a number, infinity', description: 'The floating-point values a diverging loss or an overflowing gradient produces. Section 29.' },
   { acronym: 'NCCL', fullForm: 'NVIDIA Collective Communications Library', description: 'The library that runs collectives on NVIDIA GPUs, over EFA through the aws-ofi-nccl plugin. Section 7.' },
+  { acronym: 'NCCOM', fullForm: 'no expansion published by AWS', description: "The prefix of nccom-test, the Neuron SDK's benchmark for collective operations on Trainium and Inferentia; HyperPod EKS's deep health checks call theirs NCCOM tests. Section 31." },
   { acronym: 'RAS', fullForm: 'reliability, availability and serviceability', description: "NCCL's RAS subsystem runs in every NCCL process by default and answers queries about a running job's ranks, including during a hang. Section 30." },
   { acronym: 'RNG', fullForm: 'random number generator', description: 'Its state is saved with a checkpoint so a resumed run draws the same random numbers. Sections 18 and 19.' },
   { acronym: 'SM', fullForm: 'streaming multiprocessor', description: 'An NVIDIA GPU compute unit; SM activity is one of the counters a run alerts on. Section 30.' },

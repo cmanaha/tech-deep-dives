@@ -108,7 +108,9 @@ section and source are named so the fact check can trace it.
   partition_grads for stage 2), ZeRO-1 at the accumulation boundary.
 - **Xid alert rule** (sections 29, 30, 31): alert on any Xid whose immediate bucket in NVIDIA's Xid
   catalogue is RESET_GPU, RESTART_BM or WORKFLOW_* (covers Xid 48, 74, 79); our reading, replacing
-  W6-31's mixed-column set.
+  W6-31's mixed-column set. Xid 45 is the exception: the driver logs it whenever an application is
+  aborted, so follow the other Xid that arrives with it and act only on Xid 45 alone (RESTART_FM)
+  (fc11 finding; sections 29 and 31).
 - **AWS experiments** (sections 7, 8, 18, 22, 23, 25, 27, 31): A0 to A5 are protocols marked "not yet
   run"; never present a prediction as a result.
 - **Cross-instance pricing** (sections 7, 8, 14, 21, 31, Calculator C): traffic between instances is
@@ -154,3 +156,6 @@ section and source are named so the fact check can trace it.
 | 1 Three budgets | fc01 | 38 | WRONG 1, OVERREACH 2 | 9 | 5/4/5/5/4 | 5/4/5/5/4 |
 | 2 Getting started | fc01 | 46 | WRONG 1, OVERREACH 1 | 9 | 4/5/5/5/4 | 4/5/5/5/4 |
 | 3 What a step computes and keeps | fc01 | 58 | WRONG 3, OVERREACH 1 | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
+| 29 What to measure | fc11 | 84 | WRONG 2, OVERREACH 2, STALE 1 | 9 | 5/5/5/5/3 | 5/5/5/5/4 |
+| 30 The telemetry stack on AWS | fc11 | 68 | WRONG 5, UNSUPPORTED 2, OVERREACH 6 | 8 | 4/5/5/5/3 | 4/5/5/5/3 |
+| 31 Bring-up | fc11 | 67 | OVERREACH 1 | 9 (length) | 4/5/5/5/3 | 4/5/5/5/3 |
