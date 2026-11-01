@@ -714,8 +714,9 @@ srun \${AUTO_RESUME} -l ... \\
             container and training arguments removed, and lines rewrapped to fit a phone.
           </Box>
           <Box variant="p">
-            What changes from path to path is everything under the script: who runs the controller, who builds the image
-            the nodes boot, who finds a bad GPU, and who restarts the job when a node fails. The colours match section
+            What changes from path to path is everything under the script: who runs the controller, who builds the AMI
+            (Amazon Machine Image) the nodes boot, often from a DLAMI (Deep Learning AMI), who finds a bad GPU, and who
+            restarts the job when a node fails. The colours match section
             20&apos;s grid.
           </Box>
           <SlurmLayersDiagram />
@@ -750,8 +751,8 @@ srun \${AUTO_RESUME} -l ... \\
         <SpaceBetween size="m">
           <Box variant="p">
             Running Slurm yourself means operating slurmctld, writing all of <code>slurm.conf</code>, and building the
-            node image, usually from a DLAMI (Deep Learning AMI), an Amazon Machine Image that already carries the NVIDIA
-            driver and the EFA (Elastic Fabric Adapter) installer{' '}
+            node image, usually from a DLAMI, an AMI that already carries the NVIDIA driver and the EFA (Elastic Fabric
+            Adapter) installer{' '}
             <Cite tier={1} href={DLAMI_BASE} accessed={R1}>
               DLAMI Developer Guide, Base GPU AMI release 20261027
             </Cite>
@@ -831,8 +832,8 @@ srun \${AUTO_RESUME} -l ... \\
             <Cite tier={1} href={PCS_VERSIONS}>
               AWS PCS User Guide, Slurm versions
             </Cite>
-            . The nodes boot an AMI you bring, which must carry the PCS agent and a compatible Slurm, installed with
-            AWS&apos;s installers{' '}
+            . The nodes boot an AMI you bring, which must carry the PCS agent, installed with AWS&apos;s installer, and a
+            compatible Slurm, for which AWS recommends its installer too{' '}
             <Cite tier={1} href={PCS_CUSTOM_AMI} accessed={R1}>
               AWS PCS User Guide, custom AMIs
             </Cite>
@@ -855,9 +856,10 @@ srun \${AUTO_RESUME} -l ... \\
             <Cite tier={1} href={PCS_SIZE} accessed={R1}>
               AWS PCS User Guide, cluster size
             </Cite>
-            . The Slurm version runs on a clock. SchedMD ships a Slurm major every six months and PCS supports each for
-            about 18 months from SchedMD&apos;s release, 13.5 to 14.7 months after it reaches PCS for the three current
-            majors, so a PCS cluster takes a major upgrade about once a year to stay supported. Slurm 25.05 reaches end of
+            . The Slurm version runs on a clock. By the dates in PCS&apos;s version table, SchedMD ships a Slurm major
+            every six months and PCS supports each for about 18 months from SchedMD&apos;s release, 13.5 to 14.7 months
+            after it reaches PCS for the three current majors, so a PCS cluster takes a major upgrade about once a year to
+            stay supported (our arithmetic from the table). Slurm 25.05 reaches end of
             life on PCS on 2026-11-30; after end of life no new cluster can use a version, and existing clusters can run
             up to 12 more months without guaranteed support{' '}
             <Cite tier={1} href={PCS_VERSIONS}>
@@ -960,10 +962,6 @@ srun \${AUTO_RESUME} -l ... \\
             monitor errors and the device count on Trainium{' '}
             <Cite tier={1} href={HP_HMA}>
               SageMaker Developer Guide, HyperPod health monitoring
-            </Cite>
-            ; Slurm clusters gained it on 2025-09-11, and an older cluster gets it by updating to the latest AMI{' '}
-            <Cite tier={1} href={HP_AUTO_RESUME}>
-              HyperPod Slurm auto-resume
             </Cite>
             . Deep health checks screen a node before it takes work. InstanceStress runs stress tests, GPU and PCI counts,
             DCGM diagnostics at level 4, typically about 45 to 90 minutes depending on GPU count, and EFA loopback tests
@@ -1077,8 +1075,9 @@ srun --auto-resume=1 train_auto_resume.sh`}</code>
             <Cite tier={1} href={SM_PRICE}>
               SageMaker Price List, us-east-1, version 20261029165009
             </Cite>
-            , billed for as long as the cluster exists, idle included{' '}
-            <Cite tier={1} href={SM_PRICING_PAGE} accessed={R1}>
+            , which is billed for every hour the cluster is provisioned, busy or idle, our reading of the pricing example
+            that bills a one-month cluster for all 720 hours{' '}
+            <Cite tier={1} href={SM_PRICING_PAGE}>
               SageMaker AI pricing, pricing example 16
             </Cite>
             .
@@ -1098,7 +1097,8 @@ srun --auto-resume=1 train_auto_resume.sh`}</code>
           <Box variant="p">
             A Small controller holds exactly this fleet and no more, so a fleet that may grow starts on Medium, a{' '}
             {usd(PCS_MEDIUM_MONTH - PCS_SMALL_MONTH)} difference a month. The larger difference is what each fee buys:
-            PCS charges about {share(PCS_SMALL_MONTH)} of the EC2 bill to run the controller, and HyperPod charges{' '}
+            PCS charges about {share(PCS_SMALL_MONTH)} of the EC2 bill, almost all of it the per-instance node-management
+            fee, to run the controller and its node groups, and HyperPod charges{' '}
             {share(HP_PREMIUM_MONTH)} to run the controller, the node checks, the replacement and the resume.
             Section 22 prices the same fleet on Capacity Blocks and training plans.
           </Box>
@@ -1129,7 +1129,7 @@ srun --auto-resume=1 train_auto_resume.sh`}</code>
             starting point; set <code>JobRequeue</code> or <code>--requeue</code>; reboot and replace nodes through{' '}
             <code>scontrol reboot</code>; and save before a Capacity Block&apos;s edge. EC2 starts terminating its
             instances at 11:00 UTC (Coordinated Universal Time) on its final day, 30 minutes before it ends, and a
-            P6e-GB200 UltraServer block&apos;s instances must be stopped at least 60 minutes before its end{' '}
+            P6e-GB200 UltraServer block&apos;s instances must be terminated at least 60 minutes before its end{' '}
             <Cite tier={1} href={EC2_CB}>
               EC2 User Guide, Capacity Blocks
             </Cite>
@@ -1161,7 +1161,8 @@ srun --auto-resume=1 train_auto_resume.sh`}</code>
                 .
               </Box>
               <Box variant="p">
-                HyperPod Slurm: health-monitoring agent since 2025-09-11, after an AMI update{' '}
+                HyperPod Slurm: health-monitoring agent since 2025-09-11, which an older cluster gets by updating to
+                the latest AMI{' '}
                 <Cite tier={1} href={HP_AUTO_RESUME}>
                   HyperPod Slurm auto-resume
                 </Cite>

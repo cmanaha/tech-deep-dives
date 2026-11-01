@@ -62,13 +62,13 @@ const S3C_PART_SIZE = gh(
   'awslabs/s3-connector-for-pytorch',
   S3_CONNECTOR_TAG,
   's3torchconnector/src/s3torchconnector/_s3client/s3client_config.py',
-  'L13-L25',
+  'L14-L26',
 );
 const S3C_RENAME = gh(
   'awslabs/s3-connector-for-pytorch',
   S3_CONNECTOR_TAG,
   's3torchconnector/src/s3torchconnector/dcp/s3_file_system.py',
-  'L150-L160',
+  'L150-L188',
 );
 
 /* Mountpoint for Amazon S3 1.24.0 */
@@ -493,7 +493,7 @@ export function Storage() {
         header={
           <Header
             variant="h1"
-            description={`Size training storage for the checkpoint burst and the restart read, because the tokens barely register: Llama 3.1 70B on 256 H100 GPUs reads about ${T.jobMBps} MB/s of tokens and needs ${T.syncGBps} GB/s to write its checkpoint in 60 s (Megatron Core core_v0.20.0, PyTorch v2.15.0, the S3 Connector for PyTorch v1.5.0 and Mountpoint for Amazon S3 1.24.0, read 2026-10-31)`}
+            description={`Size training storage for the checkpoint burst and the restart read, because the tokens barely register: Llama 3.1 70B on 256 H100 GPUs reads about ${T.jobMBps} MB/s of tokens and needs ${T.syncGBps} GB/s to write its checkpoint in 60 s (Megatron Core core_v0.20.0, PyTorch v2.15.0, the Amazon S3 (Simple Storage Service) Connector for PyTorch v1.5.0 and Mountpoint for Amazon S3 1.24.0, read 2026-10-31)`}
           >
             23. Storage for Training
           </Header>
@@ -504,7 +504,7 @@ export function Storage() {
             A training run moves bytes along two paths. The data path carries training tokens to each
             GPU&apos;s data loader for as long as the run lasts. The checkpoint path carries the
             model&apos;s state out to storage every few hundred steps and back in after every failure.
-            Both run through the same AWS tiers, Amazon S3 (Simple Storage Service), Amazon FSx for
+            Both run through the same AWS tiers, Amazon S3, Amazon FSx for
             Lustre (AWS&apos;s managed Lustre parallel file system), instance-store NVMe (Non-Volatile
             Memory Express) drives and host memory, so the decision is which tier serves which path, at
             what size.
@@ -532,7 +532,7 @@ export function Storage() {
           <Box variant="p">
             A GPU takes in tokens only as fast as it can do the arithmetic on them. Training costs about
             6 FLOPs (floating-point operations) per parameter per token, forward and backward{' '}
-            <Cite tier={3} href={PALM} venue="preprint" accessed={REGISTER_DATE}>
+            <Cite tier={3} href={PALM} venue="JMLR 2023" accessed={REGISTER_DATE}>
               PaLM, Appendix B
             </Cite>
             , so a GPU&apos;s tokens per second are its achieved FLOPs over 6N, for N parameters. For
@@ -552,7 +552,7 @@ export function Storage() {
               NVIDIA H100 specification
             </Cite>
             , each GPU trains on about {T.tokensPerGpu} tokens per second. The whole job takes in about{' '}
-            {T.jobTokens}: one training step (a single optimizer update) of {SEQUENCES_PER_STEP}{' '}
+            {T.jobTokens} tokens per second: one training step (a single optimizer update) of {SEQUENCES_PER_STEP}{' '}
             sequences of {fmt(SEQUENCE)} tokens every {T.stepSeconds} s, as Calculator A gives it in
             section 4, Counting the Arithmetic.
           </Box>
@@ -580,21 +580,6 @@ export function Storage() {
             instance, {T.gpuKBps} KB/s per GPU (our arithmetic).
           </Box>
           <Box variant="p">
-            Scale leaves the picture where it is. Meta&apos;s Llama 3 405B ran at 400 TFLOPs per GPU
-            on 16,384 GPUs{' '}
-            <Cite tier={3} href={LLAMA3} venue="preprint">
-              Llama 3 Herd of Models, Table 4
-            </Cite>
-            ; in the same 4-byte format that run would read about {T.job405MBps} MB/s, a figure from our
-            model of the run, since Meta does not publish its loader&apos;s bytes per token. Its storage
-            fabric is rated for &quot;a sustainable throughput of 2 TB/s and a peak throughput of 7
-            TB/s&quot;{' '}
-            <Cite tier={3} href={LLAMA3} venue="preprint">
-              Llama 3 Herd of Models, Section 3.3.1
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
             Now set the checkpoint beside it: about {T.ckptGB} GB at 14 bytes per parameter. A 60 s
             synchronous save, which pauses training until the write ends, needs {T.syncGBps} GB/s,
             about {T.syncRatio} times the token rate. An asynchronous save, which copies the state to
@@ -603,12 +588,27 @@ export function Storage() {
             section 18, Checkpointing). Text tokens are cheap;
             checkpoints are not.
           </Box>
-          <ExpandableSection headerText="The data-path arithmetic, with its assumptions">
+          <ExpandableSection headerText="The data-path arithmetic for 8B, 70B and 405B, with its assumptions">
             <SpaceBetween size="s">
               <Box variant="p">
                 <code>bytes per second = GPUs x MFU x dense peak / (6N) x bytes per token</code>
               </Box>
               <TokenRateTable />
+              <Box variant="p">
+                Scale leaves the picture where it is. Meta&apos;s Llama 3 405B ran at 400 TFLOPs per GPU
+                on 16,384 GPUs{' '}
+                <Cite tier={3} href={LLAMA3} venue="preprint">
+                  Llama 3 Herd of Models, Table 4
+                </Cite>
+                ; in the same 4-byte format that run would read about {T.job405MBps} MB/s, a figure from our
+                model of the run, since Meta does not publish its loader&apos;s bytes per token. Its storage
+                fabric is rated for &quot;a sustainable throughput of 2 TB/s and a peak throughput of 7
+                TB/s&quot;{' '}
+                <Cite tier={3} href={LLAMA3} venue="preprint">
+                  Llama 3 Herd of Models, Section 3.3.1
+                </Cite>
+                .
+              </Box>
               <Box variant="p">
                 Parameter counts: 8,030,261,248 for 8B{' '}
                 <Cite tier={1} href={HF_8B} accessed={REGISTER_DATE}>
@@ -682,31 +682,35 @@ export function Storage() {
           </Box>
           <Box variant="p">
             <strong>The restart read.</strong> Nothing trains until every rank has its shard back, so
-            the read sits on the critical path. MegaScale names the bandwidth of its distributed file
-            system as the bottleneck there, and has one worker per data-parallel group (the ranks that
-            hold identical copies of the same state) read that state and broadcast it to the rest{' '}
-            <Cite tier={3} href={MEGASCALE} venue="NSDI 2024" accessed={REGISTER_DATE}>
-              MegaScale, Section 4.4
-            </Cite>
-            . OPT-175B&apos;s restarts stalled when downloads of its 1.6 TB checkpoint, 992 files of
-            about 1.7 GB, started hanging{' '}
-            <Cite tier={2} href={OPT_NOTES} accessed={REGISTER_DATE}>
-              OPT-175B team notes, 27% update
-            </Cite>
-            . Because FSx for Lustre sells throughput with capacity, a file system sized only for an
-            asynchronous drain is small and slow to read: the smallest SSD size,{' '}
-            {T.smallGiB} GiB of PERSISTENT-1000 (FSx for Lustre&apos;s 1,000 MBps-per-TiB tier), reads the
-            70B checkpoint back in about{' '}
-            {T.readSmallMinutes} minutes, against about {T.readSyncSeconds} s for the {T.syncGiB} GiB a
-            60 s save needs (our arithmetic from Calculator D). The data path has a restart cost too:
-            Megatron Core caches its sample and shuffle indices as <code>.npy</code> files in a{' '}
-            <code>cache</code> directory beside the data by default, and rank 0 rebuilds them when they
-            are missing{' '}
+            the read sits on the critical path. Because FSx for Lustre sells throughput with capacity, a
+            file system sized only for an asynchronous drain is small and slow to read: the smallest SSD
+            size, {T.smallGiB} GiB of PERSISTENT-1000 (FSx for Lustre&apos;s 1,000 MBps-per-TiB tier),
+            reads the 70B checkpoint back in about {T.readSmallMinutes} minutes, against about{' '}
+            {T.readSyncSeconds} s for the {T.syncGiB} GiB a 60 s save needs (our arithmetic from
+            Calculator D). The data path has a restart cost too: Megatron Core caches its sample and
+            shuffle indices as <code>.npy</code> files in a <code>cache</code> directory beside the data
+            by default, and rank 0 rebuilds them when they are missing{' '}
             <Cite tier={1} href={MG_INDEX_CACHE} kind="code">
               Megatron Core core_v0.20.0 gpt_dataset.py L505-L545
             </Cite>
             , so keep the corpus and that cache where a replacement node can read them.
           </Box>
+          <ExpandableSection headerText="What MegaScale and OPT-175B report about the restart read">
+            <Box variant="p">
+              MegaScale names the bandwidth of its distributed file system as the bottleneck of that read, and
+              has one worker per data-parallel group (the ranks that hold identical copies of the same
+              state) read that state and broadcast it to the rest{' '}
+              <Cite tier={3} href={MEGASCALE} venue="NSDI 2024" accessed={REGISTER_DATE}>
+                MegaScale, Section 4.4
+              </Cite>
+              . OPT-175B&apos;s restarts were delayed when downloads of its 1.6 TB checkpoint, 992 files
+              of about 1.7 GB, started hanging{' '}
+              <Cite tier={2} href={OPT_NOTES} accessed={REGISTER_DATE}>
+                OPT-175B team notes, 27% update
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             <strong>The start-up storm.</strong> At launch and after every restart, every rank opens its
             files within the same second. On S3 that is a request-rate event: S3 sustains at least
@@ -722,7 +726,7 @@ export function Storage() {
               s3torchconnector v1.5.0 README L74-L79
             </Cite>
             , and an FSx data repository association created with its import option imports the metadata
-            of every object in the bucket{' '}
+            of every object in the linked repository{' '}
             <Cite tier={1} href={FSX_IMPORT}>
               FSx for Lustre user guide, importing changes
             </Cite>
@@ -780,7 +784,7 @@ export function Storage() {
             <Cite tier={1} href={FSX_EFA}>
               FSx for Lustre user guide, EFA-enabled file systems
             </Cite>
-            . A single client reads at up to 100 Gbps without EFA, 700 Gbps over EFA and 1,200 Gbps with
+            . A single client instance moves up to 100 Gbps without EFA, 700 Gbps over EFA and 1,200 Gbps with
             GPUDirect Storage{' '}
             <Cite tier={1} href={FSX_PERF}>
               FSx for Lustre user guide, throughput to individual clients
@@ -809,7 +813,7 @@ export function Storage() {
             requests per prefix, as above. At the S3 Connector for PyTorch&apos;s default 8 MiB part
             size{' '}
             <Cite tier={1} href={S3C_PART_SIZE} kind="code">
-              s3torchconnector v1.5.0 s3client_config.py L13-L25
+              s3torchconnector v1.5.0 s3client_config.py L14-L26
             </Cite>
             , one 70B checkpoint is {fmt(W_SYNC.storage.s3.partUploads)} part uploads, about{' '}
             {fmt(W_SYNC.storage.s3.secondsAtOnePrefix, 0)} s of one prefix&apos;s documented rate
@@ -862,25 +866,12 @@ export function Storage() {
             <Cite tier={1} href={MP_ONE_WRITER}>
               SEMANTICS.md L84-L85
             </Cite>
-            , which suits reading token shards. It does not emulate <code>rename</code> on general
-            purpose buckets{' '}
-            <Cite tier={1} href={MP_NO_RENAME}>
-              SEMANTICS.md L8
-            </Cite>{' '}
-            and supports atomic rename only on S3 Express One Zone, rejecting it elsewhere{' '}
-            <Cite tier={1} href={MP_RENAME_EXPRESS}>
-              SEMANTICS.md L20-L21
-            </Cite>
-            , while DCP&apos;s <code>FileSystemWriter</code> ends every save by writing{' '}
-            <code>.metadata.tmp</code> and renaming it to <code>.metadata</code>{' '}
-            <Cite tier={1} href={PT_FINISH_RENAME} kind="code">
-              PyTorch v2.15.0 filesystem.py L762-L798
-            </Cite>
-            . In our reading of both, a <code>dcp.save</code> into a Mountpoint directory on a general
-            purpose bucket fails at its last step (not run). The S3 connector&apos;s writer emulates
-            rename with a copy and a delete{' '}
+            , which suits reading token shards. In our reading of Mountpoint&apos;s semantics and
+            DCP&apos;s writer, a <code>dcp.save</code> into a Mountpoint directory on a general purpose
+            bucket fails at its last step (not run). The S3 connector&apos;s writer emulates rename with a
+            copy and a delete{' '}
             <Cite tier={1} href={S3C_RENAME} kind="code">
-              s3_file_system.py L150-L160
+              s3_file_system.py L150-L188
             </Cite>
             , and for full POSIX (Portable Operating System Interface) semantics AWS recommends FSx for
             Lustre{' '}
@@ -889,10 +880,28 @@ export function Storage() {
             </Cite>
             .
           </Box>
+          <ExpandableSection headerText="Why a DCP save into Mountpoint fails at its last step, in our reading">
+            <Box variant="p">
+              Mountpoint does not emulate <code>rename</code> on general purpose buckets{' '}
+              <Cite tier={1} href={MP_NO_RENAME}>
+                SEMANTICS.md L8
+              </Cite>{' '}
+              and supports atomic rename only on S3 Express One Zone, rejecting it elsewhere{' '}
+              <Cite tier={1} href={MP_RENAME_EXPRESS}>
+                SEMANTICS.md L20-L21
+              </Cite>
+              , while DCP&apos;s <code>FileSystemWriter</code> ends every save by writing{' '}
+              <code>.metadata.tmp</code> and renaming it to <code>.metadata</code>{' '}
+              <Cite tier={1} href={PT_FINISH_RENAME} kind="code">
+                PyTorch v2.15.0 filesystem.py L762-L798
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
-            <strong>Instance store</strong> is the NVMe inside the instance: 8 x 3,800 GB on p5, p5e,
-            p5en, p6-b200 and p6-b300 instances, 3 x 7,500 GB on p6e-gb200 and 4 x 1,900 GB on trn1 and
-            trn2{' '}
+            <strong>Instance store</strong> is the NVMe inside the instance: 8 x 3,800 GB on the p5, p5e,
+            p5en, p6-b200 and p6-b300 48xlarge sizes, 3 x 7,500 GB on p6e-gb200.36xlarge and 4 x 1,900 GB
+            on trn1.32xlarge and trn2.48xlarge{' '}
             <Cite tier={1} href={EC2_ACCEL}>
               EC2 accelerated computing instance specifications
             </Cite>

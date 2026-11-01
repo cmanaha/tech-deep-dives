@@ -35,11 +35,11 @@ Format: claim | source URL | register, wave 2 row or experiment. NEW marks a sou
 ## AWS PCS
 
 - PCS runs slurmctld and updates it with patch versions | https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html | T06-31; W5-29
-- Nodes boot your AMI carrying the PCS agent and a compatible Slurm | https://docs.aws.amazon.com/pcs/latest/userguide/working-with_ami_custom.html | T06-31; W5-30
+- Nodes boot your AMI carrying the PCS agent (AWS's installer required) and a compatible Slurm (AWS's installer recommended, not required; fc09 narrowed) | https://docs.aws.amazon.com/pcs/latest/userguide/working-with_ami_custom.html | T06-31; W5-30
 - PCS-ready DLAMI on Ubuntu 24.04 with the agent and several Slurm versions, no ML framework | https://docs.aws.amazon.com/pcs/latest/userguide/working-with_ami_pcs-ready-dlami.html | T06-33; W5-30
 - No PCS AMI carrying the Neuron stack located; a Trainium node group runs an AMI you build (our reading) | https://docs.aws.amazon.com/pcs/latest/userguide/ami-release-notes.html | U06-10 (closed, not located)
 - Size fixed at creation: Small 32, Medium 512, Large 2,048 | https://docs.aws.amazon.com/pcs/latest/userguide/working-with_clusters_size.html | T06-35; W5-31
-- SchedMD ships a major every six months; PCS supports each about 18 months from SchedMD's release, 13.5 to 14.7 months after it reaches PCS; one major upgrade a year | https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html | T06-32; W5-32 (corrected)
+- SchedMD ships a major every six months; PCS supports each about 18 months from SchedMD's release, 13.5 to 14.7 months after it reaches PCS; one major upgrade a year (our arithmetic from the page's dates; the page says only "at regular intervals"; label added by fc09) | https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html | T06-32; W5-32 (corrected)
 - 25.05 end of life on PCS 2026-11-30; no new clusters after EOL; existing ones up to 12 months without guaranteed support | https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html | T06-32; W5-32
 - PCS user guide table of contents has no entry containing "health" | https://docs.aws.amazon.com/pcs/latest/userguide/toc-contents.json | T06-37; W5-33
 - Supported cluster-level settings include HealthCheckProgram, HealthCheckInterval, HealthCheckNodeState, JobRequeue, Prolog, Epilog | https://docs.aws.amazon.com/pcs/latest/userguide/slurm-custom-settings-cluster.html | NEW
@@ -76,14 +76,14 @@ Format: claim | source URL | register, wave 2 row or experiment. NEW marks a sou
 - PCS $0.5825 Small, $3.2579 Medium per hour; $0.64 per P or Trn instance-hour | https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSPCS/20261027150327/us-east-1/index.json | T06-36; W5-2
 - $0.64 is the advanced node-management tier for P and Trn | https://aws.amazon.com/pcs/pricing/ | T06-36
 - HyperPod has no separate fee; $66.048 per ml.p5.48xlarge-hour | https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSageMaker/20261029165009/us-east-1/index.csv | T06-18; W5-1
-- Billed for as long as the cluster exists, idle included | https://aws.amazon.com/sagemaker/ai/pricing/ | T06-18
-- PCS Small $15,165 (1.2%), Medium $17,091 (1.3%), HyperPod premium $253,624 (20.0%); Medium minus Small $1,926 | computed by priceRun from the rows above | Calculator A; W5-1 ratio 1.20
+- Billed for every hour the cluster is provisioned, busy or idle: our reading of pricing example #16, which bills a 4-instance cluster for all 720 hours of a month (re-opened 2026-10-31 by fc09; the example states no idle rule) | https://aws.amazon.com/sagemaker/ai/pricing/ | T06-18
+- PCS Small $15,165 (1.2%), Medium $17,091 (1.3%), HyperPod premium $253,624 (20.0%); Medium minus Small $1,926; of PCS Small's $15,165, $14,746 (97%) is the per-instance node-management fee (our arithmetic, wording added by fc09) | computed by priceRun from the rows above | Calculator A; W5-1 ratio 1.20
 
 ## Ending
 
 - ParallelCluster 3.16 to 2028-02-20; banner advises PCS | as above | T06-38; W5-28
-- Capacity Block termination starts 11:00 UTC on the final day, 30 minutes before the end; P6e-GB200 UltraServer instances stopped at least 60 minutes before the end | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | T05-27; W5-16
+- Capacity Block termination starts 11:00 UTC on the final day, 30 minutes before the end; P6e-GB200 UltraServer instances terminated at least 60 minutes before the end ("you must terminate your instances"; fc09 corrected "stopped") | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | T05-27; W5-16
 - A training plan targeting HyperPod terminates one hour before the end | https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html | T06-30; W5-16
 - PCS 25.05 EOL 2026-11-30; P6e since 2026-06-18 | as above | T06-32; T05-8
 - HyperPod Slurm agent since 2025-09-11; custom AMIs since 2026-07-13 | as above | W5-34; W5-35
-- Automatic Slurm topology management announced 2026-04-23 (Tier 2, status line, post not read) | https://aws.amazon.com/about-aws/whats-new/2026/04/amazon-sagemaker-hyperpod-automatic-slurm-topology/ | wave2-aws What's New table, T06-new status line
+- Automatic Slurm topology management announced 2026-04-23 (Tier 2, status line; post read by fc09 2026-10-31: "Posted on: Apr 23, 2026") | https://aws.amazon.com/about-aws/whats-new/2026/04/amazon-sagemaker-hyperpod-automatic-slurm-topology/ | wave2-aws What's New table, T06-new status line

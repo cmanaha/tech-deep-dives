@@ -14,7 +14,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 ## What the data loader reads
 
-- About 6 FLOPs per parameter per token, forward and backward | https://arxiv.org/abs/2204.02311v5 Appendix B | T01-18 (accessed 2026-10-30)
+- About 6 FLOPs per parameter per token, forward and backward | https://arxiv.org/abs/2204.02311v5 Appendix B (venue JMLR 2023, 24(240):1-113, confirmed on https://jmlr.org/papers/v24/22-1144.html by fc09) | T01-18 (accessed 2026-10-30)
 - Llama 3.1 70B has 70,553,706,496 parameters | https://huggingface.co/api/models/meta-llama/Llama-3.1-70B | T01-3 (accessed 2026-10-30)
 - 40% MFU is an assumption inside Llama 3's measured 38% to 43% | https://arxiv.org/abs/2407.21783v3 Table 4 | T01-6, build-log "default MFU"
 - H100 dense BF16 peak 989.5 TFLOPS, half the "with sparsity" figure (vendor claim) | https://www.nvidia.com/en-us/data-center/h100/ | T05-14 (accessed 2026-10-30)
@@ -50,14 +50,14 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Meta: "the highly bursty checkpoint writes that saturate the storage fabric for short durations" is a major challenge | https://arxiv.org/abs/2407.21783v3 Sec 3.3.1 | T04-5
 - 3.86 GB per GPU and 30.9 GB per instance, 16.5 GB/s together for a 60 s save | derived, `checkpointSize`, `checkpointPlan` | 04 W2, W4-20, W4-38
 - MegaScale: restart read on the critical path, storage bandwidth the bottleneck, one worker per data-parallel group reads and broadcasts | https://arxiv.org/abs/2402.15627v1 Sec 4.4 | T04-14 (accessed 2026-10-30)
-- OPT-175B restarts stalled when downloads of a 1.6 TB checkpoint in 992 files of about 1.7 GB started hanging | https://github.com/facebookresearch/metaseq/blob/f7ffa5fd61cf90f498a36d365c13dd7f1a912ff7/projects/OPT/chronicles/27_percent_update.md#L19 | T04-18, W4-29, W4-31 (accessed 2026-10-30)
+- OPT-175B restarts were delayed when downloads of a 1.6 TB checkpoint in 992 files of about 1.7 GB started hanging ("delayed training recovery even further"; fc09 narrowed "stalled") | https://github.com/facebookresearch/metaseq/blob/f7ffa5fd61cf90f498a36d365c13dd7f1a912ff7/projects/OPT/chronicles/27_percent_update.md#L19 | T04-18, W4-29, W4-31 (accessed 2026-10-30)
 - Smallest SSD size 1,200 GiB of PERSISTENT-1000 reads the 70B checkpoint in about 14 minutes; 19,200 GiB in about 53 s | derived: `roundUpToFsxSize` via `checkpointPlan`, read time = bytes / (TiB x 1,000 MBps), the same expression section 18 uses (843 s and 52.7 s) | section 18 (committed), W4-21, U04-7
 - PERSISTENT-1000 is FSx for Lustre's 1,000 MBps-per-TiB tier | https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html | T04-29, R1 gloss table
 - Megatron caches sample and shuffle indices as `.npy` files in a `cache` directory beside the data by default, rank 0 rebuilds them when missing | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/datasets/gpt_dataset.py#L505-L545 | NEW (lines 505 to 509 default path under `path_prefix/cache/`, 511 to 531 cache-hit check, 536 to 545 rank-0 build); extends T04-45
 - Keep the corpus and that cache where a replacement node can read them | our reading | T04-45 use note
 - S3: at least 3,500 PUT/COPY/POST/DELETE or 5,500 GET/HEAD per second per partitioned prefix, gradual scaling, 503 Slow Down | https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html | T04-27, T05-39, W4-35
 - `S3MapDataset` lists every object under its prefix at first access, "might take some time and may give the impression of being unresponsive" | https://github.com/awslabs/s3-connector-for-pytorch/blob/v1.5.0/README.md#L74-L79 | T04-51
-- A data repository association created with the import option imports metadata for all objects | https://docs.aws.amazon.com/fsx/latest/LustreGuide/importing-files.html | T05-38, W4-34
+- A data repository association created with the import option imports metadata for all objects in the linked data repository (fc09: the page's scope, not the whole bucket) | https://docs.aws.amazon.com/fsx/latest/LustreGuide/importing-files.html | T05-38, W4-34
 - A few hundred large shards keep listing and request counts small | our reading | T04-51 use note
 - Non-text data carries far more bytes per example; not covered | our reading | 04 W5 reading
 
@@ -69,11 +69,11 @@ Format: claim | source URL | register, wave 2 row or experiment
 - AWS does not define the MB in bytes on these pages; two significant digits | U04-7 accept-as-hedge text | wave2-reliability G6
 - Persistent replaces a failed file server within minutes while clients retry; scratch does not, and clients get an immediate I/O error | https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-fsx-lustre.html | T05-35 (re-opened; the I/O-error quote is NEW to the register: "If clients try to access data that is on the unavailable server or disk, clients experience an immediate I/O error")
 - EFA supported on Persistent 2 with a metadata configuration; chosen at creation, cannot be enabled or disabled later; same Availability Zone; Nitro v4 or later, excluding trn2 | https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html | T05-37, W4-34
-- Per-client ceilings 100 Gbps without EFA, 700 over EFA, 1,200 with GPUDirect Storage | https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html | T04-30, T05-36, W4-34
+- Per-client-instance ceilings (maximum throughput per client, any direction) 100 Gbps without EFA, 700 over EFA, 1,200 with GPUDirect Storage | https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html | T04-30, T05-36, W4-34
 - Each instance writes about 0.51 GB/s (4.1 Gbps) during a 60 s save, so aggregate throughput binds | derived (16.46 / 32 = 0.514 GB/s) | W4-20
 - Data repository association lazy-loads on first read, serves later reads itself, can preload a file system or directory in parallel | https://docs.aws.amazon.com/fsx/latest/LustreGuide/importing-files.html | T05-38 (preload sentence NEW: "You can also preload your whole file system or a directory within your file system ... FSx for Lustre loads files from your Amazon S3 data repository in parallel")
 - A file system linked to S3 cannot be backed up | https://docs.aws.amazon.com/fsx/latest/LustreGuide/fsx-data-repositories.html | T05-38
-- S3 Connector default part size 8 MiB | https://github.com/awslabs/s3-connector-for-pytorch/blob/v1.5.0/s3torchconnector/src/s3torchconnector/_s3client/s3client_config.py#L13-L25 | W4-22, U04-8 closed
+- S3 Connector default part size 8 MiB (`part_size: int = 8 * 1024 * 1024` at L26) | https://github.com/awslabs/s3-connector-for-pytorch/blob/v1.5.0/s3torchconnector/src/s3torchconnector/_s3client/s3client_config.py#L14-L26 | W4-22, U04-8 closed
 - One 70B checkpoint is 117,750 part uploads, about 34 s of one prefix's documented rate | derived, `checkpointPlan` (ceil(987,751,890,944 / 8,388,608) = 117,750; / 3,500 = 33.6 s) | W4-22, build-log calculator note (117,750 exact)
 - S3 Express One Zone: directory buckets in one Availability Zone, up to 200,000 reads and 100,000 writes per second by default, more on request through AWS Support | https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-performance.html | T05-40, T04-28, W4-35
 - Designed for 99.95% availability within a single Availability Zone | https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html | T05-40
@@ -88,9 +88,9 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Atomic rename only on S3 Express One Zone; rejected where unsupported | https://github.com/awslabs/mountpoint-s3/blob/mountpoint-s3-1.24.0/doc/SEMANTICS.md#L20-L21 | T05-41
 - DCP's `FileSystemWriter.finish` writes `.metadata.tmp` and renames it to `.metadata` | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/checkpoint/filesystem.py#L762-L798 | NEW (code, re-read 2026-10-31)
 - So `dcp.save` into a Mountpoint path on a general purpose bucket fails at its last step; not run | our reading of both codes | T05-41 derived use note, now with the DCP code side; untested (A3 does not cover it)
-- The connector's file system emulates rename with copy and delete | https://github.com/awslabs/s3-connector-for-pytorch/blob/v1.5.0/s3torchconnector/src/s3torchconnector/dcp/s3_file_system.py#L150-L160 | NEW (code)
+- The connector's file system emulates rename with copy and delete (`copy_object` then `_delete_with_retry`, L181-L188) | https://github.com/awslabs/s3-connector-for-pytorch/blob/v1.5.0/s3torchconnector/src/s3torchconnector/dcp/s3_file_system.py#L150-L188 | NEW (code)
 - For full POSIX semantics AWS recommends FSx for Lustre | https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint.html | T04-51
-- Instance store 8 x 3,800 GB on p5, p5e, p5en, p6-b200, p6-b300; 3 x 7,500 GB on p6e-gb200; 4 x 1,900 GB on trn1 and trn2 | https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html | T05-42, W4-37
+- Instance store 8 x 3,800 GB on the p5, p5e, p5en, p6-b200, p6-b300 48xlarge sizes; 3 x 7,500 GB on p6e-gb200.36xlarge; 4 x 1,900 GB on trn1.32xlarge and trn2.48xlarge (fc09: smaller sizes differ, e.g. p5.4xlarge 1 x 3,800 GB, trn1.2xlarge 1 x 474 GB) | https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html | T05-42, W4-37
 - 30.4 TB per p5.48xlarge | derived (8 x 3,800 GB) | T05-42 use note
 - Instance store lives only as long as the instance; stop, hibernate or terminate erases it | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html | NEW source for T05-42's "ephemeral" ("the data does not persist if the instance is stopped, hibernated, or terminated")
 - Use instance store as a cache in front of FSx or S3 | our reading | T05-42 use note

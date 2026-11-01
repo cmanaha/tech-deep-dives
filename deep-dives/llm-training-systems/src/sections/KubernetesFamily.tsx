@@ -788,7 +788,7 @@ export function KubernetesFamily() {
         header={
           <Header
             variant="h1"
-            description="Assemble the five layers a synchronous training job needs on Kubernetes, and know which of them AWS runs on self-managed EKS, AWS Batch on EKS and HyperPod EKS (AWS documentation, Kueue v0.20.4, Kubeflow Trainer v2.3.0, JobSet v0.13.0 and HyperPod recipes 2.0.11, read 2026-10-31)"
+            description="Assemble the five layers a synchronous training job needs on Kubernetes, and know which of them AWS runs on self-managed EKS (Amazon Elastic Kubernetes Service), AWS Batch on EKS and HyperPod EKS (AWS documentation, Kueue v0.20.4, Kubeflow Trainer v2.3.0, JobSet v0.13.0 and HyperPod recipes 2.0.11, read 2026-10-31)"
           >
             25. The Kubernetes Family
           </Header>
@@ -806,7 +806,7 @@ export function KubernetesFamily() {
             that, and to decide which of them your team runs.
           </Box>
           <Box variant="p">
-            AWS offers three ways: self-managed EKS (Amazon Elastic Kubernetes Service), where you add the pieces;
+            AWS offers three ways: self-managed EKS, where you add the pieces;
             AWS Batch on EKS, which schedules jobs from outside the cluster onto nodes it creates; and SageMaker
             HyperPod with EKS, which keeps your EKS control plane and owns the worker nodes. Section 20, Who Owns What
             on AWS, maps who owns each concern; this section goes one level down, into how each path runs a training
@@ -827,21 +827,23 @@ export function KubernetesFamily() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Read the stack from the bottom. Nodes boot an image with the GPU or Neuron driver. Device plugins make
-            GPUs, EFA interfaces and Neuron devices visible to pods. A gang scheduler admits a job only when all of its
-            pods can start. A job API describes one training job as one resource. Recovery puts a healthy node back,
-            then restarts the training processes from a known state.
+            Read the stack from the bottom. Nodes boot an AMI (Amazon Machine Image) with the GPU or Neuron driver.
+            Device plugins, or the Neuron DRA (dynamic resource allocation) driver for Trainium, make GPUs, EFA
+            interfaces and Neuron devices visible to pods. A gang scheduler admits a job only when all of its pods can
+            start. A job API describes one training job as one resource. Recovery puts a healthy node back, then
+            restarts the training processes from a known state. Your training container, with its framework and NCCL
+            (NVIDIA Collective Communications Library), runs on top.
           </Box>
           <KubernetesStackDiagram />
           <Box variant="p">
             The training container stays yours on all three paths, our reading. The EKS-optimized accelerated AMIs
-            (Amazon Machine Images) carry the host side, the NVIDIA driver, the EFA kernel module and rdma-core, while
+            carry the host side, the NVIDIA driver, the EFA kernel module and rdma-core, while
             the CUDA runtime and libraries come from your container{' '}
             <Cite tier={1} href={EKS_AMI}>
               EKS User Guide, accelerated AMIs
             </Cite>
-            . AWS&apos;s checkpointless training container, for one, pins NCCL (NVIDIA Collective Communications
-            Library) 2.27.5 and aws-ofi-nccl, the plugin that carries NCCL over EFA, at 1.16.0{' '}
+            . AWS&apos;s checkpointless training container, for one, pins NCCL 2.27.5 and
+            aws-ofi-nccl, the plugin that carries NCCL over EFA, at 1.16.0{' '}
             <Cite tier={1} href={HP_CKPTLESS_NOTES}>
               HyperPod checkpointless training release notes
             </Cite>
@@ -909,8 +911,8 @@ export function KubernetesFamily() {
             <Cite tier={1} href={EKS_AMI}>
               EKS User Guide, accelerated AMIs
             </Cite>
-            . For Trainium on Kubernetes 1.34 and later, AWS recommends the Neuron DRA (dynamic resource allocation)
-            driver, which publishes each device&apos;s topology and EFA locality and allocates connected groups of 1,
+            . For Trainium on Kubernetes 1.34 and later, AWS recommends the Neuron DRA driver,
+            which publishes each device&apos;s topology and EFA locality and allocates connected groups of 1,
             4, 8 or 16 Neuron devices; DRA is not currently supported on Auto Mode, where the Neuron device plugin and
             its integer counts remain{' '}
             <Cite tier={1} href={EKS_NEURON}>
@@ -1280,8 +1282,8 @@ export function KubernetesFamily() {
               </Box>
               <Box variant="p">
                 <strong>Cost and teardown.</strong> {A4_HOURS} hours at HyperPod&apos;s ${HP_P5.value} per
-                ml.p5.48xlarge-hour is {usd(A4_COST)}, plus {usd2(EKS_CLUSTER)} per hour for EKS and EBS storage, our
-                arithmetic on us-east-1 rates{' '}
+                ml.p5.48xlarge-hour is {usd(A4_COST)}, plus {usd2(EKS_CLUSTER)} per hour for EKS and EBS (Amazon
+                Elastic Block Store) storage, our arithmetic on us-east-1 rates{' '}
                 <Cite tier={1} href={HP_P5.source.url}>
                   SageMaker Price List, us-east-1, version 20261029165009
                 </Cite>
@@ -1298,7 +1300,7 @@ export function KubernetesFamily() {
             variant="h2"
             description={`Decide whether recovering from peers' memory is worth ${gb1(EXTRA_GB)} of every H100 in AWS's 70B recipe, and keep the storage checkpoint it falls back to`}
           >
-            Checkpointless training: recovery from peers, paid for in HBM
+            Checkpointless training: recovery from peers, paid for in HBM (high-bandwidth memory)
           </Header>
         }
       >
@@ -1316,9 +1318,9 @@ export function KubernetesFamily() {
             </Cite>
             . Model and optimizer states are replicated across groups of nodes; the healthy replicas finish their
             optimizer step and send the updated states to the recovering ones. Recovery tries in-process recovery
-            first, then a process-level restart, and a job-level restart only for a catastrophic failure such as
-            several nodes failing at once; where peer recovery is not feasible, or fails, it loads a checkpoint from
-            storage{' '}
+            first, then a process-level restart, and a job-level restart, with the failed node replaced, for a
+            permanent node or GPU failure or a catastrophic one such as several nodes failing at once; where peer
+            recovery is not feasible, or fails, it loads a checkpoint from storage{' '}
             <Cite tier={1} href={HP_CKPTLESS_IPR}>
               SageMaker Developer Guide, checkpointless in-process recovery
             </Cite>
