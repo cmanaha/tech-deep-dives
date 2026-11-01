@@ -74,6 +74,7 @@ const SDK_QUEUE = gh(SDK, SAGEMAKER_SDK_TAG, 'sagemaker-train/src/sagemaker/trai
 /* HyperPod recipes. */
 const RECIPES = 'aws/sagemaker-hyperpod-recipes';
 const RECIPES_TREE = ghTree(RECIPES, HYPERPOD_RECIPES_TAG, 'hyperpod_recipes/recipes_src/training');
+const RECIPES_SRC_TREE = ghTree(RECIPES, HYPERPOD_RECIPES_TAG, 'hyperpod_recipes/recipes_src');
 const RECIPE_70B = gh(
   RECIPES,
   HYPERPOD_RECIPES_TAG,
@@ -508,7 +509,7 @@ trainer.train(
     channel_name="train",
     data_source=
       "s3://<bucket>/tokens/")],
-  dry_run=True)  # submits nothing`;
+  dry_run=True)  # submits no job`;
 
 /* ------------------------------------------------------------------------ */
 /* Section                                                                  */
@@ -713,8 +714,8 @@ export function TrainingJobs() {
                 <Cite tier={1} href={SM_SPOT} kind="vendor-claim">
                   SageMaker Developer Guide, managed Spot training
                 </Cite>
-                . No Spot rate is published: the Price List lists Spot training on ml.p5.48xlarge at {usdRate(SM_P5)},
-                the On-Demand training rate{' '}
+                . The Price List carries no separate Spot rate: it lists Spot training on ml.p5.48xlarge at{' '}
+                {usdRate(SM_P5)}, the On-Demand training rate{' '}
                 <Cite tier={1} href={SOURCES.sagemakerUse1.url}>
                   SageMaker Price List, us-east-1
                 </Cite>
@@ -732,25 +733,30 @@ export function TrainingJobs() {
                 </Cite>
                 . It is paid up front at {PLAN_RATIO} times the Capacity Block rate, {usdRate(PLAN_P5)} against{' '}
                 {usdRate(CB_P5)} per p5.48xlarge-hour{' '}
-                <Cite tier={1} href={SOURCES.sagemakerUse1.url} accessed={R1}>
+                <Cite tier={1} href={SOURCES.sagemakerUse1.url}>
                   SageMaker Price List, us-east-1
                 </Cite>{' '}
                 <Cite tier={1} href={SOURCES.capacityBlocks.url} accessed={R1}>
                   EC2 Capacity Blocks pricing
                 </Cite>
-                . A job on a plan waits for capacity up to its stopping condition or 2 days, then fails with an <code>InsufficientCapacityError</code>;
-                instances start terminating 30 minutes before the plan ends, and the job can read{' '}
+                . A job on a plan waits for capacity until its stopping condition stops it or, after 2 days pending,
+                fails with an <code>InsufficientCapacityError</code>; instances start terminating 30 minutes before
+                each of the plan&apos;s Reserved Capacity blocks ends, and the job can read{' '}
                 <code>SAGEMAKER_CURRENT_CAPACITY_BLOCK_EXPIRATION_TIMESTAMP</code> to save first{' '}
                 <Cite tier={1} href={SM_PLAN_JOBS}>
                   SageMaker Developer Guide, training plans for training jobs
                 </Cite>
-                .
+                . A plan can hold several blocks with gaps between them{' '}
+                <Cite tier={1} href={SM_PLANS}>
+                  SageMaker Developer Guide, training plans
+                </Cite>
+                , so a long job can stop at each gap.
               </Box>
             </SpaceBetween>
           </ColumnLayout>
           <Box variant="p">
             The training-plan page&apos;s sample saves when 30 minutes remain before that timestamp, and the page does not
-            say whether the timestamp marks the plan&apos;s end or the start of termination{' '}
+            say whether the timestamp marks the block&apos;s end or the start of termination{' '}
             <Cite tier={1} href={SM_PLAN_JOBS}>
               SageMaker Developer Guide, training plans for training jobs
             </Cite>
@@ -765,7 +771,7 @@ export function TrainingJobs() {
         header={
           <Header
             variant="h2"
-            description="Count on SageMaker to repair the cluster and restart the job after a GPU fault, and turn on the pre-start check it leaves optional"
+            description="Count on SageMaker to repair the cluster and restart the job after a GPU fault, and turn on the infrastructure check it leaves optional"
           >
             When a GPU fails mid-job
           </Header>
@@ -789,7 +795,7 @@ export function TrainingJobs() {
             .
           </Box>
           <Box variant="p">
-            Screening before the job is opt-in. <code>CreateTrainingJob</code> accepts an <code>InfraCheckConfig</code>,
+            The infrastructure check is opt-in. <code>CreateTrainingJob</code> accepts an <code>InfraCheckConfig</code>,
             a SageMaker-provided health check of instance hardware and cluster network connectivity{' '}
             <Cite tier={1} href={API_INFRA}>
               SageMaker API reference, InfraCheckConfig
@@ -818,17 +824,18 @@ export function TrainingJobs() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            AWS Batch service jobs put SageMaker training jobs behind a Batch job queue: Batch holds the priorities,
-            fair-share policies and quota shares, SageMaker runs each job, and service jobs go in through the{' '}
-            <code>SubmitServiceJob</code> API, not the console{' '}
-            <Cite tier={1} href={BATCH_SERVICE_JOBS} accessed={R1}>
+            AWS Batch service jobs put SageMaker training jobs behind a Batch job queue: Batch holds the queue and
+            its priorities, SageMaker runs each job, and service jobs go in through the <code>SubmitServiceJob</code>{' '}
+            API, not the console{' '}
+            <Cite tier={1} href={BATCH_SERVICE_JOBS}>
               AWS Batch User Guide, service jobs
             </Cite>
-            . Batch has scheduled SageMaker training jobs since 2025-07-31{' '}
+            . Batch has scheduled SageMaker training jobs since 2025-07-31, with fair-share scheduling policies across
+            teams{' '}
             <Cite tier={2} href={WN_BATCH_JOBS}>
               AWS What&apos;s New, 2025-07-31
-            </Cite>{' '}
-            and added quota management and preemption for them on 2026-03-25{' '}
+            </Cite>
+            , and added quota shares and preemption for them on 2026-03-25{' '}
             <Cite tier={2} href={WN_BATCH_QUOTA}>
               AWS What&apos;s New, 2026-03-25
             </Cite>
@@ -885,53 +892,60 @@ export function TrainingJobs() {
           </Box>
           <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>{LAUNCHER}</pre>
           <Box variant="p">
-            SMP (the SageMaker model parallelism library) v2 is built on PyTorch FSDP (Fully Sharded Data Parallel:
-            weights, gradients and optimizer state sharded across data-parallel ranks; section 8) and adds hybrid
-            sharding, TP (tensor parallelism: every layer split across the GPUs of one instance; section 9), activation
-            checkpointing and offloading; it runs on training jobs and on HyperPod{' '}
-            <Cite tier={1} href={SMP_V2}>
-              SageMaker Developer Guide, SMP v2
-            </Cite>
-            . Its latest release is v2.8.0 of 2025-04-01, on PyTorch 2.5.1 with NCCL (NVIDIA Collective Communications
-            Library) 2.23.4{' '}
-            <Cite tier={1} href={SMP_NOTES}>
-              SMP release notes, v2.8.0
-            </Cite>
-            . SDK v3 takes its settings in code, as <code>Torchrun(smp=SMP(...))</code>, which{' '}
-            <code>ModelTrainer</code> passes to the job as <code>mp_parameters</code>{' '}
-            <Cite tier={1} href={SDK_SMP} kind="code">
-              distributed.py L26-L77 at v3.28.0
-            </Cite>{' '}
-            <Cite tier={1} href={SDK_TORCHRUN} kind="code">
-              distributed.py L113-L128
-            </Cite>{' '}
-            <Cite tier={1} href={SDK_SMP_WIRING} kind="code">
-              model_trainer.py L799-L801
-            </Cite>
-            , while the SMP v2 guide documents only the SDK v2 <code>PyTorch</code> estimator, on SDK v2.200 or later{' '}
-            <Cite tier={1} href={SMP_USE} kind="doc-code-conflict">
-              SageMaker Developer Guide, use SMP v2
-            </Cite>
-            . That pairing is a code reading, not run end to end here.
+            SMP (the SageMaker model parallelism library) v2 and SMDDP (the SageMaker distributed data parallelism
+            library) are AWS&apos;s own training libraries, and neither has released in more than 18 months (release
+            dates below). Our reading: a new project on P5 or P6 gets current PyTorch and NCCL (NVIDIA Collective
+            Communications Library) by bringing FSDP2 (PyTorch&apos;s Fully Sharded Data Parallel, version 2; section
+            8), TorchTitan or Megatron Core in its own container (section 15, The Framework Map).
           </Box>
-          <Box variant="p">
-            SMDDP (the SageMaker distributed data parallelism library) implements an AllGather optimized for instances
-            powered by NVIDIA A100 GPUs{' '}
-            <Cite tier={1} href={HP_SLURM} accessed={R1}>
-              SageMaker Developer Guide, HyperPod Slurm
-            </Cite>
-            . Its own release notes end at v2.5.0 of 2024-10-17{' '}
-            <Cite tier={1} href={SMDDP_NOTES}>
-              SMDDP release notes
-            </Cite>
-            , while the SMP v2.8.0 container carries SMDDP 2.6.0{' '}
-            <Cite tier={1} href={SMP_NOTES}>
-              SMP release notes, v2.8.0
-            </Cite>
-            ; the {EFA_SAGEMAKER_LINK} covers which instances it supports. Our reading of these dates: neither library
-            has released in more than 18 months, so a new project on P5, P6 or Trainium gets current PyTorch and NCCL by
-            bringing FSDP2, TorchTitan or Megatron Core in its own container (section 15, The Framework Map).
-          </Box>
+          <ExpandableSection headerText="SMP v2 and SMDDP: what they add, how SDK v3 wires SMP, and their last releases">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                SMP v2 aligns its API with PyTorch FSDP (weights, gradients and optimizer state sharded across
+                data-parallel ranks), so it takes FSDP training scripts, and adds hybrid sharding, TP (tensor
+                parallelism: every layer split across the GPUs of one instance; section 9), activation checkpointing
+                and offloading; it runs on training jobs and on HyperPod{' '}
+                <Cite tier={1} href={SMP_V2}>
+                  SageMaker Developer Guide, SMP v2
+                </Cite>
+                . Its latest release is v2.8.0 of 2025-04-01, on PyTorch 2.5.1 with NCCL 2.23.4{' '}
+                <Cite tier={1} href={SMP_NOTES}>
+                  SMP release notes, v2.8.0
+                </Cite>
+                . SDK v3 takes its settings in code, as <code>Torchrun(smp=SMP(...))</code>, which{' '}
+                <code>ModelTrainer</code> passes to the job as <code>mp_parameters</code>{' '}
+                <Cite tier={1} href={SDK_SMP} kind="code">
+                  distributed.py L26-L77 at v3.28.0
+                </Cite>{' '}
+                <Cite tier={1} href={SDK_TORCHRUN} kind="code">
+                  distributed.py L113-L128
+                </Cite>{' '}
+                <Cite tier={1} href={SDK_SMP_WIRING} kind="code">
+                  model_trainer.py L799-L801
+                </Cite>
+                , while the SMP v2 guide documents only the SDK v2 <code>PyTorch</code> estimator, on SDK v2.200 or later{' '}
+                <Cite tier={1} href={SMP_USE} kind="doc-code-conflict">
+                  SageMaker Developer Guide, use SMP v2
+                </Cite>
+                . That pairing is a code reading, not run end to end here.
+              </Box>
+              <Box variant="p">
+                SMDDP implements an AllGather optimized for instances powered by NVIDIA A100 GPUs{' '}
+                <Cite tier={1} href={HP_SLURM}>
+                  SageMaker Developer Guide, HyperPod Slurm
+                </Cite>
+                . Its own release notes end at v2.5.0 of 2024-10-17{' '}
+                <Cite tier={1} href={SMDDP_NOTES}>
+                  SMDDP release notes
+                </Cite>
+                , while the SMP v2.8.0 container carries SMDDP 2.6.0{' '}
+                <Cite tier={1} href={SMP_NOTES}>
+                  SMP release notes, v2.8.0
+                </Cite>
+                ; the {EFA_SAGEMAKER_LINK} covers which instances it supports.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -958,7 +972,11 @@ export function TrainingJobs() {
             <Cite tier={1} href={RECIPES_TREE} kind="code">
               sagemaker-hyperpod-recipes tree at 2.0.11
             </Cite>
-            . The rest of the collection is fine-tuning and post-training. SDK v3 launches a recipe as a training job
+            . The rest of the collection is fine-tuning and post-training recipes, plus evaluation recipes{' '}
+            <Cite tier={1} href={RECIPES_SRC_TREE} kind="code">
+              sagemaker-hyperpod-recipes recipes_src at 2.0.11
+            </Cite>
+            . SDK v3 launches a recipe as a training job
             through <code>ModelTrainer.from_recipe</code>{' '}
             <Cite tier={1} href={SDK_FROM_RECIPE} kind="code">
               model_trainer.py L1410-L1411 at v3.28.0
@@ -985,12 +1003,12 @@ export function TrainingJobs() {
               <Box variant="p">
                 Release v1.5.1, a commit of 2025-08-14, held 36 training recipes, among them Llama 3 70B pre-training on
                 32, 64 and 128 p5 nodes and Llama 3 8B and 70B on Trn1{' '}
-                <Cite tier={1} href={RECIPES_V151} accessed={R1} kind="code">
+                <Cite tier={1} href={RECIPES_V151} kind="code">
                   sagemaker-hyperpod-recipes tree at v1.5.1
                 </Cite>
                 . Release v2.0.0 of 2025-12-03 carries the six training recipes above, and its notes list NVIDIA H100,
                 A100 and A10G accelerators{' '}
-                <Cite tier={1} href={RECIPES_V200} accessed={R1}>
+                <Cite tier={1} href={RECIPES_V200}>
                   sagemaker-hyperpod-recipes v2.0.0 release notes
                 </Cite>
                 .
@@ -1033,18 +1051,18 @@ export function TrainingJobs() {
             </Cite>
             , so {SM_BELOW_HP_PCT}% lower, our arithmetic. A training job also stops billing when it ends, while a
             HyperPod cluster bills for its whole life, idle hours included{' '}
-            <Cite tier={1} href={SM_PRICING_PAGE} accessed={R1}>
+            <Cite tier={1} href={SM_PRICING_PAGE}>
               SageMaker AI pricing
             </Cite>
             . What a standing cluster buys with its premium is the work around the job: no provisioning wait per job,
-            and deep health checks on every node that joins (sections 24 and 25).
+            and, when switched on, deep health checks on every node that joins (sections 24 and 25).
           </Box>
           <Box variant="p">
             The shape stops fitting at the job&apos;s limits. Section 22&apos;s reference run is Llama 3.1 70B on 15T
             tokens on {int(REF_GPUS)} H100 at an assumed {Math.round(DEFAULT_MFU.value * 100)}% MFU (model FLOPs
             utilization, FLOPs being floating-point operations), <code>6ND</code> with N ={' '}
             {(REF_MODEL.totalParameters / 1e9).toFixed(1)}B and the H100&apos;s dense BF16 peak of{' '}
-            {P5.denseBf16TflopsPerAccelerator.value} TFLOPS, a vendor specification{' '}
+            {P5.denseBf16TflopsPerAccelerator.value} TFLOPS (trillion FLOPs per second), a vendor specification{' '}
             <Cite tier={1} href={SOURCES.h100.url} kind="vendor-claim">
               NVIDIA H100 specification
             </Cite>

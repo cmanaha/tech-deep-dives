@@ -23,9 +23,6 @@ import type { CostResult, FeeLine } from '../lib/runtime';
 /* Sources                                                                  */
 /* ------------------------------------------------------------------------ */
 
-/** Register date for rows cited without re-opening their source. */
-const R1 = '2026-10-30';
-
 /* SageMaker training jobs and pricing */
 const SM_DG = 'https://docs.aws.amazon.com/sagemaker/latest/dg/';
 const SM_CAPACITY = `${SM_DG}train-get-capacity.html`;
@@ -75,7 +72,7 @@ function neuron(path: string, lines: string): string {
   return gh('aws-neuron/aws-neuron-sdk', NEURON_SDK_SHA, path, lines);
 }
 const TTN_ABOUT = 'training/torchtitan/about-torchtitan-neuron.rst';
-const TTN_STACK = neuron(TTN_ABOUT, 'L19-L26');
+const TTN_STACK = neuron(TTN_ABOUT, 'L12-L26');
 const TTN_MATRIX = neuron(TTN_ABOUT, 'L37-L60');
 const TTN_VALIDATED = neuron(TTN_ABOUT, 'L165-L200');
 const NXDT_ARCHIVE = neuron('archive/nxd-training/index.rst', 'L21-L27');
@@ -127,6 +124,8 @@ const HP_DAY = HP_MONTH / MONTH_DAYS;
 const PCS_MONTH = feeLine('pcs').usd;
 const EKS_MONTH = feeLine('eks').usd;
 const AUTO_MONTH = feeLine('eksAutoMode').usd;
+/** Auto Mode's management fee alone, without the cluster fee (section 25 prints this figure). */
+const AUTO_ONLY_MONTH = AUTO_MONTH - EKS_MONTH;
 
 const TRAIN_RATIO = (TRAIN_RATE / EC2_RATE).toFixed(2);
 /** Our arithmetic: how far the training-job rate sits below the HyperPod node rate. */
@@ -294,9 +293,9 @@ const SLURM_LEAVES: Leaf[] = [
     id: 'pcs',
     name: 'AWS PCS',
     section: 'section 24',
-    when: 'When: AWS runs only the controller',
+    when: 'When: AWS runs Slurm, replaces downed nodes',
     fee: `${usd(PCS_MONTH)} a month (${PCS_SHARE}), Small controller`,
-    yours: ['Yours: node images, GPU health checks,', 'node replacement and requeue'],
+    yours: ['Yours: node images, GPU health checks', 'that mark bad nodes down, and requeue'],
   },
   {
     id: 'hps',
@@ -314,7 +313,7 @@ const K8S_LEAVES: Leaf[] = [
     name: 'Self-managed EKS',
     section: 'section 25',
     when: 'When: EKS repairs nodes, you restart jobs',
-    fee: `${usd(EKS_MONTH)} a month; ${usd(AUTO_MONTH)} on Auto Mode`,
+    fee: `${usd(EKS_MONTH)} a month; Auto Mode adds ${usd(AUTO_ONLY_MONTH)}`,
     yours: ['Yours: gang scheduler (Kueue), job API', 'and its restart (JobSet), device plugins'],
   },
   {
@@ -346,8 +345,8 @@ const TREE_TITLE =
   `EC2 On-Demand while a job runs. Otherwise question 2, which scheduler the team runs, then question 3, who ` +
   `owns node health and the job restart. On Slurm: your own Slurm on EC2 for a cluster already running, no fee ` +
   `beyond the controller instance; AWS PCS, ${usd(PCS_MONTH)} a month, ${PCS_SHARE} of the EC2 bill; HyperPod ` +
-  `Slurm, ${usd(HP_MONTH)} a month, ${HP_SHARE}. On Kubernetes: self-managed EKS, ${usd(EKS_MONTH)} a month or ` +
-  `${usd(AUTO_MONTH)} on Auto Mode; AWS Batch on EKS, ${usd(EKS_MONTH)}; HyperPod EKS, ${usd(HP_MONTH)} plus ` +
+  `Slurm, ${usd(HP_MONTH)} a month, ${HP_SHARE}. On Kubernetes: self-managed EKS, ${usd(EKS_MONTH)} a month, and ` +
+  `Auto Mode adds ${usd(AUTO_ONLY_MONTH)}; AWS Batch on EKS, ${usd(EKS_MONTH)}; HyperPod EKS, ${usd(HP_MONTH)} plus ` +
   `${usd(EKS_MONTH)}. Question 4 applies to every leaf: on Trainium the team builds the Neuron training stack. ` +
   `Before any leaf, capacity comes first, and on every leaf the training script owns its checkpoints, the save ` +
   `before the reservation ends and a log line every step.`;
@@ -724,7 +723,7 @@ export function ChoosingPath() {
                 </Cite>
                 . The HyperPod line is the premium inside the cluster rate, about {usd(HP_DAY)} a day; HyperPod EKS adds
                 the EKS cluster fee on top. A Small PCS controller holds up to {PCS_SMALL_MAX} instances{' '}
-                <Cite tier={1} href={SOURCES.pcsSizes.url} accessed={R1}>
+                <Cite tier={1} href={SOURCES.pcsSizes.url}>
                   AWS PCS User Guide, cluster size
                 </Cite>
                 , exactly this fleet. Your own Slurm on EC2 adds no fee beyond the controller instance it runs on{' '}
@@ -732,7 +731,7 @@ export function ChoosingPath() {
                   What is AWS ParallelCluster
                 </Cite>
                 , and AWS Batch adds no charge of its own over the EKS cluster{' '}
-                <Cite tier={1} href={BATCH_PRICING} accessed={R1}>
+                <Cite tier={1} href={BATCH_PRICING}>
                   AWS Batch pricing
                 </Cite>
                 .
@@ -777,7 +776,7 @@ export function ChoosingPath() {
           <Box variant="p">
             A standing cluster bills for every instance it holds, busy or idle: a HyperPod cluster is billed per
             instance-hour for as long as it exists{' '}
-            <Cite tier={1} href={SM_PRICING_PAGE} accessed={R1}>
+            <Cite tier={1} href={SM_PRICING_PAGE}>
               SageMaker AI pricing
             </Cite>
             . Per busy hour the two SageMaker shapes are close, ${TRAIN_RATE} against ${HP_RATE} per ml.p5.48xlarge-hour,
@@ -810,7 +809,7 @@ export function ChoosingPath() {
             </Cite>
             . The default Kubernetes scheduler does not provide it, so the EKS guide tells training users to add a batch
             scheduler or queueing system that does{' '}
-            <Cite tier={1} href={EKS_TOPOLOGY} accessed={R1}>
+            <Cite tier={1} href={EKS_TOPOLOGY}>
               EKS User Guide, network topology
             </Cite>
             ; Kueue, for one, starts no pod until there is quota for all of them, by default{' '}
@@ -872,7 +871,7 @@ export function ChoosingPath() {
             <Cite tier={1} href={HP_HMA}>
               SageMaker Developer Guide, HyperPod health monitoring
             </Cite>{' '}
-            <Cite tier={1} href={HP_SLURM_HEALTH} accessed={R1}>
+            <Cite tier={1} href={HP_SLURM_HEALTH}>
               HyperPod Slurm cluster health checks
             </Cite>
             , can screen nodes before they join with deep health checks whose DCGM (NVIDIA Data Center GPU Manager)
@@ -896,13 +895,13 @@ export function ChoosingPath() {
             <strong>On Kubernetes.</strong> Self-managed EKS repairs GPU nodes itself: the EKS node monitoring agent
             reads Xid errors (the NVIDIA driver&apos;s numbered GPU error reports) from DCGM, and automatic node repair
             replaces or reboots the node, on by default in EKS Auto Mode and an add-on plus a Karpenter feature gate
-            otherwise{' '}
+            on self-managed Karpenter{' '}
             <Cite tier={1} href={EKS_REPAIR}>
               EKS User Guide, GPU node repair
             </Cite>
             . Gang admission, the job API and the job restart stay with the team (section 25). EKS charges $
             {EKS_RATE.toFixed(2)} per cluster-hour, {usd(EKS_MONTH)} a month, and Auto Mode adds ${AUTO_RATE} per
-            p5.48xlarge-hour, {usd(AUTO_MONTH)} a month with the cluster fee{' '}
+            p5.48xlarge-hour, {usd(AUTO_ONLY_MONTH)} a month and {usd(AUTO_MONTH)} with the cluster fee{' '}
             <Cite tier={1} href={SOURCES.eksPrice.url}>
               Amazon EKS Price List, us-east-1
             </Cite>
@@ -956,7 +955,7 @@ export function ChoosingPath() {
             , and the stack AWS supports for training today is TorchTitan Neuron on TorchNeuron, PyTorch&apos;s native
             Neuron backend{' '}
             <Cite tier={1} href={TTN_STACK}>
-              What is TorchTitan Neuron? L19-L26
+              What is TorchTitan Neuron? L12-L26
             </Cite>
             , both in beta at Neuron 2.33.0 (section 27). On every path the team builds that stack: the HyperPod recipes repository holds no Trainium training
             recipe at release {HYPERPOD_RECIPES_TAG}{' '}
@@ -1001,7 +1000,7 @@ export function ChoosingPath() {
           <Box variant="p">
             <strong>Capacity comes first,</strong> because it sets the start date (section 22, Capacity &amp; Cost). On
             EC2 the default quotas for Running On-Demand P and Trn instances are 0{' '}
-            <Cite tier={1} href={OD_QUOTAS} accessed={R1}>
+            <Cite tier={1} href={OD_QUOTAS}>
               EC2 On-Demand Instance quotas
             </Cite>
             , so open a quota request for your Region; on the SageMaker paths the quota is SageMaker&apos;s, for
@@ -1030,14 +1029,14 @@ export function ChoosingPath() {
             <Cite tier={1} href={EC2_CB}>
               EC2 User Guide, Capacity Blocks
             </Cite>
-            , and on a training plan the edge comes 30 minutes before the plan ends for training jobs and one hour
-            before for a HyperPod cluster{' '}
+            , and on a training plan the edge comes 30 minutes before each of its Reserved Capacity blocks ends for
+            training jobs and one hour before for a HyperPod cluster{' '}
             <Cite tier={1} href={SM_PLANS}>
               SageMaker Developer Guide, training plans
             </Cite>
             . And print a log line every step, the heartbeat the HyperPod training operator&apos;s hang detection
             matches{' '}
-            <Cite tier={1} href={HP_OPERATOR_USAGE} accessed={R1}>
+            <Cite tier={1} href={HP_OPERATOR_USAGE}>
               SageMaker Developer Guide, running jobs with the training operator
             </Cite>
             .
@@ -1054,7 +1053,7 @@ export function ChoosingPath() {
             <li>
               <strong>Your own Slurm on EC2</strong> (section 24): keep a ParallelCluster cluster on the 3.16 line,
               supported to 2028-02-20{' '}
-              <Cite tier={1} href={PC_SUPPORT} accessed={R1}>
+              <Cite tier={1} href={PC_SUPPORT}>
                 AWS ParallelCluster support policy
               </Cite>
               ; add a <code>HealthCheckProgram</code> and <code>--requeue</code>, and build the next cluster on PCS or
@@ -1063,7 +1062,7 @@ export function ChoosingPath() {
             <li>
               <strong>AWS PCS</strong> (section 24): size the controller for the largest fleet you expect, since a
               Small controller holds up to {PCS_SMALL_MAX} instances and a different size means a new cluster{' '}
-              <Cite tier={1} href={SOURCES.pcsSizes.url} accessed={R1}>
+              <Cite tier={1} href={SOURCES.pcsSizes.url}>
                 AWS PCS User Guide, cluster size
               </Cite>
               ; bake a <code>HealthCheckProgram</code> and a burn-in job into your node image, and set{' '}
@@ -1095,11 +1094,11 @@ export function ChoosingPath() {
             <li>
               <strong>HyperPod EKS</strong> (section 25): keep automatic node recovery on, run deep health checks before
               a long run, install Kueue through task governance{' '}
-              <Cite tier={1} href={HP_ELASTIC} accessed={R1}>
+              <Cite tier={1} href={HP_ELASTIC}>
                 SageMaker Developer Guide, HyperPod elastic training
               </Cite>
-              , and confirm the training operator on your versions first, since its support table lists Kubernetes 1.28
-              to 1.33{' '}
+              , and confirm the training operator on your versions first, since it supports Kubernetes 1.28 to 1.33
+              only{' '}
               <Cite tier={1} href={HP_OPERATOR}>
                 SageMaker Developer Guide, HyperPod training operator
               </Cite>
