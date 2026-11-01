@@ -56,6 +56,7 @@ const CB_PRICING = SOURCES.capacityBlocks.url;
 const CB_CLI = 'https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-capacity-block-offerings.html';
 /** On-Demand Capacity Reservations (re-read in wave 2, 2026-10-31). */
 const ODCR = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html';
+const ODCR_BILLING = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html';
 /** SageMaker training plans (re-opened 2026-10-31). */
 const TRAINING_PLANS = 'https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html';
 /** Training plans utilization for training jobs (re-opened 2026-10-31). */
@@ -618,8 +619,8 @@ function InstanceName({ name }: { name: string }) {
   );
 }
 
-function RateCell({ row }: { row: PriceRow | undefined }) {
-  if (!row) return <td style={cell}>none published</td>;
+function RateCell({ row, missing = 'none published' }: { row: PriceRow | undefined; missing?: string }) {
+  if (!row) return <td style={cell}>{missing}</td>;
   return (
     <td style={cell}>
       {rate(row.usdPerUnitHour.value)}
@@ -693,7 +694,7 @@ function SageMakerRatesTable() {
                 </td>
               <RateCell row={rowsFor(r, 'sagemakerTraining')} />
               <RateCell row={rowsFor(r, 'hyperpod')} />
-              <RateCell row={rowsFor(r, 'trainingPlan')} />
+              <RateCell row={rowsFor(r, 'trainingPlan')} missing="not in this data" />
             </tr>
           ))}
         </tbody>
@@ -1318,11 +1319,14 @@ export function CapacityCost() {
             capacity is free and reserves nothing, our reading.
           </Box>
           <Box variant="p">
-            An On-Demand Capacity Reservation holds capacity in one Availability Zone and bills whether
-            it is used or not, and future-dated reservations are limited to the C, G, I, M, R, T, U and X
-            families{' '}
+            An On-Demand Capacity Reservation holds capacity in one Availability Zone, and
+            future-dated reservations are limited to the C, G, I, M, R, T, U and X families{' '}
             <Cite tier={1} href={ODCR}>
               EC2 On-Demand Capacity Reservations
+            </Cite>
+            ; it bills at the On-Demand rate whether instances run in it or not{' '}
+            <Cite tier={1} href={ODCR_BILLING}>
+              Capacity Reservation pricing and billing
             </Cite>
             . For P and Trn instances it can only protect capacity you already hold, our reading of that
             family list. A future start date therefore means one of two products: an EC2 Capacity Block
@@ -1366,7 +1370,7 @@ export function CapacityCost() {
           <Box variant="p">
             A block cannot be cancelled, moved or split, so buy the window the run needs. Its instances
             are placed close together inside EC2 UltraClusters and a block takes no placement group, so
-            a launch template written for a cluster placement group drops it; block instances also sit
+            a launch template for a block must leave the placement group out; block instances also sit
             outside the On-Demand quota{' '}
             <Cite tier={1} href={CB_GUIDE}>
               EC2 Capacity Blocks for ML, considerations
@@ -1472,7 +1476,8 @@ export function CapacityCost() {
             <Cite tier={1} href={TP_JOBS}>
               Training plans utilization for SageMaker training jobs
             </Cite>
-            . EKS node groups on a block scale to zero more than 30 minutes before the end{' '}
+            . An EKS managed node group on a block scales itself to zero 40 minutes before the end;
+            self-managed nodes need a scheduled scale-to-zero more than 30 minutes before it{' '}
             <Cite tier={1} href={EKS_NODE_GROUPS} accessed={REGISTER_DATE}>
               Amazon EKS node groups, Capacity Blocks for ML
             </Cite>
@@ -1651,8 +1656,8 @@ export function CapacityCost() {
             Trainium and the GB200 UltraServer block are lowest on peak: Trn1 $3.14 in N. Virginia, Trn2
             $3.35 in Ohio and P6e-GB200 $4.23 in the Dallas Local Zone at NVIDIA&apos;s NVL72 per-GPU
             peak, against $6.03 for a p5.48xlarge block. Peak is what you rent, and achieved MFU decides
-            what each useful FLOP costs. No first-party MFU for dense Llama-class training on H200 or
-            Trainium2 was located in this research, so compare platforms after a measured step (section
+            what each useful FLOP costs. No first-party MFU benchmark for dense Llama-class training on H200
+            or Trainium2 was located in this research, so compare platforms after a measured step (section
             31, Bring-Up: From One Node to the Full Run).
           </Box>
           <Box variant="p">

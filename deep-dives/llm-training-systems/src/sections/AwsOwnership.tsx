@@ -37,6 +37,7 @@ const SM_TRAIN = `${SM_DG}how-it-works-training.html`;
 const SM_DIST = `${SM_DG}distributed-training.html`;
 const SM_REPAIR = `${SM_DG}model-checkpoints-cluster-repair.html`;
 const SM_RETRY = `${SM_API}API_RetryStrategy.html`;
+const SM_INFRA_CHECK = `${SM_API}API_InfraCheckConfig.html`;
 const SM_SPOT = `${SM_DG}model-managed-spot-training.html`;
 const SM_WARM = `${SM_DG}train-warm-pools.html`;
 const SM_PLANS = `${SM_DG}reserve-capacity-with-training-plans.html`;
@@ -63,6 +64,7 @@ const HP_FAQ_SLURM = `${SM_DG}sagemaker-hyperpod-faq-slurm.html`;
 const HP_OPERATOR = `${SM_DG}sagemaker-eks-operator.html`;
 const HP_OPERATOR_USAGE = `${SM_DG}sagemaker-eks-operator-usage.html`;
 const HP_GOVERNANCE = `${SM_DG}sagemaker-hyperpod-eks-operate-console-ui-governance.html`;
+const HP_GOVERNANCE_SETUP = `${SM_DG}sagemaker-hyperpod-eks-operate-console-ui-governance-setup-task-governance.html`;
 const HP_SPOT = `${SM_DG}sagemaker-hyperpod-spot.html`;
 const HP_RELEASE = `${SM_DG}sagemaker-hyperpod-release-notes.html`;
 const HP_AMI_SLURM = `${SM_DG}sagemaker-hyperpod-release-ami-slurm.html`;
@@ -81,6 +83,8 @@ const PCS_CB = `${PCS_UG}capacity-blocks.html`;
 const PCS_TOC = `${PCS_UG}toc-contents.json`;
 const PCS_EFA = `${PCS_UG}working-with_networking_efa.html`;
 const PCS_AMI_NOTES = `${PCS_UG}ami-release-notes.html`;
+const PCS_REPLACED = `${PCS_UG}troubleshooting_instance-terminated-after-reboot.html`;
+const PCS_REBOOT_FAQ = `${PCS_UG}slurm-reboot-faq.html`;
 const PCS_PRICE = 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSPCS/20261027150327/us-east-1/index.json';
 const PCS_PRICING = 'https://aws.amazon.com/pcs/pricing/';
 
@@ -244,8 +248,8 @@ const MATRIX: Record<PathId, Record<ConcernId, Cell>> = {
           <Cite tier={1} href={SM_CREATE_JOB}>
             SageMaker API reference, CreateTrainingJob, ResourceConfig
           </Cite>
-          . Team queues, priorities and fair share come from AWS Batch service jobs: Batch holds the queue and SageMaker
-          runs the job{' '}
+          . Team queues and priorities come from AWS Batch service jobs: Batch holds the queue and SageMaker runs the
+          job{' '}
           <Cite tier={1} href={BATCH_SERVICE_JOBS} accessed={R1}>
             AWS Batch User Guide, service jobs
           </Cite>
@@ -262,6 +266,12 @@ const MATRIX: Record<PathId, Record<ConcernId, Cell>> = {
           no screening of nodes before the job starts{' '}
           <Cite tier={1} href={SM_REPAIR}>
             SageMaker Developer Guide, cluster repairs for GPU errors
+          </Cite>
+          . Screening is opt-in: <code>CreateTrainingJob</code> accepts an <code>InfraCheckConfig</code>, a SageMaker
+          health check of instance hardware and cluster network connectivity, and the API reference does not say when it
+          runs or how long it takes{' '}
+          <Cite tier={1} href={SM_INFRA_CHECK}>
+            SageMaker API reference, InfraCheckConfig
           </Cite>
           .
         </>
@@ -329,7 +339,7 @@ const MATRIX: Record<PathId, Record<ConcernId, Cell>> = {
           <Cite tier={1} href={SM_TRAIN}>
             SageMaker Developer Guide, train a model
           </Cite>
-          ; inside it any launcher works, <code>torchrun</code> and <code>mpirun</code> included{' '}
+          ; inside it you can also run other launchers, such as <code>torchrun</code> and <code>mpirun</code>{' '}
           <Cite tier={1} href={SM_DIST} accessed={R1}>
             SageMaker Developer Guide, distributed training
           </Cite>
@@ -557,8 +567,20 @@ const MATRIX: Record<PathId, Record<ConcernId, Cell>> = {
     },
     replace: {
       own: 'you',
-      short: ['You replace', 'nodes'],
-      detail: <>Yours, our reading of the same guide.</>,
+      short: ['You decide;', 'PCS replaces'],
+      detail: (
+        <>
+          PCS terminates and replaces an instance that is rebooted outside Slurm{' '}
+          <Cite tier={1} href={PCS_REPLACED}>
+            AWS PCS User Guide, instance replaced after reboot
+          </Cite>{' '}
+          and one rebooted through Slurm with <code>nextstate=DOWN</code>{' '}
+          <Cite tier={1} href={PCS_REBOOT_FAQ}>
+            AWS PCS User Guide, Slurm reboot FAQ
+          </Cite>
+          . Deciding that a node is bad and marking it down is your health check&apos;s job, our reading.
+        </>
+      ),
     },
     restart: {
       own: 'you',
@@ -655,13 +677,12 @@ const MATRIX: Record<PathId, Record<ConcernId, Cell>> = {
       short: ['Slurm 25.05', 'ends 2026-11-30'],
       detail: (
         <>
-          Slurm 25.05 reaches end of life on PCS on 2026-11-30. SchedMD ships a major version every six months and PCS
-          supports each for about 18 months from SchedMD&apos;s release, so a cluster takes a major upgrade about once a
-          year{' '}
+          Slurm 25.05 reaches end of life on PCS on 2026-11-30{' '}
           <Cite tier={1} href={PCS_VERSIONS}>
             AWS PCS User Guide, Slurm versions
           </Cite>
-          .
+          . The same table&apos;s dates put a SchedMD major version every six months and PCS end of life about 18 months
+          after SchedMD&apos;s release, so a cluster takes a major upgrade about once a year, our arithmetic.
         </>
       ),
     },
@@ -888,7 +909,7 @@ const MATRIX: Record<PathId, Record<ConcernId, Cell>> = {
           <Cite tier={1} href={KUEUE}>
             Kueue README at v0.20.4
           </Cite>
-          , and Kubeflow calls TrainJob alpha{' '}
+          , and Kubeflow Trainer, which serves TrainJob, is in alpha with APIs that may change{' '}
           <Cite tier={1} href={KF_TRAINER}>
             Kubeflow Trainer README at v2.3.0
           </Cite>
@@ -901,7 +922,7 @@ const MATRIX: Record<PathId, Record<ConcernId, Cell>> = {
       short: ['Blocks through', 'launch template'],
       detail: (
         <>
-          Node groups, Karpenter or Auto Mode, with reserved capacity used first{' '}
+          Node groups, Karpenter or Auto Mode; Auto Mode and Karpenter provision reserved capacity first{' '}
           <Cite tier={1} href={EKS_COMPUTE}>
             EKS User Guide, accelerated compute
           </Cite>
@@ -1130,9 +1151,13 @@ const MATRIX: Record<PathId, Record<ConcernId, Cell>> = {
           <Cite tier={1} href={HP_EKS} accessed={R1}>
             SageMaker Developer Guide, HyperPod with EKS
           </Cite>
-          ; task governance installs and configures Kueue for team allocations, priorities, borrowing and preemption{' '}
+          ; task governance sets team allocations, priorities, borrowing and preemption{' '}
           <Cite tier={1} href={HP_GOVERNANCE} accessed={R1}>
             SageMaker Developer Guide, HyperPod task governance
+          </Cite>
+          , and its EKS add-on installs Kueue{' '}
+          <Cite tier={1} href={HP_GOVERNANCE_SETUP}>
+            SageMaker Developer Guide, task governance setup
           </Cite>
           .
         </>
@@ -1315,9 +1340,10 @@ const MATRIX_TITLE =
   'Ownership matrix for seven AWS training paths in three cluster shapes: a cluster per job (SageMaker training jobs), ' +
   'a long-lived Slurm cluster (your own Slurm on EC2, AWS PCS, HyperPod Slurm) and a long-lived Kubernetes cluster ' +
   '(self-managed EKS, AWS Batch on EKS, HyperPod EKS). AWS runs node health checks and node replacement on training ' +
-  'jobs, both HyperPod paths and self-managed EKS; your team runs them on your own Slurm and on PCS; AWS Batch on EKS ' +
-  'documents neither in the pages read. Job restart is AWS-run on training jobs and both HyperPod paths and yours on ' +
-  'the other Slurm paths and self-managed EKS. Capacity, cost and status rows hold facts to check.';
+  'jobs, both HyperPod paths and self-managed EKS; your team runs them on your own Slurm; on PCS your team runs the ' +
+  'checks and marks a node down, and PCS replaces the instance; AWS Batch on EKS documents neither in the pages ' +
+  'read. Job restart is AWS-run on training jobs and both HyperPod paths and yours on the other Slurm paths and ' +
+  'self-managed EKS. Capacity, cost and status rows hold facts to check.';
 
 function CellShape({
   x,
@@ -1771,8 +1797,9 @@ export function AwsOwnership() {
           </Box>
           <OwnershipMatrix />
           <Box variant="p">
-            Inside each family, AWS takes on more as you move toward HyperPod. Your own Slurm leaves every ownership row to you; PCS
-            takes the controller; HyperPod Slurm takes the controller, node health, node replacement and the job restart.
+            Inside each family, AWS takes on more as you move toward HyperPod. Your own Slurm leaves every ownership row to
+            you; PCS takes the controller and replaces an instance you mark down; HyperPod Slurm takes the controller, node
+            health, node replacement and the job restart.
             On Kubernetes, self-managed EKS now repairs GPU nodes itself{' '}
             <Cite tier={1} href={EKS_REPAIR}>
               EKS User Guide, GPU node repair
@@ -1786,21 +1813,6 @@ export function AwsOwnership() {
             </Cite>
             . The Trainium row stays mostly amber: on every path the Neuron software stack is the team&apos;s to build,
             our reading, and section 27, Trainium: The Neuron Path, starts it.
-          </Box>
-          <Box variant="p">
-            The job restart row never stands alone. Every restart in it, from SageMaker&apos;s repair to HyperPod&apos;s
-            auto-resume to Slurm&apos;s requeue, starts the job again from a checkpoint (the saved weights and optimizer
-            state; section 18, Checkpointing) that the job itself wrote{' '}
-            <Cite tier={1} href={SM_REPAIR}>
-              SageMaker cluster repairs
-            </Cite>{' '}
-            <Cite tier={1} href={HP_AUTO_RESUME}>
-              HyperPod Slurm auto-resume
-            </Cite>{' '}
-            <Cite tier={1} href={SLURM_SBATCH}>
-              Slurm sbatch documentation
-            </Cite>
-            .
           </Box>
           <Box variant="p">
             The capacity row differs by product, and one clock runs under all of it. EC2 begins terminating the instances
@@ -1872,6 +1884,10 @@ export function AwsOwnership() {
             What still differs is when the checking happens. SageMaker&apos;s repair starts only after the job fails{' '}
             <Cite tier={1} href={SM_REPAIR}>
               SageMaker cluster repairs
+            </Cite>
+            , and its health check before the job is opt-in, with no documented timing{' '}
+            <Cite tier={1} href={SM_INFRA_CHECK}>
+              SageMaker API reference, InfraCheckConfig
             </Cite>
             . HyperPod also screens nodes before they join, or on demand, with deep health checks: stress tests, DCGM
             diagnostics at level 4, typically about 45 to 90 minutes depending on GPU count, and a multi-node NCCL (NVIDIA
@@ -1976,9 +1992,9 @@ export function AwsOwnership() {
             <Cite tier={1} href={BATCH_MNP} accessed={R1}>
               AWS Batch User Guide, multi-node parallel jobs on EKS
             </Cite>
-            . HyperPod EKS installs Kueue for you through task governance{' '}
-            <Cite tier={1} href={HP_GOVERNANCE} accessed={R1}>
-              HyperPod task governance
+            . HyperPod EKS installs Kueue for you through the task governance add-on{' '}
+            <Cite tier={1} href={HP_GOVERNANCE_SETUP}>
+              HyperPod task governance setup
             </Cite>
             . Before the first multi-node run on Kubernetes, submit a job larger than the free capacity and confirm that
             none of its pods start.
@@ -2069,7 +2085,8 @@ export function AwsOwnership() {
           </Box>
           <Box variant="p">
             <strong>1. Write checkpoints, and reload the newest one at start-up.</strong> Every restart in the matrix
-            resumes from the last checkpoint the job saved: HyperPod auto-resume{' '}
+            resumes from the last checkpoint (the saved weights and optimizer state; section 18, Checkpointing) the job
+            saved: HyperPod auto-resume{' '}
             <Cite tier={1} href={HP_AUTO_RESUME}>
               HyperPod Slurm auto-resume
             </Cite>
@@ -2105,7 +2122,8 @@ export function AwsOwnership() {
             <Cite tier={1} href={SM_PLAN_JOBS} accessed={R1}>
               SageMaker Developer Guide, training plans for training jobs
             </Cite>
-            . On EKS node groups, schedule scale-to-zero more than 30 minutes before the end{' '}
+            . On EKS a managed node group scales itself to zero 40 minutes before the end, and self-managed nodes need a
+            scheduled scale-to-zero more than 30 minutes before it{' '}
             <Cite tier={1} href={EKS_NODE_GROUPS} accessed={R1}>
               EKS User Guide, node groups
             </Cite>

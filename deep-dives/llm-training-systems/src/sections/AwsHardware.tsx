@@ -70,7 +70,7 @@ const TT_NEURON_ABOUT = gh(
   'aws-neuron/aws-neuron-sdk',
   NEURON_SDK_SHA,
   'training/torchtitan/about-torchtitan-neuron.rst',
-  'L206-L208',
+  'L206-L209',
 );
 /** TorchNeuron overview: bfloat16 is the training baseline; FP8 and MXFP8 require Trainium3. */
 const TORCHNEURON_DTYPES = gh('aws-neuron/aws-neuron-sdk', NEURON_SDK_SHA, 'torch/about-pytorch-neuron.rst', 'L115-L118');
@@ -1058,7 +1058,7 @@ export function AwsHardware() {
               process per logical NeuronCore, {TRN2_RANKS} ranks per trn2.48xlarge at the default LNC
               (logical NeuronCore) setting of 2{' '}
               <Cite tier={1} href={TT_NEURON_ABOUT}>
-                aws-neuron-sdk 2.33, about-torchtitan-neuron.rst L206-L208
+                aws-neuron-sdk 2.33, about-torchtitan-neuron.rst L206-L209
               </Cite>
               , so each rank holds {gibPerAccelerator(TRN2)} / 4 = {TRN2_RANK_GIB} GiB (our
               arithmetic). Calculators B and C take those per-rank figures for trn2.
@@ -1109,7 +1109,8 @@ export function AwsHardware() {
             </li>
           </ul>
           <Box variant="p">
-            Two generally available products have no row. P6e-GB300 UltraServers and Trn3 UltraServers
+            Two generally available products are missing from AWS&apos;s specification and price pages.
+            P6e-GB300 UltraServers and Trn3 UltraServers
             have been generally available since 2 December 2025{' '}
             <Cite tier={2} href={WN_GB300}>
               What&apos;s New: P6e-GB300 UltraServers
@@ -1307,7 +1308,7 @@ export function AwsHardware() {
             The first use of the table is a floor. Model state, the weights, gradients and optimizer
             state that persist from step to step (section 3), costs 16 bytes per parameter with
             mixed-precision Adam{' '}
-            <Cite tier={3} href={ZERO} venue="preprint" accessed={REGISTER_DATE}>
+            <Cite tier={3} href={ZERO} venue="SC 2020" accessed={REGISTER_DATE}>
               ZeRO, Section 3.1
             </Cite>
             . Llama 3.1 70B has {int(P70)} parameters{' '}

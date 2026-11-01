@@ -45,14 +45,14 @@ Format: claim | source URL | register, wave 2 row or experiment
 - trn2: 16 x Trainium2 96 GiB, 3,200 Gbps, 4 x 1,900 GB; 667 / 1,299 dense; NeuronLink-v3 1.28 TB/s per chip | ac.html ; trainium2.html ; trn2-arch.html | T05-10, T05-17
 - Trn3 Gen2 UltraServer: 144 x Trainium3 in 36 servers of 4, 144 GiB per chip, 671 / 2,517 MXFP8, 28,800 Gbps | trainium3.html ; trn3-arch.html | T05-12, T05-18
 - NVIDIA prints sparse peaks; dense is half | hgx footnote "Dense is 1/2 sparse spec shown"; GB200 footnote | U02-7 (hedge accepted), T05-15, T05-16
-- trn2: 64 ranks per instance at LNC=2, one process per logical NeuronCore | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L206-L208 | T03-38
+- trn2: 64 ranks per instance at LNC=2, one process per logical NeuronCore | https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst#L206-L209 | T03-38
 - 96 / 4 = 24 GiB per rank | presets.ts hbmPerRank | 03 W3 [derived]
 - p6e-gb200 GPU named "NVIDIA B200" on ac.html but its peak is GB200's 2,500 against HGX B200's 2,250, 11% higher | ac.html ; gb200-nvl72 ; hgx | T05-16 [derived]
 - AWS GiB vs NVIDIA GB: 80 GiB vs 80 GB per H100, about 7%; calculators take the smaller | ac.html ; h100 | C02-7; memory.ts capacity rule
 - Section 7 reads 900 GB/s NVLink as 450 per direction; calculators divide by 450 | presets.ts NVLINK_HOPPER | T02-70 [our reading, section 7]
 - C05-1: ac.html lists trn2.48xlarge "8192 GiB (16 x 512 GiB)" (still on 2026-10-31); Neuron gives 96 GiB per chip and 1,536 per instance; Trn2 product page 96 GB and 1.5 TB | ac.html ; trainium2.html ; trn2-arch.html ; https://aws.amazon.com/ec2/instance-types/trn2/ | C05-1, W5-22
 - 512 GiB would plan with more than five times the HBM (512 / 96 = 5.3) | derived | [derived]
-- P6e-GB300 and Trn3 UltraServers GA since 2 December 2025 | https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available/ ; https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/ | T05-8, T05-48
+- P6e-GB300 and Trn3 UltraServers GA since 2 December 2025, and missing from AWS's specification and price pages | https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available/ ; https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/ | T05-8, T05-48
 - Neither on ac.html nor with a rate on the Capacity Blocks pricing page on 2026-10-31 (zero "gb300"/"trn3" in both, re-read) | ac.html ; https://aws.amazon.com/ec2/capacityblocks/pricing/ | W5-23
 - Not in the us-east-1 EC2 price file read for this research | https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/20261029175634/us-east-1/index.csv | W5-23 (wave 2 read, not re-read by this author)
 - P6e-GB300 figures appear only relative to P6e-GB200 in the AWS pages read (1.5x GPU memory, 1.5x FP4 without sparsity); announcement says contact an AWS sales representative | What's New GB300 ; P6 page | T05-8, U05-1 hedge

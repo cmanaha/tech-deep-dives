@@ -15,7 +15,8 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Running On-Demand P and Trn instance quotas default to 0 vCPUs, counted per family per Region | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html | T05-31; W5-13
 - p5.48xlarge has 192 vCPUs; 32 instances need 6,144 [derived] | https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html | T05-2
 - A raised quota reserves nothing [our reading] | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html | T05-31
-- ODCR holds capacity in one Availability Zone, billed used or not; future-dated ODCRs limited to C, G, I, M, R, T, U and X families | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html | T05-28; W5-14
+- ODCR holds capacity in one Availability Zone; future-dated ODCRs limited to C, G, I, M, R, T, U and X families | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html | T05-28; W5-14
+- An ODCR is charged at the On-Demand rate whether instances run in it or not | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html | fc08 (the overview page does not state it)
 - For P and Trn an ODCR protects only capacity already held [our reading] | same as above | T05-28
 - Capacity Blocks and training plans: up to 8 weeks ahead, start in as little as 30 minutes | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html and https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html | T05-26; T05-29; W5-15
 - Block length: 1-day steps to 14 days, then 7-day steps to 182 | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-purchase.html | T05-26; W5-15
@@ -24,7 +25,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Up to 64 instances per block; 256 instances per organization across blocks on a date; 2,048 GPUs on eight-GPU instances [derived] | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | T05-26; W5-17
 - Wall-clock floor on blocks is accelerator-hours over 2,048: 91 days for the reference run [derived] | derived (priceRun) | W5-12
 - No self-serve path past 256 instances located; whether training plans count against the 256 is not stated | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | W5-17; U05-5 (hedged)
-- A block cannot be cancelled, moved or split; instances placed close together inside EC2 UltraClusters; no placement group; outside the On-Demand quota | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | T05-26; T05-27; T05-31
+- A block cannot be cancelled, moved or split; instances placed close together inside EC2 UltraClusters; no placement group, so a launch template for a block leaves it out; outside the On-Demand quota | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | T05-26; T05-27; T05-31
 - Spot: two-minute interruption notice | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html | T05-30
 - Spot exists for P4d, P4de, P5, P5e, P5en, P6-B200, P6-B300, Trn1, Trn1n, Trn2; not for P6e-GB200 or Trn2 UltraServer instances | https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html | T05-30; W5-18
 - One reclaimed node stops every rank of a synchronous job, so a Spot interruption counts as a failure in section 17's arithmetic [our reading] | section 17 | T05-30
@@ -39,14 +40,14 @@ Format: claim | source URL | register, wave 2 row or experiment
 - A training plan terminates instances 30 minutes before the end for training jobs and one hour before for HyperPod | https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html (opened 2026-10-31) | T05-29; T06-30
 - Diagram: clock times are the documented edges; bars and save times schematic | as the two rows above | T05-27; T05-29
 - Training jobs on a plan read `SAGEMAKER_CURRENT_CAPACITY_BLOCK_EXPIRATION_TIMESTAMP`, in milliseconds | https://docs.aws.amazon.com/sagemaker/latest/dg/training-plan-utilization-for-training-jobs.html (opened 2026-10-31) | new source, this section
-- EKS node groups on a block scale to zero more than 30 minutes before the end | https://docs.aws.amazon.com/eks/latest/userguide/ml-node-groups.html | T06-42
+- EKS managed node groups on a block scale to zero 40 minutes before the end on their own; self-managed nodes need a scheduled scale-to-zero more than 30 minutes before | https://docs.aws.amazon.com/eks/latest/userguide/ml-node-groups.html | T06-42; fc08 (matches section 25)
 - PCS: an expiring block terminates the node group's instances, running jobs may fail depending on Slurm settings, queued jobs wait; one block per node group | https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks.html | T06-34
 - Back-to-back blocks need a node group per block in the same queue or a launch template naming the next block [our reading] | same as above | T06-34
 - Last save starts one save time plus a margin before the edge [our reading] | sections 18, 19 | W5-16
 
 ## What an hour costs
 
-- Rate tables: EC2 On-Demand and Capacity Block per instance-hour (UltraServer-hour for GB200), SageMaker training job, HyperPod node and training plan rates, each with its Region, read 2026-10-30 | us-east-1 EC2 index.csv; https://aws.amazon.com/ec2/capacityblocks/pricing/; us-east-1 and us-east-2 AmazonSageMaker index.csv | T05-20; T05-21; T05-22; T05-23; T05-24; W5-6; W5-8; W5-11; W5-19
+- Rate tables: EC2 On-Demand and Capacity Block per instance-hour (UltraServer-hour for GB200), SageMaker training job, HyperPod node and training plan rates, each with its Region, read 2026-10-30; a missing training plan row reads "not in this data", since the us-east-1 Price List also prices p4d ($15.6055), p4de ($23.42412) and trn1 ($10.9618) plans that presets.ts lacks | us-east-1 EC2 index.csv; https://aws.amazon.com/ec2/capacityblocks/pricing/; us-east-1 and us-east-2 AmazonSageMaker index.csv | T05-20; T05-21; T05-22; T05-23; T05-24; W5-6; W5-8; W5-11; W5-19
 - Every N. Virginia block rate is at or below On-Demand, 0.998 (p5en, p6-b200) to 0.443 (trn1); p5.48xlarge $47.757 against $55.04 [derived] | as above | T05-22; W5-8
 - Block outside Savings Plans and Reserved Instance discounts, paid up front | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-pricing-billing.html | T05-22; C05-7
 - Pricing page: one rate per type and Region, next updated January 2027, charged at the rate prevailing at purchase; billing page: supply and demand at purchase | https://aws.amazon.com/ec2/capacityblocks/pricing/ and https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-pricing-billing.html | C05-7; W5-9
@@ -64,7 +65,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 ## Two worked bills
 
 - $ per peak BF16 PFLOP-hour: Trn1 $3.14, Trn2 $3.35 (Ohio), P6e-GB200 $4.23 (Dallas Local Zone, NVL72 per-GPU peak), p5.48xlarge block $6.03; full table [derived] | rates as above; peaks from NVIDIA H100, HGX, GB200, A100 and Neuron Trainium, Trainium2 pages | W5-11; T05-13; T05-14; T05-15; T05-16; T05-17; T05-19
-- No first-party MFU for dense Llama-class training on H200 or Trainium2 located | wave2-step-maths | U01-5; build-log "default MFU"
+- No first-party MFU benchmark for dense Llama-class training on H200 or Trainium2 located (a Neuron 2.33 setup guide prints 16.54% MFU in a sample log, Qwen3 8B on 64 ranks, which is not a benchmark) | wave2-step-maths; https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/get-started/setup-torchtitan-neuron.rst#L84 | U01-5; build-log "default MFU"; fc08 (orchestrator wording)
 - 70B 15T: 4.46M H100-hours, $30.7M On-Demand, $26.6M blocks, training plan $30.6M [derived] | derived (priceRun) | W5-12; W5-10
 - 91 days at 2,048 GPUs: four blocks of 64, each 91 days (13 seven-day steps), $26.7M for the reserved windows [derived] | derived (priceRun on whole-window hours) | W5-12; T05-26
 - Blocks of 64 instances not offered for every type in every Region | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | T05-26
@@ -88,3 +89,4 @@ Format: claim | source URL | register, wave 2 row or experiment
 - U05-7 and A0: p5e.48xlarge blocks in us-east-1; shipped as "A0 protocol (not yet run)".
 - U01-3: what the model card's 7.0M hours include; hedged.
 - Library gaps (reported, not edited): `priceRun` prices run hours, not whole reserved windows; the Capacity Block and training plan limits (64, 256, 182 days, step rules) are not in presets; library notes and errors carry register IDs, which the page strips.
+- fc08: presets.ts has no `trainingPlan` rows for p4d.24xlarge, p4de.24xlarge and trn1.32xlarge, which the us-east-1 AmazonSageMaker Price List (20261029165009) prices at $15.6055, $23.42412 and $10.9618 (TrainingPlanUpfrontFee); reported to the orchestrator.

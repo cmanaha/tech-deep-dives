@@ -17,14 +17,15 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 ## Matrix: SageMaker training jobs
 
-- Queues, priorities and fair share through AWS Batch service jobs; Batch queues, SageMaker runs | https://docs.aws.amazon.com/batch/latest/userguide/service-jobs.html | T06-51
+- Queues and priorities through AWS Batch service jobs; Batch queues, SageMaker runs (fc08: fair share removed, not on this page) | https://docs.aws.amazon.com/batch/latest/userguide/service-jobs.html | T06-51
 - A job failing on a GPU gets a GPU health check; repair starts only after the job fails | https://docs.aws.amazon.com/sagemaker/latest/dg/model-checkpoints-cluster-repair.html | G2; U06-4
+- Screening before the job is opt-in: InfraCheckConfig, a SageMaker health check of instance hardware and cluster network connectivity; the API reference gives no timing | https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_InfraCheckConfig.html | fc08 (matches section 26)
 - Reboot when recoverable, otherwise replace; up to 10 attempts; repair not billed | https://docs.aws.amazon.com/sagemaker/latest/dg/model-checkpoints-cluster-repair.html | G2
 - After a successful repair the job restarts from the previous checkpoint | https://docs.aws.amazon.com/sagemaker/latest/dg/model-checkpoints-cluster-repair.html | G2
 - Managed Spot copies checkpoints between a local path and S3 and has no On-Demand fallback | https://docs.aws.amazon.com/sagemaker/latest/dg/model-managed-spot-training.html | T06-27; W5-51
 - RetryStrategy retries an InternalServerError 1 to 30 times | https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_RetryStrategy.html | G2
 - Training plans are bought for one target and cannot be interchanged | https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html | T06-30; W5-53
-- Any launcher inside the job, torchrun and mpirun included | https://docs.aws.amazon.com/sagemaker/latest/dg/distributed-training.html | T06-23
+- Other launchers can run inside the job, such as torchrun and mpirun | https://docs.aws.amazon.com/sagemaker/latest/dg/distributed-training.html | T06-23
 - EFA follows the instance type and an SDK allowlist, with no EFA field on CreateTrainingJob | ../efa/ section 16 (sibling dive link, not a Cite) | EFA dive, section 16: EFA on SageMaker and HyperPod
 - The repair page names GPU errors only | https://docs.aws.amazon.com/sagemaker/latest/dg/model-checkpoints-cluster-repair.html | G2 (scope of the hedge: this page)
 - The Trainium training-job tutorial sets a recipe path absent from the recipes at 2.0.11 | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-trainium-sagemaker-training-jobs-pretrain-tutorial.html and https://github.com/aws/sagemaker-hyperpod-recipes/tree/2.0.11 | W5-58; T06-20; T06-52; C06-4
@@ -48,12 +49,13 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Cluster size fixed at creation: Small 32, Medium 512, Large 2,048 instances | https://docs.aws.amazon.com/pcs/latest/userguide/working-with_clusters_size.html | T06-35
 - No user guide TOC entry contains "health"; AMI pages name no health agent | https://docs.aws.amazon.com/pcs/latest/userguide/toc-contents.json | T06-37; W5-33
 - One Capacity Block per node group; instances terminated at expiry; queued jobs stay pending | https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks.html | T06-34
+- PCS terminates and replaces an instance rebooted outside Slurm, or rebooted through Slurm with nextstate=DOWN; deciding a node is bad is yours (our reading) | https://docs.aws.amazon.com/pcs/latest/userguide/troubleshooting_instance-terminated-after-reboot.html and https://docs.aws.amazon.com/pcs/latest/userguide/slurm-reboot-faq.html | fc08
 - Your AMI carries the PCS agent; the PCS-ready DLAMI includes no ML framework | https://docs.aws.amazon.com/pcs/latest/userguide/working-with_ami_custom.html and https://docs.aws.amazon.com/pcs/latest/userguide/working-with_ami_pcs-ready-dlami.html | T06-33; W5-30
 - The node group AMI must have the EFA driver installed and loaded; you set up security group, launch template and node group | https://docs.aws.amazon.com/pcs/latest/userguide/working-with_networking_efa.html | fetched 2026-10-31
 - No PCS AMI with the Neuron stack located; Trainium runs a customer-built AMI (our reading) | https://docs.aws.amazon.com/pcs/latest/userguide/ami-release-notes.html | U06-10
 - Trn instances bill at the advanced node-management tier | https://aws.amazon.com/pcs/pricing/ | T06-53
 - Controller $0.5825, $3.2579 or $6.5426 per hour; $0.64 per P or Trn instance-hour | https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSPCS/20261027150327/us-east-1/index.json | T06-36; W5-2
-- Slurm 25.05 end of life on PCS 2026-11-30; a major every six months, about 18 months of support, an upgrade about yearly | https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html | T06-32; W5-32
+- Slurm 25.05 end of life on PCS 2026-11-30; from the table's dates, a major every six months, EOL about 18 months after SchedMD's release, an upgrade about yearly (our arithmetic) | https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html | T06-32; W5-32
 
 ## Matrix: HyperPod Slurm
 
@@ -77,7 +79,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Node monitoring agent reads Xid from DCGM and sets AcceleratedHardwareReady; on by default in Auto Mode, add-on plus Karpenter gate otherwise | https://docs.aws.amazon.com/eks/latest/userguide/ml-validate-gpu-node-repair.html | T06-43; W5-43
 - Automatic node repair replaces or reboots, stops when too many nodes in a NodePool are unhealthy; job restart left to you (our reading) | https://docs.aws.amazon.com/eks/latest/userguide/ml-validate-gpu-node-repair.html | T06-43; W5-43
 - Kueue deprecates PyTorchJob for TrainJob or JobSet; Kubeflow Trainer is alpha | https://github.com/kubernetes-sigs/kueue/blob/14b792888dcb30cf055bf2618b6260a4989cf85f/README.md and https://github.com/kubeflow/trainer/blob/658725bdae5c7e3a0854d93ac6ff492e109a22ab/README.md | T06-46; W5-42; C06-7
-- Node groups, Karpenter or Auto Mode, reserved capacity first; Capacity Blocks through a launch template in the block's Availability Zone | https://docs.aws.amazon.com/eks/latest/userguide/ml-compute-management.html and https://docs.aws.amazon.com/eks/latest/userguide/ml-node-groups.html | T06-41; T06-42; W5-39
+- Node groups, Karpenter or Auto Mode; Auto Mode and Karpenter provision reserved capacity first; Capacity Blocks through a launch template in the block's Availability Zone | https://docs.aws.amazon.com/eks/latest/userguide/ml-compute-management.html and https://docs.aws.amazon.com/eks/latest/userguide/ml-node-groups.html | T06-41; T06-42; W5-39
 - EKS accelerated AMIs carry the driver and EFA kernel module, not the NVIDIA or EFA device plugins; Auto Mode includes drivers and plugins | https://docs.aws.amazon.com/eks/latest/userguide/ml-eks-optimized-ami.html and https://docs.aws.amazon.com/eks/latest/userguide/ml-compute-management.html | T05-45; W5-39; W5-40
 - Neuron device plugin, or the Neuron DRA driver on Kubernetes 1.34 and later outside Auto Mode | https://docs.aws.amazon.com/eks/latest/userguide/device-management-neuron.html | T06-45; W5-40
 - $0.10 per cluster-hour, $0.50 more on extended support; Auto Mode $2.64192 per p5.48xlarge-hour | https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEKS/20261027191639/us-east-1/index.json | T06-40; T06-41; W5-4
@@ -96,7 +98,8 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 ## Matrix: HyperPod EKS
 
-- Task governance installs Kueue for team allocations, priorities, borrowing and preemption | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance.html | T06-16; W5-46
+- Task governance sets team allocations, priorities, borrowing and preemption | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance.html | T06-16; W5-46
+- The task governance EKS add-on installs Kueue | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-setup-task-governance.html | fc08 (the governance page names no Kueue)
 - A fault becomes node labels, a NoSchedule taint and a node condition | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-health-monitoring-agent.html | T06-8; W5-45
 - Automatic node recovery (recommended) reboots or replaces | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-node-recovery.html | T06-6
 - Training operator restarts processes in place, detects hangs, escalates to a full job restart | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-operator.html and https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-operator-usage.html | T06-9; T06-12; W5-47
@@ -127,5 +130,5 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Capacity Block termination starts 11:00 UTC on the final day, 30 minutes before the 11:30 end; P6e-GB200 UltraServer blocks 60 minutes | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | T05-27; W5-16
 - Training plans terminate 30 minutes early for training jobs, one hour for HyperPod | https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html | T06-30; W5-16
 - SAGEMAKER_CURRENT_CAPACITY_BLOCK_EXPIRATION_TIMESTAMP lets a training job checkpoint first | https://docs.aws.amazon.com/sagemaker/latest/dg/training-plan-utilization-for-training-jobs.html | T06-30
-- EKS node groups: schedule scale-to-zero more than 30 minutes before the end | https://docs.aws.amazon.com/eks/latest/userguide/ml-node-groups.html | T06-42
+- EKS managed node groups scale to zero 40 minutes before the end on their own; self-managed nodes need a scheduled scale-to-zero more than 30 minutes before | https://docs.aws.amazon.com/eks/latest/userguide/ml-node-groups.html | T06-42; fc08 (matches section 25)
 - The operator's hang rules are regular expressions over stdout with a maximum gap; the sample's 300 s; logs must go to sys.stdout | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-operator-usage.html | T06-12
