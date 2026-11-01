@@ -1,0 +1,171 @@
+{
+ "torch": "2.15.0+cu132",
+ "backend": "fake",
+ "world": 2,
+ "fsdp_units": "4 Blocks + root (root holds the first and last Linear)",
+ "microbatches": 4,
+ "results": {
+  "default": {
+   "step0": {
+    "total": {
+     "all_gather_single": 36,
+     "reduce_scatter_single": 20
+    },
+    "per_microbatch": [
+     {
+      "all_gather_single": 9,
+      "reduce_scatter_single": 5
+     },
+     {
+      "all_gather_single": 9,
+      "reduce_scatter_single": 5
+     },
+     {
+      "all_gather_single": 9,
+      "reduce_scatter_single": 5
+     },
+     {
+      "all_gather_single": 9,
+      "reduce_scatter_single": 5
+     }
+    ],
+    "optimizer": {
+     "all_gather_single": 0,
+     "reduce_scatter_single": 0
+    }
+   },
+   "step1": {
+    "total": {
+     "all_gather_single": 36,
+     "reduce_scatter_single": 20
+    },
+    "per_microbatch": [
+     {
+      "all_gather_single": 9,
+      "reduce_scatter_single": 5
+     },
+     {
+      "all_gather_single": 9,
+      "reduce_scatter_single": 5
+     },
+     {
+      "all_gather_single": 9,
+      "reduce_scatter_single": 5
+     },
+     {
+      "all_gather_single": 9,
+      "reduce_scatter_single": 5
+     }
+    ],
+    "optimizer": {
+     "all_gather_single": 0,
+     "reduce_scatter_single": 0
+    }
+   }
+  },
+  "no_sync": {
+   "step0": {
+    "total": {
+     "all_gather_single": 36,
+     "reduce_scatter_single": 5
+    },
+    "per_microbatch": [
+     {
+      "all_gather_single": 9
+     },
+     {
+      "all_gather_single": 9
+     },
+     {
+      "all_gather_single": 9
+     },
+     {
+      "all_gather_single": 9,
+      "reduce_scatter_single": 5
+     }
+    ],
+    "optimizer": {
+     "all_gather_single": 0,
+     "reduce_scatter_single": 0
+    }
+   },
+   "step1": {
+    "total": {
+     "all_gather_single": 36,
+     "reduce_scatter_single": 5
+    },
+    "per_microbatch": [
+     {
+      "all_gather_single": 9
+     },
+     {
+      "all_gather_single": 9
+     },
+     {
+      "all_gather_single": 9
+     },
+     {
+      "all_gather_single": 9,
+      "reduce_scatter_single": 5
+     }
+    ],
+    "optimizer": {
+     "all_gather_single": 0,
+     "reduce_scatter_single": 0
+    }
+   }
+  },
+  "no_sync_no_reshard": {
+   "step0": {
+    "total": {
+     "all_gather_single": 21,
+     "reduce_scatter_single": 5
+    },
+    "per_microbatch": [
+     {
+      "all_gather_single": 9
+     },
+     {
+      "all_gather_single": 4
+     },
+     {
+      "all_gather_single": 4
+     },
+     {
+      "all_gather_single": 4,
+      "reduce_scatter_single": 5
+     }
+    ],
+    "optimizer": {
+     "all_gather_single": 0,
+     "reduce_scatter_single": 0
+    }
+   },
+   "step1": {
+    "total": {
+     "all_gather_single": 21,
+     "reduce_scatter_single": 5
+    },
+    "per_microbatch": [
+     {
+      "all_gather_single": 9
+     },
+     {
+      "all_gather_single": 4
+     },
+     {
+      "all_gather_single": 4
+     },
+     {
+      "all_gather_single": 4,
+      "reduce_scatter_single": 5
+     }
+    ],
+    "optimizer": {
+     "all_gather_single": 0,
+     "reduce_scatter_single": 0
+    }
+   }
+  }
+ }
+}

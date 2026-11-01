@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 import Table from '@cloudscape-design/components/table';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
+import Link from '@cloudscape-design/components/link';
 import { AwsCompilerStack } from '../components/AwsCompilerStack';
 import { TorchNeuronStackDiagram } from '../components/TorchNeuronStackDiagram';
 import { Cite } from '../components/Cite';
@@ -655,7 +656,12 @@ export TORCH_NEURONX_NEFF_CACHE_DIR="/fsx/neff_cache"`}</pre>
             multiple of 128 tokens by default to limit the number of input shapes, and GRPO (Group
             Relative Policy Optimization) and RLOO (REINFORCE Leave-One-Out) generate rollouts with
             Transformers inside the training process rather than with vLLM.
-            <Cite s={S.trlTrainium} />
+            <Cite s={S.trlTrainium} /> How a Trainium training run is laid out and run on each AWS
+            path is in the{' '}
+            <Link href="../llm-training-systems/">
+              LLM training systems dive, section 27: Trainium: The Neuron Path
+            </Link>
+            .
           </Box>
         </SpaceBetween>
       </Container>

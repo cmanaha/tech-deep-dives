@@ -1,0 +1,165 @@
+# Build log (orchestrator)
+
+Per-section author reports, for the glossary, the fact check and the final report.
+
+| Section | File | Cites | Diagrams (harness 1440/390) | Acronyms expanded | Open items for fact check |
+| --- | --- | --- | --- | --- | --- |
+| 1 Three budgets | ThreeBudgets.tsx | 25 (about 37 claim rows; every source re-opened 2026-10-31) | 1 (the step at the centre with the arithmetic and memory budgets drawn to scale, the communication strip, time between failures, and the ring of three cluster shapes on AWS; narrow layout below 760px), 0 overlap/clip/overflow at 1440 and 390 | FLOPs, EFA, EC2, PCS, EKS, UTC, ZeRO, FSDP, MLP, MFU, BF16, MTTF | Repeats the owning sections' figures: 6ND = 3.80e25 against Meta's 3.8e25 (section 4), 128.5 GB, 1.6 times one H100 (section 3), one unexpected interruption every 3.1 hours (section 17), NVLink nine times EFA per GPU (section 7), the 30-minute Capacity Block edge (section 20); mental model: four resources (arithmetic, memory, communication, time) traded against each other; cites Megatron-LM Sections 2.3 and 3.3.2 for the TP all-reduces where section 7 cites Sec 3.2 (fc01 to reconcile); about 1,600 words |
+| 2 Getting started | GettingStarted.tsx | 10 (7 sources, all re-opened 2026-10-31) | 1 (reading map: six stages plus framing and reference, the four shorter routes marked per section, dashed where a stop applies only sometimes; narrow layout below 680px), 0 overlap/clip/overflow at 1440 and 390 | NCCL, EFA, HBM, MLP, KV, FLOPs, TP, DP, EP, MFU, PP, BF16, FP8, DDP, ZeRO, FSDP, HSDP, MoE | Strongest number: NVLink at nine times EFA per GPU, landed twice; 6 FLOPs and 16 bytes per parameter (128.5 GB, 1.6 times one H100) repeated from section 3; routes checked against SCOPE's R1 notes (ranks route includes 4; budget route 3, 5, 18 and 23; fine-tuning route 7, 14, 15, 20 and 22; theory route includes 2); describes section 31 from its draft (fc01 to recheck against the committed section 31) |
+| 3 Training step | TrainingStep.tsx | 34 | 1 (step timeline drawn to scale, narrow layout at 390), 0 overlap/clip/overflow | FLOPs, MFU, BF16, FP32, TFLOPS, ZeRO, MLP; FP16 glossed | 18-byte row cites Megatron's table without claiming it is the default; strongest number 128.5 GB (1.6 x one H100) landed five times |
+| 4 Arithmetic | Arithmetic.tsx | 55 | 1 (attention's share of per-token FLOPs, 8B and 70B from 2K to 128K, stacked bars; narrow layout), 0 overlap/clip/overflow | FLOPs, MFU, HFU, TFLOPS, BF16, FP32, FP8, MXFP8, FP4, PFLOP, EC2, EFA, FSDP, HSDP, TP, LNC, TPU | About 2,830 words with four expandables, above the 2,500 target: leverage pass to trim; A2 and A5 protocols marked not yet run |
+| 5 Memory budget | MemoryBudget.tsx | 65 (37 sources) | 1 (stacked bars, seven layouts against 60, 80 and 141 GB, values from `memoryBudget`; narrow layout), 0 overlap/clip/overflow; lever table stacks on narrow screens | BF16, FP32, FP8, ZeRO, FSDP, DDP, TP, SP, PP, CP, 1F1B, MLP, FLOPs, HFU, MFU, EFA, HSDP | Prints the papers' recomputation cost as 30% to 40% (no paper states 25%); U02-8 hedged until A2; Megatron's Muon state layout unread; 43.0 GB (calculator, BF16 logits added) against the register's 39 GB |
+| 6 Precision | Precision.tsx | 75 | 1 (scale ladder: model, tensor, block and tile, runs of 32 and 16; stacked below 680px), 0 overlap/clip/overflow | FP8, BF16, FP16, FP32, TFLOPS, MXFP8, NVFP4, OCP, MX, MFU, cFP8, TF32 | C03-10 (MXFP8 on Neuron: release notes against the fork's code) open, hedged; U01-13 (two Trainium2 peaks) hedged; uses a source outside the register, Megatron Bridge 0.7.0 performance archive (731 TFLOP/s per GPU, 70B FP8 on 64 H100), labelled vendor claim, proposed T01-64: fact check must open it |
+| 7 Collectives | Collectives.tsx | 47 | 4 figures (9 SVGs: before-and-after grids, all-reduce decomposition, link hierarchy, crossing count; narrow layouts), harness 0/0/0 | NCCL, EFA, DDP, ZeRO, AMI, BF16, TP | Per-instance pricing of the crossing is our reading (AWS nccl-tests sample as evidence); keeps 0.62 s only as the per-GPU count in an expandable; A1 protocol marked not yet run |
+| 8 Data parallel | DataParallel.tsx | 45 | 6 (five sharding cards on two instances, one bar chart of GB leaving each instance per step with flat-ring whiskers), 0 overlap/clip/overflow | DP, DDP, MiB, BF16, EFA, FP32, ZeRO, FSDP, FSDP2, HSDP, INT8, INT4, FLOPs, MFU, vCPUs | Per-instance numbers match Calculator C (289, 193, 120, 24.1 GB); HSDP deferred needs 82.45 GB without recomputation with the eager SwiGLU, so the page recommends full recomputation (42 GB); HSDP's time gain may be smaller than its byte gain (about 0.75 s of NVLink gathers), our reading pending A2; new derived figures: 205 GB with sync off alone (E3 counts), A2's two-instance predictions; 2,566 words |
+| 9 Tensor parallel | TensorParallel.tsx | 44 | 3 (layer with TP, layer with SP, time bars; narrow layouts), 0 overlap/clip/overflow | TP, SP, DP, MLP, KV, GQA, MFU, FLOPs, TFLOPS, BF16, EC2, EFA, FSDP, MoE | 70B TP 8: 0.94 GB per layer per micro-batch, 2.1 ms on NVLink against 13.3 ms at 40% MFU (W2-17); one-GPU-per-instance TP group 18.8 ms (per-GPU share, g = 1); SP 99.4 to 61.9 GB matches Calculator B; TP 16 across instances not priced |
+| 10 Pipeline | PipelineParallel.tsx | 53 | 1 interactive schedule chart (GPipe, 1F1B, interleaved; m control; simulated from the schedule rules; narrow layout; 18 control settings probed), 0 overlap/clip/overflow | PP, TP, DP, MFU, FLOPs, TFLOPS, 1F1B, EFA, BF16, MLP, MoE, ZeRO-1 | U02-10 (Llama 3's V and M) hedged; Calculator B's interleaved factor 1 + (p-1)/(pv) gives 1.375 L at m = p where the simulated schedule holds L, so the slider starts at m = 8 (calculator caveat for section 14); eleven Tier 1 code facts new to the registers (marked NEW in the claims file); at 390 the steady-state forward blocks are narrow and unnumbered |
+| 11 Context parallel | ContextParallel.tsx | 40 | 4 (three design cards: ring, Ulysses, Llama 3 all-gather; ring overlap threshold chart, log scale), 0 overlap/clip/overflow | CP, SP, TP, PP, DP, ZeRO, BF16, GQA, KV, EFA, EC2, FLOPs, TFLOPS, MFU | Dense 989.5 TFLOPS as half the sparse figure rests on U02-7 (open), stated; register line fixes: W2-31 at L713 to L718, Ulysses analysis is Sec 3.2 not 3.1 (T02-22); Megatron's guide runs 70B at 8K with CP 2 where Llama 3 used CP 1, both stated; 'TP and Ulysses split the same heads' and the (g+1)/P rule labelled our reading |
+| 12 Expert parallel | ExpertParallel.tsx | 38 | 1 (node-limited dispatch of one token across two p5.48xlarge; narrow layout), 0 overlap/clip/overflow | MoE, EP, EFA, EC2, FP8, BF16, FP16, ZeRO, HSDP, TP, CP, DP, PP, ETP, EDP | Glossary must add ETP and EDP; T02-72 shown as a doc-code conflict (the guide's example works only with ETP 1, per Calculator C); U03-6 closed (overlap flag, no DualPipe); twelve Megatron core_v0.20.0 code claims without a register row; about 2,600 words |
+| 13 Composing | ComposingLayouts.tsx | 51 | 1 (nested mesh of Llama 3 405B: DP 64, PP 16, CP 1, TP 8), 0 overlap/clip/overflow | TP, CP, PP, DP, MFU, FLOPs, EFA, NCCL, FSDP, FSDP2, HSDP, ZeRO, EP, GQA, PTD-P, SP, BF16, TFLOP/s, EC2 | W2-4 stated corrected (PP outermost in Megatron, TorchTitan, DeepSpeed; DP outermost in Llama 3); Llama 3's pod placement and CP 16 crossing servers labelled our reading; 70B TP about 1.2 TB per GPU per step from Calculator C; about 2,990 words |
+| 14 Set my ranks | SetMyRanks.tsx | 71 | 1 (12-step decision flow in three passes; narrow version below 760px) and Calculator C's UI (rank, check and MoE modes, 10 presets), 0 overlap/clip/overflow | TP, SP, PP, CP, DP, KV, HBM, BF16, FP32, ZeRO, FSDP, HSDP, DDP, PTD-P, MoE, ETP, EP, EDP, 1F1B, EFA, NCCL, FLOPs, MFU, GQA, VP, MLP, EC2, LNC, vCPU | Every worked number computed live by Calculator C; the author found ZeRO-2 priced like ZeRO-1, which the orchestrator fixed in the calculator (one gradient reduce-scatter per micro-batch, DeepSpeed v0.19.9 stage_1_and_2.py L2293 to L2295; new test, mutation-checked) and in the page's example 2 text; CP-heavy layouts rank first when CP is allowed, so the UI defaults to CP 1 (step 6); calculator error messages carry register IDs, which the page strips |
+| 15 Framework map | FrameworkMap.tsx | 111 (110 Tier 1, 1 Tier 3) | 1 (three engines with front ends and maturity labels at pinned tags, ended or moved projects; phone layout), 0 overlap/clip/overflow | FSDP, DTensor, ZeRO, TP, PP, CP, EP, SP, HSDP, DDP, DP, NxD, RL, BF16, FP32, FP8, MXFP8, NVFP4, MoE, 1F1B, DCP, LNC, VP, EC2, DLAMI, AMI, DLC, ALST | Glossary must add DLC and ALST; eight code or doc lines without a register row (marked NEW), one is Megatron's FSDP2 flag whose help text reads 'Set to enable FSDP ZeRO-2'; TorchTitan Neuron shown as 0.2.2+neuron.1 (package version) against the pinned release-2.33.0 tag: fact check confirms both; about 2,800 words |
+| 16 Fine-tuning | FineTuning.tsx | 39 (30 sources) | 1 (70B model state by method, to scale in 80 GB cells) and 1 widget on Calculator B's frozen-base rows, 0 overlap/clip/overflow | RL, LoRA, QLoRA, FP32, BF16, ZeRO, NF4, EC2, FP16, DTensor, FSDP | 1,128.9 GB on the 16-byte basis (15 H100 at 80 GB) and 1,270.0 GB on the 18-byte basis (16) both printed with basis; sources new to the registers: QLoRA Sec 2 activation figures, LoRA Sec 7.1 (18M adapter parameters), OpenRLHF utils.py L25 to L37; about 2,000 words |
+| 17 Failures | FailureRates.tsx | 29 | 1 (job MTTF against GPU count, log axes, three Meta rates and the Llama 3 405B point; narrow layout), 0 overlap/clip/overflow | MTTF, ETTR, HBM (RSC-1 and RSC-2 used as names; the paper never expands RSC) | Every MTTF from jobMttfSeconds and FAILURE_RATES; three facts beyond the registers checked at source (Observation 2 quote, 8 GPUs per server on Meta's clusters, Meta's three causes of lost time); EC2 instance page keeps its 2026-10-30 access date (not re-opened) |
+| 18 Checkpointing | Checkpointing.tsx | 69 | 1 (synchronous against asynchronous save around one failure; narrow layout) and Calculator D's UI, 0 overlap/clip/overflow | BF16, FP32, ZeRO, RNG, MTTF, ETTR, MFU, EC2, EFA, S3, EKS, DCP, NCCL, HDFS, SOSP, vCPU, TFLOPS | Interval and ETTR from Calculator D at render (2.0 h and 403 steps at 60 s, ETTR 0.982; 21.5 min and 74 steps at 2 s, 0.995); new point: save is asynchronous, load is not (smallest FSx size reads 988 GB back in about 14 min, longer than the 10-minute restart); A3 protocol not yet run; U04-2 (Young and Daly papers unread) hedged; RSC-1 unexpanded; over 2,500 words with the three expandables |
+| 19 Resuming | Resuming.tsx | 53 (40 sources) | 1 (one slow rank stretches every step, and what each rank's timers show; narrow layout), 0 overlap/clip/overflow | NCCL, EKS, DCP, DDP, FSDP, HSDP, TP, MFU, AMI, EFA | Strongest number: 10.4% of GPU-hours wasted to stragglers (ByteDance trace), five times; A1 protocol not yet run (narrows U04-5); NEW code facts: TorchTitan v0.4.0 disables automatic GC and collects every 50 steps, Megatron leaves it off; about 2,700 words |
+| 20 AWS ownership | AwsOwnership.tsx | 151 | 1 (ownership grid: seven paths in three cluster shapes, ten concerns, coloured AWS-run, team-run or not documented; wide and narrow layouts), 0 overlap/clip/overflow | EFA, EC2, EKS, PCS, AMI, DLAMI, S3, SDK, NCCL, SMP, UTC, DCGM, Xid, DRA | Strongest number: termination starts 30 minutes before a Capacity Block ends (W5-16), three times; rates read from presets; U06-1 (auto-resume above 16 nodes) hedged; Batch on EKS health, fabric and Trainium cells not documented (U06-7); glossary adds UTC |
+| 21 AWS hardware | AwsHardware.tsx | 67 | 1 (scale-up domains of 8, 16, 64, 72 and 144 accelerators to scale with the EFA edge; layout below 700px) and one instance table from the 12 INSTANCES presets (stacked cards on narrow screens), 0 overlap/clip/overflow | EC2, HBM, MFU, EFA, TP, NCCL, NVMe, TFLOPS, BF16, FP8, cFP8, MXFP8, LNC, FP4, DP, ZeRO-1 | All figures imported from presets, none disagrees with its source; new doc conflict: P6e-GB200 EFA 3,200 Gbps per instance (800 per GPU) on the EC2 page against 28.8 Tbps per UltraServer (about 400 per GPU) on the P6 page, preset follows EC2, page prints both; EC2 page's 2,148 GiB total is not 8 x 268 (claims file); C05-1 in the text, C05-2 to C05-4 and U01-13 in a disclosure |
+| 22 Capacity and cost | CapacityCost.tsx | 54 sites (60 claim rows) | 1 (Capacity Block window and final-day edges, 11:00 and 10:30 UTC; narrow layout) and Calculator A's cost panel on estimateRun and priceRun, 0 overlap/clip/overflow | EC2, vCPU, MFU, UTC, PCS, EKS, BF16, S3 | 70B on 15T at 40% MFU on 2,048 H100: 91 days, $30.7M On-Demand, $26.6M on blocks ($47.757 per p5 hour); Meta's 7.0M hours as the hedge (U01-3); U05-5 hedged; A0 protocol not yet run (U05-7); block and plan limits (64 instances, 256 per organization) defined in the section, not in presets; reserved windows priced by calling priceRun with window hours |
+| 23 Storage | Storage.tsx | 48 | 1 (data path and checkpoint path for 70B on 256 H100, restore edge dashed; narrow layout), 0 overlap/clip/overflow | S3, EC2, NVMe, FLOPs, MFU, BF16, TFLOPS, EFA, DCP, POSIX | 0.96 MB/s of tokens against 16.5 GB/s for a 60 s save, about 17,000 times; checkpoint numbers from Calculators A and D match section 18; NEW code readings: DCP's FileSystemWriter renames .metadata.tmp at the end of every save and Mountpoint rejects renames on general purpose buckets, so dcp.save into Mountpoint fails there in our reading (not run); Megatron rebuilds its index cache on rank 0; Megatron streams from S3 with mmap off; U04-7 hedged; about 2,620 words |
+| 24 Slurm | SlurmFamily.tsx | 55 | 2 (three Slurm paths across controller, image, health and restart layers; and a second figure), narrow layouts, 0 overlap/clip/overflow | EC2, PCS, FSDP, DLAMI, AMI, EFA, HPC, EKS, DCGM, NCCL, GRES, UTC | Glossary adds GRES; fees from priceRun (PCS 1.2%, HyperPod 20.0% over EC2); keep one spare node to skip 45 to 90 minutes of deep checks; U06-1 hedged quoting both pages; the 60 s health-check timeout on PCS is our reading; PCS docs say PCS replaces an instance rebooted outside Slurm or set nextstate=DOWN, so section 20's PCS node-replacement cell may need narrowing (fact check fc08) |
+| 25 Kubernetes | KubernetesFamily.tsx | 71 | 2 (five-layer stack across self-managed EKS, Batch on EKS and HyperPod EKS; recovery ladder), wide and narrow, 0 overlap/clip/overflow | EKS, EC2, EFA, NCCL, AMI, DRA, DCGM, Xid, DCP, TP, PP, DP, FP32, BF16 | Job API pick JobSet v0.13.0 (v1alpha2 API) labelled our reading; checkpointless extra replica 6.6 GB per H100 on AWS's 70B recipe from Calculator B; Auto Mode fee $60,870 a month on 32 p5.48xlarge; NEW: EKS managed node groups drain 40 minutes before a Capacity Block ends (added to the Capacity Block condition); U06-7 hedged; Volcano by tag only (U06-6) |
+| 26 Training jobs | TrainingJobs.tsx | 56 (67 claim rows) | 1 (one training job from queue to teardown with billing per phase; wide and narrow), 0 overlap/clip/overflow | EC2, SDK, S3, DDP, EFA, EKS, SMP, SMDDP, FSDP, TP, PP, DP, BF16, NCCL, MFU, FLOPs | 1.15 x EC2 On-Demand; reference run $30.7M rising to $35.3M at the training rate, matching section 22; SDK v3 ModelTrainer runtime default 3,600 s against the API's 1 day; U06-3 untested; InfraCheckConfig timing undocumented (section 20's no-screening cell may need a note, fc08); training-plan expiry timestamp meaning unclear; no page runs the checkpointless recipe as a training job |
+| 27 Trainium | Trainium.tsx | 73 | 1 (the Neuron stack beside the GPU stack on trn2.48xlarge and p5.48xlarge, rank unit marked on each: 64 ranks at LNC=2 against 8), 0 overlap/clip/overflow at 1440 and 390 | NxD, XLA, DTensor, FSDP, DDP, FSDP2, TP, CP, EP, MoE, PP, DLAMI, AMI, NCCL, EFA, LNC, HBM, BF16, FP32, FP8, MXFP8, TFLOPS, EC2, MFU, PCS, EKS, DRA, CI | $3.35 per peak BF16 PFLOP-hour on an Ohio Capacity Block; AWS's one published MFU line divides by 158 TFLOPS per rank, so convert with x 632/667; W3-42 (tutorial step line suggests Trainium3) our reading; A5 not yet run, 40% MFU stays an assumption; U03-4 four-node 70B command shown as unvalidated; U06-10 carried from section 24; TorchTitan Neuron 0.2.2+neuron.1 against release-2.33.0 checked in fc06 |
+| 28 Choosing | ChoosingPath.tsx | 51 (10 dated 2026-10-30, cited without re-opening) | 1 (decision tree: four questions to seven paths, each leaf with its fee beyond EC2, the work left to the team and the owning section; narrow layout below 640px), 0 overlap/clip/overflow at 1440 and 390 | PCS, EC2, EFA, EKS, HPC, DCGM, NxD, UTC | Strongest number: PCS $15,165 (1.2%) against HyperPod $253,624 (20.0%) a month on 32 p5.48xlarge, five times, all fees from priceRun (match sections 22 and 24); self-managed EKS leaf prints $72 a month and $60,942 on Auto Mode (section 25 prints the Auto Mode fee as $60,870; the leaf adds the $72 cluster fee: fc10 to check the wording agrees); hedges kept: Batch on EKS GPU health and EFA not in the pages read, spare worker as section 24's reading; ends on capacity first, the script's three duties, then section 31 |
+| 29 What to measure | WhatToMeasure.tsx | 65 | 1 (three layers of signal: model health, job efficiency, hardware health, with the symptoms each explains), 0 overlap/clip/overflow | MFU, NaN, Inf, ECC, EFA, DCGM, TFLOPS, BF16, FP8, FP16, EKS, SM, NCCL, CRC | 8B at 4,000 tokens/s is 19.5% MFU by 6N and 23% by TorchTitan's count (runtime.ts, matches W6-9); W6-31's Xid alert set mixes the immediate and investigatory bucket columns and misses Xid 48, so the page alerts on any Xid whose immediate bucket is RESET_GPU, RESTART_BM or WORKFLOW_* (our reading; orchestrator accepted; section 30 told to match); two citation line ranges corrected by the author (NCCL buffers, NVLink error fields); 2,524 words |
+| 30 Telemetry | Telemetry.tsx | 77 (65 claim rows) | 2 (two ways a hang becomes a crash at PyTorch v2.15.0 defaults, drawn to scale; each signal's path on AWS per path, on by default or off), wide and narrow, 0 overlap/clip/overflow at 1440 and 390 | NCCL, RAS, FSDP, DCGM, SM, ECC, Xid, EFA, EKS, HTA, HBM, DMA, S3 | A stalled collective becomes a crash about 11 minutes later with every rank's last 2,000 collectives dumped; keep the dumps, read them with torchfrtrace, query NCCL RAS during a hang; Xid alerting links section 29's bucket rule (not W6-31's set), HyperPod's preset any-Xid alert noted as wider; U07-3 (HyperPod preset alerts in default mode) waits on A4, not run; the NVLink alert reads a field DCGM keeps only as a deprecated alias, untested; U07-6 (NCCL logging and Nsight overhead) no NVIDIA figure, text says measure; about 2,460 words plus 470 in expandables |
+| 31 Bring-up | BringUp.tsx | 44 (65 claim rows) | 1 (the bring-up ladder: ten rungs from capacity and quota to alerts, each at the smallest scale that shows its failures, with the owning section), 0 overlap/clip/overflow at 1440 and 390 | MFU, FLOPs, vCPU, NCCL, ECC, DCGM, EFA, EKS, AMI, PCS, DLAMI, SMP, MoE, FSDP, HBM, BF16, TFLOPS, Xid | Strongest number: removing nodes that failed repeatedly cut Meta's large-job failures from 14% to 4%; ends on 'start with rung 1 today'; U07-4 narrowed (TorchTitan fake-backend memory check, then a smoke run, our reading); wave2-aws G1 (AMI supplies EFA, container supplies NCCL and aws-ofi-nccl; read versions inside the container); A1 cited as not yet run; eight NEW claims without a register row (health-check suite, nccl-tests version set, NCCL_DEBUG=VERSION, aws-ofi-nccl version line, fi_info --version, nccom-tests and NCCOM, per-instance arithmetic, large-message guidance): fc11 to verify; about 2,850 words (length) |
+
+## Calculators (`src/lib/`, 2026-10-31)
+
+presets.ts, runtime.ts (A), memory.ts (B), parallelism.ts (C), checkpoint.ts (D); 156 tests plus the 8
+Cite tests, `Tests  164 passed (164)`. Mutation check (each restored, suite green after): memory 34 to
+35 sbh fails 18 tests; runtime 6N to 5N fails 20; checkpoint sqrt(2w) to sqrt(w) fails 7; parallelism
+bubble (p-1) to p fails 2. Calculator C prices cross-instance collectives per instance (condition
+below); W2-44's shares stay about 6%, 94% and DP 0.88%.
+
+Discrepancies the calculator author recorded (spec or register against recomputation), for the
+owning sections and the fact check:
+- 01 W4: 1.377 GB from E1's measured 41.03 sbh, 1.376 GB from the rounded 41.0 (both tested).
+- Section 16: 1,129 GB at 16 bytes per parameter against register 03 W4's 1,270 GB at 18 bytes; the
+  section must say which basis it prints.
+- W1-23: TP 8 x FSDP 32 at 16 sequences with full recomputation, 38.8 GB in the register (FP32 logits
+  only, V = 128,000, 34 sbh) against 43.0 GB in the calculator (FP32 and BF16 logits, V = 128,256,
+  33.5 sbh); both fit.
+- G7: flat FSDP 32 with full recomputation, 58.0 GB with 3.42 GB of gathered layers counted, 54.6 GB
+  in the calculator, which leaves gathered layers to headroom; section 14 must say which it prints.
+- G5: the "2.7 to 15 minutes" dt* range is not wholly below u_0 (15 min = 900 s against a 600 s
+  restart); it is below 3 x u_0, so the regime warning still fires; section 18 words it that way.
+- W4-22: 117,749 parts from the rounded 987.75 GB; the exact byte count needs 117,750.
+
+## Cross-section conditions to keep consistent
+
+Facts that more than one section states. A section that contradicts one of these is wrong; the owner
+section and source are named so the fact check can trace it.
+
+- **Pinned versions** (every section): PyTorch v2.15.0, TorchTitan v0.4.0, Megatron Core core_v0.20.0,
+  Megatron Bridge v0.7.0, DeepSpeed v0.19.9, TorchTitan Neuron release-2.33.0, Neuron SDK 2.33, NCCL
+  user guide 2.32.3, dcgm-exporter 4.8.4, DCGM v4.7.0, HyperPod recipes 2.0.11. Constants in
+  `src/components/Cite.tsx`.
+- **The default MFU** (sections 4, 14, 22, 29, 31): 40% is a labelled assumption inside Llama 3's
+  measured BF16 range on H100; no first-party MFU for dense Llama-class training on H200, and for Trainium2 only the sample step line in AWS's Neuron 2.33 TorchTitan setup guide (16.54% on trn2.48xlarge), no first-party MFU benchmark (fc06)
+  was located (wave2-step-maths, U01-5). Tokens per second at 40% depend on the FLOP count: 6N only
+  gives about 8,200 (8B) and 935 (70B) per H100; TorchTitan's count at 8,192 tokens gives about 6,800
+  and 820 (wave2-observability W6-9).
+- **Activation coefficient** (sections 3, 5, 14): 34 sbh per layer with a fused SwiGLU, 41 sbh with
+  an eager, uncompiled `F.silu(gate) * up` (TorchTitan v0.4.0 compiles its SwiGLU by default,
+  llama3/model.py L87-L89, and whether the compiled path stores 34 or 41 sbh was not tested; fc02), 2 sbh with full recomputation, all measured on one
+  GB10 in E1; the logits' transient peak (8.5 GB forward, 11.6 GB backward at 8K) is above their 4.2
+  GB saved size.
+- **Recomputation price** (sections 4, 5): FLOP cost about 33%; E2 measured +14% to +16% step time
+  for full recomputation on one GB10 (1B Llama shape, 2,048 tokens); the papers' figures stay theirs:
+  about 30% extra runtime (Chen et al., T01-36) and 36% to 39% for full-layer recomputation
+  (Korthikanti et al., T01-34), printed as "30% to 40%". No paper states 25%. Full recomputation
+  also repeats the forward's TP and CP collectives: TP 12bsh(t-1)/t per layer per micro-batch
+  against 8bsh(t-1)/t, and CP's forward K and V all-gather twice (sections 9, 14; our reading of
+  Megatron core_v0.20.0 random.py L718-L742; fc05 finding, Calculator C fixed and tested).
+- **FSDP2 collective counts** (sections 8, 14, 30): default two all-gathers and one reduce-scatter per
+  unit per micro-batch; with gradient sync deferred, k + 1 all-gathers and one reduce-scatter per unit
+  for k micro-batches (E3). Flight recorder 2,000 entries is about 2.5 steps for the 8B example at
+  eight micro-batches and about one step for 70B [derived from E3].
+- **Async checkpointing** (sections 18, 23, 25): bare `async_save` blocks for the whole copy (E4: 35.86
+  s first save of 4.03 GB on GB10); a pinned stager blocks about a millisecond; an NCCL-only process
+  group is rejected ("A CPU backend must be enabled for async save"); initialise with
+  "cpu:gloo,cuda:nccl" (no explicit backend does not add CPU at v2.15.0, wave2-reliability G2).
+- **ETTR and intervals** (sections 17, 18): 70B on 256 GPUs at r_f 6.50 and a 10-minute restart: 2.0
+  h for a 60 s save, 21.5 min for an assumed 2 s save, ETTR 0.982 against 0.995.
+- **Llama 3 interruptions** (sections 1, 17): one unexpected interruption every 3.1 hours over a
+  54-day window of Llama 3 405B pre-training on up to 16K GPUs; 466 interruptions, 419 unexpected.
+- **Capacity Block edges** (sections 20, 22, 28): termination starts 11:00 UTC on the final day, 30
+  minutes before the 11:30 end; 60 minutes early for P6e-GB200 UltraServer blocks; one hour for a
+  training plan targeting HyperPod, 30 minutes for training jobs (wave2-aws W5-16); an EKS managed node
+  group on a block starts draining 40 minutes before the end (section 25).
+- **Trainium deep health checks** (sections 20, 25, 27): documented on HyperPod EKS; HyperPod Slurm's
+  are GPU-only (wave2-aws U06-11).
+- **ZeRO-2 under gradient accumulation** (sections 8, 14, 15, Calculator C): ZeRO-1 and ZeRO-2 send
+  the same bytes as DP only at one micro-batch per step; DeepSpeed reduces ZeRO-2's partitioned
+  gradients on every backward pass (stage_1_and_2.py L2293 to L2295 at v0.19.9; engine.py L2695 sets
+  partition_grads for stage 2), ZeRO-1 at the accumulation boundary.
+- **Xid alert rule** (sections 29, 30, 31): alert on any Xid whose immediate bucket in NVIDIA's Xid
+  catalogue is RESET_GPU, RESTART_BM or WORKFLOW_* (covers Xid 48, 74, 79); our reading, replacing
+  W6-31's mixed-column set. Xid 45 is the exception: the driver logs it whenever an application is
+  aborted, so follow the other Xid that arrives with it and act only on Xid 45 alone (RESTART_FM)
+  (fc11 finding; sections 29 and 31).
+- **AWS experiments** (sections 7, 8, 18, 22, 23, 25, 27, 31): A0 to A5 are protocols marked "not yet
+  run"; never present a prediction as a result.
+- **Cross-instance pricing** (sections 7, 8, 14, 21, 31, Calculator C): traffic between instances is
+  counted per instance over the instance's EFA bandwidth (400 GB/s on p5.48xlarge and p5en.48xlarge),
+  at least (M-1)/M x S per all-gather or reduce-scatter and 2(M-1)/M x S per all-reduce across M
+  instances, a flat ring (n-1)/n x S; inside the instance, per GPU over NVLink at 450 GB/s. Groups with
+  one member per instance give the same answer as 50 GB/s per GPU. Worked numbers: 8B gradients across
+  four p5.48xlarge at least 24.1 GB per instance, about 60 ms (section 7); section 8 flat FSDP at least
+  289 GB per instance per step at defaults (373 GB flat ring) against HSDP 193 GB, deferred at least
+  120 GB (156 GB) against 24.1 GB; section 14 example 2 flat FSDP 32 7% to 9% of compute. Evidence:
+  AWS's nccl-tests sample, 16 GiB all-reduced across two p5.48xlarge in 66 ms (wave2-parallelism,
+  orchestrator addendum). Labelled our reading; A1 (not yet run) would measure it.
+
+## Gate 3 scores (fact check after fixes, 1 to 10; leverage before and after: mental model / practical leverage / rigor / accuracy / economy)
+
+| Section | Group | Claims checked | Not confirmed (fixed) | Gate 3 | Leverage before | Leverage after |
+|---|---|---|---|---|---|---|
+| 4 Arithmetic | fc02 | 67 | WRONG 5, OVERREACH 2 | 8 | 4/4/5/5/3 | 4/4/5/5/4 |
+| 5 Memory budget | fc02 | 80 | OVERREACH 3, UNSUPPORTED 2, prose 1 | 8 | 4/4/5/5/3 | 4/4/5/5/3 |
+| 6 Precision | fc02 | 84 | WRONG 1, OVERREACH 3, UNSUPPORTED 1 | 8 | 4/4/5/5/4 | 4/4/5/5/4 |
+| 7 Collectives | fc03 | 68 | WRONG 1, UNSUPPORTED 2, OVERREACH 2, STALE 1, prose 1 | 9 | 5/4/5/5/4 | 5/4/5/5/4 |
+| 8 Data parallel | fc03 | 77 | WRONG 3, OVERREACH 2, STALE 1, prose 1 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |
+| 9 Tensor parallel | fc03 | 77 | WRONG 1, OVERREACH 1, STALE 1 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |
+| 10 Pipeline | fc04 | 78 | STALE 2, prose 1, WRONG 1 (claims file only) | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
+| 11 Context parallel | fc04 | 56 | UNSUPPORTED 2, OVERREACH 1 | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
+| 12 Expert parallel | fc04 | 64 | WRONG 3, UNSUPPORTED 2, OVERREACH 2 | 9 | 4/4/5/5/3 | 4/4/5/5/4 |
+| 13 Composing | fc05 | 70 | WRONG 2, OVERREACH 6, UNSUPPORTED 1 | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
+| 14 Set my ranks | fc05 | 96 | WRONG 1, UNSUPPORTED 4, OVERREACH 8, STALE 2 | 8 | 4/5/5/5/3 | 4/5/5/5/4 |
+| 15 Framework map | fc06 | about 118 | WRONG 4, UNSUPPORTED 1, OVERREACH 4 | 8 (length) | 5/4/5/5/2 | 5/4/5/5/3 |
+| 16 Fine-tuning | fc06 | 63 | UNSUPPORTED 1, OVERREACH 1, STALE 2 | 9 | 4/5/5/5/4 | 4/5/5/5/4 |
+| 27 Trainium | fc06 | 91 | WRONG 2, OVERREACH 4 | 9 | 4/4/5/5/3 | 4/4/5/5/3 |
+| 17 Failure is the steady state | fc07 | 49 | WRONG 3, OVERREACH 1, STALE 1 | 9 | 5/4/5/5/4 | 5/4/5/5/4 |
+| 18 Checkpointing | fc07 | 92 | WRONG 1, UNSUPPORTED 2, STALE 3 | 9 | 5/5/5/5/3 | 5/5/5/5/3 |
+| 19 Resuming correctly | fc07 | 62 | OVERREACH 2, UNSUPPORTED 2, WRONG 1 | 9 (length) | 4/5/5/5/3 | 4/5/5/5/3 |
+| 26 SageMaker training jobs | fc10 | 67 | WRONG 3, OVERREACH 6, UNSUPPORTED 2 | 9 | 4/5/5/5/3 | 4/5/5/5/4 |
+| 28 Choosing your path | fc10 | about 70 | WRONG 3, OVERREACH 2 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |
+| 20 Who owns what on AWS | fc08 | 93 | OVERREACH 7, UNSUPPORTED 3 | 8 | 5/4/5/5/3 | 5/5/5/5/4 |
+| 21 Training hardware | fc08 | 66 | WRONG 3 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |
+| 22 Capacity and cost | fc08 | 66 | WRONG 1, UNSUPPORTED 1, OVERREACH 3 | 8 | 4/5/5/5/4 | 4/5/5/5/4 |
+| 23 Storage | fc09 | about 75 | WRONG 3, UNSUPPORTED 1, OVERREACH 4, STALE 1 | 8 | 4/4/5/5/3 | 4/4/5/5/4 |
+| 24 The Slurm family | fc09 | about 62 | WRONG 1, OVERREACH 4 | 8 | 4/4/5/5/3 | 4/4/5/5/3 |
+| 25 The Kubernetes family | fc09 | about 71 | OVERREACH 1 | 9 | 4/4/5/5/3 | 4/4/5/5/3 |
+| 1 Three budgets | fc01 | 38 | WRONG 1, OVERREACH 2 | 9 | 5/4/5/5/4 | 5/4/5/5/4 |
+| 2 Getting started | fc01 | 46 | WRONG 1, OVERREACH 1 | 9 | 4/5/5/5/4 | 4/5/5/5/4 |
+| 3 What a step computes and keeps | fc01 | 58 | WRONG 3, OVERREACH 1 | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
+| 29 What to measure | fc11 | 84 | WRONG 2, OVERREACH 2, STALE 1 | 9 | 5/5/5/5/3 | 5/5/5/5/4 |
+| 30 The telemetry stack on AWS | fc11 | 68 | WRONG 5, UNSUPPORTED 2, OVERREACH 6 | 8 | 4/5/5/5/3 | 4/5/5/5/3 |
+| 31 Bring-up | fc11 | 67 | OVERREACH 1 | 9 (length) | 4/5/5/5/3 | 4/5/5/5/3 |
+| 32 Glossary & sources | orchestrator | 92 sources, 129 glossary entries | venue labels agree with every section's Cites; every source in sources.md at the same tier; acronym sweep of the rendered text added HPCA, SiLU and NCCOM | 8 (orchestrator check, no independent reviewer) | not scored | not scored |
+
+Gate 3 result (2026-11-01): 32 sections, lowest 8, average 8.66 (21 sections at 9, 11 at 8). Rendered
+pass of all 32 sections at 1440 and 390 px: no overlap, clipping or overflow.
