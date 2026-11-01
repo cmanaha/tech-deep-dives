@@ -72,7 +72,7 @@ const GEMINI_BLOG = 'https://www.amazon.science/blog/more-efficient-recovery-fro
 /** OPT-175B team notes at metaseq HEAD of 2026-10-30: 1.6 TB checkpoint in 992 files. */
 const OPT_NOTES = gh('facebookresearch/metaseq', METASEQ_SHA, 'projects/OPT/chronicles/27_percent_update.md', 'L19');
 /** Meta's Hugging Face model metadata for Llama 3.1 70B (exact parameter count). */
-const HF_LLAMA_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B';
+const HF_LLAMA_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac';
 const EC2_ACCEL = 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html';
 const H100_SPEC = 'https://www.nvidia.com/en-us/data-center/h100/';
 
@@ -125,7 +125,7 @@ const S3_EXPRESS = 'https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-exp
 const FSX_SSD = 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html';
 const FSX_PERF = 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html';
 const FSX_SIZES = 'https://docs.aws.amazon.com/fsx/latest/APIReference/API_CreateFileSystem.html';
-const FSX_PRICE = 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonFSx/current/us-east-1/index.json';
+const FSX_PRICE = 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonFSx/20260911124432/us-east-1/index.json';
 
 /* SageMaker HyperPod managed tiered checkpointing */
 const HP_TIERED_GA = 'https://aws.amazon.com/about-aws/whats-new/2025/09/managed-tiered-checkpointing-amazon-sagemaker-hyperpod/';

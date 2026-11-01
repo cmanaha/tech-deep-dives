@@ -85,7 +85,7 @@ const ADT_P5_SAMPLE = gh(
 /** Rajbhandari et al., ZeRO, Sec 3.1: 16 bytes per parameter for mixed-precision Adam. */
 const ZERO = arxiv('1910.02054v3');
 /** Meta's Hugging Face model metadata for Llama 3.1 70B (exact parameter count). */
-const HF_LLAMA_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B';
+const HF_LLAMA_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac';
 
 /* ------------------------------------------------------------------------ */
 /* Figures, from the shared presets (src/lib/presets.ts)                    */

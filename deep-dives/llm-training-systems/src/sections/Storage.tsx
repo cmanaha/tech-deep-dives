@@ -29,9 +29,9 @@ const PALM = arxiv('2204.02311v5');
 const MEGASCALE = arxiv('2402.15627v1');
 /** OPT-175B team notes at metaseq HEAD of 2026-10-30. */
 const OPT_NOTES = gh('facebookresearch/metaseq', METASEQ_SHA, 'projects/OPT/chronicles/27_percent_update.md', 'L19');
-const HF_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B';
-const HF_8B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B';
-const HF_405B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-405B';
+const HF_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac';
+const HF_8B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B/revision/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b';
+const HF_405B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-405B/revision/b906e4dc842aa489c962f9db26554dcfdde901fe';
 const H100_SPEC = 'https://www.nvidia.com/en-us/data-center/h100/';
 const EC2_ACCEL = 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html';
 const EC2_INSTANCE_STORE = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html';
@@ -90,7 +90,7 @@ const FSX_DEPLOY = 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-fsx
 const FSX_EFA = 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/efa-file-systems.html';
 const FSX_IMPORT = 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/importing-files.html';
 const FSX_DRA = 'https://docs.aws.amazon.com/fsx/latest/LustreGuide/fsx-data-repositories.html';
-const FSX_PRICE = 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonFSx/current/us-east-1/index.json';
+const FSX_PRICE = 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonFSx/20260911124432/us-east-1/index.json';
 
 /* SageMaker HyperPod managed tiered checkpointing */
 const HP_TIERED = 'https://docs.aws.amazon.com/sagemaker/latest/dg/managed-tier-checkpointing.html';

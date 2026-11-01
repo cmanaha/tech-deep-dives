@@ -22,7 +22,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 
 ## Tier 1: source code at a pinned ref, official framework documentation, first-party AWS and NVIDIA documentation, spec sheets and pricing
 
-382 sources.
+379 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
@@ -383,17 +383,14 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [THUDM/slime @ 0b0c277d5b4cc66efc3b6db269e2e5184e8f3b1e: slime/backends](https://github.com/THUDM/slime/tree/0b0c277d5b4cc66efc3b6db269e2e5184e8f3b1e/slime/backends) | 2026-10-31 | FineTuning |
 | [volcengine/verl @ 1876b06d0a3e4e71e06230be10af14492ca8a75b: verl/trainer/config/rollout/rollout.yaml](https://github.com/volcengine/verl/blob/1876b06d0a3e4e71e06230be10af14492ca8a75b/verl/trainer/config/rollout/rollout.yaml) | 2026-10-31 | FineTuning |
 | [volcengine/verl @ 1876b06d0a3e4e71e06230be10af14492ca8a75b: verl/trainer/config/actor](https://github.com/volcengine/verl/tree/1876b06d0a3e4e71e06230be10af14492ca8a75b/verl/trainer/config/actor) | 2026-10-31 | FineTuning |
-| [405B](https://huggingface.co/api/models/meta-llama/Llama-3.1-405B) | 2026-10-30 | FineTuning, Storage, calculator presets |
-| [Meta's Llama 3.1 405B model metadata](https://huggingface.co/api/models/meta-llama/Llama-3.1-405B/revision/b906e4dc842aa489c962f9db26554dcfdde901fe) | 2026-10-31 | Arithmetic |
-| [70B](https://huggingface.co/api/models/meta-llama/Llama-3.1-70B) | 2026-10-30, 2026-10-31 | AwsHardware, Checkpointing, FineTuning, Precision, Storage, TrainingStep, calculator presets |
-| [Meta's Llama 3.1 70B model metadata](https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac) | 2026-10-30, 2026-10-31 | Arithmetic, KubernetesFamily, MemoryBudget, SetMyRanks, TensorParallel |
-| [8B](https://huggingface.co/api/models/meta-llama/Llama-3.1-8B) | 2026-10-30, 2026-10-31 | FineTuning, Storage, TrainingStep, calculator presets |
-| [Meta's Llama 3.1 8B model metadata](https://huggingface.co/api/models/meta-llama/Llama-3.1-8B/revision/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b) | 2026-10-31 | Arithmetic, Collectives, DataParallel, MemoryBudget |
+| [405B](https://huggingface.co/api/models/meta-llama/Llama-3.1-405B/revision/b906e4dc842aa489c962f9db26554dcfdde901fe) | 2026-10-30, 2026-10-31 | Arithmetic, FineTuning, Storage, calculator presets |
+| [70B](https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac) | 2026-10-30, 2026-10-31 | Arithmetic, AwsHardware, Checkpointing, FineTuning, KubernetesFamily, MemoryBudget, Precision, SetMyRanks, Storage, TensorParallel, TrainingStep, calculator presets |
+| [8B](https://huggingface.co/api/models/meta-llama/Llama-3.1-8B/revision/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b) | 2026-10-30, 2026-10-31 | Arithmetic, Collectives, DataParallel, FineTuning, MemoryBudget, Storage, TrainingStep, calculator presets |
 | [AWS Price List, AmazonEC2 all Regions, version 20261029175634](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/20261029175634/index.csv) | 2026-10-30, 2026-10-31 | CapacityCost, Trainium, calculator presets |
 | [AWS Price List, AmazonEC2 offer 20261029175634](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/20261029175634/us-east-1/index.csv) | 2026-10-30, 2026-10-31 | Arithmetic, AwsHardware, AwsOwnership, CapacityCost, Checkpointing, Collectives, DataParallel, Resuming, SetMyRanks, SlurmFamily, Sources appendix, TrainingJobs, calculator presets |
 | [AWS Price List, AmazonEC2 offer 20261029175634, us-east-2](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/20261029175634/us-east-2/index.csv) | 2026-10-30 | calculator presets |
 | [Amazon EKS Price List, us-east-1](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEKS/20261027191639/us-east-1/index.json) | 2026-10-30, 2026-10-31 | AwsOwnership, CapacityCost, KubernetesFamily, calculator presets |
-| [AmazonFSx price list](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonFSx/current/us-east-1/index.json) | 2026-10-30 | Checkpointing, Storage, calculator presets |
+| [AmazonFSx price list](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonFSx/20260911124432/us-east-1/index.json) | 2026-10-30 | Checkpointing, Storage, calculator presets |
 | [SageMaker Price List, us-east-1](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSageMaker/20261029165009/us-east-1/index.csv) | 2026-10-30, 2026-10-31 | AwsOwnership, CapacityCost, SlurmFamily, TrainingJobs, calculator presets |
 | [AWS Price List, AmazonSageMaker offer 20261029165009, us-east-2](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSageMaker/20261029165009/us-east-2/index.csv) | 2026-10-30 | Arithmetic, CapacityCost, Trainium, calculator presets |
 | [AWS PCS Price List, us-east-1](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSPCS/20261027150327/us-east-1/index.json) | 2026-10-30, 2026-10-31 | AwsOwnership, CapacityCost, SlurmFamily, calculator presets |

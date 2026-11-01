@@ -51,9 +51,9 @@ const ZERO = arxiv('1910.02054v3');
 /** Megatron Core distributed-optimizer guide: bytes per parameter by dtype. */
 const MEGATRON_DIST_OPT = gh('NVIDIA/Megatron-LM', MEGATRON_TAG, 'docs/user-guide/features/dist_optimizer.md', 'L14-L20');
 /** Meta's Hugging Face model metadata (exact parameter counts). */
-const HF_8B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B';
-const HF_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B';
-const HF_405B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-405B';
+const HF_8B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B/revision/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b';
+const HF_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac';
+const HF_405B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-405B/revision/b906e4dc842aa489c962f9db26554dcfdde901fe';
 /** NVIDIA H100 product specifications (vendor specification: 80 GB). */
 const H100_SPEC = 'https://www.nvidia.com/en-us/data-center/h100/';
 /** EC2 accelerated computing instance specifications (p5.48xlarge: 8 x 80 GiB). */

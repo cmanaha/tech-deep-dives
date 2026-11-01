@@ -100,17 +100,17 @@ export const SOURCES = {
   },
   hf8b: {
     label: 'Hugging Face API, meta-llama/Llama-3.1-8B at revision d04e592bb4f6aa9cfee91e2e20afa771667e1d4b, safetensors.parameters (T01-3)',
-    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B',
+    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B/revision/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b',
     tier: 1,
   },
   hf70b: {
     label: 'Hugging Face API, meta-llama/Llama-3.1-70B at revision 349b2ddb53ce8f2849a6c168a81980ab25258dac, safetensors.parameters (T01-3)',
-    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B',
+    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac',
     tier: 1,
   },
   hf405b: {
     label: 'Hugging Face API, meta-llama/Llama-3.1-405B at revision b906e4dc842aa489c962f9db26554dcfdde901fe, safetensors.parameters (T01-3)',
-    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-405B',
+    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-405B/revision/b906e4dc842aa489c962f9db26554dcfdde901fe',
     tier: 1,
   },
   deepseekShapes: {
@@ -281,7 +281,7 @@ export const SOURCES = {
   },
   fsxPrice: {
     label: 'AWS Price List, AmazonFSx us-east-1 offer 20260911124432: persistent SSD Lustre per GB-month (T00-1)',
-    url: 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonFSx/current/us-east-1/index.json',
+    url: 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonFSx/20260911124432/us-east-1/index.json',
     tier: 1,
   },
   s3Rate: {

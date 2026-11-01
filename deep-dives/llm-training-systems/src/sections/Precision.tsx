@@ -52,7 +52,7 @@ const HGX_SPEC = 'https://www.nvidia.com/en-us/data-center/hgx/';
 /** EC2 accelerated computing instance specifications (accelerator per instance type). */
 const EC2_AC = 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html';
 /** Meta's Hugging Face model metadata for Llama 3.1 70B (exact parameter count). */
-const HF_LLAMA_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B';
+const HF_LLAMA_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac';
 /** NVIDIA Megatron Bridge 0.7.0 performance summary archive (vendor benchmark). */
 const MBRIDGE_PERF = 'https://docs.nvidia.com/nemo/megatron-bridge/0.7.0/performance-summary-archive.html';
 

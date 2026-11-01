@@ -43,9 +43,9 @@ const H100_SPEC = 'https://www.nvidia.com/en-us/data-center/h100/';
 /** EC2 accelerated computing instance specifications (p5.48xlarge rows). */
 const EC2_AC = 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html';
 /** Meta's Hugging Face model metadata for Llama 3.1 8B (exact parameter count). */
-const HF_LLAMA_8B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B';
+const HF_LLAMA_8B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B/revision/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b';
 /** Meta's Hugging Face model metadata for Llama 3.1 70B. */
-const HF_LLAMA_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B';
+const HF_LLAMA_70B = 'https://huggingface.co/api/models/meta-llama/Llama-3.1-70B/revision/349b2ddb53ce8f2849a6c168a81980ab25258dac';
 /** Llama 3 tokenizer at llama-models v0.2.0: 256 special tokens on top of the base vocabulary. */
 const LLAMA_TOKENIZER = gh('meta-llama/llama-models', LLAMA_MODELS_TAG, 'models/llama3/tokenizer.py', 'L53-L103');
 /** Llama 3.1 model card at llama-models v0.2.0 (training tokens). */
