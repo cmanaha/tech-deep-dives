@@ -1,43 +1,143 @@
-# LLM Training Systems
+# Training at Scale: How Large Language Models Are Trained, and How to Run It on AWS
 
-**Status: scoped, not built.** Research wave 1, the scope, the research guide and three adversarial reviews of the scope are done; there is no app yet (no `package.json`, no `src/`). The build waits on Gate 1 in `RESEARCH-GUIDE.md` section 7.
+Interactive single-page app about training large language models across many accelerators and
+running that training on AWS. It gives the intuition and the arithmetic for each part of a run
+(what one step computes and keeps, how parallelism splits it, what keeps a run alive through
+failures), the open-source frameworks that implement it, the AWS paths that run it, and how to
+measure a run. Written for a technical lead who knows systems, networking, GPUs and inference and
+has not run large-scale distributed training. It builds on the EFA, silicon, vLLM, SGLang and RL
+dives and links to them rather than repeating them.
 
-## Topic
+**Status: built.** 32 sections in eight layers, sources read 2026-10-30 and 2026-10-31. Code is
+cited at pinned tags or commits: PyTorch v2.15.0, TorchTitan v0.4.0, TorchTitan Neuron
+release-2.33.0, Megatron-LM core_v0.20.0, Megatron Bridge v0.7.0, NeMo v2.7.3 and v3.0.0, NeMo
+AutoModel v0.7.0, NeMo RL v0.7.0, DeepSpeed v0.19.9, Accelerate v1.15.0, transformers v5.22.1,
+Transformer Engine v2.21.0, nccl-tests v2.21.1, DCGM v4.7.0, dcgm-exporter 4.8.4, Holistic Trace
+Analysis v0.6.1, the Amazon S3 Connector for PyTorch v1.5.0, Mountpoint for Amazon S3 1.24.0, the
+SageMaker HyperPod recipes 2.0.11 and CLI v3.13.0, the SageMaker Python SDK v3.28.0, AWS
+ParallelCluster v3.16.2, JobSet v0.13.0, and Kueue, Kubeflow Trainer, the Neuron SDK documentation,
+the AWS Deep Learning Containers and aws-samples at commit SHAs. arXiv links carry their version.
+Prices are AWS Price List offers at pinned versions, us-east-1 unless a section says otherwise.
 
-How large language models are trained across many accelerators, and how to run that training on AWS. The dive gives the intuition and the key arithmetic for each part of a training run (what one step computes and keeps, how parallelism splits it, what keeps a run alive through failures), the open-source frameworks that implement it, the AWS paths that run it (self-managed EC2 and EKS, SageMaker AI training jobs, SageMaker HyperPod with Slurm or EKS, AWS Parallel Computing Service, AWS Batch on EKS, and Trainium), and how to measure a run. Written for a technical lead who knows systems, networking, GPUs and inference and has not run large-scale distributed training. It builds on the EFA, silicon, vLLM, SGLang and RL dives and links to them rather than repeating them.
+## The six questions
 
-The dive answers six questions: how much compute and time a run needs; whether a model fits and how to split it across accelerators ("help me set my ranks"); which software implements the split; how to keep a run alive; which AWS path to run it on and what it costs; and how to know the run is healthy.
+1. How much compute and time does a run need? (sections 3, 4 and 22)
+2. Does the model fit, and how do I split it across accelerators? (sections 5 to 14, ending in
+   section 14's sizing procedure, "set my ranks")
+3. Which software implements the split? (sections 15, 16 and 27)
+4. How do I keep a run alive? (sections 17 to 19)
+5. Which AWS path do I run it on, and what does it cost? (sections 20 to 28)
+6. How do I know the run is healthy? (sections 29 to 31)
 
-## What the research found so far
+## Key takeaways
 
-Each point carries the claim-register IDs behind it (files in `research/2026-10/`). Every source was accessed 2026-10-30; every price is us-east-1 on that date.
+Each figure is the owning section's, with its citation on the page.
 
-- The 6ND rule holds against the largest published run. For Llama 3 405B, 6 x 405B parameters x 15.6T tokens is 3.8e25 FLOPs, Meta's stated budget, and at the run's measured throughput it accounts for 80% to 90% of the 30.84M H100-hours on the model card (T01-5 to T01-7; 01 W7).
-- Mixed-precision Adam holds 16 bytes per parameter before any activation, so Llama 3.1 8B's model state alone is about 128.5 GB, 1.6 times one 80 GB H100 (T01-9; 01 W2).
-- Placement follows bandwidth. On a p5.48xlarge, NVLink gives each GPU about 450 GB/s per direction and EFA about 50 GB/s, a ratio of 9 [derived from T02-68 and T02-70], which is why tensor parallelism stays inside the instance. For Llama 3.1 70B on 256 H100 at 8,192-token sequences and a 4.2M-token batch, two layouts pass the procedure: TP 8 x PP 4 x DP 8 with ZeRO-1 and five interleaved chunks per stage, a pipeline bubble of about 0.9% [derived], and TP 8 x FSDP 32, the layout TorchTitan published for this model on 96 GB H100s with Float8 (T02-50; 02 section 3.2).
-- Three defaults change a reader's numbers, each read in code: FSDP2 communicates on every gradient-accumulation micro-batch unless told to defer (T03-2, T03-3); PyTorch's `async_save` called without a stager stages synchronously into pageable memory (T04-21); Megatron turns `--async-save` off, with only a rank-0 warning, for distributed checkpoints unless `--use-persistent-ckpt-worker` is also set (T04-38).
-- Failure is the steady state at scale. Llama 3 405B saw 419 unexpected interruptions in 54 days, one every 3.1 hours (T04-1, T04-4), and Meta's cluster study measured job mean time to failure falling inversely with job size (T04-7).
-- AWS paths differ in who owns the cluster, and the bill shows it: SageMaker training jobs run at 1.15 times the EC2 rate, HyperPod at 1.20 times on P5 and P6, and training plans at 1.15 times the Capacity Block rate (T05-22 to T05-24); AWS PCS adds a controller fee and a per-instance fee for P and Trn instances (T06-36). AWS ParallelCluster is still maintained, and its user guide now recommends AWS PCS (T06-38).
-- Hangs become crashes with evidence by default: at PyTorch v2.15.0 a stuck NCCL collective times out after 10 minutes and every rank dumps a flight-recorder trace of its last 2,000 collectives (T07-5 to T07-11). On AWS most training telemetry is opt-in, including the HyperPod observability add-on's training metrics (T07-31).
+- A step has two bills fixed by the model's shape: about 6 floating-point operations per parameter
+  per token, and 16 bytes per parameter of model state before the first activation. Llama 3.1 8B's
+  model state alone is 128.5 GB, 1.6 times one 80 GB H100 (section 3).
+- Run time is 6ND over accelerators times dense peak times MFU (model FLOPs utilization). Llama 3.1
+  70B on 15T tokens at an assumed 40% MFU on 2,048 H100 takes about 91 days: $30.7M at EC2
+  On-Demand, $26.6M on Capacity Blocks (sections 4 and 22).
+- Placement follows bandwidth. On a p5.48xlarge the two links are nine times apart per GPU, so
+  tensor parallelism stays inside the instance: for 70B at TP 8 each layer moves 0.94 GB per GPU per
+  micro-batch, 2.1 ms on NVLink against 13.3 ms of compute (sections 7 and 9).
+- Collectives that cross instances are priced per instance. Sharding on the fast link and deferring
+  gradient sync together send about 12 times fewer bytes between instances for Llama 3.1 8B on four
+  p5.48xlarge (section 8).
+- Sizing is a procedure, not a guess: for 70B on four p5en.48xlarge, eight-way tensor parallelism
+  with four data-parallel replicas fits at 85 GB per GPU with no pipeline and no recomputation
+  (section 14).
+- Failure is the steady state at scale. For 70B on 256 H100 the checkpoint interval is about 2
+  hours between 60 s saves, or 21.5 minutes between asynchronous saves that block 2 s; stragglers
+  wasted 10.4% of GPU-hours in ByteDance's trace of 3,079 large jobs (sections 17 to 19).
+- On AWS the paths differ in who runs the cluster, and the bill shows it: SageMaker training jobs
+  at 1.15 times EC2 On-Demand, HyperPod 20.0% over EC2, AWS PCS 1.2% (sections 24 and 26). On every
+  path your script owns a save that finishes before a Capacity Block starts terminating instances
+  30 minutes before its end (section 20).
+- A hang becomes a crash with evidence: at PyTorch v2.15.0 defaults a stalled collective ends the
+  job about 11 minutes later with every rank's last 2,000 collectives dumped (section 30).
+
+## Calculators
+
+Four calculators, each a tested module in `src/lib/` (165 tests in `src/__tests__/`, validated
+against the worked numbers in the research registers; see `revamp/calculators-spec.md` and
+`revamp/build-log.md`):
+
+- **A, run time and accelerator-hours** (`runtime.ts`; section 4, cost panel in section 22).
+- **B, the memory budget** (`memory.ts`; section 5, reused in sections 14 and 16).
+- **C, parallelism sizing** (`parallelism.ts`; section 14), with cross-instance collectives priced
+  per instance.
+- **D, checkpoint interval and storage** (`checkpoint.ts`; section 18).
+
+Section 10 adds an interactive pipeline schedule chart (GPipe, 1F1B, interleaved).
+
+## Our own experiments (Tier 0)
+
+Four experiments ran on one DGX Spark (one NVIDIA GB10) on 2026-10-31 with PyTorch 2.15.0. Logs,
+scripts and raw results are in `research/2026-10/` (`E1` to `E4`, `spark-scripts/`, `spark-raw/`).
+
+- **E1**, activation memory per Llama 3.1 8B layer: the formula held to within 0.1%, 34 bytes per
+  s x b x h with a fused SwiGLU, 41 with TorchTitan v0.4.0's eager SwiGLU, 2 under full
+  recomputation.
+- **E2**, step time and recomputation: full recomputation cost 14% to 16% more step time, selective
+  8% to 11%; MFU 28% to 29% against a measured 96 to 97 TFLOPS GEMM ceiling.
+- **E3**, FSDP2 collectives under gradient accumulation: 36 all-gathers and 20 reduce-scatters per
+  step at defaults, 21 and 5 with both deferral settings.
+- **E4**, checkpoint staging: a bare `async_save` blocked training for 8.8 to 36 s, longer than
+  `dcp.save`; with a pinned-memory stager it returned in about a millisecond.
+
+The AWS experiments A0 to A5 are on hold until an AWS account is set up for them. No distributed
+experiment ran. Each section that depends on one keeps its hedge and shows the protocol marked "not
+yet run" (`RESEARCH-GUIDE.md` section 5).
+
+## Section map
+
+32 sections in the left navigation.
+
+- Framing (1-2): A Training Run Is Three Budgets; Getting Started.
+- One step (3-6): what a step computes and keeps; counting the arithmetic (6ND, MFU, run time); the
+  memory budget; precision (BF16, FP8, microscaled formats).
+- Parallelism (7-14): collectives and what they cost; data parallelism and sharding (DDP, ZeRO,
+  FSDP, HSDP); tensor and sequence parallelism; pipeline parallelism and the bubble; context
+  parallelism; expert parallelism; composing the dimensions; set my ranks.
+- Software (15-16): the framework map; fine-tuning and post-training runs.
+- Reliability (17-19): failure is the steady state; checkpointing; resuming correctly.
+- AWS (20-28): who owns what on AWS; training hardware; capacity and cost; storage; the Slurm
+  family; the Kubernetes family; SageMaker training jobs; Trainium and the Neuron path; choosing
+  your path.
+- Operating a run (29-31): what to measure; the telemetry stack on AWS; bring-up from one node to
+  the full run.
+- Reference (32): glossary and sources, with the Tier 0 results and the key reading list.
+
+## Running it
+
+```bash
+pnpm install
+pnpm --filter @tech-deep-dives/llm-training-systems dev
+pnpm --filter @tech-deep-dives/llm-training-systems test
+```
+
+`bash scripts/ci.sh` at the repo root runs the deterministic gates (typecheck, lint, tests, build,
+html-validate). `node revamp/tools/gen-sources.mjs` regenerates `sources.md` from the inline
+citations; `--check` fails if it is stale. `node revamp/tools/shoot.mjs` renders sections at 1440
+and 390 px and reports text overlap, clipping and overflow.
 
 ## Files
 
 | Path | What it holds |
 |---|---|
-| `SCOPE.md` | Title, thesis, the 32-section plan in eight layers with a depth tag, payoff line and paragraph per section, the four calculators, depth distribution, key sources, connections to other dives, adversarial review notes |
-| `RESEARCH-GUIDE.md` | Where the research stands, research waves 2 to 4, the reading path, the evidence bar per claim type, Tier 0 experiments (DGX Spark and small AWS runs with costs and teardown), the UNKNOWN register with proposed triage, Gate 1 checks and record, budget record |
-| `research/2026-10/wave1-brief.md` | The shared method and register format the wave 1 agents followed |
-| `research/2026-10/00-orchestrator-notes.md` | Facts fetched during synthesis (FSx for Lustre storage rates) |
-| `research/2026-10/01-training-step-maths.md` | Claim register: the step, 6ND, MFU and dense peaks, the memory budget, precision from FP16 to NVFP4, recomputation, batch size |
-| `research/2026-10/02-parallelism.md` | Claim register: data, ZeRO, FSDP, tensor, sequence, context, pipeline and expert parallelism, collective costs, the sizing procedure with worked examples |
-| `research/2026-10/03-frameworks.md` | Claim register: PyTorch distributed, TorchTitan, TorchTitan Neuron, Megatron Core and Bridge, NeMo, DeepSpeed, Accelerate, fine-tuning and post-training as systems |
-| `research/2026-10/04-reliability-checkpointing-data.md` | Claim register: failure statistics, MTTF and goodput, checkpointing in code, restart, stragglers, determinism, data loading |
-| `research/2026-10/05-aws-infrastructure.md` | Claim register: training instances, capacity paths, dated rates, placement, storage, images |
-| `research/2026-10/06-aws-orchestration.md` | Claim register: self-managed EC2 and EKS, SageMaker training jobs, HyperPod, PCS, Batch, the ownership matrix and fees |
-| `research/2026-10/07-observability.md` | Claim register: what to measure, hang detection, DCGM and the Xid catalog, loss-spike handling, the AWS telemetry layer |
-| `reviews/2026-10/` | The three adversarial reviews of the scope |
-| `sources.md` | Every source used, grouped by tier, with access dates |
+| `src/` | The app: `App.tsx`, one lazily loaded file per section in `src/sections/`, the `Cite` component and tables in `src/components/`, calculators in `src/lib/` with tests in `src/__tests__/` |
+| `SCOPE.md` | Title, thesis, the 32-section plan with a payoff line per section, the calculators, key sources, connections to other dives, adversarial review notes |
+| `RESEARCH-GUIDE.md` | Research waves, evidence bar, Tier 0 experiments and the AWS protocols A0 to A5, the UNKNOWN register and its triage, the Gate 1 record, budget record |
+| `research/2026-10/` | Wave 1 claim registers (`01` to `07`), wave 2 refutation and gap-fill notes (`wave2-*`), Tier 0 logs `E1` to `E4` with scripts and raw output |
+| `revamp/` | Build working files: the authoring brief, calculator spec, build log with per-section rows and cross-section conditions, per-section claim lists in `claims/`, fact-check prompts, tools |
+| `reviews/` | Adversarial reviews of the scope; fact-check and leverage reports from the verify phase |
+| `sources.md` | Every citation in the app, grouped by tier, with access dates and the sections that cite it (generated) |
 
 ## Sources
 
-See `sources.md`. Sources are tiered: Tier 0 our experiments (none run yet), Tier 1 pinned code, first-party documentation, specifications and pricing, Tier 2 first-party lab and vendor posts, Tier 3 papers (peer-reviewed or preprint marked) and third-party analysis, Tier 4 used only to locate sources.
+See `sources.md`. Tiers: Tier 0, our experiments; Tier 1, code at a pinned ref, framework
+documentation, first-party AWS documentation and price files, and NVIDIA specification pages
+(vendor figures); Tier 2, first-party lab and vendor posts and samples (their figures stay claims);
+Tier 3, papers marked with their venue or as a preprint. Tier 4 sources are never cited.
