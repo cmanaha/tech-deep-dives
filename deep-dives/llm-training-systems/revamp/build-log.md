@@ -132,3 +132,8 @@ section and source are named so the fact check can trace it.
 | 10 Pipeline | fc04 | 78 | STALE 2, prose 1, WRONG 1 (claims file only) | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
 | 11 Context parallel | fc04 | 56 | UNSUPPORTED 2, OVERREACH 1 | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
 | 12 Expert parallel | fc04 | 64 | WRONG 3, UNSUPPORTED 2, OVERREACH 2 | 9 | 4/4/5/5/3 | 4/4/5/5/4 |
+| 13 Composing | fc05 | 70 | WRONG 2, OVERREACH 6, UNSUPPORTED 1 | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
+| 14 Set my ranks | fc05 | 96 | WRONG 1, UNSUPPORTED 4, OVERREACH 8, STALE 2 | 8 | 4/5/5/5/3 | 4/5/5/5/4 |
+| 15 Framework map | fc06 | about 118 | WRONG 4, UNSUPPORTED 1, OVERREACH 4 | 8 (length) | 5/4/5/5/2 | 5/4/5/5/3 |
+| 16 Fine-tuning | fc06 | 63 | UNSUPPORTED 1, OVERREACH 1, STALE 2 | 9 | 4/5/5/5/4 | 4/5/5/5/4 |
+| 27 Trainium | fc06 | 91 | WRONG 2, OVERREACH 4 | 9 | 4/4/5/5/3 | 4/4/5/5/3 |
