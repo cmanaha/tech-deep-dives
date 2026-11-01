@@ -158,7 +158,8 @@ Applies to every group:
   (commit 29fdea0); do not revert them to unpinned URLs.
 
 - fc01-framing: sections 1 and 2 were written last; check every number they repeat against the
-  owning section, figure for figure. Section 3's notation must match section 32's notation table.
+  owning section, figure for figure. Section 1 cites Megatron-LM (1909.08053v4) Sections 2.3 and 3.3.2
+  for the tensor-parallel all-reduces where section 7 cites Sec 3.2 for the same fact: make them agree. Section 3's notation must match section 32's notation table.
 - fc02-arithmetic: section 4 is about 2,830 words (length). Section 4's A5 copy (the Trainium2 MFU
   experiment, not yet run) must agree with section 27's. The MFU conversion x 632/667 for AWS's
   Trainium MFU line appears in sections 4 and 27: same wording of the basis in both.
@@ -191,3 +192,5 @@ Applies to every group:
   NVLink alert field is a deprecated DCGM alias (untested; keep the hedge). Section 31 was written
   last: check its versions against sections 7, 15 and 27, and open the source for each of its eight
   claims marked NEW in `revamp/claims/bring-up.md`. Section 31 is about 2,850 words (length).
+  Section 31 prints "NCCOM tests" without an expansion: expand it as the HyperPod EKS deep-check
+  page or the Neuron documentation names it, and report the expansion so the glossary matches.
