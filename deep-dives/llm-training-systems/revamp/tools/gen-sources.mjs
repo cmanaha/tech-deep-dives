@@ -220,8 +220,8 @@ function eva(node, env) {
   }
 }
 
-function fileEnv(sf) {
-  const env = Object.create(BASE);
+function fileEnv(sf, parent = BASE) {
+  const env = Object.create(parent);
   const decls = [];
   const visit = (n) => {
     if (ts.isVariableDeclaration(n) && ts.isIdentifier(n.name) && n.initializer) decls.push(n);
@@ -311,11 +311,25 @@ function candidateScopes(n, sf, env, wrapperUses) {
   return [];
 }
 
+// Sections import presets (SOURCES, INSTANCES, PRICES) from src/lib and cite `SOURCES.x.url`, so
+// the exported constants of every src/lib module are evaluated once and sit beneath each file's own
+// constants. Only exported names are lifted; a section's local constant shadows a library one.
+const LIB = Object.create(BASE);
+const LIB_DIR = path.join(SRC, 'lib');
+for (const name of fs.readdirSync(LIB_DIR).filter((n) => n.endsWith('.ts')).sort()) {
+  const text = fs.readFileSync(path.join(LIB_DIR, name), 'utf8');
+  const sf = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const env = fileEnv(sf);
+  for (const m of text.matchAll(/^export (?:const|function) ([A-Za-z0-9_]+)/gm)) {
+    if (Object.prototype.hasOwnProperty.call(env, m[1]) && !Object.prototype.hasOwnProperty.call(LIB, m[1])) LIB[m[1]] = env[m[1]];
+  }
+}
+
 for (const file of walk(SRC)) {
   const text = fs.readFileSync(file, 'utf8');
   const rel = path.relative(SRC, file);
   const sf = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-  const env = fileEnv(sf);
+  const env = fileEnv(sf, LIB);
 
   // Props passed to each local component, for wrappers that render a Cite from their props.
   const wrapperUses = new Map();
@@ -392,6 +406,24 @@ for (const file of walk(SRC)) {
     entries.set(key, e);
   }
   if (n === 0) unresolved.push('sections/GlossaryAndSources.tsx: no Source[] entries matched');
+}
+
+// The calculators print the source of every preset they use (an instance's peak, a price row),
+// and which one shows depends on the reader's inputs, so a few Cite hrefs cannot be resolved
+// statically. Every source in the presets' SOURCES table is listed, which covers all of them.
+{
+  const presets = LIB.SOURCES && typeof LIB.SOURCES === 'object' ? Object.values(LIB.SOURCES) : [];
+  for (const src of presets) {
+    if (!src || typeof src.url !== 'string' || !Number.isInteger(src.tier)) continue;
+    const url = src.url.replace(/#L[0-9-L]+$/, '');
+    const key = `${src.tier} ${url}`;
+    const e = entries.get(key) ?? { url, tier: src.tier, titles: new Set(), accessed: new Set(), files: new Set(), venues: new Set() };
+    if (typeof src.label === 'string') e.titles.add(cleanTitle(src.label.replace(/\s*\([^()]*\)/g, '')));
+    e.accessed.add(LIB.PRICES_READ_ON ?? DEFAULT_ACCESSED);
+    e.files.add('calculator presets');
+    entries.set(key, e);
+  }
+  if (presets.length === 0) unresolved.push('src/lib/presets.ts: SOURCES not evaluated');
 }
 
 const tierHead = {
