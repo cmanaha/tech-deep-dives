@@ -264,6 +264,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'NSDI', fullForm: 'USENIX Symposium on Networked Systems Design and Implementation', description: 'Publication venue.' },
   { acronym: 'OSDI', fullForm: 'USENIX Symposium on Operating Systems Design and Implementation', description: 'Publication venue.' },
   { acronym: 'SC', fullForm: 'International Conference for High Performance Computing, Networking, Storage and Analysis', description: 'Publication venue (Supercomputing).' },
+  { acronym: 'HPCA', fullForm: 'IEEE International Symposium on High-Performance Computer Architecture', description: 'Publication venue.' },
   { acronym: 'VLDB, PVLDB', fullForm: 'Very Large Data Bases; Proceedings of the VLDB Endowment', description: 'Publication venue.' },
 ];
 

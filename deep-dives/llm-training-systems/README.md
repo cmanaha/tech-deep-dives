@@ -38,7 +38,7 @@ Each figure is the owning section's, with its citation on the page.
   model state alone is 128.5 GB, 1.6 times one 80 GB H100 (section 3).
 - Run time is 6ND over accelerators times dense peak times MFU (model FLOPs utilization). Llama 3.1
   70B on 15T tokens at an assumed 40% MFU on 2,048 H100 takes about 91 days: $30.7M at EC2
-  On-Demand, $26.6M on Capacity Blocks (sections 4 and 22).
+  On-Demand, $26.6M on Capacity Blocks (section 22, on section 4's formula).
 - Placement follows bandwidth. On a p5.48xlarge the two links are nine times apart per GPU, so
   tensor parallelism stays inside the instance: for 70B at TP 8 each layer moves 0.94 GB per GPU per
   micro-batch, 2.1 ms on NVLink against 13.3 ms of compute (sections 7 and 9).
@@ -60,14 +60,14 @@ Each figure is the owning section's, with its citation on the page.
 
 ## Calculators
 
-Four calculators, each a tested module in `src/lib/` (165 tests in `src/__tests__/`, validated
+Four calculators, each a tested module in `src/lib/` (168 tests in `src/__tests__/`, validated
 against the worked numbers in the research registers; see `revamp/calculators-spec.md` and
 `revamp/build-log.md`):
 
 - **A, run time and accelerator-hours** (`runtime.ts`; section 4, cost panel in section 22).
 - **B, the memory budget** (`memory.ts`; section 5, reused in sections 14 and 16).
 - **C, parallelism sizing** (`parallelism.ts`; section 14), with cross-instance collectives priced
-  per instance.
+  per instance and the TP and CP traffic that full recomputation repeats counted.
 - **D, checkpoint interval and storage** (`checkpoint.ts`; section 18).
 
 Section 10 adds an interactive pipeline schedule chart (GPipe, 1F1B, interleaved).
