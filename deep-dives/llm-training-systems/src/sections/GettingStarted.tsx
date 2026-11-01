@@ -732,7 +732,7 @@ export function GettingStarted() {
             <li>
               Inference arithmetic: a forward pass costs about 2 FLOPs (floating-point operations) per parameter per
               token of a prompt{' '}
-              <Cite tier={3} href={PALM} venue="preprint">
+              <Cite tier={3} href={PALM} venue="JMLR 2023">
                 PaLM, Appendix B
               </Cite>
               .
@@ -784,7 +784,7 @@ export function GettingStarted() {
               }
             >
               A step costs about 6 FLOPs per parameter per token: 2 in the forward pass and 4 in the backward pass{' '}
-              <Cite tier={3} href={PALM} venue="preprint">
+              <Cite tier={3} href={PALM} venue="JMLR 2023">
                 PaLM, Appendix B
               </Cite>
               . Model state costs 16 bytes per parameter with mixed-precision Adam (16-bit weights and gradients, a
@@ -846,7 +846,7 @@ export function GettingStarted() {
               </Cite>
               . <strong>Per GPU, NVLink is nine times EFA</strong>, our arithmetic from those two pages. Collectives that
               combine data inside the instance first can spread their crossing over the instance&apos;s whole 400
-              GB/s, which section 7 prices.
+              GB/s, our reading, which section 7 sets out and prices.
             </IdeaCard>
           </ColumnLayout>
         </SpaceBetween>

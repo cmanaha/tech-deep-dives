@@ -54,6 +54,8 @@ const LLAMA_CARD = gh('meta-llama/llama-models', LLAMA_MODELS_TAG, 'models/llama
 const MEGATRON_DIST_OPT = gh('NVIDIA/Megatron-LM', MEGATRON_TAG, 'docs/user-guide/features/dist_optimizer.md', 'L14-L20');
 /** TorchTitan v0.4.0 SwiGLU activation (eager silu times up). */
 const TORCHTITAN_ACTIVATION = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/models/common/activation.py', 'L166-L177');
+/** TorchTitan v0.4.0 Llama 3 config: local_compile_regions defaults include fused_binary_activation. */
+const TORCHTITAN_LLAMA_COMPILE = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/models/llama3/model.py', 'L87-L89');
 
 /** Conditions every E1 figure carries. */
 const E1_TITLE = 'E1: activation memory per Llama 3.1 8B layer on one GB10, PyTorch 2.15.0, one run';
@@ -387,7 +389,7 @@ function TwoBillsTable() {
           </tr>
           <tr>
             <td style={cell}>Activations of one 8,192-token sequence</td>
-            <td style={cell}>36.5 GB at 34 sbh per layer (44.1 GB at 41 sbh)</td>
+            <td style={cell}>36.5 GB at 34 sbh per layer (44.0 GB at 41 sbh)</td>
             <td style={cell}>179.9 GB at 33.5 sbh per layer, our derivation, not measured</td>
           </tr>
         </tbody>
@@ -484,20 +486,6 @@ export function TrainingStep() {
     { sym: 'n', meaning: 'Ranks taking part in one collective', value: 'Section 7' },
     { sym: 'r_f', meaning: 'Failures per node-day', value: 'Section 17' },
     { sym: 'w_cp', meaning: 'Time a checkpoint save blocks training', value: 'Section 18' },
-    {
-      sym: 'bytes per parameter',
-      meaning: (
-        <>
-          Model state per parameter: 16 for mixed-precision Adam with BF16 weights and gradients
-          (2 weights, 2 gradients, 12 optimizer); 18 with BF16 weights and FP32 main gradients,
-          NVIDIA Megatron Core&apos;s figure for that setting{' '}
-          <Cite tier={1} href={MEGATRON_DIST_OPT}>
-            Megatron Core distributed optimizer guide L14-L20
-          </Cite>
-        </>
-      ),
-      value: '16, so 128.5 GB of model state',
-    },
   ];
 
   return (
@@ -506,7 +494,7 @@ export function TrainingStep() {
         header={
           <Header
             variant="h1"
-            description="Count the arithmetic and the bytes of one step for your own model before you split either: about 6 floating-point operations (FLOPs) per parameter per token, 16 bytes per parameter of model state, and activations that live only inside the step (papers, Meta's llama-models v0.2.0 and our DGX Spark run, read 2026-10-31)"
+            description="Count the arithmetic and the bytes of one step for your own model before you split either: about 6 floating-point operations (FLOPs) per parameter per token, 16 bytes per parameter of model state, and activations that live only inside the step (papers, NVIDIA and AWS pages, TorchTitan v0.4.0, Megatron Core core_v0.20.0 and Meta's llama-models v0.2.0, read 2026-10-31, and our DGX Spark run)"
           >
             3. One Training Step: What It Computes and Keeps
           </Header>
@@ -544,7 +532,7 @@ export function TrainingStep() {
               go through the model together, and computes the loss. Every weight takes part in one
               multiply-add per token, so the pass costs about 2 FLOPs per parameter per token, the
               same arithmetic an inference engine spends on a prompt{' '}
-              <Cite tier={3} href={PALM} venue="preprint">
+              <Cite tier={3} href={PALM} venue="JMLR 2023">
                 PaLM, Appendix B
               </Cite>
               . On the way it saves the activations, the intermediate tensors the backward pass will
@@ -560,7 +548,7 @@ export function TrainingStep() {
               </Cite>
               . Each matrix multiply of the forward pass becomes two, so this pass costs about 4
               FLOPs per parameter per token{' '}
-              <Cite tier={3} href={PALM} venue="preprint">
+              <Cite tier={3} href={PALM} venue="JMLR 2023">
                 PaLM, Appendix B
               </Cite>
               .
@@ -626,7 +614,7 @@ export function TrainingStep() {
               <Box variant="p">
                 Attention: the matrix multiplies inside attention add 12 x L x H x Q x T FLOPs per
                 token, for H heads of dimension Q and sequence length T{' '}
-                <Cite tier={3} href={PALM} venue="preprint">
+                <Cite tier={3} href={PALM} venue="JMLR 2023">
                   PaLM, Appendix B
                 </Cite>
                 . With H x Q = h and T = s that is 12 x L x h x s, a count of the full s x s score
@@ -699,8 +687,14 @@ export function TrainingStep() {
             <Cite tier={1} href={TORCHTITAN_ACTIVATION} kind="code">
               TorchTitan v0.4.0 activation.py L166-L177
             </Cite>
-            . Across the 8B model&apos;s 32 layers, one 8,192-token sequence at micro-batch 1 holds
-            36.5 GB of activations at 34 sbh and 44.1 GB at 41 sbh.
+            . TorchTitan v0.4.0&apos;s Llama 3 config wraps that function in a{' '}
+            <code>torch.compile</code> region by default{' '}
+            <Cite tier={1} href={TORCHTITAN_LLAMA_COMPILE} kind="code">
+              TorchTitan v0.4.0 llama3/model.py L87-L89
+            </Cite>
+            , and whether the compiled region stores 34 sbh or 41 was not tested. Across the 8B
+            model&apos;s 32 layers, one 8,192-token sequence at micro-batch 1 holds 36.5 GB of
+            activations at 34 sbh and 44.0 GB at 41 sbh.
           </Box>
           <StepTimelineDiagram />
           <Box variant="small" color="text-body-secondary">
@@ -742,8 +736,8 @@ export function TrainingStep() {
                 <Cite tier={3} href={FLASH} venue="preprint">
                   FlashAttention, Section 3.1
                 </Cite>
-                . For Llama&apos;s layer (RMSNorm, no dropout, 8 key-value heads, a three-matrix SwiGLU
-                3.5 times the hidden size wide) the saved tensors are:
+                . For Llama&apos;s layer (RMSNorm, root mean square normalization; no dropout; 8 key-value
+                heads; a three-matrix SwiGLU 3.5 times the hidden size wide) the saved tensors are:
               </Box>
               <ul>
                 <li>
@@ -758,7 +752,7 @@ export function TrainingStep() {
                 </li>
                 <li>
                   Total for the 8B model, h = 4,096: sbh x (12 + 4,096/h + 6F/h) = sbh x (12 + 1 + 21)
-                  = 34 sbh. An eager SwiGLU also saves the SiLU output, 2sbF more, for 41 sbh. Our
+                  = 34 sbh. An eager SwiGLU also saves the SiLU (sigmoid linear unit) output, 2sbF more, for 41 sbh. Our
                   derivation; the same count gives 33.5 sbh for 70B.
                 </li>
               </ul>
@@ -789,80 +783,6 @@ export function TrainingStep() {
               </Box>
             </SpaceBetween>
           </ExpandableSection>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Write any run's batch as one identity, B = b x m x d, which every later sizing step solves"
-          >
-            Micro-batch, accumulation and the global batch
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">Three numbers set how many sequences one optimizer update learns from:</Box>
-          <ul>
-            <li>
-              <strong>The micro-batch size b</strong> is the number of sequences that go through one
-              forward and one backward pass together. Activation memory scales with it.
-            </li>
-            <li>
-              <strong>Gradient accumulation</strong> runs m micro-batches through forward and backward
-              passes, adding their gradients together, before a single optimizer update.
-            </li>
-            <li>
-              <strong>The data-parallel degree d</strong> is the number of copies of the model that
-              each process their own micro-batches and combine gradients before the update. Each copy
-              runs on one or more ranks, a rank being one process, usually one per accelerator
-              (section 8, Data Parallelism &amp; Sharding).
-            </li>
-          </ul>
-          <Box variant="p">
-            Together they fix the global batch:{' '}
-            <code>B = b x m x d</code> sequences, or B x s tokens{' '}
-            <Cite tier={3} href={MEGATRON_PTDP} venue="SC 2021">
-              Megatron-LM on GPU Clusters, Section 3.1
-            </Cite>
-            . The tensor-parallel and pipeline degrees do not appear in it: the same paper counts
-            accelerators as n = p x t x d, and those two degrees split the work of each micro-batch
-            across accelerators. Llama 3 405B&apos;s 8,192-GPU stage shows the identity at work: 64
-            data-parallel copies, 32 sequences each per step, 8,192 tokens each, so 64 x 32 x 8,192 =
-            16.8M tokens, the &quot;16M&quot; tokens per batch of the paper&apos;s table{' '}
-            <Cite tier={3} href={LLAMA3} venue="preprint">
-              Llama 3 Herd of Models, Table 4
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            The identity also shows how a run trades memory for passes. Activation memory follows b,
-            while the update runs once per B: for a fixed global batch, a smaller b with a larger m
-            holds fewer activations at once, at the price of more and smaller passes per update (our
-            reading of these sources). Section 8 and section 14, Set My Ranks, show what that choice
-            does to communication.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
-            description="Read every later formula in one set of symbols, with Llama 3.1 8B's values beside the ones a model fixes"
-          >
-            The notation the dive uses
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            Every formula from section 4 onward uses these symbols, and section 32, Glossary &amp;
-            Sources, repeats the list. Every traffic formula says whether it counts elements or bytes;
-            one BF16 element is 2 bytes.
-          </Box>
-          <NotationTable rows={notation} />
         </SpaceBetween>
       </Container>
 
@@ -916,6 +836,80 @@ export function TrainingStep() {
         header={
           <Header
             variant="h2"
+            description="Write any run's batch as one identity, B = b x m x d, which every later sizing step solves"
+          >
+            Micro-batch, accumulation and the global batch
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">Three numbers set how many sequences one optimizer update learns from:</Box>
+          <ul>
+            <li>
+              <strong>The micro-batch size b</strong> is the number of sequences that go through one
+              forward and one backward pass together. Activation memory scales with it.
+            </li>
+            <li>
+              <strong>Gradient accumulation</strong> runs m micro-batches through forward and backward
+              passes, adding their gradients together, before a single optimizer update.
+            </li>
+            <li>
+              <strong>The data-parallel degree d</strong> is the number of copies of the model that
+              each process their own micro-batches and combine gradients before the update. Each copy
+              runs on one or more ranks, a rank being one process, usually one per accelerator
+              (section 8, Data Parallelism &amp; Sharding).
+            </li>
+          </ul>
+          <Box variant="p">
+            Together they fix the global batch:{' '}
+            <code>B = b x m x d</code> sequences, or B x s tokens{' '}
+            <Cite tier={3} href={MEGATRON_PTDP} venue="SC 2021">
+              Megatron-LM on GPU Clusters, Section 3.1
+            </Cite>
+            . The tensor-parallel and pipeline degrees do not appear in it: the same paper counts
+            the accelerators as p x t x d, and those two degrees split the work of each micro-batch
+            across accelerators. Llama 3 405B&apos;s 8,192-GPU stage shows the identity at work: 64
+            data-parallel copies, 32 sequences each per step, 8,192 tokens each, so 64 x 32 x 8,192 =
+            16.8M tokens, the &quot;16M&quot; tokens per batch of the paper&apos;s table{' '}
+            <Cite tier={3} href={LLAMA3} venue="preprint">
+              Llama 3 Herd of Models, Table 4
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            The identity also shows how a run trades memory for passes. Activation memory follows b,
+            while the update runs once per B: for a fixed global batch, a smaller b with a larger m
+            holds fewer activations at once, at the price of more and smaller passes per update (our
+            reading of these sources). Section 8 and section 14, Set My Ranks, show what that choice
+            does to communication.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Read every later formula in one set of symbols, with Llama 3.1 8B's values beside the ones a model fixes"
+          >
+            The notation the dive uses
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Every formula from section 4 onward uses these symbols, and section 32, Glossary &amp;
+            Sources, repeats the list. Every traffic formula says whether it counts elements or bytes;
+            one BF16 element is 2 bytes.
+          </Box>
+          <NotationTable rows={notation} />
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
             description="Leave with your own model's FLOPs per token and bytes per parameter, the two numbers sections 4 and 5 start from"
           >
             Your model&apos;s two bills
@@ -935,7 +929,12 @@ export function TrainingStep() {
             </li>
             <li>
               <strong>Model state:</strong> 16N bytes with mixed-precision Adam and 16-bit gradients,
-              18N where the framework keeps FP32 main gradients.
+              18N with BF16 weights and FP32 main gradients, NVIDIA Megatron Core&apos;s figure for
+              that setting{' '}
+              <Cite tier={1} href={MEGATRON_DIST_OPT}>
+                Megatron Core distributed optimizer guide L14-L20
+              </Cite>
+              .
             </li>
             <li>
               <strong>Activations:</strong> about 34 sbh bytes per layer, times L, for Llama&apos;s

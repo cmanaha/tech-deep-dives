@@ -19,7 +19,7 @@ const PALM = arxiv('2204.02311v5');
 const ZERO = arxiv('1910.02054v3');
 /** Korthikanti et al., Reducing Activation Recomputation: Table 2 (2 sbh), Sec 6.2 (33%). Section 5. */
 const KORTHIKANTI = arxiv('2205.05198v1');
-/** Narayanan et al., Megatron-LM PTD-P (SC 2021): Sec 2.3 and 3.3.2 (all-reduce frequency). Section 7. */
+/** Narayanan et al., Megatron-LM PTD-P (SC 2021): Sec 3.2 (TP all-reduces) and 3.3.2 (DP once per batch). Section 7. */
 const PTDP = arxiv('2104.04473v5');
 /** The Llama 3 Herd of Models: Sec 1 (budget, tokens), 3.3.1 (16K H100), 3.3.2 and Table 4 (MFU), 3.3.4 (interruptions). */
 const LLAMA3 = arxiv('2407.21783v3');
@@ -38,7 +38,7 @@ const NVLINK_PAGE = 'https://www.nvidia.com/en-us/data-center/nvlink/';
 const EC2_AC = 'https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html';
 /** EC2 User Guide, Capacity Blocks (termination begins 11:00 UTC, blocks end 11:30 UTC). Section 20. */
 const EC2_CB = 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html';
-/** Megatron Core distributed-optimizer guide: 18 bytes per parameter with 16-bit weights and FP32 gradients. Section 5. */
+/** Megatron Core distributed-optimizer guide: 18 bytes per parameter with BF16 weights and FP32 gradients. Section 5. */
 const MEGATRON_DIST_OPT = gh('NVIDIA/Megatron-LM', MEGATRON_TAG, 'docs/user-guide/features/dist_optimizer.md', 'L14-L20');
 /** PyTorch v2.15.0 async_save docstring: stage to CPU memory, then save in a separate thread. Sections 15, 18. */
 const ASYNC_SAVE = gh('pytorch/pytorch', PYTORCH_TAG, 'torch/distributed/checkpoint/state_dict_saver.py', 'L233-L234');
@@ -615,7 +615,7 @@ export function ThreeBudgets() {
               </Cite>
               : 2 in the forward pass, which runs the model and computes the loss, and 4 in the backward
               pass, which computes the gradients{' '}
-              <Cite tier={3} href={PALM} venue="preprint">
+              <Cite tier={3} href={PALM} venue="JMLR 2023">
                 PaLM, Appendix B
               </Cite>
               . The rule holds at full scale. Llama 3 405B has 405,853,388,800 parameters{' '}
@@ -714,8 +714,8 @@ export function ThreeBudgets() {
                 configuration Meta trained and says nothing about Meta&apos;s counting rule (section 4).
               </Box>
               <Box variant="p">
-                <code>16 x 8,030,261,248 bytes = 128.5 GB</code>, and 128.5 / 80 = 1.6. A framework that
-                keeps 32-bit main gradients beside 16-bit weights pays 18 bytes per parameter instead{' '}
+                <code>16 x 8,030,261,248 bytes = 128.5 GB</code>, and 128.5 / 80 = 1.6. With BF16 (bfloat16)
+                weights and 32-bit main gradients the count is 18 bytes per parameter instead{' '}
                 <Cite tier={1} href={MEGATRON_DIST_OPT}>
                   Megatron Core distributed optimizer guide L14-L20
                 </Cite>{' '}
@@ -790,7 +790,7 @@ export function ThreeBudgets() {
               </Cite>
               : 16.1 GB per GPU of the 8B model&apos;s 128.5 GB across the eight GPUs of one p5.48xlarge,
               our arithmetic. The price is collectives every step, about 50% more communication volume
-              than plain data parallelism{' '}
+              than plain data parallelism when each step is one micro-batch{' '}
               <Cite tier={3} href={ZERO} venue="SC 2020">
                 ZeRO, Section 1
               </Cite>{' '}
@@ -814,7 +814,7 @@ export function ThreeBudgets() {
             inside every layer, twice in the forward pass and twice in the backward, for every
             micro-batch, the slice of the batch that goes through one forward and backward pass{' '}
             <Cite tier={3} href={PTDP} venue="SC 2021">
-              Efficient Large-Scale Language Model Training on GPU Clusters, Sections 2.3 and 3.3.2
+              Efficient Large-Scale Language Model Training on GPU Clusters, Section 3.2
             </Cite>
             , so it stays on NVLink inside one instance. Data parallelism&apos;s gradient all-reduce can
             run once per batch{' '}
