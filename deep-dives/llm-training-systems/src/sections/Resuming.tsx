@@ -542,7 +542,7 @@ export function Resuming() {
         header={
           <Header
             variant="h1"
-            description="Make a restart continue the same run, and find the slow rank before it costs you a tenth of the cluster: stragglers wasted 10.4% of GPU-hours in ByteDance's trace of 3,079 large jobs (PyTorch v2.15.0, TorchTitan v0.4.0, Megatron Core core_v0.20.0 and TorchFT v0.2.0, with AWS, Slurm and NCCL documentation and papers, read 2026-10-31)"
+            description="Make a restart continue the same run, and find the slow rank from per-rank step timing: stragglers wasted 10.4% of GPU-hours in ByteDance's trace of 3,079 large jobs (PyTorch v2.15.0, TorchTitan v0.4.0, Megatron Core core_v0.20.0 and TorchFT v0.2.0, with AWS, Slurm and NCCL documentation and papers, read 2026-10-31)"
           >
             19. Resuming Correctly
           </Header>
@@ -563,8 +563,8 @@ export function Resuming() {
               Llama 3 Herd of Models, Section 3.3.4
             </Cite>
             , one every 3.1 hours by our arithmetic (section 17, Failure Is the Steady State, turns a
-            node count into that interval). Stragglers cost about as much and never stop the job: in
-            ByteDance&apos;s trace of 3,079 pre-training jobs on 128 GPUs or more, they wasted 10.4% of
+            node count into that interval). Stragglers cost about as much, by our reading of the two
+            reports, and never stop the job: in ByteDance&apos;s trace of 3,079 pre-training jobs on 128 GPUs or more, they wasted 10.4% of
             the allocated GPU-hours{' '}
             <Cite tier={3} href={STRAGGLERS} venue="OSDI 2025">
               Understanding Stragglers in Large Model Training, Sections 3.1 and 4.1
@@ -711,6 +711,9 @@ export function Resuming() {
             each replica{' '}
             <Cite tier={1} href={torchftReadme('L24-L52')}>
               TorchFT README L24-L52
+            </Cite>{' '}
+            <Cite tier={1} href={torchftReadme('L94-L101')}>
+              L94-L101
             </Cite>
             .
           </Box>
@@ -826,14 +829,7 @@ export function Resuming() {
             <Cite tier={1} href={randomness('L5-L20')}>
               PyTorch reproducibility notes L5-L20
             </Cite>
-            . TorchTitan&apos;s determinism switch sets the knobs: deterministic algorithms, cuDNN
-            deterministic mode with benchmarking off, a fixed cuBLAS workspace (
-            <code>CUBLAS_WORKSPACE_CONFIG=:4096:8</code>) and compiled flex attention without
-            autotuning. It logs &quot;Deterministic algorithm enabled (expect perf degradation)&quot;{' '}
-            <Cite tier={1} href={ttUtils('L137-L171')} kind="code">
-              TorchTitan utils.py L137-L171
-            </Cite>
-            , a warning that reports no measured figure.
+            . Turn determinism on for a debugging run, where that cost is paid on purpose.
           </Box>
           <Box variant="p">
             Collectives leave a gap. Neither PyTorch&apos;s reproducibility notes{' '}
@@ -856,6 +852,18 @@ export function Resuming() {
             the same data in the same order and the same random streams, with a loss curve that may
             differ in its low bits, our reading of these sources.
           </Box>
+          <ExpandableSection headerText="What TorchTitan's determinism switch sets">
+            <Box variant="p">
+              Deterministic algorithms, cuDNN deterministic mode with benchmarking off, a fixed cuBLAS
+              workspace (<code>CUBLAS_WORKSPACE_CONFIG=:4096:8</code>) and compiled flex attention
+              without autotuning. It logs &quot;Deterministic algorithm enabled (expect perf
+              degradation)&quot;{' '}
+              <Cite tier={1} href={ttUtils('L137-L171')} kind="code">
+                TorchTitan utils.py L137-L171
+              </Cite>
+              , a warning that reports no measured figure.
+            </Box>
+          </ExpandableSection>
           <ExpandableSection headerText="A1 protocol (not yet run)">
             <SpaceBetween size="s">
               <Box variant="p">
@@ -935,7 +943,7 @@ export function Resuming() {
             </Cite>
             . A tenth of the GPU-hours is the same order as the time Llama 3 and MegaScale lost to all
             their interruptions together, since each kept more than 90% effective training time
-            (section 17), our reading across the reports; a straggler costs that much without ever
+            (section 17), our reading across the reports; stragglers cost that much without ever
             appearing in a failure count.
           </Box>
           <StragglerDiagram />
@@ -1095,7 +1103,8 @@ export function Resuming() {
           </li>
           <li>
             <strong>Schedule garbage collection</strong> on every rank at the same step interval:
-            TorchTitan&apos;s default, Megatron&apos;s <code>manual_gc</code>.
+            TorchTitan&apos;s default, or Megatron&apos;s <code>manual_gc</code> with a{' '}
+            <code>manual_gc_interval</code> above 0.
           </li>
           <li>
             <strong>Log each rank&apos;s compute time on every step</strong>, the forward and backward

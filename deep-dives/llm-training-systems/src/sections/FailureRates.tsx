@@ -18,7 +18,7 @@ import { jobMttfSeconds } from '../lib/checkpoint';
 const LLAMA3 = arxiv('2407.21783v3');
 const LLAMA3_V1 = arxiv('2407.21783v1');
 const LLAMA3_V2 = arxiv('2407.21783v2');
-/** Revisiting Reliability in Large-Scale Machine Learning Research Clusters (FAIR at Meta). */
+/** Revisiting Reliability in Large-Scale Machine Learning Research Clusters (FAIR at Meta; HPCA 2025, confirmed on the HPCA 2025 main program and Crossref 10.1109/HPCA61900.2025.00096). */
 const META_REL = arxiv('2410.21680v2');
 /** MegaScale: Scaling Large Language Model Training to More Than 10,000 GPUs (NSDI 2024). */
 const MEGASCALE = arxiv('2402.15627v1');
@@ -485,7 +485,7 @@ export function FailureRates() {
             failure rate is the sum of its nodes&apos; rates. With <code>r_f</code> the failures per
             node-day and <code>N_nodes</code> the job&apos;s node count, the job&apos;s mean time to failure (MTTF), the average
             interval between interruptions, is <code>MTTF = 1 / (N_nodes x r_f)</code>{' '}
-            <Cite tier={3} href={META_REL} venue="preprint">
+            <Cite tier={3} href={META_REL} venue="HPCA 2025">
               Revisiting Reliability in Large-Scale ML Research Clusters, Section III
             </Cite>
             . Double the nodes and the interval halves. The formula has no term for the model, the
@@ -495,18 +495,18 @@ export function FailureRates() {
             Meta measured the rate on two research clusters of 8-GPU A100 servers: RSC-1, 16K GPUs of
             general ML work, and RSC-2, 8K GPUs focused on vision, over 11 months, 4 million jobs and more
             than 150 million GPU-hours{' '}
-            <Cite tier={3} href={META_REL} venue="preprint">
+            <Cite tier={3} href={META_REL} venue="HPCA 2025">
               Revisiting Reliability, Abstract and Section II
             </Cite>
             . RSC-1 ran at 6.50 failures per thousand node-days and RSC-2 at 2.34, and RSC-1&apos;s rate
             moved between about 2.5 and about 17.5 within a year as failure modes came and went{' '}
-            <Cite tier={3} href={META_REL} venue="preprint">
-              Revisiting Reliability, Sections II-E and III
+            <Cite tier={3} href={META_REL} venue="HPCA 2025">
+              Revisiting Reliability, Section III
             </Cite>
             . The measured job MTTF fell from 47.7 days for 8-GPU jobs to 7.9 hours for 1,024-GPU jobs,
             and at RSC-1&apos;s rate the formula projects {BIG_RSC1_H.toFixed(1)} hours for a 16,384-GPU
             job{' '}
-            <Cite tier={3} href={META_REL} venue="preprint">
+            <Cite tier={3} href={META_REL} venue="HPCA 2025">
               Revisiting Reliability, Section III and Figure 7
             </Cite>
             .
@@ -536,12 +536,12 @@ export function FailureRates() {
                 <code>r_f</code> counts, among jobs using more than 128 GPUs, those assigned a{' '}
                 <code>NODE_FAIL</code> status plus <code>FAILED</code> jobs with a critical health check firing in the last 10 minutes of the job (or 5
                 minutes after it ended), divided by the node-days of runtime{' '}
-                <Cite tier={3} href={META_REL} venue="preprint">
+                <Cite tier={3} href={META_REL} venue="HPCA 2025">
                   Revisiting Reliability, Section III, &quot;Comparing to actual job runs&quot;
                 </Cite>
                 . The measured job MTTF is per job-size bucket, and the paper introduces it with failures
                 that stem from &quot;user programs to system software to hardware faults&quot;{' '}
-                <Cite tier={3} href={META_REL} venue="preprint">
+                <Cite tier={3} href={META_REL} venue="HPCA 2025">
                   Revisiting Reliability, Section III, &quot;MTTF Decreases at Scale&quot;
                 </Cite>
                 .
@@ -549,8 +549,9 @@ export function FailureRates() {
               <Box variant="p">
                 The two measures do not line up exactly. Meta&apos;s measured 7.9 hours for 1,024-GPU jobs
                 is shorter than the formula gives at that size even at the worst-month rate,{' '}
-                {K1_WORST_H.toFixed(1)} hours, and the paper does not reconcile the two; our reading is that
-                the measured figure counts more kinds of failure. Use the lines to size an interval to the
+                {K1_WORST_H.toFixed(1)} hours. The paper describes its projection as matching the observed
+                MTTFs of jobs above 32 GPUs and does not discuss this gap; our reading is that the measured
+                figure counts more kinds of failure. Use the lines to size an interval to the
                 nearest order of magnitude.
               </Box>
             </SpaceBetween>
@@ -635,8 +636,8 @@ export function FailureRates() {
                 but 19% of GPU runtime. Removing 40 lemon nodes, nodes that fail repeatedly, found from
                 their health-check and job history (24 on RSC-1, 1.2% of that cluster, and 16 on RSC-2,
                 1.7%), cut the failure rate of jobs on 512 or more GPUs from 14% to 4%{' '}
-                <Cite tier={3} href={META_REL} venue="preprint">
-                  Revisiting Reliability, Sections II-E and IV-A
+                <Cite tier={3} href={META_REL} venue="HPCA 2025">
+                  Revisiting Reliability, Sections III and IV-A
                 </Cite>
                 .
               </Box>
@@ -675,13 +676,13 @@ export function FailureRates() {
           <Box variant="p">
             Effective training time ratio (ETTR) is the productive runtime of a job run over its
             wallclock time, and it is the goodput measure this dive uses{' '}
-            <Cite tier={3} href={META_REL} venue="preprint">
+            <Cite tier={3} href={META_REL} venue="HPCA 2025">
               Revisiting Reliability, Section II-D
             </Cite>
             . Meta splits the wallclock into time in the queue, productive runtime and unproductive
             runtime, and names three sources of the unproductive part: re-training the steps since the
             last checkpoint, the restart overhead, and the time checkpointing adds{' '}
-            <Cite tier={3} href={META_REL} venue="preprint">
+            <Cite tier={3} href={META_REL} venue="HPCA 2025">
               Revisiting Reliability, Sections II-D and III
             </Cite>
             . On a reservation the job holds for its whole run the queue term drops out, our reading.
@@ -698,11 +699,11 @@ export function FailureRates() {
             diagnostic tests took under 10 minutes on average, and the job caught up to its pre-crash
             progress within 15 minutes of the latest checkpoint{' '}
             <Cite tier={3} href={MEGASCALE} venue="NSDI 2024">
-              MegaScale, Section 6.2
+              MegaScale, Section 6.3
             </Cite>
             . Meta&apos;s research clusters estimate 0.85 to 0.9 for their largest 2K to 4K GPU runs,
             assuming Daly-Young checkpoint intervals and 5-minute restart and save costs{' '}
-            <Cite tier={3} href={META_REL} venue="preprint">
+            <Cite tier={3} href={META_REL} venue="HPCA 2025">
               Revisiting Reliability, Section III, Observation 10
             </Cite>
             .
@@ -750,8 +751,8 @@ export function FailureRates() {
           <MttfTable />
           <Box variant="small" color="text-body-secondary">
             <code>MTTF = 1 / (N_nodes x r_f)</code>, 8 GPUs per node, rates from{' '}
-            <Cite tier={3} href={META_REL} venue="preprint">
-              Revisiting Reliability, Sections II-E and III
+            <Cite tier={3} href={META_REL} venue="HPCA 2025">
+              Revisiting Reliability, Section III
             </Cite>
             . A planning estimate to the nearest order of magnitude; confirm it against your own
             fleet&apos;s failure history.
@@ -775,7 +776,7 @@ export function FailureRates() {
             continue the same run. Recovery only pays once bad nodes stay out: Meta found that recovering
             from random failures &quot;is only effective once defective nodes can be reliably rotated
             out&quot;{' '}
-            <Cite tier={3} href={META_REL} venue="preprint">
+            <Cite tier={3} href={META_REL} venue="HPCA 2025">
               Revisiting Reliability, Section II-C, Observation 2
             </Cite>
             , and removing its 40 lemon nodes cut the failure rate of 512-GPU-plus jobs from 14% to 4%.

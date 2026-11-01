@@ -65,7 +65,7 @@ const LLAMA3 = arxiv('2407.21783v3');
 const MEGASCALE = arxiv('2402.15627v1');
 /** ByteCheckpoint (NSDI 2025), Sec 2.1: what a checkpoint must hold. */
 const BYTECHECKPOINT = arxiv('2407.20143v4');
-/** ZeRO, Sec 3.1: 16 bytes per parameter for mixed-precision Adam. */
+/** ZeRO (SC 2020, Crossref 10.1109/SC41405.2020.00024), Sec 3.1: 16 bytes per parameter for mixed-precision Adam (fp16 in the paper). */
 const ZERO = arxiv('1910.02054v3');
 /** Amazon Science post by Gemini's authors (SOSP 2023): in-memory checkpoints on peers. */
 const GEMINI_BLOG = 'https://www.amazon.science/blog/more-efficient-recovery-from-failures-during-large-ml-model-training';
@@ -92,6 +92,7 @@ const TT_MODE_DEFAULT = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/com
 const TT_DISPATCH = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/components/checkpointer/dcp.py', 'L317-L338');
 const TT_STAGER = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/components/checkpointer/dcp.py', 'L453-L474');
 const TT_FENCE = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/training_engine.py', 'L872-L876');
+const TT_TRAIN_STATE = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/training_engine.py', 'L884-L885');
 
 /* Megatron Core core_v0.20.0 */
 const MG_ASYNC_OFF = gh('NVIDIA/Megatron-LM', MEGATRON_TAG, 'megatron/training/arguments.py', 'L1808-L1814');
@@ -976,10 +977,11 @@ export function Checkpointing() {
         <SpaceBetween size="m">
           <Box variant="p">
             Mixed-precision training with the Adam optimizer keeps 16 bytes of model state per
-            parameter: 2 for the BF16 (bfloat16) weights, 2 for their gradients and 12 of optimizer
-            state, an FP32 (32-bit floating point) master copy of the weights plus Adam&apos;s two moments, running
-            averages of each gradient and of its square{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            parameter: 2 for the 16-bit weights (FP16 in the paper; BF16 takes the same two bytes), 2
+            for their gradients and 12 of optimizer state, an FP32 (32-bit floating point) master copy of
+            the weights plus Adam&apos;s two moments, running averages of each gradient and of its
+            square{' '}
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO (Zero Redundancy Optimizer), Section 3.1
             </Cite>
             . A step recomputes the gradients from scratch, so a checkpoint leaves them out:
@@ -1014,12 +1016,15 @@ export function Checkpointing() {
             run is the same run: the data loader&apos;s position, including its buffer of tokens not
             yet packed into a sequence, the learning-rate scheduler, the step counter and the random
             number generator (RNG) states{' '}
-            <Cite tier={3} href={BYTECHECKPOINT} venue="NSDI 2025" accessed={REGISTER_DATE}>
+            <Cite tier={3} href={BYTECHECKPOINT} venue="NSDI 2025">
               ByteCheckpoint, Section 2.1
             </Cite>
             . Frameworks differ on the last item. TorchTitan v0.4.0 saves the model, the optimizer, the
-            data loader, the scheduler and a train state of step count and tokens seen; no RNG state
-            appears in its checkpoint manager{' '}
+            data loader, the scheduler and a train state of step count and tokens seen{' '}
+            <Cite tier={1} href={TT_TRAIN_STATE} kind="code">
+              TorchTitan v0.4.0 training_engine.py L884-L885
+            </Cite>
+            ; no RNG state appears in its checkpoint manager{' '}
             <Cite tier={1} href={TT_STATE_KEYS} kind="code">
               TorchTitan v0.4.0 checkpointer/base.py L36-L41
             </Cite>
@@ -1056,14 +1061,14 @@ export function Checkpointing() {
             <code>dt* = sqrt(2 w_cp / (N_nodes x r_f))</code>, with <code>r_f</code> the failures per
             node-day, so that <code>N_nodes x r_f</code> is the job&apos;s failure rate and its inverse
             the job&apos;s MTTF (mean time to failure){' '}
-            <Cite tier={3} href={META_RELIABILITY} venue="preprint">
+            <Cite tier={3} href={META_RELIABILITY} venue="HPCA 2025">
               Revisiting Reliability in Large-Scale ML Research Clusters, Eq. 3
             </Cite>
             . The same study estimates ETTR (effective training time ratio, productive time over
             wallclock) as{' '}
             <code>E[ETTR] ~ (1 - N_nodes r_f (u_0 + dt/2)) / (1 + w_cp / dt)</code> for long,
             high-priority runs{' '}
-            <Cite tier={3} href={META_RELIABILITY} venue="preprint">
+            <Cite tier={3} href={META_RELIABILITY} venue="HPCA 2025">
               Revisiting Reliability, Appendix A, Eq. 10
             </Cite>
             . The interval grows with the square root of the save&apos;s cost, so a save 30 times cheaper
@@ -1072,12 +1077,12 @@ export function Checkpointing() {
           <Box variant="p">
             For the 70B job on 32 nodes, at the 6.50 failures per thousand node-days Meta measured on its
             RSC-1 cluster{' '}
-            <Cite tier={3} href={META_RELIABILITY} venue="preprint">
+            <Cite tier={3} href={META_RELIABILITY} venue="HPCA 2025">
               Revisiting Reliability, Section III
             </Cite>
             , the job&apos;s MTTF is {fmt(W_SYNC.mttfDays, 1)} days. With a 10-minute restart, inside the 5
             to 20 minutes Meta gives for its clusters{' '}
-            <Cite tier={3} href={META_RELIABILITY} venue="preprint">
+            <Cite tier={3} href={META_RELIABILITY} venue="HPCA 2025">
               Revisiting Reliability, Section III
             </Cite>
             , and a step time of {fmt(REF_STEP_SECONDS, 1)} s (Calculator A in section 4, Counting the
@@ -1109,7 +1114,7 @@ export function Checkpointing() {
             {minutes(W16_2.intervalSeconds)} to {minutes(W16_60.intervalSeconds)} minutes are under three
             times the 10-minute restart, while the derivation assumes an interval much longer than the
             restart{' '}
-            <Cite tier={3} href={META_RELIABILITY} venue="preprint">
+            <Cite tier={3} href={META_RELIABILITY} venue="HPCA 2025">
               Revisiting Reliability, Section III and Appendix A
             </Cite>
             . The 256-GPU asynchronous interval is also under three restart times, and the calculator
@@ -1121,7 +1126,7 @@ export function Checkpointing() {
                 Young (1974) and Daly (2006) are the primary sources for the interval. Both sit behind
                 publisher access, so this section cites the formula through Meta&apos;s statement and
                 derivation, whose reference list names both papers{' '}
-                <Cite tier={3} href={META_RELIABILITY} venue="preprint">
+                <Cite tier={3} href={META_RELIABILITY} venue="HPCA 2025">
                   Revisiting Reliability, Eq. 3 and its references
                 </Cite>
                 . Appendix A lists the assumptions behind it: the interval much longer than the
@@ -1137,7 +1142,7 @@ export function Checkpointing() {
               <Box variant="p">
                 The failure rates count jobs above 128 GPUs that ended with a node failure, or failed
                 with a critical health check in the 10 minutes before the end{' '}
-                <Cite tier={3} href={META_RELIABILITY} venue="preprint">
+                <Cite tier={3} href={META_RELIABILITY} venue="HPCA 2025">
                   Revisiting Reliability, Section III
                 </Cite>
                 ; section 17 explains why they are an order-of-magnitude planning aid rather than a
@@ -1345,8 +1350,11 @@ export function Checkpointing() {
             behind a forward and backward pass.
           </Box>
           <Box variant="p">
-            Megatron Core&apos;s <code>--async-save</code> is off by default, and at core_v0.20.0 it is
-            switched off again, with only a rank-0 warning, for distributed checkpoints unless{' '}
+            Megatron Core&apos;s <code>--async-save</code> defaults to <code>False</code>{' '}
+            <Cite tier={1} href={MG_ASYNC_DOC} kind="code">
+              Megatron Core core_v0.20.0 training_config.py L551-L552
+            </Cite>
+            , and at core_v0.20.0 it is switched off again, with only a rank-0 warning, for distributed checkpoints unless{' '}
             <code>--use-persistent-ckpt-worker</code> is also set{' '}
             <Cite tier={1} href={MG_ASYNC_OFF} kind="code">
               Megatron Core core_v0.20.0 arguments.py L1808-L1814
@@ -1364,29 +1372,47 @@ export function Checkpointing() {
             --async-save&quot;.
           </Box>
           <Box variant="p">
-            Production systems add a tier in memory. MegaScale copies each GPU&apos;s state to pinned host
-            memory in several seconds, the only part on the training critical path, and a background
-            process writes it to HDFS (Hadoop Distributed File System); on recovery one worker per
-            data-parallel group reads the shared state and broadcasts it to the rest, cutting storage
-            reads by the group size{' '}
+            Production systems add a tier in memory: checkpoints land first in host memory, the
+            node&apos;s own or its peers&apos;, and the write to remote storage leaves the critical
+            path{' '}
             <Cite tier={3} href={MEGASCALE} venue="NSDI 2024">
               MegaScale, Section 4.4
-            </Cite>
-            . Gemini, an in-memory checkpointing system from Rice University and AWS presented at SOSP
-            2023 (the Symposium on Operating Systems Principles), also copies each machine&apos;s
-            checkpoint into the memory of its peers, in groups of typically two or three machines, so most
-            failures recover from RAM and remote storage is the backstop; it schedules that traffic into
-            the idle gaps between training collectives{' '}
+            </Cite>{' '}
             <Cite tier={2} href={GEMINI_BLOG}>
-              Amazon Science, Gemini authors&apos; post
-            </Cite>
-            . Its authors report checkpointing every iteration and cutting the training time lost to
-            failures by more than 92% against the best baseline{' '}
-            <Cite tier={2} href={GEMINI_BLOG} kind="vendor-claim">
               Amazon Science, Gemini authors&apos; post
             </Cite>
             .
           </Box>
+          <ExpandableSection headerText="Two in-memory designs: MegaScale and Gemini">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                MegaScale copies each GPU&apos;s state to pinned host memory in several seconds, the only
+                part on the training critical path, and a background process writes it to HDFS (Hadoop
+                Distributed File System); on recovery one worker per data-parallel group reads the shared
+                state and broadcasts it to the rest, cutting storage reads by the group size{' '}
+                <Cite tier={3} href={MEGASCALE} venue="NSDI 2024">
+                  MegaScale, Section 4.4
+                </Cite>
+                .
+              </Box>
+              <Box variant="p">
+                Gemini, an in-memory checkpointing system from Rice University and AWS presented at SOSP
+                2023 (the Symposium on Operating Systems Principles), copies each machine&apos;s
+                checkpoint into the memory of its peers, in groups of typically two or three machines, so
+                most failures recover from RAM and remote storage is the backstop; it schedules that
+                traffic into the idle gaps between training collectives{' '}
+                <Cite tier={2} href={GEMINI_BLOG}>
+                  Amazon Science, Gemini authors&apos; post
+                </Cite>
+                . Its authors report checkpointing every iteration and cutting the training time lost to
+                failures by more than 92% against the best baseline{' '}
+                <Cite tier={2} href={GEMINI_BLOG} kind="vendor-claim">
+                  Amazon Science, Gemini authors&apos; post
+                </Cite>
+                .
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
           <Box variant="p">
             On AWS that design is SageMaker HyperPod managed tiered checkpointing, generally available
             since 2025-09-08 for HyperPod clusters on the Amazon EKS (Elastic Kubernetes Service)
@@ -1593,7 +1619,7 @@ export function Checkpointing() {
           <CheckpointCalculator />
           <Box variant="small" color="text-body-secondary">
             Where the inputs come from. Failure rates:{' '}
-            <Cite tier={3} href={META_RELIABILITY} venue="preprint">
+            <Cite tier={3} href={META_RELIABILITY} venue="HPCA 2025">
               Revisiting Reliability, Section III
             </Cite>
             . Bytes per parameter: the optimizer rows of section 5, The Memory Budget, without the
