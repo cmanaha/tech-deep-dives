@@ -118,3 +118,11 @@ section and source are named so the fact check can trace it.
   120 GB (156 GB) against 24.1 GB; section 14 example 2 flat FSDP 32 7% to 9% of compute. Evidence:
   AWS's nccl-tests sample, 16 GiB all-reduced across two p5.48xlarge in 66 ms (wave2-parallelism,
   orchestrator addendum). Labelled our reading; A1 (not yet run) would measure it.
+
+## Gate 3 scores (fact check after fixes, 1 to 10; leverage before and after: mental model / practical leverage / rigor / accuracy / economy)
+
+| Section | Group | Claims checked | Not confirmed (fixed) | Gate 3 | Leverage before | Leverage after |
+|---|---|---|---|---|---|---|
+| 4 Arithmetic | fc02 | 67 | WRONG 5, OVERREACH 2 | 8 | 4/4/5/5/3 | 4/4/5/5/4 |
+| 5 Memory budget | fc02 | 80 | OVERREACH 3, UNSUPPORTED 2, prose 1 | 8 | 4/4/5/5/3 | 4/4/5/5/3 |
+| 6 Precision | fc02 | 84 | WRONG 1, OVERREACH 3, UNSUPPORTED 1 | 8 | 4/4/5/5/4 | 4/4/5/5/4 |
