@@ -91,7 +91,7 @@ const sources: Source[] = [
   { id: 64, title: 'Scaling Laws for Neural Language Models, arXiv 2001.08361v1, preprint', url: 'https://arxiv.org/abs/2001.08361v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 65, title: 'Training Compute-Optimal Large Language Models, arXiv 2203.15556v1, preprint', url: 'https://arxiv.org/abs/2203.15556v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 66, title: 'An Empirical Model of Large-Batch Training, arXiv 1812.06162v1, preprint', url: 'https://arxiv.org/abs/1812.06162v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
-  { id: 67, title: 'Reducing Activation Recomputation in Large Transformer Models, arXiv 2205.05198v1, preprint', url: 'https://arxiv.org/abs/2205.05198v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
+  { id: 67, title: 'Reducing Activation Recomputation in Large Transformer Models, arXiv 2205.05198v1, MLSys 2023', url: 'https://arxiv.org/abs/2205.05198v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 68, title: 'FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness, arXiv 2205.14135v2, preprint', url: 'https://arxiv.org/abs/2205.14135v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 69, title: 'Training Deep Nets with Sublinear Memory Cost, arXiv 1604.06174v2, preprint', url: 'https://arxiv.org/abs/1604.06174v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   // Tier 3: precision and optimizers
@@ -105,7 +105,7 @@ const sources: Source[] = [
   { id: 76, title: 'Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism, arXiv 1909.08053v4, preprint', url: 'https://arxiv.org/abs/1909.08053v4', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 77, title: 'Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM (PTD-P), arXiv 2104.04473v5, SC 2021', url: 'https://arxiv.org/abs/2104.04473v5', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 78, title: 'ZeRO: Memory Optimizations Toward Training Trillion Parameter Models, arXiv 1910.02054v3, preprint', url: 'https://arxiv.org/abs/1910.02054v3', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
-  { id: 79, title: 'ZeRO++: Extremely Efficient Collective Communication for Giant Model Training, arXiv 2306.10209v1, preprint', url: 'https://arxiv.org/abs/2306.10209v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
+  { id: 79, title: 'ZeRO++: Extremely Efficient Collective Communication for Giant Model Training, arXiv 2306.10209v1, ICLR 2024', url: 'https://arxiv.org/abs/2306.10209v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 80, title: 'PyTorch Distributed: Experiences on Accelerating Data Parallel Training, arXiv 2006.15704v1, VLDB 2020', url: 'https://arxiv.org/abs/2006.15704v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 81, title: 'PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel, arXiv 2304.11277v2, PVLDB 16(12)', url: 'https://arxiv.org/abs/2304.11277v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 82, title: 'GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism, arXiv 1811.06965v5, preprint', url: 'https://arxiv.org/abs/1811.06965v5', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },

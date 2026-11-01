@@ -1109,7 +1109,7 @@ export function MemoryBudget() {
           Model state by t, and activations by t. Without SP the norm inputs and the projections&apos;
           shared inputs, 8 sbh for Llama&apos;s layer, stay whole on every rank (our count, from the
           paper&apos;s Table 2){' '}
-          <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+          <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
             Reducing Activation Recomputation, Table 2
           </Cite>
         </>
@@ -1126,7 +1126,7 @@ export function MemoryBudget() {
       divides: (
         <>
           Activations, to 2 sbh per layer{' '}
-          <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+          <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
             Reducing Activation Recomputation, Table 2
           </Cite>
           , plus one layer&apos;s full set while it is recomputed (our reading); our run measured 2.00 sbh{' '}
@@ -1138,7 +1138,7 @@ export function MemoryBudget() {
       costs: (
         <>
           One more forward pass, about 33% more FLOPs (floating-point operations){' '}
-          <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+          <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
             Reducing Activation Recomputation, Section 6.2
           </Cite>
           ; 14% to 16% more step time in our run on one GB10 (details below)
@@ -1155,7 +1155,7 @@ export function MemoryBudget() {
         <>
           In Megatron&apos;s attention-only form, the attention scores: 70% of GPT-3&apos;s activations for 2.7%
           more FLOPs{' '}
-          <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+          <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
             Reducing Activation Recomputation, Section 5
           </Cite>
         </>
@@ -1163,7 +1163,7 @@ export function MemoryBudget() {
       costs: (
         <>
           7% more time on the paper&apos;s measured layer{' '}
-          <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+          <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
             Reducing Activation Recomputation, Section 6.2
           </Cite>
           . A FlashAttention-style kernel never stores those scores{' '}
@@ -1212,7 +1212,7 @@ export function MemoryBudget() {
           Model state by p, and the first stage&apos;s activations not at all. Under 1F1B (one forward, one
           backward) that stage holds p micro-batches of L/p layers, L layers&apos; worth whatever p is, times 1 +
           (p - 1)/(p x v) with v interleaved chunks{' '}
-          <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+          <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
             Reducing Activation Recomputation, Section 4.2.3
           </Cite>
         </>
@@ -1408,7 +1408,7 @@ export function MemoryBudget() {
             tokens in flight, so their unit is s x b x h, written sbh: sequence length, times micro-batch
             size (the sequences that go through one forward and backward pass together), times hidden
             size. Korthikanti et al.&apos;s method adds up the bytes of every saved tensor{' '}
-            <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+            <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
               Reducing Activation Recomputation, Section 4.1
             </Cite>
             . Applied to Llama&apos;s layer with a FlashAttention-style kernel, which keeps the attention
@@ -1479,7 +1479,7 @@ export function MemoryBudget() {
             </Cite>
             , 11.5% of the {fmtGB(act8)} in the layers (our arithmetic). Korthikanti et al. treat the
             output layer as negligible{' '}
-            <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+            <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
               Reducing Activation Recomputation, Section 4.3
             </Cite>
             . That holds beside their eager attention&apos;s 5as/h term and a 51,200-entry vocabulary; with
@@ -1536,7 +1536,7 @@ export function MemoryBudget() {
               </Box>
               <Box variant="p">
                 Eager attention, our arithmetic on the paper&apos;s GPT-layer formula sbh(34 + 5as/h){' '}
-                <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+                <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
                   Reducing Activation Recomputation, Section 4.1
                 </Cite>
                 : for the 8B model, <code>5as/h = 5 x 32 x 8,192 / 4,096 = 320</code>, so a layer is
@@ -1604,13 +1604,13 @@ export function MemoryBudget() {
             <SpaceBetween size="s">
               <Box variant="p">
                 The FLOP cost of full recomputation is about 33%, one more forward pass{' '}
-                <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+                <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
                   Reducing Activation Recomputation, Section 6.2
                 </Cite>
                 , and it counts in HFU (hardware FLOPs utilization) but not in MFU (model FLOPs
                 utilization), section 4. The papers report 30% to 40% more execution time on their own
                 models and GPUs{' '}
-                <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+                <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
                   Reducing Activation Recomputation, Section 1
                 </Cite>{' '}
                 <Cite tier={3} href={CHEN} venue="preprint">
@@ -1817,7 +1817,7 @@ export function MemoryBudget() {
                   ZeRO, Section 5
                 </Cite>
                 . TP, SP, recomputation and pipeline stages:{' '}
-                <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+                <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
                   Reducing Activation Recomputation, Table 2 and Section 4.2.3
                 </Cite>
                 , adapted to Llama&apos;s layer by our count. Context parallelism:{' '}

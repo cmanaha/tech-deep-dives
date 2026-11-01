@@ -1109,13 +1109,13 @@ export function Arithmetic() {
               <strong>Whether recomputed work counts.</strong> A recomputed forward pass is real
               arithmetic that MFU leaves out. Full recomputation adds about a third to the layers&apos;
               FLOPs, &quot;the expected 33%&quot;{' '}
-              <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+              <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
                 Reducing Activation Recomputation, Section 6.2
               </Cite>
               . On one GB10 it lengthened the step of a 1B Llama-shaped model at 2,048 tokens by 14% to
               16% across two runs, below the 30% to 40% Korthikanti et al. observed in their own
               training runs{' '}
-              <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+              <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
                 Reducing Activation Recomputation, Section 1
               </Cite>
               , and MFU fell from 29.0% to 24.9% in one run and from 27.9% to 24.5% in the other{' '}
