@@ -15,7 +15,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 ## Data parallelism and DDP
 
-- DP: every rank holds a replica; gradients summed by an all-reduce; synchronous, so the slowest rank sets the pace | https://arxiv.org/abs/2006.15704v1 (Section 2.2) | T02-1
+- DP: every rank holds a replica; gradients summed by an all-reduce, which cannot start until all processes join, so the slowest rank sets the pace | https://arxiv.org/abs/2006.15704v1 (Section 2.3) | T02-1
 - DDP buckets gradients in reverse parameter order and all-reduces each bucket as soon as it is ready, overlapping the backward pass | https://arxiv.org/abs/2006.15704v1 (Section 3.2.3) | T02-2
 - Default bucket 25 MiB via `bucket_cap_mb` at v2.15.0 | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/nn/parallel/distributed.py#L712-L717 | W2-1, T02-3, U02-1 (closed)
 - Smaller first bucket so the earliest gradients move sooner | same file #L105-L110 | W2-1
@@ -45,7 +45,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Figure: bytes per parameter 16 (DDP), 4.75 (stage 1, d = 16), 1 (stage 3, d = 16), 2 (HSDP, 16/8); schematic | derived from ZeRO's formulas | W2-13 [derived]
 - HSDP memory cost: 16.1 GB per GPU against 4.0 GB for flat FSDP over 32 | derived (table) | W2-13 [derived]
 - The FSDP paper aims hybrid sharding at models too large for full replication and too small to need full sharding; reports smaller all-reduces run faster because of stragglers and network interference, no figure | https://arxiv.org/abs/2304.11277v2 (Section 3.2.2) | T02-10
-- ZeRO++: cross-node volume 3M to 0.75M via INT8 forward all-gather, a secondary weight copy per node, INT4 gradients through an all-to-all reducing inside the node first; authors report up to 2.16 times throughput at 384 GPUs | https://arxiv.org/abs/2306.10209v1 (Section 1 and abstract) | T02-11
+- ZeRO++: cross-node volume 3M to 0.75M via INT8 forward all-gather, a secondary weight copy per node, INT4 gradients through an all-to-all reducing inside the node first; authors report up to 2.16 times throughput at 384 GPUs | https://arxiv.org/abs/2306.10209v1 (Section 1 and abstract; venue ICLR 2024, iclr.cc, confirmed 2026-10-31) | T02-11
 - Expandable: the paper defines F, then sets F = W/G and prints 2M(W-1)/(GW); the surrounding text matches F = G | https://arxiv.org/abs/2304.11277v2 (LaTeX source `text/design_sharding.tex` lines 4, 54, 73, via https://arxiv.org/e-print/2304.11277v2) | C02-1, W2-14
 - Expandable: 3.01 GB per GPU per sync against 3.89 GB from the printed form; 8 x 3.01 = 24.1 GB per instance | derived (M = 16.06 GB, G = 8, W = 32) | W2-14, orchestrator addendum [derived]
 
@@ -68,7 +68,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - HSDP's in-instance gathers: about 337 GB per GPU per step at the defaults, about 0.75 s at 450 GB/s per direction (vendor specification); HSDP's time gain can be smaller than its byte gain | https://www.nvidia.com/en-us/data-center/nvlink/ | T02-70, W2-7; Calculator C 337.27 GB [our reading]
 - With sync off, gradients accumulate on the unsharded parameters | _fully_shard.py#L606-L608 | T03-2
 - Full unsharded BF16 gradient 16.06 GB per GPU; HSDP holds four times flat FSDP's model state | derived | [derived]
-- Memory at micro-batch 1, HSDP deferred: about 75 GB with a fused SwiGLU and about 82 GB with TorchTitan v0.4.0's eager SwiGLU without recomputation; about 42 GB with full recomputation | derived | Calculator B through C (74.93, 82.45, 41.71, 41.95 GB); section 5 [derived]
+- Memory at micro-batch 1, HSDP deferred: about 75 GB with a fused SwiGLU and about 82 GB, past NVIDIA's 80 GB, with an eager (uncompiled) SwiGLU without recomputation (TorchTitan v0.4.0 compiles its SwiGLU by default, https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/models/llama3/model.py#L87-L89, and whether the compiled path stores 34 or 41 sbh was not tested); about 42 GB with full recomputation | derived | Calculator B through C (74.93, 82.45, 41.71, 41.95 GB); section 5 [derived]
 - Activations 34 sbh (fused) and 41 sbh (eager) bytes per layer, measured on one GB10 | E1 (https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/E1-spark-activation-memory.md) | E1 (Tier 0)
 - Recommendation: HSDP with one instance per sharding group, deferred sync, full recomputation | from the rows above | [our reading]
 
@@ -99,7 +99,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 - Global batch = DP degree x micro-batch x micro-batches per step | none (identity) | T01-52
 - Critical batch size: below it, doubling the batch nearly halves the steps; above it, extra batch mostly spends compute | https://arxiv.org/abs/1812.06162v1 (Sections 2.2 and 2.3) | T01-53
-- The critical batch size grows during training as the gradient shrinks | https://arxiv.org/abs/1812.06162v1 (Section 2.4) | T01-54
+- The critical batch size grows during training as the gradient shrinks | https://arxiv.org/abs/1812.06162v1 (Sections 2.5 and 3.1) | T01-54
 - Llama 3 held global tokens per batch constant from 8,192 to 16,384 GPUs, halving the batch per DP group from 32 to 16 sequences; Meta attributes the MFU fall from 43% to 41% to it | https://arxiv.org/abs/2407.21783v3 (Section 3.3.2 and Table 4) | T01-55, T02-47, W2-16
 - Past that point, further GPUs go to tensor, pipeline and context parallelism (sections 9 to 11) | none (orientation) | [our reading]
 

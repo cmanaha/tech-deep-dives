@@ -33,7 +33,7 @@ const TORCHRUN_RANKS = gh(
   'pytorch/pytorch',
   PYTORCH_TAG,
   'torch/distributed/elastic/agent/server/api.py',
-  'L587-L608',
+  'L618-L688',
 );
 const DS_LAUNCH = gh('deepspeedai/DeepSpeed', DEEPSPEED_TAG, 'deepspeed/launcher/launch.py', 'L160-L168');
 function dsTopo(lines: string): string {
@@ -707,8 +707,8 @@ export function Collectives() {
           </Box>
           <Box variant="p">
             The challenge is the link. On a p5.48xlarge, a GPU reaches the other seven GPUs of its
-            instance with nine times its share of the instance&apos;s bandwidth to the rest of the
-            cluster{' '}
+            instance with nine times its share of the instance&apos;s EFA (Elastic Fabric Adapter)
+            bandwidth to the rest of the cluster{' '}
             <Cite tier={1} href={NVLINK_PAGE} kind="vendor-claim">
               NVIDIA NVLink specifications
             </Cite>{' '}
@@ -753,15 +753,15 @@ export function Collectives() {
             give each instance a consecutive block. torchrun assigns each node&apos;s workers a
             contiguous range of global ranks{' '}
             <Cite tier={1} href={TORCHRUN_RANKS} kind="code">
-              PyTorch elastic agent api.py L587-L608
+              PyTorch elastic agent api.py L618-L688
             </Cite>
             ; DeepSpeed&apos;s launcher numbers ranks node by node in hostfile order{' '}
             <Cite tier={1} href={DS_LAUNCH} kind="code">
               DeepSpeed launch.py L160-L168
             </Cite>
             ; Slurm&apos;s <code>srun</code> places consecutive tasks on one node by default when tasks
-            outnumber nodes, except that with a topology plugin configured it follows topology order
-            instead{' '}
+            outnumber nodes, except that with a topology plugin configured and no distribution given
+            it follows topology order rather than node index order{' '}
             <Cite tier={1} href={SRUN}>
               Slurm srun manual, --distribution
             </Cite>
@@ -939,18 +939,19 @@ export function Collectives() {
             Two consequences carry through the dive. First, swapping an all-reduce for a
             reduce-scatter and an all-gather costs no extra bytes: sequence parallelism does exactly
             that inside tensor-parallel layers{' '}
-            <Cite tier={3} href={SP_PAPER} venue="preprint" accessed={REGISTER_DATE}>
+            <Cite tier={3} href={SP_PAPER} venue="MLSys 2023" accessed={REGISTER_DATE}>
               Reducing Activation Recomputation, Section 4.2.2
             </Cite>
             , and ZeRO shards gradients and optimizer state for the same
-            2 x N elements per step as plain data parallelism, N being the parameter count{' '}
+            2 x N elements per step as plain data parallelism at one micro-batch per step, N being
+            the parameter count{' '}
             <Cite tier={3} href={ZERO} venue="preprint" accessed={REGISTER_DATE}>
               ZeRO, Section 7.2.1
             </Cite>{' '}
             (section 8, Data Parallelism &amp; Sharding). Same bytes is not always the same time:
             the sequence-parallelism paper measured the pair running slower than one all-reduce of
             the same data{' '}
-            <Cite tier={3} href={SP_PAPER} venue="preprint" accessed={REGISTER_DATE}>
+            <Cite tier={3} href={SP_PAPER} venue="MLSys 2023" accessed={REGISTER_DATE}>
               Reducing Activation Recomputation, Section 6.2
             </Cite>
             . Second, 2(n-1)/n approaches 2 quickly, 1.75 at 8 ranks and 1.94 at 32 (our arithmetic),
@@ -1015,7 +1016,7 @@ export function Collectives() {
             <Cite tier={2} href={NCCL_24_BLOG}>
               NVIDIA blog, NCCL 2.4
             </Cite>
-            , and NCCL chooses among ring, tree and newer algorithms per call, a choice the{' '}
+            , and NCCL chooses among ring, tree and newer algorithms itself, a choice the{' '}
             <code>NCCL_ALGO</code> variable overrides{' '}
             <Cite tier={1} href={NCCL_ENV}>
               NCCL 2.32.3 environment variables, NCCL_ALGO
@@ -1039,9 +1040,9 @@ export function Collectives() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Inside a p5.48xlarge, each H100 has 900 GB/s of NVLink, which NVIDIA states for Hopper
-            in the same table where it calls its newest per-GPU figure bidirectional; read the same
-            way, that is 450 GB/s per direction{' '}
+            Inside a p5.48xlarge, each H100 has 900 GB/s of NVLink, the Hopper column of NVIDIA&apos;s
+            per-GPU table; the same page calls the newest generation&apos;s 3 TB/s, the last column of
+            that table, bidirectional, and read the same way 900 GB/s is 450 GB/s per direction{' '}
             <Cite tier={1} href={NVLINK_PAGE} kind="vendor-claim">
               NVIDIA NVLink specifications
             </Cite>
@@ -1087,7 +1088,8 @@ export function Collectives() {
             . Collectives whose bytes are addressed GPU to GPU (all-to-all, send and receive) cannot
             shrink at the boundary: every byte bound for another instance crosses, and each GPU pays
             its 50 GB/s share, nine times the cost of the same bytes on NVLink. This split is our
-            reading of the NCCL documentation and the AWS sample; the evidence is in the next block.
+            reading of the NCCL documentation and the AWS sample; the evidence is under &quot;Why the
+            crossing is priced per instance&quot; in the next block.
           </Box>
           <Box variant="p">
             How NCCL reaches EFA, through the aws-ofi-nccl plugin and the settings it needs, is in

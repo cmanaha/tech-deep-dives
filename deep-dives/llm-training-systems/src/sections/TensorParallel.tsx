@@ -811,8 +811,8 @@ export function TensorParallel() {
             domain of each training instance.
           </Box>
           <Box variant="p">
-            A layout can also leave NVLink by accident, through its rank order. If the eight ranks of each TP group
-            landed on eight different instances, every TP all-reduce would cross EFA (Elastic Fabric
+            A layout can also leave NVLink by accident, through its rank order. If the eight ranks of
+            each TP group landed on eight different instances, every TP all-reduce would cross EFA (Elastic Fabric
             Adapter) with one member per instance. Counted per instance, as section 7 prices a
             crossing, eight such groups share each instance&apos;s 3,200 Gb/s, 400 GB/s{' '}
             <Cite tier={1} href={EC2_ACCEL}>
@@ -871,7 +871,7 @@ export function TensorParallel() {
         header={
           <Header
             variant="h2"
-            description="Turn sequence parallelism on with every TP run: it moves no extra bytes and takes the 70B layout from 99.4 GB per GPU, more than an H100 holds, to 61.9 GB"
+            description="Turn sequence parallelism on with every TP run: for TP's bytes plus an overlapped all-gather per block, it takes the 70B layout from 99.4 GB per GPU, more than an H100 holds, to 61.9 GB"
           >
             Sequence parallelism: the same bytes, and the 70B layout fits
           </Header>
@@ -884,7 +884,7 @@ export function TensorParallel() {
             GPU, and the inputs they keep for the backward pass are stored on every GPU. Those
             operations treat each token independently, so sequence parallelism splits them along the
             sequence: each GPU handles 1/t of the tokens{' '}
-            <Cite tier={3} href={SP_PAPER} venue="preprint">
+            <Cite tier={3} href={SP_PAPER} venue="MLSys 2023">
               Reducing Activation Recomputation, Section 4.2.2
             </Cite>
             .
@@ -895,15 +895,24 @@ export function TensorParallel() {
             tokens; where TP copies the full activation into a column-split multiplication, SP
             all-gathers the slices back into the full sequence. In the backward pass each becomes the
             other{' '}
-            <Cite tier={3} href={SP_PAPER} venue="preprint">
+            <Cite tier={3} href={SP_PAPER} venue="MLSys 2023">
               Reducing Activation Recomputation, Section 4.2.2
             </Cite>
             . Because an all-reduce is a reduce-scatter followed by an all-gather (section 7), the
-            bytes are the same, and the paper concludes that SP adds no communication overhead. The
-            same paper measured the pair running slower than one all-reduce of the same data; a layer
-            of its 22B model still went from 7.7 ms to 7.2 ms in the forward pass, 6% faster, because
+            bytes are the same, and the paper concludes that SP adds no communication overhead. Its
+            full memory saving adds one all-gather per block: each GPU stores only its slice of the
+            input to the block&apos;s first projection and gathers it again in the backward pass,
+            overlapped with the gradient computation{' '}
+            <Cite tier={3} href={SP_PAPER} venue="MLSys 2023">
+              Reducing Activation Recomputation, Section 4.2.2
+            </Cite>{' '}
+            <Cite tier={1} href={mg(MG_LAYERS, 'L768-L781')} kind="code">
+              Megatron Core layers.py L768-L781
+            </Cite>
+            . The same paper measured the pair running slower than one all-reduce of the same data; a
+            layer of its 22B model still went from 7.7 ms to 7.2 ms in the forward pass, 6% faster, because
             the norms and dropout ran on 1/t of the data{' '}
-            <Cite tier={3} href={SP_PAPER} venue="preprint">
+            <Cite tier={3} href={SP_PAPER} venue="MLSys 2023">
               Reducing Activation Recomputation, Section 6.2
             </Cite>
             .
@@ -915,7 +924,7 @@ export function TensorParallel() {
           </Box>
           <Box variant="p">
             The paper calls memory &quot;the primary advantage of using sequence parallelism&quot;{' '}
-            <Cite tier={3} href={SP_PAPER} venue="preprint">
+            <Cite tier={3} href={SP_PAPER} venue="MLSys 2023">
               Reducing Activation Recomputation, Section 6.2
             </Cite>
             . For Llama 3.1 70B at TP 8, 8,192 tokens, micro-batch 1 and no recomputation, the
@@ -923,7 +932,7 @@ export function TensorParallel() {
             bytes per layer (the two norm inputs and the inputs shared by the projections after them)
             stay whole on every GPU, and 22.5 GB with SP (our count, adapting the paper&apos;s Table
             2 to Llama&apos;s layer{' '}
-            <Cite tier={3} href={SP_PAPER} venue="preprint">
+            <Cite tier={3} href={SP_PAPER} venue="MLSys 2023">
               Reducing Activation Recomputation, Table 2
             </Cite>
             ). With the optimizer state sharded over 32 data-parallel ranks, that is the difference
@@ -1015,7 +1024,8 @@ export function TensorParallel() {
                 Megatron Core model_parallel_config.py L123-L127
               </Cite>
               , so pass <code>--sequence-parallel</code> with{' '}
-              <code>--tensor-model-parallel-size 8</code>, the pair the guide shows{' '}
+              <code>--tensor-model-parallel-size 8</code>; the guide shows the two flags together,
+              there with a size of 4{' '}
               <Cite tier={1} href={mg(MG_GUIDE, 'L82-L89')}>
                 Megatron Core parallelism guide L82-L89
               </Cite>

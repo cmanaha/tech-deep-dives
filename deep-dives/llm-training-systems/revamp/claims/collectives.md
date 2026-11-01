@@ -8,9 +8,9 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 - Per GPU on a p5.48xlarge, NVLink bandwidth is nine times the GPU's share of EFA | https://www.nvidia.com/en-us/data-center/nvlink/ ; https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html | T02-68, T02-70, W2-7 [derived]
 - TP 8 x PP 4 x DP 8 = 256 ranks = 32 p5.48xlarge of 8 H100 each | https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html | W2-10 (arithmetic), T02-68
-- torchrun gives each node's workers a contiguous range of global ranks | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/elastic/agent/server/api.py#L587-L608 | W2-3, wave2-parallelism G1
+- torchrun gives each node's workers a contiguous range of global ranks | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/elastic/agent/server/api.py#L618-L688 | W2-3, wave2-parallelism G1
 - DeepSpeed's launcher numbers ranks node by node in hostfile order | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/deepspeed/launcher/launch.py#L160-L168 | W2-3, G1
-- Slurm srun: block distribution (consecutive tasks share a node) is the default when tasks exceed nodes; with a topology plugin and no distribution given, tasks follow topology order | https://slurm.schedmd.com/srun.html | G1
+- Slurm srun: block distribution (consecutive tasks share a node) is the default when tasks exceed nodes; with a topology plugin and no distribution given, tasks follow topology order rather than node index order | https://slurm.schedmd.com/srun.html | G1
 - TorchTitan unflattens the world mesh as (pp, dp_replicate, dp_shard, cp, tp), row-major, tp fastest | https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/distributed/parallelism_context.py#L319-L323 | W2-3, G1
 - DeepSpeed ProcessTopology is row-major; PipeModelDataParallelTopology axes pipe, data, model | https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/deepspeed/runtime/pipe/topology.py#L18-L21 and #L247-L248 | W2-4, G1
 - Megatron Core default order "tp-cp-ep-dp-pp" | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/parallel_state.py#L641 | T02-51, W2-58
@@ -33,8 +33,8 @@ Format: claim | source URL | register, wave 2 row or experiment
 - DeepSeek-V3 sends tokens to experts with a cross-node all-to-all | https://arxiv.org/abs/2412.19437v2 Sec 3.2.2 | T02-39, W2-11
 - A bandwidth-optimal all-reduce is a reduce-scatter then an all-gather | https://arxiv.org/abs/1910.02054v3 Sec 7.1 | T02-4, W2-12
 - Each half moves (n-1)/n; all-reduce 2(n-1)/n, independent of ring or tree | PERFORMANCE.md #L52-L63, #L39 | T02-60, W2-8
-- Sequence parallelism replaces TP all-reduces with reduce-scatter plus all-gather at the same bytes | https://arxiv.org/abs/2205.05198v1 Sec 4.2.2 | T02-16 (accessed 2026-10-30)
-- ZeRO stages 1 and 2 move 2N elements per step, the same as plain DP | https://arxiv.org/abs/1910.02054v3 Sec 7.2.1 | T02-7 (accessed 2026-10-30)
+- Sequence parallelism replaces TP all-reduces with reduce-scatter plus all-gather at the same bytes | https://arxiv.org/abs/2205.05198v1 Sec 4.2.2 (venue MLSys 2023, proceedings.mlsys.org, confirmed 2026-10-31) | T02-16 (accessed 2026-10-30)
+- ZeRO stages 1 and 2 move 2N elements per step, the same as plain DP, at one micro-batch per step (section 8 covers accumulation) | https://arxiv.org/abs/1910.02054v3 Sec 7.2.1 | T02-7 (accessed 2026-10-30)
 - Reduce-scatter plus all-gather measured slower than one all-reduce of the same data | https://arxiv.org/abs/2205.05198v1 Sec 6.2 | T02-17 (accessed 2026-10-30)
 - 2(n-1)/n = 1.75 at 8 ranks, 1.94 at 32 | arithmetic | [derived]
 
@@ -47,12 +47,12 @@ Format: claim | source URL | register, wave 2 row or experiment
 - The sample states no NCCL or EFA version | same README | NEW
 - Arithmetic check 17.18 GB / 0.0661 s = 259.8; x 2 x 15/16 = 487 | arithmetic | [derived]
 - Ring latency linear in GPU count; NCCL 2.4 double binary trees, full bandwidth, logarithmic latency | https://developer.nvidia.com/blog/massively-scale-deep-learning-training-nccl-2-4/ | T02-62, W2-57 (re-fetched 2026-10-31)
-- NCCL chooses among ring, tree and newer algorithms; NCCL_ALGO overrides (lists Ring, Tree, CollnetChain, CollnetDirect, NVLS, NVLSTree, PAT) | https://docs.nvidia.com/deeplearning/nccl/archives/nccl_2323/user-guide/docs/env.html | NEW (NCCL 2.32.3 user guide, pinned version per build-log)
+- NCCL chooses among ring, tree and newer algorithms itself (the page does not say per call); NCCL_ALGO overrides (lists Ring, Tree, CollnetChain, CollnetDirect, NVLS, NVLSTree, PAT) | https://docs.nvidia.com/deeplearning/nccl/archives/nccl_2323/user-guide/docs/env.html | NEW (NCCL 2.32.3 user guide, pinned version per build-log)
 - Bytes term decides a large gradient all-reduce, latency term the small TP messages | our reading | T02-62 use note [our reading]
 
 ## Bandwidth hierarchy
 
-- H100 (Hopper) NVLink 900 GB/s per GPU; same table calls the newest figure bidirectional; 450 GB/s per direction | https://www.nvidia.com/en-us/data-center/nvlink/ | T02-70, W2-7 [our reading for "per direction"]
+- H100 (Hopper) NVLink 900 GB/s per GPU in the table; the page's prose calls the newest generation's 3 TB/s (the table's last column) bidirectional; 450 GB/s per direction | https://www.nvidia.com/en-us/data-center/nvlink/ | T02-70, W2-7 [our reading for "per direction"]
 - p5.48xlarge 3,200 Gb/s EFA | https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html | T02-68, W2-7
 - 400 GB/s per instance, 50 GB/s per GPU, ratio 9; neither page prints 450 or 50; AWS does not state per direction | arithmetic on the two pages | W2-7 [derived]
 - DeepSeek H800: NVLink 160 GB/s, IB 50 GB/s, about 3.2x; each token to at most 4 nodes | https://arxiv.org/abs/2412.19437v2 Sec 3.2.2 | T02-39, W2-11

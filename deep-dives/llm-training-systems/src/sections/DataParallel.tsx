@@ -587,9 +587,10 @@ export function DataParallel() {
             The challenge is to stop copying that state without paying for it on the slow link.
             Sharding, splitting the model state across GPUs instead of copying it to each, trades
             memory for collectives, and where those collectives run sets the price. This section
-            builds the four answers in order, DDP, ZeRO, FSDP and HSDP, then prices them on one
-            example, Llama 3.1 8B on four p5.48xlarge, where the choice of when gradients are
-            synchronised moves more bytes than the choice of layout.
+            builds the four answers in order, DDP (Distributed Data Parallel), ZeRO (Zero Redundancy
+            Optimizer), FSDP (Fully Sharded Data Parallel) and HSDP (hybrid sharded data parallel),
+            then prices them on one example, Llama 3.1 8B on four p5.48xlarge, where the choice of
+            when gradients are synchronised moves more bytes than the choice of layout.
           </Box>
         </SpaceBetween>
       </Container>
@@ -609,10 +610,10 @@ export function DataParallel() {
             In DP (data parallelism) every rank, one training process driving one GPU, holds a full
             copy of the model, called a replica. Each rank runs the forward and backward passes on
             its own data, then all ranks sum their gradients with an all-reduce, so every replica
-            applies the same update. An all-reduce cannot finish until every rank has joined it, so
+            applies the same update. An all-reduce cannot start until every rank has joined it, so
             the slowest rank sets the pace{' '}
             <Cite tier={3} href={DDP_PAPER} venue="VLDB 2020" accessed={REGISTER_DATE}>
-              PyTorch Distributed, Section 2.2
+              PyTorch Distributed, Section 2.3
             </Cite>
             .
           </Box>
@@ -707,7 +708,7 @@ export function DataParallel() {
             . That holds for one micro-batch per step. Under gradient accumulation DeepSpeed reduces
             stage 2&apos;s partitioned gradients on every backward pass, where stage 1 waits for the
             accumulation boundary, so stage 2 sends one gradient reduce-scatter per micro-batch{' '}
-            <Cite tier={1} href={DS_ZERO2_REDUCE}>
+            <Cite tier={1} href={DS_ZERO2_REDUCE} kind="code">
               DeepSpeed stage_1_and_2.py L2293-L2295
             </Cite>
             . Stage 3 keeps no full copy of the weights to compute with, so it all-gathers them
@@ -801,7 +802,7 @@ export function DataParallel() {
             the weights in each node so the backward all-gather stays there, and gradients
             reduce-scattered in INT4 (4-bit integers) through an all-to-all that reduces inside the
             node first; its authors report up to 2.16 times the throughput at 384 GPUs{' '}
-            <Cite tier={3} href={ZERO_PP} venue="preprint" accessed={REGISTER_DATE}>
+            <Cite tier={3} href={ZERO_PP} venue="ICLR 2024" accessed={REGISTER_DATE}>
               ZeRO++, Section 1 and abstract
             </Cite>
             . The secondary copy is HSDP&apos;s trade again: memory spent to keep a collective off
@@ -862,7 +863,7 @@ export function DataParallel() {
             <Cite tier={3} href={LLAMA3} venue="preprint" accessed={REGISTER_DATE}>
               Llama 3 Herd of Models, Table 4
             </Cite>
-            , of the H100&apos;s 989.5 TFLOPS dense BF16 vendor specification{' '}
+            , of the H100&apos;s 989.5 TFLOPS dense BF16, half the 1,979 NVIDIA lists with sparsity{' '}
             <Cite tier={1} href={H100_SPEC} kind="vendor-claim">
               NVIDIA H100 specification
             </Cite>
@@ -936,11 +937,12 @@ export function DataParallel() {
             </Cite>
             , a full 16.06 GB gradient per GPU in BF16, and HSDP holds four times flat FSDP&apos;s
             model state. At micro-batch 1, the dive&apos;s memory estimate puts HSDP with deferred
-            sync at about 75 GB per GPU of an 80 GB H100 with a fused SwiGLU and about 82 GB, past the
-            card, with TorchTitan v0.4.0&apos;s eager one. Full recomputation, re-running each
-            layer&apos;s forward pass in the backward pass instead of storing its activations, brings
-            either to about 42 GB (section 5, The Memory Budget; activations at 34 and 41 sbh bytes
-            per layer, s tokens, b sequences, h hidden size, measured on one GB10{' '}
+            sync at about 75 GB per GPU of an 80 GB H100 with a fused SwiGLU (swish-gated linear
+            unit) and about 82 GB, past NVIDIA&apos;s 80 GB, with an eager (uncompiled) one.
+            Full recomputation, re-running each layer&apos;s forward pass in the backward pass
+            instead of storing its activations, brings either to about 42 GB (section 5, The Memory
+            Budget; activations at 34 and 41 sbh bytes per layer, s tokens, b sequences, h hidden
+            size, measured on one GB10{' '}
             <Cite tier={0} href={E1_URL}>
               {E1_TITLE}
             </Cite>
@@ -1101,7 +1103,7 @@ export function DataParallel() {
             </Cite>
             . The critical batch size grows as training proceeds and the gradient shrinks{' '}
             <Cite tier={3} href={LARGE_BATCH} venue="preprint" accessed={REGISTER_DATE}>
-              An Empirical Model of Large-Batch Training, Section 2.4
+              An Empirical Model of Large-Batch Training, Sections 2.5 and 3.1
             </Cite>
             .
           </Box>
@@ -1156,7 +1158,8 @@ export function DataParallel() {
             </li>
           </ol>
           <Box variant="p">
-            Then price the candidate layout with the sizing calculator in section 14, which takes the sync mode as an input, and measure the two or three layouts that pass.
+            Then price the candidate layout with the sizing calculator in section 14, which takes the
+            sync mode as an input, and measure the two or three layouts that pass.
           </Box>
         </SpaceBetween>
       </Container>
