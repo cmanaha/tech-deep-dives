@@ -164,7 +164,9 @@ Applies to every group:
 
 - fc01-framing: sections 1 and 2 were written last; check every number they repeat against the
   owning section, figure for figure. Section 1 cites Megatron-LM (1909.08053v4) Sections 2.3 and 3.3.2
-  for the tensor-parallel all-reduces where section 7 cites Sec 3.2 for the same fact: make them agree. Section 3's notation must match section 32's notation table.
+  for the tensor-parallel all-reduces where section 7 cites Sec 3.2 for the same fact: make them agree.
+  (Resolved by fc01: section 1 now cites Efficient Large-Scale Language Model Training on GPU
+  Clusters, 2104.04473v5, Sec 3.2, as section 7 does.) Section 3's notation must match section 32's notation table.
 - fc02-arithmetic: section 4 is about 2,830 words (length). Section 4's A5 copy (the Trainium2 MFU
   experiment, not yet run) must agree with section 27's. The MFU conversion x 632/667 for AWS's
   Trainium MFU line appears in sections 4 and 27: same wording of the basis in both.

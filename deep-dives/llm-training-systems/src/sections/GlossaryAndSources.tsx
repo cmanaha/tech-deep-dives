@@ -170,6 +170,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'MoE', fullForm: 'mixture of experts', description: 'Layers whose feed-forward block is many experts, of which a router sends each token to a few. Section 12.' },
   { acronym: 'RMSNorm', fullForm: 'root mean square normalization', description: "The normalization Llama's layers use. Section 3." },
   { acronym: 'SwiGLU', fullForm: 'swish-gated linear unit', description: "Llama's feed-forward activation: SiLU of a gate projection times an up projection. Its saved tensors set part of the activation bill. Section 3." },
+  { acronym: 'SiLU', fullForm: 'sigmoid linear unit', description: 'x times sigmoid(x), the activation inside SwiGLU. Section 3.' },
   // Parallelism
   { acronym: '1F1B', fullForm: 'one forward, one backward', description: 'A pipeline schedule that alternates forward and backward micro-batches once the pipeline is full, capping saved activations per stage. Section 10.' },
   { acronym: 'CP', fullForm: 'context parallelism', description: 'Splitting one sequence across ranks, which pass keys and values around during attention. Section 11.' },

@@ -151,3 +151,6 @@ section and source are named so the fact check can trace it.
 | 23 Storage | fc09 | about 75 | WRONG 3, UNSUPPORTED 1, OVERREACH 4, STALE 1 | 8 | 4/4/5/5/3 | 4/4/5/5/4 |
 | 24 The Slurm family | fc09 | about 62 | WRONG 1, OVERREACH 4 | 8 | 4/4/5/5/3 | 4/4/5/5/3 |
 | 25 The Kubernetes family | fc09 | about 71 | OVERREACH 1 | 9 | 4/4/5/5/3 | 4/4/5/5/3 |
+| 1 Three budgets | fc01 | 38 | WRONG 1, OVERREACH 2 | 9 | 5/4/5/5/4 | 5/4/5/5/4 |
+| 2 Getting started | fc01 | 46 | WRONG 1, OVERREACH 1 | 9 | 4/5/5/5/4 | 4/5/5/5/4 |
+| 3 What a step computes and keeps | fc01 | 58 | WRONG 3, OVERREACH 1 | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
