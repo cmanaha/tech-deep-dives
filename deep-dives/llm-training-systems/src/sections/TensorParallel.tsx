@@ -36,6 +36,7 @@ function tt(path: string, lines?: string): string {
   return gh('pytorch/torchtitan', TORCHTITAN_TAG, path, lines);
 }
 const MG_MAPPINGS = 'megatron/core/tensor_parallel/mappings.py';
+const MG_RANDOM = 'megatron/core/tensor_parallel/random.py';
 const MG_LAYERS = 'megatron/core/tensor_parallel/layers.py';
 const MG_SPECS = 'megatron/core/models/gpt/gpt_layer_specs.py';
 const MG_TCONFIG = 'megatron/core/transformer/transformer_config.py';
@@ -677,6 +678,14 @@ export function TensorParallel() {
             . The 8 is four all-reduces of a b x s x h tensor, each moving 2(t-1)/t of it per GPU,
             the all-reduce cost from section 7 (our reading of the formula). The hidden size is the
             only model dimension in it: the MLP&apos;s width and the parameter count do not appear.
+            Two of the four all-reduces belong to the forward pass, and full recomputation (section 5)
+            runs that forward again during the backward pass, collectives included, so a fully
+            recomputed layer moves 12bsh(t-1)/t: Megatron&apos;s checkpoint function calls the
+            layer&apos;s forward a second time inside its backward{' '}
+            <Cite tier={1} href={mg(MG_RANDOM, 'L718-L742')} kind="code">
+              Megatron Core random.py L718-L742
+            </Cite>{' '}
+            (our reading). Calculator C counts it that way.
           </Box>
           <Box variant="p">
             For Llama 3.1 70B at TP 8 on one p5.48xlarge, with one 8,192-token sequence per

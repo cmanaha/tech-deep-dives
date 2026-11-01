@@ -890,8 +890,16 @@ export function ExpertParallel() {
               .
             </li>
             <li>
-              <strong>Check the world size against both grids.</strong> TP x CP x DP x PP and ETP x EP
-              x EDP x PP must each equal the GPU count, and the expert count must be a multiple of EP{' '}
+              <strong>Check the world size against both grids.</strong> TP x CP x DP x PP must equal the
+              GPU count{' '}
+              <Cite tier={1} href={mg(MG_ARGS, 'L468-L495')} kind="code">
+                Megatron-LM arguments.py L468-L495
+              </Cite>
+              , and so must ETP x EP x EDP x PP{' '}
+              <Cite tier={1} href={mg(MG_PSTATE, 'L946-L960')} kind="code">
+                Megatron Core parallel_state.py L946-L960
+              </Cite>
+              . The expert count must be a multiple of EP{' '}
               <Cite tier={1} href={mg(MG_ARGS, 'L1567-L1571')} kind="code">
                 Megatron-LM arguments.py L1567-L1571
               </Cite>

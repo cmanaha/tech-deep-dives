@@ -398,10 +398,21 @@ function evaluateValid(ctx: Context, layout: Layout, microBatches: number): Cand
   const ranks = facts.ranksPerInstance;
   // Rank order TP innermost, then CP, PP, DP (T02-46); rank r sits on instance floor(r / ranks per instance).
   const dpStride = tp * cp * pp;
+  // Full recomputation runs each layer's forward a second time inside the backward pass, and the
+  // forward's TP and CP collectives run again with it. Our reading of Megatron-LM core_v0.20.0
+  // megatron/core/tensor_parallel/random.py: CheckpointFunction.backward (L718) calls
+  // ctx.run_function again (L742). Selective recomputation re-runs only core attention, which
+  // holds no TP collective, so it adds none here.
+  const forwardPasses = layout.recompute === 'full' ? 2 : 1;
   if (tp > 1) {
-    // T02-13: 8bsh(t-1)/t elements per layer per micro-batch, BF16, per GPU inside the instance.
-    const bytes = 8 * b * localSeq * model.hidden * ((tp - 1) / tp) * 2 * layersPerStage * microBatches;
-    addPerGpu('TP', false, 'all-reduce and its SP equivalent, every layer and micro-batch', bytes);
+    // T02-13: 8bsh(t-1)/t elements per layer per micro-batch, half forward and half backward, BF16,
+    // per GPU inside the instance; 12bsh(t-1)/t when full recomputation repeats the forward half.
+    const elementsPerToken = 4 * forwardPasses + 4;
+    const bytes = elementsPerToken * b * localSeq * model.hidden * ((tp - 1) / tp) * 2 * layersPerStage * microBatches;
+    const what = forwardPasses === 2
+      ? 'all-reduce and its SP equivalent, every layer and micro-batch, forward half run twice under full recomputation'
+      : 'all-reduce and its SP equivalent, every layer and micro-batch';
+    addPerGpu('TP', false, what, bytes);
   }
   if (cp > 1) {
     // Our reading: all-gather K and V forward (Llama 3's method, W2-30) and reduce-scatter their gradients backward.
@@ -409,8 +420,11 @@ function evaluateValid(ctx: Context, layout: Layout, microBatches: number): Cand
     const kvBytes = 2 * b * input.sequenceLength * kvDimPerRank * 2;
     const count = layersPerStage * microBatches;
     const members = Array.from({ length: cp }, (_, c) => c * tp);
-    addCollectives('CP', 'K and V all-gather forward, gradient reduce-scatter backward', members, [
-      { bytes: kvBytes, kind: 'allGather', count },
+    const what = forwardPasses === 2
+      ? 'K and V all-gather forward (twice under full recomputation), gradient reduce-scatter backward'
+      : 'K and V all-gather forward, gradient reduce-scatter backward';
+    addCollectives('CP', what, members, [
+      { bytes: kvBytes, kind: 'allGather', count: count * forwardPasses },
       { bytes: kvBytes, kind: 'reduceScatter', count },
     ]);
   }

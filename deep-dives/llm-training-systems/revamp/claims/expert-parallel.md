@@ -62,6 +62,8 @@ need a fact-check pass. Numbers marked "Calculator C" are computed on the page b
 - DeepSeek-V3's 256 experts of intermediate size 2,048 | 2412.19437v2 Sec 4.2 | T02-71
 - ETP unset takes the TP degree | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/model_parallel_config.py#L551-L552 | T02-72 (code); lines fetched 2026-10-31
 - Number of experts must be a multiple of EP | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L1567-L1571 | fetched 2026-10-31, no register row (code)
+- TP x CP x PP divides the world size and DP is the quotient (dense grid) | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L468-L495 | fetched 2026-10-31, no register row (code)
+- ETP x EP x PP divides the world size and EDP is the quotient (expert grid) | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/parallel_state.py#L946-L960 | fetched 2026-10-31, no register row (code)
 - Default token dispatcher is allgather | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/transformer/transformer_config.py#L998-L1000 | fetched 2026-10-31, no register row (code)
 - Guide: alltoall for EP > 1; flex with DeepEP for cross-node EP removes redundant tokens across nodes | README L307-L313 | fetched 2026-10-31, no register row; "per-node de-duplication" is our reading
 - Overlap: one micro-batch's forward beside another's backward, all-to-all hidden by the other's compute | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/pipeline_parallel/combined_1f1b.py#L54-L61 | U03-6 (closed, wave2-frameworks G2)

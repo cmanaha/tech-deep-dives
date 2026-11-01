@@ -395,6 +395,32 @@ describe('02 section 3.4, T02-40 and T02-41: MoE mode', () => {
   });
 });
 
+describe('full recomputation repeats the forward collectives (Megatron core_v0.20.0 CheckpointFunction)', () => {
+  const tp8 = (recompute: 'none' | 'selective' | 'full') =>
+    evaluateLayout(in70, layout({ tp: 8, dp: 32, sharding: 'fsdp', gradientSync: 'everyMicroBatch', microBatch: 16, recompute }));
+  const cp2 = (recompute: 'none' | 'full') => evaluateLayout(in70, layout({ tp: 4, cp: 2, dp: 32, recompute }));
+
+  it('TP moves 12bsh(t-1)/t per layer per micro-batch under full recomputation, 8bsh(t-1)/t otherwise', () => {
+    const none = link(tp8('none'), 'TP', 'scale-up');
+    const full = link(tp8('full'), 'TP', 'scale-up');
+    const c = tp8('full');
+    const expected = 12 * 16 * 8_192 * m70.hidden * (7 / 8) * 2 * m70.layers * c.microBatchesPerStep;
+    expect(full.bytesPerStep).toBeCloseTo(expected, 0);
+    expect(full.bytesPerStep / none.bytesPerStep).toBeCloseTo(1.5, 12);
+    expect(full.what).toMatch(/full recomputation/);
+  });
+
+  it('selective recomputation adds no TP traffic', () => {
+    expect(link(tp8('selective'), 'TP', 'scale-up').bytesPerStep).toBe(link(tp8('none'), 'TP', 'scale-up').bytesPerStep);
+  });
+
+  it('CP all-gathers K and V twice per layer under full recomputation and reduce-scatters once', () => {
+    const none = link(cp2('none'), 'CP', 'scale-up');
+    const full = link(cp2('full'), 'CP', 'scale-up');
+    expect(full.bytesPerStep / none.bytesPerStep).toBeCloseTo(1.5, 12);
+  });
+});
+
 describe('input validation', () => {
   it('throws a RangeError when the degrees do not multiply to the world size', () => {
     expect(() => evaluateLayout(in70, layout({ tp: 8, pp: 4, dp: 4 }))).toThrow(RangeError);

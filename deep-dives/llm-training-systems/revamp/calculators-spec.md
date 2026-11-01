@@ -98,7 +98,9 @@ For each candidate: memory through Calculator B; estimated step time = compute (
 identity at the stated MFU) x recomputation factor (4/3 for full, about 1.0x for selective with a
 stated assumption) x (1 + bubble (p-1)/(v x m)) + exposed communication as a range [0, full] where
 full = sum over dimensions of bytes per link / link bandwidth (TP 8bsh(t-1)/t elements per layer
-per micro-batch in BF16 over NVLink, T02-13; DP and FSDP bytes per section 8 and E3's counts:
+per micro-batch in BF16 over NVLink, T02-13, 12bsh(t-1)/t under full recomputation, which re-runs
+the forward's two all-reduces (our reading of Megatron core_v0.20.0 random.py L718-L742; CP's
+forward K and V all-gather doubles the same way); DP and FSDP bytes per section 8 and E3's counts:
 default 2 all-gathers and 1 reduce-scatter per unit per micro-batch, deferred k + 1 all-gathers
 and 1 reduce-scatter; PP bsh/t per micro-batch per boundary over EFA, T02-31; CP K and V per
 attention layer). Cross-instance collectives are priced per instance (wave2-parallelism, orchestrator

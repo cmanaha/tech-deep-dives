@@ -80,7 +80,10 @@ section and source are named so the fact check can trace it.
 - **Recomputation price** (sections 4, 5): FLOP cost about 33%; E2 measured +14% to +16% step time
   for full recomputation on one GB10 (1B Llama shape, 2,048 tokens); the papers' figures stay theirs:
   about 30% extra runtime (Chen et al., T01-36) and 36% to 39% for full-layer recomputation
-  (Korthikanti et al., T01-34), printed as "30% to 40%". No paper states 25%.
+  (Korthikanti et al., T01-34), printed as "30% to 40%". No paper states 25%. Full recomputation
+  also repeats the forward's TP and CP collectives: TP 12bsh(t-1)/t per layer per micro-batch
+  against 8bsh(t-1)/t, and CP's forward K and V all-gather twice (sections 9, 14; our reading of
+  Megatron core_v0.20.0 random.py L718-L742; fc05 finding, Calculator C fixed and tested).
 - **FSDP2 collective counts** (sections 8, 14, 30): default two all-gathers and one reduce-scatter per
   unit per micro-batch; with gradient sync deferred, k + 1 all-gathers and one reduce-scatter per unit
   for k micro-batches (E3). Flight recorder 2,000 entries is about 2.5 steps for the 8B example at
@@ -137,3 +140,6 @@ section and source are named so the fact check can trace it.
 | 15 Framework map | fc06 | about 118 | WRONG 4, UNSUPPORTED 1, OVERREACH 4 | 8 (length) | 5/4/5/5/2 | 5/4/5/5/3 |
 | 16 Fine-tuning | fc06 | 63 | UNSUPPORTED 1, OVERREACH 1, STALE 2 | 9 | 4/5/5/5/4 | 4/5/5/5/4 |
 | 27 Trainium | fc06 | 91 | WRONG 2, OVERREACH 4 | 9 | 4/4/5/5/3 | 4/4/5/5/3 |
+| 17 Failure is the steady state | fc07 | 49 | WRONG 3, OVERREACH 1, STALE 1 | 9 | 5/4/5/5/4 | 5/4/5/5/4 |
+| 18 Checkpointing | fc07 | 92 | WRONG 1, UNSUPPORTED 2, STALE 3 | 9 | 5/5/5/5/3 | 5/5/5/5/3 |
+| 19 Resuming correctly | fc07 | 62 | OVERREACH 2, UNSUPPORTED 2, WRONG 1 | 9 (length) | 4/5/5/5/3 | 4/5/5/5/3 |

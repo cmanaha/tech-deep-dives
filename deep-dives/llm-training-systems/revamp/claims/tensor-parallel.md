@@ -101,3 +101,4 @@ Format: claim | source URL | register, wave 2 row or experiment
 - get_device_arch_version returns the major compute capability (9 Hopper) | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/utils/common_utils.py#L621-L623 | code read 2026-10-31
 - Column-parallel backward relies on CUDA_DEVICE_MAX_CONNECTIONS=1 to schedule the all-reduce or reduce-scatter before the weight-gradient computation | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/tensor_parallel/layers.py#L794-L812 | code read 2026-10-31
 - Closing pointers to sections 8, 10, 11 and 14 | cross-references | none
+- Full recomputation re-runs each layer's forward inside backward, TP collectives included, so a fully recomputed layer moves 12bsh(t-1)/t | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/tensor_parallel/random.py#L718-L742 | code read 2026-10-31 (our reading)
