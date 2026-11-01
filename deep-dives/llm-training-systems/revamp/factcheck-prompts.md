@@ -154,6 +154,8 @@ Applies to every group:
   "Xid alert rule"). Any text in your files that contradicts one of these is a correction.
 - Tier 3 venues: several papers carry "preprint" where a proceedings venue exists. Set a venue only
   when you confirm it on the proceedings or publisher page yourself; otherwise leave "preprint".
+- TorchTitan v0.4.0 compiles its SwiGLU by default (llama3/model.py L87-L89), so 41 sbh belongs to an
+  eager, uncompiled SwiGLU, not to TorchTitan's default (found by fc02); correct any attribution.
 - The Llama 3.1 model metadata links and the FSx price list were pinned by the orchestrator
   (commit 29fdea0); do not revert them to unpinned URLs.
 
