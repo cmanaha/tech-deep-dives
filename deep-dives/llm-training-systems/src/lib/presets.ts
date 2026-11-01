@@ -62,7 +62,7 @@ export function memoryFigureBytes(figure: MemoryFigure): number {
 export const PRICES_READ_ON = '2026-10-30';
 
 /** Commit of this repository that holds the research files (same pin as Cite.tsx DIVE_REPO_SHA). */
-const DIVE_REPO_SHA = 'bd8184164fc3abbe0390183e11e4236c2940abe7';
+const DIVE_REPO_SHA = 'b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3';
 
 function researchUrl(file: string): string {
   return `https://github.com/cmanaha/tech-deep-dives/blob/${DIVE_REPO_SHA}/deep-dives/llm-training-systems/research/2026-10/${file}`;

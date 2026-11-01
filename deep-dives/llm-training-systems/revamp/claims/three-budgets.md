@@ -38,9 +38,9 @@ Format: claim | source URL | register, wave 2 row or experiment (owning section)
 ## Every technique trades one resource for another
 
 - Full recomputation keeps 2 sbh per layer | https://arxiv.org/abs/2205.05198v1 (Table 2) | T01-32 (section 5)
-- E1 on one GB10: 34.03 sbh (fused) and 41.03 sbh (eager) without recomputation, 2.00 sbh with full recomputation | https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/E1-spark-activation-memory.md | E1; build-log "Activation coefficient" (sections 3, 5)
+- E1 on one GB10: 34.03 sbh (fused) and 41.03 sbh (eager) without recomputation, 2.00 sbh with full recomputation | https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/E1-spark-activation-memory.md | E1; build-log "Activation coefficient" (sections 3, 5)
 - Full recomputation costs one more forward pass, about 33% more FLOPs ("the expected 33%") | https://arxiv.org/abs/2205.05198v1 (Section 6.2) | T01-12; T01-34 (section 5)
-- E2: +16.3% and +14.2% step time for full recomputation, Llama 3.2 1B shape, 2,048 tokens, two runs on one GB10 | https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/E2-spark-step-time-recompute.md | E2; build-log "Recomputation price" (section 5)
+- E2: +16.3% and +14.2% step time for full recomputation, Llama 3.2 1B shape, 2,048 tokens, two runs on one GB10 | https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/E2-spark-step-time-recompute.md | E2; build-log "Recomputation price" (section 5)
 - Full sharding (FSDP, ZeRO stage 3): 16/d bytes per parameter per rank | https://arxiv.org/abs/1910.02054v3 (Section 5) | T02-6 (sections 5, 8)
 - 8B across 8 GPUs: 128.5 / 8 = 16.1 GB per GPU | derived | matches section 8's table (Stage 3, d = 8: 16.1)
 - Stage 3 adds about 50% to data parallelism's communication volume when each step is one micro-batch | https://arxiv.org/abs/1910.02054v3 (Section 1: "a modest 50% increase in communication volume"; Section 7.2.2 counts one forward and backward per step) | T02-7 (section 5; section 8 scopes the stage comparisons to one micro-batch per step)

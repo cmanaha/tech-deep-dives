@@ -64,7 +64,7 @@ export const LLAMA_MODELS_TAG = 'v0.2.0';
  * Commit of this repository that holds the Tier 0 experiment logs. Tier 0 links point at it,
  * so the log a reader opens is the one the page describes.
  */
-export const DIVE_REPO_SHA = 'bd8184164fc3abbe0390183e11e4236c2940abe7';
+export const DIVE_REPO_SHA = 'b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3';
 
 export type Tier = 0 | 1 | 2 | 3;
 

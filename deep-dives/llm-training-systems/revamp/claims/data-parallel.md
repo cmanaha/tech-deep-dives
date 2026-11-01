@@ -38,7 +38,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - FSDP generalises ZeRO-3 with sharding factor F: F = 1 is DDP, F = W shards fully, between is hybrid | https://arxiv.org/abs/2304.11277v2 (Section 3.2) | T02-8, W2-14
 - FSDP2 `fully_shard` per unit: all-gather before forward, free, all-gather before backward, reduce-scatter gradients | https://github.com/pytorch/pytorch/blob/v2.15.0/torch/distributed/fsdp/_fully_shard/_fully_shard.py#L115-L123 | T03-1
 - Micro-batch and gradient accumulation gloss | none (definition) | T01-52
-- At defaults FSDP2 issued two all-gathers and one reduce-scatter per unit per micro-batch, one all-gather fewer for the root unit | E3 (https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/E3-spark-fsdp2-collectives.md) | E3 (Tier 0)
+- At defaults FSDP2 issued two all-gathers and one reduce-scatter per unit per micro-batch, one all-gather fewer for the root unit | E3 (https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/E3-spark-fsdp2-collectives.md) | E3 (Tier 0)
 - HSDP: reduce-scatter inside each sharding group, then all-reduce of each shard across replication groups of same-local-rank accelerators on different hosts | https://arxiv.org/abs/2304.11277v2 (Section 3.2.2) | T02-9, W2-14
 - FSDP2 HSDP is a 2D device mesh, replicate on dim 0 and shard on dim 1 | _fully_shard.py#L182-L188 (same file) | T03-1
 - HSDP crossing 2M(W-G)/(GW) bytes per GPU per synchronisation | derived from the paper's definitions | C02-1, U02-13 (closed, G4), W2-14 [derived]
@@ -69,7 +69,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - With sync off, gradients accumulate on the unsharded parameters | _fully_shard.py#L606-L608 | T03-2
 - Full unsharded BF16 gradient 16.06 GB per GPU; HSDP holds four times flat FSDP's model state | derived | [derived]
 - Memory at micro-batch 1, HSDP deferred: about 75 GB with a fused SwiGLU and about 82 GB, past NVIDIA's 80 GB, with an eager (uncompiled) SwiGLU without recomputation (TorchTitan v0.4.0 compiles its SwiGLU by default, https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/models/llama3/model.py#L87-L89, and whether the compiled path stores 34 or 41 sbh was not tested); about 42 GB with full recomputation | derived | Calculator B through C (74.93, 82.45, 41.71, 41.95 GB); section 5 [derived]
-- Activations 34 sbh (fused) and 41 sbh (eager) bytes per layer, measured on one GB10 | E1 (https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/E1-spark-activation-memory.md) | E1 (Tier 0)
+- Activations 34 sbh (fused) and 41 sbh (eager) bytes per layer, measured on one GB10 | E1 (https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/E1-spark-activation-memory.md) | E1 (Tier 0)
 - Recommendation: HSDP with one instance per sharding group, deferred sync, full recomputation | from the rows above | [our reading]
 
 ### Expandable: the FSDP2 and TorchTitan defaults
@@ -88,7 +88,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 ### Expandable: A2 protocol (not yet run)
 
-- A2 design: TorchTitan v0.4.0, Llama 3.1 8B, 8,192 tokens, 8 micro-batches; FSDP 8 on one p5.48xlarge, flat FSDP 16 and HSDP (shard 8, replicate 2) on two, with and without deferral; tokens/s, MFU, peak memory, EFA bytes | https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/RESEARCH-GUIDE.md (section 5, A2) | RESEARCH-GUIDE A2 (on hold)
+- A2 design: TorchTitan v0.4.0, Llama 3.1 8B, 8,192 tokens, 8 micro-batches; FSDP 8 on one p5.48xlarge, flat FSDP 16 and HSDP (shard 8, replicate 2) on two, with and without deferral; tokens/s, MFU, peak memory, EFA bytes | https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/RESEARCH-GUIDE.md (section 5, A2) | RESEARCH-GUIDE A2 (on hold)
 - Prediction, two instances: flat FSDP 16 about 193 GB at defaults and 80 GB deferred, HSDP about 128 GB and 16.1 GB per instance per step | derived | Calculator C at two instances [our reading; new figures, not in the register]
 - p5.48xlarge On-Demand $55.04 per hour, us-east-1, Price List version 20261029175634; 2 x 3 x $55.04 = $330 | https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/20261029175634/us-east-1/index.csv | T05-20 [derived total]
 - Running On-Demand P instances quota starts at 0 vCPUs | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html | T05-31

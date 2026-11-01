@@ -111,7 +111,7 @@ describe('source pinning (task brief: arXiv with a version, GitHub with a tag or
 
   it('Tier 0 rows point at research files pinned to the dive commit', () => {
     expect(SOURCES.e1.tier).toBe(0);
-    expect(SOURCES.e1.url).toContain('bd8184164fc3abbe0390183e11e4236c2940abe7');
+    expect(SOURCES.e1.url).toContain('b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3');
     expect(SOURCES.e3.url).toContain('E3-spark-fsdp2-collectives.md');
   });
 });

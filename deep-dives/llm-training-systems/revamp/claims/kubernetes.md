@@ -86,7 +86,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - HyperPod EKS AMI of 2026-10-16 for Kubernetes 1.31 to 1.36 | https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-release-ami-eks.html | G1; W5-50
 - EKS: 1.34 to 1.37 standard, 1.31 to 1.33 extended support | https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html | T06-40
 - Treat the operator's table as behind the platform | (the three version claims above) | our reading; C06-2
-- A4 protocol: one HyperPod EKS cluster, one ml.p5.48xlarge, deep checks, operator, Llama 3.1 8B fine-tuning recipe at 2.0.11, killed process, stalled log, managed tiered checkpointing example; teardown order | https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/RESEARCH-GUIDE.md (section 5) | A4 (not yet run, on hold); C04-3
+- A4 protocol: one HyperPod EKS cluster, one ml.p5.48xlarge, deep checks, operator, Llama 3.1 8B fine-tuning recipe at 2.0.11, killed process, stalled log, managed tiered checkpointing example; teardown order | https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/RESEARCH-GUIDE.md (section 5) | A4 (not yet run, on hold); C04-3
 - A4 cost: 5 h x $66.048 = $330 plus EKS and EBS | https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSageMaker/20261029165009/us-east-1/index.csv | derived from T05-23; W5-1 (PRICES)
 
 ## Checkpointless training

@@ -14,24 +14,24 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
-| [cmanaha/tech-deep-dives @ bd8184164fc3abbe0390183e11e4236c2940abe7: deep-dives/llm-training-systems/research/2026-10/E1-spark-activation-memory.md](https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/E1-spark-activation-memory.md) | 2026-10-30, 2026-10-31 | DataParallel, GlossaryAndSources, MemoryBudget, SetMyRanks, ThreeBudgets, TrainingStep, calculator presets |
-| [cmanaha/tech-deep-dives @ bd8184164fc3abbe0390183e11e4236c2940abe7: deep-dives/llm-training-systems/research/2026-10/E2-spark-step-time-recompute.md](https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/E2-spark-step-time-recompute.md) | 2026-10-31 | Arithmetic, GlossaryAndSources, MemoryBudget, SetMyRanks, ThreeBudgets |
-| [cmanaha/tech-deep-dives @ bd8184164fc3abbe0390183e11e4236c2940abe7: deep-dives/llm-training-systems/research/2026-10/E3-spark-fsdp2-collectives.md](https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/E3-spark-fsdp2-collectives.md) | 2026-10-30, 2026-10-31 | DataParallel, GlossaryAndSources, SetMyRanks, Telemetry, calculator presets |
-| [cmanaha/tech-deep-dives @ bd8184164fc3abbe0390183e11e4236c2940abe7: deep-dives/llm-training-systems/research/2026-10/E4-spark-checkpoint-staging.md](https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/E4-spark-checkpoint-staging.md) | 2026-10-31 | Checkpointing, GlossaryAndSources |
-| [cmanaha/tech-deep-dives @ bd8184164fc3abbe0390183e11e4236c2940abe7: deep-dives/llm-training-systems/research/2026-10/wave2-step-maths.md](https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/wave2-step-maths.md) | 2026-10-30 | calculator presets |
+| [cmanaha/tech-deep-dives @ b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3: deep-dives/llm-training-systems/research/2026-10/E1-spark-activation-memory.md](https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/E1-spark-activation-memory.md) | 2026-10-30, 2026-10-31 | DataParallel, GlossaryAndSources, MemoryBudget, SetMyRanks, ThreeBudgets, TrainingStep, calculator presets |
+| [cmanaha/tech-deep-dives @ b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3: deep-dives/llm-training-systems/research/2026-10/E2-spark-step-time-recompute.md](https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/E2-spark-step-time-recompute.md) | 2026-10-31 | Arithmetic, ContextParallel, GlossaryAndSources, MemoryBudget, SetMyRanks, ThreeBudgets |
+| [cmanaha/tech-deep-dives @ b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3: deep-dives/llm-training-systems/research/2026-10/E3-spark-fsdp2-collectives.md](https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/E3-spark-fsdp2-collectives.md) | 2026-10-30, 2026-10-31 | DataParallel, GlossaryAndSources, SetMyRanks, Telemetry, calculator presets |
+| [cmanaha/tech-deep-dives @ b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3: deep-dives/llm-training-systems/research/2026-10/E4-spark-checkpoint-staging.md](https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/E4-spark-checkpoint-staging.md) | 2026-10-31 | Checkpointing, GlossaryAndSources |
+| [cmanaha/tech-deep-dives @ b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3: deep-dives/llm-training-systems/research/2026-10/wave2-step-maths.md](https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/wave2-step-maths.md) | 2026-10-30 | calculator presets |
 
 ## Tier 1: source code at a pinned ref, official framework documentation, first-party AWS and NVIDIA documentation, spec sheets and pricing
 
-383 sources.
+392 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
 | [AWS What's New, 2025-09-08](https://aws.amazon.com/about-aws/whats-new/2025/09/managed-tiered-checkpointing-amazon-sagemaker-hyperpod/) | 2026-10-31 | Checkpointing |
-| [AWS Batch pricing](https://aws.amazon.com/batch/pricing/) | 2026-10-30 | AwsOwnership, ChoosingPath, KubernetesFamily |
+| [AWS Batch pricing](https://aws.amazon.com/batch/pricing/) | 2026-10-30, 2026-10-31 | AwsOwnership, ChoosingPath, KubernetesFamily |
 | [EC2 Capacity Blocks pricing](https://aws.amazon.com/ec2/capacityblocks/pricing/) | 2026-10-30, 2026-10-31 | Arithmetic, AwsHardware, CapacityCost, Checkpointing, Collectives, DataParallel, SetMyRanks, Sources appendix, TrainingJobs, Trainium, calculator presets |
 | [EC2 P4](https://aws.amazon.com/ec2/instance-types/p4/) | 2026-10-31 | AwsHardware |
 | [P5](https://aws.amazon.com/ec2/instance-types/p5/) | 2026-10-31 | AwsHardware |
-| [P6](https://aws.amazon.com/ec2/instance-types/p6/) | 2026-10-30, 2026-10-31 | AwsHardware, ExpertParallel |
+| [P6](https://aws.amazon.com/ec2/instance-types/p6/) | 2026-10-31 | AwsHardware, ExpertParallel |
 | [Trn1](https://aws.amazon.com/ec2/instance-types/trn1/) | 2026-10-31 | AwsHardware |
 | [EC2 Trn2 product page](https://aws.amazon.com/ec2/instance-types/trn2/) | 2026-10-31 | AwsHardware |
 | [EC2 Trn3 product page](https://aws.amazon.com/ec2/instance-types/trn3/) | 2026-10-31 | AwsHardware |
@@ -39,7 +39,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [AWS PCS pricing](https://aws.amazon.com/pcs/pricing/) | 2026-10-30, 2026-10-31 | AwsOwnership, SlurmFamily, Trainium |
 | [SageMaker HyperPod product page](https://aws.amazon.com/sagemaker/ai/hyperpod/) | 2026-10-31 | FailureRates |
 | [SageMaker HyperPod features page](https://aws.amazon.com/sagemaker/ai/hyperpod/features/) | 2026-10-31 | FailureRates |
-| [SageMaker AI pricing](https://aws.amazon.com/sagemaker/ai/pricing/) | 2026-10-30 | AwsOwnership, CapacityCost, ChoosingPath, SlurmFamily, TrainingJobs |
+| [SageMaker AI pricing](https://aws.amazon.com/sagemaker/ai/pricing/) | 2026-10-30, 2026-10-31 | AwsOwnership, CapacityCost, ChoosingPath, SlurmFamily, TrainingJobs |
 | [Neuron 2.33 NeuronCore-v3 architecture](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/neuron-core-v3.html) | 2026-10-31 | AwsHardware |
 | [Trainium](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium.html) | 2026-10-30, 2026-10-31 | AwsHardware, CapacityCost, Trainium, calculator presets |
 | [Trainium2](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html) | 2026-10-30, 2026-10-31 | Arithmetic, AwsHardware, CapacityCost, MemoryBudget, Sources appendix, calculator presets |
@@ -53,6 +53,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [Amazon S3 user guide, S3 Express One Zone performance](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-performance.html) | 2026-10-31 | Checkpointing, Storage |
 | [Capacity Blocks pricing and billing](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-pricing-billing.html) | 2026-10-30 | CapacityCost |
 | [Find and purchase Capacity Blocks](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-purchase.html) | 2026-10-31 | CapacityCost |
+| [Capacity Reservation pricing and billing](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html) | 2026-10-31 | CapacityCost |
 | [EC2 Capacity Blocks for ML](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html) | 2026-10-30, 2026-10-31 | AwsHardware, AwsOwnership, BringUp, CapacityCost, ChoosingPath, Collectives, KubernetesFamily, SlurmFamily, Sources appendix, ThreeBudgets |
 | [EC2 On-Demand Capacity Reservations](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html) | 2026-10-31 | CapacityCost |
 | [EC2 On-Demand Instance quotas](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html) | 2026-10-30, 2026-10-31 | BringUp, CapacityCost, Checkpointing, ChoosingPath, Collectives, DataParallel, Resuming, SetMyRanks |
@@ -64,7 +65,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [AWS Batch User Guide, automated job retries](https://docs.aws.amazon.com/batch/latest/userguide/job_retries.html) | 2026-10-31 | AwsOwnership |
 | [AWS Batch User Guide, multi-node parallel jobs on EKS](https://docs.aws.amazon.com/batch/latest/userguide/mnp-eks-jobs.html) | 2026-10-30, 2026-10-31 | AwsOwnership, KubernetesFamily |
 | [AWS Batch User Guide, running multi-node parallel jobs](https://docs.aws.amazon.com/batch/latest/userguide/mnp-eks-running-mnp-jobs.html) | 2026-10-31 | AwsOwnership, ChoosingPath, KubernetesFamily |
-| [AWS Batch User Guide, service jobs](https://docs.aws.amazon.com/batch/latest/userguide/service-jobs.html) | 2026-10-30 | AwsOwnership, TrainingJobs |
+| [AWS Batch User Guide, service jobs](https://docs.aws.amazon.com/batch/latest/userguide/service-jobs.html) | 2026-10-30, 2026-10-31 | AwsOwnership, TrainingJobs |
 | [AWS CLI reference, describe-capacity-block-offerings](https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-capacity-block-offerings.html) | 2026-10-31 | CapacityCost |
 | [DLAMI release notes, 20261027](https://docs.aws.amazon.com/dlami/latest/devguide/aws-deep-learning-ami-gpubaseoss-ul2404-2026-10-28.html) | 2026-10-30 | AwsOwnership, BringUp, Collectives, Resuming, SlurmFamily |
 | [EC2 instance family summary, Spot support](https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html) | 2026-10-30, 2026-10-31 | Arithmetic, AwsHardware, CapacityCost, Checkpointing, Collectives, ComposingLayouts, ContextParallel, DataParallel, ExpertParallel, FailureRates, FineTuning, GettingStarted, MemoryBudget, PipelineParallel, Precision, SetMyRanks, Sources appendix, Storage, TensorParallel, ThreeBudgets, TrainingStep, Trainium, calculator presets |
@@ -84,23 +85,23 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [FSx for Lustre user guide, performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html) | 2026-10-31 | Checkpointing, Storage |
 | [SSD performance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/ssd-storage.html) | 2026-10-30, 2026-10-31 | Checkpointing, Sources appendix, Storage, calculator presets |
 | [FSx for Lustre user guide, deployment options](https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-fsx-lustre.html) | 2026-10-31 | Storage |
-| [AWS ParallelCluster support policy](https://docs.aws.amazon.com/parallelcluster/latest/ug/support-policy.html) | 2026-10-30 | AwsOwnership, ChoosingPath, SlurmFamily |
+| [AWS ParallelCluster support policy](https://docs.aws.amazon.com/parallelcluster/latest/ug/support-policy.html) | 2026-10-30, 2026-10-31 | AwsOwnership, ChoosingPath, SlurmFamily |
 | [What is AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/latest/ug/what-is-aws-parallelcluster.html) | 2026-10-31 | AwsOwnership, ChoosingPath, SlurmFamily |
 | [AWS PCS User Guide, AMI release notes](https://docs.aws.amazon.com/pcs/latest/userguide/ami-release-notes.html) | 2026-10-31 | AwsOwnership, SlurmFamily |
 | [AWS PCS with Capacity Blocks](https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks.html) | 2026-10-30 | AwsOwnership, CapacityCost, SlurmFamily, Sources appendix |
 | [AWS PCS User Guide, custom Slurm settings for clusters](https://docs.aws.amazon.com/pcs/latest/userguide/slurm-custom-settings-cluster.html) | 2026-10-31 | ChoosingPath, SlurmFamily |
-| [AWS PCS User Guide, Slurm reboot FAQ](https://docs.aws.amazon.com/pcs/latest/userguide/slurm-reboot-faq.html) | 2026-10-31 | SlurmFamily |
+| [AWS PCS User Guide, Slurm reboot FAQ](https://docs.aws.amazon.com/pcs/latest/userguide/slurm-reboot-faq.html) | 2026-10-31 | AwsOwnership, SlurmFamily |
 | [AWS PCS User Guide, Slurm reboot](https://docs.aws.amazon.com/pcs/latest/userguide/slurm-reboot.html) | 2026-10-31 | SlurmFamily |
 | [AWS PCS User Guide, Slurm versions](https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html) | 2026-10-31 | AwsOwnership, SlurmFamily |
 | [AWS PCS User Guide, table of contents](https://docs.aws.amazon.com/pcs/latest/userguide/toc-contents.json) | 2026-10-31 | AwsOwnership, SlurmFamily |
-| [AWS PCS troubleshooting, instance replaced after reboot](https://docs.aws.amazon.com/pcs/latest/userguide/troubleshooting_instance-terminated-after-reboot.html) | 2026-10-31 | SlurmFamily |
+| [AWS PCS User Guide, instance replaced after reboot](https://docs.aws.amazon.com/pcs/latest/userguide/troubleshooting_instance-terminated-after-reboot.html) | 2026-10-31 | AwsOwnership, SlurmFamily |
 | [AWS PCS User Guide, custom AMIs](https://docs.aws.amazon.com/pcs/latest/userguide/working-with_ami_custom.html) | 2026-10-30 | AwsOwnership, SlurmFamily |
 | [PCS-ready DLAMI](https://docs.aws.amazon.com/pcs/latest/userguide/working-with_ami_pcs-ready-dlami.html) | 2026-10-31 | AwsOwnership, BringUp, SlurmFamily |
 | [AWS PCS User Guide, cluster size](https://docs.aws.amazon.com/pcs/latest/userguide/working-with_clusters_size.html) | 2026-10-30, 2026-10-31 | AwsOwnership, CapacityCost, ChoosingPath, SlurmFamily, Sources appendix, calculator presets |
 | [AWS PCS User Guide, using EFA](https://docs.aws.amazon.com/pcs/latest/userguide/working-with_networking_efa.html) | 2026-10-31 | AwsOwnership |
 | [CreateTrainingJob, ResourceConfig](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateTrainingJob.html) | 2026-10-31 | AwsOwnership |
 | [DescribeTrainingJob](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_DescribeTrainingJob.html) | 2026-10-31 | TrainingJobs |
-| [SageMaker API reference, InfraCheckConfig](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_InfraCheckConfig.html) | 2026-10-31 | TrainingJobs |
+| [SageMaker API reference, InfraCheckConfig](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_InfraCheckConfig.html) | 2026-10-31 | AwsOwnership, TrainingJobs |
 | [SageMaker API reference, RetryStrategy](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_RetryStrategy.html) | 2026-10-31 | AwsOwnership, TrainingJobs |
 | [SageMaker API reference, StoppingCondition](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_StoppingCondition.html) | 2026-10-31 | ChoosingPath, TrainingJobs |
 | [SMDDP release notes](https://docs.aws.amazon.com/sagemaker/latest/dg/data-parallel-release-notes.html) | 2026-10-31 | TrainingJobs |
@@ -126,11 +127,12 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [SageMaker Developer Guide, checkpointless in-process recovery](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless-in-process-recovery.html) | 2026-10-31 | KubernetesFamily |
 | [HyperPod checkpointless training release notes](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless-release-notes.html) | 2026-10-31 | BringUp, KubernetesFamily |
 | [SageMaker HyperPod: checkpointless training](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless.html) | 2026-10-31 | FineTuning, KubernetesFamily, Sources appendix, TrainingJobs |
-| [HyperPod elastic training guide](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-elastic-training.html) | 2026-10-30, 2026-10-31 | ChoosingPath, KubernetesFamily, Resuming |
+| [HyperPod elastic training guide](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-elastic-training.html) | 2026-10-31 | ChoosingPath, KubernetesFamily, Resuming |
 | [SageMaker Developer Guide, running jobs with the training operator](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-operator-usage.html) | 2026-10-30, 2026-10-31 | AwsOwnership, ChoosingPath, KubernetesFamily, Telemetry |
 | [HyperPod training operator](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-operator.html) | 2026-10-31 | AwsOwnership, ChoosingPath, KubernetesFamily, Resuming, Sources appendix, Telemetry |
 | [SageMaker Developer Guide, installing metrics exporter packages](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-cluster-observability-slurm-install-exporters.html) | 2026-10-31 | Telemetry |
-| [HyperPod task governance](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance.html) | 2026-10-30, 2026-10-31 | AwsOwnership, KubernetesFamily |
+| [HyperPod task governance setup](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-setup-task-governance.html) | 2026-10-31 | AwsOwnership |
+| [SageMaker Developer Guide, HyperPod task governance](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance.html) | 2026-10-30, 2026-10-31 | AwsOwnership, KubernetesFamily |
 | [HyperPod EKS deep health checks](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-deep-health-checks.html) | 2026-10-31 | AwsOwnership, BringUp, ChoosingPath, KubernetesFamily, SlurmFamily, Trainium |
 | [SageMaker HyperPod: health monitoring agent](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-health-monitoring-agent.html) | 2026-10-31 | AwsOwnership, ChoosingPath, KubernetesFamily, SlurmFamily, Sources appendix |
 | [HyperPod EKS node recovery](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-node-recovery.html) | 2026-10-30, 2026-10-31 | AwsOwnership, KubernetesFamily |
@@ -143,9 +145,9 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [HyperPod Slurm AMI release notes](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-release-ami-slurm.html) | 2026-10-31 | AwsOwnership, BringUp |
 | [HyperPod release notes, 2026-04-16](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-release-notes.html) | 2026-10-30 | AwsOwnership |
 | [HyperPod Slurm auto-resume](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-auto-resume.html) | 2026-10-31 | AwsOwnership, ChoosingPath, Resuming, SlurmFamily, Sources appendix, Trainium |
-| [HyperPod Slurm cluster health checks](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-cluster-health-check.html) | 2026-10-30 | AwsOwnership, ChoosingPath, SlurmFamily |
+| [HyperPod Slurm cluster health checks](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-cluster-health-check.html) | 2026-10-30, 2026-10-31 | AwsOwnership, ChoosingPath, SlurmFamily |
 | [HyperPod Slurm deep health checks](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-deep-health-checks.html) | 2026-10-30, 2026-10-31 | AwsOwnership, BringUp, ChoosingPath, KubernetesFamily, SlurmFamily, Sources appendix, Trainium |
-| [SageMaker HyperPod: Slurm orchestration](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-slurm.html) | 2026-10-30, 2026-10-31 | AwsOwnership, SlurmFamily, Sources appendix, TrainingJobs |
+| [SageMaker HyperPod: Slurm orchestration](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-slurm.html) | 2026-10-31 | AwsOwnership, SlurmFamily, Sources appendix, TrainingJobs |
 | [SageMaker Developer Guide, HyperPod Spot](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html) | 2026-10-30 | AwsOwnership |
 | [SageMaker Trainium training-job tutorial](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-trainium-sagemaker-training-jobs-pretrain-tutorial.html) | 2026-10-31 | AwsOwnership, TrainingJobs, Trainium |
 | [SageMaker Developer Guide, get compute capacity for training jobs](https://docs.aws.amazon.com/sagemaker/latest/dg/train-get-capacity.html) | 2026-10-31 | ChoosingPath, TrainingJobs |
@@ -178,13 +180,15 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [aws-neuron/aws-neuron-sdk @ 10832bbcc6b6920b3046a7d7aa59b6b684f6b81a: release-notes/components/dlamis.rst](https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/dlamis.rst) | 2026-10-31 | FrameworkMap, Trainium |
 | [aws-neuron/aws-neuron-sdk @ 10832bbcc6b6920b3046a7d7aa59b6b684f6b81a: release-notes/components/torchneuron.rst](https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/torchneuron.rst) | 2026-10-31 | FrameworkMap, Precision, Trainium |
 | [aws-neuron/aws-neuron-sdk @ 10832bbcc6b6920b3046a7d7aa59b6b684f6b81a: release-notes/components/torchtitan-neuron.rst](https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/release-notes/components/torchtitan-neuron.rst) | 2026-10-31 | FrameworkMap, Trainium |
+| [aws-neuron/aws-neuron-sdk @ 10832bbcc6b6920b3046a7d7aa59b6b684f6b81a: tools/neuron-sys-tools/nccom-test.rst](https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/tools/neuron-sys-tools/nccom-test.rst) | 2026-10-31 | BringUp |
 | [aws-neuron/aws-neuron-sdk @ 10832bbcc6b6920b3046a7d7aa59b6b684f6b81a: torch/about-pytorch-neuron.rst](https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/torch/about-pytorch-neuron.rst) | 2026-10-31 | AwsHardware, FrameworkMap, Precision, Trainium |
 | [aws-neuron/aws-neuron-sdk @ 10832bbcc6b6920b3046a7d7aa59b6b684f6b81a: training/torchtitan/about-torchtitan-neuron.rst](https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst) | 2026-10-30, 2026-10-31 | Arithmetic, AwsHardware, ChoosingPath, FrameworkMap, MemoryBudget, SetMyRanks, Sources appendix, Trainium, calculator presets |
+| [aws-neuron/aws-neuron-sdk @ 10832bbcc6b6920b3046a7d7aa59b6b684f6b81a: training/torchtitan/get-started/setup-torchtitan-neuron.rst](https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/get-started/setup-torchtitan-neuron.rst) | 2026-10-31 | BringUp, Trainium |
 | [aws-neuron/aws-neuron-sdk @ 10832bbcc6b6920b3046a7d7aa59b6b684f6b81a: training/torchtitan/tutorials/tutorial-basic-training.rst](https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/tutorials/tutorial-basic-training.rst) | 2026-10-31 | Trainium |
 | [aws-neuron/torchtitan-neuron @ release-2.33.0: torchtitan_neuron/docs/dense-tutorials.md](https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan_neuron/docs/dense-tutorials.md) | 2026-10-31 | Sources appendix, Trainium |
 | [aws-neuron/torchtitan-neuron @ release-2.33.0: torchtitan_neuron/docs/neuron_mxfp8.md](https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan_neuron/docs/neuron_mxfp8.md) | 2026-10-31 | Precision |
 | [aws-neuron/torchtitan-neuron @ release-2.33.0: torchtitan_neuron/tests/README.md](https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan_neuron/tests/README.md) | 2026-10-31 | Trainium |
-| [aws-neuron/torchtitan-neuron @ release-2.33.0: torchtitan/tools/utils.py](https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan/tools/utils.py) | 2026-10-31 | Trainium |
+| [aws-neuron/torchtitan-neuron @ release-2.33.0: torchtitan/tools/utils.py](https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan/tools/utils.py) | 2026-10-31 | Arithmetic, Trainium |
 | [torchtitan-neuron release-2.33.0](https://github.com/aws-neuron/torchtitan-neuron/tree/release-2.33.0) | 2026-10-31 | FrameworkMap |
 | [aws-neuron/torchtitan-neuron @ release-2.33.0: .github/workflows](https://github.com/aws-neuron/torchtitan-neuron/tree/release-2.33.0/.github/workflows) | 2026-10-31 | Trainium |
 | [aws-neuron/torchtitan-neuron @ release-2.33.0: benchmarks](https://github.com/aws-neuron/torchtitan-neuron/tree/release-2.33.0/benchmarks) | 2026-10-31 | Trainium |
@@ -195,10 +199,11 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [aws/deep-learning-containers @ 156076c639a310c6e86ddae64a6e1fce8a34087c: docker/pytorch/2.14/cuda/pyproject.toml](https://github.com/aws/deep-learning-containers/blob/156076c639a310c6e86ddae64a6e1fce8a34087c/docker/pytorch/2.14/cuda/pyproject.toml) | 2026-10-31 | FrameworkMap |
 | [deep-learning-containers release v2.16-pt-ec2-2.10.0-tr-gpu-py313](https://github.com/aws/deep-learning-containers/releases/tag/v2.16-pt-ec2-2.10.0-tr-gpu-py313) | 2026-10-31 | BringUp |
 | [aws/sagemaker-hyperpod-recipes @ 2.0.11: hyperpod_recipes/recipes_src/training/llama/checkpointless_llama3_70b_pretrain.yaml](https://github.com/aws/sagemaker-hyperpod-recipes/blob/2.0.11/hyperpod_recipes/recipes_src/training/llama/checkpointless_llama3_70b_pretrain.yaml) | 2026-10-31 | KubernetesFamily, Sources appendix, TrainingJobs |
-| [sagemaker-hyperpod-recipes v2.0.0 release notes](https://github.com/aws/sagemaker-hyperpod-recipes/releases/tag/v2.0.0) | 2026-10-30 | FineTuning, TrainingJobs |
+| [sagemaker-hyperpod-recipes v2.0.0 release notes](https://github.com/aws/sagemaker-hyperpod-recipes/releases/tag/v2.0.0) | 2026-10-30, 2026-10-31 | FineTuning, TrainingJobs |
 | [sagemaker-hyperpod-recipes 2.0.11](https://github.com/aws/sagemaker-hyperpod-recipes/tree/2.0.11) | 2026-10-30, 2026-10-31 | AwsOwnership, ChoosingPath, Trainium |
+| [aws/sagemaker-hyperpod-recipes @ 2.0.11: hyperpod_recipes/recipes_src](https://github.com/aws/sagemaker-hyperpod-recipes/tree/2.0.11/hyperpod_recipes/recipes_src) | 2026-10-31 | TrainingJobs |
 | [aws/sagemaker-hyperpod-recipes @ 2.0.11: hyperpod_recipes/recipes_src/training](https://github.com/aws/sagemaker-hyperpod-recipes/tree/2.0.11/hyperpod_recipes/recipes_src/training) | 2026-10-30, 2026-10-31 | FineTuning, TrainingJobs |
-| [aws/sagemaker-hyperpod-recipes @ a9ba8bf184ec8b912936bed828ce7ee8554fab3f: recipes_collection/recipes/training](https://github.com/aws/sagemaker-hyperpod-recipes/tree/a9ba8bf184ec8b912936bed828ce7ee8554fab3f/recipes_collection/recipes/training) | 2026-10-30 | TrainingJobs |
+| [aws/sagemaker-hyperpod-recipes @ a9ba8bf184ec8b912936bed828ce7ee8554fab3f: recipes_collection/recipes/training](https://github.com/aws/sagemaker-hyperpod-recipes/tree/a9ba8bf184ec8b912936bed828ce7ee8554fab3f/recipes_collection/recipes/training) | 2026-10-31 | TrainingJobs |
 | [v1.5.1](https://github.com/aws/sagemaker-hyperpod-recipes/tree/v1.5.1) | 2026-10-31 | Trainium |
 | [v2.0.0](https://github.com/aws/sagemaker-hyperpod-recipes/tree/v2.0.0) | 2026-10-31 | Trainium |
 | [aws/sagemaker-python-sdk @ v3.28.0: README.rst](https://github.com/aws/sagemaker-python-sdk/blob/v3.28.0/README.rst) | 2026-10-30, 2026-10-31 | AwsOwnership, TrainingJobs |
@@ -212,6 +217,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [awslabs/awsome-distributed-ai @ 3a1002576ccef26e66ba714303b10ccdaa645691: 1.architectures/5.sagemaker-hyperpod/LifecycleScripts/base-config/observability/dcgm_metrics_config/dcgm-metrics-basic.csv](https://github.com/awslabs/awsome-distributed-ai/blob/3a1002576ccef26e66ba714303b10ccdaa645691/1.architectures/5.sagemaker-hyperpod/LifecycleScripts/base-config/observability/dcgm_metrics_config/dcgm-metrics-basic.csv) | 2026-10-31 | Telemetry |
 | [awslabs/awsome-distributed-ai @ 3a1002576ccef26e66ba714303b10ccdaa645691: 1.architectures/5.sagemaker-hyperpod/LifecycleScripts/base-config/observability/install_dcgm_exporter.sh](https://github.com/awslabs/awsome-distributed-ai/blob/3a1002576ccef26e66ba714303b10ccdaa645691/1.architectures/5.sagemaker-hyperpod/LifecycleScripts/base-config/observability/install_dcgm_exporter.sh) | 2026-10-31 | Telemetry |
 | [awslabs/awsome-distributed-ai @ 3a1002576ccef26e66ba714303b10ccdaa645691: 1.architectures/5.sagemaker-hyperpod/LifecycleScripts/base-config/observability/install_observability.py](https://github.com/awslabs/awsome-distributed-ai/blob/3a1002576ccef26e66ba714303b10ccdaa645691/1.architectures/5.sagemaker-hyperpod/LifecycleScripts/base-config/observability/install_observability.py) | 2026-10-31 | Telemetry |
+| [awslabs/awsome-distributed-ai @ 3a1002576ccef26e66ba714303b10ccdaa645691: 1.architectures/5.sagemaker-hyperpod/LifecycleScripts/base-config/observability/otel_config/config-head-template.yaml](https://github.com/awslabs/awsome-distributed-ai/blob/3a1002576ccef26e66ba714303b10ccdaa645691/1.architectures/5.sagemaker-hyperpod/LifecycleScripts/base-config/observability/otel_config/config-head-template.yaml) | 2026-10-31 | Telemetry |
 | [awslabs/awsome-distributed-ai @ 3a1002576ccef26e66ba714303b10ccdaa645691: examples/training/fsdp/slurm/llama3_1_70b-training.sbatch](https://github.com/awslabs/awsome-distributed-ai/blob/3a1002576ccef26e66ba714303b10ccdaa645691/examples/training/fsdp/slurm/llama3_1_70b-training.sbatch) | 2026-10-31 | ChoosingPath, SlurmFamily |
 | [awslabs/awsome-distributed-ai @ 3a1002576ccef26e66ba714303b10ccdaa645691: validation/gpu-cluster-healthcheck/README.md](https://github.com/awslabs/awsome-distributed-ai/blob/3a1002576ccef26e66ba714303b10ccdaa645691/validation/gpu-cluster-healthcheck/README.md) | 2026-10-31 | SlurmFamily |
 | [awslabs/awsome-distributed-ai @ 3a1002576ccef26e66ba714303b10ccdaa645691: examples/training](https://github.com/awslabs/awsome-distributed-ai/tree/3a1002576ccef26e66ba714303b10ccdaa645691/examples/training) | 2026-10-30 | FrameworkMap |
@@ -224,9 +230,9 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [awslabs/s3-connector-for-pytorch @ v1.5.0: s3torchconnector/src/s3torchconnector/dcp/s3_prefix_strategy.py](https://github.com/awslabs/s3-connector-for-pytorch/blob/v1.5.0/s3torchconnector/src/s3torchconnector/dcp/s3_prefix_strategy.py) | 2026-10-31 | Checkpointing |
 | [axolotl-ai-cloud/axolotl @ v0.21.1: README.md](https://github.com/axolotl-ai-cloud/axolotl/blob/v0.21.1/README.md) | 2026-10-31 | FineTuning, FrameworkMap |
 | [bitsandbytes-foundation/bitsandbytes @ 0.50.2: bitsandbytes/optim/optimizer.py](https://github.com/bitsandbytes-foundation/bitsandbytes/blob/0.50.2/bitsandbytes/optim/optimizer.py) | 2026-10-31 | MemoryBudget |
-| [calculon-ai/calculon @ c2aba03022c4870c62a42f127f7e2b97c2ce7de2: calculon/llm.py](https://github.com/calculon-ai/calculon/blob/c2aba03022c4870c62a42f127f7e2b97c2ce7de2/calculon/llm.py) | 2026-10-31 | SetMyRanks |
-| [cmanaha/tech-deep-dives @ bd8184164fc3abbe0390183e11e4236c2940abe7: deep-dives/llm-training-systems/research/2026-10/03-frameworks.md](https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/03-frameworks.md) | 2026-10-30 | calculator presets |
-| [cmanaha/tech-deep-dives @ bd8184164fc3abbe0390183e11e4236c2940abe7: deep-dives/llm-training-systems/research/2026-10/05-aws-infrastructure.md](https://github.com/cmanaha/tech-deep-dives/blob/bd8184164fc3abbe0390183e11e4236c2940abe7/deep-dives/llm-training-systems/research/2026-10/05-aws-infrastructure.md) | 2026-10-30 | calculator presets |
+| [calculon-ai/calculon @ c2aba03022c4870c62a42f127f7e2b97c2ce7de2: calculon/llm/llm.py](https://github.com/calculon-ai/calculon/blob/c2aba03022c4870c62a42f127f7e2b97c2ce7de2/calculon/llm/llm.py) | 2026-10-31 | SetMyRanks |
+| [cmanaha/tech-deep-dives @ b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3: deep-dives/llm-training-systems/research/2026-10/03-frameworks.md](https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/03-frameworks.md) | 2026-10-30 | calculator presets |
+| [cmanaha/tech-deep-dives @ b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3: deep-dives/llm-training-systems/research/2026-10/05-aws-infrastructure.md](https://github.com/cmanaha/tech-deep-dives/blob/b0194661bd4b1be854e3cbeaa0b53fa2dd7058b3/deep-dives/llm-training-systems/research/2026-10/05-aws-infrastructure.md) | 2026-10-30 | calculator presets |
 | [deepspeedai/DeepSpeed @ v0.19.9: deepspeed/autotuning/README.md](https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/deepspeed/autotuning/README.md) | 2026-10-30 | SetMyRanks |
 | [deepspeedai/DeepSpeed @ v0.19.9: deepspeed/launcher/launch.py](https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/deepspeed/launcher/launch.py) | 2026-10-31 | Collectives, ComposingLayouts |
 | [deepspeedai/DeepSpeed @ v0.19.9: deepspeed/runtime/pipe/engine.py](https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/deepspeed/runtime/pipe/engine.py) | 2026-10-31 | FrameworkMap |
@@ -243,6 +249,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [deepspeedai/DeepSpeed @ v0.19.9: docs/_tutorials/zero.md](https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/docs/_tutorials/zero.md) | 2026-10-31 | FrameworkMap |
 | [deepspeedai/DeepSpeed @ v0.19.9: tests/unit/runtime/half_precision/test_fp8.py](https://github.com/deepspeedai/DeepSpeed/blob/v0.19.9/tests/unit/runtime/half_precision/test_fp8.py) | 2026-10-31 | FrameworkMap |
 | [facebookresearch/HolisticTraceAnalysis @ v0.6.1: hta/trace_analysis.py](https://github.com/facebookresearch/HolisticTraceAnalysis/blob/v0.6.1/hta/trace_analysis.py) | 2026-10-31 | Sources appendix, Telemetry |
+| [hiyouga/LLaMA-Factory @ v0.9.5: examples/README.md](https://github.com/hiyouga/LLaMA-Factory/blob/v0.9.5/examples/README.md) | 2026-10-31 | FineTuning |
 | [hiyouga/LLaMA-Factory @ v0.9.5: README.md](https://github.com/hiyouga/LLaMA-Factory/blob/v0.9.5/README.md) | 2026-10-31 | FineTuning |
 | [huggingface/accelerate @ v1.15.0: docs/source/concept_guides/sequence_parallelism.md](https://github.com/huggingface/accelerate/blob/v1.15.0/docs/source/concept_guides/sequence_parallelism.md) | 2026-10-31 | FrameworkMap |
 | [huggingface/accelerate @ v1.15.0: docs/source/usage_guides/low_precision_training.md](https://github.com/huggingface/accelerate/blob/v1.15.0/docs/source/usage_guides/low_precision_training.md) | 2026-10-31 | FrameworkMap, Precision |
@@ -290,13 +297,14 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/num_microbatches_calculator.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/num_microbatches_calculator.py) | 2026-10-31 | PipelineParallel, SetMyRanks |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/optimizer/distrib_optimizer.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/optimizer/distrib_optimizer.py) | 2026-10-31 | FrameworkMap |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/optimizer/optimizer_config.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/optimizer/optimizer_config.py) | 2026-10-31 | MemoryBudget |
-| [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/parallel_state.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/parallel_state.py) | 2026-10-31 | Collectives, ComposingLayouts, ContextParallel, ExpertParallel |
+| [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/parallel_state.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/parallel_state.py) | 2026-10-31 | Collectives, ComposingLayouts, ContextParallel, ExpertParallel, SetMyRanks |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/pipeline_parallel/combined_1f1b.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/pipeline_parallel/combined_1f1b.py) | 2026-10-31 | ExpertParallel, FrameworkMap, PipelineParallel |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/pipeline_parallel/schedules.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/pipeline_parallel/schedules.py) | 2026-10-31 | FrameworkMap, PipelineParallel |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/rerun_state_machine.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/rerun_state_machine.py) | 2026-10-31 | WhatToMeasure |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/tensor_parallel/cross_entropy.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/tensor_parallel/cross_entropy.py) | 2026-10-31 | MemoryBudget |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/tensor_parallel/layers.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/tensor_parallel/layers.py) | 2026-10-31 | TensorParallel |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/tensor_parallel/mappings.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/tensor_parallel/mappings.py) | 2026-10-31 | TensorParallel |
+| [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/tensor_parallel/random.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/tensor_parallel/random.py) | 2026-10-31 | TensorParallel |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/transformer/moe/moe_utils.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/transformer/moe/moe_utils.py) | 2026-10-31 | ExpertParallel |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/transformer/moe/README.md](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/transformer/moe/README.md) | 2026-10-31 | ContextParallel, ExpertParallel, FrameworkMap, PipelineParallel, SetMyRanks, Sources appendix |
 | [NVIDIA/Megatron-LM @ core_v0.20.0: megatron/core/transformer/moe/router.py](https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/transformer/moe/router.py) | 2026-10-31 | ExpertParallel |
@@ -363,23 +371,24 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [pytorch/torchtitan @ v0.4.0: torchtitan/components/checkpointer/base.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/components/checkpointer/base.py) | 2026-10-31 | Checkpointing |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/components/checkpointer/dcp.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/components/checkpointer/dcp.py) | 2026-10-31 | Checkpointing |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/components/optim/optim.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/components/optim/optim.py) | 2026-10-31 | WhatToMeasure |
+| [pytorch/torchtitan @ v0.4.0: torchtitan/config/configs.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/config/configs.py) | 2026-10-31 | Telemetry |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/config/parallelism.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/config/parallelism.py) | 2026-10-31 | DataParallel, FrameworkMap, PipelineParallel, SetMyRanks, Sources appendix, TensorParallel |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/config/README.md](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/config/README.md) | 2026-10-31 | FrameworkMap |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/distributed/parallelism_context.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/distributed/parallelism_context.py) | 2026-10-31 | Collectives, ComposingLayouts, WhatToMeasure |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/distributed/pipeline_parallel.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/distributed/pipeline_parallel.py) | 2026-10-31 | PipelineParallel |
-| [pytorch/torchtitan @ v0.4.0: torchtitan/distributed/utils.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/distributed/utils.py) | 2026-10-31 | Resuming, WhatToMeasure |
+| [pytorch/torchtitan @ v0.4.0: torchtitan/distributed/utils.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/distributed/utils.py) | 2026-10-31 | Resuming, Telemetry, WhatToMeasure |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/models/common/activation.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/models/common/activation.py) | 2026-10-31 | MemoryBudget, TrainingStep |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/models/common/config_utils.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/models/common/config_utils.py) | 2026-10-31 | TensorParallel |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/models/common/decoder_sharding.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/models/common/decoder_sharding.py) | 2026-10-31 | TensorParallel |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/models/common/flops.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/models/common/flops.py) | 2026-10-31 | Arithmetic, BringUp |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/models/llama3/flavors.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/models/llama3/flavors.py) | 2026-10-31 | TensorParallel |
-| [pytorch/torchtitan @ v0.4.0: torchtitan/models/llama3/model.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/models/llama3/model.py) | 2026-10-31 | Arithmetic |
+| [pytorch/torchtitan @ v0.4.0: torchtitan/models/llama3/model.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/models/llama3/model.py) | 2026-10-31 | Arithmetic, MemoryBudget, TrainingStep |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/observability/metrics.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/observability/metrics.py) | 2026-10-31 | Arithmetic, WhatToMeasure |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/quantization/mxfp8/README.md](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/quantization/mxfp8/README.md) | 2026-10-31 | Precision |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/quantization/README.md](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/quantization/README.md) | 2026-10-31 | FrameworkMap, Precision |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/tools/garbage_collector.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/tools/garbage_collector.py) | 2026-10-31 | Resuming |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/tools/utils.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/tools/utils.py) | 2026-10-31 | Arithmetic, WhatToMeasure |
-| [pytorch/torchtitan @ v0.4.0: torchtitan/trainer.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/trainer.py) | 2026-10-31 | PipelineParallel |
+| [pytorch/torchtitan @ v0.4.0: torchtitan/trainer.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/trainer.py) | 2026-10-31 | PipelineParallel, Telemetry |
 | [pytorch/torchtitan @ v0.4.0: torchtitan/training_engine.py](https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/training_engine.py) | 2026-10-31 | Checkpointing, DataParallel, Resuming |
 | [torchtitan commit 7cdf0aa9](https://github.com/pytorch/torchtitan/commit/7cdf0aa9f9788ed39521edb192e0dcd2815a374e) | 2026-10-31 | FrameworkMap |
 | [v0.4.0 release](https://github.com/pytorch/torchtitan/releases/tag/v0.4.0) | 2026-10-30, 2026-10-31 | FineTuning, FrameworkMap, Precision, Trainium |
@@ -393,7 +402,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [AWS Price List, AmazonEC2 all Regions, version 20261029175634](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/20261029175634/index.csv) | 2026-10-30, 2026-10-31 | CapacityCost, Trainium, calculator presets |
 | [EC2 Price List, us-east-1](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/20261029175634/us-east-1/index.csv) | 2026-10-30, 2026-10-31 | Arithmetic, AwsHardware, AwsOwnership, CapacityCost, Checkpointing, ChoosingPath, Collectives, DataParallel, Resuming, SetMyRanks, SlurmFamily, Sources appendix, TrainingJobs, calculator presets |
 | [AWS Price List, AmazonEC2 offer 20261029175634, us-east-2](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/20261029175634/us-east-2/index.csv) | 2026-10-30 | calculator presets |
-| [Amazon EKS Price List, us-east-1](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEKS/20261027191639/us-east-1/index.json) | 2026-10-30, 2026-10-31 | AwsOwnership, CapacityCost, ChoosingPath, KubernetesFamily, calculator presets |
+| [EKS Price List, us-east-1](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEKS/20261027191639/us-east-1/index.json) | 2026-10-30, 2026-10-31 | AwsOwnership, CapacityCost, ChoosingPath, KubernetesFamily, Telemetry, calculator presets |
 | [AmazonFSx price list](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonFSx/20260911124432/us-east-1/index.json) | 2026-10-30 | Checkpointing, Storage, calculator presets |
 | [SageMaker Price List, us-east-1](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSageMaker/20261029165009/us-east-1/index.csv) | 2026-10-30, 2026-10-31 | AwsOwnership, CapacityCost, ChoosingPath, SlurmFamily, TrainingJobs, calculator presets |
 | [AWS Price List, AmazonSageMaker offer 20261029165009, us-east-2](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSageMaker/20261029165009/us-east-2/index.csv) | 2026-10-30 | Arithmetic, CapacityCost, Trainium, calculator presets |
@@ -445,41 +454,41 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [Training Deep Nets with Sublinear Memory Cost, Section 5.4](https://arxiv.org/abs/1604.06174v2) | preprint | 2026-10-31 | MemoryBudget, Sources appendix |
 | [Mixed Precision Training, Section 6](https://arxiv.org/abs/1710.03740v3) | ICLR 2018 | 2026-10-31 | Precision, Sources appendix, TrainingStep |
 | [Adafactor, Abstract](https://arxiv.org/abs/1804.04235v1) | preprint | 2026-10-30, 2026-10-31 | MemoryBudget, calculator presets |
-| [GPipe, Section 2.3](https://arxiv.org/abs/1811.06965v5) | preprint | 2026-10-31 | PipelineParallel, Sources appendix |
-| [An Empirical Model of Large-Batch Training, Section 2.4](https://arxiv.org/abs/1812.06162v1) | preprint | 2026-10-30 | DataParallel, Sources appendix |
+| [GPipe, Section 2.3](https://arxiv.org/abs/1811.06965v5) | NeurIPS 2019 | 2026-10-31 | PipelineParallel, Sources appendix |
+| [An Empirical Model of Large-Batch Training, Sections 2.2 and 2.3](https://arxiv.org/abs/1812.06162v1) | preprint | 2026-10-30 | DataParallel, Sources appendix |
 | [A Study of BFLOAT16 for Deep Learning Training, Section 3](https://arxiv.org/abs/1905.12322v3) | preprint | 2026-10-31 | Precision, TrainingStep |
 | [Megatron-LM, Section 3](https://arxiv.org/abs/1909.08053v4) | preprint | 2026-10-31 | Sources appendix, TensorParallel |
-| [ZeRO, Section 5](https://arxiv.org/abs/1910.02054v3) | preprint | 2026-10-30, 2026-10-31 | AwsHardware, Checkpointing, Collectives, DataParallel, FineTuning, GettingStarted, MemoryBudget, Precision, SetMyRanks, Sources appendix, ThreeBudgets, TrainingStep, calculator presets |
+| [ZeRO, Section 5](https://arxiv.org/abs/1910.02054v3) | SC 2020 | 2026-10-30, 2026-10-31 | AwsHardware, Checkpointing, Collectives, DataParallel, FineTuning, GettingStarted, MemoryBudget, Precision, SetMyRanks, Sources appendix, ThreeBudgets, TrainingStep, calculator presets |
 | [Scaling Laws, Section 2.1](https://arxiv.org/abs/2001.08361v1) | preprint | 2026-10-30, 2026-10-31 | Arithmetic, DataParallel, Sources appendix, ThreeBudgets, TrainingStep |
-| [PyTorch Distributed, Section 2.2](https://arxiv.org/abs/2006.15704v1) | VLDB 2020 | 2026-10-30 | DataParallel, Sources appendix |
-| [GShard, Section 3.3.2](https://arxiv.org/abs/2006.16668v1) | preprint | 2026-10-30 | ExpertParallel, Sources appendix |
+| [PyTorch Distributed, Section 2.3](https://arxiv.org/abs/2006.15704v1) | VLDB 2020 | 2026-10-30 | DataParallel, Sources appendix |
+| [GShard, Section 3.3.2 and Figure 8](https://arxiv.org/abs/2006.16668v1) | preprint | 2026-10-30, 2026-10-31 | ExpertParallel, Sources appendix |
 | [Switch Transformers, Section 2.2](https://arxiv.org/abs/2101.03961v3) | JMLR 23 (2022) | 2026-10-30 | ExpertParallel, Sources appendix |
 | [PTD-P paper, Section 2.2.2](https://arxiv.org/abs/2104.04473v5) | SC 2021 | 2026-10-30, 2026-10-31 | Arithmetic, Collectives, ComposingLayouts, MemoryBudget, PipelineParallel, SetMyRanks, Sources appendix, TensorParallel, ThreeBudgets, TrainingStep |
 | [LoRA, Section 4.2](https://arxiv.org/abs/2106.09685v2) | preprint | 2026-10-31 | FineTuning, Sources appendix |
 | [8-bit Optimizers via Block-wise Quantization, Section 1.1](https://arxiv.org/abs/2110.02861v2) | ICLR 2022 | 2026-10-30, 2026-10-31 | MemoryBudget, Sources appendix, calculator presets |
 | [Alpa](https://arxiv.org/abs/2201.12023v3) | OSDI 2022 | 2026-10-31 | SetMyRanks |
 | [Training Compute-Optimal Large Language Models, Table 3](https://arxiv.org/abs/2203.15556v1) | preprint | 2026-10-31 | Arithmetic, Sources appendix |
-| [PaLM, Appendix B](https://arxiv.org/abs/2204.02311v5) | preprint | 2026-10-30, 2026-10-31 | Arithmetic, GettingStarted, Sources appendix, Storage, ThreeBudgets, TrainingStep, WhatToMeasure |
+| [PaLM, Appendix B](https://arxiv.org/abs/2204.02311v5) | JMLR 2023 | 2026-10-30, 2026-10-31 | Arithmetic, GettingStarted, Sources appendix, Storage, ThreeBudgets, TrainingStep, WhatToMeasure |
 | [OPT, Section 2.5](https://arxiv.org/abs/2205.01068v4) | preprint | 2026-10-31 | Sources appendix, WhatToMeasure |
-| [Reducing Activation Recomputation, Table 2](https://arxiv.org/abs/2205.05198v1) | preprint | 2026-10-30, 2026-10-31 | Arithmetic, Collectives, MemoryBudget, PipelineParallel, SetMyRanks, Sources appendix, TensorParallel, ThreeBudgets, TrainingStep |
+| [Reducing Activation Recomputation, Table 2](https://arxiv.org/abs/2205.05198v1) | MLSys 2023 | 2026-10-30, 2026-10-31 | Arithmetic, Collectives, MemoryBudget, PipelineParallel, SetMyRanks, Sources appendix, TensorParallel, ThreeBudgets, TrainingStep |
 | [FlashAttention, Section 3.1](https://arxiv.org/abs/2205.14135v2) | preprint | 2026-10-31 | MemoryBudget, Sources appendix, TrainingStep |
 | [FP8 Formats for Deep Learning, Table 1](https://arxiv.org/abs/2209.05433v2) | preprint | 2026-10-31 | Precision, Sources appendix |
-| [Galvatron](https://arxiv.org/abs/2211.13878v1) | VLDB 2023 | 2026-10-31 | SetMyRanks |
+| [Galvatron](https://arxiv.org/abs/2211.13878v1) | PVLDB 16(3) | 2026-10-31 | SetMyRanks |
 | [PyTorch FSDP, Section 3.2](https://arxiv.org/abs/2304.11277v2) | PVLDB 16(12) | 2026-10-30, 2026-10-31 | Collectives, DataParallel, Sources appendix |
-| [QLoRA, abstract](https://arxiv.org/abs/2305.14314v1) | preprint | 2026-10-31 | FineTuning, Sources appendix |
-| [ZeRO++, Section 1 and abstract](https://arxiv.org/abs/2306.10209v1) | preprint | 2026-10-30 | DataParallel, Sources appendix |
+| [QLoRA, abstract](https://arxiv.org/abs/2305.14314v1) | NeurIPS 2023 | 2026-10-31 | FineTuning, Sources appendix |
+| [ZeRO++, Section 1 and abstract](https://arxiv.org/abs/2306.10209v1) | ICLR 2024 | 2026-10-30 | DataParallel, Sources appendix |
 | [DeepSpeed Ulysses, Section 1](https://arxiv.org/abs/2309.14509v2) | preprint | 2026-10-31 | ContextParallel, Sources appendix |
 | [Ring Attention, Section 3](https://arxiv.org/abs/2310.01889v4) | preprint | 2026-10-31 | ContextParallel, Sources appendix |
 | [Microscaling Data Formats for Deep Learning, Section 4.1](https://arxiv.org/abs/2310.10537v3) | preprint | 2026-10-31 | Precision, Sources appendix |
 | [Zero Bubble Pipeline Parallelism, abstract](https://arxiv.org/abs/2401.10241v1) | preprint | 2026-10-31 | PipelineParallel, Sources appendix |
-| [MegaScale, Section 6.1](https://arxiv.org/abs/2402.15627v1) | NSDI 2024, preprint | 2026-10-30, 2026-10-31 | Arithmetic, Checkpointing, FailureRates, Resuming, Sources appendix, Storage, Telemetry, WhatToMeasure |
-| [ByteCheckpoint, Section 2.1](https://arxiv.org/abs/2407.20143v4) | NSDI 2025 | 2026-10-30 | Checkpointing, Sources appendix |
+| [MegaScale, Section 6.1](https://arxiv.org/abs/2402.15627v1) | NSDI 2024 | 2026-10-30, 2026-10-31 | Arithmetic, Checkpointing, FailureRates, Resuming, Sources appendix, Storage, Telemetry, WhatToMeasure |
+| [ByteCheckpoint, Section 2.1](https://arxiv.org/abs/2407.20143v4) | NSDI 2025 | 2026-10-30, 2026-10-31 | Checkpointing, Sources appendix |
 | [Llama 3 Herd of Models v1, Table 5](https://arxiv.org/abs/2407.21783v1) | preprint | 2026-10-31 | FailureRates |
 | [v2, Table 5](https://arxiv.org/abs/2407.21783v2) | preprint | 2026-10-31 | FailureRates |
 | [Table 3](https://arxiv.org/abs/2407.21783v3) | preprint | 2026-10-30, 2026-10-31 | Arithmetic, BringUp, CapacityCost, Checkpointing, Collectives, ComposingLayouts, ContextParallel, DataParallel, FailureRates, GettingStarted, MemoryBudget, PipelineParallel, Precision, Resuming, SetMyRanks, Sources appendix, Storage, Telemetry, TensorParallel, ThreeBudgets, TrainingStep, WhatToMeasure, calculator presets |
 | [TorchTitan, Tables 3 and 4](https://arxiv.org/abs/2410.06511v3) | preprint | 2026-10-30, 2026-10-31 | ComposingLayouts, SetMyRanks, Sources appendix |
 | [FALCON, Abstract](https://arxiv.org/abs/2410.12588v1) | preprint | 2026-10-31 | Resuming |
-| [Revisiting Reliability, Section III](https://arxiv.org/abs/2410.21680v2) | preprint | 2026-10-30, 2026-10-31 | BringUp, Checkpointing, FailureRates, Sources appendix, ThreeBudgets, calculator presets |
+| [Revisiting Reliability, Section III](https://arxiv.org/abs/2410.21680v2) | HPCA 2025 | 2026-10-30, 2026-10-31 | BringUp, Checkpointing, FailureRates, Sources appendix, ThreeBudgets, calculator presets |
 | [Section 3.2](https://arxiv.org/abs/2412.19437v2) | preprint | 2026-10-30, 2026-10-31 | Arithmetic, Collectives, ComposingLayouts, ExpertParallel, MemoryBudget, PipelineParallel, Precision, SetMyRanks, Sources appendix, WhatToMeasure, calculator presets |
 | [OLMo 2, Section 3](https://arxiv.org/abs/2501.00656v3) | preprint; shorter version at COLM 2025 | 2026-10-31 | Sources appendix, WhatToMeasure |
 | [Muon is Scalable for LLM Training: one momentum buffer](https://arxiv.org/abs/2502.16982v1) | preprint | 2026-10-30, 2026-10-31 | MemoryBudget, Sources appendix, calculator presets |
