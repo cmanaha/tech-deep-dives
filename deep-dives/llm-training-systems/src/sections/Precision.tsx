@@ -1105,7 +1105,7 @@ export function Precision() {
             persists from step to step. Under mixed-precision Adam it is 16 bytes per parameter: 2 for
             16-bit weights, 2 for 16-bit gradients, and 12 for an FP32 master copy of the weights and
             Adam&apos;s two moments, the running averages of each gradient and of its square{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO (Zero Redundancy Optimizer), Section 3.1
             </Cite>
             . Every recipe above keeps that FP32 master for the update{' '}

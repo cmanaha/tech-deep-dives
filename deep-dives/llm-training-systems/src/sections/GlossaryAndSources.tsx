@@ -104,7 +104,7 @@ const sources: Source[] = [
   // Tier 3: parallelism
   { id: 76, title: 'Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism, arXiv 1909.08053v4, preprint', url: 'https://arxiv.org/abs/1909.08053v4', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 77, title: 'Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM (PTD-P), arXiv 2104.04473v5, SC 2021', url: 'https://arxiv.org/abs/2104.04473v5', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
-  { id: 78, title: 'ZeRO: Memory Optimizations Toward Training Trillion Parameter Models, arXiv 1910.02054v3, preprint', url: 'https://arxiv.org/abs/1910.02054v3', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
+  { id: 78, title: 'ZeRO: Memory Optimizations Toward Training Trillion Parameter Models, arXiv 1910.02054v3, SC 2020', url: 'https://arxiv.org/abs/1910.02054v3', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 79, title: 'ZeRO++: Extremely Efficient Collective Communication for Giant Model Training, arXiv 2306.10209v1, ICLR 2024', url: 'https://arxiv.org/abs/2306.10209v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 80, title: 'PyTorch Distributed: Experiences on Accelerating Data Parallel Training, arXiv 2006.15704v1, VLDB 2020', url: 'https://arxiv.org/abs/2006.15704v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 81, title: 'PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel, arXiv 2304.11277v2, PVLDB 16(12)', url: 'https://arxiv.org/abs/2304.11277v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
@@ -118,7 +118,7 @@ const sources: Source[] = [
   { id: 89, title: 'TorchTitan: One-stop PyTorch native solution for production ready LLM pre-training, arXiv 2410.06511v3, preprint', url: 'https://arxiv.org/abs/2410.06511v3', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   // Tier 3: fine-tuning and practitioner synthesis
   { id: 90, title: 'LoRA: Low-Rank Adaptation of Large Language Models, arXiv 2106.09685v2, preprint', url: 'https://arxiv.org/abs/2106.09685v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
-  { id: 91, title: 'QLoRA: Efficient Finetuning of Quantized LLMs, arXiv 2305.14314v1, preprint', url: 'https://arxiv.org/abs/2305.14314v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
+  { id: 91, title: 'QLoRA: Efficient Finetuning of Quantized LLMs, arXiv 2305.14314v1, NeurIPS 2023', url: 'https://arxiv.org/abs/2305.14314v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 92, title: 'Hugging Face, The Ultra-Scale Playbook: Training LLMs on GPU Clusters, at commit c93890d', url: 'https://huggingface.co/spaces/nanotron/ultrascale-playbook/tree/c93890dd4b22356ee18ed9b863e6f2d0909729bc', tier: 3, type: 'blog', accessDate: '2026-10-31' },
 ];
 
@@ -250,6 +250,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'SDK', fullForm: 'software development kit', description: 'Section 26.' },
   { acronym: 'SMDDP', fullForm: 'SageMaker distributed data parallelism library', description: 'Section 26.' },
   { acronym: 'SMP', fullForm: 'SageMaker model parallelism library', description: 'Section 20.' },
+  { acronym: 'TRL', fullForm: 'Transformers Reinforcement Learning', description: "Hugging Face's library for fine-tuning and post-training, including RL trainers. Section 16." },
   { acronym: 'UTC', fullForm: 'Coordinated Universal Time', description: "A Capacity Block's final day ends at 11:30 UTC. Section 22." },
   { acronym: 'XLA', fullForm: 'Accelerated Linear Algebra', description: 'The compiler path torch-neuronx training uses on Trainium. Section 27.' },
   // Publication venues (shown on paper citations)

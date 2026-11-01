@@ -1083,7 +1083,7 @@ export function MemoryBudget() {
         <>
           Model state. Stage 1 shards the optimizer state, 4 + 12/d bytes per parameter; stage 2 adds the
           gradients, 2 + 14/d; stage 3 adds the weights, 16/d{' '}
-          <Cite tier={3} href={ZERO} venue="preprint">
+          <Cite tier={3} href={ZERO} venue="SC 2020">
             ZeRO, Section 5
           </Cite>
         </>
@@ -1091,7 +1091,7 @@ export function MemoryBudget() {
       costs: (
         <>
           Collectives every step; stage 3 adds about 50% to data parallelism&apos;s communication volume{' '}
-          <Cite tier={3} href={ZERO} venue="preprint">
+          <Cite tier={3} href={ZERO} venue="SC 2020">
             ZeRO, Section 1
           </Cite>
           . Section 8, Data Parallelism &amp; Sharding.
@@ -1262,7 +1262,7 @@ export function MemoryBudget() {
           <Box variant="p">
             Model state is the weights, the gradients and the optimizer state, and it stays allocated for
             the whole run. Mixed-precision Adam holds 16 bytes per parameter{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Section 3.1
             </Cite>
             :
@@ -1663,7 +1663,7 @@ export function MemoryBudget() {
             all-reduce or norm computation fuses the gradients into one flattened buffer, which can be
             FP32 and comes to 6 GB for a 1.5-billion-parameter model. Fragmentation: ZeRO&apos;s authors
             saw out-of-memory errors with over 30% of memory still free in extreme cases{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Section 3.2
             </Cite>
             .
@@ -1802,7 +1802,7 @@ export function MemoryBudget() {
               </li>
               <li>
                 Optimizer rows and gradient dtype: the sources in the optimizer disclosure, with{' '}
-                <Cite tier={3} href={ZERO} venue="preprint">
+                <Cite tier={3} href={ZERO} venue="SC 2020">
                   ZeRO, Section 3.1
                 </Cite>{' '}
                 for 16 bytes and{' '}
@@ -1813,7 +1813,7 @@ export function MemoryBudget() {
               </li>
               <li>
                 Sharding stages:{' '}
-                <Cite tier={3} href={ZERO} venue="preprint">
+                <Cite tier={3} href={ZERO} venue="SC 2020">
                   ZeRO, Section 5
                 </Cite>
                 . TP, SP, recomputation and pipeline stages:{' '}

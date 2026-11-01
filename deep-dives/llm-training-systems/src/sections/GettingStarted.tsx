@@ -789,7 +789,7 @@ export function GettingStarted() {
               </Cite>
               . Model state costs 16 bytes per parameter with mixed-precision Adam (16-bit weights and gradients, a
               32-bit master copy and two moments){' '}
-              <Cite tier={3} href={ZERO} venue="preprint">
+              <Cite tier={3} href={ZERO} venue="SC 2020">
                 ZeRO, Section 3.1
               </Cite>
               , before a single activation. Llama 3.1 8B, at 8.03 billion parameters{' '}
@@ -821,7 +821,7 @@ export function GettingStarted() {
               . Ranks exchange data through collectives (all-reduce, reduce-scatter, all-gather, all-to-all, and send
               and receive), each priced as bytes over the bandwidth of the link it crosses. An all-reduce is a
               reduce-scatter followed by an all-gather{' '}
-              <Cite tier={3} href={ZERO} venue="preprint">
+              <Cite tier={3} href={ZERO} venue="SC 2020">
                 ZeRO, Section 7.1
               </Cite>
               .

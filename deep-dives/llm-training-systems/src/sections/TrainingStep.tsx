@@ -659,7 +659,7 @@ export function TrainingStep() {
               per parameter: 2 for 16-bit weights, 2 for 16-bit gradients, and 12 for the
               optimizer&apos;s FP32 (32-bit floating-point) master copy of the weights and its two
               moments, 4 bytes each{' '}
-              <Cite tier={3} href={ZERO} venue="preprint">
+              <Cite tier={3} href={ZERO} venue="SC 2020">
                 ZeRO (Zero Redundancy Optimizer), Section 3.1
               </Cite>
               . Llama 3.1 8B therefore holds 128.5 GB of model state before it reads a single token,
@@ -676,7 +676,7 @@ export function TrainingStep() {
               micro-batch&apos;s forward pass to its backward pass. Their size per layer is a
               multiple of s x b x h: sequence length times micro-batch size, the tokens in flight,
               times the hidden size{' '}
-              <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+              <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
                 Reducing Activation Recomputation, Section 4.1
               </Cite>
               , so they scale with the tokens in flight and with the number of layers.
@@ -720,11 +720,11 @@ export function TrainingStep() {
             . Which of the two dominates depends on the tokens in flight: a 1.5-billion-parameter
             GPT-2 at sequence length 1K and batch 32 needs about 60 GB of activations against at
             least 24 GB of model state{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Sections 3.1 and 3.2
             </Cite>
             . Temporary buffers and memory fragmentation claim more on top of both{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Section 3.2
             </Cite>
             , which is why section 5, The Memory Budget, plans with headroom.
@@ -735,7 +735,7 @@ export function TrainingStep() {
                 Korthikanti et al.&apos;s method adds up the bytes of every tensor the backward pass
                 reads, at 2 bytes per 16-bit element. For a GPT layer it gives sbh(34 + 5as/h), where
                 5as/h is the s x s attention matrix and its softmax{' '}
-                <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+                <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
                   Reducing Activation Recomputation, Section 4.1
                 </Cite>
                 , which a FlashAttention-style kernel never stores{' '}

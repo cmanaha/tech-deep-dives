@@ -633,7 +633,7 @@ export function ThreeBudgets() {
               <strong>Memory.</strong> About 16 bytes for every parameter before the model reads a single
               token: 2 for its 16-bit weights, 2 for its 16-bit gradients, and 12 for the optimizer state
               of mixed-precision Adam, a 32-bit master copy of the weights and two running averages{' '}
-              <Cite tier={3} href={ZERO} venue="preprint">
+              <Cite tier={3} href={ZERO} venue="SC 2020">
                 ZeRO (Zero Redundancy Optimizer), Section 3.1
               </Cite>
               . Llama 3.1 8B, with 8,030,261,248 parameters{' '}
@@ -760,7 +760,7 @@ export function ThreeBudgets() {
               forward pass during the backward pass instead of storing that layer&apos;s activations. Each
               layer then keeps 2 sbh bytes, where sbh is sequence length times micro-batch size times
               hidden size{' '}
-              <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+              <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
                 Reducing Activation Recomputation, Table 2
               </Cite>
               ; for a layer of Llama 3.1 8B, our run on one GB10 measured 34.03 to 41.03 sbh without
@@ -770,7 +770,7 @@ export function ThreeBudgets() {
                 {E1_TITLE}
               </Cite>
               . The price is one more forward pass, about 33% more FLOPs{' '}
-              <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+              <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
                 Reducing Activation Recomputation, Section 6.2
               </Cite>
               , which cost 14% to 16% more step time in our two runs of a 1B-parameter Llama shape at
@@ -785,13 +785,13 @@ export function ThreeBudgets() {
               data-parallel ranks, the processes that each train on their own share of the batch, instead
               of copying it to every one. Fully sharded, as FSDP (Fully Sharded Data Parallel) and stage 3
               of ZeRO do it, each of d ranks holds 16/d bytes per parameter{' '}
-              <Cite tier={3} href={ZERO} venue="preprint">
+              <Cite tier={3} href={ZERO} venue="SC 2020">
                 ZeRO, Section 5
               </Cite>
               : 16.1 GB per GPU of the 8B model&apos;s 128.5 GB across the eight GPUs of one p5.48xlarge,
               our arithmetic. The price is collectives every step, about 50% more communication volume
               than plain data parallelism{' '}
-              <Cite tier={3} href={ZERO} venue="preprint">
+              <Cite tier={3} href={ZERO} venue="SC 2020">
                 ZeRO, Section 1
               </Cite>{' '}
               (section 8, Data Parallelism &amp; Sharding).

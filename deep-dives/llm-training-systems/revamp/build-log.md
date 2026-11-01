@@ -68,7 +68,7 @@ section and source are named so the fact check can trace it.
   user guide 2.32.3, dcgm-exporter 4.8.4, DCGM v4.7.0, HyperPod recipes 2.0.11. Constants in
   `src/components/Cite.tsx`.
 - **The default MFU** (sections 4, 14, 22, 29, 31): 40% is a labelled assumption inside Llama 3's
-  measured BF16 range on H100; no first-party MFU for dense Llama-class training on H200 or Trainium2
+  measured BF16 range on H100; no first-party MFU for dense Llama-class training on H200, and for Trainium2 only the sample step line in AWS's Neuron 2.33 TorchTitan setup guide (16.54% on trn2.48xlarge), no first-party MFU benchmark (fc06)
   was located (wave2-step-maths, U01-5). Tokens per second at 40% depend on the FLOP count: 6N only
   gives about 8,200 (8B) and 935 (70B) per H100; TorchTitan's count at 8,192 tokens gives about 6,800
   and 820 (wave2-observability W6-9).

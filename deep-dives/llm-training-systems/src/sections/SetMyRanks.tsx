@@ -1495,7 +1495,7 @@ export function SetMyRanks() {
                 <strong>Check the model state against memory.</strong> Mixed-precision Adam keeps 16
                 bytes per parameter: 2 each for the 16-bit weights and gradients and 12 for the FP32
                 (32-bit floating point) master weights and two moments{' '}
-                <Cite tier={3} href={ZERO} venue="preprint" accessed={REGISTER_DATE}>
+                <Cite tier={3} href={ZERO} venue="SC 2020" accessed={REGISTER_DATE}>
                   ZeRO, Section 3.1
                 </Cite>
                 , or 18 with Megatron&apos;s FP32 main gradients{' '}
@@ -1519,7 +1519,7 @@ export function SetMyRanks() {
                 parallelism&apos;s communication volume while the third adds about half again: &quot;same communication
                 volume as DP&quot; for ZeRO (Zero Redundancy Optimizer) stages 1 and 2, &quot;a modest
                 50% increase&quot; for stage 3{' '}
-                <Cite tier={3} href={ZERO} venue="preprint" accessed={REGISTER_DATE}>
+                <Cite tier={3} href={ZERO} venue="SC 2020" accessed={REGISTER_DATE}>
                   ZeRO, Section 1
                 </Cite>
                 . So the order is Megatron&apos;s distributed optimizer (its ZeRO-1) or ZeRO-1 first, then
@@ -2094,7 +2094,7 @@ export function SetMyRanks() {
           <Box variant="p">
             The ZeRO-2 variant of this shape holds {gb(EX2_TP8_ZERO2.memory.totalBytes)}. The ZeRO paper counts ZeRO-2 at ZeRO-1&apos;s
             volume{' '}
-            <Cite tier={3} href={ZERO} venue="preprint" accessed={REGISTER_DATE}>
+            <Cite tier={3} href={ZERO} venue="SC 2020" accessed={REGISTER_DATE}>
               ZeRO, Section 1
             </Cite>
             , which holds at one micro-batch per step. DeepSpeed reduces ZeRO-2&apos;s partitioned

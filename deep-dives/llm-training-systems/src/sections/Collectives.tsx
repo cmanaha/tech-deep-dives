@@ -922,7 +922,7 @@ export function Collectives() {
           <Box variant="p">
             A bandwidth-optimal all-reduce runs in two steps: a reduce-scatter leaves each rank with
             the sum of one slice, and an all-gather then copies every summed slice to every rank{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Section 7.1
             </Cite>
             . Each step moves (n-1)/n of the array per rank, so the all-reduce moves 2(n-1)/n{' '}
@@ -945,7 +945,7 @@ export function Collectives() {
             , and ZeRO shards gradients and optimizer state for the same
             2 x N elements per step as plain data parallelism at one micro-batch per step, N being
             the parameter count{' '}
-            <Cite tier={3} href={ZERO} venue="preprint" accessed={REGISTER_DATE}>
+            <Cite tier={3} href={ZERO} venue="SC 2020" accessed={REGISTER_DATE}>
               ZeRO, Section 7.2.1
             </Cite>{' '}
             (section 8, Data Parallelism &amp; Sharding). Same bytes is not always the same time:

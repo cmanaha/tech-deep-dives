@@ -574,7 +574,7 @@ export function DataParallel() {
               Hugging Face model metadata, Llama 3.1 8B
             </Cite>{' '}
             and needs 16 bytes of model state for each{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Section 3.1
             </Cite>
             : 128.5 GB, 1.6 times the 80 GB of one H100{' '}
@@ -649,7 +649,7 @@ export function DataParallel() {
             </Cite>
             . With N parameters, DP sends 2N(n-1)/n gradient elements per rank per step, close to 2N
             at any useful rank count{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Section 7.1
             </Cite>
             , so more replicas barely change what each one sends. For Llama 3.1 8B&apos;s 16.06 GB
@@ -662,7 +662,7 @@ export function DataParallel() {
             mixed-precision Adam, 2 for BF16 weights, 2 for BF16 gradients and 12 for the optimizer
             state (an FP32, 32-bit floating point, master copy plus Adam&apos;s two moments, running
             averages of each gradient and of its square){' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Section 3.1
             </Cite>
             . That is the 128.5 GB that does not fit one H100.
@@ -687,7 +687,7 @@ export function DataParallel() {
             it. Stage 1 shards the optimizer state and leaves 4 + 12/d bytes per parameter on each
             rank; stage 2 adds the gradients, 2 + 14/d; stage 3 adds the weights, 16/d, so memory
             falls in proportion to the rank count{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Sections 5.1 to 5.3
             </Cite>
             .
@@ -702,7 +702,7 @@ export function DataParallel() {
             the all-reduce already was a reduce-scatter followed by an all-gather and ZeRO keeps both
             halves: it reduce-scatters the gradients so each rank updates only its own shard, then
             all-gathers the updated weights, N plus N elements per step{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Section 7.2.1
             </Cite>
             . That holds for one micro-batch per step. Under gradient accumulation DeepSpeed reduces
@@ -714,7 +714,7 @@ export function DataParallel() {
             . Stage 3 keeps no full copy of the weights to compute with, so it all-gathers them
             before the forward pass and again before the backward pass, on top of the gradient
             reduce-scatter: 3N per step, 1.5 times DP{' '}
-            <Cite tier={3} href={ZERO} venue="preprint">
+            <Cite tier={3} href={ZERO} venue="SC 2020">
               ZeRO, Section 7.2.2
             </Cite>
             . Sharding the optimizer state is free in communication; sharding the weights is what
