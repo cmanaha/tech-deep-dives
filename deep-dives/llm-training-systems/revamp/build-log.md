@@ -126,3 +126,6 @@ section and source are named so the fact check can trace it.
 | 4 Arithmetic | fc02 | 67 | WRONG 5, OVERREACH 2 | 8 | 4/4/5/5/3 | 4/4/5/5/4 |
 | 5 Memory budget | fc02 | 80 | OVERREACH 3, UNSUPPORTED 2, prose 1 | 8 | 4/4/5/5/3 | 4/4/5/5/3 |
 | 6 Precision | fc02 | 84 | WRONG 1, OVERREACH 3, UNSUPPORTED 1 | 8 | 4/4/5/5/4 | 4/4/5/5/4 |
+| 7 Collectives | fc03 | 68 | WRONG 1, UNSUPPORTED 2, OVERREACH 2, STALE 1, prose 1 | 9 | 5/4/5/5/4 | 5/4/5/5/4 |
+| 8 Data parallel | fc03 | 77 | WRONG 3, OVERREACH 2, STALE 1, prose 1 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |
+| 9 Tensor parallel | fc03 | 77 | WRONG 1, OVERREACH 1, STALE 1 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |

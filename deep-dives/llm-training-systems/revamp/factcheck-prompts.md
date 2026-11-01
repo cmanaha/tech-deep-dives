@@ -154,6 +154,9 @@ Applies to every group:
   "Xid alert rule"). Any text in your files that contradicts one of these is a correction.
 - Tier 3 venues: several papers carry "preprint" where a proceedings venue exists. Set a venue only
   when you confirm it on the proceedings or publisher page yourself; otherwise leave "preprint".
+- Venues confirmed by fc03: Reducing Activation Recomputation (2205.05198v1) is MLSys 2023 and
+  ZeRO++ (2306.10209v1) is ICLR 2024; label them so wherever your files cite them. ZeRO's SC20 venue
+  was not confirmed, so ZeRO stays "preprint" unless you confirm it yourself.
 - TorchTitan v0.4.0 compiles its SwiGLU by default (llama3/model.py L87-L89), so 41 sbh belongs to an
   eager, uncompiled SwiGLU, not to TorchTitan's default (found by fc02); correct any attribution.
 - The Llama 3.1 model metadata links and the FSx price list were pinned by the orchestrator
