@@ -78,7 +78,7 @@ Four experiments ran on one DGX Spark (one NVIDIA GB10) on 2026-10-31 with PyTor
 scripts and raw results are in `research/2026-10/` (`E1` to `E4`, `spark-scripts/`, `spark-raw/`).
 
 - **E1**, activation memory per Llama 3.1 8B layer: the formula held to within 0.1%, 34 bytes per
-  s x b x h with a fused SwiGLU, 41 with TorchTitan v0.4.0's eager SwiGLU, 2 under full
+  s x b x h with a fused SwiGLU, 41 with an eager, uncompiled SwiGLU, 2 under full
   recomputation.
 - **E2**, step time and recomputation: full recomputation cost 14% to 16% more step time, selective
   8% to 11%; MFU 28% to 29% against a measured 96 to 97 TFLOPS GEMM ceiling.

@@ -563,6 +563,9 @@ export function Precision() {
           <code>NVFP4BlockScaling</code>{' '}
           <Cite tier={1} href={TE_DEFAULT} kind="code">
             Transformer Engine v2.21.0 quantization.py L261-L273
+          </Cite>{' '}
+          <Cite tier={1} href={TE_GATES} kind="code">
+            Transformer Engine v2.21.0 quantization.py L151-L187
           </Cite>
         </>
       ),
@@ -630,8 +633,8 @@ export function Precision() {
       ),
       path: (
         <>
-          MXFP8 dense-linear training in the TorchTitan Neuron fork, through torchao with Neuron
-          MXFP8 support{' '}
+          MXFP8 dense-linear training for Qwen3 in the TorchTitan Neuron fork, through torchao with
+          Neuron MXFP8 support{' '}
           <Cite tier={1} href={TTN_MXFP8}>
             TorchTitan Neuron release-2.33.0 neuron_mxfp8.md
           </Cite>
@@ -1014,8 +1017,12 @@ export function Precision() {
               <Cite tier={1} href={TT_RELEASE}>
                 TorchTitan v0.4.0 release notes
               </Cite>
-              . At v0.4.0 TorchTitan has no FP8 path on H100 or H200, so FP8 on a p5 or p5en goes
-              through Megatron Core, Accelerate or NeMo AutoModel.
+              . The MXFP8 README at the same tag still lists TorchAO 0.18.0 or later{' '}
+              <Cite tier={1} href={TT_MXFP8}>
+                TorchTitan v0.4.0 MXFP8 README
+              </Cite>
+              ; a nightly satisfies both (our reading). At v0.4.0 TorchTitan has no FP8 path on H100 or
+              H200, so FP8 on a p5 or p5en goes through Megatron Core, Accelerate or NeMo AutoModel.
             </li>
           </ul>
           <Box variant="p">
@@ -1058,7 +1065,7 @@ export function Precision() {
             <SpaceBetween size="s">
               <Box variant="p">
                 AWS&apos;s TorchTitan Neuron fork at release-2.33.0 documents MXFP8 dense-linear
-                training on Trainium3 &quot;on torchao with Neuron MXFP8 support&quot;: attention and
+                training for Qwen3 on Trainium3 &quot;on torchao with Neuron MXFP8 support&quot;: attention and
                 feed-forward linear layers switch to MXFP8, the output head stays in BF16, and off
                 Trainium3 the converter raises a <code>ValueError</code>{' '}
                 <Cite tier={1} href={TTN_MXFP8}>
@@ -1230,7 +1237,8 @@ export function Precision() {
             <li>
               <strong>p6-b200.48xlarge, B200: MXFP8.</strong> It is Transformer Engine&apos;s default
               on Blackwell. Megatron Core&apos;s guide gives{' '}
-              <code>--fp8-format e4m3 --fp8-recipe mxfp8 --fp8-param-gather --reuse-grad-buf-for-mxfp8-param-ag</code>{' '}
+              <code>--bf16 --fp8-format e4m3 --fp8-recipe mxfp8 --fp8-param-gather --reuse-grad-buf-for-mxfp8-param-ag</code>{' '}
+              with the distributed optimizer{' '}
               <Cite tier={1} href={MG_B200}>
                 Megatron Core low-precision guide L244-L253
               </Cite>

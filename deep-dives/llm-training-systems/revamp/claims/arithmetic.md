@@ -31,12 +31,13 @@ Format: claim | source URL | register, wave 2 row or experiment
 - 8B at 8,192 tokens: 12.5% causal, 22% no-discount of per-token FLOPs (matmul basis); half at 57,256 (causal) or 28,628 tokens | derived (flopsPerToken, attentionCrossoverSequenceLength) | 01 W6; W1-11
 - 70B at 8,192 tokens: 7.2% and 13.4%; half at 106,051 or 53,026 tokens | derived | 01 W6
 - Against 6N with the full count, the term adds 13% to 27% for 8B at 8,192 tokens (section 3's figure) | derived | 01 W6; section 3 claims
+- At 8,192 tokens attention is 7% (70B, causal) to 22% (8B, no discount) of per-token FLOPs across the two sizes and counts (fact check 2026-10-31: replaces "adds a few percent to about a fifth") | derived (pct of BARS_70B[2].causalShare and BARS_8B[2].noDiscountShare) | 01 W6
 - Diagram: per-token GFLOPs and causal shares for 8B and 70B from 2K to 128K tokens (6N = 45.0 and 417 GFLOPs, matmul basis) | derived (flopsPerToken at render time) | 01 W6
 - Meta did not train on long sequences earlier because "the compute in self-attention layers grows quadratically in the sequence length" | https://arxiv.org/abs/2407.21783v3 (Section 3.4.2) | T01-8
 
 ## Which parameters, and which FLOPs, count
 
-- The input embedding costs 4 d_model FLOPs per token; the output head (de-embed) is 2 d_model n_vocab | https://arxiv.org/abs/2001.08361v1 (Table 1) | T01-15
+- The input embedding costs 4 d_model FLOPs per token (page wording corrected 2026-10-31 from "a few FLOPs per token"); the output head (de-embed) is 2 d_model n_vocab | https://arxiv.org/abs/2001.08361v1 (Table 1) | T01-15
 - Kaplan's N excludes embedding parameters and C ~ 6N leaves out the context and de-embed terms | https://arxiv.org/abs/2001.08361v1 (Section 2.1) | T01-14
 - Full count 8,030,261,248 against 7,504,658,432 in matmuls for 8B: 7% overstatement; 70B 1.5% | https://huggingface.co/api/models/meta-llama/Llama-3.1-8B/revision/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b and llama-models model.py (untied 128,256-entry head) | T01-2; T01-3; T01-4; W1-12
 - 405B: 6ND 3.80e25 full count, 3.78e25 matmul count | derived | W1-13 (SCOPE NARROWER wording used)
@@ -57,10 +58,10 @@ Format: claim | source URL | register, wave 2 row or experiment
 - H200 has the H100's compute (vendor claim) | https://www.nvidia.com/en-us/data-center/h200/ | T01-28
 - Trainium2 667 BF16 TFLOPS dense per chip (vendor claim) | https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html | T01-30; T05-17
 - 430 TFLOPS at 43% MFU implies a denominator of about 1,000 | https://arxiv.org/abs/2407.21783v3 (Table 4) | T01-6
-- TorchTitan v0.4.0 peaks: H100 SXM 989e12; trn2 79e12 x 2 per rank at LNC=2 (632 per chip at four ranks, 5% below 667); unknown GPUs fall back to A100 312e12 with a warning | https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/tools/utils.py#L111-L232 | W6-9; T03-38 (four ranks per chip)
+- TorchTitan v0.4.0 peaks: H100 SXM 989e12; trn2 79e12 x 2 per rank at LNC=2 (632 per chip at four ranks, or 79 per core over the chip's eight cores, so a TorchTitan MFU reads about 5.5% higher than one against 667, 667 / 632 = 1.055; convert with MFU against 667 = printed MFU x 632 / 667, same basis wording as section 27); unknown GPUs fall back to A100 312e12 with a warning | https://github.com/pytorch/torchtitan/blob/v0.4.0/torchtitan/tools/utils.py#L111-L232; eight cores per chip: https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/arch/neuron-hardware/trainium2.html | W6-9; T03-38 (four ranks per chip)
 - DGX Spark page lists "up to 1 PFLOP ... at FP4 precision with sparsity" and no BF16 peak (vendor claim) | https://docs.nvidia.com/dgx/dgx-spark/hardware.html | E2; U01-5
 - E2: measured BF16 GEMM ceiling 96.2 and 97.3 TFLOPS; MFU 29.0% and 27.9% (6N), 30.5% and 29.5% with causal attention | E2 | E2; U01-5
-- Under TorchTitan's A100 fallback the same run would print about 9% (29.0% x 96.2 / 312) | derived | E2; W6-9
+- Under TorchTitan's A100 fallback the same run would read about 9% at the same FLOP count (29.0% x 96.2 / 312); TorchTitan's own count adds no-discount attention, so its printed figure would be somewhat higher | derived | E2; W6-9
 - Megatron Bridge archive: LLAMA3_70B, 64 H100, FP8, 731 model TFLOP/s per GPU (26.04.01); LLAMA3_8B, 8 B200, FP8-CS, 1,576 (25.11): 36.9% and 35.0% of dense FP8 peak; rows 34% to 42%, most 34% to 38%; FLOP count not stated (vendor claim, our arithmetic) | https://docs.nvidia.com/nemo/megatron-bridge/0.7.0/performance-summary-archive.html | U01-5 (wave2-step-maths); W1-52
 - No first-party MFU for dense Llama-class training on H200 or Trainium2 located (calculator MFU description) | wave2-step-maths | U01-5; build-log "default MFU"
 
@@ -75,7 +76,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - 8B and 70B: 1.46M and 7.0M hours, about 2.9 and 1.6 times a 40%-MFU estimate at 15T; "15T+" makes them upper bounds | same card URL and #L46 | W1-15; U01-3
 - Calculator preset "Llama 3 405B check": 16,384 H100 at 41% MFU, 26.0M GPU-hours, 66 days | derived (estimateRun) | 01 W7
 - PaLM 540B: 46.2% MFU with attention, 45.7% without; 238.3K tokens/s on 6,144 TPU v4; HFU 57.8% | https://arxiv.org/abs/2204.02311v5 (Section 4.1) | T01-20; W1-32
-- MegaScale: 55.2% on 12,288 GPUs (175B, 2,048 tokens, batch 6,144) against Megatron-LM's 41.2%; ablation 5.6 of 17.6 points from PTB + SWA, 3.0 from LAMB with batch x3 | https://arxiv.org/abs/2402.15627v1 (Section 6.1, Tables 2 and 3) | T01-24; T01-25; W1-33
+- MegaScale: 55.2% on 12,288 GPUs (175B, 2,048 tokens, batch 6,144) against Megatron-LM's 41.2%; ablation 5.6 of 17.6 points from PTB + SWA, 3.0 from LAMB with batch x3 | https://arxiv.org/abs/2402.15627v1 (Section 6.1, Tables 2 and 3); venue NSDI 2024 per https://www.usenix.org/conference/nsdi24/presentation/jiang-ziheng | T01-24; T01-25; W1-33
 - Llama 3 MFU by layout: 43% (8,192 GPUs), 41% (16,384), 38% (16,384 at 131,072 tokens); attention counting not stated | https://arxiv.org/abs/2407.21783v3 (Table 4) | T01-6; U01-10
 - DeepSeek-V3: 2.788M H800 GPU-hours, 180K per trillion tokens; no MFU reported | https://arxiv.org/abs/2412.19437v2 (Section 1) | T01-26; W1-34; U01-4
 
@@ -92,4 +93,4 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Prices: On-Demand and Capacity Block lines from priceRun with region and 2026-10-30 date; a Capacity Block is charged at the rate prevailing at purchase | https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/20261029175634/us-east-1/index.csv; https://aws.amazon.com/ec2/capacityblocks/pricing/ | T05-20; T05-22; W5-9
 - p5en gives the same hours as p5 because the H200 dense peak equals the H100's (our reading) | https://www.nvidia.com/en-us/data-center/h200/ | T01-28; 01 W8
 - A2 protocol (not yet run): TorchTitan v0.4.0 FSDP 8, flat FSDP 16, HSDP 8 x 2, with and without deferred reduction, 8 x 8,192 tokens; about 3 hours; $771 On-Demand (2 x 7 x $55.04) or $2,292 Capacity Block (2 x 24 x $47.757) | RESEARCH-GUIDE.md section 5 | A2; T05-20; T05-22; build-log "AWS experiments"
-- A5 protocol (not yet run): one ml.trn2.48xlarge, TP 4 x FSDP 16 over 64 ranks, 200 steps; 3 hours at $97.52 = $293; warm-pool keep-alive 0, warm pools are billable | RESEARCH-GUIDE.md section 5; https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst; AmazonSageMaker us-east-2 price file; https://docs.aws.amazon.com/sagemaker/latest/dg/train-warm-pools.html | A5; T03-38; T05-23; T06-26
+- A5 protocol (not yet run): one ml.trn2.48xlarge, TP 4 x FSDP 16 over 64 ranks, 200 steps; the trainer prints MFU against 632 per chip (https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan/tools/utils.py#L194-L206, 79e12 x 2 per rank), converted with x 632 / 667 (matches section 27); 3 hours at $97.52 = $293; warm-pool keep-alive 0, warm pools are billable | RESEARCH-GUIDE.md section 5; https://github.com/aws-neuron/aws-neuron-sdk/blob/10832bbcc6b6920b3046a7d7aa59b6b684f6b81a/training/torchtitan/about-torchtitan-neuron.rst; AmazonSageMaker us-east-2 price file; https://docs.aws.amazon.com/sagemaker/latest/dg/train-warm-pools.html | A5; T03-38; T05-23; T06-26

@@ -22,6 +22,7 @@ import {
   E2_URL,
   GUIDE_URL,
   LLAMA_MODELS_TAG,
+  TORCHTITAN_NEURON_TAG,
   TORCHTITAN_TAG,
 } from '../components/Cite';
 import { useNarrow } from '../components/useNarrow';
@@ -91,6 +92,7 @@ const TT_METRICS = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/observab
 const TT_PEAKS = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/tools/utils.py', 'L111-L232');
 /** TorchTitan Neuron's validated layouts, and the prices and AWS pages the experiment protocols cite. */
 const TT_NEURON = SOURCES.torchtitanNeuron.url;
+const TTN_PEAK = gh('aws-neuron/torchtitan-neuron', TORCHTITAN_NEURON_TAG, 'torchtitan/tools/utils.py', 'L194-L206');
 const SAGEMAKER_PRICE_USE2 = SOURCES.sagemakerUse2.url;
 const EC2_PRICE_USE1 = SOURCES.ec2PriceUse1.url;
 const CB_PRICING = SOURCES.capacityBlocks.url;
@@ -1025,8 +1027,9 @@ export function Arithmetic() {
             <AttentionShareTable />
           </ExpandableSection>
           <Box variant="p">
-            At Llama 3&apos;s 8,192-token pre-training length the term adds a few percent to about a
-            fifth; at a 128K-token stage it is most of the work for both sizes, which is why
+            At Llama 3&apos;s 8,192-token pre-training length attention is {pct(b70.causalShare, 0)} to{' '}
+            {pct(b8.noDiscountShare, 0)} of per-token FLOPs across the two sizes and counts; at a
+            128K-token stage it is most of the work for both sizes, which is why
             Meta did not train on long sequences earlier: &quot;the compute in self-attention layers
             grows quadratically in the sequence length&quot;{' '}
             <Cite tier={3} href={LLAMA3} venue="preprint">
@@ -1054,8 +1057,8 @@ export function Arithmetic() {
             <li>
               <strong>Which N.</strong> 6N charges every parameter one multiply-add forward and two
               backward, so strictly N counts the parameters that enter a matrix multiply. The input
-              embedding is a table lookup costing a few FLOPs per token, while the output head is a full
-              matrix multiply{' '}
+              embedding is a table lookup charged 4 x d_model FLOPs per token in the forward pass, while
+              the output head is a full matrix multiply{' '}
               <Cite tier={3} href={KAPLAN} venue="preprint">
                 Scaling Laws for Neural Language Models, Table 1
               </Cite>
@@ -1181,40 +1184,45 @@ export function Arithmetic() {
           <Box variant="p">
             The denominator a framework uses is a line of code worth reading. TorchTitan v0.4.0 divides by
             989 TFLOPS on an H100. For Trainium2 it charges each rank 79 TFLOPS per NeuronCore times the
-            two NeuronCores a rank drives at LNC (logical NeuronCore configuration) 2, which is 632 per
-            chip at four ranks per chip against the 667 the Trainium2 page lists, so the same run reads
-            about 5% higher in its column (our arithmetic). A GPU missing from its table falls back to the
-            A100&apos;s 312 TFLOPS with a logged warning{' '}
+            two NeuronCores a rank drives at LNC (logical NeuronCore configuration) 2, and a GPU missing
+            from its table falls back to the A100&apos;s 312 TFLOPS with a logged warning{' '}
             <Cite tier={1} href={TT_PEAKS} kind="code">
               TorchTitan v0.4.0 tools/utils.py L111-L232
             </Cite>
-            . Our reading of the code; check the denominator in the log before trusting an MFU column on
-            new hardware.
-          </Box>
-          <Box variant="p">
-            Our DGX Spark run shows the denominator problem directly. NVIDIA&apos;s DGX Spark hardware
-            page gives one compute figure, up to 1 PFLOP (petaFLOP) at FP4 (4-bit floating point) &quot;with sparsity&quot;, and no BF16
-            peak{' '}
-            <Cite tier={1} href={SPARK_HW} kind="vendor-claim">
-              NVIDIA DGX Spark hardware overview
+            . That is 632 TFLOPS per Trainium2 chip, 79 per core over the chip&apos;s eight cores{' '}
+            <Cite tier={1} href={TRN2_SPEC} kind="vendor-claim" accessed={REGISTER_DATE}>
+              AWS Neuron documentation, Trainium2
             </Cite>
-            , so the run measured one. A sweep of BF16 matrix multiplies on one GB10 peaked at 96.2 and
-            97.3 TFLOPS in two runs, and a 1B Llama-shaped model at 2,048 tokens trained at 29.0% and
-            27.9% MFU against that measured ceiling, or 30.5% and 29.5% with causal attention FLOPs
-            counted{' '}
-            <Cite tier={0} href={E2_URL}>
-              {E2_TITLE}
-            </Cite>
-            . TorchTitan v0.4.0&apos;s table has no GB10 entry, so its log would divide the same run by
-            the A100&apos;s 312 TFLOPS and print about 9% (our arithmetic). An MFU compares with another
-            only when both use the same denominator and the same FLOP count. The GB10 itself is covered
-            in the{' '}
-            <Link href="../silicon-memory-inference/">
-              Silicon, Memory and Modern Inference dive, section 17: Edge Shared-Memory Silicon: DGX
-              Spark and Jetson
-            </Link>
-            .
+            , below the 667 the chip page lists, so a TorchTitan MFU on Trainium2 reads about 5.5% higher
+            than one against 667 (our arithmetic). Convert before comparing:{' '}
+            <code>MFU against 667 = printed MFU x 632 / 667</code>. Our reading of the code; check the
+            denominator in the log before trusting an MFU column on new hardware.
           </Box>
+          <ExpandableSection headerText="Our DGX Spark run: one step against a measured and a missing denominator">
+            <Box variant="p">
+              NVIDIA&apos;s DGX Spark hardware page gives its compute as up to 1 PFLOP (petaFLOP) at FP4
+              (4-bit floating point) &quot;with sparsity&quot; and lists no BF16 peak{' '}
+              <Cite tier={1} href={SPARK_HW} kind="vendor-claim">
+                NVIDIA DGX Spark hardware overview
+              </Cite>
+              , so the run measured one. A sweep of BF16 matrix multiplies on one GB10 peaked at 96.2
+              and 97.3 TFLOPS in two runs, and a 1B Llama-shaped model at 2,048 tokens trained at 29.0%
+              and 27.9% MFU against that measured ceiling, or 30.5% and 29.5% with causal attention FLOPs
+              counted{' '}
+              <Cite tier={0} href={E2_URL}>
+                {E2_TITLE}
+              </Cite>
+              . TorchTitan v0.4.0&apos;s table has no GB10 entry, so its log would divide the same run by
+              the A100&apos;s 312 TFLOPS: about 9% at the same FLOP count (our arithmetic). An MFU
+              compares with another only when both use the same denominator and the same FLOP count. The
+              GB10 itself is covered in the{' '}
+              <Link href="../silicon-memory-inference/">
+                Silicon, Memory and Modern Inference dive, section 17: Edge Shared-Memory Silicon: DGX
+                Spark and Jetson
+              </Link>
+              .
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             Calculator A fixes BF16, the precision of Llama 3&apos;s measured range. For FP8 (8-bit
             floating point), NVIDIA&apos;s Megatron Bridge performance archive lists model TFLOPS per
@@ -1280,13 +1288,13 @@ export function Arithmetic() {
             spends beyond steady 8K pre-training: a long-context stage at 38% MFU, annealing,
             post-training and work lost to interruptions (our reading).
           </Box>
-          <Box variant="p">
-            The same card&apos;s 8B and 70B hours, 1.46M and 7.0M, are about 2.9 and 1.6 times a
-            40%-MFU estimate at 15T tokens. The card gives the tokens as &quot;15T+&quot;, so those
-            ratios are upper bounds. With the card silent on what its hours include, the 405B ratio is a
-            single data point. Calculator A applies no overhead factor, so read its hours as the
-            steady-state floor of a run.
-          </Box>
+          <ExpandableSection headerText="The same card's 8B and 70B hours">
+            <Box variant="p">
+              The same card&apos;s 8B and 70B hours, 1.46M and 7.0M, are about 2.9 and 1.6 times a
+              40%-MFU estimate at 15T tokens. The card gives the tokens as &quot;15T+&quot;, so those
+              ratios are upper bounds.
+            </Box>
+          </ExpandableSection>
           <ExpandableSection headerText="Published MFU, and what each figure counts">
             <ul>
               <li>
@@ -1304,7 +1312,7 @@ export function Arithmetic() {
                 256-GPU ablation, model changes (a parallel transformer block and sliding-window
                 attention) supplied 5.6 of the 17.6 points gained, and a tripled batch, made possible
                 by a change of optimizer, 3.0{' '}
-                <Cite tier={3} href={MEGASCALE} venue="preprint">
+                <Cite tier={3} href={MEGASCALE} venue="NSDI 2024">
                   MegaScale, Section 6.1
                 </Cite>
                 .
@@ -1327,6 +1335,11 @@ export function Arithmetic() {
               </li>
             </ul>
           </ExpandableSection>
+          <Box variant="p">
+            With the card silent on what its hours include, the 405B ratio is a single data point.
+            Calculator A applies no overhead factor, so read its hours as the steady-state floor of a
+            run.
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -1435,8 +1448,17 @@ export function Arithmetic() {
                 on one trn2.48xlarge, TP (tensor parallelism) 4 x FSDP 16 across 64 ranks{' '}
                 <Cite tier={1} href={TT_NEURON} accessed={REGISTER_DATE}>
                   aws-neuron-sdk v2.33.0, TorchTitan Neuron overview
+                </Cite>{' '}
+                (
+                <Link external href={GUIDE_URL}>
+                  research guide, section 5
+                </Link>
+                ). The trainer prints MFU against 632 per chip{' '}
+                <Cite tier={1} href={TTN_PEAK} kind="code">
+                  torchtitan-neuron release-2.33.0 tools/utils.py L194-L206
                 </Cite>
-                .
+                , so the run would convert it with the formula in Divide by the dense peak at the training
+                precision, above.
               </Box>
               <Box variant="p">
                 <strong>On what.</strong> A SageMaker training job on one ml.trn2.48xlarge in

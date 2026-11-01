@@ -122,6 +122,8 @@ const TE_CE_DTYPE = gh(
 );
 
 const TT_ACTIVATION = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/models/common/activation.py', 'L166-L177');
+const TT_LLAMA_COMPILE = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/models/llama3/model.py', 'L87-L89');
+const TT_COMPILE_REGION = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/models/common/activation.py', 'L34-L66');
 const TT_BENCH = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'docs/benchmarks/llama3_h100_202412_torchtitan.md', 'L10-L53');
 
 const PT_MUON = gh('pytorch/pytorch', PYTORCH_TAG, 'torch/optim/_muon.py', 'L160-L163');
@@ -131,7 +133,7 @@ const PT_ALLOC_CONF = gh('pytorch/pytorch', PYTORCH_TAG, 'docs/source/notes/cuda
 const PT_EXPANDABLE = gh('pytorch/pytorch', PYTORCH_TAG, 'docs/source/notes/cuda.md', 'L630-L662');
 const PT_MEMORY_API = gh('pytorch/pytorch', PYTORCH_TAG, 'torch/cuda/memory.py', 'L543-L606');
 
-const BNB_STATE = gh('bitsandbytes-foundation/bitsandbytes', '0.50.2', 'bitsandbytes/optim/optimizer.py', 'L491-L530');
+const BNB_STATE = gh('bitsandbytes-foundation/bitsandbytes', '0.50.2', 'bitsandbytes/optim/optimizer.py', 'L403-L590');
 
 /** Conditions every E1 and E2 figure carries. */
 const E1_TITLE = 'E1: activation memory per Llama 3.1 8B layer on one GB10, PyTorch 2.15.0, one run';
@@ -256,7 +258,7 @@ const W70_FP32_GRADS = memoryBudget({
   ...worked('70b-tp8').input,
   optimizer: { row: 'adamMixed', gradientDtype: 'fp32' },
 });
-/** 8B FSDP 8 with TorchTitan v0.4.0's eager SwiGLU (41 sbh). */
+/** 8B FSDP 8 with an eager SwiGLU, F.silu(gate) * up (41 sbh). */
 const W8_EAGER = memoryBudget(onH100({ zero: { stage: 3, degree: 8 }, activations: { swiglu: 'eager' } }));
 /** 8B activations for one sequence across 32 layers, fused and eager. */
 const ACT8_FUSED = memoryBudget(onH100({}));
@@ -571,7 +573,7 @@ function LeverTable({ rows }: { rows: LeverRow[] }) {
 function E1Table() {
   const rows = [
     { setting: 'Fused SwiGLU', saved: '1.142', coef: '34.03' },
-    { setting: "Eager SwiGLU (TorchTitan v0.4.0's), under any of three attention backends", saved: '1.377', coef: '41.03' },
+    { setting: 'Eager SwiGLU (F.silu(gate) * up), under any of three attention backends', saved: '1.377', coef: '41.03' },
     { setting: 'Full recomputation, either SwiGLU', saved: '0.067', coef: '2.00' },
   ];
   return (
@@ -684,7 +686,7 @@ const LOGITS_OPTIONS: Array<{ id: LogitsMode; label: string }> = [
 
 const SWIGLU_OPTIONS: Array<{ id: 'fused' | 'eager'; label: string }> = [
   { id: 'fused', label: 'Fused SwiGLU (34 sbh for 8B)' },
-  { id: 'eager', label: "Eager SwiGLU, TorchTitan v0.4.0's (41 sbh for 8B)" },
+  { id: 'eager', label: 'Eager SwiGLU, F.silu(gate) * up (41 sbh for 8B)' },
 ];
 
 const DEGREE_OPTIONS = [1, 2, 4, 8].map((n) => ({ value: String(n), label: String(n) }));
@@ -1123,11 +1125,11 @@ export function MemoryBudget() {
       ),
       divides: (
         <>
-          Activations, to 2 sbh per layer plus one layer&apos;s full set while it is recomputed{' '}
+          Activations, to 2 sbh per layer{' '}
           <Cite tier={3} href={KORTHIKANTI} venue="preprint">
             Reducing Activation Recomputation, Table 2
           </Cite>
-          ; our run measured 2.00 sbh{' '}
+          , plus one layer&apos;s full set while it is recomputed (our reading); our run measured 2.00 sbh{' '}
           <Cite tier={0} href={E1_URL}>
             {E1_TITLE}
           </Cite>
@@ -1267,12 +1269,13 @@ export function MemoryBudget() {
           </Box>
           <ul>
             <li>
-              2 bytes for the BF16 (bfloat16: 16 bits with FP32&apos;s exponent range) working weights that the
-              forward and backward passes read;
+              2 bytes for the 16-bit working weights that the forward and backward passes read, FP16
+              (16-bit floating point) in the paper; BF16 (bfloat16: 16 bits with the exponent range of FP32,
+              32-bit floating point) is the same size;
             </li>
-            <li>2 bytes for the BF16 gradients;</li>
+            <li>2 bytes for the 16-bit gradients;</li>
             <li>
-              12 bytes for the optimizer: an FP32 (32-bit floating point) master copy of the weights and
+              12 bytes for the optimizer: an FP32 master copy of the weights and
               Adam&apos;s two moments, the running averages of each gradient and of its square, at 4 bytes each.
             </li>
           </ul>
@@ -1306,9 +1309,9 @@ export function MemoryBudget() {
           </Box>
           <Box variant="p">
             The optimizer owns 12 of the 16 bytes, so the optimizer is where alternatives move the total.
-            Each row below keeps BF16 weights and an FP32 master copy of them. The training framework
-            keeps that master; the optimizer libraries hold only their own state (our reading of the
-            code in the disclosure below). Megatron Core&apos;s opt-in precision-aware optimizer can store
+            Each row below keeps BF16 weights and an FP32 master copy of them. For the Muon, 8-bit Adam
+            and Adafactor rows the training framework keeps that master and the library holds only its
+            own state (our reading of the code in the disclosure below). Megatron Core&apos;s opt-in precision-aware optimizer can store
             the master as a 16-bit remainder beside the BF16 weight, 2 bytes instead of 4, and the moments
             in BF16 or FP8 (8-bit floating point){' '}
             <Cite tier={1} href={MG_PRECISION_CONFIG} kind="code">
@@ -1360,7 +1363,7 @@ export function MemoryBudget() {
                   about 2.03 bytes, keeps FP32 states for tensors under 4,096 elements, and updates the
                   parameter in place without a master copy of its own{' '}
                   <Cite tier={1} href={BNB_STATE} kind="code">
-                    bitsandbytes 0.50.2 optimizer.py L491-L530
+                    bitsandbytes 0.50.2 optimizer.py L403-L590
                   </Cite>
                   ; the paper&apos;s blocks are 2,048 values.
                 </li>
@@ -1435,7 +1438,15 @@ export function MemoryBudget() {
               <Cite tier={1} href={TT_ACTIVATION} kind="code">
                 TorchTitan v0.4.0 activation.py L166-L177
               </Cite>
-              . Whether <code>torch.compile</code> brings TorchTitan back to 34 was not tested.
+              . TorchTitan v0.4.0&apos;s Llama 3 config wraps that function in a <code>torch.compile</code>{' '}
+              region by default, <code>fused_binary_activation</code> in <code>local_compile_regions</code>{' '}
+              <Cite tier={1} href={TT_LLAMA_COMPILE} kind="code">
+                TorchTitan v0.4.0 llama3/model.py L87-L89
+              </Cite>{' '}
+              <Cite tier={1} href={TT_COMPILE_REGION} kind="code">
+                TorchTitan v0.4.0 activation.py L34-L66
+              </Cite>
+              . Whether that compiled region stores 34 sbh or 41 was not tested.
             </li>
           </ul>
           <Box variant="p">
@@ -1586,7 +1597,7 @@ export function MemoryBudget() {
           <Box variant="p">
             The gradient dtype moves a total as far as a lever does. The same 70B layout with FP32 main
             gradients is {fmtGB(W70_FP32_GRADS.totalBytes)} per GPU, against 80 GB, and the 8B FSDP layout
-            with TorchTitan&apos;s eager SwiGLU is {fmtGB(W8_EAGER.totalBytes)}, above the target (all
+            with an eager SwiGLU is {fmtGB(W8_EAGER.totalBytes)}, above the target (all
             figures Calculator B&apos;s).
           </Box>
           <ExpandableSection headerText="What recomputation cost on one GB10">
@@ -1713,7 +1724,7 @@ export function MemoryBudget() {
               <Box variant="p">
                 <strong>Prediction, our reading and not a result.</strong> Calculator B gives{' '}
                 {fmtGB(w8fsdp.total)} per GPU for FSDP 8 at micro-batch 1 with a fused SwiGLU and{' '}
-                {fmtGB(W8_EAGER.totalBytes)} with TorchTitan&apos;s eager one, without recomputation and with
+                {fmtGB(W8_EAGER.totalBytes)} with an eager one, without recomputation and with
                 an upcasting loss. The measured peak should land above whichever applies, by an amount no
                 source we read predicts.
               </Box>

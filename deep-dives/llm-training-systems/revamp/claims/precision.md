@@ -62,7 +62,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Megatron Core FP8 is off unless the format is set | MG megatron/core/transformer/transformer_config.py#L664-L676 | T03-19 (newly read: config default lines)
 - Accelerate v1.15.0 runs FP8 on two actively maintained backends, Transformer Engine and torchao | https://github.com/huggingface/accelerate/blob/v1.15.0/docs/source/usage_guides/low_precision_training.md#L33 | T03-41
 - NeMo AutoModel v0.7.0 lists FP8 through Transformer Engine and torchao | https://github.com/NVIDIA-NeMo/Automodel/blob/v0.7.0/README.md#L168-L169 | T03-28
-- TorchTitan v0.4.0 (released 2026-10-28) removed legacy Float8; its formats are MXFP8 and experimental NVFP4, Blackwell only; MXFP8 needs a TorchAO nightly because TorchAO 0.18 lacks the kernels | https://github.com/pytorch/torchtitan/releases/tag/v0.4.0 | T03-13; W3-14; W1-46
+- TorchTitan v0.4.0 (released 2026-10-28) removed legacy Float8; its formats are MXFP8 and experimental NVFP4, Blackwell only; MXFP8 needs a TorchAO nightly because TorchAO 0.18 lacks the kernels (release notes); the MXFP8 README at the same tag lists TorchAO 0.18.0 or later (README L25-L29), a doc-versus-doc conflict the page now names; a nightly satisfies both [our reading] | https://github.com/pytorch/torchtitan/releases/tag/v0.4.0 | T03-13; W3-14; W1-46
 - So FP8 on p5 or p5en goes through Megatron Core, Accelerate or NeMo AutoModel | derived from the four rows above | T03-13; T03-19; T03-28; T03-41
 - Trainium2 Tensor Engine takes cFP8, FP16, BF16, TF32 and FP32, with stochastic rounding | NS about-neuron/arch/neuron-hardware/neuron-core-v3.rst#L25-L29 | T01-51; W1-47
 - cFP8 is 8-bit floating point with configurable range and precision; programmable rounding mode includes stochastic rounding | NS about-neuron/arch/neuron-features/data-types.rst#L98-L105 | newly read (expansion of cFP8)
@@ -72,7 +72,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - On a trn2.48xlarge at Neuron 2.33 the PyTorch path trains in BF16 although the chip lists an FP8 peak | derived from the two rows above | W3-36
 - Trainium3 keeps Trainium2's BF16 peak (671 against 667) and roughly doubles the 8-bit peak, 1,299 FP8 to 2,517 MXFP8 (vendor specification) | NS about-neuron/arch/neuron-hardware/trainium3.rst#L29-L79 | T05-18; W5-27 (wording fix applied: compares Trn2 FP8 with Trn3 MXFP8)
 - A Trainium3 run collects the gain only in MXFP8 and MXFP4, which share the 2,517 peak (labelled our reading) | NS trainium3.rst#L29-L79 | T05-18 [SPECULATIVE: our reading]
-- (Expandable) TorchTitan Neuron fork documents MXFP8 dense-linear training on Trainium3 through torchao with Neuron MXFP8 support; attention and FFN linears in MXFP8, output head BF16; ValueError off Trainium3 | https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan_neuron/docs/neuron_mxfp8.md#L1-L16 | T03-53; C03-10
+- (Expandable) TorchTitan Neuron fork documents MXFP8 dense-linear training for Qwen3 on Trainium3 through torchao with Neuron MXFP8 support; attention and FFN linears in MXFP8, output head BF16; ValueError off Trainium3 | https://github.com/aws-neuron/torchtitan-neuron/blob/release-2.33.0/torchtitan_neuron/docs/neuron_mxfp8.md#L1-L16 | T03-53; C03-10
 - (Expandable) TorchNeuron 2.33.0 release notes: "does not include TorchAO integration or composite MXFP8 data type support" | NS release-notes/components/torchneuron.rst#L186-L187 | T03-36; C03-10
 - (Expandable) Whether the fork's Trainium3 path runs on public 2.33.0 packages was not settled | none | C03-10 open; U03-4
 
@@ -97,7 +97,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 - trn2.48xlarge: BF16, TorchNeuron's training baseline; FP8 and MXFP8 require Trainium3 | NS torch/about-pytorch-neuron.rst#L117-L118 (cited above) | T03-36; W3-36
 - p5, p5e, p5en: Megatron Core's fastest stable FP8 on H100 is `--bf16 --fp8-format hybrid --fp8-recipe tensorwise --fp8-param-gather` with the distributed optimizer; `delayed` when optimizer state is offloaded to CPU | MG docs/user-guide/features/low_precision_training.md#L232-L242 | T03-19 (newly read: H100 config)
-- p6-b200: MXFP8, Transformer Engine's default on Blackwell; Megatron Core `--fp8-format e4m3 --fp8-recipe mxfp8 --fp8-param-gather --reuse-grad-buf-for-mxfp8-param-ag` | MG docs/user-guide/features/low_precision_training.md#L244-L253 | T01-45; T03-19 (newly read: B200 config)
+- p6-b200: MXFP8, Transformer Engine's default on Blackwell; Megatron Core `--bf16 --fp8-format e4m3 --fp8-recipe mxfp8 --fp8-param-gather --reuse-grad-buf-for-mxfp8-param-ag` with the distributed optimizer (`--use-distributed-optimizer`, guide L252) | MG docs/user-guide/features/low_precision_training.md#L244-L253 | T01-45; T03-19 (newly read: B200 config)
 - NVFP4 is demonstrated so far in its vendor's run | https://arxiv.org/abs/2509.25149v2 | T01-50; hedge above
 - Closing: keep a short BF16 comparison run; keep first and last blocks in BF16 if the lower format drifts; plan at the BF16 figure, 297,000 to about 148,500 at most | restates rows above | W1-25
 
@@ -107,9 +107,9 @@ Format: claim | source URL | register, wave 2 row or experiment
 - H100/H200 formats: DelayedScaling (default), Float8CurrentScaling, Float8BlockScaling (CUDA 12.9 or later) | TE transformer_engine/pytorch/quantization.py#L151-L187 | T01-45
 - H100/H200 paths: Megatron `tensorwise`, `delayed`, `blockwise`; Accelerate or AutoModel via TE or torchao; TorchTitan v0.4.0 no FP8 path | MG low_precision_training.md#L39-L46; https://github.com/pytorch/torchtitan/releases/tag/v0.4.0 | T03-19; T03-13; T03-41; T03-28
 - B200: 2,250 BF16, 4,500 FP8, 9,000 FP4 dense TFLOPS per GPU, our arithmetic from eight-GPU board figures (sparse / 2 / 8) (vendor specification) | https://www.nvidia.com/en-us/data-center/hgx/ | T05-15 (FP4 newly read from the HGX page)
-- B200 adds MXFP8BlockScaling (default) and NVFP4BlockScaling | TE transformer_engine/pytorch/quantization.py#L261-L273 | T01-45
+- B200 adds MXFP8BlockScaling (default) and NVFP4BlockScaling | TE transformer_engine/pytorch/quantization.py#L261-L273 (default); #L151-L187 (NVFP4 gate, compute capability 10.0, L173-L177) | T01-45
 - B200 paths: Megatron `mxfp8`, `--fp4-format e2m1` for NVFP4 on Transformer Engine 2.7.0.dev0 or later; TorchTitan MXFP8 with TorchAO nightly, experimental NVFP4 | MG low_precision_training.md#L39-L46; TorchTitan release notes | T03-19; T03-13
 - Trainium2: 667 BF16 and 1,299 FP8 on the chip page; per-core 79 and 158 x 8 = 632 and 1,264; neither page says why | NS trainium2.rst#L7-L27; NS neuron-core-v3.rst#L25-L29 | T05-17; T01-51; C01-4; U01-13 open (hedged)
 - Trainium2 formats and path: as in the section body | NS neuron-core-v3.rst#L25-L29; NS about-pytorch-neuron.rst#L117-L118 | T01-51; T03-36
 - Trainium3: 671 BF16/FP16/TF32 and 2,517 MXFP8/MXFP4 against Trainium2's 1,299 FP8; 2,517 / 671 = 3.75 times, our arithmetic | NS trainium3.rst#L29-L79 | T05-18; W5-27
-- Trainium3 path: MXFP8 dense-linear training in the TorchTitan Neuron fork, public-package status open | torchtitan-neuron release-2.33.0 neuron_mxfp8.md#L1-L16 | T03-53; C03-10 open
+- Trainium3 path: MXFP8 dense-linear training for Qwen3 in the TorchTitan Neuron fork, public-package status open | torchtitan-neuron release-2.33.0 neuron_mxfp8.md#L1-L16 | T03-53; C03-10 open

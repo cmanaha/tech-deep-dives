@@ -315,7 +315,7 @@ export function GlossaryAndSources() {
             <li>
               <Box variant="p">
                 Activation memory per Llama 3.1 8B layer matched the formula to within 0.1%: 34 bytes per s x b
-                x h with a fused SwiGLU, 41 with TorchTitan v0.4.0&apos;s eager SwiGLU, and 2 under full
+                x h with a fused SwiGLU, 41 with an eager, uncompiled SwiGLU, and 2 under full
                 recomputation, at every sequence length tried (sections 3 and 5){' '}
                 <Cite tier={0} href={E1_URL}>
                   E1 log: activation memory per Llama 3.1 8B layer

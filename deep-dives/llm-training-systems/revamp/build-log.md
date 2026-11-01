@@ -73,7 +73,8 @@ section and source are named so the fact check can trace it.
   gives about 8,200 (8B) and 935 (70B) per H100; TorchTitan's count at 8,192 tokens gives about 6,800
   and 820 (wave2-observability W6-9).
 - **Activation coefficient** (sections 3, 5, 14): 34 sbh per layer with a fused SwiGLU, 41 sbh with
-  TorchTitan v0.4.0's eager `F.silu(gate) * up`, 2 sbh with full recomputation, all measured on one
+  an eager, uncompiled `F.silu(gate) * up` (TorchTitan v0.4.0 compiles its SwiGLU by default,
+  llama3/model.py L87-L89, and whether the compiled path stores 34 or 41 sbh was not tested; fc02), 2 sbh with full recomputation, all measured on one
   GB10 in E1; the logits' transient peak (8.5 GB forward, 11.6 GB backward at 8K) is above their 4.2
   GB saved size.
 - **Recomputation price** (sections 4, 5): FLOP cost about 33%; E2 measured +14% to +16% step time
