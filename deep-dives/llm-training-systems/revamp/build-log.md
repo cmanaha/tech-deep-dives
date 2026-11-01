@@ -129,3 +129,6 @@ section and source are named so the fact check can trace it.
 | 7 Collectives | fc03 | 68 | WRONG 1, UNSUPPORTED 2, OVERREACH 2, STALE 1, prose 1 | 9 | 5/4/5/5/4 | 5/4/5/5/4 |
 | 8 Data parallel | fc03 | 77 | WRONG 3, OVERREACH 2, STALE 1, prose 1 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |
 | 9 Tensor parallel | fc03 | 77 | WRONG 1, OVERREACH 1, STALE 1 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |
+| 10 Pipeline | fc04 | 78 | STALE 2, prose 1, WRONG 1 (claims file only) | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
+| 11 Context parallel | fc04 | 56 | UNSUPPORTED 2, OVERREACH 1 | 9 | 5/4/5/5/3 | 5/4/5/5/4 |
+| 12 Expert parallel | fc04 | 64 | WRONG 3, UNSUPPORTED 2, OVERREACH 2 | 9 | 4/4/5/5/3 | 4/4/5/5/4 |
