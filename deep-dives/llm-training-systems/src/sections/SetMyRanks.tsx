@@ -98,7 +98,8 @@ const MG_HEADS_CHECK = mg('megatron/core/transformer/transformer_config.py', 'L1
 const MG_NUM_MICROBATCHES = mg('megatron/core/num_microbatches_calculator.py', 'L381-L388');
 const MG_UNEVEN_FLAGS = mg(MG_ARGS, 'L3041-L3056');
 const MG_ACCOUNT_FOR = mg('megatron/core/transformer/transformer_config.py', 'L151-L157');
-const MG_MOE_WORLD = mg(MG_ARGS, 'L1567-L1571');
+const MG_DENSE_WORLD = mg(MG_ARGS, 'L468-L495');
+const MG_EXPERT_WORLD = mg('megatron/core/parallel_state.py', 'L946-L960');
 const MG_MOE_README = 'megatron/core/transformer/moe/README.md';
 
 const BRIDGE_SHA = '04ce2b3efd6f2e387fc244e9f37afd0a1f7952fb';
@@ -119,7 +120,7 @@ const NEMO_3_README = gh('NVIDIA/NeMo', NEMO_TAG, 'README.md');
 const BRIDGE_TREE = ghTree('NVIDIA-NeMo/Megatron-Bridge', BRIDGE_SHA);
 
 const PLAYBOOK = 'https://huggingface.co/spaces/nanotron/ultrascale-playbook/tree/c93890dd4b22356ee18ed9b863e6f2d0909729bc';
-const CALCULON_CODE = gh('calculon-ai/calculon', 'c2aba03022c4870c62a42f127f7e2b97c2ce7de2', 'calculon/llm.py');
+const CALCULON_CODE = gh('calculon-ai/calculon', 'c2aba03022c4870c62a42f127f7e2b97c2ce7de2', 'calculon/llm/llm.py');
 const CALCULON_SC23 =
   'https://web.archive.org/web/2024/https://sc23.supercomputing.org/proceedings/tech_paper/tech_paper_pages/pap552.html';
 
@@ -1426,7 +1427,7 @@ export function SetMyRanks() {
         header={
           <Header
             variant="h1"
-            description="Turn a model, a cluster, a memory target and a global batch into two or three layouts worth measuring: for Llama 3.1 70B on four p5en.48xlarge the obvious data-parallel layouts fail the memory check, and eight-way tensor parallelism with four data-parallel replicas fits at 85 GB per GPU with no pipeline and no recomputation (Megatron Core core_v0.20.0, TorchTitan v0.4.0, PyTorch v2.15.0, DeepSpeed v0.19.9 and NeMo v2.7.3, read 2026-10-31, and our DGX Spark runs)"
+            description="Turn a model, a cluster, a memory target and a global batch into two or three layouts worth measuring: for Llama 3.1 70B on four p5en.48xlarge the obvious data-parallel layouts fail the memory check or fit only by recomputing, and eight-way tensor parallelism with four data-parallel replicas fits at 85 GB per GPU with no pipeline and no recomputation (Megatron Core core_v0.20.0, TorchTitan v0.4.0, PyTorch v2.15.0, DeepSpeed v0.19.9 and NeMo v2.7.3, read 2026-10-31, and our DGX Spark runs)"
           >
             14. Set My Ranks: The Sizing Procedure
           </Header>
@@ -1492,8 +1493,8 @@ export function SetMyRanks() {
             <li>
               <Box variant="p">
                 <strong>Check the model state against memory.</strong> Mixed-precision Adam keeps 16
-                bytes per parameter: BF16 (bfloat16) weights and gradients, and FP32 (32-bit floating
-                point) master weights and two moments{' '}
+                bytes per parameter: 2 each for the 16-bit weights and gradients and 12 for the FP32
+                (32-bit floating point) master weights and two moments{' '}
                 <Cite tier={3} href={ZERO} venue="preprint" accessed={REGISTER_DATE}>
                   ZeRO, Section 3.1
                 </Cite>
@@ -1501,7 +1502,8 @@ export function SetMyRanks() {
                 <Cite tier={1} href={MG_DIST_OPT}>
                   Megatron Core dist_optimizer.md L14-L20
                 </Cite>
-                . For Llama 3.1 70B, with 70,553,706,496 parameters{' '}
+                . The ZeRO paper&apos;s 16-bit format is FP16; BF16 (bfloat16) is the same size. For
+                Llama 3.1 70B, with 70,553,706,496 parameters{' '}
                 <Cite tier={1} href={HF_70B} accessed={REGISTER_DATE}>
                   Hugging Face model metadata, Llama 3.1 70B
                 </Cite>
@@ -1513,8 +1515,8 @@ export function SetMyRanks() {
               <Box variant="p">
                 <strong>Shard the model state over DP before adding model parallelism</strong> (TP and
                 PP, the dimensions that split the model itself). Sharding splits the state across ranks
-                instead of copying it, and its first two stages keep data parallelism&apos;s
-                communication volume while the third adds about half again: &quot;same communication
+                instead of copying it, and at one micro-batch per step its first two stages keep data
+                parallelism&apos;s communication volume while the third adds about half again: &quot;same communication
                 volume as DP&quot; for ZeRO (Zero Redundancy Optimizer) stages 1 and 2, &quot;a modest
                 50% increase&quot; for stage 3{' '}
                 <Cite tier={3} href={ZERO} venue="preprint" accessed={REGISTER_DATE}>
@@ -1603,9 +1605,13 @@ export function SetMyRanks() {
             <li>
               <Box variant="p">
                 <strong>Check divisibility.</strong> TP x CP x PP x DP must equal the world size for the
-                dense layers, and ETP x EP x EDP x PP for the expert layers{' '}
-                <Cite tier={1} href={MG_MOE_WORLD} kind="code">
-                  Megatron-LM arguments.py L1567-L1571
+                dense layers{' '}
+                <Cite tier={1} href={MG_DENSE_WORLD} kind="code">
+                  Megatron-LM arguments.py L468-L495
+                </Cite>
+                , and ETP x EP x EDP x PP for the expert layers{' '}
+                <Cite tier={1} href={MG_EXPERT_WORLD} kind="code">
+                  Megatron Core parallel_state.py L946-L960
                 </Cite>
                 . Each degree must divide what it splits: the attention heads by TP, with the KV heads a
                 multiple or a divisor of it{' '}
@@ -1647,9 +1653,9 @@ export function SetMyRanks() {
                 <Cite tier={1} href={EC2_AC} accessed={REGISTER_DATE}>
                   EC2 accelerated computing instance specifications
                 </Cite>
-                , because NCCL (NVIDIA Collective Communications Library) spreads a collective&apos;s
-                crossing over all of an instance&apos;s network cards. That per-instance count is our
-                reading, supported by a sample AWS publishes in which 16 GiB all-reduced across two
+                . That per-instance count is our reading of how NCCL (NVIDIA Collective Communications
+                Library) spreads a collective&apos;s crossing over an instance&apos;s network cards
+                (section 7), supported by a sample AWS publishes in which 16 GiB all-reduced across two
                 p5.48xlarge in 66 ms{' '}
                 <Cite tier={2} href={ADT_P5_SAMPLE} kind="vendor-claim">
                   awsome-distributed-training nccl-tests README L206-L243
@@ -1699,16 +1705,17 @@ export function SetMyRanks() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The published planners differ in what they search, and they disagree on where to start. For Llama 3.1 8B at 8,192 tokens, NeMo&apos;s heuristics
+            The published planners differ in what they search, and they disagree on where to start. For an 8B model at 8,192 tokens, NeMo&apos;s heuristics
             start at TP 2 or 4{' '}
             <Cite tier={1} href={NEMO_HEURISTIC} kind="code" accessed={REGISTER_DATE}>
               NeMo v2.7.3 training_config.py L364-L398
             </Cite>
-            , TorchTitan published FSDP 8 on one node{' '}
+            , TorchTitan published FSDP 8 on one node for Llama 3.1 8B, at a sequence length its
+            table does not state{' '}
             <Cite tier={1} href={TT_BENCH}>
               TorchTitan Llama 3 H100 benchmarks
             </Cite>
-            , and Megatron Core&apos;s guide lists CP 2 on 8 GPUs{' '}
+            , and Megatron Core&apos;s guide lists CP 2 on 8 GPUs for Llama 3 8B{' '}
             <Cite tier={1} href={mg(MG_GUIDE, 'L155-L158')}>
               Megatron Core parallelism guide L155-L158
             </Cite>
@@ -1733,7 +1740,7 @@ export function SetMyRanks() {
                   NeMo v2.7.3 training_config.py L72-L77
                 </Cite>
                 . It was not located in NVIDIA&apos;s current NeMo repositories during this research: the
-                NVIDIA/NeMo repository became speech-only at v3.0.0{' '}
+                NVIDIA/NeMo repository focuses on audio, speech and multimodal LLMs at v3.0.0{' '}
                 <Cite tier={1} href={NEMO_3_README} accessed={REGISTER_DATE}>
                   NeMo v3.0.0 README
                 </Cite>
@@ -1771,15 +1778,16 @@ export function SetMyRanks() {
           <ExpandableSection headerText="Cross-checking an estimate with Calculon">
             <SpaceBetween size="s">
               <Box variant="p">
-                For an independent estimate of dense layouts, Calculon models TP, PP and DP with ZeRO-1,
-                interleaving and recomputation analytically, returning step time and memory{' '}
+                For an independent estimate of dense layouts, Calculon is a parameterized analytical
+                performance model of transformer training{' '}
                 <Cite tier={3} href={CALCULON_SC23} venue="SC 2023">
                   Calculon, SC23 technical paper
                 </Cite>
                 . Its code takes the TP, PP and DP degrees, per-dimension networks, micro-batch size,
-                recomputation mode, interleaving and optimizer sharding{' '}
+                recomputation mode, interleaving and optimizer sharding, and estimates step time and
+                memory{' '}
                 <Cite tier={1} href={CALCULON_CODE} kind="code">
-                  Calculon llm.py at the sc23 tag
+                  Calculon llm/llm.py at the sc23 tag
                 </Cite>
                 . Our reading of that code: it does not model CP, EP or FSDP-style parameter sharding, and
                 its attention type is multi-head or multi-query only, so GQA (grouped-query attention)
@@ -1788,7 +1796,7 @@ export function SetMyRanks() {
                   Alpa
                 </Cite>{' '}
                 and Galvatron{' '}
-                <Cite tier={3} href={GALVATRON} venue="VLDB 2023">
+                <Cite tier={3} href={GALVATRON} venue="PVLDB 16(3)">
                   Galvatron
                 </Cite>{' '}
                 search parallel plans automatically.
@@ -1817,7 +1825,11 @@ export function SetMyRanks() {
             </Cite>
             , at 8,192 tokens per sequence and a global batch of 512 sequences, 4,194,304 tokens per
             step. At 6N FLOPs (floating-point operations) per token, the H100&apos;s dense BF16 peak of
-            989.5 TFLOPS and an assumed MFU (model FLOPs utilization) of 40%, inside the 38% to 43% that
+            989.5 TFLOPS (NVIDIA prints the sparse figure, 1,979; the dense figure is half){' '}
+            <Cite tier={1} href={H100_SPEC} kind="vendor-claim">
+              NVIDIA H100 specification
+            </Cite>{' '}
+            and an assumed MFU (model FLOPs utilization) of 40%, inside the 38% to 43% that
             Llama 3 measured on H100{' '}
             <Cite tier={3} href={LLAMA3} venue="preprint" accessed={REGISTER_DATE}>
               The Llama 3 Herd of Models, Table 4
@@ -1880,8 +1892,9 @@ export function SetMyRanks() {
             </table>
           </div>
           <Box variant="p">
-            Both pass every check (our arithmetic in Calculator C). Layout A is the PTD-P recipe: TP inside
-            the instance, a four-stage pipeline across instances, and ZeRO-1 over the eight data-parallel copies,
+            Both pass every check (our arithmetic in Calculator C). Layout A follows PTD-P&apos;s takeaways
+            (TP inside the instance, a four-stage pipeline across instances), here with ZeRO-1 over the
+            eight data-parallel copies,
             whose reduce-scatter and all-gather cross the network once per step at{' '}
             {gb(exA_dp.bytesPerStep)} per instance. Layout B is the layout TorchTitan published for this
             model{' '}
@@ -1907,8 +1920,8 @@ export function SetMyRanks() {
             {sec(exB_mb1.seconds)}, {pct(exB_mb1.shareOfCompute, 0)} of compute. Deferring the gradient sync
             to the last micro-batch brings that to {pct(exB_def.shareOfCompute, 0)} and costs a full
             unsharded gradient on every rank, {gb(EX1_B_MB1_DEFERRED.memory.modelState.totalBytes)} of state
-            against {gb(EX1_B_MB1.memory.modelState.totalBytes)}. The micro-batch, which most
-            configurations treat as a tuning value, decides whether layout B survives step 10.
+            against {gb(EX1_B_MB1.memory.modelState.totalBytes)}. The micro-batch decides whether
+            layout B survives step 10.
           </Box>
           <Box variant="p">
             The memory figures are lower bounds. TorchTitan measured layout B at 67.6 to 71.9 GiB per GPU
@@ -2047,13 +2060,18 @@ export function SetMyRanks() {
             layout pays twice. Compute grows by a third. FSDP2&apos;s defaults then send at least{' '}
             {gb(EX2_FSDP_PER_MB_BYTES)} out of each instance per micro-batch, {sec(EX2_FSDP_PER_MB_SECONDS, 2)}{' '}
             at 400 GB/s against {sec(EX2_COMPUTE_PER_MB_RECOMPUTED)} of compute per micro-batch with
-            recomputation, about {pct(EX2_FSDP_PER_MB_SECONDS / EX2_COMPUTE_PER_MB_RECOMPUTED, 0)}; a flat
-            ring would send 410.1 GB, 1.03 s, about 9% (our arithmetic, on the per-instance count of
-            step 10). The calculator prints the same bytes per step, {gb(EX2_FSDP_LINK.bytesPerStep, 0)},
-            as {pct(EX2_FSDP_LINK.shareOfCompute)} of the {sec(EX2_FSDP_FULL.computeSeconds)} of compute
-            before recomputation. Its {gb(EX2_FSDP_FULL.memory.totalBytes)} leaves to the headroom the two
-            BF16 layers FSDP holds gathered while it computes; adding them gives 58.0 GB (our arithmetic).
+            recomputation, about {pct(EX2_FSDP_PER_MB_SECONDS / EX2_COMPUTE_PER_MB_RECOMPUTED, 0)}.
           </Box>
+          <ExpandableSection headerText="FSDP 32's traffic and memory, cross-checked">
+            <Box variant="p">
+              Per micro-batch, a flat ring would send 410.1 GB out of each instance, 1.03 s, about 9%
+              (our arithmetic, on the per-instance count of step 10). The calculator prints the same
+              bytes per step, {gb(EX2_FSDP_LINK.bytesPerStep, 0)}, as {pct(EX2_FSDP_LINK.shareOfCompute)}{' '}
+              of the {sec(EX2_FSDP_FULL.computeSeconds)} of compute before recomputation. Its{' '}
+              {gb(EX2_FSDP_FULL.memory.totalBytes)} leaves to the headroom the two BF16 layers FSDP holds
+              gathered while it computes; adding them gives 58.0 GB (our arithmetic).
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             HSDP shards inside each instance and replicates across the four, so each GPU holds an eighth
             of the state: {gb(EX2_HSDP.memory.modelState.totalBytes)}, more than the 141 GB NVIDIA lists
@@ -2071,15 +2089,17 @@ export function SetMyRanks() {
             64 attention heads and 8 KV heads both divide by 8, so step 8 passes. TP&apos;s traffic stays
             on NVLink at {pct(ex2_tp_tp.shareOfCompute)} of compute, and DP&apos;s crossing is{' '}
             {gb(ex2_tp_dp.bytesPerStep)} per instance per step, {pct(ex2_tp_dp.shareOfCompute)} of compute.
-            Its step estimate is {range(EX2_TP8)}. The ZeRO-2 variant of this shape holds{' '}
-            {gb(EX2_TP8_ZERO2.memory.totalBytes)}, but ZeRO-2 costs the same bytes as ZeRO-1 only
-            without gradient accumulation, as the ZeRO paper counts it{' '}
+            Its step estimate is {range(EX2_TP8)}.
+          </Box>
+          <Box variant="p">
+            The ZeRO-2 variant of this shape holds {gb(EX2_TP8_ZERO2.memory.totalBytes)}. The ZeRO paper counts ZeRO-2 at ZeRO-1&apos;s
+            volume{' '}
             <Cite tier={3} href={ZERO} venue="preprint" accessed={REGISTER_DATE}>
               ZeRO, Section 1
             </Cite>
-            . DeepSpeed reduces ZeRO-2&apos;s partitioned gradients on every backward pass, not only at
-            the accumulation boundary{' '}
-            <Cite tier={1} href={DS_ZERO2_REDUCE}>
+            , which holds at one micro-batch per step. DeepSpeed reduces ZeRO-2&apos;s partitioned
+            gradients on every backward pass and ZeRO-1&apos;s at the accumulation boundary{' '}
+            <Cite tier={1} href={DS_ZERO2_REDUCE} kind="code">
               DeepSpeed stage_1_and_2.py L2293-L2295
             </Cite>
             , so at {EX2_TP8_ZERO2.microBatchesPerStep} micro-batches per step its crossing is{' '}
@@ -2090,7 +2110,7 @@ export function SetMyRanks() {
             The margin option is TP 8 x PP 2 x DP 2:{' '}
             {gb(EX2_TP8_PP2.memory.firstStage.totalBytes)} on the first stage, which holds the most
             activations under 1F1B{' '}
-            <Cite tier={3} href={KORTHIKANTI} venue="preprint" accessed={REGISTER_DATE}>
+            <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023" accessed={REGISTER_DATE}>
               Reducing Activation Recomputation in Large Transformer Models, Section 4.2.3
             </Cite>
             , and {gb(EX2_TP8_PP2.memory.lastStage.totalBytes)} on the last. The 80 layers split into 40
@@ -2208,7 +2228,7 @@ export function SetMyRanks() {
                     {E1_TITLE}
                   </Cite>
                   , with the first stage holding L layers&apos; worth under 1F1B{' '}
-                  <Cite tier={3} href={KORTHIKANTI} venue="preprint" accessed={REGISTER_DATE}>
+                  <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023" accessed={REGISTER_DATE}>
                     Reducing Activation Recomputation in Large Transformer Models, Section 4.2.3
                   </Cite>
                   . Full recomputation costs one more forward pass, a factor of 4/3 on compute (sections 4 and 5).

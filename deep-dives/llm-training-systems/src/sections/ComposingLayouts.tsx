@@ -57,7 +57,7 @@ function dsTopo(lines: string): string {
   return gh('deepspeedai/DeepSpeed', DEEPSPEED_TAG, 'deepspeed/runtime/pipe/topology.py', lines);
 }
 /** torchrun (PyTorch elastic agent): each node's workers get a contiguous block of global ranks. */
-const TORCHRUN_RANKS = gh('pytorch/pytorch', PYTORCH_TAG, 'torch/distributed/elastic/agent/server/api.py', 'L606-L608');
+const TORCHRUN_RANKS = gh('pytorch/pytorch', PYTORCH_TAG, 'torch/distributed/elastic/agent/server/api.py', 'L618-L683');
 /** DeepSpeed launcher: ranks numbered node by node in hostfile order. */
 const DS_LAUNCH = gh('deepspeedai/DeepSpeed', DEEPSPEED_TAG, 'deepspeed/launcher/launch.py', 'L160-L168');
 /** Slurm srun manual page (current documentation; SchedMD does not version it by URL). */
@@ -734,7 +734,7 @@ export function ComposingLayouts() {
           </Box>
           <ExpandableSection headerText="The TorchTitan paper and its repository report different numbers">
             <Box variant="p">
-              The paper reports the same experiments with different figures: Llama 3.1 405B as FSDP 4
+              The paper reports different figures for the same models: Llama 3.1 405B as FSDP 4
               x TP 8 x PP 16 at a global batch of 128, and 70B at 897 and 1,010 tokens per second per
               GPU{' '}
               <Cite tier={3} href={TT_PAPER} venue="preprint">
@@ -768,7 +768,7 @@ export function ComposingLayouts() {
             <Cite tier={1} href={megatronPs('L813-L816')} kind="code">
               Megatron Core parallel_state.py L813-L816
             </Cite>
-            . A docstring in the same function still gives the default as <code>tp-dp-pp</code>{' '}
+            . A docstring in the same function gives the default as <code>tp-dp-pp</code>{' '}
             <Cite tier={1} href={megatronPs('L773-L775')} kind="doc-code-conflict">
               Megatron Core parallel_state.py L773-L775
             </Cite>
@@ -825,13 +825,14 @@ export function ComposingLayouts() {
               Per-GPU throughput for the 175B model at a global batch of 1,536 sequences: ZeRO-3 144,
               88 and 44 TFLOP/s (trillion FLOPs per second) on 384, 768 and 1,536 A100s, against 153,
               149 and 141 for PTD-P with a model-parallel size of 96. For the 530B model at a batch of
-              2,240: ZeRO-3 138 on 640 GPUs (it did not fit on 560 at its micro-batch), 98 on 1,120
-              and 48 on 2,240, against 171, 167 and 159 for PTD-P on 560, 1,120 and 2,240 with a
-              model-parallel size of 280{' '}
+              2,240: ZeRO-3 98 on 1,120 GPUs and 48 on 2,240, and 138 on 640 GPUs at a batch of
+              2,560 because it did not fit on 560 at a micro-batch of 4, against 171, 167 and 159 for
+              PTD-P on 560, 1,120 and 2,240 with a model-parallel size of 280{' '}
               <Cite tier={3} href={PTDP} venue="SC 2021">
                 Megatron-LM on GPU Clusters, Table 2
               </Cite>
-              . ZeRO-3 halves at each doubling; PTD-P barely moves.
+              . ZeRO-3 loses 39% to 51% of its per-GPU throughput at each doubling (our arithmetic);
+              PTD-P barely moves.
             </Box>
           </ExpandableSection>
         </SpaceBetween>
@@ -866,7 +867,8 @@ export function ComposingLayouts() {
             <Cite tier={3} href={PTDP} venue="SC 2021">
               Megatron-LM on GPU Clusters, Section 4.1
             </Cite>
-            ; DP reduces gradients once per step (section 8, Data Parallelism &amp; Sharding).
+            ; DP with ZeRO-1 reduces gradients once per step (section 8, Data Parallelism &amp;
+            Sharding).
           </Box>
           <Box variant="p">
             The dive&apos;s 70B layout makes the gap concrete: Llama 3.1 70B on 32 p5.48xlarge as TP{' '}
@@ -967,18 +969,28 @@ export function ComposingLayouts() {
             <Cite tier={3} href={LLAMA3} venue="preprint">
               Llama 3 Herd of Models, Section 3.3.1
             </Cite>
-            . On Meta&apos;s grid one pipeline, TP 8 x PP 16, is 128 consecutive GPUs, small enough
-            for one pod, and DP spans the pods; Meta places DP there because FSDP tolerates latency by
-            prefetching weights and reducing gradients asynchronously{' '}
+            . Meta places DP outermost because FSDP tolerates latency by prefetching weights and
+            reducing gradients asynchronously{' '}
             <Cite tier={3} href={LLAMA3} venue="preprint">
               Llama 3 Herd of Models, Section 3.3.2
             </Cite>
-            . A PP-outermost order with the same degrees fills each block of 512 consecutive GPUs
-            with one stage of all 64 DP copies, so DP stays inside a pod and pipeline neighbours sit
-            512 ranks apart, across pods (our arithmetic). Our reading of these sources: put
-            outermost the axis whose traffic best tolerates distance, and on AWS read distance from
-            the network topology Amazon EC2 (Elastic Compute Cloud) reports for each instance, which
-            the <Link href="../efa/">EFA dive, section 7: The EC2 Instance Topology API</Link> covers.
+            .
+          </Box>
+          <ExpandableSection headerText="How the two orders fall on Llama 3's pods">
+            <Box variant="p">
+              On Meta&apos;s grid one pipeline, TP 8 x PP 16, is 128 consecutive GPUs, small enough
+              for one pod (our arithmetic), and DP spans the pods. A PP-outermost order with the same
+              degrees fills each block of 512 consecutive GPUs with one stage of all 64 DP copies, so
+              DP stays inside a pod, pipeline neighbours sit 512 ranks apart, and a pod holds six
+              stages, so two of the fifteen stage boundaries cross a pod if ranks fill the pods in
+              order (our arithmetic).
+            </Box>
+          </ExpandableSection>
+          <Box variant="p">
+            Our reading of these sources: put outermost the axis whose traffic best tolerates
+            distance, and on AWS read distance from the network topology Amazon EC2 (Elastic Compute
+            Cloud) reports for each instance, which the{' '}
+            <Link href="../efa/">EFA dive, section 7: The EC2 Instance Topology API</Link> covers.
           </Box>
         </SpaceBetween>
       </Container>
@@ -1015,15 +1027,15 @@ export function ComposingLayouts() {
               Check the launcher&apos;s rank order. torchrun gives each node a contiguous block of
               global ranks{' '}
               <Cite tier={1} href={TORCHRUN_RANKS} kind="code">
-                PyTorch elastic agent api.py L606-L608
+                PyTorch elastic agent api.py L618-L683
               </Cite>
               ; DeepSpeed&apos;s launcher numbers ranks node by node in hostfile order{' '}
               <Cite tier={1} href={DS_LAUNCH} kind="code">
                 DeepSpeed launch.py L160-L168
               </Cite>
               ; Slurm&apos;s <code>srun</code> places consecutive tasks on one node by default when
-              tasks outnumber nodes, except that with a topology plugin configured it follows
-              topology order instead{' '}
+              tasks outnumber nodes, and with a topology plugin configured it takes the nodes in
+              topology order rather than node-index order{' '}
               <Cite tier={1} href={SRUN}>
                 Slurm srun manual, --distribution
               </Cite>
@@ -1032,7 +1044,9 @@ export function ComposingLayouts() {
             <li>
               Log each rank&apos;s global rank and hostname at start-up, and confirm that the eight
               ranks of every TP group report one hostname. That one check per cluster is our reading
-              of the sources above; a Slurm cluster with a topology plugin is the first place to look.
+              of the sources above. On a Slurm cluster with a topology plugin, also expect the node
+              order, and so which instances hold neighbouring ranks, to follow the topology rather
+              than the node names.
             </li>
           </ol>
           <Box variant="p">
