@@ -159,3 +159,7 @@ section and source are named so the fact check can trace it.
 | 29 What to measure | fc11 | 84 | WRONG 2, OVERREACH 2, STALE 1 | 9 | 5/5/5/5/3 | 5/5/5/5/4 |
 | 30 The telemetry stack on AWS | fc11 | 68 | WRONG 5, UNSUPPORTED 2, OVERREACH 6 | 8 | 4/5/5/5/3 | 4/5/5/5/3 |
 | 31 Bring-up | fc11 | 67 | OVERREACH 1 | 9 (length) | 4/5/5/5/3 | 4/5/5/5/3 |
+| 32 Glossary & sources | orchestrator | 92 sources, 129 glossary entries | venue labels agree with every section's Cites; every source in sources.md at the same tier; acronym sweep of the rendered text added HPCA, SiLU and NCCOM | 8 (orchestrator check, no independent reviewer) | not scored | not scored |
+
+Gate 3 result (2026-11-01): 32 sections, lowest 8, average 8.66 (21 sections at 9, 11 at 8). Rendered
+pass of all 32 sections at 1440 and 390 px: no overlap, clipping or overflow.
