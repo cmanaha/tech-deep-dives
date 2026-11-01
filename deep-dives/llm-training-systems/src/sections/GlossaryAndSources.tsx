@@ -79,7 +79,7 @@ const sources: Source[] = [
   { id: 54, title: 'Amazon Science: more efficient recovery from failures during large ML model training', url: 'https://www.amazon.science/blog/more-efficient-recovery-from-failures-during-large-ml-model-training', tier: 2, type: 'blog', accessDate: '2026-10-31' },
   // Tier 3: training runs and reliability
   { id: 55, title: 'The Llama 3 Herd of Models, arXiv 2407.21783v3, preprint', url: 'https://arxiv.org/abs/2407.21783v3', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
-  { id: 56, title: 'PaLM: Scaling Language Modeling with Pathways, arXiv 2204.02311v5, preprint', url: 'https://arxiv.org/abs/2204.02311v5', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
+  { id: 56, title: 'PaLM: Scaling Language Modeling with Pathways, arXiv 2204.02311v5, JMLR 2023', url: 'https://arxiv.org/abs/2204.02311v5', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 57, title: 'OPT: Open Pre-trained Transformer Language Models, arXiv 2205.01068v4, preprint', url: 'https://arxiv.org/abs/2205.01068v4', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 58, title: '2 OLMo 2 Furious, arXiv 2501.00656v3, preprint; a shorter version at COLM 2025', url: 'https://arxiv.org/abs/2501.00656v3', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 59, title: 'DeepSeek-V3 Technical Report, arXiv 2412.19437v2, preprint', url: 'https://arxiv.org/abs/2412.19437v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },

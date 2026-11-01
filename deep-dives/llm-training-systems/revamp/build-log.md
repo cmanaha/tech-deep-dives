@@ -148,3 +148,6 @@ section and source are named so the fact check can trace it.
 | 20 Who owns what on AWS | fc08 | 93 | OVERREACH 7, UNSUPPORTED 3 | 8 | 5/4/5/5/3 | 5/5/5/5/4 |
 | 21 Training hardware | fc08 | 66 | WRONG 3 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |
 | 22 Capacity and cost | fc08 | 66 | WRONG 1, UNSUPPORTED 1, OVERREACH 3 | 8 | 4/5/5/5/4 | 4/5/5/5/4 |
+| 23 Storage | fc09 | about 75 | WRONG 3, UNSUPPORTED 1, OVERREACH 4, STALE 1 | 8 | 4/4/5/5/3 | 4/4/5/5/4 |
+| 24 The Slurm family | fc09 | about 62 | WRONG 1, OVERREACH 4 | 8 | 4/4/5/5/3 | 4/4/5/5/3 |
+| 25 The Kubernetes family | fc09 | about 71 | OVERREACH 1 | 9 | 4/4/5/5/3 | 4/4/5/5/3 |

@@ -896,13 +896,13 @@ export function Arithmetic() {
             MFU (model FLOPs utilization) is the share of the accelerators&apos; dense peak that the
             model&apos;s own arithmetic achieves: tokens per second times FLOPs per token, divided by
             accelerators times dense peak{' '}
-            <Cite tier={3} href={PALM} venue="preprint">
+            <Cite tier={3} href={PALM} venue="JMLR 2023">
               PaLM, Section 4.1 and Appendix B
             </Cite>
             . The dense peak is the matrix-unit peak without 2:4 structured sparsity. MFU counts only
             the model&apos;s FLOPs, 6N plus an attention term, so work the hardware repeats raises HFU
             (hardware FLOPs utilization) and leaves MFU where it was{' '}
-            <Cite tier={3} href={PALM} venue="preprint">
+            <Cite tier={3} href={PALM} venue="JMLR 2023">
               PaLM, Section 4.1
             </Cite>
             . The usual repeated work is recomputation, also called activation checkpointing: keeping
@@ -984,7 +984,7 @@ export function Arithmetic() {
             activations by activations: each token&apos;s query against every key, then the scores
             against the values. Those matrix multiplies add 12LHQT FLOPs per token across the forward
             and backward passes, for L layers and H heads of dimension Q at sequence length T{' '}
-            <Cite tier={3} href={PALM} venue="preprint">
+            <Cite tier={3} href={PALM} venue="JMLR 2023">
               PaLM, Appendix B
             </Cite>
             . In every Llama 3.1 size the heads times the head dimension equal the hidden size h, so the
@@ -1301,7 +1301,7 @@ export function Arithmetic() {
                 <strong>PaLM 540B:</strong> 46.2% MFU with attention FLOPs counted, 45.7% without, at
                 238.3K tokens per second on 6,144 TPU (Tensor Processing Unit) v4 chips; 57.8% HFU once rematerialization
                 (recomputation) is counted{' '}
-                <Cite tier={3} href={PALM} venue="preprint">
+                <Cite tier={3} href={PALM} venue="JMLR 2023">
                   PaLM, Section 4.1
                 </Cite>
                 .
