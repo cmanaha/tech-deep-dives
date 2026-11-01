@@ -42,6 +42,16 @@ const ENV_DOC = 'docs/source/torch_nccl_environment_variables.md';
 const FR_TUTORIAL = 'https://docs.pytorch.org/tutorials/unstable/flight_recorder_tutorial.html';
 /** TorchTitan v0.4.0 debugging guide: flight-recorder dumps land in its dump_folder. */
 const TT_DEBUG = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'docs/debugging.md', 'L156-L159');
+/** TorchTitan v0.4.0 CommConfig: its own timeouts and flight-recorder buffer size. */
+const TT_COMM_CONFIG = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/config/configs.py', 'L129-L145');
+/** TorchTitan v0.4.0 trainer: the tighter timeout applies after the first training step. */
+const TT_SET_TIMEOUT = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/trainer.py', 'L496-L504');
+/** TorchTitan v0.4.0 init_distributed: sets the flight-recorder environment and dump path. */
+const TT_FR_ENV = gh('pytorch/torchtitan', TORCHTITAN_TAG, 'torchtitan/distributed/utils.py', 'L471-L491');
+/** TorchTitan v0.4.0 CommConfig defaults (configs.py L130, L133, L139). */
+const TT_INIT_TIMEOUT_S = 300;
+const TT_TRAIN_TIMEOUT_S = 100;
+const TT_FR_ENTRIES = 20000;
 
 const LLAMA3 = arxiv('2407.21783v3');
 const MEGASCALE = arxiv('2402.15627v1');
@@ -463,7 +473,7 @@ const MAP_ROWS: MapRow[] = [
     cells: [
       ['NVIDIA, EFA and', 'Neuron metrics'],
       ['CloudWatch agent,', 'Observability EKS', 'add-on'],
-      ['CloudWatch, every', '60 s by default'],
+      ['CloudWatch; GPU', 'metrics every 60 s', 'by default'],
       ['CloudWatch', 'dashboards, alarms'],
       ['The add-on and its', 'device plugins'],
     ],
@@ -471,7 +481,7 @@ const MAP_ROWS: MapRow[] = [
     narrowLines: [
       'Collected: NVIDIA, EFA and Neuron metrics',
       'Shipped: CloudWatch agent, Observability EKS add-on',
-      'Stored: CloudWatch, every 60 s by default',
+      'Stored: CloudWatch, GPU metrics every 60 s by default',
       'Read: CloudWatch dashboards and alarms',
     ],
     narrowOff: ['Off: the add-on and its device plugins'],
@@ -500,7 +510,7 @@ const MAP_ROWS: MapRow[] = [
     sub: 'lifecycle scripts',
     cells: [
       ['DCGM basic set,', 'EFA node, Slurm', 'exporters'],
-      ['Prometheus on the', 'head node'],
+      ['OpenTelemetry', 'collector on each', 'node'],
       ['Amazon Managed', 'Service for', 'Prometheus'],
       ['Amazon Managed', 'Grafana'],
       ['enable_observability', 'and advanced_metrics'],
@@ -508,7 +518,7 @@ const MAP_ROWS: MapRow[] = [
     narrowTitle: 'HyperPod Slurm, lifecycle scripts',
     narrowLines: [
       'Collected: DCGM basic set, EFA node, Slurm exporters',
-      'Shipped: Prometheus on the head node',
+      'Shipped: OpenTelemetry collector on each node',
       'Stored: Amazon Managed Service for Prometheus',
       'Read: Amazon Managed Grafana',
     ],
@@ -819,9 +829,13 @@ export function Telemetry() {
           </Box>
           <Box variant="p">
             At PyTorch v2.15.0 a collective on the NCCL (NVIDIA Collective Communications Library) process group, the
-            communicator a set of ranks shares, times out after {TIMEOUT_S / 60} minutes; other backends wait 30{' '}
+            communicator a set of ranks shares, times out after {TIMEOUT_S / 60} minutes{' '}
             <Cite tier={1} href={pt(PG_HPP, 'L164-L165')} kind="code">
               PyTorch ProcessGroupNCCL.hpp L164-L165
+            </Cite>
+            ; other backends wait 30{' '}
+            <Cite tier={1} href={pt(C10D_PY, 'L2515-L2519')}>
+              distributed_c10d.py L2515-L2519
             </Cite>
             . The clock starts when the rank issues the collective{' '}
             <Cite tier={1} href={pt(PG_CPP, 'L561')} kind="code">
@@ -849,26 +863,6 @@ export function Telemetry() {
           </Box>
           <HangTimelineDiagram />
           <Box variant="p">
-            If the watchdog itself hangs inside a CUDA or NCCL call, a heartbeat monitor kills the process{' '}
-            <Cite tier={1} href={pt(PG_HPP, 'L98-L102')} kind="code">
-              ProcessGroupNCCL.hpp L98-L102
-            </Cite>
-            . It compares the watchdog&apos;s heartbeat counter every {HEARTBEAT_S / 60} minutes (
-            <code style={wrapCode}>TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC={HEARTBEAT_S}</code>){' '}
-            <Cite tier={1} href={pt(PG_CPP, 'L1772-L1773')} kind="code">
-              ProcessGroupNCCL.cpp L1772-L1773
-            </Cite>{' '}
-            <Cite tier={1} href={pt(PG_CPP, 'L1940-L1962')} kind="code">
-              L1940-L1962
-            </Cite>
-            , so it declares a stall {HB_DETECT_EARLY_MIN} to {HB_DETECT_LATE_MIN} minutes after it begins, then dumps
-            and waits up to {HEARTBEAT_S / 60} more minutes{' '}
-            <Cite tier={1} href={pt(PG_CPP, 'L2077-L2088')} kind="code">
-              L2077-L2088
-            </Cite>
-            : about {HB_KILL_EARLY_MIN} to {min1(HB_KILL_LATE_MIN)} minutes to the kill, our arithmetic.
-          </Box>
-          <Box variant="p">
             <strong>Leave the {TIMEOUT_S / 60}-minute timeout alone unless a step needs longer.</strong> About{' '}
             {min1(TEARDOWN_MIN)} minutes from stall to teardown is about {pct0(HANG_SHARE)} of the{' '}
             {LLAMA3_INTERVAL_H.toFixed(1)} hours between Llama 3&apos;s unexpected interruptions, our arithmetic from the
@@ -882,8 +876,9 @@ export function Telemetry() {
             <Cite tier={1} href={pt(C10D_PY, 'L2515-L2519')}>
               distributed_c10d.py L2515-L2519
             </Cite>
-            ; ByteDance raised MegaScale&apos;s NCCL timeout after network interfaces that went down for several seconds
-            failed jobs{' '}
+            . NCCL keeps its own transport timeout below that one: MegaScale&apos;s authors set it explicitly larger,
+            because at its default NCCL returned a completion error before a network interface that went down for
+            several seconds came back up{' '}
             <Cite tier={3} href={MEGASCALE} venue="NSDI 2024" accessed={R1}>
               MegaScale, Section 6.3
             </Cite>
@@ -892,8 +887,41 @@ export function Telemetry() {
             <Cite tier={1} href={HP_OPERATOR_USAGE} accessed={R1}>
               SageMaker Developer Guide, running jobs with the training operator
             </Cite>{' '}
-            (section 25, The Kubernetes Family). The PyTorch timeout is the floor that holds on every path.
+            (section 25, The Kubernetes Family). A framework can replace the PyTorch default: TorchTitan v0.4.0 starts
+            its process groups with a {TT_INIT_TIMEOUT_S}-second timeout and tightens it to {TT_TRAIN_TIMEOUT_S} seconds
+            after the first training step{' '}
+            <Cite tier={1} href={TT_COMM_CONFIG} kind="code">
+              TorchTitan v0.4.0 configs.py L129-L145
+            </Cite>{' '}
+            <Cite tier={1} href={TT_SET_TIMEOUT} kind="code">
+              trainer.py L496-L504
+            </Cite>
+            , so read the timeout your framework sets before you trust the timings above, our reading.
           </Box>
+          <ExpandableSection headerText="If the watchdog itself hangs: the heartbeat monitor">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                If the watchdog itself hangs inside a CUDA or NCCL call, a heartbeat monitor kills the process{' '}
+                <Cite tier={1} href={pt(PG_HPP, 'L98-L102')} kind="code">
+                  ProcessGroupNCCL.hpp L98-L102
+                </Cite>
+                . It compares the watchdog&apos;s heartbeat counter every {HEARTBEAT_S / 60} minutes (
+                <code style={wrapCode}>TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC={HEARTBEAT_S}</code>){' '}
+                <Cite tier={1} href={pt(PG_CPP, 'L1772-L1773')} kind="code">
+                  ProcessGroupNCCL.cpp L1772-L1773
+                </Cite>{' '}
+                <Cite tier={1} href={pt(PG_CPP, 'L1940-L1962')} kind="code">
+                  L1940-L1962
+                </Cite>
+                , so it declares a stall {HB_DETECT_EARLY_MIN} to {HB_DETECT_LATE_MIN} minutes after it begins, then dumps
+                and waits up to {HEARTBEAT_S / 60} more minutes{' '}
+                <Cite tier={1} href={pt(PG_CPP, 'L2077-L2088')} kind="code">
+                  L2077-L2088
+                </Cite>
+                : about {HB_KILL_EARLY_MIN} to {min1(HB_KILL_LATE_MIN)} minutes to the kill, our arithmetic.
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
           <ExpandableSection headerText="The PyTorch v2.15.0 defaults behind these timings, read from code">
             <SpaceBetween size="s">
               <Box variant="p">
@@ -957,8 +985,8 @@ export function Telemetry() {
                   <code style={wrapCode}>TORCH_NCCL_RETHROW_CUDA_ERRORS=1</code> and{' '}
                   <code style={wrapCode}>TORCH_NCCL_TEARDOWN_ON_TIMEOUT=0</code>. At defaults the crash runs through the
                   first; a comment marks the second as &quot;off by default while this rolls out&quot;{' '}
-                  <Cite tier={1} href={pt(PG_CPP, 'L2122')} kind="code">
-                    ProcessGroupNCCL.cpp L2122
+                  <Cite tier={1} href={pt(PG_CPP, 'L2122-L2123')} kind="code">
+                    ProcessGroupNCCL.cpp L2122-L2123
                   </Cite>{' '}
                   <Cite tier={1} href={pt(PG_CPP, 'L2436-L2442')} kind="code">
                     L2436-L2442
@@ -976,8 +1004,8 @@ export function Telemetry() {
             </Cite>
             , each entry carrying the process group, sequence number, operation, sizes, data types, state (scheduled,
             started or completed), creation time and Python stack frames{' '}
-            <Cite tier={1} href={pt(FR_HPP, 'L116-L167')} kind="code">
-              L116-L167
+            <Cite tier={1} href={pt(FR_HPP, 'L116-L170')} kind="code">
+              L116-L170
             </Cite>
             . It records and dumps with no configuration from v2.11.0; at v2.10.0 it still defaulted to zero entries{' '}
             <Cite tier={1} href={gh('pytorch/pytorch', 'v2.10.0', FR_HPP, 'L106-L107')} kind="code">
@@ -1038,9 +1066,13 @@ export function Telemetry() {
             <Cite tier={1} href={pt(FR_CPP, 'L48-L67')} kind="code">
               FlightRecorder.cpp L48-L67
             </Cite>
-            ; TorchTitan v0.4.0 writes into its <code>dump_folder</code>{' '}
+            ; TorchTitan v0.4.0 keeps {num(TT_FR_ENTRIES)} entries and points the dumps at{' '}
+            <code style={wrapCode}>comm_traces/rank_</code> under its <code>dump_folder</code>{' '}
             <Cite tier={1} href={TT_DEBUG}>
               TorchTitan debugging.md L156-L159
+            </Cite>{' '}
+            <Cite tier={1} href={TT_FR_ENV} kind="code">
+              TorchTitan distributed/utils.py L471-L491
             </Cite>
             . A replaced node takes a node-local trace with it, so point{' '}
             <code style={wrapCode}>TORCH_FR_DUMP_TEMP_FILE</code> (or <code>dump_folder</code>) at shared storage such
@@ -1086,9 +1118,10 @@ export function Telemetry() {
             <Cite tier={1} href={pt(FR_UTILS, 'L480-L487')} kind="code">
               flight_recorder utils.py L480-L487
             </Cite>
-            . Map the missing rank to a host, check its Xids against the rule of section 29, What to Measure in a Run,
-            and hand it to node repair in section 24, The Slurm Family, or section 25. If the reference rank is itself
-            the culprit, the tool lists many healthy ranks instead{' '}
+            . Map the missing rank to a host, check its Xids (the NVIDIA driver&apos;s numbered GPU error reports)
+            against the rule of section 29, What to Measure in a Run,
+            and hand it to node repair in section 24, The Slurm Family, or section 25. A comment in the matcher warns
+            that if the rank it compares against is itself the culprit, it reports many healthy ranks instead{' '}
             <Cite tier={1} href={pt(FR_UTILS, 'L462-L463')} kind="code">
               utils.py L462-L463
             </Cite>
@@ -1117,7 +1150,7 @@ export function Telemetry() {
         header={
           <Header
             variant="h2"
-            description="Add the counters a training dashboard alerts on to dcgm-exporter's default set: SM activity, throttling, ECC and NVLink errors all ship commented out"
+            description="Add the counters a training dashboard alerts on to dcgm-exporter's default set: SM (streaming multiprocessor) activity, throttling, ECC (error-correcting code) and NVLink errors all ship commented out"
           >
             GPU counters: what dcgm-exporter sends before you change it
           </Header>
@@ -1128,7 +1161,7 @@ export function Telemetry() {
             On the GPU side the exporter is dcgm-exporter, which reads DCGM (NVIDIA Data Center GPU Manager) and serves
             the fields in a counters file as Prometheus metrics. Its default file at 4.8.4 exports tensor,
             graphics-engine and DRAM activity, PCIe bytes, temperatures, power, framebuffer use, NVLink bandwidth, the
-            remapped-row counters and the last Xid (the NVIDIA driver&apos;s numbered GPU error reports){' '}
+            remapped-row counters and the last Xid{' '}
             <Cite tier={1} href={exporter('default-counters.csv', 'L5-L29')} kind="code">
               dcgm-exporter 4.8.4 default-counters.csv L5-L29
             </Cite>{' '}
@@ -1138,9 +1171,8 @@ export function Telemetry() {
             .
           </Box>
           <Box variant="p">
-            The same file ships commented out the counters a training run alerts on: SM (streaming multiprocessor)
-            activity, the power and thermal violation durations that show throttling, the ECC (error-correcting code)
-            counters, every NVLink error counter, and <code style={wrapCode}>DCGM_EXP_XID_ERRORS_TOTAL</code>, the
+            The same file ships commented out the counters a training run alerts on: SM activity, the power and
+            thermal violation durations that show throttling, the ECC counters, every NVLink error counter, and <code style={wrapCode}>DCGM_EXP_XID_ERRORS_TOTAL</code>, the
             running Xid count{' '}
             <Cite tier={1} href={exporter('default-counters.csv', 'L28-L42')} kind="code">
               default-counters.csv L28-L42
@@ -1178,16 +1210,17 @@ export function Telemetry() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Each AWS path ships the counters through its own agent to its own store; the in-process layer above is the
+            Each AWS path, from EKS (Amazon Elastic Kubernetes Service) you run yourself to HyperPod and SageMaker
+            training jobs, ships the counters through its own agent to its own store; the in-process layer above is the
             same on all of them.
           </Box>
           <TelemetryMapDiagram />
           <Box variant="p">
-            <strong>Self-managed EKS.</strong> On EKS (Amazon Elastic Kubernetes Service), CloudWatch Container Insights
+            <strong>Self-managed EKS.</strong> On EKS, CloudWatch Container Insights
             with enhanced observability collects by default once the CloudWatch Observability EKS add-on is installed:
             NVIDIA GPU metrics from add-on v1.3.0-eksbuild.1 with the NVIDIA device plugin, Neuron metrics from
             v1.5.0-eksbuild.1 with the Neuron driver and device plugin, and EFA metrics from v1.5.2-eksbuild.1 with the
-            EFA device plugin. Metrics are collected and ingested every 60 seconds; detailed monitoring from
+            EFA device plugin. GPU metrics are collected and ingested every 60 seconds by default; detailed monitoring from
             v4.7.0-eksbuild.1 samples down to 1 second and still ingests once a minute. The EFA set carries traffic and
             drops, such as <code style={wrapCode}>node_efa_rx_dropped</code>{' '}
             <Cite tier={1} href={CI_EKS}>
@@ -1260,26 +1293,43 @@ export function Telemetry() {
               </Box>
               <Box variant="p">
                 <strong>Prediction, our reading and not a result.</strong> The four series absent in the default mode
-                and present with advanced metrics on.
+                and present with advanced metrics on. The NVLink series is the least certain: the counter file lists
+                its field among the error counters for GPUs before Hopper{' '}
+                <Cite tier={1} href={exporter('dcp-metrics-included.csv', 'L57-L65')} kind="code">
+                  dcp-metrics-included.csv L57-L65
+                </Cite>
+                .
               </Box>
               <Box variant="p">
                 <strong>Cost and teardown.</strong> {A4_HOURS} hours at HyperPod&apos;s ${HP_P5.value} per
-                ml.p5.48xlarge-hour is {usd(A4_COST)}, plus {usd2(EKS_CLUSTER)} per hour for EKS and EBS storage, our
-                arithmetic on us-east-1 rates{' '}
+                ml.p5.48xlarge-hour is {usd(A4_COST)}, plus the EKS control plane at {usd2(EKS_CLUSTER)} per hour and
+                EBS (Amazon Elastic Block Store) storage, our arithmetic on us-east-1 rates{' '}
                 <Cite tier={1} href={HP_P5.source.url} accessed={R1}>
                   SageMaker Price List, us-east-1
+                </Cite>{' '}
+                <Cite tier={1} href={EKS_FEES.clusterUsdPerHour.source.url} accessed={R1}>
+                  EKS Price List, us-east-1
                 </Cite>
                 . Delete the HyperPod cluster, then the EKS cluster, then confirm with <code>list-clusters</code>.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
           <Box variant="p">
-            <strong>HyperPod Slurm.</strong> There is no add-on. HyperPod&apos;s base lifecycle scripts install a DCGM
-            exporter and an EFA node exporter on compute nodes, and a Slurm exporter and Prometheus on the head node,
-            feeding Amazon Managed Service for Prometheus and Amazon Managed Grafana, when{' '}
+            <strong>HyperPod Slurm.</strong> There is no add-on. The developer guide has HyperPod&apos;s base lifecycle
+            scripts install a DCGM exporter and an EFA node exporter on compute nodes, and a Slurm exporter and
+            Prometheus on the head node, feeding Amazon Managed Service for Prometheus and Amazon Managed Grafana, when{' '}
             <code style={wrapCode}>enable_observability=True</code> is set in <code>config.py</code>{' '}
-            <Cite tier={1} href={HP_SLURM_EXPORTERS}>
+            <Cite tier={1} href={HP_SLURM_EXPORTERS} kind="doc-code-conflict">
               SageMaker Developer Guide, installing metrics exporter packages
+            </Cite>
+            . The scripts at the pinned commit run an OpenTelemetry collector on every node in place of Prometheus, with
+            the node and Slurm exporters on the head node and the node, DCGM and EFA exporters on compute nodes, each
+            collector writing to Amazon Managed Service for Prometheus{' '}
+            <Cite tier={1} href={lifecycle('observability/install_observability.py', 'L45-L84')} kind="code">
+              install_observability.py L45-L84
+            </Cite>{' '}
+            <Cite tier={1} href={lifecycle('observability/otel_config/config-head-template.yaml', 'L27-L44')} kind="code">
+              config-head-template.yaml L27-L44
             </Cite>
             . At the pinned commit both switches start off,{' '}
             <code style={wrapCode}>enable_observability = False</code> and{' '}
@@ -1304,14 +1354,14 @@ export function Telemetry() {
             <strong>SageMaker training jobs.</strong> A training job publishes CPU, memory, disk,{' '}
             <code>GPUUtilization</code> and <code>GPUMemoryUtilization</code> per instance to the{' '}
             <code style={wrapCode}>/aws/sagemaker/TrainingJobs</code> namespace every minute. The GPU metrics are summed
-            over the instance&apos;s GPUs (0 to 400% on four), with a <code>Normalized</code> variant, and the default
-            CloudWatch view averages across instances{' '}
+            over the instance&apos;s GPUs (0 to 400% on four), and the default CloudWatch view averages across
+            instances{' '}
             <Cite tier={1} href={SM_CW}>
               SageMaker Developer Guide, monitoring with CloudWatch
             </Cite>
             . On a p5.48xlarge&apos;s {P5_GPUS} GPUs the range is 0 to {P5_GPUS * 100}%, and on a {JOB_HOSTS}-instance
-            job one idle host moves the averaged normalized value by at most 1/{JOB_HOSTS}, about{' '}
-            {(100 / JOB_HOSTS).toFixed(1)} percentage points, our arithmetic: plot each host (the{' '}
+            job one idle host moves the averaged value by at most 1/{JOB_HOSTS} of that range, about{' '}
+            {((P5_GPUS * 100) / JOB_HOSTS).toFixed(1)} percentage points, our arithmetic: plot each host (the{' '}
             <code style={wrapCode}>job-name/algo-n</code> dimension) and alarm on the minimum. Loss, tokens per second
             and every other training metric reach CloudWatch only through metric definitions you supply, a name and a
             regular expression matched against the training log{' '}

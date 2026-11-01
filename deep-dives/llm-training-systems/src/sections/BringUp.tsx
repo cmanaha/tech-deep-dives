@@ -15,6 +15,7 @@ import {
   METASEQ_SHA,
   NCCL_TESTS_TAG,
   NEMO_2_TAG,
+  NEURON_SDK_SHA,
   TORCHTITAN_TAG,
 } from '../components/Cite';
 import { useNarrow } from '../components/useNarrow';
@@ -61,6 +62,16 @@ function adt(path: string, lines?: string): string {
   return gh('aws-samples/awsome-distributed-training', AWSOME_DISTRIBUTED_TRAINING_SHA, path, lines);
 }
 const ADT_INDEX = adt('README.md', 'L81-L102');
+/** Neuron SDK 2.33 docs at the pinned commit: the nccom-test guide and the TorchTitan setup guide's sample step. */
+const NCCOM_TEST = gh('aws-neuron/aws-neuron-sdk', NEURON_SDK_SHA, 'tools/neuron-sys-tools/nccom-test.rst', 'L14');
+const NEURON_TT_SETUP = gh(
+  'aws-neuron/aws-neuron-sdk',
+  NEURON_SDK_SHA,
+  'training/torchtitan/get-started/setup-torchtitan-neuron.rst',
+  'L60-L84',
+);
+/** The sample step line's MFU in that guide (L84), a single install-check step, not a benchmark. */
+const NEURON_SAMPLE_MFU = '16.54%';
 const ADT_HEALTHCHECK = adt('validation/gpu-cluster-healthcheck/README.md', 'L60-L98');
 const ADT_NCCL_SET = adt('micro-benchmarks/nccl-tests/README.md', 'L36-L45');
 const ADT_P5_SAMPLE = adt('micro-benchmarks/nccl-tests/README.md', 'L206-L243');
@@ -382,7 +393,8 @@ export function BringUp() {
         <SpaceBetween size="m">
           <Box variant="p">
             Bring-up is the work between holding accelerators and starting the long run: the checks that prove the
-            nodes, the fabric, the software and the chosen layout before weeks of cluster time depend on them. Every
+            nodes, the EFA (Elastic Fabric Adapter) fabric and the NCCL (NVIDIA Collective Communications Library)
+            collectives over it, the software and the chosen layout before weeks of cluster time depend on them. Every
             number this dive estimates, from MFU (model FLOPs utilization: the share of the accelerators&apos; peak
             rate of floating-point operations, or FLOPs, that a run achieves) to memory per rank, collective time and
             checkpoint interval, stays a prediction until a measured step replaces it.
@@ -451,16 +463,16 @@ export function BringUp() {
 
           <Box variant="p">
             <strong>2. Screen every node before it takes work, and every node that joins later.</strong> Nodes can
-            arrive faulty: during OPT-175B&apos;s training, nodes came up with NCCL (NVIDIA Collective Communications
-            Library) or InfiniBand faults or ECC (error-correcting code) errors, replacements often turned out to be the
-            same bad machine, and the team added GPU burn-in and automated fabric tests{' '}
+            arrive faulty: during OPT-175B&apos;s training, nodes came up with NCCL or InfiniBand faults or ECC
+            (error-correcting code) errors, replacements often turned out to be the same bad machine, and the team
+            added GPU burn-in and automated fabric tests{' '}
             <Cite tier={2} href={OPT_27} accessed={REGISTER_DATE}>
               OPT-175B logbook, 27% update, L12-L17
             </Cite>
             . HyperPod&apos;s deep health checks are AWS&apos;s form of that screen: DCGM (NVIDIA Data Center GPU
-            Manager) diagnostics at level 4, typically about 45 to 90 minutes depending on GPU count, EFA (Elastic
-            Fabric Adapter) loopback tests of about 2 to 5 minutes, and a multi-node NCCL all-reduce of about 5 to 15
-            minutes. They run when instances are first provisioned or added, for an instance group that sets{' '}
+            Manager) diagnostics at level 4, typically about 45 to 90 minutes depending on GPU count, EFA loopback
+            tests of about 2 to 5 minutes, and a multi-node NCCL all-reduce of about 5 to 15 minutes. They run when
+            instances are first provisioned or added, for an instance group that sets{' '}
             <code>OnStartDeepHealthChecks</code>, and a node that fails is replaced and its replacement checked
             again{' '}
             <Cite tier={1} href={HP_SLURM_DEEP}>
@@ -515,20 +527,7 @@ NCCL_DEBUG=VERSION    # NCCL prints its version when the program starts
 NCCL_DEBUG=INFO       # adds "NET/OFI Initializing aws-ofi-nccl <version>"`}</code>
           </pre>
           <Box variant="p">
-            The <code>VERSION</code> level prints the NCCL version at the start of the program{' '}
-            <Cite tier={1} href={NCCL_ENV}>
-              NCCL 2.32.3 environment variables, NCCL_DEBUG
-            </Cite>
-            . At <code>INFO</code>, the bring-up level section 30 sets, the plugin logs its own version and the
-            libfabric version it loaded as it initialises{' '}
-            <Cite tier={1} href={OFI_INIT_LOG} kind="code">
-              aws-ofi-nccl v1.21.1 nccl_ofi_net.cpp L188-L195
-            </Cite>
-            , and <code>fi_info --version</code> prints libfabric&apos;s{' '}
-            <Cite tier={1} href={FI_INFO_MAN}>
-              libfabric v2.6.0 fi_info man page L89-L90
-            </Cite>
-            . Record the image digest with every benchmark, not only its tag: the Deep Learning Containers&apos;
+            Record the image digest with every benchmark, not only its tag: the Deep Learning Containers&apos;
             PyTorch 2.14 build configuration pins NCCL 2.30.7-1 and installs the EFA installer marked{' '}
             <code>latest</code> when the image is built{' '}
             <Cite tier={1} href={DLC_214_CONFIG} kind="code" accessed={REGISTER_DATE}>
@@ -536,6 +535,24 @@ NCCL_DEBUG=INFO       # adds "NET/OFI Initializing aws-ofi-nccl <version>"`}</co
             </Cite>
             .
           </Box>
+          <ExpandableSection headerText="Where each command's output is documented">
+            <Box variant="p">
+              The <code>VERSION</code> level prints the NCCL version at the start of the program{' '}
+              <Cite tier={1} href={NCCL_ENV}>
+                NCCL 2.32.3 environment variables, NCCL_DEBUG
+              </Cite>
+              . At <code>INFO</code>, the bring-up level section 30 sets, the plugin logs its own version and the
+              libfabric version it loaded as it initialises{' '}
+              <Cite tier={1} href={OFI_INIT_LOG} kind="code">
+                aws-ofi-nccl v1.21.1 nccl_ofi_net.cpp L188-L195
+              </Cite>
+              , and <code>fi_info --version</code> prints libfabric&apos;s{' '}
+              <Cite tier={1} href={FI_INFO_MAN}>
+                libfabric v2.6.0 fi_info man page L89-L90
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
           <ExpandableSection headerText="What each AWS path documents about these versions">
             <SpaceBetween size="s">
               <ul style={LIST}>
@@ -551,7 +568,7 @@ NCCL_DEBUG=INFO       # adds "NET/OFI Initializing aws-ofi-nccl <version>"`}</co
                   .
                 </li>
                 <li>
-                  <strong>EKS-optimized AL2023 accelerated AMI</strong>, release v20261031: the <code>efa</code> 3.3.1
+                  <strong>EKS-optimized Amazon Linux 2023 accelerated AMI</strong>, release v20261031: the <code>efa</code> 3.3.1
                   package{' '}
                   <Cite tier={1} href={EKS_AMI_RELEASE}>
                     amazon-eks-ami release v20261031
@@ -621,6 +638,10 @@ NCCL_DEBUG=INFO       # adds "NET/OFI Initializing aws-ofi-nccl <version>"`}</co
             <Cite tier={1} href={perf('L5-L12')}>
               nccl-tests PERFORMANCE.md L5-L12
             </Cite>
+            . Its algorithm bandwidth column, <code>algbw</code>, is message size over time{' '}
+            <Cite tier={1} href={perf('L16-L20')}>
+              PERFORMANCE.md L16-L20
+            </Cite>
             . Its bus bandwidth column, <code>busbw</code>, is built to be held against the hardware peak whatever the
             rank count{' '}
             <Cite tier={1} href={perf('L27-L29')}>
@@ -667,8 +688,12 @@ NCCL_DEBUG=INFO       # adds "NET/OFI Initializing aws-ofi-nccl <version>"`}</co
           </Box>
           <Box variant="p">
             For an MoE (mixture of experts) layout add <code>alltoall_perf</code>: its bytes are addressed GPU to GPU
-            and each GPU pays its {EFA_GPU_GBS} GB/s share (section 7). On Trainium the counterpart is AWS&apos;s
-            nccom-tests sample{' '}
+            and each GPU pays its {EFA_GPU_GBS} GB/s share (section 7). On Trainium the counterpart is nccom-test, the
+            Neuron SDK&apos;s benchmark for collective operations on Trainium and Inferentia{' '}
+            <Cite tier={1} href={NCCOM_TEST}>
+              Neuron SDK 2.33 nccom-test user guide L14
+            </Cite>
+            , with AWS&apos;s nccom-tests sample{' '}
             <Cite tier={2} href={ADT_INDEX}>
               awsome-distributed-training README L81-L102
             </Cite>{' '}
@@ -719,19 +744,23 @@ NGPU=256 COMM_BACKEND=fake MODULE=my_recipes CONFIG=my_target_layout ./run_train
           <Box variant="p">
             Then run the layout scaled down on one node for a few steps, reading the allocator&apos;s peaks as section
             29, What to Measure in a Run, sets out. It catches what fake mode cannot: NCCL starting over NVLink, the
-            data loader, the first save and a loss that moves. That step is our reading,
-            located as a stated practice in one first-party source&apos;s quick start and not in the two AWS
-            repositories read. TorchTitan&apos;s quick start trains a debug model on one GPU, then a real recipe on 8
-            GPUs{' '}
-            <Cite tier={1} href={TT_QUICKSTART}>
-              TorchTitan v0.4.0 README L68-L81
-            </Cite>
-            , then multi-node with Slurm{' '}
-            <Cite tier={1} href={TT_MULTINODE}>
-              README L246-L248
-            </Cite>
-            .
+            data loader, the first save and a loss that moves. That step is our reading.
           </Box>
+          <ExpandableSection headerText="Where the one-node step comes from">
+            <Box variant="p">
+              The step was located as a stated practice in one first-party source&apos;s quick start and not in the
+              two AWS repositories read. TorchTitan&apos;s quick start trains a debug model on one GPU, then a real
+              recipe on 8 GPUs{' '}
+              <Cite tier={1} href={TT_QUICKSTART}>
+                TorchTitan v0.4.0 README L68-L81
+              </Cite>
+              , then multi-node with Slurm{' '}
+              <Cite tier={1} href={TT_MULTINODE}>
+                README L246-L248
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -794,9 +823,16 @@ NGPU=256 COMM_BACKEND=fake MODULE=my_recipes CONFIG=my_target_layout ./run_train
             <Cite tier={3} href={LLAMA3} venue="preprint">
               Llama 3 Herd of Models, Table 4
             </Cite>
-            , and no first-party MFU for dense Llama-class training on H200 or Trainium2 was located in this research.
-            Turn the logged rate into MFU as section 29 does, put it into Calculator A in place of the {MFU_PCT}, and
-            the run-time and cost estimates of sections 4, 14 and 22 become your run&apos;s.
+            . No first-party MFU benchmark for dense Llama-class training on H200 or Trainium2 was located in this
+            research; for Trainium2, AWS&apos;s Neuron 2.33 TorchTitan setup guide prints one sample step line, an
+            install check of Qwen3-8B on a trn2.48xlarge at {NEURON_SAMPLE_MFU} MFU, with the note that values will
+            vary{' '}
+            <Cite tier={1} href={NEURON_TT_SETUP}>
+              Neuron SDK 2.33, How to set up TorchTitan Neuron, L60-L84
+            </Cite>{' '}
+            (section 27, Trainium: The Neuron Path). Turn the logged rate into MFU as section 29 does, put it into
+            Calculator A in place of the {MFU_PCT}, and the run-time and cost estimates of sections 4, 14 and 22 become
+            your run&apos;s.
           </Box>
         </SpaceBetween>
       </Container>

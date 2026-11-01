@@ -52,9 +52,9 @@ Format: claim | source URL | register, wave 2 row or experiment. "NEW" marks a f
 
 ## Model health
 
-- OLMo 2: gradient-norm spikes more frequent than loss spikes, larger ones often first; slow upward drift went with more spikes; together they led to divergence; spike score = share of values 7 or more standard deviations from a rolling average of the last 1,000, on loss and gradient norm | https://arxiv.org/abs/2501.00656v3 (Sec 3) | T07-18, W6-23
+- OLMo 2, observing OLMo-0424 (the model before OLMo 2): gradient-norm spikes more frequent than loss spikes, larger ones often first; slow upward drift went with more spikes; the authors write that together these would lead to divergence at larger scale (fc11 fact check: the earlier wording attributed the observations to OLMo 2 and said they led to divergence); spike score = share of values 7 or more standard deviations from a rolling average of the last 1,000, on loss and gradient norm | https://arxiv.org/abs/2501.00656v3 (Sec 3) | T07-18, W6-23
 - Large runs rolled back, skipped batches or lowered the learning rate; that needs checkpoints about 100 steps back and a loader that can skip a batch range (sections 18 and 19) | sections 18 (`checkpointing`), 19 (`resuming`) by name | T07-38
-- PaLM 540B: about 20 loss spikes despite clipping; restart about 100 steps earlier, skip about 200 to 500 batches | https://arxiv.org/abs/2204.02311v5 (Sec 5.1) | T07-13, W6-25
+- PaLM 540B: about 20 loss spikes despite clipping; restart about 100 steps earlier, skip about 200 to 500 batches | https://arxiv.org/abs/2204.02311v5 (Sec 5.1); venue JMLR 2023, 24(240):1-113, https://jmlr.org/papers/v24/22-1144.html | T07-13, W6-25
 - OPT-175B: divergence with FP16 loss scaler crashing to 0 and last-layer activation norm spiking; lowered learning rate and restarted | https://arxiv.org/abs/2205.01068v4 (Sec 2.5) | T07-14, W6-24
 - OPT team notes: one 10% learning-rate cut stabilised gradient and activation norms | https://github.com/facebookresearch/metaseq/blob/f7ffa5fd61cf90f498a36d365c13dd7f1a912ff7/projects/OPT/chronicles/56_percent_update.md#L43 | T07-15, W6-24
 - Llama 3 405B: few loss spikes, no interventions for divergence | https://arxiv.org/abs/2407.21783v3 (Sec 3.4.1) | T07-16, W6-26
@@ -98,15 +98,17 @@ Format: claim | source URL | register, wave 2 row or experiment. "NEW" marks a f
 - Xid 74 on several GPUs of one node points at one failed peer [our reading of the catalog's Xid 74 note] | same | T07-25
 - Clock-event reasons are field 112, a bitmask, alias CLOCK_THROTTLE_REASONS | https://github.com/NVIDIA/DCGM/blob/v4.7.0/dcgmlib/dcgm_fields.h#L585-L592 | T07-26, W6-28
 - Power and thermal violation time in ns are fields 240 and 241 | https://github.com/NVIDIA/DCGM/blob/v4.7.0/dcgmlib/dcgm_fields.h#L843-L855 | T07-26
+- v4.7.0 marks 240 and 241 deprecated in favour of fields 1617 and 1618, counted in seconds | https://github.com/NVIDIA/DCGM/blob/v4.7.0/dcgmlib/dcgm_fields.h#L3644-L3652 | NEW (fc11 fact check)
 - Llama 3 405B: mid-day temperatures acting on DVFS moved throughput 1% to 2% over the day | https://arxiv.org/abs/2407.21783v3 (Sec 3.3.4) | T04-6
 - NVLink bytes sent and received are fields 1011 and 1012 | https://github.com/NVIDIA/DCGM/blob/v4.7.0/dcgmlib/dcgm_fields.h#L2676-L2690 | NEW
 - NVLink CRC flit, CRC data, replay and recovery error totals are fields 409, 419, 429, 439 | https://github.com/NVIDIA/DCGM/blob/v4.7.0/dcgmlib/dcgm_fields.h#L4104-L4107 | NEW
+- dcgm-exporter 4.8.4 lists those four as error counters for pre-Hopper GPUs, and lists the Hopper data-link CRC, recovery and replay totals, fields 497, 498, 499 | https://github.com/NVIDIA/dcgm-exporter/blob/4.8.4/etc/default-counters.csv#L66-L75, https://github.com/NVIDIA/DCGM/blob/v4.7.0/dcgmlib/dcgm_fields.h#L1718-L1731 | NEW (fc11 fact check)
 - EFA device counters are covered in the EFA dive, section 17 | ../efa/ (Operations, Observability and Failure Modes) | cross-dive link
 
 ## Measurement table and alerts
 
 - Table rows restate the claims above with the same sources; "No range" wherever a source gives none; tensor activity "No range located in the sources read" | rows above | W6-31
-- Xid row range "any bucket beyond RESTART_APP or IGNORE takes the node out" [our reading] | Xid catalog | T07-25, W6-31
+- Xid row range "RESET_GPU or RESTART_BM takes the node out; a WORKFLOW_ bucket sends you to that Xid's workflow in the catalog" [our reading] | Xid catalog | T07-25, W6-31 (fc11 fact check: the earlier "any bucket beyond RESTART_APP or IGNORE takes the node out" overreached; WORKFLOW_XID_45 resolves to RESTART_FM or IGNORE, and WORKFLOW_NVLINK_ERR treats some bits as ignorable)
 - Alert set: sustained throughput drop, gradient-norm spike (7 SD over 1,000 steps), any NaN or Inf, SM activity below 0.5, data loading above 20%, any Xid whose immediate bucket asks for more than an application restart (RESET_GPU, RESTART_BM, or a WORKFLOW_ bucket such as Xid 48's and 74's) [our reading, labelled] | sources above | W6-31 (see note)
 - dcgm-exporter 4.8.4's default set leaves out SM activity, the power and thermal violation counters and the ECC counters | https://github.com/NVIDIA/dcgm-exporter/blob/4.8.4/etc/default-counters.csv#L28-L107 | T07-24, W6-14
 - Section 30 turns on what each AWS path leaves off; section 31 takes the first measured step | sections 30 (`telemetry`), 31 (`bring-up`) by name | dispatch notes

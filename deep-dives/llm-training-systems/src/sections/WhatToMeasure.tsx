@@ -64,6 +64,8 @@ function dcgm(lines: string): string {
 
 /** dcgm-exporter 4.8.4's default counter set (commented lines are off). */
 const EXPORTER_DEFAULTS = gh('NVIDIA/dcgm-exporter', DCGM_EXPORTER_TAG, 'etc/default-counters.csv', 'L28-L107');
+/** The same file's NVLink error counters, grouped by GPU generation. */
+const EXPORTER_NVLINK = gh('NVIDIA/dcgm-exporter', DCGM_EXPORTER_TAG, 'etc/default-counters.csv', 'L66-L75');
 
 /** First-party documentation pages (unversioned; read 2026-10-31). */
 const DCGM_GUIDE = 'https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/feature-overview.html';
@@ -559,12 +561,12 @@ const MEASURE_ROWS: MeasureRow[] = [
   {
     metric: 'Xid errors, ECC, row remapping',
     how: "Driver error codes, read against the catalog's resolution buckets",
-    range: 'Any bucket beyond RESTART_APP or IGNORE takes the node out (our reading)',
+    range: "RESET_GPU or RESTART_BM takes the node out; a WORKFLOW_ bucket sends you to that Xid's workflow in the catalog (our reading)",
     source: <Cite tier={1} href={XID_CATALOG}>NVIDIA Xid catalog</Cite>,
   },
   {
     metric: 'Throttling',
-    how: 'Clock-event reasons (field 112); power and thermal violation time (240, 241)',
+    how: 'Clock-event reasons (field 112); power and thermal violation time (240, 241; deprecated for 1617, 1618)',
     range: 'No range; it shows as a slow rank',
     source: (
       <Cite tier={1} href={dcgm('L585-L592')} kind="code">
@@ -574,7 +576,7 @@ const MEASURE_ROWS: MeasureRow[] = [
   },
   {
     metric: 'NVLink and EFA counters',
-    how: 'NVLink bytes (1011, 1012) and error totals (409, 419, 429, 439); EFA device counters',
+    how: 'NVLink bytes (1011, 1012) and error totals (409, 419, 429, 439; 497 to 499 on H100); EFA device counters',
     range: 'No range here; the EFA dive reads the EFA counters',
     source: (
       <Cite tier={1} href={dcgm('L2676-L2690')} kind="code">
@@ -699,7 +701,7 @@ export function WhatToMeasure() {
         header={
           <Header
             variant="h1"
-            description={`Watch three layers of signal and know which one moved when a run goes wrong. At ${MFU_PCT} MFU (model FLOPs utilization) and 6 FLOPs per parameter per token, an H100 trains Llama 3.1 8B at about ${R8_TPS} tokens per second, so a log showing ${num(LOGGED_TPS)} means about ${R8_AT_LOGGED} MFU (TorchTitan v0.4.0, Megatron Core core_v0.20.0, PyTorch v2.15.0 and DCGM v4.7.0 code, with NVIDIA and AWS documentation and papers, read 2026-10-31)`}
+            description={`Watch three layers of signal and know which one moved when a run goes wrong. At ${MFU_PCT} MFU (model FLOPs utilization) and 6 FLOPs per parameter per token, an H100 trains Llama 3.1 8B at about ${R8_TPS} tokens per second, so a log showing ${num(LOGGED_TPS)} means about ${R8_AT_LOGGED} MFU (TorchTitan v0.4.0, Megatron Core core_v0.20.0, PyTorch v2.15.0 and NVIDIA Data Center GPU Manager (DCGM) v4.7.0 code, with NVIDIA and AWS documentation and papers, read 2026-10-31)`}
           >
             29. What to Measure in a Run
           </Header>
@@ -729,10 +731,11 @@ export function WhatToMeasure() {
             loss, the gradient norm (the size of the step&apos;s gradient across every weight) and any NaN
             (not a number) or Inf (infinity) in either, computed by the training loop.{' '}
             <strong>Job efficiency</strong> is tokens per second per accelerator, MFU and the shares of
-            step time, from the same loop and per-rank traces. <strong>Hardware health</strong> is Xid
+            step time, from the same loop and per-rank traces, with SM (streaming multiprocessor) activity
+            from DCGM. <strong>Hardware health</strong> is Xid
             errors (the NVIDIA driver&apos;s numbered GPU error reports), ECC (error-correcting code) errors
             and row remapping, clock throttling, and NVLink and EFA (Elastic Fabric Adapter) counters, read
-            through DCGM (NVIDIA Data Center GPU Manager){' '}
+            through DCGM{' '}
             <Cite tier={1} href={dcgm('L2610-L2640')} kind="code">
               DCGM v4.7.0 dcgm_fields.h L2610-L2640
             </Cite>{' '}
@@ -877,10 +880,11 @@ export function WhatToMeasure() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The loss is the lagging signal and the gradient norm the leading one. In OLMo 2&apos;s training,
-            gradient-norm spikes came more often than loss spikes and the larger ones often came first, and
-            a slow upward drift in the norm went with more frequent spikes; together these led to
-            divergence. OLMo 2 scores spikiness as the share of values at least 7 standard deviations from
+            The loss is the lagging signal and the gradient norm the leading one. In the training of
+            OLMo-0424, the model before OLMo 2, gradient-norm spikes came more often than loss spikes and
+            the larger ones often came first, and a slow upward drift in the norm went with more frequent
+            spikes; the OLMo 2 authors write that together these would lead to divergence at larger scale.
+            OLMo 2 scores spikiness as the share of values at least 7 standard deviations from
             a rolling average of the last 1,000, on the loss and on the gradient norm{' '}
             <Cite tier={3} href={OLMO2} venue={OLMO2_VENUE}>
               2 OLMo 2 Furious, Section 3
@@ -898,7 +902,7 @@ export function WhatToMeasure() {
               <Box variant="p">
                 <strong>PaLM 540B</strong> saw about 20 loss spikes despite gradient clipping, restarted
                 from a checkpoint about 100 steps before each one and skipped about 200 to 500 data batches{' '}
-                <Cite tier={3} href={PALM} venue="preprint">
+                <Cite tier={3} href={PALM} venue="JMLR 2023">
                   PaLM, Section 5.1
                 </Cite>
                 .
@@ -1059,7 +1063,7 @@ export function WhatToMeasure() {
             <Cite tier={1} href={EKS_OBS}>
               EKS Best Practices Guide, AI/ML observability
             </Cite>
-            . Streaming multiprocessor (SM) activity is the share of cycles an SM has at least one warp (a
+            . SM activity is the share of cycles an SM has at least one warp (a
             group of threads it schedules together) assigned{' '}
             <Cite tier={1} href={dcgm('L2620-L2624')} kind="code">
               DCGM v4.7.0 dcgm_fields.h L2620-L2624
@@ -1084,18 +1088,6 @@ export function WhatToMeasure() {
             </Cite>
             , is the closer view of busy matrix units, our reading. Neither replaces MFU, which counts
             FLOPs in software.
-          </Box>
-          <Box variant="p">
-            Key dashboards on field IDs: DCGM v4.7.0 renamed its profiling fields, for example{' '}
-            <code>DCGM_FI_PROF_SM_ACTIVE</code> to <code>DCGM_FI_PROF_SM_UTIL_RATIO</code>, and keeps the
-            old names as deprecated aliases with the same IDs, 1002 and 1004{' '}
-            <Cite tier={1} href={dcgm('L3954')} kind="code">
-              DCGM v4.7.0 dcgm_fields.h L3954
-            </Cite>{' '}
-            <Cite tier={1} href={dcgm('L4174-L4176')} kind="code">
-              L4174-L4176
-            </Cite>
-            .
           </Box>
           <Box variant="p">
             <strong>Errors arrive as Xids.</strong> NVIDIA&apos;s catalog gives each Xid an immediate and an
@@ -1131,6 +1123,10 @@ export function WhatToMeasure() {
             <Cite tier={1} href={dcgm('L843-L855')} kind="code">
               L843-L855
             </Cite>
+            , which v4.7.0 marks deprecated in favour of fields 1617 and 1618, counted in seconds{' '}
+            <Cite tier={1} href={dcgm('L3644-L3652')} kind="code">
+              L3644-L3652
+            </Cite>
             . A throttled GPU becomes a slow rank every other rank waits for: on Llama 3 405B, mid-day
             temperatures acting on the GPUs&apos; dynamic voltage and frequency scaling moved throughput by
             1% to 2% over the day{' '}
@@ -1140,17 +1136,44 @@ export function WhatToMeasure() {
             .
           </Box>
           <Box variant="p">
-            NVLink bytes sent and received are fields 1011 and 1012{' '}
-            <Cite tier={1} href={dcgm('L2676-L2690')} kind="code">
-              dcgm_fields.h L2676-L2690
-            </Cite>
-            , and its CRC (cyclic redundancy check), replay and recovery error totals are fields 409, 419, 429 and 439{' '}
-            <Cite tier={1} href={dcgm('L4104-L4107')} kind="code">
-              L4104-L4107
-            </Cite>
-            ; the EFA device counters are read in the{' '}
+            The EFA device counters are read in the{' '}
             <Link href="../efa/">EFA dive, section 17: Operations, Observability and Failure Modes</Link>.
           </Box>
+          <ExpandableSection headerText="Field IDs for dashboards: the v4.7.0 renames and the NVLink counters by GPU generation">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                Key dashboards on field IDs: DCGM v4.7.0 renamed its profiling fields, for example{' '}
+                <code>DCGM_FI_PROF_SM_ACTIVE</code> to <code>DCGM_FI_PROF_SM_UTIL_RATIO</code>, and keeps the
+                old names as deprecated aliases with the same IDs, 1002 and 1004{' '}
+                <Cite tier={1} href={dcgm('L3954')} kind="code">
+                  DCGM v4.7.0 dcgm_fields.h L3954
+                </Cite>{' '}
+                <Cite tier={1} href={dcgm('L4174-L4176')} kind="code">
+                  L4174-L4176
+                </Cite>
+                .
+              </Box>
+              <Box variant="p">
+                NVLink bytes sent and received are fields 1011 and 1012{' '}
+                <Cite tier={1} href={dcgm('L2676-L2690')} kind="code">
+                  dcgm_fields.h L2676-L2690
+                </Cite>
+                , and its CRC (cyclic redundancy check), replay and recovery error totals are fields 409, 419, 429 and 439{' '}
+                <Cite tier={1} href={dcgm('L4104-L4107')} kind="code">
+                  L4104-L4107
+                </Cite>
+                . dcgm-exporter 4.8.4&apos;s counter file lists those four for GPUs before Hopper and gives an H100
+                the data-link CRC, recovery and replay totals, fields 497, 498 and 499{' '}
+                <Cite tier={1} href={EXPORTER_NVLINK} kind="code">
+                  dcgm-exporter 4.8.4 default-counters.csv L66-L75
+                </Cite>{' '}
+                <Cite tier={1} href={dcgm('L1718-L1731')} kind="code">
+                  dcgm_fields.h L1718-L1731
+                </Cite>
+                .
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
