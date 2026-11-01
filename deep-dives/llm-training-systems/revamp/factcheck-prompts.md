@@ -189,4 +189,5 @@ Applies to every group:
   per file. Section 30's FlightRecorder citations at v2.10.0 and
   v2.11.0 are deliberate (the text dates when the default changed); check that dating. Section 30's
   NVLink alert field is a deprecated DCGM alias (untested; keep the hedge). Section 31 was written
-  last: check its versions against sections 7, 15 and 27.
+  last: check its versions against sections 7, 15 and 27, and open the source for each of its eight
+  claims marked NEW in `revamp/claims/bring-up.md`. Section 31 is about 2,850 words (length).
