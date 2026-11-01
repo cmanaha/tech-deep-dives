@@ -140,3 +140,51 @@ rather than editing them.
 Sections 1 and 2 summarise the others: fc01 checks every number they repeat against the owning
 section and its source. Known items to settle per group are appended below by the orchestrator
 from the authors' reports.
+
+## Known items per group (orchestrator, 2026-10-31)
+
+Settle each item below in your fact-check table, in addition to the full pass. Items marked
+"length" are for the leverage pass: the section reads long, so prefer demoting supporting evidence
+into an `ExpandableSection` over cutting it.
+
+Applies to every group:
+- Cross-instance collectives are priced per instance, not per GPU (build-log "Cross-instance
+  pricing"); ZeRO-2 reduce-scatters on every micro-batch under gradient accumulation (build-log
+  "ZeRO-2 under gradient accumulation"); the Xid alert rule is section 29's bucket rule (build-log
+  "Xid alert rule"). Any text in your files that contradicts one of these is a correction.
+- Tier 3 venues: several papers carry "preprint" where a proceedings venue exists. Set a venue only
+  when you confirm it on the proceedings or publisher page yourself; otherwise leave "preprint".
+- The Llama 3.1 model metadata links and the FSx price list were pinned by the orchestrator
+  (commit 29fdea0); do not revert them to unpinned URLs.
+
+- fc01-framing: sections 1 and 2 were written last; check every number they repeat against the
+  owning section, figure for figure. Section 3's notation must match section 32's notation table.
+- fc02-arithmetic: section 4 is about 2,830 words (length). Section 4's A5 copy (the Trainium2 MFU
+  experiment, not yet run) must agree with section 27's. The MFU conversion x 632/667 for AWS's
+  Trainium MFU line appears in sections 4 and 27: same wording of the basis in both.
+- fc03-collectives-dp: section 8's flat FSDP and HSDP byte counts per instance (289 GB, 373 GB on a
+  flat ring, 193 GB; deferred 120 GB against 24.1 GB) against `src/lib/parallelism.ts` and its tests.
+- fc04-pp-cp-ep: section 10's narrow forward blocks at 390 px (check the PNG for legibility).
+- fc05-layouts: section 13 is about 2,990 words (length). Section 14 example 2's ZeRO-2 passage
+  (13,652 GB and 24.3% at 128 micro-batches, against ZeRO-1's 211.7 GB and 0.4%) against Calculator C.
+- fc06-frameworks: section 15 is about 2,800 words (length). Section 15's TorchTitan Neuron version
+  string (0.2.2+neuron.1) against the release-2.33.0 tag. Section 16: TRL appears in a table without
+  an expansion; check the acronym rule. Section 27: W3-42's Trainium3 reading is labelled ours.
+- fc07-reliability: MegaScale (2402.15627v1) is labelled "NSDI 2024" in one file and "preprint" in
+  another; make them agree. Section 19 reads long (length). Section 17 cites Llama 3 v1 and v2 on
+  purpose (Table 5 changed across versions); keep that.
+- fc08-aws-a: section 20's PCS node-replacement cell may need narrowing (PCS documents replacing an
+  instance rebooted outside Slurm or set nextstate=DOWN). InfraCheckConfig timing is undocumented,
+  so section 20's no-screening cell for training jobs may need a note. Section 21 prints the
+  P6e-GB200 EFA conflict (3,200 Gbps per instance on the EC2 page against 28.8 Tbps per UltraServer
+  on the P6 page); keep it as a documentation conflict.
+- fc09-aws-b: EBS (Amazon Elastic Block Store) is used without expansion in section 25. Section 23
+  is about 2,620 words (length). Section 23's reading that dcp.save into Mountpoint fails on general
+  purpose buckets is ours and not run; keep the label.
+- fc10-aws-c: section 26's InfraCheckConfig and training-plan expiry notes; section 28 was written
+  after the body: every branch must name the section that owns it and agree with it.
+- fc11-measure: section 30 uses EBS without expansion (line about A4's cost); the acronym rule is
+  per file. Section 30's FlightRecorder citations at v2.10.0 and
+  v2.11.0 are deliberate (the text dates when the default changed); check that dating. Section 30's
+  NVLink alert field is a deprecated DCGM alias (untested; keep the hedge). Section 31 was written
+  last: check its versions against sections 7, 15 and 27.
