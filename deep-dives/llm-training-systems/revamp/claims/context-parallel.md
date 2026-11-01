@@ -20,7 +20,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 ## What CP divides, and what it leaves whole
 
 - CP partitions inputs and all activations along the sequence; SP splits only dropout and norm activations | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/user-guide/features/context_parallel.md#L19 | T02-25, W2-27
-- Linear layers and norms run unchanged on a slice; each GPU's activation memory falls by the CP degree | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/user-guide/features/context_parallel.md#L34 | T02-25
+- Linear layers and norms run unchanged on a slice (L19); each GPU's activation memory falls by the CP degree (L34) | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/user-guide/features/context_parallel.md#L19-L34 | T02-25 (fact check 2026-10-31: the no-inter-token-operations half is on L19)
 - CP ranks join the data-parallel group for the weight-gradient all-reduce; CP saves no weight memory | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/parallel_state.py#L713-L718 | T02-26, W2-31
 - The distributed optimizer (ZeRO-1 form) shards optimizer state over DP and CP together | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/transformer/moe/README.md#L160-L166 | T02-53, W2-31 note (03 W2)
 - 70B on 32 p5.48xlarge (256 H100): TP 8 x PP 4 (v = 5) x DP 8 with ZeRO-1 holds about 38 GB at 8,192 tokens and needs about 426 GB at 131,072 | none (section 5 calculator) | Calculator B; W2-10 (256 ranks, 32 instances)
@@ -62,7 +62,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - At 40% MFU every threshold falls 2.5 times (about 880 and 7.9K full width, 110 and 990 with GQA) | derived | dive-wide 40% MFU assumption; W2-29
 - Attention O(S^2) against O(S) for the gather over a whole sequence | https://arxiv.org/abs/2407.21783v3 (Section 3.3.2) | T02-24
 - CP 8 at 131,072 leaves 16,384 tokens per GPU, about 6.6 times 2.5K; CP 4 at 8,192 leaves 2,048, below the threshold at peak, above at 40% | derived | 16,384 / 2,474; our reading
-- Section 14's calculator: one all-gather forward and one reduce-scatter backward per layer per instance; 601 GB per instance per step, 1.5 s at 400 GB/s against 38.9 s, about 4%, unhidden | none (section 14 calculator) | Calculator C
+- Section 14's calculator: one all-gather forward (Llama 3's method; Llama 3 Sec 3.3.2 describes only the forward) and one reduce-scatter backward (Megatron's overview L19) per layer per instance; 601 GB per instance per step, 1.5 s at 400 GB/s against 38.9 s, about 4%, unhidden | none (section 14 calculator) | Calculator C
 - Megatron Core re-gathers K and V in backward to save memory, about 6% | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/user-guide/features/context_parallel.md#L19 | T02-25; 3.87% x 1.5 [derived]
 - Expandable: the paper's A100 values, about 1.0K over NVLink at 300 GB/s and 24.5K over InfiniBand at 12.5 GB/s | https://arxiv.org/abs/2310.01889v4 (Section 3, Table 2) | T02-21
 
@@ -76,7 +76,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Recomputation overhead about 30% in Megatron Core's overview | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/user-guide/features/context_parallel.md#L32 | T02-25 (lines 19 to 34)
 - Bubble 9.4% (3 / 32) against 15% (3 / (5 x 4)) | derived | W2-21 formula (p - 1) / (v m); Calculator C
 - NVIDIA reports TP with CP ahead of full recomputation for a 175B GPT (vendor claim) | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/docs/user-guide/features/context_parallel.md#L29-L34 | T02-25
-- Expandable: the calculator charges full recomputation 4/3; E2 measured +14% to +16% step time on one GB10; at 1.15 the recomputed layout is about 51 to 54 s and the gap about 15% | none (sections 4 and 5) | build-log cross-section condition 'Recomputation price', E2; 38.86 x 1.15 x 1.15 = 51.4 s plus 3.04 s exposed [derived]
+- Expandable: the calculator charges full recomputation 4/3; E2 measured +14% to +16% step time on one GB10 (unified memory, 1B Llama shape, 2,048 tokens), now with a Tier 0 Cite to E2 (fact check 2026-10-31); at 1.15 the recomputed layout is about 51 to 54 s and the gap about 15% | none (sections 4 and 5) | build-log cross-section condition 'Recomputation price', E2; 38.86 x 1.15 x 1.15 = 51.4 s plus 3.04 s exposed [derived]
 - Expandable: CP layout with five chunks 63.8 GB, above the 75% headroom; compute 38.9 s at 131,072 against 18.9 s at 8,192 | none | Calculator B, Calculator C
 - Llama 3 orders dimensions TP, CP, PP, DP from innermost to outermost | https://arxiv.org/abs/2407.21783v3 (Section 3.3.2) | T02-46, W2-4
 - With TP 8 on a p5.48xlarge, one GPU of each CP group per instance, each hop at 50 GB/s | derived | T02-68, W2-7; our reading

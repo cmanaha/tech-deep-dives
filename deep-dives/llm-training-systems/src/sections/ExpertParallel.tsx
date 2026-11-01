@@ -15,7 +15,7 @@ import { evaluateMoeGrid, routedExpertParameters, type MoeCandidate, type MoeInp
 /* Sources                                                                  */
 /* ------------------------------------------------------------------------ */
 
-/** DeepSeek-V3 Technical Report: 2.1.2 routing and no dropping, 3.1 cluster, 3.2 layout, 3.2.1 ratio, 3.2.2 kernels, 3.3.4 precision, 4.2 shapes. */
+/** DeepSeek-V3 Technical Report: 2.1.2 routing and no dropping, 3.1 cluster, 3.2 layout, 3.2.1 ratio, 3.2.2 kernels, 3.3.3 precision, 4.2 shapes. */
 const DSV3 = arxiv('2412.19437v2');
 /** Switch Transformers (JMLR 23, 2022), Sec 2.2: expert capacity and dropped tokens. */
 const SWITCH = arxiv('2101.03961v3');
@@ -520,7 +520,7 @@ export function ExpertParallel() {
           <Box variant="p">
             Training adds three things. EP (expert parallelism) places the experts on different GPUs,
             and the backward pass repeats every token exchange, so each MoE layer runs four all-to-alls
-            per step. A capacity factor decides how many tokens an expert accepts. And the expert layers
+            for every micro-batch. A capacity factor decides how many tokens an expert accepts. And the expert layers
             want a different split from attention, so an MoE model runs on two grids at once. The
             challenge is placement: where the experts sit decides whether every token&apos;s copies ride
             NVLink inside an instance or EFA (Elastic Fabric Adapter) between instances.
@@ -547,8 +547,8 @@ export function ExpertParallel() {
             GPU sends a different slice of its data to every other GPU (section 7, Collectives &amp;
             What They Cost); GShard uses an AllToAll to reshard tokens to experts and another to bring
             them back{' '}
-            <Cite tier={3} href={GSHARD} venue="preprint" accessed={REGISTER_DATE}>
-              GShard, Section 3.3.2
+            <Cite tier={3} href={GSHARD} venue="preprint">
+              GShard, Section 3.3.2 and Figure 8
             </Cite>
             . The backward pass runs both again in the opposite direction, carrying gradients (our
             reading).
@@ -575,7 +575,7 @@ export function ExpertParallel() {
             . It dispatches in FP8 (8-bit floating point, one byte per value) and combines in BF16
             (bfloat16, two bytes per value){' '}
             <Cite tier={3} href={DSV3} venue="preprint">
-              DeepSeek-V3 Technical Report, Section 3.3.4
+              DeepSeek-V3 Technical Report, Section 3.3.3
             </Cite>
             . Per token, per MoE layer, in the forward pass:
           </Box>
@@ -702,7 +702,7 @@ export function ExpertParallel() {
             Node-limited routing sends each token to at most M = 4 nodes, chosen by the sum of the
             highest expert scores on each node{' '}
             <Cite tier={3} href={DSV3} venue="preprint">
-              DeepSeek-V3 Technical Report, Section 2.1.2
+              DeepSeek-V3 Technical Report, Sections 2.1.2 and 4.2
             </Cite>
             . A token crosses InfiniBand once per target node, to the GPU with the same index inside
             that node, and that GPU forwards it over NVLink to the GPUs that hold its experts; combine
@@ -731,9 +731,9 @@ export function ExpertParallel() {
           <Box variant="p">
             The ratio on AWS is steeper: nine times on a p5.48xlarge, where DeepSeek&apos;s cluster had
             3.2. EP 64 spans 8 p5.48xlarge, so every copy bound for another instance pays it. The same
-            64 GPUs fit inside one P6e-GB200 UltraServer, whose 72 Blackwell GPUs share one NVLink
-            domain{' '}
-            <Cite tier={1} href={P6_PAGE} accessed={REGISTER_DATE}>
+            64 GPUs fit inside one 72-GPU P6e-GB200 UltraServer, which puts up to 72 Blackwell GPUs
+            in one NVLink domain{' '}
+            <Cite tier={1} href={P6_PAGE}>
               Amazon EC2 P6 instances, P6e UltraServers
             </Cite>
             , and there the exchange need not leave NVLink (our arithmetic). Section 21, Training
@@ -810,31 +810,37 @@ export function ExpertParallel() {
             <Cite tier={1} href={mg(MG_GUIDE, 'L174-L180')} kind="doc-code-conflict">
               Megatron Core parallelism guide L174-L180
             </Cite>
-            , which the code above does not follow. The guide&apos;s own DeepSeek-V3 row, 1,024 GPUs
-            at TP 2, PP 16, CP 1 and EP 64{' '}
-            <Cite tier={1} href={mg(MG_GUIDE, 'L166-L170')} kind="doc-code-conflict">
-              Megatron Core parallelism guide L166-L170
-            </Cite>
-            , shows the cost: its formula gives 2 x 16 x 64 = 2,048 before any DP, more than the row&apos;s
-            GPUs. Under the code the row holds only with ETP 1 (Calculator C&apos;s world-size check on
-            1,024 GPUs):
+            , which the code above does not follow; under the code the guide&apos;s own DeepSeek-V3
+            row holds only with ETP 1.
           </Box>
-          <ul>
-            <li>
-              Attention grid, TP 2 x PP 16 x DP 32 = {int(GUIDE_DEFAULT_ETP.attentionGrid.product)}:{' '}
-              {GUIDE_DEFAULT_ETP.attentionGrid.matchesWorldSize ? 'passes' : 'fails'}.
-            </li>
-            <li>
-              Expert grid at the default ETP = TP = 2, 2 x 64 x 16 ={' '}
-              {int(GUIDE_DEFAULT_ETP.expertGrid.product)} on {int(GUIDE_DEFAULT_ETP.worldSize)} GPUs:{' '}
-              {GUIDE_DEFAULT_ETP.expertGrid.matchesWorldSize ? 'passes' : 'fails, and Megatron Core stops'}.
-            </li>
-            <li>
-              Expert grid with <code>--expert-tensor-parallel-size 1</code>, 1 x 64 x 16 ={' '}
-              {int(GUIDE_ETP_1.expertGrid.product)}, EDP 1:{' '}
-              {GUIDE_ETP_1.expertGrid.matchesWorldSize ? 'passes' : 'fails'}.
-            </li>
-          </ul>
+          <ExpandableSection headerText="The guide's DeepSeek-V3 row, checked against the code">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                The row is 1,024 GPUs at TP 2, PP 16, CP 1 and EP 64{' '}
+                <Cite tier={1} href={mg(MG_GUIDE, 'L166-L170')} kind="doc-code-conflict">
+                  Megatron Core parallelism guide L166-L170
+                </Cite>
+                . The guide&apos;s formula gives 2 x 16 x 64 = 2,048 before any DP, more than the
+                row&apos;s GPUs. Calculator C&apos;s world-size check on 1,024 GPUs:
+              </Box>
+              <ul>
+                <li>
+                  Attention grid, TP 2 x PP 16 x DP 32 = {int(GUIDE_DEFAULT_ETP.attentionGrid.product)}:{' '}
+                  {GUIDE_DEFAULT_ETP.attentionGrid.matchesWorldSize ? 'passes' : 'fails'}.
+                </li>
+                <li>
+                  Expert grid at the default ETP = TP = 2, 2 x 64 x 16 ={' '}
+                  {int(GUIDE_DEFAULT_ETP.expertGrid.product)} on {int(GUIDE_DEFAULT_ETP.worldSize)} GPUs:{' '}
+                  {GUIDE_DEFAULT_ETP.expertGrid.matchesWorldSize ? 'passes' : 'fails, and Megatron Core stops'}.
+                </li>
+                <li>
+                  Expert grid with <code>--expert-tensor-parallel-size 1</code>, 1 x 64 x 16 ={' '}
+                  {int(GUIDE_ETP_1.expertGrid.product)}, EDP 1:{' '}
+                  {GUIDE_ETP_1.expertGrid.matchesWorldSize ? 'passes' : 'fails'}.
+                </li>
+              </ul>
+            </SpaceBetween>
+          </ExpandableSection>
           <Box variant="p">
             The code is the authority: check both grids, and set ETP rather than inherit it.
           </Box>
@@ -931,8 +937,8 @@ export function ExpertParallel() {
           <ExpandableSection headerText="What the all-to-all overlap requires in Megatron Core core_v0.20.0">
             <SpaceBetween size="s">
               <Box variant="p">
-                The configuration rejects <code>--overlap-moe-expert-parallel-comm</code> unless EP is
-                above 1, the dispatcher is <code>alltoall</code> or <code>flex</code>, the model runs in
+                Among its checks, the configuration rejects{' '}
+                <code>--overlap-moe-expert-parallel-comm</code> unless EP is above 1, the dispatcher is <code>alltoall</code> or <code>flex</code>, the model runs in
                 BF16 or FP16 (16-bit floating point), full recomputation is off and no recomputation
                 covers the MoE layers, and, when PP is above 1, an interleaved pipeline (section
                 10&apos;s virtual stages) is set{' '}
@@ -943,8 +949,8 @@ export function ExpertParallel() {
                 backward to avoid storing activations, therefore gives up the overlap (our reading).
               </Box>
               <Box variant="p">
-                On an H100, Megatron-LM&apos;s training script warns when TP is above 1 together with
-                the overlap: TP wants <code>CUDA_DEVICE_MAX_CONNECTIONS=1</code> and the overlap a
+                On an H100, Megatron-LM&apos;s training script warns when TP or CP is above 1 together
+                with the overlap: TP and CP want <code>CUDA_DEVICE_MAX_CONNECTIONS=1</code> and the overlap a
                 larger value, so the run sets 1 or 32 by which of the two it favours{' '}
                 <Cite tier={1} href={mg(MG_ARGS, 'L1392-L1401')} kind="code">
                   Megatron-LM arguments.py L1392-L1401

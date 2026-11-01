@@ -27,11 +27,11 @@ import { evaluateLayout, type Candidate, type Layout, type ParallelismInput } fr
 /* Sources                                                                  */
 /* ------------------------------------------------------------------------ */
 
-/** Huang et al., GPipe, Sec 2.3: bubble O((K-1)/(M+K-1)) over total time. */
+/** Huang et al., GPipe (NeurIPS 2019, confirmed on the proceedings page), Sec 2.3: bubble O((K-1)/(M+K-1)) over total time. */
 const GPIPE = arxiv('1811.06965v5');
 /** Narayanan et al., Megatron-LM on GPU clusters (PTD-P), SC 2021: Sec 2.2 schedules, 3.1 notation, 3.5 recomputation, 4.1 scatter-gather, Appendix FLOPs. */
 const PTDP = arxiv('2104.04473v5');
-/** Korthikanti et al., Reducing Activation Recomputation in Large Transformer Models, Sec 4.2.3. */
+/** Korthikanti et al., Reducing Activation Recomputation in Large Transformer Models (MLSys 2023, confirmed on the proceedings page), Sec 4.2.3. */
 const KORTHIKANTI = arxiv('2205.05198v1');
 /** Qi et al., Zero Bubble Pipeline Parallelism: abstract, Sec 2, Table 2. */
 const ZERO_BUBBLE = arxiv('2401.10241v1');
@@ -679,7 +679,7 @@ export function PipelineParallel() {
             </Cite>
             . GPipe, which introduced the schedule, states it over the total time instead,{' '}
             <code>(p - 1) / (m + p - 1)</code>{' '}
-            <Cite tier={3} href={GPIPE} venue="preprint">
+            <Cite tier={3} href={GPIPE} venue="NeurIPS 2019">
               GPipe, Section 2.3
             </Cite>
             . Both describe the same idle time, so a quoted percentage means little until its
@@ -695,33 +695,36 @@ export function PipelineParallel() {
             <Cite tier={3} href={LLAMA3} venue="preprint">
               Llama 3 Herd of Models, Section 3.3.2
             </Cite>
-            . For 405B&apos;s 126 layers{' '}
-            <Cite tier={3} href={LLAMA3} venue="preprint">
-              Table 3
-            </Cite>{' '}
-            on 16 stages{' '}
-            <Cite tier={3} href={LLAMA3} venue="preprint">
-              Table 4
-            </Cite>{' '}
-            that is 7 + 14 x 8 + 7 layers by our arithmetic (126 + 2 = 128 = 16 x 8). DeepSeek-V3 ran
-            61 layers{' '}
-            <Cite tier={3} href={DEEPSEEK_V3} venue="preprint">
-              DeepSeek-V3 Technical Report, Section 4.2
-            </Cite>{' '}
-            on 16 stages{' '}
-            <Cite tier={3} href={DEEPSEEK_V3} venue="preprint">
-              Section 3.2
-            </Cite>{' '}
-            under its DualPipe schedule, which places the shallowest and the deepest layers on the same
-            rank{' '}
-            <Cite tier={3} href={DEEPSEEK_V3} venue="preprint">
-              Section 3.2.3
-            </Cite>
-            ; the paper does not give the per-stage counts. The three frameworks read for this section
-            all support lighter first and last stages, each with its own default.
+            . The three frameworks read for this section all support lighter first and last stages,
+            each with its own default.
           </Box>
-          <ExpandableSection headerText="Uneven stages in Megatron Core, TorchTitan and DeepSpeed">
+          <ExpandableSection headerText="Uneven stages: two production splits, and the settings in Megatron Core, TorchTitan and DeepSpeed">
             <SpaceBetween size="s">
+              <Box variant="p">
+                For Llama 3 405B&apos;s 126 layers{' '}
+                <Cite tier={3} href={LLAMA3} venue="preprint">
+                  Table 3
+                </Cite>{' '}
+                on 16 stages{' '}
+                <Cite tier={3} href={LLAMA3} venue="preprint">
+                  Table 4
+                </Cite>{' '}
+                one layer fewer at each end is 7 + 14 x 8 + 7 layers by our arithmetic (126 + 2 = 128 =
+                16 x 8). DeepSeek-V3 ran 61 layers{' '}
+                <Cite tier={3} href={DEEPSEEK_V3} venue="preprint">
+                  DeepSeek-V3 Technical Report, Section 4.2
+                </Cite>{' '}
+                on 16 stages{' '}
+                <Cite tier={3} href={DEEPSEEK_V3} venue="preprint">
+                  Section 3.2
+                </Cite>{' '}
+                under its DualPipe schedule, which places the shallowest and the deepest layers on the
+                same rank{' '}
+                <Cite tier={3} href={DEEPSEEK_V3} venue="preprint">
+                  Section 3.2.3
+                </Cite>
+                ; the paper does not give the per-stage counts.
+              </Box>
               <Box variant="p">
                 <strong>Megatron Core core_v0.20.0</strong> checks that the layer count divides by p
                 only when neither <code>--decoder-first-pipeline-num-layers</code> nor{' '}
@@ -868,8 +871,10 @@ export function PipelineParallel() {
                 all-to-all, the exchange that sends each token to the GPUs holding its experts, and
                 the pipeline sends run behind computation. Its bubble is{' '}
                 <code>(PP/2 - 1)(F&amp;B + B - 3W)</code> against 1F1B&apos;s{' '}
-                <code>(PP - 1)(F + B)</code>, for two copies of the parameters and activations for PP
-                + 1 micro-batches, and it needs the stage and micro-batch counts to be even, without
+                <code>(PP - 1)(F + B)</code>, with F, B and W the times of a forward chunk, a full
+                backward chunk and a weight-gradient chunk and F&amp;B an overlapped forward and
+                backward pair, for two copies of the parameters and activations for PP + 1
+                micro-batches, and it needs the stage and micro-batch counts to be even, without
                 requiring m to divide by the stage count{' '}
                 <Cite tier={3} href={DEEPSEEK_V3} venue="preprint">
                   DeepSeek-V3 Technical Report, Section 3.2.1 and Table 2
@@ -1050,7 +1055,7 @@ export function PipelineParallel() {
             each one&apos;s activations for its L/p of the model&apos;s L layers, so it stores p x L/p
             = L layers&apos; worth whatever p is; the interleaved schedule raises that to{' '}
             <code>L x (1 + (p - 1) / (p x v))</code>{' '}
-            <Cite tier={3} href={KORTHIKANTI} venue="preprint">
+            <Cite tier={3} href={KORTHIKANTI} venue="MLSys 2023">
               Reducing Activation Recomputation, Section 4.2.3
             </Cite>
             . Llama 3 reports the same imbalance in production: its first stage consumed more memory

@@ -18,7 +18,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 - m = B / (b x d) | https://arxiv.org/abs/2104.04473v5 (Sec 3.1) | T02-28; T02-44
 - Bubble (p - 1)/m over ideal compute time | https://arxiv.org/abs/2104.04473v5 (Sec 2.2.1) | T02-28; W2-21
-- GPipe bubble (p - 1)/(m + p - 1) over total time | https://arxiv.org/abs/1811.06965v5 (Sec 2.3) | T02-27; W2-21; C02-9
+- GPipe bubble (p - 1)/(m + p - 1) over total time | https://arxiv.org/abs/1811.06965v5 (Sec 2.3; venue NeurIPS 2019, confirmed on proceedings.neurips.cc 2026-10-31) | T02-27; W2-21; C02-9
 - p = 4, m = 8: 37.5% of ideal time against 27.3% of the step | our arithmetic | C02-9 [derived]
 - Llama 3 removed one layer from the first and last stages; the first chunk holds only the embedding, the last only the output projection and loss | https://arxiv.org/abs/2407.21783v3 (Sec 3.3.2) | T02-35; W2-6; G8 (wave2-parallelism)
 - Llama 3 405B has 126 layers (Table 3) and ran PP 16 (Table 4) | https://arxiv.org/abs/2407.21783v3 | T02-35; T02-47
@@ -55,7 +55,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - ZB-H1: about a third of 1F1B's bubble at the same peak memory; ZB-H2: zero bubble at 2p - 1 micro-batches | https://arxiv.org/abs/2401.10241v1 (Sec 2, Table 2) | T02-33
 - Zero Bubble: up to 23% more throughput at similar memory, 31% relaxed (authors' runs) | https://arxiv.org/abs/2401.10241v1 (abstract) | T02-33
 - DualPipe: two-ended feed, split backward, paired forward and backward chunks hiding the all-to-all and PP sends | https://arxiv.org/abs/2412.19437v2 (Sec 3.2.1) | T02-34
-- DualPipe bubble (PP/2 - 1)(F&B + B - 3W) against 1F1B's (PP - 1)(F + B), 2x parameters, PP + 1 activations, even counts, no need for m to divide by stages | https://arxiv.org/abs/2412.19437v2 (Sec 3.2.1, Table 2) | T02-34
+- DualPipe bubble (PP/2 - 1)(F&B + B - 3W) against 1F1B's (PP - 1)(F + B), F, B, W and F&B defined as in the Table 2 caption, 2x parameters, PP + 1 activations, even counts, no need for m to divide by stages | https://arxiv.org/abs/2412.19437v2 (Sec 3.2.1, Table 2) | T02-34
 - DualPipe was built because computation and communication were about 1:1 | https://arxiv.org/abs/2412.19437v2 (Sec 3.2.1) | T02-34
 - DualPipe is a communication-hiding schedule first | our reading | T02-34 [our reading]
 - Llama 3: tunable N, interleaved bubble (PP - 1)/(V x M), asynchronous point-to-point | https://arxiv.org/abs/2407.21783v3 (Sec 3.3.2) | T02-35
@@ -85,10 +85,10 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 ## What a pipeline divides, and what stays on stage 1
 
-- Under 1F1B stage 1 holds L layers' worth whatever p is; interleaving gives L(1 + (p - 1)/(p v)) | https://arxiv.org/abs/2205.05198v1 (Sec 4.2.3) | T02-19; T01-62; W2-23
+- Under 1F1B stage 1 holds L layers' worth whatever p is; interleaving gives L(1 + (p - 1)/(p v)) | https://arxiv.org/abs/2205.05198v1 (Sec 4.2.3); venue MLSys 2023, confirmed on proceedings.mlsys.org 2026-10-31 | T02-19; T01-62; W2-23
 - Llama 3's first stage used more memory because of the embedding and warm-up micro-batches | https://arxiv.org/abs/2407.21783v3 (Sec 3.3.2) | T02-35
 - The last stage holds one micro-batch | our reading of the schedule | W2-54 (calculator) [our reading]
-- Table: model state 38.6, 21.0, 12.1 GB per GPU at p = 1, 2, 4; stage 1 activations 22.8 GB throughout; last stage 22.8, 11.4, 5.7 GB | Calculator C (`memory`) | build-log "Activation coefficient" 34 sbh [derived]
+- Table: model state 38.6, 20.9, 12.1 GB per GPU at p = 1, 2, 4 (rendered from Calculator C; 20.95 GB rounds to 20.9); stage 1 activations 22.8 GB throughout; last stage 22.8, 11.4, 5.7 GB | Calculator C (`memory`) | build-log "Activation coefficient" 34 sbh [derived]
 - Stage 1 at v = 5: 26.2 GB | Calculator C | W2-23 [derived]
 - Megatron (2021): recomputation "required to train reasonably large models with pipeline parallelism" | https://arxiv.org/abs/2104.04473v5 (Sec 3.5) | T02-32; C02-11; W2-24
 - Llama 3 405B trained at PP 16 with 8,192-token sequences without activation checkpointing | https://arxiv.org/abs/2407.21783v3 (Sec 3.3.2, Table 4) | T02-35; C02-11; W2-24

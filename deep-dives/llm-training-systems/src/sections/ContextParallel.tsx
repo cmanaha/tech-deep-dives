@@ -4,7 +4,7 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
-import { Cite, arxiv, gh, MEGATRON_TAG, DEEPSPEED_TAG } from '../components/Cite';
+import { Cite, arxiv, gh, MEGATRON_TAG, DEEPSPEED_TAG, E2_URL } from '../components/Cite';
 
 /* ------------------------------------------------------------------------ */
 /* Sources                                                                  */
@@ -510,8 +510,8 @@ export function ContextParallel() {
             </Cite>
             . Linear layers and norms have no operations across tokens, so they run unchanged on a
             slice, and each GPU&apos;s activation memory falls by the CP degree{' '}
-            <Cite tier={1} href={megatronCpDoc('L34')}>
-              Megatron Core context parallelism overview, L34
+            <Cite tier={1} href={megatronCpDoc('L19-L34')}>
+              Megatron Core context parallelism overview, L19 and L34
             </Cite>
             .
           </Box>
@@ -606,26 +606,32 @@ export function ContextParallel() {
           </Box>
           <Box variant="p">
             Under GQA (grouped-query attention, where several query heads share one key and value
-            head) the split follows the KV (key and value) heads. DeepSpeed v0.19.9 takes the count
-            from the key tensor, so each query head lands on the GPU holding its KV head{' '}
-            <Cite tier={1} href={dsLayer('L544-L547')} kind="code">
-              DeepSpeed sequence/layer.py L544-L547
-            </Cite>
-            , rejects a degree above that count{' '}
+            head) the split follows the KV (key and value) heads, and DeepSpeed v0.19.9 rejects a
+            degree above their count{' '}
             <Cite tier={1} href={dsLayer('L35-L37')} kind="code">
               DeepSpeed sequence/layer.py L35-L37
             </Cite>
-            , and splits a count that does not divide evenly unevenly{' '}
-            <Cite tier={1} href={dsLayer('L286-L288')} kind="code">
-              DeepSpeed sequence/layer.py L286-L288
-            </Cite>
-            ; the file has no path that replicates KV heads. Every Llama 3.1 size has 8 KV heads{' '}
+            . Every Llama 3.1 size has 8 KV heads{' '}
             <Cite tier={3} href={LLAMA3} venue="preprint">
               Llama 3 Herd of Models, Table 3
             </Cite>
             , so Ulysses stops at 8. TP splits the same heads: with TP 8, each GPU holds one KV head
             of a Llama 3.1 model and Ulysses has nothing left to split (our reading of the code).
           </Box>
+          <ExpandableSection headerText="How DeepSpeed v0.19.9 splits heads under GQA">
+            <Box variant="p">
+              DeepSpeed takes the head count from the key tensor, so each query head lands on the GPU
+              holding its KV head{' '}
+              <Cite tier={1} href={dsLayer('L544-L547')} kind="code">
+                DeepSpeed sequence/layer.py L544-L547
+              </Cite>
+              , and splits a count that does not divide evenly unevenly{' '}
+              <Cite tier={1} href={dsLayer('L286-L288')} kind="code">
+                DeepSpeed sequence/layer.py L286-L288
+              </Cite>
+              ; the file has no path that replicates KV heads.
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             <strong>All-gather.</strong> Llama 3 all-gathers the keys and values (K and V), then
             computes attention for its local queries. The all-gather sits on the critical path, and Meta accepted that for two
@@ -745,20 +751,8 @@ export function ContextParallel() {
               EC2 (Elastic Compute Cloud) accelerated computing instance specifications
             </Cite>
             . A ring then needs about 2.2K tokens per GPU over NVLink and about 19.8K over EFA (our
-            arithmetic).
-          </Box>
-          <Box variant="p">
-            The EFA figure assumes one member of each CP group per instance, which is what TP 8 gives.
-            Megatron Core&apos;s key and value exchange runs between a GPU and its counterparts in
-            other TP groups{' '}
-            <Cite tier={1} href={megatronCpDoc('L19')}>
-              Megatron Core context parallelism overview, L19
-            </Cite>
-            , so with TP filling the instance every ring hop crosses to another instance. Each hop
-            then rides its GPU&apos;s 50 GB/s share while eight rings share the instance&apos;s 400
-            GB/s, the way section 7, Collectives &amp; What They Cost, prices traffic addressed GPU to
-            GPU. A CP group with several GPUs in one instance sends some hops over NVLink (our
-            reading).
+            arithmetic), the EFA figure for one member of each CP group per instance, which is what TP
+            8 gives.
           </Box>
           <Box variant="p">
             Both thresholds assume keys and values as wide as the hidden size. Llama 3.1 70B has 64
@@ -790,9 +784,9 @@ export function ContextParallel() {
             actually run (our reading).
           </Box>
           <Box variant="p">
-            The sizing calculator of section 14, Set My Ranks, prices CP as Llama 3 runs it, one all-gather of K and
-            V in the forward pass and one reduce-scatter of their gradients in the backward pass per
-            layer, per instance. For the CP 8 layout at 131,072 tokens that is 601 GB per instance per
+            The sizing calculator of section 14, Set My Ranks, prices CP as one all-gather of K and V
+            in the forward pass, the way Llama 3 runs it, and one reduce-scatter of their gradients in
+            the backward pass, per layer, per instance. For the CP 8 layout at 131,072 tokens that is 601 GB per instance per
             step, 1.5 s at 400 GB/s against 38.9 s of compute: about 4%, with none of it hidden.
             Megatron Core gathers K and V again in the backward pass to save memory{' '}
             <Cite tier={1} href={megatronCpDoc('L19')}>
@@ -821,6 +815,18 @@ export function ContextParallel() {
                 <code>19,790 / 8 = 2,474</code>. At 40% MFU the achieved rate is 395.8 TFLOPS, which
                 gives about 880 and 7.9K at full width and about 110 and 990 with GQA. All our
                 arithmetic.
+              </Box>
+              <Box variant="p">
+                Why the EFA figure applies with TP 8: Megatron Core&apos;s key and value exchange runs
+                between a GPU and its counterparts in other TP groups{' '}
+                <Cite tier={1} href={megatronCpDoc('L19')}>
+                  Megatron Core context parallelism overview, L19
+                </Cite>
+                , so with TP filling the instance every ring hop crosses to another instance. Each hop
+                then rides its GPU&apos;s 50 GB/s share while eight rings share the instance&apos;s
+                400 GB/s, the way section 7, Collectives &amp; What They Cost, prices traffic
+                addressed GPU to GPU. A CP group with several GPUs in one instance sends some hops
+                over NVLink (our reading).
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -898,9 +904,13 @@ export function ContextParallel() {
                 none. Compute at 131,072 tokens is about twice the 18.9 s of the same tokens at 8,192,
                 because attention&apos;s FLOPs grow with the sequence (section 4, Counting the
                 Arithmetic). The calculator charges full recomputation its FLOP cost, a factor of 4/3;
-                the one measured step in this dive, on a single GB10, cost 14% to 16% more (sections 4
-                and 5), which at 1.15 would put the recomputed layout at about 51 to 54 s and narrow the
-                gap to about 15% (our arithmetic). Estimates; confirm with a measured step.
+                this dive&apos;s one measurement of it, on a single GB10 with unified memory and a 1B
+                Llama-shaped model at 2,048 tokens, cost 14% to 16% more step time{' '}
+                <Cite tier={0} href={E2_URL}>
+                  E2: step time and recomputation on one GB10, PyTorch 2.15.0, two runs
+                </Cite>
+                , which at 1.15 would put the recomputed layout at about 51 to 54 s and narrow the gap
+                to about 15% (our arithmetic). Estimates; confirm with a measured step.
               </Box>
             </SpaceBetween>
           </ExpandableSection>

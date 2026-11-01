@@ -9,14 +9,14 @@ need a fact-check pass. Numbers marked "Calculator C" are computed on the page b
 ## Opening
 
 - An MoE layer replaces the feed-forward block with experts and a router that sends each token to k of E; inference-side mechanics linked, not repeated | ../silicon-memory-inference/ (section 25) | SCOPE section 12 block; T02-71 for "replaces FFNs"
-- EP places experts on different GPUs; the backward pass repeats both exchanges, four all-to-alls per MoE layer per step | https://arxiv.org/abs/2006.16668v1 (Sec 3.3.2) | T02-37, T02-38 [our reading of dispatch/combine pair]
+- EP places experts on different GPUs; the backward pass repeats both exchanges, four all-to-alls per MoE layer for every micro-batch (fact check 2026-10-31: was "per step", which undercounts under gradient accumulation) | https://arxiv.org/abs/2006.16668v1 (Sec 3.3.2) | T02-37, T02-38 [our reading of dispatch/combine pair]
 
 ## Dispatch and combine
 
-- GShard uses AllToAll to reshard tokens to experts and back | https://arxiv.org/abs/2006.16668v1 Sec 3.3.2 | T02-37 (accessed 2026-10-30)
+- GShard uses AllToAll to reshard tokens to experts (Sec 3.3.2) and back (Figure 8 caption: "MoE dispatch and combine" is AllToAll) | https://arxiv.org/abs/2006.16668v1 Sec 3.3.2, Figure 8 | T02-37 (re-read 2026-10-31)
 - Bytes leaving a GPU per MoE layer forward about 2 x T x k x h x bytes x (EP-1)/EP; backward the same; no source located that prints it for top-k | derived | T02-38 [derived]
 - DeepSeek-V3: hidden 7,168; 8 of 256 routed experts; 58 of 61 layers are MoE (first three dense); 671B total, 37B active | https://arxiv.org/abs/2412.19437v2 Sec 4.2 | T02-71, T01-26, W2-35 (re-read 2026-10-31)
-- FP8 dispatch, BF16 combine | https://arxiv.org/abs/2412.19437v2 Sec 3.3.4 | T02-39, W2-35
+- FP8 dispatch, BF16 combine | https://arxiv.org/abs/2412.19437v2 Sec 3.3.3 ("Low-Precision Communication"; the paper has no Sec 3.3.4) | T02-39, W2-35
 - Dispatch 57 KB, combine 115 KB, 172 KB per token per MoE layer forward; about 10 MB across 58 layers | Calculator C (`expertTraffic`) | 02 section 3.4, W2-35 [derived]
 - 172 KB is 12 times the token's 14 KB BF16 hidden state (172,032 / 14,336) | derived | our arithmetic on T02-71
 - Bytes follow k and h, not expert count or size | derived | our reading of T02-38's formula
@@ -32,13 +32,13 @@ need a fact-check pass. Numbers marked "Calculator C" are computed on the page b
 - DeepSeek-V3: 2,048 H800, 8 GPUs per node on NVLink and NVSwitch | https://arxiv.org/abs/2412.19437v2 Sec 3.1 | T02-40, W2-34
 - PP 16, EP 64 spanning 8 nodes, ZeRO-1 DP, no TP | https://arxiv.org/abs/2412.19437v2 Sec 3.2 | T02-40, W2-34
 - Cross-node EP left computation to communication about 1:1 | https://arxiv.org/abs/2412.19437v2 Sec 3.2.1 | T02-34, T02-40
-- Node-limited routing: at most M = 4 nodes, chosen by the sum of highest affinity scores per node | https://arxiv.org/abs/2412.19437v2 Sec 2.1.2 | T02-39, W2-34
+- Node-limited routing: at most M = 4 nodes, chosen by the sum of highest affinity scores per node | https://arxiv.org/abs/2412.19437v2 Sec 2.1.2 (M) and Sec 4.2 (M = 4) | T02-39, W2-34
 - IB once per target node to the same in-node index GPU, then NVLink forwarding; combine reverse with accumulation | https://arxiv.org/abs/2412.19437v2 Sec 3.2.2 | T02-39 (combine accumulation re-read 2026-10-31)
 - NVLink 160 GB/s, about 3.2x IB 50 GB/s; average 3.2 experts per node at no extra cost; up to 13 experts at the same cost | https://arxiv.org/abs/2412.19437v2 Sec 3.2.2 | T02-39, W2-11 (13 experts re-read 2026-10-31)
 - Cross-node dispatch at most 4 x 7,168 x 1 B = 29 KB per token per layer against 57 KB | Calculator C (`crossNodeDispatchBytesPerTokenPerMoeLayer`) | 02 section 3.4 [derived]
 - Same pattern as HSDP: cross the slow link once, fan out on the fast one | derived | 02 section 4 mental model 7 [our reading]
 - p5.48xlarge 9x vs DeepSeek 3.2x | derived | 02 section 3.4, T02-68, T02-70, T02-39
-- EP 64 spans 8 p5.48xlarge; fits a P6e-GB200 UltraServer's 72-GPU NVLink domain | https://aws.amazon.com/ec2/instance-types/p6/ | W2-35 [derived], T05-6, T05-7, W5-19 (accessed 2026-10-30)
+- EP 64 spans 8 p5.48xlarge; fits the 72-GPU P6e-GB200 UltraServer, "up to 72 Blackwell GPUs within one NVLink domain" (a 36-GPU UltraServer also exists) | https://aws.amazon.com/ec2/instance-types/p6/ | W2-35 [derived], T05-6, T05-7, W5-19 (re-read 2026-10-31)
 - Diagram: token on GPU 6 of instance A, experts on A GPUs 1 and 3 and B GPUs 0, 3 and 4, one EFA copy to B GPU 6 (same index) which forwards over NVLink; illustrative; numbers 450, 50, 4 nodes, 29 KB, 57 KB match prose | as above | schematic
 
 ## Two layouts
@@ -67,9 +67,9 @@ need a fact-check pass. Numbers marked "Calculator C" are computed on the page b
 - Overlap: one micro-batch's forward beside another's backward, all-to-all hidden by the other's compute | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/pipeline_parallel/combined_1f1b.py#L54-L61 | U03-6 (closed, wave2-frameworks G2)
 - --overlap-moe-expert-parallel-comm and --delay-wgrad-compute, both off by default | README L433-L438, L563-L564 | U03-6, G2
 - Guide: EP all-to-all can consume 30% to 40% of training time without optimization; no conditions | README L431 | G2 [vendor claim]
-- Overlap requires EP > 1, alltoall or flex, BF16 or FP16, no recomputation settings, VPP when PP > 1 | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/transformer/transformer_config.py#L3613-L3648 | fetched 2026-10-31, no register row (code); extends G2
+- Overlap requires, among other checks, EP > 1, alltoall or flex, BF16 or FP16, no full recomputation and no recomputation method, layer count or "moe" module, VPP when PP > 1 (further checks past L3648: no shared-expert overlap, MTP at most one layer, torch >= 2.6 at L3615) | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/core/transformer/transformer_config.py#L3613-L3648 | fetched 2026-10-31, no register row (code); extends G2
 - Full recomputation therefore excludes the overlap | derived | our reading of the asserts
-- On Hopper with TP > 1 and the overlap the training script warns: TP wants CUDA_DEVICE_MAX_CONNECTIONS=1, the overlap a larger value; set 1 or 32 | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L1392-L1401 | fetched 2026-10-31; same block section 9 cites (L1376-L1405)
+- On Hopper with TP > 1 or CP > 1 and the overlap the training script warns (condition at L1379-L1380): TP wants CUDA_DEVICE_MAX_CONNECTIONS=1, the overlap a larger value; set 1 or 32 | https://github.com/NVIDIA/Megatron-LM/blob/core_v0.20.0/megatron/training/arguments.py#L1392-L1401 | fetched 2026-10-31; same block section 9 cites (L1376-L1405)
 - Candidate grids on 256 p5.48xlarge: DeepSeek-V3's degrees 10.6 GB, EP over EFA across 8 instances; TP 8 x PP 8 x DP 32 with ETP 1 x EP 8 x EDP 32, 45.9 GB, NVLink only; activations "not modelled; measure a step" | Calculator C (`evaluateMoeGrid`) | calculator; SCOPE section 12 ending
 - Headroom target 60 GB = 75% of 80 GB, an assumption | Calculator B/C default (`DEFAULT_HEADROOM`) | SCOPE Calculator B [our reading]
 - Room under the target: about 14 GB (in-instance) against about 49 GB (DeepSeek-V3's degrees) | derived from Calculator C | our arithmetic
