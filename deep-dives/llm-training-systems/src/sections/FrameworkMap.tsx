@@ -64,7 +64,7 @@ function tt(path: string, lines?: string): string {
 const TT_DEV = tt('README.md', 'L38-L39');
 const TT_FEATURES = tt('README.md', 'L130-L134');
 const TT_HF = tt('README.md', 'L161');
-const TT_PIN = tt('README.md', 'L219-L220');
+const TT_PIN = tt('README.md', 'L220-L221');
 const TT_TORCHAO = tt('README.md', 'L228-L230');
 const TT_RELEASE = 'https://github.com/pytorch/torchtitan/releases/tag/v0.4.0';
 const TT_CONFIG = tt('torchtitan/config/README.md', 'L3-L22');
@@ -79,7 +79,7 @@ const TTN_RELEASE = neuron('release-notes/components/torchtitan-neuron.rst', 'L1
 const TTN_FORK_POINT = neuron('training/torchtitan/about-torchtitan-neuron.rst', 'L50-L56');
 const TTN_SUPPORT = neuron('training/torchtitan/about-torchtitan-neuron.rst', 'L62-L95');
 const TTN_VALIDATED = neuron('training/torchtitan/about-torchtitan-neuron.rst', 'L176-L186');
-const TTN_RANKS = neuron('training/torchtitan/about-torchtitan-neuron.rst', 'L203-L208');
+const TTN_RANKS = neuron('training/torchtitan/about-torchtitan-neuron.rst', 'L203-L209');
 const TORCHNEURON_BETA = neuron('release-notes/components/torchneuron.rst', 'L20-L22');
 const NEURON_PRECISION = neuron('torch/about-pytorch-neuron.rst', 'L115-L118');
 const NEURON_DLAMI = neuron('release-notes/components/dlamis.rst', 'L28');
@@ -150,7 +150,7 @@ function ds(path: string, lines?: string): string {
 }
 const DS_STAGE = ds('deepspeed/runtime/zero/config.py', 'L95-L100');
 const DS_ELASTIC = ds('deepspeed/runtime/zero/config.py', 'L158-L162');
-const DS_FP8_TEST = ds('tests/unit/runtime/half_precision/test_fp8.py', 'L20-L92');
+const DS_FP8_TEST = ds('tests/unit/runtime/half_precision/test_fp8.py', 'L20-L98');
 const DS_UNIVERSAL = ds('docs/_tutorials/universal-checkpointing.md', 'L21-L47');
 const DS_HOSTFILE = ds('docs/_tutorials/getting-started.md', 'L175-L190');
 const DS_NO_SSH = ds('docs/_tutorials/getting-started.md', 'L230-L248');
@@ -166,7 +166,7 @@ function ac(path: string, lines?: string): string {
 }
 const AC_PARALLELISM = ac('src/accelerate/parallelism_config.py', 'L34-L76');
 const AC_CP_DOCSTRING = ac('src/accelerate/parallelism_config.py', 'L52-L53');
-const AC_CP_CODE = ac('src/accelerate/accelerator.py', 'L4175-L4177');
+const AC_CP_CODE = ac('src/accelerate/accelerator.py', 'L4200-L4215');
 const AC_FSDP_VERSION = ac('src/accelerate/utils/dataclasses.py', 'L1591-L1593');
 const AC_FSDP_ENV = ac('src/accelerate/utils/dataclasses.py', 'L1830-L1831');
 const AC_FP8 = ac('docs/source/usage_guides/low_precision_training.md', 'L33-L35');
@@ -1217,9 +1217,10 @@ export function FrameworkMap() {
           One rank per logical NeuronCore: 64 ranks per trn2.48xlarge at the default LNC (logical NeuronCore) setting
           of 2{' '}
           <Cite tier={1} href={TTN_RANKS}>
-            About TorchTitan Neuron L203-L208
+            About TorchTitan Neuron L203-L209
           </Cite>
-          ; validated at TP 4 x FSDP 16 on one trn2.48xlarge for Llama3-8B and Qwen3-32B{' '}
+          ; validated at TP 4 x FSDP 16 for Llama3-8B on one trn2.48xlarge and for Qwen3-32B with full activation
+          checkpointing{' '}
           <Cite tier={1} href={TTN_VALIDATED}>
             L176-L186
           </Cite>
@@ -1386,7 +1387,11 @@ export function FrameworkMap() {
               About TorchTitan Neuron L50-L56
             </Cite>
             . Megatron-LM is &quot;a reference example that includes Megatron Core plus pre-configured training
-            scripts&quot;, and Megatron Bridge runs its loop on Megatron Core and converts Hugging Face checkpoints both
+            scripts&quot;{' '}
+            <Cite tier={1} href={MG_ABOUT}>
+              Megatron README L16-L22
+            </Cite>
+            , and Megatron Bridge runs its loop on Megatron Core and converts Hugging Face checkpoints both
             ways{' '}
             <Cite tier={1} href={BR_OVERVIEW}>
               Megatron Bridge README L68-L72
@@ -1422,18 +1427,9 @@ export function FrameworkMap() {
             <Cite tier={1} href={AXOLOTL}>
               Axolotl README L102
             </Cite>
-            (section 16, Fine-Tuning &amp; Post-Training Runs). Nanotron enters only as the code behind Hugging
-            Face&apos;s Ultra-Scale Playbook, which calls it &quot;a production training codebase used at Hugging
-            Face&quot;{' '}
-            <Cite tier={3} href={PLAYBOOK}>
-              Ultra-Scale Playbook
-            </Cite>{' '}
-            <Cite tier={1} href={NANOTRON}>
-              Nanotron v0.5
-            </Cite>
-            .
+            (section 16, Fine-Tuning &amp; Post-Training Runs).
           </Box>
-          <ExpandableSection headerText="Where the split into engines and front ends comes from">
+          <ExpandableSection headerText="Where the split into engines and front ends comes from, and where Nanotron fits">
             <SpaceBetween size="s">
               <Box variant="p">
                 No single source states the split; it is our reading of how each project describes itself, cited
@@ -1445,6 +1441,17 @@ export function FrameworkMap() {
                 post-training library with both backends{' '}
                 <Cite tier={1} href={BR_MATRIX}>
                   Bridge README L79-L81
+                </Cite>
+                .
+              </Box>
+              <Box variant="p">
+                Nanotron enters only as the code behind Hugging Face&apos;s Ultra-Scale Playbook, which calls it
+                &quot;a production training codebase used at Hugging Face&quot;{' '}
+                <Cite tier={3} href={PLAYBOOK}>
+                  Ultra-Scale Playbook
+                </Cite>{' '}
+                <Cite tier={1} href={NANOTRON}>
+                  Nanotron v0.5
                 </Cite>
                 .
               </Box>
@@ -1532,7 +1539,7 @@ export function FrameworkMap() {
             TorchTitan pins each stable release to &quot;the nightly versions of{' '}
             <code>torch</code> and <code>torchao</code> it was validated against&quot;{' '}
             <Cite tier={1} href={TT_PIN}>
-              TorchTitan README L219-L220
+              TorchTitan README L220-L221
             </Cite>
             : pin the release and install the nightlies it names. TorchTitan Neuron forked from an upstream commit of
             2026-07-08{' '}
@@ -1548,18 +1555,13 @@ export function FrameworkMap() {
           </Box>
           <FrameworkTable headers={['Framework', 'Version to pin', 'Its own words', 'Best fit (our reading)']} rows={maturityRows} />
           <Box variant="p">
-            Three projects on the map have ended or moved. The NVIDIA/NeMo repository at v3.0.0 is titled &quot;NVIDIA
-            NeMo Speech&quot; and says it &quot;has pivoted to focus on audio, speech, and multimodal LLM&quot;{' '}
+            Three projects on the map have ended or moved. The NVIDIA/NeMo repository at v3.0.0 says it &quot;has
+            pivoted to focus on audio, speech, and multimodal LLM&quot;{' '}
             <Cite tier={1} href={NEMO_SPEECH}>
               NeMo README L10-L33
             </Cite>
-            ; its collections are now <code>asr</code>, <code>audio</code>, <code>common</code>,{' '}
-            <code>speechlm2</code> and <code>tts</code>{' '}
-            <Cite tier={1} href={NEMO_COLLECTIONS}>
-              nemo/collections at v3.0.0
-            </Cite>
-            . Its LLM training moved to Megatron Bridge, AutoModel and NeMo RL, which Bridge&apos;s README lists side
-            by side{' '}
+            , and its LLM training moved to Megatron Bridge, AutoModel and NeMo RL, which Bridge&apos;s README lists
+            side by side{' '}
             <Cite tier={1} href={BR_MATRIX}>
               Bridge README L79-L81
             </Cite>
@@ -1579,6 +1581,20 @@ export function FrameworkMap() {
             </Cite>
             ; section 27, Trainium: The Neuron Path, follows that route.
           </Box>
+          <ExpandableSection headerText="NeMo's pivot in its own repository">
+            <Box variant="p">
+              At v3.0.0 the NVIDIA/NeMo README is titled &quot;NVIDIA NeMo Speech&quot;{' '}
+              <Cite tier={1} href={NEMO_SPEECH}>
+                NeMo README L10-L33
+              </Cite>
+              , and its collections are <code>asr</code>, <code>audio</code>, <code>common</code>,{' '}
+              <code>speechlm2</code> and <code>tts</code>{' '}
+              <Cite tier={1} href={NEMO_COLLECTIONS}>
+                nemo/collections at v3.0.0
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -1600,22 +1616,27 @@ export function FrameworkMap() {
           </Box>
           <FrameworkTable headers={['Framework', 'Parallelism and pipeline schedules', 'Training precision']} rows={implRows} />
           <Box variant="p">
-            DeepSpeed&apos;s configuration has no FP8 switch: FP8 comes from Transformer Engine layers in the model.
-            DeepSpeed&apos;s own test suite trains a Transformer Engine linear layer under <code>fp8_autocast</code> at
-            ZeRO stages 0, 1, 2 and 3 on Hopper or later and checks that the losses match{' '}
-            <Cite tier={1} href={DS_FP8_TEST} kind="code">
-              test_fp8.py L20-L92
-            </Cite>
-            . A one-layer test shows that the two compose; no full-model FP8 recipe for DeepSpeed was located in this
-            research.
+            DeepSpeed&apos;s configuration has no FP8 switch: FP8 comes from Transformer Engine layers in the model,
+            and no full-model FP8 recipe for DeepSpeed was located in this research.
           </Box>
+          <ExpandableSection headerText="DeepSpeed's FP8 test">
+            <Box variant="p">
+              DeepSpeed&apos;s own test suite trains a Transformer Engine linear layer under <code>fp8_autocast</code>{' '}
+              at ZeRO stages 0, 1, 2 and 3 on Hopper or later and checks that the losses match{' '}
+              <Cite tier={1} href={DS_FP8_TEST} kind="code">
+                test_fp8.py L20-L98
+              </Cite>
+              . A one-layer test shows that the two compose.
+            </Box>
+          </ExpandableSection>
           <Box variant="p">
             Megatron Core&apos;s pipeline schedules are 1F1B, interleaved and a combined 1F1B in which &quot;the forward
             pass of Transformer layers for one micro-batch runs in parallel with the backward pass of another&quot;{' '}
             <Cite tier={1} href={MG_COMBINED_1F1B} kind="code">
               combined_1f1b.py L55-L58
             </Cite>
-            ; no Zero Bubble or DualPipe schedule by name was found in its code, where PyTorch and DeepSpeed both ship
+            ; no Zero Bubble or DualPipe schedule by name was found in its pipeline-schedule code, where PyTorch and
+            DeepSpeed both ship
             DualPipeV. Its MoE all-to-all overlap flags are off by default{' '}
             <Cite tier={1} href={MG_MOE_DEFAULTS}>
               MoE README L563-L564
@@ -1723,7 +1744,8 @@ export function FrameworkMap() {
                 <Cite tier={1} href={MG_DEPRECATED_FLAG} kind="code">
                   arguments.py L2979-L2981
                 </Cite>
-                . The code&apos;s other optimizer load error names the working flag,{' '}
+                . The code&apos;s other optimizer load error, raised when a GPT checkpoint loads into a hybrid model,
+                names the working flag,{' '}
                 <code>--dist-ckpt-optim-fully-reshardable</code>, or <code>--no-load-optim</code> &quot;to start from a
                 fresh optimizer&quot;{' '}
                 <Cite tier={1} href={MG_CKPT_OTHER_ERROR} kind="code">
@@ -1771,8 +1793,8 @@ export function FrameworkMap() {
             <Cite tier={1} href={TF_FSDP_V2} kind="code">
               training_args.py L2780
             </Cite>
-            . The same settings run FSDP1 under <code>accelerate launch</code> and FSDP2 under the Trainer: write the
-            version down.
+            . By our reading of the two defaults, the same settings run FSDP1 under <code>accelerate launch</code> and
+            FSDP2 under the Trainer: write the version down.
           </Box>
           <Box variant="p">
             Accelerate&apos;s <code>ParallelismConfig</code> docstring calls <code>cp_size</code> &quot;Currently not
@@ -1780,12 +1802,12 @@ export function FrameworkMap() {
             <Cite tier={1} href={AC_CP_DOCSTRING} kind="doc-code-conflict">
               parallelism_config.py L52-L53
             </Cite>
-            , while the code runs context parallelism with FSDP2 and a <code>cp_size</code> above 1 and otherwise does
-            nothing, without an error{' '}
+            , while the code runs context parallelism on its torch backend when <code>cp_size</code> is above 1 and
+            otherwise logs &quot;Context parallel training is not enabled&quot; once and runs without it{' '}
             <Cite tier={1} href={AC_CP_CODE} kind="code">
-              accelerator.py L4175-L4177
+              accelerator.py L4200-L4215
             </Cite>
-            : check that it engaged.
+            : check the log for that line.
           </Box>
           <FrameworkTable headers={['Framework', 'Configuration and launcher', 'In the AWS images and samples']} rows={configRows} />
           <Box variant="p">
@@ -1822,20 +1844,21 @@ export function FrameworkMap() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Four defaults that change a result are owned by other sections and only indexed here: TorchTitan v0.4.0
-            removed legacy Float8 (section 6, Precision for Training); FSDP2 and TorchTitan synchronise gradients on
-            every micro-batch by default (section 8, Data Parallelism &amp; Sharding); Megatron&apos;s distributed
-            optimizer is off by default (section 14, Set My Ranks); and Megatron turns <code>--async-save</code> off with
-            a warning unless <code>--use-persistent-ckpt-worker</code> is set{' '}
-            <Cite tier={1} href={MG_ASYNC_SAVE} kind="code">
-              arguments.py L1808-L1814
-            </Cite>{' '}
-            (section 18, Checkpointing).
-          </Box>
-          <Box variant="p">
             The three engines answer most of the choice: the questions below pick one, name the front end over it and
             say what to check first.
           </Box>
+          <ExpandableSection headerText="Four defaults that change a result, owned by other sections">
+            <Box variant="p">
+              TorchTitan v0.4.0 removed legacy Float8 (section 6, Precision for Training); FSDP2 and TorchTitan
+              synchronise gradients on every micro-batch by default (section 8, Data Parallelism &amp; Sharding);
+              Megatron&apos;s distributed optimizer is off by default (section 14, Set My Ranks); and Megatron turns{' '}
+              <code>--async-save</code> off with a warning unless <code>--use-persistent-ckpt-worker</code> is set{' '}
+              <Cite tier={1} href={MG_ASYNC_SAVE} kind="code">
+                arguments.py L1808-L1814
+              </Cite>{' '}
+              (section 18, Checkpointing).
+            </Box>
+          </ExpandableSection>
           <StackChooser />
           <Box variant="p">
             Pin the versions the chooser names, then take the degrees to section 14, Set My Ranks, and measure the two

@@ -66,6 +66,7 @@ const LLAMA_FACTORY_HW = gh('hiyouga/LLaMA-Factory', LLAMA_FACTORY_TAG, 'README.
 const LLAMA_FACTORY_NEWS = gh('hiyouga/LLaMA-Factory', LLAMA_FACTORY_TAG, 'README.md', 'L128');
 const LLAMA_FACTORY_QLORA = gh('hiyouga/LLaMA-Factory', LLAMA_FACTORY_TAG, 'README.md', 'L214');
 const LLAMA_FACTORY_CLI = gh('hiyouga/LLaMA-Factory', LLAMA_FACTORY_TAG, 'README.md', 'L636');
+const LLAMA_FACTORY_DS = gh('hiyouga/LLaMA-Factory', LLAMA_FACTORY_TAG, 'examples/README.md', 'L97-L101');
 
 /** Post-training frameworks at the commits the RL dive's register pins. */
 const VERL_SHA = '1876b06d0a3e4e71e06230be10af14492ca8a75b'; // v0.9.1
@@ -587,7 +588,7 @@ function FineTuneSizer() {
         </Cite>
         . Adapters train with mixed-precision Adam at 16 bytes per adapter parameter, Calculator B&apos;s
         assumption; the 0.2% default comes from{' '}
-        <Cite tier={3} href={QLORA} venue="preprint">
+        <Cite tier={3} href={QLORA} venue="NeurIPS 2023">
           QLoRA, Section 2
         </Cite>
         . Parameter counts from Meta&apos;s model metadata for{' '}
@@ -619,7 +620,7 @@ export function FineTuning() {
         header={
           <Header
             variant="h1"
-            description={`Size a fine-tuning or RL (reinforcement learning) run's memory and pick the framework by the training engine it reuses: freezing Llama 3.1 70B's weights and storing them in 4 bits takes its model state from ${T70.gpuFull16} H100 at 80 GB each to one (papers, AWS documentation, and framework code and docs at Megatron Core core_v0.20.0, TorchTitan v0.4.0, Axolotl v0.21.1, LLaMA-Factory v0.9.5, NeMo RL v0.7.0, verl v0.9.1, OpenRLHF v0.11.2, TRL v1.16.0 and slime v0.4.0, read 2026-10-31)`}
+            description={`Size a fine-tuning or RL (reinforcement learning) run's memory and pick the framework by the training engine it reuses: freezing Llama 3.1 70B's weights and storing them in 4 bits takes its model state from ${T70.gpuFull16} H100 at 80 GB each to one (papers, AWS documentation, and framework code and docs at Megatron Core core_v0.20.0, TorchTitan v0.4.0, Axolotl v0.21.1, LLaMA-Factory v0.9.5, NeMo RL v0.7.0, verl v0.9.1, OpenRLHF v0.11.2, TRL (Transformers Reinforcement Learning) v1.16.0 and slime v0.4.0, read 2026-10-31)`}
           >
             16. Fine-Tuning &amp; Post-Training Runs
           </Header>
@@ -663,7 +664,7 @@ export function FineTuning() {
             2 for 16-bit weights, 2 for 16-bit gradients, and 12 for the optimizer&apos;s FP32 (32-bit
             floating-point) master copy of the weights and Adam&apos;s two moments, the running
             averages of each gradient and of its square{' '}
-            <Cite tier={3} href={ZERO} venue="preprint" accessed={REGISTER_DATE}>
+            <Cite tier={3} href={ZERO} venue="SC 2020" accessed={REGISTER_DATE}>
               ZeRO (Zero Redundancy Optimizer), Section 3.1
             </Cite>
             . A framework that keeps FP32 main gradients pays 18, Megatron Core&apos;s figure for BF16
@@ -688,7 +689,7 @@ export function FineTuning() {
               <strong>LoRA</strong> adds to each adapted projection the scaled product of two thin
               matrices, so a projection <code>XW</code> becomes <code>XW + sXL1L2</code> with only{' '}
               <code>L1</code> and <code>L2</code> trained{' '}
-              <Cite tier={3} href={QLORA} venue="preprint">
+              <Cite tier={3} href={QLORA} venue="NeurIPS 2023">
                 QLoRA, Section 2, Equation 3
               </Cite>
               . For a large Transformer trained with Adam its authors report up to two thirds less
@@ -704,13 +705,13 @@ export function FineTuning() {
               type its authors built for normally distributed weights; quantises each block&apos;s
               scaling constant a second time (double quantization); and pages optimizer state out to
               CPU memory when the GPU runs short (paged optimizers){' '}
-              <Cite tier={3} href={QLORA} venue="preprint">
+              <Cite tier={3} href={QLORA} venue="NeurIPS 2023">
                 QLoRA, Section 3
               </Cite>
               . Gradients flow through the frozen 4-bit base into LoRA adapters, and its authors
               fine-tuned a 65B model on a single 48 GB GPU while reporting full 16-bit fine-tuning task
               performance{' '}
-              <Cite tier={3} href={QLORA} venue="preprint">
+              <Cite tier={3} href={QLORA} venue="NeurIPS 2023">
                 QLoRA, abstract
               </Cite>
               . Four bits is half a byte per parameter.
@@ -743,7 +744,7 @@ export function FineTuning() {
             stored. LoRA holds {T70.lora} GB, {T70.gpuLora} H100, and QLoRA {T70.qlora} GB, one H100.
             The QLoRA figure counts the 4-bit weights only: after double quantization the scaling
             constants add 0.127 bits per parameter{' '}
-            <Cite tier={3} href={QLORA} venue="preprint">
+            <Cite tier={3} href={QLORA} venue="NeurIPS 2023">
               QLoRA, Section 3
             </Cite>
             , which makes {T70.qloraWithConstants} GB by our arithmetic, still one GPU.
@@ -755,7 +756,7 @@ export function FineTuning() {
             of the weights, the &quot;LoRA input gradients&quot; took 567 MB against 26 MB for the
             adapters themselves, and about 18 MB per sequence with gradient checkpointing, while the
             4-bit base took 5,048 MB{' '}
-            <Cite tier={3} href={QLORA} venue="preprint">
+            <Cite tier={3} href={QLORA} venue="NeurIPS 2023">
               QLoRA, Section 2
             </Cite>
             . Gradient checkpointing is the recomputation of section 5, The Memory Budget: re-running
@@ -778,15 +779,15 @@ export function FineTuning() {
               </Box>
               <Box variant="p">
                 LLaMA-Factory&apos;s hardware table, marked &quot;estimated&quot;, prints 1,200 GB for
-                full fine-tuning of a 70B model in BF16 or FP16 (the older 16-bit floating-point format), 160 GB for LoRA and the other
-                frozen-base methods, and 48 GB for 4-bit QLoRA{' '}
+                full fine-tuning of a 70B model in BF16 or FP16 (the older 16-bit floating-point format), 160 GB for the row that
+                groups LoRA with Freeze, GaLore, APOLLO, BAdam and OFT, and 48 GB for 4-bit QLoRA{' '}
                 <Cite tier={1} href={LLAMA_FACTORY_HW}>
                   LLaMA-Factory v0.9.5 README L484-L495
                 </Cite>
                 . Its own per-parameter column, 18x, 2x and x/2 GB for x billion parameters, gives
                 1,260, 140 and 35 GB, so the printed cells are rounded or padded estimates. Read
                 against the arithmetic above, the full figure sits between the 16- and 18-byte bases
-                and the frozen-base figures sit above the weights alone (our reading).
+                and the LoRA and QLoRA figures sit above the weights alone (our reading).
               </Box>
               <Box variant="p">
                 The adapters are small at the LoRA paper&apos;s own setting: a budget of 18M trainable
@@ -846,7 +847,11 @@ export function FineTuning() {
               <Cite tier={1} href={LLAMA_FACTORY_CLI}>
                 LLaMA-Factory v0.9.5 README L636
               </Cite>{' '}
-              on DeepSpeed or FSDP, including an FSDP plus QLoRA mode that &quot;fine-tunes a 70B model
+              on DeepSpeed{' '}
+              <Cite tier={1} href={LLAMA_FACTORY_DS}>
+                LLaMA-Factory v0.9.5 examples/README.md L97-L101
+              </Cite>{' '}
+              or FSDP, including an FSDP plus QLoRA mode that &quot;fine-tunes a 70B model
               on 2x24GB GPUs&quot;{' '}
               <Cite tier={1} href={LLAMA_FACTORY_QLORA}>
                 LLaMA-Factory v0.9.5 README L214

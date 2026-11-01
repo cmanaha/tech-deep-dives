@@ -33,9 +33,9 @@ Format: claim | source URL | register, wave 2 row or experiment
 ### Expandable: how the 70B figures are counted
 
 - Ratios against 80 GB: 14.1, 15.9, 1.76, 0.44; against 80 GiB (85.9 GB): 13.1, 14.8, 1.64, 0.41 | Calculator B | W3-21, W3-22, W3-23 (derived)
-- LLaMA-Factory's "estimated" table: 70B full (bf16 or fp16) 1,200 GB, Freeze/LoRA 160 GB, 4-bit QLoRA 48 GB; per-B columns 18x, 2x, x/2 | https://github.com/hiyouga/LLaMA-Factory/blob/v0.9.5/README.md#L484-L495 | T03-45; W3-24
+- LLaMA-Factory's "estimated" table: 70B full (bf16 or fp16) 1,200 GB, the Freeze/LoRA/GaLore/APOLLO/BAdam/OFT row 160 GB, 4-bit QLoRA 48 GB; per-B columns 18x, 2x, x/2 | https://github.com/hiyouga/LLaMA-Factory/blob/v0.9.5/README.md#L484-L495 | T03-45; W3-24
 - The per-B formulas give 1,260, 140 and 35 GB, so the printed cells are rounded or padded | derived | W3-24
-- Full figure sits between the 16- and 18-byte bases, frozen-base figures above the weights alone | our reading | 03 W4
+- Full figure sits between the 16- and 18-byte bases, the LoRA and QLoRA figures above the weights alone | our reading | 03 W4
 - LoRA Section 7.1: parameter budget of 18M, "roughly 35MB if stored in FP16", GPT-3 175B, r = 4 on two attention weight types | https://arxiv.org/abs/2106.09685v2 (Section 7.1) | NEW (adjacent to T03-43)
 - 18M is 0.01% of 175B; at 16 bytes about 0.29 GB | derived
 - Calculator B charges adapters 16 bytes per trainable parameter (mixed-precision AdamW) | src/lib/memory.ts `optimizerComponents` | 03 W4
@@ -47,6 +47,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - Axolotl v0.21.1: one YAML file for the pipeline; methods include full fine-tuning, LoRA, QLoRA, preference tuning, RL; multi-GPU on FSDP2 or DeepSpeed | https://github.com/axolotl-ai-cloud/axolotl/blob/v0.21.1/README.md#L100-L102 | T03-46; W3-25
 - Axolotl composes CP, TP and FSDP within a node and across nodes | https://github.com/axolotl-ai-cloud/axolotl/blob/v0.21.1/README.md#L76 | T03-46
 - LLaMA-Factory runs `llamafactory-cli train` with YAML | https://github.com/hiyouga/LLaMA-Factory/blob/v0.9.5/README.md#L636 | T03-47
+- LLaMA-Factory runs on DeepSpeed ("Supervised Fine-Tuning with DeepSpeed ZeRO-3 (Weight Sharding)") | https://github.com/hiyouga/LLaMA-Factory/blob/v0.9.5/examples/README.md#L97-L101 | NEW (doc, v0.9.5)
 - LLaMA-Factory FSDP+QLoRA "fine-tunes a 70B model on 2x24GB GPUs" | https://github.com/hiyouga/LLaMA-Factory/blob/v0.9.5/README.md#L214 | T03-47; W3-25
 - LLaMA-Factory Megatron Core backend via mcore_adapter since 2025-10-26 | https://github.com/hiyouga/LLaMA-Factory/blob/v0.9.5/README.md#L128 | T03-47; W3-25
 - 35.3 GB over two cards is about 17.6 GB each | derived (Calculator B)
@@ -60,7 +61,7 @@ Format: claim | source URL | register, wave 2 row or experiment
 - verl rollout names hf/vllm/sglang/trtllm, `mode: async` | https://github.com/volcengine/verl/blob/1876b06d0a3e4e71e06230be10af14492ca8a75b/verl/trainer/config/rollout/rollout.yaml#L4-L8 | F05-24
 - OpenRLHF v0.11.2: `get_strategy` builds a `DeepspeedStrategy` with `zero_stage=args.ds.zero_stage` | https://github.com/OpenRLHF/OpenRLHF/blob/17fd4a79cc87dfb2f6185ffac634066525bcd917/openrlhf/utils/utils.py#L25-L37 | F05-13 (paper), code line NEW
 - OpenRLHF creates vLLM engines for generation | https://github.com/OpenRLHF/OpenRLHF/blob/17fd4a79cc87dfb2f6185ffac634066525bcd917/openrlhf/cli/train_ppo_ray.py#L52-L66 | F05-13, F05-14
-- TRL v1.16.0: transformers and accelerate in core dependencies; vLLM an optional extra | https://github.com/huggingface/trl/blob/1b5c75ed94b7387f42532adb090c935166d4878d/pyproject.toml#L29-L42 ; #L89-L93 | F05-46
+- TRL (Transformers Reinforcement Learning, README L1 at 1b5c75ed) v1.16.0: transformers and accelerate in core dependencies; vLLM an optional extra | https://github.com/huggingface/trl/blob/1b5c75ed94b7387f42532adb090c935166d4878d/pyproject.toml#L29-L42 ; #L89-L93 | F05-46
 - slime v0.4.0 backends megatron_utils and sglang_utils | https://github.com/THUDM/slime/tree/0b0c277d5b4cc66efc3b6db269e2e5184e8f3b1e/slime/backends | F05-33
 - NeMo RL v0.7.0: DTensor or Megatron (Megatron Bridge) training; vLLM or Megatron inference backend | https://github.com/NVIDIA-NeMo/RL/blob/v0.7.0/README.md#L84-L96 | T03-49
 - Every post-training framework read in this research reuses a training engine; behaviour is the engine's | our reading | T03-50; W3-26 replacement text
@@ -90,4 +91,4 @@ Format: claim | source URL | register, wave 2 row or experiment
 
 ## Acronyms expanded in this file
 
-RL, LoRA, QLoRA, FP32, BF16, ZeRO, NF4, EC2, FP16, DTensor, FSDP (FSDP2 glossed). Used unexpanded as common or as names: GPU, CPU, YAML, GB, GiB, MB, TB, H100, vLLM, SGLang.
+RL, LoRA, QLoRA, FP32, BF16, ZeRO, NF4, EC2, FP16, DTensor, FSDP (FSDP2 glossed), TRL. Used unexpanded as common or as names: GPU, CPU, YAML, GB, GiB, MB, TB, H100, vLLM, SGLang.

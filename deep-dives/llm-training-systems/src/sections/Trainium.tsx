@@ -45,7 +45,8 @@ const TTN_LIMITS = neuron(TTN_ABOUT, 'L262-L274');
 const TRN3_NOTE = neuron('includes/torch/trn3-sizing-note.txt', 'L1-L11');
 const TUT = 'training/torchtitan/tutorials/tutorial-basic-training.rst';
 const TUT_LIMITS = neuron(TUT, 'L59-L65');
-const TUT_LAUNCH = neuron(TUT, 'L102-L117');
+const TUT_LAUNCH = neuron(TUT, 'L45-L117');
+const SETUP_LINE = neuron('training/torchtitan/get-started/setup-torchtitan-neuron.rst', 'L49-L84');
 const TUT_HEALTHY = neuron(TUT, 'L145-L158');
 const TUT_NGPU = neuron(TUT, 'L166-L178');
 const TUT_MULTI = neuron(TUT, 'L182-L246');
@@ -74,7 +75,7 @@ const NC3 = neuron('about-neuron/arch/neuron-hardware/neuron-core-v3.rst', 'L21-
 const FORK = 'aws-neuron/torchtitan-neuron';
 const TTN_PEAK = gh(FORK, TORCHTITAN_NEURON_TAG, 'torchtitan/tools/utils.py', 'L194-L206');
 const TTN_70B = gh(FORK, TORCHTITAN_NEURON_TAG, 'torchtitan_neuron/docs/dense-tutorials.md', 'L121-L143');
-const TTN_TESTS = gh(FORK, TORCHTITAN_NEURON_TAG, 'torchtitan_neuron/tests/README.md', 'L1-L15');
+const TTN_TESTS = gh(FORK, TORCHTITAN_NEURON_TAG, 'torchtitan_neuron/tests/README.md', 'L3-L5');
 const TTN_BENCH = ghTree(FORK, TORCHTITAN_NEURON_TAG, 'benchmarks');
 const TTN_CI = ghTree(FORK, TORCHTITAN_NEURON_TAG, '.github/workflows');
 const TTN_DIR = ghTree(FORK, TORCHTITAN_NEURON_TAG, 'torchtitan_neuron');
@@ -693,6 +694,8 @@ const TWO_NODES = `mpirun --allow-run-as-root -np 2 --hostfile <hostfile> \\
 
 const SAMPLE_LINE =
   'step:  3  loss: 11.04064  grad_norm:  5.3200  memory:  9.38GiB(26.07%)  tps: 587  tflops: 30.92  mfu: 19.57%';
+const SETUP_SAMPLE_LINE =
+  'step: 10  loss:  6.95994  grad_norm: 28.3022  memory:  9.14GiB(38.10%)  tps: 496  tflops: 26.13  mfu: 16.54%';
 
 const PRE: CSSProperties = { margin: 0, whiteSpace: 'pre', overflowX: 'auto' };
 
@@ -939,7 +942,7 @@ export function Trainium() {
           </Box>
           <Box variant="p">
             Placement adds one level to section 7&apos;s bandwidth hierarchy: ranks on one chip communicate fastest,
-            then ranks on one instance, then across instances. AWS keeps each TP group on one chip, &quot;TP=4
+            then ranks on one instance, then across instances. AWS recommends keeping each TP group on one chip, &quot;TP=4
 
             matches the 4 logical NeuronCores of a Trainium2 device at LNC=2&quot;, while FSDP &quot;can span devices
             and nodes&quot;{' '}
@@ -1126,30 +1129,51 @@ export function Trainium() {
         header={
           <Header
             variant="h2"
-            description={`Judge your first steps against the one sample line AWS prints, 587 tokens per second per rank at 19.57% MFU, knowing its MFU divides by ${TTN_PEAK_PER_RANK} TFLOPS per rank and its instance is unnamed`}
+            description={`Judge your first steps against the two sample lines AWS prints, 496 tokens per second per rank at 16.54% MFU in a 10-step install check on a trn2.48xlarge, knowing the MFU divides by ${TTN_PEAK_PER_RANK} TFLOPS per rank`}
           >
-            The one published step, and how to read its MFU
+            The two published sample steps, and how to read their MFU
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
             AWS publishes no Trainium2 throughput or MFU benchmark for TorchTitan Neuron in the Neuron 2.33 docs or the
-            fork. The fork&apos;s benchmarks folder holds only upstream GPU reports{' '}
-
-            <Cite tier={1} href={TTN_BENCH} kind="code">
-              torchtitan-neuron release-2.33.0, benchmarks/
+            fork.
+          </Box>
+          <ExpandableSection headerText="Where the fork was searched for a benchmark">
+            <Box variant="p">
+              The fork&apos;s benchmarks folder holds only upstream GPU reports{' '}
+              <Cite tier={1} href={TTN_BENCH} kind="code">
+                torchtitan-neuron release-2.33.0, benchmarks/
+              </Cite>
+              , none of its CI (continuous integration) workflows names a Neuron device{' '}
+              <Cite tier={1} href={TTN_CI} kind="code">
+                .github/workflows
+              </Cite>
+              , and its tests README says to &quot;Keep hardware-specific tests device-guarded and prefer
+              CPU-runnable config and registry tests when validating extension contracts&quot;{' '}
+              <Cite tier={1} href={TTN_TESTS}>
+                torchtitan_neuron/tests/README.md L3-L5
+              </Cite>
+              .
+            </Box>
+          </ExpandableSection>
+          <Box variant="p">
+            The docs print two sample lines instead, for the same Qwen3-8B config. The setup guide runs it for 10
+            steps on &quot;all 64 NeuronCores on a <code>trn2.48xlarge</code>&quot; at TP 4 x FSDP 16, with a bundled test
+            tokenizer and the small <code>c4_test</code> split, and prints this as a healthy step line, &quot;values
+            will vary&quot;{' '}
+            <Cite tier={1} href={SETUP_LINE}>
+              Neuron 2.33 TorchTitan setup L49-L84
             </Cite>
-            , none of its CI (continuous integration) workflows names a Neuron device{' '}
-            <Cite tier={1} href={TTN_CI} kind="code">
-              .github/workflows
-            </Cite>
-            , and its tests README says to &quot;prefer CPU-runnable config and registry tests&quot;{' '}
-            <Cite tier={1} href={TTN_TESTS}>
-              torchtitan_neuron/tests/README.md L1-L15
-            </Cite>
-            . The one figure is a sample line in the Qwen3-8B tutorial, shown as what &quot;A healthy step looks
-            like&quot;{' '}
+            :
+          </Box>
+          <pre style={PRE}>
+            <code>{SETUP_SAMPLE_LINE}</code>
+          </pre>
+          <Box variant="p">
+            Its memory field implies 24 GiB per rank (our arithmetic: 9.14 / 0.381), which matches Trainium2&apos;s{' '}
+            {TRN2_RANK_GIB} GiB. The tutorial shows a second line as what &quot;A healthy step looks like&quot;{' '}
             <Cite tier={1} href={TUT_HEALTHY}>
               Neuron 2.33 TorchTitan tutorial L145-L158
             </Cite>
@@ -1159,19 +1183,23 @@ export function Trainium() {
             <code>{SAMPLE_LINE}</code>
           </pre>
           <Box variant="p">
-            It is step 3 of an eager run on an unnamed instance. Its memory field implies 36 GiB per rank (our
+            It is step 3 of an eager run. The tutorial&apos;s launch command is labelled for a trn2.48xlarge{' '}
+            <Cite tier={1} href={TUT_LAUNCH}>
+              Neuron 2.33 TorchTitan tutorial L45-L117
+            </Cite>
+            , yet the line&apos;s memory field implies 36 GiB per rank (our
             arithmetic: 9.38 / 0.2607), which matches a Trainium3 chip&apos;s 144 GiB over four logical cores (eight
             NeuronCore-v4 at LNC=2), {fix(TRN3_RANK_GIB, 0)} GiB{' '}
             <Cite tier={1} href={TRN3_CHIP} kind="vendor-claim">
               Neuron 2.33 Trainium3 architecture L27-L35
             </Cite>
             , against Trainium2&apos;s {TRN2_RANK_GIB} GiB; that the line came from Trainium3 is our reading, not
-            verified. Its MFU divides by TorchTitan Neuron&apos;s hard-coded peak, 79 BF16 TFLOPS per NeuronCore times
+            verified. The MFU field divides by TorchTitan Neuron&apos;s hard-coded peak, 79 BF16 TFLOPS per NeuronCore times
             2 for LNC=2, {TTN_PEAK_PER_RANK} per rank{' '}
             <Cite tier={1} href={TTN_PEAK} kind="code">
               torchtitan-neuron release-2.33.0 tools/utils.py L194-L206
             </Cite>
-            , which the line confirms: 30.92 / 0.1957 = 158 (our arithmetic).
+            , which both lines confirm: 26.13 / 0.1654 and 30.92 / 0.1957 each give 158 (our arithmetic).
           </Box>
           <Box variant="p">
             That is {int(TTN_PEAK_PER_CHIP)} TFLOPS per Trainium2 chip, the NeuronCore-v3 page&apos;s 79 per core{' '}
@@ -1189,8 +1217,10 @@ export function Trainium() {
           </Box>
           <Box variant="p">
             Until a measured step exists, the 40% MFU that the dive&apos;s calculators assume on Trainium2 stays an
-            assumption: no first-party MFU for dense Llama-class training on Trainium2 was located in this research.
-            Experiment A5 would measure one.
+            assumption. The two sample lines are illustrations whose values the docs say will vary:
+            the setup line&apos;s 16.54% at step 10 on a test split is about 15.7% against {int(TRN2_BF16)} (our
+            arithmetic), and no first-party MFU benchmark for dense Llama-class training on Trainium2 was located in
+            this research. Experiment A5 would measure one.
           </Box>
           <ExpandableSection headerText="A5 protocol (not yet run)">
             <SpaceBetween size="s">
@@ -1267,7 +1297,7 @@ export function Trainium() {
                 <strong>Run one node, {TRN2_RANKS} ranks.</strong> The tutorial&apos;s Qwen3-8B config sets TP 4 x FSDP
                 16, the batch size and the sequence length{' '}
                 <Cite tier={1} href={TUT_LAUNCH}>
-                  Neuron 2.33 TorchTitan tutorial L102-L117
+                  Neuron 2.33 TorchTitan tutorial L45-L117
                 </Cite>
                 :
               </Box>
