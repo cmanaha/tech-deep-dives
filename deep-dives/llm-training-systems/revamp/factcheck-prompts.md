@@ -183,6 +183,8 @@ Applies to every group:
   purpose buckets is ours and not run; keep the label.
 - fc10-aws-c: section 26's InfraCheckConfig and training-plan expiry notes; section 28 was written
   after the body: every branch must name the section that owns it and agree with it.
+  Section 28's self-managed EKS leaf prints "$60,942 on Auto Mode" where section 25 prints the
+  Auto Mode fee as $60,870 (the leaf adds the $72 EKS cluster fee); make the wording say which.
 - fc11-measure: section 30 uses EBS without expansion (line about A4's cost); the acronym rule is
   per file. Section 30's FlightRecorder citations at v2.10.0 and
   v2.11.0 are deliberate (the text dates when the default changed); check that dating. Section 30's
