@@ -483,7 +483,7 @@ export function BringUp() {
             Keep each node&apos;s results, by instance, rather than only its latest pass. Meta found 40 nodes that
             failed repeatedly from historical health-check and job data, and removing them cut the failure rate of
             jobs on 512 or more GPUs from 14% to 4%{' '}
-            <Cite tier={3} href={META_REL} venue="preprint">
+            <Cite tier={3} href={META_REL} venue="HPCA 2025">
               Revisiting Reliability in Large-Scale ML Research Clusters, Section IV-A
             </Cite>
             . A record per node lets a cluster you run yourself do the same, our reading. Section 20, Who Owns What on

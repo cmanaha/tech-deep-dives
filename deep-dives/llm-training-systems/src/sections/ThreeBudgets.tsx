@@ -860,7 +860,7 @@ export function ThreeBudgets() {
               <strong>Failures.</strong> Divide one node&apos;s time between failures by your node count:
               the job&apos;s MTTF (mean time to failure) is <code>1 / (N_nodes x r_f)</code>, with r_f the
               failure rate per node{' '}
-              <Cite tier={3} href={META_REL} venue="preprint">
+              <Cite tier={3} href={META_REL} venue="HPCA 2025">
                 Revisiting Reliability in Large-Scale ML Research Clusters, Section III
               </Cite>
               . Section 17 reads that interval off for your node count, and Calculator D in section 18

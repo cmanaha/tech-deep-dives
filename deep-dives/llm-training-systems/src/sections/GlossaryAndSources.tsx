@@ -84,7 +84,7 @@ const sources: Source[] = [
   { id: 58, title: '2 OLMo 2 Furious, arXiv 2501.00656v3, preprint; a shorter version at COLM 2025', url: 'https://arxiv.org/abs/2501.00656v3', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 59, title: 'DeepSeek-V3 Technical Report, arXiv 2412.19437v2, preprint', url: 'https://arxiv.org/abs/2412.19437v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 60, title: 'MegaScale: Scaling Large Language Model Training to More Than 10,000 GPUs, arXiv 2402.15627v1, NSDI 2024', url: 'https://arxiv.org/abs/2402.15627v1', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
-  { id: 61, title: 'Revisiting Reliability in Large-Scale Machine Learning Research Clusters, arXiv 2410.21680v2, preprint', url: 'https://arxiv.org/abs/2410.21680v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
+  { id: 61, title: 'Revisiting Reliability in Large-Scale Machine Learning Research Clusters, arXiv 2410.21680v2, HPCA 2025', url: 'https://arxiv.org/abs/2410.21680v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 62, title: 'Understanding Stragglers in Large Model Training Using What-if Analysis, arXiv 2505.05713v2, OSDI 2025', url: 'https://arxiv.org/abs/2505.05713v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-31' },
   { id: 63, title: 'ByteCheckpoint: A Unified Checkpointing System for Large Foundation Model Development, arXiv 2407.20143v4, NSDI 2025', url: 'https://arxiv.org/abs/2407.20143v4', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   // Tier 3: the arithmetic and memory of a step

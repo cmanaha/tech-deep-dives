@@ -178,7 +178,8 @@ Applies to every group:
   an expansion; check the acronym rule. Section 27: W3-42's Trainium3 reading is labelled ours.
 - fc07-reliability: MegaScale (2402.15627v1) is labelled "NSDI 2024" in one file and "preprint" in
   another; make them agree. Section 19 reads long (length). Section 17 cites Llama 3 v1 and v2 on
-  purpose (Table 5 changed across versions); keep that.
+  purpose; keep that. (fc07 found Table 5 identical in v1, v2 and v3, so the two Cites show the
+  inconsistency persists across versions.)
 - fc08-aws-a: section 20's PCS node-replacement cell may need narrowing (PCS documents replacing an
   instance rebooted outside Slurm or set nextstate=DOWN). InfraCheckConfig timing is undocumented,
   so section 20's no-screening cell for training jobs may need a note. Section 21 prints the
