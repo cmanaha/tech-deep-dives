@@ -906,11 +906,14 @@ export const PRICES: readonly PriceRow[] = [
   price('trn1n.32xlarge', 'hyperpod', 28.5, SOURCES.instanceTable),
   price('trn2.48xlarge', 'hyperpod', 101.76, SOURCES.sagemakerUse2, OHIO),
   // SageMaker training plans, up-front hourly fee (T05-24; wave2-aws W5-10)
+  price('p4d.24xlarge', 'trainingPlan', 15.6055, SOURCES.sagemakerUse1),
+  price('p4de.24xlarge', 'trainingPlan', 23.42412, SOURCES.sagemakerUse1),
   price('p5.48xlarge', 'trainingPlan', 54.92078, SOURCES.sagemakerUse1),
   price('p5e.48xlarge', 'trainingPlan', 63.1626, SOURCES.sagemakerUse2, OHIO),
   price('p5en.48xlarge', 'trainingPlan', 72.6317, SOURCES.sagemakerUse1),
   price('p6-b200.48xlarge', 'trainingPlan', 130.7159, SOURCES.sagemakerUse1),
   price('p6-b300.48xlarge', 'trainingPlan', 148.5432, SOURCES.sagemakerUse1),
+  price('trn1.32xlarge', 'trainingPlan', 10.9618, SOURCES.sagemakerUse1),
   price('trn2.48xlarge', 'trainingPlan', 41.12492, SOURCES.sagemakerUse2, OHIO),
 ];
 

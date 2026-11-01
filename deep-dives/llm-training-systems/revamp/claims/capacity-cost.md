@@ -90,3 +90,4 @@ Format: claim | source URL | register, wave 2 row or experiment
 - U01-3: what the model card's 7.0M hours include; hedged.
 - Library gaps (reported, not edited): `priceRun` prices run hours, not whole reserved windows; the Capacity Block and training plan limits (64, 256, 182 days, step rules) are not in presets; library notes and errors carry register IDs, which the page strips.
 - fc08: presets.ts has no `trainingPlan` rows for p4d.24xlarge, p4de.24xlarge and trn1.32xlarge, which the us-east-1 AmazonSageMaker Price List (20261029165009) prices at $15.6055, $23.42412 and $10.9618 (TrainingPlanUpfrontFee); reported to the orchestrator.
+- SageMaker training plan up-front fee, us-east-1: ml.p4d.24xlarge $15.6055, ml.p4de.24xlarge $23.42412, ml.trn1.32xlarge $10.9618 per hour | https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonSageMaker/20261029165009/us-east-1/index.csv | read 2026-10-31 (USE1-TrainingPlanUpfrontFee rows; fc08 gap, added to presets.ts)

@@ -143,3 +143,8 @@ section and source are named so the fact check can trace it.
 | 17 Failure is the steady state | fc07 | 49 | WRONG 3, OVERREACH 1, STALE 1 | 9 | 5/4/5/5/4 | 5/4/5/5/4 |
 | 18 Checkpointing | fc07 | 92 | WRONG 1, UNSUPPORTED 2, STALE 3 | 9 | 5/5/5/5/3 | 5/5/5/5/3 |
 | 19 Resuming correctly | fc07 | 62 | OVERREACH 2, UNSUPPORTED 2, WRONG 1 | 9 (length) | 4/5/5/5/3 | 4/5/5/5/3 |
+| 26 SageMaker training jobs | fc10 | 67 | WRONG 3, OVERREACH 6, UNSUPPORTED 2 | 9 | 4/5/5/5/3 | 4/5/5/5/4 |
+| 28 Choosing your path | fc10 | about 70 | WRONG 3, OVERREACH 2 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |
+| 20 Who owns what on AWS | fc08 | 93 | OVERREACH 7, UNSUPPORTED 3 | 8 | 5/4/5/5/3 | 5/5/5/5/4 |
+| 21 Training hardware | fc08 | 66 | WRONG 3 | 9 | 5/5/5/5/4 | 5/5/5/5/4 |
+| 22 Capacity and cost | fc08 | 66 | WRONG 1, UNSUPPORTED 1, OVERREACH 3 | 8 | 4/5/5/5/4 | 4/5/5/5/4 |
