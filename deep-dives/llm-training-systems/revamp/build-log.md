@@ -28,6 +28,7 @@ Per-section author reports, for the glossary, the fact check and the final repor
 | 24 Slurm | SlurmFamily.tsx | 55 | 2 (three Slurm paths across controller, image, health and restart layers; and a second figure), narrow layouts, 0 overlap/clip/overflow | EC2, PCS, FSDP, DLAMI, AMI, EFA, HPC, EKS, DCGM, NCCL, GRES, UTC | Glossary adds GRES; fees from priceRun (PCS 1.2%, HyperPod 20.0% over EC2); keep one spare node to skip 45 to 90 minutes of deep checks; U06-1 hedged quoting both pages; the 60 s health-check timeout on PCS is our reading; PCS docs say PCS replaces an instance rebooted outside Slurm or set nextstate=DOWN, so section 20's PCS node-replacement cell may need narrowing (fact check fc08) |
 | 25 Kubernetes | KubernetesFamily.tsx | 71 | 2 (five-layer stack across self-managed EKS, Batch on EKS and HyperPod EKS; recovery ladder), wide and narrow, 0 overlap/clip/overflow | EKS, EC2, EFA, NCCL, AMI, DRA, DCGM, Xid, DCP, TP, PP, DP, FP32, BF16 | Job API pick JobSet v0.13.0 (v1alpha2 API) labelled our reading; checkpointless extra replica 6.6 GB per H100 on AWS's 70B recipe from Calculator B; Auto Mode fee $60,870 a month on 32 p5.48xlarge; NEW: EKS managed node groups drain 40 minutes before a Capacity Block ends (added to the Capacity Block condition); U06-7 hedged; Volcano by tag only (U06-6) |
 | 26 Training jobs | TrainingJobs.tsx | 56 (67 claim rows) | 1 (one training job from queue to teardown with billing per phase; wide and narrow), 0 overlap/clip/overflow | EC2, SDK, S3, DDP, EFA, EKS, SMP, SMDDP, FSDP, TP, PP, DP, BF16, NCCL, MFU, FLOPs | 1.15 x EC2 On-Demand; reference run $30.7M rising to $35.3M at the training rate, matching section 22; SDK v3 ModelTrainer runtime default 3,600 s against the API's 1 day; U06-3 untested; InfraCheckConfig timing undocumented (section 20's no-screening cell may need a note, fc08); training-plan expiry timestamp meaning unclear; no page runs the checkpointless recipe as a training job |
+| 29 What to measure | WhatToMeasure.tsx | 65 | 1 (three layers of signal: model health, job efficiency, hardware health, with the symptoms each explains), 0 overlap/clip/overflow | MFU, NaN, Inf, ECC, EFA, DCGM, TFLOPS, BF16, FP8, FP16, EKS, SM, NCCL, CRC | 8B at 4,000 tokens/s is 19.5% MFU by 6N and 23% by TorchTitan's count (runtime.ts, matches W6-9); W6-31's Xid alert set mixes the immediate and investigatory bucket columns and misses Xid 48, so the page alerts on any Xid whose immediate bucket is RESET_GPU, RESTART_BM or WORKFLOW_* (our reading; orchestrator accepted; section 30 told to match); two citation line ranges corrected by the author (NCCL buffers, NVLink error fields); 2,524 words |
 
 ## Calculators (`src/lib/`, 2026-10-31)
 
@@ -95,6 +96,9 @@ section and source are named so the fact check can trace it.
   the same bytes as DP only at one micro-batch per step; DeepSpeed reduces ZeRO-2's partitioned
   gradients on every backward pass (stage_1_and_2.py L2293 to L2295 at v0.19.9; engine.py L2695 sets
   partition_grads for stage 2), ZeRO-1 at the accumulation boundary.
+- **Xid alert rule** (sections 29, 30, 31): alert on any Xid whose immediate bucket in NVIDIA's Xid
+  catalogue is RESET_GPU, RESTART_BM or WORKFLOW_* (covers Xid 48, 74, 79); our reading, replacing
+  W6-31's mixed-column set.
 - **AWS experiments** (sections 7, 8, 18, 22, 23, 25, 27, 31): A0 to A5 are protocols marked "not yet
   run"; never present a prediction as a result.
 - **Cross-instance pricing** (sections 7, 8, 14, 21, 31, Calculator C): traffic between instances is
