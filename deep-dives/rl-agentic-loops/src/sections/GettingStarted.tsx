@@ -412,12 +412,15 @@ export function GettingStarted() {
           </Box>
           <Box variant="p">
             A gradient step moves every weight a small distance along that direction, and a
-            setting called the learning rate sets how small. That is the plain form; the optimizers
+            setting called the learning rate sets how small. As an illustration with two weights:
+            a gradient of (+2, -1) and a learning rate of 0.01 move the first weight up by 0.02 and
+            the second down by 0.01. That is the plain form; the optimizers
             trainers use in practice, such as Adam, rescale each weight&apos;s step, but the direction
             of each move still comes from the gradient. Training is many such steps, each on
             a new batch. So when the dive says a step makes a response more likely, it means: take
             the gradient of that response&apos;s probability and move the weights a little along
-            it. The dive needs no calculus beyond that.
+            it. Beyond that, the dive uses one rule from calculus, about logarithms, and section 4
+            brings it in with numbers where it is needed.
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">
@@ -523,8 +526,8 @@ export function GettingStarted() {
               <Box variant="p">
                 The RL vocabulary on tokens, sections 3 to 6: the policy; the policy gradient, the
                 basic rule for turning a score into a weight change; the clip of PPO (Proximal
-                Policy Optimization), which stops rewarding an update for moving a token&apos;s
-                probability more than a set amount; the KL
+                Policy Optimization), which stops pushing a token&apos;s probability further once
+                an update has moved it a set amount from where the sampling model had it; the KL
                 (Kullback-Leibler) penalty, a charge for drifting from the model the run started
                 from; and rewards learned from preferences, where a reward model is trained on
                 people&apos;s choices between two responses. KL divergence, named after the two
@@ -662,9 +665,10 @@ export function GettingStarted() {
                   Sections 7 and 23, on the advisor route.
                 </Box>{' '}
                 Section 22 relies on section 7 to turn today&apos;s base rate, the share of attempts
-                the model passes now, into the expected share of training groups that carry no
-                gradient: when every attempt in a group gets the same score, no attempt did better
-                or worse than the others, so every advantage is 0. Section 22 also names the
+                the model passes now, into the expected share of training groups that change no
+                weights: when every attempt in a group gets the same score, no attempt did better
+                or worse than the others, every advantage is 0, and the group&apos;s gradient is
+                zero. Section 22 also names the
                 AWS service for each path and leaves the detail to section 23.
               </Box>
             </SpaceBetween>
