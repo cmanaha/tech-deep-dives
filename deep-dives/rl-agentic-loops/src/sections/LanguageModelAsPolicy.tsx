@@ -392,8 +392,10 @@ export function LanguageModelAsPolicy() {
           </Box>
           <Box variant="p">
             The two views describe the same computation. In the token view the next state is the
-            old state plus the token just chosen, so nothing outside the text changes, and the
-            reward only arrives at the end. Choosing the tokens one at a time and choosing the
+            old state plus the token just chosen, so the policy&apos;s own choices are the only thing
+            that changes the state, and the reward only arrives at the end. A tool call breaks that
+            condition, because the tool&apos;s output enters the state without the policy choosing
+            it. Without tools, choosing the tokens one at a time and choosing the
             finished response in one go are then the same choice, and the token-level process
             reduces to a bandit whose only states are the prompt and the finished response{' '}
             <Cite tier={3} href={AHM24} venue="ACL 2024">
@@ -591,8 +593,9 @@ export function LanguageModelAsPolicy() {
             this one, describe a different policy. Learning from them needs either a correction
             for the difference between the two models&apos; probabilities or a method built for
             fixed data. Section 5 meets the first case: a batch reused for several updates is
-            slightly off-policy from the second update on, and PPO&apos;s probability ratio is the
-            correction.
+            slightly off-policy from the second update on, and PPO&apos;s probability ratio
+            reweights each token to correct for it, a correction that holds while the old and new
+            policies stay close.
           </Box>
           <Box variant="p">
             Exploration is the trade RL adds over supervised learning. The learner has to exploit

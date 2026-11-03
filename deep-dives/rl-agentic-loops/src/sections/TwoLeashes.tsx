@@ -563,7 +563,9 @@ export function TwoLeashes() {
             Read it term by term. <code>ratio * A</code> is section 4&apos;s policy gradient written
             for samples that came from π_old: at the start of a batch, when π_new equals π_old, its
             gradient is exactly the advantage times <code>grad log pi</code>, and later in the batch
-            the ratio corrects for the samples coming from an older policy. The clipped
+            the ratio reweights each token to correct for the samples coming from an older policy, a
+            correction that holds only while the two policies stay close, which is what the clip
+            protects. The clipped
             term is the same product with the ratio held between 0.8 and 1.2. Taking the smaller of
             the two means a move can never earn more than the clipped version allows. As an
             illustration with A = +1: at a ratio of 1.1 both terms are 1.1; at 1.3 the terms are
@@ -737,13 +739,16 @@ export function TwoLeashes() {
             Q(x)) very large.
           </Box>
           <Box variant="p">
-            RL fine-tuning reaches for this measure because it is nearly free. The trainer already
-            has both models&apos; probabilities for every sampled token, and the samples come from
-            the trained model. So the per-token term, log P minus log Q for the token actually
-            generated, costs almost nothing on every token, and averaged over the trained
-            model&apos;s own samples it equals the KL. Used as a penalty, it keeps the model near
-            the reference, so the model cannot chase the reward with text the reference would never
-            write.
+            RL fine-tuning reaches for this measure because it is cheap per token. The samples come
+            from the trained model, and the trainer computes that model&apos;s probability for every
+            sampled token anyway, to take the gradient. Running the reference model over the same
+            tokens, one extra forward pass and a second model in memory (the memory result below),
+            gives the other side. From then on the
+            per-token term, log P minus log Q for the token actually generated, costs almost
+            nothing, and averaged over the trained model&apos;s own samples it equals the KL. Used
+            as a penalty, it charges the model for drifting from the reference, so chasing the
+            reward with text the reference would never write costs reward, at a price set by
+            beta.
           </Box>
           <Box variant="p">
             InstructGPT&apos;s RL objective is the reward minus <code>beta</code> times the

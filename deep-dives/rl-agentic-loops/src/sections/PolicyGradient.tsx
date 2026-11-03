@@ -609,7 +609,7 @@ export function PolicyGradient() {
             trained alongside the policy to predict the reward a partial response will end up with.
             Subtracted from the reward, it is a learned baseline. It can do a second job too. Applied
             to the state after an action, its prediction can stand in for the rewards still to come,
-            so the update need not wait for the final score; a value function used that way is a
+            replacing them with its own estimate; a value function used that way is a
             critic, and the method an actor-critic method, the actor being the policy{' '}
             <Cite tier={3} href={SB} venue="textbook">
               Sutton and Barto, Section 13.5

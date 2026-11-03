@@ -119,9 +119,9 @@ arrives out of order has the glossary.
 At first use, give the full form, then say in plain words what the thing is or
 does. For a technique, also say what challenge it meets and when it is used.
 "PPO (Proximal Policy Optimization)" is a name. "PPO (Proximal Policy
-Optimization), the RL algorithm that limits how far each update can move the
-model from the one that produced its training samples, which keeps training
-stable when a batch is reused" is an explanation. Where a later section covers
+Optimization), the RL algorithm that stops rewarding an update for moving the
+model far from the version that produced its training samples, which keeps
+training stable when a batch is reused" is an explanation. Where a later section covers
 the technique in depth, give the intuition at first use and point to that
 section.
 
@@ -188,11 +188,14 @@ KL(Q || P) = 0.5 log(0.5 / 0.9) + 0.5 log 5 = 0.51. The direction with the new
 model first blows up when the new model puts probability on a token the
 original thought nearly impossible.
 
-**Why RL fine-tuning uses it.** The trainer already has both models'
-probabilities for each token, and the samples come from the new model. So the
-per-token term, log P minus log Q, costs almost nothing to compute on every
-generated token. Used as a penalty, it keeps the model near the original, so the
-model cannot chase the reward with text the original would never write.
+**Why RL fine-tuning uses it.** The samples come from the new model, and the
+trainer computes the new model's probability for every sampled token anyway, to
+take the gradient; one forward pass of the frozen original over the same tokens
+gives the other side. From then on the per-token term, log
+P minus log Q, costs almost nothing to compute on every generated token, and
+averaged over the new model's samples it equals the KL. Used as a penalty, it
+charges the model for drifting from the original, so chasing the reward with
+text the original would never write costs reward, at a price the trainer sets.
 
 ## How this relates to the section-shape standard
 

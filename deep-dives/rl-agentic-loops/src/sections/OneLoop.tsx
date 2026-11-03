@@ -394,11 +394,12 @@ export function OneLoop() {
             RL trains the model itself. Two RL algorithms, recipes for turning scores into weight
             changes, recur through the dive. Both carry the word policy, which is RL&apos;s name
             for whatever chooses the actions; for a language model the policy is the model itself,
-            choosing each next token. PPO (Proximal Policy Optimization) limits how far each update
-            may move the model, which keeps training stable, and uses a second model to predict
-            the score each attempt should expect. GRPO (Group Relative Policy Optimization)
-            samples a group of attempts at each prompt and judges each attempt against the
-            group&apos;s average score, so it needs no second model. Sections 4 and 5 build PPO, and
+            choosing each next token. PPO (Proximal Policy Optimization) stops rewarding an update
+            for moving the model far from the version that produced its attempts, which keeps
+            training stable, and uses a second model to predict the score each attempt should
+            expect. GRPO (Group Relative Policy Optimization) samples a group of attempts at each
+            prompt and judges each attempt against the group&apos;s average score, so it needs no
+            second model to predict scores. Sections 4 and 5 build PPO, and
             section 7 builds GRPO.
           </Box>
           <Box variant="p">
@@ -412,7 +413,7 @@ export function OneLoop() {
             grader, the test, checker or judge that scores each attempt, and a rewrite is kept only
             if it scores better. Each new candidate is a rewrite of a
             parent chosen from the best so far, as in a genetic algorithm, and every candidate
-            that is best on at least one example stays in the pool, which is what Pareto refers to
+            that is best on at least one example stays available as a parent, which is what Pareto refers to
             (section 14). Other loops in this store write a rewritten prompt, a playbook, a memory
             or a skill file, and the next attempt runs with it.
           </Box>

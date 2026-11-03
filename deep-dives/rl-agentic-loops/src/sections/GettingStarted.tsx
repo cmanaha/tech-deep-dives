@@ -407,11 +407,14 @@ export function GettingStarted() {
             billions of weights at once, in which the objective rises fastest. If nudging a weight
             up would raise the objective, for instance the probability of a wanted output, its
             entry is positive and the step moves that weight up; if it would lower it, the entry is
-            negative and the weight moves down; a weight that makes no difference barely moves.
+            negative and the weight moves down; a weight that makes no difference gets an entry
+            near zero.
           </Box>
           <Box variant="p">
             A gradient step moves every weight a small distance along that direction, and a
-            setting called the learning rate sets how small. Training is many such steps, each on
+            setting called the learning rate sets how small. That is the plain form; the optimizers
+            trainers use in practice, such as Adam, rescale each weight&apos;s step, but the direction
+            of each move still comes from the gradient. Training is many such steps, each on
             a new batch. So when the dive says a step makes a response more likely, it means: take
             the gradient of that response&apos;s probability and move the weights a little along
             it. The dive needs no calculus beyond that.
@@ -520,7 +523,8 @@ export function GettingStarted() {
               <Box variant="p">
                 The RL vocabulary on tokens, sections 3 to 6: the policy; the policy gradient, the
                 basic rule for turning a score into a weight change; the clip of PPO (Proximal
-                Policy Optimization), a limit on how far one update may move the model; the KL
+                Policy Optimization), which stops rewarding an update for moving a token&apos;s
+                probability more than a set amount; the KL
                 (Kullback-Leibler) penalty, a charge for drifting from the model the run started
                 from; and rewards learned from preferences, where a reward model is trained on
                 people&apos;s choices between two responses. KL divergence, named after the two
