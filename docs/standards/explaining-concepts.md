@@ -119,9 +119,10 @@ arrives out of order has the glossary.
 At first use, give the full form, then say in plain words what the thing is or
 does. For a technique, also say what challenge it meets and when it is used.
 "PPO (Proximal Policy Optimization)" is a name. "PPO (Proximal Policy
-Optimization), the RL algorithm that stops rewarding an update for moving the
-model far from the version that produced its training samples, which keeps
-training stable when a batch is reused" is an explanation. Where a later section covers
+Optimization), the RL algorithm that stops pushing a token's probability further
+once training has moved it a set amount from the version of the model that
+produced the training samples, which keeps training stable when a batch is
+reused" is an explanation. Where a later section covers
 the technique in depth, give the intuition at first use and point to that
 section.
 
