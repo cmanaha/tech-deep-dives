@@ -472,7 +472,7 @@ export function PolicyGradient() {
             B&apos;s total push, only because A is more common. Dividing by the probability scales
             each push on A by 1 / 0.8 = 1.25 and each push on B by 1 / 0.2 = 5, so over the batch
             A&apos;s probability gradient is counted 80 x 1.25 = 100 times and B&apos;s 20 x 5 =
-            100 times: equal rewards, equal pushes. Averaged over many samples, every response is
+            100 times: equal rewards, equal pushes, which the next block shows cancel out. Averaged over many samples, every response is
             pushed in proportion to its reward alone, and the average update points the way that
             raises the expected reward, the average score over the model&apos;s own samples. Second, by section
             3&apos;s factorisation, <code>log pi(y | x)</code> is the sum of the log-probabilities
@@ -561,10 +561,13 @@ export function PolicyGradient() {
               Sutton and Barto, Section 13.4
             </Cite>
             . The reason it averages to zero shows in the two-response illustration above. With
-            every reward equal, A&apos;s and B&apos;s probability gradients were each counted 100
-            times. A and B share one unit of probability, so any change that makes A 0.01 more
-            likely makes B 0.01 less likely: B&apos;s probability gradient is minus A&apos;s, and
-            the two pushes cancel exactly. With any number of responses the same holds, because
+            every reward equal and the expected 80/20 split, A&apos;s and B&apos;s probability
+            gradients were each counted 100 times. A and B share one unit of probability, so any
+            change that makes A 0.01 more likely makes B 0.01 less likely: B&apos;s probability
+            gradient is minus A&apos;s, and the two pushes cancel. A real batch lands near that
+            split, not on it, so the term is zero on average rather than in every batch, which is
+            how a baseline can change one batch&apos;s update, its noise, without changing the
+            average. With any number of responses the same holds, because
             the probabilities of all possible responses always add up to 1, so averaged over the
             model&apos;s own samples, <code>grad log pi</code> comes to zero. A fixed b times that
             average is zero too. The first property holds for any such baseline. The variance
@@ -638,7 +641,8 @@ export function PolicyGradient() {
             <Cite tier={3} href={AHM} venue="ACL 2024">
               Ahmadian et al., Section 1
             </Cite>
-            .
+            . In the textbook the name needs the second job; RLHF papers, and this dive, use it for
+            PPO&apos;s value model however it is used.
           </Box>
           <Box variant="p">
             GAE (Generalized Advantage Estimation) is the dial between those two roles: it sets how
@@ -688,8 +692,9 @@ export function PolicyGradient() {
             <Cite tier={3} href={AHM} venue="ACL 2024">
               Ahmadian et al., Section 2.3
             </Cite>
-            : it does the value model&apos;s job with no trained weights, recomputed from fresh
-            samples at every step. GRPO uses the mean reward of the whole group as the baseline and divides by the
+            : it does the value model&apos;s baseline job for the prompt as a whole, with no
+            trained weights, recomputed from fresh samples at every step. It predicts nothing for
+            partial responses, so every token of a response gets the same advantage. GRPO uses the mean reward of the whole group as the baseline and divides by the
             group&apos;s standard deviation, a measure of how spread out the group&apos;s rewards
             are{' '}
             <Cite tier={3} href={DSM} venue="preprint">

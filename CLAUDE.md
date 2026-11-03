@@ -33,7 +33,7 @@ Each deep dive directory contains:
 
 ## Acronym Standard
 - First occurrence of every acronym in the sequential reading order must expand to its full form: "EFA (Elastic Fabric Adapter)"
-- Expansion alone is not an explanation. At first use, after the full form, say in plain words what the thing is or does; for a technique, also what challenge it meets and when it is used: "PPO (Proximal Policy Optimization), the RL algorithm that stops pushing a token's probability further once training has moved it a set amount from the version of the model that sampled the data". See `docs/standards/explaining-concepts.md`
+- Expansion alone is not an explanation. At first use, after the full form, say in plain words what the thing is or does; for a technique, also what challenge it meets and when it is used: "PPO (Proximal Policy Optimization), the RL algorithm that stops pushing a token's probability further once training has moved it a set fraction from the version of the model that sampled the data". See `docs/standards/explaining-concepts.md`
 - After first expansion, the acronym alone is fine
 - Every deep dive includes a Glossary in the Sources appendix section listing all acronyms used
 - Niche/domain-specific acronyms always expand: SRD, NCCL, RDMA, MPI, NAPI, DIM, GRO, LRO, QP, CQ, AH, MR, PD, UARN, WQE, etc.

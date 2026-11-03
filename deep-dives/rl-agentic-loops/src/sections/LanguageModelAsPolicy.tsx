@@ -401,10 +401,13 @@ export function LanguageModelAsPolicy() {
             <Cite tier={3} href={AHM24} venue="ACL 2024">
               Ahmadian et al., section 3.3
             </Cite>
-            . A tool call breaks that condition, because the tool&apos;s output enters the state
-            without the policy choosing it. The reduction is what lets a trainer score and push
-            whole responses, as the methods below do. What the token view adds is a place to say
-            which tokens mattered, which the next block takes up.
+            . The reduction is why REINFORCE and RLOO, below, can treat a whole response as one
+            action and lose nothing. A tool call breaks that condition, because the tool&apos;s
+            output enters the state without the policy choosing it. Trainers still score a whole
+            tool-using episode and push the tokens the model wrote, since the tool&apos;s side of
+            the episode does not depend on the weights; section 9, Agentic RL, shows how. What the
+            token view adds is a place to say which tokens mattered, which the next block takes
+            up.
           </Box>
           <Box variant="p">
             Which view a method takes shapes everything after it. REINFORCE is the simplest

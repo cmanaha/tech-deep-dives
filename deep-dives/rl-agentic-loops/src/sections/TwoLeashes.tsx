@@ -458,9 +458,10 @@ export function TwoLeashes() {
           </Box>
           <Box variant="p">
             The two leashes measure from different places. The clip of PPO (Proximal Policy
-            Optimization) stops pushing a token&apos;s probability once the updates on a batch have
-            moved it a set amount away from the policy that sampled that batch, and that reference
-            point moves on with every batch. The KL (Kullback-Leibler divergence) penalty charges
+            Optimization) stops pushing a token&apos;s probability further in the direction its
+            advantage asks for once the updates on a batch have moved it a set fraction of its old
+            value away from the policy that sampled that batch, and that reference point moves on
+            with every batch. The KL (Kullback-Leibler divergence) penalty charges
             for distance from the reference model, a frozen copy of the model the run started from,
             and that reference point never moves{' '}
             <Cite tier={3} href={GAO} venue="ICML 2023">
@@ -548,9 +549,10 @@ export function TwoLeashes() {
           </Box>
           <Box variant="p">
             PPO&apos;s objective, the number each training step tries to raise, multiplies that
-            ratio by the token&apos;s advantage and caps how much the product can gain. An update
-            that raises the objective is said to be rewarded, a second sense of the word: it is
-            about the training step, where section 3&apos;s reward was the score of an attempt. With{' '}
+            ratio by the token&apos;s advantage and caps how much the product can gain. This page
+            calls an update that raises the objective rewarded, a second sense of the word used in
+            the comparison diagram further down: it is about the training step, where a reward
+            elsewhere is the score of an attempt. With{' '}
             <code>ratio = pi_new(token) / pi_old(token)</code>, <code>A</code> the token&apos;s
             advantage, <code>eps</code> epsilon (ε), the clip&apos;s width,{' '}
             <code>clip(ratio, 1 - eps, 1 + eps)</code> the ratio held inside the range 1 - eps to 1
@@ -772,7 +774,7 @@ export function TwoLeashes() {
             every token, to keep the policy from over-optimising the reward model, an imperfect
             stand-in for human judgement. GRPO moves it out of the reward and adds the KL to
             the loss directly, so the advantage stays a plain comparison of each sample&apos;s score
-            with its group&apos;s, and the drift is charged as a separate term{' '}
+            with its group&apos;s scores, and the drift is charged as a separate term{' '}
             <Cite tier={3} href={DEEPSEEKMATH} venue="preprint">
               DeepSeekMath, Section 4.1.1
             </Cite>
@@ -978,8 +980,9 @@ export function TwoLeashes() {
             started. Policy
             entropy shows how much variety is left: it measures how spread out the next-token
             distribution is. It is 0 when the model is certain of the next token, an even split
-            between two tokens gives 0.69 with natural logs (1 with base-2 logs), and more tokens
-            in play push it higher. When it collapses the model samples nearly the same answer every
+            between two tokens gives 0.69 with natural logs (1 with base-2 logs), and an even split
+            over four tokens gives ln 4 = 1.39, so the more tokens share the probability, and the
+            more evenly, the higher it goes. When it collapses the model samples nearly the same answer every
             time, so a group of samples has nothing left to compare (section 8, What RL Does to a
             Model, returns to it). The clip fraction, the share of tokens where the clip is active,
             shows how often the speed limit binds.

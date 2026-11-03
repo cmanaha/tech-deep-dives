@@ -527,7 +527,8 @@ export function GettingStarted() {
                 The RL vocabulary on tokens, sections 3 to 6: the policy; the policy gradient, the
                 basic rule for turning a score into a weight change; the clip of PPO (Proximal
                 Policy Optimization), which stops pushing a token&apos;s probability further once
-                an update has moved it a set amount from where the sampling model had it; the KL
+                the updates on a batch have moved it a set fraction from where the sampling model
+                had it; the KL
                 (Kullback-Leibler) penalty, a charge for drifting from the model the run started
                 from; and rewards learned from preferences, where a reward model is trained on
                 people&apos;s choices between two responses. KL divergence, named after the two
@@ -665,10 +666,11 @@ export function GettingStarted() {
                   Sections 7 and 23, on the advisor route.
                 </Box>{' '}
                 Section 22 relies on section 7 to turn today&apos;s base rate, the share of attempts
-                the model passes now, into the expected share of training groups that change no
-                weights: when every attempt in a group gets the same score, no attempt did better
-                or worse than the others, every advantage is 0, and the group&apos;s gradient is
-                zero. Section 22 also names the
+                the model passes now, into the expected share of training groups that carry no
+                learning signal: when every attempt in a group gets the same score, no attempt did
+                better or worse than the others, every advantage is 0, and the group adds nothing
+                to the reward-driven part of the update (only the KL penalty, when it is switched
+                on, still acts on it). Section 22 also names the
                 AWS service for each path and leaves the detail to section 23.
               </Box>
             </SpaceBetween>

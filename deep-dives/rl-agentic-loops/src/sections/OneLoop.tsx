@@ -395,7 +395,7 @@ export function OneLoop() {
             changes, recur through the dive. Both carry the word policy, which is RL&apos;s name
             for whatever chooses the actions; for a language model the policy is the model itself,
             choosing each next token. PPO (Proximal Policy Optimization) stops pushing a
-            token&apos;s probability further once training has moved it a set amount from the
+            token&apos;s probability further once training has moved it a set fraction from the
             version of the model that produced the attempts, which keeps training stable. It also
             uses a second model to predict the score each attempt should expect, so each attempt
             is judged by how much better or worse it did than expected, not by its raw score. GRPO (Group Relative Policy Optimization) samples a group of attempts at each
@@ -504,7 +504,8 @@ export function OneLoop() {
             makes a model more reliable at answers it can already give some of the time.
             Distillation trains a model on the outputs of a stronger one. A calibrated model&apos;s
             confidence in an answer matches how often such answers are right. In the row on what
-            each store holds best, fast means a behaviour that costs no extra tokens on any call,
+            each store holds best, fast means a behaviour that adds no tokens to the prompt of any
+            call,
             and general means one that applies to every input, including tasks the training never
             saw.
           </Box>
