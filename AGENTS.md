@@ -94,7 +94,7 @@ Import from `@tech-deep-dives/shared`:
 - **Every claim citable:** If it cannot be traced to a source, it does not go in the app.
 - **Visual-first:** Prefer diagrams, animations, and interactive elements over walls of text.
 - **Comparative:** Always show alternatives and trade-offs, not just the happy path.
-- **Right complexity level:** A technical reader who may be new to the topic. Lay down the topic's own basics before building on them, and skip general computing basics. Then focus on architecture decisions, trade-offs, pricing implications, and when-to-use guidance. See **Explaining Concepts** below.
+- **Right complexity level:** A technical reader, for example from IT or software (reads TypeScript or Python, runs infrastructure), who does not yet have the topic's concepts. Aim for the right depth and the right ramp-up: build the topic's concepts up fast, in front of the mechanisms, formulas, numbers and practical detail, without oversimplifying them away; skip general computing basics. Then focus on architecture decisions, trade-offs, pricing implications, and when-to-use guidance. See **Explaining Concepts** below.
 - **Fact-checking & sources:** Every quantitative claim (bandwidth numbers, latency figures, percentages, pricing) must have an inline citation linking to the Sources appendix. Every deep dive app includes a Sources appendix section as the last navigation item. Sources are graded by authority: Tier 1 (official AWS docs, API reference, source code), Tier 2 (AWS blog posts, re:Invent talks), Tier 3 (third-party technical analysis, academic papers), Tier 4 (blog posts, tutorials — inspiration only, never cited as fact). Numbers without citations are unverified claims — flag them visually.
 
 ## Section Shape: Mental Model Or Practical Value
@@ -167,6 +167,10 @@ Full standard, with his words and a worked example (KL divergence), in
 
 - **Lay down the basics first.** A section never builds on an idea the page has
   not yet explained.
+- **Right depth, right ramp-up** (Carlos, 2026-11-03). Build the concepts up fast,
+  then reach the real depth. Too steep (a concept met before it is built) and
+  too flat (the mechanism, formula or number dropped, or the reader talked
+  down to) are both failures.
 - **Explain every term at first use in reading order, and place it**: say how it
   fits with what came before. Diagram labels, table cells, captions and header
   descriptions count as uses. Explain once; later uses are plain. Where a word

@@ -55,14 +55,42 @@ These are the source of every rule below. Quoted, not paraphrased.
   they will be in the project. So any new project, regardless of if it has Open
   Brain or not, will actually just go through it."
 
-## Who the reader is
+## Who the reader is: the right depth and the right ramp-up
 
-A technical reader who may be new to the topic. They know general computing:
-servers, networks, files, APIs, a percentage, an average, a probability. They
-do not know the topic's own basics, and the page lays those down. For the RL
-dive that means saying what a model's weights are before saying that training
-changes them. For a networking dive it means saying what a queue pair is before
-saying how many the device supports.
+Carlos, 2026-11-03 (voice transcription, verbatim): "this is for a technical
+audience, but even for a technical audience that is coming from IT, when you get
+them to such deep concepts, you see that it is hard to understand some of those
+things. So we need something in between. ... the moment that you get them into
+[tech], TypeScript, Python, into concepts, it needs to build up those concepts,
+which is exactly what we've done. So I know that we may need to adjust a bit,
+and we need to adjust in a way that we don't oversimplify either, that we
+basically just get the right depth and that we do the right ramp up. Like the
+right depth and the right ramp up is the part that we are after. So we can
+basically get people relatively fast from ramping up even if they don't have
+the concept."
+
+The reader is technical, for example from IT or software: they read TypeScript
+or Python, run infrastructure, and know general computing (servers, networks,
+files, APIs, a percentage, an average, a probability). They do not yet have the
+topic's concepts. The page builds those concepts up fast and then takes the
+reader to the real depth.
+
+The ramp-up goes in front of the mechanisms, the formulas, the numbers and the
+practical detail. It does not replace them. For the RL dive that means saying
+what a model's weights are before saying that training changes them, and then
+still showing the update rule and its symbols. For a networking dive it means
+saying what a queue pair is before saying how many the device supports, and then
+still giving the count.
+
+Check every explanation against two failure modes:
+
+- **Too steep.** The reader meets a concept before it is built: a term used
+  before it is explained, a formula before its intuition, a symbol defined after
+  the line that uses it.
+- **Too flat.** The explanation drops the mechanism, the formula or the number,
+  or talks down to the reader. A reader who knows the field should find nothing
+  wrong or missing, and a newcomer should reach the same depth, only with the
+  steps laid out.
 
 ## The rules
 
@@ -204,7 +232,9 @@ word count.
 6. No citation marker sits inside a definition.
 7. Read the section as a technical reader new to the topic. Find the first
    sentence where that reader stops following, and fix the explanation there,
-   not just the wording.
+   not just the wording. Then read it as someone who knows the field: nothing
+   should be wrong, missing or talked down. Too steep and too flat are both
+   failures.
 8. Every sentence added in the pass carries a basic, a definition, an intuition
    or a decomposition.
 9. The No AI Tells rules hold.
