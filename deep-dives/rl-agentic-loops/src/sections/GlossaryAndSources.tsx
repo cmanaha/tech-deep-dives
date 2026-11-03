@@ -191,6 +191,8 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'pass@k', fullForm: 'Pass at k', description: 'The chance that at least one of k samples solves a problem; pass@1 is the single-attempt success rate.' },
   { acronym: 'AIME', fullForm: 'American Invitational Mathematics Examination', description: 'A US competition-math exam with integer answers, used as an RLVR benchmark.' },
   { acronym: 'MATH-500', fullForm: 'MATH-500', description: 'A 500-problem subset of the MATH competition-math benchmark.' },
+  { acronym: 'SQuADv2', fullForm: 'Stanford Question Answering Dataset, version 2', description: 'A reading-comprehension benchmark; one of the regressions InstructGPT measured after RL (section 5).' },
+  { acronym: 'DROP', fullForm: 'Discrete Reasoning Over Paragraphs', description: 'A reading-comprehension benchmark; another of the regressions InstructGPT measured after RL (section 5).' },
   { acronym: 'GSM8K', fullForm: 'Grade School Math 8K', description: 'Grade-school math word problems.' },
   { acronym: 'MMLU', fullForm: 'Massive Multitask Language Understanding', description: 'A multiple-choice exam benchmark across academic subjects.' },
   { acronym: 'SWE-bench Verified', fullForm: 'SWE-bench Verified', description: 'Human-validated GitHub issues, scored by whether the repository\'s tests pass after the model\'s patch.' },

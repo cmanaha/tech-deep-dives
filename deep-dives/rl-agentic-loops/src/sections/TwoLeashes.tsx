@@ -773,7 +773,8 @@ export function TwoLeashes() {
               General skills.
             </Box>{' '}
             In a 1.3B ablation, a KL coefficient 100x larger did not fix the regressions on SQuADv2
-            and DROP (two reading-comprehension benchmarks) and cost validation reward, the reward
+            (Stanford Question Answering Dataset, version 2) and DROP (Discrete Reasoning Over
+            Paragraphs), two reading-comprehension benchmarks, and cost validation reward, the reward
             on prompts held out from training; mixing pretraining data into the RL updates did fix
             them. In the main InstructGPT models the mix reduced those regressions without removing
             them{' '}
