@@ -457,20 +457,20 @@ export function TwoLeashes() {
             sets it and where to watch it.
           </Box>
           <Box variant="p">
-            The two leashes measure from different places. The clip of PPO
-            (Proximal Policy Optimization) limits how far one update is rewarded for moving each
-            token&apos;s probability away from the policy that sampled the current batch, and that
-            reference point moves on with every batch. The KL (Kullback-Leibler divergence, a measure of how
-            far one probability distribution has moved from another) penalty charges for distance
-            from the reference model, a frozen copy of the model the run started from, and that
-            reference point never moves{' '}
+            The two leashes measure from different places. The clip of PPO (Proximal Policy
+            Optimization) limits how far one update is rewarded for moving each token&apos;s
+            probability away from the policy that sampled the current batch, and that reference
+            point moves on with every batch. The KL (Kullback-Leibler divergence) penalty charges
+            for distance from the reference model, a frozen copy of the model the run started from,
+            and that reference point never moves{' '}
             <Cite tier={3} href={GAO} venue="ICML 2023">
               Gao et al., Section 3.6
             </Cite>
             . The clip is a speed limit; the KL penalty is a tether. In TRL (Transformers
             Reinforcement Learning, Hugging Face&apos;s post-training library) the two sit side by
             side as two small numbers: its GRPO (Group Relative Policy Optimization) trainer ships
-            with <code>epsilon</code> 0.2 for the clip and <code>beta</code> 0.0 for the KL{' '}
+            with <code>epsilon</code> 0.2, the width of the clip, and <code>beta</code> 0.0, the
+            price of the KL{' '}
             <Cite tier={1} href={trl('grpo_config.py', 'L681-L696')}>
               TRL grpo_config.py L681-L696
             </Cite>
@@ -493,9 +493,10 @@ export function TwoLeashes() {
           <Box variant="p">
             A batch of rollouts (attempts from prompt to reward) is evidence about the policy that
             sampled it. The first gradient step on that batch uses fresh evidence. Every further
-            step on the same batch uses evidence about a policy that no longer exists. Reusing the
-            batch is tempting because sampling is the expensive part of a step: on our own 0.5B
-            run on a DGX Spark, generation took about 62% of step time{' '}
+            step on the same batch uses evidence about a policy that no longer exists: the batch
+            has gone slightly off-policy, in section 3&apos;s terms. Reusing the batch is tempting
+            because sampling is the expensive part of a step: on our own 0.5B run on a DGX Spark,
+            generation took about 62% of step time{' '}
             <Cite tier={0} href={E0_URL}>
               E0 log: GRPO smoke test on a DGX Spark
             </Cite>
@@ -507,9 +508,10 @@ export function TwoLeashes() {
             .
           </Box>
           <Box variant="p">
-            TRPO (Trust Region Policy Optimization) met this with a trust region: maximise the
-            improvement subject to a cap on the KL divergence between the new policy and the old
-            one{' '}
+            TRPO (Trust Region Policy Optimization), PPO&apos;s predecessor, met this with a trust
+            region, a zone around the current policy inside which the update&apos;s estimate is
+            trusted. It maximises the improvement subject to a cap on the KL divergence between the
+            new policy and the old one{' '}
             <Cite tier={3} href={TRPO} venue="ICML 2015">
               TRPO paper, Section 4
             </Cite>
@@ -528,37 +530,6 @@ export function TwoLeashes() {
         header={
           <Header
             variant="h2"
-            description="Tell the clip and the KL apart at a glance: where each is measured from, how long it lasts, and which knob sets it"
-          >
-            Two leashes, two reference points
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <TwoLeashesDiagram />
-          <Box variant="small" color="text-body-secondary">
-            Schematic, not to scale. The values in the panels are the defaults cited in this
-            section; π_ref is the reference model, π_old the policy that sampled the batch, π_new
-            the policy after the update.
-          </Box>
-          <Box variant="p">
-            The two leashes interact. The clip controls how fast the policy changes, and in a
-            well-tuned implementation that also makes the KL to the starting model grow much more
-            slowly{' '}
-            <Cite tier={3} href={GAO} venue="ICML 2023">
-              Gao et al., Section 3.6
-            </Cite>
-            . A run with a clip and no KL penalty still drifts from its start, only more slowly.
-            Each knob answers its own question: <code>epsilon</code>, how hard one batch may push;{' '}
-            <code>beta</code>, how much the whole journey costs.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header
-            variant="h2"
             description="Read epsilon as the point where an update stops being rewarded, and know when it does any work at all"
           >
             The clip: PPO stops paying for moves past 20%
@@ -567,15 +538,38 @@ export function TwoLeashes() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            PPO compares each token&apos;s probability under the policy being trained with its
-            probability under the policy that sampled it,{' '}
-            <code>ratio = pi_new(token) / pi_old(token)</code>, and takes the smaller of two terms:{' '}
-            <code>min(ratio * A, clip(ratio, 1 - eps, 1 + eps) * A)</code>, where <code>A</code> is
-            the token&apos;s advantage and <code>eps</code> is 0.2 in the paper{' '}
+            The clip works through one number per token, the probability ratio. Take a token in
+            the batch. The policy that sampled it, π_old, gave it some probability. The policy
+            being trained, π_new, gives it a probability that shifts with every update. Their ratio
+            says how far the updates have moved that token: 1 means unchanged, 1.2 means 20% more
+            likely, 0.8 means 20% less likely. As an illustration, a token that π_old gave
+            probability 0.50 and π_new gives 0.60 has a ratio of 1.2.
+          </Box>
+          <Box variant="p">
+            PPO&apos;s objective, the number each training step tries to raise, multiplies that
+            ratio by the token&apos;s advantage and caps how much the product can gain. With{' '}
+            <code>ratio = pi_new(token) / pi_old(token)</code>, <code>A</code> the token&apos;s
+            advantage, <code>eps</code> epsilon (ε), the clip&apos;s width,{' '}
+            <code>clip(ratio, 1 - eps, 1 + eps)</code> the ratio held inside the range 1 - eps to 1
+            + eps, and <code>min</code> the smaller of two numbers, PPO takes the smaller of two
+            terms: <code>min(ratio * A, clip(ratio, 1 - eps, 1 + eps) * A)</code>, with{' '}
+            <code>eps</code> 0.2 in the paper{' '}
             <Cite tier={3} href={PPO} venue="preprint">
               PPO paper, Section 3, Eq. 7
             </Cite>
             .
+          </Box>
+          <Box variant="p">
+            Read it term by term. <code>ratio * A</code> is section 4&apos;s policy gradient written
+            for samples that came from π_old: at the start of a batch, when π_new equals π_old, its
+            gradient is exactly the advantage times <code>grad log pi</code>, and later in the batch
+            the ratio corrects for the samples coming from an older policy. The clipped
+            term is the same product with the ratio held between 0.8 and 1.2. Taking the smaller of
+            the two means a move can never earn more than the clipped version allows. As an
+            illustration with A = +1: at a ratio of 1.1 both terms are 1.1; at 1.3 the terms are
+            1.3 and 1.2, the min is 1.2, and moving further earns nothing. With A = -1 and a ratio
+            of 1.3 the terms are -1.3 and -1.2, and the min keeps -1.3: a move in the wrong
+            direction is always counted in full.
           </Box>
           <Box variant="p">
             For a token with a positive advantage, the objective stops rising once the ratio passes
@@ -635,9 +629,12 @@ export function TwoLeashes() {
             <Cite tier={0} href={E0_RUN2}>
               E0 run 2 metrics log
             </Cite>
-            . Epsilon starts to matter when you reuse a batch: <code>num_iterations</code> above 1,
-            or <code>steps_per_generation</code> above <code>gradient_accumulation_steps</code>,
-            which spreads one batch over several optimizer steps (our reading of the code){' '}
+            . Epsilon starts to matter when you reuse a batch. An optimizer step is one update of
+            the model&apos;s weights, and gradient accumulation adds up the gradients of several
+            slices of a batch before one step is taken. A batch is reused when{' '}
+            <code>num_iterations</code> is above 1, or when <code>steps_per_generation</code> is
+            above <code>gradient_accumulation_steps</code>, which spreads one batch over several
+            optimizer steps (our reading of the code){' '}
             <Cite tier={1} href={trl('grpo_config.py', 'L528-L531')}>
               TRL grpo_config.py L528-L531
             </Cite>{' '}
@@ -661,8 +658,11 @@ export function TwoLeashes() {
               <Box variant="p">
                 The same logs carry a second ratio, <code>sampling/importance_sampling_ratio</code>
                 , which reached 2.80 and 2.86 on our two runs while the clip metric stayed at 0.0.
-                It corrects a different gap: vLLM and the trainer assign slightly different
-                probabilities to the same tokens under the same weights{' '}
+                Importance sampling is the general correction behind both ratios: it reweights
+                samples drawn from one distribution by the ratio of two probabilities, so they
+                count as if drawn from another. This ratio corrects a different gap: vLLM and the
+                trainer assign slightly different probabilities to the same tokens under the same
+                weights{' '}
                 <Cite tier={0} href={E0_URL}>
                   E0 log: GRPO smoke test on a DGX Spark
                 </Cite>
@@ -673,10 +673,11 @@ export function TwoLeashes() {
           </ExpandableSection>
           <ExpandableSection headerText="The robotics ablation behind epsilon 0.2">
             <Box variant="p">
+              An ablation is an experiment that changes one setting and measures the effect.
               PPO&apos;s ablation ran seven simulated robotics tasks (MuJoCo physics engine, one
-              million timesteps, three seeds each): epsilon 0.2 scored 0.82 on the normalised
-              average, against 0.76 at 0.1 and 0.70 at 0.3, and running with no clipping or penalty
-              scored -0.39{' '}
+              million timesteps, three seeds each, a seed being the starting value of the random
+              number generator): epsilon 0.2 scored 0.82 on the normalised average, against 0.76 at
+              0.1 and 0.70 at 0.3, and running with no clipping or penalty scored -0.39{' '}
               <Cite tier={3} href={PPO} venue="preprint">
                 PPO paper, Section 6.1, Table 1
               </Cite>
@@ -690,7 +691,7 @@ export function TwoLeashes() {
         header={
           <Header
             variant="h2"
-            description="Set beta knowing what the tether has been shown to protect, what it has not, and what it costs in memory"
+            description="Set beta knowing what the tether measures, what it has been shown to protect, what it has not, and what it costs in memory"
           >
             The KL penalty: a tether to the starting model
           </Header>
@@ -698,14 +699,64 @@ export function TwoLeashes() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
+            The tether needs a number for how far the model has drifted from where it started.
+            When you fine-tune a model you want it to get better at the task without forgetting how
+            to write normal text, and the drift is what you watch. KL divergence (Kullback-Leibler
+            divergence, named after the two people who defined it) is that number. It comes from
+            information theory and compares two probability distributions, lists of probabilities
+            that add up to 1. Here each list is the probabilities a model gives to every possible
+            next token at one position of a response: P from the model being trained, Q from the
+            reference model, π_ref, the frozen copy of the starting model.
+          </Box>
+          <Box variant="p">
+            Its values read simply. It is never negative. Zero means the two models agree exactly
+            at that position, a small value means little drift, and a large one means the trained
+            model now prefers very different tokens. In the formula, x runs over every token in the
+            vocabulary:
+          </Box>
+          <Box variant="p">
+            <code>KL(P || Q) = sum over x of P(x) * log(P(x) / Q(x))</code>
+          </Box>
+          <Box variant="p">
+            Read it term by term. <code>P(x) / Q(x)</code> is how many times more likely the
+            trained model finds token x than the reference does. The log turns that ratio into a
+            score: 0 when the two agree, positive when the trained model likes x more, negative
+            when it likes x less. Weighting each score by <code>P(x)</code> and summing averages it
+            over what the trained model actually generates: KL is the average log-ratio, which is
+            what measuring the distance in logarithmic terms means. The negative scores never
+            outweigh the positive ones, so the average is never below 0, and it is 0 only when the
+            two lists match.
+          </Box>
+          <Box variant="p">
+            The measure is asymmetric: swapping P and Q weights the average by the other
+            model&apos;s preferences, so the answer changes. As an illustration with two tokens, P
+            = (0.9, 0.1) and Q = (0.5, 0.5), using the natural log: KL(P || Q) = 0.9 log 1.8 + 0.1
+            log 0.2 = 0.37, while KL(Q || P) = 0.5 log(0.5 / 0.9) + 0.5 log 5 = 0.51. The direction
+            used here, the trained model first, blows up when the trained model puts probability
+            on a token the reference thought nearly impossible: a Q(x) near 0 makes log(P(x) /
+            Q(x)) very large.
+          </Box>
+          <Box variant="p">
+            RL fine-tuning reaches for this measure because it is nearly free. The trainer already
+            has both models&apos; probabilities for every sampled token, and the samples come from
+            the trained model. So the per-token term, log P minus log Q for the token actually
+            generated, costs almost nothing on every token, and averaged over the trained
+            model&apos;s own samples it equals the KL. Used as a penalty, it keeps the model near
+            the reference, so the model cannot chase the reward with text the reference would never
+            write.
+          </Box>
+          <Box variant="p">
             InstructGPT&apos;s RL objective is the reward minus <code>beta</code> times the
             per-token log-ratio between the policy and the SFT (supervised fine-tuning) model the
-            run started from, plus an optional term on pretraining data, with beta 0.02{' '}
+            run started from, plus an optional term on pretraining data (text of the kind the model
+            was first trained on), with beta 0.02{' '}
             <Cite tier={3} href={INSTRUCTGPT} venue="NeurIPS 2022">
               InstructGPT, Section 3.5 and Appendix C.4
             </Cite>
-            . The penalty sits in the reward at every token, to keep the policy from
-            over-optimising the reward model, an imperfect stand-in for human judgement. GRPO moves it out of the reward and adds the KL to
+            . That log-ratio is the per-token term above, and beta (β) is its price: the larger
+            beta is, the more reward each unit of drift costs. The penalty sits in the reward at
+            every token, to keep the policy from over-optimising the reward model, an imperfect
+            stand-in for human judgement. GRPO moves it out of the reward and adds the KL to
             the loss directly{' '}
             <Cite tier={3} href={DEEPSEEKMATH} venue="preprint">
               DeepSeekMath, Section 4.1.1
@@ -722,9 +773,10 @@ export function TwoLeashes() {
               General skills.
             </Box>{' '}
             In a 1.3B ablation, a KL coefficient 100x larger did not fix the regressions on SQuADv2
-            and DROP (two reading-comprehension benchmarks) and cost validation reward; mixing
-            pretraining data into the RL updates did fix them. In the main InstructGPT models the
-            mix reduced those regressions without removing them{' '}
+            and DROP (two reading-comprehension benchmarks) and cost validation reward, the reward
+            on prompts held out from training; mixing pretraining data into the RL updates did fix
+            them. In the main InstructGPT models the mix reduced those regressions without removing
+            them{' '}
             <Cite tier={3} href={INSTRUCTGPT} venue="NeurIPS 2022">
               InstructGPT, Appendix E.6 and Sections 4.2 and 5.4
             </Cite>
@@ -735,9 +787,10 @@ export function TwoLeashes() {
               Over-optimisation.
             </Box>{' '}
             In a synthetic study, where a fixed 6B &quot;gold&quot; reward model stood in for human
-            raters, the KL penalty acted like early stopping: the gold score converged earlier, and
-            the best gold score reachable at a given KL from the start did not improve. The authors
-            flag the result as possibly sensitive to hyperparameters{' '}
+            raters, the KL penalty acted like early stopping, ending training before it runs its
+            course: the gold score converged earlier, and the best gold score reachable at a given
+            KL from the start did not improve. The authors flag the result as possibly sensitive to
+            hyperparameters, the settings chosen before a run{' '}
             <Cite tier={3} href={GAO} venue="ICML 2023">
               Gao et al., Sections 1 and 3.6
             </Cite>
@@ -759,9 +812,10 @@ export function TwoLeashes() {
             <Cite tier={1} href={trl('rloo_config.py', 'L502-L508')}>
               TRL rloo_config.py L502-L508
             </Cite>
-            . When the policy is an adapter such as LoRA (Low-Rank Adaptation), TRL recovers the
-            starting model by switching the adapter off, so a beta above 0 costs no second copy
-            of the model (our reading of the code){' '}
+            . When the policy is an adapter such as LoRA (Low-Rank Adaptation), a small set of added
+            weights trained while the original weights stay frozen, TRL recovers the starting model
+            by switching the adapter off, so a beta above 0 costs no second copy of the model (our
+            reading of the code){' '}
             <Cite tier={1} href={trl('grpo_trainer.py', 'L987-L990')} kind="code">
               TRL grpo_trainer.py L987-L990
             </Cite>{' '}
@@ -804,6 +858,42 @@ export function TwoLeashes() {
               </Box>
             </SpaceBetween>
           </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Tell the clip and the KL apart at a glance: where each is measured from, how long it lasts, and which knob sets it"
+          >
+            Two leashes, two reference points
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            With both leashes built, the diagram sets them side by side: where each is measured
+            from, how long it lasts, what it acts on and which knob sets it. In the clip panel,
+            each token&apos;s weight in the gradient is its multiplier in section 4&apos;s sense.
+          </Box>
+          <TwoLeashesDiagram />
+          <Box variant="small" color="text-body-secondary">
+            Schematic, not to scale. The values in the panels are the defaults cited in this
+            section; π_ref is the reference model, π_old the policy that sampled the batch, π_new
+            the policy after the update.
+          </Box>
+          <Box variant="p">
+            The two leashes interact. The clip controls how fast the policy changes, and in a
+            well-tuned implementation that also makes the KL to the starting model grow much more
+            slowly{' '}
+            <Cite tier={3} href={GAO} venue="ICML 2023">
+              Gao et al., Section 3.6
+            </Cite>
+            . A run with a clip and no KL penalty still drifts from its start, only more slowly.
+            Each knob answers its own question: <code>epsilon</code>, how hard one batch may push;{' '}
+            <code>beta</code>, how much the whole journey costs.
+          </Box>
         </SpaceBetween>
       </Container>
 
@@ -891,10 +981,10 @@ export function TwoLeashes() {
           <EntropyChart />
           <Box variant="small" color="text-body-secondary">
             Measured on our DGX Spark: two 20-step runs with seed 0, Qwen2.5-0.5B-Instruct with
-            full fine-tuning, TRL 1.16.0 with vLLM 0.28.0 colocated, TRL defaults beta 0.0 and
-            epsilon 0.2, learning rate 1e-6, 16 completions per step (2 prompts x 8) at temperature
-            1.0 on synthetic arithmetic. A mechanism test: the reward did not move and was not
-            expected to.
+            full fine-tuning (every weight trained, no adapter), TRL 1.16.0 with vLLM 0.28.0
+            colocated on the same GPU, TRL defaults beta 0.0 and epsilon 0.2, learning rate 1e-6, 16
+            completions per step (2 prompts x 8) at temperature 1.0 on synthetic arithmetic. A
+            mechanism test: the reward did not move and was not expected to.
           </Box>
           <Box variant="p">
             This is what the entropy curve looks like on a real run where nothing is being learned
@@ -912,10 +1002,11 @@ export function TwoLeashes() {
             steps, not a single point (our reading).
           </Box>
           <Box variant="p">
-            On a managed job, Bedrock reinforcement fine-tuning (RFT) reports{' '}
+            On a managed job, Amazon Bedrock&apos;s reinforcement fine-tuning (RFT) reports{' '}
             <code>actor/entropy</code>{' '}
             and <code>actor/pg_clipfrac</code>, the share of clipped updates, next to its reward
-            statistics; no KL metric was among those listed on the monitoring page read{' '}
+            statistics (the actor is the policy, in section 4&apos;s actor-critic terms); no KL
+            metric was among those listed on the monitoring page read{' '}
             <Cite tier={1} href={BEDROCK_RFT}>
               Bedrock user guide: Monitor your RFT training job
             </Cite>
