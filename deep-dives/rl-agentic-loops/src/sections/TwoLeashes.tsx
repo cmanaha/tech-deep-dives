@@ -458,8 +458,8 @@ export function TwoLeashes() {
           </Box>
           <Box variant="p">
             The two leashes measure from different places. The clip of PPO (Proximal Policy
-            Optimization) limits how far one update is rewarded for moving each token&apos;s
-            probability away from the policy that sampled the current batch, and that reference
+            Optimization) stops pushing a token&apos;s probability once the updates on a batch have
+            moved it a set amount away from the policy that sampled that batch, and that reference
             point moves on with every batch. The KL (Kullback-Leibler divergence) penalty charges
             for distance from the reference model, a frozen copy of the model the run started from,
             and that reference point never moves{' '}
@@ -509,8 +509,9 @@ export function TwoLeashes() {
           </Box>
           <Box variant="p">
             TRPO (Trust Region Policy Optimization), PPO&apos;s predecessor, met this with a trust
-            region, a zone around the current policy inside which the update&apos;s estimate is
-            trusted. It maximises the improvement subject to a cap on the KL divergence between the
+            region: a limit on how far one update may move the policy&apos;s probabilities, because
+            an update computed from the current samples is only reliable near the policy that
+            produced them. It maximises the improvement subject to a cap on the KL divergence between the
             new policy and the old one{' '}
             <Cite tier={3} href={TRPO} venue="ICML 2015">
               TRPO paper, Section 4
@@ -530,7 +531,7 @@ export function TwoLeashes() {
         header={
           <Header
             variant="h2"
-            description="Read epsilon as the point where an update stops being rewarded, and know when it does any work at all"
+            description="Read epsilon as the point where the objective stops paying for a move, and know when it does any work at all"
           >
             The clip: PPO stops paying for moves past 20%
           </Header>
@@ -547,7 +548,9 @@ export function TwoLeashes() {
           </Box>
           <Box variant="p">
             PPO&apos;s objective, the number each training step tries to raise, multiplies that
-            ratio by the token&apos;s advantage and caps how much the product can gain. With{' '}
+            ratio by the token&apos;s advantage and caps how much the product can gain. An update
+            that raises the objective is said to be rewarded, a second sense of the word: it is
+            about the training step, where section 3&apos;s reward was the score of an attempt. With{' '}
             <code>ratio = pi_new(token) / pi_old(token)</code>, <code>A</code> the token&apos;s
             advantage, <code>eps</code> epsilon (ε), the clip&apos;s width,{' '}
             <code>clip(ratio, 1 - eps, 1 + eps)</code> the ratio held inside the range 1 - eps to 1
@@ -561,15 +564,21 @@ export function TwoLeashes() {
           </Box>
           <Box variant="p">
             Read it term by term. <code>ratio * A</code> is section 4&apos;s policy gradient written
-            for samples that came from π_old: at the start of a batch, when π_new equals π_old, its
-            gradient is exactly the advantage times <code>grad log pi</code>, and later in the batch
-            the ratio reweights each token to correct for the samples coming from an older policy, a
+            for samples that came from π_old. The π_old probabilities are fixed numbers recorded
+            when the batch was sampled, so the gradient of the ratio is the gradient of π_new
+            divided by π_old. At the start of a batch π_new equals π_old, so that is the gradient
+            of π divided by π itself, which section 4 showed is <code>grad log pi</code>: the first
+            update on a batch is exactly section 4&apos;s, the advantage times{' '}
+            <code>grad log pi</code>. Later in the batch the ratio reweights each token to correct for the samples coming from an older policy, a
             correction that holds only while the two policies stay close, which is what the clip
             protects. The clipped
             term is the same product with the ratio held between 0.8 and 1.2. Taking the smaller of
             the two means a move can never earn more than the clipped version allows. As an
-            illustration with A = +1: at a ratio of 1.1 both terms are 1.1; at 1.3 the terms are
-            1.3 and 1.2, the min is 1.2, and moving further earns nothing. With A = -1 and a ratio
+            illustration, follow one token with A = +1 through a batch reused for three updates.
+            The first update starts at a ratio of 1.0 and pushes the token up. If that leaves the
+            ratio at 1.1, both terms are 1.1 and the second update still pushes it up. If that one
+            leaves it at 1.3, the terms are 1.3 and 1.2, the min is 1.2, and the third update gets
+            no push from this token: moving further earns nothing. With A = -1 and a ratio
             of 1.3 the terms are -1.3 and -1.2, and the min keeps -1.3: a move in the wrong
             direction is always counted in full.
           </Box>
@@ -762,7 +771,8 @@ export function TwoLeashes() {
             beta is, the more reward each unit of drift costs. The penalty sits in the reward at
             every token, to keep the policy from over-optimising the reward model, an imperfect
             stand-in for human judgement. GRPO moves it out of the reward and adds the KL to
-            the loss directly{' '}
+            the loss directly, so the advantage stays a plain comparison of each sample&apos;s score
+            with its group&apos;s, and the drift is charged as a separate term{' '}
             <Cite tier={3} href={DEEPSEEKMATH} venue="preprint">
               DeepSeekMath, Section 4.1.1
             </Cite>
@@ -794,8 +804,8 @@ export function TwoLeashes() {
             </Box>{' '}
             In a synthetic study, where a fixed 6B &quot;gold&quot; reward model stood in for human
             raters, the KL penalty acted like early stopping, ending training before it runs its
-            course: the gold score converged earlier, and the best gold score reachable at a given
-            KL from the start did not improve. The authors flag the result as possibly sensitive to
+            course: the gold score converged earlier, and the best gold score reachable for a given
+            amount of drift from the starting model, measured as KL, did not improve. The authors flag the result as possibly sensitive to
             hyperparameters, the settings chosen before a run{' '}
             <Cite tier={3} href={GAO} venue="ICML 2023">
               Gao et al., Sections 1 and 3.6
@@ -967,7 +977,9 @@ export function TwoLeashes() {
             The KL to the reference model shows how far the run has travelled from where it
             started. Policy
             entropy shows how much variety is left: it measures how spread out the next-token
-            distribution is, and when it collapses the model samples nearly the same answer every
+            distribution is. It is 0 when the model is certain of the next token, an even split
+            between two tokens gives 0.69 with natural logs (1 with base-2 logs), and more tokens
+            in play push it higher. When it collapses the model samples nearly the same answer every
             time, so a group of samples has nothing left to compare (section 8, What RL Does to a
             Model, returns to it). The clip fraction, the share of tokens where the clip is active,
             shows how often the speed limit binds.
@@ -994,8 +1006,9 @@ export function TwoLeashes() {
           </Box>
           <Box variant="p">
             This is what the entropy curve looks like on a real run where nothing is being learned
-            yet. TRL&apos;s mean per-token entropy stayed between 0.19 and 0.32 over the 20 steps
-            and wandered with no trend{' '}
+            yet. TRL&apos;s mean per-token entropy stayed between 0.19 and 0.32 over the 20 steps,
+            on average less spread than an even split between two tokens, and wandered with no
+            trend{' '}
             <Cite tier={0} href={E0_URL}>
               E0 log: GRPO smoke test on a DGX Spark
             </Cite>
