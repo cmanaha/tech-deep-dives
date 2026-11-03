@@ -127,9 +127,15 @@ sourcing methodology or a lookup table closes in the wrong place.
 A summary box lets the body stay unfocused because the box will catch it. Make
 the body land instead.
 
-**13. Word count that grows.**
-Reframing keeps every verified fact and every citation while holding length flat
-or bringing it down. Growth means the pass turned into a rewrite.
+**13. Word count that grows without carrying anything.**
+Reframing keeps every verified fact and every citation. Length grows only when
+the added words carry what the reader was missing: the basics, a definition at
+first use, the intuition, or a formula decomposed against that intuition. In
+Carlos's words (2026-11-02): "I don't want to grow the word count if we are not
+providing the right information. I'm happy to create sections that have the
+right information and guide through the structured approach." Growth from
+padding, restatement or rhythm still means the pass went wrong. The standard for
+that explanation is `docs/standards/explaining-concepts.md`.
 
 **14. Universal claims built from local searches.**
 "No AWS benchmark was located during this research" is honest. "No AWS benchmark

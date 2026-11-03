@@ -33,6 +33,7 @@ Each deep dive directory contains:
 
 ## Acronym Standard
 - First occurrence of every acronym in the sequential reading order must expand to its full form: "EFA (Elastic Fabric Adapter)"
+- Expansion alone is not an explanation. At first use, after the full form, say in plain words what the thing is or does; for a technique, also what challenge it meets and when it is used: "PPO (Proximal Policy Optimization), the RL algorithm that limits how far each update moves the model". See `docs/standards/explaining-concepts.md`
 - After first expansion, the acronym alone is fine
 - Every deep dive includes a Glossary in the Sources appendix section listing all acronyms used
 - Niche/domain-specific acronyms always expand: SRD, NCCL, RDMA, MPI, NAPI, DIM, GRO, LRO, QP, CQ, AH, MR, PD, UARN, WQE, etc.
@@ -84,7 +85,7 @@ Exempt: code, config, and real CLI output are left verbatim. This applies to eve
 
 ## Content Philosophy
 - **Outcome-first**: Start with "what business problem does this solve?" then work backward to mechanism.
-- **Right complexity level**: Technical lead audience — skip basics, focus on architecture decisions, trade-offs, pricing implications, and when-to-use guidance.
+- **Right complexity level**: A technical reader who may be new to the topic. Lay down the topic's own basics before building on them, and skip general computing basics. Then focus on architecture decisions, trade-offs, pricing implications, and when-to-use guidance. See **Explaining Concepts** below.
 - **Visual-first**: Prefer diagrams, animations, and interactive elements over walls of text.
 - **Comparative**: Always show alternatives and trade-offs, not just the happy path.
 
@@ -147,6 +148,35 @@ is material that passes neither test.
 - **Preserve the scope of every hedge.** "No AWS benchmark was located during
   this research" is honest; "no AWS benchmark exists" is a claim about the world
   that the research cannot support.
+
+## Explaining Concepts
+
+Set by Carlos on 2026-11-02, after a newcomer reader got lost in the RL dive. The
+section shape above stays; this adds the explanation that was missing inside it.
+Full standard, with his words and a worked example (KL divergence), in
+`docs/standards/explaining-concepts.md`.
+
+- **Lay down the basics first.** A section never builds on an idea the page has
+  not yet explained.
+- **Explain every term at first use in reading order, and place it**: say how it
+  fits with what came before. Diagram labels, table cells, captions and header
+  descriptions count as uses. Explain once; later uses are plain. Where a word
+  takes a second meaning, say so at the switch.
+- **An expanded acronym is a name, not an explanation.** Add what it is or does;
+  for a technique, the challenge it meets and when it is used. A technique
+  covered in depth later gets its intuition at first use, plus a pointer.
+- **Intuition, then formula, then decomposition.** Say what is going on, show
+  the formula, then say which term carries which part of the intuition. Define
+  every symbol at or before the formula, never after it.
+- **The more complex the idea, the more explanation it gets.** A worked example
+  with small numbers bridges intuition and formula; label toy numbers as
+  illustrations and keep the arithmetic redoable.
+- **A citation marker never splits a definition.** Put it after the sentence
+  that defines.
+- **No fixed opening formula and no analogy by default.** Use an intuition
+  about what is going on.
+- **Length grows only to carry missing basics, definitions, intuition or formula
+  decomposition.** Never for padding.
 
 ## Iteration Flywheel (ADR-003)
 Three explicit gates, budget controls throughout:
