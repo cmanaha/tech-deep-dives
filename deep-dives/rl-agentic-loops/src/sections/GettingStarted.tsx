@@ -405,9 +405,9 @@ export function GettingStarted() {
             would raise or lower the objective, and how strongly. That list, one entry per weight,
             is the gradient. Taken together its entries point in the direction, across all the
             billions of weights at once, in which the objective rises fastest. If nudging a weight
-            up would raise the probability of a wanted output, its entry is positive and the step
-            moves that weight up; if it would lower it, the entry is negative and the weight moves
-            down; a weight that makes no difference barely moves.
+            up would raise the objective, for instance the probability of a wanted output, its
+            entry is positive and the step moves that weight up; if it would lower it, the entry is
+            negative and the weight moves down; a weight that makes no difference barely moves.
           </Box>
           <Box variant="p">
             A gradient step moves every weight a small distance along that direction, and a

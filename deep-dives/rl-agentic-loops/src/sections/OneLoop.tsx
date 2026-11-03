@@ -408,8 +408,9 @@ export function OneLoop() {
             A loop writes text that the next attempt reads, and the model stays frozen. Reflexion
             has the model write a short lesson in plain words after a failed attempt and puts that
             lesson into the context of the next attempt (section 12). GEPA (Genetic-Pareto) is a
-            prompt optimiser: a model rewrites the prompt using the grader&apos;s written feedback,
-            and a rewrite is kept only if it scores better. Each new candidate is a rewrite of a
+            prompt optimiser: a model rewrites the prompt using the written feedback of the
+            grader, the test, checker or judge that scores each attempt, and a rewrite is kept only
+            if it scores better. Each new candidate is a rewrite of a
             parent chosen from the best so far, as in a genetic algorithm, and every candidate
             that is best on at least one example stays in the pool, which is what Pareto refers to
             (section 14). Other loops in this store write a rewritten prompt, a playbook, a memory
@@ -437,7 +438,7 @@ export function OneLoop() {
                 basic rule for turning scores into weight changes that PPO and GRPO build on
                 (section 4); PPO&apos;s limits on each step (section 5); RLHF (RL from human
                 feedback) and DPO (Direct Preference Optimization), which learn from pairs of
-                responses where a person judged one better (section 6); GRPO and its successors,
+                responses where one was judged better (section 6); GRPO and its successors,
                 scored by a program that checks each answer (section 7); agentic RL, where one
                 attempt is a whole multi-turn task in which the model calls tools, as in Search-R1
                 (a model trained to use a search engine while it reasons) and DeepSWE (a coding
@@ -608,8 +609,7 @@ export function OneLoop() {
             Section 22, Choosing a Text Loop, a Hybrid or a Weight Update. The short answer: three
             questions, in order. What kind of gap is it? What signal do you have, and what does the
             model score on it today? Can you touch the weights, and how many queries will the
-            learned artifact serve? The work starts with the grader, the test, checker or judge
-            that produces the score.
+            learned artifact serve? The work starts with the grader.
           </Box>
           <Box variant="p">
             Your next step: section 2, Getting Started, shows how training turns a score into a

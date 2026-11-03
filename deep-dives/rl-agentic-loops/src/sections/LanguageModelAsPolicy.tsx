@@ -285,7 +285,7 @@ export function LanguageModelAsPolicy() {
         header={
           <Header
             variant="h1"
-            description="Read any reinforcement learning paper's equations by mapping them onto the sampling you already run (TRL v1.12.0 and v1.16.0, papers read 2026-10-30)"
+            description="Read any reinforcement learning paper's equations by mapping them onto the sampling you already run (code read in the TRL training library at v1.12.0 and v1.16.0, papers read 2026-10-30)"
           >
             3. The Language Model Is Already a Policy
           </Header>
