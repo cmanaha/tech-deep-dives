@@ -358,7 +358,7 @@ export function GettingStarted() {
         header={
           <Header
             variant="h1"
-            description="Four ideas to hold, and the shortest route through the dive for the reason you are reading (sources read 2026-10-30)"
+            description="The two mechanics every later section builds on, four ideas to hold, and the shortest route through the dive for the reason you are reading (sources read 2026-10-30)"
           >
             2. Getting Started
           </Header>
@@ -369,6 +369,9 @@ export function GettingStarted() {
             The dive runs to 24 sections, from the RL (reinforcement learning) vocabulary to a
             choice of method and the AWS services that run it. A reader with one question needs a
             subset of them, and the challenge is choosing that subset without losing the thread.
+            This section first lays down two mechanics that every later section assumes, how a
+            training step changes the weights and what the context costs, then gives the four
+            ideas the rest of the dive leans on and the routes through it.
           </Box>
         </SpaceBetween>
       </Container>
@@ -377,36 +380,57 @@ export function GettingStarted() {
         header={
           <Header
             variant="h2"
-            description="Check that the dive starts where your experience ends, and know where to look up a term you meet out of order"
+            description="Check that the dive starts where your experience ends, and get the two mechanics it builds on: a gradient step and the cost of the context"
           >
-            Who the dive is written for
+            Who the dive is written for, and the two mechanics it builds on
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The dive is written for a technical lead who knows inference engines, GPUs, prompts
-            and agent loops in practice, has run long autonomous coding agents, and has no formal
-            RL background. It takes two things from that background as given.
+            The dive is written for a technical reader who uses language models, prompts and agent
+            loops in practice, such as a technical lead who has run long autonomous coding agents,
+            and who has no background in RL or in how models are trained. Section 1 laid down what
+            a model is made of. Two mechanics carry the rest.
           </Box>
-          <ul>
-            <li>
-              <Box variant="p">
-                The context window as everything a frozen model conditions on, with its cost
-                rules: the effective length, how much of a long context a model still uses well,
-                and prefix caching. Section 17, Where Words Fall Short, applies both rules to
-                learning loops, and the{' '}
-                <Link href="../vllm/">vLLM dive, section 6: Automatic Prefix Caching</Link> covers
-                the cache itself.
-              </Box>
-            </li>
-            <li>
-              <Box variant="p">
-                A gradient step nudges the weights to make something more likely. The dive needs
-                no calculus beyond that.
-              </Box>
-            </li>
-          </ul>
+          <Box variant="p">
+            <Box variant="strong" display="inline">
+              How a gradient step changes the weights.
+            </Box>{' '}
+            Training starts from one number that says how well the model is doing on a batch of
+            examples. Written as a loss, training makes it smaller; for SFT the loss is low when the
+            model gives high probability to the tokens of the example outputs. Written as an
+            objective, training makes it larger; in RL the objective is usually the average
+            reward. For every weight, one can work out whether a tiny increase in that weight
+            would raise or lower the objective, and how strongly. That list, one entry per weight,
+            is the gradient. Taken together its entries point in the direction, across all the
+            billions of weights at once, in which the objective rises fastest. If nudging a weight
+            up would raise the probability of a wanted output, its entry is positive and the step
+            moves that weight up; if it would lower it, the entry is negative and the weight moves
+            down; a weight that makes no difference barely moves.
+          </Box>
+          <Box variant="p">
+            A gradient step moves every weight a small distance along that direction, and a
+            setting called the learning rate sets how small. Training is many such steps, each on
+            a new batch. So when the dive says a step makes a response more likely, it means: take
+            the gradient of that response&apos;s probability and move the weights a little along
+            it. The dive needs no calculus beyond that.
+          </Box>
+          <Box variant="p">
+            <Box variant="strong" display="inline">
+              What the context costs.
+            </Box>{' '}
+            The context is everything a frozen model conditions on, and it has cost rules of its
+            own. Every token in it is read again on every call, and model APIs price by the
+            token. A model also uses a
+            long context unevenly: the effective length is how much of a long context a model still
+            uses well. Prefix caching lets an inference engine or a provider keep the processed
+            form of a prompt&apos;s opening tokens, so a later call that starts with exactly the
+            same tokens skips that work; prompt caching in section 1 is the provider&apos;s version.
+            Section 17, Where Words Fall Short, applies these rules to learning loops, and the{' '}
+            <Link href="../vllm/">vLLM dive, section 6: Automatic Prefix Caching</Link> covers
+            the cache itself in vLLM, an open-source engine for serving models.
+          </Box>
           <Box variant="p">
             Each section defines the RL terms it uses when it first uses them. If a shorter route
             brings you to a term out of order, section 24, Glossary &amp; Sources, lists every
@@ -435,16 +459,19 @@ export function GettingStarted() {
               title="Policy and reward"
               where="Defined in section 3, The Language Model Is Already a Policy."
             >
-              The model is a policy: a probability distribution over next tokens, which every
-              sampled call draws from. A reward is one number per attempt, and it usually arrives
-              only at the end of the response.
+              RL calls whatever chooses the actions a policy. Here the policy is the language model:
+              at each step it gives a probability to every possible next token, and every sampled
+              call draws from those probabilities. A reward is one number per attempt, produced by a
+              grader, and it usually arrives only at the end of the response.
             </IdeaCard>
             <IdeaCard
               title="Advantage"
               where="Defined in section 3; section 4, Policy Gradient, shows the two ways to estimate it."
             >
-              How much better or worse an attempt did than expected. Its sign decides whether a
-              training step makes that attempt more likely or less likely.
+              How much better or worse an attempt did than expected. As an illustration: if
+              attempts at a prompt pass 30% of the time, scored 1 for a pass and 0 for a fail, the
+              expected score is 0.3, so a pass is 0.7 above expectation and a fail 0.3 below. The
+              sign decides whether a training step makes that attempt more likely or less likely.
             </IdeaCard>
             <IdeaCard
               title="The grader as a proxy"
@@ -457,14 +484,18 @@ export function GettingStarted() {
               }
             >
               The grader is the program or model that produces the reward. It stands in for what
-              you actually want, and optimisation pressure finds the places where the two differ.
+              you actually want, and optimisation pressure finds the places where the two differ:
+              training makes whatever the grader rewards more likely, including answers that score
+              well without being what you meant.
             </IdeaCard>
             <IdeaCard
               title="pass@k and the capability boundary"
               where="pass@k is defined in section 3; section 8, What RL Does to a Model, defines the boundary and reads both as a curve."
             >
               pass@1 is how often one sample succeeds, and pass@k is whether any of k samples
-              does. The capability boundary is the set of problems a model solves when k is large.
+              does; averaged over problems, it is the share solved within k tries. The capability
+              boundary is the set of problems a model solves when k is large: what its sampling can
+              reach at all.
             </IdeaCard>
           </ColumnLayout>
         </SpaceBetween>
@@ -487,9 +518,16 @@ export function GettingStarted() {
           <ol>
             <li>
               <Box variant="p">
-                The RL vocabulary on tokens, sections 3 to 6: the policy, the policy gradient, the
-                clip of PPO (Proximal Policy Optimization) and the KL (Kullback-Leibler
-                divergence) penalty, and rewards learned from preferences.
+                The RL vocabulary on tokens, sections 3 to 6: the policy; the policy gradient, the
+                basic rule for turning a score into a weight change; the clip of PPO (Proximal
+                Policy Optimization), a limit on how far one update may move the model; the KL
+                (Kullback-Leibler) penalty, a charge for drifting from the model the run started
+                from; and rewards learned from preferences, where a reward model is trained on
+                people&apos;s choices between two responses. KL divergence, named after the two
+                people who defined it, is a number from information theory for how different two
+                probability distributions are, here the next-token probabilities of the model being
+                trained and of the model it started from: 0 when they agree, larger as they drift
+                apart. Section 5 builds it up with its formula.
               </Box>
             </li>
             <li>
@@ -502,7 +540,7 @@ export function GettingStarted() {
             <li>
               <Box variant="p">
                 The same loop rebuilt with the context as the trainable parameter, sections 11 to
-                16.
+                16: the text a loop writes plays the part the weights play in RL.
               </Box>
             </li>
             <li>
@@ -539,7 +577,10 @@ export function GettingStarted() {
         }
       >
         <SpaceBetween size="m">
-          <Box variant="p">Each shorter route is built around one reason to read.</Box>
+          <Box variant="p">
+            Each shorter route is built around one reason to read. Reinforcement fine-tuning, in
+            the second, is the name AWS and OpenAI give to managed RL on a model they host.
+          </Box>
           <ul>
             <li>
               <Box variant="p">
@@ -564,13 +605,15 @@ export function GettingStarted() {
                   &quot;I want RL properly&quot;:
                 </Box>{' '}
                 sections 2 to 10 in order, with section 19, An RL Step Is an Inference Job Inside a
-                Training Job, as an optional systems coda.
+                Training Job, as an optional coda on the systems side.
               </Box>
             </li>
           </ul>
           <Box variant="p">
             The map lays the sections out by stage. Arrows show the path from stage to stage, and
-            a lettered mark inside a section shows which shorter route reads it.
+            a lettered mark inside a section shows which shorter route reads it. Section 16,
+            Hybrids, is section 1&apos;s third store, a small trained model; section 21 runs on a
+            DGX Spark, NVIDIA&apos;s desktop machine.
           </Box>
           <ReadingMapDiagram />
           <Box variant="small" color="text-body-secondary">
@@ -600,7 +643,7 @@ export function GettingStarted() {
                   Section 8, on every route.
                 </Box>{' '}
                 Section 18 points to it for sharpening, section 20&apos;s calculator takes
-                inference-time sampling from it, and section 22 caps that option at the base
+                sampling more at query time from it, and section 22 caps that option at the base
                 model&apos;s own pass@k with a pointer back to it.
               </Box>
               <Box variant="p">
@@ -614,9 +657,11 @@ export function GettingStarted() {
                 <Box variant="strong" display="inline">
                   Sections 7 and 23, on the advisor route.
                 </Box>{' '}
-                Section 22 relies on section 7 to turn today&apos;s base rate into the expected
-                share of training groups that carry no gradient, and names the AWS service for each
-                path while leaving the detail to section 23.
+                Section 22 relies on section 7 to turn today&apos;s base rate, the share of attempts
+                the model passes now, into the expected share of training groups that carry no
+                gradient: when every attempt in a group gets the same score, no attempt did better
+                or worse than the others, so every advantage is 0. Section 22 also names the
+                AWS service for each path and leaves the detail to section 23.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
