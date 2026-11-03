@@ -338,7 +338,8 @@ export function LanguageModelAsPolicy() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            In the token view, the state is the prompt plus the tokens generated so far, the action
+            In the token view, the state is the prompt plus the tokens generated so far (together,
+            the prefix), the action
             is the next token, and one response is one episode, RL&apos;s word for one complete
             attempt from start to finish{' '}
             <Cite tier={3} href={IVI24} venue="NeurIPS 2024">
@@ -393,16 +394,17 @@ export function LanguageModelAsPolicy() {
           <Box variant="p">
             The two views describe the same computation. In the token view the next state is the
             old state plus the token just chosen, so the policy&apos;s own choices are the only thing
-            that changes the state, and the reward only arrives at the end. A tool call breaks that
-            condition, because the tool&apos;s output enters the state without the policy choosing
-            it. Without tools, choosing the tokens one at a time and choosing the
-            finished response in one go are then the same choice, and the token-level process
-            reduces to a bandit whose only states are the prompt and the finished response{' '}
+            that changes the state, and the reward only arrives at the end. A finished response is
+            then nothing more than the sequence of token choices that wrote it, so choosing the
+            tokens one at a time comes to choosing the finished response, and the token-level process reduces to a bandit whose only states
+            are the prompt and the finished response{' '}
             <Cite tier={3} href={AHM24} venue="ACL 2024">
               Ahmadian et al., section 3.3
             </Cite>
-            . What the token view adds is a place to say which tokens mattered, which the next
-            block takes up.
+            . A tool call breaks that condition, because the tool&apos;s output enters the state
+            without the policy choosing it. The reduction is what lets a trainer score and push
+            whole responses, as the methods below do. What the token view adds is a place to say
+            which tokens mattered, which the next block takes up.
           </Box>
           <Box variant="p">
             Which view a method takes shapes everything after it. REINFORCE is the simplest
@@ -415,7 +417,7 @@ export function LanguageModelAsPolicy() {
               Ahmadian et al., section 3.3
             </Cite>
             . Treating the response as one action lets plain REINFORCE optimise the sequence-level
-            reward directly{' '}
+            reward, the one score for the whole response, directly{' '}
             <Cite tier={3} href={AHM24} venue="ACL 2024">
               Ahmadian et al., section 2.2
             </Cite>
@@ -504,8 +506,10 @@ export function LanguageModelAsPolicy() {
             <Cite tier={3} href={SB_URL} venue="textbook">
               Sutton and Barto, section 3.5
             </Cite>
-            . For a language model it is a prediction of the final score of a partial response,
-            and PPO trains a separate value model, also called the critic, to make that prediction{' '}
+            . For a language model it is a prediction of the final score of a partial response.
+            The value function gives that prediction for every possible state, and PPO trains a
+            separate network to estimate it, which papers call the value model or the critic: two
+            names for one network{' '}
             <Cite tier={3} href={IVI24} venue="NeurIPS 2024">
               Ivison et al., appendix F.2
             </Cite>
@@ -593,9 +597,10 @@ export function LanguageModelAsPolicy() {
             this one, describe a different policy. Learning from them needs either a correction
             for the difference between the two models&apos; probabilities or a method built for
             fixed data. Section 5 meets the first case: a batch reused for several updates is
-            slightly off-policy from the second update on, and PPO&apos;s probability ratio
-            reweights each token to correct for it, a correction that holds while the old and new
-            policies stay close.
+            slightly off-policy from the second update on. PPO divides each token&apos;s
+            probability under the model being trained by its probability under the model that
+            sampled it, and weights the token by that ratio to correct for the difference, a
+            correction that holds while the two models stay close.
           </Box>
           <Box variant="p">
             Exploration is the trade RL adds over supervised learning. The learner has to exploit
