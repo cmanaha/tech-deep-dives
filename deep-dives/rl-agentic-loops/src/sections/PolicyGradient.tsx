@@ -451,9 +451,9 @@ export function PolicyGradient() {
             </Cite>
           </Box>
           <Box variant="p">
-            Read it in two parts. <code>grad log pi(y | x)</code> is the direction in weight space,
-            one change for every weight of the model, that most increases the probability of
-            producing y again, and the update moves along it in proportion to the reward that
+            Read it in two parts. <code>grad log pi(y | x)</code> is a gradient in section 2&apos;s
+            sense, one entry for every weight of the model, pointing the way that most increases
+            the probability of producing y again, and the update moves along it in proportion to the reward that
             followed{' '}
             <Cite tier={3} href={SB} venue="textbook">
               Sutton and Barto, Section 13.3
@@ -462,13 +462,19 @@ export function PolicyGradient() {
             move.
           </Box>
           <Box variant="p">
-            The log is there for two reasons. First, the gradient of <code>log pi(y | x)</code> is
-            the gradient of <code>pi(y | x)</code> divided by <code>pi(y | x)</code> itself.
-            Dividing by the probability makes up for how often y gets sampled: a common response
-            turns up in many batches and a rare one seldom, so the rare one gets a bigger push each
-            time it does turn up. Averaged over many samples, every response is pushed in
-            proportion to its reward alone, and the average update points the way that raises the
-            expected reward, the average score over the model&apos;s own samples. Second, by section
+            The log is there for two reasons. First, it makes up for how often each response gets
+            sampled. A rule of calculus, the one section 2 promised, says the gradient of{' '}
+            <code>log pi(y | x)</code> is the gradient of <code>pi(y | x)</code> divided by{' '}
+            <code>pi(y | x)</code> itself: the same direction, scaled up by one over the
+            probability. As an illustration, take a prompt with only two possible responses, A
+            with probability 0.8 and B with 0.2, both scored R = 1. In 100 samples A turns up about
+            80 times and B about 20. Pushing on the probability itself would give A four times
+            B&apos;s total push, only because A is more common. Dividing by the probability scales
+            each push on A by 1 / 0.8 = 1.25 and each push on B by 1 / 0.2 = 5, so over the batch
+            A&apos;s probability gradient is counted 80 x 1.25 = 100 times and B&apos;s 20 x 5 =
+            100 times: equal rewards, equal pushes. Averaged over many samples, every response is
+            pushed in proportion to its reward alone, and the average update points the way that
+            raises the expected reward, the average score over the model&apos;s own samples. Second, by section
             3&apos;s factorisation, <code>log pi(y | x)</code> is the sum of the log-probabilities
             of y&apos;s tokens, so the update pushes on every token of y with the same weight, R.
           </Box>
@@ -554,10 +560,14 @@ export function PolicyGradient() {
             <Cite tier={3} href={SB} venue="textbook">
               Sutton and Barto, Section 13.4
             </Cite>
-            . The reason it averages to zero: the probabilities of all possible responses always
-            add up to 1, so making some more likely makes others less likely, and averaged over
-            the model&apos;s own samples, <code>grad log pi</code> comes to zero. A fixed b times
-            that average is zero too. The first property holds for any such baseline. The variance
+            . The reason it averages to zero shows in the two-response illustration above. With
+            every reward equal, A&apos;s and B&apos;s probability gradients were each counted 100
+            times. A and B share one unit of probability, so any change that makes A 0.01 more
+            likely makes B 0.01 less likely: B&apos;s probability gradient is minus A&apos;s, and
+            the two pushes cancel exactly. With any number of responses the same holds, because
+            the probabilities of all possible responses always add up to 1, so averaged over the
+            model&apos;s own samples, <code>grad log pi</code> comes to zero. A fixed b times that
+            average is zero too. The first property holds for any such baseline. The variance
             cut depends on the choice: it comes from a baseline that tracks the reward the attempt
             was likely to get, such as an estimate of the expected reward from the attempt&apos;s
             starting point{' '}
@@ -605,12 +615,13 @@ export function PolicyGradient() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Learn it.</strong> A value function, section 3&apos;s value, is a second network
-            trained alongside the policy to predict the reward a partial response will end up with.
+            <strong>Learn it.</strong> Section 3&apos;s value model is a second network trained
+            alongside the policy to predict the reward a partial response will end up with.
             Subtracted from the reward, it is a learned baseline. It can do a second job too. Applied
             to the state after an action, its prediction can stand in for the rewards still to come,
-            replacing them with its own estimate; a value function used that way is a
-            critic, and the method an actor-critic method, the actor being the policy{' '}
+            replacing them with its own estimate. That second job is where the name critic comes
+            from: a value model used that way is a critic, and the method an actor-critic method,
+            the actor being the policy{' '}
             <Cite tier={3} href={SB} venue="textbook">
               Sutton and Barto, Section 13.5
             </Cite>
@@ -636,7 +647,9 @@ export function PolicyGradient() {
             token&apos;s advantage is that token&apos;s reward plus the critic&apos;s estimate after
             it, minus the critic&apos;s estimate before it: how much this one token changed the
             critic&apos;s prediction. That has low variance, and is biased unless the critic is
-            accurate. At lambda = 1 the advantage is the full return actually received minus the
+            accurate. Section 3&apos;s example, a token that moves the predicted score from 0.3 to
+            0.6 and earns no reward of its own, is this case: +0.3. At lambda = 1 the advantage is
+            the full return actually received minus the
             critic&apos;s baseline: unbiased however inaccurate the critic is, and high in variance{' '}
             <Cite tier={3} href={GAE} venue="ICLR 2016">
               GAE, Section 3, Eqs. 17-18
@@ -675,7 +688,8 @@ export function PolicyGradient() {
             <Cite tier={3} href={AHM} venue="ACL 2024">
               Ahmadian et al., Section 2.3
             </Cite>
-            . GRPO uses the mean reward of the whole group as the baseline and divides by the
+            : it does the value model&apos;s job with no trained weights, recomputed from fresh
+            samples at every step. GRPO uses the mean reward of the whole group as the baseline and divides by the
             group&apos;s standard deviation, a measure of how spread out the group&apos;s rewards
             are{' '}
             <Cite tier={3} href={DSM} venue="preprint">
