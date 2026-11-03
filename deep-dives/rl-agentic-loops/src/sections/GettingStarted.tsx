@@ -667,8 +667,10 @@ export function GettingStarted() {
           </ExpandableSection>
           <Box variant="p">
             Pick the route that matches why you are reading. On the first two routes, read section
-            1, One Loop, Three Places to Keep What It Learns, first if you came straight here. All
-            three routes then continue at section 3, The Language Model Is Already a Policy.
+            1, One Loop, Three Places to Keep What It Learns, first if you came straight here. On
+            the third, read section 1&apos;s opening block if weights, tokens and sampling are new
+            to you. All three routes then continue at section 3, The Language Model Is Already a
+            Policy.
           </Box>
         </SpaceBetween>
       </Container>
