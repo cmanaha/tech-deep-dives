@@ -76,11 +76,26 @@ topic's concepts. The page builds those concepts up fast and then takes the
 reader to the real depth.
 
 The ramp-up goes in front of the mechanisms, the formulas, the numbers and the
-practical detail. It does not replace them. For the RL dive that means saying
-what a model's weights are before saying that training changes them, and then
+practical detail. It does not replace them. For the RL dive that means building
+the gradient step and the log-probability before the policy gradient, and then
 still showing the update rule and its symbols. For a networking dive it means
 saying what a queue pair is before saying how many the device supports, and then
 still giving the count.
+
+The ramp-up starts from what the reader already has, and the page does not
+explain that again. Carlos, 2026-11-02, on the RL dive's first section (voice
+transcription, verbatim): "we have gone too far in the opposite direction. Like,
+we have a full TechDeep dive on training, but yet over here we're explaining,
+like if it was to a kid, what training is"; calibrate to "what an IT person in
+2026 kind of knows or have an intuition at the level 100, level 200"; "Even if
+they don't know they have heard. So we should not explain the stuff that they
+have." For a dive on language models, that baseline is: what a large language
+model is; prompts, tokens and context windows; that a model has weights,
+counted in billions of parameters; open-weight models; mixture of experts as a
+name; that models are trained and then fine-tuned; LoRA as a name. The page
+starts from there. Where another dive in this repository already explains a
+basic, link to its section instead of explaining it again, at most two such
+links per section, each placed where it helps.
 
 Check every explanation against two failure modes:
 
@@ -96,8 +111,9 @@ Check every explanation against two failure modes:
 
 **1. Lay down the basics a section relies on before building on them.**
 Before a section uses an idea as a building block, the page has already said
-what that idea is. "Training changes the weights" needs the weights first: the
-billions of numbers in the model file that decide what it writes. The basics go
+what that idea is. "The KL penalty keeps the model near where it started" needs
+the KL divergence first: a number for how far two next-token distributions
+differ. The basics go
 where the reader first needs them, usually early in the first sections, and a
 later section that depends on them can point back.
 

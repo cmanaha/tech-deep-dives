@@ -1,6 +1,6 @@
 # RL dive: rename-and-scope plan (fine-tuning in general, mostly RL)
 
-**Status:** plan only, 2026-11-06. No section, `App.tsx`, `index.html`, README or other dive is changed by this document. Written by the rl-finetune-scope job on branch `docs/rl-explain-sections-1-5`, on top of 5bb5e26 (accuracy fixes from the RL expert review of the round-2 prose of sections 1 to 5).
+**Status:** built by the rl-finetune-build job on 2026-11-07, with the recommended answers to the five open questions in section 8 (the assistant's choices, each reversible; Carlos said "keep going" without answering them). Plan written 2026-11-06. No section, `App.tsx`, `index.html`, README or other dive is changed by this document. Written by the rl-finetune-scope job on branch `docs/rl-explain-sections-1-5`, on top of 5bb5e26 (accuracy fixes from the RL expert review of the round-2 prose of sections 1 to 5).
 
 **What Carlos asked for, in his words.**
 
@@ -21,7 +21,7 @@ The three options were sent to Telegram on 2026-11-06 (message 1955). None uses 
 **Option A. Leads with fine-tuning**
 - Title: Fine-Tuning Techniques: Where the Learning Signal Comes From, With Reinforcement Learning in Depth
 - Subtitle: Supervised examples, a stronger model's answers, preference pairs and scored attempts: what each signal teaches a language model, how reinforcement learning turns a score into a weight update, and when a loop over a frozen model's context does the same job
-- Promise and room to grow: a map of fine-tuning organised by where the signal comes from, with reinforcement learning as the deep track. Any later technique slots into the map as one more signal source without a rename. It reuses the name Carlos approved for the new section on 2026-11-03.
+- Promise and room to grow: a map of fine-tuning organised by where the signal comes from, with reinforcement learning as the deep track. Any later technique slots into the map as one more signal source without a rename. It reuses the working title the assistant proposed for the new section (Carlos did not approve a section name; see the correction under new 3).
 - Context-loop half: only in the subtitle. The title reads as a weights-only dive, so the learning-in-words sections would sit under a heading that does not announce them.
 
 **Option B. Leads with learning from feedback**
@@ -138,7 +138,7 @@ Twenty-four sections become twenty-seven: three new, none merged or split. Mergi
 ### 3.2 New sections
 
 **New 3. Fine-Tuning Techniques: Where the Learning Signal Comes From**
-(The name Carlos approved on 2026-11-03.)
+(A working title proposed by the assistant. Correction, 2026-11-07: an earlier version of this plan called it the name Carlos approved on 2026-11-03. The assistant misread his message; Carlos corrected it the same day: "let's change the name" meant renaming the whole dive. Keeping the title is fine; it is not his decision.)
 
 - Position: after Getting Started, before the RL vocabulary. It is the map every later section hangs on.
 - Depth: survey, with one mechanism (the shared gradient).
@@ -202,7 +202,7 @@ Twenty-four sections become twenty-seven: three new, none merged or split. Mergi
 | "That I quite like" (the "Three places to keep what the loop learns" h2) | New 1 | Kept as written, apart from RL spelled out and the links. |
 | Distillation against RL: "So we have a good understanding and intuition of how distillation effectively is different from Reinforced Learning" | New 4 and new 11 | New 4 builds distillation as a technique; new 11 sets it against RL with the intuition, the Table 16 evidence and diagrams. The glossary gains a plain "distillation" entry, which it lacks today. |
 | "we need a similar explanation [with] graphs and charts similar to what we've done" | New 3, 4, 11 | Thirteen diagrams across the three new sections, listed in 3.2, in the dive's inline-SVG style. |
-| 2026-11-03 naming decision, then the correction to rename the whole dive | New 3 and the dive title | "Fine-Tuning Techniques: Where the Learning Signal Comes From" stays as new 3's title; the dive's own title is the one Carlos picks from section 1. |
+| 2026-11-03: "let's change the name", which Carlos clarified the same day as renaming the whole dive | New 3 and the dive title | The dive's own title is the one picked from section 1 of this plan. "Fine-Tuning Techniques: Where the Learning Signal Comes From" is new 3's working title, proposed by the assistant, not a title Carlos approved (correction, 2026-11-07). |
 
 Two related points that are not Carlos's notes, labelled as such:
 
