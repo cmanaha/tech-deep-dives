@@ -9,6 +9,13 @@ const OneLoop = React.lazy(() =>
 const GettingStarted = React.lazy(() =>
   import('./sections/GettingStarted').then((m) => ({ default: m.GettingStarted }))
 );
+// Where the signal comes from
+const FineTuningSignals = React.lazy(() =>
+  import('./sections/FineTuningSignals').then((m) => ({ default: m.FineTuningSignals }))
+);
+const LearningFromAnswers = React.lazy(() =>
+  import('./sections/LearningFromAnswers').then((m) => ({ default: m.LearningFromAnswers }))
+);
 // The RL vocabulary
 const LanguageModelAsPolicy = React.lazy(() =>
   import('./sections/LanguageModelAsPolicy').then((m) => ({ default: m.LanguageModelAsPolicy }))
@@ -22,12 +29,15 @@ const TwoLeashes = React.lazy(() =>
 const PreferencesToRewards = React.lazy(() =>
   import('./sections/PreferencesToRewards').then((m) => ({ default: m.PreferencesToRewards }))
 );
-// RL with verifiable rewards
+// RL with verifiable rewards, and set against distillation
 const RlvrAndGrpo = React.lazy(() =>
   import('./sections/RlvrAndGrpo').then((m) => ({ default: m.RlvrAndGrpo }))
 );
 const WhatRlDoes = React.lazy(() =>
   import('./sections/WhatRlDoes').then((m) => ({ default: m.WhatRlDoes }))
+);
+const DistillationOrRl = React.lazy(() =>
+  import('./sections/DistillationOrRl').then((m) => ({ default: m.DistillationOrRl }))
 );
 const AgenticRl = React.lazy(() =>
   import('./sections/AgenticRl').then((m) => ({ default: m.AgenticRl }))
@@ -84,41 +94,47 @@ const GlossaryAndSources = React.lazy(() =>
 );
 
 const sections = [
-  { id: 'one-loop', title: '1. One Loop, Three Places to Keep What It Learns' },
+  { id: 'one-loop', title: '1. One Loop: What It Learns From and Where It Keeps It' },
   { id: 'getting-started', title: '2. Getting Started' },
-  { id: 'policy', title: '3. The Language Model Is Already a Policy' },
-  { id: 'policy-gradient', title: '4. Policy Gradient' },
-  { id: 'leashes', title: '5. Two Leashes: PPO\'s Clip & the KL' },
-  { id: 'preferences', title: '6. From Preferences to Rewards' },
-  { id: 'rlvr', title: '7. RLVR & GRPO' },
-  { id: 'what-rl-does', title: '8. What RL Does to a Model' },
-  { id: 'agentic-rl', title: '9. Agentic RL' },
-  { id: 'reward-proxy', title: '10. The Reward Is a Proxy' },
-  { id: 'text-loop', title: '11. A Text Loop Is RL on the Context' },
-  { id: 'verbal', title: '12. Verbal Reinforcement & Self-Correction' },
-  { id: 'experience', title: '13. Memories, Playbooks & Skill Libraries' },
-  { id: 'prompt-opt', title: '14. Optimising the Prompt' },
-  { id: 'your-loops', title: '15. Your Loops Through the RL Lens' },
-  { id: 'hybrids', title: '16. Hybrids' },
-  { id: 'words-limits', title: '17. Where Words Fall Short' },
-  { id: 'weights-context', title: '18. What Lives in Weights & What Lives in Context' },
-  { id: 'rl-systems', title: '19. An RL Step Is an Inference Job Inside a Training Job' },
-  { id: 'cost', title: '20. Cost per Improvement' },
-  { id: 'lab', title: '21. Side by Side on a DGX Spark' },
-  { id: 'choosing', title: '22. Choosing a Text Loop, a Hybrid or a Weight Update' },
-  { id: 'aws', title: '23. RL & Learning Loops on AWS' },
-  { id: 'sources', title: '24. Glossary & Sources' },
+  { id: 'signals', title: '3. Fine-Tuning Techniques: Where the Learning Signal Comes From' },
+  { id: 'answers', title: '4. Learning From Answers: Supervised Fine-Tuning & Distillation' },
+  { id: 'policy', title: '5. The Language Model Is Already a Policy' },
+  { id: 'policy-gradient', title: '6. Policy Gradient' },
+  { id: 'leashes', title: '7. Two Leashes: PPO\'s Clip & the KL' },
+  { id: 'preferences', title: '8. Learning From Preferences: Reward Models, RLHF & DPO' },
+  { id: 'rlvr', title: '9. RLVR & GRPO' },
+  { id: 'what-rl-does', title: '10. What RL Does to a Model' },
+  { id: 'distill-or-rl', title: '11. Distillation or RL: A Teacher\'s Answers or a Score on Your Own' },
+  { id: 'agentic-rl', title: '12. Agentic RL' },
+  { id: 'reward-proxy', title: '13. The Reward Is a Proxy' },
+  { id: 'text-loop', title: '14. A Text Loop Is RL on the Context' },
+  { id: 'verbal', title: '15. Verbal Reinforcement & Self-Correction' },
+  { id: 'experience', title: '16. Memories, Playbooks & Skill Libraries' },
+  { id: 'prompt-opt', title: '17. Optimising the Prompt' },
+  { id: 'your-loops', title: '18. Your Loops Through the RL Lens' },
+  { id: 'hybrids', title: '19. Hybrids' },
+  { id: 'words-limits', title: '20. Where Words Fall Short' },
+  { id: 'weights-context', title: '21. What Lives in Weights & What Lives in Context' },
+  { id: 'rl-systems', title: '22. An RL Step Is an Inference Job Inside a Training Job' },
+  { id: 'cost', title: '23. Cost per Improvement' },
+  { id: 'lab', title: '24. Side by Side on a DGX Spark' },
+  { id: 'choosing', title: '25. Choosing a Technique: Fine-Tuning, a Text Loop or a Hybrid' },
+  { id: 'aws', title: '26. Fine-Tuning & Learning Loops on AWS' },
+  { id: 'sources', title: '27. Glossary & Sources' },
 ];
 
 const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   'one-loop': OneLoop,
   'getting-started': GettingStarted,
+  signals: FineTuningSignals,
+  answers: LearningFromAnswers,
   policy: LanguageModelAsPolicy,
   'policy-gradient': PolicyGradient,
   leashes: TwoLeashes,
   preferences: PreferencesToRewards,
   rlvr: RlvrAndGrpo,
   'what-rl-does': WhatRlDoes,
+  'distill-or-rl': DistillationOrRl,
   'agentic-rl': AgenticRl,
   'reward-proxy': RewardIsAProxy,
   'text-loop': TextLoopAsRl,
