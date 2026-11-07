@@ -1672,5 +1672,66 @@
    3
   ],
   "sentence": "In section 3, the subject area of the tasks one report\\'s RL stage starts on.' }, { acronym: 'GSM8K'"
+ },
+ {
+  "file": "OneLoop.tsx",
+  "numbers": [
+   4,
+   10,
+   21
+  ],
+  "sentence": "Some old ability is forgotten, more the more training changes what the model would write compared with its base; RL changes it less than SFT does (sections 4, 10 and 21)'"
+ },
+ {
+  "file": "OneLoop.tsx",
+  "numbers": [
+   5,
+   13
+  ],
+  "sentence": "s comparisons to score answers), a program, an environment or a judge (sections 5 to 13)."
+ },
+ {
+  "file": "OneLoop.tsx",
+  "numbers": [
+   3,
+   11
+  ],
+  "sentence": "s judgement of each token the model wrote itself: on-policy distillation: the model writes its own answer and the stronger model rates each of its tokens, so it takes its samples from RL and its targets from distillation (sections 3 and 11)."
+ },
+ {
+  "file": "GettingStarted.tsx",
+  "numbers": [
+   5,
+   8
+  ],
+  "sentence": "The RL vocabulary on tokens, sections 5 to 8: the policy; the policy gradient, the basic rule for turning a score into a weight change; the clip of PPO (Proximal Policy Optimization), which stops pushing a token's probability further once training has moved it a set fraction from where it started; the KL penalty, a charge for drifting from the model the run"
+ },
+ {
+  "file": "FineTuningSignals.tsx",
+  "numbers": [
+   4
+  ],
+  "sentence": "Section 4 shows the other half of the push: with the same multiplier, a token the model found unlikely moves further."
+ },
+ {
+  "file": "LearningFromAnswers.tsx",
+  "numbers": [
+   11
+  ],
+  "sentence": "s likeliest tokens instead [cite] ; section 11 shows why most on-policy distillation recipes choose it."
+ },
+ {
+  "file": "LearningFromAnswers.tsx",
+  "numbers": [
+   11
+  ],
+  "sentence": "A stronger model you may train on: section 11 shows when distilling it beats RL, as it did for DeepSeek on a 32B base with the 800,000 samples built during R1's training."
+ },
+ {
+  "file": "DistillationOrRl.tsx",
+  "numbers": [
+   4
+  ],
+  "sentence": "s distillation trainer by default, is the KL divergence of section 4, taken at each position of the student's own answer, with the student first: loss = average over answers y sampled from pi_student, of sum over t of KL(pi_student || pi_teacher) at position t Here p"
  }
 ]

@@ -26,7 +26,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 
 ## Tier 1: source code at a pinned ref, official framework documentation, first-party AWS documentation and pricing
 
-113 sources.
+114 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
@@ -142,6 +142,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [Anthropic docs: prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) | 2026-10-30 | Sources appendix, WhereWordsFallShort |
 | [AWS Price List API, Nova 2 Lite RFT training hours](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/20261030160456/us-east-1/index.json) | 2026-10-30 | CostPerImprovement, RlOnAws |
 | [OpenAI Services Agreement, section 3.3 (archived copy of 2026-10-08)](https://web.archive.org/web/20261008023004/https://openai.com/policies/business-terms/) | 2026-11-07 | LearningFromAnswers |
+| [Anthropic Usage Policy, Do Not Abuse Our Platform](https://www.anthropic.com/legal/aup) | 2026-11-07 | LearningFromAnswers |
 | [Anthropic Commercial Terms, D.4](https://www.anthropic.com/legal/commercial-terms) | 2026-11-07 | LearningFromAnswers |
 
 ## Tier 2: first-party lab and vendor posts and talks (their performance figures are claims)

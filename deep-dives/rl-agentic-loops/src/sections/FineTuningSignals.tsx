@@ -82,7 +82,7 @@ const MAP_ROWS: MapRow[] = [
   {
     source: ['Example answers someone wrote'],
     family: 'SFT',
-    trains: ['the next token of each answer;', 'the prompt carries no loss'],
+    trains: ['the next token of each answer;', 'the prompt is not trained on'],
     density: ['every answer token'],
     dense: true,
     whose: ['fixed data'],
@@ -399,7 +399,7 @@ const RECIPES: Recipe[] = [
     base: ['pretrained', 'base'],
     stages: [
       { signal: 'teacher', name: 'SFT', lines: ['on trajectories from', 'earlier Kimi specialists'] },
-      { signal: 'scores', name: 'RL', lines: ['nine experts: 3 domains', 'x 3 effort levels'] },
+      { signal: 'scores', name: 'RL', lines: ['nine experts: 3 domains', 'x 3 reasoning-effort levels'] },
       { signal: 'opd', name: 'On-policy distillation', lines: ['nine experts', 'into one model'] },
     ],
   },
@@ -415,12 +415,12 @@ const RECIPES: Recipe[] = [
   },
   {
     model: 'Ministral 3',
-    date: 'January 2026',
+    date: 'reasoning models, Jan 2026',
     base: ['base pruned and', 'distilled from a', 'larger Mistral'],
     stages: [
-      { signal: 'teacher', name: 'SFT', lines: ['with a logit-distillation', 'loss from a teacher'] },
+      { signal: 'answers', name: 'SFT', lines: ['on chain-of-thought data;', '3B also distils a teacher'] },
       { signal: 'scores', name: 'RL (GRPO)', lines: ['STEM tasks, then', 'rubric-judged chat'] },
-      { signal: 'pairs', name: 'Online DPO', lines: ['own pairs ranked by', 'a reward model'] },
+      { signal: 'pairs', name: 'Online DPO', lines: ['pairs of its own answers', 'ranked by a reward model'] },
     ],
   },
 ];
@@ -870,8 +870,9 @@ export function FineTuningSignals() {
                 A teacher&apos;s judgement of each token the model wrote, on-policy distillation.
               </Box>{' '}
               It teaches what the teacher would have written, at the places where the student
-              actually goes wrong. It needs a teacher that exposes its token probabilities, shares
-              the student&apos;s tokenizer and stays available through training{' '}
+              actually goes wrong. In its standard form it needs a teacher that exposes its token
+              probabilities, shares the student&apos;s tokenizer and stays available through
+              training{' '}
               <Cite tier={1} href={SAGEMAKER_DISTILL} accessed={READ}>
                 SageMaker AI developer guide: distillation
               </Cite>
@@ -948,10 +949,13 @@ export function FineTuningSignals() {
         <SpaceBetween size="m">
           <Box variant="p">
             Every technique on the map changes the weights the same way. It makes some tokens more
-            likely and others less likely, each by an amount the technique sets. SFT pushes every
-            token of a written answer up by the same amount. RL pushes every token of the
-            model&apos;s own attempt up when the attempt scored well and down when it scored badly.
-            Distillation pushes the student toward the teacher&apos;s answer or its probabilities.
+            likely and others less likely, and it sets a multiplier for each token, how hard that
+            token is pushed. SFT gives every token of a written answer the same multiplier and
+            pushes each one up. RL gives all the tokens of one of the model&apos;s own attempts a
+            shared multiplier set by the attempt&apos;s score: positive, a push up, when it scored
+            well, and negative, a push down, when it scored badly. Distillation pushes the student toward the teacher&apos;s answer or its
+            probabilities. Section 4 shows the other half of the push: with the same multiplier, a
+            token the model found unlikely moves further.
           </Box>
           <Box variant="p">
             So a technique comes down to three choices: where the training text comes from (a
@@ -982,7 +986,14 @@ export function FineTuningSignals() {
           <Box variant="p">
             A released model is fine-tuned several times in a row, each stage with its own signal;
             labs call the sequence post-training. Four recent first-party reports, each drawn as its
-            stages and coloured by signal:
+            stages and coloured by signal. Five words recur in them. A specialist, or expert, is a
+            copy of the model fine-tuned for one domain such as math or code, to be merged back
+            later. A trajectory is a whole multi-step attempt, every turn and tool call of it.
+            Online means trained on answers the model being trained has just written, rather than
+            on a fixed dataset. Pruning makes a model smaller by removing weights. Logit
+            distillation trains the student toward the teacher&apos;s full list of next-token
+            probabilities rather than only the text the teacher chose; logits are the raw scores
+            a model turns into those probabilities.
           </Box>
           <PipelinesDiagram />
           <Box variant="small" color="text-body-secondary">
@@ -1003,15 +1014,18 @@ export function FineTuningSignals() {
               Ministral 3, Sections 3.2 and 3.3
             </Cite>
             . Dates are each report&apos;s first arXiv version. Colours are our mapping of each
-            stage to the map&apos;s rows.
+            stage to the map&apos;s rows. The Ministral 3 strip is the reasoning models&apos;
+            recipe; its instruct models run SFT, then online DPO, with no RL stage.
           </Box>
           <Box variant="p">
             Three patterns run through the four, as we read them. Every recipe starts from written
             answers, and in three of the four other models wrote them: Olmo 3&apos;s SFT targets are
-            reasoning traces generated with QwQ-32B and DeepSeek R1, Ministral 3 trains its SFT
-            stage with a logit-distillation loss from a stronger teacher, and Kimi K3 synthesises
+            reasoning traces generated with QwQ-32B and DeepSeek R1, Ministral 3 trains its instruct
+            SFT with logit distillation from Mistral Medium 3 and its 3B reasoning SFT with logit
+            distillation from Magistral Small 1.2, and Kimi K3 synthesises
             its SFT trajectories with specialist models from its earlier releases. Scores on the
-            model&apos;s own attempts sit in the middle of all four. Preference pairs, where used,
+            model&apos;s own attempts come after the written answers in all four: last in Olmo 3,
+            and followed by a distillation or preference stage in the other three. Preference pairs, where used,
             come either before RL or after it: Olmo 3 found that RL starting from its DPO
             checkpoint did better than RL starting from its SFT checkpoint, in one 7B run of 1,000
             RL steps{' '}
@@ -1128,7 +1142,8 @@ export function FineTuningSignals() {
           </Box>
           <HowMuchChangesDiagram />
           <Box variant="p">
-            For RL the choice costs little in one lab&apos;s runs: on Llama-3.1-8B, a rank-1 LoRA
+            For RL the choice costs little in one lab&apos;s runs: on Llama-3.1-8B, a rank-1 LoRA,
+            whose added matrices are a single column and a single row, the smallest LoRA there is,
             matched full fine-tuning for policy-gradient RL, which fits the information argument
             above: an RL run has few bits to store{' '}
             <Cite tier={2} href={LORA_BLOG}>

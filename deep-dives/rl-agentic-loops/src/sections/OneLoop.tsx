@@ -261,7 +261,7 @@ const STORE_ROWS: StoreRow[] = [
     id: 'keep',
     decides: 'What the model keeps',
     weights:
-      'Some old ability is forgotten, more the further training moves the model from its base; RL moves it less than SFT does (sections 4, 10 and 21)',
+      'Some old ability is forgotten, more the more training changes what the model would write compared with its base; RL changes it less than SFT does (sections 4, 10 and 21)',
     context:
       'Every old ability once the text is removed, since the weights never move; the text can be read, edited and removed, and a store fed misleading feedback degrades (sections 16 and 21)',
     small: "Every ability of the large model once the advice is removed; only the small model's weights move (section 19)",
@@ -382,8 +382,9 @@ export function OneLoop() {
             algorithms, recipes for turning scores into weight changes, recur through the dive.
             Both carry the word policy, which is RL&apos;s name for whatever chooses the actions;
             for a language model the policy is the model itself, choosing each next token. PPO
-            (Proximal Policy Optimization) puts a limit on how far one round of training can move
-            the model. GRPO (Group Relative Policy Optimization) samples a group of attempts at
+            (Proximal Policy Optimization) stops pushing a token&apos;s probability further once
+            training has moved it a set fraction from the version of the model that sampled the
+            data. GRPO (Group Relative Policy Optimization) samples a group of attempts at
             each prompt and judges each attempt against the group&apos;s average score. Sections 6
             and 7 build PPO, and section 9 builds GRPO.
           </Box>
@@ -456,7 +457,9 @@ export function OneLoop() {
           <Box variant="p">
             A fourth route stores nothing. It samples a frozen model several times and chooses
             among the attempts, either with a verifier (a checker that recognises a correct answer)
-            or with a sampling method that needs none, and it pays on every query instead of once.
+            or with a sampler that needs none because it uses the model&apos;s own probabilities to
+            favour the answers the model rates likeliest as a whole, and it pays on every query
+            instead of once.
             One training-free sampler nearly matched the single-shot score of GRPO, the score a
             GRPO-trained model gets with one attempt per problem, on a math benchmark, at about 8.84
             times the tokens per answer{' '}
@@ -559,15 +562,16 @@ export function OneLoop() {
               <Box variant="strong" display="inline">
                 A score on each of the model&apos;s own attempts:
               </Box>{' '}
-              RL, scored by a reward model, a program, an environment or a judge (sections 5 to
-              13).
+              RL, scored by a reward model (a model trained on people&apos;s comparisons to score
+              answers), a program, an environment or a judge (sections 5 to 13).
             </li>
             <li>
               <Box variant="strong" display="inline">
                 A stronger model&apos;s judgement of each token the model wrote itself:
               </Box>{' '}
-              on-policy distillation, which takes its samples from RL and its targets from
-              distillation (sections 3 and 11).
+              on-policy distillation: the model writes its own answer and the stronger model
+              rates each of its tokens, so it takes its samples from RL and its targets from distillation
+              (sections 3 and 11).
             </li>
           </ul>
           <Box variant="p">

@@ -626,7 +626,9 @@ export function LearningFromAnswers() {
             the answer&apos;s token t, given the prompt and the answer so far. The minus sign turns
             it into a surprise: positive, 0 for a certain token, large for an unlikely one. The sum
             runs over the answer tokens only, so the prompt contributes context and no term. The{' '}
-            <code>1 / T</code> averages, so long and short answers count on the same scale. This is
+            <code>1 / T</code> averages over one answer&apos;s tokens. Trainers usually average over
+            every answer token in the batch instead, so each token weighs the same and a long
+            answer counts for more than a short one. This is
             the cross-entropy loss pretraining already uses for the next token, restricted to the
             answer. With the illustrative numbers above, the loss is (0.69 + 0.11 + 1.61) / 3 =
             0.80.
@@ -648,7 +650,8 @@ export function LearningFromAnswers() {
               TRL sft_config.py L261-L282
             </Cite>
             . Either way TRL marks every token that should carry no loss with the label -100 when it
-            prepares the dataset, and the loss averages over the rest{' '}
+            prepares the dataset, and the loss divides the summed loss by the number of tokens
+            left, across the batch{' '}
             <Cite tier={1} href={trl('sft_trainer.py', 'L1407-L1434')} kind="code" accessed={READ}>
               TRL sft_trainer.py L1407-L1434
             </Cite>
@@ -706,7 +709,8 @@ export function LearningFromAnswers() {
             For SFT, the gradient of the loss is minus the sum of the gradients of the answer
             tokens&apos; log-probabilities, each counted once. So a step pushes every answer
             token&apos;s probability up, and pushes hardest where the model was most surprised.
-            This gives the dive its one shared shape. Every method in it moves the weights along{' '}
+            This gives the dive its one shared shape. Every method in it that trains weights moves
+            them along{' '}
             <code>weight x grad log pi(token | prompt, tokens before it)</code>, summed over the
             tokens the method trains on{' '}
             <Cite tier={3} href={DSM} venue="preprint">
@@ -754,8 +758,8 @@ export function LearningFromAnswers() {
               InstructGPT, Section 3.2
             </Cite>
             . Reasoning that the answers spell out step by step can be taught too, with far more
-            data: the DeepSeek-R1-Distill models are Qwen and Llama base models fine-tuned for 2 to
-            3 epochs on about 800,000 samples built during DeepSeek-R1&apos;s training, with no RL{' '}
+            data: the DeepSeek-R1-Distill models are Qwen and Llama models fine-tuned for 2 to 3
+            epochs on about 800,000 samples built during DeepSeek-R1&apos;s training, with no RL{' '}
             <Cite tier={3} href={R1} venue="Nature 2025" accessed={READ}>
               DeepSeek-R1, Supplementary B.4.3 and Appendix F
             </Cite>
@@ -943,7 +947,7 @@ export function LearningFromAnswers() {
             <Cite tier={3} href={GKD} venue="ICLR 2024" accessed={READ}>
               GKD, Section 3.1
             </Cite>
-            ; section 11 shows why on-policy distillation uses it. Section 7 reuses the same number
+            ; section 11 shows why most on-policy distillation recipes choose it. Section 7 reuses the same number
             for a different job: there the reference point is a frozen copy of the model the run
             started from, and the KL measures how far training has moved the model away from it.
           </Box>
@@ -993,14 +997,18 @@ export function LearningFromAnswers() {
             Every distillation run needs two things. First, a teacher you may train on. Provider
             terms differ and change. OpenAI&apos;s Services Agreement forbids using output to
             develop models that compete with OpenAI&apos;s products, Anthropic&apos;s Commercial
-            Terms forbid using its services to train competing AI models, and Google&apos;s Gemini
+            Terms forbid using its services to train competing AI models, its Usage Policy in the
+            version effective November 12, 2026 lists using outputs to train any AI model without
+            prior authorization, and Google&apos;s Gemini
             API terms forbid developing models that compete with the Gemini API. The Llama 4
             Community License allows using outputs to train or improve another model, with a
             naming condition; DeepSeek-R1&apos;s MIT licence states that it allows distillation;
             and Qwen3&apos;s Apache 2.0 licence says nothing about outputs. The detail and the
             quotes are in the panel below. Read your provider&apos;s current terms before you
-            start. Second, the inference to run the teacher: sequence level pays for its
-            generations once, token level runs it beside the student at every training step.
+            start. Second, the inference to run the teacher. Sequence level pays for its
+            generations once. Token level needs the teacher&apos;s distribution at every position:
+            on fixed text it can be computed once and stored, and on-policy the teacher runs beside
+            the student at every training step.
           </Box>
           <ExpandableSection headerText="The terms quoted, as read on 2026-11-07">
             <TermsList />
@@ -1100,7 +1108,7 @@ export function LearningFromAnswers() {
             Your next step depends on the signal you hold. Answers you trust: run SFT with the
             prompt masked, and check that the end-of-turn token is a target. A stronger model you
             may train on: section 11 shows when distilling it beats RL, as it did for DeepSeek on a
-            32B base with 800,000 teacher samples. Only a grader: go on to section 5, where the
+            32B base with the 800,000 samples built during R1&apos;s training. Only a grader: go on to section 5, where the
             model&apos;s own attempts and one score per attempt replace the written answer.
           </Box>
         </SpaceBetween>
@@ -1115,6 +1123,7 @@ export function LearningFromAnswers() {
 
 const TERMS_OPENAI = 'https://web.archive.org/web/20261008023004/https://openai.com/policies/business-terms/';
 const TERMS_ANTHROPIC = 'https://www.anthropic.com/legal/commercial-terms';
+const AUP_ANTHROPIC = 'https://www.anthropic.com/legal/aup';
 const TERMS_GEMINI = 'https://ai.google.dev/gemini-api/terms';
 const LICENSE_LLAMA4 = gh('meta-llama/llama-models', '0e0b8c519242d5833d8c11bffc1232b77ad7f301', 'models/llama4/LICENSE');
 const LICENSE_R1 = gh('deepseek-ai/DeepSeek-R1', '0cf78561f1d51c84a21b2190626b21116d5c68bb', 'README.md', 'L256-L261');
@@ -1143,6 +1152,13 @@ function TermsList() {
           models&quot;{' '}
           <Cite tier={1} href={TERMS_ANTHROPIC} accessed={READ}>
             Anthropic Commercial Terms, D.4
+          </Cite>
+          . Anthropic&apos;s Usage Policy, in the version shown on 2026-11-07 and marked effective
+          November 12, 2026, lists under platform abuse: &quot;Use outputs to train an AI model
+          (e.g., &quot;model scraping&quot; or &quot;model distillation&quot;) without prior
+          authorization from Anthropic&quot;{' '}
+          <Cite tier={1} href={AUP_ANTHROPIC} accessed={READ}>
+            Anthropic Usage Policy, Do Not Abuse Our Platform
           </Cite>
           .
         </li>

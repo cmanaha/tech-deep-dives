@@ -612,13 +612,13 @@ export function DistillationOrRl() {
             you train on its output (section 4 lists the main providers&apos; terms) and one
             teacher answer per training example. RL needs a grader and a student that passes some
             of the time: when every attempt at a prompt gets the same score, the advantage is zero
-            and the prompt contributes no gradient{' '}
+            and the prompt adds nothing to the reward-driven part of the update{' '}
             <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
               DAPO, Section 3.2
             </Cite>
-            . On-policy distillation needs more from the teacher than either: its probabilities
-            for every token, the same tokenizer as the student, and its availability for the whole
-            run{' '}
+            . On-policy distillation, in its standard form, needs more from the teacher than
+            either: its probabilities for every token, the same tokenizer as the student, and its
+            availability for the whole run{' '}
             <Cite tier={1} href={SAGEMAKER_DISTILL} accessed={READ}>
               SageMaker AI developer guide: distillation
             </Cite>
@@ -697,8 +697,8 @@ export function DistillationOrRl() {
             Section 10 read RL&apos;s pass@k curve: above the base at small k, below it at large
             k, which says RL mostly reweights paths the base could already sample. The same study
             draws the contrast with distillation, which &quot;can transfer new reasoning patterns
-            from a stronger teacher to the student&quot;, so distilled models show &quot;an
-            expanded reasoning scope beyond that of the base model&quot;{' '}
+            from a stronger teacher to the student&quot;, so distilled models &quot;often
+            demonstrate an expanded reasoning scope beyond that of the base model&quot;{' '}
             <Cite tier={3} href={YUE} venue="NeurIPS 2025" accessed={READ}>
               Yue et al., abstract
             </Cite>
@@ -754,8 +754,14 @@ export function DistillationOrRl() {
             . The student gets feedback on the very tokens it got wrong.
           </Box>
           <Box variant="p">
-            The loss is the KL divergence of section 4, taken at each position of the
-            student&apos;s own answer, with the student first:
+            GKD treats the direction of the divergence as a setting, writes its own on-policy
+            objective with the teacher first, and found the best choice depended on the task{' '}
+            <Cite tier={3} href={GKD} venue="ICLR 2024" accessed={READ}>
+              GKD, Sections 3 and 3.1
+            </Cite>
+            . The loss Thinking Machines uses, and TRL&apos;s distillation trainer by default, is
+            the KL divergence of section 4, taken at each position of the student&apos;s own
+            answer, with the student first:
           </Box>
           <Box variant="p">
             <code>
@@ -796,7 +802,8 @@ export function DistillationOrRl() {
             gives &quot;42&quot; probability 0.6 and the teacher 0.1: the advantage is ln 0.1 - ln
             0.6 = -2.30 + 0.51 = -1.79, and the step pushes &quot;42&quot; down hard. For
             &quot;is&quot;, at 0.9 under both, it is 0 and nothing moves. Each token&apos;s
-            advantage counts that token only, with no credit passed to later ones.
+            advantage counts that token only: with a discount factor of zero, a token is not
+            charged for the teacher&apos;s verdict on the tokens that follow it.
           </Box>
           <Box variant="p">
             Labs running this at scale change the estimate. Kimi K3 clips the per-token value to a
@@ -929,7 +936,7 @@ export function DistillationOrRl() {
             <Cite tier={1} href={BEDROCK_RFT} accessed={READ}>
               Bedrock user guide: reinforcement fine-tuning best practices
             </Cite>
-            ; at 0% every group of attempts scores alike and RL has no gradient to follow. The
+            ; at 0% every group of attempts scores alike and RL has no reward signal to follow. The
             second is whether a stronger teacher exists that you may train on.
           </Box>
           <DecisionDiagram />

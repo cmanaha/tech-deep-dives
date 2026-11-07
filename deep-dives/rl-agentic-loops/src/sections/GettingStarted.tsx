@@ -533,7 +533,8 @@ export function GettingStarted() {
               <Box variant="p">
                 The RL vocabulary on tokens, sections 5 to 8: the policy; the policy gradient, the
                 basic rule for turning a score into a weight change; the clip of PPO (Proximal
-                Policy Optimization), a limit on how far one round of training can move the model;
+                Policy Optimization), which stops pushing a token&apos;s probability further once
+                training has moved it a set fraction from where it started;
                 the KL penalty, a charge for drifting from the model the run started from; and
                 learning from preferences, where a reward model is trained on people&apos;s choices
                 between two responses, or DPO (Direct Preference Optimization) learns from those
