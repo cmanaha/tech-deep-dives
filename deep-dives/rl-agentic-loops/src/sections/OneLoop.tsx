@@ -526,7 +526,7 @@ export function OneLoop() {
         <SpaceBetween size="m">
           <Box variant="p">
             In every store the signal decides whether anything is learned, and fine-tuning
-            techniques differ first in where it comes from. Six sources run through the dive,
+            techniques differ first in where it comes from. Seven sources run through the dive,
             each with the section that covers it:
           </Box>
           <ul>
@@ -561,6 +561,13 @@ export function OneLoop() {
               </Box>{' '}
               RL, scored by a reward model, a program, an environment or a judge (sections 5 to
               13).
+            </li>
+            <li>
+              <Box variant="strong" display="inline">
+                A stronger model&apos;s judgement of each token the model wrote itself:
+              </Box>{' '}
+              on-policy distillation, which takes its samples from RL and its targets from
+              distillation (sections 3 and 11).
             </li>
           </ul>
           <Box variant="p">
