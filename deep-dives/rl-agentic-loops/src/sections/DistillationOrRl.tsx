@@ -220,7 +220,7 @@ function Table16Diagram() {
   return (
     <div style={{ overflowX: 'auto' }}>
       <svg
-        viewBox="0 0 960 360"
+        viewBox="0 0 960 376"
         role="img"
         aria-labelledby="distill-t16-title"
         aria-describedby="distill-t16-desc"
@@ -247,7 +247,7 @@ function Table16Diagram() {
           .distill-t16-tick { fill: #414d5c; font: 11px sans-serif; text-anchor: end; }
           .distill-t16-leg { fill: #16191f; font: 12px sans-serif; }
         `}</style>
-        <rect x={0} y={0} width={960} height={360} rx={8} className="distill-t16-bg" />
+        <rect x={0} y={0} width={960} height={376} rx={8} className="distill-t16-bg" />
         {T16_MODELS.map((m, k) => (
           <g key={m.name}>
             <rect x={20 + k * 310} y={16} width={16} height={12} rx={2} className={m.cls} />
@@ -287,9 +287,11 @@ function Table16Diagram() {
             </g>
           );
         })}
-        <text x={x0 + 4} y={yBase + 46} className="distill-t16-leg">
-          pass@1, percent; all three are 32B models. Qwen2.5-32B-Zero is the base after RL; the
-          Distill model is the same base after SFT, no RL; QwQ-32B-Preview is a reference.
+        <text x={x0 + 4} y={yBase + 44} className="distill-t16-leg">
+          pass@1, percent; all three are 32B models. Qwen2.5-32B-Zero is the base after RL;
+        </text>
+        <text x={x0 + 4} y={yBase + 60} className="distill-t16-leg">
+          the Distill model is the same base after SFT, no RL; QwQ-32B-Preview is a reference.
         </text>
       </svg>
     </div>

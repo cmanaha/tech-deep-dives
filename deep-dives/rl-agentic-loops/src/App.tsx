@@ -156,7 +156,9 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
 /**
  * The dive's title and subtitle, defined once. Option B of the rename plan, chosen by the
  * assistant on 2026-11-07 and reversible: index.html, README.md, SCOPE.md and the front-page
- * card repeat this text and change with it.
+ * card repeat this text and change with it. index.html's <title> uses the short form
+ * "Learning From Feedback: Fine-Tuning, RL and Agentic Learning Loops", since html-validate
+ * caps a title at 70 characters.
  */
 export const DIVE_TITLE = 'Learning From Feedback: Fine-Tuning, Reinforcement Learning and Agentic Learning Loops';
 export const DIVE_SUBTITLE =
