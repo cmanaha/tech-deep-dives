@@ -62,13 +62,13 @@ const MAP_ROWS: MapRow[] = [
     label: 'Instructions and procedures',
     gloss: 'rules, strategies, playbooks',
     weights: { mark: 'partial', lines: ['Can move in later, through', 'context distillation'] },
-    context: { mark: 'holds', lines: ['When a reliable signal', 'writes them: sections 13, 14'] },
+    context: { mark: 'holds', lines: ['When a reliable signal', 'writes them: sections 16, 17'] },
   },
   {
     id: 'sharpening',
     label: 'Sharpening',
     gloss: 'toward answers it can already sample',
-    weights: { mark: 'holds', lines: ['RL makes the first try right', 'more often: section 8'] },
+    weights: { mark: 'holds', lines: ['RL makes the first try right', 'more often: section 10'] },
     context: { mark: 'partial', lines: ['Bought per query by sampling,', 'at more tokens per answer'] },
   },
   {
@@ -104,8 +104,8 @@ const MAP_ROWS: MapRow[] = [
     id: 'exploration',
     label: 'Exploration and credit',
     gloss: 'learning from failure, long horizons',
-    weights: { mark: 'partial', lines: ['Where it is trained in:', 'section 17'] },
-    context: { mark: 'weak', lines: ['Weak in the general models', 'tested: section 17'] },
+    weights: { mark: 'partial', lines: ['Where it is trained in:', 'section 20'] },
+    context: { mark: 'weak', lines: ['Weak in the general models', 'tested: section 20'] },
   },
   {
     id: 'skill',
@@ -113,7 +113,7 @@ const MAP_ROWS: MapRow[] = [
     gloss: 'CONTESTED: can RL alone add it?',
     contested: true,
     weights: { mark: 'holds', lines: ['Distillation from a stronger', 'model; RL alone contested'] },
-    context: { mark: 'weak', lines: ['Fell short of RL on one', 'math benchmark: section 14'] },
+    context: { mark: 'weak', lines: ['Fell short of RL on one', 'math benchmark: section 17'] },
   },
 ];
 
@@ -373,14 +373,14 @@ const CLASSIFY_ROWS: ClassifyRow[] = [
     row: 'Instructions and procedures',
     ask: 'Would telling the model a rule or a method it can already follow close the gap?',
     store: 'Context, when a reliable signal writes them',
-    next: 'Section 14 for one optimised prompt; section 13 for a playbook that grows.',
+    next: 'Section 17 for one optimised prompt; section 16 for a playbook that grows.',
   },
   {
     id: 'sharpening',
     row: 'Sharpening',
     ask: 'Does the model reach the right answer within k tries but miss it on the first?',
     store: 'Weights through RL, or per query by sampling',
-    next: "Plot the base model's pass@k on your task; section 8 shows how to read it and what sampling costs.",
+    next: "Plot the base model's pass@k on your task; section 10 shows how to read it and what sampling costs.",
   },
   {
     id: 'format',
@@ -401,7 +401,7 @@ const CLASSIFY_ROWS: ClassifyRow[] = [
     row: 'Token efficiency',
     ask: 'Is the same long instruction paid for on every call, and has it stopped changing?',
     store: 'Weights, through context distillation',
-    next: 'Distil the settled text; keep the part still changing in context.',
+    next: 'Distil the settled text (section 4); keep the part still changing in context.',
   },
   {
     id: 'retention',
@@ -415,14 +415,14 @@ const CLASSIFY_ROWS: ClassifyRow[] = [
     row: 'Exploration, learning from failure, long-horizon credit',
     ask: 'Does the task need trying options of unknown value, learning from failed runs, or credit across many steps?',
     store: 'Weak in context',
-    next: 'Section 17: keep the statistics in code and hand the model a summary.',
+    next: 'Section 20: keep the statistics in code and hand the model a summary.',
   },
   {
     id: 'skill',
     row: 'New reasoning skill (contested)',
     ask: 'Does the model fail at every k you can afford to sample?',
     store: 'Weights, through distillation from a stronger model',
-    next: 'Look for a stronger teacher first; sections 7 and 8 cover distillation and the RL debate.',
+    next: 'Look for a stronger teacher first; section 11 sets distillation against RL, and section 10 covers the debate.',
   },
 ];
 
@@ -473,7 +473,7 @@ export function WeightsVsContext() {
             variant="h1"
             description="Classify your gap before you choose a method: facts from after the cutoff sat best in context (retrieval 0.875 against 0.504 for fine-tuning on one 7B model), calibration and prompt cost sit in the weights, and two rows stay contested (sources read 2026-10-30)"
           >
-            18. What Lives in Weights &amp; What Lives in Context
+            21. What Lives in Weights &amp; What Lives in Context
           </Header>
         }
       >
@@ -495,7 +495,7 @@ export function WeightsVsContext() {
             <Cite tier={3} href={OVADIA} venue="EMNLP 2024">
               Ovadia et al., Table 2
             </Cite>
-            . Section 22, Choosing a Text Loop, a Hybrid or a Weight Update, starts from the
+            . Section 25, Choosing a Technique: Fine-Tuning, a Text Loop or a Hybrid, starts from the
             classification this map produces.
           </Box>
         </SpaceBetween>
@@ -523,13 +523,13 @@ export function WeightsVsContext() {
           </Box>
           <Box variant="p">
             Three rows are argued in full elsewhere in the dive. Instructions and procedures belong
-            in context when a reliable signal writes them: see section 13, Memories, Playbooks
-            &amp; Skill Libraries, and section 14, Optimising the Prompt. Sharpening raises pass@1,
+            in context when a reliable signal writes them: see section 16, Memories, Playbooks
+            &amp; Skill Libraries, and section 17, Optimising the Prompt. Sharpening raises pass@1,
             the chance that one attempt is right, toward pass@k, the chance that at least one of k
-            attempts is right; section 8, What RL Does to a Model, shows how to read it and what
+            attempts is right; section 10, What RL Does to a Model, shows how to read it and what
             buying it per query costs. Exploration (trying options of unknown value), learning from
             failure and long-horizon credit assignment (working out which step earned the result)
-            are weak in a general model&apos;s context; section 17, Where Words Fall Short, carries
+            are weak in a general model&apos;s context; section 20, Where Words Fall Short, carries
             that evidence. The blocks below carry the evidence for the other six rows.
           </Box>
         </SpaceBetween>
@@ -779,7 +779,7 @@ export function WeightsVsContext() {
             Our reading: this is the bridge from a text loop to a weight update. A prompt or
             playbook that a loop has found and stopped changing can be distilled, and its tokens
             and their latency leave every call. While the text is still changing, keeping it in
-            context costs tokens on every call and keeps each edit cheap; section 17, Where Words
+            context costs tokens on every call and keeps each edit cheap; section 20, Where Words
             Fall Short, covers how prompt caching prices a stable prefix and re-prices an edited
             one.
           </Box>
@@ -802,16 +802,15 @@ export function WeightsVsContext() {
             so whatever it could do before a loop ran, it can still do with the loop&apos;s text
             removed. A weight update pays for its gain in what it forgets. Across RL and SFT
             (supervised fine-tuning, training on target answers token by token), the degree of
-            forgetting was determined by the distributional shift, measured as the KL
-            (Kullback-Leibler divergence, how far one probability distribution has moved from
-            another) between the fine-tuned and the base model on the new task{' '}
+            forgetting was determined by the distributional shift, measured as section 4&apos;s KL
+            divergence between the fine-tuned and the base model on the new task{' '}
             <Cite tier={3} href={RAZOR} venue="ICLR 2026">
               RL&apos;s Razor, abstract
             </Cite>
-            . Section 8, What RL Does to a Model, covers why RL moves the model less than SFT. Our
+            . Section 10, What RL Does to a Model, covers why RL moves the model less than SFT. Our
             reading: that KL is a number to watch while training, next to evaluations of what the
             model must keep. The context store has its own way to lose ground, a store polluted by
-            misleading feedback, which section 13 covers.
+            misleading feedback, which section 16 covers.
           </Box>
           <Box variant="p">
             A model that fails a task at any number of tries has a skill gap. In the studies read,
@@ -826,8 +825,7 @@ export function WeightsVsContext() {
             <Cite tier={3} href={R1} venue="Nature 2025">
               DeepSeek-R1, Supplementary F.1, Table 16
             </Cite>
-            ; section 7, RLVR &amp; GRPO (RL with verifiable rewards and Group Relative Policy
-            Optimization), gives the figures. Distillation also works from the model&apos;s own
+            ; section 11, Distillation or RL, gives the figures and when each path wins. Distillation also works from the model&apos;s own
             context: context distillation internalised step-by-step reasoning for
             8-digit addition, and the new capability helped on other downstream tasks{' '}
             <Cite tier={3} href={CONTEXT_DISTILLATION} venue="preprint">
@@ -842,10 +840,10 @@ export function WeightsVsContext() {
             <Cite tier={3} href={YUE} venue="NeurIPS 2025">
               Yue et al., abstract
             </Cite>
-            . Section 8 lays out the debate and the settings in which the boundary moved. On the
+            . Section 10 lays out the debate and the settings in which the boundary moved. On the
             context side, when a prompt optimiser and RL changed the same 8B model, the optimiser
             fell short on AIME, a competition-math exam, and came within a point of RL on the
-            other math benchmark; section 14 reports both.
+            other math benchmark; section 17 reports both.
           </Box>
         </SpaceBetween>
       </Container>
@@ -854,7 +852,7 @@ export function WeightsVsContext() {
         header={
           <Header
             variant="h2"
-            description="Classify the gap you have now, one row at a time, and take the marks to section 22, where the choice of method starts"
+            description="Classify the gap you have now, one row at a time, and take the marks to section 25, where the choice of method starts"
           >
             Classify your gap, row by row
           </Header>
@@ -869,8 +867,8 @@ export function WeightsVsContext() {
           </Box>
           <ClassifyTable />
           <Box variant="p">
-            The marks answer the first of section 22&apos;s three questions: what kind of gap it
-            is. Section 22, Choosing a Text Loop, a Hybrid or a Weight Update, adds the other two,
+            The marks answer the first of section 25&apos;s three questions: what kind of gap it
+            is. Section 25, Choosing a Technique: Fine-Tuning, a Text Loop or a Hybrid, adds the other two,
             what signal you have and what the model scores on it today, and whether you can touch
             the weights and how many queries the result will serve. Take your marked rows there.
           </Box>

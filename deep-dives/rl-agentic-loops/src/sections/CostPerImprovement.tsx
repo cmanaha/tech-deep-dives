@@ -57,6 +57,11 @@ const BEDROCK_PRICING = 'https://aws.amazon.com/bedrock/pricing/';
 const BEDROCK_PRICE_LIST =
   'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/20261030160456/us-east-1/index.json';
 const RFT_JOB = 'https://docs.aws.amazon.com/bedrock/latest/userguide/rft-submit-job.html';
+/** Qwen3 Technical Report: on-policy distillation against RL from one checkpoint (Table 21). */
+const QWEN3 = arxiv('2505.09388v1');
+/** Bedrock Model Distillation: teacher inference billed at the teacher's on-demand rate. */
+const BEDROCK_DISTILL = 'https://docs.aws.amazon.com/bedrock/latest/userguide/model-distillation.html';
+const BEDROCK_CUSTOM = 'https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models.html';
 /** Bedrock user guide page with the table of base models supported for reinforcement fine-tuning. */
 const RFT_MODELS = 'https://docs.aws.amazon.com/bedrock/latest/userguide/reinforcement-fine-tuning.html';
 const RFT_BEST_PRACTICES =
@@ -327,7 +332,7 @@ const PRESETS: readonly Preset[] = [
   {
     id: 'sampling',
     side: 'b',
-    label: 'Inference-time sampling, no training (section 8)',
+    label: 'Inference-time sampling, no training (section 10)',
     scope:
       "No training run. The multiplier is the paper's ratio of tokens per answer to standard inference, in its MATH-500 setting; it moves with output length and the sampler's settings. The cost per query starts from the weight-update column's, as if both columns served the same model.",
     sources: ['sampling'],
@@ -984,7 +989,7 @@ export function CostPerImprovement() {
             variant="h1"
             description="Pay once in training or on every query: find the query volume where the two cost the same, and which side of it you are on (sources read 2026-10-30)"
           >
-            20. Cost per Improvement
+            23. Cost per Improvement
           </Header>
         }
       >
@@ -1062,7 +1067,7 @@ export function CostPerImprovement() {
           <Box variant="p">
             The published runs collected here range from a few hundred GPU-hours to well over a hundred thousand, and
             model size alone does not set the bill. A minimal recipe of Dr. GRPO (GRPO Done Right), the
-            GRPO variant of section 7 that drops the division by each answer&apos;s length and by the
+            GRPO variant of section 9 that drops the division by each answer&apos;s length and by the
             group&apos;s standard deviation, on Qwen2.5-Math-7B took 27 hours on 8 A100s{' '}
             <SourceCite id="drgrpo" />, 216 GPU-hours by our arithmetic. ProRL (prolonged RL) trained a 1.5B
             model for more than 2,000 steps in about 16k H100 GPU-hours <SourceCite id="prorl" />, 74 times the 7B
@@ -1074,7 +1079,7 @@ export function CostPerImprovement() {
             <Box variant="p">
               Two 32B runs sit between them. Agentica and Together AI report that DeepSWE&apos;s RL run on Qwen3-32B
               took 64 H100s for six days <SourceCite id="deepswe" />. DAPO (Decoupled Clip and Dynamic sAmpling Policy
-              Optimization) is the GRPO variant of section 7 that raises the upper clip bound, keeps only prompts whose
+              Optimization) is the GRPO variant of section 9 that raises the upper clip bound, keeps only prompts whose
               group of answers is neither all right nor all wrong, and averages the loss over every token in the batch.
               verl&apos;s public reproduction of it on Qwen2.5-32B logged 159.6 hours of step time over 489 steps on 16
               nodes of 8 GPUs <SourceCite id="dapo-run" />, about 20,400 GPU-hours by our arithmetic; that
@@ -1083,11 +1088,32 @@ export function CostPerImprovement() {
           </ExpandableSection>
           <Box variant="p">
             The calculator&apos;s one same-model pair of training budgets is GEPA (Genetic-Pareto), the reflective
-            prompt optimiser of section 14, Optimising the Prompt, against GRPO with LoRA (Low-Rank Adaptation) on
+            prompt optimiser of section 17, Optimising the Prompt, against GRPO with LoRA (Low-Rank Adaptation) on
             Qwen3 8B. GRPO is the RL method that samples a group of answers per prompt and reinforces those that beat
             the group&apos;s average. GEPA spent 1,839 to 7,051 rollouts per task against 24,000 for GRPO, and led
             across six tasks in aggregate, 54.85 to 48.91, while trailing on AIME-2025, a US competition-math exam <SourceCite id="gepa-table1" />. Price each side&apos;s rollouts
             separately: a GRPO rollout also pays for its share of the weight update.
+          </Box>
+          <Box variant="p">
+            Distillation splits its bill differently. The teacher&apos;s answers are inference,
+            generated once before training; on Bedrock they are billed at the teacher&apos;s
+            on-demand rates{' '}
+            <Cite tier={1} href={BEDROCK_DISTILL} accessed="2026-11-07">
+              Bedrock user guide: model distillation
+            </Cite>
+            , and the student&apos;s fine-tuning is billed per token trained{' '}
+            <Cite tier={1} href={BEDROCK_CUSTOM} accessed="2026-11-07">
+              Bedrock user guide: customisation methods
+            </Cite>
+            . The one published comparison with RL from the same checkpoint located in this
+            research is Qwen3&apos;s: on-policy distillation of an 8B model took 1,800 GPU-hours
+            where RL from the same checkpoint took 17,920, and scored higher on every benchmark
+            listed{' '}
+            <Cite tier={3} href={QWEN3} venue="preprint" accessed="2026-11-07">
+              Qwen3, Section 4.7, Table 21
+            </Cite>
+            . Section 11, Distillation or RL, gives its scope: one student, a teacher already
+            trained with RL, compute reported rather than matched.
           </Box>
           <Box variant="p">
             Managed RL is billed by the hour. Bedrock RFT (reinforcement fine-tuning) charges $80.00 per training hour
@@ -1148,7 +1174,7 @@ export function CostPerImprovement() {
             with caching on, at the hit rate your own prefix reaches.
           </Box>
           <Box variant="p">
-            The third option trains nothing. Section 8, What RL Does to a Model, covers a training-free sampler that
+            The third option trains nothing. Section 10, What RL Does to a Model, covers a training-free sampler that
             sharpens a frozen model&apos;s answers at about 8.84 times the tokens of standard inference, in the
             paper&apos;s MATH-500 (500 competition mathematics problems) setting <SourceCite id="sampling" />. The
             multiplier moves with output length and the sampler&apos;s settings, so the calculator takes it as an
@@ -1190,7 +1216,7 @@ export function CostPerImprovement() {
             <TfGrpo>Training-Free GRPO, Section 4.2</TfGrpo>. It also leaves out the RL model&apos;s idle GPU time. At
             the paper&apos;s 400 problems an hour, 665,467 problems keep the 4-GPU server busy for 1,664 hours, about
             69 days of continuous load (our arithmetic); at any lower utilisation the RL side&apos;s real cost per
-            problem rises above $0.005 and the breakeven moves out. Section 13, Memories, Playbooks &amp; Skill
+            problem rises above $0.005 and the breakeven moves out. Section 16, Memories, Playbooks &amp; Skill
             Libraries, compares the two methods on 32B-class models.
           </Box>
           <ExpandableSection headerText="The arithmetic behind 665,467 problems">

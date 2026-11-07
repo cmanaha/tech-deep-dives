@@ -591,8 +591,8 @@ export function RlRollout() {
             Production Users. What the trainer on the other side of the refit does, and where an
             RL step spends its time, is in the{' '}
             <Link href="../rl-agentic-loops/">
-              RL and agentic learning loops dive, section 19: An RL Step Is an Inference Job Inside
-              a Training Job
+              Fine-Tuning, RL and Agentic Learning Loops dive, section 22: An RL Step Is an Inference
+              Job Inside a Training Job
             </Link>
             .
           </Box>

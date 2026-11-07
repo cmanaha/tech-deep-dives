@@ -26,11 +26,12 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 
 ## Tier 1: source code at a pinned ref, official framework documentation, first-party AWS documentation and pricing
 
-98 sources.
+113 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
-| [Amazon Bedrock pricing, reinforcement fine-tuning](https://aws.amazon.com/bedrock/pricing/) | 2026-10-30 | CostPerImprovement, RlOnAws, Sources appendix |
+| [Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms) | 2026-11-07 | LearningFromAnswers |
+| [Amazon Bedrock pricing, model customisation](https://aws.amazon.com/bedrock/pricing/) | 2026-10-30, 2026-11-07 | CostPerImprovement, RlOnAws, Sources appendix |
 | [Neuron v2.33.0, NxD Training archive notice](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/archive/nxd-training/index.html) | 2026-10-30 | RlOnAws |
 | [Neuron v2.33.0, What is TorchNeuron](https://awsdocs-neuron.readthedocs-hosted.com/en/v2.33.0/torch/about-pytorch-neuron.html) | 2026-10-30 | RlOnAws |
 | [OpenAI API docs: reinforcement fine-tuning](https://developers.openai.com/api/docs/guides/reinforcement-fine-tuning) | 2026-10-30 | Choosing, PreferencesToRewards |
@@ -42,16 +43,21 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [AgentCore developer guide, how optimization works](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/optimization-how-it-works.html) | 2026-10-30 | RlOnAws |
 | [Amazon Bedrock AgentCore: optimization](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/optimization.html) | 2026-10-30 | Choosing, RlOnAws, Sources appendix |
 | [Bedrock user guide: how Advanced Prompt Optimization works](https://docs.aws.amazon.com/bedrock/latest/userguide/advanced-prompt-optimization-how.html) | 2026-10-30 | Choosing, RlOnAws, Sources appendix |
-| [Bedrock user guide, customisation methods](https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models.html) | 2026-10-30 | RlOnAws |
+| [Bedrock user guide: customize your model](https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models.html) | 2026-11-07 | Choosing, CostPerImprovement, FineTuningSignals, RlOnAws |
+| [Bedrock user guide, distillation datasets](https://docs.aws.amazon.com/bedrock/latest/userguide/distillation-prepare-datasets.html) | 2026-11-07 | RlOnAws |
+| [Bedrock user guide: model distillation](https://docs.aws.amazon.com/bedrock/latest/userguide/model-distillation.html) | 2026-11-07 | CostPerImprovement, LearningFromAnswers, RlOnAws |
+| [Bedrock user guide: distillation prerequisites](https://docs.aws.amazon.com/bedrock/latest/userguide/prequisites-model-distillation.html) | 2026-11-07 | Choosing, LearningFromAnswers, RlOnAws |
 | [Amazon Bedrock user guide: prompt caching](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html) | 2026-10-30 | Sources appendix, WhereWordsFallShort, YourLoops |
-| [Bedrock user guide, benefits of RFT](https://docs.aws.amazon.com/bedrock/latest/userguide/reinforcement-fine-tuning.html) | 2026-10-30 | Choosing, CostPerImprovement, RlOnAws, RlvrAndGrpo, Sources appendix |
+| [Bedrock user guide, benefits of RFT](https://docs.aws.amazon.com/bedrock/latest/userguide/reinforcement-fine-tuning.html) | 2026-10-30, 2026-11-07 | Choosing, CostPerImprovement, DistillationOrRl, RlOnAws, RlvrAndGrpo, Sources appendix |
 | [Bedrock user guide, reward functions for open-weight models](https://docs.aws.amazon.com/bedrock/latest/userguide/reward-functions-open-weight.html) | 2026-10-30 | RlOnAws |
 | [Bedrock user guide, reward functions for Nova models](https://docs.aws.amazon.com/bedrock/latest/userguide/reward-functions.html) | 2026-10-30 | RlOnAws |
 | [Bedrock user guide, RFT data for open-weight models](https://docs.aws.amazon.com/bedrock/latest/userguide/rft-prepare-data-open-weight.html) | 2026-10-30 | RlOnAws |
 | [Bedrock user guide, RFT data for Nova models](https://docs.aws.amazon.com/bedrock/latest/userguide/rft-prepare-data.html) | 2026-10-30 | RlOnAws |
 | [Bedrock user guide: create an RFT job](https://docs.aws.amazon.com/bedrock/latest/userguide/rft-submit-job.html) | 2026-10-30 | CostPerImprovement, RlvrAndGrpo, Sources appendix, TwoLeashes |
+| [SageMaker AI developer guide, sequence-level knowledge distillation](https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models-distillation-sequence-level-knowledge-distillation.html) | 2026-11-07 | RlOnAws |
+| [SageMaker AI developer guide: distillation](https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models-distillation.html) | 2026-11-07 | Choosing, DistillationOrRl, FineTuningSignals, LearningFromAnswers, RlOnAws |
 | [Amazon SageMaker AI: training sessions](https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models-training-sessions.html) | 2026-10-30 | Choosing, RlOnAws, Sources appendix |
-| [SageMaker AI developer guide: Model customization](https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models.html) | 2026-10-30 | Choosing, PreferencesToRewards, RlOnAws, Sources appendix |
+| [SageMaker AI developer guide: customizing models](https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models.html) | 2026-10-30, 2026-11-07 | Choosing, LearningFromAnswers, PreferencesToRewards, RlOnAws, Sources appendix |
 | [SageMaker AI Developer Guide: Preparing your agent](https://docs.aws.amazon.com/sagemaker/latest/dg/model-customize-mtrl-agent.html) | 2026-10-30 | AgenticRl, RlOnAws, Sources appendix |
 | [SageMaker AI multi-turn RL hyperparameters reference](https://docs.aws.amazon.com/sagemaker/latest/dg/model-customize-mtrl-hyperparams.html) | 2026-10-30 | Choosing, RlOnAws, RlvrAndGrpo |
 | [SageMaker AI developer guide: Open weight model customization](https://docs.aws.amazon.com/sagemaker/latest/dg/model-customize-open-weight.html) | 2026-10-30 | PreferencesToRewards, RlOnAws |
@@ -63,6 +69,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [aws/sagemaker-hyperpod-recipes @ a6030c319908c8a1b74cb619b00476f8e6baa04f: hyperpod_recipes/recipes_src/fine-tuning/qwen-0_7_0/verl-grpo-rlvr-qwen-3-32b-lora.yaml](https://github.com/aws/sagemaker-hyperpod-recipes/blob/a6030c319908c8a1b74cb619b00476f8e6baa04f/hyperpod_recipes/recipes_src/fine-tuning/qwen-0_7_0/verl-grpo-rlvr-qwen-3-32b-lora.yaml) | 2026-10-30 | RlOnAws |
 | [SageMaker HyperPod recipes at commit a6030c3 (release 2.0.11): verl GRPO and Nova RFT recipes](https://github.com/aws/sagemaker-hyperpod-recipes/tree/a6030c319908c8a1b74cb619b00476f8e6baa04f) | 2026-10-30 | Sources appendix |
 | [aws/sagemaker-hyperpod-recipes @ a6030c319908c8a1b74cb619b00476f8e6baa04f: hyperpod_recipes/recipes_src/fine-tuning](https://github.com/aws/sagemaker-hyperpod-recipes/tree/a6030c319908c8a1b74cb619b00476f8e6baa04f/hyperpod_recipes/recipes_src/fine-tuning) | 2026-10-30 | Choosing, RlOnAws |
+| [deepseek-ai/DeepSeek-R1 @ 0cf78561f1d51c84a21b2190626b21116d5c68bb: README.md](https://github.com/deepseek-ai/DeepSeek-R1/blob/0cf78561f1d51c84a21b2190626b21116d5c68bb/README.md) | 2026-11-07 | LearningFromAnswers |
 | [gepa-ai/gepa-artifact @ cbefbc1aa0f43dd39874ec4bf42211365dbda42e: gepa_artifact/benchmarks/AIME/__init__.py](https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/gepa_artifact/benchmarks/AIME/__init__.py) | 2026-10-30 | PromptOptimization |
 | [gepa-ai/gepa-artifact @ cbefbc1aa0f43dd39874ec4bf42211365dbda42e: gepa_artifact/benchmarks/AIME/AIME_data.py](https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/gepa_artifact/benchmarks/AIME/AIME_data.py) | 2026-10-30 | PromptOptimization |
 | [gepa-ai/gepa-artifact @ cbefbc1aa0f43dd39874ec4bf42211365dbda42e: gepa_artifact/gepa/gepa.py](https://github.com/gepa-ai/gepa-artifact/blob/cbefbc1aa0f43dd39874ec4bf42211365dbda42e/gepa_artifact/gepa/gepa.py) | 2026-10-30 | PromptOptimization |
@@ -83,6 +90,8 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [huggingface/trl @ v1.16.0: docs/source/paper_index.md](https://github.com/huggingface/trl/blob/v1.16.0/docs/source/paper_index.md) | 2026-10-30 | RlvrAndGrpo |
 | [huggingface/trl @ v1.16.0: pyproject.toml](https://github.com/huggingface/trl/blob/v1.16.0/pyproject.toml) | 2026-10-30 | SideBySideLab |
 | [huggingface/trl @ v1.16.0: trl/generation/vllm_generation.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/generation/vllm_generation.py) | 2026-10-30 | RlStepAsSystem |
+| [huggingface/trl @ v1.16.0: trl/trainer/distillation_config.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/distillation_config.py) | 2026-11-07 | DistillationOrRl |
+| [huggingface/trl @ v1.16.0: trl/trainer/distillation_trainer.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/distillation_trainer.py) | 2026-11-07 | DistillationOrRl, LearningFromAnswers |
 | [huggingface/trl @ v1.16.0: trl/trainer/dpo_config.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/dpo_config.py) | 2026-10-30 | PreferencesToRewards |
 | [huggingface/trl @ v1.16.0: trl/trainer/dpo_trainer.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/dpo_trainer.py) | 2026-10-30 | PreferencesToRewards |
 | [huggingface/trl @ v1.16.0: trl/trainer/grpo_config.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/grpo_config.py) | 2026-10-30 | RlOnAws, RlStepAsSystem, RlvrAndGrpo, SideBySideLab, Sources appendix, TwoLeashes |
@@ -90,6 +99,8 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [huggingface/trl @ v1.16.0: trl/trainer/kto_trainer.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/kto_trainer.py) | 2026-10-30 | PreferencesToRewards |
 | [huggingface/trl @ v1.16.0: trl/trainer/rloo_config.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/rloo_config.py) | 2026-10-30 | TwoLeashes |
 | [huggingface/trl @ v1.16.0: trl/trainer/rloo_trainer.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/rloo_trainer.py) | 2026-10-30 | RlvrAndGrpo |
+| [huggingface/trl @ v1.16.0: trl/trainer/sft_config.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/sft_config.py) | 2026-11-07 | LearningFromAnswers |
+| [huggingface/trl @ v1.16.0: trl/trainer/sft_trainer.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/sft_trainer.py) | 2026-11-07 | LearningFromAnswers |
 | [huggingface/trl @ v1.16.0: trl/trainer/utils.py](https://github.com/huggingface/trl/blob/v1.16.0/trl/trainer/utils.py) | 2026-10-30 | RlvrAndGrpo |
 | [TRL v1.13.0 release notes](https://github.com/huggingface/trl/releases/tag/v1.13.0) | 2026-10-30 | LanguageModelAsPolicy |
 | [huggingface/trl @ v1.16.0: trl/trainer](https://github.com/huggingface/trl/tree/v1.16.0/trl/trainer) | 2026-10-30 | LanguageModelAsPolicy |
@@ -97,6 +108,7 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [karpathy/autoresearch @ 228791fb499afffb54b46200aca536f79142f117: program.md](https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/program.md) | 2026-10-30 | RewardIsAProxy, TextLoopAsRl, YourLoops |
 | [karpathy/autoresearch @ 228791fb499afffb54b46200aca536f79142f117: train.py](https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/train.py) | 2026-10-30 | RewardIsAProxy, YourLoops |
 | [autoresearch tree at 228791fb](https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117) | 2026-10-30 | RewardIsAProxy, Sources appendix |
+| [meta-llama/llama-models @ 0e0b8c519242d5833d8c11bffc1232b77ad7f301: models/llama4/LICENSE](https://github.com/meta-llama/llama-models/blob/0e0b8c519242d5833d8c11bffc1232b77ad7f301/models/llama4/LICENSE) | 2026-11-07 | LearningFromAnswers |
 | [NVIDIA/dgx-spark-playbooks @ c035e0ac7d211509ec131b79b5b6f0f824a9e421: nvidia/playbook-unsloth/README.md](https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-unsloth/README.md) | 2026-10-30 | SideBySideLab |
 | [NVIDIA/dgx-spark-playbooks @ c035e0ac7d211509ec131b79b5b6f0f824a9e421: nvidia/playbook-vlm-finetuning/assets/ui_image/src/train_image_vlm.py](https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-vlm-finetuning/assets/ui_image/src/train_image_vlm.py) | 2026-10-30 | SideBySideLab |
 | [NVIDIA/dgx-spark-playbooks @ c035e0ac7d211509ec131b79b5b6f0f824a9e421: nvidia/playbook-vlm-finetuning/assets/ui_image/src/train.yaml](https://github.com/NVIDIA/dgx-spark-playbooks/blob/c035e0ac7d211509ec131b79b5b6f0f824a9e421/nvidia/playbook-vlm-finetuning/assets/ui_image/src/train.yaml) | 2026-10-30 | SideBySideLab |
@@ -124,17 +136,21 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [volcengine/verl @ v0.9.1: verl/trainer/ppo/core_algos.py](https://github.com/volcengine/verl/blob/v0.9.1/verl/trainer/ppo/core_algos.py) | 2026-10-30 | AgenticRl, RlvrAndGrpo, WhereWordsFallShort |
 | [volcengine/verl @ v0.9.1: verl/utils/tokenizer/continuous_token.py](https://github.com/volcengine/verl/blob/v0.9.1/verl/utils/tokenizer/continuous_token.py) | 2026-10-30 | AgenticRl |
 | [verl at v0.9.1](https://github.com/volcengine/verl/tree/v0.9.1) | 2026-10-30 | Sources appendix |
+| [Qwen3-8B LICENSE](https://huggingface.co/Qwen/Qwen3-8B/blob/b968826d9c46dd6066d109eabc6255188de91218/LICENSE) | 2026-11-07 | LearningFromAnswers |
 | [Claude docs: Agent Skills overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) | 2026-10-30 | AccumulatingExperience, Sources appendix |
 | [Claude docs: memory tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool) | 2026-10-30 | AccumulatingExperience, Sources appendix |
 | [Anthropic docs: prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) | 2026-10-30 | Sources appendix, WhereWordsFallShort |
 | [AWS Price List API, Nova 2 Lite RFT training hours](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/20261030160456/us-east-1/index.json) | 2026-10-30 | CostPerImprovement, RlOnAws |
+| [OpenAI Services Agreement, section 3.3 (archived copy of 2026-10-08)](https://web.archive.org/web/20261008023004/https://openai.com/policies/business-terms/) | 2026-11-07 | LearningFromAnswers |
+| [Anthropic Commercial Terms, D.4](https://www.anthropic.com/legal/commercial-terms) | 2026-11-07 | LearningFromAnswers |
 
 ## Tier 2: first-party lab and vendor posts and talks (their performance figures are claims)
 
-14 sources.
+16 sources.
 
 | Source | Accessed | Cited in |
 | --- | --- | --- |
+| [Meta, The Llama 4 herd (lab blog)](https://ai.meta.com/blog/llama-4-multimodal-intelligence/) | 2026-11-07 | FineTuningSignals |
 | [GPT-4 Technical Report (OpenAI), Section 5 and Figure 8](https://arxiv.org/abs/2303.08774v6) | 2026-10-30 | WeightsVsContext |
 | [Claude 3.7 Sonnet system card, Section 6](https://assets.anthropic.com/m/785e231869ea8b3b/original/claude-3-7-sonnet-system-card.pdf) | 2026-10-30 | RewardIsAProxy, Sources appendix |
 | [AWS What's New, Bedrock RFT launch, 2025-12-03](https://aws.amazon.com/about-aws/whats-new/2025/12/bedrock-reinforcement-fine-tuning-66-base-models/) | 2026-10-30 | RlOnAws |
@@ -145,26 +161,30 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [Huntley, Ralph (author's post)](https://ghuntley.com/ralph/) | 2026-10-30 | RewardIsAProxy, Sources appendix, TextLoopAsRl, YourLoops |
 | [gepa-ai/gepa @ v0.1.4: README.md](https://github.com/gepa-ai/gepa/blob/v0.1.4/README.md) | 2026-10-30 | PromptOptimization |
 | [karpathy/autoresearch @ 228791fb499afffb54b46200aca536f79142f117: README.md](https://github.com/karpathy/autoresearch/blob/228791fb499afffb54b46200aca536f79142f117/README.md) | 2026-10-30 | RewardIsAProxy, YourLoops |
-| [Thinking Machines, LoRA Without Regret (lab blog)](https://thinkingmachines.ai/blog/lora/) | 2026-10-30 | Sources appendix, WhatRlDoes |
+| [Thinking Machines, LoRA Without Regret (lab blog)](https://thinkingmachines.ai/blog/lora/) | 2026-10-30, 2026-11-07 | DistillationOrRl, FineTuningSignals, Sources appendix, WhatRlDoes |
+| [Thinking Machines, On-Policy Distillation (lab blog)](https://thinkingmachines.ai/blog/on-policy-distillation/) | 2026-11-07 | DistillationOrRl, Sources appendix |
 | [verl team, W&B run record DAPO-Qwen2.5-32B](https://wandb.ai/verl-org/DAPO%20Reproduction%20on%20verl/runs/0qjd0wap) | 2026-10-30 | CostPerImprovement, RlStepAsSystem |
 | [Anthropic Engineering, Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) | 2026-10-30 | AccumulatingExperience, Sources appendix |
 | [DeepSWE post, Sections 2.1 and 2.2](https://www.together.ai/blog/deepswe) | 2026-10-30 | AgenticRl, CostPerImprovement, Sources appendix |
 
 ## Tier 3: papers (venue or preprint shown) and third-party technical analysis
 
-102 sources.
+121 sources.
 
 | Source | Venue | Accessed | Cited in |
 | --- | --- | --- | --- |
 | [Sutton and Barto, chapter 2](http://incompleteideas.net/book/RLbook2020.pdf) | textbook | 2026-10-30 | LanguageModelAsPolicy, PolicyGradient |
 | [TRPO paper, Section 4](https://arxiv.org/abs/1502.05477v5) | ICML 2015 | 2026-10-30 | TwoLeashes |
+| [Hinton et al., Section 1](https://arxiv.org/abs/1503.02531v1) | NIPS 2014 Deep Learning Workshop | 2026-11-07 | LearningFromAnswers, Sources appendix |
 | [GAE, Eq. 18](https://arxiv.org/abs/1506.02438v6) | ICLR 2016 | 2026-10-30 | LanguageModelAsPolicy, PolicyGradient, Sources appendix |
+| [Kim and Rush, Section 3](https://arxiv.org/abs/1606.07947v4) | EMNLP 2016 | 2026-11-07 | LearningFromAnswers, Sources appendix |
 | [Christiano et al., Section 2.2.3](https://arxiv.org/abs/1706.03741v4) | NeurIPS 2017 | 2026-10-30 | PreferencesToRewards |
 | [PPO paper, Section 3](https://arxiv.org/abs/1707.06347v2) | preprint | 2026-10-30 | Sources appendix, TwoLeashes |
 | [Ziegler et al., section 2](https://arxiv.org/abs/1909.08593v2) | preprint | 2026-10-30 | LanguageModelAsPolicy |
 | [Stiennon et al., section 3.4, footnote 8](https://arxiv.org/abs/2009.01325v3) | NeurIPS 2020 | 2026-10-30 | LanguageModelAsPolicy, RewardIsAProxy |
-| [InstructGPT, Eq. 1](https://arxiv.org/abs/2203.02155v1) | NeurIPS 2022 | 2026-10-30 | LanguageModelAsPolicy, PreferencesToRewards, Sources appendix, TwoLeashes |
-| [Snell et al., abstract](https://arxiv.org/abs/2209.15189v1) | preprint | 2026-10-30 | Choosing, Hybrids, WeightsVsContext |
+| [LoRA, abstract](https://arxiv.org/abs/2106.09685v2) | preprint | 2026-11-07 | FineTuningSignals |
+| [InstructGPT, Eq. 1](https://arxiv.org/abs/2203.02155v1) | NeurIPS 2022 | 2026-10-30 | LanguageModelAsPolicy, LearningFromAnswers, PreferencesToRewards, Sources appendix, TwoLeashes |
+| [Snell et al., abstract](https://arxiv.org/abs/2209.15189v1) | preprint | 2026-10-30 | Choosing, Hybrids, LearningFromAnswers, WeightsVsContext |
 | [Gao et al., Section 2](https://arxiv.org/abs/2210.10760v1) | ICML 2023 | 2026-10-30 | RewardIsAProxy, Sources appendix, TwoLeashes |
 | [Algorithm Distillation, Abstract](https://arxiv.org/abs/2210.14215v1) | ICLR 2023 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
 | [von Oswald et al., Abstract](https://arxiv.org/abs/2212.07677v2) | ICML 2023 | 2026-10-30 | TextLoopAsRl |
@@ -172,9 +192,13 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [Reflexion, title](https://arxiv.org/abs/2303.11366v4) | NeurIPS 2023 | 2026-10-30 | AccumulatingExperience, GettingStarted, LanguageModelAsPolicy, RewardIsAProxy, Sources appendix, TextLoopAsRl, VerbalReinforcement |
 | [Self-Refine, Table 1](https://arxiv.org/abs/2303.17651v2) | NeurIPS 2023 | 2026-10-30 | Sources appendix, TextLoopAsRl, VerbalReinforcement |
 | [ProTeGi, Sections 2 and 3](https://arxiv.org/abs/2305.03495v2) | EMNLP 2023 | 2026-10-30 | PromptOptimization, TextLoopAsRl |
+| [LIMA, abstract](https://arxiv.org/abs/2305.11206v1) | NeurIPS 2023 | 2026-11-07 | FineTuningSignals, LearningFromAnswers, Sources appendix |
+| [QLoRA, abstract](https://arxiv.org/abs/2305.14314v1) | preprint | 2026-11-07 | FineTuningSignals |
 | [Voyager, Sections 2 and 4](https://arxiv.org/abs/2305.16291v2) | TMLR 2024 | 2026-10-30 | AccumulatingExperience, Sources appendix, TextLoopAsRl |
 | [DPO paper, Section 4](https://arxiv.org/abs/2305.18290v3) | NeurIPS 2023 | 2026-10-30 | PreferencesToRewards, Sources appendix |
 | [Let's Verify Step by Step, Sections 1 to 3 and Figure 3](https://arxiv.org/abs/2305.20050v1) | ICLR 2024 | 2026-10-30 | WhatRlDoes |
+| [MiniLLM, Sections 1 and 2.1](https://arxiv.org/abs/2306.08543v6) | ICLR 2024 | 2026-11-07 | DistillationOrRl, Sources appendix |
+| [GKD, Section 3.1](https://arxiv.org/abs/2306.13649v3) | ICLR 2024 | 2026-11-07 | DistillationOrRl, LearningFromAnswers, Sources appendix |
 | [DPT, Abstract](https://arxiv.org/abs/2306.14892v1) | NeurIPS 2023 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
 | [Lost in the Middle, Abstract](https://arxiv.org/abs/2307.03172v3) | TACL 2024 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
 | [Retroformer, Figure 1](https://arxiv.org/abs/2308.02151v3) | ICLR 2024 | 2026-10-30 | Hybrids, Sources appendix, TextLoopAsRl, VerbalReinforcement |
@@ -187,9 +211,9 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [CLIN, Section 3.2](https://arxiv.org/abs/2310.10134v1) | COLM 2024 | 2026-10-30 | AccumulatingExperience, TextLoopAsRl |
 | [Sclar et al., abstract](https://arxiv.org/abs/2310.11324v2) | ICLR 2024 | 2026-10-30 | Choosing, Sources appendix, WeightsVsContext |
 | [IPO paper, Sections 1 and 4.2](https://arxiv.org/abs/2310.12036v2) | AISTATS 2024 | 2026-10-30 | PreferencesToRewards |
-| [Ovadia et al., Table 2](https://arxiv.org/abs/2312.05934v3) | EMNLP 2024 | 2026-10-30 | Sources appendix, WeightsVsContext |
+| [Ovadia et al., Table 2](https://arxiv.org/abs/2312.05934v3) | EMNLP 2024 | 2026-10-30 | FineTuningSignals, Sources appendix, WeightsVsContext |
 | [KTO paper, Section 1](https://arxiv.org/abs/2402.01306v5) | ICML 2024 | 2026-10-30 | PreferencesToRewards |
-| [DeepSeekMath, Eq. 3](https://arxiv.org/abs/2402.03300v3) | preprint | 2026-10-30 | LanguageModelAsPolicy, PolicyGradient, PreferencesToRewards, RlStepAsSystem, RlvrAndGrpo, Sources appendix, TwoLeashes |
+| [DeepSeekMath, Eq. 3](https://arxiv.org/abs/2402.03300v3) | preprint | 2026-10-30 | FineTuningSignals, LanguageModelAsPolicy, LearningFromAnswers, PolicyGradient, PreferencesToRewards, RlStepAsSystem, RlvrAndGrpo, Sources appendix, TwoLeashes |
 | [RLOO, Section 2.3](https://arxiv.org/abs/2402.14740v2) | ACL 2024 | 2026-10-30 | LanguageModelAsPolicy, PolicyGradient, PreferencesToRewards, RlStepAsSystem, RlvrAndGrpo, Sources appendix, TwoLeashes |
 | [ORPO paper, abstract](https://arxiv.org/abs/2403.07691v2) | EMNLP 2024 | 2026-10-30 | PreferencesToRewards |
 | [Krishnamurthy et al., Abstract](https://arxiv.org/abs/2403.15371v3) | NeurIPS 2024 | 2026-10-30 | Sources appendix, TextLoopAsRl, WhereWordsFallShort, YourLoops |
@@ -200,9 +224,9 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [OpenRLHF, Section 1](https://arxiv.org/abs/2405.11143v6) | EMNLP 2025 System Demonstrations | 2026-10-30 | RlStepAsSystem, Sources appendix |
 | [SimPO paper, abstract and Section 2.2](https://arxiv.org/abs/2405.14734v3) | NeurIPS 2024 | 2026-10-30 | PreferencesToRewards |
 | [Kamoi et al., Section 4 and Table 4](https://arxiv.org/abs/2406.01297v3) | TACL 2024 | 2026-10-30 | VerbalReinforcement |
-| [TextGrad (arXiv v1), Section 2](https://arxiv.org/abs/2406.07496v1) | Nature 2025 | 2026-10-30 | PromptOptimization, Sources appendix, TextLoopAsRl |
+| [TextGrad (arXiv v1), Section 2](https://arxiv.org/abs/2406.07496v1) | Nature 2025 | 2026-10-30 | FineTuningSignals, PromptOptimization, Sources appendix, TextLoopAsRl |
 | [Ivison et al., Table 2](https://arxiv.org/abs/2406.09279v2) | NeurIPS 2024 | 2026-10-30 | LanguageModelAsPolicy, PreferencesToRewards, RlStepAsSystem, Sources appendix |
-| [MIPRO, Section 3](https://arxiv.org/abs/2406.11695v2) | EMNLP 2024 | 2026-10-30 | PromptOptimization, Sources appendix, TextLoopAsRl |
+| [MIPRO, Section 3](https://arxiv.org/abs/2406.11695v2) | EMNLP 2024 | 2026-10-30 | FineTuningSignals, PromptOptimization, Sources appendix, TextLoopAsRl |
 | [BetterTogether, abstract](https://arxiv.org/abs/2407.10930v2) | EMNLP 2024 | 2026-10-30 | Hybrids |
 | [Llama 3 report, Section 4.1.4](https://arxiv.org/abs/2407.21783v3) | preprint | 2026-10-30 | PreferencesToRewards, Sources appendix |
 | [Kumar et al., Training Language Models to Self-Correct via Reinforcement Learning (SCoRe), arXiv 2409.12917v2, ICLR 2025](https://arxiv.org/abs/2409.12917v2) | ICLR 2025 | 2026-10-30 | Sources appendix, VerbalReinforcement |
@@ -210,27 +234,28 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [EVOLvE, abstract and Section 4](https://arxiv.org/abs/2410.06238v2) | ICML 2025 | 2026-10-30 | Hybrids |
 | [REINFORCE++, abstract](https://arxiv.org/abs/2501.03262v9) | preprint | 2026-10-30 | RlvrAndGrpo |
 | [DeepSeek-R1 v1, Section 2.2.4](https://arxiv.org/abs/2501.12948v1) | preprint | 2026-10-30 | RlvrAndGrpo |
-| [DeepSeek-R1, Section 1](https://arxiv.org/abs/2501.12948v2) | Nature 2025 | 2026-10-30 | Choosing, CostPerImprovement, RlStepAsSystem, RlvrAndGrpo, Sources appendix, WeightsVsContext, WhatRlDoes |
+| [DeepSeek-R1, Section 1](https://arxiv.org/abs/2501.12948v2) | Nature 2025 | 2026-10-30, 2026-11-07 | CostPerImprovement, DistillationOrRl, FineTuningSignals, LearningFromAnswers, RlStepAsSystem, RlvrAndGrpo, Sources appendix, WeightsVsContext, WhatRlDoes |
+| [SFT Memorizes, RL Generalizes, Section 5](https://arxiv.org/abs/2501.17161v2) | ICML 2025 | 2026-10-30 | LearningFromAnswers |
 | [Should You Use Your LLM to Explore or Exploit?, Section 2](https://arxiv.org/abs/2502.00225v4) | UAI 2026 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
 | [SWE-RL, Section 2.1](https://arxiv.org/abs/2502.18449v2) | NeurIPS 2025 | 2026-10-30 | AgenticRl, Sources appendix |
 | [Search-R1, Table 4](https://arxiv.org/abs/2503.09516v5) | COLM 2025 | 2026-10-30 | AgenticRl, Sources appendix |
 | [Baker et al., Table 1](https://arxiv.org/abs/2503.11926v1) | preprint | 2026-10-30 | RewardIsAProxy, Sources appendix |
-| [DAPO, Table 1](https://arxiv.org/abs/2503.14476v2) | NeurIPS 2025 | 2026-10-30 | Choosing, RlvrAndGrpo, Sources appendix |
+| [DAPO, Table 1](https://arxiv.org/abs/2503.14476v2) | NeurIPS 2025 | 2026-10-30 | Choosing, DistillationOrRl, RlvrAndGrpo, Sources appendix |
 | [Gemma 3 report, Section 3](https://arxiv.org/abs/2503.19786v1) | preprint | 2026-10-30 | PreferencesToRewards |
 | [Dr. GRPO, Section 1](https://arxiv.org/abs/2503.20783v2) | COLM 2025 | 2026-10-30 | CostPerImprovement, RlvrAndGrpo, Sources appendix |
 | [Dynamic Cheatsheet, Sections 2 and 5](https://arxiv.org/abs/2504.07952v1) | EACL 2026 | 2026-10-30 | AccumulatingExperience, CostPerImprovement, Sources appendix, TextLoopAsRl |
 | [ReTool, abstract](https://arxiv.org/abs/2504.11536v2) | ICLR 2026 | 2026-10-30 | AccumulatingExperience, AgenticRl, Sources appendix |
-| [Yue et al., abstract](https://arxiv.org/abs/2504.13837v5) | NeurIPS 2025 | 2026-10-30 | LanguageModelAsPolicy, Sources appendix, WeightsVsContext, WhatRlDoes |
+| [Yue et al., abstract](https://arxiv.org/abs/2504.13837v5) | NeurIPS 2025 | 2026-10-30, 2026-11-07 | DistillationOrRl, LanguageModelAsPolicy, Sources appendix, WeightsVsContext, WhatRlDoes |
 | [Schmied et al., Sections 1 and 4.3](https://arxiv.org/abs/2504.16078v1) | ICLR 2026 | 2026-10-30 | Hybrids, Sources appendix, WhereWordsFallShort |
 | [RAGEN, Sections 4.1 and 4.2](https://arxiv.org/abs/2504.20073v2) | preprint | 2026-10-30 | AgenticRl, Sources appendix |
 | [Which Agent Causes Task Failures and When?, Section 4.4](https://arxiv.org/abs/2505.00212v3) | ICML 2025 | 2026-10-30 | Sources appendix, WhereWordsFallShort |
 | [TRAIL (Trace Reasoning and Agentic Issue Localization), Table 1](https://arxiv.org/abs/2505.08638v3) | preprint | 2026-10-30 | WhereWordsFallShort |
-| [Qwen3 report, Section 4.2](https://arxiv.org/abs/2505.09388v1) | preprint | 2026-10-30 | PreferencesToRewards |
+| [Qwen3, Sections 4 and 4.5](https://arxiv.org/abs/2505.09388v1) | preprint | 2026-10-30, 2026-11-07 | CostPerImprovement, DistillationOrRl, FineTuningSignals, PreferencesToRewards, Sources appendix |
 | [RL Finetunes Small Subnetworks, Table 6](https://arxiv.org/abs/2505.11711v2) | NeurIPS 2025 | 2026-10-30 | WhatRlDoes |
 | [Skywork-OR1, Table 5](https://arxiv.org/abs/2505.22312v2) | preprint | 2026-10-30 | RlStepAsSystem, Sources appendix |
 | [The Entropy Mechanism of RL for Reasoning, Sections 2.3 and 2.4](https://arxiv.org/abs/2505.22617v1) | preprint | 2026-10-30 | WhatRlDoes |
 | [AReaL, Section 1](https://arxiv.org/abs/2505.24298v5) | NeurIPS 2025 | 2026-10-30 | RlStepAsSystem, Sources appendix |
-| [ProRL, Sections 1 and 3.2](https://arxiv.org/abs/2505.24864v1) | NeurIPS 2025 | 2026-10-30 | CostPerImprovement, Sources appendix |
+| [ProRL, Sections 1 and 3.2](https://arxiv.org/abs/2505.24864v1) | NeurIPS 2025 | 2026-10-30, 2026-11-07 | CostPerImprovement, DistillationOrRl, Sources appendix |
 | [Spurious Rewards, abstract](https://arxiv.org/abs/2506.10947v2) | ICML 2026 | 2026-10-30 | RlvrAndGrpo, Sources appendix, WhatRlDoes |
 | [AlphaEvolve, Table 1](https://arxiv.org/abs/2506.13131v1) | preprint | 2026-10-30 | Choosing, Sources appendix, TextLoopAsRl, YourLoops |
 | [Guru cross-domain RL study, Section 4.3](https://arxiv.org/abs/2506.14965v1) | NeurIPS 2025 Datasets and Benchmarks | 2026-10-30 | WhatRlDoes |
@@ -239,9 +264,11 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [GSPO, Sections 5.1 to 5.3](https://arxiv.org/abs/2507.18071v2) | preprint | 2026-10-30 | RlvrAndGrpo, Sources appendix |
 | [GEPA, Table 1](https://arxiv.org/abs/2507.19457v2) | ICLR 2026 | 2026-10-30 | Choosing, CostPerImprovement, PromptOptimization, SideBySideLab, Sources appendix, TextLoopAsRl |
 | [Kimi K2 report, Section 3.2.1](https://arxiv.org/abs/2507.20534v2) | preprint | 2026-10-30 | AgenticRl, Sources appendix |
+| [gpt-oss model card, abstract and Section 2.5](https://arxiv.org/abs/2508.10925v1) | preprint | 2026-11-07 | FineTuningSignals |
 | [Memento, Section 3](https://arxiv.org/abs/2508.16153v2) | preprint | 2026-10-30 | AccumulatingExperience, Hybrids, TextLoopAsRl |
-| [RL's Razor, abstract](https://arxiv.org/abs/2509.04259v1) | ICLR 2026 | 2026-10-30 | PolicyGradient, Sources appendix, WeightsVsContext, WhatRlDoes |
+| [RL's Razor, abstract](https://arxiv.org/abs/2509.04259v1) | ICLR 2026 | 2026-10-30 | DistillationOrRl, LearningFromAnswers, PolicyGradient, Sources appendix, WeightsVsContext, WhatRlDoes |
 | [PipelineRL, Section 3](https://arxiv.org/abs/2509.19128v2) | TMLR 2026 | 2026-10-30 | RlStepAsSystem, Sources appendix |
+| [RL Squeezes, SFT Expands, abstract](https://arxiv.org/abs/2509.21128v2) | ICLR 2026 | 2026-10-30 | LearningFromAnswers |
 | [From f(x) and g(x) to f(g(x)), Figure 5](https://arxiv.org/abs/2509.25123v3) | ICLR 2026 | 2026-10-30 | WhatRlDoes |
 | [ReasoningBank, Section 3.2](https://arxiv.org/abs/2509.25140v2) | ICLR 2026 | 2026-10-30 | AccumulatingExperience, Sources appendix, TextLoopAsRl, VerbalReinforcement |
 | [Advisor Models, Section 4.4.3](https://arxiv.org/abs/2510.02453v3) | ICML 2026 | 2026-10-30 | Choosing, Hybrids, PromptOptimization, Sources appendix, TextLoopAsRl |
@@ -252,9 +279,18 @@ Tiers follow the dive's RESEARCH-GUIDE.md section 1. Tier 3 papers show their ve
 | [The Path Not Taken, abstract and Section 2.3](https://arxiv.org/abs/2511.08567v1) | preprint | 2026-10-30 | WhatRlDoes |
 | [MacDiarmid et al., abstract](https://arxiv.org/abs/2511.18397v1) | preprint | 2026-10-30 | RewardIsAProxy, Sources appendix |
 | [Interplay of pre-training, mid-training and RL, abstract and Section 2.4](https://arxiv.org/abs/2512.07783v1) | ICML 2026 | 2026-10-30 | WhatRlDoes |
-| [Adaptation of Agentic AI, Section 1](https://arxiv.org/abs/2512.16301v3) | preprint | 2026-10-30 | OneLoop, TextLoopAsRl |
+| [Olmo 3, Table 22](https://arxiv.org/abs/2512.13961v2) | preprint | 2026-11-07 | FineTuningSignals |
+| [Adaptation of Agentic AI, Sections 1 and 3.3](https://arxiv.org/abs/2512.16301v3) | preprint | 2026-10-30 | FineTuningSignals, TextLoopAsRl |
+| [MiMo-V2-Flash, Section 4.1](https://arxiv.org/abs/2601.02780v2) | preprint | 2026-11-07 | FineTuningSignals |
+| [Ministral 3, Sections 3.2 and 3.3](https://arxiv.org/abs/2601.08584v1) | preprint | 2026-11-07 | FineTuningSignals |
+| [GLM-5, Section 3.5](https://arxiv.org/abs/2602.15763v2) | preprint | 2026-11-07 | FineTuningSignals |
+| [Nemotron-Cascade 2, Section 4.4](https://arxiv.org/abs/2603.19220v2) | preprint | 2026-11-07 | DistillationOrRl, FineTuningSignals |
 | [Pass@(k,T), abstract](https://arxiv.org/abs/2604.14877v1) | preprint | 2026-10-30 | AgenticRl, Sources appendix, WhatRlDoes |
+| [DeepSeek-V4, Section 5.1](https://arxiv.org/abs/2606.19348v1) | preprint | 2026-11-07 | DistillationOrRl, FineTuningSignals |
 | [Curriculum RL beyond the base model, abstract and Section 4.1](https://arxiv.org/abs/2606.22317v1) | preprint | 2026-10-30 | WhatRlDoes |
+| [Gemma 4, Section 3](https://arxiv.org/abs/2607.02770v2) | preprint | 2026-11-07 | FineTuningSignals |
+| [Kimi K3, Section 4.1](https://arxiv.org/abs/2607.24653v2) | preprint | 2026-11-07 | DistillationOrRl, FineTuningSignals |
+| [DeepSeek-V4.1-Flash, Section 5.2.4](https://arxiv.org/abs/2609.19969v1) | preprint | 2026-11-07 | FineTuningSignals |
 | [Revisiting scaling laws for reward optimization, abstract and Sections 5.2 and 5.3](https://arxiv.org/abs/2609.38526v1) | preprint | 2026-10-30 | RewardIsAProxy |
 | [Compact-Bench, Abstract](https://arxiv.org/abs/2610.31710v2) | preprint | 2026-10-30 | WhereWordsFallShort |
 | [FunSearch, main text](https://www.nature.com/articles/s41586-023-06924-6) | Nature 2023 | 2026-10-30 | Sources appendix, TextLoopAsRl, YourLoops |

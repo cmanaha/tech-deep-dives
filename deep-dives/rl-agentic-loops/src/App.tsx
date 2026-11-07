@@ -153,18 +153,31 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   sources: GlossaryAndSources,
 };
 
+/**
+ * The dive's title and subtitle, defined once. Option B of the rename plan, chosen by the
+ * assistant on 2026-11-07 and reversible: index.html, README.md, SCOPE.md and the front-page
+ * card repeat this text and change with it.
+ */
+export const DIVE_TITLE = 'Learning From Feedback: Fine-Tuning, Reinforcement Learning and Agentic Learning Loops';
+export const DIVE_SUBTITLE =
+  "How a language model learns from examples, a teacher's answers, preferences or scores, whether the change is written into its weights or into the context a frozen model reads, and how to choose between them";
+
 export function App() {
   const [activeSection, setActiveSection] = useState('one-loop');
   const SectionComponent = sectionComponents[activeSection] || OneLoop;
 
   return (
     <DeepDiveLayout
-      title="Learning From Feedback: RL and Agentic Learning Loops"
-      subtitle="What reinforcement learning does to a language model, which part of that effect a loop can reproduce in words with a frozen model, where the words fall short, and how to choose between them"
+      title={DIVE_TITLE}
+      subtitle={DIVE_SUBTITLE}
       sections={sections}
       activeSection={activeSection}
       onSectionChange={setActiveSection}
       siblings={[
+        {
+          label: 'Training at Scale: How Large Language Models Are Trained, and How to Run It on AWS',
+          href: '../llm-training-systems/',
+        },
         { label: 'vLLM: The LLM Inference Serving Engine', href: '../vllm/' },
         { label: 'SGLang: The Radix-Tree Serving Runtime', href: '../sglang/' },
         { label: 'Silicon, Memory & Inference', href: '../silicon-memory-inference/' },

@@ -287,7 +287,7 @@ export function LanguageModelAsPolicy() {
             variant="h1"
             description="Read any reinforcement learning paper's equations by mapping them onto the sampling you already run (code read in the TRL training library at v1.12.0 and v1.16.0, papers read 2026-10-30)"
           >
-            3. The Language Model Is Already a Policy
+            5. The Language Model Is Already a Policy
           </Header>
         }
       >
@@ -301,6 +301,12 @@ export function LanguageModelAsPolicy() {
               Sutton and Barto, section 3.5
             </Cite>
             .
+          </Box>
+          <Box variant="p">
+            Section 4 trained a model on answers someone else wrote: SFT makes a fixed answer more
+            likely, token by token. RL changes where the answer comes from. The model samples its
+            own answers, a grader scores each one, and the score decides how much each answer is
+            made more or less likely. Describing that needs RL&apos;s vocabulary.
           </Box>
           <Box variant="p">
             A language model already has that shape. Every call to it at a temperature above zero
@@ -385,7 +391,7 @@ export function LanguageModelAsPolicy() {
             feedback), takes the response view in its RL stage. Its environment is a bandit
             environment that presents a random customer prompt, expects a response, scores it with
             the reward model (a second model trained to score responses the way human raters
-            would, section 6) and ends the episode{' '}
+            would, section 8) and ends the episode{' '}
             <Cite tier={3} href={OUY22} venue="NeurIPS 2022">
               InstructGPT, section 3.5
             </Cite>
@@ -405,7 +411,7 @@ export function LanguageModelAsPolicy() {
             action and lose nothing. A tool call breaks that condition, because the tool&apos;s
             output enters the state without the policy choosing it. Trainers still score a whole
             tool-using episode and push the tokens the model wrote, since the tool&apos;s side of
-            the episode does not depend on the weights; section 9, Agentic RL, shows how. What the
+            the episode does not depend on the weights; section 12, Agentic RL, shows how. What the
             token view adds is a place to say which tokens mattered, which the next block takes
             up.
           </Box>
@@ -414,7 +420,7 @@ export function LanguageModelAsPolicy() {
             policy-gradient method: it makes each sampled response more likely in proportion to its
             reward. RLOO (REINFORCE Leave-One-Out) is REINFORCE with each response&apos;s reward
             compared against the average reward of the other responses to the same prompt. Section
-            4 builds both. PPO models each token as an action, while REINFORCE and RLOO model the
+            6 builds both. PPO models each token as an action, while REINFORCE and RLOO model the
             entire response as one action{' '}
             <Cite tier={3} href={AHM24} venue="ACL 2024">
               Ahmadian et al., section 3.3
@@ -435,7 +441,7 @@ export function LanguageModelAsPolicy() {
         header={
           <Header
             variant="h2"
-            description="See why one score at the end of a response is the difficulty that the methods of sections 4 to 7 exist to handle, and what the value and the advantage measure"
+            description="See why one score at the end of a response is the difficulty that the methods of sections 6 to 9 exist to handle, and what the value and the advantage measure"
           >
             One score at the end, spread over every token
           </Header>
@@ -464,8 +470,8 @@ export function LanguageModelAsPolicy() {
               E0 log: GRPO smoke test on a DGX Spark
             </Cite>
             . A signal that arrives this rarely is called a sparse reward. The same holds whether
-            the score comes from a reward model trained on human preferences (section 6) or from a
-            program that checks the answer (section 7).
+            the score comes from a reward model trained on human preferences (section 8) or from a
+            program that checks the answer (section 9).
           </Box>
           <Box variant="p">
             The return is the sum of rewards from a step to the end of the episode{' '}
@@ -489,12 +495,11 @@ export function LanguageModelAsPolicy() {
             The diagram draws one response both ways and adds where the reward lands. In the token
             view each token is one step, sampled from π(token | state). The reward row is 0 at
             every step and the grader&apos;s 1.0 at the end. The bottom row shows how one PPO
-            trainer changes that picture. TRL (Transformers Reinforcement Learning, Hugging
-            Face&apos;s post-training library) at v1.12.0 also charges every token a small KL
+            trainer changes that picture. TRL at v1.12.0 also charges every token a small KL
             penalty for drifting from the model the run started from, written -β KL, and adds the
             score at the end. β (beta) is the setting that prices the drift: the larger it is, the
-            more each unit of drift costs. Section 2 introduced the KL divergence, section 5
-            builds it up, and the last part of this section reads that code.
+            more each unit of drift costs. Section 4 built the KL divergence, section 7 puts this
+            penalty to work, and the last part of this section reads that code.
           </Box>
           <TrajectoryDiagram />
           <Box variant="small" color="text-body-secondary">
@@ -554,7 +559,7 @@ export function LanguageModelAsPolicy() {
             <Cite tier={3} href={GAE} venue="ICLR 2016">
               Schulman et al., Generalized Advantage Estimation, section 2
             </Cite>
-            . Section 4 shows the two ways to estimate it: learn V with a critic, or sample it from
+            . Section 6 shows the two ways to estimate it: learn V with a critic, or sample it from
             other attempts at the same prompt. The sparse reward makes the first route harder for
             language models: usually only the last token is assigned a reward score by the reward
             model, which may complicate training a value function that is accurate at each token{' '}
@@ -591,7 +596,7 @@ export function LanguageModelAsPolicy() {
               E0 log: GRPO smoke test on a DGX Spark
             </Cite>
             . Training on a fixed file of responses that another model or a person produced is
-            off-policy; section 6 meets it in preference training on a fixed dataset.
+            off-policy; section 8 meets it in preference training on a fixed dataset.
           </Box>
           <Box variant="p">
             The difference matters because a policy-gradient update reads its samples as evidence
@@ -599,7 +604,7 @@ export function LanguageModelAsPolicy() {
             current model actually wrote. Responses from another model, or from an older copy of
             this one, describe a different policy. Learning from them needs either a correction
             for the difference between the two models&apos; probabilities or a method built for
-            fixed data. Section 5 meets the first case: a batch reused for several updates is
+            fixed data. Section 7 meets the first case: a batch reused for several updates is
             slightly off-policy from the second update on. PPO divides each token&apos;s
             probability under the model being trained by its probability under the model that
             sampled it, and weights the token by that ratio to correct for the difference, a
@@ -642,7 +647,7 @@ export function LanguageModelAsPolicy() {
               Yue et al., section 2
             </Cite>
             . It measures what sampling can reach, where pass@1 measures what one call returns.
-            Section 8 reads the two as curves against k, and that comparison carries the dive&apos;s
+            Section 10 reads the two as curves against k, and that comparison carries the dive&apos;s
             question of what RL adds to a model.
           </Box>
           <ExpandableSection headerText="Measuring pass@k on your own grader">
@@ -789,7 +794,7 @@ rewards[actual_start, actual_end] += scores`}</code>
                 KL estimate is minus <code>logr</code>, the policy&apos;s log-probability minus the
                 reference&apos;s: positive where the policy now gives the token more probability
                 than the reference did, negative where it gives less, and averaging to the KL
-                divergence over the policy&apos;s own samples (section 5 shows why). The k3 setting,
+                divergence over the policy&apos;s own samples (section 7 shows why). The k3 setting,
                 from the post the comment links, is another per-token formula with the same average
                 that is never negative. Every token&apos;s reward starts as minus{' '}
                 <code>kl_coef</code> times that estimate; then the reward model&apos;s{' '}
@@ -835,14 +840,14 @@ rewards[actual_start, actual_end] += scores`}</code>
           <Box variant="p">
             The vocabulary carries over to loops that never touch the weights. Reflexion, a loop
             that writes a lesson into memory after each failed attempt and then retries (section
-            12), defines its policy as the agent&apos;s memory paired with a choice of model
+            15), defines its policy as the agent&apos;s memory paired with a choice of model
             parameters{' '}
             <Cite tier={3} href={REFLEXION} venue="NeurIPS 2023">
               Reflexion, section 1
             </Cite>
             . In this section&apos;s terms, the memory sits in the context, the context is the state
             the model conditions on, and so editing the memory changes which responses the policy
-            samples while the weights stay fixed. That is our reading, and section 11 builds the
+            samples while the weights stay fixed. That is our reading, and section 14 builds the
             words track on it.
           </Box>
           <Box variant="p">
@@ -850,7 +855,7 @@ rewards[actual_start, actual_end] += scores`}</code>
             token or a whole response), where its reward lands and how often (one score per rollout,
             or a charge per token beside it), whether its samples come from the current policy, and
             what its policy is made of (the weights alone, or the weights plus text the loop carries
-            forward). Sections 4 to 7 change the weights; sections 11 to 16 change that text.
+            forward). Sections 6 to 9 change the weights; sections 14 to 19 change that text.
           </Box>
         </SpaceBetween>
       </Container>

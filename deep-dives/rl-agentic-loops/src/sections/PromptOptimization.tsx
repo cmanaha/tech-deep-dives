@@ -435,7 +435,7 @@ export function PromptOptimization() {
             variant="h1"
             description="Know when a prompt optimiser should be your first move instead of RL, and write the feedback it learns from (gepa v0.1.4 and DSPy 3.4.1, read 2026-10-30)"
           >
-            14. Optimising the Prompt
+            17. Optimising the Prompt
           </Header>
         }
       >
@@ -478,7 +478,7 @@ export function PromptOptimization() {
             Every prompt optimiser runs the loop RL runs: sample attempts, score them, change
             something. They differ in two places: what the optimiser reads from an attempt, a
             score or text that explains the score, and how it chooses which candidate to build on
-            next. Section 11, A Text Loop Is RL on the Context, places each of them in the
+            next. Section 14, A Text Loop Is RL on the Context, places each of them in the
             dive&apos;s shared vocabulary.
           </Box>
           <Box variant="p">
@@ -504,7 +504,9 @@ export function PromptOptimization() {
             <Cite tier={3} href={TEXTGRAD} venue="Nature 2025">
               TextGrad (arXiv v1), Section 3.3 and Table 3
             </Cite>
-            .
+            . That is distillation into the context: section 4&apos;s distillation writes a
+            stronger model&apos;s answers into the weights, and here the stronger model&apos;s
+            judgement ends up in the prompt the cheap model reads.
           </Box>
           <Box variant="p">
             OPRO (Optimization by PROmpting) keeps score in the prompt. Its meta-prompt holds
@@ -681,7 +683,7 @@ export function PromptOptimization() {
             <Cite tier={3} href={ADVISOR} venue="ICML 2026">
               Advisor Models, Section 4.3.1 and Figure 5
             </Cite>
-            . Section 16, Hybrids, covers putting weights in front of a frozen model for that
+            . Section 19, Hybrids, covers putting weights in front of a frozen model for that
             case.
           </Box>
           <Box variant="p">
@@ -851,7 +853,7 @@ export function PromptOptimization() {
             $86 <Gepa>GEPA, Table 2 and Appendix E.3</Gepa>. And
             you have an evaluator that can say why an answer failed. When the model cannot do the
             task even after reading worked solutions, or the right output depends on something
-            hidden per input, plan for weights instead: section 16, Hybrids, and section 20, Cost
+            hidden per input, plan for weights instead: section 19, Hybrids, and section 23, Cost
             per Improvement, which prices the two routes over the queries the result will serve.
           </Box>
           <Box variant="p">

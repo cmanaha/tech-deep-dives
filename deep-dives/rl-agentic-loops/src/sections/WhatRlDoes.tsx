@@ -328,14 +328,14 @@ export function WhatRlDoes() {
             variant="h1"
             description="Read an RL gain as a pass@k curve before you trust it, and know what a frozen model can buy back per query, and at what price (sources read 2026-10-30)"
           >
-            8. What RL Does to a Model
+            10. What RL Does to a Model
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
             RL (reinforcement learning) with verifiable rewards, RLVR, trains a model on tasks
-            where a program checks each answer and the check is the reward (section 7, RLVR &amp;
+            where a program checks each answer and the check is the reward (section 9, RLVR &amp;
             GRPO). It raises single-shot accuracy on math and code. What it adds to the model is a
             separate question, and the answer decides what else could deliver the same gain and at
             what price. This section answers the dive&apos;s first question: what RL does to a
@@ -376,7 +376,7 @@ export function WhatRlDoes() {
               Yue et al., Section 2.2
             </Cite>
             . Plot it against k on a log scale for the base model and for the same model after RL,
-            and the two curves show what training changed. Section 3, The Language Model Is
+            and the two curves show what training changed. Section 5, The Language Model Is
             Already a Policy, shows how to estimate pass@k from a fixed number of samples.
           </Box>
           <PassAtKDiagram />
@@ -505,15 +505,17 @@ export function WhatRlDoes() {
             <Cite tier={3} href={CURRICULUM} venue="preprint">
               Curriculum RL beyond the base model, abstract and Section 4.1
             </Cite>
-            . LoRA (Low-Rank Adaptation) trains a small add-on to frozen weights. In one small
-            study (Qwen2.5-7B-Instruct trained with LoRA GRPO on 200 problems, 100 test problems per
+            . Distillation from a stronger model is the plainest form of this setting, and section
+            11, Distillation or RL, sets it against RL. In one small
+            study (Qwen2.5-7B-Instruct trained with GRPO through a LoRA adapter, section 3, on 200
+            problems, 100 test problems per
             category, k up to 64), tool-use RL on multi-hop search ended above the base at large k,
             0.81 against 0.77 at k = 64, a margin of about four problems, and the gap widened as k
             grew{' '}
             <Cite tier={3} href={PASS_KT} venue="preprint">
               Pass@(k,T), Sections 3 and 4.2
             </Cite>
-            . Section 9, Agentic RL, covers that study.
+            . Section 12, Agentic RL, covers that study.
           </Box>
           <ExpandableSection headerText="How far the evidence reaches">
             <SpaceBetween size="s">
@@ -611,7 +613,7 @@ export function WhatRlDoes() {
             </Cite>
             . Our reading: a model that samples nearly the same answer every time has little left
             to cover the right side of the pass@k curve, so the entropy curve is the large-k loss
-            seen from inside the run. Section 5, Two Leashes: PPO&apos;s Clip &amp; the KL, shows
+            seen from inside the run. Section 7, Two Leashes: PPO&apos;s Clip &amp; the KL, shows
             where to read it on a dashboard.
           </Box>
           <ExpandableSection headerText="Does RL change only a few weights? Three positions">
@@ -703,7 +705,7 @@ export function WhatRlDoes() {
           <Box variant="p">
             Why random rewards help Qwen2.5-Math is still argued. One group points to a clipping
             bias in GRPO&apos;s update (the clip caps how far one update may move each token&apos;s
-            probability; section 5 covers it) that amplifies behaviour the model already has, here
+            probability; section 7 covers it) that amplifies behaviour the model already has, here
             reasoning in code it never runs{' '}
             <Cite tier={3} href={SPURIOUS} venue="ICML 2026">
               Spurious Rewards, abstract
@@ -832,7 +834,7 @@ export function WhatRlDoes() {
             </Cite>
             . DeepSeek dropped PRMs as a training reward: steps are hard to define, step
             correctness is hard to label at scale, and a model-based PRM leads to reward hacking
-            (the policy learning to exploit the scorer; section 10, The Reward Is a Proxy). Against
+            (the policy learning to exploit the scorer; section 13, The Reward Is a Proxy). Against
             the compute it adds in large-scale RL its benefit was limited, while a PRM still helps
             rerank the top answers{' '}
             <Cite tier={3} href={R1} venue="Nature 2025">
@@ -864,8 +866,8 @@ export function WhatRlDoes() {
             above its pass@1 and you hold a verifier, selection can buy the gain per query. If the
             base curve stays below the level you need even at that K, the gap lies beyond what
             resampling the base reaches, and closing it takes new information, in the weights or in
-            the context. Section 20, Cost per Improvement, prices the per-query route against
-            training, and the words track from section 11, A Text Loop Is RL on the Context,
+            the context. Section 23, Cost per Improvement, prices the per-query route against
+            training, and the words track from section 14, A Text Loop Is RL on the Context,
             onward takes up what a loop can learn that RL mostly does not: instructions, procedures
             and facts.
           </Box>

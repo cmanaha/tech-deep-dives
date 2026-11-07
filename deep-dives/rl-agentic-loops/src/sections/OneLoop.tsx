@@ -11,7 +11,7 @@ import { Cite, arxiv } from '../components/Cite';
 /* Sources                                                                  */
 /* ------------------------------------------------------------------------ */
 
-/** Reasoning with Sampling (power sampling), the figure section 8 owns. */
+/** Reasoning with Sampling (power sampling), the figure section 10 owns. */
 const SAMPLING = arxiv('2510.14901v1');
 
 /* ------------------------------------------------------------------------ */

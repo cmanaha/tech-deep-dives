@@ -625,8 +625,8 @@ client = OpenAI(base_url="http://localhost:8000/v1",
             <Cite tier={1} href={vllmUrl(README, 'L167-L209')}>README.md L167-L209</Cite>. How an RL
             trainer uses the weight-transfer path, and what its step costs, is in the{' '}
             <Link href="../rl-agentic-loops/">
-              RL and agentic learning loops dive, section 19: An RL Step Is an Inference Job Inside a
-              Training Job
+              Fine-Tuning, RL and Agentic Learning Loops dive, section 22: An RL Step Is an Inference
+              Job Inside a Training Job
             </Link>
             . The security
             guide lists pause, resume and weight updates as present on every generative server; the

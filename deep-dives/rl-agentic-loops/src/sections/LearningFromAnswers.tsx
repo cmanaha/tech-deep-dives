@@ -941,7 +941,7 @@ export function LearningFromAnswers() {
             first, the reverse KL, makes the student concentrate on the teacher&apos;s likeliest
             tokens instead{' '}
             <Cite tier={3} href={GKD} venue="ICLR 2024" accessed={READ}>
-              GKD, Sections 2 and 3
+              GKD, Section 3.1
             </Cite>
             ; section 11 shows why on-policy distillation uses it. Section 7 reuses the same number
             for a different job: there the reference point is a frozen copy of the model the run

@@ -443,13 +443,13 @@ export function TwoLeashes() {
             variant="h1"
             description="What each of the two limits on a training update holds back, which config knob sets it, and the curves that show it on a run or a managed job (TRL v1.16.0 and papers read 2026-10-30)"
           >
-            5. Two Leashes: PPO&apos;s Clip &amp; the KL
+            7. Two Leashes: PPO&apos;s Clip &amp; the KL
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Policy gradient (section 4, Policy Gradient) tells an RL (reinforcement learning)
+            Policy gradient (section 6, Policy Gradient) tells an RL (reinforcement learning)
             trainer which way to move the policy, the model read as a probability distribution
             over next tokens: toward attempts with a positive advantage (they scored better than
             expected) and away from attempts with a negative one. It says nothing about how far.
@@ -461,7 +461,7 @@ export function TwoLeashes() {
             Optimization) stops pushing a token&apos;s probability further in the direction its
             advantage asks for once the updates on a batch have moved it a set fraction of its old
             value away from the policy that sampled that batch, and that reference point moves on
-            with every batch. The KL (Kullback-Leibler divergence) penalty charges
+            with every batch. The KL penalty charges
             for distance from the reference model, a frozen copy of the model the run started from,
             and that reference point never moves{' '}
             <Cite tier={3} href={GAO} venue="ICML 2023">
@@ -495,7 +495,7 @@ export function TwoLeashes() {
             A batch of rollouts (attempts from prompt to reward) is evidence about the policy that
             sampled it. The first gradient step on that batch uses fresh evidence. Every further
             step on the same batch uses evidence about a policy that no longer exists: the batch
-            has gone slightly off-policy, in section 3&apos;s terms. Reusing the batch is tempting
+            has gone slightly off-policy, in section 5&apos;s terms. Reusing the batch is tempting
             because sampling is the expensive part of a step: on our own 0.5B run on a DGX Spark,
             generation took about 62% of step time{' '}
             <Cite tier={0} href={E0_URL}>
@@ -565,12 +565,12 @@ export function TwoLeashes() {
             .
           </Box>
           <Box variant="p">
-            Read it term by term. <code>ratio * A</code> is section 4&apos;s policy gradient written
+            Read it term by term. <code>ratio * A</code> is section 6&apos;s policy gradient written
             for samples that came from π_old. The π_old probabilities are fixed numbers recorded
             when the batch was sampled, so the gradient of the ratio is the gradient of π_new
             divided by π_old. At the start of a batch π_new equals π_old, so that is the gradient
-            of π divided by π itself, which section 4 showed is <code>grad log pi</code>: the first
-            update on a batch is exactly section 4&apos;s, the advantage times{' '}
+            of π divided by π itself, which section 6 showed is <code>grad log pi</code>: the first
+            update on a batch is exactly section 6&apos;s, the advantage times{' '}
             <code>grad log pi</code>. Later in the batch the ratio reweights each token to correct for the samples coming from an older policy, a
             correction that holds only while the two policies stay close, which is what the clip
             protects. The clipped
@@ -679,7 +679,7 @@ export function TwoLeashes() {
                 <Cite tier={0} href={E0_URL}>
                   E0 log: GRPO smoke test on a DGX Spark
                 </Cite>
-                . Section 19, An RL Step Is an Inference Job Inside a Training Job, covers that
+                . Section 22, An RL Step Is an Inference Job Inside a Training Job, covers that
                 correction.
               </Box>
             </SpaceBetween>
@@ -712,42 +712,21 @@ export function TwoLeashes() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The tether needs a number for how far the model has drifted from where it started.
-            When you fine-tune a model you want it to get better at the task without forgetting how
-            to write normal text, and the drift is what you watch. KL divergence (Kullback-Leibler
-            divergence, named after the two people who defined it) is that number. It comes from
-            information theory and compares two probability distributions, lists of probabilities
-            that add up to 1. Here each list is the probabilities a model gives to every possible
-            next token at one position of a response: P from the model being trained, Q from the
-            reference model, π_ref, the frozen copy of the starting model.
-          </Box>
-          <Box variant="p">
-            Its values read simply. It is never negative. Zero means the two models agree exactly
-            at that position, a small value means little drift, and a large one means the trained
-            model now prefers very different tokens. In the formula, x runs over every token in the
-            vocabulary:
+            The tether needs a number for how far the model has drifted from where it started, and
+            section 4 built it: the KL divergence between two next-token distributions, zero where
+            they agree and larger the more they differ, in the formula
           </Box>
           <Box variant="p">
             <code>KL(P || Q) = sum over x of P(x) * log(P(x) / Q(x))</code>
           </Box>
           <Box variant="p">
-            Read it term by term. <code>P(x) / Q(x)</code> is how many times more likely the
-            trained model finds token x than the reference does. The log turns that ratio into a
-            score: 0 when the two agree, positive when the trained model likes x more, negative
-            when it likes x less. Weighting each score by <code>P(x)</code> and summing averages it
-            over what the trained model actually generates: KL is the average log-ratio, which is
-            what measuring the distance in logarithmic terms means. The negative scores never
-            outweigh the positive ones, so the average is never below 0, and it is 0 only when the
-            two lists match.
-          </Box>
-          <Box variant="p">
-            The measure is asymmetric: swapping P and Q weights the average by the other
-            model&apos;s preferences, so the answer changes. As an illustration with two tokens, P
-            = (0.9, 0.1) and Q = (0.5, 0.5), using the natural log: KL(P || Q) = 0.9 log 1.8 + 0.1
-            log 0.2 = 0.37, while KL(Q || P) = 0.5 log(0.5 / 0.9) + 0.5 log 5 = 0.51. The direction
-            used here, the trained model first, blows up when the trained model puts probability
-            on a token the reference thought nearly impossible: a Q(x) near 0 makes log(P(x) /
-            Q(x)) very large.
+            The reference point switches here. In section 4&apos;s distillation, Q was a teacher the
+            student should move toward. In the tether, P is the model being trained and Q is the
+            reference model, π_ref, the frozen copy of the model the run started from, which the
+            trained model should not move far from. The direction is the trained model first, the
+            reverse KL of section 4. It blows up when the trained model puts probability on a token
+            the reference thought nearly impossible: a Q(x) near 0 makes log(P(x) / Q(x)) very
+            large.
           </Box>
           <Box variant="p">
             RL fine-tuning reaches for this measure because it is cheap per token. The samples come
@@ -763,7 +742,7 @@ export function TwoLeashes() {
           </Box>
           <Box variant="p">
             InstructGPT&apos;s RL objective is the reward minus <code>beta</code> times the
-            per-token log-ratio between the policy and the SFT (supervised fine-tuning) model the
+            per-token log-ratio between the policy and the SFT model the
             run started from, plus an optional term on pretraining data (text of the kind the model
             was first trained on), with beta 0.02{' '}
             <Cite tier={3} href={INSTRUCTGPT} venue="NeurIPS 2022">
@@ -872,7 +851,7 @@ export function TwoLeashes() {
                 <Cite tier={1} href={trl('grpo_config.py', 'L681-L688')}>
                   TRL grpo_config.py L681-L688
                 </Cite>
-                . Section 19 sizes the models an RL step holds in memory.
+                . Section 22 sizes the models an RL step holds in memory.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -893,7 +872,7 @@ export function TwoLeashes() {
           <Box variant="p">
             With both leashes built, the diagram sets them side by side: where each is measured
             from, how long it lasts, what it acts on and which knob sets it. In the clip panel,
-            each token&apos;s weight in the gradient is its multiplier in section 4&apos;s sense.
+            each token&apos;s weight in the gradient is its multiplier in section 6&apos;s sense.
           </Box>
           <TwoLeashesDiagram />
           <Box variant="small" color="text-body-secondary">
@@ -919,7 +898,7 @@ export function TwoLeashes() {
         header={
           <Header
             variant="h2"
-            description="Place PPO beside the four methods of section 4 and see each leash land in its own column"
+            description="Place PPO beside the four methods of section 6 and see each leash land in its own column"
           >
             PPO&apos;s row in the gradient table
           </Header>
@@ -927,7 +906,7 @@ export function TwoLeashes() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Section 4 read the post-training methods in this dive as one gradient shape, a weight times the
+            Section 6 read the post-training methods in this dive as one gradient shape, a weight times the
             gradient of a token&apos;s log-probability, differing in where the samples come from,
             what scores them and how the score becomes the weight{' '}
             <Cite tier={3} href={DEEPSEEKMATH} venue="preprint">
@@ -937,8 +916,7 @@ export function TwoLeashes() {
           </Box>
           <GradientTable />
           <Box variant="small" color="text-body-secondary">
-            Rows 1 to 4 summarise section 4, where their sources are cited. Section 6, From
-            Preferences to Rewards, adds the DPO (Direct Preference Optimization) row and completes
+            Rows 1 to 4 summarise section 6, where their sources are cited. Section 8, Learning From Preferences: Reward Models, RLHF &amp; DPO, adds the DPO (Direct Preference Optimization) row and completes
             the table.
           </Box>
           <Box variant="p">
@@ -983,7 +961,7 @@ export function TwoLeashes() {
             between two tokens gives 0.69 with natural logs (1 with base-2 logs), and an even split
             over four tokens gives ln 4 = 1.39, so the more tokens share the probability, and the
             more evenly, the higher it goes. When it collapses the model samples nearly the same answer every
-            time, so a group of samples has nothing left to compare (section 8, What RL Does to a
+            time, so a group of samples has nothing left to compare (section 10, What RL Does to a
             Model, returns to it). The clip fraction, the share of tokens where the clip is active,
             shows how often the speed limit binds.
           </Box>
@@ -1027,7 +1005,7 @@ export function TwoLeashes() {
             On a managed job, Amazon Bedrock&apos;s reinforcement fine-tuning (RFT) reports{' '}
             <code>actor/entropy</code>{' '}
             and <code>actor/pg_clipfrac</code>, the share of clipped updates, next to its reward
-            statistics (the actor is the policy, in section 4&apos;s actor-critic terms); no KL
+            statistics (the actor is the policy, in section 6&apos;s actor-critic terms); no KL
             metric was among those listed on the monitoring page read{' '}
             <Cite tier={1} href={BEDROCK_RFT}>
               Bedrock user guide: Monitor your RFT training job

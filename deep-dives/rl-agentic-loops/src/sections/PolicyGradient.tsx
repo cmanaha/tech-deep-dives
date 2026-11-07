@@ -223,7 +223,7 @@ const TABLE_ROWS: TableRow[] = [
   {
     method: ['RLOO or GRPO'],
     samples: ['A group of samples per', 'prompt from the current', 'model'],
-    scorer: ['A reward model in both', 'papers; a program in', 'section 7'],
+    scorer: ['A reward model in both', 'papers; a program in', 'section 9'],
     weight: ['Reward minus a baseline', 'from the group;', 'can be negative'],
   },
 ];
@@ -270,7 +270,7 @@ function GradientTableDiagram() {
           minus a baseline, as the weight. Rejection-sampling fine-tuning uses the model&apos;s own
           samples, a rule that checks the answer, and a weight of 1 for a pass and 0 for a failure.
           RLOO or GRPO uses a group of samples per prompt from the current model, a reward model, and
-          the reward minus a baseline taken from the group, which can be negative. Sections 5 and 6
+          the reward minus a baseline taken from the group, which can be negative. Sections 7 and 8
           add rows for PPO and DPO.
         </title>
         <style>{`
@@ -351,7 +351,7 @@ function GradientTableDiagram() {
         {/* Rows the next two sections add */}
         <rect x={16} y={dashedY} width={828} height={34} rx={4} className="pg-table-dash" />
         <text x={430} y={dashedY + 22} className="pg-table-dt">
-          Section 5 adds the PPO row and section 6 the DPO row
+          Section 7 adds the PPO row and section 8 the DPO row
         </text>
       </svg>
     </div>
@@ -371,7 +371,7 @@ export function PolicyGradient() {
             variant="h1"
             description="Read any post-training method as one gradient: which samples, which scorer, which weight (sources read 2026-10-30)"
           >
-            4. Policy Gradient
+            6. Policy Gradient
           </Header>
         }
       >
@@ -382,16 +382,14 @@ export function PolicyGradient() {
             a response, score it, and make the high-scoring responses more likely.
           </Box>
           <Box variant="p">
-            One word needs care in this section. The model&apos;s weights are its parameters, the
-            billions of numbers that training changes. The weight on a sample is something else: a
-            multiplier that says how hard one update pushes on that sample, how much it counts.
-            The header above, the diagrams and the tables in this section use weight in that second
-            sense; where the text means the parameters, it says the model&apos;s weights.
+            As in section 4, weight in the header above, the diagrams and the tables means the
+            multiplier on a sample, how hard one update pushes on it; where the text means the
+            parameters, it says the model&apos;s weights.
           </Box>
           <Box variant="p">
             PPO (Proximal Policy Optimization) and GRPO (Group Relative Policy Optimization), the
-            two RL (reinforcement learning) algorithms this dive keeps returning to, both update a
-            model this way, and so does SFT (supervised fine-tuning, section 1), with every
+            two RL algorithms this dive keeps returning to, both update a model this way, and so
+            does SFT (section 4), with every
             sample&apos;s weight set to 1{' '}
             <Cite tier={3} href={DSM} venue="preprint">
               DeepSeekMath, Section 5.2.1 and Appendix A.1
@@ -413,9 +411,9 @@ export function PolicyGradient() {
             or a compiler can be the scorer just as a neural reward model can.
           </Box>
           <Box variant="p">
-            The section ends on a table that sets SFT, REINFORCE, rejection-sampling fine-tuning
-            (fine-tuning on the model&apos;s own answers that passed a check) and RLOO (REINFORCE
-            Leave-One-Out) or GRPO side by side. Every later method in the dive then reads as three
+            The section ends on the gradient table section 4 opened with SFT and distillation, and
+            adds REINFORCE, rejection-sampling fine-tuning (section 4&apos;s SFT on the model&apos;s
+            own answers that passed a check) and RLOO (REINFORCE Leave-One-Out) or GRPO. Every later method in the dive then reads as three
             choices: which samples, which scorer, which weight.
           </Box>
         </SpaceBetween>
@@ -437,8 +435,8 @@ export function PolicyGradient() {
             from the current model, score it to get a reward R, and step the model&apos;s weights
             along the gradient of the response&apos;s log-probability, scaled by R. In the formula,{' '}
             <code>pi(y | x)</code> is the probability the current model gives response y to prompt x
-            (section 3&apos;s π), log is the logarithm, grad is the gradient with respect to the
-            model&apos;s weights (section 2), and <code>pi(. | x)</code> is the model&apos;s whole
+            (section 5&apos;s π), log is the logarithm, grad is the gradient with respect to the
+            model&apos;s weights (section 4), and <code>pi(. | x)</code> is the model&apos;s whole
             distribution over responses to x:
           </Box>
           <Box variant="p">
@@ -451,7 +449,7 @@ export function PolicyGradient() {
             </Cite>
           </Box>
           <Box variant="p">
-            Read it in two parts. <code>grad log pi(y | x)</code> is a gradient in section 2&apos;s
+            Read it in two parts. <code>grad log pi(y | x)</code> is a gradient in section 4&apos;s
             sense, one entry for every weight of the model, pointing the way that most increases
             the probability of producing y again, and the update moves along it in proportion to the reward that
             followed{' '}
@@ -463,7 +461,7 @@ export function PolicyGradient() {
           </Box>
           <Box variant="p">
             The log is there for two reasons. First, it makes up for how often each response gets
-            sampled. A rule of calculus, the one section 2 promised, says the gradient of{' '}
+            sampled. A rule of calculus, the one section 4 promised, says the gradient of{' '}
             <code>log pi(y | x)</code> is the gradient of <code>pi(y | x)</code> divided by{' '}
             <code>pi(y | x)</code> itself: the same direction, scaled up by one over the
             probability. As an illustration, take a prompt with only two possible responses, A
@@ -475,7 +473,7 @@ export function PolicyGradient() {
             100 times: equal rewards, equal pushes, which the next block shows cancel out. Averaged over many samples, every response is
             pushed in proportion to its reward alone, and the average update points the way that
             raises the expected reward, the average score over the model&apos;s own samples. Second, by section
-            3&apos;s factorisation, <code>log pi(y | x)</code> is the sum of the log-probabilities
+            5&apos;s factorisation, <code>log pi(y | x)</code> is the sum of the log-probabilities
             of y&apos;s tokens, so the update pushes on every token of y with the same weight, R.
           </Box>
           <Box variant="p">
@@ -520,7 +518,7 @@ export function PolicyGradient() {
             <Cite tier={3} href={GAE} venue="ICLR 2016">
               GAE, Section 1
             </Cite>
-            ; in the token-level view of section 3, every token of a response is one action.
+            ; in the token-level view of section 5, every token of a response is one action.
           </Box>
           <Box variant="p">
             A baseline is the expectation a score is measured against, so that the update sees
@@ -583,7 +581,7 @@ export function PolicyGradient() {
             .
           </Box>
           <Box variant="p">
-            The difference R - b is section 3&apos;s advantage: how much better or worse an attempt
+            The difference R - b is section 5&apos;s advantage: how much better or worse an attempt
             did than expected. Its sign sets the direction. A step along the policy gradient should
             make better-than-average actions more likely and worse-than-average actions less likely{' '}
             <Cite tier={3} href={GAE} venue="ICLR 2016">
@@ -601,7 +599,7 @@ export function PolicyGradient() {
             . Subtract a baseline taken from the other samples and each failure gets a negative
             weight, so its probability is pushed down. The same arithmetic gives a case to watch for:
             when every sample in the group passes, every advantage is 0 and the prompt contributes no
-            gradient. Section 7, RLVR &amp; GRPO, returns to why such prompts waste the step.
+            gradient. Section 9, RLVR &amp; GRPO, returns to why such prompts waste the step.
           </Box>
         </SpaceBetween>
       </Container>
@@ -618,7 +616,7 @@ export function PolicyGradient() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Learn it.</strong> Section 3&apos;s value model is a second network trained
+            <strong>Learn it.</strong> Section 5&apos;s value model is a second network trained
             alongside the policy to predict the reward a partial response will end up with.
             Subtracted from the reward, it is a learned baseline. It can do a second job too. Applied
             to the state after an action, its prediction can stand in for the rewards still to come,
@@ -636,7 +634,7 @@ export function PolicyGradient() {
             <Cite tier={3} href={GAE} venue="ICLR 2016">
               GAE, Section 1
             </Cite>
-            . PPO, the subject of section 5, Two Leashes, trains one, and RLHF (RL from human
+            . PPO, the subject of section 7, Two Leashes, trains one, and RLHF (RL from human
             feedback) papers call it the critic{' '}
             <Cite tier={3} href={AHM} venue="ACL 2024">
               Ahmadian et al., Section 1
@@ -651,7 +649,7 @@ export function PolicyGradient() {
             token&apos;s advantage is that token&apos;s reward plus the critic&apos;s estimate after
             it, minus the critic&apos;s estimate before it: how much this one token changed the
             critic&apos;s prediction. That has low variance, and is biased unless the critic is
-            accurate. Section 3&apos;s example, a token that moves the predicted score from 0.3 to
+            accurate. Section 5&apos;s example, a token that moves the predicted score from 0.3 to
             0.6 and earns no reward of its own, is this case: +0.3. At lambda = 1 the advantage is
             the full return actually received minus the
             critic&apos;s baseline: unbiased however inaccurate the critic is, and high in variance{' '}
@@ -725,7 +723,7 @@ export function PolicyGradient() {
             <Cite tier={3} href={DSM} venue="preprint">
               DeepSeekMath, Section 4.1.1
             </Cite>
-            . Section 7, RLVR &amp; GRPO, develops the group baseline and the variants that change its
+            . Section 9, RLVR &amp; GRPO, develops the group baseline and the variants that change its
             terms.
           </Box>
           <ExpandableSection headerText="The two ends of GAE, in symbols">
@@ -737,7 +735,7 @@ export function PolicyGradient() {
                 <Cite tier={3} href={GAE} venue="ICLR 2016">
                   GAE, Section 3, Eq. 16
                 </Cite>
-                . Gamma is section 3&apos;s discount factor. A residual, delta_t, is the
+                . Gamma is section 5&apos;s discount factor. A residual, delta_t, is the
                 critic&apos;s surprise at token t: how much better or worse things look after the
                 token than before it. In the lines below, s_t is the state before token t, s_t+1 the
                 state after it, r_t the reward at token t, V the critic&apos;s estimate, and l counts
@@ -780,7 +778,7 @@ export function PolicyGradient() {
           <Box variant="p">
             DeepSeekMath&apos;s unified paradigm writes SFT, rejection-sampling fine-tuning, DPO
             (Direct Preference Optimization, which trains on pairs of responses where one was
-            preferred, section 6), PPO and GRPO in one form: a gradient coefficient times the
+            preferred, section 8), PPO and GRPO in one form: a gradient coefficient times the
             gradient of each token&apos;s log-probability, averaged over the tokens of each sample.
             Three components decide the rest: the data source, which determines the training
             samples; the reward function, the source of the training signal; and the algorithm,
@@ -814,7 +812,7 @@ export function PolicyGradient() {
           <GradientTableDiagram />
           <Box variant="small" color="text-body-secondary">
             The first four rows, from DeepSeekMath&apos;s Table 10 and Appendix A.1 and from the RLOO
-            paper. Sections 5 and 6 add the PPO and DPO rows, and the full table closes section 6.
+            paper. Sections 7 and 8 add the PPO and DPO rows, and the full table closes section 8.
           </Box>
           <Box variant="p">
             Read the rows from the top. SFT takes fixed targets from a dataset and weights every
@@ -849,9 +847,9 @@ export function PolicyGradient() {
             <Cite tier={3} href={AHM} venue="ACL 2024">
               Ahmadian et al., Section 1
             </Cite>
-            ; section 7 replaces it with a program.
+            ; section 9 replaces it with a program.
             GRPO&apos;s coefficient also carries a term that pulls the model toward a frozen reference
-            copy of the starting model, the KL (Kullback-Leibler divergence) penalty of section 5{' '}
+            copy of the starting model, the KL (Kullback-Leibler divergence) penalty of section 7{' '}
             <Cite tier={3} href={DSM} venue="preprint">
               DeepSeekMath, Appendix A.1.6, Eq. 21
             </Cite>
@@ -885,8 +883,8 @@ export function PolicyGradient() {
             </Box>
           </ExpandableSection>
           <Box variant="p">
-            Use the table as a reading frame for the rest of the dive. When section 5 introduces PPO,
-            section 6 DPO and section 7 the GRPO variants, fill in the three columns before reading
+            Use the table as a reading frame for the rest of the dive. When section 7 introduces PPO,
+            section 8 DPO and section 9 the GRPO variants, fill in the three columns before reading
             the loss: where the samples come from, what scores them, and how the score becomes the
             weight. Then place your own pipeline on it. If you fine-tune on filtered outputs of your
             own model, you are on the rejection-sampling row, with a weight of 1 or 0; the two moves

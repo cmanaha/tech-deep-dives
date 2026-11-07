@@ -1,8 +1,9 @@
-# RL and Agentic Learning Loops: Scope and Section Plan
+# Fine-Tuning, RL and Agentic Learning Loops: Scope and Section Plan
 
-**Title:** Learning From Feedback: RL and Agentic Learning Loops
-**Subtitle:** What reinforcement learning does to a language model, which part of that effect a loop can reproduce in words with a frozen model, where the words fall short, and how to choose between them
-**Status:** Scoping v2.1 (2026-10-30). Research waves 1 and 2 complete; three adversarial reviews, a factual re-check and the wave 2 refutation applied; E0 ran on the DGX Spark; Gate 1 passed (RESEARCH-GUIDE section 7); app build in progress.
+**Title:** Learning From Feedback: Fine-Tuning, Reinforcement Learning and Agentic Learning Loops
+**Subtitle:** How a language model learns from examples, a teacher's answers, preferences or scores, whether the change is written into its weights or into the context a frozen model reads, and how to choose between them
+**Status:** v3 (2026-11-07), the fine-tuning rebuild: 27 sections, built. The title is option B of `revamp/rename-and-scope-plan.md`, chosen by the assistant and reversible; it is defined once in `src/App.tsx` (`DIVE_TITLE`, `DIVE_SUBTITLE`). The v3 block below sets the thesis addition and the 27-section plan; the per-section blocks after it are v2.1's and keep v2.1's 24-section numbering (the v3 table maps them).
+**Previous status:** Scoping v2.1 (2026-10-30). Research waves 1 and 2 complete; three adversarial reviews, a factual re-check and the wave 2 refutation applied; E0 ran on the DGX Spark; Gate 1 passed (RESEARCH-GUIDE section 7); app build in progress.
 **Predecessor deep dives:** vLLM Inference Engine (the rollout engine inside every RL step), Caching (prefix reuse, which an evolving context defeats), Silicon, Memory and Modern Inference (the DGX Spark used for the Tier 0 lab)
 
 **How to read the evidence markers.** Bracketed IDs such as (F03-61) point to claim-register entries in `research/2026-10/NN-*.md`. Each entry carries the pinned source (arXiv ID with version, release tag or 40-character SHA, or first-party doc URL), its tier, its evidence kind, and a verbatim quote. `[derived]` marks arithmetic we did on sourced inputs. `[vendor claim]` marks a vendor performance figure. `[our reading]` marks a synthesis no single source states. Where a figure comes from a lab or vendor blog rather than a paper, the text names the tier.
@@ -11,7 +12,49 @@
 
 ---
 
-## Thesis
+## v3 (2026-11-07): fine-tuning in general, mostly RL
+
+**Reader.** A technical reader at level 100 to 200: reads TypeScript or Python, runs infrastructure, has no machine learning background. Concepts are built before they are used (`docs/standards/explaining-concepts.md`).
+
+**Thesis addition.** Before where a change is kept comes what it is learned from. A model learns from seven signal sources, section 3's rows: raw domain text (continued pretraining), written answers (SFT), a teacher's answers or probabilities (distillation), its own attempts that a grader passed (rejection-sampling fine-tuning), pairs where one answer was judged better (DPO, RLHF), a score on its own attempts (RL), and a teacher's grade on every token of its own attempts (on-policy distillation, which takes its samples from RL and its targets from distillation). The signal picks the family of technique, and every one of them updates the weights with the same gradient step, differing in the weight each sample gets. Where a stronger teacher exists, distilling it beat RL from the same base at 32B in DeepSeek's comparison (72.6 against 47.0 pass@1 on AIME 2024, R1 Supplementary F.1, Table 16), and from one Qwen3 8B checkpoint on-policy distillation scored higher than RL at 1,800 against 17,920 GPU-hours (Qwen3, Section 4.7, Table 21). [our reading] RL earns its place where no teacher exists, and where the model must learn from its own attempts. Evidence: `research/2026-11/07-fine-tuning-signals.md`.
+
+**Five questions.** Which technique fits the signal you have (3, then 4 and 11); what RL does to a model (10); which part a loop can reproduce in words (the end of 10, then 14 to 19); where the words fall short (20, with 19 and 21); how to choose (25). The second of section 25's three decision questions now forks into section 3's map.
+
+**Section plan v3.** New sections are 3, 4 and 11. Reworked: 1, 2, 25 and 26. The rest kept their content, gained pointers to 3, 4 and 11, and were renumbered by `revamp/tools/renumber.mjs` and checked by `revamp/tools/check-renumber.mjs`.
+
+| v3 | Title | v2.1 | Change |
+|---|---|---|---|
+| 1 | One Loop: What It Learns From and Where It Keeps It | 1 | Reworked: the signal list, five questions |
+| 2 | Getting Started | 2 | Reworked: level 100 to 200 baseline, four routes over 27 sections |
+| 3 | Fine-Tuning Techniques: Where the Learning Signal Comes From | new | Seven signal sources, dense against sparse, one update behind every row, four 2025-2026 post-training recipes, how much of the model changes, signal by store |
+| 4 | Learning From Answers: Supervised Fine-Tuning & Distillation | new | Log-probabilities, the SFT loss, the gradient step, what SFT teaches and costs, distillation at sequence and token level, the KL divergence, provider terms, rejection sampling as the bridge to RL |
+| 5 | The Language Model Is Already a Policy | 3 | Light edits: builds on section 4 |
+| 6 | Policy Gradient | 4 | Light edits: the gradient table opened in section 4 |
+| 7 | Two Leashes: PPO's Clip & the KL | 5 | Light edits: the KL built in section 4 |
+| 8 | Learning From Preferences: Reward Models, RLHF & DPO | 6 | Retitled |
+| 9 | RLVR & GRPO | 7 | Pointer to 11 |
+| 10 | What RL Does to a Model | 8 | Pointer to 11 |
+| 11 | Distillation or RL: A Teacher's Answers or a Score on Your Own | new | Three loops, DeepSeek-R1 Table 16, the pass@k view, on-policy distillation from GKD and MiniLLM, Qwen3's same-checkpoint comparison, TRL and AWS, the decision |
+| 12 | Agentic RL | 9 | Renumbered |
+| 13 | The Reward Is a Proxy | 10 | Renumbered |
+| 14 | A Text Loop Is RL on the Context | 11 | "Two signal sources" renamed "two ways to check a score" |
+| 15 | Verbal Reinforcement & Self-Correction | 12 | Renumbered |
+| 16 | Memories, Playbooks & Skill Libraries | 13 | Renumbered |
+| 17 | Optimising the Prompt | 14 | Distillation-into-context pointer |
+| 18 | Your Loops Through the RL Lens | 15 | Renumbered |
+| 19 | Hybrids | 16 | Renumbered |
+| 20 | Where Words Fall Short | 17 | Renumbered |
+| 21 | What Lives in Weights & What Lives in Context | 18 | Pointers to 4 and 11 |
+| 22 | An RL Step Is an Inference Job Inside a Training Job | 19 | SFT and distillation as ordinary training jobs; on-policy distillation as the exception |
+| 23 | Cost per Improvement | 20 | Distillation's bill and the Qwen3 GPU-hours |
+| 24 | Side by Side on a DGX Spark | 21 | Renumbered |
+| 25 | Choosing a Technique: Fine-Tuning, a Text Loop or a Hybrid | 22 | Question 2 forks into section 3's map; seven paths, SFT and distillation split |
+| 26 | Fine-Tuning & Learning Loops on AWS | 23 | Bedrock SFT and Model Distillation, SageMaker AI distillation, the two-stacks diagram extended |
+| 27 | Glossary & Sources | 24 | Distillation terms, GKD, MiniLLM, LIMA, QLoRA and the new key sources |
+
+---
+
+## Thesis (v2.1)
 
 Every method in this dive runs one loop: sample attempts, score them, and change something so the next attempts score better. The methods differ in where the change lands. Reinforcement learning (RL) writes it into the weights. A text loop writes it into the context a frozen model reads: a reflection, a rewritten prompt, a playbook, a memory, a skill file. A hybrid trains a small model whose output is words for a frozen large one.
 
@@ -23,7 +66,7 @@ In both, the reward decides whether anything is learned and is the surface that 
 
 ---
 
-## Section Plan
+## Section Plan (v2.1, 24-section numbering)
 
 ### Layer A. Framing and the reader's map
 

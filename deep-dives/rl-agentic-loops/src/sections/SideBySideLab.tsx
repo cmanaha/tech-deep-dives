@@ -530,7 +530,7 @@ export function SideBySideLab() {
             variant="h1"
             description="Run the dive's comparison on a machine you can own: one RL step took about 2.1 s on a 0.5B model, and at a 4% base rate 9 and 10 of 20 steps produced no gradient, so the protocol measures the base rate before it trains (our DGX Spark run with TRL 1.16.0 and vLLM 0.28.0, and sources read 2026-10-30)"
           >
-            21. Side by Side on a DGX Spark
+            24. Side by Side on a DGX Spark
           </Header>
         }
       >
@@ -593,7 +593,7 @@ export function SideBySideLab() {
             <Cite tier={1} href={trlCode('trl/trainer/grpo_trainer.py', 'L2640-L2655')} kind="code">
               TRL grpo_trainer.py L2640-L2655
             </Cite>
-            . Section 19, An RL Step Is an Inference Job Inside a Training Job, explains each stage;
+            . Section 22, An RL Step Is an Inference Job Inside a Training Job, explains each stage;
             this run gives you one measured point to plan from.
           </Box>
           <StepTimeDiagram />
@@ -646,7 +646,7 @@ export function SideBySideLab() {
             single tokens differing by up to 0.92 and 1.14, and TRL&apos;s importance-sampling
             ratio, the factor that reweights a sampled answer by how likely the trainer finds it,
             reached 2.80 and 2.86 <E0>E0 log</E0>. That disagreement is why TRL pays for the extra forward
-            pass by default; section 19 covers the correction. TRL logs both as{' '}
+            pass by default; section 22 covers the correction. TRL logs both as{' '}
             <code>sampling/sampling_logp_difference</code> and{' '}
             <code>sampling/importance_sampling_ratio</code>, so you can watch them on every run.
           </Box>
@@ -785,7 +785,7 @@ export function SideBySideLab() {
             gap the chart would favour RL because of the task type alone. Generate the items fresh,
             for example Countdown-style arithmetic (reach a target from given numbers), so no model
             has seen them. Score with an exact-match verifier in plain Python, outside any
-            agent&apos;s write path, and check it against the grader checklist in section 10, The
+            agent&apos;s write path, and check it against the grader checklist in section 13, The
             Reward Is a Proxy, before any arm trains on it.
           </Box>
           <Box variant="p">
@@ -794,7 +794,7 @@ export function SideBySideLab() {
             training prompt from the base model, score them with the verifier, and adjust the
             difficulty, or drop prompts, until most prompts pass some of the time and fail some of
             the time. Use one small Qwen-family instruct model (0.5B to 1.5B) and one non-Qwen
-            control of similar size; section 8, What RL Does to a Model, explains why results
+            control of similar size; section 10, What RL Does to a Model, explains why results
             differ by model family.
           </Box>
           <E1ArmsDiagram />
@@ -892,32 +892,32 @@ export function SideBySideLab() {
             <li>
               <strong>GRPO (b) beats both text loops (c, d) at pass@1 on the skill part.</strong>{' '}
               On AIME-2025, a competition-math exam, GRPO beat a prompt optimiser on the same
-              model (section 14, Optimising the Prompt).
+              model (section 17, Optimising the Prompt).
             </li>
             <li>
               <strong>The base model (a) matches or beats GRPO (b) at pass@256.</strong> On the
-              models tested, RL raised pass@1 while pass@k at large k held or fell (section 8, What
+              models tested, RL raised pass@1 while pass@k at large k held or fell (section 10, What
               RL Does to a Model).
             </li>
             <li>
               <strong>The text loops (c, d) close more of the unstated-rule gap per rollout than
               GRPO (b).</strong> A prompt optimiser beat GRPO on one 8B model with a fraction of
-              its rollouts (section 14).
+              its rollouts (section 17).
             </li>
             <li>
               <strong>The text loops learn the rule from the verifier&apos;s verdict.</strong> Feed
-              the verdict to the reflector on every attempt; section 12, Verbal Reinforcement &amp;
+              the verdict to the reflector on every attempt; section 15, Verbal Reinforcement &amp;
               Self-Correction, shows what a reflection loop does without a signal from outside the
               model.
             </li>
             <li>
               <strong>The text loops cost more tokens per query than GRPO.</strong> The learned
-              prompt or playbook rides along on every query (section 13, Memories, Playbooks &amp;
+              prompt or playbook rides along on every query (section 16, Memories, Playbooks &amp;
               Skill Libraries).
             </li>
             <li>
               <strong>Best-of-n (e) recovers part of GRPO&apos;s pass@1 gain at n times the
-              inference cost</strong> (section 8, under what a frozen model can buy back).
+              inference cost</strong> (section 10, under what a frozen model can buy back).
             </li>
           </ul>
         </SpaceBetween>
@@ -950,20 +950,19 @@ export function SideBySideLab() {
             <strong>At what per-query cost.</strong> Put tokens per test query next to each gain.
             The text loops pay for their learned context on every query, best-of-n pays for n
             samples, and the GRPO model adds no prompt tokens but paid its training wall-clock up
-            front. Section 20, Cost per Improvement, turns those into a breakeven
+            front. Section 23, Cost per Improvement, turns those into a breakeven
             volume.
           </Box>
           <Box variant="p">
             <strong>Which result would change on a larger model.</strong> On a 0.5B model the text
-            loops run with a 0.5B reflector unless you record a larger one, and section 14 shows the
+            loops run with a 0.5B reflector unless you record a larger one, and section 17 shows the
             optimiser&apos;s own capability bounds a text loop. The comparison between GRPO and the
             text loops on the unstated rule is therefore the result most likely to move at 7B to 8B.
             Re-run arms (b), (c) and (d) there before you generalise, and measure the base rate
             there first, because the rate belongs to the model and the task together.
           </Box>
           <Box variant="p">
-            Then take the three readings to section 22, Choosing a Text Loop, a Hybrid or a Weight
-            Update, where they become its decision questions: what kind of gap it is, what your
+            Then take the three readings to section 25, Choosing a Technique: Fine-Tuning, a Text Loop or a Hybrid, where they become its decision questions: what kind of gap it is, what your
             signal scores today, and how many queries the learned artifact will serve.
           </Box>
         </SpaceBetween>

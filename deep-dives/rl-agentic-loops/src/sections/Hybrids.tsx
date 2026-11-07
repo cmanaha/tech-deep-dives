@@ -303,7 +303,7 @@ export function Hybrids() {
             variant="h1"
             description="Improve an API model you cannot train by training a small model in front of it: in the one same-model test, that recovered about 70% of what RL on the big model gained (TRL v1.16.0 and papers, read 2026-10-30)"
           >
-            16. Hybrids
+            19. Hybrids
           </Header>
         }
       >
@@ -391,7 +391,7 @@ export function Hybrids() {
                 <Retroformer>Retroformer, Figure 1</Retroformer>. Retroformer keeps the actor frozen and
                 fine-tunes a smaller local reflector with PPO (Proximal Policy Optimization), rating
                 each reflection by the change in episode return between one trial and the next{' '}
-                <Retroformer>Retroformer, Section 4</Retroformer>. Section 12, Verbal
+                <Retroformer>Retroformer, Section 4</Retroformer>. Section 15, Verbal
                 Reinforcement &amp; Self-Correction, covers the frozen-reflection side of that example.
               </Box>
               <Box variant="p">
@@ -419,7 +419,7 @@ export function Hybrids() {
                 <Cite tier={3} href={EVOLVE} venue="ICML 2025">
                   EVOLvE, abstract and Section 4
                 </Cite>
-                . Section 17, Where Words Fall Short, covers the exploration failure these address.
+                . Section 20, Where Words Fall Short, covers the exploration failure these address.
               </Box>
               <Box variant="p">
                 <strong>Context distillation.</strong> A model performs better with instructions
@@ -468,7 +468,7 @@ export function Hybrids() {
             length of a media review, its reading level, and the style of a worked math solution.
             The student was GPT-4o mini and the advisor base Qwen2.5 7B Instruct. Two static
             methods, PAG (Profile-Augmented Generation) and GEPA (Genetic-Pareto, the reflective
-            prompt optimiser of section 14, Optimising the Prompt), landed &quot;marginally above
+            prompt optimiser of section 17, Optimising the Prompt), landed &quot;marginally above
             the un-optimized baselines, if at all&quot;. The advisor reached 0.94 reward out of a
             maximum 1.0 on review length, 99.6% accuracy on review level, and 0.948 out of 1.0 on
             math solutions <Advisor>Advisor Models, Section 4.3 and Figure 5</Advisor>. The authors

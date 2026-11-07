@@ -117,6 +117,15 @@ const sources: Source[] = [
   { id: 90, title: 'Fu et al., AReaL: A Large-Scale Asynchronous Reinforcement Learning System for Language Reasoning, arXiv 2505.24298v5, NeurIPS 2025', url: 'https://arxiv.org/abs/2505.24298v5', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 91, title: 'Piché et al., PipelineRL: Faster On-policy Reinforcement Learning for Long Sequence Generation, arXiv 2509.19128v2, TMLR 2026', url: 'https://arxiv.org/abs/2509.19128v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
   { id: 92, title: 'He et al., Skywork Open Reasoner 1 Technical Report, arXiv 2505.22312v2, preprint', url: 'https://arxiv.org/abs/2505.22312v2', tier: 3, type: 'academic-paper', accessDate: '2026-10-30' },
+  // Tier 3: supervised fine-tuning and distillation (added for the fine-tuning rebuild)
+  { id: 93, title: 'Hinton, Vinyals and Dean, Distilling the Knowledge in a Neural Network, arXiv 1503.02531v1, NIPS 2014 Deep Learning Workshop', url: 'https://arxiv.org/abs/1503.02531v1', tier: 3, type: 'academic-paper', accessDate: '2026-11-07' },
+  { id: 94, title: 'Kim and Rush, Sequence-Level Knowledge Distillation, arXiv 1606.07947v4, EMNLP 2016', url: 'https://arxiv.org/abs/1606.07947v4', tier: 3, type: 'academic-paper', accessDate: '2026-11-07' },
+  { id: 95, title: 'Zhou et al., LIMA: Less Is More for Alignment, arXiv 2305.11206v1, NeurIPS 2023', url: 'https://arxiv.org/abs/2305.11206v1', tier: 3, type: 'academic-paper', accessDate: '2026-11-07' },
+  { id: 96, title: 'Agarwal et al., On-Policy Distillation of Language Models: Learning from Self-Generated Mistakes (GKD), arXiv 2306.13649v3, ICLR 2024', url: 'https://arxiv.org/abs/2306.13649v3', tier: 3, type: 'academic-paper', accessDate: '2026-11-07' },
+  { id: 97, title: 'Gu et al., MiniLLM: On-Policy Distillation of Large Language Models, arXiv 2306.08543v6, ICLR 2024', url: 'https://arxiv.org/abs/2306.08543v6', tier: 3, type: 'academic-paper', accessDate: '2026-11-07' },
+  { id: 98, title: 'Qwen Team, Qwen3 Technical Report, arXiv 2505.09388v1, preprint', url: 'https://arxiv.org/abs/2505.09388v1', tier: 3, type: 'academic-paper', accessDate: '2026-11-07' },
+  // Tier 2: lab post on on-policy distillation
+  { id: 99, title: 'Thinking Machines, On-Policy Distillation (lab blog)', url: 'https://thinkingmachines.ai/blog/on-policy-distillation/', tier: 2, type: 'blog', accessDate: '2026-11-07' },
 ];
 
 
@@ -129,7 +138,7 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'RLVR', fullForm: 'RL with verifiable rewards', description: 'RL where a program computes the reward: a unit test, an answer check, a compiler.' },
   { acronym: 'RFT', fullForm: 'Reinforcement fine-tuning', description: 'The product name AWS and OpenAI use for managed RL on a hosted model.' },
   { acronym: 'MTRL', fullForm: 'Multi-turn RL', description: 'SageMaker AI\'s managed RL in which the customer\'s agent runs each episode and reports its reward.' },
-  { acronym: 'SFT', fullForm: 'Supervised fine-tuning', description: 'Training on fixed input-output examples with the next-token loss.' },
+  { acronym: 'SFT', fullForm: 'Supervised fine-tuning', description: 'Training on written prompt-answer examples with the next-token loss, counted on the answer tokens only (section 4). Sequence-level distillation is SFT on a teacher\'s answers.' },
   { acronym: 'PPO', fullForm: 'Proximal Policy Optimization', description: 'Policy-gradient algorithm that clips each update\'s probability ratio and uses a learned critic. The classic RLHF optimiser.' },
   { acronym: 'PPO-ptx', fullForm: 'PPO with pretraining mix', description: 'InstructGPT\'s PPO variant, which mixes pretraining gradients into the update to limit regressions.' },
   { acronym: 'TRPO', fullForm: 'Trust Region Policy Optimization', description: 'PPO\'s predecessor, which bounds each update by a KL constraint.' },
@@ -154,10 +163,20 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'ProRL', fullForm: 'Prolonged RL', description: 'A recipe for long RL training runs, applied to a 1.5B model.' },
   { acronym: 'UCB', fullForm: 'Upper Confidence Bound', description: 'A bandit rule that picks the action whose estimated value plus an uncertainty bonus is highest.' },
   { acronym: 'MAB', fullForm: 'Multi-armed bandit', description: 'A repeated choice among actions with unknown payoffs: the simplest exploration problem.' },
-  { acronym: 'MCMC', fullForm: 'Markov chain Monte Carlo', description: 'Sampling by a random walk whose long-run distribution is the target, used by the training-free sampler of section 8.' },
+  { acronym: 'MCMC', fullForm: 'Markov chain Monte Carlo', description: 'Sampling by a random walk whose long-run distribution is the target, used by the training-free sampler of section 10.' },
   { acronym: 'AD', fullForm: 'Algorithm Distillation', description: 'Trains a transformer on the logged learning histories of an RL algorithm, so it improves in context.' },
   { acronym: 'ED', fullForm: 'Expert Distillation', description: 'Algorithm Distillation\'s control: trained on expert episodes rather than on learning histories.' },
   { acronym: 'DPT', fullForm: 'Decision-Pretrained Transformer', description: 'Trained to predict the optimal action from an in-context set of interactions with a task, which may be random.' },
+  // Fine-tuning signals and distillation
+  { acronym: 'Distillation', fullForm: 'Knowledge distillation', description: 'Training a student model to match a stronger teacher model. Sequence-level: SFT on the teacher\'s sampled answers. Token-level: matching the teacher\'s next-token probabilities at every position. On-policy: the student writes the answer and the teacher scores each of its tokens (sections 4 and 11).' },
+  { acronym: 'Teacher, student', fullForm: 'Teacher model, student model', description: 'In distillation, the stronger model whose outputs or probabilities are the training target, and the model being trained.' },
+  { acronym: 'On-policy distillation', fullForm: 'On-policy distillation', description: 'The student samples its own answers and is trained toward the teacher\'s token probabilities on them, with the reverse KL at every position; a dense signal on the student\'s own mistakes (section 11).' },
+  { acronym: 'GKD', fullForm: 'Generalized Knowledge Distillation', description: 'An ICLR 2024 method that trains the student on sequences it generates itself, with the teacher\'s token-level distribution as the target.' },
+  { acronym: 'MiniLLM', fullForm: 'MiniLLM (method name)', description: 'An ICLR 2024 distillation method that minimises the reverse KL, so a small student concentrates on what the teacher rates likely rather than covering everything it might say.' },
+  { acronym: 'Continued pretraining', fullForm: 'Continued pretraining', description: 'More next-token training on raw domain text, with no prompt-answer structure (section 3).' },
+  { acronym: 'Rejection-sampling fine-tuning', fullForm: 'Rejection-sampling fine-tuning', description: 'SFT on the model\'s own answers that passed a check, the rest rejected; the step between SFT and RL (section 4).' },
+  { acronym: 'LIMA', fullForm: 'Less Is More for Alignment', description: 'A 2023 study that fine-tuned a 65B model on 1,000 curated examples; the reference point for a small, carefully chosen SFT set.' },
+  { acronym: 'QLoRA', fullForm: 'Quantized LoRA', description: 'LoRA over frozen weights stored at 4 bits, which cuts the memory the frozen copy takes.' },
   // Learning in words
   { acronym: 'ICL', fullForm: 'In-context learning', description: 'A frozen model adapting to examples or feedback placed in its context, with no weight update.' },
   { acronym: 'GD', fullForm: 'Gradient descent', description: 'Updating parameters a small step against the gradient of a loss.' },
@@ -185,14 +204,16 @@ const glossary: GlossaryEntry[] = [
   { acronym: 'HH', fullForm: 'Helpful and harmless', description: 'Anthropic\'s preference dataset of helpfulness and harmlessness comparisons.' },
   { acronym: 'NxD', fullForm: 'NeuronX Distributed', description: 'AWS Neuron\'s distributed training library for Trainium; its training package (NxD Training) has reached end of support.' },
   { acronym: 'DGX Spark', fullForm: 'NVIDIA DGX Spark (GB10)', description: 'A desktop system with one GB10 chip and unified CPU-GPU memory; the host of this dive\'s E0 run.' },
-  { acronym: 'E0, E1', fullForm: 'Experiment 0, Experiment 1', description: 'This dive\'s own experiments. E0 (a GRPO smoke test on a DGX Spark) ran; E1 (one task, three learners) ships as a protocol in section 21.' },
+  { acronym: 'E0, E1', fullForm: 'Experiment 0, Experiment 1', description: 'This dive\'s own experiments. E0 (a GRPO smoke test on a DGX Spark) ran; E1 (one task, three learners) ships as a protocol in section 24.' },
   { acronym: 'REINFORCE', fullForm: 'REINFORCE (algorithm name)', description: 'Williams\'s Monte Carlo policy-gradient algorithm: weight each sampled action\'s log-probability gradient by its return. RLOO and REINFORCE++ build on it.' },
   // Benchmarks and metrics
   { acronym: 'pass@k', fullForm: 'Pass at k', description: 'The chance that at least one of k samples solves a problem; pass@1 is the single-attempt success rate.' },
   { acronym: 'AIME', fullForm: 'American Invitational Mathematics Examination', description: 'A US competition-math exam with integer answers, used as an RLVR benchmark.' },
   { acronym: 'MATH-500', fullForm: 'MATH-500', description: 'A 500-problem subset of the MATH competition-math benchmark.' },
-  { acronym: 'SQuADv2', fullForm: 'Stanford Question Answering Dataset, version 2', description: 'A reading-comprehension benchmark; one of the regressions InstructGPT measured after RL (section 5).' },
-  { acronym: 'DROP', fullForm: 'Discrete Reasoning Over Paragraphs', description: 'A reading-comprehension benchmark; another of the regressions InstructGPT measured after RL (section 5).' },
+  { acronym: 'SQuADv2', fullForm: 'Stanford Question Answering Dataset, version 2', description: 'A reading-comprehension benchmark; one of the regressions InstructGPT measured after RL (section 7).' },
+  { acronym: 'DROP', fullForm: 'Discrete Reasoning Over Paragraphs', description: 'A reading-comprehension benchmark; another of the regressions InstructGPT measured after RL (section 7).' },
+  { acronym: 'GPQA', fullForm: 'Graduate-Level Google-Proof Q&A', description: 'Multiple-choice science questions written by domain experts; GPQA Diamond is its highest-quality subset.' },
+  { acronym: 'STEM', fullForm: 'Science, technology, engineering and mathematics', description: 'In section 3, the subject area of the tasks one report\'s RL stage starts on.' },
   { acronym: 'GSM8K', fullForm: 'Grade School Math 8K', description: 'Grade-school math word problems.' },
   { acronym: 'MMLU', fullForm: 'Massive Multitask Language Understanding', description: 'A multiple-choice exam benchmark across academic subjects.' },
   { acronym: 'SWE-bench Verified', fullForm: 'SWE-bench Verified', description: 'Human-validated GitHub issues, scored by whether the repository\'s tests pass after the model\'s patch.' },
@@ -228,9 +249,9 @@ export function GlossaryAndSources() {
         header={
           <Header
             variant="h1"
-            description="Every acronym in the dive, our own experiment, and the reading list grouped by authority (sources read 2026-10-30)"
+            description="Every acronym and fine-tuning term in the dive, our own experiment, and the reading list grouped by authority (sources read 2026-10-30 and 2026-11-07)"
           >
-            24. Glossary &amp; Sources
+            27. Glossary &amp; Sources
           </Header>
         }
       >

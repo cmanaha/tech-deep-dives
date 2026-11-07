@@ -346,13 +346,13 @@ export function RlStepAsSystem() {
             variant="h1"
             description="Size and monitor a self-run RL job: generation takes most of each step, the longest response sets its length, and eight times the GPUs bought only a 45% cut in rollout time (papers, our DGX Spark run, and TRL v1.16.0, verl v0.9.1, OpenRLHF v0.11.2, slime v0.4.0 and prime-rl v0.10.0, read 2026-10-30)"
           >
-            19. An RL Step Is an Inference Job Inside a Training Job
+            22. An RL Step Is an Inference Job Inside a Training Job
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            An RL (reinforcement learning) step runs two workloads on one set of weights. A batch
+            An RL step runs two workloads on one set of weights. A batch
             inference job writes the attempts (rollouts), a training job learns from their scores, and the new
             weights go back to the inference engine before the next batch of attempts starts. For a
             reader who runs inference engines most of the step is familiar work; what is new is the
@@ -361,6 +361,15 @@ export function RlStepAsSystem() {
           <Box variant="p">
             Sizing a self-run job is the challenge of keeping both halves busy, and of knowing which
             one holds the clock on your run.
+          </Box>
+          <Box variant="p">
+            SFT and distillation from a teacher&apos;s answers have no generation inside the step:
+            the teacher&apos;s answers are written once, before training, so the run is an ordinary
+            training job, and the training dive&apos;s section 16, Fine-Tuning &amp; Post-Training
+            Runs, sizes it. On-policy distillation (section 11) is the exception: the student
+            generates its own attempts every step as in RL, and the teacher reads them, so in our
+            reading this section applies to it, with the teacher in the place of the reference
+            model.
           </Box>
         </SpaceBetween>
       </Container>
