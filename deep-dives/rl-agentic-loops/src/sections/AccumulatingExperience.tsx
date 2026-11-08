@@ -433,7 +433,7 @@ export function AccumulatingExperience() {
             variant="h1"
             description="Design a playbook whose update rule keeps what it learned, with a signal that decides what enters it (sources read 2026-10-30)"
           >
-            13. Memories, Playbooks &amp; Skill Libraries
+            16. Memories, Playbooks &amp; Skill Libraries
           </Header>
         }
       >
@@ -448,7 +448,7 @@ export function AccumulatingExperience() {
           <Box variant="p">
             The challenge is keeping what the store has learned. Every store has an update rule,
             and the rule sets how much of the store one update changes: the step size of section
-            11, A Text Loop Is RL on the Context. A step that is too large erases. In a case study
+            14, A Text Loop Is RL on the Context. A step that is too large erases. In a case study
             in the ACE (Agentic Context Engineering) paper on AppWorld (agent tasks run through the
             APIs of simulated apps), one full rewrite took an 18,282-token context to 122 tokens,
             and accuracy fell from 66.7 to 57.1, below the 63.7 of no adaptation at all <Ace>ACE, Section 2.2</Ace>. A step that is too small
@@ -489,7 +489,7 @@ export function AccumulatingExperience() {
             block.
           </Box>
           <Box variant="p">
-            Training-Free GRPO is the rule that maps most directly onto RL. GRPO (section 7, RLVR
+            Training-Free GRPO is the rule that maps most directly onto RL. GRPO (section 9, RLVR
             &amp; GRPO) samples a group of answers to one prompt and scores each by its advantage,
             how much better it did than the group&apos;s average. Training-Free GRPO keeps the
             group and replaces the number with words: for a group with clear winners and losers,
@@ -524,7 +524,7 @@ export function AccumulatingExperience() {
             Cheatsheet and argue the risk belongs to any end-to-end rewrite by an LLM, which tends
             to compress a long context into a short summary. In RL terms, our reading: this is an
             update with no trust region, the limit that PPO (Proximal Policy Optimization) puts on
-            how far one step can move the policy (section 5, Two Leashes: PPO&apos;s Clip &amp; the
+            how far one step can move the policy (section 7, Two Leashes: PPO&apos;s Clip &amp; the
             KL). One step undid sixty.
           </Box>
           <Box variant="p">
@@ -562,7 +562,7 @@ export function AccumulatingExperience() {
             populate the memory with high-quality, reusable strategies&quot;{' '}
             <Cheatsheet>Dynamic Cheatsheet, Section 4.5 and Table 3</Cheatsheet>. In our reading,
             a store learns from tasks the model already solves some of the time, the condition
-            section 7 sets for a GRPO group to carry any gradient.
+            section 9 sets for a GRPO group to carry any gradient.
           </Box>
         </SpaceBetween>
       </Container>
@@ -579,7 +579,7 @@ export function AccumulatingExperience() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The update rule sets how much changes; the signal decides what. Section 12, Verbal
+            The update rule sets how much changes; the signal decides what. Section 15, Verbal
             Reinforcement &amp; Self-Correction, showed a reflection loop learning only from a
             signal outside the model, and a store inherits that rule. Voyager admits a program to
             its library only after a GPT-4 check that the task succeeded. Removing that
@@ -605,7 +605,7 @@ export function AccumulatingExperience() {
           </Box>
           <Box variant="p">
             So name the check that admits a lesson before choosing an update rule: a test that
-            runs, a label, an environment reward. Section 10, The Reward Is a Proxy, gives the
+            runs, a label, an environment reward. Section 13, The Reward Is a Proxy, gives the
             grader checklist that applies to it unchanged.
           </Box>
         </SpaceBetween>
@@ -657,7 +657,7 @@ export function AccumulatingExperience() {
           <Box variant="p">
             The cost runs the other way. Training-Free GRPO was cheap to learn and dearer per
             query, again on a pair that compares different base models{' '}
-            <TfGrpo>Training-Free GRPO, Section 4.2</TfGrpo>; section 20, Cost per Improvement,
+            <TfGrpo>Training-Free GRPO, Section 4.2</TfGrpo>; section 23, Cost per Improvement,
             prices it. Part of the per-query cost is the playbook itself, which rides in every
             prompt, and prefix caching decides how much of it is billed (
             <Link href="../vllm/">vLLM dive, section 6: Automatic Prefix Caching</Link>). In a
@@ -770,7 +770,7 @@ export function AccumulatingExperience() {
                 <Cite tier={3} href={EXPEL} venue="AAAI 2024">
                   ExpeL, Section 5.6 and Table 3
                 </Cite>{' '}
-                (section 12 has the detail).
+                (section 15 has the detail).
               </Box>
             </li>
           </ul>

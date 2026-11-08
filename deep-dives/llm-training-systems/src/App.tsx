@@ -191,7 +191,7 @@ export function App() {
       siblings={[
         { label: 'Elastic Fabric Adapter (EFA)', href: '../efa/' },
         { label: 'Silicon, Memory & Inference', href: '../silicon-memory-inference/' },
-        { label: 'RL & Agentic Learning Loops', href: '../rl-agentic-loops/' },
+        { label: 'Fine-Tuning, RL & Agentic Learning Loops', href: '../rl-agentic-loops/' },
       ]}
     >
       <Suspense fallback={<Spinner size="large" />}>

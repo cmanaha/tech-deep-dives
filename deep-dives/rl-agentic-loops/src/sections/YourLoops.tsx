@@ -336,7 +336,7 @@ export function YourLoops() {
             variant="h1"
             description="Harden the loops you already run: find the RL part each one leaves empty, then add the check that fills it, starting with a noise floor for a loop that decides about 100 experiments a night on one reading each (autoresearch at commit 228791fb; sources read 2026-10-30)"
           >
-            15. Your Loops Through the RL Lens
+            18. Your Loops Through the RL Lens
           </Header>
         }
       >
@@ -516,7 +516,7 @@ export function YourLoops() {
                 </Cite>
                 . No repeat-run or noise rule appears in <code>program.md</code>,{' '}
                 <code>README.md</code> or <code>train.py</code> at this commit (our reading of the
-                three files). Section 10 showed the other weak point of this layout: the
+                three files). Section 13 showed the other weak point of this layout: the
                 evaluation runs the model code the agent edits.
               </Box>
             </SpaceBetween>
@@ -681,7 +681,7 @@ export function YourLoops() {
             <Cite tier={1} href={ar('program.md', 'L99-L100')}>
               autoresearch program.md L99-L100
             </Cite>
-            . Section 17, Where Words Fall Short, covers the measurements of how models use long
+            . Section 20, Where Words Fall Short, covers the measurements of how models use long
             contexts.
           </Box>
         </SpaceBetween>
@@ -691,7 +691,7 @@ export function YourLoops() {
         header={
           <Header
             variant="h2"
-            description="Harden the loop you run tonight: section 10's grader checks first, then six checks that each supply a part the map marked missing or weak"
+            description="Harden the loop you run tonight: section 13's grader checks first, then six checks that each supply a part the map marked missing or weak"
           >
             The hardening checklist
           </Header>
@@ -699,7 +699,7 @@ export function YourLoops() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Start with the evaluator. Section 10, The Reward Is a Proxy, ends on four grader checks
+            Start with the evaluator. Section 13, The Reward Is a Proxy, ends on four grader checks
             that apply here unchanged: evaluator code the agent cannot edit, hidden or read-only
             tests, a held-out metric, and monitors kept out of the reward. Then add the six below.
           </Box>
@@ -750,7 +750,7 @@ export function YourLoops() {
             </Box>{' '}
             Start each iteration from files the loop maintains, such as a plan, a log and notes, as
             Ralph does, and keep raw run output out of the context, as autoresearch does. Huntley
-            argues for this from his own use; section 17 has the measurements on long contexts.
+            argues for this from his own use; section 20 has the measurements on long contexts.
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">
@@ -772,7 +772,7 @@ export function YourLoops() {
             already produces this layout, in our reading; no cache measurement for Ralph was
             located. The mechanism is in the{' '}
             <Link href="../vllm/">vLLM dive, section 6: Automatic Prefix Caching</Link>, and
-            section 17, Where Words Fall Short, prices what an edit early in an evolving context
+            section 20, Where Words Fall Short, prices what an edit early in an evolving context
             costs.
           </Box>
           <Box variant="p">

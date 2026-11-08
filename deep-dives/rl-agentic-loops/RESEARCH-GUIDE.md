@@ -209,6 +209,34 @@ The iteration flywheel (ADR-003) puts Gate 1 between research and build. For thi
 
 After Gate 1, the build starts from `deep-dives/_template/`, with `.gates.json` opting the dive into every Tier 1 gate from the first commit of `src/` (no-ai-tells, svg-a11y, pinned-refs, pinned-refs-research, required-files, pre-overflow), so the ratchet holds from day one. Gates 2 (human review on device) and 3 (no section below 7 of 10, average at least 8) follow the flywheel unchanged.
 
+### Gate 1 record (2026-11-07): fine-tuning rebuild research, PASS
+
+The rename-and-scope plan (`revamp/rename-and-scope-plan.md`) widens the dive from RL to fine-tuning in general, mostly RL, with three new sections (3, the map of fine-tuning techniques by signal source; 4, SFT and distillation; 11, distillation or RL). Its section 6 listed the research those sections need. Register: `research/2026-11/07-fine-tuning-signals.md`, built from three agent outputs kept under `research/2026-11/parts/`.
+
+**What was researched.**
+- Newest first-party post-training report per lab with open-weight models, 2025 to 2026 first, and four stage-by-stage pipelines (agent R1): DeepSeek-R1 v2, DeepSeek-V4 and V4.1-Flash, Qwen3 and Qwen3.5-Omni, Llama 4 (launch blog), Gemma 4, Kimi K3, Olmo 3, GLM-5, gpt-oss, Ministral 3, Nemotron-Cascade 2, MiniMax-M1, MiMo-V2-Flash.
+- Primary sources for SFT and distillation (R1): Hinton et al. 2015, Kim and Rush 2016, LIMA, the R1-Distill recipe and DeepSeek's statement on RL after distillation.
+- On-policy distillation (R1): GKD (ICLR 2024), MiniLLM (ICLR 2024), Thinking Machines' on-policy distillation post (Tier 2), Qwen3's comparison with RL from the same checkpoint, and a search for a matched-compute comparison.
+- TRL at the pin v1.16.0 (agent R2): how SFT keeps the prompt out of the loss, the stable on-policy `DistillationTrainer`, the experimental GKD trainer; freshness against v1.17.1.
+- AWS (R2): Bedrock's customisation overview, Bedrock Model Distillation (pairs, data, limits, billing), the status of continued pre-training, SageMaker AI's techniques and its one supported distillation method, Nova distillation.
+- Provider terms on training with outputs (R2): OpenAI, Anthropic, Gemini, Llama 4, DeepSeek-R1, Qwen3.
+- Refutation (agent R3): every 2026-dated source's identity, every number and stage claim the new sections use, the TRL code claims at the pinned SHA, the AWS and terms claims, and 17 in-hand rows from the 2026-10 registers.
+
+**Sources by tier.**
+- Tier 1: TRL code at commit 1b5c75ed (v1.16.0) and 44809ba3 (v1.17.1); Bedrock User Guide, API Reference and pricing page; SageMaker AI Developer Guide; Amazon Nova guides; first-party terms and licences at pinned revisions (OpenAI archived, Anthropic, Gemini, Llama 4, DeepSeek-R1, Qwen3-8B).
+- Tier 2: Thinking Machines, On-Policy Distillation and LoRA Without Regret; Meta's Llama 4 launch post. Their performance and cost figures stay the labs' claims on the page.
+- Tier 3: arXiv reports and papers at pinned versions, venue shown where confirmed (R1 in Nature 2025; GKD and MiniLLM at ICLR 2024; LIMA at NeurIPS 2023; the 2026 lab reports as preprints).
+
+**Verdicts.** 88 register entries (F07-1 to F07-63, F07-101 to F07-125). Refutation, 92 rows: HOLDS 87, SCOPE NARROWER 1 (Qwen3.5-Omni's "on-policy distillation" is self-distillation on fixed targets), WRONG 1 (TRL's GKD trainer with `seq_kd=True` is not plain SFT), NOT CHECKED (budget) 3, none of them load-bearing for the page. Both fixes are applied in the register.
+
+**Not found** (statements about this search, not about the world):
+- A study comparing distillation and RL from the same base at a matched compute budget. The closest evidence fixes the starting checkpoint and reports compute (Qwen3, 1,800 against 17,920 GPU hours).
+- A Meta post-training report newer than Llama 3 (July 2024); the Llama 4 launch blog (April 2025) is the newest first-party description, Tier 2.
+- A report for the text-only Qwen3.5, and a MiniMax report newer than MiniMax-M1 that gives its stages.
+- Whether Bedrock's continued pre-training is deprecated: the User Guide no longer documents it, the API still accepts the type, and no notice was found (UNVERIFIABLE).
+
+**Budget.** Three agents, never more than two at once: R1 61 fetches, R2 69 fetches, R3 73 of its 80. Plan item 4 (on-policy distillation gets a block in section 11 only with a peer-reviewed or first-party source) is met: GKD and MiniLLM (ICLR 2024), plus the lab reports.
+
 ---
 
 ## 8. Budget record

@@ -641,7 +641,7 @@ export function FineTuning() {
             The challenge is to size the run from that one change, then to choose a framework by the
             engine underneath it, since the engine decides the run&apos;s parallelism, checkpoints and
             precision. The algorithms belong to the{' '}
-            <Link href="../rl-agentic-loops/">RL and Agentic Learning Loops dive</Link>; this section
+            <Link href="../rl-agentic-loops/">Fine-Tuning, RL and Agentic Learning Loops dive</Link>; this section
             is the systems side.
           </Box>
         </SpaceBetween>
@@ -898,8 +898,8 @@ export function FineTuning() {
             algorithms and the step as a system, including where each engine runs and how weights move
             between them, in{' '}
             <Link href="../rl-agentic-loops/">
-              RL and Agentic Learning Loops dive, section 19: An RL Step Is an Inference Job Inside a
-              Training Job
+              Fine-Tuning, RL and Agentic Learning Loops dive, section 22: An RL Step Is an Inference
+              Job Inside a Training Job
             </Link>
             . What this dive adds is which training engine each framework reuses:
           </Box>

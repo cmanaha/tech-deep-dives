@@ -1,0 +1,2899 @@
+[
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 853,
+  "old": [
+   11,
+   16
+  ],
+  "new": [
+   14,
+   19
+  ],
+  "sentence": "Sections 6 to 9 change the weights; sections 14 to 19 change that text."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 853,
+  "old": [
+   4,
+   7
+  ],
+  "new": [
+   6,
+   9
+  ],
+  "sentence": "Sections 6 to 9 change the weights; sections 14 to 19 change that text."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 845,
+  "old": [
+   11
+  ],
+  "new": [
+   14
+  ],
+  "sentence": "That is our reading, and section 14 builds the words track on it."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 837,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Reflexion, a loop that writes a lesson into memory after each failed attempt and then retries (section 15), defines its policy as the agent's memory paired with a choice of model parameters [cite] ."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 792,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "s own samples (section 7 shows why)."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 645,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Section 10 reads the two as curves against k, and that comparison carries the dive's question of what RL adds to a model."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 602,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "Section 7 meets the first case: a batch reused for several updates is slightly off-policy from the second update on."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 594,
+  "old": [
+   6
+  ],
+  "new": [
+   8
+  ],
+  "sentence": "Training on a fixed file of responses that another model or a person produced is off-policy; section 8 meets it in preference training on a fixed dataset."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 557,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "Section 6 shows the two ways to estimate it: learn V with a critic, or sample it from other attempts at the same prompt."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 496,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "Section 2 introduced the KL divergence, section 7 builds it up, and the last part of this section reads that code."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 496,
+  "old": [
+   2
+  ],
+  "new": [
+   2
+  ],
+  "sentence": "Section 2 introduced the KL divergence, section 7 builds it up, and the last part of this section reads that code."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 468,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "The same holds whether the score comes from a reward model trained on human preferences (section 8) or from a program that checks the answer (section 9)."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 467,
+  "old": [
+   6
+  ],
+  "new": [
+   8
+  ],
+  "sentence": "The same holds whether the score comes from a reward model trained on human preferences (section 8) or from a program that checks the answer (section 9)."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 438,
+  "old": [
+   4,
+   7
+  ],
+  "new": [
+   6,
+   9
+  ],
+  "sentence": "<Container header={ <Header variant=\"h2\" description=\"See why one score at the end of a response is the difficulty that the methods of sections 6 to 9 exist to handle, and what the value and the advantage measure\" > One score at the end, spread over every token } > The reward arrives once."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 416,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "Section 6 builds both."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 408,
+  "old": [
+   9
+  ],
+  "new": [
+   12
+  ],
+  "sentence": "s side of the episode does not depend on the weights; section 12, Agentic RL, shows how."
+ },
+ {
+  "file": "LanguageModelAsPolicy.tsx",
+  "line": 388,
+  "old": [
+   6
+  ],
+  "new": [
+   8
+  ],
+  "sentence": "Its environment is a bandit environment that presents a random customer prompt, expects a response, scores it with the reward model (a second model trained to score responses the way human raters would, section 8) and ends the episode [cite] ."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 889,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "When section 7 introduces PPO, section 8 DPO and section 9 the GRPO variants, fill in the three columns before reading the loss: where the samples come from, what scores them, and how the score becomes the weight."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 889,
+  "old": [
+   6
+  ],
+  "new": [
+   8
+  ],
+  "sentence": "When section 7 introduces PPO, section 8 DPO and section 9 the GRPO variants, fill in the three columns before reading the loss: where the samples come from, what scores them, and how the score becomes the weight."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 888,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "When section 7 introduces PPO, section 8 DPO and section 9 the GRPO variants, fill in the three columns before reading the loss: where the samples come from, what scores them, and how the score becomes the weight."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 854,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "s coefficient also carries a term that pulls the model toward a frozen reference copy of the starting model, the KL (Kullback-Leibler divergence) penalty of section 7 [cite] ."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 852,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "In both papers the scorer is a reward model [cite] [cite] ; section 9 replaces it with a program."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 817,
+  "old": [
+   6
+  ],
+  "new": [
+   8
+  ],
+  "sentence": "Sections 7 and 8 add the PPO and DPO rows, and the full table closes section 8."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 817,
+  "old": [
+   5,
+   6
+  ],
+  "new": [
+   7,
+   8
+  ],
+  "sentence": "Sections 7 and 8 add the PPO and DPO rows, and the full table closes section 8."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 783,
+  "old": [
+   6
+  ],
+  "new": [
+   8
+  ],
+  "sentence": "s unified paradigm writes SFT, rejection-sampling fine-tuning, DPO (Direct Preference Optimization, which trains on pairs of responses where one was preferred, section 8), PPO and GRPO in one form: a gradient coefficient times the gradient of each token's log-probability, averaged over the tokens of each sample."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 740,
+  "old": [
+   3
+  ],
+  "new": [
+   5
+  ],
+  "sentence": "Gamma is section 5's discount factor."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 728,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "Section 9, RLVR & GRPO, develops the group baseline and the variants that change its terms."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 654,
+  "old": [
+   3
+  ],
+  "new": [
+   5
+  ],
+  "sentence": "Section 5's example, a token that moves the predicted score from 0.3 to 0.6 and earns no reward of its own, is this case: +0.3."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 639,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "PPO, the subject of section 7, Two Leashes, trains one, and RLHF (RL from human feedback) papers call it the critic [cite] ."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 621,
+  "old": [
+   3
+  ],
+  "new": [
+   5
+  ],
+  "sentence": "Section 5's value model is a second network trained alongside the policy to predict the reward a partial response will end up with."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 604,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "Section 9, RLVR & GRPO, returns to why such prompts waste the step."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 586,
+  "old": [
+   3
+  ],
+  "new": [
+   5
+  ],
+  "sentence": "The difference R - b is section 5's advantage: how much better or worse an attempt did than expected."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 523,
+  "old": [
+   3
+  ],
+  "new": [
+   5
+  ],
+  "sentence": "The noise grows with the length of the episode, because the effect of one action is confounded, mixed up, with the effects of the actions before and after it [cite] ; in the token-level view of section 5, every token of a response is one action."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 477,
+  "old": [
+   3
+  ],
+  "new": [
+   5
+  ],
+  "sentence": "Second, by section 5's factorisation, log pi(y | x) is the sum of the log-probabilities of y's tokens, so the update pushes on every token of y with the same weight, R."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 466,
+  "old": [
+   2
+  ],
+  "new": [
+   2
+  ],
+  "sentence": "A rule of calculus, the one section 2 promised, says the gradient of log pi(y | x) is the gradient of pi(y | x) divided by pi(y | x) itself: the same direction, scaled up by one over the probability."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 454,
+  "old": [
+   2
+  ],
+  "new": [
+   2
+  ],
+  "sentence": "grad log pi(y | x) is a gradient in section 2's sense, one entry for every weight of the model, pointing the way that most increases the probability of producing y again, and the update moves along it in proportion to the reward that followed [cite] ."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 441,
+  "old": [
+   2
+  ],
+  "new": [
+   2
+  ],
+  "sentence": "s weights (section 2), and pi(."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 440,
+  "old": [
+   3
+  ],
+  "new": [
+   5
+  ],
+  "sentence": "In the formula, pi(y | x) is the probability the current model gives response y to prompt x (section 5's π), log is the logarithm, grad is the gradient with respect to the model's weights (section 2), and pi(."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 394,
+  "old": [
+   1
+  ],
+  "new": [
+   1
+  ],
+  "sentence": "PPO (Proximal Policy Optimization) and GRPO (Group Relative Policy Optimization), the two RL (reinforcement learning) algorithms this dive keeps returning to, both update a model this way, and so does SFT (supervised fine-tuning, section 1), with every sample's weight set to 1 [cite] ."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 354,
+  "old": [
+   6
+  ],
+  "new": [
+   8
+  ],
+  "sentence": "{t} ))} ))} ))} {/* Rows the next two sections add */} Section 7 adds the PPO row and section 8 the DPO row ); } /* ------------------------------------------------------------------------ */ /* Section */ /* ------------------------------------------------------------------------ */ export function PolicyGradient() { return ( <Container"
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 354,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "{t} ))} ))} ))} {/* Rows the next two sections add */} Section 7 adds the PPO row and section 8 the DPO row ); } /* ------------------------------------------------------------------------ */ /* Section */ /* ------------------------------------------------------------------------ */ export function PolicyGradient() { return ( <SpaceBetwe"
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 273,
+  "old": [
+   5,
+   6
+  ],
+  "new": [
+   7,
+   8
+  ],
+  "sentence": "Sections 7 and 8 add rows for PPO and DPO."
+ },
+ {
+  "file": "PolicyGradient.tsx",
+  "line": 226,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "section 9'"
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 1030,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "s reinforcement fine-tuning (RFT) reports actor/entropy and actor/pg_clipfrac , the share of clipped updates, next to its reward statistics (the actor is the policy, in section 6's actor-critic terms); no KL metric was among those listed on the monitoring page read [cite] ."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 986,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "When it collapses the model samples nearly the same answer every time, so a group of samples has nothing left to compare (section 10, What RL Does to a Model, returns to it)."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 940,
+  "old": [
+   6
+  ],
+  "new": [
+   8
+  ],
+  "sentence": "Section 8, From Preferences to Rewards, adds the DPO (Direct Preference Optimization) row and completes the table."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 940,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "Rows 1 to 4 summarise section 6, where their sources are cited."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 930,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "Section 6 read the post-training methods in this dive as one gradient shape, a weight times the gradient of a token's log-probability, differing in where the samples come from, what scores them and how the score becomes the weight DeepSeekMath, Section 5.2.1, Table 10 </Cite"
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 922,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "<Container header={ <Header variant=\"h2\" description=\"Place PPO beside the four methods of section 6 and see each leash land in its own column\" > PPO's row in the gradient table } > Section 6 read the post-training methods in this dive as one gradient shape, a weight times the gradient of a token's log-probability, differing in where the s"
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 896,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "s weight in the gradient is its multiplier in section 6's sense."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 875,
+  "old": [
+   19
+  ],
+  "new": [
+   22
+  ],
+  "sentence": "Section 22 sizes the models an RL step holds in memory."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 682,
+  "old": [
+   19
+  ],
+  "new": [
+   22
+  ],
+  "sentence": "Section 22, An RL Step Is an Inference Job Inside a Training Job, covers that correction."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 573,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "At the start of a batch π_new equals π_old, so that is the gradient of π divided by π itself, which section 6 showed is grad log pi : the first update on a batch is exactly section 6's, the advantage times grad log pi ."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 572,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "At the start of a batch π_new equals π_old, so that is the gradient of π divided by π itself, which section 6 showed is grad log pi : the first update on a batch is exactly section 6's, the advantage times grad log pi ."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 568,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "ratio * A is section 6's policy gradient written for samples that came from π_old."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 498,
+  "old": [
+   3
+  ],
+  "new": [
+   5
+  ],
+  "sentence": "Every further step on the same batch uses evidence about a policy that no longer exists: the batch has gone slightly off-policy, in section 5's terms."
+ },
+ {
+  "file": "TwoLeashes.tsx",
+  "line": 452,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "Policy gradient (section 6, Policy Gradient) tells an RL (reinforcement learning) trainer which way to move the policy, the model read as a probability distribution over next tokens: toward attempts with a positive advantage (they scored better than expected) and away from attempts with a negative one."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 903,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "When the gap is one a program can check, take the RL route of section 9, RLVR & GRPO."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 895,
+  "old": [
+   23
+  ],
+  "new": [
+   26
+  ],
+  "sentence": "Section 26, RL & Learning Loops on AWS, maps the options."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 834,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "Neither study tests a verifier; section 9 covers RLVR (RL with verifiable rewards), where the reward is a program."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 808,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "Section 13, The Reward Is a Proxy, takes that up."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 768,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "The critique-and-revise half is a text loop with a frozen model, the kind section 15, Verbal Reinforcement & Self-Correction, develops; Constitutional AI then distils its output into the weights."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 651,
+  "old": [
+   4,
+   5
+  ],
+  "new": [
+   6,
+   7
+  ],
+  "sentence": "Rows 1 to 5 summarise sections 6 and 7, where their sources are cited."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 631,
+  "old": [
+   4,
+   5
+  ],
+  "new": [
+   6,
+   7
+  ],
+  "sentence": "Sections 6 and 7 filled five rows: SFT, REINFORCE, rejection-sampling fine-tuning, RLOO (REINFORCE Leave-One-Out) or GRPO (Group Relative Policy Optimization), and PPO, whose weight is the advantage (how much better an attempt did than expected) estimated with GAE (Generalized Advantage Estimation) from the critic."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 623,
+  "old": [
+   4,
+   5
+  ],
+  "new": [
+   6,
+   7
+  ],
+  "sentence": "<Container header={ <Header variant=\"h2\" description=\"Add DPO to the five rows of sections 6 and 7, and see it as the one method in the table that pushes a response down without sampling from the model it trains\" > The gradient table, complete } > Sections 6 and 7 filled five rows: SFT, REINFORCE, rejection-sampling fine-tuning, RLOO (REINF"
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 455,
+  "old": [
+   19
+  ],
+  "new": [
+   22
+  ],
+  "sentence": "Section 22, An RL Step Is an Inference Job Inside a Training Job, sizes them."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 426,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "s Clip & the KL, covers that penalty, and section 13, The Reward Is a Proxy, what happens when the policy finds where the scorer is wrong."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 426,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "Section 7, Two Leashes: PPO's Clip & the KL, covers that penalty, and section 13, The Reward Is a Proxy, what happens when the policy finds where the scorer is wrong."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 349,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "The challenge is to turn \"A is better than B\" into the one number per attempt that policy gradient needs to update the policy, the model seen as a probability distribution over responses (section 6, Policy Gradient), or to find a way around that number."
+ },
+ {
+  "file": "PreferencesToRewards.tsx",
+  "line": 233,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "); } /* ------------------------------------------------------------------------ */ /* The gradient table, complete */ /* ------------------------------------------------------------------------ */ interface GradientRow { id: string; method: string; isNew: boolean; source: string; scorer: string; weight: string; } /** Rows 1 to 5 repeat section 7's table word for word; row 6 is this section's."
+ },
+ {
+  "file": "RlvrAndGrpo.tsx",
+  "line": 1173,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "Section 25, Choosing a Text Loop, a Hybrid or a Weight Update, turns the same measurement into its second decision question: what the model scores on your signal today."
+ },
+ {
+  "file": "RlvrAndGrpo.tsx",
+  "line": 860,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "Two terms from section 7 recur."
+ },
+ {
+  "file": "RlvrAndGrpo.tsx",
+  "line": 859,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "\"Bias\" in this table means a systematic tilt in the objective, a different sense from the statistical bias of section 6."
+ },
+ {
+  "file": "RlvrAndGrpo.tsx",
+  "line": 813,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "s defaults switch off the KL (Kullback-Leibler divergence) penalty of section 7 and the entropy bonus, so under them prompt B adds no gradient to the step [cite] [cite] ."
+ },
+ {
+  "file": "RlvrAndGrpo.tsx",
+  "line": 765,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "GRPO is the sampled-baseline route of section 6, Policy Gradient."
+ },
+ {
+  "file": "RlvrAndGrpo.tsx",
+  "line": 747,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Section 10, What RL Does to a Model, reads these results as pass@k curves, where pass@k is the chance that at least one of k samples is correct."
+ },
+ {
+  "file": "RlvrAndGrpo.tsx",
+  "line": 689,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "Section 13, The Reward Is a Proxy, takes up what a checker can still miss."
+ },
+ {
+  "file": "RlvrAndGrpo.tsx",
+  "line": 335,
+  "old": [
+   4
+  ],
+  "new": [
+   6
+  ],
+  "sentence": "s baseline from the other answers, the sampled baseline of section 6 ), without: ( REINFORCE++'s authors argue that per-prompt normalisation is a biased estimator with a tendency to overfit."
+ },
+ {
+  "file": "WhatRlDoes.tsx",
+  "line": 868,
+  "old": [
+   11
+  ],
+  "new": [
+   14
+  ],
+  "sentence": "Section 23, Cost per Improvement, prices the per-query route against training, and the words track from section 14, A Text Loop Is RL on the Context, onward takes up what a loop can learn that RL mostly does not: instructions, procedures and facts."
+ },
+ {
+  "file": "WhatRlDoes.tsx",
+  "line": 867,
+  "old": [
+   20
+  ],
+  "new": [
+   23
+  ],
+  "sentence": "Section 23, Cost per Improvement, prices the per-query route against training, and the words track from section 14, A Text Loop Is RL on the Context, onward takes up what a loop can learn that RL mostly does not: instructions, procedures and facts."
+ },
+ {
+  "file": "WhatRlDoes.tsx",
+  "line": 835,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "DeepSeek dropped PRMs as a training reward: steps are hard to define, step correctness is hard to label at scale, and a model-based PRM leads to reward hacking (the policy learning to exploit the scorer; section 13, The Reward Is a Proxy)."
+ },
+ {
+  "file": "WhatRlDoes.tsx",
+  "line": 706,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "s probability; section 7 covers it) that amplifies behaviour the model already has, here reasoning in code it never runs [cite] ; another points to benchmark contamination Reasoning or"
+ },
+ {
+  "file": "WhatRlDoes.tsx",
+  "line": 614,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "Section 7, Two Leashes: PPO's Clip & the KL, shows where to read it on a dashboard."
+ },
+ {
+  "file": "WhatRlDoes.tsx",
+  "line": 516,
+  "old": [
+   9
+  ],
+  "new": [
+   12
+  ],
+  "sentence": "Section 12, Agentic RL, covers that study."
+ },
+ {
+  "file": "WhatRlDoes.tsx",
+  "line": 379,
+  "old": [
+   3
+  ],
+  "new": [
+   5
+  ],
+  "sentence": "Section 5, The Language Model Is Already a Policy, shows how to estimate pass@k from a fixed number of samples."
+ },
+ {
+  "file": "WhatRlDoes.tsx",
+  "line": 338,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "RL (reinforcement learning) with verifiable rewards, RLVR, trains a model on tasks where a program checks each answer and the check is the reward (section 9, RLVR & GRPO)."
+ },
+ {
+  "file": "AgenticRl.tsx",
+  "line": 938,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "Once training runs, section 9, RLVR & GRPO, names the TRL metric that tracks such groups."
+ },
+ {
+  "file": "AgenticRl.tsx",
+  "line": 931,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "Whichever trainer runs the update, the first deliverable is the environment: a reset into a task, tools that return text, limits on turns, length and time, and a grader that runs once per episode and that the agent cannot satisfy without doing the task (section 13, The Reward Is a Proxy, gives the checklist)."
+ },
+ {
+  "file": "AgenticRl.tsx",
+  "line": 924,
+  "old": [
+   23
+  ],
+  "new": [
+   26
+  ],
+  "sentence": "Section 26, RL & Learning Loops on AWS, covers the service."
+ },
+ {
+  "file": "AgenticRl.tsx",
+  "line": 896,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "Under GRPO the filter also drops the groups that section 9's rule already makes useless: a group whose episodes all score the same has zero advantage and carries no gradient."
+ },
+ {
+  "file": "AgenticRl.tsx",
+  "line": 834,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "The RL arm is a LoRA adapter, and k stops at 64, below the sample counts of the static-reasoning studies in section 10."
+ },
+ {
+  "file": "AgenticRl.tsx",
+  "line": 804,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Our reading: the tool supplies information the model does not hold, and RL taught it to use that information, which fits the tool condition of section 10."
+ },
+ {
+  "file": "AgenticRl.tsx",
+  "line": 772,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Section 10, What RL Does to a Model, reads that difference as a curve: pass@k is the chance that at least one of k attempts succeeds, and on static reasoning the base model tends to catch up as k grows."
+ },
+ {
+  "file": "RewardIsAProxy.tsx",
+  "line": 998,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "Section 18, Your Loops Through the RL Lens, applies the checklist to the loops you run; section 24, Side by Side on a DGX Spark, to the lab; and section 25, Choosing a Text Loop, a Hybrid or a Weight Update, to the choice."
+ },
+ {
+  "file": "RewardIsAProxy.tsx",
+  "line": 997,
+  "old": [
+   21
+  ],
+  "new": [
+   24
+  ],
+  "sentence": "Section 18, Your Loops Through the RL Lens, applies the checklist to the loops you run; section 24, Side by Side on a DGX Spark, to the lab; and section 25, Choosing a Text Loop, a Hybrid or a Weight Update, to the choice."
+ },
+ {
+  "file": "RewardIsAProxy.tsx",
+  "line": 995,
+  "old": [
+   15
+  ],
+  "new": [
+   18
+  ],
+  "sentence": "Section 18, Your Loops Through the RL Lens, applies the checklist to the loops you run; section 24, Side by Side on a DGX Spark, to the lab; and section 25, Choosing a Text Loop, a Hybrid or a Weight Update, to the choice."
+ },
+ {
+  "file": "RewardIsAProxy.tsx",
+  "line": 903,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Section 15, Verbal Reinforcement & Self-Correction, takes up that result."
+ },
+ {
+  "file": "RewardIsAProxy.tsx",
+  "line": 602,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "With a KL penalty the gold score converged earlier on the same curve, an effect section 7 covers."
+ },
+ {
+  "file": "RewardIsAProxy.tsx",
+  "line": 524,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "s; section 7, Two Leashes: PPO's Clip & the KL)."
+ },
+ {
+  "file": "RewardIsAProxy.tsx",
+  "line": 501,
+  "old": [
+   6
+  ],
+  "new": [
+   8
+  ],
+  "sentence": "The classic proxy is a reward model, a network trained to predict which of two answers a person prefers (section 8, From Preferences to Rewards)."
+ },
+ {
+  "file": "RewardIsAProxy.tsx",
+  "line": 479,
+  "old": [
+   15,
+   21,
+   22
+  ],
+  "new": [
+   18,
+   24,
+   25
+  ],
+  "sentence": "The section ends on the grader checklist that sections 18, 24 and 25 apply."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 1078,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Section 15 starts there."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 1073,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "Section 20, Where Words Fall Short, takes this further."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 1054,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 16, Memories, Playbooks & Skill Libraries, covers update rules that keep what they learned."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 1042,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Section 15, Verbal Reinforcement & Self-Correction, compares loops with and without an outside signal."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 1018,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 16, Memories, Playbooks & Skill Libraries, develops step size as a design choice."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 1000,
+  "old": [
+   12,
+   16
+  ],
+  "new": [
+   15,
+   19
+  ],
+  "sentence": "Sections 15 to 19 develop each one."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 978,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "It is the question section 25, Choosing a Text Loop, a Hybrid or a Weight Update, asks of any signal you have."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 953,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Their sources are in the table below; section 15, Verbal Reinforcement & Self-Correction, shows what grading without ground truth does to a loop."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 925,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "Short names in the grid and the table: GRPO is Group Relative Policy Optimization, the RL algorithm of section 9, which scores each answer against the others sampled for the same prompt and calls the difference its advantage; ACE is Agentic Context Engineering; GEPA is Genetic-Pareto; OPRO is Optimization by PROmpting; ProTeGi is Prompt Optimization with Textual Gradients; MIPROv2 is DSPy's implementation of MIPRO (Multi-prompt Instruction PRopos"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 921,
+  "old": [
+   9
+  ],
+  "new": [
+   12
+  ],
+  "sentence": "Its weights row holds reference points: runs of RLVR (RL with verifiable rewards, where a program checks each answer) from section 9, RLVR & GRPO, and section 12, Agentic RL."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 921,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "Its weights row holds reference points: runs of RLVR (RL with verifiable rewards, where a program checks each answer) from section 9, RLVR & GRPO, and section 12, Agentic RL."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 910,
+  "old": [
+   1
+  ],
+  "new": [
+   1
+  ],
+  "sentence": "Section 1, One Loop, Three Places to Keep What It Learns, named the three stores: the weights, the context a frozen model reads, and a small trained model that writes context for a large one."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 800,
+  "old": [
+   3,
+   10
+  ],
+  "new": [
+   5,
+   13
+  ],
+  "sentence": "<Container header={ <Header variant=\"h2\" description=\"Name the policy, the parameters, the learner and the environment of any text loop, and the RL vocabulary of sections 5 to 13 applies to it\" > The analogy, made exact } > In RL, the policy is the probability distribution an agent samples its actions from, and training changes the parameters that define it."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 774,
+  "old": [
+   3,
+   10
+  ],
+  "new": [
+   5,
+   13
+  ],
+  "sentence": "Sections 5 to 13 built the vocabulary of RL (reinforcement learning) on the weights."
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 703,
+  "old": [
+   16
+  ],
+  "new": [
+   19
+  ],
+  "sentence": "Section 19'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 688,
+  "old": [
+   16
+  ],
+  "new": [
+   19
+  ],
+  "sentence": "Section 19'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 673,
+  "old": [
+   16
+  ],
+  "new": [
+   19
+  ],
+  "sentence": "Section 19'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 658,
+  "old": [
+   15
+  ],
+  "new": [
+   18
+  ],
+  "sentence": "Section 18'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 638,
+  "old": [
+   15
+  ],
+  "new": [
+   18
+  ],
+  "sentence": "Section 18'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 616,
+  "old": [
+   15
+  ],
+  "new": [
+   18
+  ],
+  "sentence": "Section 18'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 601,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "Section 17'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 579,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "Section 17'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 564,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "Section 17'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 549,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "Section 17'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 534,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "Section 17'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 519,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 16'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 504,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 16'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 489,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 16'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 474,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 16'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 459,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 16'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 444,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 16'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 429,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 16'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 414,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Section 15'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 399,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Section 15'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 185,
+  "old": [
+   7,
+   9
+  ],
+  "new": [
+   9,
+   12
+  ],
+  "sentence": "RL on the weights (sections 9 and 12)' }, ]; function legendLayout(): Array { let x = SG_HEAD_X; return SG_LEGEND.map((item) => { const at = x; x += 28 + 8 + Math.ceil(item.text.length * 6.2) + 28; return { ...item, x: at }; }); } const SG_LEGEND_ITEMS = legendLayout(); function StoreSignalDiagram() { return ("
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 107,
+  "old": [
+   16
+  ],
+  "new": [
+   19
+  ],
+  "sentence": "frozen one, section 19'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 76,
+  "old": [
+   12,
+   15
+  ],
+  "new": [
+   15,
+   18
+  ],
+  "sentence": "sections 15 to 18'"
+ },
+ {
+  "file": "TextLoopAsRl.tsx",
+  "line": 69,
+  "old": [
+   3,
+   10
+  ],
+  "new": [
+   5,
+   13
+  ],
+  "sentence": "sections 5 to 13'"
+ },
+ {
+  "file": "VerbalReinforcement.tsx",
+  "line": 759,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "Then check that signal the way you would check an RL reward, with the grader checklist in section 13, The Reward Is a Proxy."
+ },
+ {
+  "file": "VerbalReinforcement.tsx",
+  "line": 722,
+  "old": [
+   16
+  ],
+  "new": [
+   19
+  ],
+  "sentence": "Section 19, Hybrids, covers that pattern."
+ },
+ {
+  "file": "VerbalReinforcement.tsx",
+  "line": 502,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Memory that accumulates across many tasks is the subject of section 16, Memories, Playbooks & Skill Libraries."
+ },
+ {
+  "file": "AccumulatingExperience.tsx",
+  "line": 773,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": ", and ExpeL extracts insights from success and failure pairs; adding free-floating reflections on failures dropped ExpeL on HotPotQA (multi-hop questions over Wikipedia) from 39.0 to 29.0 [cite] (section 15 has the detail)."
+ },
+ {
+  "file": "AccumulatingExperience.tsx",
+  "line": 660,
+  "old": [
+   20
+  ],
+  "new": [
+   23
+  ],
+  "sentence": "Training-Free GRPO was cheap to learn and dearer per query, again on a pair that compares different base models Training-Free GRPO, Section 4.2 ; section 23, Cost per Improvement, prices it."
+ },
+ {
+  "file": "AccumulatingExperience.tsx",
+  "line": 608,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "Section 13, The Reward Is a Proxy, gives the grader checklist that applies to it unchanged."
+ },
+ {
+  "file": "AccumulatingExperience.tsx",
+  "line": 582,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Section 15, Verbal Reinforcement & Self-Correction, showed a reflection loop learning only from a signal outside the model, and a store inherits that rule."
+ },
+ {
+  "file": "AccumulatingExperience.tsx",
+  "line": 565,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "In our reading, a store learns from tasks the model already solves some of the time, the condition section 9 sets for a GRPO group to carry any gradient."
+ },
+ {
+  "file": "AccumulatingExperience.tsx",
+  "line": 527,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "In RL terms, our reading: this is an update with no trust region, the limit that PPO (Proximal Policy Optimization) puts on how far one step can move the policy (section 7, Two Leashes: PPO's Clip & the KL)."
+ },
+ {
+  "file": "AccumulatingExperience.tsx",
+  "line": 492,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "GRPO (section 9, RLVR & GRPO) samples a group of answers to one prompt and scores each by its advantage, how much better it did than the group's average."
+ },
+ {
+  "file": "AccumulatingExperience.tsx",
+  "line": 450,
+  "old": [
+   11
+  ],
+  "new": [
+   14
+  ],
+  "sentence": "Every store has an update rule, and the rule sets how much of the store one update changes: the step size of section 14, A Text Loop Is RL on the Context."
+ },
+ {
+  "file": "PromptOptimization.tsx",
+  "line": 854,
+  "old": [
+   20
+  ],
+  "new": [
+   23
+  ],
+  "sentence": "When the model cannot do the task even after reading worked solutions, or the right output depends on something hidden per input, plan for weights instead: section 19, Hybrids, and section 23, Cost per Improvement, which prices the two routes over the queries the result will serve."
+ },
+ {
+  "file": "PromptOptimization.tsx",
+  "line": 854,
+  "old": [
+   16
+  ],
+  "new": [
+   19
+  ],
+  "sentence": "When the model cannot do the task even after reading worked solutions, or the right output depends on something hidden per input, plan for weights instead: section 19, Hybrids, and section 23, Cost per Improvement, which prices the two routes over the queries the result will serve."
+ },
+ {
+  "file": "PromptOptimization.tsx",
+  "line": 684,
+  "old": [
+   16
+  ],
+  "new": [
+   19
+  ],
+  "sentence": "Section 19, Hybrids, covers putting weights in front of a frozen model for that case."
+ },
+ {
+  "file": "PromptOptimization.tsx",
+  "line": 481,
+  "old": [
+   11
+  ],
+  "new": [
+   14
+  ],
+  "sentence": "Section 14, A Text Loop Is RL on the Context, places each of them in the dive's shared vocabulary."
+ },
+ {
+  "file": "YourLoops.tsx",
+  "line": 775,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "The mechanism is in the vLLM dive, section 6: Automatic Prefix Caching , and section 20, Where Words Fall Short, prices what an edit early in an evolving context costs."
+ },
+ {
+  "file": "YourLoops.tsx",
+  "line": 753,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "Huntley argues for this from his own use; section 20 has the measurements on long contexts."
+ },
+ {
+  "file": "YourLoops.tsx",
+  "line": 702,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "Section 13, The Reward Is a Proxy, ends on four grader checks that apply here unchanged: evaluator code the agent cannot edit, hidden or read-only tests, a held-out metric, and monitors kept out of the reward."
+ },
+ {
+  "file": "YourLoops.tsx",
+  "line": 694,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "<Container header={ <Header variant=\"h2\" description=\"Harden the loop you run tonight: section 13's grader checks first, then six checks that each supply a part the map marked missing or weak\" > The hardening checklist } > Start with the evaluator."
+ },
+ {
+  "file": "YourLoops.tsx",
+  "line": 684,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "Section 20, Where Words Fall Short, covers the measurements of how models use long contexts."
+ },
+ {
+  "file": "YourLoops.tsx",
+  "line": 519,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "Section 13 showed the other weak point of this layout: the evaluation runs the model code the agent edits."
+ },
+ {
+  "file": "Hybrids.tsx",
+  "line": 471,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "Two static methods, PAG (Profile-Augmented Generation) and GEPA (Genetic-Pareto, the reflective prompt optimiser of section 17, Optimising the Prompt), landed \"marginally above the un-optimized baselines, if at all\"."
+ },
+ {
+  "file": "Hybrids.tsx",
+  "line": 422,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "Section 20, Where Words Fall Short, covers the exploration failure these address."
+ },
+ {
+  "file": "Hybrids.tsx",
+  "line": 394,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Section 15, Verbal Reinforcement & Self-Correction, covers the frozen-reflection side of that example."
+ },
+ {
+  "file": "WhereWordsFallShort.tsx",
+  "line": 710,
+  "old": [
+   18
+  ],
+  "new": [
+   21
+  ],
+  "sentence": "Where a gap survives these changes, section 21, What Lives in Weights & What Lives in Context, maps which improvements belong in the weights instead."
+ },
+ {
+  "file": "WhereWordsFallShort.tsx",
+  "line": 639,
+  "old": [
+   15
+  ],
+  "new": [
+   18
+  ],
+  "sentence": "Practitioners answer the cliff in two ways: restart each iteration with a fresh context and keep state in files, as the Ralph loop in section 18 does, or keep one long session and compact it by summarising its history."
+ },
+ {
+  "file": "WhereWordsFallShort.tsx",
+  "line": 558,
+  "old": [
+   15
+  ],
+  "new": [
+   18
+  ],
+  "sentence": "The design that follows makes credit cheap to assign, so the model never has to find it: one change per trial, so the score belongs to that change, as in section 18's checklist, and a short log per attempt, since accuracy fell as logs grew (our reading)."
+ },
+ {
+  "file": "WhereWordsFallShort.tsx",
+  "line": 528,
+  "old": [
+   9
+  ],
+  "new": [
+   12
+  ],
+  "sentence": "Section 12, Agentic RL, walks through that code."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 873,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "Section 25, Choosing a Text Loop, a Hybrid or a Weight Update, adds the other two, what signal you have and what the model scores on it today, and whether you can touch the weights and how many queries the result will serve."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 872,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "The marks answer the first of section 25's three questions: what kind of gap it is."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 857,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "<Container header={ <Header variant=\"h2\" description=\"Classify the gap you have now, one row at a time, and take the marks to section 25, where the choice of method starts\" > Classify your gap, row by row } > Write the gap down in one sentence."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 848,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "On the context side, when a prompt optimiser and RL changed the same 8B model, the optimiser fell short on AIME, a competition-math exam, and came within a point of RL on the other math benchmark; section 17 reports both."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 845,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Section 10 lays out the debate and the settings in which the boundary moved."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 829,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "s Qwen2.5-32B, on every benchmark reported [cite] ; section 9, RLVR & GRPO (RL with verifiable rewards and Group Relative Policy Optimization), gives the figures."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 814,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "The context store has its own way to lose ground, a store polluted by misleading feedback, which section 16 covers."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 811,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Section 10, What RL Does to a Model, covers why RL moves the model less than SFT."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 782,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "While the text is still changing, keeping it in context costs tokens on every call and keeps each edit cheap; section 20, Where Words Fall Short, covers how prompt caching prices a stable prefix and re-prices an edited one."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 532,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "s context; section 20, Where Words Fall Short, carries that evidence."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 529,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Sharpening raises pass@1, the chance that one attempt is right, toward pass@k, the chance that at least one of k attempts is right; section 10, What RL Does to a Model, shows how to read it and what buying it per query costs."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 527,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "Instructions and procedures belong in context when a reliable signal writes them: see section 16, Memories, Playbooks & Skill Libraries, and section 17, Optimising the Prompt."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 526,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Instructions and procedures belong in context when a reliable signal writes them: see section 16, Memories, Playbooks & Skill Libraries, and section 17, Optimising the Prompt."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 498,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "Section 25, Choosing a Text Loop, a Hybrid or a Weight Update, starts from the classification this map produces."
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 425,
+  "old": [
+   7,
+   8
+  ],
+  "new": [
+   9,
+   10
+  ],
+  "sentence": "Look for a stronger teacher first; sections 9 and 10 cover distillation and the RL debate.'"
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 418,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "Section 20: keep the statistics in code and hand the model a summary.'"
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 383,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "s pass@k on your task; section 10 shows how to read it and what sampling costs.\", }, { id: 'format'"
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 376,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 17 for one optimised prompt; section 16 for a playbook that grows.'"
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 376,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "Section 17 for one optimised prompt; section 16 for a playbook that grows.'"
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 116,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "math benchmark: section 17'"
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 108,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "tested: section 20'"
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 107,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "section 20'"
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 71,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "more often: section 10'"
+ },
+ {
+  "file": "WeightsVsContext.tsx",
+  "line": 65,
+  "old": [
+   13,
+   14
+  ],
+  "new": [
+   16,
+   17
+  ],
+  "sentence": "writes them: sections 16, 17'"
+ },
+ {
+  "file": "CostPerImprovement.tsx",
+  "line": 1193,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "Section 16, Memories, Playbooks & Skill Libraries, compares the two methods on 32B-class models."
+ },
+ {
+  "file": "CostPerImprovement.tsx",
+  "line": 1151,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Section 10, What RL Does to a Model, covers a training-free sampler that sharpens a frozen model's answers at about 8.84 times the tokens of standard inference, in the paper's MATH-500 (500 competition mathematics problems) setting ."
+ },
+ {
+  "file": "CostPerImprovement.tsx",
+  "line": 1086,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "s one same-model pair of training budgets is GEPA (Genetic-Pareto), the reflective prompt optimiser of section 17, Optimising the Prompt, against GRPO with LoRA (Low-Rank Adaptation) on Qwen3 8B."
+ },
+ {
+  "file": "CostPerImprovement.tsx",
+  "line": 1077,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "DAPO (Decoupled Clip and Dynamic sAmpling Policy Optimization) is the GRPO variant of section 9 that raises the upper clip bound, keeps only prompts whose group of answers is neither all right nor all wrong, and averages the loss over every token in the batch."
+ },
+ {
+  "file": "CostPerImprovement.tsx",
+  "line": 1065,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "GRPO (GRPO Done Right), the GRPO variant of section 9 that drops the division by each answer's length and by the group's standard deviation, on Qwen2.5-Math-7B took 27 hours on 8 A100s , 216 GPU-hours by our arithmetic."
+ },
+ {
+  "file": "CostPerImprovement.tsx",
+  "line": 330,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Inference-time sampling, no training (section 10)'"
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 965,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "Then take the three readings to section 25, Choosing a Text Loop, a Hybrid or a Weight Update, where they become its decision questions: what kind of gap it is, what your signal scores today, and how many queries the learned artifact will serve."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 958,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "On a 0.5B model the text loops run with a 0.5B reflector unless you record a larger one, and section 17 shows the optimiser's own capability bounds a text loop."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 953,
+  "old": [
+   20
+  ],
+  "new": [
+   23
+  ],
+  "sentence": "Section 23, Cost per Improvement, turns those into a breakeven volume."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 920,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "s pass@1 gain at n times the inference cost (section 10, under what a frozen model can buy back)."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 915,
+  "old": [
+   13
+  ],
+  "new": [
+   16
+  ],
+  "sentence": "The learned prompt or playbook rides along on every query (section 16, Memories, Playbooks & Skill Libraries)."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 909,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Feed the verdict to the reflector on every attempt; section 15, Verbal Reinforcement & Self-Correction, shows what a reflection loop does without a signal from outside the model."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 905,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "A prompt optimiser beat GRPO on one 8B model with a fraction of its rollouts (section 17)."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 899,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "On the models tested, RL raised pass@1 while pass@k at large k held or fell (section 10, What RL Does to a Model)."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 895,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "On AIME-2025, a competition-math exam, GRPO beat a prompt optimiser on the same model (section 17, Optimising the Prompt)."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 797,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Use one small Qwen-family instruct model (0.5B to 1.5B) and one non-Qwen control of similar size; section 10, What RL Does to a Model, explains why results differ by model family."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 788,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "s write path, and check it against the grader checklist in section 13, The Reward Is a Proxy, before any arm trains on it."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 649,
+  "old": [
+   19
+  ],
+  "new": [
+   22
+  ],
+  "sentence": "That disagreement is why TRL pays for the extra forward pass by default; section 22 covers the correction."
+ },
+ {
+  "file": "SideBySideLab.tsx",
+  "line": 596,
+  "old": [
+   19
+  ],
+  "new": [
+   22
+  ],
+  "sentence": "Section 22, An RL Step Is an Inference Job Inside a Training Job, explains each stage; this run gives you one measured point to plan from."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 861,
+  "old": [
+   20
+  ],
+  "new": [
+   23
+  ],
+  "sentence": "s gains stop clearing the noise floor and your answers to questions 1 and 3 point there, with section 23's breakeven as the check on the price."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 835,
+  "old": [
+   15
+  ],
+  "new": [
+   18
+  ],
+  "sentence": "A later change counts as a win only when its gain clears the floor or repeats (section 18, Your Loops Through the RL Lens)."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 824,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "Before anything optimises against it, run section 13's four checks, which apply to a training run and a text loop alike: evaluator code the agent cannot edit, hidden or read-only tests, a held-out metric, and monitors kept out of the reward."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 779,
+  "old": [
+   18
+  ],
+  "new": [
+   21
+  ],
+  "sentence": "A person can read every line of a prompt or a playbook, review a change before it ships, and delete it; section 21 counts auditability among the properties the context store holds."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 728,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Whether RL alone adds new reasoning skill is contested (section 10), which is why a stronger teacher comes first where one exists."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 726,
+  "old": [
+   19
+  ],
+  "new": [
+   22
+  ],
+  "sentence": "s score sits between the two thresholds (section 9, RLVR & GRPO, for the algorithm; section 22, An RL Step Is an Inference Job Inside a Training Job, for sizing a self-run job)."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 725,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "s score sits between the two thresholds (section 9, RLVR & GRPO, for the algorithm; section 22, An RL Step Is an Inference Job Inside a Training Job, for sizing a self-run job)."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 681,
+  "old": [
+   16
+  ],
+  "new": [
+   19
+  ],
+  "sentence": "When the model is an API model and the right behaviour varies per input (section 19, Hybrids)."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 653,
+  "old": [
+   14
+  ],
+  "new": [
+   17
+  ],
+  "sentence": "On Qwen3 8B, GEPA (Genetic-Pareto, the reflective prompt optimiser of section 17) reached 54.85 on a six-task aggregate against 48.91 for GRPO trained through LoRA (Low-Rank Adaptation) adapters and 45.23 for the base model, spending 1,839 to 7,051 rollouts per task against GRPO's 24,000."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 652,
+  "old": [
+   13,
+   15
+  ],
+  "new": [
+   16,
+   18
+  ],
+  "sentence": "The default first move for missing instructions and procedures, on an API model or your own (sections 16 to 18)."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 644,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "s own pass@K (section 10)."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 635,
+  "old": [
+   23
+  ],
+  "new": [
+   26
+  ],
+  "sentence": "Section 26, RL & Learning Loops on AWS, details each service and what the customer brings to it."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 626,
+  "old": [
+   23
+  ],
+  "new": [
+   26
+  ],
+  "sentence": "<Container header={ <Header variant=\"h2\" description=\"Match your three answers to a path, and find the AWS service that runs it, detailed in section 26\" > Six paths, and the AWS service for each } > Each path names the answers that lead to it and, in one phrase, the AWS service that runs it where one exists."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 616,
+  "old": [
+   20
+  ],
+  "new": [
+   23
+  ],
+  "sentence": "Section 23, Cost per Improvement, turns your rates, your volume and your measured quality gap into the breakeven."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 613,
+  "old": [
+   17
+  ],
+  "new": [
+   20
+  ],
+  "sentence": "A text loop pays for its instructions on every call; section 20, Where Words Fall Short, covers how prompt caching prices a stable prefix."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 534,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "Section 9, RLVR & GRPO (RLVR: RL with verifiable rewards), turns a base rate into the expected share of silent groups for your group size."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 525,
+  "old": [
+   21
+  ],
+  "new": [
+   24
+  ],
+  "sentence": "Our own run (section 24, Side by Side on a DGX Spark) shows the low end on a live trainer."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 496,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "Anything weaker is nothing trustworthy, and then the first task is building the grader, against the four checks that end section 13, The Reward Is a Proxy."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 465,
+  "old": [
+   18
+  ],
+  "new": [
+   21
+  ],
+  "sentence": "Latency and token cost fall when instructions move into the weights, and the spread and confidence of outputs are set by the probabilities training produces (section 21)."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 463,
+  "old": [
+   16
+  ],
+  "new": [
+   19
+  ],
+  "sentence": "Behaviour that depends on something hidden in each input needs weights that read each input, and those can belong to a small advisor in front of a frozen model (section 19, Hybrids)."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 454,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Section 10, What RL Does to a Model, shows how to read the base model's pass@k curve and how much of the gap a frozen model can buy back when it answers."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 446,
+  "old": [
+   13,
+   14
+  ],
+  "new": [
+   16,
+   17
+  ],
+  "sentence": "Sections 16 and 17 cover a playbook that grows and a prompt that is optimised."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 436,
+  "old": [
+   18
+  ],
+  "new": [
+   21
+  ],
+  "sentence": "Section 21, What Lives in Weights & What Lives in Context, maps each kind of improvement to the store that holds it best, and its row-by-row table is the input to this question."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 428,
+  "old": [
+   18
+  ],
+  "new": [
+   21
+  ],
+  "sentence": "<Container header={ <Header variant=\"h2\" description=\"Put your gap in one of three kinds, using section 21's map, and the store that can hold its fix follows\" > 1."
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 302,
+  "old": [
+   20
+  ],
+  "new": [
+   23
+  ],
+  "sentence": "Can you touch the weights, and how many queries will it serve? API access only, or weights you own; section 23 prices the volume {/* Six paths */} {CT_LEAVES.map((pair, lane) => pair.map((leaf, side) => { const x = leafX(lane, side); const cx = x + CT_LEAF_W / 2; return ("
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 207,
+  "old": [
+   18
+  ],
+  "new": [
+   21
+  ],
+  "sentence": "What kind of gap is it? section 21's map: mark every row Output format: contested <text x={662} y={45} className="
+ },
+ {
+  "file": "Choosing.tsx",
+  "line": 104,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "No trustworthy signal: build the grader first (section 13)'"
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 874,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "Path (section 25)'"
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 872,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "variant=\"embedded\" wrapLines header={ Each path from section 25, and where it runs on AWS } columnDefinitions={[ { id: 'path'"
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 841,
+  "old": [
+   16
+  ],
+  "new": [
+   19
+  ],
+  "sentence": "An advisor, section 19's small trained model that writes per-input advice into a frozen model's prompt, can be an open-weight model trained on SageMaker AI and placed in front of a Bedrock model."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 839,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "Two of section 25's paths have no dedicated service, on our reading of the services covered here."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 826,
+  "old": [
+   13,
+   15
+  ],
+  "new": [
+   16,
+   18
+  ],
+  "sentence": "Any loop from sections 16 to 18 can run against Bedrock models with nothing AWS-specific beyond the model API (our reading)."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 818,
+  "old": [
+   13,
+   15
+  ],
+  "new": [
+   16,
+   18
+  ],
+  "sentence": "<Container header={ <Header variant=\"h2\" description=\"Run any loop from sections 16 to 18 on Bedrock models, and assemble the two paths that have no dedicated service among those covered here\" > Words, self-run, and two paths with no dedicated service } > Any loop from sections 16 to 18 can run against Bedrock models with nothing"
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 792,
+  "old": [
+   12
+  ],
+  "new": [
+   15
+  ],
+  "sentence": "Our reading is that this verdict reads the transcript with no external check, the kind of signal section 13, The Reward Is a Proxy, and section 15, Verbal Reinforcement & Self-Correction, identify as weak."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 792,
+  "old": [
+   10
+  ],
+  "new": [
+   13
+  ],
+  "sentence": "Our reading is that this verdict reads the transcript with no external check, the kind of signal section 13, The Reward Is a Proxy, and section 15, Verbal Reinforcement & Self-Correction, identify as weak."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 699,
+  "old": [
+   13,
+   15
+  ],
+  "new": [
+   16,
+   18
+  ],
+  "sentence": "Bedrock Advanced Prompt Optimization is a text loop of the kind sections 16 to 18 build, run as a job."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 627,
+  "old": [
+   19
+  ],
+  "new": [
+   22
+  ],
+  "sentence": "Our reading is that age_tolerance: 2 lets a rollout be about two policy versions old when it is trained on, the asynchronous design of section 22, An RL Step Is an Inference Job Inside a Training Job; the recipe does not define the unit."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 568,
+  "old": [
+   7
+  ],
+  "new": [
+   9
+  ],
+  "sentence": "rewards into advantages, the comparison section 9, RLVR & GRPO, makes among GRPO's successors."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 531,
+  "old": [
+   9
+  ],
+  "new": [
+   12
+  ],
+  "sentence": "Multi-turn RL is section 12, Agentic RL, offered as an API."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 523,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "Section 25's path of SFT or distillation from a stronger model finds its service here; Bedrock lists distillation as a customisation method as well [cite] ."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 468,
+  "old": [
+   20
+  ],
+  "new": [
+   23
+  ],
+  "sentence": "Section 23, Cost per Improvement, turns the hourly rate into a breakeven against a text loop."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 350,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "The challenge is to find the service for the path you chose in section 25, Choosing a Text Loop, a Hybrid or a Weight Update, and to know what you own once you get there."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 334,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "---------------------------- */ /* Section */ /* ------------------------------------------------------------------------ */ export function RlOnAws() { return ( <Container header={ <Header variant=\"h1\" description=\"Find the AWS service for each path from section 25 and what you bring to it: one grader can drive a weight update or a prompt rewrite, and Bedrock's managed RL costs $80.00 per training hour (AWS pages, HyperPod recipes 2.0.11, Neuron v2.33.0 and TRL v1.16.0, read 2026-10-30)\" > 26."
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 278,
+  "old": [
+   22
+  ],
+  "new": [
+   25
+  ],
+  "sentence": "{level.sub[1]} ))} ); } /* ------------------------------------------------------------------------ */ /* Table: each path from section 25, and where it runs on AWS */ /* ------------------------------------------------------------------------ */ interface PathRow { path: string; service: string; bring: string; } const PATH_ROWS: PathRow[] = [ { path: 'Inference-time sampling'"
+ },
+ {
+  "file": "RlOnAws.tsx",
+  "line": 128,
+  "old": [
+   13,
+   15
+  ],
+  "new": [
+   16,
+   18
+  ],
+  "sentence": "any loop from sections 16 to 18'"
+ },
+ {
+  "file": "GlossaryAndSources.tsx",
+  "line": 195,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "A reading-comprehension benchmark; another of the regressions InstructGPT measured after RL (section 7).' }, { acronym: 'GSM8K'"
+ },
+ {
+  "file": "GlossaryAndSources.tsx",
+  "line": 194,
+  "old": [
+   5
+  ],
+  "new": [
+   7
+  ],
+  "sentence": "A reading-comprehension benchmark; one of the regressions InstructGPT measured after RL (section 7).' }, { acronym: 'DROP'"
+ },
+ {
+  "file": "GlossaryAndSources.tsx",
+  "line": 188,
+  "old": [
+   21
+  ],
+  "new": [
+   24
+  ],
+  "sentence": "E0 (a GRPO smoke test on a DGX Spark) ran; E1 (one task, three learners) ships as a protocol in section 24.' }, { acronym: 'REINFORCE'"
+ },
+ {
+  "file": "GlossaryAndSources.tsx",
+  "line": 157,
+  "old": [
+   8
+  ],
+  "new": [
+   10
+  ],
+  "sentence": "Sampling by a random walk whose long-run distribution is the target, used by the training-free sampler of section 10.' }, { acronym: 'AD'"
+ }
+]

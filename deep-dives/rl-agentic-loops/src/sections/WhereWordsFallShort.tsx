@@ -251,7 +251,7 @@ export function WhereWordsFallShort() {
             variant="h1"
             description="Where frozen models fall short, and the loop designs that work around it: keep the statistics in code, size memory to the length a model still uses, and put the evolving context after the stable part (verl v0.9.1 and sources read 2026-10-30)"
           >
-            17. Where Words Fall Short
+            20. Where Words Fall Short
           </Header>
         }
       >
@@ -525,7 +525,7 @@ export function WhereWordsFallShort() {
             </Cite>
             . A good step and a wasted one in the same attempt get the same push. Across thousands
             of attempts, the steps that recur in high-scoring attempts gain probability and the
-            rest wash out. Section 9, Agentic RL, walks through that code.
+            rest wash out. Section 12, Agentic RL, walks through that code.
           </Box>
           <Box variant="p">
             A text loop assigns credit by reading one log, and it has to name the step that
@@ -555,7 +555,7 @@ export function WhereWordsFallShort() {
             was not measured in any study located during this research. Both figures above come
             from a separate model reading a trace it did not write. The design that follows makes
             credit cheap to assign, so the model never has to find it: one change per trial, so
-            the score belongs to that change, as in section 15&apos;s checklist, and a short log
+            the score belongs to that change, as in section 18&apos;s checklist, and a short log
             per attempt, since accuracy fell as logs grew (our reading).
           </Box>
         </SpaceBetween>
@@ -636,7 +636,7 @@ export function WhereWordsFallShort() {
             <SpaceBetween size="s">
               <Box variant="p">
                 Practitioners answer the cliff in two ways: restart each iteration with a fresh
-                context and keep state in files, as the Ralph loop in section 15 does, or keep one
+                context and keep state in files, as the Ralph loop in section 18 does, or keep one
                 long session and compact it by summarising its history. No controlled comparison
                 of a fresh-context loop with one long compacted session on the same task was
                 located during this research.
@@ -707,7 +707,7 @@ export function WhereWordsFallShort() {
             .
           </Box>
           <Box variant="p">
-            Where a gap survives these changes, section 18, What Lives in Weights &amp; What Lives
+            Where a gap survives these changes, section 21, What Lives in Weights &amp; What Lives
             in Context, maps which improvements belong in the weights instead.
           </Box>
         </SpaceBetween>

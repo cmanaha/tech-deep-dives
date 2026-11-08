@@ -230,7 +230,7 @@ interface GradientRow {
   weight: string;
 }
 
-/** Rows 1 to 5 repeat section 5's table word for word; row 6 is this section's. */
+/** Rows 1 to 5 repeat section 7's table word for word; row 6 is this section's. */
 const GRADIENT_ROWS: GradientRow[] = [
   {
     id: 'sft',
@@ -331,7 +331,7 @@ export function PreferencesToRewards() {
             variant="h1"
             description="Turn preference data you already collect into a weight update, and tell when offline DPO (Direct Preference Optimization) is enough (TRL v1.12.0 and v1.16.0, papers read 2026-10-30)"
           >
-            6. From Preferences to Rewards
+            8. Learning From Preferences: Reward Models, RLHF &amp; DPO
           </Header>
         }
       >
@@ -346,7 +346,7 @@ export function PreferencesToRewards() {
           <Box variant="p">
             The challenge is to turn &quot;A is better than B&quot; into the one number per attempt
             that policy gradient needs to update the policy, the model seen as a probability
-            distribution over responses (section 4, Policy Gradient), or to find a way around that
+            distribution over responses (section 6, Policy Gradient), or to find a way around that
             number. RLHF learns a reward model from the pairs and runs PPO (Proximal Policy
             Optimization) against it. DPO folds the reward model into the policy and trains on the
             pairs with a classification loss, offline. In a controlled 13B comparison, PPO came out
@@ -423,8 +423,8 @@ export function PreferencesToRewards() {
             <Cite tier={3} href={INSTRUCTGPT} venue="NeurIPS 2022">
               InstructGPT, Section 3.5
             </Cite>
-            . Section 5, Two Leashes: PPO&apos;s Clip &amp; the KL, covers that penalty, and section
-            10, The Reward Is a Proxy, what happens when the policy finds where the scorer is wrong.
+            . Section 7, Two Leashes: PPO&apos;s Clip &amp; the KL, covers that penalty, and section
+            13, The Reward Is a Proxy, what happens when the policy finds where the scorer is wrong.
           </Box>
           <Box variant="p">
             The post-training was cheap next to pretraining: 4.9 petaflop/s-days for the 175B SFT
@@ -452,7 +452,7 @@ export function PreferencesToRewards() {
             >
               TRL v1.12.0 ppo_trainer.py L489
             </Cite>
-            . Section 19, An RL Step Is an Inference Job Inside a Training Job, sizes them.
+            . Section 22, An RL Step Is an Inference Job Inside a Training Job, sizes them.
           </Box>
         </SpaceBetween>
       </Container>
@@ -620,7 +620,7 @@ export function PreferencesToRewards() {
         header={
           <Header
             variant="h2"
-            description="Add DPO to the five rows of sections 4 and 5, and see it as the one method in the table that pushes a response down without sampling from the model it trains"
+            description="Add DPO to the five rows of sections 6 and 7, and see it as the one method in the table that pushes a response down without sampling from the model it trains"
           >
             The gradient table, complete
           </Header>
@@ -628,8 +628,9 @@ export function PreferencesToRewards() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Sections 4 and 5 filled five rows: SFT, REINFORCE, rejection-sampling fine-tuning, RLOO
-            (REINFORCE Leave-One-Out) or GRPO (Group Relative Policy Optimization), and PPO, whose
+            Section 4 opened the gradient table with SFT and distillation, and sections 6 and 7 added
+            REINFORCE, rejection-sampling fine-tuning, RLOO (REINFORCE Leave-One-Out) or GRPO (Group
+            Relative Policy Optimization), and PPO, whose
             weight is the advantage (how much better an attempt did than expected) estimated with GAE
             (Generalized Advantage Estimation) from the critic. DeepSeekMath&apos;s unified paradigm
             writes DPO in the same shape as the other rows: a coefficient times the gradient of each
@@ -648,7 +649,7 @@ export function PreferencesToRewards() {
           </Box>
           <GradientTable />
           <Box variant="small" color="text-body-secondary">
-            Rows 1 to 5 summarise sections 4 and 5, where their sources are cited.
+            Rows 1 to 5 summarise sections 6 and 7, where their sources are cited.
           </Box>
           <Box variant="p">
             Read DPO&apos;s row against its neighbours. Its weight is signed like the RLOO, GRPO and
@@ -765,7 +766,7 @@ export function PreferencesToRewards() {
             .
           </Box>
           <Box variant="p">
-            The critique-and-revise half is a text loop with a frozen model, the kind section 12,
+            The critique-and-revise half is a text loop with a frozen model, the kind section 15,
             Verbal Reinforcement &amp; Self-Correction, develops; Constitutional AI then distils its
             output into the weights. That makes it the first bridge in this dive between words and
             weights: a critique written in language becomes either a revision to train on or a
@@ -805,7 +806,7 @@ export function PreferencesToRewards() {
             <Cite tier={3} href={CAI} venue="preprint">
               Constitutional AI, Section 4.3
             </Cite>
-            . Section 10, The Reward Is a Proxy, takes that up.
+            . Section 13, The Reward Is a Proxy, takes that up.
           </Box>
         </SpaceBetween>
       </Container>
@@ -831,7 +832,7 @@ export function PreferencesToRewards() {
             <Cite tier={3} href={IVISON} venue="NeurIPS 2024">
               Ivison et al., abstract and Appendix K
             </Cite>
-            . Neither study tests a verifier; section 7 covers RLVR (RL with verifiable rewards),
+            . Neither study tests a verifier; section 9 covers RLVR (RL with verifiable rewards),
             where the reward is a program.
           </Box>
           <Box variant="p">
@@ -892,7 +893,7 @@ export function PreferencesToRewards() {
             <Cite tier={1} href={SM_OPEN_WEIGHT}>
               SageMaker AI developer guide: Open weight model customization
             </Cite>
-            . Section 23, RL &amp; Learning Loops on AWS, maps the options.
+            . Section 26, Fine-Tuning &amp; Learning Loops on AWS, maps the options.
           </Box>
           <Box variant="p">
             The order of moves follows. Put the pairs you already collect into DPO, starting from
@@ -900,7 +901,7 @@ export function PreferencesToRewards() {
             result on pairs held out from training. Spend on better pairs before a heavier
             algorithm, since data quality moved results most in the controlled study. Reach for PPO
             when the gap that remains is worth about 8 times the wall-clock. When the gap is one a
-            program can check, take the RL route of section 7, RLVR &amp; GRPO.
+            program can check, take the RL route of section 9, RLVR &amp; GRPO.
           </Box>
         </SpaceBetween>
       </Container>

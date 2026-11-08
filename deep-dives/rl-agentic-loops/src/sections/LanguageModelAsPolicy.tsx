@@ -285,27 +285,42 @@ export function LanguageModelAsPolicy() {
         header={
           <Header
             variant="h1"
-            description="Read any reinforcement learning paper's equations by mapping them onto the sampling you already run (TRL v1.12.0 and v1.16.0, papers read 2026-10-30)"
+            description="Read any reinforcement learning paper's equations by mapping them onto the sampling you already run (code read in the TRL training library at v1.12.0 and v1.16.0, papers read 2026-10-30)"
           >
-            3. The Language Model Is Already a Policy
+            5. The Language Model Is Already a Policy
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Every call to a language model at a temperature above zero draws from a probability
-            distribution: the chance of each next token, given the prompt and every token so far. RL
-            (reinforcement learning) calls a mapping from situations to probabilities over actions a
-            policy{' '}
+            RL (reinforcement learning) describes any learner with the same few words. The state
+            is the situation the learner is in. An action is what it does next. The policy is the
+            rule that picks the action, given as a probability for each possible action in each
+            state: RL calls a mapping from situations to probabilities over actions a policy{' '}
             <Cite tier={3} href={SB_URL} venue="textbook">
               Sutton and Barto, section 3.5
             </Cite>
-            , so a language model is a policy before anyone trains it: fix the beginning of the
-            sample to the prompt, and generate the rest with the model{' '}
+            .
+          </Box>
+          <Box variant="p">
+            Section 4 trained a model on answers someone else wrote: SFT makes a fixed answer more
+            likely, token by token. RL changes where the answer comes from. The model samples its
+            own answers, a grader scores each one, and the score decides how much each answer is
+            made more or less likely. Describing that needs RL&apos;s vocabulary.
+          </Box>
+          <Box variant="p">
+            A language model already has that shape. Every call to it at a temperature above zero
+            draws from a probability distribution: the chance of each next token, given the prompt
+            and every token so far. The temperature is the sampling setting that reshapes those
+            chances before the draw: below 1 it concentrates them on the likeliest tokens, at 0
+            the call always takes the single likeliest token, and above 1 it spreads them out. So
+            a language model is a policy before anyone trains it: fix the beginning of the sample
+            to the prompt, and generate the rest with the model{' '}
             <Cite tier={3} href={ZIE19} venue="preprint">
               Ziegler et al., section 2
             </Cite>
-            .
+            . The policy is the model, and training the policy means changing the weights that
+            set its probabilities.
           </Box>
           <Box variant="p">
             The challenge in reading RL papers is vocabulary. The same response is a sequence of
@@ -329,8 +344,10 @@ export function LanguageModelAsPolicy() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            In the token view, the state is the prompt plus the tokens generated so far, the action
-            is the next token, and one response is one episode{' '}
+            In the token view, the state is the prompt plus the tokens generated so far (together,
+            the prefix), the action
+            is the next token, and one response is one episode, RL&apos;s word for one complete
+            attempt from start to finish{' '}
             <Cite tier={3} href={IVI24} venue="NeurIPS 2024">
               Ivison et al., appendix F.2
             </Cite>
@@ -345,38 +362,19 @@ export function LanguageModelAsPolicy() {
             retrieved document, a tool result, a critique, becomes part of the state the policy acts
             on.
           </Box>
-          <TrajectoryDiagram />
-          <Box variant="small" color="text-body-secondary">
-            Illustrative, not measured: a prompt in the style of E0&apos;s arithmetic task (E0 is
-            our GRPO, Group Relative Policy Optimization, smoke test on a DGX Spark), drawn with a
-            few readable tokens; a real tokenizer splits the text differently. EOS is the
-            end-of-sequence token. The 1.0 is E0&apos;s grader for a correct tagged answer. The
-            bottom row is the PPO (Proximal Policy Optimization) trainer of TRL (Transformers
-            Reinforcement Learning, Hugging Face&apos;s post-training library) at v1.12.0, where β
-            scales a KL (Kullback-Leibler divergence) penalty; the last part of this section reads
-            that code.
+          <Box variant="p">
+            Papers write the policy as π, the Greek letter pi, for policy. π(token | state) reads
+            &quot;the probability the policy gives this token in this state&quot;. Written
+            π_θ, the subscript θ (theta) stands for the weights, a reminder that the probabilities
+            come from them and change when training changes them.
           </Box>
           <Box variant="p">
-            The response view treats the whole response as one action. InstructGPT&apos;s RL stage
-            takes this view: its environment is a bandit environment that presents a random
-            customer prompt, expects a response, scores it with the reward model and ends the
-            episode{' '}
-            <Cite tier={3} href={OUY22} venue="NeurIPS 2022">
-              InstructGPT, section 3.5
-            </Cite>
-            . The two views describe the same computation. The next state is fully determined by the
-            token just chosen, and the reward only arrives at the end, so the token-level process
-            reduces to a bandit whose only states are the prompt and the finished response{' '}
-            <Cite tier={3} href={AHM24} venue="ACL 2024">
-              Ahmadian et al., section 3.3
-            </Cite>
-            .
-          </Box>
-          <Box variant="p">
-            A bandit is the smallest RL problem: pick one of several options, receive one reward,
-            and carry nothing forward. A new prompt each time makes it a contextual bandit, in which
-            each action affects only its own reward; once actions also shape the next situation, the
-            full RL problem begins{' '}
+            The response view treats the whole response as one action: the model reads a prompt,
+            writes a response, and gets a score. RL has a name for a problem of that shape. A bandit
+            is the smallest RL problem: pick one of several options, receive one reward, and carry
+            nothing forward; the name comes from slot machines, once called one-armed bandits. A
+            new prompt each time makes it a contextual bandit, in which each action affects only
+            its own reward. Once actions also shape the next situation, the full RL problem begins{' '}
             <Cite tier={3} href={SB_URL} venue="textbook">
               Sutton and Barto, section 2.9
             </Cite>
@@ -389,14 +387,46 @@ export function LanguageModelAsPolicy() {
             .
           </Box>
           <Box variant="p">
-            Which view a method takes shapes everything after it. PPO models each token as an
-            action, while REINFORCE, the basic policy-gradient method of
-            section 4, and RLOO (REINFORCE Leave-One-Out) model the entire response as one action{' '}
+            InstructGPT, a GPT-3 model fine-tuned to follow instructions with RLHF (RL from human
+            feedback), takes the response view in its RL stage. Its environment is a bandit
+            environment that presents a random customer prompt, expects a response, scores it with
+            the reward model (a second model trained to score responses the way human raters
+            would, section 8) and ends the episode{' '}
+            <Cite tier={3} href={OUY22} venue="NeurIPS 2022">
+              InstructGPT, section 3.5
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            The two views describe the same computation. In the token view the next state is the
+            old state plus the token just chosen, so the policy&apos;s own choices are the only thing
+            that changes the state, and the reward only arrives at the end. A finished response is
+            then nothing more than the sequence of token choices that wrote it, so choosing the
+            tokens one at a time comes to choosing the finished response, and the token-level process reduces to a bandit whose only states
+            are the prompt and the finished response{' '}
+            <Cite tier={3} href={AHM24} venue="ACL 2024">
+              Ahmadian et al., section 3.3
+            </Cite>
+            . The reduction is why REINFORCE and RLOO, below, can treat a whole response as one
+            action and lose nothing. A tool call breaks that condition, because the tool&apos;s
+            output enters the state without the policy choosing it. Trainers still score a whole
+            tool-using episode and push the tokens the model wrote, since the tool&apos;s side of
+            the episode does not depend on the weights; section 12, Agentic RL, shows how. What the
+            token view adds is a place to say which tokens mattered, which the next block takes
+            up.
+          </Box>
+          <Box variant="p">
+            Which view a method takes shapes everything after it. REINFORCE is the simplest
+            policy-gradient method: it makes each sampled response more likely in proportion to its
+            reward. RLOO (REINFORCE Leave-One-Out) is REINFORCE with each response&apos;s reward
+            compared against the average reward of the other responses to the same prompt. Section
+            6 builds both. PPO models each token as an action, while REINFORCE and RLOO model the
+            entire response as one action{' '}
             <Cite tier={3} href={AHM24} venue="ACL 2024">
               Ahmadian et al., section 3.3
             </Cite>
             . Treating the response as one action lets plain REINFORCE optimise the sequence-level
-            reward directly{' '}
+            reward, the one score for the whole response, directly{' '}
             <Cite tier={3} href={AHM24} venue="ACL 2024">
               Ahmadian et al., section 2.2
             </Cite>
@@ -411,7 +441,7 @@ export function LanguageModelAsPolicy() {
         header={
           <Header
             variant="h2"
-            description="See why one number at the end-of-sequence token is the difficulty that critics, baselines and group averages in sections 4 to 7 exist to handle"
+            description="See why one score at the end of a response is the difficulty that the methods of sections 6 to 9 exist to handle, and what the value and the advantage measure"
           >
             One score at the end, spread over every token
           </Header>
@@ -420,20 +450,28 @@ export function LanguageModelAsPolicy() {
         <SpaceBetween size="m">
           <Box variant="p">
             The reward arrives once. The reward model scores entire responses and gives nothing at
-            intermediate steps; each episode ends when the policy outputs the end-of-sequence (EOS)
-            token, and the discount factor is 1, so a reward counts the same however many tokens
-            precede it{' '}
+            intermediate steps, and each episode ends when the policy outputs the end-of-sequence
+            (EOS) token. RL can also shrink a reward by a discount factor, a number between 0 and
+            1 applied once for every step that the reward lies in the future; here the discount
+            factor is 1, so a reward counts the same however many tokens precede it{' '}
             <Cite tier={3} href={STI20} venue="NeurIPS 2020">
               Stiennon et al., section 3.4, footnote 8
             </Cite>
-            . In E0, the mean completion length per step ranged from 124 to 164 tokens, and each
-            completion received a single number: 1.0 if the tagged answer was right, 0.0 if not{' '}
+            .
+          </Box>
+          <Box variant="p">
+            E0 is this dive&apos;s own experiment: a 20-step GRPO (Group Relative Policy
+            Optimization) training run on a small model, Qwen2.5-0.5B-Instruct, on a DGX Spark, run
+            to check the mechanics on arithmetic problems. In E0, the mean completion length per
+            step (a completion is the response the model writes after the prompt) ranged from 124
+            to 164 tokens, and each completion received a single number: 1.0 if the answer it
+            wrote between answer tags was right, 0.0 if not{' '}
             <Cite tier={0} href={E0_URL}>
               E0 log: GRPO smoke test on a DGX Spark
             </Cite>
             . A signal that arrives this rarely is called a sparse reward. The same holds whether
-            the score comes from a reward model trained on human preferences (section 6) or from a
-            program that checks the answer (section 7).
+            the score comes from a reward model trained on human preferences (section 8) or from a
+            program that checks the answer (section 9).
           </Box>
           <Box variant="p">
             The return is the sum of rewards from a step to the end of the episode{' '}
@@ -441,8 +479,9 @@ export function LanguageModelAsPolicy() {
               Sutton and Barto, section 3.3
             </Cite>
             . With one reward at the end and a discount of 1, every token&apos;s return is that same
-            final score; the arithmetic follows from the two definitions. The return alone cannot
-            tell the 29 that decided the answer from the tokens that came before it.
+            final score; the arithmetic follows from the two definitions. Take the response in the
+            diagram below, which answers (3 + 4) * 5 - 6 with 29: the return alone cannot tell the
+            29 that decided the answer from the tokens that came before it.
           </Box>
           <Box variant="p">
             Spreading that one score back over the tokens that earned it is the credit assignment
@@ -450,39 +489,68 @@ export function LanguageModelAsPolicy() {
             <Cite tier={3} href={GAE} venue="ICLR 2016">
               Schulman et al., Generalized Advantage Estimation, section 1
             </Cite>
-            . For language models it also makes a per-token critic, a model that predicts the final
-            score from each token, harder to train: usually only the last token is assigned a reward
-            score by the reward model, which may complicate training a value function that is
-            accurate at each token{' '}
-            <Cite tier={3} href={DSM24} venue="preprint">
-              DeepSeekMath, section 4.1.1
-            </Cite>
             .
           </Box>
           <Box variant="p">
-            Two quantities do the spreading. The value of a state is the return the policy is
-            expected to collect from there{' '}
+            The diagram draws one response both ways and adds where the reward lands. In the token
+            view each token is one step, sampled from π(token | state). The reward row is 0 at
+            every step and the grader&apos;s 1.0 at the end. The bottom row shows how one PPO
+            trainer changes that picture. TRL at v1.12.0 also charges every token a small KL
+            penalty for drifting from the model the run started from, written -β KL, and adds the
+            score at the end. β (beta) is the setting that prices the drift: the larger it is, the
+            more each unit of drift costs. Section 4 built the KL divergence, section 7 puts this
+            penalty to work, and the last part of this section reads that code.
+          </Box>
+          <TrajectoryDiagram />
+          <Box variant="small" color="text-body-secondary">
+            Illustrative, not measured: a prompt in the style of E0&apos;s arithmetic task, drawn
+            with a few readable tokens; a real tokenizer splits the text differently. EOS is the
+            end-of-sequence token. The 1.0 is E0&apos;s grader for a correct tagged answer.
+          </Box>
+          <Box variant="p">
+            Two quantities do the spreading. The first is the value of a state: the return the
+            policy is expected to collect from there, averaged over all the ways the response could
+            go on{' '}
             <Cite tier={3} href={SB_URL} venue="textbook">
               Sutton and Barto, section 3.5
             </Cite>
-            ; for a language model it is a prediction of the final score of a partial response, and
-            PPO trains a separate value model to make it{' '}
+            . For a language model it is a prediction of the final score of a partial response.
+            The value function gives that prediction for every possible state, and PPO trains a
+            separate network to estimate it, which papers call the value model or the critic: two
+            names for one network{' '}
             <Cite tier={3} href={IVI24} venue="NeurIPS 2024">
               Ivison et al., appendix F.2
             </Cite>
-            . The advantage is how much better an action did than expected: Q, the expected return
-            after taking that particular action and then following the policy{' '}
-            <Cite tier={3} href={SB_URL} venue="textbook">
-              Sutton and Barto, section 3.5
-            </Cite>
-            , minus V, the value of the state{' '}
-            <Cite tier={3} href={GAE} venue="ICLR 2016">
-              Schulman et al., Generalized Advantage Estimation, section 2
-            </Cite>
             .
           </Box>
           <Box variant="p">
+            The second is the advantage: how much better an action did than expected. As an
+            illustration, say the response so far goes on to a correct answer 30% of the time, so
+            the value of that state is 0.3. Writing one particular next token raises the chance to
+            60%. That token&apos;s advantage is 0.6 - 0.3 = +0.3: it moved the response toward
+            success. A token that dropped the chance to 10% would have an advantage of 0.1 - 0.3 =
+            -0.2.
+          </Box>
+          <Box variant="p">
+            In symbols, Q(s, a) is the expected return after taking that particular action a in
+            state s and then following the policy{' '}
+            <Cite tier={3} href={SB_URL} venue="textbook">
+              Sutton and Barto, section 3.5
+            </Cite>
+            , V(s) is the value of the state, and the advantage A is Q minus V{' '}
+            <Cite tier={3} href={GAE} venue="ICLR 2016">
+              Schulman et al., Generalized Advantage Estimation, section 2
+            </Cite>
+            :
+          </Box>
+          <Box variant="p">
             <code>A(s, a) = Q(s, a) - V(s)</code>
+          </Box>
+          <Box variant="p">
+            Q(s, a) is the 0.6 of the example: the expected final score given this token. V(s) is
+            the 0.3: the expected final score before the choice, averaged over every token the
+            policy might pick. Their difference is positive when the chosen token beats the
+            policy&apos;s own average from that state, and negative when it falls short.
           </Box>
           <Box variant="p">
             Its sign carries the decision. A policy-gradient step makes better-than-average actions
@@ -491,8 +559,14 @@ export function LanguageModelAsPolicy() {
             <Cite tier={3} href={GAE} venue="ICLR 2016">
               Schulman et al., Generalized Advantage Estimation, section 2
             </Cite>
-            . Section 4 shows the two ways to estimate it: learn V with a critic, or sample it from
-            other attempts at the same prompt.
+            . Section 6 shows the two ways to estimate it: learn V with a critic, or sample it from
+            other attempts at the same prompt. The sparse reward makes the first route harder for
+            language models: usually only the last token is assigned a reward score by the reward
+            model, which may complicate training a value function that is accurate at each token{' '}
+            <Cite tier={3} href={DSM24} venue="preprint">
+              DeepSeekMath, section 4.1.1
+            </Cite>
+            .
           </Box>
         </SpaceBetween>
       </Container>
@@ -501,7 +575,7 @@ export function LanguageModelAsPolicy() {
         header={
           <Header
             variant="h2"
-            description="Read on-policy data, exploration and pass@k as properties of the sampling you configure, starting with the temperature"
+            description="See how where your training samples come from, and the temperature you sample at, decide what a run can learn, and how pass@k measures it"
           >
             How you sample decides what can be learned
           </Header>
@@ -514,14 +588,27 @@ export function LanguageModelAsPolicy() {
             <Cite tier={3} href={SB_URL} venue="textbook">
               Sutton and Barto, section 5.4
             </Cite>
-            . A trainer that samples fresh rollouts from the current weights at every step is
+            . For a language model, the question is whose samples the training step learns from. A
+            trainer that samples fresh rollouts from the current weights at every step is
             on-policy: in E0, each of the 20 steps generated 16 new completions with vLLM before it
             trained{' '}
             <Cite tier={0} href={E0_URL}>
               E0 log: GRPO smoke test on a DGX Spark
             </Cite>
             . Training on a fixed file of responses that another model or a person produced is
-            off-policy; section 6 meets it in preference training on a fixed dataset.
+            off-policy; section 8 meets it in preference training on a fixed dataset.
+          </Box>
+          <Box variant="p">
+            The difference matters because a policy-gradient update reads its samples as evidence
+            about the model that produced them: it raises or lowers the probability of what the
+            current model actually wrote. Responses from another model, or from an older copy of
+            this one, describe a different policy. Learning from them needs either a correction
+            for the difference between the two models&apos; probabilities or a method built for
+            fixed data. Section 7 meets the first case: a batch reused for several updates is
+            slightly off-policy from the second update on. PPO divides each token&apos;s
+            probability under the model being trained by its probability under the model that
+            sampled it, and weights the token by that ratio to correct for the difference, a
+            correction that holds while the two models stay close.
           </Box>
           <Box variant="p">
             Exploration is the trade RL adds over supervised learning. The learner has to exploit
@@ -530,7 +617,8 @@ export function LanguageModelAsPolicy() {
             <Cite tier={3} href={SB_URL} venue="textbook">
               Sutton and Barto, section 1.1
             </Cite>
-            . Policy-gradient methods explore by keeping the policy from becoming deterministic{' '}
+            . Policy-gradient methods explore by keeping the policy from becoming deterministic,
+            that is, from putting all the probability on one action{' '}
             <Cite tier={3} href={SB_URL} venue="textbook">
               Sutton and Barto, section 13.1
             </Cite>
@@ -539,7 +627,7 @@ export function LanguageModelAsPolicy() {
             <Cite tier={3} href={OUY22} venue="NeurIPS 2022">
               InstructGPT, appendix C.4
             </Cite>
-            , the Tulu 2 PPO runs at 0.7{' '}
+            , the PPO runs on the open Tulu 2 models at 0.7{' '}
             <Cite tier={3} href={IVI24} venue="NeurIPS 2024">
               Ivison et al., appendix F.2
             </Cite>
@@ -547,7 +635,8 @@ export function LanguageModelAsPolicy() {
             <Cite tier={0} href={E0_URL}>
               E0 log
             </Cite>
-            . Greedy decoding returns the same response every time, so it explores nothing.
+            . Greedy decoding, temperature 0, returns the same response every time, so it explores
+            nothing.
           </Box>
           <Box variant="p">
             pass@1 is the chance that one sample is correct. pass@k is the chance that at least one
@@ -558,27 +647,33 @@ export function LanguageModelAsPolicy() {
               Yue et al., section 2
             </Cite>
             . It measures what sampling can reach, where pass@1 measures what one call returns.
-            Section 8 reads the two as curves against k, and that comparison carries the dive&apos;s
+            Section 10 reads the two as curves against k, and that comparison carries the dive&apos;s
             question of what RL adds to a model.
           </Box>
           <ExpandableSection headerText="Measuring pass@k on your own grader">
             <SpaceBetween size="s">
               <Box variant="p">
-                Drawing exactly k samples per problem gives a high-variance estimate. Draw n
-                samples per problem instead, with n at least k, count the c that pass, and use the
-                unbiased estimator of Chen et al., as Yue et al. do{' '}
+                Drawing exactly k samples per problem gives a high-variance estimate: repeat the
+                measurement and the answer swings, because each problem&apos;s result rests on a
+                single set of k tries. Draw n samples per problem instead, with n at least k, count
+                the c that pass, and use the unbiased estimator of Chen et al., as Yue et al. do{' '}
                 <Cite tier={3} href={YUE25} venue="NeurIPS 2025">
                   Yue et al., appendix A.2
                 </Cite>
-                :
+                . Unbiased means that, averaged over many repeats, it gives the true pass@k, neither
+                high nor low. In the formula, <code>C(a, b)</code> is the binomial coefficient, the
+                number of ways to choose b items from a:
               </Box>
               <Box variant="p">
                 <code>pass@k = mean over problems of [ 1 - C(n - c, k) / C(n, k) ]</code>
               </Box>
               <Box variant="p">
-                Here <code>C(a, b)</code> is the binomial coefficient, the number of ways to choose
-                b items from a. With a programmatic grader such as E0&apos;s, the same n samples give
-                pass@1 and every pass@k up to n.
+                <code>C(n - c, k) / C(n, k)</code> is the chance that k samples picked at random
+                from the n are all failures: the ways to pick k from the n - c failures, over the
+                ways to pick k from all n. One minus it is the chance that at least one passes. As
+                an illustration, with n = 4 samples of which c = 1 passes, and k = 2: C(3, 2) / C(4,
+                2) = 3 / 6, so pass@2 for that problem is 0.5. With a programmatic grader such as
+                E0&apos;s, the same n samples give pass@1 and every pass@k up to n.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -598,7 +693,11 @@ export function LanguageModelAsPolicy() {
         <SpaceBetween size="m">
           <Box variant="p">
             Every term above has a counterpart in a generation call. The table maps each one, with
-            the symbols papers commonly write it in.
+            the symbols papers commonly write it in. A key to those symbols: x is the prompt and y
+            the response; y_t is the response&apos;s token at step t, and y_&lt;t the tokens before
+            it; ◦ joins two pieces of text, so x ◦ y_&lt;t is the prompt followed by the response
+            so far; θ is the weights; τ (tau) is a whole trajectory; G_t is the return from step
+            t; Q and V are the two quantities of the advantage above.
           </Box>
           <Table
             variant="embedded"
@@ -612,6 +711,20 @@ export function LanguageModelAsPolicy() {
             ]}
           />
           <Box variant="p">
+            Most RL equations for language models work with log-probabilities, the logarithm of a
+            probability. The reason is the factorisation every language model is built on: the
+            probability of a sequence is the product of its next-token probabilities{' '}
+            <Cite tier={3} href={ZIE19} venue="preprint">
+              Ziegler et al., section 2
+            </Cite>
+            . A product of hundreds of numbers below 1 is too small to work with, and the
+            logarithm turns the product into a sum: a response&apos;s log-probability is the sum of
+            its tokens&apos; log-probabilities. A log-probability is 0 for a token given
+            probability 1 and more negative the less likely the token is. As an illustration, a
+            two-token response whose tokens have probabilities 0.5 and 0.2 has probability 0.1,
+            and log 0.1 = log 0.5 + log 0.2.
+          </Box>
+          <Box variant="p">
             To tell which view an equation takes, look at what the log-probability is taken over.
             A sum over t of <code>log π(y_t | x, y_&lt;t)</code>, with a reward or advantage indexed
             by t and a value model over partial responses, is the token view: PPO as used for
@@ -624,19 +737,15 @@ export function LanguageModelAsPolicy() {
             <Cite tier={3} href={AHM24} venue="ACL 2024">
               Ahmadian et al., section 2.2, Eq. 6
             </Cite>
-            . The two connect through the factorisation every language model is built on: the
-            probability of a sequence is the product of its next-token probabilities{' '}
-            <Cite tier={3} href={ZIE19} venue="preprint">
-              Ziegler et al., section 2
-            </Cite>
-            , so a response&apos;s log-probability is the sum of its tokens&apos; log-probabilities.
-            Our arithmetic from that: a response-level update gives every token the same weight, and
-            the token view lets each token carry its own.
+            . The factorisation connects the two. Our arithmetic from it: a response-level update
+            multiplies every token&apos;s term by the same number, the response&apos;s reward, and
+            the token view lets each token carry a number of its own.
           </Box>
           <Box variant="p">
             Running code mixes the two. In TRL&apos;s PPO trainer at v1.12.0, every token gets a KL
-            penalty, a charge for drifting from the reference model the run started from, and the
-            reward model&apos;s score is added at the end of the response{' '}
+            penalty, a charge for drifting from the reference model (a frozen copy of the model the
+            run started from), and the reward model&apos;s score is added at the end of the
+            response{' '}
             <Cite tier={1} href={gh(TRL, TRL_PPO_TAG, PPO_TRAINER, 'L771-L779')} kind="code">
               TRL v1.12.0 ppo_trainer.py L771-L779
             </Cite>
@@ -679,9 +788,16 @@ actual_end = torch.where(sequence_lengths_p1 < rewards.size(1), sequence_lengths
 rewards[actual_start, actual_end] += scores`}</code>
               </pre>
               <Box variant="p">
-                Line by line: the per-token KL estimate compares the policy&apos;s log-probability of
-                each sampled token with the reference model&apos;s; every token&apos;s reward starts as
-                minus <code>kl_coef</code> times that estimate; then the reward model&apos;s{' '}
+                Line by line: <code>logprobs</code> holds the policy&apos;s log-probability of
+                each sampled token and <code>ref_logprobs</code> the reference model&apos;s, so{' '}
+                <code>logr</code> is their difference per token. With the k1 setting the per-token
+                KL estimate is minus <code>logr</code>, the policy&apos;s log-probability minus the
+                reference&apos;s: positive where the policy now gives the token more probability
+                than the reference did, negative where it gives less, and averaging to the KL
+                divergence over the policy&apos;s own samples (section 7 shows why). The k3 setting,
+                from the post the comment links, is another per-token formula with the same average
+                that is never negative. Every token&apos;s reward starts as minus{' '}
+                <code>kl_coef</code> times that estimate; then the reward model&apos;s{' '}
                 <code>scores</code> are added at one index per response, at its end. The discount{' '}
                 <code>gamma</code> defaults to 1.0, the same discount of 1 as above{' '}
                 <Cite tier={1} href={gh(TRL, TRL_PPO_TAG, PPO_CONFIG, 'L264-L267')}>
@@ -724,14 +840,14 @@ rewards[actual_start, actual_end] += scores`}</code>
           <Box variant="p">
             The vocabulary carries over to loops that never touch the weights. Reflexion, a loop
             that writes a lesson into memory after each failed attempt and then retries (section
-            12), defines its policy as the agent&apos;s memory paired with a choice of model
+            15), defines its policy as the agent&apos;s memory paired with a choice of model
             parameters{' '}
             <Cite tier={3} href={REFLEXION} venue="NeurIPS 2023">
               Reflexion, section 1
             </Cite>
             . In this section&apos;s terms, the memory sits in the context, the context is the state
             the model conditions on, and so editing the memory changes which responses the policy
-            samples while the weights stay fixed. That is our reading, and section 11 builds the
+            samples while the weights stay fixed. That is our reading, and section 14 builds the
             words track on it.
           </Box>
           <Box variant="p">
@@ -739,7 +855,7 @@ rewards[actual_start, actual_end] += scores`}</code>
             token or a whole response), where its reward lands and how often (one score per rollout,
             or a charge per token beside it), whether its samples come from the current policy, and
             what its policy is made of (the weights alone, or the weights plus text the loop carries
-            forward). Sections 4 to 7 change the weights; sections 11 to 16 change that text.
+            forward). Sections 6 to 9 change the weights; sections 14 to 19 change that text.
           </Box>
         </SpaceBetween>
       </Container>

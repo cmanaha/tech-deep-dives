@@ -415,7 +415,7 @@ export function VerbalReinforcement() {
             variant="h1"
             description="Make a reflection loop learn by giving it a signal from outside the model, before you tune how it reflects (sources read 2026-10-30)"
           >
-            12. Verbal Reinforcement &amp; Self-Correction
+            15. Verbal Reinforcement &amp; Self-Correction
           </Header>
         }
       >
@@ -499,7 +499,7 @@ export function VerbalReinforcement() {
             The memory is small by design: three lessons on HotPotQA and one on the programming
             tasks <Reflexion>Reflexion, Sections 4.2 and 4.3</Reflexion>. Reflexion measures its
             gains across retries of the same tasks. Memory that accumulates across many tasks is
-            the subject of section 13, Memories, Playbooks &amp; Skill Libraries.
+            the subject of section 16, Memories, Playbooks &amp; Skill Libraries.
           </Box>
         </SpaceBetween>
       </Container>
@@ -719,7 +719,7 @@ export function VerbalReinforcement() {
             <Cite tier={3} href={RETROFORMER} venue="ICLR 2024">
               Retroformer, abstract and Section 4
             </Cite>
-            . Section 16, Hybrids, covers that pattern.
+            . Section 19, Hybrids, covers that pattern.
           </Box>
         </SpaceBetween>
       </Container>
@@ -756,7 +756,7 @@ export function VerbalReinforcement() {
           </Box>
           <Box variant="p">
             Then check that signal the way you would check an RL reward, with the grader checklist
-            in section 10, The Reward Is a Proxy. Tune the reflector once the grader passes it.
+            in section 13, The Reward Is a Proxy. Tune the reflector once the grader passes it.
           </Box>
         </SpaceBetween>
       </Container>

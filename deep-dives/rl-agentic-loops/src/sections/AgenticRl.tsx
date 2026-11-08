@@ -485,7 +485,7 @@ export function AgenticRl() {
             variant="h1"
             description="What you build to RL-train an agent: a sandbox, tool interfaces and a grader (verl v0.9.1 and TRL v1.16.0, papers and posts read 2026-10-30)"
           >
-            9. Agentic RL
+            12. Agentic RL
           </Header>
         }
       >
@@ -769,7 +769,7 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
             could already solve, stays open for this result.
           </Box>
           <Box variant="p">
-            Section 8, What RL Does to a Model, reads that difference as a curve: pass@k is the
+            Section 10, What RL Does to a Model, reads that difference as a curve: pass@k is the
             chance that at least one of k attempts succeeds, and on static reasoning the base model
             tends to catch up as k grows. One small study asked the question of a search agent:
             Qwen2.5-7B-Instruct with one keyword-search tool, trained with LoRA (Low-Rank
@@ -801,7 +801,7 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
               Pass@(k,T), abstract
             </Cite>
             . Our reading: the tool supplies information the model does not hold, and RL taught it
-            to use that information, which fits the tool condition of section 8. It is the clearest
+            to use that information, which fits the tool condition of section 10. It is the clearest
             boundary expansion located in the agentic setting in this research, and it is small.
           </Box>
           <ExpandableSection headerText="How far the pass@(k,T) result reaches">
@@ -831,7 +831,7 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
                 Four problems in 100 is about one binomial standard error at a pass rate near 0.8,
                 in our arithmetic: <code>sqrt(0.8 * 0.2 / 100) = 0.04</code>. The RL arm is a LoRA
                 adapter, and k stops at 64, below the sample counts of the static-reasoning studies
-                in section 8.
+                in section 10.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -893,7 +893,7 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
             <Cite tier={3} href={RAGEN} venue="preprint">
               RAGEN, Sections 4.1 and 4.2
             </Cite>
-            . Under GRPO the filter also drops the groups that section 7&apos;s rule already makes
+            . Under GRPO the filter also drops the groups that section 9&apos;s rule already makes
             useless: a group whose episodes all score the same has zero advantage and carries no
             gradient.
           </Box>
@@ -921,21 +921,21 @@ mask = completion_mask if "tool_mask" not in inputs else completion_mask * input
               SageMaker AI Developer Guide: Preparing your agent
             </Cite>
             . The model&apos;s tokens and the update belong to the service; the sandbox, the tools
-            and the grader belong to you. Section 23, RL &amp; Learning Loops on AWS, covers the
+            and the grader belong to you. Section 26, Fine-Tuning &amp; Learning Loops on AWS, covers the
             service.
           </Box>
           <Box variant="p">
             Whichever trainer runs the update, the first deliverable is the environment: a reset
             into a task, tools that return text, limits on turns, length and time, and a grader
             that runs once per episode and that the agent cannot satisfy without doing the task
-            (section 10, The Reward Is a Proxy, gives the checklist). Before training, run the
+            (section 13, The Reward Is a Proxy, gives the checklist). Before training, run the
             untrained model through it and measure how often it succeeds. Agentica and Together
             AI&apos;s run started at 23% pass@1 and reached 42.2%{' '}
             <Cite tier={2} href={DEEPSWE} kind="vendor-claim">
               DeepSWE post, Figure 2 (Agentica and Together AI)
             </Cite>
             ; a task the model never solves gives every episode in a group the same zero, and
-            leaves RL nothing to learn from. Once training runs, section 7, RLVR &amp; GRPO, names
+            leaves RL nothing to learn from. Once training runs, section 9, RLVR &amp; GRPO, names
             the TRL metric that tracks such groups.
           </Box>
         </SpaceBetween>

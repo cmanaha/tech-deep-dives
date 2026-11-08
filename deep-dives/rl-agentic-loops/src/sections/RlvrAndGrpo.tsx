@@ -332,7 +332,7 @@ const SUCCESSOR_ROWS: SuccessorRow[] = [
       <>
         REINFORCE++ normalises across the whole batch instead of per prompt. RLOO (REINFORCE
         Leave-One-Out) takes each answer&apos;s baseline from the other answers, the sampled baseline
-        of section 4
+        of section 6
       </>
     ),
     without: (
@@ -613,7 +613,7 @@ export function RlvrAndGrpo() {
             variant="h1"
             description="Read the knobs on a managed GRPO job: which knob fixes which bias, and why always-solved prompts waste the step (TRL v1.16.0 and verl v0.9.1, read 2026-10-30)"
           >
-            7. RLVR &amp; GRPO
+            9. RLVR &amp; GRPO
           </Header>
         }
       >
@@ -686,7 +686,7 @@ export function RlvrAndGrpo() {
             <Cite tier={3} href={R1} venue="Nature 2025">
               DeepSeek-R1, Section 2.2
             </Cite>
-            . Section 10, The Reward Is a Proxy, takes up what a checker can still miss.
+            . Section 13, The Reward Is a Proxy, takes up what a checker can still miss.
           </Box>
           <Box variant="p">
             DeepSeek-R1-Zero applied that reward to DeepSeek-V3-Base with no supervised fine-tuning
@@ -718,14 +718,8 @@ export function RlvrAndGrpo() {
             .
           </Box>
           <Box variant="p">
-            For a 32B model, distillation was the stronger path. Qwen2.5-32B-Base after more than
-            10,000 RL steps reached 47.0 pass@1 on AIME 2024, on par with QwQ-32B-Preview;
-            DeepSeek-R1-Distill-Qwen-32B, fine-tuned on R1&apos;s outputs with no RL stage, reached 72.6
-            and led on every benchmark in the comparison{' '}
-            <Cite tier={3} href={R1} venue="Nature 2025">
-              DeepSeek-R1, Supplementary F.1, Table 16
-            </Cite>
-            .
+            On the 32B base where RL worked, distillation from DeepSeek-R1 did better still;
+            section 11, Distillation or RL, gives the comparison and when each wins.
           </Box>
           <Box variant="p">
             A 7B math base did respond to RL, in DeepSeek&apos;s own later run on Qwen2-Math-7B{' '}
@@ -744,7 +738,7 @@ export function RlvrAndGrpo() {
             <Cite tier={3} href={SPUR} venue="ICML 2026">
               Spurious Rewards, abstract
             </Cite>
-            . Section 8, What RL Does to a Model, reads these results as pass@k curves, where
+            . Section 10, What RL Does to a Model, reads these results as pass@k curves, where
             pass@k is the chance that at least one of k samples is correct.
           </Box>
         </SpaceBetween>
@@ -762,7 +756,7 @@ export function RlvrAndGrpo() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            GRPO is the sampled-baseline route of section 4, Policy Gradient. For each prompt it samples
+            GRPO is the sampled-baseline route of section 6, Policy Gradient. For each prompt it samples
             a group of G answers from the current model and scores each one. Every answer then gets an
             advantage, how much better it did than the group expected: its reward minus the
             group&apos;s mean reward, divided by the group&apos;s standard deviation. Every token of the
@@ -810,7 +804,7 @@ export function RlvrAndGrpo() {
             <Cite tier={3} href={DAPO} venue="NeurIPS 2025">
               DAPO, Section 3.2
             </Cite>
-            . TRL&apos;s defaults switch off the KL (Kullback-Leibler divergence) penalty of section 5
+            . TRL&apos;s defaults switch off the KL (Kullback-Leibler divergence) penalty of section 7
             and the entropy bonus, so under them prompt B adds no gradient to the step{' '}
             <Cite tier={1} href={gh(TRL, TRL_TAG, TRL_CFG, 'L681-L687')}>
               grpo_config.py L681-L687
@@ -856,8 +850,8 @@ export function RlvrAndGrpo() {
           <Box variant="p">
             Each method below keeps GRPO&apos;s loop (sample a group, score it, weight each answer by
             its advantage) and changes one term. &quot;Bias&quot; in this table means a
-            systematic tilt in the objective, a different sense from the statistical bias of section 4.
-            Two terms from section 5 recur. The probability ratio is a token&apos;s probability under the
+            systematic tilt in the objective, a different sense from the statistical bias of section 6.
+            Two terms from section 7 recur. The probability ratio is a token&apos;s probability under the
             model being updated divided by its probability when the answer was sampled, and the clip is
             PPO&apos;s limit on how far one update may push that ratio. Entropy measures how spread out
             the next-token distribution is.
@@ -1170,7 +1164,7 @@ export function RlvrAndGrpo() {
             and count the prompts that pass every time or never. On the E0 figures, a 4% base rate left
             9 and 10 of 20 steps with no gradient at all; your count tells you how much of your run
             would do the same. Drop or replace those prompts, or filter them during training.
-            Section 22, Choosing a Text Loop, a Hybrid or a Weight Update, turns the same measurement
+            Section 25, Choosing a Technique: Fine-Tuning, a Text Loop or a Hybrid, turns the same measurement
             into its second decision question: what the model scores on your signal today.
           </Box>
         </SpaceBetween>

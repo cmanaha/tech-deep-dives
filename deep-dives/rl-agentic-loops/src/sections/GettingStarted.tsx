@@ -21,108 +21,122 @@ const TF_GRPO = arxiv('2510.08191v1');
 /* Diagram: the reading map                                                 */
 /* ------------------------------------------------------------------------ */
 
-type RouteId = 'loops' | 'advisor' | 'rl';
+type RouteId = 'loops' | 'advisor' | 'rl' | 'finetune';
 
-/** The three shorter routes, exactly as SCOPE.md section 2 gives them. */
+/** The four shorter routes, as SCOPE.md section 2 gives them. */
 const ROUTE_SECTIONS: Record<RouteId, number[]> = {
-  loops: [1, 2, 3, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22],
-  advisor: [1, 2, 3, 7, 8, 10, 14, 16, 17, 18, 20, 22, 23],
-  rl: [2, 3, 4, 5, 6, 7, 8, 9, 10],
+  loops: [1, 2, 3, 5, 10, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 25],
+  advisor: [1, 2, 3, 5, 9, 10, 11, 13, 17, 19, 20, 21, 23, 25, 26],
+  rl: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+  finetune: [1, 2, 3, 4, 5, 8, 9, 10, 11, 13, 23, 25, 26],
 };
-/** Section 19 is the optional systems coda of the RL route. */
-const RL_OPTIONAL = [19];
+/** Section 22 is the optional systems coda of the RL route. */
+const RL_OPTIONAL = [22];
 
-const ROUTE_ORDER: RouteId[] = ['loops', 'advisor', 'rl'];
+const ROUTE_ORDER: RouteId[] = ['loops', 'advisor', 'rl', 'finetune'];
 
 const ROUTE_STYLE: Record<RouteId, { letter: string; color: string }> = {
   loops: { letter: 'L', color: '#0972d3' },
   advisor: { letter: 'A', color: '#a04a00' },
   rl: { letter: 'R', color: '#037f0c' },
+  finetune: { letter: 'F', color: '#6f4cc4' },
 };
 
 /** Section titles from App.tsx, wrapped by hand to fit a node. */
 const TITLE_LINES: Record<number, string[]> = {
-  1: ['1. One Loop, Three', 'Places to Keep What', 'It Learns'],
+  1: ['1. One Loop: What It', 'Learns From and', 'Where It Keeps It'],
   2: ['2. Getting Started'],
-  3: ['3. The Language', 'Model Is Already a', 'Policy'],
-  4: ['4. Policy Gradient'],
-  5: ['5. Two Leashes:', "PPO's Clip & the KL"],
-  6: ['6. From Preferences', 'to Rewards'],
-  7: ['7. RLVR & GRPO'],
-  8: ['8. What RL Does to', 'a Model'],
-  9: ['9. Agentic RL'],
-  10: ['10. The Reward Is a', 'Proxy'],
-  11: ['11. A Text Loop Is', 'RL on the Context'],
-  12: ['12. Verbal', 'Reinforcement &', 'Self-Correction'],
-  13: ['13. Memories,', 'Playbooks & Skill', 'Libraries'],
-  14: ['14. Optimising the', 'Prompt'],
-  15: ['15. Your Loops', 'Through the RL Lens'],
-  16: ['16. Hybrids'],
-  17: ['17. Where Words', 'Fall Short'],
-  18: ['18. What Lives in', 'Weights & What', 'Lives in Context'],
-  19: ['19. An RL Step Is an', 'Inference Job Inside', 'a Training Job'],
-  20: ['20. Cost per', 'Improvement'],
-  21: ['21. Side by Side on', 'a DGX Spark'],
-  22: ['22. Choosing a Text', 'Loop, a Hybrid or a', 'Weight Update'],
-  23: ['23. RL & Learning', 'Loops on AWS'],
+  3: ['3. Fine-Tuning', 'Techniques: Where', 'the Learning Signal', 'Comes From'],
+  4: ['4. Learning From', 'Answers: Supervised', 'Fine-Tuning &', 'Distillation'],
+  5: ['5. The Language', 'Model Is Already a', 'Policy'],
+  6: ['6. Policy Gradient'],
+  7: ['7. Two Leashes:', "PPO's Clip & the KL"],
+  8: ['8. Learning From', 'Preferences: Reward', 'Models, RLHF & DPO'],
+  9: ['9. RLVR & GRPO'],
+  10: ['10. What RL Does to', 'a Model'],
+  11: ['11. Distillation or', "RL: A Teacher's", 'Answers or a Score', 'on Your Own'],
+  12: ['12. Agentic RL'],
+  13: ['13. The Reward Is a', 'Proxy'],
+  14: ['14. A Text Loop Is', 'RL on the Context'],
+  15: ['15. Verbal', 'Reinforcement &', 'Self-Correction'],
+  16: ['16. Memories,', 'Playbooks & Skill', 'Libraries'],
+  17: ['17. Optimising the', 'Prompt'],
+  18: ['18. Your Loops', 'Through the RL Lens'],
+  19: ['19. Hybrids'],
+  20: ['20. Where Words', 'Fall Short'],
+  21: ['21. What Lives in', 'Weights & What', 'Lives in Context'],
+  22: ['22. An RL Step Is an', 'Inference Job Inside', 'a Training Job'],
+  23: ['23. Cost per', 'Improvement'],
+  24: ['24. Side by Side on', 'a DGX Spark'],
+  25: ['25. Choosing a', 'Technique: Fine-', 'Tuning, a Text Loop', 'or a Hybrid'],
+  26: ['26. Fine-Tuning &', 'Learning Loops on', 'AWS'],
 };
 
 const GS_W = 980;
-const GS_H = 668;
+const GS_H = 960;
 const NODE_W = 132;
-const NODE_H = 80;
+const NODE_H = 96;
+/** Vertical offset of the route marks inside a node. */
+const PIP_DY = 80;
 
-/** Node top-left corners, laid out by stage band. */
-const NODE_POS: Record<number, { x: number; y: number }> = {
-  // Framing band
-  1: { x: 44, y: 42 },
-  2: { x: 44, y: 184 },
-  // Stage 1
-  3: { x: 228, y: 42 },
-  4: { x: 425, y: 42 },
-  5: { x: 623, y: 42 },
-  6: { x: 820, y: 42 },
-  // Stage 2
-  7: { x: 228, y: 184 },
-  8: { x: 425, y: 184 },
-  9: { x: 623, y: 184 },
-  10: { x: 820, y: 184 },
-  // Stage 3
-  11: { x: 48, y: 326 },
-  12: { x: 202, y: 326 },
-  13: { x: 357, y: 326 },
-  14: { x: 511, y: 326 },
-  15: { x: 666, y: 326 },
-  16: { x: 820, y: 326 },
-  // Stage 4
-  17: { x: 48, y: 468 },
-  18: { x: 215, y: 468 },
-  19: { x: 381, y: 468 },
-  20: { x: 548, y: 468 },
-  21: { x: 48, y: 562 },
-  22: { x: 215, y: 562 },
-  23: { x: 381, y: 562 },
-};
+interface Band {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  label: string;
+  /** Rows of section numbers; each row is spread evenly across the band. */
+  rows: number[][];
+}
 
-const BANDS: { x: number; y: number; w: number; h: number; label: string }[] = [
-  { x: 36, y: 16, w: 148, h: 254, label: 'Framing' },
-  { x: 216, y: 16, w: 748, h: 112, label: 'Stage 1. The RL vocabulary on tokens' },
+const ROW_H = 140;
+const BANDS: Band[] = [
+  { x: 36, y: 16, w: 312, h: ROW_H, label: 'Framing', rows: [[1, 2]] },
+  { x: 380, y: 16, w: 312, h: ROW_H, label: 'Stage 1. Where the signal comes from', rows: [[3, 4]] },
+  { x: 36, y: 186, w: 928, h: ROW_H, label: 'Stage 2. The RL vocabulary on tokens', rows: [[5, 6, 7, 8]] },
   {
-    x: 216,
-    y: 158,
-    w: 748,
-    h: 112,
-    label: 'Stage 2. What RL with a program as grader does to a model',
+    x: 36,
+    y: 356,
+    w: 928,
+    h: ROW_H,
+    label: 'Stage 3. What RL with a program as grader does to a model, set against distillation',
+    rows: [[9, 10, 11, 12, 13]],
   },
   {
     x: 36,
-    y: 300,
+    y: 526,
     w: 928,
-    h: 112,
-    label: 'Stage 3. The same loop, with the context as the parameter',
+    h: ROW_H,
+    label: 'Stage 4. The same loop, with the context as the parameter',
+    rows: [[14, 15, 16, 17, 18, 19]],
   },
-  { x: 36, y: 442, w: 656, h: 210, label: 'Stage 4. The comparison, the cost and the choice' },
+  {
+    x: 36,
+    y: 696,
+    w: 612,
+    h: 248,
+    label: 'Stage 5. The comparison, the cost and the choice',
+    rows: [
+      [20, 21, 22, 23],
+      [24, 25, 26],
+    ],
+  },
 ];
+
+/** Node top-left corners, computed from the bands: 12 units of padding, even gaps. */
+const NODE_POS: Record<number, { x: number; y: number }> = (() => {
+  const pos: Record<number, { x: number; y: number }> = {};
+  for (const b of BANDS) {
+    const perRow = Math.max(...b.rows.map((r) => r.length));
+    const gap = perRow > 1 ? (b.w - 24 - perRow * NODE_W) / (perRow - 1) : 0;
+    b.rows.forEach((row, ri) => {
+      row.forEach((n, i) => {
+        pos[n] = { x: b.x + 12 + i * (NODE_W + gap), y: b.y + 30 + ri * (NODE_H + 14) };
+      });
+    });
+  }
+  return pos;
+})();
 
 function routesFor(section: number): { id: RouteId; optional: boolean }[] {
   const out: { id: RouteId; optional: boolean }[] = [];
@@ -165,7 +179,7 @@ function SectionNode({ n }: { n: number }) {
   const { x, y } = NODE_POS[n];
   const lines = n === 2 ? [...TITLE_LINES[2], 'You are here'] : TITLE_LINES[n];
   const here = n === 2;
-  const slotX = [x + 18, x + 40, x + 62];
+  const slotX = [x + 18, x + 40, x + 62, x + 84];
   return (
     <g>
       <rect
@@ -197,7 +211,7 @@ function SectionNode({ n }: { n: number }) {
           key={id}
           id={id}
           cx={slotX[ROUTE_ORDER.indexOf(id)]}
-          cy={y + 65}
+          cy={y + PIP_DY}
           optional={optional}
         />
       ))}
@@ -205,9 +219,24 @@ function SectionNode({ n }: { n: number }) {
   );
 }
 
+const LEGEND_X = 680;
+const LEGEND_Y = 696;
+
+function LegendRow({ y, lines, children }: { y: number; lines: string[]; children: ReactNode }) {
+  return (
+    <g>
+      {children}
+      {lines.map((line, i) => (
+        <text key={line} x={LEGEND_X + 38} y={y + 4 + i * 14} fontFamily="sans-serif" fontSize={11} fill="#16191f">
+          {line}
+        </text>
+      ))}
+    </g>
+  );
+}
+
 function ReadingMapDiagram() {
   const arrow = { stroke: '#5f6b7a', strokeWidth: 2, fill: 'none', markerEnd: 'url(#gs-map-ah)' };
-  const legendX = 712;
   return (
     <div style={{ overflowX: 'auto' }}>
       <svg
@@ -218,20 +247,21 @@ function ReadingMapDiagram() {
         style={{ width: '100%', minWidth: 760, height: 'auto' }}
       >
         <title id="gs-map-title">
-          The dive&apos;s reading map. Sections 1 and 2 frame the dive. Four stages then run in
-          order: the RL vocabulary on tokens (sections 3 to 6), what RL with a program as grader
-          does to a model (7 to 10), the same loop with the context as the parameter (11 to 16),
-          and the comparison, the cost and the choice (17 to 23), which builds on stage 2 directly
-          as well as on stage 3. Lettered marks inside each section show which of the three shorter
-          routes reads it.
+          The dive&apos;s reading map. Sections 1 and 2 frame the dive. Five stages then run in
+          order: where the signal comes from (sections 3 and 4), the RL vocabulary on tokens (5 to
+          8), what RL with a program as grader does to a model, set against distillation (9 to 13),
+          the same loop with the context as the parameter (14 to 19), and the comparison, the cost
+          and the choice (20 to 26), which builds on stage 3 directly as well as on stage 4.
+          Lettered marks inside each section show which of the four shorter routes reads it.
         </title>
         <desc id="gs-map-desc">
-          L, the route for readers who run agent loops and want them to learn: sections 1, 2, 3, 8,
-          10, 11, 12, 13, 14, 15, 16, 17, 18, 20 and 22. A, the route for readers who advise a team
-          choosing between reinforcement fine-tuning and prompting: sections 1, 2, 3, 7, 8, 10, 14,
-          16, 17, 18, 20, 22 and 23. R, the route for readers who want RL properly: sections 2 to 10
-          in order, with section 19 optional, drawn as a dashed mark. Section 21 is on no shorter
-          route.
+          L, the route for readers who run agent loops and want them to learn: sections 1, 2, 3, 5,
+          10, 13 to 21, 23 and 25. A, the route for readers who advise a team choosing between
+          reinforcement fine-tuning and prompting: sections 1, 2, 3, 5, 9, 10, 11, 13, 17, 19, 20,
+          21, 23, 25 and 26. R, the route for readers who want RL properly: sections 2 to 13 in
+          order, with section 22 optional, drawn as a dashed mark. F, the route for readers choosing
+          a fine-tuning technique: sections 1, 2, 3, 4, 5, 8, 9, 10, 11, 13, 23, 25 and 26. Section
+          24 is on no shorter route.
         </desc>
         <defs>
           <marker
@@ -274,14 +304,18 @@ function ReadingMapDiagram() {
         ))}
 
         {/* The path between stages */}
-        <path d="M 184 80 H 214" style={arrow} />
-        <path d="M 590 128 V 156" style={arrow} />
-        <path d="M 590 270 V 298" style={arrow} />
-        <path d="M 364 412 V 440" style={arrow} />
-        {/* Stage 4 also builds on stage 2 directly */}
-        <path d="M 240 270 V 280 Q 240 285 235 285 H 23 Q 18 285 18 290 V 422 Q 18 427 23 427 H 55 Q 60 427 60 432 V 440" style={arrow} />
-        <text x={72} y={434} fontFamily="sans-serif" fontSize={11} fill="#414d5c">
-          Stage 4 also builds on stage 2
+        <path d="M 348 94 H 378" style={arrow} />
+        <path d="M 536 156 V 184" style={arrow} />
+        <path d="M 500 326 V 354" style={arrow} />
+        <path d="M 500 496 V 524" style={arrow} />
+        <path d="M 340 666 V 694" style={arrow} />
+        {/* Stage 5 also builds on stage 3 directly */}
+        <path
+          d="M 60 496 V 506 Q 60 511 55 511 H 23 Q 18 511 18 516 V 676 Q 18 681 23 681 H 55 Q 60 681 60 686 V 694"
+          style={arrow}
+        />
+        <text x={72} y={688} fontFamily="sans-serif" fontSize={11} fill="#414d5c">
+          Stage 5 also builds on stage 3
         </text>
 
         {Object.keys(NODE_POS).map((k) => (
@@ -289,39 +323,31 @@ function ReadingMapDiagram() {
         ))}
 
         {/* Legend */}
-        <rect x={legendX} y={442} width={252} height={210} rx={8} fill="#ffffff" stroke="#d1d5db" strokeWidth={1.2} />
-        <text x={legendX + 12} y={462} fontFamily="sans-serif" fontSize={12} fontWeight={700} fill="#16191f">
+        <rect x={LEGEND_X} y={LEGEND_Y} width={284} height={248} rx={8} fill="#ffffff" stroke="#d1d5db" strokeWidth={1.2} />
+        <text x={LEGEND_X + 12} y={LEGEND_Y + 20} fontFamily="sans-serif" fontSize={12} fontWeight={700} fill="#16191f">
           Shorter routes
         </text>
-        <RoutePip id="loops" cx={legendX + 22} cy={482} optional={false} />
-        <text x={legendX + 38} y={486} fontFamily="sans-serif" fontSize={11} fill="#16191f">
-          I run agent loops and want them
-        </text>
-        <text x={legendX + 38} y={500} fontFamily="sans-serif" fontSize={11} fill="#16191f">
-          to learn
-        </text>
-        <RoutePip id="advisor" cx={legendX + 22} cy={522} optional={false} />
-        <text x={legendX + 38} y={526} fontFamily="sans-serif" fontSize={11} fill="#16191f">
-          I advise a team choosing between
-        </text>
-        <text x={legendX + 38} y={540} fontFamily="sans-serif" fontSize={11} fill="#16191f">
-          reinforcement fine-tuning and
-        </text>
-        <text x={legendX + 38} y={554} fontFamily="sans-serif" fontSize={11} fill="#16191f">
-          prompting
-        </text>
-        <RoutePip id="rl" cx={legendX + 22} cy={576} optional={false} />
-        <text x={legendX + 38} y={580} fontFamily="sans-serif" fontSize={11} fill="#16191f">
-          I want RL properly
-        </text>
-        <RoutePip id="rl" cx={legendX + 22} cy={600} optional={true} />
-        <text x={legendX + 38} y={604} fontFamily="sans-serif" fontSize={11} fill="#16191f">
-          Optional on that route
-        </text>
-        <path d={`M ${legendX + 12} 626 H ${legendX + 34}`} style={arrow} />
-        <text x={legendX + 38} y={630} fontFamily="sans-serif" fontSize={11} fill="#16191f">
-          The path from stage to stage
-        </text>
+        <LegendRow y={LEGEND_Y + 42} lines={['I run agent loops and want them', 'to learn']}>
+          <RoutePip id="loops" cx={LEGEND_X + 22} cy={LEGEND_Y + 42} optional={false} />
+        </LegendRow>
+        <LegendRow
+          y={LEGEND_Y + 82}
+          lines={['I advise a team choosing between', 'reinforcement fine-tuning and', 'prompting']}
+        >
+          <RoutePip id="advisor" cx={LEGEND_X + 22} cy={LEGEND_Y + 82} optional={false} />
+        </LegendRow>
+        <LegendRow y={LEGEND_Y + 136} lines={['I want RL properly']}>
+          <RoutePip id="rl" cx={LEGEND_X + 22} cy={LEGEND_Y + 136} optional={false} />
+        </LegendRow>
+        <LegendRow y={LEGEND_Y + 162} lines={['I want to choose a fine-tuning', 'technique']}>
+          <RoutePip id="finetune" cx={LEGEND_X + 22} cy={LEGEND_Y + 162} optional={false} />
+        </LegendRow>
+        <LegendRow y={LEGEND_Y + 202} lines={['Optional on the RL route']}>
+          <RoutePip id="rl" cx={LEGEND_X + 22} cy={LEGEND_Y + 202} optional={true} />
+        </LegendRow>
+        <LegendRow y={LEGEND_Y + 226} lines={['The path from stage to stage']}>
+          <path d={`M ${LEGEND_X + 12} ${LEGEND_Y + 226} H ${LEGEND_X + 34}`} style={arrow} />
+        </LegendRow>
       </svg>
     </div>
   );
@@ -358,7 +384,7 @@ export function GettingStarted() {
         header={
           <Header
             variant="h1"
-            description="Four ideas to hold, and the shortest route through the dive for the reason you are reading (sources read 2026-10-30)"
+            description="Five ideas to hold, and the shortest route through the dive for the reason you are reading (sources read 2026-10-30)"
           >
             2. Getting Started
           </Header>
@@ -366,9 +392,11 @@ export function GettingStarted() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The dive runs to 24 sections, from the RL (reinforcement learning) vocabulary to a
-            choice of method and the AWS services that run it. A reader with one question needs a
-            subset of them, and the challenge is choosing that subset without losing the thread.
+            The dive runs to 27 sections, from where a fine-tuning signal comes from, through the
+            reinforcement learning (RL) vocabulary, to a choice of technique and the AWS services
+            that run it. A reader with one question needs a subset of them, and the challenge is
+            choosing that subset without losing the thread. This section says where the dive
+            starts, gives the five ideas the rest of it leans on, and the routes through it.
           </Box>
         </SpaceBetween>
       </Container>
@@ -377,7 +405,7 @@ export function GettingStarted() {
         header={
           <Header
             variant="h2"
-            description="Check that the dive starts where your experience ends, and know where to look up a term you meet out of order"
+            description="Check that the dive starts where your experience ends, and find where the two mechanics it builds on are explained"
           >
             Who the dive is written for
           </Header>
@@ -385,31 +413,21 @@ export function GettingStarted() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The dive is written for a technical lead who knows inference engines, GPUs, prompts
-            and agent loops in practice, has run long autonomous coding agents, and has no formal
-            RL background. It takes two things from that background as given.
+            The dive is written for a technical reader who uses language models, prompts and agent
+            loops in practice and knows that a model has weights, counted in billions of
+            parameters, that can be fine-tuned, but not how training turns a signal into a change
+            in those weights. Two mechanics carry the rest: the gradient step, which section 4
+            builds where SFT (supervised fine-tuning) first needs it and the{' '}
+            <Link href="../llm-training-systems/">
+              training dive, section 3: One Training Step: What It Computes and Keeps
+            </Link>{' '}
+            follows onto the hardware, and the cost of the context, which every call pays again
+            and the <Link href="../vllm/">vLLM dive, section 6: Automatic Prefix Caching</Link>{' '}
+            shows a serving engine taking back with a cache.
           </Box>
-          <ul>
-            <li>
-              <Box variant="p">
-                The context window as everything a frozen model conditions on, with its cost
-                rules: the effective length, how much of a long context a model still uses well,
-                and prefix caching. Section 17, Where Words Fall Short, applies both rules to
-                learning loops, and the{' '}
-                <Link href="../vllm/">vLLM dive, section 6: Automatic Prefix Caching</Link> covers
-                the cache itself.
-              </Box>
-            </li>
-            <li>
-              <Box variant="p">
-                A gradient step nudges the weights to make something more likely. The dive needs
-                no calculus beyond that.
-              </Box>
-            </li>
-          </ul>
           <Box variant="p">
-            Each section defines the RL terms it uses when it first uses them. If a shorter route
-            brings you to a term out of order, section 24, Glossary &amp; Sources, lists every
+            Each section defines the terms it uses when it first uses them. If a shorter route
+            brings you to a term out of order, section 27, Glossary &amp; Sources, lists every
             acronym the dive uses and its reading list, grouped by authority.
           </Box>
         </SpaceBetween>
@@ -419,52 +437,68 @@ export function GettingStarted() {
         header={
           <Header
             variant="h2"
-            description="Hold four ideas and any section on any route reads; each one names the section that defines it"
+            description="Hold five ideas and any section on any route reads; each one names the section that defines it"
           >
-            Four ideas to hold
+            Five ideas to hold
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Every later section leans on four ideas. The section named under each one defines it
+            Every later section leans on five ideas. The section named under each one defines it
             with its evidence.
           </Box>
           <ColumnLayout columns={2} variant="text-grid">
             <IdeaCard
-              title="Policy and reward"
-              where="Defined in section 3, The Language Model Is Already a Policy."
+              title="Where the signal comes from"
+              where="Defined in section 3, Fine-Tuning Techniques: Where the Learning Signal Comes From."
             >
-              The model is a policy: a probability distribution over next tokens, which every
-              sampled call draws from. A reward is one number per attempt, and it usually arrives
-              only at the end of the response.
+              Fine-tuning techniques differ first in what they learn from: example answers, a
+              stronger model&apos;s answers, pairs of answers where one is better, or a score on
+              the model&apos;s own attempts. An answer gives a target at every token of the
+              response; a score gives one number for the whole response.
+            </IdeaCard>
+            <IdeaCard
+              title="Policy and reward"
+              where="Defined in section 5, The Language Model Is Already a Policy."
+            >
+              RL calls whatever chooses the actions a policy. Here the policy is the language model:
+              at each step it gives a probability to every possible next token, and every sampled
+              call draws from those probabilities. A reward is one number per attempt, produced by a
+              grader, and it usually arrives only at the end of the response.
             </IdeaCard>
             <IdeaCard
               title="Advantage"
-              where="Defined in section 3; section 4, Policy Gradient, shows the two ways to estimate it."
+              where="Defined in section 5; section 6, Policy Gradient, shows the two ways to estimate it."
             >
-              How much better or worse an attempt did than expected. Its sign decides whether a
-              training step makes that attempt more likely or less likely.
+              How much better or worse an attempt did than expected. As an illustration: if
+              attempts at a prompt pass 30% of the time, scored 1 for a pass and 0 for a fail, the
+              expected score is 0.3, so a pass is 0.7 above expectation and a fail 0.3 below. The
+              sign decides whether a training step makes that attempt more likely or less likely.
             </IdeaCard>
             <IdeaCard
               title="The grader as a proxy"
               where={
                 <>
-                  Section 7, RLVR &amp; GRPO (RL with verifiable rewards, and Group Relative Policy
-                  Optimization), introduces the program as grader; section 10, The Reward Is a
+                  Section 9, RLVR &amp; GRPO (RL with verifiable rewards, and Group Relative Policy
+                  Optimization), introduces the program as grader; section 13, The Reward Is a
                   Proxy, shows how to build one that holds up under optimisation.
                 </>
               }
             >
               The grader is the program or model that produces the reward. It stands in for what
-              you actually want, and optimisation pressure finds the places where the two differ.
+              you actually want, and optimisation pressure finds the places where the two differ:
+              training makes whatever the grader rewards more likely, including answers that score
+              well without being what you meant.
             </IdeaCard>
             <IdeaCard
               title="pass@k and the capability boundary"
-              where="pass@k is defined in section 3; section 8, What RL Does to a Model, defines the boundary and reads both as a curve."
+              where="pass@k is defined in section 5; section 10, What RL Does to a Model, defines the boundary and reads both as a curve."
             >
               pass@1 is how often one sample succeeds, and pass@k is whether any of k samples
-              does. The capability boundary is the set of problems a model solves when k is large.
+              does; averaged over problems, it is the share solved within k tries. The capability
+              boundary is the set of problems a model solves when k is large: what its sampling can
+              reach at all.
             </IdeaCard>
           </ColumnLayout>
         </SpaceBetween>
@@ -474,7 +508,7 @@ export function GettingStarted() {
         header={
           <Header
             variant="h2"
-            description="See why the RL sections come before the loops you already run, so the second half reads as the same loop with a new place to keep what it learns"
+            description="See why the map and the RL sections come before the loops you already run, so the second half reads as the same loop with a new place to keep what it learns"
           >
             The path, and why in this order
           </Header>
@@ -482,46 +516,65 @@ export function GettingStarted() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Read in full, the dive runs in four stages after the two opening sections.
+            Read in full, the dive runs in five stages after the two opening sections.
           </Box>
           <ol>
             <li>
               <Box variant="p">
-                The RL vocabulary on tokens, sections 3 to 6: the policy, the policy gradient, the
-                clip of PPO (Proximal Policy Optimization) and the KL (Kullback-Leibler
-                divergence) penalty, and rewards learned from preferences.
+                Where the signal comes from, sections 3 and 4: the map of fine-tuning techniques by
+                signal source, then the two that learn from written answers, SFT and distillation.
+                Section 4 builds the gradient step, the log-probability of a token and the KL
+                (Kullback-Leibler) divergence, a number for how different two next-token
+                distributions are, because SFT and distillation are where the dive first needs
+                them.
               </Box>
             </li>
             <li>
               <Box variant="p">
-                What RL with a program as grader does to a model, sections 7 to 10, including what
-                a frozen model can buy back without training (the close of section 8) and ending
-                on the reward as a proxy (section 10).
+                The RL vocabulary on tokens, sections 5 to 8: the policy; the policy gradient, the
+                basic rule for turning a score into a weight change; the clip of PPO (Proximal
+                Policy Optimization), which stops pushing a token&apos;s probability further once
+                training has moved it a set fraction from where it started;
+                the KL penalty, a charge for drifting from the model the run started from; and
+                learning from preferences, where a reward model is trained on people&apos;s choices
+                between two responses, or DPO (Direct Preference Optimization) learns from those
+                pairs directly.
               </Box>
             </li>
             <li>
               <Box variant="p">
-                The same loop rebuilt with the context as the trainable parameter, sections 11 to
-                16.
+                What RL with a program as grader does to a model, sections 9 to 13, including what
+                a frozen model can buy back without training (the close of section 10), how it
+                compares with distilling a stronger model (section 11), and ending on the reward as
+                a proxy (section 13).
               </Box>
             </li>
             <li>
-              <Box variant="p">The comparison, the cost and the choice, sections 17 to 23.</Box>
+              <Box variant="p">
+                The same loop rebuilt with the context as the trainable parameter, sections 14 to
+                19: the text a loop writes plays the part the weights play in RL.
+              </Box>
+            </li>
+            <li>
+              <Box variant="p">The comparison, the cost and the choice, sections 20 to 26.</Box>
             </li>
           </ol>
           <Box variant="p">
-            RL comes first because the loop papers describe themselves in its terms. Reflexion&apos;s
-            full title is &quot;Reflexion: Language Agents with Verbal Reinforcement Learning&quot;{' '}
+            The two answer-based techniques come before RL because RL reads most easily as their
+            extension: section 6 builds the policy gradient as fine-tuning on the model&apos;s own
+            samples, weighted by their score. RL comes before the loops because the loop papers
+            describe themselves in its terms. Reflexion&apos;s full title is &quot;Reflexion:
+            Language Agents with Verbal Reinforcement Learning&quot;{' '}
             <Cite tier={3} href={REFLEXION} venue="NeurIPS 2023">
               Reflexion, title
             </Cite>
             , and Training-Free GRPO is named in full &quot;Training-Free Group Relative Policy
-            Optimization&quot;, after the RL algorithm of section 7{' '}
+            Optimization&quot;, after the RL algorithm of section 9{' '}
             <Cite tier={3} href={TF_GRPO} venue="preprint">
               Training-Free GRPO, title and abstract
             </Cite>
-            . The capability result in section 8 comes before the words track because it sets what
-            a loop would have to reproduce. Section 10 previews the words track: its second half
+            . The capability result in section 10 comes before the words track because it sets what
+            a loop would have to reproduce. Section 13 previews the words track: its second half
             already uses Ralph, autoresearch and Reflexion, and points ahead to the sections that
             introduce them.
           </Box>
@@ -534,19 +587,22 @@ export function GettingStarted() {
             variant="h2"
             description="Pick the route that matches why you are reading, and skip the sections it does not need"
           >
-            Three shorter routes
+            Four shorter routes
           </Header>
         }
       >
         <SpaceBetween size="m">
-          <Box variant="p">Each shorter route is built around one reason to read.</Box>
+          <Box variant="p">
+            Each shorter route is built around one reason to read. Reinforcement fine-tuning, in
+            the second, is the name AWS and OpenAI give to managed RL on a model they host.
+          </Box>
           <ul>
             <li>
               <Box variant="p">
                 <Box variant="strong" display="inline">
                   &quot;I run agent loops and want them to learn&quot;:
                 </Box>{' '}
-                sections 1, 2, 3, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22.
+                sections 1, 2, 3, 5, 10, 13 to 21, 23 and 25.
               </Box>
             </li>
             <li>
@@ -555,7 +611,7 @@ export function GettingStarted() {
                   &quot;I advise a team choosing between reinforcement fine-tuning and
                   prompting&quot;:
                 </Box>{' '}
-                sections 1, 2, 3, 7, 8, 10, 14, 16, 17, 18, 20, 22, 23.
+                sections 1, 2, 3, 5, 9, 10, 11, 13, 17, 19, 20, 21, 23, 25, 26.
               </Box>
             </li>
             <li>
@@ -563,67 +619,91 @@ export function GettingStarted() {
                 <Box variant="strong" display="inline">
                   &quot;I want RL properly&quot;:
                 </Box>{' '}
-                sections 2 to 10 in order, with section 19, An RL Step Is an Inference Job Inside a
-                Training Job, as an optional systems coda.
+                sections 2 to 13 in order, with section 22, An RL Step Is an Inference Job Inside a
+                Training Job, as an optional coda on the systems side.
+              </Box>
+            </li>
+            <li>
+              <Box variant="p">
+                <Box variant="strong" display="inline">
+                  &quot;I want to choose a fine-tuning technique&quot;:
+                </Box>{' '}
+                sections 1, 2, 3, 4, 5, 8, 9, 10, 11, 13, 23, 25, 26.
               </Box>
             </li>
           </ul>
           <Box variant="p">
             The map lays the sections out by stage. Arrows show the path from stage to stage, and
-            a lettered mark inside a section shows which shorter route reads it.
+            a lettered mark inside a section shows which shorter route reads it. Section 19,
+            Hybrids, is section 1&apos;s third store, a small trained model; section 24 runs on a
+            DGX Spark, NVIDIA&apos;s desktop machine.
           </Box>
           <ReadingMapDiagram />
           <Box variant="small" color="text-body-secondary">
-            Sections read left to right within a stage. Section 21, Side by Side on a DGX Spark,
+            Sections read left to right within a stage. Section 24, Side by Side on a DGX Spark,
             is on no shorter route: it runs one RL step on hardware you can own and sets out the
             protocol for running the comparison there.
           </Box>
           <Box variant="p">
-            Where a section on the first two routes names a method from a section you skipped,
-            look for a one-clause gloss with a pointer beside it, as when section 22 introduces
-            GEPA as &quot;Genetic-Pareto, the reflective prompt optimiser of section 14&quot;.
+            Where a section on a shorter route names a method from a section you skipped, look for
+            a one-clause gloss with a pointer beside it, as when section 25 introduces GEPA as
+            &quot;Genetic-Pareto, the reflective prompt optimiser of section 17&quot;.
           </Box>
-          <ExpandableSection headerText="What each shorter route keeps from the RL half, and why">
+          <ExpandableSection headerText="What each shorter route keeps from the first half, and why">
             <SpaceBetween size="s">
               <Box variant="p">
-                Each shorter route keeps the RL sections that its later stops point back to.
+                Each shorter route keeps the early sections that its later stops point back to.
               </Box>
               <Box variant="p">
                 <Box variant="strong" display="inline">
-                  Section 3, on every route.
+                  Sections 3 and 5, on every route.
                 </Box>{' '}
-                It defines the policy, the reward, the advantage and pass@k, and its closing block
-                is the bridge that section 11 builds the words track on.
-              </Box>
-              <Box variant="p">
-                <Box variant="strong" display="inline">
-                  Section 8, on every route.
-                </Box>{' '}
-                Section 18 points to it for sharpening, section 20&apos;s calculator takes
-                inference-time sampling from it, and section 22 caps that option at the base
-                model&apos;s own pass@k with a pointer back to it.
+                Section 3 is the map of signal sources that section 25&apos;s second question forks
+                into. Section 5 defines the policy, the reward, the advantage and pass@k, and its
+                closing block is the bridge that section 14 builds the words track on.
               </Box>
               <Box variant="p">
                 <Box variant="strong" display="inline">
                   Section 10, on every route.
                 </Box>{' '}
-                Section 15&apos;s hardening checklist starts with its grader checks, and section 22
+                Section 21 points to it for sharpening, section 23&apos;s calculator takes
+                sampling more at query time from it, and section 25 caps that option at the base
+                model&apos;s own pass@k with a pointer back to it.
+              </Box>
+              <Box variant="p">
+                <Box variant="strong" display="inline">
+                  Section 13, on every route.
+                </Box>{' '}
+                Section 18&apos;s hardening checklist starts with its grader checks, and section 25
                 sends a gap with no trustworthy signal back to its four checks.
               </Box>
               <Box variant="p">
                 <Box variant="strong" display="inline">
-                  Sections 7 and 23, on the advisor route.
+                  Sections 9 and 26, on the advisor and fine-tuning routes.
                 </Box>{' '}
-                Section 22 relies on section 7 to turn today&apos;s base rate into the expected
-                share of training groups that carry no gradient, and names the AWS service for each
-                path while leaving the detail to section 23.
+                Section 25 relies on section 9 to turn today&apos;s base rate, the share of
+                attempts the model passes now, into the expected share of training groups that
+                carry no learning signal: when every attempt in a group gets the same score, no
+                attempt did better or worse than the others, every advantage is 0, and the group
+                adds nothing to the reward-driven part of the update (only the KL penalty, when it
+                is switched on, still acts on it). Section 25 also names the AWS service for each
+                path and leaves the detail to section 26.
+              </Box>
+              <Box variant="p">
+                <Box variant="strong" display="inline">
+                  Sections 4, 8 and 11, on the fine-tuning route.
+                </Box>{' '}
+                Section 4 builds SFT and distillation, section 8 the techniques that learn from
+                pairs of answers, and section 11 sets distillation against RL, the fork section 25
+                sends a gap in reasoning skill to.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
           <Box variant="p">
-            Pick the route that matches why you are reading. On the first two routes, read section
-            1, One Loop, Three Places to Keep What It Learns, first if you came straight here. All
-            three routes then continue at section 3, The Language Model Is Already a Policy.
+            Pick the route that matches why you are reading. If you came straight here, read
+            section 1, One Loop: What It Learns From and Where It Keeps It, first on every route
+            but the RL one. All four routes then continue at section 3, Fine-Tuning Techniques:
+            Where the Learning Signal Comes From.
           </Box>
         </SpaceBetween>
       </Container>

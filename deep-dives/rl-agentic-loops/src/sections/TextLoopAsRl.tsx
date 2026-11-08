@@ -40,7 +40,7 @@ const AR_PROGRAM = gh('karpathy/autoresearch', AUTORESEARCH_SHA, 'program.md', '
 const AR_BUDGET = gh('karpathy/autoresearch', AUTORESEARCH_SHA, 'prepare.py', 'L31');
 
 /* ------------------------------------------------------------------------ */
-/* Diagram: three stores against two signal sources                         */
+/* Diagram: three stores against two ways to check a score                 */
 /* ------------------------------------------------------------------------ */
 
 type ChipKind = 'words' | 'self' | 'rl';
@@ -66,14 +66,14 @@ const STORE_ROWS: StoreRow[] = [
   {
     id: 'weights',
     title: 'Weights',
-    sub: ['RL changes the model', 'sections 3 to 10'],
+    sub: ['RL changes the model', 'sections 5 to 13'],
     exec: [r('DeepSeek-R1 (test pass rate)')],
     out: [r('Search-R1 (exact match)'), r('ReTool (answer only)')],
   },
   {
     id: 'context',
     title: 'Context',
-    sub: ['a frozen model reads it', 'sections 12 to 15'],
+    sub: ['a frozen model reads it', 'sections 15 to 18'],
     exec: [
       w('Reflexion (unit tests)'),
       w('ExpeL (task success)'),
@@ -104,7 +104,7 @@ const STORE_ROWS: StoreRow[] = [
   {
     id: 'small',
     title: 'Small trained model',
-    sub: ['writes context for a', 'frozen one, section 16'],
+    sub: ['writes context for a', 'frozen one, section 19'],
     exec: [w('Retroformer (environment)')],
     out: [w('Retroformer (answer F1)'), w('Advisor Models'), w('Memento')],
   },
@@ -182,7 +182,7 @@ const SG_H = SG_LEGEND_Y + 30;
 const SG_LEGEND: Array<{ kind: ChipKind; text: string }> = [
   { kind: 'words', text: 'Words-track method' },
   { kind: 'self', text: 'No ground truth: graded by the model or an LLM judge' },
-  { kind: 'rl', text: 'RL on the weights (sections 7 and 9)' },
+  { kind: 'rl', text: 'RL on the weights (sections 9 and 12)' },
 ];
 
 function legendLayout(): Array<{ kind: ChipKind; text: string; x: number }> {
@@ -208,7 +208,7 @@ function StoreSignalDiagram() {
         <title id="textloop-grid-title">
           A grid with three rows for where a loop keeps what it learns (the weights, the context a
           frozen model reads, and a small trained model that writes context for a frozen one) and
-          two columns for where its signal comes from (execution-grounded: tests, a compiler or an
+          two columns for how its score is checked (execution-grounded: tests, a compiler or an
           environment; output-evaluated: a gold answer, a rubric or a judge). The weights row holds
           RL reference points. The context row holds most of the words track and fills both
           columns. Reflexion, ExpeL, ACE, TextGrad and Retroformer appear in both columns because
@@ -240,7 +240,7 @@ function StoreSignalDiagram() {
           Store, by row
         </text>
         <text x={SG_HEAD_X + 8} y={52} className="textloop-grid-s">
-          Signal source, by column
+          How the score is checked, by column
         </text>
 
         {/* Column headers */}
@@ -396,7 +396,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'reflexion',
     name: 'Reflexion',
-    section: 'Section 12',
+    section: 'Section 15',
     source: (
       <Cite tier={3} href={REFLEXION} venue="NeurIPS 2023">
         Reflexion, Sections 3 and 4
@@ -411,7 +411,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'self-refine',
     name: 'Self-Refine',
-    section: 'Section 12',
+    section: 'Section 15',
     source: (
       <Cite tier={3} href={SELF_REFINE} venue="NeurIPS 2023">
         Self-Refine, Abstract and Section 2
@@ -426,7 +426,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'expel',
     name: 'ExpeL',
-    section: 'Section 13',
+    section: 'Section 16',
     source: (
       <Cite tier={3} href={EXPEL} venue="AAAI 2024">
         ExpeL, Sections 4.2 and 5
@@ -441,7 +441,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'clin',
     name: 'CLIN',
-    section: 'Section 13',
+    section: 'Section 16',
     source: (
       <Cite tier={3} href={CLIN} venue="COLM 2024">
         CLIN, Sections 3.1 and 3.2
@@ -456,7 +456,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'reasoningbank',
     name: 'ReasoningBank',
-    section: 'Section 13',
+    section: 'Section 16',
     source: (
       <Cite tier={3} href={REASONING_BANK} venue="ICLR 2026">
         ReasoningBank, Section 3.2
@@ -471,7 +471,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'cheatsheet',
     name: 'Dynamic Cheatsheet',
-    section: 'Section 13',
+    section: 'Section 16',
     source: (
       <Cite tier={3} href={CHEATSHEET} venue="EACL 2026">
         Dynamic Cheatsheet, Sections 2 and 5
@@ -486,7 +486,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'voyager',
     name: 'Voyager',
-    section: 'Section 13',
+    section: 'Section 16',
     source: (
       <Cite tier={3} href={VOYAGER} venue="TMLR 2024">
         Voyager, Sections 2 and 4
@@ -501,7 +501,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'ace',
     name: 'ACE',
-    section: 'Section 13',
+    section: 'Section 16',
     source: (
       <Cite tier={3} href={ACE} venue="ICLR 2026">
         ACE, Sections 3 and 4.7
@@ -516,7 +516,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'tf-grpo',
     name: 'Training-Free GRPO',
-    section: 'Section 13',
+    section: 'Section 16',
     source: (
       <Cite tier={3} href={TF_GRPO} venue="preprint">
         Training-Free GRPO, Sections 2 and 4.2
@@ -531,7 +531,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'textgrad',
     name: 'TextGrad',
-    section: 'Section 14',
+    section: 'Section 17',
     source: (
       <Cite tier={3} href={TEXTGRAD} venue="Nature 2025">
         TextGrad (arXiv v1), Section 2
@@ -546,7 +546,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'protegi',
     name: 'ProTeGi',
-    section: 'Section 14',
+    section: 'Section 17',
     source: (
       <Cite tier={3} href={PROTEGI} venue="EMNLP 2023">
         ProTeGi, Sections 2 and 3
@@ -561,7 +561,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'opro',
     name: 'OPRO',
-    section: 'Section 14',
+    section: 'Section 17',
     source: (
       <Cite tier={3} href={OPRO} venue="ICLR 2024">
         OPRO, Sections 2 and 5
@@ -576,7 +576,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'mipro',
     name: 'MIPROv2',
-    section: 'Section 14',
+    section: 'Section 17',
     source: (
       <Cite tier={3} href={MIPRO} venue="EMNLP 2024">
         MIPRO, Section 3
@@ -598,7 +598,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'gepa',
     name: 'GEPA',
-    section: 'Section 14',
+    section: 'Section 17',
     source: (
       <Cite tier={3} href={GEPA} venue="ICLR 2026">
         GEPA, Section 3 and Table 1
@@ -613,7 +613,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'autoresearch',
     name: 'autoresearch',
-    section: 'Section 15',
+    section: 'Section 18',
     source: (
       <Cite tier={1} href={AR_PROGRAM}>
         autoresearch program.md L103-L104
@@ -635,7 +635,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'funsearch',
     name: 'FunSearch and AlphaEvolve',
-    section: 'Section 15',
+    section: 'Section 18',
     source: (
       <SpaceBetween size="xxs">
         <Cite tier={3} href={FUNSEARCH} venue="Nature 2023">
@@ -655,7 +655,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'ralph',
     name: 'Ralph',
-    section: 'Section 15',
+    section: 'Section 18',
     source: (
       <Cite tier={2} href={RALPH}>
         Huntley, Ralph (author&apos;s post)
@@ -670,7 +670,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'retroformer',
     name: 'Retroformer',
-    section: 'Section 16',
+    section: 'Section 19',
     source: (
       <Cite tier={3} href={RETROFORMER} venue="ICLR 2024">
         Retroformer, Sections 4.1, 4.2 and 5.2, Appendices C.1 and C.3
@@ -685,7 +685,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'advisor',
     name: 'Advisor Models',
-    section: 'Section 16',
+    section: 'Section 19',
     source: (
       <Cite tier={3} href={ADVISOR} venue="ICML 2026">
         Advisor Models, Sections 3 and 4, Appendix A
@@ -700,7 +700,7 @@ const METHODS: MethodRow[] = [
   {
     id: 'memento',
     name: 'Memento',
-    section: 'Section 16',
+    section: 'Section 19',
     source: (
       <Cite tier={3} href={MEMENTO} venue="preprint">
         Memento, Sections 3, 5.3 and 6
@@ -763,7 +763,7 @@ export function TextLoopAsRl() {
             variant="h1"
             description="Read any text loop as RL with the context as its trainable parameter, then predict its behaviour from its signal, its step size and its exploration (sources read 2026-10-30)"
           >
-            11. A Text Loop Is RL on the Context
+            14. A Text Loop Is RL on the Context
           </Header>
         }
       >
@@ -771,7 +771,7 @@ export function TextLoopAsRl() {
           <Box variant="p">
             A text loop improves a frozen model by changing what the model reads. After an attempt
             is scored, something writes a reflection, a revised prompt, a lesson in a playbook (a
-            list of itemised lessons the loop maintains) or a new skill file, and the next attempt runs with it in the context. Sections 3 to 10
+            list of itemised lessons the loop maintains) or a new skill file, and the next attempt runs with it in the context. Sections 5 to 13
             built the vocabulary of RL (reinforcement learning) on the weights. This section opens
             the words track by applying the same vocabulary to the context, so that any loop, one
             you run or one in a paper, can be described in RL terms and its behaviour predicted
@@ -797,7 +797,7 @@ export function TextLoopAsRl() {
         header={
           <Header
             variant="h2"
-            description="Name the policy, the parameters, the learner and the environment of any text loop, and the RL vocabulary of sections 3 to 10 applies to it"
+            description="Name the policy, the parameters, the learner and the environment of any text loop, and the RL vocabulary of sections 5 to 13 applies to it"
           >
             The analogy, made exact
           </Header>
@@ -899,18 +899,20 @@ export function TextLoopAsRl() {
         header={
           <Header
             variant="h2"
-            description="Place any method by where it keeps what it learns and where its score comes from, and pick out the loops that grade themselves"
+            description="Place any method by where it keeps what it learns and how its score is checked, and pick out the loops that grade themselves"
           >
-            Three stores, two signal sources
+            Three stores, two ways to check a score
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Section 1, One Loop, Three Places to Keep What It Learns, named the three stores: the
+            Section 1, One Loop: What It Learns From and Where It Keeps It, named the three stores: the
             weights, the context a frozen model reads, and a small trained model that writes
-            context for a large one. The second axis is where the signal comes from, taken from a
-            survey of agent adaptation: execution-grounded (the result of a tool call or code run:
+            context for a large one. The second axis is how a score is checked, the split section 3
+            drew inside its score row. A survey of agent adaptation calls this axis the signal
+            source; this dive keeps that name for section 3&apos;s wider map, so here it is the way
+            the score is checked: execution-grounded (the result of a tool call or code run:
             tests, a compiler, an environment) or output-evaluated (a score on the final output: an
             exact-match check against a gold answer, a rubric, or a judge){' '}
             <Cite tier={3} href={SURVEY} venue="preprint">
@@ -918,11 +920,11 @@ export function TextLoopAsRl() {
             </Cite>
             . The grid crosses the two and places every method of the words track. Its weights row
             holds reference points: runs of RLVR (RL with verifiable rewards, where a program
-            checks each answer) from section 7, RLVR &amp; GRPO, and section 9, Agentic RL.
+            checks each answer) from section 9, RLVR &amp; GRPO, and section 12, Agentic RL.
           </Box>
           <Box variant="p">
             Short names in the grid and the table: GRPO is Group Relative Policy Optimization, the
-            RL algorithm of section 7, which scores each answer against the others sampled for the
+            RL algorithm of section 9, which scores each answer against the others sampled for the
             same prompt and calls the difference its advantage; ACE is Agentic Context
             Engineering; GEPA is Genetic-Pareto; OPRO is Optimization by PROmpting; ProTeGi is
             Prompt Optimization with Textual Gradients; MIPROv2 is DSPy&apos;s implementation of
@@ -950,7 +952,7 @@ export function TextLoopAsRl() {
             Self-Refine critiques its own answer, Dynamic Cheatsheet&apos;s curator &quot;does not
             have access to ground-truth labels&quot;, ReasoningBank labels outcomes with an LLM
             judge &quot;without any ground-truth reference&quot;, and TextGrad can run with a
-            judge. Their sources are in the table below; section 12, Verbal Reinforcement &amp;
+            judge. Their sources are in the table below; section 15, Verbal Reinforcement &amp;
             Self-Correction, shows what grading without ground truth does to a loop.
           </Box>
           <ExpandableSection headerText="Where the survey draws the split, and how this grid extends it">
@@ -975,8 +977,7 @@ export function TextLoopAsRl() {
                   Adaptation of Agentic AI, Section 3.2 and footnote 1
                 </Cite>
                 . Applying the execution-or-output split to the context and the small-model rows
-                is our extension of its frame. It is the question section 22, Choosing a Text Loop,
-                a Hybrid or a Weight Update, asks of any signal you have.
+                is our extension of its frame. It is the question section 25, Choosing a Technique: Fine-Tuning, a Text Loop or a Hybrid, asks of any signal you have.
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -997,8 +998,8 @@ export function TextLoopAsRl() {
           <Box variant="p">
             Five fields carry the comparison: the state that persists between attempts, the update
             rule that changes it, the feedback signal that drives the update, what stays frozen,
-            and the cost. The table fills them in for each method of the words track. Sections 12
-            to 16 develop each one.
+            and the cost. The table fills them in for each method of the words track. Sections 15
+            to 19 develop each one.
           </Box>
           <FiveFieldTable />
           <Box variant="p">
@@ -1015,7 +1016,7 @@ export function TextLoopAsRl() {
             <Cite tier={3} href={GEPA} venue="ICLR 2026">
               GEPA, Appendix E.4 and Table 4
             </Cite>
-            . Section 13, Memories, Playbooks &amp; Skill Libraries, develops step size as a design
+            . Section 16, Memories, Playbooks &amp; Skill Libraries, develops step size as a design
             choice.
           </Box>
         </SpaceBetween>
@@ -1039,7 +1040,7 @@ export function TextLoopAsRl() {
             <Cite tier={3} href={REFLEXION} venue="NeurIPS 2023">
               Reflexion, Table 3
             </Cite>
-            . Section 12, Verbal Reinforcement &amp; Self-Correction, compares loops with and
+            . Section 15, Verbal Reinforcement &amp; Self-Correction, compares loops with and
             without an outside signal.
           </Box>
           <Box variant="p">
@@ -1051,7 +1052,7 @@ export function TextLoopAsRl() {
             <Cite tier={3} href={ACE} venue="ICLR 2026">
               ACE, Section 2.2
             </Cite>
-            . Section 13, Memories, Playbooks &amp; Skill Libraries, covers update rules that keep
+            . Section 16, Memories, Playbooks &amp; Skill Libraries, covers update rules that keep
             what they learned.
           </Box>
           <Box variant="p">
@@ -1070,12 +1071,12 @@ export function TextLoopAsRl() {
             <Cite tier={3} href={BANDITS} venue="NeurIPS 2024">
               Krishnamurthy et al., Abstract
             </Cite>
-            . Section 17, Where Words Fall Short, takes this further.
+            . Section 20, Where Words Fall Short, takes this further.
           </Box>
           <Box variant="p">
             So the frame gives a check to run on any loop, yours or a paper&apos;s, before you
             trust its gains: fill in the five fields, place it in the grid, and read the signal
-            first, because Reflexion moved from 0.52 to 0.68 on one change, the tests. Section 12
+            first, because Reflexion moved from 0.52 to 0.68 on one change, the tests. Section 15
             starts there.
           </Box>
         </SpaceBetween>

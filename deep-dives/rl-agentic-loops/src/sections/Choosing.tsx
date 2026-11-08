@@ -11,8 +11,6 @@ import { Cite, arxiv, ghTree, E0_URL, HYPERPOD_RECIPES_SHA } from '../components
 
 /** DAPO: Decoupled Clip and Dynamic sAmpling Policy Optimization. */
 const DAPO = arxiv('2503.14476v2');
-/** DeepSeek-R1 (the Nature version is v2). */
-const R1 = arxiv('2501.12948v2');
 /** Snell et al., Learning by Distilling Context. */
 const CONTEXT_DISTILLATION = arxiv('2209.15189v1');
 /** AlphaEvolve white paper. */
@@ -33,6 +31,9 @@ const AGENTCORE_OPT = 'https://docs.aws.amazon.com/bedrock-agentcore/latest/devg
 const AGENTCORE_EPISODIC =
   'https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/episodic-memory-strategy.html';
 const SM_CUSTOMIZE = 'https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models.html';
+const SM_DISTILL = 'https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models-distillation.html';
+const BEDROCK_CUSTOM = 'https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models.html';
+const BEDROCK_DISTILL_PAIRS = 'https://docs.aws.amazon.com/bedrock/latest/userguide/prequisites-model-distillation.html';
 const SM_TRAINING_SESSIONS =
   'https://docs.aws.amazon.com/sagemaker/latest/dg/customizing-models-training-sessions.html';
 const SM_MTRL = 'https://docs.aws.amazon.com/sagemaker/latest/dg/model-customize-mtrl-hyperparams.html';
@@ -101,7 +102,7 @@ const CT_LEAVES: Leaf[][] = [
 ];
 
 const CT_EXITS = [
-  'No trustworthy signal: build the grader first (section 10)',
+  'No trustworthy signal: build the grader first (section 13)',
   'Near 0%: groups score alike, no gradient. SFT or distillation first',
   'Above 95%: little left to learn. RFT might be unnecessary',
 ];
@@ -169,7 +170,8 @@ function DecisionTreeDiagram() {
         </title>
         <desc id="choosing-tree-desc">
           Blue boxes are the three questions, asked in order. Amber boxes are exits that send you
-          to fix the signal or the starting point before any path. Green boxes are the six paths.
+          to fix the signal or the starting point before any path. Green boxes are six of the seven
+          paths; the seventh, SFT on answers you trust, sits behind the near-0% exit.
           The dashed amber box marks output format, the contested row, which is measured on the
           target model.
         </desc>
@@ -204,7 +206,7 @@ function DecisionTreeDiagram() {
           1. What kind of gap is it?
         </text>
         <text x={CT_Q1.x + CT_Q1.w / 2} y={46} className="choosing-tree-sub-mid">
-          section 18&apos;s map: mark every row
+          section 21&apos;s map: mark every row
         </text>
 
         <line x1={CT_Q1.x + CT_Q1.w} y1={33} x2={650} y2={33} className="choosing-tree-dash" />
@@ -299,10 +301,10 @@ function DecisionTreeDiagram() {
           3. Can you touch the weights, and how many queries will it serve?
         </text>
         <text x={30} y={327} className="choosing-tree-sub">
-          API access only, or weights you own; section 20 prices the volume
+          API access only, or weights you own; section 23 prices the volume
         </text>
 
-        {/* Six paths */}
+        {/* Six of the seven paths (SFT sits behind the near-0% exit) */}
         {CT_LEAVES.map((pair, lane) =>
           pair.map((leaf, side) => {
             const x = leafX(lane, side);
@@ -371,7 +373,7 @@ export function Choosing() {
             variant="h1"
             description="Answer three questions in order (the kind of gap, the signal and today's score on it, weight access and volume), then start with the grader: at a 4% base rate, 9 and 10 of 20 steps of our small RL run carried no gradient (sources read 2026-10-30)"
           >
-            22. Choosing a Text Loop, a Hybrid or a Weight Update
+            25. Choosing a Technique: Fine-Tuning, a Text Loop or a Hybrid
           </Header>
         }
       >
@@ -425,7 +427,7 @@ export function Choosing() {
         header={
           <Header
             variant="h2"
-            description="Put your gap in one of three kinds, using section 18's map, and the store that can hold its fix follows"
+            description="Put your gap in one of three kinds, using section 21's map, and the store that can hold its fix follows"
           >
             1. What kind of gap is it?
           </Header>
@@ -433,7 +435,7 @@ export function Choosing() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Section 18, What Lives in Weights &amp; What Lives in Context, maps each kind of
+            Section 21, What Lives in Weights &amp; What Lives in Context, maps each kind of
             improvement to the store that holds it best, and its row-by-row table is the input to
             this question. Three kinds of gap cover the choice.
           </Box>
@@ -443,7 +445,7 @@ export function Choosing() {
             </Box>{' '}
             The model can follow the rule, use the fact or run the method once it reads it, so a
             text loop or retrieval writes it where the model reads, and each later edit stays
-            cheap. Sections 13 and 14 cover a playbook that grows and a prompt that is optimised.
+            cheap. Sections 16 and 17 cover a playbook that grows and a prompt that is optimised.
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">
@@ -451,7 +453,7 @@ export function Choosing() {
             </Box>{' '}
             The model reaches the right answer within k attempts and misses it on the first: its
             pass@k, the chance that at least one of k attempts is right, sits well above its
-            pass@1. Section 8, What RL Does to a Model, shows how to read the base model&apos;s
+            pass@1. Section 10, What RL Does to a Model, shows how to read the base model&apos;s
             pass@k curve and how much of the gap a frozen model can buy back when it answers.
           </Box>
           <Box variant="p">
@@ -460,9 +462,9 @@ export function Choosing() {
             </Box>{' '}
             A model that fails at every k you can afford to sample lacks the skill. Behaviour that
             depends on something hidden in each input needs weights that read each input, and
-            those can belong to a small advisor in front of a frozen model (section 16, Hybrids).
+            those can belong to a small advisor in front of a frozen model (section 19, Hybrids).
             Latency and token cost fall when instructions move into the weights, and the spread
-            and confidence of outputs are set by the probabilities training produces (section 18).
+            and confidence of outputs are set by the probabilities training produces (section 21).
           </Box>
           <Box variant="p">
             Output format is the contested row. Formatting alone moved few-shot accuracy by up to
@@ -481,7 +483,7 @@ export function Choosing() {
         header={
           <Header
             variant="h2"
-            description="Measure today's score on your grader before you pay for a run: near 0% RL has nothing to push on, and near 100% nothing is left to learn"
+            description="Name the signal you hold, then measure today's score on your grader before you pay for an RL run: near 0% RL has nothing to push on, and near 100% nothing is left to learn"
           >
             2. What signal do you have, and what does the model score on it today?
           </Header>
@@ -489,11 +491,19 @@ export function Choosing() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The signal comes in three grades. A programmatic verifier, such as tests, a compiler
+            Name the signal first, as a row of section 3&apos;s map, because the row picks the
+            family of technique. Written answers you trust lead to SFT (section 4). A stronger
+            model whose output you may train on leads to distillation (sections 4 and 11). Pairs of
+            answers where one was judged better lead to DPO or RLHF (section 8). A grader on the
+            model&apos;s own attempts leads to RL, and the rest of this question is about that
+            grader and what the model scores on it.
+          </Box>
+          <Box variant="p">
+            A grader comes in three grades. A programmatic verifier, such as tests, a compiler
             or an exact-match check against a gold answer, scores each attempt with no model in
             the scoring. An LLM judge counts as a signal once you have checked its verdicts
             against a set of labelled examples. Anything weaker is nothing trustworthy, and then
-            the first task is building the grader, against the four checks that end section 10,
+            the first task is building the grader, against the four checks that end section 13,
             The Reward Is a Proxy.
           </Box>
           <Box variant="p">
@@ -522,7 +532,7 @@ export function Choosing() {
             .
           </Box>
           <Box variant="p">
-            Our own run (section 21, Side by Side on a DGX Spark) shows the low end on a live
+            Our own run (section 24, Side by Side on a DGX Spark) shows the low end on a live
             trainer. Qwen2.5-0.5B-Instruct on fresh
             synthetic arithmetic, scored 1 for the exact integer, in two runs of 20 steps with two
             prompts and 8 completions per prompt in each step: the mean reward was 0.044, a base
@@ -531,7 +541,7 @@ export function Choosing() {
             <Cite tier={0} href={E0_URL}>
               E0 log: GRPO smoke test on a DGX Spark
             </Cite>
-            . Section 7, RLVR &amp; GRPO (RLVR: RL with verifiable rewards), turns a base rate into
+            . Section 9, RLVR &amp; GRPO (RLVR: RL with verifiable rewards), turns a base rate into
             the expected share of silent
             groups for your group size.
           </Box>
@@ -610,10 +620,10 @@ export function Choosing() {
             <Cite tier={3} href={SAMPLING} venue="ICLR 2026">
               Reasoning with Sampling, Section 5.3
             </Cite>
-            . A text loop pays for its instructions on every call; section 17, Where Words Fall
+            . A text loop pays for its instructions on every call; section 20, Where Words Fall
             Short, covers how prompt caching prices a stable prefix. Our reading: low volume
             favours the per-query paths, and high volume over the life of the learned artifact
-            favours paying once. Section 20, Cost per Improvement, turns your rates, your volume
+            favours paying once. Section 23, Cost per Improvement, turns your rates, your volume
             and your measured quality gap into the breakeven.
           </Box>
         </SpaceBetween>
@@ -623,17 +633,19 @@ export function Choosing() {
         header={
           <Header
             variant="h2"
-            description="Match your three answers to a path, and find the AWS service that runs it, detailed in section 23"
+            description="Match your three answers to a path, and find the AWS service that runs it, detailed in section 26"
           >
-            Six paths, and the AWS service for each
+            Seven paths, and the AWS service for each
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
             Each path names the answers that lead to it and, in one phrase, the AWS service that
-            runs it where one exists. Section 23, RL &amp; Learning Loops on AWS, details each
-            service and what the customer brings to it.
+            runs it where one exists. Six are the leaves of the tree above; the seventh, SFT on
+            answers you trust, is reached through the tree&apos;s near-0% exit, or straight from
+            question 2 when written answers are what you hold. Section 26, Fine-Tuning &amp;
+            Learning Loops on AWS, details each service and what the customer brings to it.
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">
@@ -641,7 +653,7 @@ export function Choosing() {
             </Box>{' '}
             When the gap is sharpening and the per-query cost is acceptable: best-of-K with your
             grader at serving time, or a sampler that needs no verifier. Neither reaches past the
-            base model&apos;s own pass@K (section 8). On AWS, in our reading, it needs no
+            base model&apos;s own pass@K (section 10). On AWS, in our reading, it needs no
             dedicated service: it runs against any model endpoint.
           </Box>
           <Box variant="p">
@@ -649,8 +661,8 @@ export function Choosing() {
               A text loop with a hardened grader.
             </Box>{' '}
             The default first move for missing instructions and procedures, on an API model or
-            your own (sections 13 to 15). On Qwen3 8B, GEPA (Genetic-Pareto, the reflective prompt
-            optimiser of section 14) reached 54.85 on a six-task aggregate against 48.91 for GRPO
+            your own (sections 16 to 18). On Qwen3 8B, GEPA (Genetic-Pareto, the reflective prompt
+            optimiser of section 17) reached 54.85 on a six-task aggregate against 48.91 for GRPO
             trained through LoRA (Low-Rank Adaptation) adapters and 45.23 for the base model,
             spending 1,839 to 7,051 rollouts per task against GRPO&apos;s 24,000. GRPO still won
             on AIME-2025 (a US competition-math exam), 38.00 against 32.00{' '}
@@ -678,7 +690,7 @@ export function Choosing() {
             <Box variant="strong" display="inline">
               An advisor.
             </Box>{' '}
-            When the model is an API model and the right behaviour varies per input (section 16,
+            When the model is an API model and the right behaviour varies per input (section 19,
             Hybrids). In the one test that ran both arms on the same model, an advisor in front
             of the frozen model recovered about 70% of the gain that direct RL on that model
             achieved (our arithmetic from the paper&apos;s figures){' '}
@@ -695,23 +707,19 @@ export function Choosing() {
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">
-              SFT or distillation from a stronger model.
+              SFT on answers you trust.
             </Box>{' '}
-            When the base scores a consistent 0% on your grader{' '}
+            When you hold written answers for the behaviour you want, or the base scores a
+            consistent 0% on your grader and needs the format first{' '}
             <Cite tier={1} href={BEDROCK_RFT}>
               Bedrock user guide: reinforcement fine-tuning best practices
             </Cite>
-            . Distillation also wins where a stronger teacher exists. In DeepSeek&apos;s comparison
-            at 32B, DeepSeek-R1-Distill-Qwen-32B, fine-tuned on DeepSeek-R1&apos;s outputs with no
-            RL stage, beat Qwen&apos;s Qwen2.5-32B base trained with over 10K steps of RL on every
-            benchmark in the comparison, 72.6 against 47.0 pass@1 on AIME 2024{' '}
-            <Cite tier={3} href={R1} venue="Nature 2025">
-              DeepSeek-R1, Supplementary F.1, Table 16
-            </Cite>
-            . Our reading: that RL run worked, so the result shows distillation beating RL from a
-            base RL could train. On AWS: SageMaker AI model customisation lists SFT and
-            distillation, transferring knowledge from a teacher model to a student, among its
-            techniques{' '}
+            . Section 4 has the loss and the one setting to get right, keeping the prompt out of
+            it. On AWS: supervised fine-tuning is one of Bedrock&apos;s customisation methods{' '}
+            <Cite tier={1} href={BEDROCK_CUSTOM} accessed="2026-11-07">
+              Bedrock user guide: customize your model
+            </Cite>{' '}
+            and one of the techniques SageMaker AI model customisation lists{' '}
             <Cite tier={1} href={SM_CUSTOMIZE}>
               SageMaker AI developer guide: model customization overview
             </Cite>
@@ -719,13 +727,33 @@ export function Choosing() {
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">
+              Distillation from a stronger model.
+            </Box>{' '}
+            When a teacher you may train on is better at the task than your model, whatever your
+            model scores today. At 32B, distillation beat RL run on the same base, and from one
+            distilled 8B checkpoint on-policy distillation beat RL at about a tenth of the
+            GPU-hours; section 11, Distillation or RL, has the figures and their scope. On AWS:
+            Bedrock Model Distillation pairs Nova and Llama teachers with smaller students of the
+            same family{' '}
+            <Cite tier={1} href={BEDROCK_DISTILL_PAIRS} accessed="2026-11-07">
+              Bedrock user guide: distillation prerequisites
+            </Cite>
+            , and SageMaker AI runs sequence-level distillation as SFT on a teacher&apos;s
+            responses{' '}
+            <Cite tier={1} href={SM_DISTILL} accessed="2026-11-07">
+              SageMaker AI developer guide: distillation
+            </Cite>
+            ; on-policy distillation runs as your own training job.
+          </Box>
+          <Box variant="p">
+            <Box variant="strong" display="inline">
               Reinforcement fine-tuning, managed or self-run.
             </Box>{' '}
             When the gap is skill, or sharpening at high volume, you own the weights, and
-            today&apos;s score sits between the two thresholds (section 7, RLVR &amp; GRPO, for the
-            algorithm; section 19, An RL Step Is an Inference Job Inside a Training Job, for
+            today&apos;s score sits between the two thresholds (section 9, RLVR &amp; GRPO, for the
+            algorithm; section 22, An RL Step Is an Inference Job Inside a Training Job, for
             sizing a self-run job). Whether RL alone adds new reasoning skill is contested
-            (section 8), which is why a stronger teacher comes first where one exists. On AWS: Amazon Bedrock reinforcement fine-tuning trains with
+            (section 10), which is why a stronger teacher comes first where one exists. On AWS: Amazon Bedrock reinforcement fine-tuning trains with
             GRPO on three base models{' '}
             <Cite tier={1} href={BEDROCK_RFT}>
               Bedrock user guide: reinforcement fine-tuning
@@ -776,7 +804,7 @@ export function Choosing() {
         <SpaceBetween size="m">
           <Box variant="p">
             What a text loop learns is text. A person can read every line of a prompt or a
-            playbook, review a change before it ships, and delete it; section 18 counts
+            playbook, review a change before it ships, and delete it; section 21 counts
             auditability among the properties the context store holds. Our reading of the two
             stores: a weight update leaves no such record for a person to read.
           </Box>
@@ -821,7 +849,7 @@ export function Choosing() {
             <Box variant="strong" display="inline">
               1. Write the grader.
             </Box>{' '}
-            Before anything optimises against it, run section 10&apos;s four checks, which apply
+            Before anything optimises against it, run section 13&apos;s four checks, which apply
             to a training run and a text loop alike: evaluator code the agent cannot edit, hidden
             or read-only tests, a held-out metric, and monitors kept out of the reward. Write down
             the ones it fails.
@@ -832,7 +860,7 @@ export function Choosing() {
             </Box>{' '}
             Score the unchanged model or prompt several times and take the spread of the scores as
             the floor. A later change counts as a win only when its gain clears the floor or
-            repeats (section 15, Your Loops Through the RL Lens).
+            repeats (section 18, Your Loops Through the RL Lens).
           </Box>
           <Box variant="p">
             <Box variant="strong" display="inline">
@@ -858,7 +886,7 @@ export function Choosing() {
             For a sharpening gap, that is best-of-K with the grader on the base model; for missing
             instructions or procedures, a text loop. Move to a hybrid or a weight update when the
             cheap loop&apos;s gains stop clearing the noise floor and your answers to questions 1
-            and 3 point there, with section 20&apos;s breakeven as the check on the price.
+            and 3 point there, with section 23&apos;s breakeven as the check on the price.
           </Box>
         </SpaceBetween>
       </Container>

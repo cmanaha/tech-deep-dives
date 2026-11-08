@@ -94,7 +94,7 @@ Import from `@tech-deep-dives/shared`:
 - **Every claim citable:** If it cannot be traced to a source, it does not go in the app.
 - **Visual-first:** Prefer diagrams, animations, and interactive elements over walls of text.
 - **Comparative:** Always show alternatives and trade-offs, not just the happy path.
-- **Right complexity level:** Technical lead audience — skip basics, focus on architecture decisions, trade-offs, pricing implications, and when-to-use guidance.
+- **Right complexity level:** A technical reader, for example from IT or software (reads TypeScript or Python, runs infrastructure), who does not yet have the topic's concepts. Aim for the right depth and the right ramp-up: build the topic's concepts up fast, in front of the mechanisms, formulas, numbers and practical detail, without oversimplifying them away; skip general computing basics. Then focus on architecture decisions, trade-offs, pricing implications, and when-to-use guidance. See **Explaining Concepts** below.
 - **Fact-checking & sources:** Every quantitative claim (bandwidth numbers, latency figures, percentages, pricing) must have an inline citation linking to the Sources appendix. Every deep dive app includes a Sources appendix section as the last navigation item. Sources are graded by authority: Tier 1 (official AWS docs, API reference, source code), Tier 2 (AWS blog posts, re:Invent talks), Tier 3 (third-party technical analysis, academic papers), Tier 4 (blog posts, tutorials — inspiration only, never cited as fact). Numbers without citations are unverified claims — flag them visually.
 
 ## Section Shape: Mental Model Or Practical Value
@@ -158,8 +158,42 @@ is material that passes neither test.
   this research" is honest; "no AWS benchmark exists" is a claim about the world
   that the research cannot support.
 
+## Explaining Concepts
+
+Set by Carlos on 2026-11-02, after a newcomer reader got lost in the RL dive. The
+section shape above stays; this adds the explanation that was missing inside it.
+Full standard, with his words and a worked example (KL divergence), in
+`docs/standards/explaining-concepts.md`.
+
+- **Lay down the basics first.** A section never builds on an idea the page has
+  not yet explained.
+- **Right depth, right ramp-up** (Carlos, 2026-11-03). Build the concepts up fast,
+  then reach the real depth. Too steep (a concept met before it is built) and
+  too flat (the mechanism, formula or number dropped, or the reader talked
+  down to) are both failures.
+- **Explain every term at first use in reading order, and place it**: say how it
+  fits with what came before. Diagram labels, table cells, captions and header
+  descriptions count as uses. Explain once; later uses are plain. Where a word
+  takes a second meaning, say so at the switch.
+- **An expanded acronym is a name, not an explanation.** Add what it is or does;
+  for a technique, the challenge it meets and when it is used. A technique
+  covered in depth later gets its intuition at first use, plus a pointer.
+- **Intuition, then formula, then decomposition.** Say what is going on, show
+  the formula, then say which term carries which part of the intuition. Define
+  every symbol at or before the formula, never after it.
+- **The more complex the idea, the more explanation it gets.** A worked example
+  with small numbers bridges intuition and formula; label toy numbers as
+  illustrations and keep the arithmetic redoable.
+- **A citation marker never splits a definition.** Put it after the sentence
+  that defines.
+- **No fixed opening formula and no analogy by default.** Use an intuition
+  about what is going on.
+- **Length grows only to carry missing basics, definitions, intuition or formula
+  decomposition.** Never for padding.
+
 ## Acronym Standard
 - First occurrence of every acronym in the sequential reading order must expand to its full form: "EFA (Elastic Fabric Adapter)"
+- Expansion alone is not an explanation. At first use, after the full form, say in plain words what the thing is or does; for a technique, also what challenge it meets and when it is used: "PPO (Proximal Policy Optimization), the RL algorithm that stops pushing a token's probability further once training has moved it a set fraction from the version of the model that sampled the data". See `docs/standards/explaining-concepts.md`
 - After first expansion, the acronym alone is fine
 - Every deep dive includes a Glossary in the Sources appendix section listing all acronyms used
 - Niche/domain-specific acronyms always expand: SRD, NCCL, RDMA, MPI, NAPI, DIM, GRO, LRO, QP, CQ, AH, MR, PD, UARN, WQE, etc.

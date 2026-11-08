@@ -22,6 +22,12 @@ const BR_DATA_NOVA = `${BEDROCK_GUIDE}/rft-prepare-data.html`;
 const BR_DATA_OPEN = `${BEDROCK_GUIDE}/rft-prepare-data-open-weight.html`;
 /** Bedrock customisation overview (SFT, RFT, distillation). */
 const BR_CUSTOM = `${BEDROCK_GUIDE}/custom-models.html`;
+/** Bedrock Model Distillation: how it works, data sources, teacher billing. */
+const BR_DISTILL = `${BEDROCK_GUIDE}/model-distillation.html`;
+/** Supported teacher-student pairs and Regions. */
+const BR_DISTILL_PAIRS = `${BEDROCK_GUIDE}/prequisites-model-distillation.html`;
+/** Distillation dataset limits (15K maximum, 100 recommended, text-to-text only). */
+const BR_DISTILL_DATA = `${BEDROCK_GUIDE}/distillation-prepare-datasets.html`;
 /** How Bedrock Advanced Prompt Optimization works. */
 const BR_APO = `${BEDROCK_GUIDE}/advanced-prompt-optimization-how.html`;
 const BR_PRICING = 'https://aws.amazon.com/bedrock/pricing/';
@@ -38,6 +44,10 @@ const RFT_BEST_PRACTICES =
 const SAGEMAKER_GUIDE = 'https://docs.aws.amazon.com/sagemaker/latest/dg';
 /** SageMaker AI model customisation overview (techniques, training types, infrastructure). */
 const SM_CUSTOM = `${SAGEMAKER_GUIDE}/customizing-models.html`;
+/** SageMaker AI distillation: the three kinds and which one is supported. */
+const SM_DISTILL = `${SAGEMAKER_GUIDE}/customizing-models-distillation.html`;
+/** SageMaker AI sequence-level knowledge distillation walkthrough. */
+const SM_SEQ_KD = `${SAGEMAKER_GUIDE}/customizing-models-distillation-sequence-level-knowledge-distillation.html`;
 /** Open-weight model customisation: supported models and techniques table. */
 const SM_OPEN_WEIGHT = `${SAGEMAKER_GUIDE}/model-customize-open-weight.html`;
 /** Multi-turn RL: preparing your agent. */
@@ -96,14 +106,14 @@ const LEVELS: { name: string; sub: [string, string] }[] = [
 
 const WEIGHTS_CELLS: StackCell[] = [
   {
-    title: 'Amazon Bedrock reinforcement fine-tuning',
-    lines: ['GRPO on Nova 2 Lite, gpt-oss-20B or Qwen3 32B', 'rank-32 LoRA adapter, $80.00 per training hour'],
-    bring: ['the grader: a reward Lambda, or a judge for Nova', 'and at least 100 training records'],
+    title: 'Amazon Bedrock model customisation',
+    lines: ['SFT; Model Distillation from a Nova or Llama teacher', 'RFT: GRPO on three models, $80.00 per training hour'],
+    bring: ['answers (SFT), prompts (distillation), or the', 'grader and at least 100 records (RFT)'],
   },
   {
     title: 'SageMaker AI model customisation',
     lines: ['SFT, DPO, RFT, multi-turn RL, distillation', 'and training session APIs on managed GPUs'],
-    bring: ['an agent that reports the reward (multi-turn RL),', 'or the algorithm itself (training sessions)'],
+    bring: ['teacher responses you generate (distillation), an', 'agent (multi-turn RL) or the algorithm (sessions)'],
   },
   {
     title: 'SageMaker HyperPod recipes, release 2.0.11',
@@ -125,7 +135,7 @@ const WORDS_CELLS: StackCell[] = [
   },
   {
     title: 'Your own loop on Bedrock models',
-    lines: ['any loop from sections 13 to 15', 'AWS supplies the model API (our reading)'],
+    lines: ['any loop from sections 16 to 18', 'AWS supplies the model API (our reading)'],
     bring: ['the whole loop: the grader, the store', 'and the update rule'],
   },
 ];
@@ -173,16 +183,17 @@ function TwoStacksDiagram() {
       >
         <title id="aws-stacks-title">
           Two stacks of AWS services for learning loops, each with three levels of control. The
-          weights stack changes a model with a training run: Amazon Bedrock reinforcement
-          fine-tuning at the managed level, SageMaker AI model customisation and training session
-          APIs at the serverless level, and SageMaker HyperPod recipes plus Trainium through TRL at
+          weights stack changes a model with a training run: Amazon Bedrock model customisation,
+          meaning SFT, Model Distillation and reinforcement fine-tuning, at the managed level,
+          SageMaker AI model customisation, distillation included, and training session APIs at
+          the serverless level, and SageMaker HyperPod recipes plus Trainium through TRL at
           the self-managed level. The words stack keeps the model frozen and changes the text it
           reads: Bedrock Advanced Prompt Optimization and AgentCore optimization at the managed
           level, AgentCore Memory&apos;s episodic strategy at the serverless level, and your own
           loop on Bedrock models at the self-managed level. Your grader, a rule-based Lambda or an
           LLM judge, sits across the top of both stacks, and a highlighted box in each cell names
-          what you bring at that level: a reward Lambda and training records, an agent or an
-          algorithm, a cluster, an evaluator, memory overrides, or the whole loop.
+          what you bring at that level: answers, prompts for a teacher, or a reward Lambda and
+          training records; teacher responses, an agent or an algorithm; a cluster; an evaluator, memory overrides, or the whole loop.
         </title>
         <style>{`
           .aws-stk-bg { fill: #ffffff; stroke: #d1d5db; }
@@ -275,7 +286,7 @@ function TwoStacksDiagram() {
 }
 
 /* ------------------------------------------------------------------------ */
-/* Table: each path from section 22, and where it runs on AWS               */
+/* Table: each path from section 25, and where it runs on AWS               */
 /* ------------------------------------------------------------------------ */
 
 interface PathRow {
@@ -303,9 +314,15 @@ const PATH_ROWS: PathRow[] = [
     bring: 'The grader, and the training loop if you use training sessions',
   },
   {
-    path: 'SFT or distillation from a stronger model',
-    service: 'SageMaker AI model customisation (SFT, distillation); Bedrock distillation',
-    bring: 'Labelled pairs, or a teacher model and your prompts',
+    path: 'SFT on answers you trust',
+    service: 'Bedrock supervised fine-tuning; SageMaker AI SFT',
+    bring: 'Prompt-response pairs you trust',
+  },
+  {
+    path: 'Distillation from a stronger model',
+    service:
+      'Bedrock Model Distillation (fixed Nova and Llama pairs); SageMaker AI sequence-level distillation; on-policy distillation as your own job',
+    bring: 'Prompts and a teacher you may train on; on SageMaker AI, the teacher calls and the filtering',
   },
   {
     path: 'Reinforcement fine-tuning, managed or self-run',
@@ -331,24 +348,24 @@ export function RlOnAws() {
         header={
           <Header
             variant="h1"
-            description="Find the AWS service for each path from section 22 and what you bring to it: one grader can drive a weight update or a prompt rewrite, and Bedrock's managed RL costs $80.00 per training hour (AWS pages, HyperPod recipes 2.0.11, Neuron v2.33.0 and TRL v1.16.0, read 2026-10-30)"
+            description="Find the AWS service for each path from section 25 and what you bring to it: Bedrock and SageMaker AI run SFT and distillation from a teacher's answers, one grader can drive a weight update or a prompt rewrite, and Bedrock's managed RL costs $80.00 per training hour (AWS pages read 2026-10-30 and 2026-11-07; HyperPod recipes 2.0.11, Neuron v2.33.0 and TRL v1.16.0)"
           >
-            23. RL &amp; Learning Loops on AWS
+            26. Fine-Tuning &amp; Learning Loops on AWS
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
             AWS runs both kinds of learning loop this dive compares. Some services change a
-            model&apos;s weights with a training run, RL (reinforcement learning) or fine-tuning.
+            model&apos;s weights with a training run: SFT on answers, distillation from a
+            teacher, or RL against a grader.
             Others keep the model frozen and change the text it reads: a prompt, a tool
             description, a store of reflections. They sit in four product families, Amazon Bedrock,
             Amazon SageMaker AI, Amazon Bedrock AgentCore and the Neuron SDK for Trainium, at three
             levels of control, and each level asks you to bring a different component.
           </Box>
           <Box variant="p">
-            The challenge is to find the service for the path you chose in section 22, Choosing a
-            Text Loop, a Hybrid or a Weight Update, and to know what you own once you get there. One
+            The challenge is to find the service for the path you chose in section 25, Choosing a Technique: Fine-Tuning, a Text Loop or a Hybrid, and to know what you own once you get there. One
             component recurs on both sides. Bedrock reinforcement fine-tuning scores its samples
             with a rule-based Lambda or an LLM judge{' '}
             <Cite tier={1} href={BR_REWARD_NOVA}>
@@ -380,7 +397,8 @@ export function RlOnAws() {
         <SpaceBetween size="m">
           <Box variant="p">
             The weights stack trains a model. Its methods are SFT (supervised fine-tuning) on
-            labelled answers, DPO (Direct Preference Optimization) on preferred and rejected pairs,
+            labelled answers, distillation on a teacher model&apos;s answers, DPO (Direct
+            Preference Optimization) on preferred and rejected pairs,
             and RFT (reinforcement fine-tuning) against a grader, which Bedrock runs with GRPO (Group
             Relative Policy Optimization), often training a LoRA (Low-Rank Adaptation) adapter, a
             small set of matrices added beside frozen weights. On Trainium, the documented RL route
@@ -398,6 +416,78 @@ export function RlOnAws() {
             Schematic. The price, versions and model names are cited in the blocks below. &quot;One
             grader, two update targets&quot; is our reading of the Bedrock RFT and Advanced Prompt
             Optimization pages.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Distil a smaller Nova or Llama model from a larger one of its family, and budget the teacher's inference beside the student's training"
+          >
+            Weights, managed: Bedrock supervised fine-tuning and Model Distillation
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Bedrock customises a model in three ways: supervised fine-tuning, reinforcement
+            fine-tuning and distillation{' '}
+            <Cite tier={1} href={BR_CUSTOM} accessed="2026-11-07">
+              Bedrock user guide, customisation methods
+            </Cite>
+            . Supervised fine-tuning is section 4&apos;s SFT run as a managed job on answers you
+            supply. Training is billed by the tokens processed, the tokens in the training data
+            times the number of epochs, plus a monthly charge to store each custom model{' '}
+            <Cite tier={1} href={BR_CUSTOM} accessed="2026-11-07">
+              Bedrock user guide, customisation methods
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            Model Distillation trains a smaller student on a larger teacher&apos;s answers. Bedrock
+            calls the teacher on your prompts, may add data synthesis of its own, such as
+            generating similar prompts, and fine-tunes the student on the responses. It can also
+            take prompts, or prompt-response pairs, from your invocation logs; logged responses are
+            used as they stand only when they came from the teacher the job names{' '}
+            <Cite tier={1} href={BR_DISTILL} accessed="2026-11-07">
+              Bedrock user guide, model distillation
+            </Cite>
+            . On our reading this is section 4&apos;s sequence-level distillation: the student
+            learns from the teacher&apos;s text. The page says the student is fine-tuned and does
+            not name the objective.
+          </Box>
+          <Box variant="p">
+            The teacher-student pairs are fixed. Nova Pro or Nova Premier teach smaller Nova models
+            in US East (N. Virginia); Llama 3.1 405B, Llama 3.1 70B or Llama 3.3 70B teach smaller
+            Llama 3.1, 3.2 and 3.3 models in US West (Oregon); distillation is not currently
+            available for Anthropic models{' '}
+            <Cite tier={1} href={BR_DISTILL_PAIRS} accessed="2026-11-07">
+              Bedrock user guide, distillation supported models and Regions
+            </Cite>
+            . The pairs are text to text only, and a job takes at most 15K prompts or
+            prompt-response pairs, with at least 100 pairs recommended{' '}
+            <Cite tier={1} href={BR_DISTILL_DATA} accessed="2026-11-07">
+              Bedrock user guide, distillation datasets
+            </Cite>
+            .
+          </Box>
+          <Box variant="p">
+            The bill has three parts. The teacher&apos;s inference calls are charged at its
+            on-demand rates, and data synthesis can grow the training set to 15k pairs{' '}
+            <Cite tier={1} href={BR_DISTILL} accessed="2026-11-07">
+              Bedrock user guide, model distillation
+            </Cite>
+            ; the student&apos;s training is charged per token trained, and the custom model per
+            month of storage. The pricing page has no distillation price table of its own; for
+            scale, fine-tuning Llama 3.1 8B is listed at $1.49 per million tokens trained in US
+            West (Oregon), and storing a custom model at $1.95 a month{' '}
+            <Cite tier={1} href={BR_PRICING} accessed="2026-11-07">
+              Amazon Bedrock pricing, model customisation
+            </Cite>
+            . Section 23, Cost per Improvement, sets distillation&apos;s bill beside RL&apos;s
+            GPU-hours.
           </Box>
         </SpaceBetween>
       </Container>
@@ -465,7 +555,7 @@ export function RlOnAws() {
             <Cite tier={2} href={RFT_BEST_PRACTICES}>
               AWS Machine Learning Blog, RFT on Bedrock best practices
             </Cite>
-            . Section 20, Cost per Improvement, turns the hourly rate into a breakeven against a text
+            . Section 23, Cost per Improvement, turns the hourly rate into a breakeven against a text
             loop.
           </Box>
           <Box variant="p">
@@ -520,15 +610,30 @@ export function RlOnAws() {
             <Cite tier={1} href={SM_CUSTOM}>
               SageMaker AI developer guide, model customisation overview
             </Cite>
-            . Section 22&apos;s path of SFT or distillation from a stronger model finds its service
-            here; Bedrock lists distillation as a customisation method as well{' '}
-            <Cite tier={1} href={BR_CUSTOM}>
-              Bedrock user guide, customisation methods
-            </Cite>
-            .
+            . Section 25&apos;s SFT path runs here as well as on Bedrock.
           </Box>
           <Box variant="p">
-            Multi-turn RL is section 9, Agentic RL, offered as an API. Your agent runs each episode,
+            Distillation on SageMaker AI is the sequence-level kind, run as SFT on the
+            teacher&apos;s responses. Because it needs only the teacher&apos;s text, it works with a
+            teacher you reach through an API; logit-based and on-policy distillation are described
+            on the page as not currently supported{' '}
+            <Cite tier={1} href={SM_DISTILL} accessed="2026-11-07">
+              SageMaker AI developer guide, distillation
+            </Cite>
+            . You generate the data: call the teacher through the Bedrock Converse API or a
+            SageMaker AI endpoint, keep only correct answers on verifiable tasks such as math and
+            code, then fine-tune the student. AWS notes that this kind tends to plateau on the
+            hardest problems, because the student never trained on states its own early mistakes
+            lead to, and that on-policy methods address it{' '}
+            <Cite tier={1} href={SM_SEQ_KD} accessed="2026-11-07">
+              SageMaker AI developer guide, sequence-level knowledge distillation
+            </Cite>
+            . On-policy distillation, section 11&apos;s method, therefore runs as your own training
+            job. The same page asks you to check the teacher&apos;s licence and terms of use before
+            training on its outputs; section 4 covers what the main providers allow.
+          </Box>
+          <Box variant="p">
+            Multi-turn RL is section 12, Agentic RL, offered as an API. Your agent runs each episode,
             one complete attempt at a task: it calls the policy model through SageMaker AI, takes
             actions in your environment such as tool calls, and reports one reward score for the
             complete rollout, a rollout being the sampled episode{' '}
@@ -565,7 +670,7 @@ export function RlOnAws() {
                 SageMaker AI developer guide, multi-turn RL hyperparameters
               </Cite>
               . On our reading, the nine values are alternative ways to turn the same rollouts&apos;
-              rewards into advantages, the comparison section 7, RLVR &amp; GRPO, makes among
+              rewards into advantages, the comparison section 9, RLVR &amp; GRPO, makes among
               GRPO&apos;s successors.
             </Box>
           </ExpandableSection>
@@ -624,7 +729,7 @@ export function RlOnAws() {
             </Cite>
             . Off-policy means the trainer learns from rollouts an older copy of the policy sampled.
             Our reading is that <code>age_tolerance: 2</code> lets a rollout be about two policy
-            versions old when it is trained on, the asynchronous design of section 19, An RL Step Is
+            versions old when it is trained on, the asynchronous design of section 22, An RL Step Is
             an Inference Job Inside a Training Job; the recipe does not define the unit.
           </Box>
           <Box variant="p">
@@ -696,7 +801,7 @@ export function RlOnAws() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Bedrock Advanced Prompt Optimization is a text loop of the kind sections 13 to 15 build,
+            Bedrock Advanced Prompt Optimization is a text loop of the kind sections 16 to 18 build,
             run as a job. It takes up to 10 prompt templates, up to 100 evaluation samples per
             template, ground-truth answers and your evaluation metric, given as an LLM-as-a-judge
             rubric, a Lambda function or short natural-language criteria. It then repeats
@@ -789,7 +894,7 @@ export function RlOnAws() {
               AgentCore developer guide, episodic memory system prompt
             </Cite>
             . Our reading is that this verdict reads the transcript with no external check, the kind
-            of signal section 10, The Reward Is a Proxy, and section 12, Verbal Reinforcement &amp;
+            of signal section 13, The Reward Is a Proxy, and section 15, Verbal Reinforcement &amp;
             Self-Correction, identify as weak. The extraction, consolidation and reflection steps
             can each be overridden with your own instructions and your choice of model{' '}
             <Cite tier={1} href={AC_OVERRIDES}>
@@ -815,7 +920,7 @@ export function RlOnAws() {
         header={
           <Header
             variant="h2"
-            description="Run any loop from sections 13 to 15 on Bedrock models, and assemble the two paths that have no dedicated service among those covered here"
+            description="Run any loop from sections 16 to 18 on Bedrock models, and assemble the two paths that have no dedicated service among those covered here"
           >
             Words, self-run, and two paths with no dedicated service
           </Header>
@@ -823,7 +928,7 @@ export function RlOnAws() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Any loop from sections 13 to 15 can run against Bedrock models with nothing
+            Any loop from sections 16 to 18 can run against Bedrock models with nothing
             AWS-specific beyond the model API (our reading). On the pages read, none of the
             words-side services is described as changing model weights{' '}
             <Cite tier={1} href={AC_EPISODIC}>
@@ -836,9 +941,9 @@ export function RlOnAws() {
             an edited prompt.
           </Box>
           <Box variant="p">
-            Two of section 22&apos;s paths have no dedicated service, on our reading of the services
+            Two of section 25&apos;s paths have no dedicated service, on our reading of the services
             covered here. Inference-time sampling, drawing several answers and keeping the one the
-            grader passes, runs against any model endpoint. An advisor, section 16&apos;s small
+            grader passes, runs against any model endpoint. An advisor, section 19&apos;s small
             trained model that writes per-input advice into a frozen model&apos;s prompt, can be an
             open-weight model trained on SageMaker AI and placed in front of a Bedrock model.
             SageMaker AI RFT supports RLVR and RLAIF on models as small as Qwen3 0.6B{' '}
@@ -869,16 +974,18 @@ export function RlOnAws() {
           <Table<PathRow>
             variant="embedded"
             wrapLines
-            header={<Header variant="h3">Each path from section 22, and where it runs on AWS</Header>}
+            header={<Header variant="h3">Each path from section 25, and where it runs on AWS</Header>}
             columnDefinitions={[
-              { id: 'path', header: 'Path (section 22)', cell: (r) => r.path, minWidth: 160 },
+              { id: 'path', header: 'Path (section 25)', cell: (r) => r.path, minWidth: 160 },
               { id: 'service', header: 'Where it runs on AWS', cell: (r) => r.service, minWidth: 260 },
               { id: 'bring', header: 'What you bring', cell: (r) => r.bring, minWidth: 220 },
             ]}
             items={PATH_ROWS}
           />
           <Box variant="p">
-            What you bring, in order. The grader comes first at every level: on Bedrock RFT a
+            What you bring, in order. SFT and distillation start from data, answers you trust or a
+            teacher you may train on, and the grader measures the result. Every other path starts
+            from the grader, at every level: on Bedrock RFT a
             grader and 100 records start a job billed at $80.00 per training hour, and the same
             grader belongs inside any loop you run yourself. Each level then adds one component.
             Multi-turn RL asks for an agent that runs the episode and reports the reward. Training

@@ -20,6 +20,7 @@ Use this template to scaffold a new deep dive.
    - Replace the `title` and `subtitle` props on `DeepDiveLayout`
    - Define your actual sections in the `sections` array
    - Create section components (recommended: one file per section in `src/sections/`)
+   - Write each section to `docs/standards/explaining-concepts.md` (basics first, every term explained at first use, intuition before formula)
 
 5. Install dependencies from the repo root:
    ```bash

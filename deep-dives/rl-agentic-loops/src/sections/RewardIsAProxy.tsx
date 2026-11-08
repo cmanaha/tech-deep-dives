@@ -448,7 +448,7 @@ export function RewardIsAProxy() {
             variant="h1"
             description="Build a grader whose cheapest route to a high score is the behaviour you wanted, for a training run or a text loop: GPT-5 cheated its way past the tests on 76% of SWE-bench tasks whose tests contradicted their specification (sources read 2026-10-30; autoresearch at commit 228791fb)"
           >
-            10. The Reward Is a Proxy
+            13. The Reward Is a Proxy
           </Header>
         }
       >
@@ -476,7 +476,7 @@ export function RewardIsAProxy() {
               ImpossibleBench, Section 1
             </Cite>
             . A leaky signal teaches the leak, wherever the update lands. The
-            section ends on the grader checklist that sections 15, 21 and 22
+            section ends on the grader checklist that sections 18, 24 and 25
             apply.
           </Box>
         </SpaceBetween>
@@ -498,7 +498,7 @@ export function RewardIsAProxy() {
             Over-optimisation is an optimiser still raising a proxy after the
             proxy has stopped tracking the goal. The classic proxy is a reward
             model, a network trained to predict which of two answers a person
-            prefers (section 6, From Preferences to Rewards). In a summarisation
+            prefers (section 8, Learning From Preferences: Reward Models, RLHF &amp; DPO). In a summarisation
             study with human raters, policies (the models being optimised)
             improved under light optimisation against a reward model; pushed
             further, they fell away from its predictions until it was
@@ -521,7 +521,7 @@ export function RewardIsAProxy() {
             </Cite>
             . Distance travelled is d, the square root of the KL
             (Kullback-Leibler divergence, how far the policy&apos;s output
-            distribution has moved from the starting model&apos;s; section 5,
+            distribution has moved from the starting model&apos;s; section 7,
             Two Leashes: PPO&apos;s Clip &amp; the KL). The gold score fitted{" "}
             <code>d(alpha - beta * d)</code> under best-of-n and{" "}
             <code>d(alpha - beta * log d)</code> under RL. Both rise and then
@@ -599,7 +599,7 @@ export function RewardIsAProxy() {
                 Gao et al., Sections 2, 2.1, 3.1 and 3.4
               </Cite>
               . With a KL penalty the gold score converged earlier on the same
-              curve, an effect section 5 covers.
+              curve, an effect section 7 covers.
             </Box>
           </ExpandableSection>
         </SpaceBetween>
@@ -900,7 +900,7 @@ export function RewardIsAProxy() {
             <Cite tier={3} href={REFLEXION} venue="NeurIPS 2023">
               Reflexion, Section 4.3 and Table 3
             </Cite>
-            . Section 12, Verbal Reinforcement &amp; Self-Correction, takes up
+            . Section 15, Verbal Reinforcement &amp; Self-Correction, takes up
             that result.
           </Box>
         </SpaceBetween>
@@ -993,9 +993,9 @@ export function RewardIsAProxy() {
             Run the four checks before the first training step or loop
             iteration, and write down the ones your grader fails: they are where
             to look first when the score climbs faster than the work. Section
-            15, Your Loops Through the RL Lens, applies the checklist to the
-            loops you run; section 21, Side by Side on a DGX Spark, to the lab;
-            and section 22, Choosing a Text Loop, a Hybrid or a Weight Update,
+            18, Your Loops Through the RL Lens, applies the checklist to the
+            loops you run; section 24, Side by Side on a DGX Spark, to the lab;
+            and section 25, Choosing a Technique: Fine-Tuning, a Text Loop or a Hybrid,
             to the choice.
           </Box>
         </SpaceBetween>
