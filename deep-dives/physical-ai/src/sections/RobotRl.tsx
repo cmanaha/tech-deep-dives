@@ -7,6 +7,7 @@ import Link from '@cloudscape-design/components/link';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure } from '../components/Figure';
+import { Formula, M } from '../components/Math';
 import { ARM, TASK_STORY, SIM_TASK, SIM_TASK_PLAIN, SIM_TASK_GAP } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
@@ -298,6 +299,47 @@ export function RobotRl() {
             <Cite id="F04-58">MuJoCo Playground env_rl_config.py</Cite>
           </Box>
           <Box variant="p">
+            That update is a policy gradient step with a brake on it. A policy gradient method raises the
+            probability of actions that turned out better than expected and lowers it for the rest. PPO goes
+            over the same batch several times, and every pass moves the policy further from the one that
+            collected the batch, so the batch describes it less and less well. The brake stops rewarding a
+            change once it has gone a set distance.
+          </Box>
+          <Box variant="p">
+            The symbols. <M>{String.raw`s_t`}</M> is the state at step <M>t</M>, here what the policy saw, and{' '}
+            <M>{String.raw`a_t`}</M> the action it took. <M>{String.raw`\pi_\theta(a_t \mid s_t)`}</M> is the
+            probability the policy with weights <M>{String.raw`\theta`}</M> gives that action, and{' '}
+            <M>{String.raw`\theta_{\mathrm{old}}`}</M> are the weights that collected the batch.{' '}
+            <M>{String.raw`r_t(\theta)`}</M> is the ratio of the two probabilities: 1 before the first pass,
+            above 1 once the action has become more likely. <M>{String.raw`\hat{A}_t`}</M> is the estimated
+            advantage: how much better things went after <M>{String.raw`a_t`}</M> than a second network, trained
+            beside the policy to predict outcomes, expected at <M>{String.raw`s_t`}</M>. Positive means better
+            than expected. <M>{String.raw`\epsilon`}</M> is the clip range,{' '}
+            <M>{String.raw`\operatorname{clip}`}</M> holds its first argument between the two bounds that
+            follow it, and <M>{String.raw`\hat{\mathbb{E}}_t`}</M> is the average over the batch. Training
+            maximises:
+          </Box>
+          <Formula
+            name="PPO clipped surrogate objective"
+            tex={String.raw`\begin{aligned} & r_t(\theta) = \frac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_{\mathrm{old}}}(a_t \mid s_t)} \\ & L^{\mathrm{CLIP}}(\theta) = \hat{\mathbb{E}}_t \Big[ \min \big( r_t(\theta) \hat{A}_t, \\ & \quad \operatorname{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) \, \hat{A}_t \big) \Big] \end{aligned}`}
+            source={<Cite id="F11-4">PPO paper, section 3, equation 7</Cite>}
+          />
+          <Box variant="p">
+            <M>{String.raw`r_t(\theta) \hat{A}_t`}</M> is the plain push: making a good action more likely raises
+            the objective. The second argument is the same product with the ratio held inside{' '}
+            <M>{String.raw`[1 - \epsilon, 1 + \epsilon]`}</M>. Taking the smaller of the two is the brake: a
+            change in the helpful direction stops earning anything past the bound, and a change in the harmful
+            direction still counts in full. This recipe sets <M>{String.raw`\epsilon`}</M> to 0.2, the value
+            the paper suggests. An illustration with invented numbers: an action with an advantage of{' '}
+            <Toy>+2</Toy> whose probability the passes have raised to <Toy>1.5</Toy> times its old value scores{' '}
+            <Toy>1.5</Toy> x <Toy>2</Toy> = <Derived>3</Derived> unclipped and <Derived>1.2</Derived> x{' '}
+            <Toy>2</Toy> = <Derived>2.4</Derived> clipped. The objective takes <Derived>2.4</Derived>, which no
+            longer depends on the ratio, so nothing pushes that action further until fresh attempts are
+            collected.{' '}
+            <Cite id="F11-4">PPO paper, section 3</Cite>{' '}
+            <Cite id="F04-58">MuJoCo Playground env_rl_config.py</Cite>
+          </Box>
+          <Box variant="p">
             Under each control step sit 20 physics steps: the simulator advances every 5 ms and the policy acts
             every 100 ms. Section 12 reads the rest of the solver settings.{' '}
             <Cite id="F06-105">MuJoCo Playground simulation config and SO-101 task.py</Cite>{' '}
@@ -366,26 +408,28 @@ export function RobotRl() {
           <Box variant="p">
             Then the policy update. Recap labels every recorded action as better or worse than
             expected, trains the VLA to imitate all of them with that label as one more input, and at run time
-            asks for &quot;better&quot;. Four symbols. <code>R_t</code> is what happened from step <code>t</code>{' '}
-            to the end of the episode, on the same scale as the value. <code>V(o_t, l)</code> is the value
-            model&apos;s prediction from the observation <code>o_t</code> (images and joint angles) and the
-            instruction <code>l</code>. <code>eps_l</code> is a threshold set per task. <code>I_t</code> is the
-            label, true or false. The formula below is the form the paper uses for its pre-training data, where the
+            asks for &quot;better&quot;. Four symbols. <M>{String.raw`R_t`}</M> is what happened from step{' '}
+            <M>t</M> to the end of the episode, on the same scale as the value.{' '}
+            <M>{String.raw`V(o_t, \ell)`}</M> is the value model&apos;s prediction from the observation{' '}
+            <M>{String.raw`o_t`}</M> (images and joint angles) and the instruction{' '}
+            <M>{String.raw`\ell`}</M>. <M>{String.raw`\epsilon_\ell`}</M> is a threshold set per task, a
+            different quantity from PPO&apos;s clip range. <M>{String.raw`I_t`}</M> is the label, true or
+            false. The formula below is the form the paper uses for its pre-training data, where the
             outcome is the whole rest of the episode. For the rollouts collected on the robot the paper
             shortens the outcome: the rewards over a fixed number of steps ahead plus the value predicted at that
             later step. The subtraction and the label work the same way in both.
           </Box>
+          <Formula
+            name="Recap advantage and its better-than-expected label"
+            tex={String.raw`\begin{aligned} A_t &= R_t - V(o_t, \ell) \\ I_t &= \big( A_t > \epsilon_\ell \big) \end{aligned}`}
+            source={<Cite id="F04-62">Recap paper, section IV-B, in this page&apos;s symbols</Cite>}
+          />
           <Box variant="p">
-            <code>A_t = R_t - V(o_t, l)</code>
-            <br />
-            <code>{'I_t = (A_t > eps_l)'}</code>
-          </Box>
-          <Box variant="p">
-            <code>V</code> carries &quot;how well is this going&quot;. <code>A_t</code>, the advantage, carries
-            the surprise: outcome minus prediction. <code>I_t</code> carries that surprise into the policy as an
+            <M>V</M> carries &quot;how well is this going&quot;. <M>{String.raw`A_t`}</M>, the advantage, carries
+            the surprise: outcome minus prediction. <M>{String.raw`I_t`}</M> carries that surprise into the policy as an
             input next to the instruction. An illustration with invented numbers: the value model says{' '}
             <Toy>-0.40</Toy> in the middle of a grasp, the episode ends sooner than that implied, at{' '}
-            <Toy>-0.30</Toy>, so <code>A_t</code> = <Toy>-0.30</Toy> - (<Toy>-0.40</Toy>) ={' '}
+            <Toy>-0.30</Toy>, so <M>{String.raw`A_t`}</M> = <Toy>-0.30</Toy> - (<Toy>-0.40</Toy>) ={' '}
             <Derived>+0.10</Derived>. With a threshold of <Toy>+0.05</Toy> the grasp is filed as better than
             expected. Had the block slipped, the label would be false and the data would still be used. Training
             stays the supervised loss the VLA already had, and actions a person supplied while correcting are

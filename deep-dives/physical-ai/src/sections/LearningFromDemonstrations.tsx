@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
+import { Formula, M } from '../components/Math';
 import { ARM, TASK_STORY } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
@@ -388,6 +389,29 @@ export function LearningFromDemonstrations() {
             <Cite id="F02-1">Ross, Gordon and Bagnell, section 1</Cite>
           </Box>
           <Box variant="p">
+            As a formula, training is a search for the policy with the smallest average loss over the situations
+            the expert was in. Write <M>{String.raw`\pi`}</M> for a candidate policy and <M>{String.raw`\Pi`}</M>{' '}
+            for all the policies the network can represent, one per setting of its weights. <M>s</M> is a
+            situation the robot is in (the paper calls it a state; the observation is the policy&apos;s view of
+            it). <M>{String.raw`\pi^*`}</M> is the expert, and <M>{String.raw`d_{\pi^*}`}</M> is the pool of
+            situations the expert visits. <M>{String.raw`\ell(s, \pi)`}</M> is the loss in one situation: how far
+            the policy&apos;s action there is from the expert&apos;s. <M>{String.raw`\mathbb{E}`}</M> is an
+            average, taken over the pool named under it.
+          </Box>
+          <Formula
+            name="Behaviour cloning objective"
+            tex={String.raw`\hat{\pi}_{\mathrm{sup}} = \arg\min_{\pi \in \Pi} \; \mathbb{E}_{s \sim d_{\pi^*}} \big[ \ell(s, \pi) \big]`}
+            source={<Cite id="F11-1">Ross, Gordon and Bagnell, section 2.1, equation 2</Cite>}
+          />
+          <Box variant="p">
+            The <M>{String.raw`\arg\min`}</M> is the training run, and{' '}
+            <M>{String.raw`\hat{\pi}_{\mathrm{sup}}`}</M> is the policy it returns. The loss{' '}
+            <M>{String.raw`\ell`}</M> is the per-pair comparison. The subscript{' '}
+            <M>{String.raw`s \sim d_{\pi^*}`}</M> is the part to watch: the average runs only over situations
+            the expert reached, so the formula is silent about every situation the policy reaches by its own
+            actions.
+          </Box>
+          <Box variant="p">
             On the arm, take episodes of <Toy>20</Toy> seconds each (an illustration; yours will vary). Fifty
             episodes at 30 ticks a second are 50 x <Toy>20</Toy> x 30 = <Derived>30,000</Derived> pairs. For each
             pair the loss compares six predicted target angles with the six recorded ones. Nothing in the recipe
@@ -428,43 +452,48 @@ export function LearningFromDemonstrations() {
           </Box>
           <Box variant="p">
             A bound from the paper that framed the challenge says how bad it can get. Count the decisions the policy
-            takes in one task and call that <code>T</code>, the horizon. Let <code>epsilon</code> be the probability
-            that the policy disagrees with the expert on one decision, measured on situations the expert visited.
-            Then:
+            takes in one task and call that <M>T</M>, the horizon. Let <M>{String.raw`\epsilon`}</M> be the
+            probability that the policy disagrees with the expert on one decision, measured on situations the
+            expert visited: the average loss of the formula above, with a loss of 1 for a disagreement and 0
+            otherwise. Write <M>{String.raw`J(\pi)`}</M> for the mistakes the policy is expected to make over the
+            whole task and <M>{String.raw`J(\pi^*)`}</M> for the expert&apos;s own. Then:
           </Box>
+          <Formula
+            name="Compounding-error bound for behaviour cloning"
+            tex={String.raw`J(\pi) \le J(\pi^*) + T^2 \epsilon`}
+            source={<Cite id="F02-3">Ross, Gordon and Bagnell, theorem 2.1</Cite>}
+          />
           <Box variant="p">
-            <code>{'expected mistakes over the task <= T^2 x epsilon'}</code>
-          </Box>
-          <Box variant="p">
-            One factor of <code>T</code> counts the chances to make a first mistake: with <code>T</code> decisions
-            and no feedback between them, <code>T x epsilon</code> mistakes are expected. The second factor of{' '}
-            <code>T</code> is what one mistake can cost: once off the demonstrated path the policy may be wrong at
-            every step that remains, and up to <code>T</code> remain. The bound is a worst case. The paper shows
+            The term <M>{String.raw`T^2 \epsilon`}</M> is the extra mistakes copying can add. One factor of{' '}
+            <M>T</M> counts the chances to make a first mistake: with <M>T</M> decisions and no feedback between
+            them, <M>{String.raw`T \epsilon`}</M> mistakes are expected. The second factor of <M>T</M> is what
+            one mistake can cost: once off the demonstrated path the policy may be wrong at every step that
+            remains, and up to <M>T</M> remain. The bound is a worst case. The paper shows
             that problems exist where it is reached, and it is a ceiling, with no claim about what a given arm will
             do.{' '}
             <Cite id="F02-2">Ross, Gordon and Bagnell, section 1</Cite>{' '}
             <Cite id="F02-3">Ross, Gordon and Bagnell, theorem 2.1</Cite>
           </Box>
           <Box variant="p">
-            Put toy numbers in. A <Toy>20</Toy>-second episode at 30 ticks a second is <code>T</code> ={' '}
+            Put toy numbers in. A <Toy>20</Toy>-second episode at 30 ticks a second is <M>T</M> ={' '}
             <Derived>600</Derived> decisions. Suppose the policy makes a mistake that matters once in{' '}
-            <Toy>1,000</Toy> decisions on familiar situations, so <code>epsilon</code> = <Toy>0.001</Toy>. That
+            <Toy>1,000</Toy> decisions on familiar situations, so <M>{String.raw`\epsilon`}</M> = <Toy>0.001</Toy>. That
             rate is an illustration; nobody measured it.
           </Box>
           <ul style={LIST}>
             <li>
-              If mistakes did not feed each other: <code>T x epsilon</code> = <Derived>600</Derived> x{' '}
+              If mistakes did not feed each other: <M>{String.raw`T \epsilon`}</M> = <Derived>600</Derived> x{' '}
               <Toy>0.001</Toy> = <Derived>0.6</Derived> mistakes per episode.
             </li>
             <li>
-              The worst case: <code>T^2 x epsilon</code> = <Derived>360,000</Derived> x <Toy>0.001</Toy> ={' '}
+              The worst case: <M>{String.raw`T^2 \epsilon`}</M> = <Derived>360,000</Derived> x <Toy>0.001</Toy> ={' '}
               <Derived>360</Derived>.
             </li>
           </ul>
           <Box variant="p">
             The ceiling allows <Derived>360</Derived> of the <Derived>600</Derived> decisions to be wrong, more
             than half the episode. Being right <Toy>999</Toy> times in <Toy>1,000</Toy> guarantees very little
-            about reaching the block. The square is the part to act on: halve <code>T</code> and the ceiling drops
+            about reaching the block. The square is the part to act on: halve <M>T</M> and the ceiling drops
             to a quarter.
           </Box>
           <AnimatedFigure
@@ -495,27 +524,27 @@ export function LearningFromDemonstrations() {
         <SpaceBetween size="m">
           <Box variant="p">
             Errors grow with the square of the number of decisions, so take fewer decisions. An action chunk is the
-            run of actions section 3 introduced: from one observation the policy predicts the next <code>k</code>{' '}
+            run of actions section 3 introduced: from one observation the policy predicts the next <M>k</M>{' '}
             actions, the host plays them in order, and only then does the policy look again. A task of{' '}
-            <code>T</code> ticks becomes <code>T / k</code> decisions.{' '}
+            <M>T</M> ticks becomes <M>T / k</M> decisions.{' '}
             <Cite id="F02-5">ACT paper, section IV-A</Cite>
           </Box>
           <Box variant="p">
             ACT (Action Chunking with Transformers) is the 2023 method that made chunks standard in robot
             imitation. It is a transformer, the network design behind language models, that reads the camera images
-            and the joint angles and writes a whole chunk in one forward pass. Its chunk is <code>k</code> = 100
+            and the joint angles and writes a whole chunk in one forward pass. Its chunk is <M>k</M> = 100
             actions on a robot controlled at 50 Hz (50 actions a second), so one pass plans 2 seconds of motion. In the authors&apos;
             ablation, an experiment that changes one setting and holds the rest, success averaged over four
-            settings went from 1% with no chunking (<code>k</code> = 1) to 44% at <code>k</code> = 100.{' '}
+            settings went from 1% with no chunking (<M>k</M> = 1) to 44% at <M>k</M> = 100.{' '}
             <Cite id="F02-5">ACT paper, section IV-A</Cite>{' '}
             <Cite id="F02-6">ACT paper, table III and the chunking ablation</Cite>
           </Box>
           <Box variant="p">
             Back to the toy episode. LeRobot&apos;s ACT also defaults to chunks of 100 actions, which at the{' '}
             {ARM}&apos;s 30 Hz is 3.33 s of motion per decision. The <Derived>600</Derived>-tick episode becomes{' '}
-            <Derived>600</Derived> / 100 = 6 decisions. With the same <code>epsilon</code> the ceiling is 6 x 6 x{' '}
+            <Derived>600</Derived> / 100 = 6 decisions. With the same <M>{String.raw`\epsilon`}</M> the ceiling is 6 x 6 x{' '}
             <Toy>0.001</Toy> = <Derived>0.036</Derived>, which is 100 x 100 = <Derived>10,000</Derived> times
-            lower. Keeping <code>epsilon</code> the same is generous, since choosing a whole chunk is harder than
+            lower. Keeping <M>{String.raw`\epsilon`}</M> the same is generous, since choosing a whole chunk is harder than
             choosing one action, and the bound is still only a ceiling. The measured evidence is the ablation: 1%
             to 44%.{' '}
             <Cite id="F02-11">LeRobot configuration_act.py</Cite>{' '}
@@ -607,10 +636,41 @@ export function LearningFromDemonstrations() {
             <strong>A style variable (ACT).</strong> ACT uses a CVAE (conditional variational autoencoder), a
             model trained to rebuild its input through a small random vector. During training a second network
             looks at the demonstrated chunk and squeezes &quot;which way the person did it&quot; into a vector{' '}
-            <code>z</code>, which the policy receives as one more input, so it is never asked to average two ways.
-            On the robot that second network is thrown away and <code>z</code> is set to zero, which gives one
+            <M>z</M>, which the policy receives as one more input, so it is never asked to average two ways.
+            On the robot that second network is thrown away and <M>z</M> is set to zero, which gives one
             consistent way.{' '}
             <Cite id="F02-8">ACT paper, section IV and figure 4</Cite>
+          </Box>
+          <Box variant="p">
+            ACT&apos;s loss has one term for each of those two jobs: copy the chunk, and keep <M>z</M> small
+            enough to drop. <M>{String.raw`a_{t:t+k}`}</M> is the demonstrated chunk, the <M>k</M> actions from
+            tick <M>t</M> on, and <M>{String.raw`\hat{a}_{t:t+k}`}</M> is the chunk the policy predicts from the
+            observation and <M>z</M>. The second network does not output one <M>z</M>. It outputs a bell curve
+            of likely values, a mean and a spread, written{' '}
+            <M>{String.raw`q_\phi(z \mid a_{t:t+k}, \bar{o}_t)`}</M>, where <M>{String.raw`\bar{o}_t`}</M> is the
+            observation without its images and <M>{String.raw`\phi`}</M> stands for that network&apos;s weights;{' '}
+            <M>z</M> is drawn from it. <M>{String.raw`\mathcal{N}(0, I)`}</M> is the standard bell curve
+            centred on zero. <M>{String.raw`D_{\mathrm{KL}}`}</M> is the KL (Kullback-Leibler) divergence, a
+            number for how far one probability distribution is from another, zero when they match.{' '}
+            <M>{String.raw`\lVert \cdot \rVert_1`}</M> is the L1 distance from the previous block, and{' '}
+            <M>{String.raw`\beta`}</M> is a weight you set.
+          </Box>
+          <Formula
+            name="ACT training loss"
+            tex={String.raw`\begin{aligned} \mathcal{L} &= \mathcal{L}_{\mathrm{reconst}} + \beta \, \mathcal{L}_{\mathrm{reg}} \\ \mathcal{L}_{\mathrm{reconst}} &= \lVert \hat{a}_{t:t+k} - a_{t:t+k} \rVert_1 \\ \mathcal{L}_{\mathrm{reg}} &= D_{\mathrm{KL}}\big( q_\phi(z \mid a_{t:t+k}, \bar{o}_t) \\ &\qquad\quad \Vert\, \mathcal{N}(0, I) \big) \end{aligned}`}
+            source={<Cite id="F11-2">ACT paper, algorithm 1 and section IV-C</Cite>}
+          />
+          <Box variant="p">
+            <M>{String.raw`\mathcal{L}_{\mathrm{reconst}}`}</M> is the copying: it pulls the predicted chunk onto
+            the demonstrated one. <M>{String.raw`\mathcal{L}_{\mathrm{reg}}`}</M> pulls the second
+            network&apos;s bell curve toward the standard one, so <M>z</M> can carry only a little information
+            (which way, and no more) and zero, the centre of that curve, is a value the policy has met in
+            training. <M>{String.raw`\beta`}</M> sets the balance: the higher it is, the less passes through{' '}
+            <M>z</M>. LeRobot&apos;s default is 10. The paper&apos;s algorithm box labels the first term MSE
+            (mean squared error); its text and LeRobot&apos;s code use L1.{' '}
+            <Cite id="F11-2">ACT paper, algorithm 1 and section IV-C</Cite>{' '}
+            <Cite id="F02-11">LeRobot configuration_act.py</Cite>{' '}
+            <Cite id="F02-13">LeRobot modeling_act.py</Cite>
           </Box>
           <Box variant="p">
             <strong>Denoising (diffusion policy).</strong> A diffusion policy starts from a chunk of random
@@ -621,6 +681,29 @@ export function LearningFromDemonstrations() {
             the network what was added. Every run starts from different noise, so different runs settle on
             different modes, and each result is one whole way of doing the task.{' '}
             <Cite id="F02-14">Diffusion Policy paper, sections 3.1 and 3.2</Cite>
+          </Box>
+          <Box variant="p">
+            The training loss says the same in symbols. <M>{String.raw`O_t`}</M> is the observation at tick{' '}
+            <M>t</M> and <M>{String.raw`A_t^0`}</M> the demonstrated chunk that starts there; the superscript
+            counts denoising iterations still to run, so 0 means clean. <M>k</M> is an iteration picked at
+            random (in this paper <M>k</M> counts iterations, where ACT used it for the chunk length).{' '}
+            <M>{String.raw`\epsilon^k`}</M> is random noise as strong as iteration <M>k</M> calls for; this{' '}
+            <M>{String.raw`\epsilon`}</M> is noise, a different quantity from the error rate in the bound
+            above. <M>{String.raw`\epsilon_\theta`}</M> is the network with weights{' '}
+            <M>{String.raw`\theta`}</M>, and MSE is the mean squared error, the average of the squared
+            differences.
+          </Box>
+          <Formula
+            name="Diffusion policy training loss (noise prediction)"
+            tex={String.raw`\mathcal{L} = \mathrm{MSE}\big( \epsilon^k, \; \epsilon_\theta(O_t, \, A_t^0 + \epsilon^k, \, k) \big)`}
+            source={<Cite id="F11-3">Diffusion Policy paper, section 2.3, equation 5</Cite>}
+          />
+          <Box variant="p">
+            <M>{String.raw`A_t^0 + \epsilon^k`}</M> is the demonstrated chunk with the noise added: what the
+            network is shown, beside the observation. The first argument,{' '}
+            <M>{String.raw`\epsilon^k`}</M> alone, is the answer it should give. The network is told{' '}
+            <M>k</M> because heavy noise and light noise call for different answers, and one set of weights
+            serves every iteration.
           </Box>
           <Box variant="p">
             The price is repetition. The Diffusion Policy paper trains with 100 iterations. On real robots it uses
@@ -639,30 +722,46 @@ export function LearningFromDemonstrations() {
             step, and ask again.
           </Box>
           <Box variant="p">
-            Four symbols. <code>x</code> is the chunk being built. <code>t</code> is flow time, which runs from 0
-            (pure noise) to 1 (finished chunk); it measures progress through the sampling, and all of it passes
-            inside one policy call, so it is a different clock from the robot&apos;s ticks. <code>dt</code> is
-            the size of one step in flow time. <code>v(x, t)</code> is the network&apos;s output, one velocity for
-            each number in <code>x</code>, computed with the observation as a further input. One step is:
+            Four symbols. <M>x</M> is the chunk being built. <M>{String.raw`\tau`}</M> is flow time, which runs
+            from 0 (pure noise) to 1 (finished chunk); it measures progress through the sampling, and all of it
+            passes inside one policy call, so it is a different clock from the robot&apos;s tick <M>t</M>.{' '}
+            <M>{String.raw`\delta`}</M> is the size of one step in flow time.{' '}
+            <M>{String.raw`v(x, \tau)`}</M> is the network&apos;s output, one velocity for each number in{' '}
+            <M>x</M>, computed with the observation as a further input. One step is:
           </Box>
+          <Formula
+            name="One sampling step of flow matching (an Euler step)"
+            tex={String.raw`x \leftarrow x + \delta \, v(x, \tau)`}
+            source={<Cite id="F02-20">pi0 paper, section IV, in this page&apos;s symbols</Cite>}
+          />
           <Box variant="p">
-            <code>{'x <- x + dt * v(x, t)'}</code>
-          </Box>
-          <Box variant="p">
-            The <code>x</code> on the right is where the chunk is now. <code>v(x, t)</code> is the direction from
-            here toward a valid chunk, and it carries everything the network learned from the demonstrations.{' '}
-            <code>dt</code> is how far to trust that direction before asking again. Taking a short straight step
+            The <M>x</M> on the right is where the chunk is now. <M>{String.raw`v(x, \tau)`}</M> is the
+            direction from here toward a valid chunk, and it carries everything the network learned from the
+            demonstrations. <M>{String.raw`\delta`}</M> is how far to trust that direction before asking again. Taking a short straight step
             along a velocity and re-asking is called an Euler step. pi0, a robot model from Physical Intelligence
             that section 5 covers, builds a chunk of 50 actions this way in 10 Euler steps of size 0.1.{' '}
             <Cite id="F02-18">pi0 paper, section IV</Cite>{' '}
             <Cite id="F02-20">pi0 paper, section IV and appendix D</Cite>
           </Box>
           <Box variant="p">
-            Training supplies the directions. Take a demonstrated chunk <code>A</code> and noise of the same
-            shape, pick a random <code>t</code>, and blend them: <code>x = t * A + (1 - t) * noise</code>. The
-            network is trained to output <code>A - noise</code>, the straight direction from that noise to that
-            demonstration.{' '}
-            <Cite id="F02-19">pi0 paper, section IV</Cite>
+            Training supplies the directions. Take a demonstrated chunk <M>A</M> and noise{' '}
+            <M>{String.raw`\epsilon`}</M> of the same shape, pick a random <M>{String.raw`\tau`}</M>, and blend
+            them into a point <M>x</M> partway between the two. The network is trained to output{' '}
+            <M>{String.raw`A - \epsilon`}</M>, the straight direction from that noise to that demonstration.
+          </Box>
+          <Formula
+            name="Flow-matching training loss (velocity regression on the straight path)"
+            tex={String.raw`\begin{aligned} x &= \tau A + (1 - \tau) \, \epsilon \\ \mathcal{L} &= \mathbb{E} \, \big\lVert v(x, \tau) - (A - \epsilon) \big\rVert^2 \end{aligned}`}
+            source={<Cite id="F02-19">pi0 paper, section IV, in this page&apos;s symbols</Cite>}
+          />
+          <Box variant="p">
+            The first line is the blend: at <M>{String.raw`\tau = 0`}</M> it is all noise, at{' '}
+            <M>{String.raw`\tau = 1`}</M> all demonstration, and in between it slides along the straight line
+            that joins them. <M>{String.raw`A - \epsilon`}</M> is the velocity along that line, the same at
+            every <M>{String.raw`\tau`}</M>, which is why the path is straight. The second line is plain
+            regression: the squared distance between the network&apos;s velocity and that one, averaged (
+            <M>{String.raw`\mathbb{E}`}</M>) over demonstrations, noise draws and flow times, so the network
+            learns a direction for every point a sample can pass through.
           </Box>
           <Box variant="p">
             Follow one number of one chunk, with toy values. The noise is <Toy>0.8</Toy> and the demonstrated

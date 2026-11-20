@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
+import { Formula, M } from '../components/Math';
 import { ARM, TASK_STORY } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
@@ -608,6 +609,50 @@ export function VisionLanguageAction() {
             </li>
           </ul>
           <Box variant="p">
+            Section 4 wrote flow matching with a bare <M>x</M> for the chunk being built. The pi0 paper writes
+            the same two rules with the robot in them. A subscript is the robot&apos;s tick <M>t</M> and a
+            superscript is flow time <M>{String.raw`\tau`}</M>, from 0 (pure noise) to 1 (finished chunk).{' '}
+            <M>{String.raw`\mathbf{o}_t`}</M> is the observation: the camera frames, the sentence and the joint
+            angles. <M>{String.raw`\mathbf{A}_t`}</M> is a demonstrated chunk that starts at tick <M>t</M>,{' '}
+            <M>{String.raw`\epsilon`}</M> is noise of the same shape, and{' '}
+            <M>{String.raw`\mathbf{A}_t^\tau = \tau \mathbf{A}_t + (1 - \tau) \epsilon`}</M> is their blend.{' '}
+            <M>{String.raw`\mathbf{v}_\theta`}</M> is the action head with weights{' '}
+            <M>{String.raw`\theta`}</M>: it reads the blend and the observation and outputs one velocity per
+            number in the chunk. <M>{String.raw`\mathbf{u}(\mathbf{A}_t^\tau \mid \mathbf{A}_t) = \mathbf{A}_t - \epsilon`}</M>{' '}
+            is the velocity it should output, the straight direction from the noise to the demonstration.{' '}
+            <M>{String.raw`\mathbb{E}`}</M> is an average over the two pools named under it:{' '}
+            <M>{String.raw`p(\mathbf{A}_t \mid \mathbf{o}_t)`}</M>, the demonstrated chunks that go with an
+            observation, and <M>{String.raw`q(\mathbf{A}_t^\tau \mid \mathbf{A}_t)`}</M>, the noisy blends of
+            one chunk. Training minimises:
+          </Box>
+          <Formula
+            name="pi0 training loss (conditional flow matching)"
+            tex={String.raw`\begin{aligned} & L^\tau(\theta) = \mathbb{E}_{p(\mathbf{A}_t \mid \mathbf{o}_t), \, q(\mathbf{A}_t^\tau \mid \mathbf{A}_t)} \\ & \quad \big\lVert \mathbf{v}_\theta(\mathbf{A}_t^\tau, \mathbf{o}_t) - \mathbf{u}(\mathbf{A}_t^\tau \mid \mathbf{A}_t) \big\rVert^2 \end{aligned}`}
+            source={<Cite id="F02-19">pi0 paper, section IV</Cite>}
+          />
+          <Box variant="p">
+            <M>{String.raw`\mathbf{v}_\theta(\mathbf{A}_t^\tau, \mathbf{o}_t)`}</M> is one pass of the action
+            head against the prefix. <M>{String.raw`\mathbf{u}`}</M> is the answer, known in training because
+            the demonstration is known. The squared distance between the two is the whole loss for the action
+            tokens. On the robot there is no demonstration, so the model starts from pure noise{' '}
+            <M>{String.raw`\mathbf{A}_t^0`}</M> and follows its own velocities, a step of size{' '}
+            <M>{String.raw`\delta`}</M> in flow time at a time:
+          </Box>
+          <Formula
+            name="pi0 inference step (forward Euler)"
+            tex={String.raw`\mathbf{A}_t^{\tau + \delta} = \mathbf{A}_t^\tau + \delta \, \mathbf{v}_\theta(\mathbf{A}_t^\tau, \mathbf{o}_t)`}
+            source={<Cite id="F02-20">pi0 paper, section IV</Cite>}
+          />
+          <Box variant="p">
+            The left side is the chunk a little further along in flow time. pi0 sets{' '}
+            <M>{String.raw`\delta`}</M> to 0.1, so 10 steps carry <M>{String.raw`\tau`}</M> from 0 to 1: the 10
+            refinement steps of the figure, each on a tensor of 50 rows by 32 columns.{' '}
+            <M>{String.raw`\mathbf{o}_t`}</M> is the same in every step, which is why the prefix is read once
+            and cached and only <M>{String.raw`\mathbf{v}_\theta`}</M> is computed again.{' '}
+            <Cite id="F02-20">pi0 paper, section IV and appendix D</Cite>{' '}
+            <Cite id="F02-29">LeRobot pi0 and pi0_fast configs</Cite>
+          </Box>
+          <Box variant="p">
             Every model in this section fills in the same template with different numbers: which VLM is the
             backbone, how large the action head is, how long the chunk is, how many refinement steps it takes. When
             an announcement gives one parameter count, it is the sum of the two parts, and in the models here the backbone is the larger part.
@@ -653,12 +698,13 @@ export function VisionLanguageAction() {
           </AnimatedFigure>
           <Box variant="p">
             The two rates count different things. The slow rate counts passes of the backbone. The fast rate counts
-            actions, and an action is one row of a chunk. With <code>actions per chunk</code> the chunk length and{' '}
-            <code>chunks per second</code> how often the action head can produce one:
+            actions, and an action is one row of a chunk. Take the chunk length, in actions per chunk, and how often the
+            action head can produce a chunk, in chunks per second:
           </Box>
-          <Box variant="p">
-            <code>actions per second = actions per chunk x chunks per second</code>
-          </Box>
+          <Formula
+            name="Action rate"
+            tex={String.raw`\frac{\text{actions}}{\text{second}} = \frac{\text{actions}}{\text{chunk}} \times \frac{\text{chunks}}{\text{second}}`}
+          />
           <Box variant="p">
             The first factor is free: a longer chunk raises the action rate with no extra compute. The second is
             the real speed of the network. The same NVIDIA paper reports 63.9 ms to sample one chunk of 16 actions
@@ -1105,13 +1151,15 @@ export function VisionLanguageAction() {
           <Box variant="p">
             One call to a VLA has a part that runs once and a part that repeats. The images are encoded and the
             backbone reads the prefix once. The action head then runs once per refinement step. With{' '}
-            <code>t_see</code> the time in the image encoders, <code>t_read</code> the backbone&apos;s pass over the
-            prefix, <code>K</code> the number of refinement steps and <code>t_step</code> the time of one
-            action-head pass:
+            <M>{String.raw`t_{\mathrm{see}}`}</M> the time in the image encoders,{' '}
+            <M>{String.raw`t_{\mathrm{read}}`}</M> the backbone&apos;s pass over the prefix, <M>K</M> the number
+            of refinement steps, <M>{String.raw`t_{\mathrm{step}}`}</M> the time of one action-head pass and{' '}
+            <M>{String.raw`t_{\mathrm{call}}`}</M> the time of the whole call:
           </Box>
-          <Box variant="p">
-            <code>time per call = t_see + t_read + K x t_step</code>
-          </Box>
+          <Formula
+            name="Time of one VLA call"
+            tex={String.raw`t_{\mathrm{call}} = t_{\mathrm{see}} + t_{\mathrm{read}} + K \, t_{\mathrm{step}}`}
+          />
           <Box variant="p">
             The first two terms are the slow system. They grow with the number of cameras and the size of the
             backbone. The last term is the fast system, and it grows with the step count and the size of the action
