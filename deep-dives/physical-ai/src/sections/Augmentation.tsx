@@ -399,8 +399,9 @@ export function Augmentation() {
               </li>
               <li>
                 <strong>The framework FAQ.</strong> 32 GB for Nano and 128 GB for Super, with no resolution,
-                precision or workload given. By our reading this is the size of the weights alone: 16B parameters
-                at 2 bytes each is 32 GB. <Cite id="F03-123">NVIDIA cosmos-framework FAQ, inference</Cite>
+                precision or workload given. The FAQ labels the models 8B and 32B, where the model cards say 16B and 64B. Taking the
+                model cards&apos; counts, 16B parameters at 2 bytes each is 32 GB, so by our reading this is the size of
+                the weights alone. <Cite id="F03-123">NVIDIA cosmos-framework FAQ, inference</Cite>
               </li>
               <li>
                 <strong>Measured peaks.</strong> The only ones located are in a notes file in NVIDIA&apos;s

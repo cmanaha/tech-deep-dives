@@ -115,7 +115,7 @@ const BATCH_COMPUTE_ENVIRONMENT = `{
         "instanceRole": "arn:aws:iam::123456789012:instance-profile/ecsInstanceRole",
         "ec2Configuration": [
             {
-                "imageType": "ECS_AL2023"
+                "imageType": "ECS_AL2023_NVIDIA"
             }
         ]
     },
@@ -843,10 +843,12 @@ export function AwsOrchestration() {
           </Snippet>
           <Box variant="p">
             This is the documentation&apos;s skeleton for a managed EC2 compute environment. Changed: the name, the
-            resource type from <code>EC2</code> to <code>SPOT</code>, the allocation strategy, and the instance types,
-            which now name two G families with ray-tracing cores. Removed: the launch template and the tags. Everything
-            else, including the placeholder subnet, security group and role, is as printed. The API reference adds that
-            a <code>SPOT</code> environment also names a Spot Fleet role in <code>spotIamFleetRole</code>.{' '}
+            resource type from <code>EC2</code> to <code>SPOT</code>, the allocation strategy, the instance types,
+            which now name two G families with ray-tracing cores, and the image type, which names the GPU image so
+            the instances come up with the NVIDIA driver. Removed: the launch template and the tags. Everything
+            else, including the placeholder subnet, security group and role, is as printed. The API reference asks for
+            a Spot Fleet role in <code>spotIamFleetRole</code> only with the <code>BEST_FIT</code> allocation strategy
+            or with none set; this snippet sets its own strategy and needs none.{' '}
             <Cite id="F09-131">AWS Batch User Guide, Compute environment template</Cite>
           </Box>
           <Box variant="p">

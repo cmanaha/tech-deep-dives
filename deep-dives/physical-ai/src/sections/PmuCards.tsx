@@ -733,6 +733,11 @@ bad speculation = (1 - STALL_SLOT / slots) x (1 - OP_RETIRED / OP_SPEC)`}</code>
             </table>
           </div>
           <Box variant="p">
+            One Arm row needs a caution. The file for the Neoverse N1, the core of Graviton2, lists a width but no
+            slot-stall events, so the slot formula of this section does not run on it; Arm&apos;s method for that core
+            counts stalled cycles instead.
+          </Box>
+          <Box variant="p">
             Intel&apos;s cookbook page says a core has four slots per cycle; that is the width of the oldest cores
             in Intel&apos;s own metrics file, so take the width from the file. <Cite id="F08-2">Intel VTune cookbook, Top-down Microarchitecture Analysis Method</Cite> AMD
             cores report a fifth bucket for SMT (simultaneous multithreading, two hardware threads sharing one

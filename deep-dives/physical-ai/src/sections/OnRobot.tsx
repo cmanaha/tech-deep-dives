@@ -875,7 +875,7 @@ export function OnRobot() {
             <li>
               <strong>Nucleus lite</strong> (v2.7.0) is a set of small C programs with a shorter feature list; it
               cannot, for example, be driven by the Greengrass command-line tool on the device.{' '}
-              <Cite id="F07-135">Greengrass developer guide, feature compatibility</Cite> AWS measured it at 14.6 MB
+              <Cite id="F07-135">Greengrass developer guide, feature compatibility</Cite> AWS measured its v2.5.0 packages at 14.6 MB
               of memory idle and 15.8 MB with six small components running, on a Raspberry Pi 4.{' '}
               <Cite id="F07-138">aws-greengrass-lite v2.7.0, RESOURCE_LIMITS.md</Cite>
             </li>

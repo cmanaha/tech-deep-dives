@@ -525,7 +525,8 @@ export function TrainingScales() {
                     <strong>One-node post-training</strong>, eight GPUs
                   </td>
                   <td style={TD}>
-                    The 80 GB class once every weight trains: openpi asks for more than 70 GB for a full fine-tune
+                    The 80 GB class in openpi&apos;s own recipe, which asks for more than 70 GB for a full fine-tune; the AWS run
+                    below trained every weight of pi0.5 on a smaller GPU
                   </td>
                   <td style={TD}>
                     A shared file system that outlives the job: 1.2 TiB of FSx for Lustre in AWS&apos;s pi0 example

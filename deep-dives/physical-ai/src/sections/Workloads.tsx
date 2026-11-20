@@ -696,7 +696,7 @@ export function Workloads() {
               <li>
                 <strong>Embed and deduplicate</strong> (section 10). A vision encoder turns each clip into a vector
                 so near-duplicates can be dropped: matrix arithmetic on tensor cores. The input path can fill first.
-                One run in the tool&apos;s design notes, cancelled before it completed, left 32 H100s
+                One captioning run in the same tool&apos;s design notes, cancelled before it completed, left 32 H100s
                 at about 17% utilisation because fetching the clips was the slow side.{' '}
                 <Cite id="F05-76">Cosmos Curator curator-next-robot-action-caption.md</Cite>
               </li>
@@ -859,8 +859,8 @@ export function Workloads() {
                   <td style={TD}>None: every unit is independent</td>
                   <td style={TD}>Yes, at the cost of one unit</td>
                   <td style={TD}>
-                    Decode and filter, embed and deduplicate, CPU physics, GPU-parallel physics, simulated cameras,
-                    evaluation, engine build, generative augmentation
+                    Decode and filter, embed and deduplicate, CPU physics, GPU-parallel physics stepped for evaluation
+                    or data generation, simulated cameras, evaluation, engine build, generative augmentation
                   </td>
                 </tr>
                 <tr>
@@ -870,7 +870,7 @@ export function Workloads() {
                   <td style={TD}>Hours</td>
                   <td style={TD}>None beyond the one machine</td>
                   <td style={TD}>Yes, back to the last checkpoint</td>
-                  <td style={TD}>Policy fine-tune, world-model training</td>
+                  <td style={TD}>Policy fine-tune, world-model training, GPU-parallel physics inside a reinforcement-learning run</td>
                 </tr>
                 <tr>
                   <td style={TD}>

@@ -839,3 +839,9 @@ Section 22 uses section G as written; every figure carries "one run". Section 23
 ### Tier 4 (used only to locate primary sources; nothing cited as fact)
 
 - Web searches restricted to aws.amazon.com, docs.aws.amazon.com and aboutamazon.com to locate the Graviton5, P6 and Rubin pages. Two search-result summaries are mentioned as unresolved leads (F08-55 and section 8) and are not used as evidence.
+
+## Wave 4 (2026-11-20): corrections from the accuracy review
+
+- F08-16 note (2026-11-20): the Neoverse N1 file (`neoverse_n1_r4p1_pmu.json` at ea533b73) has `num_slots` 5 and no STALL_SLOT events; its top-down stage 1 is cycle accounting. Read by the accuracy reviewer.
+- Reproducibility note (2026-11-20): across the two passes, 35 of the 36 category values agree within 0.5 points; retiring for the policy stand-in on the Cortex-A725 moves 0.69 points (55.50% against 54.81%). The dive prints "within 0.7 points".
+- F08-78 note (2026-11-20): GPU-parallel physics is shape A when stepped for evaluation or data generation and shape B inside a reinforcement-learning run, as F08-80 already notes.

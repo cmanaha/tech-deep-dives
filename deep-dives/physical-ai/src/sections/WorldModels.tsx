@@ -462,7 +462,7 @@ export function WorldModels() {
             The sources read for this dive name four uses for a model that answers &quot;what if&quot;: plan by
             trying action sequences inside it, improve a policy inside it, generate synthetic experience, and
             evaluate what would have happened under other actions.{' '}
-            <Cite id="F03-88">LeWorldModel paper, section 1</Cite> A fifth arrived in 2026: let the model output the
+            <Cite id="F03-88">LeWorldModel paper, section 1</Cite> A fifth got its name in 2026: let the model output the
             action together with its prediction, so the world model is the policy.{' '}
             <Cite id="F03-93">DreamZero paper, sections 1 and 2</Cite> Counting them as five is our grouping.
           </Box>
@@ -623,7 +623,7 @@ export function WorldModels() {
               <Box variant="p">
                 <strong>Cosmos 3 (NVIDIA).</strong> Three sizes: Super with 64B parameters, Nano with 16B and Edge
                 with 4B, the last released in July 2026 for on-device use.{' '}
-                <Cite id="F03-94">NVIDIA Cosmos README, models</Cite> It has two transformers sharing weights. One is
+                <Cite id="F03-94">NVIDIA Cosmos README, models</Cite> NVIDIA&apos;s documentation describes two modes that share transformer weights. One is
                 autoregressive: it produces text one token at a time, each conditioned on the ones before, and does
                 the reasoning. The other is the diffusion transformer described above, which refines all the tokens
                 of a clip together.{' '}
@@ -782,7 +782,7 @@ export function WorldModels() {
             <strong>GR00T 2</strong> is the current example, and it carries a label wherever this dive quotes a
             figure from it: {GROOT2_LABEL}. NVIDIA describes a single 2B-parameter transformer built on
             Cosmos-Predict2.5-2B, a video generator from the generation before Cosmos 3. Camera frames go through a
-            frozen VAE that compresses 4 times in time and 8 times in each spatial direction, giving 280 tokens per
+            frozen VAE that compresses 4 times in time and 8 times in each spatial direction. The result is then split into patches, giving 280 tokens per
             compressed frame and camera at 224 x 320 pixels. Video tokens, joint state and actions sit in one
             sequence, and flow matching trains the model on future video and on actions together. NVIDIA reports a
             median of 153 ms to predict an action chunk for one robot, Dexter, from three camera views on an RTX 5090

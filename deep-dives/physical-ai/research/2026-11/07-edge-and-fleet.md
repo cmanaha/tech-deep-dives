@@ -1553,3 +1553,9 @@ Seed claims confirmed unchanged on re-fetch: Jetson list prices (F07-42); T5000 
 - Learning While Deploying: https://arxiv.org/abs/2605.00416v4 (preprint)
 
 **Tier 4: none cited.** Press and tracker sources named in the seed research (price-rise coverage, RoboMaker shutdown coverage) were not used.
+
+## Wave 4 (2026-11-20): corrections from the accuracy review
+
+- F07-90 correction (2026-11-20): `timeoutInSeconds` (default 60) is how long the nucleus waits for a component that does not answer the update notification. A component that answers with `DeferComponentUpdate` sets its own delay (`recheckAfterMs`) and is asked again; answering 0 acknowledges. Source: https://docs.aws.amazon.com/greengrass/v2/developerguide/ipc-component-lifecycle.html | Tier 1, AWS docs | read 2026-11-20 by the accuracy reviewer | "If a component doesn't respond to the component update notification, the nucleus waits the amount of time that you specify in the deployment's component update policy. After that timeout, the nucleus proceeds with the deployment. The default component update timeout is 60 seconds."
+- F07-162 correction (2026-11-20): the rollout rate increases when either threshold is reached (notified or succeeded), per F07-93's quote; "and" in the paraphrase was wrong.
+- F07-94 note (2026-11-20): `minNumberOfExecutedThings` counts things that have received the job notification.

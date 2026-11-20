@@ -67,6 +67,9 @@ export function loadEntries() {
     }
     e.url = url;
     e.local = url ? null : (first.match(/`([^`]+)`/)?.[1] ?? first.trim().slice(0, 120));
+    // An entry that quotes a second file of the same experiment (a second machine) points at the
+    // experiment folder, so the citation never names the wrong machine's log.
+    if (e.local && /" ; /.test(body)) e.local = e.local.replace(/^(.*\/E-[^/]+)\/.*$/, '$1/');
     e.tier = tier;
     e.venue = venue;
     e.kind = kind;

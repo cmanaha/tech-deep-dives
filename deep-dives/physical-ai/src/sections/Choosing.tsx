@@ -360,7 +360,8 @@ const ROWS: Row[] = [
     market: <MarketCell kind="open">On-Demand with a list of types; Spot when the run checkpoints.</MarketCell>,
     why: (
       <>
-        One GPU, one job, for hours: a stop costs the stretch since the last checkpoint.{' '}
+        Inside a reinforcement-learning run this is one GPU, one job, for hours (shape B in section 20): a stop
+        costs the stretch since the last checkpoint.{' '}
         <Cite id="F06-51">Isaac Lab 3.0 installation guide</Cite>{' '}
         <Cite id="F09-73">AWS Physical AI Toolchain sample, training options</Cite>
       </>
@@ -374,7 +375,8 @@ const ROWS: Row[] = [
     market: <MarketCell kind="open">Several G types, a second Region, or an ODCR.</MarketCell>,
     why: (
       <>
-        The RT-core requirement removes the P family, and the window reservation with it.{' '}
+        The RT-core requirement removes the P family, and with it the window reservation, which the lists read on
+        2026-11-20 offer for no G type.{' '}
         <Cite id="F06-60">AWS post on Isaac Lab and SageMaker, instance compatibility</Cite>{' '}
         <Cite id="F09-49">EKS user guide, Auto Mode GPU limits</Cite>
       </>
@@ -388,7 +390,7 @@ const ROWS: Row[] = [
     market: <MarketCell kind="open">On-Demand with a priority list of types.</MarketCell>,
     why: (
       <>
-        AWS reports 3.4 to 10.9 hours on one GPU for its runs on this arm: pay per job.{' '}
+        AWS reports 3.4 to 10.9 hours on one GPU for the runs of its standard recipe on this arm: pay per job.{' '}
         <Cite id="F09-82">AWS post on training VLA models with LeRobot, run times</Cite>{' '}
         <Cite id="F09-114">AWS embodied AI series, fine-tuning on Batch</Cite>
       </>
@@ -471,7 +473,7 @@ const ROWS: Row[] = [
   {
     name: 'Robot foundation-model pretraining',
     part: 'Tensor cores across many nodes, the fabric between them, and storage',
-    family: "P5en or P6-B200, in AWS's sizing table",
+    family: "P5en or P6-B200: the sizes AWS's Cosmos 3 table gives for multi-node post-training, taken here as our reading for pretraining",
     orchestrator: 'HyperPod, which replaces faulty nodes; Slurm where the team already runs it',
     market: <MarketCell kind="window">A Capacity Block or a SageMaker training plan. No Spot.</MarketCell>,
     why: (
@@ -577,7 +579,8 @@ export function Choosing() {
           </ol>
           <Box variant="p">
             For {TASK}, the answers are small. AWS&apos;s post of 19 November 2026 trains three policies on an {ARM}{' '}
-            dataset and reports 3.4 to 10.9 hours on one GPU for each run.{' '}
+            dataset and prints run times for two of them, GR00T N1.7 and pi0.5: 3.4 to 10.9 hours on one GPU for the
+            runs that use its standard recipe.{' '}
             <Cite id="F09-81">AWS post on training VLA models with LeRobot</Cite>{' '}
             <Cite id="F09-82">the same post, run times</Cite> One GPU for 3 to 11 hours needs a service that runs a
             job and goes away, and no cluster.
@@ -730,7 +733,7 @@ export function Choosing() {
             P4d, P4de, P5, P5e, P5en, P6-B200 and P6-B300 families, and P6e-GB200 UltraServers in a table of their
             own.{' '}
             <Cite id="F09-91">EC2 user guide, Capacity Blocks supported instance types</Cite> The SageMaker training
-            plans list names P types of the same families.{' '}
+            plans list, read the same day, names P4d, P5, P5e, P5en, P6-B200 and P6-B300 types and two Trainium types.{' '}
             <Cite id="F09-34">SageMaker documentation, training plans</Cite>
           </Box>
           <Box variant="p">
@@ -785,7 +788,7 @@ export function Choosing() {
             </li>
             <li>
               Cameras. GPU-parallel physics that starts rendering with an RTX renderer moves to the G family only,
-              and leaves the window reservation behind.{' '}
+              and leaves behind the window reservation, which the lists read on 2026-11-20 offer for no G type.{' '}
               <Cite id="F06-60">AWS post on Isaac Lab and SageMaker, instance compatibility</Cite>
             </li>
             <li>

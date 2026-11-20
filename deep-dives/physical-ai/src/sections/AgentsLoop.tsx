@@ -651,7 +651,9 @@ export function AgentsLoop() {
             timeout unless one is set, and without one it runs until its container exits. Set{' '}
             <code>attemptDurationSeconds</code> (minimum 60 seconds) on the job definition. At the limit Batch sends
             the container SIGTERM, then SIGKILL 30 seconds later, and a job ended by its timeout is not retried. The
-            job definition lives in the scheduler, so a training script the agent rewrote cannot extend it.{' '}
+            job definition lives in the scheduler, so a training script the agent rewrote cannot extend it. A timeout
+            passed when the job is submitted replaces the one in the job definition, so the cap holds against the
+            agent itself only when submission goes through a wrapper or a role the agent cannot change.{' '}
             <Cite id="F04-50">AWS Batch User Guide, job timeouts</Cite>
           </Box>
           <Box variant="p">
@@ -681,7 +683,7 @@ export function AgentsLoop() {
               Freeze the grader, the reset and the evaluation seeds, and store them where the agent&apos;s
               credentials cannot write.
             </li>
-            <li>Give every job the agent can submit a timeout in the job definition.</li>
+            <li>Give every job the agent can submit a timeout in the job definition, and keep the submit call out of its hands.</li>
             <li>
               Run the agent&apos;s own code in a sandbox, and send its GPU work out as separate capped jobs.
             </li>

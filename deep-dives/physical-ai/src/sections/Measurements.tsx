@@ -6,7 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ColumnLayout from '@cloudscape-design/components/column-layout';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import Link from '@cloudscape-design/components/link';
-import { Cite } from '../components/Cite';
+import { Cite, Derived } from '../components/Cite';
 import { Figure } from '../components/Figure';
 import { Placeholder } from '../components/Blocks';
 import { ARM, TASK_STORY } from '../lib/task';
@@ -637,7 +637,7 @@ export function Measurements() {
             </li>
             <li>
               <strong>Only what reproduced is printed.</strong> Across the two passes the three workload cards
-              reproduce: throughput within 2.5% and every category within 0.5 points. The front-end against
+              reproduce: throughput within 2.5% and every category within <Derived>0.7</Derived> points. The front-end against
               back-end split of two memory microbenchmarks, the triad and a memory-write loop, does not reproduce
               at the same throughput. Their throughput is printed above; their stall split is not.{' '}
               <Cite id="F08-73">limits of our measurements</Cite>

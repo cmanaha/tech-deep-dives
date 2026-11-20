@@ -2,30 +2,9 @@
  {
   "tier": 0,
   "url": null,
-  "local": "deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/pmu-cards/dgx-spark.md",
-  "venue": null,
-  "title": "our DGX Spark card, GPU kernel",
-  "sections": [
-   22
-  ]
- },
- {
-  "tier": 0,
-  "url": null,
-  "local": "deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/pmu-cards/jetson-orin-nano.md",
+  "local": "deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/",
   "venue": null,
   "title": "the edge formula",
-  "sections": [
-   22,
-   23
-  ]
- },
- {
-  "tier": 0,
-  "url": null,
-  "local": "deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/report.md",
-  "venue": null,
-  "title": "our profiling report, FMA row",
   "sections": [
    1,
    12,
@@ -35,17 +14,6 @@
    22,
    23,
    25
-  ]
- },
- {
-  "tier": 0,
-  "url": null,
-  "local": "deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/results-pass2/results-jetson-a78ae.csv",
-  "venue": null,
-  "title": "our recomputation from the raw counters",
-  "sections": [
-   21,
-   22
   ]
  },
  {
@@ -64,7 +32,7 @@
   "url": null,
   "local": "deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/run.sh",
   "venue": null,
-  "title": "our run script and experiment notes",
+  "title": "our comparison of the run script with Arm's formulas",
   "sections": [
    21,
    22

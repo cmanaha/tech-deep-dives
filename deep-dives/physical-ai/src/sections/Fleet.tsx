@@ -84,9 +84,9 @@ function DownArrow({ x, y0, y1 }: { x: number; y0: number; y1: number }) {
 const ROLLOUT_STEPS = [
   'A new policy version is ready: an image in the registry, and a component version that names it by digest.',
   'A deployment targets the canary thing group, a few arms chosen to go first. An IoT job carries it.',
-  'Each canary downloads the image. The nucleus asks the running policy component whether it is safe to update, waits 60 seconds by default, then starts the new version.',
+  'Each canary downloads the image. The nucleus asks the running policy component whether it is safe to update, and starts the new version once the component agrees, or after 60 seconds by default if it never answers.',
   'The gate: each canary reports RUNNING or ERRORED. Nothing wider starts until this reads well.',
-  'The rollout widens to the fleet group, and the rate grows only as successes are reported.',
+  'The rollout widens to the fleet group, and the rate grows as devices are notified or report success.',
   'The abort case: failures cross the threshold and the job cancels the arms still queued. The seven that already updated stay updated until a new deployment pins the old version.',
 ];
 
@@ -204,7 +204,7 @@ function RolloutDiagram({ step, reduced }: { step: number; reduced: boolean }) {
             running policy 1.4.0
           </text>
           <text x={146} y={240} fontSize={12} fontWeight={700} fill={EMPHASIS} style={shown(step === 2, reduced)}>
-            asked first; default wait 60 s
+            asked first; 60 s if no answer
           </text>
           <text x={146} y={240} fontSize={12} fill={TENSOR_INK} style={shown(step > 2, reduced)}>
             running policy 1.5.0
@@ -219,7 +219,7 @@ function RolloutDiagram({ step, reduced }: { step: number; reduced: boolean }) {
             twenty arms, still on policy 1.4.0
           </text>
           <text x={tx} y={406} fontSize={12} fontWeight={700} fill={EMPHASIS} style={shown(step === 4, reduced)}>
-            the rate grows as successes are reported
+            rate grows as arms are notified or succeed
           </text>
           <text x={tx} y={406} fontSize={12} fontWeight={700} fill={FAIL_INK} style={shown(step === 5, reduced)}>
             abort: queued arms cancelled, updated arms stay
@@ -435,7 +435,7 @@ const VOCAB: VocabRow[] = [
     arm: (
       <>
         The agent program on the device (section 17): a Java program that needs at least 96 MB of RAM, or nucleus
-        lite, small C daemons documented at less than 15 MB.
+        lite, small C daemons documented at less than 15 MB of memory (section 17 gives the measured figures).
       </>
     ),
     cite: (
@@ -644,7 +644,7 @@ const EDGE_ROWS: ThreeCol[] = [
     c: (
       <>
         &quot;is not a fit for disconnected, disrupted, intermittent or limited (DDIL) environments&quot;. Running
-        pods keep running, nothing can be changed, and a node can take up to 30 minutes to rejoin. <Cite id="F09-119">EKS user guide, Hybrid Nodes overview</Cite>{' '}
+        pods keep running, nothing can be changed, and a node that authenticates through Systems Manager can take up to 30 minutes to rejoin once its credentials have lapsed. <Cite id="F09-119">EKS user guide, Hybrid Nodes overview</Cite>{' '}
         <Cite id="F09-125">EKS best practices, hybrid nodes and disconnections</Cite>
       </>
     ),
@@ -927,7 +927,7 @@ export function Fleet() {
       >
         <SpaceBetween size="s">
           <Box variant="p">
-            A staged rollout updates a few devices first, widens as successes accumulate and stops when too many
+            A staged rollout updates a few devices first, widens in steps and stops when too many
             fail. Use it for every change to robots that move; for one arm on the bench a deployment to that one
             thing is enough. The mechanism is borrowed. &quot;AWS IoT Greengrass uses AWS IoT Core jobs to send deployments to core
             devices, so these options are identical to the configuration options for AWS IoT Core jobs.&quot;
@@ -942,8 +942,8 @@ export function Fleet() {
             caption={
               <>
                 Read from the top; the blue dot is the new policy version. Illustrative, not measured: the device
-                counts, the version numbers and the point where the failures arrive are invented. The 60-second
-                wait is the documented default.
+                counts, the version numbers and the point where the failures arrive are invented. The 60 seconds
+                is the documented default for a component that does not answer.
               </>
             }
           >
@@ -955,8 +955,9 @@ export function Fleet() {
             <code>incrementFactor</code> from 1.1 to 5.{' '}
             <Cite id="F07-92">AWS IoT API reference, ExponentialRolloutRate and JobExecutionsRolloutConfig</Cite>{' '}
             AWS&apos;s own example starts at 50 per minute with a factor of 2 and doubles each time another 1,000
-            devices have been notified or have succeeded: 50, 100, 200, 400 per minute. The rate rises only on
-            evidence of success. A hundred arms want the same shape with smaller thresholds. <Cite id="F07-93">AWS IoT developer guide, Job rollout rates</Cite>
+            devices have been notified or have succeeded: 50, 100, 200, 400 per minute. The rate rises on
+            notifications as well as on successes; to widen only on evidence of success, set{' '}
+            <code>numberOfSucceededThings</code> and leave <code>numberOfNotifiedThings</code> out. A hundred arms want the same shape with smaller thresholds. <Cite id="F07-93">AWS IoT developer guide, Job rollout rates</Cite>
           </Box>
           <Box variant="p">
             <strong>The abort rule.</strong> It names a failure type, a minimum number of devices before it can
@@ -969,10 +970,11 @@ export function Fleet() {
           </Box>
           <Box variant="p">
             <strong>On each device.</strong> First the nucleus asks. By default it notifies every running component
-            before replacing it, the component can answer that now is a bad moment, and the nucleus waits 60
-            seconds; after that &quot;the deployment proceeds on the device&quot;. An episode lasts tens of seconds,
-            so our reading is that the policy component defers until the gripper is empty, with the timeout set
-            above the longest episode.{' '}
+            before replacing it. A component that subscribes can acknowledge at once, or answer that now is a bad
+            moment with a delay of its own choosing, after which the nucleus asks again. A component that does
+            not answer within 60 seconds, the default timeout, is replaced anyway: &quot;the deployment proceeds on
+            the device&quot;. An episode lasts tens of seconds, so our reading is that the policy component defers
+            in short repeated intervals until the gripper is empty.{' '}
             <Cite id="F07-90">Greengrass V2 API reference, DeploymentComponentUpdatePolicy</Cite> The two calls
             that let a component defer are absent from the operations listed in nucleus lite&apos;s README at
             v2.7.0. <Cite id="F07-137">aws-greengrass-lite v2.7.0, README</Cite> Then the new version starts. If
@@ -1012,11 +1014,11 @@ export function Fleet() {
             Read it in three parts. <code>components</code> is the list for the target. <code>deploymentPolicies</code>{' '}
             is the per-device behaviour: ask components first (this example shortens the wait to 30 seconds), let
             them validate new configuration, roll back on failure. <code>iotJobConfiguration</code> is the spread:
-            start at 5 devices per minute, double once 10 were notified and 5 succeeded, never exceed 50 per minute,
-            cancel when 5% of executions fail after at least 100 have executed, and give each device 5 minutes.
+            start at 5 devices per minute, double once 10 devices were notified or 5 succeeded, whichever comes first, never exceed 50 per minute,
+            cancel when 5% of executions fail, once at least 100 devices have been notified, and give each device 5 minutes.
             Two of those numbers need changing for robots, in our reading. A 5-minute timeout is shorter than the
             download: at 100 Mbit/s, 6 GB takes 8 minutes, so a healthy arm would time out and count as a failure.
-            And a minimum of 100 executed devices never fires in a fleet of 20 arms.{' '}
+            And a minimum of 100 notified devices never fires in a fleet of 20 arms.{' '}
             <Cite id="F07-161">Greengrass developer guide, deployment policies</Cite>{' '}
             <Cite id="F07-162">Greengrass developer guide, Create deployments</Cite>
           </Box>
@@ -1088,7 +1090,7 @@ export function Fleet() {
             produced at the median (148 s at the 99th percentile), and that a published model reached a robot in 38
             s at the median (55 s at the 99th percentile).{' '}
             <Cite id="F07-109">Learning While Deploying, Table VI</Cite> Under a minute each way, on the
-            authors&apos; own plumbing, where a staged deployment&apos;s default handshake alone waits 60 seconds.
+            authors&apos; own plumbing, where a staged deployment waits up to 60 seconds by default for a component that never answers the update notification.
           </Box>
           <Box variant="p">
             <strong>How much data is that?</strong> For this arm, megabytes per episode. For an upper bound, a

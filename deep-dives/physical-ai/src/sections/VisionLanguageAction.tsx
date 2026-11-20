@@ -661,7 +661,7 @@ export function VisionLanguageAction() {
             The first factor is free: a longer chunk raises the action rate with no extra compute. The second is
             the real speed of the network. The same NVIDIA paper reports 63.9 ms to sample one chunk of 16 actions
             on an L40. By our arithmetic that is about 15.6 chunks a second, and 15.6 x 16 gives room for 250
-            actions a second. So 120 Hz is a rate of actions; the action head itself runs about 15.6 times a
+            actions a second. So 120 Hz is a rate of actions; the model as a whole samples a chunk about 15.6 times a
             second. When an announcement quotes a fast rate, ask which of the two it counts.{' '}
             <Cite id="F02-34">GR00T N1 paper, sections 2 and 3</Cite>{' '}
             <Cite id="F02-33">GR00T N1 paper, section 1</Cite>
@@ -709,7 +709,7 @@ export function VisionLanguageAction() {
             <Cite id="F02-44">NVIDIA GR00T 2 research page, Model Architecture</Cite>
           </Box>
           <Box variant="p">
-            Its on-robot variant, GR00T 2 Turbo, has 2B parameters. NVIDIA reports one prediction in 38 ms on an RTX
+            The project page calls its on-robot variant, GR00T 2 Turbo, a smaller transformer and prints 2B parameters for it, the same figure the whitepaper gives for the full model (section 6); NVIDIA&apos;s two documents do not reconcile them. NVIDIA reports one prediction in 38 ms on an RTX
             5090 desktop GPU and 124 ms on a Jetson Thor, its onboard computer for robots, where the model plans
             1.6 s chunks about once per second and a separate controller executes them at 50 Hz. The reasoning
             model is the only part that runs off the robot. Section 3, The Robot as a Computer, drew this stack as
@@ -796,7 +796,7 @@ export function VisionLanguageAction() {
                   cells={[
                     'GR00T 2 (NVIDIA)',
                     'Research page and whitepaper, November 2026',
-                    'Turbo variant: 2B. The full model has no size on the page',
+                    '2B for the full model in the whitepaper, and 2B for the Turbo variant on the project page',
                     'Nothing yet. Code is announced for December',
                     'No',
                   ]}
@@ -1116,7 +1116,9 @@ export function VisionLanguageAction() {
             an H100 data-centre GPU with TensorRT, NVIDIA&apos;s compiler that turns a trained network into an
             optimised inference engine, the stages are 6.2 ms of data processing, 8.8 ms in the backbone and 12.3
             ms in the action head, beside a printed end-to-end figure of 27.9 ms (35.9 Hz). On a Jetson AGX Thor the
-            card gives 93.8 ms (10.7 Hz).{' '}
+            card gives 93.8 ms (10.7 Hz). The figures in sections 2 and 3 come from a second NVIDIA benchmark, the
+            deployment guide in the repository, which times a different checkpoint with two cameras and so prints
+            different numbers for the same devices.{' '}
             <Cite id="F02-40">GR00T N1.7 model card, inference timing table</Cite>
           </Box>
           <Box variant="p">

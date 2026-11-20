@@ -588,7 +588,7 @@ export function RobotAsComputer() {
             The P gain sets how hard the motor pushes for each step of error, so the joint pushes harder the
             further it is from its goal. The D gain acts on the change in error, so it brakes the joint when the
             error is shrinking fast. The I gain adds a push that builds up while an error persists. LeRobot writes
-            P = 16, I = 0 and D = 32 into each follower servo when it connects, which switches the third term off:
+            P = 16, I = 0 and D = 32 into each follower servo when it connects, which switches the integral term off:
             the joints run as PD (proportional-derivative) controllers, and a joint holding a load can sit
             slightly short of its goal.{' '}
             <Cite id="F01-16">LeRobot so_follower.py, configure()</Cite> The formula is the standard one. Neither

@@ -370,7 +370,10 @@ export function RobotRl() {
             to the end of the episode, on the same scale as the value. <code>V(o_t, l)</code> is the value
             model&apos;s prediction from the observation <code>o_t</code> (images and joint angles) and the
             instruction <code>l</code>. <code>eps_l</code> is a threshold set per task. <code>I_t</code> is the
-            label, true or false.
+            label, true or false. The formula below is the form the paper uses for its pre-training data, where the
+            outcome is the whole rest of the episode. For the rollouts collected on the robot the paper
+            shortens the outcome: the rewards over a fixed number of steps ahead plus the value predicted at that
+            later step. The subtraction and the label work the same way in both.
           </Box>
           <Box variant="p">
             <code>A_t = R_t - V(o_t, l)</code>
