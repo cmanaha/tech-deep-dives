@@ -875,7 +875,7 @@
 "F08-54":{"t":2,"u":"https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available"},
 "F08-55":{"t":2,"u":"https://www.aboutamazon.com/news/aws/aws-nvidia-2-million-gpus-ai"},
 "F08-56":{"t":1,"u":"https://github.com/aws/aws-graviton-getting-started/blob/541d1ad524bb1630e16b8e66aef36dcd01a3bbc1/README.md","k":"vendor-claim"},
-"F08-57":{"t":1,"u":"https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html"},
+"F08-57":{"t":1,"u":"https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html","k":"derived"},
 "F08-58":{"t":-1,"i":["F06-52"],"k":"our-reading"},
 "F08-59":{"t":-1,"i":[],"k":"our-reading"},
 "F08-60":{"t":0,"l":"deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/run.sh","k":"our-run"},
@@ -1022,4 +1022,13 @@
 "F09-115":{"t":1,"u":"https://aws.amazon.com/about-aws/whats-new/2026/11/sagemaker-hyperpod-higher-pod-density/"},
 "F09-116":{"t":1,"u":"https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-eks-hybrid-nodes-pricing-change/"},
 "F09-117":{"t":1,"u":"https://aws.amazon.com/about-aws/whats-new/2026/11/deadline-cloud-supports-ec2-g7/"},
-"F09-118":{"t":1,"u":"https://aws.amazon.com/about-aws/whats-new/2026/11/aws-lambda-gpu-managed-instances/"}}
+"F09-118":{"t":1,"u":"https://aws.amazon.com/about-aws/whats-new/2026/11/aws-lambda-gpu-managed-instances/"},
+"F09-119":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-overview.html"},
+"F09-120":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-prereqs.html"},
+"F09-121":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-os.html"},
+"F09-122":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-add-ons.html"},
+"F09-123":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-add-ons.html"},
+"F09-124":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-nodeadm.html"},
+"F09-125":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/best-practices/hybrid-nodes-kubernetes-pod-failover.html"},
+"F09-126":{"t":2,"u":"https://aws.amazon.com/eks/pricing/"},
+"F09-127":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-overview.html"}}
