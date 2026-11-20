@@ -38,7 +38,7 @@ export function loadEntries() {
     const parts = body.split(' | ');
     const first = parts[0] ?? '';
     const url = first.match(/https?:\/\/[^\s|)>\]]+/)?.[0]?.replace(/[.,;]+$/, '') ?? null;
-    const tierPart = parts.find((p) => /^Tier \d/.test(p.trim())) ?? '';
+    const tierPart = parts.slice(0, 3).find((p) => /^Tier \d,|^Tier \d$|^Tier \d /.test(p.trim()) && !/anchors/.test(p)) ?? '';
     const tier = Number(tierPart.match(/Tier (\d)/)?.[1] ?? NaN);
     let venue = null;
     if (tier === 3) {
