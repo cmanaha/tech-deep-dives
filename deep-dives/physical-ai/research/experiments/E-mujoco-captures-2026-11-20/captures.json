@@ -1,0 +1,254 @@
+{
+ "pick_place": {
+  "success": true,
+  "frames": 205,
+  "fps": 25,
+  "seconds": 8.2,
+  "timestep_s": 0.002,
+  "control_hz": 50
+ },
+ "strip_times_s": [
+  0.2,
+  1.4,
+  2.5,
+  3.7,
+  4.9,
+  6.6
+ ],
+ "contact": {
+  "count": 5,
+  "contacts": [
+   {
+    "a": "floor",
+    "b": "block",
+    "normal_force_N": 6.071,
+    "penetration_mm": 1.46
+   },
+   {
+    "a": "floor",
+    "b": "block",
+    "normal_force_N": 4.74,
+    "penetration_mm": 1.29
+   },
+   {
+    "a": "block",
+    "b": "gripper",
+    "normal_force_N": 40.04,
+    "penetration_mm": 8.235
+   },
+   {
+    "a": "block",
+    "b": "moving_jaw_so101_v1",
+    "normal_force_N": 28.601,
+    "penetration_mm": 7.29
+   },
+   {
+    "a": "block",
+    "b": "moving_jaw_so101_v1",
+    "normal_force_N": 28.596,
+    "penetration_mm": 7.289
+   }
+  ],
+  "constraints_nefc": 36
+ },
+ "render_passes": {
+  "depth_min_m": 0.376,
+  "depth_max_m": 0.62,
+  "width": 600,
+  "height": 400
+ },
+ "domain_randomisation": [
+  {
+   "block_xy": [
+    0.286,
+    -0.04
+   ],
+   "cup_xy": [
+    0.228,
+    0.108
+   ],
+   "light_diffuse": 0.5,
+   "camera_offset_m": [
+    0.003,
+    0.03,
+    0.035
+   ]
+  },
+  {
+   "block_xy": [
+    0.236,
+    -0.083
+   ],
+   "cup_xy": [
+    0.2,
+    0.14
+   ],
+   "light_diffuse": 0.5,
+   "camera_offset_m": [
+    0.021,
+    0.008,
+    0.029
+   ]
+  },
+  {
+   "block_xy": [
+    0.232,
+    -0.076
+   ],
+   "cup_xy": [
+    0.214,
+    0.114
+   ],
+   "light_diffuse": 0.59,
+   "camera_offset_m": [
+    -0.012,
+    0.022,
+    0.019
+   ]
+  },
+  {
+   "block_xy": [
+    0.29,
+    -0.073
+   ],
+   "cup_xy": [
+    0.233,
+    0.109
+   ],
+   "light_diffuse": 0.27,
+   "camera_offset_m": [
+    -0.023,
+    0.028,
+    0.019
+   ]
+  },
+  {
+   "block_xy": [
+    0.285,
+    -0.119
+   ],
+   "cup_xy": [
+    0.238,
+    0.138
+   ],
+   "light_diffuse": 0.35,
+   "camera_offset_m": [
+    -0.008,
+    -0.019,
+    -0.018
+   ]
+  },
+  {
+   "block_xy": [
+    0.254,
+    -0.068
+   ],
+   "cup_xy": [
+    0.257,
+    0.105
+   ],
+   "light_diffuse": 0.56,
+   "camera_offset_m": [
+    0.028,
+    -0.01,
+    -0.012
+   ]
+  }
+ ],
+ "evaluation": {
+  "episodes": 12,
+  "successes": 8,
+  "jitter_mm": 12,
+  "results": [
+   {
+    "offset_mm": [
+     0.0,
+     0.0
+    ],
+    "success": true
+   },
+   {
+    "offset_mm": [
+     -8.9,
+     -0.0
+    ],
+    "success": false
+   },
+   {
+    "offset_mm": [
+     2.4,
+     -11.3
+    ],
+    "success": true
+   },
+   {
+    "offset_mm": [
+     -8.4,
+     10.3
+    ],
+    "success": false
+   },
+   {
+    "offset_mm": [
+     -10.3,
+     -8.9
+    ],
+    "success": false
+   },
+   {
+    "offset_mm": [
+     10.8,
+     2.9
+    ],
+    "success": true
+   },
+   {
+    "offset_mm": [
+     -3.1,
+     0.3
+    ],
+    "success": true
+   },
+   {
+    "offset_mm": [
+     3.9,
+     -5.4
+    ],
+    "success": true
+   },
+   {
+    "offset_mm": [
+     -8.7,
+     6.9
+    ],
+    "success": false
+   },
+   {
+    "offset_mm": [
+     4.1,
+     0.3
+    ],
+    "success": true
+   },
+   {
+    "offset_mm": [
+     7.6,
+     1.2
+    ],
+    "success": true
+   },
+   {
+    "offset_mm": [
+     11.5,
+     -7.1
+    ],
+    "success": true
+   }
+  ]
+ },
+ "software": {
+  "mujoco": "4.0.1",
+  "numpy": "2.5.5",
+  "renderer": "mujoco.Renderer (OpenGL, offscreen)"
+ }
+}
