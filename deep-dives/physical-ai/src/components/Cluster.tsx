@@ -310,7 +310,7 @@ function ClusterSvg({ spec, step, reduced, narrow }: { spec: ClusterSpec; step: 
     if ('hidden' in at) return null;
     if ('store' in at) return { x: L.stores[at.store].x + 18 + at.pos * 22, y: L.stores[at.store].y + 48 };
     const c = centre(chipRect(L.groups[at.g].places[at.i], spec.groups[at.g].gpus, at.gpu ?? 0));
-    return { x: c.x + 13, y: c.y - 11 };
+    return { x: c.x + 17, y: c.y + 9 };
   };
 
   // Tokens keep their identity across steps: the union of ids over all steps, in a stable order.
