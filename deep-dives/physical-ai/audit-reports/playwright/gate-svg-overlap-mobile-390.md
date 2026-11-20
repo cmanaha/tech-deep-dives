@@ -4,11 +4,11 @@ Status: **PASS** (0 finding(s))
 
 | field | value |
 | --- | --- |
-| generated | 2026-11-20T20:06:33.964Z |
+| generated | 2026-11-20T23:18:02.806Z |
 | viewport | 390 x 844 |
 | base URL | http://127.0.0.1:4183/ |
-| sections visited | 26 |
-| diagrams checked | 52 |
+| sections visited | 30 |
+| diagrams checked | 62 |
 
 ## Scope
 
@@ -25,4 +25,4 @@ None.
 
 ## Sections visited
 
-one-loop, getting-started, robot-computer, demonstrations, vla, world-models, jepa, robot-rl, collecting, curating, augmentation, physics, rendering, sim-to-real, training-scales, evaluation, on-robot, fleet, agents, workloads, pmu-cards, measurements, price-performance, aws-orchestration, choosing, sources
+one-loop, getting-started, robot-computer, demonstrations, vla, world-models, jepa, robot-rl, collecting, curating, augmentation, physics, rendering, sim-to-real, training-scales, evaluation, on-robot, fleet, agents, workloads, pmu-cards, measurements, price-performance, aws-orchestration, aws-batch, aws-pcs, hyperpod, eks, choosing, sources

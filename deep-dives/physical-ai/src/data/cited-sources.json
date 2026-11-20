@@ -13,7 +13,8 @@
    21,
    22,
    23,
-   25
+   24,
+   29
   ]
  },
  {
@@ -50,7 +51,7 @@
    21,
    22,
    23,
-   25
+   29
   ]
  },
  {
@@ -61,17 +62,7 @@
   "title": "AWS announcement, EKS Hybrid Nodes pricing change",
   "sections": [
    24,
-   25
-  ]
- },
- {
-  "tier": 1,
-  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/aws-lambda-gpu-managed-instances/",
-  "local": null,
-  "venue": null,
-  "title": "AWS What's New, 18 November 2026, Lambda GPU functions",
-  "sections": [
-   24
+   29
   ]
  },
  {
@@ -81,8 +72,7 @@
   "venue": null,
   "title": "AWS announcement, Deadline Cloud supports EC2 G7",
   "sections": [
-   24,
-   25
+   29
   ]
  },
  {
@@ -93,16 +83,6 @@
   "title": "AWS What's New, EC2 performance status checks",
   "sections": [
    21
-  ]
- },
- {
-  "tier": 1,
-  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/sagemaker-hyperpod-higher-pod-density/",
-  "local": null,
-  "venue": null,
-  "title": "AWS What's New, 18 November 2026",
-  "sections": [
-   24
   ]
  },
  {
@@ -138,6 +118,16 @@
    13,
    20,
    23,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-draining.html",
+  "local": null,
+  "venue": null,
+  "title": "ECS Developer Guide, Draining container instances",
+  "sections": [
    25
   ]
  },
@@ -146,7 +136,17 @@
   "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html",
   "local": null,
   "venue": null,
-  "title": "S3 User Guide, Amazon EventBridge",
+  "title": "S3 User Guide, Using EventBridge",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint.html",
+  "local": null,
+  "venue": null,
+  "title": "S3 User Guide, Mountpoint for Amazon S3",
   "sections": [
    24
   ]
@@ -168,8 +168,7 @@
   "venue": null,
   "title": "EC2 User Guide, Nitro Sandboxes, considerations and limitations",
   "sections": [
-   19,
-   24
+   19
   ]
  },
  {
@@ -180,7 +179,7 @@
   "title": "EC2 User Guide, On-Demand Capacity Reservations",
   "sections": [
    24,
-   25
+   29
   ]
  },
  {
@@ -191,7 +190,7 @@
   "title": "Capacity Blocks list",
   "sections": [
    24,
-   25
+   29
   ]
  },
  {
@@ -208,12 +207,151 @@
  },
  {
   "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/interruption-behavior.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 User Guide, Behavior of Spot Instance interruptions",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/prepare-for-interruptions.html",
+  "local": null,
+  "venue": null,
+  "title": "Prepare for Spot Instance interruptions",
+  "sections": [
+   24,
+   28,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/rebalance-recommendations.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 User Guide, rebalance recommendations",
+  "sections": [
+   24,
+   28
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html",
   "local": null,
   "venue": null,
-  "title": "EC2 User Guide, Spot best practices",
+  "title": "Spot best practices",
   "sections": [
    24,
+   28,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 User Guide, Spot Instance interruption notices",
+  "sections": [
+   24,
+   25,
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 User Guide, Spot Instance interruptions",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-placement-score.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 User Guide, Spot placement score",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-limits.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 User Guide, Spot Instance quotas",
+  "sections": [
+   24,
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/APIReference/API_ComputeEnvironmentOrder.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch API Reference, ComputeEnvironmentOrder",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/APIReference/API_ComputeResource.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, scaling",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/APIReference/API_ComputeScalingPolicy.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch API Reference, ComputeScalingPolicy",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/APIReference/API_CreateJobQueue.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch API Reference, CreateJobQueue",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/APIReference/API_Ec2Configuration.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch API Reference, Ec2Configuration",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/APIReference/API_JobStateTimeLimitAction.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch API Reference, JobStateTimeLimitAction",
+  "sections": [
    25
   ]
  },
@@ -224,7 +362,18 @@
   "venue": null,
   "title": "AWS Batch API Reference, SubmitJob",
   "sections": [
-   24
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/APIReference/API_UpdatePolicy.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch API Reference, UpdatePolicy",
+  "sections": [
+   25
   ]
  },
  {
@@ -232,9 +381,9 @@
   "url": "https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html",
   "local": null,
   "venue": null,
-  "title": "AWS Batch User Guide, allocation strategies",
+  "title": "AWS Batch User Guide, allocation strategies, maxvCpus",
   "sections": [
-   24
+   25
   ]
  },
  {
@@ -244,7 +393,50 @@
   "venue": null,
   "title": "AWS Batch User Guide, Array jobs",
   "sections": [
+   20,
    24,
+   25,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/batch-cwe-target.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, parameter substitution",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/batch-host-logs-verify.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, minvCpus",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/bestpractice1.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, When to use AWS Batch",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/bestpractice5.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, On-Demand or Spot",
+  "sections": [
    25
   ]
  },
@@ -255,8 +447,10 @@
   "venue": null,
   "title": "AWS Batch user guide, job length on Spot",
   "sections": [
+   20,
    24,
-   25
+   25,
+   29
   ]
  },
  {
@@ -266,7 +460,17 @@
   "venue": null,
   "title": "AWS Batch User Guide, Compute environment template",
   "sections": [
-   24
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/ecs-managed-instances-instance-draining.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, ECS Managed Instances draining and job queues",
+  "sections": [
+   25
   ]
  },
  {
@@ -276,8 +480,8 @@
   "venue": null,
   "title": "AWS Batch user guide, scaling to zero",
   "sections": [
-   24,
-   25
+   25,
+   29
   ]
  },
  {
@@ -285,9 +489,9 @@
   "url": "https://docs.aws.amazon.com/batch/latest/userguide/example-test-gpu.html",
   "local": null,
   "venue": null,
-  "title": "AWS Batch API Reference, RegisterJobDefinition",
+  "title": "AWS Batch User Guide, Test GPU functionality, and API Reference, RegisterJobDefinition",
   "sections": [
-   24
+   25
   ]
  },
  {
@@ -297,7 +501,28 @@
   "venue": null,
   "title": "AWS Batch User Guide, Run GPU jobs",
   "sections": [
-   24
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_definition_parameters.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, linuxParameters",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_retries.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Automated job retries",
+  "sections": [
+   25
   ]
  },
  {
@@ -307,7 +532,38 @@
   "venue": null,
   "title": "AWS Batch User Guide, job scheduling",
   "sections": [
-   24
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_states.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Job states",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_stuck_in_runnable_common_causes.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, causes of jobs stuck in RUNNABLE",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_stuck_in_runnable.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Jobs stuck in a RUNNABLE status",
+  "sections": [
+   25
   ]
  },
  {
@@ -318,7 +574,40 @@
   "title": "AWS Batch User Guide, job timeouts",
   "sections": [
    19,
-   24
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/job-lifecycle.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, job lifecycle for multi-node jobs",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/launch-templates.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, launch templates",
+  "sections": [
+   25,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/managed_compute_environments.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, image updates",
+  "sections": [
+   24,
+   25
   ]
  },
  {
@@ -326,19 +615,112 @@
   "url": "https://docs.aws.amazon.com/batch/latest/userguide/mnp-ce.html",
   "local": null,
   "venue": null,
-  "title": "AWS Batch User Guide, compute environment considerations for multi-node jobs",
+  "title": "AWS Batch User Guide, multi-node parallel jobs",
   "sections": [
-   24
+   24,
+   25
   ]
  },
  {
   "tier": 1,
-  "url": "https://docs.aws.amazon.com/batch/latest/userguide/multi-node-parallel-jobs.html",
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/mnp-node-groups.html",
   "local": null,
   "venue": null,
-  "title": "AWS Batch User Guide, Multi-node parallel jobs",
+  "title": "AWS Batch User Guide, Node groups",
   "sections": [
-   24
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/multi-container-jobs.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, job definition parameters and service quotas",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/preemption.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Preemption",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/quota-shares.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Quota shares and Preemption",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/s3files-volumes.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Amazon S3 Files volumes and Amazon EFS volumes",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/scaling-updates.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Perform scaling updates",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/service-environments.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Service environments",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/service-job-status.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, service job status",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/share-identifiers.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, share identifiers, and API Reference, FairsharePolicy",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/unmanaged_compute_environments.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Unmanaged compute environments",
+  "sections": [
+   25
   ]
  },
  {
@@ -348,7 +730,7 @@
   "venue": null,
   "title": "AWS Batch User Guide, When to use Fargate",
   "sections": [
-   24
+   25
   ]
  },
  {
@@ -359,7 +741,7 @@
   "title": "searches of AWS documentation run on 2026-11-20",
   "sections": [
    24,
-   25
+   29
   ]
  },
  {
@@ -376,7 +758,8 @@
    20,
    21,
    23,
-   25
+   26,
+   29
   ]
  },
  {
@@ -384,10 +767,11 @@
   "url": "https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html",
   "local": null,
   "venue": null,
-  "title": "EKS user guide, Auto Mode GPU limits",
+  "title": "checkpointing",
   "sections": [
    24,
-   25
+   28,
+   29
   ]
  },
  {
@@ -402,13 +786,95 @@
  },
  {
   "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/best-practices/karpenter.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS Best Practices Guide, Karpenter",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://docs.aws.amazon.com/eks/latest/userguide/auto-accelerated.html",
   "local": null,
   "venue": null,
   "title": "EKS User Guide, Auto Mode",
   "sections": [
    24,
-   25
+   28,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/auto-cost-control.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, Cost optimization in EKS Auto Mode",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/automode-learn-instances.html",
+  "local": null,
+  "venue": null,
+  "title": "Auto Mode managed instances",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/automode.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS Auto Mode",
+  "sections": [
+   24,
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/create-node-pool.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, Create a Node Pool, Disruption",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/device-management-nvidia-mig.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, MIG with NVIDIA GPUs",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/device-management-nvidia-time-slicing.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, time-slicing with NVIDIA GPUs",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/device-management.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, Manage hardware devices on Amazon EKS",
+  "sections": [
+   28
   ]
  },
  {
@@ -430,7 +896,7 @@
   "sections": [
    18,
    24,
-   25
+   29
   ]
  },
  {
@@ -442,7 +908,8 @@
   "sections": [
    18,
    24,
-   25
+   28,
+   29
   ]
  },
  {
@@ -454,6 +921,56 @@
   "sections": [
    18,
    24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/ml-eks-optimized-ami.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, accelerated AMIs",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/node-health-nma.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, node monitoring agent",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/node-repair.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, Automatically repair nodes",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/s3-csi.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, Amazon EKS Hybrid Nodes overview",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/set-builtin-node-pools.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, built-in NodePools",
+  "sections": [
+   28
   ]
  },
  {
@@ -629,8 +1146,9 @@
   "sections": [
    17,
    18,
+   20,
    24,
-   25
+   29
   ]
  },
  {
@@ -870,12 +1388,396 @@
  },
  {
   "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/APIReference/API_ClusterSlurmConfigurationRequest.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS API Reference, scaleDownIdleTimeInSeconds",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/APIReference/API_CreateCluster.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS API Reference, CreateCluster",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/APIReference/API_CreateComputeNodeGroup.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS queues",
+  "sections": [
+   24,
+   26,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/APIReference/API_SpotOptions.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS API Reference, SpotOptions",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks-configure-cng.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, Capacity Blocks",
+  "sections": [
+   24,
+   26,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks-faq.html",
+  "local": null,
+  "venue": null,
+  "title": "Using I-ODCRs with AWS PCS",
+  "sections": [
+   24,
+   26,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks-nvidia-imex.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, UltraServers",
+  "sections": [
+   26,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/capacity-reservations-odcr.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, Using ODCRs with AWS PCS",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/cng-node-lifecycle-actions-examples.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, Node lifecycle action examples",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/cng-node-lifecycle-actions.html",
+  "local": null,
+  "venue": null,
+  "title": "Run custom scripts with node lifecycle actions",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/getting-started_run-job.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, submitting jobs",
+  "sections": [
+   24,
+   26,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/key-concepts.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, what PCS is",
+  "sections": [
+   24,
+   26,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/monitoring_scaling-logs.html",
+  "local": null,
+  "venue": null,
+  "title": "Scaling logs",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/scaling-job-level.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, job-level scaling",
+  "sections": [
+   24,
+   26,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/service-endpoints-quotas.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, Endpoints and service quotas",
+  "sections": [
+   24,
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/slurm-accounting.html",
+  "local": null,
+  "venue": null,
+  "title": "Slurm accounting",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/slurm-configuration.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, Slurm configuration in AWS PCS",
+  "sections": [
+   24,
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/slurm-custom-settings-cng.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, Custom Slurm settings for compute node groups",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/slurm-custom-settings-queue.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, Custom Slurm settings for queues",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/slurm-rest-api.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, Slurm REST API in AWS PCS",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions_release-notes.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, Slurm release notes",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html",
+  "local": null,
+  "venue": null,
+  "title": "Slurm versions in AWS PCS",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/working-with_ami_pcs-ready-dlami.html",
+  "local": null,
+  "venue": null,
+  "title": "Using PCS-ready DLAMI with AWS PCS",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/working-with_clusters_size.html",
+  "local": null,
+  "venue": null,
+  "title": "Cluster size in AWS PCS",
+  "sections": [
+   24,
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/working-with_clusters_version_update_procedure.html",
+  "local": null,
+  "venue": null,
+  "title": "Update the scheduler version of a cluster",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/working-with_cng_create.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, scaling configuration",
+  "sections": [
+   24,
+   26,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/working-with_cng.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, AWS PCS compute node groups",
+  "sections": [
+   24,
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/working-with_file-systems.html",
+  "local": null,
+  "venue": null,
+  "title": "Using network file systems with AWS PCS",
+  "sections": [
+   24,
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/working-with_login-nodes.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, AWS PCS login nodes",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/working-with_networking_efa_create-lt.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, Using EFA with AWS PCS",
+  "sections": [
+   24,
+   26,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/working-with_networking_vpc-requirements.html",
+  "local": null,
+  "venue": null,
+  "title": "Creating a compute node group",
+  "sections": [
+   26
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/pcs/latest/userguide/working-with_queues.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS User Guide, queues",
+  "sections": [
+   24,
+   26
+  ]
+ },
+ {
+  "tier": 1,
   "url": "https://docs.aws.amazon.com/robomaker/latest/dg/chapter-welcome.html",
   "local": null,
   "venue": null,
   "title": "RoboMaker developer guide (page removed)",
   "sections": [
    18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterInstanceGroupSpecification.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker API Reference, ClusterInstanceGroupSpecification",
+  "sections": [
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateCluster.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker API Reference, CreateCluster",
+  "sections": [
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateClusterSchedulerConfig.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, task governance",
+  "sections": [
+   24,
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, managed MLflow",
+  "sections": [
+   24
   ]
  },
  {
@@ -887,7 +1789,61 @@
   "sections": [
    15,
    24,
-   25
+   27,
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless-considerations.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, checkpointless training considerations",
+  "sections": [
+   24,
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-operator-usage.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, HyperPod training operator",
+  "sections": [
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-autoscaling.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, create a NodePool",
+  "sections": [
+   24,
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-gpu-partitioning.html",
+  "local": null,
+  "venue": null,
+  "title": "docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-gpu-partitioning.html",
+  "sections": [
+   24,
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-cli.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, task governance CLI examples",
+  "sections": [
+   27
   ]
  },
  {
@@ -897,37 +1853,60 @@
   "venue": null,
   "title": "SageMaker Developer Guide, task governance policies",
   "sections": [
-   24
+   27
   ]
  },
  {
   "tier": 1,
-  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-setup-task-governance.html",
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-tasks-scheduling.html",
   "local": null,
   "venue": null,
-  "title": "SageMaker Developer Guide, task governance setup",
+  "title": "docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-tasks-scheduling.html",
   "sections": [
-   24
+   24,
+   27
   ]
  },
  {
   "tier": 1,
-  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-deep-health-checks.html",
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-prerequisites.html",
   "local": null,
   "venue": null,
-  "title": "SageMaker Developer Guide, Deep health checks",
+  "title": "SageMaker Developer Guide, installing packages with Helm",
   "sections": [
-   24
+   27
   ]
  },
  {
   "tier": 1,
-  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-node-recovery.html",
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-run-jobs-kubectl.html",
   "local": null,
   "venue": null,
-  "title": "SageMaker Developer Guide, automatic node recovery",
+  "title": "SageMaker Developer Guide, running jobs with kubectl",
   "sections": [
-   24
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, HyperPod orchestrators",
+  "sections": [
+   24,
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-operate-slurm-cli-command.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, scaling a Slurm cluster",
+  "sections": [
+   24,
+   27
   ]
  },
  {
@@ -937,17 +1916,50 @@
   "venue": null,
   "title": "SageMaker Developer Guide, HyperPod prerequisites",
   "sections": [
-   24
+   27
   ]
  },
  {
   "tier": 1,
-  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-release-notes.html",
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-auto-resume.html",
   "local": null,
   "venue": null,
-  "title": "SageMaker HyperPod release notes, 16 April 2026",
+  "title": "SageMaker Developer Guide, node recovery",
   "sections": [
-   24
+   24,
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-deep-health-checks.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, deep health checks",
+  "sections": [
+   24,
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-scaling-eks.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, flexible instance groups",
+  "sections": [
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, Spot on HyperPod",
+  "sections": [
+   24,
+   27
   ]
  },
  {
@@ -957,8 +1969,38 @@
   "venue": null,
   "title": "SageMaker HyperPod documentation, orchestrators",
   "sections": [
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/smcluster-getting-started-slurm-cli.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, HyperPod storage",
+  "sections": [
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/training-plan-utilization-for-hyperpod.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, training plans in HyperPod",
+  "sections": [
    24,
-   25
+   27
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/solutions/physical-ai-for-robotics-on-aws/",
+  "local": null,
+  "venue": null,
+  "title": "AWS Guidance for Physical AI for Robotics",
+  "sections": [
+   24
   ]
  },
  {
@@ -968,7 +2010,7 @@
   "venue": null,
   "title": "AWS Guidance for Physical AI Simulation Platform",
   "sections": [
-   25
+   29
   ]
  },
  {
@@ -979,7 +2021,7 @@
   "title": "Step Functions Developer Guide, AWS Batch integration",
   "sections": [
    24,
-   25
+   29
   ]
  },
  {
@@ -1001,7 +2043,17 @@
   "sections": [
    13,
    23,
-   25
+   29
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/overview.html",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA GPU Operator documentation, overview",
+  "sections": [
+   28
   ]
  },
  {
@@ -1202,27 +2254,8 @@
   "title": "AWS Physical AI Toolchain sample, training options",
   "sections": [
    24,
-   25
-  ]
- },
- {
-  "tier": 1,
-  "url": "https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws/blob/84984decc51cc07fb4ceb8f3fc1f85d523924bf5/osmo-on-aws/README.md",
-  "local": null,
-  "venue": null,
-  "title": "AWS Physical AI Toolchain sample, OSMO on AWS README",
-  "sections": [
-   24
-  ]
- },
- {
-  "tier": 1,
-  "url": "https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws/blob/84984decc51cc07fb4ceb8f3fc1f85d523924bf5/README.md",
-  "local": null,
-  "venue": null,
-  "title": "AWS Physical AI Toolchain sample, OSMO guidance",
-  "sections": [
-   24
+   26,
+   29
   ]
  },
  {
@@ -1248,12 +2281,85 @@
  },
  {
   "tier": 1,
-  "url": "https://github.com/aws/karpenter-provider-aws/releases/tag/v1.15.2",
+  "url": "https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/concepts/disruption.md",
   "local": null,
   "venue": null,
-  "title": "Karpenter provider for AWS, release v1.15.2",
+  "title": "Interruption",
   "sections": [
-   24
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/concepts/nodeclaims.md",
+  "local": null,
+  "venue": null,
+  "title": "Karpenter v1.15.3 docs, NodeClaims",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/concepts/nodeclasses.md",
+  "local": null,
+  "venue": null,
+  "title": "Karpenter v1.15.3 docs, NodeClasses",
+  "sections": [
+   24,
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/concepts/nodepools.md",
+  "local": null,
+  "venue": null,
+  "title": "spec.limits",
+  "sections": [
+   24,
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/concepts/scheduling.md",
+  "local": null,
+  "venue": null,
+  "title": "Karpenter v1.15.3 docs, Weighted NodePools",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/faq.md",
+  "local": null,
+  "venue": null,
+  "title": "Karpenter v1.15.3 documentation, scheduling",
+  "sections": [
+   24,
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/reference/settings.md",
+  "local": null,
+  "venue": null,
+  "title": "Karpenter v1.15.3 docs, settings, batching",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/tasks/odcrs.md",
+  "local": null,
+  "venue": null,
+  "title": "Karpenter v1.15.3 docs, capacity reservations",
+  "sections": [
+   28
   ]
  },
  {
@@ -1862,7 +2968,7 @@
   "sections": [
    12,
    13,
-   25
+   29
   ]
  },
  {
@@ -1918,22 +3024,53 @@
  },
  {
   "tier": 1,
-  "url": "https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/docs/gpu-sharing/README.md",
+  "url": "https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/docs/gpu-sharing/gpu-sharing.yaml",
   "local": null,
   "venue": null,
-  "title": "KAI Scheduler v0.19.0, GPU sharing documentation",
+  "title": "KAI Scheduler v0.19.0 docs, GPU sharing and autoscaling",
   "sections": [
-   24
+   28
   ]
  },
  {
   "tier": 1,
-  "url": "https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/README.md",
+  "url": "https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/docs/quickstart/default-queues.yaml",
   "local": null,
   "venue": null,
-  "title": "KAI Scheduler v0.19.0, README",
+  "title": "KAI Scheduler v0.19.0 docs, queues and batch",
   "sections": [
-   24
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/kubeflow/trainer/blob/a7b05c24ff0f145368529b5d180c223baf965ef5/docs/user-guides/trainjob-lifecycle.md",
+  "local": null,
+  "venue": null,
+  "title": "Kubeflow Trainer v2.4.0 README and runtime guide",
+  "sections": [
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/kubernetes-sigs/jobset/blob/6266f0267a5d1a013ae552ecb209214eab5c55c8/README.md",
+  "local": null,
+  "venue": null,
+  "title": "JobSet v0.13.1 README",
+  "sections": [
+   24,
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/admission_check/provisioning_request.md",
+  "local": null,
+  "venue": null,
+  "title": "Kueue v0.20.7 docs, ProvisioningRequest",
+  "sections": [
+   28
   ]
  },
  {
@@ -1941,19 +3078,31 @@
   "url": "https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/cluster_queue.md",
   "local": null,
   "venue": null,
-  "title": "Kueue v0.20.7 documentation, ClusterQueue and Cohort",
+  "title": "Kueue v0.20.7 docs, ClusterQueue and Cohort",
   "sections": [
-   24
+   28
   ]
  },
  {
   "tier": 1,
-  "url": "https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/overview/_index.md",
+  "url": "https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/static/examples/admin/single-clusterqueue-setup.yaml",
   "local": null,
   "venue": null,
-  "title": "Kueue v0.20.7 documentation, overview",
+  "title": "Kueue v0.20.7 docs, concepts",
   "sections": [
-   24
+   24,
+   28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/static/examples/jobs/sample-job.yaml",
+  "local": null,
+  "venue": null,
+  "title": "Kueue v0.20.7 docs, admission",
+  "sections": [
+   24,
+   28
   ]
  },
  {
@@ -2042,22 +3191,12 @@
  },
  {
   "tier": 1,
-  "url": "https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/resource_pools/scheduling/index.rst",
+  "url": "https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/deployment_guide/install_backend/create_backend/cloud_setup.rst",
   "local": null,
   "venue": null,
-  "title": "NVIDIA OSMO 6.3.1, resource pools and scheduling",
+  "title": "NVIDIA OSMO deployment guide for AWS",
   "sections": [
-   24
-  ]
- },
- {
-  "tier": 1,
-  "url": "https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/workflows/index.rst",
-  "local": null,
-  "venue": null,
-  "title": "NVIDIA OSMO at tag 6.3.1, README",
-  "sections": [
-   24
+   28
   ]
  },
  {
@@ -2065,9 +3204,10 @@
   "url": "https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/README.md",
   "local": null,
   "venue": null,
-  "title": "NVIDIA OSMO 6.3.1, README",
+  "title": "NVIDIA OSMO 6.3.1 README",
   "sections": [
-   24
+   24,
+   28
   ]
  },
  {
@@ -2075,9 +3215,9 @@
   "url": "https://github.com/NVIDIA/OSMO/releases/tag/6.2.8",
   "local": null,
   "venue": null,
-  "title": "NVIDIA OSMO, release notes 6.2.8 and 6.3.0",
+  "title": "NVIDIA OSMO release notes",
   "sections": [
-   24
+   28
   ]
  },
  {
@@ -2085,9 +3225,9 @@
   "url": "https://github.com/NVIDIA/OSMO/releases/tag/6.3.1",
   "local": null,
   "venue": null,
-  "title": "NVIDIA OSMO, release 6.3.1",
+  "title": "NVIDIA OSMO release list",
   "sections": [
-   24
+   28
   ]
  },
  {
@@ -2171,16 +3311,6 @@
   "title": "Linux v7.3, perf arm64 per-core directories",
   "sections": [
    21
-  ]
- },
- {
-  "tier": 1,
-  "url": "https://github.com/volcano-sh/volcano/blob/41f27d567fb5bdaf2cab01e1caaf48f7e266eefb/README.md",
-  "local": null,
-  "venue": null,
-  "title": "Volcano v1.16.0, README",
-  "sections": [
-   24
   ]
  },
  {
@@ -2821,7 +3951,7 @@
   "sections": [
    10,
    20,
-   25
+   29
   ]
  },
  {
@@ -2939,7 +4069,7 @@
    17,
    20,
    23,
-   25
+   29
   ]
  },
  {
@@ -2991,7 +4121,7 @@
   "title": "Spot Instance Advisor data file",
   "sections": [
    24,
-   25
+   29
   ]
  },
  {
@@ -3057,22 +4187,12 @@
  },
  {
   "tier": 2,
-  "url": "https://aws.amazon.com/about-aws/whats-new/2025/09/sagemaker-hyperpod-autoscaling/",
-  "local": null,
-  "venue": null,
-  "title": "SageMaker Developer Guide, autoscaling on HyperPod",
-  "sections": [
-   24
-  ]
- },
- {
-  "tier": 2,
   "url": "https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available",
   "local": null,
   "venue": null,
   "title": "AWS announcement of P6e-GB300 UltraServers",
   "sections": [
-   25
+   29
   ]
  },
  {
@@ -3084,17 +4204,7 @@
   "sections": [
    13,
    24,
-   25
-  ]
- },
- {
-  "tier": 2,
-  "url": "https://aws.amazon.com/about-aws/whats-new/2026/03/aws-batch-quota-management-preemption-sagemaker/",
-  "local": null,
-  "venue": null,
-  "title": "AWS Batch User Guide, Quota management",
-  "sections": [
-   24
+   29
   ]
  },
  {
@@ -3109,12 +4219,24 @@
  },
  {
   "tier": 2,
-  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/eks-auto-mode-pod-rightsizing-preview/",
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/06/aws-parallel-computing-service/",
   "local": null,
   "venue": null,
-  "title": "AWS What's New, 17 November 2026, and EKS User Guide, resource optimization",
+  "title": "AWS What's New, 18 June 2026",
   "sections": [
-   24
+   20,
+   24,
+   26
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/08/aws-batch-on-ecs-managed-instances/",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, When to use Amazon ECS Managed Instances",
+  "sections": [
+   25
   ]
  },
  {
@@ -3122,10 +4244,9 @@
   "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/nitro-sandboxes-eks-ecs-ec2/",
   "local": null,
   "venue": null,
-  "title": "AWS What's New and EKS User Guide, Nitro Sandboxes",
+  "title": "AWS What's New post and EKS User Guide, Nitro Sandboxes",
   "sections": [
-   19,
-   24
+   19
   ]
  },
  {
@@ -3133,9 +4254,40 @@
   "url": "https://aws.amazon.com/blogs/aws/introducing-checkpointless-and-elastic-training-on-amazon-sagemaker-hyperpod/",
   "local": null,
   "venue": null,
-  "title": "AWS News Blog, 3 December 2025, and SageMaker Developer Guide",
+  "title": "AWS News Blog, checkpointless and elastic training on SageMaker HyperPod",
   "sections": [
-   15,
+   15
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/hpc/how-to-use-capacity-blocks-for-ml-with-aws-batch/",
+  "local": null,
+  "venue": null,
+  "title": "AWS HPC Blog, Capacity Blocks for ML with AWS Batch",
+  "sections": [
+   25,
+   29
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/hpc/running-nvidia-cosmos-world-foundation-models-on-aws/",
+  "local": null,
+  "venue": null,
+  "title": "AWS HPC Blog, Cosmos world models on AWS Batch",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/hpc/scale-reinforcement-learning-with-aws-batch-multi-node-parallel-jobs/",
+  "local": null,
+  "venue": null,
+  "title": "AWS HPC Blog, Isaac Lab on AWS Batch",
+  "sections": [
    24
   ]
  },
@@ -3147,6 +4299,17 @@
   "title": "AWS Machine Learning Blog, 4 September 2026",
   "sections": [
    24,
+   27,
+   29
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/machine-learning/cost-effective-multilingual-audio-transcription-at-scale-with-parakeet-tdt-and-aws-batch/",
+  "local": null,
+  "venue": null,
+  "title": "AWS Machine Learning Blog, transcription at scale on AWS Batch",
+  "sections": [
    25
   ]
  },
@@ -3159,8 +4322,7 @@
   "sections": [
    13,
    23,
-   24,
-   25
+   29
   ]
  },
  {
@@ -3173,7 +4335,7 @@
    14,
    15,
    16,
-   25
+   29
   ]
  },
  {
@@ -3184,7 +4346,8 @@
   "title": "AWS embodied AI series, part 1",
   "sections": [
    15,
-   25
+   25,
+   29
   ]
  },
  {
@@ -3194,7 +4357,8 @@
   "venue": null,
   "title": "AWS pi0 post",
   "sections": [
-   15
+   15,
+   27
   ]
  },
  {
@@ -3202,9 +4366,9 @@
   "url": "https://aws.amazon.com/blogs/physical-ai/introducing-aws-physical-ai-toolchain/",
   "local": null,
   "venue": null,
-  "title": "AWS Physical AI Toolchain sample, README",
+  "title": "aws.amazon.com/blogs/physical-ai/introducing-aws-physical-ai-toolchain/",
   "sections": [
-   24
+   20
   ]
  },
  {
@@ -3214,7 +4378,9 @@
   "venue": null,
   "title": "AWS and NVIDIA post on Cosmos 3",
   "sections": [
-   25
+   20,
+   24,
+   29
   ]
  },
  {
@@ -3224,7 +4390,7 @@
   "venue": null,
   "title": "AWS post on RLWRLD",
   "sections": [
-   25
+   29
   ]
  },
  {
@@ -3234,7 +4400,7 @@
   "venue": null,
   "title": "AWS post on RobCo",
   "sections": [
-   25
+   29
   ]
  },
  {
@@ -3245,8 +4411,10 @@
   "title": "AWS post, timing table",
   "sections": [
    15,
+   20,
    24,
-   25
+   27,
+   29
   ]
  },
  {
@@ -3260,6 +4428,37 @@
    2,
    13,
    20
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/hpc/dcv/",
+  "local": null,
+  "venue": null,
+  "title": "Amazon DCV product page",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/pcs/pricing/",
+  "local": null,
+  "venue": null,
+  "title": "AWS PCS pricing page",
+  "sections": [
+   24,
+   26
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/sagemaker/ai/pricing/",
+  "local": null,
+  "venue": null,
+  "title": "Amazon SageMaker AI pricing page, HyperPod note",
+  "sections": [
+   27
   ]
  },
  {
@@ -3517,7 +4716,7 @@
   "venue": null,
   "title": "AWS press release of 26 August 2026",
   "sections": [
-   25
+   29
   ]
  },
  {
@@ -3885,7 +5084,7 @@
    13,
    14,
    20,
-   25
+   29
   ]
  },
  {
@@ -3962,7 +5161,7 @@
    7,
    15,
    20,
-   25
+   29
   ]
  },
  {

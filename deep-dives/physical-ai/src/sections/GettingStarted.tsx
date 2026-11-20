@@ -66,7 +66,7 @@ const SHORT: Record<number, string> = {
   23: 'Price-Performance',
   24: 'Orchestrating on AWS',
   25: 'AWS Batch',
-  26: 'Parallel Computing Service',
+  26: 'Parallel Computing',
   27: 'SageMaker HyperPod',
   28: 'Amazon EKS',
   29: 'Choosing',
@@ -127,7 +127,7 @@ function RouteGrid({ selected }: { selected: RouteId }) {
         style={{ width: '100%', height: 'auto' }}
         data-num="nav"
       >
-        <title id="getting-started-routes-title">The sections of the dive in eight parts, with three reading routes</title>
+        <title id="getting-started-routes-title">The sections of the dive in nine parts, with three reading routes</title>
         <desc>
           Every section is a cell, grouped under its part and numbered in reading order. A cell carries the letter W
           when it is on the world models route, P for the pipeline route and C for the compute route. The cells of

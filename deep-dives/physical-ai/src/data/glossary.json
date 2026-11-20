@@ -78,10 +78,34 @@
   "section": 19
  },
  {
+  "term": "Allocation strategy",
+  "expansion": null,
+  "meaning": "The rule by which Batch chooses an instance type from the list when its first choice is not available.",
+  "section": 25
+ },
+ {
+  "term": "Amazon DCV",
+  "expansion": null,
+  "meaning": "The remote-desktop protocol for interactive workstations on EC2.",
+  "section": 24
+ },
+ {
   "term": "Amazon EKS",
   "expansion": "Elastic Kubernetes Service",
-  "meaning": "AWS's managed Kubernetes: AWS runs the control plane and you supply the nodes.",
+  "meaning": "The managed Kubernetes control plane; a HyperPod cluster supplies its worker nodes, mapped 1-to-1.",
+  "section": 27
+ },
+ {
+  "term": "Amazon EventBridge",
+  "expansion": null,
+  "meaning": "The AWS event bus that routes events such as a new S3 object or a Spot notice to targets.",
   "section": 24
+ },
+ {
+  "term": "AMI",
+  "expansion": "Amazon Machine Image",
+  "meaning": "The disk image an EC2 instance boots from.",
+  "section": 26
  },
  {
   "term": "Armature",
@@ -92,7 +116,7 @@
  {
   "term": "Array job",
   "expansion": null,
-  "meaning": "One AWS Batch submission that spawns 2 to 10,000 child jobs sharing a job definition, each with its own index.",
+  "meaning": "One AWS Batch submission that spawns 2 to 10,000 child jobs, each reading its own index.",
   "section": 24
  },
  {
@@ -114,10 +138,22 @@
   "section": 19
  },
  {
+  "term": "Augment",
+  "expansion": null,
+  "meaning": "Vary a training image (a crop, a colour shift) so the policy sees more variety.",
+  "section": 20
+ },
+ {
   "term": "Augmentation",
   "expansion": null,
   "meaning": "Making more training samples from the recorded ones, from image changes to generated video.",
   "section": 1
+ },
+ {
+  "term": "Auto-resume",
+  "expansion": null,
+  "meaning": "The mechanism that restarts a job after its node was replaced: annotations on a Kubernetes job, or a flag on a Slurm step.",
+  "section": 27
  },
  {
   "term": "Autoregressive",
@@ -141,7 +177,7 @@
   "term": "AWS Deadline Cloud",
   "expansion": null,
   "meaning": "AWS's managed render farm.",
-  "section": 24
+  "section": 29
  },
  {
   "term": "AWS IoT Core",
@@ -156,15 +192,21 @@
   "section": 17
  },
  {
-  "term": "AWS Physical AI Toolchain",
+  "term": "AWS ParallelCluster",
   "expansion": null,
-  "meaning": "An AWS sample repository of independent Terraform modules for simulation, training and OSMO on AWS.",
-  "section": 24
+  "meaning": "AWS's other route to a Slurm cluster; its boot hooks map onto PCS node lifecycle actions.",
+  "section": 26
+ },
+ {
+  "term": "AWS PCS",
+  "expansion": "AWS Parallel Computing Service",
+  "meaning": "Managed Slurm: AWS runs the controller, and compute node groups start instances for waiting jobs and can scale back to zero.",
+  "section": 29
  },
  {
   "term": "AWS Step Functions",
   "expansion": null,
-  "meaning": "AWS's workflow service; a state can submit a Batch job and wait for it.",
+  "meaning": "The AWS workflow service that orders steps as states and can submit a Batch job and wait for it.",
   "section": 24
  },
  {
@@ -222,22 +264,16 @@
   "section": 6
  },
  {
-  "term": "Bin packing",
-  "expansion": null,
-  "meaning": "Fitting waiting jobs onto as few machines as possible and emptying machines that are mostly idle.",
-  "section": 24
- },
- {
   "term": "Bookkeeping columns",
   "expansion": null,
   "meaning": "The five columns the recorder fills in on every row: timestamp, frame_index, episode_index, index and task_index.",
   "section": 9
  },
  {
-  "term": "Borrowing",
+  "term": "Borrow limit",
   "expansion": null,
-  "meaning": "Running past your quota on machines another team is leaving idle.",
-  "section": 24
+  "meaning": "How much idle quota beyond its own allocation a team may use, in percent of that allocation.",
+  "section": 27
  },
  {
   "term": "BPE",
@@ -276,6 +312,12 @@
   "section": 6
  },
  {
+  "term": "Capacity Block",
+  "expansion": null,
+  "meaning": "A reservation of GPU instances for a fixed window, bought ahead.",
+  "section": 25
+ },
+ {
   "term": "Capacity Block for ML",
   "expansion": null,
   "meaning": "A reservation of GPU instances for a fixed window, booked ahead and paid up front.",
@@ -290,8 +332,14 @@
  {
   "term": "Capacity market",
   "expansion": null,
-  "meaning": "The way an instance is paid for and what AWS promises in return.",
-  "section": 25
+  "meaning": "The way a cloud machine is bought, which decides whether it can be taken back in the middle of a job.",
+  "section": 24
+ },
+ {
+  "term": "Capacity type",
+  "expansion": null,
+  "meaning": "The purchase option a NodePool allows: spot, on-demand or reserved (capacity reservations).",
+  "section": 28
  },
  {
   "term": "Cartpole",
@@ -304,6 +352,12 @@
   "expansion": "cross-entropy method",
   "meaning": "A search that samples candidate action sequences from a Gaussian, keeps the lowest-cost few and refits the Gaussian to them, round after round.",
   "section": 7
+ },
+ {
+  "term": "Checkpoint",
+  "expansion": null,
+  "meaning": "The saved weights of a policy, or the saved state of a job from which it can resume.",
+  "section": 24
  },
  {
   "term": "Checkpointless training",
@@ -342,10 +396,22 @@
   "section": 16
  },
  {
+  "term": "Cluster placement group",
+  "expansion": null,
+  "meaning": "The EC2 placement setting AWS recommends for a compute node group that uses EFA.",
+  "section": 26
+ },
+ {
+  "term": "Cluster policy",
+  "expansion": null,
+  "meaning": "The one task governance object per cluster that holds priority classes and how idle compute is shared.",
+  "section": 27
+ },
+ {
   "term": "ClusterQueue",
   "expansion": null,
-  "meaning": "Kueue's pool of quota, with what it owns, what it may borrow and what it may lend.",
-  "section": 24
+  "meaning": "The Kueue object that holds a quota per flavor for the whole cluster.",
+  "section": 28
  },
  {
   "term": "Codec",
@@ -358,6 +424,12 @@
   "expansion": null,
   "meaning": "A language model that reads and writes files and runs commands, here used to run a robot policy's improvement loop.",
   "section": 19
+ },
+ {
+  "term": "Cohort",
+  "expansion": null,
+  "meaning": "A group of ClusterQueues that lend each other unused quota.",
+  "section": 28
  },
  {
   "term": "Collapse",
@@ -384,6 +456,12 @@
   "section": 4
  },
  {
+  "term": "Compute allocation",
+  "expansion": null,
+  "meaning": "A team's quota: resources, a sharing strategy, a borrow limit and a preemption rule.",
+  "section": 27
+ },
+ {
   "term": "Compute capability",
   "expansion": null,
   "meaning": "A major.minor number naming a GPU generation, recorded in an engine and checked when it loads.",
@@ -392,14 +470,38 @@
  {
   "term": "Compute environment",
   "expansion": null,
-  "meaning": "The AWS Batch object that lists the allowed instance types with a floor and a ceiling on the vCPUs it may run.",
-  "section": 24
+  "meaning": "The pool of capacity behind a Batch queue: a type, a list of instance types, an allocation strategy and a vCPU floor and ceiling.",
+  "section": 25
+ },
+ {
+  "term": "Compute node",
+  "expansion": null,
+  "meaning": "A machine that runs jobs; in PCS, one EC2 instance running slurmd and the PCS agent.",
+  "section": 26
+ },
+ {
+  "term": "Compute node group",
+  "expansion": null,
+  "meaning": "The PCS object that says how nodes are created: instance types, minimum and maximum count, subnets, image and one purchase option.",
+  "section": 26
  },
  {
   "term": "Confidence interval",
   "expansion": null,
   "meaning": "The range of true success rates that would plausibly give the count that was observed.",
   "section": 16
+ },
+ {
+  "term": "consolidateAfter",
+  "expansion": null,
+  "meaning": "The NodePool setting for how long Karpenter waits before removing a node it no longer needs.",
+  "section": 27
+ },
+ {
+  "term": "Consolidation",
+  "expansion": null,
+  "meaning": "Karpenter removing or replacing nodes to cut cost.",
+  "section": 28
  },
  {
   "term": "Constraint",
@@ -430,6 +532,12 @@
   "expansion": null,
   "meaning": "The encoder copy that sees only the visible tokens and is trained by the loss.",
   "section": 7
+ },
+ {
+  "term": "Continuous provisioning",
+  "expansion": null,
+  "meaning": "HyperPod's default way of filling groups: it records a target count, retries failed launches in the background and lets jobs start on the capacity that has arrived.",
+  "section": 27
  },
  {
   "term": "Contrastive negatives",
@@ -486,12 +594,6 @@
   "section": 18
  },
  {
-  "term": "Core-bound",
-  "expansion": null,
-  "meaning": "Back-end slots lost with little waiting on memory: the arithmetic units are busy or operations wait on each other.",
-  "section": 20
- },
- {
   "term": "Cosmos 3",
   "expansion": null,
   "meaning": "NVIDIA's current video-generating world model family (Super, Nano, Edge), released at the end of May 2026.",
@@ -512,13 +614,13 @@
  {
   "term": "CPU back end",
   "expansion": null,
-  "meaning": "The second half of a core, which runs micro-operations on the arithmetic units and retires them in order.",
+  "meaning": "The part of a core that executes the decoded instructions on its arithmetic units.",
   "section": 20
  },
  {
   "term": "CPU front end",
   "expansion": null,
-  "meaning": "The first half of a core, which predicts the next instruction, fetches it and decodes it into micro-operations.",
+  "meaning": "The part of a core that fetches instructions and decodes them.",
   "section": 20
  },
  {
@@ -526,6 +628,12 @@
   "expansion": "constant rate factor",
   "meaning": "The encoder's quality dial: one number for how much detail it may discard; lower means better quality and larger files.",
   "section": 9
+ },
+ {
+  "term": "CSI",
+  "expansion": "Container Storage Interface",
+  "meaning": "The plug-in form in which Kubernetes mounts storage into pods as volumes.",
+  "section": 28
  },
  {
   "term": "Curation",
@@ -540,10 +648,10 @@
   "section": 4
  },
  {
-  "term": "DAG",
-  "expansion": "directed acyclic graph",
-  "meaning": "Steps joined by one-way dependencies with no loops.",
-  "section": 24
+  "term": "DaemonSet",
+  "expansion": null,
+  "meaning": "A Kubernetes object that runs one pod on every matching node.",
+  "section": 28
  },
  {
   "term": "Damping (kd)",
@@ -612,6 +720,12 @@
   "section": 10
  },
  {
+  "term": "Deep health check",
+  "expansion": null,
+  "meaning": "An optional stress test HyperPod runs on a new or replaced instance before work lands on it.",
+  "section": 27
+ },
+ {
   "term": "Delta action",
   "expansion": null,
   "meaning": "An action given as an offset from the previous action, so errors add up along the sequence.",
@@ -654,6 +768,12 @@
   "section": 18
  },
  {
+  "term": "Device plugin",
+  "expansion": null,
+  "meaning": "A DaemonSet that advertises a node's devices to Kubernetes; the NVIDIA one advertises GPUs as nvidia.com/gpu.",
+  "section": 28
+ },
+ {
   "term": "DGX Spark",
   "expansion": null,
   "meaning": "NVIDIA's desk-side Arm computer with a GPU and 128 GB of memory shared between CPU and GPU.",
@@ -676,12 +796,6 @@
   "expansion": null,
   "meaning": "A latent world model built on a frozen pretrained image encoder.",
   "section": 7
- },
- {
-  "term": "Distributed Map",
-  "expansion": null,
-  "meaning": "A Step Functions state that runs each item of a list as its own child workflow.",
-  "section": 24
  },
  {
   "term": "DiT",
@@ -708,6 +822,18 @@
   "section": 14
  },
  {
+  "term": "DRA",
+  "expansion": "Dynamic Resource Allocation",
+  "meaning": "The Kubernetes API in which a driver publishes devices with attributes and a pod claims one by description.",
+  "section": 28
+ },
+ {
+  "term": "Draining",
+  "expansion": null,
+  "meaning": "The state Batch puts an instance in on the Spot notice: running jobs continue and no new job is placed on it.",
+  "section": 25
+ },
+ {
   "term": "DreamGen",
   "expansion": null,
   "meaning": "A recipe in which a fine-tuned video model invents robot episodes and a second model recovers their actions.",
@@ -718,6 +844,12 @@
   "expansion": null,
   "meaning": "NVIDIA's February 2026 world-action model, the paper that coined the term.",
   "section": 6
+ },
+ {
+  "term": "Drift",
+  "expansion": null,
+  "meaning": "A node no longer matching its NodePool or image, which makes Karpenter replace it.",
+  "section": 28
  },
  {
   "term": "Duration",
@@ -734,8 +866,20 @@
  {
   "term": "EC2",
   "expansion": "Elastic Compute Cloud",
-  "meaning": "AWS's virtual machines, called instances.",
+  "meaning": "The AWS service that rents virtual machines, called instances.",
   "section": 24
+ },
+ {
+  "term": "EC2 Fleet",
+  "expansion": null,
+  "meaning": "The EC2 API that fills one capacity request from a list of instance types.",
+  "section": 28
+ },
+ {
+  "term": "EC2NodeClass",
+  "expansion": null,
+  "meaning": "The Karpenter object holding the AWS settings for nodes: image, role, subnets, security groups, disks, reservations.",
+  "section": 28
  },
  {
   "term": "ECR",
@@ -762,6 +906,12 @@
   "section": 2
  },
  {
+  "term": "EFS",
+  "expansion": "Elastic File System",
+  "meaning": "A shared network file system on AWS that a Batch job can mount as a volume, for example to keep checkpoints.",
+  "section": 25
+ },
+ {
   "term": "EGL",
   "expansion": null,
   "meaning": "The interface MuJoCo uses for hardware accelerated rendering with no display.",
@@ -782,7 +932,7 @@
  {
   "term": "EKS Auto Mode",
   "expansion": null,
-  "meaning": "The managed form of the EKS node layer: AWS runs scaling, the machine image, patching and GPU drivers.",
+  "meaning": "The managed form of Karpenter-based scaling, in which AWS also runs the node software.",
   "section": 24
  },
  {
@@ -790,6 +940,12 @@
   "expansion": "Amazon Elastic Kubernetes Service Hybrid Nodes",
   "meaning": "A feature that joins a machine on your premises to a cloud Kubernetes cluster as a worker node.",
   "section": 18
+ },
+ {
+  "term": "Elastic training",
+  "expansion": null,
+  "meaning": "A HyperPod feature that grows and shrinks a training job by checkpointing and resuming with a different number of workers.",
+  "section": 27
  },
  {
   "term": "Elites",
@@ -894,10 +1050,34 @@
   "section": 4
  },
  {
+  "term": "Extended resource",
+  "expansion": null,
+  "meaning": "A countable thing beyond CPU and memory that a node advertises and a pod claims in whole units, such as nvidia.com/gpu.",
+  "section": 28
+ },
+ {
+  "term": "Fair-share scheduling",
+  "expansion": null,
+  "meaning": "A queue policy that takes the next job from the share identifier with the least recent vCPU usage, scaled by a weight.",
+  "section": 25
+ },
+ {
   "term": "FAST",
   "expansion": "Frequency-space Action Sequence Tokenization",
   "meaning": "An action tokeniser that compresses a chunk with a cosine transform and byte-pair encoding before the language model predicts it.",
   "section": 4
+ },
+ {
+  "term": "Feature and constraint",
+  "expansion": null,
+  "meaning": "A label on a group's nodes and the job option that asks for nodes carrying it; how a job picks a group inside a shared queue.",
+  "section": 26
+ },
+ {
+  "term": "FIFO",
+  "expansion": "first in, first out",
+  "meaning": "The default order of a Batch queue: the job at the front goes next, and blocks the rest if it cannot be placed.",
+  "section": 25
  },
  {
   "term": "Fisher's exact test",
@@ -916,6 +1096,12 @@
   "expansion": null,
   "meaning": "Onboarding many devices by shipping each with a shared claim certificate that it exchanges for its own on first connection.",
   "section": 18
+ },
+ {
+  "term": "Flexible instance group",
+  "expansion": null,
+  "meaning": "An instance group that lists up to 20 instance types in priority order and falls back down the list when capacity is missing.",
+  "section": 27
  },
  {
   "term": "Flow matching",
@@ -1022,8 +1208,8 @@
  {
   "term": "G family",
   "expansion": null,
-  "meaning": "The EC2 GPU instance families whose cards have RT cores, used for rendering and one-GPU jobs.",
-  "section": 25
+  "meaning": "EC2 GPU instances whose GPUs carry ray-tracing cores, used for rendering and simulation.",
+  "section": 24
  },
  {
   "term": "Gain",
@@ -1040,8 +1226,8 @@
  {
   "term": "Gang scheduling",
   "expansion": null,
-  "meaning": "Starting all the pods or nodes of one job together, or none of them.",
-  "section": 24
+  "meaning": "Scheduling all of a job's pods together or none of them.",
+  "section": 28
  },
  {
   "term": "Gauss-Newton least squares",
@@ -1092,6 +1278,12 @@
   "section": 9
  },
  {
+  "term": "GPU Operator",
+  "expansion": null,
+  "meaning": "NVIDIA's package that installs the driver, toolkit, device plugin, node labelling and monitoring together.",
+  "section": 28
+ },
+ {
   "term": "GPU utilisation",
   "expansion": null,
   "meaning": "The share of research wall-clock time during which the station's GPU is in use.",
@@ -1140,6 +1332,12 @@
   "section": 21
  },
  {
+  "term": "GRES",
+  "expansion": "generic resources",
+  "meaning": "How Slurm counts resources that are neither CPU cores nor memory, GPUs above all.",
+  "section": 26
+ },
+ {
   "term": "GRPO",
   "expansion": "Group Relative Policy Optimization",
   "meaning": "An RL algorithm that scores each attempt against the others in its group, so it needs no separate value model.",
@@ -1176,6 +1374,18 @@
   "section": 12
  },
  {
+  "term": "Health monitoring agent",
+  "expansion": null,
+  "meaning": "The HyperPod process on each node that watches for hardware faults and labels the node's health.",
+  "section": 27
+ },
+ {
+  "term": "Helm chart",
+  "expansion": null,
+  "meaning": "A Kubernetes package; HyperPod's chart installs its health agent, device plug-ins and training operators on the EKS cluster.",
+  "section": 27
+ },
+ {
   "term": "HEVC",
   "expansion": "High Efficiency Video Coding",
   "meaning": "Another video compression standard, also called H.265, available through LeRobot's hardware encoders.",
@@ -1206,6 +1416,12 @@
   "section": 3
  },
  {
+  "term": "HPC",
+  "expansion": "high-performance computing",
+  "meaning": "The field that runs simulations and training across many machines at once.",
+  "section": 26
+ },
+ {
   "term": "Hugging Face hub",
   "expansion": null,
   "meaning": "The site where LeRobot datasets and models are published.",
@@ -1221,7 +1437,19 @@
   "term": "Hybrid node",
   "expansion": null,
   "meaning": "A machine outside AWS, such as a lab workstation, joined to an EKS cluster as a node.",
-  "section": 25
+  "section": 29
+ },
+ {
+  "term": "HyperpodNodeClass",
+  "expansion": null,
+  "meaning": "The object that lists which instance groups Karpenter may raise.",
+  "section": 27
+ },
+ {
+  "term": "HyperPodPyTorchJob",
+  "expansion": null,
+  "meaning": "The HyperPod training operator's job object, whose runPolicy carries retry counts and rules that detect a hung job.",
+  "section": 27
  },
  {
   "term": "Hz",
@@ -1254,6 +1482,12 @@
   "section": 6
  },
  {
+  "term": "IMEX",
+  "expansion": "Internode Memory Exchange",
+  "meaning": "The NVIDIA service that lets GPUs in different nodes share memory; on PCS it needs a dedicated domain per job.",
+  "section": 26
+ },
+ {
   "term": "In distribution",
   "expansion": null,
   "meaning": "A test where the object starts in positions the demonstrations covered.",
@@ -1268,8 +1502,8 @@
  {
   "term": "Instance group",
   "expansion": null,
-  "meaning": "HyperPod's unit of node supply: a set of instances of the listed types.",
-  "section": 24
+  "meaning": "HyperPod's unit of capacity: a named set of instances of one type (or a flexible list of types) with a count and one capacity market.",
+  "section": 27
  },
  {
   "term": "Instruction",
@@ -1294,6 +1528,12 @@
   "expansion": null,
   "meaning": "Whether a job can lose its machine and resume, losing no more than one unit of work.",
   "section": 20
+ },
+ {
+  "term": "Interruption queue",
+  "expansion": null,
+  "meaning": "The Amazon SQS queue through which Karpenter receives EC2 events such as the Spot interruption warning.",
+  "section": 28
  },
  {
   "term": "Intervention",
@@ -1368,6 +1608,12 @@
   "section": 3
  },
  {
+  "term": "Jetson Orin Nano Super",
+  "expansion": null,
+  "meaning": "NVIDIA's small robot computer; the other machine of our measurements.",
+  "section": 20
+ },
+ {
   "term": "Jetson Thor",
   "expansion": null,
   "meaning": "NVIDIA's onboard computer for robots, the newest of the Jetson line named in this section.",
@@ -1380,15 +1626,33 @@
   "section": 18
  },
  {
+  "term": "Job array",
+  "expansion": null,
+  "meaning": "One Slurm submission that expands into many numbered copies of the same script, each scheduled on its own.",
+  "section": 26
+ },
+ {
   "term": "Job definition",
   "expansion": null,
-  "meaning": "The reusable description of a Batch job: image, resources, command, retry strategy and timeout.",
-  "section": 24
+  "meaning": "The template of a Batch job: image, command, resource needs, retry strategy and timeout.",
+  "section": 25
  },
  {
   "term": "Job queue",
   "expansion": null,
-  "meaning": "The AWS Batch object that holds waiting jobs and decides which runs next.",
+  "meaning": "The Batch object where jobs wait, with a priority and an ordered list of up to three compute environments.",
+  "section": 25
+ },
+ {
+  "term": "Job state",
+  "expansion": null,
+  "meaning": "Where a Batch job is: SUBMITTED, PENDING, RUNNABLE, STARTING, RUNNING, then SUCCEEDED or FAILED.",
+  "section": 25
+ },
+ {
+  "term": "JobSet",
+  "expansion": null,
+  "meaning": "A Kubernetes object that manages several Jobs as one unit and restarts them together.",
   "section": 24
  },
  {
@@ -1400,13 +1664,13 @@
  {
   "term": "KAI Scheduler",
   "expansion": null,
-  "meaning": "An open-source Kubernetes scheduler for GPU workloads with gang scheduling, queues and fractional GPUs.",
+  "meaning": "An open-source Kubernetes scheduler with queues and quotas for GPU work.",
   "section": 24
  },
  {
   "term": "Karpenter",
   "expansion": null,
-  "meaning": "An open-source node provisioner that launches EC2 instances to fit pods that cannot be placed.",
+  "meaning": "The open-source node provisioner that starts EC2 instances for pods that fit no existing node.",
   "section": 24
  },
  {
@@ -1428,9 +1692,15 @@
   "section": 3
  },
  {
+  "term": "Kubeflow Training Operator",
+  "expansion": null,
+  "meaning": "The Kubernetes controller that turns a training job description such as a PyTorchJob into pods.",
+  "section": 27
+ },
+ {
   "term": "Kueue",
   "expansion": null,
-  "meaning": "A Kubernetes admission layer that manages quotas and decides when a job may start; it does not place pods.",
+  "meaning": "A Kubernetes add-on that holds jobs against per-team quotas and decides when each is admitted.",
   "section": 24
  },
  {
@@ -1462,6 +1732,12 @@
   "expansion": null,
   "meaning": "The space of all possible latents; predicting in latent space means predicting the encoder's output for the next frame, with no image made.",
   "section": 6
+ },
+ {
+  "term": "Launch template",
+  "expansion": null,
+  "meaning": "An EC2 object holding instance settings a compute node group cannot express: EFA interfaces, placement group, reservations, user data.",
+  "section": 26
  },
  {
   "term": "Leader arm",
@@ -1512,6 +1788,30 @@
   "section": 17
  },
  {
+  "term": "Lifecycle script",
+  "expansion": null,
+  "meaning": "A set-up script HyperPod runs once on each new node.",
+  "section": 27
+ },
+ {
+  "term": "LocalQueue",
+  "expansion": null,
+  "meaning": "Kueue's per-namespace queue, the one a team's jobs name in their label.",
+  "section": 27
+ },
+ {
+  "term": "Login node",
+  "expansion": null,
+  "meaning": "The always-on machine where users type Slurm commands; in PCS, a static compute node group attached to no queue.",
+  "section": 26
+ },
+ {
+  "term": "Loop stage",
+  "expansion": null,
+  "meaning": "One of the six steps the arm's data passes through: collect, curate, simulate, train, evaluate, deploy.",
+  "section": 20
+ },
+ {
   "term": "LoRA",
   "expansion": "low-rank adaptation",
   "meaning": "A fine-tune that trains small added matrices and leaves the base weights frozen.",
@@ -1522,6 +1822,12 @@
   "expansion": null,
   "meaning": "A piece of a computer that saturates separately from the others, such as CPU cores or a GPU's tensor cores.",
   "section": 1
+ },
+ {
+  "term": "Managed tiered checkpointing",
+  "expansion": null,
+  "meaning": "A HyperPod feature that writes checkpoints to node memory, copies them to adjacent nodes and persists them periodically to storage.",
+  "section": 27
  },
  {
   "term": "Mask token",
@@ -1580,8 +1886,8 @@
  {
   "term": "Micro-operation",
   "expansion": null,
-  "meaning": "One of the small internal steps a CPU breaks an instruction into before executing it.",
-  "section": 20
+  "meaning": "One of the smaller internal steps a core breaks each program instruction into; Intel writes uOp.",
+  "section": 21
  },
  {
   "term": "Microbenchmark",
@@ -1608,6 +1914,12 @@
   "section": 11
  },
  {
+  "term": "minvCpus, desiredvCpus, maxvCpus",
+  "expansion": null,
+  "meaning": "The floor a compute environment keeps running, the current target that Batch moves with queue demand, and the ceiling it may reach.",
+  "section": 25
+ },
+ {
   "term": "mj_step",
   "expansion": null,
   "meaning": "MuJoCo's step function: 26 stages in four groups (position, velocity, force and acceleration, integrator).",
@@ -1618,6 +1930,12 @@
   "expansion": null,
   "meaning": "MuJoCo's JAX interface, over two engines: MJX-JAX and MJX-Warp.",
   "section": 12
+ },
+ {
+  "term": "MLflow",
+  "expansion": null,
+  "meaning": "An experiment tracking server and model registry, offered managed by SageMaker.",
+  "section": 24
  },
  {
   "term": "MLP",
@@ -1638,6 +1956,18 @@
   "section": 7
  },
  {
+  "term": "Mountpoint for Amazon S3",
+  "expansion": null,
+  "meaning": "A client that presents an S3 bucket as a local file system for reading and creating files.",
+  "section": 24
+ },
+ {
+  "term": "Mountpoint for Amazon S3 CSI driver",
+  "expansion": null,
+  "meaning": "The driver that presents an S3 bucket as a volume in a pod.",
+  "section": 28
+ },
+ {
   "term": "MP4",
   "expansion": null,
   "meaning": "The common container file for compressed video.",
@@ -1648,6 +1978,12 @@
   "expansion": "model-predictive control",
   "meaning": "Plan a sequence of actions through a model, execute only the first part, observe, and plan again.",
   "section": 7
+ },
+ {
+  "term": "MPS",
+  "expansion": "Multi-Process Service",
+  "meaning": "An NVIDIA feature that runs several processes on one GPU at the same moment.",
+  "section": 28
  },
  {
   "term": "MQTT",
@@ -1692,6 +2028,12 @@
   "section": 14
  },
  {
+  "term": "Multi-node parallel job",
+  "expansion": null,
+  "meaning": "One Batch job that spans several instances, with a main node that starts first; On-Demand only.",
+  "section": 25
+ },
+ {
   "term": "Multimodal (actions)",
   "expansion": null,
   "meaning": "Said of demonstrations whose good answers form several separate groups; unrelated to models that take images and text.",
@@ -1722,10 +2064,34 @@
   "section": 19
  },
  {
-  "term": "Node pool",
+  "term": "Node lifecycle action",
   "expansion": null,
-  "meaning": "Kubernetes configuration that says which instance types a node provider may launch and when to remove them.",
+  "meaning": "A script PCS runs on a node at one of two boot stages: nodeBootstrapped, before slurmd starts, or nodeReady, after.",
+  "section": 26
+ },
+ {
+  "term": "Node provider",
+  "expansion": null,
+  "meaning": "The layer that starts a machine when a job is waiting and removes it when nothing is.",
   "section": 24
+ },
+ {
+  "term": "Node recovery",
+  "expansion": null,
+  "meaning": "The cluster setting that lets HyperPod reboot or replace a faulty node without being asked.",
+  "section": 27
+ },
+ {
+  "term": "NodeClaim",
+  "expansion": null,
+  "meaning": "Karpenter's record of one instance on its way to being a node: Launched, Registered, Initialized.",
+  "section": 28
+ },
+ {
+  "term": "NodePool",
+  "expansion": null,
+  "meaning": "Karpenter's object that points at a node class and holds the rules for removing nodes.",
+  "section": 27
  },
  {
   "term": "Nsight Compute",
@@ -1770,12 +2136,6 @@
   "section": 17
  },
  {
-  "term": "NVIDIA OSMO",
-  "expansion": null,
-  "meaning": "An open-source workflow orchestrator for physical AI that hands each step of a pipeline to a Kubernetes cluster.",
-  "section": 24
- },
- {
   "term": "nvidia-smi",
   "expansion": null,
   "meaning": "NVIDIA's command-line tool that reports GPU status, including utilisation and power.",
@@ -1788,6 +2148,12 @@
   "section": 21
  },
  {
+  "term": "NVLink",
+  "expansion": null,
+  "meaning": "NVIDIA's direct GPU-to-GPU connection.",
+  "section": 26
+ },
+ {
   "term": "Observation",
   "expansion": null,
   "meaning": "The input to a policy at one instant: on the SO-101, six joint angles and one image per camera.",
@@ -1796,13 +2162,13 @@
  {
   "term": "ODCR",
   "expansion": "On-Demand Capacity Reservation",
-  "meaning": "Capacity held for a named instance type in one Availability Zone, charged at the On-Demand rate whether used or not.",
+  "meaning": "Capacity held for a named instance type in one Availability Zone for any duration, charged at the On-Demand rate.",
   "section": 24
  },
  {
   "term": "On-Demand",
   "expansion": null,
-  "meaning": "A machine billed by the second with no commitment and no promise that one is free.",
+  "meaning": "A machine with no commitment and no promise that one is free.",
   "section": 24
  },
  {
@@ -1824,16 +2190,16 @@
   "section": 5
  },
  {
-  "term": "Orchestration",
-  "expansion": null,
-  "meaning": "Deciding which job runs next, starting a machine for it and removing the machine when the job ends.",
-  "section": 24
- },
- {
   "term": "Orchestrator",
   "expansion": null,
-  "meaning": "The service that queues jobs and starts machines for them.",
-  "section": 25
+  "meaning": "The service that queues jobs and starts machines for them: AWS Batch, AWS Parallel Computing Service, Amazon SageMaker HyperPod or Amazon EKS.",
+  "section": 20
+ },
+ {
+  "term": "OSMO",
+  "expansion": null,
+  "meaning": "NVIDIA's open-source workflow orchestrator for physical AI pipelines on Kubernetes clusters.",
+  "section": 24
  },
  {
   "term": "Out of distribution",
@@ -1844,8 +2210,8 @@
  {
   "term": "P family",
   "expansion": null,
-  "meaning": "The EC2 instance families with data-centre training GPUs, which have no RT cores.",
-  "section": 25
+  "meaning": "EC2 GPU instances sized for training throughput.",
+  "section": 24
  },
  {
   "term": "p50",
@@ -1872,6 +2238,12 @@
   "section": 9
  },
  {
+  "term": "Partition",
+  "expansion": null,
+  "meaning": "A named Slurm queue in front of a set of nodes; a PCS queue is one partition.",
+  "section": 26
+ },
+ {
   "term": "pass@8",
   "expansion": null,
   "meaning": "Success if the policy completes the task within up to eight sequential attempts inside one rollout; a measure of recovery, different from a one-shot success rate.",
@@ -1884,16 +2256,34 @@
   "section": 7
  },
  {
+  "term": "PCS",
+  "expansion": "AWS Parallel Computing Service",
+  "meaning": "Managed Slurm: AWS runs the Slurm controller and compute node groups launch EC2 instances for waiting jobs.",
+  "section": 24
+ },
+ {
   "term": "PD",
   "expansion": "proportional-derivative",
   "meaning": "A PID controller with the integral term off: it pushes in proportion to the error and brakes when the error shrinks fast.",
   "section": 3
  },
  {
+  "term": "PD, CF, R",
+  "expansion": "pending, configuring, running",
+  "meaning": "The states squeue shows for a job: waiting, waiting for its nodes to come up, and running.",
+  "section": 26
+ },
+ {
   "term": "Pearson correlation (r)",
   "expansion": null,
   "meaning": "A number between -1 and 1 that says how closely two lists of numbers rise and fall together; 1 means one predicts the other exactly, 0 means no relation.",
   "section": 16
+ },
+ {
+  "term": "Pending",
+  "expansion": null,
+  "meaning": "The state of a pod that no node can hold yet; on a cluster that scales from zero it is the request for a machine.",
+  "section": 28
  },
  {
   "term": "Per-task adaptation",
@@ -1974,12 +2364,6 @@
   "section": 7
  },
  {
-  "term": "Platform (OSMO)",
-  "expansion": null,
-  "meaning": "The kind of hardware an OSMO task asks for, named by whoever set up the cluster.",
-  "section": 24
- },
- {
   "term": "PLDM",
   "expansion": null,
   "meaning": "A JEPA world model that trains its encoder with variance and covariance terms; named here as the LeWorldModel authors' comparison.",
@@ -2054,8 +2438,8 @@
  {
   "term": "Preemption",
   "expansion": null,
-  "meaning": "The scheduler stopping a running job to give its machine to a job with a stronger claim.",
-  "section": 24
+  "meaning": "A scheduler stopping a running job to give its capacity to another; Batch does it only for SageMaker Training queues.",
+  "section": 25
  },
  {
   "term": "Prefetch factor",
@@ -2082,6 +2466,12 @@
   "section": 15
  },
  {
+  "term": "Price-capacity-optimized",
+  "expansion": null,
+  "meaning": "The Spot allocation strategy that takes the lowest-priced pools among those with the most spare capacity.",
+  "section": 28
+ },
+ {
   "term": "Proprioception",
   "expansion": null,
   "meaning": "A robot's sense of its own body; on the SO-101 it is the six joint angles.",
@@ -2100,6 +2490,12 @@
   "section": 7
  },
  {
+  "term": "PyTorchJob",
+  "expansion": null,
+  "meaning": "The Kubeflow Training Operator's object that describes one PyTorch training run.",
+  "section": 27
+ },
+ {
   "term": "qacc",
   "expansion": null,
   "meaning": "MuJoCo's name for the vector of joint accelerations, the main output of a physics step before integration.",
@@ -2112,10 +2508,16 @@
   "section": 17
  },
  {
-  "term": "Quota",
+  "term": "Queue",
   "expansion": null,
-  "meaning": "The share of a cluster's machines a team is entitled to.",
+  "meaning": "The layer that holds waiting jobs and decides which runs next.",
   "section": 24
+ },
+ {
+  "term": "Queue (PCS)",
+  "expansion": null,
+  "meaning": "The PCS object users submit jobs to; it is one Slurm partition and points at one or more compute node groups.",
+  "section": 26
  },
  {
   "term": "Rank agreement",
@@ -2158,6 +2560,12 @@
   "expansion": null,
   "meaning": "Carrying something real into the simulator: measured servo parameters, a scanned scene, or a policy trained on real data to be tested there.",
   "section": 14
+ },
+ {
+  "term": "Rebalance recommendation",
+  "expansion": null,
+  "meaning": "An EC2 signal that a Spot instance is at elevated risk of interruption.",
+  "section": 24
  },
  {
   "term": "Recap",
@@ -2232,6 +2640,12 @@
   "section": 8
  },
  {
+  "term": "Requeue",
+  "expansion": null,
+  "meaning": "Slurm putting a job that lost its node back in the queue, to start again from the top of its script.",
+  "section": 26
+ },
+ {
   "term": "Reset",
   "expansion": null,
   "meaning": "Putting the scene back to its starting state between attempts.",
@@ -2244,6 +2658,12 @@
   "section": 4
  },
  {
+  "term": "ResourceFlavor",
+  "expansion": null,
+  "meaning": "The Kueue object that describes one kind of node through node labels and tolerations.",
+  "section": 28
+ },
+ {
   "term": "Retirement",
   "expansion": null,
   "meaning": "The last pipeline stage, where the results of executed micro-operations are made final in program order.",
@@ -2254,6 +2674,12 @@
   "expansion": null,
   "meaning": "The share of slots that carried a micro-operation which finished: the useful work.",
   "section": 21
+ },
+ {
+  "term": "Retry strategy",
+  "expansion": null,
+  "meaning": "The part of a job definition that says how many attempts a job gets and which failures are retried, for example only a status reason matching Host EC2*.",
+  "section": 25
  },
  {
   "term": "Reward",
@@ -2316,16 +2742,34 @@
   "section": 13
  },
  {
+  "term": "RUNNABLE",
+  "expansion": null,
+  "meaning": "The state of a job that is ready and waiting for capacity, including the whole time an instance is launching for it.",
+  "section": 25
+ },
+ {
   "term": "SAC",
   "expansion": "Soft Actor-Critic",
   "meaning": "An RL method that trains from a replay buffer, so each real step is reused in many updates.",
   "section": 8
  },
  {
+  "term": "sacct",
+  "expansion": null,
+  "meaning": "The Slurm command that queries the accounting record of past jobs.",
+  "section": 26
+ },
+ {
   "term": "SageMaker HyperPod",
   "expansion": null,
   "meaning": "A persistent training cluster that SageMaker manages, run with Kubernetes or Slurm.",
   "section": 15
+ },
+ {
+  "term": "SageMaker Training Job",
+  "expansion": null,
+  "meaning": "A managed run of one training container that bills for the duration of the job and then shuts the instances down.",
+  "section": 24
  },
  {
   "term": "SageMaker Training Jobs",
@@ -2348,8 +2792,38 @@
  {
   "term": "Savings Plans",
   "expansion": null,
-  "meaning": "A discount on the bill for what you run; a billing construct, not a source of machines.",
+  "meaning": "A billing discount applied to what an account runs.",
   "section": 24
+ },
+ {
+  "term": "sbatch",
+  "expansion": null,
+  "meaning": "The Slurm command that submits a shell script as a job and returns at once.",
+  "section": 26
+ },
+ {
+  "term": "Scale to zero",
+  "expansion": null,
+  "meaning": "A compute environment with a floor of 0 vCPUs, which holds no instance when its queue is empty.",
+  "section": 25
+ },
+ {
+  "term": "Scale-down delay",
+  "expansion": null,
+  "meaning": "The time, set with minScaleDownDelayMinutes, that Batch keeps an instance after its last job so the next job skips the launch.",
+  "section": 25
+ },
+ {
+  "term": "scaleDownIdleTimeInSeconds",
+  "expansion": null,
+  "meaning": "How long a node may sit idle before PCS removes it; 600 seconds by default.",
+  "section": 26
+ },
+ {
+  "term": "Scaling log",
+  "expansion": null,
+  "meaning": "The opt-in PCS log that records each node as LAUNCHED, REGISTERED, ACTIVE or TERMINATED, with a reason.",
+  "section": 26
  },
  {
   "term": "Scanned scene (twin)",
@@ -2362,6 +2836,12 @@
   "expansion": null,
   "meaning": "A planner pays for search at run time on every decision; a world-action model pays during training and answers in one forward pass.",
   "section": 6
+ },
+ {
+  "term": "Service environment",
+  "expansion": null,
+  "meaning": "The Batch object that puts a Batch queue in front of training jobs that Amazon SageMaker runs.",
+  "section": 25
  },
  {
   "term": "Servo",
@@ -2385,7 +2865,7 @@
   "term": "Shape",
   "expansion": null,
   "meaning": "A job described by its duration, coupling and interruptibility (section 20).",
-  "section": 25
+  "section": 29
  },
  {
   "term": "Shape (of a workload)",
@@ -2394,10 +2874,28 @@
   "section": 1
  },
  {
+  "term": "Share identifier",
+  "expansion": null,
+  "meaning": "A label on a job saying whose work it is, used by fair-share scheduling.",
+  "section": 25
+ },
+ {
   "term": "SIGReg",
   "expansion": "Sketched Isotropic Gaussian Regularization",
   "meaning": "A loss term that pushes a batch of latents toward a round Gaussian cloud by testing its projections on random directions.",
   "section": 7
+ },
+ {
+  "term": "SIGTERM",
+  "expansion": null,
+  "meaning": "The signal that asks a process to stop; a pod receives it when it is evicted and has its grace period to finish.",
+  "section": 28
+ },
+ {
+  "term": "SIGTERM and SIGKILL",
+  "expansion": null,
+  "meaning": "The Unix signals that ask a process to stop and that force it to stop; Batch sends them 30 seconds apart when a job times out.",
+  "section": 25
  },
  {
   "term": "Sim-to-real",
@@ -2432,14 +2930,20 @@
  {
   "term": "Slot",
   "expansion": null,
-  "meaning": "One chance per clock cycle for a CPU core to start one micro-operation; an unused slot is charged to the part that caused it.",
-  "section": 20
+  "meaning": "One chance, in one clock cycle, to pass one micro-operation from the front end to the back end; a core has a fixed number per cycle.",
+  "section": 21
  },
  {
   "term": "Slurm",
   "expansion": null,
-  "meaning": "The job scheduler of classic supercomputing clusters.",
+  "meaning": "The job scheduler of classic supercomputing, driven by commands such as sbatch.",
   "section": 24
+ },
+ {
+  "term": "slurmd",
+  "expansion": null,
+  "meaning": "The Slurm daemon on each compute node that takes orders from the controller.",
+  "section": 26
  },
  {
   "term": "SM",
@@ -2474,14 +2978,44 @@
  {
   "term": "Spot",
   "expansion": null,
-  "meaning": "Spare EC2 capacity that AWS can take back with two minutes of warning.",
+  "meaning": "Spare EC2 capacity sold at a discount that EC2 can take back.",
   "section": 24
  },
  {
   "term": "Spot interruption",
   "expansion": null,
-  "meaning": "AWS reclaiming a Spot instance while it runs.",
+  "meaning": "EC2 taking a Spot instance back, announced two minutes before on a best-effort basis.",
   "section": 24
+ },
+ {
+  "term": "Spot interruption notice",
+  "expansion": null,
+  "meaning": "The warning EC2 sends two minutes, on a best-effort basis, before it takes a Spot instance back.",
+  "section": 25
+ },
+ {
+  "term": "Spot placement score",
+  "expansion": null,
+  "meaning": "A number from 1 to 10 for how likely a Spot request is to succeed in a Region or zone.",
+  "section": 28
+ },
+ {
+  "term": "squeue",
+  "expansion": null,
+  "meaning": "The Slurm command that lists jobs and their states.",
+  "section": 26
+ },
+ {
+  "term": "srun",
+  "expansion": null,
+  "meaning": "The Slurm command that starts a program on every node a job was given.",
+  "section": 26
+ },
+ {
+  "term": "SSM",
+  "expansion": "AWS Systems Manager",
+  "meaning": "The AWS service whose sessions give shell access to an instance without SSH.",
+  "section": 28
  },
  {
   "term": "Staged rollout",
@@ -2506,6 +3040,12 @@
   "expansion": null,
   "meaning": "A small program measured in place of the real one (a MuJoCo humanoid for the arm, matrix-vector products for a policy).",
   "section": 20
+ },
+ {
+  "term": "STARTING",
+  "expansion": null,
+  "meaning": "The state of a job that has been placed on an instance while its container image is pulled; it sits outside the timeout.",
+  "section": 25
  },
  {
   "term": "State",
@@ -2604,10 +3144,28 @@
   "section": 14
  },
  {
+  "term": "Taint",
+  "expansion": null,
+  "meaning": "A Kubernetes mark on a node that keeps pods off unless they tolerate it; Batch taints the EKS nodes it manages.",
+  "section": 25
+ },
+ {
+  "term": "Taint and toleration",
+  "expansion": null,
+  "meaning": "A taint marks a node so that only pods declaring a matching toleration may be scheduled on it.",
+  "section": 28
+ },
+ {
   "term": "Target encoder",
   "expansion": null,
   "meaning": "The encoder copy that sees the whole clip and supplies the answers; it is updated by an EMA and receives no gradient.",
   "section": 7
+ },
+ {
+  "term": "Task governance",
+  "expansion": null,
+  "meaning": "HyperPod's multi-team layer on EKS: an add-on that installs Kueue and adds a cluster policy and per-team compute allocations.",
+  "section": 27
  },
  {
   "term": "tegrastats",
@@ -2664,6 +3222,12 @@
   "section": 11
  },
  {
+  "term": "terminationGracePeriodSeconds",
+  "expansion": null,
+  "meaning": "The time Kubernetes gives a pod to stop after it is told to; the window in which a training script can write a last checkpoint.",
+  "section": 27
+ },
+ {
   "term": "TES",
   "expansion": "Token exchange service",
   "meaning": "A local Greengrass server that trades the device certificate for temporary AWS credentials, so no access key sits on the device.",
@@ -2692,6 +3256,12 @@
   "expansion": null,
   "meaning": "Drawing every environment's camera into one tile of a single large GPU image in one pass, then cutting it apart.",
   "section": 13
+ },
+ {
+  "term": "Time-slicing",
+  "expansion": null,
+  "meaning": "Several pods taking turns on one GPU, with no memory or compute isolation.",
+  "section": 28
  },
  {
   "term": "Timestep",
@@ -2744,8 +3314,14 @@
  {
   "term": "Trainium",
   "expansion": null,
-  "meaning": "AWS's own training chip.",
-  "section": 25
+  "meaning": "AWS's own training chip, sold as the trn instance types.",
+  "section": 24
+ },
+ {
+  "term": "TrainJob",
+  "expansion": null,
+  "meaning": "The Kubeflow Trainer object a user submits; it points at an administrator's runtime template.",
+  "section": 28
  },
  {
   "term": "Transcode",
@@ -2798,8 +3374,8 @@
  {
   "term": "UltraServer",
   "expansion": null,
-  "meaning": "A rack-scale EC2 system at the top of the P range.",
-  "section": 25
+  "meaning": "A P6e-GB200 or P6e-GB300 machine that joins many GPUs with NVLink.",
+  "section": 26
  },
  {
   "term": "UMI",
@@ -2824,6 +3400,12 @@
   "expansion": null,
   "meaning": "Units of work per second divided by watts drawn: how much work a machine does with a fixed amount of energy.",
   "section": 23
+ },
+ {
+  "term": "User data",
+  "expansion": null,
+  "meaning": "The script an EC2 instance runs at boot; here it mounts the shared file system.",
+  "section": 26
  },
  {
   "term": "V-JEPA 2",
@@ -2910,10 +3492,10 @@
   "section": 5
  },
  {
-  "term": "Volcano",
-  "expansion": null,
-  "meaning": "An open-source batch scheduler for Kubernetes with job queues and gang scheduling.",
-  "section": 24
+  "term": "VPC",
+  "expansion": "Virtual Private Cloud",
+  "meaning": "Your private network on AWS, in whose subnets Batch launches instances.",
+  "section": 25
  },
  {
   "term": "WAM",
@@ -2986,6 +3568,12 @@
   "expansion": null,
   "meaning": "The identity file issued to a device when it is registered, which it uses to prove who it is to AWS IoT.",
   "section": 17
+ },
+ {
+  "term": "XID",
+  "expansion": null,
+  "meaning": "The NVIDIA driver's numbered report of a GPU fault.",
+  "section": 28
  },
  {
   "term": "Yield",
