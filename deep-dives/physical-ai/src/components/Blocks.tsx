@@ -6,7 +6,7 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 /**
  * A dated placeholder: one plain block that says which measurement or figure will land here and
  * where it will come from. Allowed only in sections 17, 18, 22, 23 and 24 (measurements, the IoT
- * hook-up, prices), by the owner's instruction of 2026-11-20.
+ * hook-up, prices).
  */
 export function Placeholder({ what, source }: { what: ReactNode; source: ReactNode }) {
   return (

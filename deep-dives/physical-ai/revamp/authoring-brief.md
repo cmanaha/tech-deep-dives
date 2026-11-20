@@ -2,7 +2,7 @@
 
 Research date and accessed date for every source: **2026-11-20**.
 
-Repo root: `/Users/carlos/workspace/git_repositories/tech-deep-dives-wt/physical-ai` (a git worktree, branch
+Repo root: `<repo root>` (a git worktree, branch
 `deep-dive/physical-ai`). Dive: `deep-dives/physical-ai/`. You own exactly ONE section file, named in your task,
 plus `revamp/claims/<section-id>.md` and `revamp/glossary/<section-id>.json`, plus any shared component your task
 names. Edit nothing else: not `App.tsx`, not another section, not `SCOPE.md`, not the registers, not `src/components/`
@@ -206,7 +206,7 @@ Read `revamp/diagram-plan.md` section 1 (the contract) and your section's rows. 
 from your task):
 
 ```bash
-cd /Users/carlos/workspace/git_repositories/tech-deep-dives-wt/physical-ai/deep-dives/physical-ai
+cd <repo root>/deep-dives/physical-ai
 npx vite build --outDir /tmp/pai-dist-<slug> --emptyOutDir
 node revamp/tools/check-section.mjs --dist /tmp/pai-dist-<slug> --port <port> \
      --out /tmp/pai-shots-<slug> --sections <section-id>

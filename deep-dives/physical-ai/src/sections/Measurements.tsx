@@ -30,7 +30,7 @@ const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbd
 const TABLE: CSSProperties = { borderCollapse: 'collapse', width: '100%', minWidth: 620, fontSize: 14 };
 
 /** Where the profiling results will come from, stated once. */
-const PROJECT = "The dive owner's profiling project";
+const PROJECT = 'Our profiling project';
 
 /* ------------------------------------------------------------------------ */
 /* Diagram 22.1: one card per stand-in workload per core type               */
@@ -704,7 +704,7 @@ export function Measurements() {
                 made at all.
               </>
             }
-            source={<>{PROJECT}, run against his own AWS account; not yet run.</>}
+            source={<>{PROJECT}, run on EC2; not yet run.</>}
           />
           <Placeholder
             what={
@@ -716,7 +716,7 @@ export function Measurements() {
                 timeline that shows the share of time the GPU waits for data between batches.
               </>
             }
-            source={<>{PROJECT}, run against his own AWS account and on the two edge machines; not yet run.</>}
+            source={<>{PROJECT}, run on EC2 and on the two edge machines; not yet run.</>}
           />
           <Placeholder
             what={

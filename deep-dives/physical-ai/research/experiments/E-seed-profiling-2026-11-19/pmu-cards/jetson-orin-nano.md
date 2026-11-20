@@ -1,4 +1,4 @@
-# PMU card v0: Jetson Orin Nano Super (tailnet jetson-ricky, hostname carlos-desktop)
+# PMU card v0: Jetson Orin Nano Super
 
 Draft for the Physical AI profiling work.
 Everything under "Measured" was read from the machine on 2026-11-18 over the home network. Later the same day the packages were upgraded and perf and hwloc installed (see System state).
@@ -69,7 +69,7 @@ Reading [INFERRED]: on the same interpreter loop this core is front-end bound (a
 
 Confirmed: `ncu` 2024.3.1 profiles the Orin GPU. It needs root, and under sudo it must still see the cuDSS path and the
 user-site Python packages: `. ~/physical-ai-bench/env.sh` then
-`sudo -n env LD_LIBRARY_PATH=$LD_LIBRARY_PATH PYTHONUSERBASE=/home/carlos/.local /usr/local/cuda/bin/ncu ...`.
+`sudo -n env LD_LIBRARY_PATH=$LD_LIBRARY_PATH PYTHONUSERBASE=$HOME/.local /usr/local/cuda/bin/ncu ...`.
 Kernel: PyTorch float32 matmul 2048x2048 (`~/physical-ai-bench/gpu_kernel.py 2048`), report `~/physical-ai-bench/ncu-matmul.ncu-rep`, set `basic`.
 
 - Kernel launched: `ampere_sgemm_128x128_nn`, compute capability 8.7.

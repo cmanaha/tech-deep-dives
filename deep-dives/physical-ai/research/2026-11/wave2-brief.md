@@ -2,7 +2,7 @@
 
 Date of this pass and accessed date for every source you fetch: **2026-11-20**.
 
-Repo root: `/Users/carlos/workspace/git_repositories/tech-deep-dives-wt/physical-ai` (a git worktree, branch
+Repo root: `<repo root>` (a git worktree, branch
 `deep-dive/physical-ai`). Dive: `deep-dives/physical-ai/`. You own exactly ONE output file, named in your task, under
 `deep-dives/physical-ai/research/2026-11/`. Edit nothing else: not `SCOPE.md`, not the registers, not another agent's
 file. Do not commit or run git write commands. The orchestrator applies your verdicts.

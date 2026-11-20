@@ -1155,8 +1155,7 @@ export function Fleet() {
             }
             source={
               <>
-                the owner&apos;s own hook-up of his Jetson Orin Nano Super and DGX Spark against his AWS account,
-                not yet done.
+                our own hook-up of a Jetson Orin Nano Super and a DGX Spark to AWS IoT, not yet done.
               </>
             }
           />

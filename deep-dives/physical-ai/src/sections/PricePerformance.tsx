@@ -594,7 +594,7 @@ export function PricePerformance() {
                 this build. <Cite id="F08-59">prices not collected</Cite>
               </>
             }
-            source={<>A dated price pass in a second round of this dive. This build ships without prices by the owner&apos;s decision.</>}
+            source={<>A dated price pass in a second round of this dive. This build ships without prices.</>}
           />
           <Placeholder
             what={
@@ -605,7 +605,7 @@ export function PricePerformance() {
                 has been measured for this dive. <Cite id="F08-73">limits of our measurements</Cite>
               </>
             }
-            source={<>The owner&apos;s profiling project, run against his own AWS account. It has not yet run.</>}
+            source={<>Our profiling project, run on EC2. It has not yet run.</>}
           />
           <Placeholder
             what={

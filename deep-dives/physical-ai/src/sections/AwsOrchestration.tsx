@@ -1369,11 +1369,11 @@ export function AwsOrchestration() {
           <Placeholder
             what={
               <>
-                the measured hook-up of the owner&apos;s Jetson and DGX Spark to AWS IoT: the deployment of a policy
+                the measured hook-up of our Jetson and DGX Spark to AWS IoT: the deployment of a policy
                 component to each device and the upload of one recorded episode to S3, timed end to end.
               </>
             }
-            source={<>the owner&apos;s own hook-up of the two machines, which has not been done yet.</>}
+            source={<>our own hook-up of the two machines, which has not been done yet.</>}
           />
           <Box variant="p">
             <strong>What to do next.</strong> Name the shape of your next job from section 20. If it is shape A, adapt
