@@ -1031,4 +1031,10 @@
 "F09-124":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-nodeadm.html"},
 "F09-125":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/best-practices/hybrid-nodes-kubernetes-pod-failover.html"},
 "F09-126":{"t":2,"u":"https://aws.amazon.com/eks/pricing/"},
-"F09-127":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-overview.html"}}
+"F09-127":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-overview.html"},
+"F09-128":{"t":1,"u":"https://docs.aws.amazon.com/batch/latest/userguide/gpu-jobs.html"},
+"F09-129":{"t":1,"u":"https://docs.aws.amazon.com/batch/latest/userguide/example-test-gpu.html"},
+"F09-130":{"t":1,"u":"https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html"},
+"F09-131":{"t":1,"u":"https://docs.aws.amazon.com/batch/latest/userguide/compute-environment-template.html"},
+"F09-132":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/auto-accelerated.html"},
+"F09-133":{"t":1,"u":"https://docs.aws.amazon.com/greengrass/v2/developerguide/interact-with-aws-services.html"}}
