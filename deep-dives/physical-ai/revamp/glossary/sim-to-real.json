@@ -1,0 +1,23 @@
+[
+  { "term": "Sim-to-real gap", "expansion": null, "meaning": "The difference between what a simulator produces and what the real robot and bench produce, in physics, appearance and timing." },
+  { "term": "Sim-to-real", "expansion": null, "meaning": "Carrying a policy trained in simulation onto the real robot." },
+  { "term": "Real-to-sim", "expansion": null, "meaning": "Carrying something real into the simulator: measured servo parameters, a scanned scene, or a policy trained on real data to be tested there." },
+  { "term": "Domain randomisation", "expansion": null, "meaning": "Drawing each uncertain simulator parameter from a range at the start of every episode, so the real world falls inside what the policy trained on." },
+  { "term": "System identification", "expansion": null, "meaning": "Fitting a simulator's parameters to recordings of the real robot until the simulated motion matches the measured one." },
+  { "term": "mujoco.sysid", "expansion": null, "meaning": "The system-identification toolbox that ships with MuJoCo 4.0; the SO-101 script built on it fits 24 servo parameters from one episode." },
+  { "term": "Teleoperated excitation episode", "expansion": null, "meaning": "One recording in which a person drives the arm through its range with the leader arm so that every parameter leaves a mark in the data." },
+  { "term": "Calibration", "expansion": null, "meaning": "The step that tells the software what each joint's encoder reading means as an angle; done by hand on this arm, it can leave the gripper 1 to 2 cm off." },
+  { "term": "End effector", "expansion": null, "meaning": "The tool at the end of the arm, here the gripper." },
+  { "term": "Zero-shot", "expansion": null, "meaning": "Deployed on the real robot with no further training on real data." },
+  { "term": "PD", "expansion": "proportional-derivative", "meaning": "A control rule that pushes in proportion to the position error and brakes in proportion to the speed." },
+  { "term": "Gain (stiffness, kp)", "expansion": null, "meaning": "How hard a servo pushes per unit of position error." },
+  { "term": "Damping (kd)", "expansion": null, "meaning": "How hard a servo or joint brakes per unit of speed." },
+  { "term": "Armature", "expansion": null, "meaning": "Extra inertia at a joint from the spinning motor and its gears." },
+  { "term": "Friction loss", "expansion": null, "meaning": "A constant resistance inside a joint that the motor must overcome before the joint moves." },
+  { "term": "Gauss-Newton least squares", "expansion": null, "meaning": "A fitting method that repeatedly nudges each parameter, re-simulates, and steps toward a smaller sum of squared mismatches." },
+  { "term": "Transport delay", "expansion": null, "meaning": "The time a command takes to travel over the serial link to the servos." },
+  { "term": "Gaussian splatting", "expansion": null, "meaning": "Representing a filmed place as a cloud of small, soft, coloured blobs fitted until pictures drawn from the cloud match the video frames." },
+  { "term": "Scanned scene (twin)", "expansion": null, "meaning": "A simulated copy of a real place built from a video: splats for how it looks and a mesh for what objects collide with." },
+  { "term": "RT cores", "expansion": "ray tracing cores", "meaning": "GPU hardware for ray tracing, covered in section 13; the ray-traced reconstruction method wants it." },
+  { "term": "PhysX", "expansion": null, "meaning": "The physics engine of NVIDIA's Isaac Sim." }
+]
