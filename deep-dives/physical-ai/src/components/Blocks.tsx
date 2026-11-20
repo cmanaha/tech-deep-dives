@@ -39,22 +39,35 @@ export function Snippet({
   title,
   mode,
   source,
+  ours,
   children,
 }: {
   title: string;
   mode: 'copied' | 'adapted';
   source: ReactNode;
+  /**
+   * For an adapted or assembled snippet: one sentence naming the values that are this dive's
+   * choices and not the source's ("the names, the instance list and the 256 vCPU ceiling are
+   * ours"). With it, the citation check treats the numbers inside the block as ours.
+   */
+  ours?: ReactNode;
   children: string;
 }) {
   return (
     <div data-snippet={mode}>
       <SpaceBetween size="xxs">
         <Box variant="strong">{title}</Box>
-        <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>
+        <pre data-num={ours ? 'adapted' : undefined} style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>
           <code>{children}</code>
         </pre>
         <Box variant="small" color="text-body-secondary">
           {mode === 'copied' ? 'Copied from' : 'Adapted from'} {source}
+          {ours && (
+            <>
+              {' '}
+              <span data-num="adapted">Our choices: {ours}</span>
+            </>
+          )}
         </Box>
       </SpaceBetween>
     </div>

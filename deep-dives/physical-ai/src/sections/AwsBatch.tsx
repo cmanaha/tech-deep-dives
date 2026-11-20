@@ -3,6 +3,7 @@ import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import { ClusterFigure } from '../components/Cluster';
 import type { ClusterSpec, JobToken } from '../components/Cluster';
+import { LoopOnAws } from '../components/LoopOnAws';
 
 const ids = ['1', '2', '3', '4', '5', '6'];
 const inQueue = (from: number): JobToken[] => ids.slice(from).map((id, k) => ({ id, label: id, at: { q: 0, pos: k } }));
@@ -69,6 +70,7 @@ export function AwsBatch() {
       <div data-stub="true">
         <Box variant="p">This section is being written.</Box>
       </div>
+      <LoopOnAws emphasis="service" cites="" caption="Draft." />
       <ClusterFigure spec={SPEC} name="a Batch array job on Spot" cites="" caption="Draft." />
     </Container>
   );
