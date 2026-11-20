@@ -57,11 +57,11 @@ Newest first-party version or announcement found on 2026-11-20 for every item th
 
 ### Docs pages read (all accessed 2026-11-20, markdown form)
 
-Amazon EKS User Guide (https://docs.aws.amazon.com/eks/latest/userguide/ plus the page name): automode, auto-change, auto-accelerated, auto-cost-control, auto-controls, auto-disruption, auto-learn-reqs, auto-migrate-karpenter, auto-networking, auto-odcr, auto-reference, auto-static-capacity, automode-learn-instances, create-node-class, create-node-pool, set-builtin-node-pools, device-management, device-management-nvidia, device-management-nvidia-dra-device-plugin, device-management-nvidia-time-slicing, device-management-nvidia-mig, device-management-efa, ml-eks-optimized-ami, eks-optimized-ami-nvidia, node-health, node-health-nma, node-repair, s3-csi, fsx-csi, ebs-csi, node-efa, eks-provisioned-control-plane, service-quotas, hybrid-nodes-overview, hybrid-nodes-add-ons, hybrid-nodes-gpu, machine-learning-on-eks, ml-compute-management, capacity-blocks-mng, managed-node-groups, kubernetes-versions, doc-history.
+Amazon EKS User Guide (https://docs.aws.amazon.com/eks/latest/userguide/ plus the page name): automode, auto-change, auto-accelerated, auto-cost-control, auto-controls, auto-migrate-karpenter, auto-networking, auto-odcr, auto-reference, auto-static-capacity, automode-learn-instances, create-node-class, create-node-pool, set-builtin-node-pools, device-management, device-management-nvidia, device-management-nvidia-dra-device-plugin, device-management-nvidia-time-slicing, device-management-nvidia-mig, device-management-efa, ml-eks-optimized-ami, node-health, node-health-nma, node-repair, s3-csi, fsx-csi, ebs-csi, eks-provisioned-control-plane, service-quotas, hybrid-nodes-overview, hybrid-nodes-add-ons, ml-compute-management, managed-node-groups, kubernetes-versions, doc-history.
 
-EKS Best Practices Guide (https://docs.aws.amazon.com/eks/latest/best-practices/ plus the page name): aiml-compute, aiml-storage, aiml-networking, aiml-observability, aiml-performance, karpenter, spot, cas, scalability, scale-control-plane, kubernetes_upstream_slos.
+EKS Best Practices Guide (https://docs.aws.amazon.com/eks/latest/best-practices/ plus the page name): aiml-compute, aiml-storage, aiml-networking, aiml-observability, aiml-performance, karpenter, cas, scalability, scale-control-plane, kubernetes_upstream_slos.
 
-Amazon EC2 User Guide (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ plus the page name): using-spot-instances, how-spot-instances-work, spot-best-practices, spot-interruptions, interruption-behavior, prepare-for-interruptions, spot-instance-termination-notices, rebalance-recommendations, ec2-fleet-capacity-rebalance, ec2-fleet-allocation-strategy, spot-fleet-allocation-strategy, ec2-fleet-attribute-based-instance-type-selection, spot-placement-score, work-with-spot-placement-score, using-spot-limits, stop-spot-instances, hibernate-spot-instances, terminate-interrupted-spot-instances, find-interrupted-spot-instances, placement-groups, efa-start.
+Amazon EC2 User Guide (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ plus the page name): using-spot-instances, how-spot-instances-work, spot-best-practices, spot-interruptions, interruption-behavior, prepare-for-interruptions, spot-instance-termination-notices, rebalance-recommendations, ec2-fleet-capacity-rebalance, ec2-fleet-allocation-strategy, spot-fleet-allocation-strategy, ec2-fleet-attribute-based-instance-type-selection, spot-placement-score, work-with-spot-placement-score, using-spot-limits, placement-groups, efa-start.
 
 Other AWS docs: AWS Batch User Guide (bestpractice5, bestpractice6); Amazon SageMaker AI Developer Guide (model-managed-spot-training, model-checkpoints, sagemaker-hyperpod-spot). NVIDIA: GPU Operator overview (https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/overview.html).
 
@@ -1129,7 +1129,7 @@ Block for F10-531: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet
 
 1. **Submitter** (a person with `kubectl`, a pipeline, an agent) creates a Job, JobSet or TrainJob in a namespace. With Kueue it carries the label `kueue.x-k8s.io/queue-name` (F10-451); with KAI Scheduler it sets `schedulerName: kai-scheduler` and the label `kai.scheduler/queue` (F10-454).
 2. **Control plane** (run by AWS, outside the account's VPC): the API server and the default scheduler. A box with one gauge, the tier, only when Provisioned Control Plane is used (F10-465).
-3. **Queue layer** (optional, in the cluster): Kueue's LocalQueue in the namespace, pointing to a ClusterQueue with quota per ResourceFlavor, ClusterQueues grouped in a cohort that lends unused quota (F10-450, F10-452); or KAI's two-level Queue tree with quota, limit and over-quota weight (F10-454). Draw the job as a token that waits here while suspended.
+3. **Queue layer** (optional, in the cluster): Kueue's LocalQueue in the namespace, pointing to a ClusterQueue with quota per ResourceFlavor, ClusterQueues grouped in a cohort that lends unused quota (F10-450, F10-452); or KAI's two-level Queue tree with quota, limit and over-quota weight (F10-454). Draw the job as a token that waits here before any pod exists.
 4. **Job objects**: Job (one pod template), JobSet (several Jobs restarted as one unit, F10-456), TrainJob over a ClusterTrainingRuntime (F10-457). They create **pods**; a pod that asks for `nvidia.com/gpu` and fits no node is Pending.
 5. **Karpenter controller** (a Deployment on a few non-Karpenter nodes or Fargate): watches Pending pods, batches them, and creates **NodeClaims** (F10-404, F10-411). It also reads the **interruption queue**, an SQS queue fed by EventBridge rules (F10-417).
 6. **NodePool**: the constraints box. Capacity types, instance categories and generations, GPU memory floor, taints, `limits`, `weight`, the `disruption` block (F10-401, F10-402, F10-407, F10-408, F10-412, F10-415). Draw two for the arm: a GPU Spot NodePool and a GPU On-Demand or reserved NodePool.
@@ -1146,9 +1146,9 @@ Variant to draw beside it, **EKS Auto Mode**: boxes 5 and 9 move behind the AWS 
 
 | Step | What the animation shows | Object state | Entries |
 |---|---|---|---|
-| 1. Submit | The user applies a Job with the queue label; Kueue's webhook holds it | Job `suspend: true`, a Workload object appears | F10-451 |
-| 2. Queue | The Workload waits in the LocalQueue until the ClusterQueue has GPU quota in a flavor; a higher-priority Workload may preempt a lower one | Workload pending, then `QuotaReserved`, then `Admitted` | F10-450, F10-451, F10-452 |
-| 3. Unsuspend | Kueue unsuspends the Job and injects the flavor's node labels; the Job creates its pod | Pod `Pending`, unschedulable | F10-451, F10-453 |
+| 1. Submit | The user applies a Job with the queue label; Kueue holds it and represents it as a Workload in the LocalQueue | Job held, pods not yet created | F10-451 |
+| 2. Queue | The Workload waits in the LocalQueue until the ClusterQueue has GPU quota in a flavor; a higher-priority Workload may preempt a lower one | Workload: quota reserved, then admitted | F10-450, F10-451, F10-452 |
+| 3. Release | Kueue releases the Job and writes the flavor's node labels into the pod template; the Job creates its pod | Pod `Pending`, unschedulable | F10-451, F10-453 |
 | 4. Scale from zero | Karpenter's batch window closes (1 second idle, 10 seconds at most); it bin-packs the batch and sends up to 60 instance types to EC2 Fleet with price-capacity-optimized | NodeClaim created | F10-404, F10-403, F10-405 |
 | 5. Launch | EC2 returns one Spot instance; if a type has no capacity in a zone, that answer is cached for 3 minutes and the next option is tried | NodeClaim `Launched` | F10-402, F10-411 |
 | 6. Register and initialise | The node joins; the `karpenter.sh/unregistered` taint goes; the device plugin starts and the node advertises `nvidia.com/gpu` | NodeClaim `Registered`, then `Initialized` (deleted and retried after 15 minutes without registration) | F10-411, F10-410 |
@@ -1171,3 +1171,259 @@ No first-party page gives the seconds for steps 4 to 7 on a GPU node (U10c-1); t
 - **KAI Scheduler in place of Kueue:** step 2 happens inside the scheduler (the pod exists and is Pending while its queue is over quota); a fractional-GPU pod needs the `node-scale-adjuster` for step 4 to fire at all (F10-455).
 - **Multi-node JobSet or TrainJob:** step 4 must produce N nodes; with a placement group and EFA they come from one EC2NodeClass (F10-426). One Spot notice restarts the whole JobSet (F10-456), which is why the EKS guide keeps large training off Spot (F10-534).
 - **GPU fault instead of Spot notice:** the node monitoring agent sets `AcceleratedHardwareReady` to false; after 10 minutes auto repair replaces or reboots the node, with a 5 or 10 minute grace period on Karpenter v1.15 and almost none on Auto Mode (F10-460, F10-461, F10-462).
+
+
+## 7. Recommended configuration [our reading]
+
+Everything in this section is `[our reading]`: a configuration assembled for the arm's workloads from fields that the first-party pages document. The YAML below is ASSEMBLED, not verbatim; every field exists in the cited entries and every value is our choice. The verbatim first-party blocks are in section 5.
+
+**What AWS and the projects themselves recommend, quoted:**
+- "We recommend using the `price-capacity-optimized` strategy" (F10-528). Karpenter already uses it and offers no other (F10-403).
+- "A good rule of thumb is to be flexible across at least 10 instance types for each workload." (F10-529)
+- For GPUs: "allow broader g-series instances (generation 4 or higher) from NVIDIA across sizes and Availability Zones (AZs)" (F10-534)
+- "We strongly discourage using Spot Instances for these workloads or attempting to fail over to On-Demand Instances to handle interruptions" (F10-530)
+- "We recommend that you check for these interruption notices every 5 seconds." (F10-521)
+- "tiered approaches (fast local every 5-30 minutes for transients, durable hourly for major failures)" (F10-535)
+- "Design workloads that can't be interrupted safely, such as long-running training jobs, to checkpoint and resume." (F10-462)
+- "AWS suggests running either EKS Auto Mode or self-managed Karpenter" (F10-439)
+
+### 7.1 Choice of node layer
+
+- **EKS Auto Mode** when the team wants no node software to run: GPU drivers, device plugin, Spot handling and repair are included (F10-430, F10-435). Accept: no time-slicing (F10-443), no custom image or node access (F10-434), a 21-day node ceiling (F10-432), no G7 today (F10-433), repair with a minimal grace period (F10-462).
+- **Self-managed Karpenter v1.15** when the work needs time-slicing, MPS or KAI fractions, a custom image, G7, a repair grace period, or nodes that live longer than 21 days (F10-443, F10-445, F10-455, F10-440, F10-462, F10-416).
+
+### 7.2 Assembled NodePools for the arm (self-managed Karpenter)
+
+Three NodePools, one EC2NodeClass. Reasoning for each value follows the block.
+
+```yaml
+# ASSEMBLED [our reading]. Not from one page. Fields: F10-401, F10-402, F10-407, F10-408, F10-412, F10-415, F10-416, F10-422, F10-424.
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: gpu-spot                      # interruptible work: workloads 2, 3, 6, 7, 8, 10, 13
+spec:
+  weight: 50                          # tried before gpu-on-demand (F10-408)
+  template:
+    metadata:
+      labels:
+        fleet: gpu-spot
+    spec:
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot"]
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: ["g"]               # G only: P Spot is for multi-node work this pool does not run
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: ["4"]               # generation 5 up: g5, g6, g6e, g7e; the guide also allows generation 4 (F10-534)
+        - key: karpenter.k8s.aws/instance-gpu-memory
+          operator: Gt
+          values: ["20480"]           # same floor as the guide's block (F10-428); set per workload
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+      taints:
+        - key: nvidia.com/gpu
+          effect: NoSchedule
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: gpu
+      expireAfter: 720h               # Karpenter's default (F10-416)
+      terminationGracePeriod: 2h      # bounds a drain at expiry; irrelevant to a Spot reclaim (F10-416)
+  limits:
+    nvidia.com/gpu: 32                # the fleet ceiling, also the budget ceiling (F10-407)
+  disruption:
+    consolidationPolicy: WhenEmpty    # never move a running job to save money (F10-412, F10-428)
+    consolidateAfter: 10m             # keep a warm node between jobs of a sweep; the guide's job value is 60m
+    budgets:
+      - nodes: "100%"
+        reasons: ["Empty"]            # empty nodes may all go at once (F10-415)
+      - nodes: "0"
+        reasons: ["Drifted"]          # no drift replacement under running jobs; expiry still applies
+---
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: gpu-on-demand                 # work that must not be reclaimed: 9, 14, long runs of 8
+spec:
+  weight: 10
+  template:
+    metadata:
+      labels:
+        fleet: gpu-on-demand
+    spec:
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["reserved", "on-demand"]   # reserved first when an ODCR is selected (F10-402, F10-425)
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: ["g", "p"]
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: ["4"]
+      taints:
+        - key: nvidia.com/gpu
+          effect: NoSchedule
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: gpu
+      expireAfter: Never              # do not expire under a multi-day run; patch by drift in a window
+      terminationGracePeriod: 48h
+  limits:
+    nvidia.com/gpu: 8
+  disruption:
+    consolidationPolicy: WhenEmpty
+    consolidateAfter: 60m             # the guide's value for jobs (F10-428)
+---
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: gpu
+spec:
+  amiSelectorTerms:
+    - alias: al2023@v20261119         # pinned image, not @latest, so drift is a decision (F10-422, F10-440)
+  role: KarpenterNodeRole-CLUSTER     # placeholder
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: CLUSTER   # placeholder; subnets in every Availability Zone (F10-529)
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: CLUSTER
+  instanceStorePolicy: RAID0          # local NVMe as scratch for images and caches (F10-424)
+```
+
+Reasoning, value by value:
+
+- **Spot and On-Demand in separate NodePools, selected by the job, not one mixed pool.** A mixed pool makes Karpenter fall back to On-Demand within milliseconds when Spot is short (F10-402), which is the fail-over AWS discourages (F10-530) and which hides from the user which jobs are paying full price. The job chooses with a node selector on `fleet`, or the Kueue ResourceFlavor does it (F10-451). A mixed pool is right only where finishing on time matters more than cost, and that is a per-job choice.
+- **Flexibility.** With generation above 4 and a GPU-memory floor, the pool spans g5, g6, g6e and g7e in every size and zone. Whether that reaches 10 types that the workload can use depends on the floor (F10-529); the March 2026 advisor file shows most of those rows in the highest interruption band (F10-539), so the checkpoint, not the type list, carries the risk.
+- **`limits` of 32 GPUs.** A cap is needed because a NodePool without one is bounded only by the EC2 quota (F10-407). 32 is an illustration: four sweeps of eight single-GPU jobs. The account's "All G and VT Spot Instance Requests" quota must cover it in vCPUs, and its printed default is 0 (F10-533).
+- **`WhenEmpty`.** `WhenEmptyOrUnderutilized`, Karpenter's default with `consolidateAfter: 0s` (F10-412), would evict a running training pod to repack it. Jobs also carry `karpenter.sh/do-not-disrupt: "true"` as a second guard (F10-420); neither stops a Spot reclaim.
+- **`consolidateAfter: 10m`.** Long enough that the next job of a sweep reuses a node that already holds the image; short enough that an idle 8-GPU node is not kept for an hour. HyperPod's guidance for the same field is "non zero upto 2 min" (F10-540); the EKS guide's is 60 minutes for jobs (F10-428). 10 minutes sits between and should be tuned against measured node start time (U10c-1).
+- **Interruption queue on.** Without `--interruption-queue` Karpenter does not react to the notice at all (F10-417). No Node Termination Handler beside it (F10-419).
+
+### 7.3 Checkpoint settings
+
+- **Periodic, to durable storage.** Every 10 to 15 minutes to S3 through Mountpoint or to FSx for Lustre for single-GPU fine-tunes; the EKS guide's range for the fast tier is 5 to 30 minutes (F10-535), and Batch's Spot advice is units of work of 30 minutes or less (F10-535). The interval is the work lost per reclaim: at 15 minutes and a ">20%" monthly band it is an accepted loss `[our reading]`.
+- **On SIGTERM as well, but never only on SIGTERM.** The notice is best effort (F10-522). Set the pod's `terminationGracePeriodSeconds` to 100 to 110 seconds: above the 30-second default, under the two minutes after which the node is gone (F10-535, F10-418). A checkpoint that takes longer than that to write cannot be a SIGTERM checkpoint.
+- **Not on instance store alone.** RAID0 scratch is lost on reclaim (F10-525, F10-424).
+- **Retries.** A Job `backoffLimit` that tolerates several reclaims, or a JobSet failure policy that does not count evictions (F10-456). Batch's figure for the same idea is 1 to 3 retries at least (F10-537).
+
+### 7.4 Before the first GPU Spot job
+
+1. Raise the Spot quota for G instances (F10-533).
+2. Query the Spot placement score for the accepted G types in each candidate Region and zone (F10-532).
+3. Do not set a maximum Spot price (F10-526).
+4. Test an interruption before trusting the handler (F10-522); the same EC2 page names AWS Fault Injection Service as the tool.
+
+
+## 8. Workload fit
+
+Names are those in `src/sections/Workloads.tsx`, in its order. Verdicts are `[our reading]` unless an entry with first-party evidence is cited as such. "On Spot" is the EC2 Spot verdict, which holds for Batch and HyperPod as well as EKS.
+
+| # | Workload (file name) | Fit on EKS | On Spot | Why, with entries |
+|---|---|---|---|---|
+| 1 | Record and encode | Does not fit: edge | Not applicable | Runs on the computer beside the robot. EKS Hybrid Nodes could make that computer a node, but the pages read state no GPU status for it (F10-466, U10c-5) and nothing is gained for one arm. |
+| 2 | Decode and filter | Suits | Suits | Independent shards as an indexed Job behind a Kueue queue; CPU or one GPU each; a reclaim costs one shard. First-party: "data augmentation" and batch work are on the EKS guide's Spot list (F10-534). |
+| 3 | Embed and deduplicate | Suits | Suits | Same shape as 2. Small embedding models can share a GPU by time-slicing or KAI fractions on self-managed Karpenter, not on Auto Mode (F10-443, F10-455). |
+| 4 | Dataloader decode and augment | Not a scheduler decision | Follows the training job | It runs inside the training pod. EKS's levers are the instance size (vCPUs per GPU through NodePool requirements, F10-401) and the pod's CPU and memory requests. |
+| 5 | CPU physics step | Suits | Suits | Many CPU pods; a CPU NodePool is where the 10-type rule is easy to meet, and the repository's own Spot example is a `c`, `m`, `r` pool (F10-427, F10-529). |
+| 6 | GPU-parallel physics | Suits | Suits with checkpoints | One GPU per pod, thousands of environments inside it. A reinforcement-learning run checkpoints its policy every few minutes; a reclaim costs the interval (F10-535). |
+| 7 | Simulated cameras | Suits | Suits, with a narrower type list | Needs RTX-capable GPUs and more GPU memory, so the NodePool's memory floor shrinks the list; the guide names "GPU memory or Ray Tracing" as the constraints to weigh (F10-534). The advisor file has rows for g6e and g7e (F10-538). |
+| 8 | Policy fine-tune | Suits | Suits with checkpoints | The EKS guide lists "Fine-tuning models" on Spot "with robust checkpointing mechanisms" (F10-534, first-party). A TrainJob or plain Job, one node, 1 to 8 GPUs (F10-457). The managed alternative with no cluster is SageMaker managed Spot training (F10-536). |
+| 9 | World-model training | Possible | Possible on one node; not for multi-node | Single-node runs behave like 8 with larger checkpoints: the checkpoint must be writable inside two minutes or be periodic only (F10-535, F10-418). The guide: Spot "not recommended for production-scale training" (F10-534). |
+| 10 | Closed-loop evaluation | Suits | Suits | Many short, independent rollouts of a policy in simulation; a reclaimed rollout is rerun. Array-style Job with a Kueue quota so evaluation cannot starve training (F10-450, F10-452). |
+| 11 | Engine build | Possible | Possible | A short single-GPU job. The constraint is the GPU model, not the scheduler: the engine must be built for the target device, so a cloud G instance serves only when it matches or when the build is for a cloud target. Pin one family in the NodePool, which gives up Spot flexibility (F10-529). |
+| 12 | On-robot inference | Does not fit: edge | Not applicable | Runs on the robot's computer. The cloud-side neighbour is a real-time endpoint, which is what the guide's `gpu-inference-spot` block is written for (F10-428). |
+| 13 | Generative augmentation | Suits | Suits | Batch inference of a video or world model over a list of clips: the guide's Spot list has "data augmentation" and batch inference (F10-534). Needs large GPU memory, so the same narrow type list as 7. |
+| 14 | Robot foundation-model pretraining | Possible on EKS; hand off above one node | Does not fit | Days on 8 GPUs or more. On EKS it wants On-Demand or reserved capacity (ODCRs or Capacity Blocks, F10-425), `expireAfter` off and repair with a grace period (F10-416, F10-462); Auto Mode's 21-day node ceiling and minimal-grace repair count against it (F10-432, F10-462). |
+| 15 | World-model pretraining | Possible; hand off | Does not fit | Multi-node with EFA and a placement group: supported in Karpenter and Auto Mode since July 2026 (F10-426, F10-464, F10-540), with JobSet or TrainJob and KAI gang scheduling (F10-454, F10-456). One reclaim restarts every node's work, and AWS discourages Spot for "tightly coupled" work (F10-530, F09-95). HyperPod or PCS carry this with less assembly (sections 26, 27). |
+
+
+## 9. What it does poorly, and hand-offs
+
+| Limit | Entries | Where it hands off |
+|---|---|---|
+| Nothing queues jobs out of the box: plain Kubernetes starts every pod it can, so quota, priority between teams and fair sharing need Kueue or KAI installed and configured | F10-450, F10-454 | AWS Batch (queues and fair share are the service, section 25); HyperPod task governance (section 27) |
+| Many parts to version and keep compatible on self-managed Karpenter: Karpenter, the image, device plugin or GPU Operator or DRA driver, CSI drivers, scheduler, monitoring agent | section 2 currency table; F10-440, F10-441, F10-442 | EKS Auto Mode for the node layer (F10-430); Batch or HyperPod for the whole stack |
+| Auto Mode removes choices GPU work may need: no time-slicing, no custom image, no node access, no G7, 21-day node ceiling, forceful repair | F10-434, F10-443, F10-433, F10-432, F10-462 | Self-managed Karpenter on the same cluster type |
+| Kueue's capacity-aware admission (ProvisioningRequest) is written for cluster-autoscaler; with Karpenter a job is admitted on quota and then waits for capacity that may not exist | F10-453, U10c-3 | Batch, whose scheduler and scaling are one service |
+| Fractional GPUs are invisible to the autoscaler: Karpenter counts whole `nvidia.com/gpu`; KAI fractions need an extra component | F10-443, F10-455 | Whole-GPU jobs on Batch; or accept one node per fractional group |
+| Karpenter ignores the rebalance recommendation and has no capacity-rebalancing mode | F10-419, F10-524 | Auto Scaling group or fleet based services (Batch, PCS) where Capacity Rebalancing exists |
+| A Spot reclaim of one node restarts a whole multi-node job | F10-456, F10-530 | On-Demand, ODCRs or Capacity Blocks (F10-425); HyperPod or PCS for resilience features (sections 26, 27) |
+| GPU Spot depth is thin and uneven: default quota 0, most common G rows in the highest interruption band in the March 2026 file, no rows for the newest families | F10-533, F10-539, F10-538 | Capacity reservations; another Region chosen with the placement score (F10-532) |
+| The two-minute notice is not guaranteed and a pod grace period beyond it is cut | F10-522, F10-418 | No hand-off: periodic checkpoints are the only answer on every service |
+| No published time from pending pod to running GPU pod | F10-438, U10c-1 | Measure it; or keep warm nodes with `consolidateAfter` or Auto Mode static capacity |
+| Simulation with a display, a robot in the loop, or data capture at the edge | F10-466 | The edge sections of the dive; OSMO for cloud-plus-edge pipelines (F10-458, F09-65) |
+
+
+## 10. Contradicts or sharpens the first version
+
+| F09 ID | What register 09 says | What today's page says |
+|---|---|---|
+| F09-38 | Karpenter's AWS provider is at v1.15.2 (12 November 2026) | v1.15.3 was published today, 20 November 2026, a bug-fix release (F10-400). Register 09 did not fetch the Karpenter documentation; this register reads it at the v1.15.3 tag (F10-401 to F10-427). |
+| F09-42 | From the best-practices guide: DRA on self-managed nodes is limited to managed node groups, "not with Karpenter" | Contradicted by the EKS User Guide and the 9 November 2026 announcement: Karpenter supports DRA from v1.15 and Auto Mode from Kubernetes 1.36, and the guide recommends DRA drivers for new deployments on 1.34 and later (F10-442). The best-practices page is the stale one. |
+| F09-48 | Auto Mode nodes have a 21-day maximum lifetime | The default is 336 hours, 14 days; 21 days is the ceiling. The default `terminationGracePeriod` is 24 hours (F10-432). |
+| F09-47 | The 2026 Auto Mode changes, with approximate dates | Exact headings: placement groups 5 May, interruptible Capacity Reservations 3 June, and the rest as listed in F10-437. `Balanced` consolidation is also in open-source Karpenter v1.15 (F10-412). The 17 November resource-optimization preview is not on the release notes page. |
+| F09-41 | MIG on A100, H100 and Blackwell GPUs; the A10G does not support it | Sharpened: on AWS, MIG is also available on g7 and g7e, and not on g5, g6 or g6e; time-slicing and MPS limits added (F10-443, F10-444, F10-445). |
+| F09-39 | The guide's GPU NodePool pattern, summarised | Printed verbatim (F10-428, section 5). The block is written for inference (`WhenEmptyOrUnderutilized`, 5 minutes); for jobs the same guide gives `WhenEmpty` and 60 minutes. |
+| F09-40 | Karpenter uses ODCRs through `capacityReservationSelectorTerms` | Sharpened with versions and labels: ODCRs from v1.3, Capacity Blocks from v1.6, interruptible reservations from v1.10; capacity type `reserved` is tried first (F10-425, F10-402). |
+| F09-49 | G7 is not supported in Auto Mode | Agrees: G7 is absent from today's Auto Mode instance list and present in the accelerated image list (F10-433, F10-440). |
+| F09-61 | OSMO's newest release is 6.3.1 | Agrees (F10-458). |
+| F09-95 | Two minutes' warning, best effort; be flexible across 10 types; Spot is unsuitable for tightly coupled work | Agrees, and sharpened three ways: the warning can be missing altogether (F10-522); the rebalance recommendation has no guaranteed lead (F10-523); AWS also discourages failing over to On-Demand, which sits in tension with the Spot-then-On-Demand patterns that Karpenter, Auto Mode, HyperPod and the Batch guide document (F10-530, F10-402, F10-435, F10-540, F10-537). The dive should print the fallback pattern with that caveat. |
+| F09-96 | Spot Instance Advisor file of 20 March 2026; US East (N. Virginia) counts for G5, G6e, G7e | Agrees (same file, same date). Extended to every G and P family and to all Regions; no rows for g7, p5e, p6e (F10-538, F10-539). |
+| F09-11 | Batch: avoid Spot for jobs of an hour or more; parts of 30 minutes or less | Agrees (F10-535, F10-537). Not the same advice as the EKS guide, which sets the checkpoint threshold at jobs longer than 1 to 2 hours and a fast tier of 5 to 30 minutes (F10-535). The dive should present them as two first-party figures, not one rule. |
+
+One contradiction inside today's first-party pages, not with register 09: the Karpenter documentation at v1.15.3 describes node repair as force-terminating without a drain (F10-421), while the EKS User Guide says Karpenter v1.15.0 and later applies a grace period of 5 or 10 minutes and adds `RebootForRepair` and `karpenter.sh/do-not-repair` (F10-462). The EKS guide is the more specific and more recent statement `[our reading]`.
+
+## 11. UNKNOWN register
+
+| ID | Unknown | Where it arises | What was searched; what would close it |
+|---|---|---|---|
+| U10c-1 | Seconds from a pending GPU pod to a running one (launch, registration, device plugin ready, image pull) on Karpenter or Auto Mode | F10-404, F10-418, F10-438 | Karpenter docs at v1.15.3, EKS User Guide Auto Mode pages, best-practices guide: only the batch window (1 second, 10 seconds) and one sample output (76 seconds, On-Demand). Closed by our own measurement on a `g6e` Spot node. |
+| U10c-2 | A first-party Auto Mode page that prints a GPU Spot NodePool | F10-435 | Auto Mode pages listed in section 3: the Spot example is a CI pool, the GPU examples are On-Demand. The Karpenter-form block in F10-428 is the nearest. |
+| U10c-3 | Whether Karpenter supports Kueue's ProvisioningRequest admission check | F10-453 | Kueue provisioning_request.md at v0.20.7 names cluster-autoscaler only; the Karpenter docs pages read do not mention it. A statement in either project's docs or release notes would close it. |
+| U10c-4 | The pods-per-node limit that applies to a GPU node | F10-465 | service-quotas and provisioned control plane pages. Not needed for the arm's fleet. |
+| U10c-5 | GPU support on EKS Hybrid Nodes | F10-466 | Overview and add-ons pages have no match for "gpu" or "nvidia". Register 09 wave 3 holds the Hybrid Nodes limits. |
+| U10c-6 | One first-party checkpoint interval for GPU training on Spot | F10-535 | EKS guide (5 to 30 minutes fast tier, hourly durable), Batch guide (parts of 30 minutes or less), SageMaker (checkpoint unless the job is quick), EC2 guide (no number). The pages give ranges and no single figure. |
+| U10c-7 | A 2025 or 2026 AWS blog post or What's New item about simulation or rendering fleets on GPU Spot | F10-540 | The What's New feed searched for Spot, GPU, Karpenter and EKS items; found HyperPod Spot, EFA and placement groups, DRA, placement score for Local Zones. AWS blog categories were not searched exhaustively. |
+| U10c-8 | Current Spot interruption data for G and P families, and any data for g7, p5e, p6e | F10-538 | The advisor file is dated 20 March 2026 and has no rows for those families. The placement score API gives a current likelihood of fulfilment, which needs an AWS call this research did not make. |
+| U10c-9 | The share of interruptions that arrive without the two-minute notice | F10-522 | The EC2 and HyperPod pages say it can happen and give no rate. |
+
+## 12. Source list by tier
+
+### Tier 1 (AWS documentation, first-party data, project docs and examples at a pinned tag)
+
+- Amazon EKS User Guide, pages listed in section 3: https://docs.aws.amazon.com/eks/latest/userguide/
+- EKS Best Practices Guide, pages listed in section 3: https://docs.aws.amazon.com/eks/latest/best-practices/
+- Amazon EC2 User Guide, Spot pages listed in section 3: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/
+- AWS Batch User Guide, "Amazon EC2 On-Demand or Amazon EC2 Spot": https://docs.aws.amazon.com/batch/latest/userguide/bestpractice5.html
+- AWS Batch User Guide, "Use Amazon EC2 Spot best practices for AWS Batch": https://docs.aws.amazon.com/batch/latest/userguide/bestpractice6.html
+- Amazon SageMaker AI Developer Guide, "Managed Spot Training in Amazon SageMaker AI": https://docs.aws.amazon.com/sagemaker/latest/dg/model-managed-spot-training.html
+- Amazon SageMaker AI Developer Guide, "Spot instances in Amazon SageMaker HyperPod": https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html
+- Spot Instance Advisor data file: https://spot-bid-advisor.s3.amazonaws.com/spot-advisor-data.json
+- Karpenter AWS provider at v1.15.3: https://github.com/aws/karpenter-provider-aws/tree/8c91894e993eda682f0785091b79a93da68f9830
+- Kueue at v0.20.7: https://github.com/kubernetes-sigs/kueue/tree/e854ec82e404436b261c81f0341ac9de8508f97c
+- KAI Scheduler at v0.19.0: https://github.com/kai-scheduler/KAI-Scheduler/tree/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11
+- JobSet at v0.13.1: https://github.com/kubernetes-sigs/jobset/tree/6266f0267a5d1a013ae552ecb209214eab5c55c8
+- Kubeflow Trainer at v2.4.0: https://github.com/kubeflow/trainer/tree/a7b05c24ff0f145368529b5d180c223baf965ef5
+- NVIDIA OSMO release 6.3.1: https://github.com/NVIDIA/OSMO/releases/tag/6.3.1
+- NVIDIA GPU Operator documentation, overview: https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/overview.html
+- GitHub API release lists (dates only) for the repositories named in section 2.
+
+### Tier 2 (What's New posts, AWS blogs)
+
+- "Amazon SageMaker HyperPod now supports Spot Instances", Nov 24, 2025: https://aws.amazon.com/about-aws/whats-new/2025/11/amazon-sagemaker-hyperpod-spot-instances
+- Amazon EKS placement groups and EFA for node pools on Auto Mode and Karpenter, Jul 22, 2026: https://aws.amazon.com/about-aws/whats-new/2026/07/amazon-eks-efa-placement-groups/
+- Spot placement score support for Local Zones, Aug 13, 2026: https://aws.amazon.com/about-aws/whats-new/2026/08/spot-placement-score-local-zones/
+- DRA on EKS Auto Mode and Karpenter, Nov 9, 2026: https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-eks-auto-mode-karpenter-dra/
+- AWS Compute Blog, "Introducing the price-capacity-optimized allocation strategy for EC2 Spot Instances" (linked from the Karpenter FAQ passage quoted in F10-403; the post itself is not quoted): https://aws.amazon.com/blogs/compute/introducing-price-capacity-optimized-allocation-strategy-for-ec2-spot-instances/
+
+### Tier 3 and Tier 4
+
+None used.
