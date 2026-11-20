@@ -69,7 +69,14 @@ export async function probeSvgs(page: Page): Promise<SvgProbe[]> {
       const rawTexts = Array.from(svg.querySelectorAll('text')).filter((el) => {
         if (el.closest('defs, clipPath, mask, marker, symbol, pattern')) return false;
         const rect = el.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0;
+        if (!(rect.width > 0 && rect.height > 0)) return false;
+        // Physical AI dive: an animated figure keeps the elements of other steps in the DOM at
+        // opacity 0 so they can fade in. Text the reader cannot see cannot collide.
+        for (let n: Element | null = el; n && n !== svg; n = n.parentElement) {
+          const cs = window.getComputedStyle(n);
+          if (cs.visibility === 'hidden' || Number(cs.opacity) < 0.05) return false;
+        }
+        return true;
       });
       // No rendered <text> means this is a Cloudscape icon, not an authored
       // diagram. Only diagrams are in scope for an overlap gate.
