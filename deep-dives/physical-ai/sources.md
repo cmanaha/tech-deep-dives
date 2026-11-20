@@ -1,3 +1,449 @@
-# Sources
+# Physical AI: Sources
 
-Drafted at the end of the Gate 1 research. Registers with pinned sources are in `research/2026-11/`.
+Draft at Gate 1 (2026-11-20). Every source below was accessed on 2026-11-20 unless its line says otherwise. Sources are grouped by tier, then by the claim register that cites them; each register in `research/2026-11/` holds the pinned version (arXiv version, release tag or 40-character SHA), the verbatim quotes and the entry IDs. This file is rebuilt from the registers when the app sections are written, and the glossary is added then.
+
+Tier ladder (repository standard): Tier 0 our experiments; Tier 1 code, official docs and API references; Tier 2 first-party blogs and talks; Tier 3 papers and third-party analysis; Tier 4 tutorials and press, for locating sources only. Code is the authority over documentation. Vendor and author performance figures are claims and are labelled as such where they are used.
+
+## Tier 0: our own experiments
+
+- `research/experiments/E-seed-profiling-2026-11-19/`: CPU microbenchmarks and three CPU stand-in workloads under `perf stat`, top-down level 1, on a Jetson Orin Nano Super and a DGX Spark; one GPU matmul kernel per machine under Nsight Compute. One run per kernel per core type in each of two passes; provenance and limits in `research/experiments/README.md`. Cited by register 08 (F08-60 to F08-74).
+
+## Tier 1: source code at a pinned ref, official documentation, API references, vendor support matrices and datasheets
+
+### Register 01. Robot basics (section 3)
+
+- TheRobotStudio/SO-ARM100 at `141aea7bcac2744d92998e30268c413202a56f96`: https://github.com/TheRobotStudio/SO-ARM100 (files as listed in section 3)
+- huggingface/lerobot at v0.7.0, `410c095eacc0011d998a73383eb94abed2715af0`: https://github.com/huggingface/lerobot/releases/tag/v0.7.0 (files as listed in section 3)
+- huggingface/lerobot at v0.6.1, `7e241bd630a3719a56157a497ce5d08f244784f1` (one file)
+- pollen-robotics/rustypot at v1.13.1, `7aa85e13143594ea4fd4ed9f29e3e29d39b5de85`: `src/servo/feetech/sts3215.rs`
+- NVIDIA/Isaac-GR00T at `708617f5716c63fc0a327391492ea2b91977ae90`: `README.md`, `scripts/deployment/README.md`
+- Feetech STS3215 Product Specification, edition A/0, 2020-04-10 (reseller-hosted machine translation): https://core-electronics.com.au/attachments/uploads/sts3215-smart-servo-datasheet-translated.pdf
+- Feetech STS3215 evaluation note, 2020 (reseller-hosted copy): https://www.mantech.co.za/datasheets/products/sts3215-200620a-1.pdf
+- OpenArm docs, "Motor", version 2.0, updated 2026-11-16: https://docs.openarm.dev/hardware/openarm-2.0/motor
+- Release metadata: https://pypi.org/pypi/lerobot/json , https://pypi.org/pypi/rustypot/json , GitHub API release and tag listings for the repositories above
+
+### Register 02. Imitation learning and vision-language-action models (sections 4, 5)
+
+- huggingface/lerobot at tag v0.7.0, SHA 410c095eacc0011d998a73383eb94abed2715af0: `src/lerobot/policies/{act,diffusion,smolvla,pi0,pi05,pi0_fast,groot,xvla,rtc}/`, `src/lerobot/robots/so_follower/so_follower.py`, `docs/source/{act,smolvla,pi0,pi05,groot,xvla,il_robots,peft_training}.mdx`; release notes https://github.com/huggingface/lerobot/releases/tag/v0.7.0
+- Physical-Intelligence/openpi, repository root https://github.com/Physical-Intelligence/openpi at SHA 215abfb217dbac7d5f1273282331b9b1866c0479: `README.md`, `src/openpi/models/pi0.py`, `src/openpi/models/pi0_config.py`
+- NVIDIA/Isaac-GR00T, repository root https://github.com/NVIDIA/Isaac-GR00T at SHA 708617f5716c63fc0a327391492ea2b91977ae90: `README.md`, `gr00t/configs/model/gr00t_n1d7.py`, `scripts/deployment/README.md`, `getting_started/hardware_recommendation.md`, `examples/SO100/README.md`
+- Hugging Face model card nvidia/GR00T-N1.7-3B at revision 373d34e2723d928870157d07dc216a19a624b5bb
+- Hugging Face model registry API (author lerobot; author nvidia)
+
+### Register 03. World models and JEPA (sections 6, 7)
+
+- facebookresearch/vjepa2 at `204698b45b3712590f06245fbfba32d3be539812`: https://github.com/facebookresearch/vjepa2
+- lucas-maes/le-wm at `8edfeb336732b5f3ce7b8b210d0ba370a09e2cac`: https://github.com/lucas-maes/le-wm
+- NVIDIA/Cosmos at `0eab578a8935e26aa41c2b7dc9f5ab00f790a037`: https://github.com/NVIDIA/Cosmos
+- nvidia-cosmos/cosmos-predict2.5 at `a2c298b0a3df3778b973fe65e9e58877b292d8a7`: https://github.com/nvidia-cosmos/cosmos-predict2.5
+- facebookresearch/robo_jepa at `f93106f5f4a451fd526d51778aa8ab7c852eb824` (README only): https://github.com/facebookresearch/robo_jepa
+- huggingface/lerobot v0.7.0 at `410c095eacc0011d998a73383eb94abed2715af0`: https://github.com/huggingface/lerobot
+- Model card nvidia/Cosmos3-Nano, revision `45666784803b3a7ad577e0def405f9afcc3bddb2`: https://huggingface.co/nvidia/Cosmos3-Nano
+
+### Register 04. Reinforcement learning and agentic loops (sections 8, 19)
+
+- huggingface/lerobot at v0.7.0 (SHA 410c095eacc0011d998a73383eb94abed2715af0): https://github.com/huggingface/lerobot/releases/tag/v0.7.0
+- isaac-sim/IsaacLab at v3.0.0 (SHA e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4): https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0
+- google-deepmind/mujoco_playground at v1.0.1 (SHA 084e7957842792725d70866ee840d8fd79f17bbe): https://github.com/google-deepmind/mujoco_playground/tree/v1.0.1
+- newton-physics/newton at v1.8.0 (SHA 425db81f01e402b51f96f560e154d529d645c6de): https://github.com/newton-physics/newton/releases/tag/v1.8.0
+- NVlabs/ENPIRE at SHA 99ee90acf65b5b18957c8382ad580db999528be3: https://github.com/NVlabs/ENPIRE
+- NVlabs/ASPIRE at SHA fa00f0ef2bc1d91d594b9aa502c22133c9f538f7: https://github.com/NVlabs/ASPIRE
+- aws-samples/sample-rfm-simulation-on-aws at SHA 66e0fbef60d4d345d72c38505d3911d6a4cfff89 (and tag v1.0.0, SHA 1baf622dc6c7ebfd91035d803149d58bbed4fddb): https://github.com/aws-samples/sample-rfm-simulation-on-aws
+- RLinf/RLinf at v0.4 (SHA 2348ece3df113874671478be1360ae3115b346e3): https://github.com/RLinf/RLinf
+- rail-berkeley/hil-serl at SHA c32939bccb65f3b8c43a9f9add3d322d4ab0264a: https://github.com/rail-berkeley/hil-serl
+- AWS Batch user guide: https://docs.aws.amazon.com/batch/latest/userguide/job_timeouts.html ; https://docs.aws.amazon.com/batch/latest/userguide/fair-share-scheduling.html ; https://docs.aws.amazon.com/batch/latest/userguide/resource-aware-scheduling.html
+- Amazon Bedrock AgentCore limits: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/bedrock-agentcore-limits.html
+
+### Register 05. Data pipeline (sections 9 to 11)
+
+- huggingface/lerobot at v0.7.0, `410c095eacc0011d998a73383eb94abed2715af0`: https://github.com/huggingface/lerobot/tree/410c095eacc0011d998a73383eb94abed2715af0 (files in section 3)
+- huggingface/lerobot at v0.4.0, `f25ac02e6c8fa9c467ab8462289e5f4aed3a2e85`, `benchmarks/video/README.md` (history)
+- huggingface/lerobot default-branch head `039e05183f38b02d28c5f6ac9dbc7ef1680728cd`: https://github.com/huggingface/lerobot (format version constant)
+- Hub dataset `lerobot/svla_so101_pickplace` at `f641879e22172be7e8161d5e6c1503c2d2feb657`: `meta/info.json` and file listing
+- NVIDIA/cosmos-curator at v2.10.0, `95675431e309fd86c1c559a39fcb694ddedaa2a9`: https://github.com/NVIDIA/cosmos-curator/tree/95675431e309fd86c1c559a39fcb694ddedaa2a9
+- NVIDIA-NeMo/Curator at v1.4.0, `10fba1ea785863872ae6983b580ec6813e72cc79`, `README.md`
+- isaac-sim/IsaacLab at v3.0.0, `e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4`: https://github.com/isaac-sim/IsaacLab/tree/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/features/imitation-learning
+- NVIDIA-Omniverse-blueprints/synthetic-manipulation-motion-generation at `be78013710543995b40a3a122294e6ab21699e67`, `README.md`
+- NVIDIA/cosmos at `0eab578a8935e26aa41c2b7dc9f5ab00f790a037`: https://github.com/NVIDIA/cosmos/tree/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference
+- nvidia-cosmos/cosmos-transfer2.5 at `2ff49d0717af02057ae79bc75c00fbff9da1b4e7` and nvidia-cosmos/cosmos-predict2.5 at `a2c298b0a3df3778b973fe65e9e58877b292d8a7`
+- NVIDIA video encode and decode GPU support matrix: https://developer.nvidia.com/video-encode-decode-support-matrix
+- Jetson Linux Developer Guide r36.5 and r39.2.2, "Software Encode in Orin Nano": https://docs.nvidia.com/jetson/archives/r36.5/DeveloperGuide/SD/Multimedia/SoftwareEncodeInOrinNano.html
+- Amazon EC2 accelerated computing instance types: https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html
+
+### Register 06. Simulation, sim-to-real and evaluation (sections 12 to 14, 16)
+
+- google-deepmind/mujoco at 4.0.1 (4ed093a9f06b170bd1564942fa37e1bb907d93e3) and default branch at 23c23e0dc1643e99bb2a0abaf5dc4cf873e0bd77
+- google-deepmind/mujoco_warp at v4.0.1 (2db59f4d929dab714d85fab946d93427d2aa56e7) and commit 917a14b77735944140b66345325c8a14f2fe6be7; nightly benchmark page
+- google-deepmind/mujoco_playground at v1.0.1 (084e7957842792725d70866ee840d8fd79f17bbe)
+- google-deepmind/mujoco_menagerie at 370c43965323c0944b433b202aac5058b5f907a9
+- TheRobotStudio/SO-ARM100 at 141aea7bcac2744d92998e30268c413202a56f96
+- newton-physics/newton at v1.8.0 (425db81f01e402b51f96f560e154d529d645c6de) and default branch at 9bd0215d9c82508ea8d759c41df1b4577423d6ea
+- isaac-sim/IsaacSim at v6.2.0 (74a9356b20250dd60337d90b4b4d913c9454d32b); Isaac Sim 6.2.0 documentation (requirements, NuRec assets)
+- isaac-sim/IsaacLab at v3.0.0 (e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4), including the release benchmark export
+- isaac-sim/IsaacLab-Arena at 2281e1256bd10bf9b62b67ccccec9c87cd51fc6f; its performance documentation page
+- huggingface/lerobot at v0.7.0 (410c095eacc0011d998a73383eb94abed2715af0)
+- nv-tlabs/3dgrut at v1.1.0 (0a5832248698ab8456b181d6ea17fe02eda58637)
+- Genesis-Embodied-AI/Genesis at v1.4.7 (0a9e28ac6af9206baf26285f7b71104d670a5e51), README only
+- NVIDIA product pages: A10, L4, L40S, RTX PRO 6000 Blackwell Server Edition, H100, H200
+
+### Register 07. Edge and fleet (sections 17, 18)
+
+- huggingface/lerobot at tag v0.7.0, SHA 410c095eacc0011d998a73383eb94abed2715af0: `docs/source/{rtc,inference,remote_inference,hardware_guide,installation}.mdx`, `src/lerobot/policies/rtc/configuration_rtc.py` (raw URLs in the entries)
+- NVIDIA/Isaac-GR00T at SHA 708617f5716c63fc0a327391492ea2b91977ae90 (head of the default branch, 2026-11-17): `scripts/deployment/README.md`; repository root https://github.com/NVIDIA/Isaac-GR00T
+- Physical-Intelligence/openpi at SHA 215abfb217dbac7d5f1273282331b9b1866c0479 (head of the default branch, 2026-08-24): `docs/remote_inference.md`, `packages/openpi-client/src/openpi_client/action_chunk_broker.py`, `README.md`; repository root https://github.com/Physical-Intelligence/openpi
+- NVIDIA/TensorRT release v11.5: https://github.com/NVIDIA/TensorRT/releases/tag/v11.5
+- NVIDIA/TensorRT-Edge-LLM release v0.12.0: https://github.com/NVIDIA/TensorRT-Edge-LLM/releases/tag/v0.12.0
+- aws-greengrass releases: https://github.com/aws-greengrass/aws-greengrass-nucleus/releases/tag/v2.18.4 ; https://github.com/aws-greengrass/aws-greengrass-lite/releases/tag/v2.7.0
+- TensorRT 11.5.0 docs: https://docs.nvidia.com/deeplearning/tensorrt/latest/getting-started/release-notes-11/11.5.0.html ; https://docs.nvidia.com/deeplearning/tensorrt/latest/getting-started/support-matrix.html ; https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/engine-compatibility.html ; https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/work-quantized-types.html
+- NVIDIA product and release pages: https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/ ; https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/nano-super-developer-kit/ ; https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-thor/ ; https://www.nvidia.com/en-us/products/workstations/dgx-spark/ ; https://docs.nvidia.com/dgx/dgx-spark/hardware.html ; https://developer.nvidia.com/embedded/faq ; https://developer.nvidia.com/embedded/jetpack ; https://developer.nvidia.com/embedded/jetpack/downloads
+- AWS IoT Greengrass V2: https://docs.aws.amazon.com/greengrass/v2/developerguide/greengrass-nucleus-component.html ; https://docs.aws.amazon.com/greengrass/v2/developerguide/greengrass-nucleus-lite-component.html ; https://docs.aws.amazon.com/greengrass/v2/developerguide/operating-system-feature-support-matrix.html ; https://docs.aws.amazon.com/greengrass/v2/developerguide/run-docker-container.html ; https://docs.aws.amazon.com/greengrass/v2/developerguide/manage-data-streams.html ; https://docs.aws.amazon.com/general/latest/gr/greengrassv2.html ; https://docs.aws.amazon.com/greengrass/v2/APIReference/API_DeploymentPolicies.html ; https://docs.aws.amazon.com/greengrass/v2/APIReference/API_DeploymentComponentUpdatePolicy.html ; https://docs.aws.amazon.com/greengrass/v2/APIReference/API_DeploymentIoTJobConfiguration.html
+- AWS IoT: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-configurations-details.html ; https://docs.aws.amazon.com/iot/latest/apireference/API_JobExecutionsRolloutConfig.html ; https://docs.aws.amazon.com/iot/latest/apireference/API_ExponentialRolloutRate.html ; https://docs.aws.amazon.com/iot/latest/apireference/API_AbortCriteria.html ; https://docs.aws.amazon.com/general/latest/gr/iot-core.html
+- AWS other: https://docs.aws.amazon.com/general/latest/gr/full_shutdown_services.html ; https://docs.aws.amazon.com/iot-fleetwise/latest/developerguide/iotfleetwise-availability-change.html ; https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/edge.html ; https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/limits.html ; https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html ; https://aws.amazon.com/about-aws/global-infrastructure/localzones/features/
+
+### Register 08. Compute shapes and reading a machine (sections 20 to 23)
+
+- intel/perfmon at c6875bae4fe4322e88c6b265962901672bfa97c9: `TMA_Metrics-full.csv`, `README.md` (https://github.com/intel/perfmon/blob/c6875bae4fe4322e88c6b265962901672bfa97c9/TMA_Metrics-full.csv)
+- torvalds/linux at tag v7.3, c03c1a14507dfaf8b856c2608f9ac216021fc222: `tools/perf/Documentation/perf-stat.txt`, `tools/perf/Documentation/topdown.txt`, `tools/perf/pmu-events/arch/x86/amdzen4/pipeline.json`, `amdzen5/pipeline.json`, `amdzen6/pipeline.json`, `tools/perf/pmu-events/arch/arm64/sbsa.json`, `arm64/arm/neoverse-v1/metrics.json`, `neoverse-n2-v2/metrics.json`, `neoverse-v3/metrics.json`, `tools/perf/arch/arm64/util/pmu.c`
+- Arm Telemetry Solution at tag 2026.09, ea533b733b9bad52223d16e768b7dab03cabb830 (https://gitlab.arm.com/telemetry-solution/telemetry-solution): `RELEASE_NOTES.md`, `data/pmu/cpu/mapping.json`, `data/pmu/cpu/specifications/neoverse/neoverse_v1_r1p2_pmu.json`, `neoverse_v2_r0p0_pmu.json`, `neoverse_v3_r0p0_pmu.json`, `neoverse_n1_r4p1_pmu.json`, `data/pmu/cpu/specifications/cortex/cortex_x925_r0p0_pmu.json`, `cortex_a725_r0p0_pmu.json`
+- aws/aws-graviton-getting-started at 541d1ad524bb1630e16b8e66aef36dcd01a3bbc1: `perfrunbook/debug_hw_perf.md`, `README.md`
+- Intel VTune Profiler cookbook, Top-down Microarchitecture Analysis Method: https://www.intel.com/content/www/us/en/docs/vtune-profiler/cookbook/current/top-down-microarchitecture-analysis-method.html
+- EC2 instance type specifications: https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html , https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html , https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html
+- EC2 User Guide, Elastic Fabric Adapter: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html
+- FSx for Lustre performance: https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html
+- NVIDIA nvidia-smi documentation: https://docs.nvidia.com/deploy/nvidia-smi/index.html
+- NVIDIA DCGM User Guide, Feature Overview: https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/feature-overview.html (newest repository tag v4.7.0, 9fae2867e6e5264fa0fca22a07dc898d591baa21)
+- NVIDIA Nsight Compute 2026.4.0 Profiling Guide and Release Notes: https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html , https://docs.nvidia.com/nsight-compute/ReleaseNotes/index.html
+- NVIDIA Nsight Systems 2026.6 Release Notes: https://docs.nvidia.com/nsight-systems/ReleaseNotes/index.html
+- NVIDIA Jetson Linux Developer Guide r39.2.2, Tegrastats Utility: https://docs.nvidia.com/jetson/archives/r39.2.2/DeveloperGuide/AT/JetsonLinuxDevelopmentTools/TegrastatsUtility.html
+- NVIDIA Video Encode and Decode Support Matrix: https://developer.nvidia.com/video-encode-decode-support-matrix
+
+### Register 09. AWS orchestration (sections 24, 25)
+
+**AWS documentation**
+- https://docs.aws.amazon.com/batch/latest/userguide/when-to-use-fargate.html (F09-1)
+- https://docs.aws.amazon.com/batch/latest/userguide/when-to-use-ecs-managed-instances.html (F09-2)
+- https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html (F09-3, F09-4)
+- https://docs.aws.amazon.com/batch/latest/userguide/array_jobs.html (F09-5)
+- https://docs.aws.amazon.com/batch/latest/userguide/service_limits.html (F09-6, F09-16)
+- https://docs.aws.amazon.com/batch/latest/userguide/multi-node-parallel-jobs.html (F09-7)
+- https://docs.aws.amazon.com/batch/latest/userguide/mnp-ce.html (F09-8)
+- https://docs.aws.amazon.com/batch/latest/userguide/efa.html (F09-9)
+- https://docs.aws.amazon.com/batch/latest/userguide/bestpractice6.html (F09-10, F09-11, F09-12)
+- https://docs.aws.amazon.com/batch/latest/userguide/job_retries.html (F09-10)
+- https://docs.aws.amazon.com/batch/latest/userguide/eks.html (F09-13, F09-19)
+- https://docs.aws.amazon.com/batch/latest/userguide/job_scheduling.html (F09-14)
+- https://docs.aws.amazon.com/batch/latest/userguide/fair-share-scheduling.html (F09-14)
+- https://docs.aws.amazon.com/batch/latest/userguide/quota-management.html (F09-15)
+- https://docs.aws.amazon.com/batch/latest/userguide/service-environments.html (F09-16)
+- https://docs.aws.amazon.com/batch/latest/userguide/document_history.html (F09-21)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html (F09-22)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-deep-health-checks.html (F09-23)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-node-recovery.html (F09-24)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-setup-task-governance.html (F09-25)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance.html (F09-25)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-policies.html (F09-26)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-autoscaling.html (F09-27)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html (F09-28)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-release-notes.html (F09-29, F09-37)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless.html (F09-30)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/managed-tier-checkpointing.html (F09-31)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-elastic-training.html (F09-32)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html (F09-34, F09-35)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-prerequisites.html (F09-36)
+- https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html (F09-39, F09-40, F09-41, F09-42, F09-49, F09-60)
+- https://docs.aws.amazon.com/eks/latest/userguide/sandboxing.html (F09-43)
+- https://docs.aws.amazon.com/eks/latest/userguide/auto-change.html (F09-44, F09-47)
+- https://docs.aws.amazon.com/eks/latest/userguide/sandboxing-ami-create-update.html (F09-44)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-ec2-nitro-sandboxes.html (F09-45)
+- https://docs.aws.amazon.com/eks/latest/userguide/auto-resource-optimization.html (F09-46)
+- https://docs.aws.amazon.com/eks/latest/userguide/doc-history.html (F09-47, F09-49)
+- https://docs.aws.amazon.com/eks/latest/userguide/auto-accelerated.html (F09-48, F09-49, F09-50)
+- https://docs.aws.amazon.com/eks/latest/userguide/automode.html (F09-48)
+- https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-os.html (F09-52)
+- https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-overview.html (F09-52)
+- https://docs.aws.amazon.com/solutions/physical-ai-for-robotics-on-aws/ (F09-78)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html (F09-90, F09-91, F09-92)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html (F09-94)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html (F09-94)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html (F09-95)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html (F09-95)
+- https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html (F09-100)
+- https://docs.aws.amazon.com/step-functions/latest/dg/state-map-distributed.html (F09-101)
+- https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html (F09-101)
+- https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html (F09-102)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow.html (F09-103)
+- https://docs.aws.amazon.com/fsx/latest/LustreGuide/managing-throughput-capacity.html (F09-105)
+- https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint.html (F09-106)
+- https://docs.aws.amazon.com/decision-guides/latest/decision-guides/genai-guide.html (F09-110, F09-111)
+- https://docs.aws.amazon.com/solutions/physical-ai-simulation-platform-on-aws/ (F09-113)
+**Source repositories at a pinned tag or SHA**
+- https://github.com/aws/karpenter-provider-aws/releases/tag/v1.15.2 (F09-38)
+- https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/overview/_index.md (F09-54)
+- https://github.com/kubernetes-sigs/kueue/releases/tag/v0.20.0 (F09-54)
+- https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/cluster_queue.md (F09-55)
+- https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/cohort.md (F09-55)
+- https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/topology_aware_scheduling.md (F09-56)
+- https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/multikueue.md (F09-56)
+- https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/README.md (F09-57)
+- https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/docs/gpu-sharing/README.md (F09-58)
+- https://github.com/kai-scheduler/KAI-Scheduler/releases/tag/v0.19.0 (F09-58)
+- https://github.com/volcano-sh/volcano/blob/41f27d567fb5bdaf2cab01e1caaf48f7e266eefb/README.md (F09-59)
+- https://github.com/NVIDIA/OSMO/releases/tag/6.3.1 (F09-61)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/README.md (F09-62)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/workflows/index.rst (F09-63)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/resource_pools/scheduling/index.rst (F09-64)
+- https://github.com/NVIDIA/OSMO/releases/tag/6.2.8 (F09-65, F09-68)
+- https://github.com/NVIDIA/OSMO/releases/tag/6.3.0 (F09-65)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/architecture.rst (F09-65)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/deployment_guide/install_backend/create_backend/cloud_setup.rst (F09-66)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/deployments/terraform/aws/example/README.md (F09-66)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/how_to/hil.rst (F09-67)
+- https://github.com/NVIDIA/OSMO/blob/0983bbeacaa1d8202559f153add88a9d855edc1d/docs/user_guide/getting_started/mcp.rst (F09-68)
+- https://github.com/awslabs/mountpoint-s3/releases/tag/mountpoint-s3-1.25.0 (F09-106)
+- https://github.com/awslabs/mountpoint-s3-csi-driver/releases/tag/v2.9.2 (F09-106)
+**Project documentation sites**
+- https://cncf.io\ (F09-57)
+- https://volcano.sh/ (F09-59)
+- https://cncf.io/ (F09-59)
+- https://developer.nvidia.com/blog/nvidia-open-sources-runai-scheduler-to-foster-community-collaboration/> (F09-65)
+- https://developer.nvidia.com/embedded-computing (F09-70)
+- https://developer.nvidia.com/isaac/lab (F09-70)
+**AWS data files**
+- https://spot-bid-advisor.s3.amazonaws.com/spot-advisor-data.json (F09-96, F09-97)
+**AWS Physical AI Toolchain sample at commit 84984decc51cc07fb4ceb8f3fc1f85d523924bf5**
+- https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws : `README.md`, `isaac-gr00t-on-aws/README.md`, `isaac-lab-on-aws/README.md`, `osmo-on-aws/README.md`, `cosmos-on-aws/README.md` (F09-69 to F09-77)
+
+## Tier 2: first-party vendor and lab blogs, announcements, model and dataset cards, whitepapers
+
+### Register 01. Robot basics (section 3)
+
+- NVIDIA GEAR, "GR00T 2" research page, November 2026: https://research.nvidia.com/labs/gear/gr00t-2
+- Figure, "Helix", 2025-02-20: https://www.figure.ai/news/helix
+- Figure, "Helix 02", 2026-01-27: https://www.figure.ai/news/helix-02
+- Google DeepMind, "Gemini Robotics 2 brings whole body intelligence to robots", 2026-07-30: https://deepmind.google/blog/gemini-robotics-2-brings-whole-body-intelligence-to-robots/
+- Google DeepMind, "Gemini Robotics 2.5 accelerates real-world general dexterity", 2026-11-10: https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/
+
+### Register 02. Imitation learning and vision-language-action models (sections 4, 5)
+
+- https://research.nvidia.com/labs/gear/gr00t-2/
+- https://research.nvidia.com/labs/gear/gr00t-n1_5/
+- https://research.nvidia.com/labs/gear/gr00t-n1_6/
+- https://huggingface.co/blog/nvidia/gr00t-n1-7
+- https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/
+- https://deepmind.google/blog/gemini-robotics-2-brings-whole-body-intelligence-to-robots/
+- https://deepmind.google/blog/gemini-robotics-15-brings-ai-agents-into-the-physical-world/
+- https://deepmind.google/blog/gemini-robotics-on-device-brings-ai-to-local-robotic-devices/
+
+### Register 03. World models and JEPA (sections 6, 7)
+
+- GR00T 2 whitepaper and project page (NVIDIA, November 2026): https://research.nvidia.com/labs/gear/gr00t-2/assets/gr00t2_whitepaper.pdf ; https://research.nvidia.com/labs/gear/gr00t-2/
+- Genie 4 model page (Google DeepMind): https://deepmind.google/models/genie/
+- Genie 3 post (Google DeepMind, 2025-08-05): https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/
+- 1X World Model post (1X, 2026-01-12): https://www.1x.tech/discover/world-model-self-learning
+- AMI Labs site: https://amilabs.xyz/ ; https://amilabs.xyz/updates
+
+### Register 04. Reinforcement learning and agentic loops (sections 8, 19)
+
+- ENPIRE project page and chart data: https://research.nvidia.com/labs/gear/enpire/
+- GR00T 2 page: https://research.nvidia.com/labs/gear/gr00t-2/
+
+### Register 05. Data pipeline (sections 9 to 11)
+
+- LeRobot v0.7.0 release blog (2026-11-05): https://huggingface.co/blog/lerobot/lerobot-release-v070
+- huggingface/lerobot pull request 4549 (open on 2026-11-20): https://github.com/huggingface/lerobot/pull/4549
+- NVIDIA Technical Blog, NeMo Video Curator on DGX Cloud (2025-03-18): https://developer.nvidia.com/blog/petabyte-scale-video-processing-with-nvidia-nemo-curator-on-nvidia-dgx-cloud/
+- Generalist, GEN-0 (2025-11-04): https://generalistai.com/blog/nov-04-2025-GEN-0 ; GEN-1 (2026-04-02): https://generalistai.com/blog/gen-1
+- HiFi-UMI-2K dataset card: https://huggingface.co/datasets/simple-world-lab/HiFi-UMI-2K/blob/a53b7b5784afdd50b2fda9195c9f724ef75ffdaf/README.md
+- Egocentric-100K dataset card: https://huggingface.co/datasets/builddotai/Egocentric-100K/blob/fae604b751b25337d6fd8c4c53e595910c28f68f/README.md
+- AWS Machine Learning Blog, Cosmos 3 on SageMaker HyperPod (2026-09-04): https://aws.amazon.com/blogs/machine-learning/build-a-physical-ai-model-factory-with-nvidia-cosmos-3-on-sagemaker-hyperpod/
+- Dexset, robot training data prices (July 2026; a vendor on its own prices, indicative only): https://dexset.ai/blogs/robot-training-data-costs-pricing-complete-2026/
+
+### Register 06. Simulation, sim-to-real and evaluation (sections 12 to 14, 16)
+
+- MuJoCo 4 announcement, google-deepmind/mujoco discussion 3773 (2026-11-07)
+- Isaac Lab-Arena v0.3 announcement, discussion 1245 (2026-09-10)
+- mujoco_warp pull requests 1113 (merged) and 1932 (closed, unmerged; external contributor, cited only to trace a seed figure)
+- AWS Machine Learning blog, Isaac Lab on Amazon SageMaker AI (2026-06-09)
+- AWS Physical AI blog, Telexistence DreamZero experiment (2026-09-09)
+- NVIDIA developer page on ray tracing
+- Alliance for OpenUSD, Core Specification 1.0 post
+- 1X, world model post (2024-09-17; history)
+
+### Register 07. Edge and fleet (sections 17, 18)
+
+- https://www.jetson-ai-lab.com/tutorials/openpi_on_thor/
+- https://www.jetson-ai-lab.com/tutorials/groot_n17_on_thor/
+- https://developer.nvidia.com/blog/deploy-agentic-ready-ai-at-the-edge-with-memory-efficiency-in-nvidia-jetpack-7-2/ (2026-06-01)
+- https://blogs.nvidia.com/blog/jetson-thor-robotics-edge-ai-agent/ (2026-07-15)
+
+### Register 08. Compute shapes and reading a machine (sections 20 to 23)
+
+- Arm, "Arm Neoverse V1 Core: Performance Analysis Methodology" white paper: https://armkeil.blob.core.windows.net/developer/Files/pdf/white-paper/neoverse-v1-core-performance-analysis.pdf
+- AWS What's New: G7 (2026-06-18) https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-ec2-g7-generally-available/ ; G7e (2026-01-20) https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-g7e-instances-generally-available/ ; P6e-GB300 (2025-12-02) https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available ; M9g (2026-06-10) https://aws.amazon.com/about-aws/whats-new/2026/06/ec2-m9g-m9gd-instances-graviton5-processors-available/ ; C9g (2026-06-30) https://aws.amazon.com/about-aws/whats-new/2026/06/ec2-c9g-c9gd-instances-graviton5-processors-available/ ; R9g (2026-08-31) https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-ec2-r9g-and-r9gd-memory-optimized-instances-are-now-available/
+- AWS product pages: G7 https://aws.amazon.com/ec2/instance-types/g7/ ; M9g https://aws.amazon.com/ec2/instance-types/m9g/
+- About Amazon, AWS and NVIDIA (2026-08-26): https://www.aboutamazon.com/news/aws/aws-nvidia-2-million-gpus-ai
+- NVIDIA Tensor Cores product page: https://www.nvidia.com/en-us/data-center/tensor-cores/
+
+### Register 09. AWS orchestration (sections 24, 25)
+
+**AWS What's New announcements**
+- https://aws.amazon.com/about-aws/whats-new/2026/08/aws-batch-on-ecs-managed-instances/ (F09-2)
+- https://aws.amazon.com/about-aws/whats-new/2026/03/aws-batch-configurable-scale-down-delay/ (F09-13)
+- https://aws.amazon.com/about-aws/whats-new/2026/03/aws-batch-quota-management-preemption-sagemaker/ (F09-15)
+- https://aws.amazon.com/about-aws/whats-new/2026/02/aws-batch-on-eks-unmanaged-compute-environments/ (F09-20)
+- https://aws.amazon.com/about-aws/whats-new/2026/11/aws-batch-eks-security-context/ (F09-21)
+- https://aws.amazon.com/about-aws/whats-new/2025/09/sagemaker-hyperpod-autoscaling/ (F09-27)
+- https://aws.amazon.com/about-aws/whats-new/2026/04/sagemaker-hyperpod-flexible-instance-groups/ (F09-29)
+- https://aws.amazon.com/about-aws/whats-new/2026/11/nitro-sandboxes-eks-ecs-ec2/ (F09-43)
+- https://aws.amazon.com/about-aws/whats-new/2026/11/eks-auto-mode-pod-rightsizing-preview/ (F09-46)
+- https://aws.amazon.com/about-aws/whats-new/2025/07/amazon-eks-100000-worker-nodes-per-cluster/ (F09-53)
+- https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-g7e-instances-generally-available/ (F09-98)
+- https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-ec2-g7-generally-available/ (F09-98)
+- https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available (F09-99)
+- https://aws.amazon.com/about-aws/whats-new/2026/08/aws-deadline-cloud-ecs-containers-linux-smf/ (F09-108)
+- https://aws.amazon.com/about-aws/whats-new/2026/06/aws-parallel-computing-service/ (F09-109)
+**AWS blogs**
+- https://aws.amazon.com/blogs/hpc/how-to-use-capacity-blocks-for-ml-with-aws-batch/ (F09-17, F09-18)
+- https://aws.amazon.com/blogs/aws/introducing-checkpointless-and-elastic-training-on-amazon-sagemaker-hyperpod/ (F09-30)
+- https://aws.amazon.com/blogs/physical-ai/introducing-aws-physical-ai-toolchain/ (F09-69, F09-80)
+- https://aws.amazon.com/blogs/physical-ai/feed/ (F09-79)
+- https://aws.amazon.com/blogs/physical-ai/train-vla-models-with-hugging-face-lerobot-on-amazon-sagemaker-ai/ (F09-81, F09-82)
+- https://aws.amazon.com/blogs/physical-ai/fine-tuning-%CF%800-pi-zero-for-robotic-manipulation-on-amazon-sagemaker-hyperpod-eks/ (F09-83)
+- https://aws.amazon.com/blogs/physical-ai/nvidia-cosmos-3-on-aws-omnimodal-world-models-for-physical-ai/ (F09-84)
+- https://aws.amazon.com/blogs/physical-ai/isaac-lab-on-aws-from-simulation-to-registered-policy/ (F09-85)
+- https://aws.amazon.com/blogs/physical-ai/scaling-physical-ai-vision-pipelines-with-ray-on-amazon-sagemaker-hyperpod/ (F09-86)
+- https://aws.amazon.com/blogs/physical-ai/putting-dexterous-robots-to-work-how-rlwrld-builds-physical-ai-with-aws/ (F09-87)
+- https://aws.amazon.com/blogs/physical-ai/bringing-a-frontier-world-model-to-the-convenience-store-inside-telexistences-dreamzero-experiment-on-aws/ (F09-88)
+- https://aws.amazon.com/blogs/physical-ai/how-wirobotics-is-teaching-humanoid-robots-to-use-human-tools-with-aws-and-nvidia/ (F09-89)
+- https://aws.amazon.com/blogs/machine-learning/build-a-physical-ai-model-factory-with-nvidia-cosmos-3-on-sagemaker-hyperpod/ (F09-112)
+- https://aws.amazon.com/blogs/physical-ai/embodied-ai-blog-series-part-1/ (F09-114)
+**AWS product and pricing pages**
+- https://aws.amazon.com/sagemaker/ai/pricing/ (F09-33)
+- https://aws.amazon.com/eks/pricing/ (F09-51)
+- https://aws.amazon.com/ec2/capacityblocks/ (F09-90)
+- https://aws.amazon.com/ec2/capacityblocks/pricing/ (F09-93)
+- https://aws.amazon.com/ec2/spot/instance-advisor/ (F09-96)
+- https://aws.amazon.com/hpc/dcv/ (F09-104)
+- https://aws.amazon.com/s3/storage-classes/express-one-zone/ (F09-107)
+
+## Tier 3: papers and third-party technical analysis ("peer-reviewed" only where the venue was confirmed; otherwise preprint)
+
+### Register 01. Robot basics (section 3)
+
+- pi0.7: https://arxiv.org/abs/2604.15483v2
+- SONIC: https://arxiv.org/abs/2511.07820v4
+- Real-time chunking: https://arxiv.org/abs/2506.07339v2
+- pi0.5: https://arxiv.org/abs/2504.16054v1
+- GR00T N1: https://arxiv.org/abs/2503.14734v2
+- Gemini Robotics: https://arxiv.org/abs/2503.20020v1
+- pi0 (2024, cited as the paper that introduced the design): https://arxiv.org/abs/2410.24164v4
+
+### Register 02. Imitation learning and vision-language-action models (sections 4, 5)
+
+- Peer-reviewed: arXiv 1011.0686v3 (AISTATS 2011); arXiv 2506.07339v2 (NeurIPS 2025, abstract only)
+- Preprints: arXiv 2304.13705v1, 2303.04137v5, 2410.24164v4, 2501.09747v1, 2503.14734v2, 2504.16054v1, 2511.14759v2, 2604.15483v2, 2506.01844v1, 2502.19645v2, 2510.10274v1, 2611.21607v1, 2503.20020v1; listings only: 2602.15922v1, 2406.09246v3
+
+### Register 03. World models and JEPA (sections 6, 7)
+
+Peer-reviewed, venue confirmed:
+- JEPA-WMs, "What Drives Success in Physical Planning with Joint-Embedding Predictive World Models?" (TMLR, 05/2026): https://arxiv.org/abs/2512.24497v4
+- VICReg (ICLR 2022; history): https://arxiv.org/abs/2105.04906v3
+Preprints, or venue not confirmed in this pass:
+- V-JEPA 2: https://arxiv.org/abs/2506.09985v1
+- V-JEPA 2.1: https://arxiv.org/abs/2603.14482v3
+- RoboJEPA: https://arxiv.org/abs/2610.10515v1
+- LeWorldModel: https://arxiv.org/abs/2603.19312v3
+- LeJEPA: https://arxiv.org/abs/2511.08544v3
+- VL-JEPA: https://arxiv.org/abs/2512.10942v2
+- Dreamer 4: https://arxiv.org/abs/2509.24527v1
+- DreamZero: https://arxiv.org/abs/2602.15922v1
+- Cosmos 3: https://arxiv.org/abs/2606.02800v4
+- I-JEPA (history): https://arxiv.org/abs/2301.08243v3
+- V-JEPA (history): https://arxiv.org/abs/2404.08471v1
+- DreamerV3 (history): https://arxiv.org/abs/2301.04104v2
+- LeCun, "A Path Towards Autonomous Machine Intelligence", v0.9.2, 2022-06-27 (history; position paper): https://web.archive.org/web/20240101103457/https://openreview.net/pdf?id=BZ5a1r-kVsf
+
+### Register 04. Reinforcement learning and agentic loops (sections 8, 19)
+
+- Peer-reviewed: ENPIRE, https://arxiv.org/abs/2606.19980v2 (CoRL 2026); Eureka, https://arxiv.org/abs/2310.12931v2 (ICLR 2024, history); DrEureka, https://arxiv.org/abs/2406.01967v1 (RSS 2024, history); MuJoCo Playground, https://arxiv.org/abs/2502.08844v1 (RSS 2025).
+- Preprints, RL: Recap, https://arxiv.org/abs/2511.14759v2 ; piRL, https://arxiv.org/abs/2510.25889v3 ; HIL-SERL, https://arxiv.org/abs/2410.21845v3 (history) ; LWD, https://arxiv.org/abs/2605.00416v4
+- Preprints, agent loops: ASPIRE, https://arxiv.org/abs/2607.00272v2 ; AgenticRobotics, https://arxiv.org/abs/2608.07555v2 ; CaP-X, https://arxiv.org/abs/2603.22435v2 ; RACaP, https://arxiv.org/abs/2609.29394v1 ; SimEX, https://arxiv.org/abs/2609.38982v1 ; SEAR, https://arxiv.org/abs/2610.18792v1 ; AdaRSI, https://arxiv.org/abs/2610.20474v2 ; Physical RSI survey, https://arxiv.org/abs/2610.18842v1 ; RE-0, https://arxiv.org/abs/2609.32416v1 (abstract only)
+- Preprints, judges: FailBench, https://arxiv.org/abs/2609.03611v1 ; D&A, https://arxiv.org/abs/2611.03622v1 ; VLMeg, https://arxiv.org/abs/2610.15401v1 ; ARS, https://arxiv.org/abs/2609.34484v1
+
+### Register 05. Data pipeline (sections 9 to 11)
+
+- MimicGen, arXiv 2310.17596v1, peer-reviewed (CoRL 2023, per the arXiv comments field); history: https://arxiv.org/abs/2310.17596v1
+- UMI, arXiv 2402.10329v3, preprint (venue not confirmed here); history: https://arxiv.org/abs/2402.10329v3
+- DreamGen, arXiv 2505.12705v2, preprint: https://arxiv.org/abs/2505.12705v2
+- FastUMI-100K, arXiv 2510.08022v1, preprint: https://arxiv.org/abs/2510.08022v1
+
+### Register 06. Simulation, sim-to-real and evaluation (sections 12 to 14, 16)
+
+- Peer-reviewed (venue confirmed from the arXiv comment): STEP, arXiv 2503.10966v4 (RSS 2025)
+- Preprints: 2502.08844v1 (MuJoCo Playground), 2511.04831v1 (Isaac Lab), 2512.16881v2 (PolaRiS), 2506.18123v2 (RoboArena), 2607.01060v4 (RoboWorld), 2506.00613v3 (WorldGym), 2610.13522v1 (HF-WM), 2606.27375v1 (ABC), 2609.13679v2 (REAL-I challenge report), 2510.13626v3 (LIBERO-Plus), 2510.03827v2 (LIBERO-PRO)
+- History, before 2025: 1703.06907v1 (domain randomisation, 2017), 2405.05941v1 (SIMPLER, 2024), 2409.09491v2 (TRI best practices, 2024)
+
+### Register 07. Edge and fleet (sections 17, 18)
+
+- Real-time chunking: https://arxiv.org/abs/2506.07339v2 (peer-reviewed, NeurIPS 2025)
+- SAFE: https://arxiv.org/abs/2506.09937v2 (peer-reviewed, NeurIPS 2025)
+- Training-time RTC: https://arxiv.org/abs/2512.05964v2 (preprint)
+- SmolVLA: https://arxiv.org/abs/2506.01844v1 (preprint)
+- Perturbation Informed Execution: https://arxiv.org/abs/2610.19656v3 (preprint)
+- The Robot Data Factory: https://arxiv.org/abs/2609.16705v1 (preprint)
+- Learning While Deploying: https://arxiv.org/abs/2605.00416v4 (preprint)
+
+### Register 08. Compute shapes and reading a machine (sections 20 to 23)
+
+- A. Yasin, "A Top-Down Method for Performance Analysis and Counters Architecture", ISPASS 2014, DOI 10.1109/ISPASS.2014.6844459. History; cited through Intel's repository README; body not fetched.
+
+## Tier 4: tutorials and press, used only to locate primary sources and never cited as fact
+
+### Register 01. Robot basics (section 3)
+
+- web search result pages for the STS3215 datasheet, the Waveshare bus adapter, OpenArm motor documentation, and the 2026 model announcements from Physical Intelligence, NVIDIA and Google DeepMind.
+
+### Register 02. Imitation learning and vision-language-action models (sections 4, 5)
+
+- Two web searches for Physical Intelligence releases after pi0.7 (results pointed at pi.website, which could not be fetched; see U7).
+
+### Register 03. World models and JEPA (sections 6, 7)
+
+- Press and encyclopedia pages reporting a Genie 4 launch date of 2026-10-27 (the date is recorded as UNKNOWN U7).
+- Web search result pages used to find the arXiv listings and repositories above.
+
+### Register 04. Reinforcement learning and agentic loops (sections 8, 19)
+
+- web search result pages for the item-11 search on 2026-11-20.
+
+### Register 05. Data pipeline (sections 9 to 11)
+
+- Web searches for 2026 hand-held data-collection papers and for data-collection price lists. Nothing from a search snippet is cited as fact; the four papers found this way and not read are listed in U7.
+
+### Register 08. Compute shapes and reading a machine (sections 20 to 23)
+
+- Web searches restricted to aws.amazon.com, docs.aws.amazon.com and aboutamazon.com to locate the Graviton5, P6 and Rubin pages. Two search-result summaries are mentioned as unresolved leads (F08-55 and section 8) and are not used as evidence.
+
+### Register 09. AWS orchestration (sections 24, 25)
+
+- Web searches restricted to aws.amazon.com and docs.aws.amazon.com, queries listed in F09-110.
+
+## Sources added in wave 2 (refutation and freshness, 2026-11-20)
+
+First-party pages the refuters fetched that the registers did not hold; each is cited by the entry named.
+
+- AWS What's New, 2026-11-18, SageMaker HyperPod higher pod density: https://aws.amazon.com/about-aws/whats-new/2026/11/sagemaker-hyperpod-higher-pod-density/ (F09-115)
+- AWS What's New, 2026-11-18, EKS Hybrid Nodes pricing change: https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-eks-hybrid-nodes-pricing-change/ (F09-116)
+- AWS What's New, 2026-11-18, Deadline Cloud supports EC2 G7: https://aws.amazon.com/about-aws/whats-new/2026/11/deadline-cloud-supports-ec2-g7/ (F09-117)
+- AWS What's New, 2026-11-18, Lambda Managed Instances GPU functions: https://aws.amazon.com/about-aws/whats-new/2026/11/aws-lambda-gpu-managed-instances/ (F09-118)
+- AWS What's New, 2026-11-19, EC2 performance status checks and one-minute GPU metrics: https://aws.amazon.com/about-aws/whats-new/2026/11/ec2-performance-status-checks/ (F08-86)
+- AWS press release, 2026-08-26, AWS and NVIDIA: https://press.aboutamazon.com/aws/2026/8/aws-and-nvidia-to-deliver-2-million-additional-gpus-and-next-generation-infrastructure-for-agentic-and-physical-ai (F08-55)
+- Figure, "Helix 2.5: Zero-Shot 30-Home Generalization", 2026-09-17: https://www.figure.ai/news/helix-2-5-zero-shot-30-home-generalization (F01-72)
+- Physical Intelligence, "Frontier Models for Every Robot" (Pi API beta), 2026-10-13, read from an archive copy: https://web.archive.org/web/20261031104522/https://www.pi.website/blog/api-beta (F02-53)
+- NVIDIA GR00T 2 whitepaper, November 2026: https://research.nvidia.com/labs/gear/gr00t-2/assets/gr00t2_whitepaper.pdf (F02-46, F03-104, F07-119)
+- `nvidia/GR00T-N1.7-3B` `config.json` at revision 373d34e2723d928870157d07dc216a19a624b5bb (F02-38)
+- facebookresearch/vjepa2 commit 93366fe723bc8980fd6e170f9eef221ec2091e70, 2025-06-20 (F03-82)
+
+## Glossary
+
+Added with the app sections (section 26). Each register expands its acronyms at first use.
