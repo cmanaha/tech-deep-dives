@@ -1,0 +1,21 @@
+[
+  { "term": "Per-task adaptation", "expansion": null, "meaning": "Training a pretrained checkpoint, or a small policy from random weights, on tens of episodes of one task on one arm; a one-GPU job of minutes to hours." },
+  { "term": "Post-training", "expansion": null, "meaning": "The labs' word for any training that starts from a pretrained checkpoint; in this dive, one-node post-training is the eight-GPU version of it." },
+  { "term": "Pretraining", "expansion": null, "meaning": "The first training of a model, on data from many robots or on video, before it has seen the reader's robot; done by labs across many servers." },
+  { "term": "Full fine-tuning", "expansion": null, "meaning": "Further training that updates every weight of the model, so the GPU holds gradient and optimiser state for all of them." },
+  { "term": "LoRA", "expansion": "low-rank adaptation", "meaning": "A fine-tune that trains small matrices added beside the existing weights and leaves the base weights frozen, used when a full update does not fit in GPU memory." },
+  { "term": "Frozen backbone", "expansion": null, "meaning": "A training setting where the vision-language model that reads images and the instruction is not updated and only the action head and a small layer feeding it train." },
+  { "term": "GPU-hours", "expansion": null, "meaning": "The number of GPUs a job holds multiplied by the hours it holds them; a measure of occupied GPU time that does not account for the GPU model." },
+  { "term": "VLA", "expansion": "vision-language-action model", "meaning": "A robot policy built from a vision-language backbone with an action head attached." },
+  { "term": "JEPA", "expansion": "joint-embedding predictive architecture", "meaning": "A model that predicts the latent representation of what comes next instead of its pixels." },
+  { "term": "ACT", "expansion": "Action Chunking with Transformers", "meaning": "A small policy trained from scratch per task that outputs a chunk of future actions per call." },
+  { "term": "RL", "expansion": "reinforcement learning", "meaning": "Training in which a policy improves from scored attempts, here in a simulator, instead of from demonstrations." },
+  { "term": "Episode", "expansion": null, "meaning": "One recorded attempt at the task, from start to end." },
+  { "term": "SageMaker Training Jobs", "expansion": null, "meaning": "The SageMaker service that starts instances for one training job and shuts them down when it ends." },
+  { "term": "SageMaker HyperPod", "expansion": null, "meaning": "A persistent training cluster that SageMaker manages, run with Kubernetes or Slurm." },
+  { "term": "FSx for Lustre", "expansion": null, "meaning": "AWS's managed Lustre, a file system that many processes read in parallel." },
+  { "term": "Capacity Blocks for ML", "expansion": null, "meaning": "An EC2 booking of GPU instances for a set window." },
+  { "term": "Training plan", "expansion": null, "meaning": "A SageMaker reservation of GPU instances for a training job or HyperPod cluster, for 1 to 182 days." },
+  { "term": "EFA", "expansion": "Elastic Fabric Adapter", "meaning": "The AWS network interface that lets training processes on different servers exchange data without passing through the operating system's network stack." },
+  { "term": "Checkpointless training", "expansion": null, "meaning": "A SageMaker HyperPod feature that rebuilds a failed node's training state from healthy peers instead of restarting from a saved checkpoint." }
+]
