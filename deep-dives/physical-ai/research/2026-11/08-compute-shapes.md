@@ -28,6 +28,56 @@ Code over docs over blogs. Vendor and author performance numbers are claims, not
 
 **Evidence kinds:** definition, documentation of support, benchmark claim (author or vendor reported), our measurement, code behaviour.
 
+## 2. Currency table
+
+Newest first-party version or announcement found on 2026-11-20. "Date not recorded" means the release date was not captured in this pass; it does not mean the release is undated.
+
+| Item | Newest version found | Release date | Source URL | What the seed research named |
+|---|---|---|---|---|
+| EC2 G families | G7 (RTX PRO 4500 Blackwell Server Edition) and G7e (RTX PRO 6000 Blackwell Server Edition) | G7: 2026-06-18; G7e: 2026-01-20 | https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-ec2-g7-generally-available/ ; https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-g7e-instances-generally-available/ | G5, G6, Gr6, G6f, G6e, G7, G7e (same newest families) |
+| EC2 P families | In the specification table: P6-B200, P6-B300, P6e-GB200. Announced and absent from the table: P6e-GB300. No Rubin-based family located (U08-5) | P6e-GB300: 2025-12-02; P6-B200 and P6-B300: month known from URL paths only (U08-11) | https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html ; https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available | P4d, P5, P5e, P5en, P6-B200, P6e-GB200/GB300 |
+| AWS Graviton | Graviton5 (Neoverse V3) in M9g/M9gd, C9g/C9gd, R9g/R9gd | 2026-06-10, 2026-06-30, 2026-08-31 | https://aws.amazon.com/about-aws/whats-new/2026/06/ec2-m9g-m9gd-instances-graviton5-processors-available/ (others in section 11) | C8g and M8g (Graviton4 generation); Graviton5 not named |
+| Intel top-down metrics file | TMA_Metrics-full.csv, version "5.2-full" | Repository head commit 2026-11-20; date of version 5.2 itself not recorded | https://github.com/intel/perfmon at c6875bae4fe4322e88c6b265962901672bfa97c9 | No version named |
+| Intel VTune cookbook, top-down page | "2025.4 (latest)" | 2025-06-30 | https://www.intel.com/content/www/us/en/docs/vtune-profiler/cookbook/current/top-down-microarchitecture-analysis-method.html | No version named |
+| Linux kernel (perf, metric files) | v7.3 (v7.4-rc3 is the newest release candidate) | 2026-10-18 | https://github.com/torvalds/linux at tag v7.3, c03c1a14507dfaf8b856c2608f9ac216021fc222 | The Tier 0 machines ran perf 6.17.13 (Spark); no kernel source version named |
+| Arm Telemetry Solution | Tag 2026.09 (adds Cortex-X925 and Cortex-A725 files; previous tag 2025.09) | 2026-09-29 | https://gitlab.arm.com/telemetry-solution/telemetry-solution at ea533b733b9bad52223d16e768b7dab03cabb830 | "Arm's telemetry spec", no version; the formula check was left open |
+| AWS Graviton performance guide | Repository head | 2026-11-18 | https://github.com/aws/aws-graviton-getting-started at 541d1ad524bb1630e16b8e66aef36dcd01a3bbc1 | Not named |
+| NVIDIA Nsight Compute | 2026.4.0 | Date not recorded | https://docs.nvidia.com/nsight-compute/ReleaseNotes/index.html | 2025.3.1 (Spark) and 2024.3.1 (Jetson), as installed |
+| NVIDIA Nsight Systems | 2026.6 (2026.6.1) | Date not recorded | https://docs.nvidia.com/nsight-systems/ReleaseNotes/index.html | 2025.3.2 and 2024.5.4, as installed |
+| NVIDIA DCGM | v4.7.0 | Date not recorded | https://github.com/NVIDIA/DCGM at tag v4.7.0, 9fae2867e6e5264fa0fca22a07dc898d591baa21 | Named without a version |
+| Jetson Linux (tegrastats page) | r39.2.2 (JetPack 7.2.2, F07-44) | See F07-44 | https://docs.nvidia.com/jetson/archives/r39.2.2/DeveloperGuide/AT/JetsonLinuxDevelopmentTools/TegrastatsUtility.html | The Jetson ran L4T R36.4.7 |
+| NVIDIA video encode and decode matrix | Page as fetched today (undated page) | Not dated | https://developer.nvidia.com/video-encode-decode-support-matrix | Used without a date |
+
+## 3. Pinned sources
+
+### Papers
+
+| Paper | Version or venue | Role | Entries |
+|---|---|---|---|
+| A. Yasin, "A Top-Down Method for Performance Analysis and Counters Architecture" | ISPASS 2014 (venue as printed in Intel's repository README), DOI 10.1109/ISPASS.2014.6844459; body not fetched (U08-12) | History: the paper that introduced the method | F08-1 |
+| Arm, "Arm Neoverse V1 Core: Performance Analysis Methodology" | Vendor white paper, no date found on the PDF; https://armkeil.blob.core.windows.net/developer/Files/pdf/white-paper/neoverse-v1-core-performance-analysis.pdf | Arm's definition of a slot and of the four categories | F08-14, F08-15, F08-17 |
+
+### Code and vendor data files
+
+| Repository | Ref | 40-character SHA | Files read |
+|---|---|---|---|
+| https://github.com/intel/perfmon | default branch head, 2026-11-20 | c6875bae4fe4322e88c6b265962901672bfa97c9 | `TMA_Metrics-full.csv`, `README.md` |
+| https://github.com/torvalds/linux | tag v7.3 | c03c1a14507dfaf8b856c2608f9ac216021fc222 | `tools/perf/Documentation/perf-stat.txt`, `tools/perf/Documentation/topdown.txt`, `tools/perf/pmu-events/arch/x86/amdzen4/pipeline.json`, `amdzen5/pipeline.json`, `amdzen6/pipeline.json`, `tools/perf/pmu-events/arch/arm64/sbsa.json`, `arch/arm64/arm/neoverse-v1/metrics.json`, `neoverse-n2-v2/metrics.json`, `neoverse-v3/metrics.json`, `tools/perf/arch/arm64/util/pmu.c` |
+| https://gitlab.arm.com/telemetry-solution/telemetry-solution | tag 2026.09 | ea533b733b9bad52223d16e768b7dab03cabb830 | `RELEASE_NOTES.md`, `data/pmu/cpu/mapping.json`, `data/pmu/cpu/specifications/neoverse/neoverse_v1_r1p2_pmu.json`, `neoverse_v2_r0p0_pmu.json`, `neoverse_v3_r0p0_pmu.json`, `neoverse_n1_r4p1_pmu.json`, `data/pmu/cpu/specifications/cortex/cortex_x925_r0p0_pmu.json`, `cortex_a725_r0p0_pmu.json` |
+| https://github.com/aws/aws-graviton-getting-started | default branch head, 2026-11-18 | 541d1ad524bb1630e16b8e66aef36dcd01a3bbc1 | `perfrunbook/debug_hw_perf.md`, `README.md` |
+| https://github.com/NVIDIA/DCGM | tag v4.7.0 | 9fae2867e6e5264fa0fca22a07dc898d591baa21 | Tag list only (newest version); the field definitions come from the docs page |
+
+The GitHub path `ARM-software/telemetry-solution` returned 404 on 2026-11-20; the GitLab URL above is the one that resolves.
+
+### Docs (all accessed 2026-11-20)
+
+- Intel VTune Profiler cookbook, "Top-down Microarchitecture Analysis Method", version 2025.4.
+- EC2 instance type specifications: accelerated computing (`ac.html`), general purpose (`gp.html`), compute optimized (`co.html`).
+- EC2 User Guide, Elastic Fabric Adapter (`efa.html`). FSx for Lustre User Guide, performance page.
+- AWS What's New posts for G7, G7e, P6e-GB300, M9g, C9g, R9g; the G7 and M9g product pages; the About Amazon article of 2026-08-26.
+- NVIDIA: `nvidia-smi` documentation; DCGM User Guide, Feature Overview; Nsight Compute 2026.4.0 Profiling Guide and Release Notes; Nsight Systems 2026.6 Release Notes; Jetson Linux r39.2.2 Tegrastats Utility; Video Encode and Decode Support Matrix; Tensor Cores product page.
+- Full URLs are in section 11.
+
 ## 4. Claim register
 
 Sections A to D are the method (how a machine is read). E defines the machine parts. F is the instance table. G is
@@ -621,3 +671,159 @@ flush correction (F08-22); back-end and retiring percentages match Arm's method 
 - Evidence: entries listed in Location | Tier 1 and Tier 2 sources pinned there | definition | docs rows: "g7.48xlarge | 768.00 | Intel Xeon Granite Rapids | 192 | 192 | 1 | 8 x NVIDIA RTX PRO 4500 GPU" and "p5.48xlarge | 2048.00 | AMD EPYC 7R13 | 192 | 96 | 2 | 8 x NVIDIA H100 GPU" (accessed 2026-11-20)
 - Use in dive: section 23, the closing guidance: choose the instance by the part the workload saturates, then compute units per dollar on that instance, then check the latency tail if the shape is E.
 
+## 5. Teaching material
+
+### 5.1 Section 20, "Fifteen Workloads, Five Shapes"
+
+**The plain-words idea.** A computer is several machines sharing a box. The processor has a part that fetches and decodes instructions and a part that executes them; memory has a rate at which it can stream data and a separate delay for fetching one item; a GPU has units for matrix arithmetic, units for general arithmetic, units for tracing rays, and fixed-function engines that only compress or decompress video; storage and network have their own rates. A workload fills one of these first, and once that part is full, the others sit partly idle while the job goes no faster. Naming the part that fills first is what tells you which machine to choose (F08-50, F08-76).
+
+**Worked example on the arm (real figures, arithmetic redoable).**
+- Collection. Two cameras at 640x480, 30 frames per second, 3 bytes per pixel: 640 x 480 x 3 = 921,600 bytes per frame; x 30 x 2 = 55,296,000 bytes per second = 55.3 MB/s raw (F01-86). LeRobot's default of 50 episodes of 60 s (F05-2) is 3,000 s, so 55.3 x 3,000 = 165.9 GB of raw pixels pass through the host `[derived]`. The part that must keep up is the CPU running the AV1 encoder (F05-35); storage is not close to a limit, since 55.3 MB/s is under half of the 125 MB/s EBS baseline of the smallest G6 size (F08-46).
+- Training. LeRobot's own timing on 4 x H100 at batch 32: 0.167 s per update for Diffusion Policy (F01-91), so 32 / 0.167 = 192 samples per second `[derived]`. One dataset item costs about 5 ms to fetch and decode in one process (F05-62, hardware not stated), so 192 x 0.005 s = 0.96 seconds of decode work per second: about one CPU core busy feeding four GPUs `[derived]`. Here the GPUs are the full part. Turn on per-sample image augmentation in the workers and the balance tips: LeRobot states "the GPU ends up waiting for data" (F05-58).
+- Simulation. One X925 core stepped a humanoid 57,240 times per second in our single run (F08-61). The arm's control rate is 30 Hz and MuJoCo's default timestep is 2 ms (F06-10), so one simulated second is 500 steps; the PPO recipe for the SO-101 collects 197 million control steps (F04-58). Illustration with a toy assumption, labelled: if an SO-101 scene stepped as fast as the humanoid and each control step took one physics step, 197,000,000 / 57,240 = 3,442 core-seconds, about 57 minutes on one core. The published recipe instead runs 4,096 arms on one GPU (F04-58), which is the same arithmetic moved to general GPU compute (row 6).
+- Inference. A 3B-parameter policy takes 149.0 ms per call on a Jetson Orin with TensorRT (F07-5): 149.0 / 33.3 = 4.5 control periods at 30 Hz. The part is the GPU's tensor cores on a machine where CPU and GPU share one memory.
+
+**The mechanism.** For each workload, write down what it touches per unit of work and compare with what the part can deliver. Our policy stand-in is the cleanest case we own: six 1024x1024 float32 matrices are 25.2 MB, every inference reads all of them, and at 390 inferences per second that is 9.8 GB/s on a Jetson core whose measured streaming limit is 9.25 to 11.71 GB/s (F08-63). The counters agree from the other side: 63.9% of slots back-end bound, 62.3% of cycles stalled on memory (F08-62). Demand equals supply, and the stall counters name the part: that is a saturated part.
+
+**What it costs in compute, and which part.** The table in F08-76 carries it per workload. The figures that anchor the section: CPU physics 14,507 to 57,240 steps per second per core, core-bound (F08-61, Tier 0, one run); GPU physics 2.51 to 25.2 million steps per second on one RTX 6000 Ada at under 1 GB (F06-20, F06-22); simulated cameras about 57 to 64 GB of GPU memory for 8,192 environments (F06-48); policy fine-tune 2 to 6 GB (ACT) to 24 to 40 GB (pi0-class) of GPU memory and 30 minutes to 8 hours on one GPU (F01-90); on-robot inference 35.6 to 149.0 ms per call for a 3B policy (F07-1, F07-4); vendor-scale pretraining about 50,000 H100 GPU-hours (F02-34) and 1,024 GB200 GPUs (F03-119). The instance table is F08-58; the CPU-per-GPU ratios are F08-57.
+
+**The five shapes.** F08-78 to F08-80: duration, coupling, interruptibility. Teach them after the parts, as a second axis: the part chooses the machine, the shape chooses how it is bought and scheduled.
+
+### 5.2 Section 21, "Reading a Machine: PMU Cards"
+
+**The plain-words idea.** A processor core can start a fixed number of micro-operations in every clock cycle: 10 on the DGX Spark's big core, 5 on its small one, 8 on a Graviton4 core (F08-16). Each of those chances is a slot. Top-down analysis asks, for every slot, where it went, and there are only four answers: it did useful work (retiring); it did work that was thrown away after a wrong guess (bad speculation); it stayed empty because the front of the core had nothing ready (front-end bound); it stayed empty because the back of the core could not accept more (back-end bound) (F08-2, F08-3, F08-14). Four percentages that add to 100 tell you which half of the core, or which guess, is costing you. A PMU card is those four numbers plus the GPU's equivalents, for one workload on one machine.
+
+**Worked example with our own counters: one MuJoCo step loop on the Cortex-X925** (Tier 0, one run; raw row `wl_sim` in `results-pass2/results-spark-x925.csv`, F08-61, F08-70).
+- Counters: CPU_CYCLES 19,958,256,358; STALL_SLOT 97,275,014,000; STALL_SLOT_FRONTEND 24,352,200,609; STALL_SLOT_BACKEND 72,922,813,391; OP_SPEC 102,307,494,220; OP_RETIRED 91,123,888,968.
+- Slots: 19,958,256,358 cycles x 10 slots per cycle = 199,582,563,580 slots.
+- Front-end bound: 24,352,200,609 / 199,582,563,580 = 12.20%.
+- Back-end bound: 72,922,813,391 / 199,582,563,580 = 36.54%.
+- Slots that were not stalled: 1 - 97,275,014,000 / 199,582,563,580 = 1 - 0.48739 = 0.51261.
+- Share of started micro-operations that retired: 91,123,888,968 / 102,307,494,220 = 0.89069.
+- Retiring: 0.51261 x 0.89069 = 45.66%. Bad speculation: 0.51261 x (1 - 0.89069) = 5.60%.
+- Check of the slot count: (97,275,014,000 + 102,307,494,220) / 19,958,256,358 = 10.000 (F08-68).
+- Reading: just under half the slots do useful physics; the largest loss is the back end (36.5%), and the memory stall counter in the second run is 0.4% of cycles, so the back end is waiting on computation (dependent floating-point chains, limited execution ports), not on memory. Instructions per cycle from the second run: 87,008,530,550 / 19,922,115,591 = 4.37.
+- The correction this example lacks: Arm's formula for this core subtracts STALL_FRONTEND_FLUSH / CPU_CYCLES from the front end and adds it to bad speculation (F08-19). That event was not recorded. With 0.91 mispredicted branches per thousand instructions on this row, the shift is small here (about 1.6 points by the borrowed-constant illustration in F08-23); it is large for branchy code.
+
+**The mechanism.** Every vendor counts the same thing with different events. Intel: slots = pipeline width x core clocks, with width 4, 5, 6 or 8 by generation; from Ice Lake a fixed counter counts slots and a register holds the four ratios (F08-8, F08-10). AMD: 6 dispatch slots per cycle on Zen 4, 8 on Zen 5, plus a fifth bucket for slots lost to the sibling hardware thread (F08-11, F08-12). Arm: slots are counted at the rename stage; STALL_SLOT_FRONTEND and STALL_SLOT_BACKEND count empty slots by cause, OP_SPEC and OP_RETIRED count started and finished micro-operations, and each core's file adds a correction that moves flush-recovery time from the front end to bad speculation (F08-15, F08-17 to F08-19). Level 2 splits the back end into core-bound and memory-bound (F08-6, F08-24). The GPU has no single equivalent: `nvidia-smi` utilisation is only "was any kernel running" (F08-30); DCGM adds SM, tensor and memory activity (F08-32); Nsight Compute gives per-kernel throughput against the GPU's maximum and a roofline that separates the compute limit from the memory bandwidth limit (F08-34, F08-35). Video engines have their own utilisation fields (F08-31); ray-tracing cores have no counter that this research located (F08-36).
+
+**What it costs.** `perf stat` counting six events adds no extra run of the workload; on our two machines it needed sudo on the Spark, where `perf_event_paranoid` is 4 (Tier 0 cards, F08-60). Its overhead was not measured. Nsight Compute replays the kernel once per group of metrics, so `full` is slow, and it needs root on a Jetson (F08-33, F08-37). On EC2 the cost is the instance size: full PMU access generally needs a size that owns a whole socket (c9g.12xlarge and up, c8g.24xlarge and up), and the GPU families have no bare-metal sizes (F08-25, F08-26, F08-28).
+
+**A caution the section should print.** The four numbers describe the CPU thread that was measured. `perf` documentation: "The bottleneck is only the real bottleneck if the workload is actually bound by the CPU and not by something else." (F08-9). And the four adding to 100% is arithmetic, not validation (F08-69).
+
+### 5.3 Sections 22 and 23
+
+Section 22 uses section G as written; every figure carries "one run". Section 23 uses F08-81 to F08-85: units of work, units per dollar with the dollar column empty until a dated price is recorded, units per joule with vendor power ceilings as bounds only, and latency as p50 and p99 against the 33.3 ms control period.
+
+## 6. Stale or wrong in the seed research
+
+| Seed file | Seed claim | What the source says now | Entry |
+|---|---|---|---|
+| seed PMU card (DGX Spark) | The top-down formula is "simplified from Arm's top-down method; not yet checked line by line against Arm's telemetry spec" | Checked. It equals the generic Arm formula Linux perf ships. Arm's own X925 and A725 files subtract STALL_FRONTEND_FLUSH / CPU_CYCLES from front-end bound and add it to bad speculation; back end and retiring are identical | F08-19, F08-20, F08-22 |
+| seed PMU card (DGX Spark) | "the four categories sum to about 100% on both core types, so the formula is self-consistent here" | The sum is 100% by construction: the two stall counters add to STALL_SLOT exactly in all 51 rows. It validates nothing | F08-69 |
+| seed PMU card (Jetson) | slots = 6 for the Cortex-A78AE, "Check ... against Arm's documentation" still open | Arm's Telemetry Solution 2026.09 has no A78AE file. X925 = 10 and A725 = 5 are confirmed there | F08-16, U08-1 |
+| seed 10 | "Whether virtualized P, G and Graviton sizes expose the PMU counters needed for top-down: not verified" | AWS publishes a table by family generation and size for Graviton and general-purpose x86; G and P families are not named in it and have almost no metal sizes | F08-25, F08-26, F08-28, U08-3 |
+| seed workload rows | The Arm CPU families named are C8g and M8g (Graviton4 generation); Graviton5 is not named | Graviton5 (Neoverse V3) is generally available in M9g (2026-06-10), C9g (2026-06-30) and R9g (2026-08-31) | F08-56 |
+| seed 08 row D4, seed 03 | "p5.48xlarge = 24 vCPU per GPU" | Correct, and it is 12 physical cores per GPU (2 threads per core). g7.48xlarge is the exception: 24 physical cores per GPU | F08-57 |
+| seed PMU cards | Nsight Compute 2025.3.1 (Spark) and 2024.3.1 (Jetson); Nsight Systems 2025.3.2 and 2024.5.4 | Current: Nsight Compute 2026.4.0, with new GB10B metrics; Nsight Systems 2026.6.1. The Jetson's L4T R36.4.7 is two major releases behind Jetson Linux 39.2.2 (F07-44) | F08-33, F08-39, F08-40 |
+| seed 03 section 1.1 | Prices: "g6e.4xlarge ~$1.86/h", p5.48xlarge "$55.04/hour" On-Demand | Not re-fetched; not carried | F08-59, U08-6 |
+| seed 08 section 2 | Five shapes grouped by capacity market and orchestrator | Kept the letters; the grouping rule is restated as duration, coupling, interruptibility so that the shape is a property of the job, with the AWS pattern left to sections 24 and 25 | F08-78 |
+| seed 08 section 1 | "about fifteen" workloads over more than thirty rows | Fixed list of fifteen with a stated rule | F08-75, F08-76 |
+
+## 7. Mental models worth teaching
+
+1. **A machine has parts that fill separately.** The part that fills first sets the speed, and the rest idle. Nine parts on the chip, plus storage and network (F08-50, F08-76).
+2. **A slot is one chance per cycle to start one micro-operation, and it can go four places.** Retiring, bad speculation, front-end bound, back-end bound (F08-2, F08-3, F08-14).
+3. **Demand against supply.** Bytes or operations a unit of work needs, times units per second, compared with what the part delivers: 25.2 MB x 390 per second = 9.8 GB/s against an 11.7 GB/s core (F08-63).
+4. **"Memory-bound" is two things.** Streaming is limited by bandwidth (GB/s), chasing is limited by latency (ns per load); the Spark beats the Jetson by 3.8 times on one and 2.4 times on the other (F08-41, F08-66, F08-67).
+5. **GPU utilisation means "a kernel was running".** It is not a measure of how full the GPU is. Use SM activity, tensor activity and memory activity, or a roofline (F08-30, F08-32, F08-35).
+6. **One GPU is three or four machines.** Tensor cores, general compute, ray-tracing cores, and video engines are separate units, present or absent per model: a P5's H100 has no ray-tracing cores, no encoder and no AV1 decode; a G7's card has all of them (F08-36, F08-43, F08-44, F08-58).
+7. **The CPU beside the GPU is a part you buy by accident.** 24 vCPUs per GPU is 12 cores on most eight-GPU sizes; decode, augmentation and physics all land there (F08-57, F08-77).
+8. **The same counter name can hide different formulas.** "Front-end bound" on an Arm core has at least three definitions in current tools; say which one (F08-17 to F08-20).
+9. **Shape and part are two axes.** Part chooses the machine; duration, coupling and interruptibility choose how it is bought (F08-78, F08-79).
+
+## 8. Contradictions between sources
+
+| Topic | Source A | Source B | Reading |
+|---|---|---|---|
+| Slots per cycle on Intel | VTune cookbook (version 2025.4): "there are four pipeline slots available" (F08-2) | Intel's own metrics file: pipeline width 4, 5, 6, 8 by generation (F08-8) | The cookbook text is older than the cores EC2 sells; use the metrics file |
+| Arm front-end bound | Linux perf generic file: no correction (F08-20) | Arm's V1 and V2 files: minus 4 cycles (V1) or 1 cycle (V2) per mispredict; Arm's V3, X925, A725 files: minus measured flush cycles (F08-17 to F08-19) | Three formulas under one metric name. A card must state the formula and the tool version |
+| What "top-down" means on Graviton | Arm: four slot-based categories (F08-14) | AWS Graviton guide: IPC, then stalled cycles per thousand cycles (F08-29) | Cycle-based is the fallback when slot events are unavailable; the two do not give the same percentages |
+| GPU "utilisation" | nvidia-smi: time a kernel was executing (F08-30) | DCGM: SM activity, with "0.8 or greater is necessary, but not sufficient" (F08-32) | Different quantities; do not compare a figure from one tool with a figure from the other |
+| GPU memory of an L4 or L40S | AWS product pages and NVIDIA: 24 GB, 48 GB (F06-58) | EC2 docs table: 22 GiB, 44 GiB (F08-45) | Units and usable memory; quote the docs figure with "GiB" |
+| Ray-tracing cores on the G5's GPU | Seed 03 quotes the AWS G5 page: "80 ray tracing cores" per A10G (not re-fetched here) | NVIDIA's A10 page: 72 RT cores (F06-58) | Unresolved here; the A10G is an AWS variant of the A10 |
+| Tier 0 memory bandwidth of a Spark core | "Mem read" kernel: 22.08 and 28.94 GB/s (report section 1) | Policy stand-in's implied traffic: 35.3 and 49.5 GB/s; triad: 43.95 and 44.38 GB/s (F08-63, F08-66) | The read kernel is limited by its own loop (82.9% front-end bound on the X925), not by memory; treat triad as the ceiling |
+| Rubin on AWS | Search-result summary of the About Amazon page of 2026-08-26: mentions Rubin GPUs for 2027 to 2028 | The fetch of that page's body: the word "Rubin" not found (F08-55) | Unresolved; no instance family is named either way |
+
+## 9. UNKNOWN register
+
+| ID | Unknown | Where it arises | What would close it |
+|---|---|---|---|
+| U08-1 | Whether 6 slots per cycle is Arm's documented value for the Cortex-A78AE | F08-16, F08-68 | The Cortex-A78AE technical reference manual or a telemetry file for the core; neither was located (the Telemetry Solution at tag 2026.09 has none) |
+| U08-2 | Which events make up the "reduced set" on smaller EC2 sizes, and whether STALL_SLOT, OP_SPEC and STALL_FRONTEND_FLUSH are in it | F08-26 | `perf list` on, for example, c9g.2xlarge and c9g.12xlarge (a Tier 0 check; not run, by the rules of this pass) |
+| U08-3 | Which G and P instance sizes expose which CPU PMU events | F08-28 | An AWS statement, or `perf list` on g6e.xlarge, g6e.48xlarge, g7.48xlarge, p5.48xlarge |
+| U08-4 | Whether any NVIDIA tool exposes ray-tracing core utilisation | F08-36 | Searched: Nsight Compute profiling guide 2026.4.0 (no "OptiX", "RT Core" only in a unit list), nvidia-smi utilisation fields, DCGM profiling fields, tegrastats. Not searched: Nsight Graphics, OptiX and Omniverse profilers |
+| U08-5 | Whether a Rubin-based EC2 family exists or is announced, and its name | F08-55 | An AWS What's New post or a row in the EC2 specification table |
+| U08-6 | Every price: On-Demand, Spot, Capacity Block, for every family in F08-58 | F08-59, F08-82 | A dated first-party price per Region: the EC2 pricing page read in a browser, or the public bulk price list file with its publication date |
+| U08-7 | The `-funroll-loops` follow-up (X925 triad L1 from 39.6% to 1.6% front-end bound, 183 to 246 GB/s) | F08-66; `experiments/README.md` | The raw output of that run landing in the experiments folder |
+| U08-8 | The exact inheritance rule for blank cells in Intel's TMA file, and therefore the pipeline width for Granite Rapids and Emerald Rapids | F08-8 | The file's README section on column inheritance, or the per-platform JSON under `GNR/` and `EMR/` in the same repository |
+| U08-9 | The H200's video engines and AV1 decode support | F08-44, F05-49 | A row in NVIDIA's support matrix, or `nvidia-smi` decoder fields on a p5en instance |
+| U08-10 | How much of the Tier 0 render workload ran on the GPU | F08-64 | Re-run with `MUJOCO_GL=osmesa` against `egl`, with tegrastats or nvidia-smi sampling |
+| U08-11 | Launch dates of G4dn, G5, G5g, G6, G6e, P4d, P5, P5e, P5en, P6e-GB200 and the Graviton4 families (not re-fetched); P6-B200 and P6-B300 are known to the month from their What's New URL paths only | F08-58 | The What's New post for each |
+| U08-12 | The body of Yasin's 2014 paper (not fetched) | F08-1 | The IEEE copy or the author's copy |
+| U08-13 | Whether GPU physics (MuJoCo Warp, PhysX) uses the tensor pipeline at all | F08-42, F08-76 row 6 | Nsight Compute ComputeWorkloadAnalysis on one MuJoCo Warp step |
+| U08-14 | vCPU, memory, network and GPU count per instance for P6e-GB300 | F08-54 | A row in the EC2 specification table |
+| U08-15 | Whether the DGX Spark's kernel exposes STALL_FRONTEND_FLUSH and the level-2 stall events by name (the card counted 78 named events and did not list them) | F08-22, F08-24, F08-74 | `perf list` on the Spark, or the raw event code 0x8162 |
+| U08-16 | Whether Jetson Linux r39.2.2's tegrastats page applies unchanged to the Orin Nano on L4T R36 | F08-40 | The r36.x copy of the same page |
+
+## 10. Reading path for Carlos
+
+1. `deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/report.md`, section 3 (three small tables). Why: these are our own numbers; read them first so the method has something to bite on.
+2. Intel VTune cookbook, "Top-down Microarchitecture Analysis Method" (https://www.intel.com/content/www/us/en/docs/vtune-profiler/cookbook/current/top-down-microarchitecture-analysis-method.html), the first third, up to the four-category diagram. Why: the clearest prose explanation of slots; ignore its "four slots" figure.
+3. Arm's Neoverse V1 white paper, section 3.2 and Appendix C (PDF pages 15 to 17 and the metrics table near the end). Why: the Arm definition of a slot and the first appearance of the mispredict correction.
+4. Arm Telemetry Solution, `data/pmu/cpu/specifications/cortex/cortex_x925_r0p0_pmu.json` at tag 2026.09: search for `"frontend_bound"` and `"STALL_FRONTEND_FLUSH"`. Why: the exact formulas for the DGX Spark's big core, the ones our results should be recomputed with.
+5. Linux `tools/perf/pmu-events/arch/arm64/sbsa.json` at v7.3 (four metrics, twenty lines). Why: this is literally the formula our Tier 0 used; seeing it next to item 4 is the whole comparison.
+6. AWS Graviton guide, `perfrunbook/debug_hw_perf.md`, the table under "How to Collect PMU counters". Why: tells you which EC2 size to rent before profiling.
+7. NVIDIA `nvidia-smi` documentation, section "Utilization" (six short definitions). Why: one sentence changes how every GPU utilisation figure reads.
+8. Nsight Compute Profiling Guide, sections "Streaming Multiprocessor" and "Roofline Charts". Why: the unit list (tensor cores, RT cores) and the GPU's compute-versus-memory picture.
+9. EC2 "Specifications for accelerated computing instances" (https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html), the "Performance specifications" table, columns vCPUs, CPU cores, Threads per core. Why: the CPU beside each GPU, and the G7 exception.
+10. This register, the tables under F08-58 (instances), F08-76 (workloads) and F08-74 (Tier 0 still owed). Why: the three tables sections 20, 22 and 25 are built from.
+
+## 11. Source list by tier
+
+### Tier 0 (our experiments, single run)
+
+- `deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/`: `report.md`, `results-pass2/results-jetson-a78ae.csv`, `results-pass2/results-spark-a725.csv`, `results-pass2/results-spark-x925.csv`, `pmu-cards/dgx-spark.md`, `pmu-cards/jetson-orin-nano.md`, `run.sh`, `workloads.py`, `micro.c`, `humanoid.xml`; and `deep-dives/physical-ai/research/experiments/README.md`.
+
+### Tier 1 (code and vendor files at a pinned ref, official docs)
+
+- intel/perfmon at c6875bae4fe4322e88c6b265962901672bfa97c9: `TMA_Metrics-full.csv`, `README.md` (https://github.com/intel/perfmon/blob/c6875bae4fe4322e88c6b265962901672bfa97c9/TMA_Metrics-full.csv)
+- torvalds/linux at tag v7.3, c03c1a14507dfaf8b856c2608f9ac216021fc222: `tools/perf/Documentation/perf-stat.txt`, `tools/perf/Documentation/topdown.txt`, `tools/perf/pmu-events/arch/x86/amdzen4/pipeline.json`, `amdzen5/pipeline.json`, `amdzen6/pipeline.json`, `tools/perf/pmu-events/arch/arm64/sbsa.json`, `arm64/arm/neoverse-v1/metrics.json`, `neoverse-n2-v2/metrics.json`, `neoverse-v3/metrics.json`, `tools/perf/arch/arm64/util/pmu.c`
+- Arm Telemetry Solution at tag 2026.09, ea533b733b9bad52223d16e768b7dab03cabb830 (https://gitlab.arm.com/telemetry-solution/telemetry-solution): `RELEASE_NOTES.md`, `data/pmu/cpu/mapping.json`, `data/pmu/cpu/specifications/neoverse/neoverse_v1_r1p2_pmu.json`, `neoverse_v2_r0p0_pmu.json`, `neoverse_v3_r0p0_pmu.json`, `neoverse_n1_r4p1_pmu.json`, `data/pmu/cpu/specifications/cortex/cortex_x925_r0p0_pmu.json`, `cortex_a725_r0p0_pmu.json`
+- aws/aws-graviton-getting-started at 541d1ad524bb1630e16b8e66aef36dcd01a3bbc1: `perfrunbook/debug_hw_perf.md`, `README.md`
+- Intel VTune Profiler cookbook, Top-down Microarchitecture Analysis Method: https://www.intel.com/content/www/us/en/docs/vtune-profiler/cookbook/current/top-down-microarchitecture-analysis-method.html
+- EC2 instance type specifications: https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html , https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html , https://docs.aws.amazon.com/ec2/latest/instancetypes/co.html
+- EC2 User Guide, Elastic Fabric Adapter: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html
+- FSx for Lustre performance: https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html
+- NVIDIA nvidia-smi documentation: https://docs.nvidia.com/deploy/nvidia-smi/index.html
+- NVIDIA DCGM User Guide, Feature Overview: https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/feature-overview.html (newest repository tag v4.7.0, 9fae2867e6e5264fa0fca22a07dc898d591baa21)
+- NVIDIA Nsight Compute 2026.4.0 Profiling Guide and Release Notes: https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html , https://docs.nvidia.com/nsight-compute/ReleaseNotes/index.html
+- NVIDIA Nsight Systems 2026.6 Release Notes: https://docs.nvidia.com/nsight-systems/ReleaseNotes/index.html
+- NVIDIA Jetson Linux Developer Guide r39.2.2, Tegrastats Utility: https://docs.nvidia.com/jetson/archives/r39.2.2/DeveloperGuide/AT/JetsonLinuxDevelopmentTools/TegrastatsUtility.html
+- NVIDIA Video Encode and Decode Support Matrix: https://developer.nvidia.com/video-encode-decode-support-matrix
+
+### Tier 2 (first-party announcements, product pages, white papers)
+
+- Arm, "Arm Neoverse V1 Core: Performance Analysis Methodology" white paper: https://armkeil.blob.core.windows.net/developer/Files/pdf/white-paper/neoverse-v1-core-performance-analysis.pdf
+- AWS What's New: G7 (2026-06-18) https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-ec2-g7-generally-available/ ; G7e (2026-01-20) https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-g7e-instances-generally-available/ ; P6e-GB300 (2025-12-02) https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available ; M9g (2026-06-10) https://aws.amazon.com/about-aws/whats-new/2026/06/ec2-m9g-m9gd-instances-graviton5-processors-available/ ; C9g (2026-06-30) https://aws.amazon.com/about-aws/whats-new/2026/06/ec2-c9g-c9gd-instances-graviton5-processors-available/ ; R9g (2026-08-31) https://aws.amazon.com/about-aws/whats-new/2026/08/amazon-ec2-r9g-and-r9gd-memory-optimized-instances-are-now-available/
+- AWS product pages: G7 https://aws.amazon.com/ec2/instance-types/g7/ ; M9g https://aws.amazon.com/ec2/instance-types/m9g/
+- About Amazon, AWS and NVIDIA (2026-08-26): https://www.aboutamazon.com/news/aws/aws-nvidia-2-million-gpus-ai
+- NVIDIA Tensor Cores product page: https://www.nvidia.com/en-us/data-center/tensor-cores/
+
+### Tier 3 (papers)
+
+- A. Yasin, "A Top-Down Method for Performance Analysis and Counters Architecture", ISPASS 2014, DOI 10.1109/ISPASS.2014.6844459. History; cited through Intel's repository README; body not fetched.
+
+### Tier 4 (used only to locate primary sources; nothing cited as fact)
+
+- Web searches restricted to aws.amazon.com, docs.aws.amazon.com and aboutamazon.com to locate the Graviton5, P6 and Rubin pages. Two search-result summaries are mentioned as unresolved leads (F08-55 and section 8) and are not used as evidence.
