@@ -93,7 +93,7 @@ h1 payoff: Read any 2026 robot-model announcement and know what the backbone, th
    as current and labelled whitepaper, code due in December (F02-44, F02-45); SmolVLA (F02-58, F02-60); OpenVLA-OFT
    (F02-68); Gemini Robotics 2.5 (F02-74). Diagram 5.3. Details per line in ExpandableSections.
 5. **Which can be fine-tuned for the arm today** - "Where to start on an SO-101": LeRobot v0.7.0's policy list
-   (F02-65 and the wave 3 entries that complete it; F02-47 for what was removed).
+   (F02-102, the full table of 28, with F02-84 to F02-101 per package; F02-47 for what was removed).
 6. **What it costs** - "Publisher's figures for training and for one action": pointers into 15 and 17, with the
    N1.7 stage timings (F02-40) and pi0.7 serving (F02-52).
 SN: SmolVLA's 90% in distribution against ACT's 70% on the SO-101 pick-place task with 50 demonstrations (author
@@ -117,7 +117,7 @@ h1 payoff: Know what a world model is for, and the one design choice that separa
 7. **Worked example: one imagined candidate** - "What it costs to imagine one future": the per-candidate times, not
    like for like, each with its GPU (F03-118, F03-25); parameters side by side (F03-117). Diagram 6.3.
 8. **What it costs, and which family fits which use** - compute by family; memory only where a first-party figure
-   exists (F03-105 and the wave 3 Cosmos memory result); ends on the choice.
+   exists (F03-121 to F03-127: NVIDIA's NIM support matrix prints Cosmos 3 memory needs); ends on the choice.
 SN: 16 seconds per planned action in latent space against 4 minutes with a video model, on one RTX 4090 (author
 reported, F03-25). Links: none.
 
@@ -203,7 +203,7 @@ h1 payoff: Three ways to get more data than you recorded, and what each one cost
 3. **Demonstration multiplication in simulation** - Isaac Lab Mimic (F05-89, F05-90, F05-91, F05-92); MimicGen as
    history (F05-88). Loads: physics plus rendering.
 4. **Generative augmentation with a world model** - Cosmos 3 (F05-95, F05-96, F05-97, F05-98, F03-98, F03-99);
-   memory only where printed (F03-105, F05-99 as a dated figure for the superseded model, wave 3 result);
+   memory only where printed (F03-121 to F03-127; F05-99 only as a dated figure for the superseded model);
    DreamGen on the SO-100 (F05-102, F05-103). Loads: tensor cores, minutes per clip.
 5. **Which kind fits which hardware** - the reader's choice.
 SN: 207.78 s per 720p clip on an H100 (vendor claim). Links: none.
@@ -216,7 +216,7 @@ h1 payoff: Know what a physics step is, what it costs, and when it moves from CP
 2. **The idea** - "A simulator answers: given forces, where is everything one timestep later": state, timestep
    (0.002 s default, F06-10), contact, constraint, integration.
 3. **Worked example: one second of the arm** - steps per simulated second from the timestep; the SO-101 pick-cube
-   task's own timestep and control step (F06-27 and the wave 3 timestep entries).
+   task's own timestep and control step (F06-27, F06-105, F06-106).
 4. **The mechanism: one step** - `mj_step`, 26 stages in four groups then the integrator (F06-9).
    Diagram 12.1 (animated).
 5. **The simulators, November 2026** - MuJoCo 4.0.1 (F06-1, F06-2), MuJoCo Warp (F06-19), MJX, Newton 1.8.0
@@ -234,7 +234,7 @@ h1 payoff: Understand why a simulator with cameras needs a different GPU than a 
    (F08-43, F06-58, F06-59, F08-36). Diagram 13.2: the shared component `src/components/GpuEngines.tsx`, written by
    this section's author with a `workload` selector, reused by section 20.
 4. **Worked example: what one camera costs** - 1,023,698 to 152,124 FPS and 0.93 GB to 57.3 GB (F06-48); the
-   manipulation rows (F06-49); the camera resolution from the wave 3 entries; memory ladder (F06-102, F06-63).
+   manipulation rows (F06-49); the camera resolution (F06-103; the Cartpole rows' camera size is unresolved, F06-104: say so); memory ladder (F06-102, F06-63).
    Diagram 13.3.
 5. **The rule, with its scope** - "Which simulators need RT cores, in the vendor's words": Isaac Sim 6.2.0
    (F06-52); Isaac Lab 3.0 headless Newton does not (F06-51); a ray tracer written as GPU compute (F06-24).
