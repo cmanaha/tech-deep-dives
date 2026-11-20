@@ -25,9 +25,80 @@ Code is the authority over documentation. Vendor and author performance numbers 
 
 **Evidence kinds:** definition, documentation of support, benchmark claim (author or vendor reported), ablation, production report, code behaviour.
 
-<!-- CURRENCY-TABLE-PLACEHOLDER -->
+## 2. Currency table
 
-<!-- PINNED-SOURCES-PLACEHOLDER -->
+Newest first-party version found on 2026-11-20 for every item this register names.
+
+| Item | Newest version found | Release date | Source URL | What the seed research named |
+|---|---|---|---|---|
+| V-JEPA 2 paper | arXiv 2506.09985v1 (only version) | 2025-06-11 | https://arxiv.org/abs/2506.09985v1 | V-JEPA 2 (same) |
+| V-JEPA encoder | V-JEPA 2.1 (arXiv 2603.14482v3), in the vjepa2 repository | 2026-03-16 release; v3 2026-06-11 | https://arxiv.org/abs/2603.14482v3 | V-JEPA 2 only |
+| facebookresearch/vjepa2 code | no releases or tags; HEAD `204698b45b3712590f06245fbfba32d3be539812` | 2026-03-23 | https://github.com/facebookresearch/vjepa2 | repository, no SHA |
+| JEPA robot world model | RoboJEPA, arXiv 2610.10515v1; code facebookresearch/robo_jepa `f93106f5f4a451fd526d51778aa8ab7c852eb824` | 2026-10-07 | https://arxiv.org/abs/2610.10515v1 | not named (V-JEPA 2-AC was the newest) |
+| LeWorldModel paper | arXiv 2603.19312v3 | 2026-06-03 (v1 2026-03-13) | https://arxiv.org/abs/2603.19312v3 | LeWorldModel, earlier version |
+| lucas-maes/le-wm code | no releases; HEAD `8edfeb336732b5f3ce7b8b210d0ba370a09e2cac` | 2026-05-22 | https://github.com/lucas-maes/le-wm | repository, no SHA |
+| LeJEPA (SIGReg) | arXiv 2511.08544v3 | 2025-11-14 | https://arxiv.org/abs/2511.08544v3 | LeJEPA |
+| JEPA-WMs study | arXiv 2512.24497v4 (TMLR, May 2026) | 2026-09-02 | https://arxiv.org/abs/2512.24497v4 | not named |
+| VL-JEPA | arXiv 2512.10942v2 | 2026-02-02 | https://arxiv.org/abs/2512.10942v2 | not named |
+| facebookresearch/eb_jepa | located, not read; last push 2026-07-17 | 2026-07-17 | https://github.com/facebookresearch/eb_jepa | not named |
+| AMI Labs | company site; launch announcement; no model, paper or code listed | 2026-03-10 | https://amilabs.xyz/ | AMI Labs, from secondary reporting |
+| NVIDIA Cosmos | Cosmos 3 (Super 64B, Nano 16B, Edge 4B); repo tag `Cosmos3`; HEAD `0eab578a8935e26aa41c2b7dc9f5ab00f790a037` | 2026-05-31 (Nano, Super); Edge July 2026; interactive simulation checkpoints October 2026; HEAD 2026-11-19 | https://github.com/NVIDIA/Cosmos | Cosmos 3 for the family, Cosmos-Predict2.5 and Transfer2.5 for memory and timing figures |
+| Cosmos 3 paper | arXiv 2606.02800v4 | 2026-06-23 | https://arxiv.org/abs/2606.02800v4 | Cosmos 3 paper, earlier version |
+| Cosmos-Predict2.5 | repository in limited maintenance; HEAD `a2c298b0a3df3778b973fe65e9e58877b292d8a7` | notice read 2026-11-20 | https://github.com/nvidia-cosmos/cosmos-predict2.5 | treated as current for per-clip figures |
+| Genie | Genie 4 (model page; no date on the page) | UNKNOWN on first-party page (press: 2026-10-27, Tier 4) | https://deepmind.google/models/genie/ | Genie 3 current, Genie 4 unverified |
+| Genie 3 | blog post | 2025-08-05 | https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/ | Genie 3 |
+| Dreamer | Dreamer 4, arXiv 2509.24527v1 | 2025-09-29 | https://arxiv.org/abs/2509.24527v1 | not named |
+| DreamZero | arXiv 2602.15922v1 (only version found) | 2026-02-17 | https://arxiv.org/abs/2602.15922v1 | DreamZero |
+| GR00T world-action model | GR00T 2 whitepaper and project page; code "Available in December" | November 2026 | https://research.nvidia.com/labs/gear/gr00t-2/ | GR00T N2 / GR00T 2, described as built on DreamZero |
+| 1X World Model | company post | 2026-01-12 | https://www.1x.tech/discover/world-model-self-learning | 1X World Model (same post) |
+| LeRobot (SO-101 figures) | v0.7.0, SHA `410c095eacc0011d998a73383eb94abed2715af0` | 2026-11-05 | https://github.com/huggingface/lerobot | LeRobot, older version |
+
+## 3. Pinned sources
+
+### Papers
+
+| Short name | Pinned version | Date of that version | Venue status | Parts read |
+|---|---|---|---|---|
+| V-JEPA 2 | https://arxiv.org/abs/2506.09985v1 | 2025-06-11 | preprint | sections 1 to 4, appendices A and B, Tables 9 and 12 |
+| V-JEPA 2.1 | https://arxiv.org/abs/2603.14482v3 | 2026-06-11 | preprint | abstract, method, Table 6, Figure 8 |
+| RoboJEPA | https://arxiv.org/abs/2610.10515v1 | 2026-10-07 | preprint | abstract, sections on data, planning, results, limits; Table 13 |
+| LeWorldModel | https://arxiv.org/abs/2603.19312v3 | 2026-06-03 | preprint | whole paper including appendices A and D |
+| LeJEPA | https://arxiv.org/abs/2511.08544v3 | 2025-11-14 | preprint | abstract, sections on the isotropic Gaussian and SIGReg |
+| JEPA-WMs | https://arxiv.org/abs/2512.24497v4 | 2026-09-02 | peer-reviewed (TMLR, 05/2026, as printed on the paper) | sections 1, 2 and 7; Table 6 caption; the V-JEPA 2-AC bug note |
+| VL-JEPA | https://arxiv.org/abs/2512.10942v2 | 2026-02-02 | preprint | abstract, section 1 |
+| I-JEPA (history) | https://arxiv.org/abs/2301.08243v3 | 2023-04-13 | venue label conflicts (see section 8); treated as preprint | sections 3 and 4, appendix A |
+| V-JEPA (history) | https://arxiv.org/abs/2404.08471v1 | 2024-02-15 (paper date; arXiv listing April 2024) | preprint | sections 2 to 4, Table 1 |
+| VICReg (history) | https://arxiv.org/abs/2105.04906v3 | 2022-01-28 | peer-reviewed (ICLR 2022) | sections 3 and 4 |
+| LeCun position paper (history) | "A Path Towards Autonomous Machine Intelligence", version 0.9.2, read from https://web.archive.org/web/20240101103457/https://openreview.net/pdf?id=BZ5a1r-kVsf (OpenReview itself served a browser challenge) | 2022-06-27 | position paper, not peer-reviewed | sections 2 to 4 |
+| DreamerV3 (history) | https://arxiv.org/abs/2301.04104v2 | 2024-04-17 | preprint (venue not confirmed in this pass) | abstract, world model section |
+| Dreamer 4 | https://arxiv.org/abs/2509.24527v1 | 2025-09-29 | preprint | abstract, sections 3 and 4 |
+| DreamZero | https://arxiv.org/abs/2602.15922v1 | 2026-02-17 | preprint | abstract, sections 1 to 3 and 6 |
+| Cosmos 3 | https://arxiv.org/abs/2606.02800v4 | 2026-06-23 | preprint | sections 3.1 and 4.1 |
+| Cosmos-Predict2.5 | https://arxiv.org/abs/2511.00062v2 | listing only | preprint | not read; listing located only |
+| GR00T 2 whitepaper | https://research.nvidia.com/labs/gear/gr00t-2/assets/gr00t2_whitepaper.pdf | November 2026 | first-party technical report, not on arXiv as of this pass | section 2, latency paragraphs, Figure 66 |
+
+### Code and model cards
+
+| Repository | Ref (40-character SHA) | Commit date | Files read |
+|---|---|---|---|
+| facebookresearch/vjepa2 | `204698b45b3712590f06245fbfba32d3be539812` (no release tags) | 2026-03-23 | `README.md`, `CHANGELOG.md`, `src/models/predictor.py`, `src/models/ac_predictor.py`, `app/vjepa/train.py`, `app/vjepa_droid/train.py`, `notebooks/utils/mpc_utils.py`, `notebooks/utils/world_model_wrapper.py`, `configs/train/vitl16/pretrain-256px-16f.yaml`, `configs/train/vitg16/droid-256px-8f.yaml` |
+| lucas-maes/le-wm | `8edfeb336732b5f3ce7b8b210d0ba370a09e2cac` (no release tags) | 2026-05-22 | `jepa.py`, `module.py`, `train.py`, `eval.py`, `utils.py`, `config/train/*`, `config/eval/*`, `README.md` |
+| NVIDIA/Cosmos | `0eab578a8935e26aa41c2b7dc9f5ab00f790a037` (tag `Cosmos3` dated 2026-06-01 also exists) | 2026-11-19 | `README.md`, `docs/reference/models.md`, `docs/reference/inference_benchmarks.md`, `docs/reference/inference_benchmarks/cosmos3-nano-generator.md`, `docs/reference/inference_benchmarks/benchmark_methodology.md` |
+| facebookresearch/robo_jepa | `f93106f5f4a451fd526d51778aa8ab7c852eb824` | 2026-10 | `README.md` only |
+| nvidia-cosmos/cosmos-predict2.5 | `a2c298b0a3df3778b973fe65e9e58877b292d8a7` | read 2026-11-20 | `README.md` (maintenance notice) |
+| huggingface/lerobot | `410c095eacc0011d998a73383eb94abed2715af0` (tag v0.7.0) | 2026-11-05 | `src/lerobot/robots/so_follower/so_follower.py` (lines 72 to 77: six `sts3215` motors), `docs/source/il_robots.mdx` (example cameras 640 x 480 at 30 fps) |
+| Hugging Face model card nvidia/Cosmos3-Nano | revision `45666784803b3a7ad577e0def405f9afcc3bddb2` | last modified 2026-11-12 | `README.md` (the card) |
+
+Located, not read: facebookresearch/eb_jepa, facebookresearch/jepa-wms, galilai-group/stable-worldmodel (see the UNKNOWN register).
+
+### Docs and first-party pages (all accessed 2026-11-20)
+
+- https://amilabs.xyz/ and https://amilabs.xyz/updates (AMI Labs company site)
+- https://deepmind.google/models/genie/ (Genie 4 model page)
+- https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/ (Genie 3 post, 2025-08-05)
+- https://research.nvidia.com/labs/gear/gr00t-2/ (GR00T 2 project page)
+- https://www.1x.tech/discover/world-model-self-learning (1X World Model post, 2026-01-12)
+- https://huggingface.co/nvidia/Cosmos3-Nano (model card, revision above)
 
 ---
 
@@ -91,7 +162,7 @@ Short code names used below: `vjepa2@2046` means facebookresearch/vjepa2 at SHA 
 - Location: `configs/train/vitl16/pretrain-256px-16f.yaml` `mask:` block; paper Table 9
 - Verdict: NEW
 - Evidence: https://raw.githubusercontent.com/facebookresearch/vjepa2/204698b45b3712590f06245fbfba32d3be539812/configs/train/vitl16/pretrain-256px-16f.yaml | Tier 1, code | code behaviour | "num_blocks: 8 / spatial_scale: [0.15, 0.15] / temporal_scale: [1.0, 1.0]" and "num_blocks: 2 / spatial_scale: [0.7, 0.7] / temporal_scale: [1.0, 1.0]" (accessed 2026-11-20)
-- Use in dive: section 7, the masking picture. The resulting fraction of tokens hidden is not printed in the V-JEPA 2 paper; the V-JEPA paper gives it (F03-41).
+- Use in dive: section 7, the masking picture. The resulting fraction of tokens hidden is not printed in the V-JEPA 2 paper; the V-JEPA paper gives it, about 90% (F03-60).
 
 **F03-10. Pretraining data is VideoMix22M: 22 million samples from five sources (Something-Something v2 168 hours, Kinetics 614 hours, HowTo100M 134K hours, curated YT-Temporal-1B 1.6M hours, ImageNet 1M images).**
 - Location: section 2.2, Table 1
@@ -275,7 +346,7 @@ Short code names used below: `vjepa2@2046` means facebookresearch/vjepa2 at SHA 
 - Location: section 3.1 "Training Objective"
 - Verdict: NEW
 - Evidence: https://arxiv.org/abs/2603.19312v3 | Tier 3, preprint | definition | "SIGReg circumvents this limitation by projecting embeddings onto M random unit-norm directions u(m) in S^(d-1) and optimizing the univariate Epps-Pulley test statistic T(.) along the resulting one-dimensional projections h(m) = Z u(m) ... By the Cramer-Wold theorem, matching all one-dimensional marginals is equivalent to matching the full joint distribution." (accessed 2026-11-20)
-- Use in dive: sections 7 (collapse). A collapsed encoder outputs one point; a single point is as far from a bell curve as a distribution can be, so the statistic is large and the gradient pushes embeddings apart.
+- Use in dive: section 7 (collapse). A collapsed encoder outputs one point; a single point is as far from a bell curve as a distribution can be, so the statistic is large and the gradient pushes embeddings apart.
 
 **F03-40. LeWM planning: CEM with 300 candidate action sequences, 30 iterations on Push-T (10 on the other environments), top 30 kept, horizon 5 steps where each step is a block of 5 environment actions; all 5 planned blocks are executed before replanning. Cost is the squared distance between the final predicted embedding and the goal image's embedding.**
 - Location: paper section 3.2 and appendix D "Planning solver"; `config/eval/solver/cem.yaml`; `config/eval/pusht.yaml` lines 21 to 24; `jepa.py` lines 119 to 124
@@ -419,7 +490,7 @@ Source note: the canonical copy is https://openreview.net/pdf?id=BZ5a1r-kVsf, wh
 - Location: section 4.1; Table 1
 - Verdict: NEW (history)
 - Evidence: https://arxiv.org/abs/2404.08471v1 | Tier 3, preprint | ablation | Table 1 caption: "We ablate the effect of computing the prediction loss in feature space vs pixel space. All models are trained on VideoMix2M for 90K iterations with a batch size of 3072 using the multi-block prediction task. ... Predicting in feature space provide a consistent improvement over pixel space prediction." (accessed 2026-11-20)
-- Use in dive: section 6, evidence behind the latent argument (an ablation on representation quality, not on planning).
+- Use in dive: section 6, evidence behind the latent argument (an ablation on representation quality, not on planning). Table 1 rows for ViT-L/16 `[author reported]`: pixel target 68.6 (Kinetics-400), 66.0 (Something-Something v2), 73.3 (ImageNet-1K), 85.4 (Kinetics-400 fine-tuned); feature target 73.7, 66.2, 74.8, 85.6. The gap is 5.1 points on Kinetics-400 and 0.2 on Something-Something v2 [derived].
 
 ### F. Collapse and the ways each method prevents it
 
@@ -783,3 +854,327 @@ Source note: the canonical copy is https://openreview.net/pdf?id=BZ5a1r-kVsf, wh
 - Evidence: https://arxiv.org/abs/2512.24497v4 | Tier 3, peer-reviewed (TMLR) | benchmark claim (author reported) | "Table 6: Model-specific training times in minutes per epoch on 16 H100 80 GB GPUs for Maze and Wall, on 32 H100 GPUs for Push-T and Metaworld. ... For DROID, we display the train time for 10 epochs since we train for 315 epochs." (accessed 2026-11-20)
 - Use in dive: pointer for the compute table: the only located source with wall-clock training time for a V-JEPA-2-AC-class predictor (UNKNOWN U4 until the cells are read).
 
+---
+
+## 5. Teaching material
+
+The arm's figures used below, from LeRobot v0.7.0 at SHA `410c095eacc0011d998a73383eb94abed2715af0`: the SO-101 follower arm has six STS3215 servo motors (`shoulder_pan`, `shoulder_lift`, `elbow_flex`, `wrist_flex`, `wrist_roll`, `gripper`), so an action is 6 numbers; the documented example cameras are 640 x 480 at 30 frames per second. None of the models in this register has been run on an SO-101 by anyone we could cite. Every worked example below maps published settings onto the arm task and says so.
+
+### 5.1 Section 6, "World Models: Predicting What Happens Next"
+
+#### The plain-words idea
+
+A world model is a network that answers one question: "if the scene looks like this now and the robot does that, what will the scene look like next?" (F03-87). Once a model can answer it, the robot can try actions in the model instead of in the room. The sources name five uses: search for a good action sequence by trying many (planning), train a policy on imagined experience, generate extra training data, score a policy without a robot, and use the model itself as the policy by having it output actions next to its prediction (F03-88, F03-92, F03-93).
+
+The design choice that splits the field is what "the scene next" means. One family predicts the next video frames (through a compressed code that a decoder turns back into pixels). The other predicts a short list of numbers that summarises the next scene and never draws it. Section 6 teaches the first family and the argument between them; section 7 teaches the second.
+
+#### Worked example on the arm task: what one imagined second costs
+
+The task: the block sits 10 cm left of the cup. The camera sees it at 640 x 480, 30 frames per second.
+
+1. **As video.** A 640 x 480 colour frame is 640 x 480 x 3 = 921,600 numbers. One second at 30 frames per second is 27,648,000 numbers `[derived]`. A video world model does not predict these directly: Cosmos 3 first compresses with a frozen VAE (a variational autoencoder, an encoder and decoder pair trained so the decoder can rebuild the pixels from the code), 4 times in time and 32 x 32 in space (F03-96). A 480 x 640 frame becomes 15 x 20 = 300 latent positions, and 30 frames become about 8 latent frames, so one second is roughly 2,400 tokens `[derived]`. The transformer then produces those tokens by denoising: start from noise and refine over several passes (35 in the model card's examples, F03-95).
+2. **What that costs, published.** Cosmos3-Nano (16B parameters) used as an action-conditioned predictor takes about 2.0 s per rollout on one H100 (F03-99, `[vendor claim]`, rollout length not published). A free text-to-video clip of 7.875 s at 320 x 192 takes 7.61 s on the same GPU, and at 720p it takes 207.78 s (F03-98).
+3. **Why that matters for planning.** Planning by search needs thousands of imagined futures per decision. V-JEPA 2-AC's planner uses 800 candidates x 10 rounds = 8,000 predictor passes per action (F03-24, F03-115). At 2.0 s each, run one at a time, that is 16,000 GPU-seconds, about 4.4 GPU-hours for one action `[derived]`. The V-JEPA 2 authors measured the same thing on a 2025 video model: with only 80 candidates, 4 minutes per action on an RTX 4090, against 16 s for their latent model with 800 (F03-25).
+4. **The other way to use a video model.** Do not search. Have the model output the actions together with the video, once per decision. DreamZero (14B) does this at 7 Hz on 2 GB200 GPUs (F03-103); GR00T 2 (2B) predicts an action chunk in a median 153 ms on one RTX 5090 (F03-104). This is why the pixel family in 2026 is mostly world-action models and data generators, and the latent family is mostly planners `[our reading]`.
+
+#### The mechanism (which tensor goes where)
+
+A generic action-conditioned video world model, using Cosmos 3 and GR00T 2 as the concrete cases:
+
+1. **Tokenise.** Camera frames go through the frozen VAE encoder. Cosmos 3: 4x in time, 32 x 32 in space (F03-96). GR00T 2: 4x in time, 8x per spatial dimension, then patches, giving 280 tokens per latent frame per camera at 224 x 320 (F03-104).
+2. **Condition.** Past frames' tokens are clean. Text (and in Cosmos 3 the reasoning tower's output) and the action sequence enter as further tokens (F03-95).
+3. **Generate.** Future-frame tokens start as Gaussian noise. The transformer is trained with flow matching: given a noisy mix of the true future tokens and noise, predict the direction that moves the mix toward the true tokens. In symbols, with x_1 the true future latent, x_0 noise, t a number between 0 and 1, and x_t = (1 - t) x_0 + t x_1, the network v predicts the velocity x_1 - x_0 and the loss is the squared error || v(x_t, t, conditions) - (x_1 - x_0) ||^2. The quoted sources name the objective ("rectified flow matching", F03-95; "flow matching on future video latents and actions together, with one loss for each", F03-104); the formula here is the standard form of that objective, not a quote, and the section writer should check it against Cosmos 3 paper section 4.1 before printing it.
+4. **Decode.** The VAE decoder turns the finished latent into pixels. A world-action model also reads out the action tokens (F03-93, F03-104).
+
+Three older or adjacent patterns the section should place in one sentence each: Dreamer (learn a compact latent model with a reconstruction loss and rewards, then train the policy inside it; F03-89, F03-90); the inverse-dynamics pattern of the 1X World Model (generate 5 s of video of the task being done, then a second model works out which actions produce that video; F03-102); interactive worlds for agents (Genie 3 and 4; F03-100, F03-101).
+
+#### The latent argument, stated from the sources
+
+- Pixels force the model to spend capacity on detail that does not matter or cannot be known: every blade of grass, every leaf (F03-106, F03-107, F03-51).
+- Measured on representation quality, the same network trained to predict features beat the same network trained to predict pixels by 5.1 points on Kinetics-400 (73.7 against 68.6) and by 0.2 on Something-Something v2 (F03-62). That ablation is from 2024 and measures recognition, not planning.
+- Measured on planning: 16 s against 4 min per action, same GPU (F03-25). The pixel side was a 2025 model tuned by the JEPA authors.
+- The price: no pictures without an extra decoder, and what the encoder dropped may be something the task needs (F03-109, F03-111); one predicted future where several are possible (F03-110).
+- The pixel camp's reply in its own words: video is "a dense representation of how the world evolves", and the DreamZero authors say future world-action models may predict "learned latent representations" (F03-93). Neither camp's source claims the question is settled `[our reading]`.
+
+#### What it costs in compute, and which part of the machine it loads
+
+| Workload | Published figure | Entry | Part of the machine |
+|---|---|---|---|
+| Pretraining a video world model | Cosmos3-Nano: 1,024 GB200 GPUs, 31.05T tokens; duration not stated | F03-97 | GPU tensor cores across many nodes; the network between them; storage throughput for video |
+| Generating a clip | Cosmos3-Nano, 189 frames: 7.61 s (320 x 192) to 207.78 s (720p) on one H100 | F03-98 | GPU tensor cores (repeated transformer passes); GPU memory for 16B weights, at least 32 GB in BF16 `[derived]`, true need UNKNOWN (F03-105) |
+| One action-conditioned rollout | Cosmos3-Nano: about 2.0 s on one H100 | F03-99 | same |
+| World-action model control | DreamZero 14B: 7 Hz on 2 GB200. GR00T 2 2B: 153 ms per chunk on one RTX 5090; Turbo 124 ms on Jetson Thor | F03-103, F03-104 | GPU tensor cores; a few denoising steps per chunk |
+| Video as policy with action extraction | 1X: 11 s multi-GPU plus 1 s for 5 s of motion | F03-102 | GPU tensor cores, several GPUs |
+| Interactive world | Dreamer 4 2B: above 20 frames per second on one H100. Genie 3: 24 frames per second at 720p, hardware not stated | F03-90, F03-100 | GPU tensor cores |
+
+None of these loads ray-tracing cores: a learned world model is matrix arithmetic, unlike a rendered simulator `[our reading]`. Whether the VAE decode and any video encode of the output run on the GPU's tensor cores or its video engines is not stated in the sources read.
+
+#### Order to teach it in (section 6)
+
+1. The question a world model answers, on the arm (F03-87).
+2. The five uses, each in one line, with the arm (F03-88, F03-92, F03-93).
+3. Policy training in imagination as the oldest use: Dreamer in two sentences (F03-89, F03-90).
+4. How a video world model works: compress, condition, denoise, decode (F03-95, F03-96).
+5. What exists in November 2026: Cosmos 3, Genie 4, the 1X World Model, GR00T 2 (F03-94, F03-101, F03-102, F03-104).
+6. The cost of one imagined second, then of one planned action (F03-98, F03-99, F03-25).
+7. Two ways out of that cost: output actions directly (world-action models, F03-103, F03-104) or stop predicting pixels (F03-106 to F03-108).
+8. The price of leaving pixels (F03-109 to F03-111). Hand over to section 7.
+
+### 5.2 Section 7, "JEPA"
+
+#### The plain-words idea
+
+A JEPA (Joint-Embedding Predictive Architecture) has three parts. An encoder turns what the camera sees into a list of numbers, the representation. A second encoder pass turns the thing to be predicted (a hidden part of the video, or the next frame) into its own representation. A predictor takes the first representation and tries to output the second (F03-47). The training signal is how far the prediction lands from the target, measured between the two lists of numbers, never between pictures (F03-48). That distance is called the energy: low when the target is a plausible match for the context, high when it is not.
+
+Because the model grades its own homework (it produces both the prediction and the target), it can cheat: output the same numbers for every input and the distance is always zero. That failure is called collapse (F03-63). Most of what distinguishes one JEPA from another is how it prevents collapse.
+
+A JEPA becomes a world model when the predictor also receives the robot's action and the target is the next frame's representation (F03-14, F03-36). The robot then plans by searching for the action sequence whose predicted representation lands closest to the representation of a picture of the goal (F03-23).
+
+#### Worked example A: the encoder (V-JEPA 2) on arm video
+
+Pretraining needs video only, no actions.
+
+1. Take a clip of the arm: 16 frames at 256 x 256 (the paper samples 4 frames per second, so this is 4 seconds; F03-11). The 640 x 480 camera frame is resized.
+2. Cut it into tubelets of 2 frames x 16 x 16 pixels (F03-3). That gives 16 / 2 = 8 steps in time and 256 / 16 = 16 per side: 8 x 16 x 16 = 2,048 tokens `[derived]`.
+3. Hide most of them. The masks are blocks that run through the whole clip in time: 8 blocks of 15% of the frame, or 2 blocks of 70% (F03-9). In V-JEPA this hides about 90% of the tokens (F03-60); at that ratio about 205 of 2,048 stay visible (illustration: the V-JEPA 2 paper does not print its ratio).
+4. The encoder (ViT-g, 1B parameters, width 1408; F03-4) processes only the visible tokens. The target encoder, a slowly updated copy, processes all 2,048.
+5. The predictor (22M parameters, width 384; F03-4) receives the visible tokens' outputs plus one learnable "mask token" at every hidden position, each tagged with its position, and outputs a 1408-wide vector for each hidden position (F03-6).
+6. Loss: the mean absolute difference between those outputs and the target encoder's vectors at the same positions (F03-2, F03-7).
+
+Intuition for why this teaches physics-like knowledge: with the block and the gripper hidden for the whole clip in a region, the only way to predict that region's representation is to know how grippers and blocks move.
+
+#### Worked example B: imagining and planning with V-JEPA 2-AC on pick-and-place
+
+1. **Encode the present.** One frame, duplicated to fill a 2-frame tubelet, gives a 16 x 16 grid of 1408-wide vectors: 256 tokens (F03-17). That is 256 x 1,408 = 360,448 numbers `[derived]`, more numbers than the 256 x 256 x 3 = 196,608 values of the frame it came from. V-JEPA 2's representation is not small; it is abstract.
+2. **Encode the goal.** A photo of the block in the cup, same encoder, same shape.
+3. **One imagined step.** The predictor (300M parameters, 24 layers, width 1024; F03-14) receives 1 action token + 1 arm-state token + 256 patch tokens = 258 tokens per time step (F03-15, F03-16) and outputs the 256 patch vectors for the next step. One step is 0.25 s of world time at 4 frames per second (F03-20).
+4. **The action.** V-JEPA 2-AC's action is 7 numbers describing the change of the gripper's pose (F03-15). The SO-101's native action is 6 joint targets. Using this model on the SO-101 would need either a conversion between the two or a predictor trained on SO-101 data `[our reading]`.
+5. **Score a candidate.** Energy = mean absolute difference between the imagined grid and the goal grid (F03-23).
+6. **Search with CEM** (F03-113, F03-24): draw 800 candidate actions from a Gaussian; imagine each; keep the 10 with the lowest energy; refit the Gaussian to those 10; repeat 10 times. 800 x 10 = 8,000 predictor passes. Execute the result, look again, repeat.
+7. **Cost.** 16 s per action on an RTX 4090, 2 ms per pass (F03-25, F03-118); 3 s on an A100 per the later paper (F03-74).
+8. **The whole task.** Pick-and-place uses three sub-goal images on a schedule of 4 + 10 + 4 = 18 steps (F03-27). 18 x 16 s = 288 s of planning on the RTX 4090, 18 x 3 s = 54 s on the A100, 18 x 8,000 = 144,000 predictor passes `[derived]`. The Cosmos baseline at 4 minutes per action would be 72 minutes `[derived]`. Published success for this task with a cup: 80% over 10 trials on a Franka arm (F03-26).
+
+A toy CEM round to show the mechanics (illustration, invented numbers): the block is 10 cm left of the gripper. Round 1 samples sideways moves around 0 cm with spread 5 cm; the three best candidates are -6, -8 and -7 cm. Round 2 samples around their mean, -7 cm, with their spread, 1 cm. After a few rounds the mean sits near -10 cm.
+
+#### Worked example C: the same task in LeWorldModel
+
+1. A 224 x 224 frame is cut into 14 x 14 pixel patches: 16 x 16 = 256 patches plus one summary token, the [CLS] token (F03-32). The encoder is a 5M-parameter ViT-Tiny trained from scratch.
+2. Only the [CLS] output is kept, passed through a small MLP: one vector of 192 numbers per frame (F03-32, F03-34). 224 x 224 x 3 = 150,528 pixel values become 192, a 784-fold reduction `[derived]`.
+3. The predictor (10M parameters, 6 layers) sees the last 3 frame vectors (F03-34) and the action, which modulates its normalisation layers (F03-33), and outputs the next 192-number vector.
+4. One model step covers 5 control steps (frame skip 5, F03-43), so its action input for an SO-101 would be 5 x 6 = 30 numbers `[derived]`.
+5. Planning: 300 candidates x 30 rounds x 5 steps = 45,000 predictor passes on Push-T, in 0.98 s in total (F03-40, F03-41, F03-115). Each pass handles 3 tokens instead of 258.
+6. The released code trains on Push-T and similar simulated tasks; a loader for arm episodes in LeRobot format is not part of it (F03-44).
+
+#### The mechanism, formula by formula
+
+Symbols used throughout: x is the input (video or frame); E_theta is the encoder with weights theta; P_phi is the predictor with weights phi; z = E_theta(x) is a representation; a hat marks a prediction; sg(.) means "treat as a constant: no gradient flows back through this".
+
+**1. V-JEPA 2 pretraining loss (F03-2, F03-7).** Intuition: predict the hidden tokens' representations from the visible ones.
+
+L = (1 / |M|) x sum over i in M of | P_phi( E_theta(x_visible), m )_i - sg( E_thetabar(x) )_i |
+
+M is the set of hidden token positions and |M| its size; x_visible is the clip with hidden tokens removed; m is the learnable mask token placed at each hidden position; E_thetabar is the target encoder; | . | is the absolute difference averaged over the vector's entries (L1). The left term carries "what the predictor guessed"; the right term carries "what the full-view encoder says is there"; sg stops the target from moving to meet the guess.
+
+**2. The target encoder update (F03-8).** After each optimiser step: thetabar = m x thetabar + (1 - m) x theta, with m = 0.99925 (this m is the momentum, a different quantity from the mask token; the sources use the same letter). Each step moves the target 0.075% of the way to the encoder; it takes about 924 steps to close half of any gap, ln(0.5) / ln(0.99925) `[derived]`. I-JEPA uses 0.996 rising to 1.0 (F03-56).
+
+**3. V-JEPA 2-AC training loss (F03-18, F03-19).** The encoder E is frozen. z_k = E(frame k); a_k is the action between frames k and k+1; s_k is the arm state at frame k.
+
+L = L_teacher-forcing + L_rollout
+
+L_teacher-forcing = (1 / T) x sum over k of | P_phi(a_1..k, s_1..k, z_1..k) - z_k+1 |: predict each next frame from the true frames before it.
+
+L_rollout = | P_phi(a_1..2, s_1, z_1, z-hat_2) - z_3 |: predict frame 2, feed that prediction back in, predict frame 3, and compare with the true frame 3. The first term teaches one-step accuracy; the second teaches the predictor to survive its own errors, which is what planning asks of it. (The released config rolls out 2 steps, F03-19. An independent study reports that the released code computed this term against the wrong frame; F03-82 and the UNKNOWN register.)
+
+**4. Planning energy (F03-23).** E(a_1..T) = | P_phi(a_1..T; s_k, z_k) - z_goal |, with z_goal = E(goal image). The plan is the action sequence with the lowest E, found by CEM (F03-113, code in F03-30).
+
+**5. LeWorldModel loss (F03-35, F03-36).** One encoder, trained together with the predictor, no target copy, no sg.
+
+L = || z-hat_t+1 - z_t+1 ||^2 + lambda x SIGReg(Z), with z-hat_t+1 = P_phi(z_t, a_t)
+
+The first term is the squared prediction error. The second measures how far the batch of embeddings Z is from a round Gaussian cloud. lambda is the one weight: 0.1 in the paper, 0.09 in the released config (F03-37).
+
+**6. SIGReg (F03-38, F03-39, F03-69).** Intuition: a collapsed encoder gives a single point; a healthy one gives a spread-out cloud. Asking the cloud to look like a standard Gaussian in every direction rules out the point and also rules out a flat pancake (dimensional collapse, F03-64). Testing a 192-dimensional cloud directly is expensive, so test its shadow on many random lines: if every one-dimensional shadow is Gaussian, the cloud is Gaussian (the Cramer-Wold theorem, F03-39).
+
+For one random unit direction u and a batch of N embeddings z_1..z_N, let p_n = u . z_n (the shadow of each embedding on the line). The statistic for that direction is
+
+N x integral over t of w(t) x [ ( mean_n cos(t p_n) - exp(-t^2 / 2) )^2 + ( mean_n sin(t p_n) )^2 ] dt
+
+mean_n cos(t p_n) and mean_n sin(t p_n) are the real and imaginary parts of the batch's characteristic function (a fingerprint of a distribution); exp(-t^2 / 2) is the same fingerprint for a standard Gaussian, whose imaginary part is zero; w(t) = exp(-t^2 / 2) is a weighting window; the integral is taken numerically at 17 points t from 0 to 3. SIGReg is the average over 1,024 random directions (and over time steps). Tensor shapes in the released code with batch 128, 4 frames, width 192: embeddings (4, 128, 192) times a (192, 1024) random matrix gives (4, 128, 1024) shadows, times 17 values of t gives 4 x 128 x 1,024 x 17 = 8,912,896 cosines and as many sines per training step `[derived]`.
+
+**7. The five ways to prevent collapse, side by side (F03-65 to F03-71).**
+
+| Mechanism | Used by | What it does | Its price |
+|---|---|---|---|
+| EMA target + stop-gradient | I-JEPA, V-JEPA, V-JEPA 2, V-JEPA 2.1 | the target moves slowly and receives no gradient, so it cannot rush to meet the prediction | explained by hypothesis, not by a defined objective (F03-65, F03-66); a second encoder in memory |
+| Variance and covariance terms | VICReg, PLDM | keep every dimension's spread above a threshold; push correlations between dimensions to zero | several loss weights to tune: six for PLDM (F03-68) |
+| SIGReg | LeJEPA, LeWorldModel | push the embedding cloud toward a round Gaussian | one weight; weakens in very simple, low-diversity environments (F03-45) |
+| Contrastive negatives | older joint-embedding methods | push different inputs' embeddings apart | negatives needed grow with dimension (F03-70) |
+| Frozen pretrained encoder | V-JEPA 2-AC, RoboJEPA, DINO-WM | the encoder is not trained, so it cannot collapse | the representation is whatever pretraining kept (F03-71, F03-111) |
+
+#### What it costs in compute, and which part of the machine it loads
+
+| Workload | Published figure | Entry | Part of the machine |
+|---|---|---|---|
+| Pretraining the video encoder | V-JEPA 2 ViT-g: projection of about 60 A100 GPU-years without progressive resolution, 8.4x less with it (about 7 `[derived]`); released ViT-L config asks for 16 nodes x 8 GPUs. Actual run not stated | F03-12, F03-13 | GPU tensor cores, many nodes, network; video decode to feed batches of 3,072 clips (decode path not examined in this register) |
+| Pretraining an image JEPA (history) | I-JEPA ViT-H/14: 16 A100, under 72 hours, under 1,200 GPU-hours | F03-57 | GPU tensor cores |
+| Training the action-conditioned predictor | V-JEPA 2-AC: config asks for 4 nodes x 8 GPUs, 94,500 iterations at batch 256; GPU model and time not stated. RoboJEPA-1B: 32 nodes x 8 H100 | F03-21, F03-80 | GPU tensor cores; the frozen 1B encoder runs forward on every batch |
+| Training a small JEPA world model end to end | LeWM 15M: "a single GPU in a few hours", GPU not named; batch 128, bf16 | F03-31, F03-37 | one GPU's tensor cores; image decode and data loading on the CPU |
+| Planning, large model | V-JEPA 2-AC: 16 s per action on an RTX 4090; 3 s on an A100. V-JEPA 2.1 at horizon 8: 14 s on an A100. RoboJEPA: several seconds across several GPUs | F03-25, F03-74, F03-73, F03-77 | GPU tensor cores (thousands of batched predictor passes); GPU memory for the batch of candidates (not published) |
+| Planning, small model | LeWM: 0.98 s per plan, GPU not named | F03-41 | GPU tensor cores; small enough that CPU-side overhead may matter `[our reading]` |
+
+No JEPA workload here uses ray-tracing cores or video encode engines. The camera frame must still be decoded and resized before the encoder.
+
+#### Order to teach it in (section 7)
+
+1. Representation: an encoder turns a frame into numbers that keep what matters (use example B step 1 or C step 2 for the picture).
+2. JEPA's three parts and the energy (F03-47, F03-48).
+3. Why the naive version fails: collapse, complete and dimensional (F03-63, F03-64).
+4. Masked prediction on images, I-JEPA, as the simplest working case, with EMA and stop-gradient (F03-54 to F03-56).
+5. The same on video: tubelets, heavy masking, V-JEPA then V-JEPA 2 (F03-59, F03-60, F03-1 to F03-11). Worked example A.
+6. Adding actions: the frozen encoder and the action-conditioned predictor, teacher forcing and rollout (F03-14 to F03-19).
+7. Planning: energy to a goal image, MPC, CEM. Worked example B (F03-23, F03-112, F03-113, F03-24, F03-25).
+8. What the robot results are and where they stop (F03-26 to F03-28).
+9. The small end-to-end alternative: LeWorldModel and SIGReg. Worked example C (F03-31 to F03-41).
+10. The five anti-collapse mechanisms side by side (F03-65 to F03-71).
+11. What is newest: V-JEPA 2.1, RoboJEPA, the JEPA-WMs study, AMI Labs (F03-72 to F03-86).
+12. Limits: goal images, short horizons, one predicted future, compute per decision (F03-28, F03-45, F03-79, F03-110, F03-114).
+
+---
+
+## 6. Stale or wrong in the seed research
+
+| Seed file | Seed claim | What the source says now | Entry |
+|---|---|---|---|
+| seed 10 | LeWM trains in a few hours on one GPU, "an L40S in the paper" | Paper v3 says "a single GPU in a few hours" and names no GPU model in the text read | F03-31 |
+| seed 10 | LeWM plans "up to 48x faster than foundation-model world models" | The 48x is one comparison: 0.98 s against 47 s for DINO-WM | F03-41 |
+| seed 10 | V-JEPA 2-AC plans at "about 16 s per action" | 16 s is on an RTX 4090 (V-JEPA 2 paper); the V-JEPA 2.1 paper reports 3 s on an A100 for the same settings | F03-25, F03-74 |
+| seed 10, seed 12 | V-JEPA 2 and V-JEPA 2-AC are the newest JEPA models | V-JEPA 2.1 (March 2026) and RoboJEPA (October 2026) are newer | F03-72, F03-75 |
+| seed 01 | DreamZero is "the WAM that GR00T N2/GR00T 2 builds on" | The GR00T 2 whitepaper says it is built on Cosmos-Predict2.5-2B; DreamZero appears as a compared policy | F03-104 |
+| seed 02 | Cosmos 3 per-clip latency: "not on the repo page" | Published in the repository's inference benchmark pages | F03-98, F03-99 |
+| seed 02 | Memory figures of 65.4 GB and 56.38 GB used to select instances | Those are Cosmos-Transfer2.5-2B and Cosmos-Predict2-14B; Predict2.5's repository is in limited maintenance and Cosmos 3's memory need is not published | F03-94, F03-105 |
+| seed 02 | Genie 4 "NOT VERIFIED" (Wikipedia only) | First-party model page presents Genie 4; the date is still not on that page | F03-101 |
+| seed 11 | LeWM "ships Push-T" as its dataset example | The README describes HDF5 files; the Push-T config at the pinned SHA names a `.lance` file; other environments have configs too | F03-44 |
+
+---
+
+## 7. Mental models worth teaching
+
+1. **A world model is a "what if" function.** State plus action in, next state out; everything else (planning, imagination training, synthetic data, evaluation) is a way of calling it many times (F03-87, F03-88).
+2. **Predict the summary, not the picture.** A JEPA predicts the encoder's description of the future, so it can ignore what cannot be predicted; the cost is that you cannot look at its prediction and it keeps only what the encoder kept (F03-51, F03-106, F03-107, F03-109, F03-111).
+3. **A model that writes its own targets will cheat unless stopped.** Collapse is the default outcome of matching two learned representations, and each JEPA is defined largely by its anti-cheating rule: slow target, spread statistics, Gaussian cloud, or frozen encoder (F03-63, F03-65 to F03-71).
+4. **Energy is distance to "plausible".** Training lowers the distance between prediction and target for real data; planning reuses the same distance, measured to a goal image, as the cost to minimise (F03-48, F03-23).
+5. **Planning is paid in predictor passes.** Samples x iterations x horizon gives the bill: 8,000 for V-JEPA 2-AC, 45,000 for LeWM, 204,800 for RoboJEPA; the size of one pass decides whether that is 1 s or 16 s (F03-115, F03-118).
+6. **Video teaches how the world moves; a little robot data teaches what actions do.** 1M hours of video and 62 hours of robot data for V-JEPA 2; 2,541 hours of video and 100 hours of actions for Dreamer 4 (F03-1, F03-91).
+7. **Search or amortise.** A latent world model searches for actions at run time (seconds per decision); a world-action model has the search folded into one forward pass (GR00T 2 at 153 ms) (F03-25, F03-104, F03-116).
+8. **"Pixel model" means "reconstruction code".** Video world models in 2026 also work in a compressed space; the difference from JEPA is that their code must rebuild every pixel (F03-96).
+9. **Small can be enough when the task is narrow.** A 15M-parameter model with 192 numbers per frame plans Push-T at 96% success; the same paper shows a frozen-foundation-encoder model ahead on the 3D cube task (F03-31, F03-42).
+
+---
+
+## 8. Contradictions between sources
+
+| Topic | Source A | Source B | How the dive should handle it |
+|---|---|---|---|
+| V-JEPA 2-AC planning time | 16 s per action, RTX 4090 (V-JEPA 2 paper, F03-25) | 3 s per action, single A100, same settings (V-JEPA 2.1 paper, F03-74) | Print both with their GPU. The 5x gap is not explained in either paper |
+| V-JEPA 2-AC clip length | 16-frame clips (paper, F03-20) | `dataset_fpcs: [8]` (released config, F03-22) | Code is the authority for what the release runs; say the paper describes 16 |
+| V-JEPA 2-AC planner settings | 800 samples, horizon 1 (paper, F03-24) | 400 samples, rollout 2, translation and gripper only (notebook defaults, F03-29) | Paper settings for the published numbers; note the notebook is a demo |
+| V-JEPA 2-AC rollout loss | Paper formula compares the rollout with the true later frame (F03-18) | JEPA-WMs reports the released code computed it against the wrong frame (F03-82) | State as reported by a third party; our reading of the pinned SHA is recorded under U5 |
+| LeWM SIGReg weight | lambda = 0.1 (paper, F03-36) | 0.09 (released config, F03-37) | Give both; the paper reports success is flat between 0.01 and 0.2 (F03-46) |
+| LeWM epochs | 10 epochs (paper, F03-43) | `max_epochs: 100` (released config, F03-37) | Give both; any Tier 0 run must record which it used |
+| LeWM dataset format | HDF5 (README, F03-44) | `.lance` in the Push-T config (F03-44) | Code is the authority; the loader lives in a package not read here (U8) |
+| I-JEPA venue | arXiv comment names the IEEE/CVF International Conference on Computer Vision | the repository description says CVPR | Cite as arXiv 2301.08243v3 without a venue until confirmed |
+| Cosmos 3 training GPU counts | section 4.1 text: 1,024 (Nano) and 2,048 (Super) GB200 (F03-97) | another line in the same paper reads "2048 and 4096 GPUs, respectively" (noted in the seed research and seen again in v4) | Quote section 4.1 and flag the second line; not resolved here (U12) |
+| Is latent prediction better | V-JEPA and V-JEPA 2 authors: yes, for representation quality and planning cost (F03-62, F03-25) | DreamZero and GR00T 2: video prediction gives a dense training signal and runs at 153 ms when actions are output directly (F03-93, F03-104) | Present as an open design argument with each side's evidence and its limits |
+| V-JEPA 2.1 release year | README "What's new" and arXiv: March 2026 (F03-72) | `CHANGELOG.md` at the pinned SHA: "[0.0.2] - 2025-03-16" | A typo in the changelog `[our reading]`: the entry sits above the 2025-06-05 initial release |
+
+---
+
+## 9. UNKNOWN register
+
+| ID | Unknown | Where it arises | What would close it |
+|---|---|---|---|
+| U1 | The GPU model and measured wall-clock time of LeWM training | F03-31 | A statement from the authors, or our own run (Tier 0) |
+| U2 | The GPU used for LeWM's 0.98 s and DINO-WM's 47 s planning times, and which CEM settings were timed | F03-41, F03-118 | The paper's timing setup, if a later version states it; or timing `eval.py` ourselves |
+| U3 | Actual GPU count and wall-clock time of the released V-JEPA 2 pretraining run | F03-12, F03-13 | An author statement; the paper gives only a projection |
+| U4 | GPU model and wall-clock time of V-JEPA 2-AC predictor training; the cell values of JEPA-WMs Table 6 | F03-21, F03-120 | Read Table 6 of arXiv 2512.24497v4 in full |
+| U5 | Whether facebookresearch/vjepa2 at the pinned SHA still has the rollout-loss behaviour that JEPA-WMs reports | F03-82 | Git history of `app/vjepa_droid/train.py`. Our reading of lines 424 to 448 at the pinned SHA: with `auto_steps: 2` the loop predicts frame 3 from the true frame 1 and the predicted frame 2 and compares with frames 2 and 3, which matches the paper's formula; we did not find the miscomputation in those lines, did not run the code, and did not check whether the file changed after the JEPA-WMs authors read it |
+| U6 | GPU memory used by V-JEPA 2-AC planning (800 candidates x 258 tokens through a 300M predictor) | F03-25 | Run the notebook with a memory profiler (Tier 0) |
+| U7 | Genie 4's release date, frame rate, resolution, model size and hardware | F03-101 | A dated first-party post; the model page has none of these |
+| U8 | How `stable-worldmodel` loads datasets and what adapting it to LeRobot episodes needs | F03-44 | Read galilai-group/stable-worldmodel at a pinned SHA |
+| U9 | RoboJEPA: number of GPUs used by the real-robot planner, seconds per decision, and total GPU-hours per model size | F03-77, F03-80 | Read the RoboJEPA appendix tables and the repository's planning configs |
+| U10 | GPU memory needed to run Cosmos3-Nano, Super and Edge | F03-105 | A first-party figure, or a measurement |
+| U11 | The rollout length (frames, action steps) behind the Cosmos3-Nano "Forward Dynamics - Robot" timing | F03-99 | NVIDIA's methodology page says the payloads were not retained for every measurement; a rerun would be needed |
+| U12 | Which GPU counts are right for Cosmos 3 pretraining where the paper gives two sets | F03-97 | An erratum or a later paper version |
+| U13 | Whether AMI Labs has released any model, paper or code | F03-85 | None is listed on its site as of 2026-11-20; recheck before publication |
+| U14 | DreamerV3's publication venue | F03-89 | The journal page; not fetched in this pass |
+| U15 | The contents of facebookresearch/eb_jepa and facebookresearch/jepa-wms (located, not read) | section 3 | Read both at a pinned SHA |
+| U16 | Whether any JEPA world model has been trained or run on an SO-100 or SO-101 arm | section 5 | Not located in this research; a search of the LeRobot hub and issues, or our own run |
+| U17 | GR00T 2's training compute and its code (announced for December) | F03-104 | The December release; the whitepaper's training section was not read in full |
+
+---
+
+## 10. Reading path for Carlos
+
+1. **LeWorldModel paper, arXiv 2603.19312v3: the section "Method: LeWorldModel", the appendix algorithm "Cross-Entropy Method (CEM) for Action Sequence Optimization", then Figure 7.** The whole JEPA world model fits on two pages: encoder, predictor, two-term loss, CEM. Read this first because nothing in it is hidden behind scale.
+2. **le-wm at SHA `8edfeb336732b5f3ce7b8b210d0ba370a09e2cac`: `train.py` lines 20 to 41, `module.py` class `SIGReg` (lines 10 to 36), `jepa.py` `rollout` and `get_cost`.** The paper's formulas as about 80 lines of code; the fastest way to see which tensor goes where.
+3. **V-JEPA 2 paper, arXiv 2506.09985v1: the overview figure, the pretraining objective, the sections "V-JEPA 2-AC: Learning an Action-Conditioned World Model" and "Planning: Zero-shot Robot Control" (robot results and the 16 s against 4 min comparison), then "Limitations".** The large-scale version of the same idea, and the source of the planning numbers.
+4. **vjepa2 at SHA `204698b45b3712590f06245fbfba32d3be539812`: `app/vjepa_droid/train.py` lines 419 to 448 (teacher forcing and rollout), `notebooks/utils/mpc_utils.py` (CEM), `src/models/ac_predictor.py` (how actions are interleaved).** What the release really runs, including where it differs from the paper.
+5. **LeCun, "A Path Towards Autonomous Machine Intelligence" v0.9.2: the parts on energy-based models, "Joint Embedding Predictive Architecture (JEPA)" with Figure 12, and Figure 13 on non-contrastive training.** History, and where the vocabulary comes from (energy, collapse, Mode-1 and Mode-2).
+6. **I-JEPA paper, arXiv 2301.08243v3: Figure 3 and section 3.** The cleanest picture of context encoder, target encoder and predictor.
+7. **JEPA-WMs, arXiv 2512.24497v4: the introduction with its list of contributions, the limitations discussion, and the "V-JEPA-2-AC reproduction" paragraph in the appendix.** An independent, peer-reviewed check on what matters in this family, including the bug report.
+8. **RoboJEPA, arXiv 2610.10515v1: abstract, the results table and the limitations section.** The newest and largest JEPA robot model, with the honest numbers (27% pick-and-place).
+9. **NVIDIA/Cosmos at SHA `0eab578a8935e26aa41c2b7dc9f5ab00f790a037`: `docs/reference/models.md` and `docs/reference/inference_benchmarks/cosmos3-nano-generator.md`.** What the pixel side is and costs today.
+10. **GR00T 2 whitepaper, the "Architecture" and "GR00T 2 Turbo" paragraphs.** The world-action model at 2B parameters and 153 ms; the strongest current counter-example to "video models are too slow to control a robot".
+11. **DreamZero, arXiv 2602.15922v1: the introduction and the inference-optimisation results.** Why the world-action camp predicts video, and what it took to make it run.
+
+---
+
+## 11. Source list by tier
+
+### Tier 0 (our experiments)
+
+None in this register.
+
+### Tier 1 (code at a pinned SHA, official docs, model cards)
+
+- facebookresearch/vjepa2 at `204698b45b3712590f06245fbfba32d3be539812`: https://github.com/facebookresearch/vjepa2
+- lucas-maes/le-wm at `8edfeb336732b5f3ce7b8b210d0ba370a09e2cac`: https://github.com/lucas-maes/le-wm
+- NVIDIA/Cosmos at `0eab578a8935e26aa41c2b7dc9f5ab00f790a037`: https://github.com/NVIDIA/Cosmos
+- nvidia-cosmos/cosmos-predict2.5 at `a2c298b0a3df3778b973fe65e9e58877b292d8a7`: https://github.com/nvidia-cosmos/cosmos-predict2.5
+- facebookresearch/robo_jepa at `f93106f5f4a451fd526d51778aa8ab7c852eb824` (README only): https://github.com/facebookresearch/robo_jepa
+- huggingface/lerobot v0.7.0 at `410c095eacc0011d998a73383eb94abed2715af0`: https://github.com/huggingface/lerobot
+- Model card nvidia/Cosmos3-Nano, revision `45666784803b3a7ad577e0def405f9afcc3bddb2`: https://huggingface.co/nvidia/Cosmos3-Nano
+
+### Tier 2 (first-party lab and vendor pages)
+
+- GR00T 2 whitepaper and project page (NVIDIA, November 2026): https://research.nvidia.com/labs/gear/gr00t-2/assets/gr00t2_whitepaper.pdf ; https://research.nvidia.com/labs/gear/gr00t-2/
+- Genie 4 model page (Google DeepMind): https://deepmind.google/models/genie/
+- Genie 3 post (Google DeepMind, 2025-08-05): https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/
+- 1X World Model post (1X, 2026-01-12): https://www.1x.tech/discover/world-model-self-learning
+- AMI Labs site: https://amilabs.xyz/ ; https://amilabs.xyz/updates
+
+### Tier 3 (papers)
+
+Peer-reviewed, venue confirmed:
+- JEPA-WMs, "What Drives Success in Physical Planning with Joint-Embedding Predictive World Models?" (TMLR, 05/2026): https://arxiv.org/abs/2512.24497v4
+- VICReg (ICLR 2022; history): https://arxiv.org/abs/2105.04906v3
+
+Preprints, or venue not confirmed in this pass:
+- V-JEPA 2: https://arxiv.org/abs/2506.09985v1
+- V-JEPA 2.1: https://arxiv.org/abs/2603.14482v3
+- RoboJEPA: https://arxiv.org/abs/2610.10515v1
+- LeWorldModel: https://arxiv.org/abs/2603.19312v3
+- LeJEPA: https://arxiv.org/abs/2511.08544v3
+- VL-JEPA: https://arxiv.org/abs/2512.10942v2
+- Dreamer 4: https://arxiv.org/abs/2509.24527v1
+- DreamZero: https://arxiv.org/abs/2602.15922v1
+- Cosmos 3: https://arxiv.org/abs/2606.02800v4
+- I-JEPA (history): https://arxiv.org/abs/2301.08243v3
+- V-JEPA (history): https://arxiv.org/abs/2404.08471v1
+- DreamerV3 (history): https://arxiv.org/abs/2301.04104v2
+- LeCun, "A Path Towards Autonomous Machine Intelligence", v0.9.2, 2022-06-27 (history; position paper): https://web.archive.org/web/20240101103457/https://openreview.net/pdf?id=BZ5a1r-kVsf
+
+### Tier 4 (used only to locate primary sources; nothing cited as fact)
+
+- Press and encyclopedia pages reporting a Genie 4 launch date of 2026-10-27 (the date is recorded as UNKNOWN U7).
+- Web search result pages used to find the arXiv listings and repositories above.
