@@ -288,6 +288,12 @@
   "section": 15
  },
  {
+  "term": "Capacity market",
+  "expansion": null,
+  "meaning": "The way an instance is paid for and what AWS promises in return.",
+  "section": 25
+ },
+ {
   "term": "Cartpole",
   "expansion": null,
   "meaning": "A small standard control task, a cart balancing a pole, used in Isaac Lab's benchmark.",
@@ -1014,6 +1020,12 @@
   "section": 13
  },
  {
+  "term": "G family",
+  "expansion": null,
+  "meaning": "The EC2 GPU instance families whose cards have RT cores, used for rendering and one-GPU jobs.",
+  "section": 25
+ },
+ {
   "term": "Gain",
   "expansion": null,
   "meaning": "A tuning number of a controller that sets how strongly it reacts to the error.",
@@ -1204,6 +1216,12 @@
   "expansion": null,
   "meaning": "A robot with two legs and two arms.",
   "section": 3
+ },
+ {
+  "term": "Hybrid node",
+  "expansion": null,
+  "meaning": "A machine outside AWS, such as a lab workstation, joined to an EKS cluster as a node.",
+  "section": 25
  },
  {
   "term": "Hz",
@@ -1812,10 +1830,22 @@
   "section": 24
  },
  {
+  "term": "Orchestrator",
+  "expansion": null,
+  "meaning": "The service that queues jobs and starts machines for them.",
+  "section": 25
+ },
+ {
   "term": "Out of distribution",
   "expansion": null,
   "meaning": "A test where the object starts somewhere the demonstrations did not cover.",
   "section": 5
+ },
+ {
+  "term": "P family",
+  "expansion": null,
+  "meaning": "The EC2 instance families with data-centre training GPUs, which have no RT cores.",
+  "section": 25
  },
  {
   "term": "p50",
@@ -2352,6 +2382,12 @@
   "section": 13
  },
  {
+  "term": "Shape",
+  "expansion": null,
+  "meaning": "A job described by its duration, coupling and interruptibility (section 20).",
+  "section": 25
+ },
+ {
   "term": "Shape (of a workload)",
   "expansion": null,
   "meaning": "How long one unit runs, whether its pieces exchange data while running, and whether it can be stopped and resumed.",
@@ -2706,6 +2742,12 @@
   "section": 15
  },
  {
+  "term": "Trainium",
+  "expansion": null,
+  "meaning": "AWS's own training chip.",
+  "section": 25
+ },
+ {
   "term": "Transcode",
   "expansion": null,
   "meaning": "Decoding a video and encoding it again, usually into a different codec or as separate clips.",
@@ -2752,6 +2794,12 @@
   "expansion": null,
   "meaning": "The measured round trip of one remote policy request, from encoding through network and inference to decoding.",
   "section": 17
+ },
+ {
+  "term": "UltraServer",
+  "expansion": null,
+  "meaning": "A rack-scale EC2 system at the top of the P range.",
+  "section": 25
  },
  {
   "term": "UMI",

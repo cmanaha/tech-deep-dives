@@ -53,7 +53,7 @@ export function loadEntries() {
     else if (/\[vendor claim/.test(all) || /vendor reported|\(vendor\)/.test(parts[2] ?? '')) kind = 'vendor-claim';
     else if (/\[author reported/.test(all) || /author reported/.test(parts[2] ?? '')) kind = 'author-reported';
     if (tier !== 0 && /^\[derived/.test(e.claim)) kind = 'derived';
-    else if (tier !== 0 && /^\[our reading/.test(e.claim)) kind = 'our-reading';
+    else if (tier !== 0 && (/^.{0,140}\[our reading/.test(e.claim) || /was located in this research/.test(e.claim.slice(0, 400)))) kind = 'our-reading';
     // Entries that join or interpret other entries carry no source of their own.
     e.inputs = [];
     if (!url && tier !== 0) {
