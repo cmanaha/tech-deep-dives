@@ -3,9 +3,10 @@
 **From a Robot's Demonstrations to a Fleet That Learns.** One arm, one task, every workload in the loop: the models,
 the data, the simulation, the part of the machine each one loads, and how to orchestrate it on AWS.
 
-**Status (2026-11-20):** research complete to Gate 1 of the iteration flywheel (ADR-003). Gate 1 checks 1 to 4 are
-recorded in `RESEARCH-GUIDE.md` section 7; check 5, human approval of the section list, is pending. No app section is
-written: `src/` holds a placeholder page so that the build gates run.
+**Status (2026-11-20):** Gate 1 approved (decisions recorded in `RESEARCH-GUIDE.md` section 7). All 26 sections are
+built in `src/sections/`, with 52 diagrams of which 17 are animated. Sections 22 and 23, and the IoT hook-up blocks in
+sections 17, 18 and 24, carry dated placeholders for measurements and prices that have not been taken. The dive is at a
+side preview for human review (Gate 2); nothing is pushed or deployed.
 
 ## What the dive is
 
@@ -25,11 +26,12 @@ part, instance family, orchestrator, capacity market, why.
 |---|---|
 | `SCOPE.md` | Reader, thesis, nine questions, the 26-section plan, numbers by section with register IDs, changes to the approved plan |
 | `RESEARCH-GUIDE.md` | Research waves, reading path, evidence bar per claim type, Tier 0 requests, triage of every unknown, the Gate 1 record, the budget record |
-| `research/2026-11/01` to `09` | Nine claim registers, 915 entries. Each entry has an ID, the claim, a pinned source, tier, evidence kind, a verbatim quote, a verdict and the section it feeds |
+| `research/2026-11/01` to `09` | Nine claim registers, 1,040 entries after the wave 3 and wave 4 additions. Each entry has an ID, the claim, a pinned source, tier, evidence kind, a verbatim quote, a verdict and the section it feeds |
 | `research/2026-11/wave2-A.md`, `-B.md`, `-C.md` | The refutation and freshness pass: one verdict row per load-bearing claim, by an agent that did not write the register |
 | `research/experiments/` | Tier 0 results on hand (CPU stand-in workloads on a Jetson Orin Nano Super and a DGX Spark), with provenance and limits |
 | `sources.md` | Every source, grouped by tier, then by register |
-| `src/` | Placeholder app (one status section). `src/sections/` is created after Gate 1 |
+| `src/` | The app: 26 sections in `src/sections/`, shared pieces in `src/components/`, generated citation data in `src/data/` |
+| `revamp/` | Authoring brief, section architecture, diagram plan, per-section claim lists and glossaries, the check tools (`revamp/tools/`), the check report and the accuracy reviews |
 
 ## What the research found
 
