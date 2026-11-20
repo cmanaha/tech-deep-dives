@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
+import { Formula, M } from '../components/Math';
 import { log10Scale } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
 
@@ -425,13 +426,11 @@ export function WorldModels() {
             <code>observation.state</code> is the six measured joint angles. Here it means the whole scene as the
             model holds it, block and cup included. The third word is the prediction itself, written as a function:
           </Box>
+          <Formula name="A world model as a function" tex={String.raw`\text{next state} = f(\text{state},\ \text{action})`} />
           <Box variant="p">
-            <code>next state = f(state, action)</code>
-          </Box>
-          <Box variant="p">
-            Here <code>f</code> is the world model, a trained network. <code>state</code> and <code>action</code> are
-            its two inputs for one tick, and <code>next state</code> is its output, in the same form as the input
-            state. Set it beside a policy, which is <code>action = policy(observation)</code>. The policy answers
+            Here <M>f</M> is the world model, a trained network. The state and the action are its two inputs for
+            one tick, and the next state is its output, in the same form as the input state. Set it beside a
+            policy, which is <M>{String.raw`\text{action} = \text{policy}(\text{observation})`}</M>. The policy answers
             &quot;what should I do&quot;. The world model answers &quot;what happens if I do it&quot;.
           </Box>
           <Box variant="p">
@@ -724,6 +723,53 @@ export function WorldModels() {
             one vector of width 192 per frame.{' '}
             <Cite id="F03-32">LeWorldModel paper, encoder</Cite>
           </Box>
+          <Box variant="p">
+            Training such a predictor needs one number that says how wrong it was. V-JEPA 2-AC gets it by walking
+            through a recorded clip of a robot arm. At each frame the predictor is shown what really happened up
+            to that frame and guesses the latent of the next frame. The guess is then compared with the latent the
+            encoder makes of the frame that really came next.
+          </Box>
+          <Box variant="p">
+            The symbols: <M>x_k</M> is frame <M>k</M> of the clip, <M>E</M> the frozen encoder and{' '}
+            <M>{String.raw`z_k = E(x_k)`}</M> the latent of that frame. <M>a_k</M> is the action taken between
+            frames <M>k</M> and <M>k+1</M>. <M>s_k</M> is the measured pose of the gripper at frame <M>k</M>, the
+            narrow sense of state. <M>{String.raw`P_\phi`}</M> is the predictor with its weights{' '}
+            <M>{String.raw`\phi`}</M>, and{' '}
+            <M>{String.raw`\hat{z}_{k+1} = P_\phi\big((a_t, s_t, z_t)_{t \le k}\big)`}</M> is its guess for the
+            next latent from the actions, poses and latents up to frame <M>k</M>. <M>T</M> is the number of guesses
+            per clip, 15 for a clip of 16 frames. The double bars with a subscript 1 are the L1 distance:
+            subtract the two latents number by number, drop the signs and add up.
+          </Box>
+          <Formula
+            name="Next-latent prediction loss of V-JEPA 2-AC (teacher forcing)"
+            tex={String.raw`\begin{aligned} & \mathcal{L}_{\text{teacher-forcing}}(\phi) \coloneqq \\ & \qquad \frac{1}{T}\sum_{k=1}^{T} \lVert \hat{z}_{k+1} - z_{k+1} \rVert_1 \end{aligned}`}
+            source={<Cite id="F11-100">V-JEPA 2 paper, section 3.1, equation 2</Cite>}
+          />
+          <ul style={LIST}>
+            <li>
+              <M>{String.raw`\hat{z}_{k+1}`}</M> is the &quot;what if&quot; answer: the predictor&apos;s output
+              for this state and this action.
+            </li>
+            <li>
+              <M>{String.raw`z_{k+1}`}</M> is what happened: the encoder&apos;s latent of the real next frame.
+            </li>
+            <li>
+              The bars measure the miss in latent space. No pixel is redrawn, so the glint on the cup costs
+              nothing unless the encoder chose to keep it.
+            </li>
+            <li>
+              The sum and the <M>{String.raw`1/T`}</M> average the miss over every frame of the clip.
+            </li>
+            <li>
+              <M>{String.raw`(\phi)`}</M> says which weights this loss trains: the predictor&apos;s alone. The
+              encoder stays frozen.
+            </li>
+          </ul>
+          <Box variant="p">
+            The name teacher forcing says that every guess starts from the true latents, never from the
+            model&apos;s own earlier guesses. A rollout does start from its own guesses, and section 7 adds the
+            loss term that trains for it.
+          </Box>
           <Box variant="p">Three things are given up, and they decide when this family is the wrong choice.</Box>
           <ul style={LIST}>
             <li>
@@ -782,8 +828,13 @@ export function WorldModels() {
             <strong>GR00T 2</strong> is the current example, and it carries a label wherever this dive quotes a
             figure from it: {GROOT2_LABEL}. NVIDIA describes a single 2B-parameter transformer built on
             Cosmos-Predict2.5-2B, a video generator from the generation before Cosmos 3. Camera frames go through a
-            frozen VAE that compresses 4 times in time and 8 times in each spatial direction. The result is then split into patches, giving 280 tokens per
-            compressed frame and camera at 224 x 320 pixels. Video tokens, joint state and actions sit in one
+            frozen VAE that compresses 4 times in time and 8 times in each spatial direction. At 224 x 320 pixels
+            that leaves a grid of <Derived>28</Derived> by <Derived>40</Derived>, which is{' '}
+            <Derived>1,120</Derived> positions per compressed frame (our arithmetic: 224 / 8 and 320 / 8). The
+            grid is then split into patches. A patch here is a small block of neighbouring grid positions, and
+            each patch becomes one token, one vector in the sequence the transformer processes. NVIDIA states the
+            result: 280 tokens per compressed frame and camera at that resolution, which works out to 4 grid
+            positions per token (our arithmetic: <Derived>1,120</Derived> / 280). Video tokens, joint state and actions sit in one
             sequence, and flow matching trains the model on future video and on actions together. NVIDIA reports a
             median of 153 ms to predict an action chunk for one robot, Dexter, from three camera views on an RTX 5090
             after its inference optimisations (449 ms before them), and 180 ms on the YAM arms.{' '}

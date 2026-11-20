@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
+import { Formula, M } from '../components/Math';
 import { log10Scale } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
 
@@ -613,14 +614,6 @@ function PassesChart() {
 /* Section                                                                  */
 /* ------------------------------------------------------------------------ */
 
-function Formula({ children }: { children: string }) {
-  return (
-    <div style={{ overflowX: 'auto' }}>
-      <code style={{ whiteSpace: 'nowrap' }}>{children}</code>
-    </div>
-  );
-}
-
 export function Jepa() {
   return (
     <SpaceBetween size="l">
@@ -815,14 +808,14 @@ export function Jepa() {
           <ul style={LIST}>
             <li>
               The <strong>context encoder</strong> sees only the visible tokens. Its weights are written{' '}
-              <code>theta</code>.
+              <M>{String.raw`\theta`}</M> (theta in the figure below).
             </li>
             <li>
               The <strong>target encoder</strong> is a copy of the encoder that sees the whole clip, hidden parts
-              included. Its weights are written <code>theta-bar</code>. It supplies the answers.
+              included. Its weights are written <M>{String.raw`\overline{\theta}`}</M> (theta-bar in the figure). It supplies the answers.
             </li>
             <li>
-              The <strong>predictor</strong>, with weights <code>phi</code>, receives the context encoder&apos;s
+              The <strong>predictor</strong>, with weights <M>{String.raw`\phi`}</M> (phi in the figure), receives the context encoder&apos;s
               outputs plus one mask token for every hidden position. A mask token is a learned placeholder vector
               that means &quot;predict what belongs here&quot;, tagged with its position in the clip. The
               predictor returns one vector for each hidden position.{' '}
@@ -833,37 +826,38 @@ export function Jepa() {
           <Box variant="h3">The loss</Box>
           <Box variant="p">
             The loss asks one question: at the hidden positions, how far is the predictor&apos;s guess from what
-            the target encoder says is there? The symbols first. <code>x</code> is the masked clip (the visible
-            tokens) and <code>y</code> the full clip. <code>E_theta</code> is the encoder with its weights{' '}
-            <code>theta</code>, and <code>E_theta-bar</code> the target encoder. <code>P_phi</code> is the
-            predictor. <code>Delta_y</code> is the mask tokens, which mark the hidden positions.{' '}
-            <code>sg(...)</code> is the stop-gradient, explained below; for now read it as &quot;the value
+            the target encoder says is there? The symbols first. <M>{String.raw`x`}</M> is the masked clip (the visible
+            tokens) and <M>{String.raw`y`}</M> the full clip. <M>{String.raw`E_\theta`}</M> is the encoder with its weights{' '}
+            <M>{String.raw`\theta`}</M>, and <M>{String.raw`E_{\overline{\theta}}`}</M> the target encoder. <M>{String.raw`P_\phi`}</M> is the
+            predictor. <M>{String.raw`\Delta_y`}</M> is the mask tokens, which mark the hidden positions.{' '}
+            <M>{String.raw`\text{sg}(\cdot)`}</M> is the stop-gradient, explained below; for now read it as &quot;the value
             of&quot;. The double bars with a subscript 1 are the L1 distance, the loss section 4 used on actions:
             subtract the two lists of numbers entry by entry, drop the signs and add up. The paper prints the
             objective as:
           </Box>
-          <Formula>{'minimize over theta, phi, Delta_y:  || P_phi(Delta_y, E_theta(x)) - sg(E_theta-bar(y)) ||_1'}</Formula>
-          <Box variant="p">
-            <Cite id="F03-2">V-JEPA 2 paper, section 2.1, equation 1</Cite>
-          </Box>
+          <Formula
+            name="V-JEPA 2 pretraining objective"
+            tex={String.raw`\begin{aligned} & \underset{\theta,\,\phi,\,\Delta_y}{\text{minimize}} \\ & \quad \lVert P_\phi(\Delta_y, E_\theta(x)) - \text{sg}(E_{\overline{\theta}}(y)) \rVert_1 \end{aligned}`}
+            source={<Cite id="F03-2">V-JEPA 2 paper, section 2.1, equation 1</Cite>}
+          />
           <ul style={LIST}>
             <li>
-              <code>E_theta(x)</code> is what was seen: the context encoder&apos;s latents for the visible tokens.
+              <M>{String.raw`E_\theta(x)`}</M> is what was seen: the context encoder&apos;s latents for the visible tokens.
             </li>
             <li>
-              <code>P_phi(Delta_y, ...)</code> is the guess: the predictor&apos;s latents for the hidden positions.
+              <M>{String.raw`P_\phi(\Delta_y, \cdot)`}</M> is the guess: the predictor&apos;s latents for the hidden positions.
             </li>
             <li>
-              <code>sg(E_theta-bar(y))</code> is the answer: the target encoder&apos;s latents for the full clip.
+              <M>{String.raw`\text{sg}(E_{\overline{\theta}}(y))`}</M> is the answer: the target encoder&apos;s latents for the full clip.
               The loss is applied at the hidden positions only.
             </li>
             <li>
-              <code>|| ... ||_1</code> is the energy from the idea block: the distance between guess and answer,
+              <M>{String.raw`\lVert \cdot \rVert_1`}</M> is the energy from the idea block: the distance between guess and answer,
               measured in latent space.
             </li>
             <li>
-              <code>minimize over theta, phi, Delta_y</code> lists what the optimiser may change: the encoder, the
-              predictor and the mask token. <code>theta-bar</code> is absent from the list.
+              The subscript under &quot;minimize&quot;, <M>{String.raw`\theta, \phi, \Delta_y`}</M>, lists what the optimiser may
+              change: the encoder, the predictor and the mask token. <M>{String.raw`\overline{\theta}`}</M> is absent from the list.
             </li>
           </ul>
           <Box variant="p">
@@ -878,8 +872,8 @@ export function Jepa() {
             Training works by gradient: for every weight, the trainer computes how the loss would change if that
             weight were nudged, then nudges it the way that lowers the loss. The loss above depends on two
             encoders, so left alone both would be nudged. The stop-gradient says: treat this value as a constant.
-            Inside <code>sg(...)</code> no nudge is computed, so the gradient reaches <code>phi</code> and{' '}
-            <code>theta</code> through the left-hand term and never reaches <code>theta-bar</code>. That is what
+            Inside <M>{String.raw`\text{sg}(\cdot)`}</M> no nudge is computed, so the gradient reaches <M>{String.raw`\phi`}</M> and{' '}
+            <M>{String.raw`\theta`}</M> through the left-hand term and never reaches <M>{String.raw`\overline{\theta}`}</M>. That is what
             &quot;the gradient does not flow through the target&quot; means: the optimiser changes the predictor
             and the context encoder, and leaves the target encoder alone. In the released code the target encoder runs under <code>torch.no_grad()</code> and its
             weights are marked <code>requires_grad = False</code>.{' '}
@@ -891,17 +885,21 @@ export function Jepa() {
           <Box variant="p">
             The target encoder still has to improve, or its answers would stay those of an untrained network. It
             follows the context encoder at a distance, as an EMA (exponential moving average): a running average
-            in which recent values count most and old ones fade. Let <code>m</code>, the momentum, be a number
+            in which recent values count most and old ones fade. Let <M>{String.raw`m`}</M>, the momentum, be a number
             just under 1; V-JEPA 2 holds it at 0.99925 for the whole run. After every optimiser step, each target
             weight becomes:
           </Box>
-          <Formula>{'theta-bar <- m * theta-bar + (1 - m) * theta'}</Formula>
+          <Formula
+            name="EMA update of the target encoder"
+            tex={String.raw`\overline{\theta} \leftarrow m\,\overline{\theta} + (1 - m)\,\theta`}
+            source={<Cite id="F03-8">vjepa2 app/vjepa/train.py, lines 471 to 480</Cite>}
+          />
           <ul style={LIST}>
             <li>
-              <code>m * theta-bar</code> keeps almost all of the old target weight.
+              <M>{String.raw`m\,\overline{\theta}`}</M> keeps almost all of the old target weight.
             </li>
             <li>
-              <code>(1 - m) * theta</code> mixes in a sliver of the encoder&apos;s current weight: 1 - 0.99925 =
+              <M>{String.raw`(1 - m)\,\theta`}</M> mixes in a sliver of the encoder&apos;s current weight: 1 - 0.99925 =
               0.00075, which is 0.075%.
             </li>
           </ul>
@@ -915,8 +913,8 @@ export function Jepa() {
             <Cite id="F03-8">vjepa2 app/vjepa/train.py, lines 471 to 480, and the config&apos;s ema setting</Cite>
           </Box>
           <Box variant="p">
-            One clip, two kinds of update: the loss changes <code>theta</code> and <code>phi</code> by gradient,
-            and <code>theta-bar</code> trails <code>theta</code> by averaging. The figure plays the step.
+            One clip, two kinds of update: the loss changes <M>{String.raw`\theta`}</M> and <M>{String.raw`\phi`}</M> by gradient,
+            and <M>{String.raw`\overline{\theta}`}</M> trails <M>{String.raw`\theta`}</M> by averaging. The figure plays the step.
           </Box>
           <AnimatedFigure
             name="one JEPA training step"
@@ -981,7 +979,7 @@ export function Jepa() {
           <Box variant="p">
             This is the training step you just followed. For the shortcut to work, guess and answer have to
             drift to the same constant together. The stop-gradient
-            takes away the answer&apos;s reason to move: no gradient pulls <code>theta-bar</code> toward the
+            takes away the answer&apos;s reason to move: no gradient pulls <M>{String.raw`\overline{\theta}`}</M> toward the
             guess. The EMA takes away its speed: 0.075% of the way per step.
           </Box>
           <Box variant="p">
@@ -1007,32 +1005,33 @@ export function Jepa() {
             its values spread around their average across the batch (the standard deviation is its square root):
             it is 0 when every row holds the same value. The covariance of two columns measures whether they rise
             and fall together across the batch: it is far from 0 when one column follows the other, and 0 when
-            high values of one come equally with high and low values of the other. The symbols: <code>Z</code> and <code>Z&apos;</code> are two batches of latents that
-            should match row by row. <code>s</code> is the invariance term, the mean squared distance between
-            matching rows. <code>v</code> is the variance term: zero while the standard deviation of every column
-            stays above a threshold, and growing when one falls below. <code>c</code> is the covariance term,
-            which grows with the covariance between any two different columns. <code>lambda</code>,{' '}
-            <code>mu</code> and <code>nu</code> are three weights.
+            high values of one come equally with high and low values of the other. The symbols: <M>{String.raw`Z`}</M> and <M>{String.raw`Z'`}</M> are two batches of latents that
+            should match row by row. <M>{String.raw`s`}</M> is the invariance term, the mean squared distance between
+            matching rows. <M>{String.raw`v`}</M> is the variance term: zero while the standard deviation of every column
+            stays above a threshold, and growing when one falls below. <M>{String.raw`c`}</M> is the covariance term,
+            which grows with the covariance between any two different columns. <M>{String.raw`\lambda`}</M>,{' '}
+            <M>{String.raw`\mu`}</M> and <M>{String.raw`\nu`}</M> are three weights, and <M>{String.raw`\ell`}</M> is the loss for the pair of batches.
           </Box>
-          <Formula>{"l(Z, Z') = lambda s(Z, Z') + mu [v(Z) + v(Z')] + nu [c(Z) + c(Z')]"}</Formula>
-          <Box variant="p">
-            <Cite id="F03-67">VICReg paper, abstract and equation 6</Cite>
-          </Box>
+          <Formula
+            name="VICReg loss"
+            tex={String.raw`\begin{aligned} \ell(Z, Z') = {} & \lambda\, s(Z, Z') \\ & + \mu\,[v(Z) + v(Z')] \\ & + \nu\,[c(Z) + c(Z')] \end{aligned}`}
+            source={<Cite id="F03-67">VICReg paper, abstract and equation 6</Cite>}
+          />
           <ul style={LIST}>
             <li>
-              <code>s</code> is the pull that makes matching latents agree. Alone, it is the shortcut.
+              <M>{String.raw`s`}</M> is the pull that makes matching latents agree. Alone, it is the shortcut.
             </li>
             <li>
-              <code>v</code> blocks complete collapse: a constant column has a standard deviation of 0.
+              <M>{String.raw`v`}</M> blocks complete collapse: a constant column has a standard deviation of 0.
             </li>
             <li>
-              <code>c</code> blocks dimensional collapse: columns that move together have a high covariance.
+              <M>{String.raw`c`}</M> blocks dimensional collapse: columns that move together have a high covariance.
             </li>
           </ul>
           <Box variant="p">
             Three toy batches of four latents with two numbers each (an illustration). In (3, 3), (3, 3), (3, 3),
-            (3, 3) neither column varies, so <code>v</code> is large. In (1, 1), (2, 2), (3, 3), (4, 4) both
-            columns vary and the second copies the first, so <code>c</code> is large. In (1, 2), (2, 4), (3, 1),
+            (3, 3) neither column varies, so <M>{String.raw`v`}</M> is large. In (1, 1), (2, 2), (3, 3), (4, 4) both
+            columns vary and the second copies the first, so <M>{String.raw`c`}</M> is large. In (1, 2), (2, 4), (3, 1),
             (4, 3) both vary and their covariance is 0, so both terms are satisfied. To redo it, subtract each
             column&apos;s average (<Toy>2.5</Toy>) from its values, multiply the two leftovers row by row and add:{' '}
             <Toy>0.75 - 0.75 - 0.75 + 0.75</Toy> = 0.
@@ -1068,36 +1067,35 @@ export function Jepa() {
             <Cite id="F03-39">LeWorldModel paper, section 3.1</Cite>
           </Box>
           <Box variant="p">
-            The symbols of the loss: <code>z_t</code> is the latent of frame <code>t</code>, <code>a_t</code> the
-            action taken at that frame, <code>pred_phi</code> the predictor and <code>z-hat_t+1</code> its guess
-            for the next frame&apos;s latent. <code>Z</code> is all the latents in the batch and{' '}
-            <code>lambda</code> a single weight. The double bars with two 2s are the squared L2 distance:
+            The symbols of the loss: <M>{String.raw`z_t`}</M> is the latent of frame <M>{String.raw`t`}</M>, <M>{String.raw`a_t`}</M> the
+            action taken at that frame, <M>{String.raw`\mathrm{pred}_\phi`}</M> the predictor and <M>{String.raw`\hat{z}_{t+1}`}</M> its guess
+            for the next frame&apos;s latent. <M>{String.raw`Z`}</M> is all the latents in the batch and{' '}
+            <M>{String.raw`\lambda`}</M> a single weight. The double bars with two 2s are the squared L2 distance:
             subtract entry by entry, square, add up.
           </Box>
-          <Formula>{'z-hat_t+1 = pred_phi(z_t, a_t)'}</Formula>
-          <Formula>{'L_pred = || z-hat_t+1 - z_t+1 ||_2^2'}</Formula>
-          <Formula>{'L_LeWM = L_pred + lambda SIGReg(Z)'}</Formula>
-          <Box variant="p">
-            <Cite id="F03-36">LeWorldModel paper, section 3.1, equations 1 to 3</Cite>
-          </Box>
+          <Formula
+            name="LeWorldModel training objective"
+            tex={String.raw`\begin{aligned} \hat{z}_{t+1} &= \mathrm{pred}_\phi(z_t, a_t) \\ \mathcal{L}_{\mathrm{pred}} &\triangleq \lVert \hat{z}_{t+1} - z_{t+1} \rVert_2^2 \\ \mathcal{L}_{\mathrm{LeWM}} &\triangleq \mathcal{L}_{\mathrm{pred}} + \lambda\,\mathrm{SIGReg}(Z) \end{aligned}`}
+            source={<Cite id="F03-36">LeWorldModel paper, section 3.1, equations 1 to 3</Cite>}
+          />
           <ul style={LIST}>
             <li>
-              <code>L_pred</code> is the JEPA pull: the predicted and the actual next latent should agree. Alone,
+              <M>{String.raw`\mathcal{L}_{\mathrm{pred}}`}</M> is the JEPA pull: the predicted and the actual next latent should agree. Alone,
               it collapses.
             </li>
             <li>
-              <code>SIGReg(Z)</code> is large when the batch&apos;s latents fail the bell-curve test along the
+              <M>{String.raw`\mathrm{SIGReg}(Z)`}</M> is large when the batch&apos;s latents fail the bell-curve test along the
               sampled directions. A collapsed batch fails it badly.
             </li>
             <li>
-              <code>lambda</code> sets the exchange rate between the two, and it is the only loss weight.
+              <M>{String.raw`\lambda`}</M> sets the exchange rate between the two, and it is the only loss weight.
             </li>
           </ul>
           <Box variant="p">
-            The paper gives lambda = 0.1 with 1,024 random directions. The released training config sets the
+            The paper gives <M>{String.raw`\lambda`}</M> = 0.1 with 1,024 random directions. The released training config sets the
             weight to 0.09, with 1,024 projections each tested at 17 points (the config calls them knots). The
             gap matters little by the authors&apos; own test of other values: on Push-T, a simulated 2D pushing task, they
-            report success above 80% for any lambda between 0.01 and 0.2.{' '}
+            report success above 80% for any <M>{String.raw`\lambda`}</M> between 0.01 and 0.2.{' '}
             <Cite id="F03-36">LeWorldModel paper, section 3.1</Cite>{' '}
             <Cite id="F03-37">le-wm config/train/lewm.yaml, lines 17 to 43</Cite>{' '}
             <Cite id="F03-46">LeWorldModel paper, appendix G</Cite> The limit the authors state: the regulariser
@@ -1107,17 +1105,22 @@ export function Jepa() {
           <ExpandableSection headerText="How SIGReg tests one direction, from the released code">
             <SpaceBetween size="s">
               <Box variant="p">
-                Take one random direction, and let <code>p_n</code> be the shadow of the <code>n</code>-th latent
+                Take one random direction, and let <M>{String.raw`p_n`}</M> be the shadow of the <M>{String.raw`n`}</M>-th latent
                 of the batch on it. A distribution has a fingerprint, its characteristic function. For a batch it
-                is estimated by two averages, <code>mean_n cos(t p_n)</code> and <code>mean_n sin(t p_n)</code>,
-                at a chosen value <code>t</code>. For a standard Gaussian the fingerprint is{' '}
-                <code>exp(-t^2 / 2)</code> for the cosine part and 0 for the sine part. The error at one{' '}
-                <code>t</code> is:
+                is estimated by two averages over the batch, <M>{String.raw`\operatorname{mean}_n \cos(t\,p_n)`}</M> and{' '}
+                <M>{String.raw`\operatorname{mean}_n \sin(t\,p_n)`}</M>, at a chosen test value <M>{String.raw`t`}</M> (in this block{' '}
+                <M>{String.raw`t`}</M> is that test value and no longer a frame index). For a standard Gaussian the
+                fingerprint is <M>{String.raw`e^{-t^2/2}`}</M> for the cosine part and 0 for the sine part. The error at
+                one <M>{String.raw`t`}</M> is:
               </Box>
-              <Formula>{'(mean_n cos(t p_n) - exp(-t^2 / 2))^2 + (mean_n sin(t p_n))^2'}</Formula>
+              <Formula
+                name="SIGReg error for one direction at one test value"
+                tex={String.raw`\begin{aligned} & \big(\operatorname{mean}_n \cos(t\,p_n) - e^{-t^2/2}\big)^2 \\ & + \big(\operatorname{mean}_n \sin(t\,p_n)\big)^2 \end{aligned}`}
+                source={<Cite id="F03-38">le-wm module.py, lines 10 to 36</Cite>}
+              />
               <Box variant="p">
                 The first bracket is how far the batch&apos;s cosine average is from the Gaussian&apos;s; the second
-                is how far its sine average is from zero. The code evaluates this at 17 values of <code>t</code>{' '}
+                is how far its sine average is from zero. The code evaluates this at 17 values of <M>{String.raw`t`}</M>{' '}
                 from 0 to 3, weights and sums them, scales by the batch size, and averages over the 1,024
                 directions.{' '}
                 <Cite id="F03-38">le-wm module.py, lines 10 to 36</Cite>
@@ -1184,10 +1187,41 @@ export function Jepa() {
             next frame.{' '}
             <Cite id="F03-15">V-JEPA 2 paper, section 3.1</Cite>{' '}
             <Cite id="F03-16">vjepa2 ac_predictor.py, lines 141 to 153</Cite> Training compares that grid with the
-            frozen encoder&apos;s grid for the real next frame, by L1 distance again, and a second loss term
-            feeds the predictor its own output for one more step, as planning will.{' '}
-            <Cite id="F03-18">V-JEPA 2 paper, section 3.1, equations 2 to 4</Cite>
+            frozen encoder&apos;s grid for the real next frame, by L1 distance again. This is the teacher-forcing
+            loss that section 6 wrote out: every guess starts from the true latents of the frames before it.{' '}
+            <Cite id="F11-100">V-JEPA 2 paper, section 3.1, equation 2</Cite>
           </Box>
+          <Box variant="p">
+            A planner has true latents for the current frame only. Beyond it, the predictor must build on its own
+            output, so a second loss term trains exactly that. The symbols: <M>{String.raw`z_1`}</M> is the latent of a
+            clip&apos;s first frame and <M>{String.raw`s_1`}</M> the gripper&apos;s pose there. <M>{String.raw`a_{1:T}`}</M> is
+            the <M>{String.raw`T`}</M> recorded actions that followed, with <M>{String.raw`T = 2`}</M> in practice.{' '}
+            <M>{String.raw`P_\phi(a_{1:T}, s_1, z_1)`}</M> is the predictor run <M>{String.raw`T`}</M> times from that start,
+            each run after the first taking its own previous output as input. <M>{String.raw`z_{T+1}`}</M> is the
+            encoder&apos;s latent of the frame the robot really reached.{' '}
+            <M>{String.raw`\mathcal{L}_{\text{teacher-forcing}}`}</M> is the loss from section 6, and <M>{String.raw`\phi`}</M> the
+            predictor&apos;s weights.
+          </Box>
+          <Formula
+            name="V-JEPA 2-AC training loss: rollout term and total"
+            tex={String.raw`\begin{aligned} & \mathcal{L}_{\text{rollout}}(\phi) \coloneqq \\ & \quad \lVert P_\phi(a_{1:T}, s_1, z_1) - z_{T+1} \rVert_1 \\[6pt] & L(\phi) \coloneqq \mathcal{L}_{\text{teacher-forcing}}(\phi) \\ & \quad + \mathcal{L}_{\text{rollout}}(\phi) \end{aligned}`}
+            source={<Cite id="F03-18">V-JEPA 2 paper, section 3.1, equations 3 and 4</Cite>}
+          />
+          <ul style={LIST}>
+            <li>
+              The first line is the miss after an imagined rollout: only the first latent is real, and the
+              prediction is compared with where the robot really ended up.
+            </li>
+            <li>
+              The second line adds the two misses with equal weight. One term teaches single steps from true
+              inputs, the other teaches the predictor to stay accurate on its own outputs.
+            </li>
+            <li>
+              <M>{String.raw`(\phi)`}</M> says what is trained: the predictor alone. With <M>{String.raw`T = 2`}</M> the
+              gradient passes through one repeated step of the predictor.{' '}
+              <Cite id="F11-102">V-JEPA 2 paper, section 3.1, text around equations 3 and 4</Cite>
+            </li>
+          </ul>
           <Box variant="p">
             Before V-JEPA 2 came the position paper that defined the JEPA, then I-JEPA (2023) on images and V-JEPA
             (2024) on video; all three are history here.{' '}
@@ -1236,20 +1270,26 @@ export function Jepa() {
             it.
           </Box>
           <Box variant="p">
-            The symbols: <code>z_k</code> is the latent of the current frame <code>k</code>, and <code>s_k</code>{' '}
-            the gripper&apos;s current pose. <code>z_g</code> is the goal latent. <code>a-hat_1:T</code> is a
-            candidate sequence of <code>T</code> actions, where <code>T</code> is the planning horizon: how many
-            steps the planner looks ahead. <code>P(...)</code> is the predictor run <code>T</code> times, each
-            time on its own previous output. The cost of a candidate is its energy:
+            The symbols: <M>{String.raw`z_k`}</M> is the latent of the current frame <M>{String.raw`k`}</M>, and <M>{String.raw`s_k`}</M>{' '}
+            the gripper&apos;s current pose. <M>{String.raw`z_g`}</M> is the goal latent. <M>{String.raw`\hat{a}_{1:T}`}</M> is a
+            candidate sequence of <M>{String.raw`T`}</M> actions, where <M>{String.raw`T`}</M> is the planning horizon: how many
+            steps the planner looks ahead. <M>{String.raw`P(\hat{a}_{1:T}; s_k, z_k)`}</M> is the predictor run{' '}
+            <M>{String.raw`T`}</M> times from the present, each time on its own previous output. The cost of a candidate
+            is its energy <M>{String.raw`\mathcal{E}`}</M>, and the plan <M>{String.raw`(a^\star_i)_{i \in [T]}`}</M>, the
+            actions <M>{String.raw`a^\star_1`}</M> to <M>{String.raw`a^\star_T`}</M>, is the candidate with the lowest energy:
           </Box>
-          <Formula>{'E(a-hat_1:T; z_k, s_k, z_g) := || P(a-hat_1:T; s_k, z_k) - z_g ||_1'}</Formula>
+          <Formula
+            name="V-JEPA 2-AC planning objective"
+            tex={String.raw`\begin{aligned} & \mathcal{E}(\hat{a}_{1:T};\ z_k, s_k, z_g) \coloneqq \\ & \quad \lVert P(\hat{a}_{1:T}; s_k, z_k) - z_g \rVert_1 \\[6pt] & (a^\star_i)_{i \in [T]} \coloneqq \\ & \quad \underset{\hat{a}_{1:T}}{\text{argmin}}\ \mathcal{E}(\hat{a}_{1:T};\ z_k, s_k, z_g) \end{aligned}`}
+            source={<Cite id="F03-23">V-JEPA 2 paper, section 3.2, equation 5</Cite>}
+          />
           <Box variant="p">
-            <Cite id="F03-23">V-JEPA 2 paper, section 3.2, equation 5</Cite>
-          </Box>
-          <Box variant="p">
-            The left term is the imagined future for this candidate and the right term is where you want to be.
-            The L1 distance between them is the training measure reused as a score: a low energy means the
-            candidate is predicted to make the scene look like the goal picture. Two ideas turn the score into
+            In the first line, the left term inside the bars is the imagined future for this candidate and the
+            right term is where you want to be. The L1 distance between them is the training measure reused as a
+            score: a low energy means the candidate is predicted to make the scene look like the goal picture.
+            The second line is the search: argmin means &quot;the candidate that makes this smallest&quot;. No
+            formula solves it, so the authors approximate it with the cross-entropy method.{' '}
+            <Cite id="F11-101">V-JEPA 2 paper, section 3.2 and Figure 7</Cite> Two ideas turn the score into
             motion.
           </Box>
           <Box variant="p">
