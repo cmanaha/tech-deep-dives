@@ -1,6 +1,71 @@
 # 10c Amazon EKS and EC2 Spot for GPU fleets: research register
 
-(File under construction: sections are appended as research proceeds.)
+## 1. Header
+
+- **Research date:** 2026-11-20. Every URL in this file was accessed 2026-11-20.
+- **Area:** round 2 of the "Physical AI" dive, stream 10c. Topic A: Amazon EKS as the place a robot arm's GPU and CPU batch workloads run, with Karpenter or EKS Auto Mode adding and removing nodes and a batch scheduler (Kueue, KAI Scheduler, JobSet, Kubeflow Trainer) ordering the jobs. Topic B: EC2 Spot itself, the signals it sends and the configuration AWS recommends, which sections 25 to 28 all rely on.
+- **Sections fed:** 28 "Amazon EKS" (main), 24 (the overview and the Spot explanation), and the hand-offs to 25 (AWS Batch), 26 (AWS Parallel Computing Service) and 27 (Amazon SageMaker HyperPod).
+- **ID range:** F10-400 to F10-466 for EKS (67 numbers, 61 used) and F10-520 to F10-540 for EC2 Spot (21 used). Entries of register 09 are cited as F09-n and are not repeated unless today's page goes deeper or differs (section 10).
+- **Quote policy:** quotes are verbatim from the page as fetched today, with house normalisation: curly quotes become straight quotes, typographic dashes become " - " or a hyphen. Where a quote starts with "+ " or "* " it is a list item in the page's markdown form. Configuration blocks are quoted joined on one line in the Evidence line and printed whole in section 5.
+- **How pages were fetched:** AWS documentation pages in their markdown form (page address plus `.md`) with `curl` and a generic client name. Karpenter, Kueue, KAI Scheduler, JobSet and Kubeflow Trainer documentation and examples as raw files from GitHub at the release tags pinned in section 3. Release dates from the GitHub API release lists. What's New posts from the AWS What's New feed and the post pages. The Spot Instance Advisor data file with `curl`, parsed locally. Nothing was taken from a search-engine summary or from memory.
+- **Labels:** `[vendor claim]` for savings or performance figures printed by AWS or a project; `[derived]` for arithmetic, inputs shown; `[our reading]` for synthesis and every recommendation.
+- **No prices:** where a page prints a price the entry says so and does not copy it.
+- **Tiers:** Tier 1 = AWS docs, first-party data files, project docs and examples at a pinned tag, release lists; Tier 2 = What's New posts and AWS blogs.
+
+## 2. Currency table
+
+Newest first-party version or announcement found on 2026-11-20 for every item this register names.
+
+| Item | Newest found | Date | Source |
+|---|---|---|---|
+| Karpenter, AWS provider | v1.15.3 (bug-fix release) | 2026-11-20 | https://github.com/aws/karpenter-provider-aws/releases/tag/v1.15.3 (F10-400) |
+| EKS Auto Mode release notes | Newest heading: DRA for NVIDIA GPUs and EFA, Nitro Sandboxes | November 9, 2026 | https://docs.aws.amazon.com/eks/latest/userguide/auto-change.html (F10-437) |
+| DRA on EKS Auto Mode and Karpenter | What's New post | Nov 9, 2026 | https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-eks-auto-mode-karpenter-dra/ |
+| EFA and placement groups on Auto Mode and Karpenter | What's New post | Jul 22, 2026 | https://aws.amazon.com/about-aws/whats-new/2026/07/amazon-eks-efa-placement-groups/ (F10-540) |
+| EKS-optimised images (amazon-eks-ami) | v20261119 | 2026-11-19 | GitHub API release list for awslabs/amazon-eks-ami (F10-440) |
+| EKS node monitoring agent | v1.7.7 | 2026-11-07 | GitHub API release list for aws/eks-node-monitoring-agent (F10-460) |
+| NVIDIA GPU Operator | v26.7.3 | 2026-11-17 | GitHub API release list for NVIDIA/gpu-operator (F10-441) |
+| NVIDIA device plugin for Kubernetes | v0.20.2 | 2026-11-17 | GitHub API release list for NVIDIA/k8s-device-plugin (F10-441) |
+| NVIDIA DRA driver | v0.5.1 | 2026-10-12 | GitHub API release list for kubernetes-sigs/dra-driver-nvidia-gpu (F10-442) |
+| DRANET (the DRA network driver used for EFA) | v1.5.0 | 2026-10-03 | GitHub API release list for kubernetes-sigs/dranet (F10-464) |
+| Kueue | v0.20.7 | 2026-11-19 | GitHub API release list for kubernetes-sigs/kueue (F10-450) |
+| KAI Scheduler | v0.19.0 | 2026-11-11 | GitHub API release list for kai-scheduler/KAI-Scheduler (F10-454) |
+| JobSet | v0.13.1 | 2026-11-18 | GitHub API release list for kubernetes-sigs/jobset (F10-456) |
+| Kubeflow Trainer | v2.4.0 | 2026-11-06 | GitHub API release list for kubeflow/trainer (F10-457) |
+| NVIDIA OSMO | 6.3.1 (unchanged since register 09) | 2026-06-22 | https://github.com/NVIDIA/OSMO/releases/tag/6.3.1 (F10-458) |
+| Mountpoint for Amazon S3 CSI driver | v2.9.2 | 2026-10-30 | GitHub API release list for awslabs/mountpoint-s3-csi-driver (F10-463) |
+| FSx for Lustre CSI driver | v1.12.0 | 2026-11-12 | GitHub API release list for kubernetes-sigs/aws-fsx-csi-driver (F10-463) |
+| EBS CSI driver | v1.68.1 | 2026-11-18 | GitHub API release list for kubernetes-sigs/aws-ebs-csi-driver (F10-463) |
+| AWS Node Termination Handler | v1.25.6 | 2026-04-02 | GitHub API release list for aws/aws-node-termination-handler (F10-419) |
+| Spot placement score, Local Zones | What's New post | Aug 13, 2026 | https://aws.amazon.com/about-aws/whats-new/2026/08/spot-placement-score-local-zones/ (F10-532) |
+| SageMaker HyperPod Spot Instances | What's New post | Nov 24, 2025 | https://aws.amazon.com/about-aws/whats-new/2025/11/amazon-sagemaker-hyperpod-spot-instances (F10-540) |
+| Spot Instance Advisor data file | `Last-Modified` header | Fri, 20 Mar 2026 | https://spot-bid-advisor.s3.amazonaws.com/spot-advisor-data.json (F10-538) |
+| EC2 Spot interruption notice and rebalance recommendation pages | No date on the pages; content as fetched | 2026-11-20 | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html (F10-520) |
+
+## 3. Pinned sources
+
+### Code and release-pinned documentation
+
+| Repository | Tag | 40-character SHA | Used for |
+|---|---|---|---|
+| aws/karpenter-provider-aws | v1.15.3 (published 2026-11-20) | 8c91894e993eda682f0785091b79a93da68f9830 | `website/content/en/docs/` concepts (nodepools, nodeclasses, nodeclaims, scheduling, disruption), reference/settings, tasks/odcrs, faq; `examples/v1/` (F10-400 to F10-427) |
+| kubernetes-sigs/kueue | v0.20.7 (2026-11-19) | e854ec82e404436b261c81f0341ac9de8508f97c | `site/content/en/docs/concepts/` and `site/static/examples/` (F10-450 to F10-453) |
+| kai-scheduler/KAI-Scheduler | v0.19.0 (2026-11-11) | 2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11 | `docs/queues`, `docs/batch`, `docs/gpu-sharing`, `docs/quickstart` (F10-454, F10-455) |
+| kubernetes-sigs/jobset | v0.13.1 (2026-11-18) | 6266f0267a5d1a013ae552ecb209214eab5c55c8 | README and `site/static/examples/failure-policy/` (F10-456) |
+| kubeflow/trainer | v2.4.0 (2026-11-06) | a7b05c24ff0f145368529b5d180c223baf965ef5 | README, `docs/operator-guides/runtime.md`, `docs/user-guides/trainjob-lifecycle.md` (F10-457) |
+| NVIDIA/OSMO | 6.3.1 (2026-06-22) | ed59b69715e4ee6fff70bcd9d715106358a7205f | Release list only (F10-458) |
+
+### Docs pages read (all accessed 2026-11-20, markdown form)
+
+Amazon EKS User Guide (https://docs.aws.amazon.com/eks/latest/userguide/ plus the page name): automode, auto-change, auto-accelerated, auto-cost-control, auto-controls, auto-disruption, auto-learn-reqs, auto-migrate-karpenter, auto-networking, auto-odcr, auto-reference, auto-static-capacity, automode-learn-instances, create-node-class, create-node-pool, set-builtin-node-pools, device-management, device-management-nvidia, device-management-nvidia-dra-device-plugin, device-management-nvidia-time-slicing, device-management-nvidia-mig, device-management-efa, ml-eks-optimized-ami, eks-optimized-ami-nvidia, node-health, node-health-nma, node-repair, s3-csi, fsx-csi, ebs-csi, node-efa, eks-provisioned-control-plane, service-quotas, hybrid-nodes-overview, hybrid-nodes-add-ons, hybrid-nodes-gpu, machine-learning-on-eks, ml-compute-management, capacity-blocks-mng, managed-node-groups, kubernetes-versions, doc-history.
+
+EKS Best Practices Guide (https://docs.aws.amazon.com/eks/latest/best-practices/ plus the page name): aiml-compute, aiml-storage, aiml-networking, aiml-observability, aiml-performance, karpenter, spot, cas, scalability, scale-control-plane, kubernetes_upstream_slos.
+
+Amazon EC2 User Guide (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ plus the page name): using-spot-instances, how-spot-instances-work, spot-best-practices, spot-interruptions, interruption-behavior, prepare-for-interruptions, spot-instance-termination-notices, rebalance-recommendations, ec2-fleet-capacity-rebalance, ec2-fleet-allocation-strategy, spot-fleet-allocation-strategy, ec2-fleet-attribute-based-instance-type-selection, spot-placement-score, work-with-spot-placement-score, using-spot-limits, stop-spot-instances, hibernate-spot-instances, terminate-interrupted-spot-instances, find-interrupted-spot-instances, placement-groups, efa-start.
+
+Other AWS docs: AWS Batch User Guide (bestpractice5, bestpractice6); Amazon SageMaker AI Developer Guide (model-managed-spot-training, model-checkpoints, sagemaker-hyperpod-spot). NVIDIA: GPU Operator overview (https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/overview.html).
+
+Data file: https://spot-bid-advisor.s3.amazonaws.com/spot-advisor-data.json (1,190,579 bytes, `Last-Modified` Fri, 20 Mar 2026 23:38:55 GMT).
 
 ## 4. Claim register
 
@@ -525,3 +590,584 @@ A Spot Instance is spare EC2 capacity sold at a discount; EC2 can take it back. 
 - Verdict: NEW
 - Evidence: https://aws.amazon.com/about-aws/whats-new/2025/11/amazon-sagemaker-hyperpod-spot-instances | Tier 2, launch announcement | "Posted on: Nov 24, 2025 Amazon SageMaker HyperPod now supports Spot Instances" and "The feature is available on HyperPod EKS clusters and integrates with Karpenter for intelligent auto-scaling, automatically discovering available Spot capacity and handling instance interruptions." ; https://aws.amazon.com/about-aws/whats-new/2026/07/amazon-eks-efa-placement-groups/ | Tier 2, launch announcement | "Posted on: Jul 22, 2026 Amazon Elastic Kubernetes Service (EKS) now supports Amazon EC2 placement groups and Elastic Fabric Adapter (EFA) network device configuration for node pools on EKS Auto Mode and the open-source Karpenter project" ; https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html | Tier 1, first-party docs | definition | "+ When using Karpenter for automatic scaling, you can configure HyperPod to automatically fallback to On-Demand when Spot capacity is interrupted or unavailable" and "Set it to non zero upto 2 min to allow graceful pod eviction for any checkpointing needs." (accessed 2026-11-20)
 - Use in dive: section 24 currency; section 27 Amazon SageMaker HyperPod cross-reference. No 2025 or 2026 AWS blog post on simulation or rendering fleets on GPU Spot was located in this search (U10c-7).
+
+
+## 5. Configuration blocks
+
+Every block below is verbatim from the first-party page or file named above it, at the pinned tag where one applies. The one assembled configuration in this file is in section 7 and is labelled there.
+
+Block for F10-428: https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html (verbatim, EKS Best Practices Guide, GPU Spot NodePool)
+
+```yaml
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: gpu-inference-spot
+spec:
+  template:
+    metadata:
+      labels:
+        role: gpu-spot-worker
+    spec:
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot"] # Use Spot Instances
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: ["g", "p"] # Diversifies across G-series and P-series
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: ["3"] # Selects instance generations greater than 3
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"] # Specifies AMD64 architecture, compatible with NVIDIA GPUs
+        - key: karpenter.k8s.aws/instance-gpu-memory
+          operator: Gt
+          values: ["20480"] # Ensures more than 20GB (20480 MiB) total GPU memory
+      taints:
+        - key: nvidia.com/gpu
+          effect: NoSchedule
+      nodeClassRef:
+        name: gpu-inference-ec2
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+      expireAfter: 720h
+  limits:
+    cpu: 100
+    memory: 100Gi
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 5m # Enables consolidation of underutilized nodes after 5 minutes
+```
+
+Block for F10-427: https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/examples/v1/spot.yaml (verbatim, Karpenter repository example at tag v1.15.3, minus the two leading comment lines)
+
+```yaml
+---
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: spot
+  annotations:
+    kubernetes.io/description: "NodePool for provisioning spot capacity"
+spec:
+  template:
+    spec:
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot"]
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: ["c", "m", "r"]
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: ["2"]
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: default
+---
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: default
+  annotations:
+    kubernetes.io/description: "General purpose EC2NodeClass for running Amazon Linux 2 nodes"
+spec:
+  role: "KarpenterNodeRole-${CLUSTER_NAME}" # replace with your cluster name
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "${CLUSTER_NAME}" # replace with your cluster name
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "${CLUSTER_NAME}" # replace with your cluster name
+  amiSelectorTerms:
+    - alias: al2023@latest # Amazon Linux 2023
+```
+
+Block for F10-424: https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/examples/v1/instance-store-ephemeral-storage.yaml (verbatim, the EC2NodeClass document of the example)
+
+```yaml
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: instance-store-ephemeral-storage
+  annotations:
+    kubernetes.io/description: "EC2NodeClass to provision nodes with instance-store ephemeral storage"
+spec:
+  instanceStorePolicy: "RAID0"
+  role: "KarpenterNodeRole-${CLUSTER_NAME}" # replace with your cluster name
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "${CLUSTER_NAME}" # replace with your cluster name
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "${CLUSTER_NAME}" # replace with your cluster name
+  amiSelectorTerms:
+    - alias: al2023@latest  # Amazon Linux 2023
+```
+
+Block for F10-415: https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/concepts/disruption.md (verbatim, Karpenter docs at tag v1.15.3)
+
+```yaml
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: default
+spec:
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    budgets:
+    - nodes: "20%"
+      reasons:
+      - "Empty"
+      - "Drifted"
+    - nodes: "5"
+    - nodes: "0"
+      schedule: "@daily"
+      duration: 10m
+      reasons:
+      - "Underutilized"
+```
+
+Block for F10-435: https://docs.aws.amazon.com/eks/latest/userguide/auto-cost-control.html (verbatim, EKS User Guide, Auto Mode CI runner NodePool with Spot and On-Demand)
+
+```yaml
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: ci-runners
+spec:
+  template:
+    spec:
+      nodeClassRef:
+        group: eks.amazonaws.com
+        kind: NodeClass
+        name: default
+      requirements:
+        - key: "eks.amazonaws.com/instance-category"
+          operator: In
+          values: ["c", "m"]
+        - key: "eks.amazonaws.com/instance-cpu"
+          operator: Lte
+          values: ["32"]
+        - key: "karpenter.sh/capacity-type"
+          operator: In
+          values: ["spot", "on-demand"]
+  limits:
+    cpu: "500"
+    memory: 1000Gi
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 30s
+```
+
+Block for F10-443: https://docs.aws.amazon.com/eks/latest/userguide/device-management-nvidia-time-slicing.html (verbatim, the ConfigMap body from the AL2023 procedure, without the `cat <<EOF | kubectl apply -f -` wrapper and its indentation)
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nvidia-device-plugin-config
+  namespace: nvidia
+data:
+  config.yaml: |
+    version: v1
+    sharing:
+      timeSlicing:
+        renameByDefault: false
+        failRequestsGreaterThanOne: true
+        resources:
+          - name: nvidia.com/gpu
+            replicas: 4
+```
+
+Block for F10-450: https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/static/examples/admin/single-clusterqueue-setup.yaml (verbatim, Kueue example at tag v0.20.7)
+
+```yaml
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ResourceFlavor
+metadata:
+  name: "default-flavor"
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: "cluster-queue"
+spec:
+  namespaceSelector: {} # match all.
+  resourceGroups:
+  - coveredResources: ["cpu", "memory"]
+    flavors:
+    - name: "default-flavor"
+      resources:
+      - name: "cpu"
+        nominalQuota: 9
+      - name: "memory"
+        nominalQuota: 36Gi
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: LocalQueue
+metadata:
+  namespace: "default"
+  name: "user-queue"
+spec:
+  clusterQueue: "cluster-queue"
+```
+
+Block for F10-451: https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/static/examples/jobs/sample-job.yaml (verbatim, Kueue example at tag v0.20.7)
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: sample-job-
+  namespace: default
+  labels:
+    kueue.x-k8s.io/queue-name: user-queue
+spec:
+  parallelism: 3
+  completions: 3
+  template:
+    spec:
+      containers:
+      - name: dummy-job
+        image: registry.k8s.io/e2e-test-images/agnhost:2.53
+        command: [ "/bin/sh" ]
+        args: [ "-c", "sleep 60" ]
+        resources:
+          requests:
+            cpu: "1"
+            memory: "200Mi"
+      restartPolicy: Never
+```
+
+Block for F10-452: https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/cluster_queue.md (verbatim, Kueue docs at tag v0.20.7)
+
+```yaml
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: "team-a-cq"
+spec:
+  preemption:
+    reclaimWithinCohort: Any
+    borrowWithinCohort:
+      policy: LowerPriority
+      maxPriorityThreshold: 100
+    withinClusterQueue: LowerPriority
+```
+
+Block for F10-454: https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/docs/quickstart/default-queues.yaml (verbatim, KAI Scheduler at tag v0.19.0, minus the licence header)
+
+```yaml
+apiVersion: scheduling.run.ai/v2
+kind: Queue
+metadata:
+  name: default-parent-queue
+spec:
+  resources:
+    cpu:
+      limit: -1
+      overQuotaWeight: 1
+      quota: 0
+    gpu:
+      limit: -1
+      overQuotaWeight: 1
+      quota: 0
+    memory:
+      limit: -1
+      overQuotaWeight: 1
+      quota: 0
+---
+apiVersion: scheduling.run.ai/v2
+kind: Queue
+metadata:
+  name: default-queue
+spec:
+  parentQueue: default-parent-queue
+  resources:
+    cpu:
+      limit: -1
+      overQuotaWeight: 1
+      quota: 0
+    gpu:
+      limit: -1
+      overQuotaWeight: 1
+      quota: 0
+    memory:
+      limit: -1
+      overQuotaWeight: 1
+      quota: 0
+```
+
+Block for F10-455: https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/docs/gpu-sharing/gpu-sharing.yaml (verbatim, KAI Scheduler at tag v0.19.0, minus the licence header)
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-sharing
+  labels:
+    kai.scheduler/queue: default-queue
+  annotations:
+    gpu-fraction: "0.5"
+spec:
+  schedulerName: kai-scheduler
+  automountServiceAccountToken: false
+  containers:
+    - name: gpu-workload
+      image: nvidia/cuda:13.0.2-base-ubi8
+      command: ["nvidia-smi"]
+      args: ["-L"]
+      resources:
+        limits:
+          memory: 1Gi
+```
+
+Block for F10-454: https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/docs/batch/batch-job-min-member.yaml (verbatim, KAI Scheduler at tag v0.19.0, minus the licence header)
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: batch-job-min-member
+  annotations:
+    kai.scheduler/batch-min-member: "2"
+spec:
+  parallelism: 6
+  completions: 6
+  template:
+    metadata:
+      labels:
+        kai.scheduler/queue: default-queue
+    spec:
+      schedulerName: kai-scheduler
+      restartPolicy: OnFailure
+      automountServiceAccountToken: false
+      containers:
+        - name: main
+          image: ubuntu
+          args: ["sleep", "infinity"]
+          resources:
+            limits:
+              nvidia.com/gpu: "1"
+              memory: 1Gi
+```
+
+Block for F10-456: https://github.com/kubernetes-sigs/jobset/blob/6266f0267a5d1a013ae552ecb209214eab5c55c8/site/static/examples/failure-policy/host-maintenance-event-model.yaml (verbatim excerpt, lines 1 to 16 of the JobSet example at tag v0.13.1 (the replicatedJobs list follows in the file))
+
+```yaml
+apiVersion: jobset.x-k8s.io/v1alpha2
+kind: JobSet
+metadata:
+  name: host-maintenance-event-model
+spec:
+  failurePolicy:
+    maxRestarts: 0
+    rules:
+      # The JobSet will restart an unlimited number of times when failure matches the pod failure policy.
+      - action: RestartJobSetAndIgnoreMaxRestarts
+        onJobFailureReasons:
+        - PodFailurePolicy
+      # The JobSet is restarted as normal when the leader job fails and the above rule is not matched.
+      - action: RestartJobSet
+        targetReplicatedJobs:
+        - leader
+```
+
+Block for F10-457: https://github.com/kubeflow/trainer/blob/a7b05c24ff0f145368529b5d180c223baf965ef5/docs/user-guides/trainjob-lifecycle.md (verbatim, Kubeflow Trainer docs at tag v2.4.0)
+
+```yaml
+apiVersion: trainer.kubeflow.org/v1alpha1
+kind: TrainJob
+metadata:
+  name: my-trainjob
+  namespace: my-namespace
+spec:
+  activeDeadlineSeconds: 3600 # terminate the TrainJob after 1 hour
+  runtimeRef:
+    name: torch-distributed
+    kind: ClusterTrainingRuntime
+    apiGroup: trainer.kubeflow.org
+  trainer:
+    image: docker.io/my-training-image:latest
+    command:
+      - torchrun
+      - train.py
+```
+
+Block for F10-520: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html (verbatim from the page's markdown form; double braces mark the page's placeholder values)
+
+```json
+{
+    "version": "0",
+    "id": "{{12345678-1234-1234-1234-123456789012}}",
+    "detail-type": "EC2 Spot Instance Interruption Warning",
+    "source": "aws.ec2",
+    "account": "{{123456789012}}",
+    "time": "{{yyyy}}-{{mm}}-{{dd}}T{{hh}}:{{mm}}:{{ss}}Z",
+    "region": "{{us-east-2}}",
+    "resources": ["arn:aws:ec2:{{us-east-2a}}:instance/{{i-1234567890abcdef0}}"],
+    "detail": {
+        "instance-id": "{{i-1234567890abcdef0}}",
+        "instance-action": "{{action}}"
+    }
+}
+```
+
+Block for F10-521: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html (verbatim, example output of the instance metadata item spot/instance-action)
+
+```json
+{"action": "terminate", "time": "2017-09-18T08:22:00Z"}
+```
+
+Block for F10-523: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/rebalance-recommendations.html (verbatim from the page's markdown form; double braces mark the page's placeholder values)
+
+```json
+{
+    "version": "0",
+    "id": "{{12345678-1234-1234-1234-123456789012}}",
+    "detail-type": "EC2 Instance Rebalance Recommendation",
+    "source": "aws.ec2",
+    "account": "{{123456789012}}",
+    "time": "{{yyyy}}-{{mm}}-{{dd}}T{{hh}}:{{mm}}:{{ss}}Z",
+    "region": "{{us-east-2}}",
+    "resources": ["arn:aws:ec2:{{us-east-2}}:{{123456789012}}:instance/{{i-1234567890abcdef0}}"],
+    "detail": {
+        "instance-id": "{{i-1234567890abcdef0}}"
+    }
+}
+```
+
+Block for F10-531: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html (verbatim, the page skeleton of `InstanceRequirements`; the zeros and sample values are the page placeholders, not a recommendation)
+
+```json
+"InstanceRequirements": {
+    "VCpuCount": {
+        "Min": 0,
+        "Max": 0
+    },
+    "MemoryMiB": {
+        "Min": 0,
+        "Max": 0
+    },
+    "CpuManufacturers": [
+        "intel"
+    ],
+    "MemoryGiBPerVCpu": {
+        "Min": 0.0,
+        "Max": 0.0
+    },
+    "ExcludedInstanceTypes": [
+        ""
+    ],
+    "InstanceGenerations": [
+        "current"
+    ],
+    "SpotMaxPricePercentageOverLowestPrice": 0,
+    "OnDemandMaxPricePercentageOverLowestPrice": 0,
+    "BareMetal": "included",
+    "BurstablePerformance": "included",
+    "RequireHibernateSupport": true,
+    "NetworkInterfaceCount": {
+        "Min": 0,
+        "Max": 0
+    },
+    "LocalStorage": "included",
+    "LocalStorageTypes": [
+        "hdd"
+    ],
+    "TotalLocalStorageGB": {
+        "Min": 0.0,
+        "Max": 0.0
+    },
+    "BaselineEbsBandwidthMbps": {
+        "Min": 0,
+        "Max": 0
+    },
+    "AcceleratorTypes": [
+        "gpu"
+    ],
+    "AcceleratorCount": {
+        "Min": 0,
+        "Max": 0
+    },
+    "AcceleratorManufacturers": [
+        "nvidia"
+    ],
+    "AcceleratorNames": [
+        "a100"
+    ],
+    "AcceleratorTotalMemoryMiB": {
+        "Min": 0,
+        "Max": 0
+    },
+    "NetworkBandwidthGbps": {
+        "Min": 0.0,
+        "Max": 0.0
+    },
+    "AllowedInstanceTypes": [
+        ""
+    ]
+},
+```
+
+
+
+## 6. The cluster, drawn
+
+### 6.1 Objects and how they nest (EKS with self-managed Karpenter, the main drawing)
+
+1. **Submitter** (a person with `kubectl`, a pipeline, an agent) creates a Job, JobSet or TrainJob in a namespace. With Kueue it carries the label `kueue.x-k8s.io/queue-name` (F10-451); with KAI Scheduler it sets `schedulerName: kai-scheduler` and the label `kai.scheduler/queue` (F10-454).
+2. **Control plane** (run by AWS, outside the account's VPC): the API server and the default scheduler. A box with one gauge, the tier, only when Provisioned Control Plane is used (F10-465).
+3. **Queue layer** (optional, in the cluster): Kueue's LocalQueue in the namespace, pointing to a ClusterQueue with quota per ResourceFlavor, ClusterQueues grouped in a cohort that lends unused quota (F10-450, F10-452); or KAI's two-level Queue tree with quota, limit and over-quota weight (F10-454). Draw the job as a token that waits here while suspended.
+4. **Job objects**: Job (one pod template), JobSet (several Jobs restarted as one unit, F10-456), TrainJob over a ClusterTrainingRuntime (F10-457). They create **pods**; a pod that asks for `nvidia.com/gpu` and fits no node is Pending.
+5. **Karpenter controller** (a Deployment on a few non-Karpenter nodes or Fargate): watches Pending pods, batches them, and creates **NodeClaims** (F10-404, F10-411). It also reads the **interruption queue**, an SQS queue fed by EventBridge rules (F10-417).
+6. **NodePool**: the constraints box. Capacity types, instance categories and generations, GPU memory floor, taints, `limits`, `weight`, the `disruption` block (F10-401, F10-402, F10-407, F10-408, F10-412, F10-415). Draw two for the arm: a GPU Spot NodePool and a GPU On-Demand or reserved NodePool.
+7. **EC2NodeClass**: the AWS settings a NodePool points at. Image alias, node role, subnets, security groups, disks, `instanceStorePolicy`, placement group, extra network interfaces, capacity reservations (F10-422 to F10-426).
+8. **Nodes**: EC2 instances, one per NodeClaim, labelled with capacity type, zone, instance family and GPU attributes. Draw Spot and On-Demand nodes in different outlines, G instances with one to eight GPU slots, across three Availability Zones.
+9. **On each GPU node**: the kubelet, the accelerated image's NVIDIA driver (F10-440), the NVIDIA device plugin DaemonSet that advertises `nvidia.com/gpu` (F10-410, F10-441) or the DRA driver that publishes ResourceSlices (F10-442), the node monitoring agent (F10-460), and the pods. One pod holds whole GPUs unless time-slicing, MPS, MIG or KAI fractions are configured (F10-443 to F10-445, F10-455).
+10. **Storage beside the cluster**: a container registry (image pull at pod start), S3 through the Mountpoint CSI driver (datasets in, checkpoints out), FSx for Lustre for a shared POSIX file system, EBS volumes per pod, the node's own NVMe as RAID0 scratch (F10-463, F10-424).
+11. **Network**: the VPC subnets named by the EC2NodeClass; for multi-node training a cluster placement group and `efa-only` interfaces (F10-426, F10-464).
+12. **Signals in from EC2**: Spot interruption warning, rebalance recommendation, scheduled change, instance state change, all as EventBridge events (F10-417, F10-520, F10-523).
+
+Variant to draw beside it, **EKS Auto Mode**: boxes 5 and 9 move behind the AWS line. There is no Karpenter Deployment, no interruption queue, no device plugin DaemonSet and no node access to draw; the user still writes NodePools and a NodeClass (`eks.amazonaws.com/v1`) (F10-430, F10-434, F10-435, F10-436). Two built-in NodePools exist and neither launches GPUs or Spot (F10-431).
+
+### 6.2 Lifecycle as numbered steps (one single-GPU training Job, Kueue in front, a Spot GPU NodePool at zero nodes)
+
+| Step | What the animation shows | Object state | Entries |
+|---|---|---|---|
+| 1. Submit | The user applies a Job with the queue label; Kueue's webhook holds it | Job `suspend: true`, a Workload object appears | F10-451 |
+| 2. Queue | The Workload waits in the LocalQueue until the ClusterQueue has GPU quota in a flavor; a higher-priority Workload may preempt a lower one | Workload pending, then `QuotaReserved`, then `Admitted` | F10-450, F10-451, F10-452 |
+| 3. Unsuspend | Kueue unsuspends the Job and injects the flavor's node labels; the Job creates its pod | Pod `Pending`, unschedulable | F10-451, F10-453 |
+| 4. Scale from zero | Karpenter's batch window closes (1 second idle, 10 seconds at most); it bin-packs the batch and sends up to 60 instance types to EC2 Fleet with price-capacity-optimized | NodeClaim created | F10-404, F10-403, F10-405 |
+| 5. Launch | EC2 returns one Spot instance; if a type has no capacity in a zone, that answer is cached for 3 minutes and the next option is tried | NodeClaim `Launched` | F10-402, F10-411 |
+| 6. Register and initialise | The node joins; the `karpenter.sh/unregistered` taint goes; the device plugin starts and the node advertises `nvidia.com/gpu` | NodeClaim `Registered`, then `Initialized` (deleted and retried after 15 minutes without registration) | F10-411, F10-410 |
+| 7. Place | The scheduler binds the pod to the new node; the kubelet pulls the image and mounts S3, FSx or EBS volumes | Pod `ContainerCreating` | F10-463 |
+| 8. Run | The training loop runs and writes a checkpoint every N minutes to S3 or FSx, not to the node's NVMe alone | Pod `Running` | F10-535, F10-424, F10-525 |
+| 9. Rebalance recommendation (may or may not come first) | EC2 flags the instance at elevated risk; Karpenter only records an event | No change | F10-523, F10-419 |
+| 10. Spot notice | EventBridge event "EC2 Spot Instance Interruption Warning" reaches the SQS queue; two minutes on the clock, best effort | Node tainted, NodeClaim deleting | F10-520, F10-417, F10-522 |
+| 11. Drain and replace in parallel | Karpenter launches a replacement at once and evicts the pod; the pod gets SIGTERM and has its `terminationGracePeriodSeconds`, capped in practice by the two minutes | Pod `Terminating`, pod condition `DisruptionTarget` | F10-418, F10-535, F10-456 |
+| 12. Checkpoint | On SIGTERM the loop writes a last checkpoint if it can finish in time; otherwise the last periodic one stands | Pod exits | F10-535, F10-522 |
+| 13. Requeue | The Job controller (or JobSet, whose failure policy can ignore evictions when counting restarts) creates a new pod, which is Pending until the replacement node is ready, then resumes from the checkpoint | Pod `Pending`, then `Running` | F10-456, F10-418 |
+| 14. Reclaim | EC2 terminates the instance; everything on its instance store is gone | Node removed | F10-525 |
+| 15. Finish | The Job completes; Kueue releases the quota | Job `Complete` | F10-451 |
+| 16. Scale down | The node is empty; after `consolidateAfter` Karpenter deletes it, within the disruption budget | NodeClaim deleted, zero nodes | F10-412, F10-413, F10-415 |
+
+No first-party page gives the seconds for steps 4 to 7 on a GPU node (U10c-1); the one printed illustration is an Auto Mode sample showing a node Ready at 76 seconds (F10-438). The animation should mark that span as unmeasured or use a number we measure ourselves.
+
+### 6.3 What changes in the other variants
+
+- **EKS Auto Mode:** steps 4 to 6 and 10 to 11 are the same events with the controller hidden; there is no queue to configure (F10-435). The pod cannot read the instance metadata service unless it uses host networking, so step 12 relies on SIGTERM (F10-434, F10-521). Nodes live 14 days by default, 21 at most (F10-432).
+- **KAI Scheduler in place of Kueue:** step 2 happens inside the scheduler (the pod exists and is Pending while its queue is over quota); a fractional-GPU pod needs the `node-scale-adjuster` for step 4 to fire at all (F10-455).
+- **Multi-node JobSet or TrainJob:** step 4 must produce N nodes; with a placement group and EFA they come from one EC2NodeClass (F10-426). One Spot notice restarts the whole JobSet (F10-456), which is why the EKS guide keeps large training off Spot (F10-534).
+- **GPU fault instead of Spot notice:** the node monitoring agent sets `AcceleratedHardwareReady` to false; after 10 minutes auto repair replaces or reboots the node, with a 5 or 10 minute grace period on Karpenter v1.15 and almost none on Auto Mode (F10-460, F10-461, F10-462).

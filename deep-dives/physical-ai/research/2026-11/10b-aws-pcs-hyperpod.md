@@ -1,6 +1,53 @@
 # 10b AWS PCS and SageMaker HyperPod: research register
 
-(file under construction: header, currency table and sections 5 to 12 are written last)
+## 1. Header
+
+- Research date and access date for every source: 2026-11-20.
+- Area: two of the four AWS cluster orchestrators the dive draws. AWS Parallel Computing Service (PCS), which is managed Slurm, in entries F10-200 to F10-245. Amazon SageMaker HyperPod, a persistent cluster of SageMaker-managed instances scheduled by Slurm or by Amazon EKS, in entries F10-300 to F10-334.
+- Sections fed: section 26 (PCS), section 27 (HyperPod), and the comparison in section 24 (overview). Sections 25 (Batch) and 28 (EKS) are referenced only at hand-offs.
+- Sources: first-party only. AWS documentation (PCS User Guide and API Reference, SageMaker AI Developer Guide and API Reference), AWS What's New posts, one AWS News Blog post, the PCS pricing and FAQ pages. No third-party page is cited. No GitHub repository was pinned (see section 3).
+- How pages were fetched: `curl` with a generic client name and no contact address, against the markdown form of each documentation page (the page URL with `.md` appended). 214 PCS User Guide pages, 322 SageMaker Developer Guide pages on HyperPod, and the API Reference pages named in section 12 were downloaded today and searched locally. What's New, blog, pricing and FAQ pages were fetched as HTML and reduced to text. The URLs printed in entries are the public `.html` URLs.
+- Quote policy: every quoted string is verbatim from the page as fetched, checked mechanically against the downloaded copy (whitespace-insensitive). House normalisation only: curly quotes to straight quotes, typographic dashes to a hyphen. Markdown escapes that the `.md` form of a page carries (for example `\~` and `\_`) are left as fetched. Two symbols in one formula (F10-328) are written as "x" and "-" in the claim; the quote lines do not contain the formula.
+- Prices: no monetary value is copied. Where a page prints a price the entry says so.
+- Labels: `[vendor claim]` for a figure AWS reports about itself, `[derived]` for arithmetic with inputs shown, `[our reading]` for an inference or an assembly of several pages. Absence claims ("no page read today documents X") are scoped to the pages downloaded today and each has an UNKNOWN id in section 11.
+- IDs: entries F10-246 to F10-289 and F10-335 to F10-399 are unused.
+
+## 2. Currency table
+
+| Item | Newest found | Date | Source |
+|---|---|---|---|
+| Slurm versions on PCS | 26.05, 25.11 and 25.05 in the versions table; 25.05 reaches end of life on 11/30/2026 | 26.05 added 11 September 2026 (F10-242) | F10-203, https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html |
+| PCS in-place Slurm upgrade | supported | 29 and 30 June 2026 | F10-204 |
+| PCS CLI filter and job submit plugins | newest PCS feature found | 19 November 2026 | F10-230 |
+| PCS GRES, hardware topology, MIG | supported | 11 September 2026 | F10-236 |
+| PCS scaling logs | supported | 30 September 2026 | F10-219 |
+| PCS node lifecycle actions | supported | 23 July 2026 | F10-214 |
+| PCS UltraServers (P6e-GB200, P6e-GB300) | supported through Capacity Blocks | 18 June 2026 | F10-237 |
+| PCS-ready Deep Learning AMI | available | 1 June 2026 | F10-212 |
+| PCS per-node-group idle time | `scaleDownIdleTimeInSeconds` override per group | 28 May 2026 | F10-218 |
+| PCS mixed static and dynamic scaling | supported | 18 May 2026 | F10-208 |
+| PCS Regions | 27 | page as fetched 2026-11-20 | F10-241 |
+| HyperPod release notes, newest heading | "November 16, 2026" (cluster operations) | 16 November 2026 | F10-332 |
+| HyperPod dynamic ENI attachment | `AttachClusterNodeNetworkInterface`, VPC CNI v1.23.3-eksbuild.1 or later | release note 11 November 2026, What's New 18 November 2026 | F10-328 |
+| HyperPod Kubernetes versions | 1.30 to 1.35 | page as fetched 2026-11-20 | F10-329 |
+| HyperPod training operator Kubernetes versions | 1.28 to 1.33 | page as fetched 2026-11-20 | F10-317 |
+| HyperPod task governance add-on | v1.6.1-eksbuild.1, installs Kueue v0.19.2 | page as fetched 2026-11-20 | F10-320 |
+| HyperPod health monitoring agent floor for Karpenter | 1.0.742.0_1.0.241.0 | page as fetched 2026-11-20 | F10-312 |
+| HyperPod flexible instance groups | up to 20 instance types per group | 16 April 2026 (release note), 17 April 2026 (What's New) | F10-308 |
+| HyperPod G7e instances | supported | 27 April 2026 | F10-304 |
+| HyperPod Slurm: AMI-based node configuration, MinCount, custom AMIs | supported | 7 May, 27 May, 13 July 2026 | F10-303, F10-307, F10-332 |
+| HyperPod EFA-only network interfaces | supported | 1 June 2026 | F10-327 |
+| HyperPod managed Karpenter | launched | 18 September 2025 | F10-312, register 09 F09-27 |
+
+## 3. Pinned sources
+
+No source-code repository is pinned in this register: every claim rests on a documentation page, an API Reference page or an announcement, each fetched on 2026-11-20. The documentation has no version tag, so the pin is the access date plus the page's own version markers where it has them:
+
+- PCS User Guide, document history page (https://docs.aws.amazon.com/pcs/latest/userguide/doc-history.html): the dated change log that F10-242 quotes. Newest entry found: 19 November 2026.
+- PCS Slurm versions table (https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html) and per-version release notes (https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions_release-notes.html).
+- HyperPod release notes (https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-release-notes.html): four headings dated 2026 (25 January, 16 April, 11 November, 16 November).
+- Version strings that pin behaviour: task governance add-on v1.6.1-eksbuild.1 with Kueue v0.19.2 (F10-320); training operator v1.2.0 for checkpointless training (F10-319); Kubeflow Training Operator 1.7.0, 1.8.0 or 1.8.1 for job auto-resume (F10-316); VPC CNI v1.23.3-eksbuild.1 for dynamic ENI attachment (F10-328).
+- Not pinned: the HyperPod CLI repository and the HyperPod Helm chart repository are named by the documentation but were not opened or pinned to a commit today (U10-12). The Karpenter version HyperPod runs is not printed on the pages read (U10-13).
 
 ## 4. Claim register
 
@@ -297,7 +344,7 @@ Part A is AWS Parallel Computing Service (F10-200 to F10-289). Part B is Amazon 
 **F10-245. [our reading] What PCS does well and poorly for the arm. Well: Slurm semantics (arrays, multi-node jobs that start only when every node is up, partitions with priority and preemption, GRES and MIG) with no controller to run, scale to zero per node group, every EC2 market per group. Poorly: one purchase option per group and a 10-group default cap make Spot diversification coarse; instance types in a group must match in vCPU and GPU count; no documented Spot drain or checkpoint hook; no container-native path (jobs are processes on an AMI); the controller is a fixed size and is billed while idle; SMT is off; storage and its mounts are the user's work; the Slurm allow-list excludes arbitrary `slurm.conf` edits.**
 - Location: synthesis of F10-202, F10-205, F10-206, F10-207, F10-213, F10-222, F10-231, F10-239, F10-240
 - Verdict: NEW
-- Evidence: F10-202, F10-205, F10-206, F10-207, F10-213, F10-222, F10-231, F10-239, F10-240 | synthesis; the "no container-native path" clause rests on the absence of any container runtime page in the User Guide's table of contents as fetched today
+- Evidence: F10-202, F10-205, F10-206, F10-207, F10-213, F10-222, F10-231, F10-239, F10-240 | synthesis; the clause about containers rests on the absence of any container runtime page in the User Guide's table of contents as fetched today
 - Use in dive: section 26, "what it does poorly" and the hand-offs in section 9 of this file.
 
 ### B1. SageMaker HyperPod: the cluster and its two orchestrators
@@ -305,7 +352,7 @@ Part A is AWS Parallel Computing Service (F10-200 to F10-289). Part B is Amazon 
 **F10-300. A HyperPod cluster is a persistent set of SageMaker-managed instances, organised in instance groups, that takes its scheduler from one of two orchestrators chosen at creation. With Slurm, the cluster contains its own controller node, optional login node and compute nodes, all of them instance groups the user sizes. With Amazon EKS, the HyperPod cluster is only the worker nodes, mapped 1-to-1 to an EKS cluster that provides the control plane.**
 - Location: Amazon SageMaker AI Developer Guide, "Orchestrating SageMaker HyperPod clusters with Amazon EKS"; "Getting started with SageMaker HyperPod using the AWS CLI"
 - Verdict: NEW
-- Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks.html | Tier 1, first-party docs | definition | "The high-level architecture of Amazon EKS support in HyperPod involves a 1-to-1 mapping between an EKS cluster (control plane) and a HyperPod cluster (worker nodes) within a VPC, as shown in the following diagram." ; https://docs.aws.amazon.com/sagemaker/latest/dg/smcluster-getting-started-slurm-cli.html | Tier 1, first-party docs | definition | "A Slurm cluster requires at least a controller node (which runs the `slurmctld` daemon and coordinates job scheduling) and one or more compute nodes (which execute jobs). Optionally, you can add a login node to provide users with a dedicated access point for submitting and managing jobs without logging into the controller directly." (accessed 2026-11-20)
+- Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks.html | Tier 1, first-party docs | definition | "The high-level architecture of Amazon EKS support in HyperPod involves a 1-to-1 mapping between an EKS cluster (control plane) and a HyperPod cluster (worker nodes) within a VPC, as shown in the following diagram." ; https://docs.aws.amazon.com/sagemaker/latest/dg/smcluster-getting-started-slurm-cli.html | Tier 1, first-party docs | definition | "A Slurm cluster requires at least a controller node (which runs the `slurmctld` daemon and coordinates job scheduling) and one or more compute nodes (which execute jobs). Optionally, you can add a login node to provide users with a dedicated access point for submitting and managing jobs without logging into the controller directly." ; https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-cli-command-create-cluster.html | Tier 1, first-party docs | definition | "// create_cluster.json { \"ClusterName\": {{\"string\"}}, \"InstanceGroups\": [{ \"InstanceGroupName\": {{\"string\"}}, \"InstanceType\": {{\"string\"}}, \"InstanceCount\": {{number}}, \"LifeCycleConfig\": { \"SourceS3Uri\": {{\"s3://amzn-s3-demo-bucket-sagemaker/lifecycle-script-directory/src/\"}}, \"OnCreate\": {{\"on_create.sh\"}} }, \"ExecutionRole\": {{\"string\"}}, \"ThreadsPerCore\": {{number}}, \"OnStartDeepHealthChecks\": [ {{\"InstanceStress\", \"InstanceConnectivity\"}} ] }], \"RestrictedInstanceGroups\": [ { \"EnvironmentConfig\": { \"FSxLustreConfig\": { \"PerUnitStorageThroughput\": {{number}}, \"SizeInGiB\": {{number}} } }, \"ExecutionRole\": {{\"string\"}}, \"InstanceCount\": {{number}}, \"InstanceGroupName\": {{\"string\"}}, \"InstanceStorageConfigs\": [ { ... } ], \"InstanceType\": {{\"string\"}}, \"OnStartDeepHealthChecks\": [ {{\"string\"}} ], \"OverrideVpcConfig\": { \"SecurityGroupIds\": [ {{\"string\"}} ], \"Subnets\": [ {{\"string\"}} ] }, \"ScheduledUpdateConfig\": { \"DeploymentConfig\": { \"AutoRollbackConfiguration\": [ { \"AlarmName\": {{\"string\"}} } ], \"RollingUpdatePolicy\": { \"MaximumBatchSize\": { \"Type\": {{\"string\"}}, \"Value\": {{number}} }, \"RollbackMaximumBatchSize\": { \"Type\": {{\"string\"}}, \"Value\": {{number}} } }, \"WaitIntervalInSeconds\": {{number}} }, \"ScheduleExpression\": {{\"string\"}} }, \"ThreadsPerCore\": {{number}}, \"TrainingPlanArn\": {{\"string\"}} } ], \"VpcConfig\": { \"SecurityGroupIds\": [{{\"string\"}}], \"Subnets\": [{{\"string\"}}] }, \"Tags\": [{ \"Key\": {{\"string\"}}, \"Value\": {{\"string\"}} }], \"Orchestrator\": { \"Eks\": { \"ClusterArn\": {{\"string\"}}, \"KubernetesConfig\": { \"Labels\": { {{\"nvidia.com/mig.config\": \"all-3g.40gb\"}} } } } }, \"NodeRecovery\": \"Automatic\" }" (accessed 2026-11-20)
 - Use in dive: section 27, the opening definition and the two cluster drawings (Slurm: controller, login, compute groups inside the cluster; EKS: control plane outside, instance groups inside). Sharpens F09-22.
 
 **F10-301. One `CreateCluster` request carries the whole HyperPod cluster: `InstanceGroups` (each with `InstanceGroupName`, `InstanceType` or `InstanceRequirements`, `InstanceCount`, `MinInstanceCount`, `ExecutionRole`, `LifeCycleConfig`, `InstanceStorageConfigs`, `CapacityRequirements`, `TrainingPlanArn`, `OnStartDeepHealthChecks`, `OverrideVpcConfig`, `SlurmConfig` or `KubernetesConfig`, `ThreadsPerCore`), `RestrictedInstanceGroups`, `Orchestrator` (`Eks` or `Slurm`), `NodeRecovery`, `NodeProvisioningMode`, `AutoScaling` and `VpcConfig`. `InstanceCount` ranges from 0 to 6758, `ThreadsPerCore` is 1 or 2, and a group takes at most 4 storage configurations.**
@@ -362,7 +409,7 @@ Part A is AWS Parallel Computing Service (F10-200 to F10-289). Part B is Amazon 
 - Location: Developer Guide, "Spot instances in Amazon SageMaker HyperPod"; API Reference, ClusterCapacityRequirements
 - Verdict: NEW
 - Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html | Tier 1, first-party docs | documentation of support | "By default, Spot Instances on HyperPod work with HyperPod's [continuous provisioning feature](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-scaling-eks.html), which enables SageMaker HyperPod to automatically provision remaining capacity in the background while workloads start immediately on available instances." and "`CapacityRequirements` cannot be modified once an Instance Group is created." and "Capture up to 90% cost savings compared to On-Demand instances" and "Resources: TestCluster: Type: AWS::SageMaker::Cluster Properties: ClusterName: \"SampleCluster\" InstanceGroups: - InstanceGroupName: group1 InstanceType: ml.c5.2xlarge InstanceCount: 1 LifeCycleConfig: SourceS3Uri: \"s3://'$BUCKET_NAME'\" OnCreate: \"on_create_noop.sh\" ExecutionRole: \"'$EXECUTION_ROLE'\", ThreadsPerCore: 1 CapacityRequirements: Spot: {} VpcConfig: Subnets: - \"'$SUBNET1'\" SecurityGroupIds: - \"'$SECURITY_GROUP'\" Orchestrator: Eks: ClusterArn: '$EKS_CLUSTER_ARN' NodeProvisioningMode: \"Continuous\" NodeRecovery: \"Automatic\"" ; https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterCapacityRequirements.html | Tier 1, first-party docs | definition | "Defines the instance capacity requirements for an instance group, including configurations for both Spot and On-Demand capacity types." (accessed 2026-11-20)
-- Use in dive: section 27, the Spot instance group snippet. The "no Slurm page mentions Spot" clause is a search result over the 60 Slurm-chapter pages downloaded today (U10-8), so the dive should say "documented for EKS orchestration". The CLI examples on the Spot page are printed with a missing closing quote after `CapacityRequirements`; the CloudFormation form is the clean one to show. Sharpens F09-28.
+- Use in dive: section 27, the Spot instance group snippet. The "no Slurm page mentions Spot" clause is a search result over the 61 downloaded HyperPod pages whose file name contains "slurm" (U10-8), so the dive should say "documented for EKS orchestration". The CLI examples on the Spot page are printed with a missing closing quote after `CapacityRequirements`; the CloudFormation form is the clean one to show. Sharpens F09-28.
 
 **F10-310. What HyperPod does on a Spot interruption, in AWS's order: (1) detects the interruption signal; (2) taints the node so no new pod lands on it; (3) evicts the pods gracefully, respecting each pod's `terminationGracePeriodSeconds`; (4) provisions replacement capacity, retrying until it is available (inside the same instance group when there is no autoscaling; through Karpenter's fallback to other instance groups, On-Demand included, when there is); (5) Kubernetes reschedules the evicted pods. The 2-minute notice is best effort: EC2 may terminate without warning, in which case the node is replaced without graceful eviction.**
 - Location: Developer Guide, "Spot instances in Amazon SageMaker HyperPod", "Managing Node Interruption"
@@ -420,11 +467,11 @@ Part A is AWS Parallel Computing Service (F10-200 to F10-289). Part B is Amazon 
 - Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-deep-health-checks.html | Tier 1, first-party docs | definition | "Typical duration: \~45-90 minutes depending on GPU count." and "Typical duration: \~2-5 minutes." and "During deep health checks, affected nodes are placed in a Slurm maintenance reservation to prevent jobs from being scheduled on them." ; https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-config-tips.html | Tier 1, first-party docs | definition | "When the deep health checks are enabled, whenever a new instance is added to the HyperPod cluster (either during create-cluster or through automatic node replacement), the new instance goes through the deep health check process (instance level stress tests) for about a couple of hours." and "**Recommendation**: disable the deep health check config throughout the cluster life cycle. Node auto recovery config is enabled by default." ; https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-deep-health-checks.html | Tier 1, first-party docs | definition | "The `MultiNodeTrainingValidation` deep health check runs the Tiny Megatron and Megatron tests. It runs only on clusters orchestrated by Amazon EKS, on supported EFA-enabled NVIDIA GPU instance types." (accessed 2026-11-20)
 - Use in dive: section 27, the health-check moving part with its duration. Adds the durations F09-23 lacks.
 
-**F10-319. Three training-resilience features sit on EKS orchestration and exclude each other in places. Checkpointless training (training operator v1.2.0 or above, built on NVIDIA NeMo, recipes verified on ml.p5 instances) is incompatible with managed tiered checkpointing and with elastic training. Managed tiered checkpointing writes PyTorch checkpoints to CPU memory on the nodes, replicates them to adjacent nodes and persists them periodically to storage such as Amazon S3. Elastic training (`elasticPolicy` on a `HyperPodPyTorchJob`: `minReplicas`, `maxReplicas`, `gracefulShutdownTimeoutInSeconds: 600`, `scalingTimeoutInSeconds: 60`) grows and shrinks a job by checkpointing and resuming at a new world size. AWS reports over 80% less downtime for checkpointless training in internal studies on 16 to over 2,000 GPUs `[vendor claim]`.**
+**F10-319. Three training-resilience features sit on EKS orchestration and exclude each other in places. Checkpointless training (training operator v1.2.0 or above, built on NVIDIA NeMo, recipes verified on ml.p5 instances) is incompatible with managed tiered checkpointing and with elastic training. Elastic training in turn does not support Spot Instances. Managed tiered checkpointing writes PyTorch checkpoints to CPU memory on the nodes, replicates them to adjacent nodes and persists them periodically to storage such as Amazon S3. Elastic training (`elasticPolicy` on a `HyperPodPyTorchJob`: `minReplicas`, `maxReplicas`, `gracefulShutdownTimeoutInSeconds: 600`, `scalingTimeoutInSeconds: 60`) grows and shrinks a job by checkpointing and resuming at a new world size. AWS reports over 80% less downtime for checkpointless training in internal studies on 16 to over 2,000 GPUs `[vendor claim]`.**
 - Location: Developer Guide, "Checkpointless training in Amazon SageMaker HyperPod"; "Special considerations"; "HyperPod managed tiered checkpointing"; "Elastic training"; AWS News Blog 3 December 2025
 - Verdict: NEW
-- Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless-considerations.html | Tier 1, first-party docs | documentation of a limit | "HyperPod managed tiered checkpointing and elastic training: note that HyperPod checkpointless training is currently incompatible with HyperPod managed tiered checkpointing and elastic training." and "These recipes have been verified on ml.p5 instances." ; https://docs.aws.amazon.com/sagemaker/latest/dg/managed-tier-checkpointing.html | Tier 1, first-party docs | definition | "When you save a checkpoint, the system stores it in allocated memory space across your cluster nodes. It automatically replicates data across adjacent compute nodes for enhanced reliability." ; https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-elastic-training.html | Tier 1, first-party docs | definition | "apiVersion: sagemaker.amazonaws.com/v1 kind: HyperPodPyTorchJob metadata: name: elastic-training-job spec: elasticPolicy: minReplicas: 1 maxReplicas: 4 # Increment amount of pods in fixed-size groups # Amount of pods will be equal to minReplicas + N * replicaIncrementStep replicaIncrementStep: 1 # ... or Provide an exact amount of pods that required for training replicaDiscreteValues: [2,4,8] # How long traing operator wait job to save checkpoint and exit during # scaling events. Job will be force-stopped after this period of time gracefulShutdownTimeoutInSeconds: 600 # When scaling event is detected: # how long job controller waits before initiate scale-up. # Some delay can prevent from frequent scale-ups and scale-downs scalingTimeoutInSeconds: 60 # In case of faults, specify how long elastic training should wait for # recovery, before triggering a scale-down faultyScaleDownTimeoutInSeconds: 30 ... replicaSpecs: - name: pods replicas: 4 # Initial replica count maxReplicas: 8 # Max for this replica spec (should match elasticPolicy.maxReplicas) ..." ; https://aws.amazon.com/blogs/aws/introducing-checkpointless-and-elastic-training-on-amazon-sagemaker-hyperpod/ | Tier 2, launch announcement | benchmark claim (vendor reported) | "Additionally, based on internal studies on cluster sizes ranging between 16 GPUs to over 2,000 GPUs, checkpointless training showcased significant improvements in recovery times, reducing downtime by over 80% compared to traditional checkpoint-based recovery." (accessed 2026-11-20)
-- Use in dive: section 27, one paragraph and the elastic snippet. For the arm these matter only at workload 15; a single-node ACT or SmolVLA fine-tune needs an ordinary checkpoint and auto-resume `[our reading]`. Confirms F09-30 to F09-32.
+- Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless-considerations.html | Tier 1, first-party docs | documentation of a limit | "HyperPod managed tiered checkpointing and elastic training: note that HyperPod checkpointless training is currently incompatible with HyperPod managed tiered checkpointing and elastic training." and "These recipes have been verified on ml.p5 instances." ; https://docs.aws.amazon.com/sagemaker/latest/dg/managed-tier-checkpointing.html | Tier 1, first-party docs | definition | "When you save a checkpoint, the system stores it in allocated memory space across your cluster nodes. It automatically replicates data across adjacent compute nodes for enhanced reliability." ; https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-elastic-training.html | Tier 1, first-party docs | definition | "apiVersion: sagemaker.amazonaws.com/v1 kind: HyperPodPyTorchJob metadata: name: elastic-training-job spec: elasticPolicy: minReplicas: 1 maxReplicas: 4 # Increment amount of pods in fixed-size groups # Amount of pods will be equal to minReplicas + N * replicaIncrementStep replicaIncrementStep: 1 # ... or Provide an exact amount of pods that required for training replicaDiscreteValues: [2,4,8] # How long traing operator wait job to save checkpoint and exit during # scaling events. Job will be force-stopped after this period of time gracefulShutdownTimeoutInSeconds: 600 # When scaling event is detected: # how long job controller waits before initiate scale-up. # Some delay can prevent from frequent scale-ups and scale-downs scalingTimeoutInSeconds: 60 # In case of faults, specify how long elastic training should wait for # recovery, before triggering a scale-down faultyScaleDownTimeoutInSeconds: 30 ... replicaSpecs: - name: pods replicas: 4 # Initial replica count maxReplicas: 8 # Max for this replica spec (should match elasticPolicy.maxReplicas) ..." and "Elastic training does not currently support checkpointless training capabilities, HyperPod managed tiered checkpointing, or Spot instances." ; https://aws.amazon.com/blogs/aws/introducing-checkpointless-and-elastic-training-on-amazon-sagemaker-hyperpod/ | Tier 2, launch announcement | benchmark claim (vendor reported) | "Additionally, based on internal studies on cluster sizes ranging between 16 GPUs to over 2,000 GPUs, checkpointless training showcased significant improvements in recovery times, reducing downtime by over 80% compared to traditional checkpoint-based recovery." (accessed 2026-11-20)
+- Use in dive: section 27, one paragraph and the elastic snippet. For the arm these matter only at workload 15; a single-node ACT or SmolVLA fine-tune needs an ordinary checkpoint and auto-resume `[our reading]`. Confirms F09-30 to F09-32, including the Spot exclusion of elastic training.
 
 ### B4. HyperPod: task governance (Kueue)
 
@@ -519,4 +566,1681 @@ Part A is AWS Parallel Computing Service (F10-200 to F10-289). Part B is Amazon 
 - Verdict: NEW
 - Evidence: F10-309, F10-312, F10-313, F10-318, F10-319, F10-323, F10-324, F10-325 | synthesis
 - Use in dive: section 27, "what it does poorly", and the hand-offs in section 9 of this file.
+
+## 5. Configuration blocks
+
+Every block below is verbatim from the page named above it, as fetched on 2026-11-20 in its markdown form. The same text is quoted, joined to one line, in the Evidence line of the entry it belongs to. `{{...}}`, `<...>` and upper-case names are the pages' own placeholders. Nothing was added, removed or reordered.
+
+Block for F10-201: (verbatim from https://docs.aws.amazon.com/pcs/latest/APIReference/API_CreateCluster.html)
+
+```
+{
+   "clientToken": "{{string}}",
+   "clusterName": "{{string}}",
+   "networking": { 
+      "networkType": "{{string}}",
+      "securityGroupIds": [ "{{string}}" ],
+      "subnetIds": [ "{{string}}" ]
+   },
+   "scheduler": { 
+      "type": "{{string}}",
+      "version": "{{string}}"
+   },
+   "size": "{{string}}",
+   "slurmConfiguration": { 
+      "accounting": { 
+         "defaultPurgeTimeInDays": {{number}},
+         "mode": "{{string}}"
+      },
+      "cgroupCustomSettings": [ 
+         { 
+            "parameterName": "{{string}}",
+            "parameterValue": "{{string}}"
+         }
+      ],
+      "jobSubmitPlugins": [ 
+         { 
+            "name": "{{string}}",
+            "scriptSource": { 
+               "checksum": "{{string}}",
+               "s3VersionId": "{{string}}",
+               "scriptLocation": "{{string}}"
+            },
+            "type": "{{string}}"
+         }
+      ],
+      "scaleDownIdleTimeInSeconds": {{number}},
+      "slurmCustomSettings": [ 
+         { 
+            "parameterName": "{{string}}",
+            "parameterValue": "{{string}}"
+         }
+      ],
+      "slurmdbdCustomSettings": [ 
+         { 
+            "parameterName": "{{string}}",
+            "parameterValue": "{{string}}"
+         }
+      ],
+      "slurmRest": { 
+         "mode": "{{string}}"
+      }
+   },
+   "tags": { 
+      "{{string}}" : "{{string}}" 
+   }
+}
+```
+
+Block for F10-206: (verbatim from https://docs.aws.amazon.com/pcs/latest/APIReference/API_CreateComputeNodeGroup.html)
+
+```
+{
+   "amiId": "{{string}}",
+   "clientToken": "{{string}}",
+   "clusterIdentifier": "{{string}}",
+   "computeNodeGroupName": "{{string}}",
+   "customLaunchTemplate": { 
+      "id": "{{string}}",
+      "version": "{{string}}"
+   },
+   "iamInstanceProfileArn": "{{string}}",
+   "instanceConfigs": [ 
+      { 
+         "instanceType": "{{string}}"
+      }
+   ],
+   "launchTemplateMode": "{{string}}",
+   "nodeLifecycleActions": { 
+      "scriptCachingPolicy": "{{string}}",
+      "stages": { 
+         "nodeBootstrapped": [ 
+            { 
+               "arguments": [ "{{string}}" ],
+               "executionPolicy": "{{string}}",
+               "name": "{{string}}",
+               "onError": "{{string}}",
+               "scriptSource": { 
+                  "checksum": "{{string}}",
+                  "s3VersionId": "{{string}}",
+                  "scriptLocation": "{{string}}"
+               }
+            }
+         ],
+         "nodeReady": [ 
+            { 
+               "arguments": [ "{{string}}" ],
+               "executionPolicy": "{{string}}",
+               "name": "{{string}}",
+               "onError": "{{string}}",
+               "scriptSource": { 
+                  "checksum": "{{string}}",
+                  "s3VersionId": "{{string}}",
+                  "scriptLocation": "{{string}}"
+               }
+            }
+         ]
+      }
+   },
+   "purchaseOption": "{{string}}",
+   "scalingConfiguration": { 
+      "maxInstanceCount": {{number}},
+      "minInstanceCount": {{number}}
+   },
+   "securityGroupIds": [ "{{string}}" ],
+   "slurmConfiguration": { 
+      "gresCustomSettings": [ 
+         { 
+            "{{string}}" : "{{string}}" 
+         }
+      ],
+      "scaleDownIdleTimeInSeconds": {{number}},
+      "slurmCustomSettings": [ 
+         { 
+            "parameterName": "{{string}}",
+            "parameterValue": "{{string}}"
+         }
+      ]
+   },
+   "spotOptions": { 
+      "allocationStrategy": "{{string}}"
+   },
+   "sshKeyName": "{{string}}",
+   "subnetIds": [ "{{string}}" ],
+   "tags": { 
+      "{{string}}" : "{{string}}" 
+   }
+}
+```
+
+Block for F10-210: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/working-with_cng_create.html)
+
+```
+aws pcs create-compute-node-group --region {{region}} \
+    --cluster-identifier {{my-cluster}} \
+    --compute-node-group-name {{my-node-group}} \
+    --launch-template-mode MANAGED \
+    --ami-id {{ami-ExampleID1}} \
+    --subnet-ids {{subnet-ExampleID1}} \
+    --security-group-ids {{sg-ExampleID1}} \
+    --ssh-key-name {{my-key-pair}} \
+    --iam-instance-profile-arn {{arn:InstanceProfile}} \
+    --scaling-configuration minInstanceCount={{min-instances}},maxInstanceCount={{max-instances}} \
+    --instance-configs instanceType={{t3.large}}
+```
+
+Block for F10-210: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/working-with_cng_create.html)
+
+```
+aws pcs create-compute-node-group --region {{region}} \
+    --cluster-identifier {{my-cluster}} \
+    --compute-node-group-name {{my-node-group}} \
+    --subnet-ids {{subnet-ExampleID1}} \
+    --custom-launch-template id={{lt-ExampleID1}},version='{{launch-template-version}}' \
+    --iam-instance-profile-arn {{arn:InstanceProfile}} \
+    --scaling-configuration minInstanceCount={{min-instances}},maxInstanceCount={{max-instances}} \
+    --instance-configs instanceType={{t3.large}}
+```
+
+Block for F10-214: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/cng-node-lifecycle-actions-examples.html)
+
+```
+aws pcs create-compute-node-group --region {{region}} \
+  --cluster-identifier {{my-cluster}} \
+  --compute-node-group-name {{my-cng}} \
+  --subnet-ids {{subnet-ExampleID1}} \
+  --custom-launch-template id={{lt-ExampleID1}},version='{{1}}' \
+  --iam-instance-profile-arn {{arn:InstanceProfile}} \
+  --scaling-configuration minInstanceCount={{0}},maxInstanceCount={{10}} \
+  --instance-configs instanceType={{t3.large}} \
+  --node-lifecycle-actions '{
+    "stages": {
+      "nodeBootstrapped": [
+        { "name": "Mount FSx Lustre", "scriptSource": { "scriptLocation": "s3://{{my-bucket}}/mount-fsx.sh" }, "arguments": ["fs-{{0abc123}}", "/scratch"], "executionPolicy": "EVERY_BOOT" },
+        { "name": "Join Active Directory", "scriptSource": { "scriptLocation": "s3://{{my-bucket}}/configure-ad.sh" }, "arguments": ["ad.example.com", "EXAMPLE"], "executionPolicy": "FIRST_BOOT_ONLY" }
+      ],
+      "nodeReady": [
+        { "name": "Configure CloudWatch logging", "scriptSource": { "scriptLocation": "s3://{{my-bucket}}/setup-cloudwatch.sh" }, "arguments": ["/aws/pcs/{{my-cluster}}"], "onError": "CONTINUE" }
+      ]
+    }
+  }'
+```
+
+Block for F10-215: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/working-with_queues_create.html)
+
+```
+aws pcs create-queue --region {{region-code}} \
+    --queue-name {{my-queue}} \
+    --cluster-identifier {{my-cluster}} \
+    --compute-node-group-configurations \
+    computeNodeGroupId={{compute-node-group-id}} \
+    --slurm-configuration \
+    'slurmCustomSettings=[{parameterName=Default,parameterValue=YES}]'
+```
+
+Block for F10-215: (verbatim from https://docs.aws.amazon.com/pcs/latest/APIReference/API_CreateQueue.html)
+
+```
+{
+   "clientToken": "{{string}}",
+   "clusterIdentifier": "{{string}}",
+   "computeNodeGroupConfigurations": [ 
+      { 
+         "computeNodeGroupId": "{{string}}"
+      }
+   ],
+   "queueName": "{{string}}",
+   "slurmConfiguration": { 
+      "slurmCustomSettings": [ 
+         { 
+            "parameterName": "{{string}}",
+            "parameterValue": "{{string}}"
+         }
+      ]
+   },
+   "tags": { 
+      "{{string}}" : "{{string}}" 
+   }
+}
+```
+
+Block for F10-218: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/working-with_clusters_create.html)
+
+```
+aws pcs create-cluster --region {{region}} \
+    --cluster-name {{my-cluster}} \
+    --scheduler type=SLURM,version={{25.11}} \
+    --size {{SMALL}} \
+    --networking subnetIds={{subnet-ExampleId1}},securityGroupIds={{sg-ExampleId1}}
+    --slurm-configuration scaleDownIdleTimeInSeconds=3600,accounting='{mode=STANDARD}',slurmCustomSettings='[{parameterName=SelectTypeParameters,parameterValue=CR_CPU_Memory}]'
+```
+
+Block for F10-218: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/working-with_cng_create.html)
+
+```
+aws pcs create-compute-node-group --region {{region}} \
+    --cluster-identifier {{my-cluster}} \
+    --compute-node-group-name {{my-gpu-nodes}} \
+    --launch-template-mode MANAGED \
+    --ami-id {{ami-ExampleID1}} \
+    --subnet-ids {{subnet-ExampleID1}} \
+    --security-group-ids {{sg-ExampleID1}} \
+    --iam-instance-profile-arn {{arn:InstanceProfile}} \
+    --scaling-configuration minInstanceCount={{0}},maxInstanceCount={{10}} \
+    --instance-configs instanceType={{p4d.24xlarge}} \
+    --slurm-configuration scaleDownIdleTimeInSeconds={{300}}
+```
+
+Block for F10-219: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/monitoring_scaling-logs.html)
+
+```
+{
+    "resource_id": "pcs_abc123de45",
+    "resource_type": "PCS_CLUSTER",
+    "event_timestamp": 1789179816460,
+    "compute_node_group_id": "pcs_abcdef01",
+    "scheduler_node_id": "compute-1",
+    "status_code": "LAUNCHED",
+    "reason_code": "SCHEDULER_REQUESTED",
+    "description": "Instance launched to satisfy a scheduler scale-up request.",
+    "details": {
+        "instance_id": "i-0abc12345def67890",
+        "instance_type": "c6i.xlarge",
+        "subnet_id": "subnet-0123456789abcdef0"
+    }
+}
+```
+
+Block for F10-223: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/mig-configuration.html)
+
+```
+if [ -z "${CUDA_VISIBLE_DEVICES-}" ]; then
+    scontrol requeue "$SLURM_JOB_ID"
+    exit 1
+fi
+```
+
+Block for F10-228: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/getting-started_run-job.html)
+
+```
+cat << EOF > job.sh
+#!/bin/bash
+#SBATCH -J single
+#SBATCH -o single.%j.out
+#SBATCH -e single.%j.err
+
+echo "This is job \${SLURM_JOB_NAME} [\${SLURM_JOB_ID}] running on \${SLURMD_NODENAME}, submitted from \${SLURM_SUBMIT_HOST}" && sleep 60 && echo "Job complete"
+EOF
+```
+
+Block for F10-228: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/getting-started_run-mpi-job.html)
+
+```
+cat > hello.sh << EOF
+#!/bin/bash
+#SBATCH -J multi
+#SBATCH -o multi.out
+#SBATCH -e multi.err
+#SBATCH --exclusive
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=1
+
+srun $HOME/hello
+EOF
+```
+
+Block for F10-231: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/working-with_file-systems.html)
+
+```
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+--==MYBOUNDARY==
+Content-Type: text/cloud-config; charset="us-ascii"
+
+runcmd:
+- amazon-linux-extras install -y lustre={{latest}}
+- mkdir -p /{{mount-point-directory}}
+- mount -t lustre {{filesystem-id}}.fsx.{{region-code}}.amazonaws.com@tcp:/{{mount-name}} /{{mount-point-directory}}
+
+--==MYBOUNDARY==--
+```
+
+Block for F10-231: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/working-with_file-systems.html)
+
+```
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+--==MYBOUNDARY==
+Content-Type: text/cloud-config; charset="us-ascii"
+
+packages:
+  - amazon-efs-utils
+
+runcmd:
+  - mkdir -p /{{mount-point-directory}}
+  - echo "{{filesystem-id}}:/ /{{mount-point-directory}} efs tls,_netdev" >> /etc/fstab
+  - mount -a -t efs defaults
+
+--==MYBOUNDARY==--
+```
+
+Block for F10-231: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/working-with_file-systems.html)
+
+```
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+--==MYBOUNDARY==
+Content-Type: text/cloud-config; charset="us-ascii"
+
+runcmd:
+- mkdir -p /{{mount-point-directory}}
+- mount -t nfs -o noatime,nfsvers=4.2,sync,rsize=1048576,wsize=1048576 {{filesystem-id}}.fsx.{{region-code}}.amazonaws.com:/fsx/ /{{mount-point-directory}}
+
+--==MYBOUNDARY==--
+```
+
+Block for F10-233: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/working-with_networking_efa_create-lt.html)
+
+```
+{
+    "Placement": {
+        "GroupId": "pg-{{PlacementGroupId1}}"
+    },
+    "NetworkInterfaces": [
+        {
+            "DeviceIndex": 0,
+            "InterfaceType": "efa",
+            "NetworkCardIndex": 0,
+            "SubnetId": "subnet-{{SubnetId1}}",
+            "Groups": [
+                "sg-{{SecurityGroupId1}}",
+                "sg-{{EfaSecGroupId}}"
+            ]
+        },
+        {
+            "DeviceIndex": 1,
+            "InterfaceType": "efa",
+            "NetworkCardIndex": 1,
+            "SubnetId": "subnet-{{SubnetId1}}"
+            "Groups": ["sg-{{EfaSecGroupId}}"]
+        }
+    ]
+}
+```
+
+Block for F10-234: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks-faq.html)
+
+```
+$ sinfo  
+PARTITION AVAIL TIMELIMIT NODES STATE NODELIST  
+fanout up infinite 4 idle node-fanout-[1-4]
+```
+
+Block for F10-235: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/capacity-reservations-odcr.html)
+
+```
+{
+  "CapacityReservationSpecification": {
+    "CapacityReservationResourceGroupArn": "arn:aws:resource-groups:us-east-2:123456789012:group/EXAMPLE-CR-GROUP"
+  }
+}
+```
+
+Block for F10-235: (verbatim from https://docs.aws.amazon.com/pcs/latest/userguide/capacity-reservations-iodcr.html)
+
+```
+{
+  "CapacityReservationSpecification": {
+    "CapacityReservationTarget": {
+      "CapacityReservationId": "cr-1234567890abcdef1"
+    }
+  },
+  "InstanceMarketOptions": {
+    "MarketType": "interruptible-capacity-reservation"
+  }
+}
+```
+
+Block for F10-300: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-cli-command-create-cluster.html)
+
+```
+// create_cluster.json
+{
+    "ClusterName": {{"string"}},
+    "InstanceGroups": [{
+        "InstanceGroupName": {{"string"}},
+        "InstanceType": {{"string"}},
+        "InstanceCount": {{number}},
+        "LifeCycleConfig": {
+            "SourceS3Uri": {{"s3://amzn-s3-demo-bucket-sagemaker/lifecycle-script-directory/src/"}},
+            "OnCreate": {{"on_create.sh"}}
+        },
+        "ExecutionRole": {{"string"}},
+        "ThreadsPerCore": {{number}},
+        "OnStartDeepHealthChecks": [
+            {{"InstanceStress", "InstanceConnectivity"}}
+        ]
+    }],
+    "RestrictedInstanceGroups": [ 
+      { 
+         "EnvironmentConfig": { 
+            "FSxLustreConfig": { 
+               "PerUnitStorageThroughput": {{number}},
+               "SizeInGiB": {{number}}
+            }
+         },
+         "ExecutionRole": {{"string"}},
+         "InstanceCount": {{number}},
+         "InstanceGroupName": {{"string"}},
+         "InstanceStorageConfigs": [ 
+            { ... }
+         ],
+         "InstanceType": {{"string"}},
+         "OnStartDeepHealthChecks": [ {{"string"}} ],
+         "OverrideVpcConfig": { 
+            "SecurityGroupIds": [ {{"string"}} ],
+            "Subnets": [ {{"string"}} ]
+         },
+         "ScheduledUpdateConfig": { 
+            "DeploymentConfig": { 
+               "AutoRollbackConfiguration": [ 
+                  { 
+                     "AlarmName": {{"string"}}
+                  }
+               ],
+               "RollingUpdatePolicy": { 
+                  "MaximumBatchSize": { 
+                     "Type": {{"string"}},
+                     "Value": {{number}}
+                  },
+                  "RollbackMaximumBatchSize": { 
+                     "Type": {{"string"}},
+                     "Value": {{number}}
+                  }
+               },
+               "WaitIntervalInSeconds": {{number}}
+            },
+            "ScheduleExpression": {{"string"}}
+         },
+         "ThreadsPerCore": {{number}},
+         "TrainingPlanArn": {{"string"}}
+      }
+   ],
+    "VpcConfig": {
+        "SecurityGroupIds": [{{"string"}}],
+        "Subnets": [{{"string"}}]
+    },
+    "Tags": [{
+        "Key": {{"string"}},
+        "Value": {{"string"}}
+    }],
+    "Orchestrator": {
+        "Eks": {
+            "ClusterArn": {{"string"}},
+            "KubernetesConfig": {
+                "Labels": {
+                    {{"nvidia.com/mig.config": "all-3g.40gb"}}
+                }
+            }
+        }
+    },
+    "NodeRecovery": "Automatic"
+}
+```
+
+Block for F10-301: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateCluster.html)
+
+```
+{
+   "AutoScaling": { 
+      "AutoScalerType": "{{string}}",
+      "Mode": "{{string}}"
+   },
+   "ClusterName": "{{string}}",
+   "ClusterRole": "{{string}}",
+   "InstanceGroups": [ 
+      { 
+         "AutoPatchConfig": { 
+            "DeploymentConfig": { 
+               "AutoRollbackConfiguration": [ 
+                  { 
+                     "AlarmName": "{{string}}"
+                  }
+               ],
+               "RollingUpdatePolicy": { 
+                  "MaximumBatchSize": { 
+                     "Type": "{{string}}",
+                     "Value": {{number}}
+                  },
+                  "RollbackMaximumBatchSize": { 
+                     "Type": "{{string}}",
+                     "Value": {{number}}
+                  }
+               },
+               "WaitIntervalInSeconds": {{number}}
+            },
+            "DrainPolicy": { 
+               "DrainTimeoutInSeconds": {{number}},
+               "OnDrainTimeout": "{{string}}"
+            },
+            "IdleWaitWindowInSeconds": {{number}},
+            "PatchingStrategy": "{{string}}",
+            "PatchSchedule": { 
+               "NextPatchDate": {{number}}
+            }
+         },
+         "CapacityRequirements": { 
+            "OnDemand": { 
+            },
+            "Spot": { 
+            }
+         },
+         "ExecutionRole": "{{string}}",
+         "ImageId": "{{string}}",
+         "ImageReleaseVersion": "{{string}}",
+         "InstanceCount": {{number}},
+         "InstanceGroupName": "{{string}}",
+         "InstanceRequirements": { 
+            "InstanceTypes": [ "{{string}}" ]
+         },
+         "InstanceStorageConfigs": [ 
+            { ... }
+         ],
+         "InstanceType": "{{string}}",
+         "KubernetesConfig": { 
+            "Labels": { 
+               "{{string}}" : "{{string}}" 
+            },
+            "Taints": [ 
+               { 
+                  "Effect": "{{string}}",
+                  "Key": "{{string}}",
+                  "Value": "{{string}}"
+               }
+            ]
+         },
+         "LifeCycleConfig": { 
+            "OnCreate": "{{string}}",
+            "OnInitComplete": "{{string}}",
+            "SourceS3Uri": "{{string}}"
+         },
+         "MinInstanceCount": {{number}},
+         "NetworkInterface": { 
+            "InterfaceType": "{{string}}"
+         },
+         "OnStartDeepHealthChecks": [ "{{string}}" ],
+         "OverrideVpcConfig": { 
+            "SecurityGroupIds": [ "{{string}}" ],
+            "Subnets": [ "{{string}}" ]
+         },
+         "ScheduledUpdateConfig": { 
+            "DeploymentConfig": { 
+               "AutoRollbackConfiguration": [ 
+                  { 
+                     "AlarmName": "{{string}}"
+                  }
+               ],
+               "RollingUpdatePolicy": { 
+                  "MaximumBatchSize": { 
+                     "Type": "{{string}}",
+                     "Value": {{number}}
+                  },
+                  "RollbackMaximumBatchSize": { 
+                     "Type": "{{string}}",
+                     "Value": {{number}}
+                  }
+               },
+               "WaitIntervalInSeconds": {{number}}
+            },
+            "ScheduleExpression": "{{string}}"
+         },
+         "SlurmConfig": { 
+            "NodeType": "{{string}}",
+            "PartitionNames": [ "{{string}}" ]
+         },
+         "ThreadsPerCore": {{number}},
+         "TrainingPlanArn": "{{string}}"
+      }
+   ],
+   "NodeProvisioningMode": "{{string}}",
+   "NodeRecovery": "{{string}}",
+   "Orchestrator": { 
+      "Eks": { 
+         "ClusterArn": "{{string}}"
+      },
+      "Slurm": { 
+         "AccountingDatabase": { 
+            "Endpoint": "{{string}}",
+            "Name": "{{string}}",
+            "Port": {{number}},
+            "SecretArn": "{{string}}"
+         },
+         "SlurmConfigStrategy": "{{string}}"
+      }
+   },
+   "RestrictedInstanceGroups": [ 
+      { 
+         "EnvironmentConfig": { 
+            "FSxLustreConfig": { 
+               "PerUnitStorageThroughput": {{number}},
+               "SizeInGiB": {{number}}
+            }
+         },
+         "ExecutionRole": "{{string}}",
+         "InstanceCount": {{number}},
+         "InstanceGroupName": "{{string}}",
+         "InstanceStorageConfigs": [ 
+            { ... }
+         ],
+         "InstanceType": "{{string}}",
+         "OnStartDeepHealthChecks": [ "{{string}}" ],
+         "OverrideVpcConfig": { 
+            "SecurityGroupIds": [ "{{string}}" ],
+            "Subnets": [ "{{string}}" ]
+         },
+         "ScheduledUpdateConfig": { 
+            "DeploymentConfig": { 
+               "AutoRollbackConfiguration": [ 
+                  { 
+                     "AlarmName": "{{string}}"
+                  }
+               ],
+               "RollingUpdatePolicy": { 
+                  "MaximumBatchSize": { 
+                     "Type": "{{string}}",
+                     "Value": {{number}}
+                  },
+                  "RollbackMaximumBatchSize": { 
+                     "Type": "{{string}}",
+                     "Value": {{number}}
+                  }
+               },
+               "WaitIntervalInSeconds": {{number}}
+            },
+            "ScheduleExpression": "{{string}}"
+         },
+         "ThreadsPerCore": {{number}},
+         "TrainingPlanArn": "{{string}}"
+      }
+   ],
+   "RestrictedInstanceGroupsConfig": { 
+      "SharedEnvironmentConfig": { 
+         "FSxLustreConfig": { 
+            "PerUnitStorageThroughput": {{number}},
+            "SizeInGiB": {{number}}
+         },
+         "FSxLustreDeletionPolicy": "{{string}}"
+      }
+   },
+   "Tags": [ 
+      { 
+         "Key": "{{string}}",
+         "Value": "{{string}}"
+      }
+   ],
+   "TieredStorageConfig": { 
+      "InstanceMemoryAllocationPercentage": {{number}},
+      "Mode": "{{string}}"
+   },
+   "VpcConfig": { 
+      "SecurityGroupIds": [ "{{string}}" ],
+      "Subnets": [ "{{string}}" ]
+   }
+}
+```
+
+Block for F10-302: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/smcluster-getting-started-slurm-cli.html)
+
+```
+{
+    "ClusterName": "my-hyperpod-cluster",
+    "InstanceGroups": [
+        {
+            "InstanceGroupName": "my-controller-group",
+            "InstanceType": "ml.c5.xlarge",
+            "InstanceCount": 1,
+            "SlurmConfig": {
+                "NodeType": "Controller"
+            },
+            "ExecutionRole": "arn:aws:iam::{{111122223333}}:role/HyperPodExecutionRole",
+            "InstanceStorageConfigs": [
+                {
+                    "EbsVolumeConfig": {
+                        "VolumeSizeInGB": 500
+                    }
+                }
+            ]
+        },
+        {
+            "InstanceGroupName": "my-login-group",
+            "InstanceType": "ml.m5.4xlarge",
+            "InstanceCount": 1,
+            "SlurmConfig": {
+                "NodeType": "Login"
+            },
+            "ExecutionRole": "arn:aws:iam::{{111122223333}}:role/HyperPodExecutionRole"
+        },
+        {
+            "InstanceGroupName": "worker-group-1",
+            "InstanceType": "ml.trn1.32xlarge",
+            "InstanceCount": 1,
+            "SlurmConfig": {
+                "NodeType": "Compute",
+                "PartitionNames": ["partition-1"]
+            },
+            "ExecutionRole": "arn:aws:iam::{{111122223333}}:role/HyperPodExecutionRole",
+            "InstanceStorageConfigs": [
+                {
+                    "FsxLustreConfig": {
+                        "DnsName": "{{fs-0abc123def456789.fsx.us-west-2.amazonaws.com}}",
+                        "MountPath": "/fsx",
+                        "MountName": "{{abcdefgh}}"
+                    }
+                }
+            ]
+        }
+    ],
+    "Orchestrator": {
+        "Slurm": {
+            "SlurmConfigStrategy": "Managed"
+        }
+    },
+    "VpcConfig": {
+        "SecurityGroupIds": ["{{sg-0abc123def456789a}}"],
+        "Subnets": ["{{subnet-0abc123def456789a}}"]
+    }
+}
+```
+
+Block for F10-302: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-ref.html)
+
+```
+// Save as provisioning_parameters.json.
+{
+    "version": "1.0.0",
+    "workload_manager": "slurm",
+    "controller_group": "{{string}}",
+    "login_group": "{{string}}",
+    "worker_groups": [
+        {
+            "instance_group_name": "{{string}}",
+            "partition_name": "{{string}}"
+        }
+    ],
+    "fsx_dns_name": "{{string}}",
+    "fsx_mountname": "{{string}}"
+}
+```
+
+Block for F10-308: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-scaling-eks.html)
+
+```
+aws sagemaker create-cluster \
+--cluster-name $HP_CLUSTER_NAME \
+--orchestrator 'Eks={ClusterArn='$EKS_CLUSTER_ARN'}' \
+--vpc-config '{
+   "SecurityGroupIds": ["'$SECURITY_GROUP'"],
+   "Subnets": ["'$SUBNET_AZ1'", "'$SUBNET_AZ2'"]
+}' \
+--instance-groups '[{
+   "InstanceGroupName": "flexible-ig",
+   "InstanceRequirements": {
+      "InstanceTypes": ["ml.p5.48xlarge", "ml.p4d.24xlarge", "ml.g6.48xlarge"]
+   },
+   "InstanceCount": 10,
+   "LifeCycleConfig": {
+      "SourceS3Uri": "s3://'$BUCKET_NAME'",
+      "OnCreate": "on_create.sh"
+   },
+   "ExecutionRole": "'$EXECUTION_ROLE'"
+}]' \
+--node-provisioning-mode Continuous
+```
+
+Block for F10-309: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html)
+
+```
+Resources:
+  TestCluster:
+    Type: AWS::SageMaker::Cluster
+    Properties:
+      ClusterName: "SampleCluster"
+      InstanceGroups:
+        - InstanceGroupName: group1
+          InstanceType: ml.c5.2xlarge
+          InstanceCount: 1
+          LifeCycleConfig:
+            SourceS3Uri: "s3://'$BUCKET_NAME'"
+            OnCreate: "on_create_noop.sh"
+          ExecutionRole: "'$EXECUTION_ROLE'",
+          ThreadsPerCore: 1
+          CapacityRequirements:
+            Spot: {}
+      VpcConfig:
+        Subnets:
+          - "'$SUBNET1'"
+        SecurityGroupIds:
+          - "'$SECURITY_GROUP'"
+      Orchestrator:
+        Eks:
+          ClusterArn:
+            '$EKS_CLUSTER_ARN'
+      NodeProvisioningMode: "Continuous"
+      NodeRecovery: "Automatic"
+```
+
+Block for F10-311: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html)
+
+```
+apiVersion: karpenter.sagemaker.amazonaws.com/v1
+kind: HyperpodNodeClass
+metadata:
+  name: multiazg6
+spec:
+  instanceGroups:
+    # name of InstanceGroup in HyperPod cluster. InstanceGroup needs to pre-created
+    # before this step can be completed.
+    # MaxItems: 10
+    - auto-spot-c5-2x-az1
+    - auto-spot-c5-2x-az2
+    - auto-spot-c5-x-az3
+    - auto-ondemand-c5-2x-az1
+```
+
+Block for F10-311: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html)
+
+```
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+ name: gpunodepool
+spec:
+ template:
+   spec:
+     nodeClassRef:
+      group: karpenter.sagemaker.amazonaws.com
+      kind: HyperpodNodeClass
+      name: multiazg6
+     expireAfter: Never
+     requirements:
+        - key: node.kubernetes.io/instance-type
+          operator: Exists
+        - key: "node.kubernetes.io/instance-type" // Optional otherwise Karpenter will decide based on Job config resource requirements
+          operator: In
+          values: ["ml.c5.2xlarge"]
+        - key: "topology.kubernetes.io/zone"
+          operator: In
+          values: ["us-west-2a"]
+```
+
+Block for F10-311: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html)
+
+```
+aws sagemaker create-cluster \
+    --cluster-name clusterNameHere \
+    --orchestrator 'Eks={ClusterArn='$EKS_CLUSTER_ARN'}' \
+    --node-provisioning-mode "Continuous" \
+    --cluster-role 'arn:aws:iam::YOUR-ACCOUNT-ID:role/SageMakerHyperPodRole' \
+    --instance-groups '[{
+        "InstanceGroupName": "auto-spot-c5-2x-az1",
+        "InstanceType": "ml.c5.2xlarge",
+        "InstanceCount": 0, // For Auto scaling keep instance count as 0
+        "CapacityRequirements: { "Spot": {} }
+        "LifeCycleConfig": {
+        "SourceS3Uri": "s3://'$BUCKET_NAME'",
+        "OnCreate": "on_create_noop.sh"
+        },
+        "ExecutionRole": "'$EXECUTION_ROLE'",
+        "ThreadsPerCore": 1,
+        "OverrideVpcConfig": {
+            "SecurityGroupIds": ["'$SECURITY_GROUP'"],
+            "Subnets": ["'$SUBNET1'"]
+         }
+    }]' 
+--vpc-config '{
+    "SecurityGroupIds": ["'$SECURITY_GROUP'"],
+    "Subnets": ["'$SUBNET'"] 
+}'
+--auto-scaling ' {
+    "Mode": "Enable",
+    "AutoScalerType": "Karpenter"
+}'
+```
+
+Block for F10-312: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-autoscaling-nodepool.html)
+
+```
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: <nodepool-name>
+  uid: <resource-uid>
+  ...
+spec:
+  disruption:
+    budgets:
+    - nodes: 90%
+    consolidateAfter: 0s
+    consolidationPolicy: WhenEmptyOrUnderutilized
+  template:
+    spec:
+      expireAfter: 720h
+      nodeClassRef:
+        group: karpenter.sagemaker.amazonaws.com
+        kind: HyperpodNodeClass
+        name: <nodeclass-name>
+      requirements:
+      - key: node.kubernetes.io/instance-type
+        operator: Exists
+status:
+  conditions:
+  - lastTransitionTime: "<timestamp>"
+    message: ""
+    observedGeneration: 2
+    reason: ValidationSucceeded
+    status: "True"
+    type: ValidationSucceeded
+  - lastTransitionTime: "<timestamp>"
+    message: ""
+    observedGeneration: 2
+    reason: NodeClassReady
+    status: "True"
+    type: NodeClassReady
+  - lastTransitionTime: "<timestamp>"
+    message: ""
+    observedGeneration: 2
+    reason: Ready
+    status: "True"
+    type: Ready
+```
+
+Block for F10-315: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-auto-resume.html)
+
+```
+#!/bin/bash
+#SBATCH --nodes 2
+#SBATCH --exclusive
+srun --auto-resume=1 {{train_auto_resume.sh}}
+```
+
+Block for F10-315: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-auto-resume.html)
+
+```
+#!/bin/bash
+
+# Filename: train_auto_resume.sh
+# Sample containerized script to launch a training job with a single srun which can be auto-resumed.
+
+# Place your training environment setup here. 
+# Example: Install conda, docker, activate virtual env, etc.
+
+# Get the list of nodes for a given job
+NODE_LIST=$(scontrol show jobid=$SLURM_JOBID | \ # Show details of the SLURM job
+            awk -F= '/NodeList=/{print $2}' | \  # Extract NodeList field
+            grep -v Exc)                         # Exclude nodes marked as excluded
+
+# Determine the master node from the node list
+MASTER_NODE=$(scontrol show hostname $NODE_LIST | \ # Convert node list to hostnames
+              head -n 1)                            # Select the first hostname as master node
+
+# Get the master node address
+MASTER_ADDR=$(scontrol show node=$MASTER_NODE | \ # Show node information
+              awk -F= '/NodeAddr=/{print $2}' | \ # Extract NodeAddr
+              awk '{print $1}')                   # Print the first part of NodeAddr
+
+
+# Torchrun command to launch the training job
+torchrun_cmd="torchrun --nnodes=$SLURM_NNODES \
+                       --nproc_per_node=1 \
+                       --node_rank=$SLURM_NODE \
+                       --master-addr=$MASTER_ADDR \
+                       --master_port={{1234}} \
+                       {{<your_training_script.py>}}"
+
+# Execute the torchrun command in the 'pytorch' Conda environment, 
+# streaming output live
+/opt/conda/bin/conda run --live-stream -n pytorch $torchrun_cmd
+```
+
+Block for F10-316: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-run-jobs-kubectl.html)
+
+```
+apiVersion: "kubeflow.org/v1"
+kind: PyTorchJob 
+metadata:
+    name: pytorch-simple
+    namespace: kubeflow
+    annotations: { // config for job auto resume
+      sagemaker.amazonaws.com/enable-job-auto-resume: "true"
+      sagemaker.amazonaws.com/job-max-retry-count: "2"
+    }
+spec:
+  pytorchReplicaSpecs:
+  ......
+  Worker:
+      replicas: 10
+      restartPolicy: OnFailure
+      template:
+          spec:
+              nodeSelector:
+                  sagemaker.amazonaws.com/node-health-status: Schedulable
+```
+
+Block for F10-317: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-operator-usage.html)
+
+```
+apiVersion: sagemaker.amazonaws.com/v1
+kind: HyperPodPyTorchJob
+metadata:
+  labels:
+    app.kubernetes.io/name: HyperPod
+    app.kubernetes.io/managed-by: kustomize
+  name: &jobname xxx
+  annotations:
+    XXX: XXX
+    ......
+spec:
+  nprocPerNode: "X"
+  replicaSpecs:
+    - name: 'XXX'
+      replicas: 16
+      template:
+        spec:
+          nodeSelector:
+            beta.kubernetes.io/instance-type: ml.p5.48xlarge
+          containers:
+            - name: XXX
+              image: XXX
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 8080 # This is the port that HyperPodElasticAgent listens to
+              resources:
+                limits:
+                  nvidia.com/gpu: 8
+                  hugepages-2Mi: 5120Mi
+                requests:
+                  nvidia.com/gpu: 8
+                  hugepages-2Mi: 5120Mi
+                  memory: 32000Mi
+          ......        
+  runPolicy:
+    jobMaxRetryCount: 50
+    restartPolicy:
+      numRestartBeforeFullJobRestart: 3 
+      evalPeriodSeconds: 21600 
+      maxFullJobRestarts: 1
+    cleanPodPolicy: "All"
+    logMonitoringConfiguration: 
+      - name: "JobStart"
+        logPattern: ".*Experiment configuration.*" # This is the start of the training script
+        expectedStartCutOffInSeconds: 120 # Expected match in the first 2 minutes
+      - name: "JobHangingDetection"
+        logPattern: ".*\\[Epoch 0 Batch \\d+.*'training_loss_step': (\\d+(\\.\\d+)?).*"
+        expectedRecurringFrequencyInSeconds: 300 # If next batch is not printed within 5 minute, consider it hangs. Or if loss is not decimal (e.g. nan) for 2 minutes, mark it hang as well.
+        expectedStartCutOffInSeconds: 600 # Allow 10 minutes of job startup time
+      - name: "NoS3CheckpointingDetection"
+        logPattern: ".*The checkpoint is finalized. All shards is written.*"
+        expectedRecurringFrequencyInSeconds: 600 # If next checkpoint s3 upload doesn't happen within 10 mins, mark it hang.
+        expectedStartCutOffInSeconds: 1800 # Allow 30 minutes for first checkpoint upload
+      - name: "LowThroughputDetection"
+        logPattern: ".*\\[Epoch 0 Batch \\d+.*'samples\\/sec': (\\d+(\\.\\d+)?).*"
+        metricThreshold: 80 # 80 samples/sec
+        operator: "lteq"
+        metricEvaluationDataPoints: 25 # if throughput lower than threshold for 25 datapoints, kill the job
+```
+
+Block for F10-319: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-elastic-training.html)
+
+```
+apiVersion: sagemaker.amazonaws.com/v1
+kind: HyperPodPyTorchJob
+metadata:
+  name: elastic-training-job
+spec:
+  elasticPolicy:
+    minReplicas: 1
+    maxReplicas: 4
+    # Increment amount of pods in fixed-size groups
+    # Amount of pods will be equal to minReplicas + N * replicaIncrementStep
+    replicaIncrementStep: 1           
+    # ... or Provide an exact amount of pods that required for training
+    replicaDiscreteValues: [2,4,8]     
+
+    # How long traing operator wait job to save checkpoint and exit during
+    # scaling events. Job will be force-stopped after this period of time
+    gracefulShutdownTimeoutInSeconds: 600
+
+    # When scaling event is detected:   
+    # how long job controller waits before initiate scale-up.
+    # Some delay can prevent from frequent scale-ups and scale-downs
+    scalingTimeoutInSeconds: 60
+
+    # In case of faults, specify how long elastic training should wait for
+    # recovery, before triggering a scale-down
+    faultyScaleDownTimeoutInSeconds: 30
+  ...
+  replicaSpecs:
+    - name: pods
+      replicas: 4           # Initial replica count
+      maxReplicas: 8        # Max for this replica spec (should match elasticPolicy.maxReplicas)
+      ...
+```
+
+Block for F10-320: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateClusterSchedulerConfig.html)
+
+```
+{
+   "ClusterArn": "{{string}}",
+   "Description": "{{string}}",
+   "Name": "{{string}}",
+   "SchedulerConfig": { 
+      "FairShare": "{{string}}",
+      "IdleResourceSharing": "{{string}}",
+      "PriorityClasses": [ 
+         { 
+            "Name": "{{string}}",
+            "Weight": {{number}}
+         }
+      ]
+   },
+   "Tags": [ 
+      { 
+         "Key": "{{string}}",
+         "Value": "{{string}}"
+      }
+   ]
+}
+```
+
+Block for F10-320: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateComputeQuota.html)
+
+```
+{
+   "ActivationState": "{{string}}",
+   "ClusterArn": "{{string}}",
+   "ComputeQuotaConfig": { 
+      "ComputeQuotaResources": [ 
+         { 
+            "AcceleratorPartition": { 
+               "Count": {{number}},
+               "Type": "{{string}}"
+            },
+            "Accelerators": {{number}},
+            "Count": {{number}},
+            "InstanceType": "{{string}}",
+            "MemoryInGiB": {{number}},
+            "VCpu": {{number}}
+         }
+      ],
+      "PreemptTeamTasks": "{{string}}",
+      "ResourceSharingConfig": { 
+         "AbsoluteBorrowLimits": [ 
+            { 
+               "AcceleratorPartition": { 
+                  "Count": {{number}},
+                  "Type": "{{string}}"
+               },
+               "Accelerators": {{number}},
+               "Count": {{number}},
+               "InstanceType": "{{string}}",
+               "MemoryInGiB": {{number}},
+               "VCpu": {{number}}
+            }
+         ],
+         "BorrowLimit": {{number}},
+         "Strategy": "{{string}}"
+      }
+   },
+   "ComputeQuotaTarget": { 
+      "FairShareWeight": {{number}},
+      "TeamName": "{{string}}"
+   },
+   "Description": "{{string}}",
+   "Name": "{{string}}",
+   "Tags": [ 
+      { 
+         "Key": "{{string}}",
+         "Value": "{{string}}"
+      }
+   ]
+}
+```
+
+Block for F10-321: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-cli.html)
+
+```
+metadata:
+    name: {{job-name}}
+    namespace: hyperpod-ns-{{team-name}}
+    labels:
+        kueue.x-k8s.io/queue-name: hyperpod-ns-{{team-name}}-localqueue
+        kueue.x-k8s.io/priority-class: {{priority-class-name}}-priority
+```
+
+Block for F10-321: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-cli.html)
+
+```
+hyperpod start-job --job-name hyperpod-cli-test --job-kind kubeflow/PyTorchJob --image docker.io/kubeflowkatib/pytorch-mnist-cpu:v1beta1-bc09cfd --entry-script /opt/pytorch-mnist/mnist.py --pull-policy IfNotPresent --instance-type ml.g5.xlarge --node-count 1 --tasks-per-node 1 --results-dir ./result --priority training-priority
+```
+
+Block for F10-323: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-tasks-scheduling.html)
+
+```
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: test-tas-job
+  namespace: hyperpod-ns-{{team-name}}
+  labels:
+    kueue.x-k8s.io/queue-name: hyperpod-ns-{{team-name}}-localqueue
+    kueue.x-k8s.io/priority-class: {{PRIORITY_CLASS}}-priority
+spec:
+  parallelism: 10
+  completions: 10
+  suspend: true
+  template:
+    metadata:
+      labels:
+        kueue.x-k8s.io/queue-name: hyperpod-ns-{{team-name}}-localqueue
+      annotations:
+        kueue.x-k8s.io/podset-required-topology: "topology.k8s.aws/network-node-layer-3"
+        or
+        kueue.x-k8s.io/podset-preferred-topology: "topology.k8s.aws/network-node-layer-3"
+    spec:
+      nodeSelector:
+        topology.k8s.aws/network-node-layer-3: {{TOPOLOGY_LABEL_VALUE}}
+      containers:
+        - name: dummy-job
+          image: gcr.io/k8s-staging-perf-tests/sleep:v0.1.0
+          args: ["3600s"]
+          resources:
+            requests:
+              cpu: "100"
+      restartPolicy: Never
+```
+
+Block for F10-324: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-policies-compute-allocation-gpu-partitions.html)
+
+```
+aws sagemaker create-compute-quota \
+  --name "fractional-gpu-quota" \
+  --compute-quota-config '{
+    "ComputeQuotaResources": [
+      {
+        "InstanceType": "ml.p4d.24xlarge",
+        "AcceleratorPartition": {
+            "Count": 4,
+            "Type": "mig-1g.5gb"
+        }
+      }
+    ],
+    "ResourceSharingConfig": { 
+      "Strategy": "LendAndBorrow", 
+      "BorrowLimit": 100 
+    }
+  }'
+```
+
+Block for F10-325: (verbatim from https://docs.aws.amazon.com/sagemaker/latest/dg/use-training-plan-for-hyperpod-creation-using-api-cli-sdk.html)
+
+```
+# Create a cluster         
+aws sagemaker create-cluster \
+  --cluster-name {{cluster-name}} \
+  --instance-groups '[ \
+        { \
+            "InstanceCount": {{1}},\
+            "InstanceGroupName": "{{controller-nodes}}",\
+            "InstanceType": "{{ml.t3.xlarge}}",\
+            "LifeCycleConfig": {"SourceS3Uri": {{source_s3_uri}}, "OnCreate": "on_create.sh"},\
+            "ExecutionRole": "arn:aws:iam::{{customer_account_id}}:role/{{execution_role}}",\
+            "ThreadsPerCore": {{1}},\
+        },\
+        { \
+            "InstanceCount": {{2}}, \
+            "InstanceGroupName": "{{worker-nodes}}",\
+            "InstanceType": "{{p4d.24xlarge}}",\
+            "LifeCycleConfig": {"SourceS3Uri": {{source_s3_uri}}, "OnCreate": "on_create.sh"},\
+            "ExecutionRole": "arn:aws:iam::{{customer_account_id}}}:role/{{execution_role}}}",\
+            "ThreadsPerCore": {{1}},\
+            "TrainingPlanArn": {{training_plan_arn}},\
+        }]'
+```
+
+## 6. The cluster, drawn
+
+Everything in this section is an arrangement of the entries in section 4 for the person drawing the cluster. Where a step is not written by AWS in one place it is marked `[our reading]`.
+
+### 6.1 AWS PCS: objects and nesting
+
+- Account and Region boundary. Inside it, one VPC; the cluster is tied to one subnet named at creation, and compute node groups may use other subnets of the same VPC (F10-232).
+- Cluster (F10-201): a managed Slurm controller the user never logs into, drawn as a box with a size label Small, Medium or Large (F10-202: 32 instances and 256 jobs, 512 and 8,192, 2,048 and 16,384). It carries the Slurm version (F10-203), the cluster-wide Slurm settings (F10-224, default `scaleDownIdleTimeInSeconds` 600, F10-218) and optional accounting (F10-226). It reaches the user's VPC through an elastic network interface that PCS creates in that subnet (F10-232), and from outside through the Slurm REST API on port 6820 when enabled (F10-229).
+- Queue (F10-215, F10-216): one Slurm partition. A queue points at one or more compute node groups. Draw it as a lane holding pending jobs.
+- Compute node group (F10-206): the capacity definition. One purchase option per group (F10-207: `ONDEMAND`, `SPOT`, `CAPACITY_BLOCK`, `INTERRUPTIBLE_CAPACITY_RESERVATION`), a list of instance types, `minInstanceCount` and `maxInstanceCount` (F10-208), subnets, an AMI (F10-212), a launch template (F10-210), an instance profile (F10-211), optional node lifecycle actions (F10-214). Draw it as a row of node slots: filled slots are running EC2 instances, empty slots are Slurm nodes that exist by name and have no instance behind them.
+- Node: one EC2 instance in the user's account, running `slurmd` and the PCS agent, with GPUs as GRES slots (F10-236) and one thread per core (F10-213).
+- Login node: a static node group (minimum equals maximum) that is in no queue (F10-227).
+- Shared storage: Amazon EFS, FSx for Lustre or FSx for OpenZFS, mounted by the launch template's user data (F10-231).
+- Not in the drawing because PCS does not have it: a container runtime layer, a second scheduler, a per-team quota object. Slurm accounting and partition limits fill that role (F10-226, F10-216).
+
+### 6.2 AWS PCS: lifecycle
+
+1. Submit. A user on the login node runs `sbatch` against a queue (F10-228), or a client posts the job to the Slurm REST API (F10-229). A job submit plugin can accept, reject or rewrite the job at the controller (F10-230).
+2. Queue. The job is pending in the partition (state PD). Priority, partition limits and accounting decide order (F10-216, F10-226).
+3. Scale from zero. Slurm allocates the job to named nodes of a compute node group that have no instance yet; PCS launches the instances behind those names (F10-217). The scaling log prints `LAUNCHED` with reason `SCHEDULER_REQUESTED` (F10-219). How often PCS evaluates is described as a regular interval of unpublished length (U10-1).
+4. Place. Each instance boots, runs the launch template user data and lifecycle actions, registers (`REGISTERED`), and becomes `ACTIVE` when `slurmd` accepts jobs (F10-219, F10-220). The job shows CF (configuring) until every node is up; a node that does not arrive within about 30 minutes is failed by Slurm's resume timeout (F10-221). AWS publishes no nominal cold-start time (U10-3).
+5. Run. Job state R. Processes run directly on the AMI. Multi-node jobs use EFA and a placement group when the launch template sets them (F10-233).
+6. Spot notice `[our reading]`. PCS documents what happens when an instance disappears (the node is released and replaced, scaling log `EXTERNALLY_TERMINATED`, F10-219, F10-222) and documents a 2-minute notice for interruptible capacity reservations (F10-222). It does not document whether a Spot notice drains the node or signals the job (U10-4). Draw the node vanishing and the job leaving it; do not draw a drain step.
+7. Checkpoint and requeue. The Capacity Block FAQ says active jobs are requeued by default when the block ends (F10-222); `--requeue`, `--requeue=expedite` and `requeue_delay` are the documented controls (F10-223). The job must reload its own checkpoint from shared storage. The Spot sequence as a whole is F10-244 `[our reading]`.
+8. Scale down. A node idle for `scaleDownIdleTimeInSeconds` (default 600, overridable per group, F10-218) is powered down by Slurm and its instance terminated: `TERMINATED`, reason `SCHEDULER_REQUESTED` (F10-219). A group with minimum 0 returns to zero instances; the controller stays, and the hourly controller fee is a price dimension of its own (F10-240).
+
+### 6.3 SageMaker HyperPod with Slurm: objects and nesting
+
+- VPC, one Availability Zone by default (F10-327).
+- HyperPod cluster (F10-300, F10-301) with `Orchestrator.Slurm` and a `SlurmConfigStrategy` (F10-302).
+- Instance groups, each a set of identical `ml.` instances (F10-304) with a Slurm role: exactly one `Controller` group (an instance the user sizes and pays for), an optional `Login` group, and `Compute` groups, each mapped to one partition (F10-302).
+- Per group: lifecycle configuration (F10-303), `InstanceStorageConfigs` with FSx for Lustre or FSx for OpenZFS (F10-326), optional `TrainingPlanArn` (F10-325), optional deep health checks (F10-318), `MinInstanceCount` (F10-307).
+- Cluster-level: `NodeRecovery` (F10-314), `NodeProvisioningMode` (F10-306).
+- Not in the drawing: an autoscaler and a Spot group. Neither is documented for Slurm orchestration (F10-313, F10-309, U10-8).
+
+### 6.4 SageMaker HyperPod with Slurm: lifecycle
+
+1. Submit. `sbatch` from the login or controller node; the training step is launched with `srun --auto-resume=1` inside an exclusive allocation (F10-315). Containers run through Enroot and Pyxis (F10-330).
+2. Queue. Standard Slurm partition queue.
+3. Scale from zero. Does not exist. The pool is whatever `InstanceCount` says; growing it is an `UpdateCluster` call (F10-313), provisioned continuously with partial capacity usable (F10-306).
+4. Place. Slurm places the job on idle nodes of the partition. A new or replaced node that has deep health checks enabled sits in a Slurm maintenance reservation for about 45 to 90 minutes first (F10-318).
+5. Run.
+6. Spot notice. Not applicable: no Spot documentation for Slurm orchestration (U10-8). The equivalent event is a hardware fault found by the health monitoring agent (F10-314).
+7. Checkpoint and requeue. With `--auto-resume=1` the faulty node is replaced (never rebooted) and the step restarts; on GRES-enabled nodes the job is requeued and starts from the beginning. The script reloads its checkpoint (F10-315).
+8. Scale down. Manual: `UpdateCluster` to a lower count or `BatchDeleteClusterNodes` (F10-313). Billing stops when the instance enters a terminating state (F10-306).
+
+### 6.5 SageMaker HyperPod with Amazon EKS: objects and nesting
+
+- An Amazon EKS cluster: the control plane, outside the HyperPod cluster, mapped 1-to-1 to it (F10-300). On it: the HyperPod Helm chart (health monitoring agent, device plug-ins, Kubeflow Training Operator, MPI operator, F10-329) and the optional add-ons: task governance with Kueue (F10-320), the training operator (F10-317), observability (F10-330).
+- HyperPod cluster: the worker nodes. Instance groups (F10-301), each one instance type or a flexible list of up to 20 (F10-308), each On-Demand or Spot for life (F10-309), optionally on a training plan (F10-325). Restricted instance groups are a separate kind, not used here (F10-305).
+- Autoscaling layer (optional): `AutoScaling` with `AutoScalerType` `Karpenter`; one or more `HyperpodNodeClass` objects, each listing up to 10 instance groups, and Karpenter `NodePool` objects that reference them (F10-311, F10-312).
+- Governance layer (optional): one cluster policy with priority classes; one compute allocation per team, which creates namespace `hyperpod-ns-<team>` and a Kueue LocalQueue `hyperpod-ns-<team>-localqueue` (F10-320, F10-321).
+- Node: one `ml.` instance, labelled with its health status (F10-316) and, on supported types, its network topology layers (F10-323). Pods per node are capped by the ENI formula (F10-328).
+- Job objects: `PyTorchJob` (Kubeflow) or `HyperPodPyTorchJob` (F10-316, F10-317).
+
+### 6.6 SageMaker HyperPod with Amazon EKS: lifecycle
+
+The whole sequence is F10-333 `[our reading]`; each step is documented separately.
+
+1. Submit. `kubectl apply` of a `PyTorchJob` or `HyperPodPyTorchJob` in the team namespace, or `hyperpod start-job`, with the queue-name and priority-class labels (F10-321, F10-330).
+2. Queue. Kueue holds the workload in the team's LocalQueue and admits it against the team's quota, or by borrowing idle or unallocated capacity up to the borrow limit (F10-320, F10-322). With gang scheduling, a workload whose pods are not all ready within the timeout is evicted and requeued (F10-322).
+3. Scale from zero. Admitted pods are pending. Karpenter picks an instance group from the NodeClass, Spot groups first, ordered by Spot placement score per Availability Zone, and raises its count from 0 (F10-311, F10-312).
+4. Place. The node goes `Pending` then `Running` (F10-306) and the pod is scheduled on it; a node selector keeps pods on nodes labelled `Schedulable` (F10-316). Topology annotations apply on P-class and UltraServer nodes (F10-323).
+5. Run. Billing for the instance started when its lifecycle script began (F10-306).
+6. Spot notice. HyperPod detects the signal, taints the node, evicts pods within their `terminationGracePeriodSeconds`, and provisions replacement capacity, falling back through the NodeClass to On-Demand (F10-310). The notice is best effort.
+7. Checkpoint and requeue. The pod's SIGTERM handler writes a checkpoint `[our reading]`. Kubernetes reschedules the evicted pods (F10-310); the job auto-resume annotations or the operator's `runPolicy` restart the job up to the retry count (F10-316, F10-317).
+8. Scale down. When pods finish, Karpenter consolidates after `consolidateAfter` and the instance groups return to zero; no node is kept for the Karpenter controller (F10-311, F10-312). The EKS control plane remains.
+
+## 7. Recommended configuration [our reading]
+
+Each setting below is our selection, tied to the entry that documents the setting. Where AWS itself recommends something, its words are quoted from the entry's evidence.
+
+### 7.1 AWS PCS, for the arm's cloud workloads
+
+- One cluster, size Small unless more than 32 instances or 256 jobs are expected at once (F10-202). Slurm 26.05 or 25.11, not 25.05, which reaches end of life on 11/30/2026 (F10-203).
+- One queue per workload class, each backed by its own compute node groups, because a group has exactly one purchase option and its instance types must match in vCPU and GPU count (F10-206, F10-207): a CPU Spot queue (decode, curation, CPU physics), a G-family Spot queue (GPU-parallel physics, simulated cameras, single-node fine-tunes), an On-Demand or Capacity Block queue for long multi-GPU training (F10-234).
+- Spot groups: `minInstanceCount` 0, several instance types of the same shape, allocation strategy left at the default `price-capacity-optimized` (F10-209). The default cap of 10 node groups per cluster limits how finely Spot can be diversified (F10-239).
+- `scaleDownIdleTimeInSeconds`: keep the default 600 on Spot simulation groups and raise it on a GPU group whose next job usually follows within minutes, using the per-group override (F10-218). The threshold logic: a value shorter than the gap between consecutive jobs causes a relaunch per job, and the launch-to-`ACTIVE` time is unpublished (U10-3), so measure it from the scaling logs (F10-219) before lowering the value.
+- Jobs on Spot groups: submit with `--requeue` and write checkpoints to shared storage (F10-223, F10-231). Treat requeue on a Spot reclaim as expected and unconfirmed (U10-4).
+- AMI: the PCS-ready Deep Learning AMI for GPU groups (F10-212). Shared storage mounted in the launch template user data (F10-231). EFA and a cluster placement group only for the multi-node group (F10-233).
+- Turn on accounting (F10-226) and scaling logs (F10-219): they are the only first-party way to see why a node did not arrive.
+- AWS guidance quoted in entries: the Capacity Block FAQ's "By default, active jobs are automatically re-queued" (F10-222). No PCS page read today prints a recommended Spot configuration (U10-4).
+
+### 7.2 SageMaker HyperPod
+
+- Orchestrator: EKS when the team wants Spot, scale to zero or per-team quotas, because all three are documented only there (F10-309, F10-312, F10-320). Slurm when the team wants a held GPU pool with Slurm commands and accepts manual scaling (F10-313). For new Slurm clusters AWS says of the API-driven topology: "This is the recommended approach for new clusters." (F10-302).
+- Provisioning: continuous, which is the default (F10-306); `MinInstanceCount` on a multi-node training group (F10-307).
+- Node recovery: `Automatic`. AWS: "We recommend setting the `Automatic` option." (F10-314).
+- Deep health checks: on for a held P-class training group, off for Karpenter-scaled groups (not supported there, F10-312) and for small clusters with no spare nodes, where AWS says: "**Recommendation**: disable the deep health check config throughout the cluster life cycle." (F10-318).
+- Spot simulation and fine-tune capacity: one Spot instance group per Availability Zone with `InstanceCount` 0, one On-Demand group as fallback, all in one `HyperpodNodeClass` (at most 10 groups), one NodePool (F10-311). `consolidateAfter` above zero. AWS: "Set it to non zero upto 2 min to allow graceful pod eviction for any checkpointing needs." (F10-311). Our value: 60s to 120s, with the pod's `terminationGracePeriodSeconds` below 120 because the Spot notice is at most 2 minutes and best effort (F10-310).
+- Jobs: `HyperPodPyTorchJob` with `jobMaxRetryCount` and a hang rule, or a Kubeflow `PyTorchJob` with the two auto-resume annotations and `restartPolicy: OnFailure` (F10-316, F10-317). Check the training operator's Kubernetes range (to 1.33) against the cluster version (F10-317, F10-329).
+- Governance: one compute allocation per team; borrow limit left at the default 50 until measured contention says otherwise; preemption default `LowerPriority`; at most 10 priority classes (F10-320). Label every job with its LocalQueue and priority class (F10-321).
+- Reserved capacity: a training plan on the P-class training group only, never on the primary group. AWS: "we do not recommend using a training plan for the primary instance group of a cluster" (F10-325). A training-plan group cannot be in a Karpenter NodeClass (F10-325).
+- Do not combine: elastic training with Spot; checkpointless training with tiered checkpointing or elastic training (F10-319); MIG with flexible instance groups (F10-308).
+
+## 8. Workload fit
+
+All cells are `[our reading]`, argued from the entries named. The workload names are the ones in `src/sections/Workloads.tsx`; the number in brackets is the workload number in the research brief. "HyperPod" means EKS orchestration unless the cell says Slurm.
+
+| # | Workload | AWS PCS | SageMaker HyperPod | Why (entries) |
+|---|---|---|---|---|
+| 1 | Record and encode (teleoperation recording, edge) | does not fit | does not fit | Runs at the edge, on the operator's machine next to the robot. Neither service places work outside a Region. |
+| 2 | Dataloader decode and augment (video decode into the dataloader) | suits | suits | It is part of the training job and runs on the training node's CPUs. On PCS one thread per core is fixed (F10-213); on HyperPod `ThreadsPerCore` is chosen (F10-301). |
+| 3 | Decode and filter, Embed and deduplicate (curation: filter, caption, embed) | suits | possible | Array jobs on CPU and G-family Spot groups that scale to zero (F10-208, F10-217). On HyperPod it works as pods on Karpenter-scaled Spot groups (F10-311), but a persistent ML cluster is heavy for a batch pipeline; Batch (section 25) is the hand-off. |
+| 4 | Image augmentation (inside the dataloader) | suits | suits | Same node as training; no scheduler feature involved. |
+| 5 | CPU physics step | suits | possible | Thousands of short CPU jobs fit Slurm arrays and Graviton or x86 Spot groups (F10-207). HyperPod accepts `ml.c8g` and `ml.m8g` groups (F10-304) and gains pod density from dynamic ENI attachment (F10-328), but none of its distinguishing features apply to CPU work (F10-334). |
+| 6 | GPU-parallel physics | suits | possible | Single-GPU G-family jobs on Spot with requeue (F10-223). On HyperPod: Spot G groups through Karpenter (F10-311); no fractional GPU on G types (F10-324). |
+| 7 | Simulated cameras | suits | possible | Same shape as 6; needs a G-family type with ray-tracing cores, which both accept (F10-304 for HyperPod; PCS takes EC2 types directly, F10-206). |
+| 8 | Policy fine-tune (ACT, SmolVLA) | suits | possible | One G-family GPU for hours. PCS: Spot group, `--requeue`, checkpoint to shared storage (F10-223). HyperPod: works with auto-resume (F10-316), but its health-check, topology and reservation features target P-class nodes (F10-334), and training plans exclude G types (register 09, F09-35). |
+| 9 | World-model training (JEPA class, small model) | suits | suits | Single node to a few nodes. Either service; HyperPod adds automatic node replacement and job resume (F10-314, F10-317). |
+| 10 | Closed-loop evaluation | suits | possible | Many independent simulation rollouts: array jobs on Spot (F10-217). On HyperPod as low-priority tasks that borrow idle quota and are preempted first (F10-322). |
+| 11 | Engine build (export and quantise for the device) | possible | possible | One short GPU job. The engine must be built for the device's own GPU, so the cloud step is export and calibration only; either scheduler runs it, neither adds anything. |
+| 12 | On-robot inference (edge) | does not fit | does not fit | Runs on the robot's computer. HyperPod inference (F10-330) serves cloud endpoints, which is a different workload. |
+| 13 | Generative augmentation (with a world model) | possible | suits | Batch inference on large GPUs. HyperPod can host the model and share GPUs with training under one quota system (F10-320, F10-330). On PCS it is an ordinary GPU batch job on On-Demand or a Capacity Block (F10-234). |
+| 14 | Robot foundation-model pretraining on one node (VLA post-training) | suits | suits | One 8-GPU P-class node for days. PCS: Capacity Block node group (F10-234). HyperPod: training plan on the instance group, deep health checks, auto-resume (F10-325, F10-318, F10-316). |
+| 15 | Robot foundation-model pretraining and World-model pretraining (multi-node) | suits | suits | PCS: EFA, placement group, hardware topology, UltraServers with a user-written IMEX prolog (F10-233, F10-236, F10-237). HyperPod: the workload it was built for: topology-aware scheduling, `MultiNodeTrainingValidation`, checkpointless or tiered checkpointing, UltraServer handling (F10-318, F10-319, F10-323, F10-331). |
+
+Notes on the mapping: `Workloads.tsx` lists curation as two rows ("Decode and filter", "Embed and deduplicate") and pretraining as two rows ("Robot foundation-model pretraining", "World-model pretraining"); the brief's fifteen merge and split them differently, so rows 3 and 15 carry both names. The brief's workload 4 (image augmentation) is inside the "Dataloader decode and augment" row of the file.
+
+## 9. What it does poorly, and hand-offs
+
+### 9.1 AWS PCS
+
+- Spot handling is undocumented at the job level: no page read today says a Spot notice drains the node, signals the job or requeues it (U10-4, F10-222, F10-244). A team that needs a documented Spot sequence gets one from HyperPod on EKS (F10-310) or from EKS with Karpenter (section 28).
+- Coarse Spot diversification: one purchase option per node group, instance types in a group must match in vCPU and GPU count, default cap of 10 node groups per cluster (F10-206, F10-207, F10-239).
+- No documented container path: jobs are processes on an AMI (F10-245). Container-first teams hand off to Batch (section 25) or EKS (section 28).
+- No published cold-start figure; the documented bound is Slurm's resume timeout of about 30 minutes (F10-221, U10-3).
+- The controller has its own hourly fee, separate from the nodes (F10-240), so a cluster with zero nodes still has a standing cost `[our reading]`. For a pipeline that runs a few hours a week, Batch (section 25) has no standing controller.
+- No per-team quota object beyond Slurm accounting and partition limits (F10-226). Lending and borrowing between teams is HyperPod task governance (F10-320) or Kueue on EKS.
+- Hand-off summary: to Batch for container array jobs without a cluster; to HyperPod for a held, health-checked GPU pool with automatic job resume; to EKS for services, operators and fractional GPUs.
+
+### 9.2 SageMaker HyperPod
+
+- Slurm orchestration has no autoscaler and no documented Spot (F10-313, U10-8), and the controller is an instance group the user pays for (F10-302). A team that wants Slurm that scales to zero hands off to PCS (F10-208).
+- Its distinguishing features are P-class features: deep health checks that take about two hours, checkpointless training verified on ml.p5, topology-aware scheduling on P, Trainium and UltraServer types, MIG on P types, training plans with no G type (F10-318, F10-319, F10-323, F10-324; register 09, F09-35). For a G-family simulation fleet HyperPod is a managed node pool with Karpenter and little else (F10-334).
+- Features exclude each other: Karpenter with deep health checks or training plans (F10-312); elastic training with Spot; checkpointless with tiered checkpointing and elastic training (F10-319); MIG with flexible instance groups (F10-308).
+- Documentation lag: the NodeClass page says "Only on-demand capacity is supported at this time" while the Spot page documents Spot with Karpenter (F10-312, U10-9). The Spot page's CLI examples are printed with a missing quote (F10-309).
+- Version skew: the training operator supports Kubernetes 1.28 to 1.33 while HyperPod supports 1.30 to 1.35 (F10-317, F10-329).
+- IP consumption on EKS: 81 addresses per P5 instance (F10-327), eased by EFA-only interfaces.
+- A persistent cluster bills per provisioned instance whether or not jobs run (register 09, F09-33); scale to zero exists only on EKS with Karpenter (F10-312).
+- Hand-off summary: to PCS for elastic Slurm; to Batch for stateless array work; to plain EKS for EC2-native instance names, fractional GPU schedulers and anything not `ml.`-prefixed.
+
+## 10. Contradicts or sharpens the first version
+
+| F09 ID | What register 09 says | What today's page says |
+|---|---|---|
+| F09-22 (HyperPod has two orchestrators) | Slurm clusters have head, login and worker nodes; EKS maps 1-to-1. | Holds. Sharpened by F10-300 and F10-302: the roles are instance groups with `SlurmConfig.NodeType` `Controller`, `Login`, `Compute`; exactly one controller group; `SlurmConfigStrategy` `Managed`, `Overwrite`, `Merge`. |
+| F09-23 (deep health checks, EKS) | Three test types on EKS. | Holds. Sharpened by F10-318: Slurm has two types; DCGM level 4 takes about 45 to 90 minutes, EFA about 2 to 5 minutes; AWS's planning figure is "about a couple of hours". |
+| F09-24 (automatic node recovery) | `Automatic` recommended. | Holds (F10-314). Added: it is the default. |
+| F09-25 (task governance is Kueue, add-on v1.6.1-eksbuild.1 installs v0.19.2) | As stated. | Holds (F10-320). |
+| F09-26 (governance policies) | Lending, fair share, borrow up to 10,000%. | Holds. Sharpened by F10-320 and F10-322: API defaults are borrow limit 50, preemption `LowerPriority`, at most 10 priority classes, 15 quota resources per team; unallocated sharing dated 16 March 2026. |
+| F09-27 (managed Karpenter) | Scale to zero; three prerequisites. | Holds. Sharpened by F10-312: instance groups with deep health checks, training plans or reserved capacity are excluded; at most 10 groups per NodeClass. Contradiction inside AWS's docs: the NodeClass page says only On-Demand capacity is supported, the Spot page documents Spot with Karpenter (U10-9). |
+| F09-28 (Spot on EKS-orchestrated HyperPod) | Taint, evict, replace; On-Demand fallback. | Holds. Sharpened by F10-309 to F10-311: five numbered steps; `CapacityRequirements` is immutable; Karpenter prefers Spot groups and sorts by Spot placement score; `consolidateAfter` tip of up to 2 minutes. |
+| F09-29 (flexible instance groups) | Up to 20 types in priority order; EKS only. | Sharpened by F10-308: lowest-priority type terminated first on scale-down; needs continuous provisioning; Karpenter ignores the list order; MIG not supported. The "EKS only" clause was not re-verified today: the flexible-group text read today is on the EKS continuous-provisioning page. |
+| F09-30 to F09-32 (checkpointless, tiered checkpointing, elastic training) | As stated, including no Spot with elastic training. | Hold (F10-319). |
+| F09-33 (billing per provisioned instance) | As stated, with a monetary example. | Not re-fetched today. F10-306 adds when billing starts and stops. |
+| F09-34, F09-35 (training plans; no G types) | As stated. | The eligible-type list was not re-fetched today. F10-325 adds the attachment (`TrainingPlanArn` per instance group), the advice against the primary group, and the Karpenter exclusion. |
+| F09-36 (single Availability Zone, 32 and 81 addresses) | Single AZ by default. | Holds (F10-327). Added: multi-AZ deployment is documented; EFA-only interfaces since 1 June 2026. |
+| F09-37 (HyperPod news September to November 2026) | The only release note in that window is 16 November 2026. | Contradicted. The release-notes page fetched today also carries a heading dated 11 November 2026 (dynamic ENI attachment), and a What's New post dated 18 November 2026 (higher pod density) (F10-328, F10-332). |
+| F09-109 (PCS and UltraServers) | Supported since 18 June 2026 through Capacity Blocks and a launch template. | Holds. Sharpened by F10-237 (mechanism) and by F10-200 to F10-245, which give PCS the depth register 09 lacked. Register 09's phrase "the managed route for a team that schedules with Slurm and does not want HyperPod" stands, with the limits in section 9.1. |
+
+## 11. UNKNOWN register
+
+| ID | What is unknown | What was checked | Entries affected |
+|---|---|---|---|
+| U10-1 | The length of the "regular interval" at which PCS evaluates scaling. | PCS User Guide scaling pages. | F10-217 |
+| U10-2 | Why the API default for `scaleDownIdleTimeInSeconds` is 600 while a Slurm 23.11 release note says SuspendTime defaults to 60. | API Reference and release-notes page; both quoted. | F10-218 |
+| U10-3 | A nominal cold-start time for a PCS node (launch to `ACTIVE`). | User Guide, FAQ, What's New. Only the resume timeout is printed. | F10-221 |
+| U10-4 | What PCS does on an EC2 Spot interruption notice: drain, signal to the job, requeue. | All 214 User Guide pages searched for Spot interruption handling; the Capacity Block FAQ and interruptible-reservation page describe adjacent cases only. | F10-222, F10-244 |
+| U10-5 | An AWS-published PCS `sbatch` example with `--array`, `--requeue`, a checkpoint signal handler or a GPU request line. | User Guide getting-started and MIG pages. | F10-228, F10-236 |
+| U10-6 | Why the PCS create-cluster page says "AWS PCS currently supports Slurm 25.11 and 25.05" while the versions table lists 26.05. | Both pages fetched today; the table is taken as current. | F10-203 |
+| U10-7 | A first-party statement of when to choose PCS over AWS ParallelCluster. | PCS FAQ and User Guide. | F10-243 |
+| U10-8 | Whether HyperPod Slurm orchestration supports Spot Instances or any autoscaling. | 61 downloaded HyperPod pages with "slurm" in the file name searched for "spot" and "autoscal": no match. | F10-309, F10-313 |
+| U10-9 | Which of two AWS pages is current on Karpenter and Spot. | NodeClass page ("Only on-demand capacity is supported at this time") against the Spot page (Spot groups in a NodeClass). The Spot page is the more specific and is followed. | F10-311, F10-312 |
+| U10-10 | Amazon EFS as HyperPod shared storage. | Slurm getting-started page and EKS storage page name FSx for Lustre, FSx for OpenZFS, Mountpoint for Amazon S3 and EBS. | F10-326 |
+| U10-11 | Three HyperPod inference posts of 2026 (20 May, 6 July, 11 September) seen in search results. | Not fetched; not used as evidence. | F10-332 |
+| U10-12 | Commit pins for the HyperPod CLI and Helm chart repositories. | Not opened today. | F10-329, F10-330 |
+| U10-13 | The Karpenter version HyperPod runs, and the launch date of HyperPod Spot support. | Autoscaling and Spot pages; no version or date printed. | F10-309, F10-312 |
+| U10-14 | Time from a pending pod to a `Running` HyperPod node under Karpenter. | Autoscaling pages; the only durations printed are the console set-up ("around 20 minutes") and deep health checks. | F10-312, F10-333 |
+| U10-15 | Whether flexible instance groups are available under Slurm orchestration. | Flexible-group text was read on the EKS continuous-provisioning page only. | F10-308 |
+
+## 12. Source list by tier
+
+All accessed 2026-11-20. The entry IDs that cite each source follow it in brackets. Tier 0 (our own experiments): none in this register. Tier 3 and Tier 4: none cited.
+
+### Tier 1, first-party documentation: AWS PCS User Guide
+
+- https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks-configure-cng.html (F10-206, F10-234)
+- https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks-faq.html (F10-222, F10-225, F10-234, F10-236)
+- https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks-nvidia-imex.html (F10-237)
+- https://docs.aws.amazon.com/pcs/latest/userguide/capacity-blocks.html (F10-234)
+- https://docs.aws.amazon.com/pcs/latest/userguide/capacity-reservations-iodcr.html (F10-222, F10-235)
+- https://docs.aws.amazon.com/pcs/latest/userguide/capacity-reservations-odcr.html (F10-235)
+- https://docs.aws.amazon.com/pcs/latest/userguide/cng-node-lifecycle-actions-examples.html (F10-214, F10-243)
+- https://docs.aws.amazon.com/pcs/latest/userguide/cng-node-lifecycle-actions-vetted-scripts.html (F10-214)
+- https://docs.aws.amazon.com/pcs/latest/userguide/cng-node-lifecycle-actions.html (F10-214, F10-220)
+- https://docs.aws.amazon.com/pcs/latest/userguide/doc-history.html (F10-204, F10-208, F10-218, F10-226, F10-229, F10-230, F10-231, F10-234, F10-238, F10-241, F10-242)
+- https://docs.aws.amazon.com/pcs/latest/userguide/getting-started_create-cng_workers.html (F10-208, F10-231)
+- https://docs.aws.amazon.com/pcs/latest/userguide/getting-started_run-job.html (F10-221, F10-228)
+- https://docs.aws.amazon.com/pcs/latest/userguide/getting-started_run-mpi-job.html (F10-228)
+- https://docs.aws.amazon.com/pcs/latest/userguide/gres-custom-settings.html (F10-236)
+- https://docs.aws.amazon.com/pcs/latest/userguide/key-concepts.html (F10-200, F10-215)
+- https://docs.aws.amazon.com/pcs/latest/userguide/mig-configuration.html (F10-223, F10-236)
+- https://docs.aws.amazon.com/pcs/latest/userguide/monitoring-cloudwatch_metrics.html (F10-238)
+- https://docs.aws.amazon.com/pcs/latest/userguide/monitoring-cost-allocation.html (F10-238)
+- https://docs.aws.amazon.com/pcs/latest/userguide/monitoring_scaling-logs.html (F10-219, F10-222, F10-238)
+- https://docs.aws.amazon.com/pcs/latest/userguide/scaling-job-level.html (F10-208, F10-217, F10-232)
+- https://docs.aws.amazon.com/pcs/latest/userguide/service-endpoints-quotas.html (F10-239, F10-241)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-accounting.html (F10-205, F10-226)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-configuration.html (F10-205)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-custom-settings-cluster.html (F10-224, F10-228)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-custom-settings-cng.html (F10-225)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-custom-settings-queue.html (F10-216)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-custom-settings.html (F10-205)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-job-submit-plugins.html (F10-230)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-rest-api-faq.html (F10-229)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-rest-api.html (F10-229)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions.html (F10-203)
+- https://docs.aws.amazon.com/pcs/latest/userguide/slurm-versions_release-notes.html (F10-223, F10-224, F10-236)
+- https://docs.aws.amazon.com/pcs/latest/userguide/spot-role.html (F10-209)
+- https://docs.aws.amazon.com/pcs/latest/userguide/troubleshooting-compute-node-bootstrap.html (F10-221)
+- https://docs.aws.amazon.com/pcs/latest/userguide/troubleshooting-job-submission-maxjobcount.html (F10-202)
+- https://docs.aws.amazon.com/pcs/latest/userguide/what-is-service.html (F10-200)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_ami_pcs-ready-dlami.html (F10-212)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_ami_samples.html (F10-212)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_clusters_create.html (F10-201, F10-218)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_clusters_size.html (F10-202)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_clusters_version_update_procedure.html (F10-204)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_cng.html (F10-206, F10-213)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_cng_create.html (F10-206, F10-207, F10-208, F10-209, F10-210, F10-218, F10-225, F10-232)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_file-systems.html (F10-231)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_login-nodes.html (F10-227)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_login-nodes_compute-node-group-for-login.html (F10-227)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_networking_efa.html (F10-233)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_networking_efa_create-lt.html (F10-233)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_networking_placement-groups.html (F10-233)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_networking_vpc-requirements.html (F10-201, F10-211, F10-232)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_queues.html (F10-207, F10-215)
+- https://docs.aws.amazon.com/pcs/latest/userguide/working-with_queues_create.html (F10-215)
+
+### Tier 1, first-party documentation: AWS PCS API Reference
+
+- https://docs.aws.amazon.com/pcs/latest/APIReference/API_ClusterSlurmConfigurationRequest.html (F10-218)
+- https://docs.aws.amazon.com/pcs/latest/APIReference/API_CreateCluster.html (F10-201)
+- https://docs.aws.amazon.com/pcs/latest/APIReference/API_CreateComputeNodeGroup.html (F10-206, F10-207, F10-210, F10-211)
+- https://docs.aws.amazon.com/pcs/latest/APIReference/API_CreateQueue.html (F10-215)
+- https://docs.aws.amazon.com/pcs/latest/APIReference/API_SpotOptions.html (F10-209)
+
+### Tier 1, first-party documentation: Amazon SageMaker AI Developer Guide (HyperPod)
+
+- https://docs.aws.amazon.com/sagemaker/latest/dg/hyperpod-observability-addon-setup.html (F10-305)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/managed-tier-checkpointing.html (F10-319)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless-considerations.html (F10-319)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-elastic-training.html (F10-319)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-operator-usage.html (F10-317)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-operator.html (F10-317)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-autoscaling-nodeclass.html (F10-312, F10-325)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-autoscaling-nodepool.html (F10-312)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-autoscaling.html (F10-312)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-gpu-partitioning.html (F10-308, F10-324)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-install-packages-using-helm-chart.html (F10-329)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-cli-command-create-cluster.html (F10-300)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-create-cluster.html (F10-305)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-cli.html (F10-321)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-policies-compute-allocation-gpu-partitions.html (F10-324)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-policies.html (F10-322)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-setup-task-governance.html (F10-320)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-tasks-gang-scheduling.html (F10-322)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-tasks-scheduling.html (F10-323)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-prerequisites.html (F10-304, F10-328, F10-329)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-config-tips.html (F10-318)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-deep-health-checks.html (F10-318)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-node-recovery.html (F10-314)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-run-jobs-kubectl.html (F10-316)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-setup-storage.html (F10-326)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks.html (F10-300)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-model-deployment.html (F10-330)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-observability-addon.html (F10-330)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-operate-slurm-cli-command.html (F10-313)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-prerequisites.html (F10-327)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-ref.html (F10-302)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-release-notes.html (F10-308, F10-328, F10-332)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-auto-resume.html (F10-314, F10-315)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-deep-health-checks.html (F10-318)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-resiliency-slurm-hang-detection.html (F10-330)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-run-jobs-slurm-docker.html (F10-330)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-scaling-eks.html (F10-306, F10-307, F10-308)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-scaling-slurm.html (F10-306)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html (F10-309, F10-310, F10-311)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-ultraserver.html (F10-331)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/smcluster-getting-started-slurm-cli.html (F10-300, F10-302, F10-303, F10-326)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/training-plan-utilization-for-hyperpod.html (F10-325)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/use-training-plan-for-hyperpod-creation-using-api-cli-sdk.html (F10-325)
+
+### Tier 1, first-party documentation: Amazon SageMaker API Reference
+
+- https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterAutoScalingConfig.html (F10-312, F10-313)
+- https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterCapacityRequirements.html (F10-309)
+- https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterInstanceGroupSpecification.html (F10-301, F10-304)
+- https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ClusterSlurmConfig.html (F10-302)
+- https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ComputeQuotaConfig.html (F10-320)
+- https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateCluster.html (F10-301)
+- https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateClusterSchedulerConfig.html (F10-320)
+- https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateComputeQuota.html (F10-320)
+- https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_PriorityClass.html (F10-320)
+- https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ResourceSharingConfig.html (F10-320)
+
+### Tier 2, AWS announcements and product pages (What's New posts, the AWS News Blog, the PCS pricing and FAQ pages)
+
+- https://aws.amazon.com/about-aws/whats-new/2026/03/aws-pcs-manages-slurmdbd-cgroups-settings/ (F10-242)
+- https://aws.amazon.com/about-aws/whats-new/2026/03/sagemaker-hyperpod-idle-resource-sharing/ (F10-322)
+- https://aws.amazon.com/about-aws/whats-new/2026/04/amazon-sagemaker-hyperpod-g7e-r5d/ (F10-304)
+- https://aws.amazon.com/about-aws/whats-new/2026/04/aws-pcs-slurm-25-11/ (F10-223)
+- https://aws.amazon.com/about-aws/whats-new/2026/04/sagemaker-hyperpod-flexible-instance-groups/ (F10-332)
+- https://aws.amazon.com/about-aws/whats-new/2026/05/amazon-sagemaker-hyperpod-ami-based-node/ (F10-303)
+- https://aws.amazon.com/about-aws/whats-new/2026/05/amazon-sagemaker-hyperpod-mincount/ (F10-307)
+- https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-sagemaker-hyperpod-efa-only/ (F10-327)
+- https://aws.amazon.com/about-aws/whats-new/2026/06/aws-parallel-computing-service-upgrade/ (F10-204)
+- https://aws.amazon.com/about-aws/whats-new/2026/06/aws-parallel-computing-service/ (F10-237)
+- https://aws.amazon.com/about-aws/whats-new/2026/06/aws-pcs-deep-learning-ami/ (F10-212)
+- https://aws.amazon.com/about-aws/whats-new/2026/07/aws-pcs-node-lifecycle-actions/ (F10-214)
+- https://aws.amazon.com/about-aws/whats-new/2026/07/hyperpod-custom-ami-slurm/ (F10-332)
+- https://aws.amazon.com/about-aws/whats-new/2026/09/aws-pcs-gres-hardware-topology-mig/ (F10-236)
+- https://aws.amazon.com/about-aws/whats-new/2026/09/aws-pcs-scaling-logs/ (F10-219)
+- https://aws.amazon.com/about-aws/whats-new/2026/11/sagemaker-hyperpod-higher-pod-density/ (F10-328)
+- https://aws.amazon.com/blogs/aws/introducing-checkpointless-and-elastic-training-on-amazon-sagemaker-hyperpod/ (F10-319)
+- https://aws.amazon.com/pcs/faqs/ (F10-232)
+- https://aws.amazon.com/pcs/pricing/ (F10-240)
+
+### Read and not cited
+
+- Register 09 of this dive (`research/2026-11/09-aws-orchestration.md`), for section 10 only. It is not a source for any entry here.
+- The remaining downloaded pages of the PCS User Guide (214 in total) and of the SageMaker Developer Guide HyperPod chapters (322 in total), searched for the absence claims in section 11.
 
