@@ -7,7 +7,7 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 /**
  * Figure wrappers for the Physical AI dive.
  *
- * The <svg> itself is always written in the section file, with a literal role="img",
+ * The svg element itself is always written in the section file, with a literal role="img",
  * aria-labelledby and <title id>: the svg-a11y gate reads the source text. These wrappers add
  * what every figure needs around it: the register entries its numbers come from, a caption that
  * says how to read it, a scroll container for phones, and (AnimatedFigure) the controls.
