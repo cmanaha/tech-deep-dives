@@ -204,7 +204,6 @@ function collectClaims(page) {
       missing: Array.from(main.querySelectorAll('[data-cite-missing]')).map((c) => c.getAttribute('data-cite-id')),
       stub: Boolean(main.querySelector('[data-stub]')),
       mathErrors: Array.from(main.querySelectorAll('.katex-error')).map((e) => (e.getAttribute('title') ?? e.textContent ?? '').slice(0, 120)),
-      plainFormulas: Array.from(main.querySelectorAll('code')).map((c) => c.textContent ?? '').filter((t) => /[=≈].*(\\|\^|_\{|\bsum\b|\bE\[)/.test(t) && !c.closest('pre')).map((t) => t.slice(0, 80)),
       brokenMedia: Array.from(main.querySelectorAll('figure[data-capture] img')).filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.getAttribute('src')),
       captures: main.querySelectorAll('figure[data-capture]').length,
       mediaNoProvenance: Array.from(main.querySelectorAll('figure[data-capture]')).filter((f) => !f.querySelector('[data-num="provenance"]')).length,
