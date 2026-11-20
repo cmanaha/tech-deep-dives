@@ -812,6 +812,26 @@ C4 to C12 are changes of content inside a section that the research forced; no s
 | C11 | Section 25's closing table carries a capacity-market column that separates "can be reserved for a window" from "On-Demand, Spot and Savings Plans only". | Capacity Blocks list P and Trainium types only and the training plans list has no G family (F09-91, F09-35), so the simulation and rendering rows cannot use the reservation the training rows use. |
 | C12 | Section 6's side-by-side drops memory and "time per predicted second" as fixed columns; section 7 names five ways to block collapse, three in depth; section 15 describes pretraining as days on tens to hundreds of GPUs; section 11 names Cosmos 3. | Cosmos3-Nano's memory need is not published (F03-105) and its rollout length is not stated (F03-99). The register records five mechanisms (F03-70, F03-71). Published pretraining runs are 120 hours on 256 GPUs for GR00T N1.7 and about 4 days on 64 A100s for X-VLA (F02-39, F02-71). Cosmos 3 superseded the 2.5 models (F05-95). |
 
+## Round 2 (2026-11-20): the 30-section plan
+
+The owner read the published dive on 2026-11-20 and gave first feedback by voice. The plan above is the approved
+26-section plan and is kept as the record; where the section tables above say 24, 25 and 26, read them through the
+map below. `revamp/tools/renumber.mjs` holds the map and `revamp/tools/check-renumber.mjs` checks it.
+
+| # | Change | Reason (the owner's words where quoted) |
+|---|---|---|
+| R1 | Each AWS orchestrator gets its own section. New: 25 AWS Batch, 26 AWS Parallel Computing Service, 27 Amazon SageMaker HyperPod, 28 Amazon EKS. Choosing moves from 25 to 29, Glossary and Sources from 26 to 30. Sections 1 to 24 keep their numbers. | The talk this dive feeds "is going to be far more about" orchestrating on AWS. "I need the orchestration to go deeper in AWS Batch, in PCS, in HyperPod, and in Amazon EKS. I need a far better explanation for each of those of the individual things that go on it, so you have far more space for driving that in each one in their own subsection." |
+| R2 | Section 24 is retitled "Orchestrating Physical AI on AWS" and becomes the overview: the fifteen workloads placed on AWS, the four orchestrators introduced by what each is and when to use it, the capacity markets, the glue. The depth moves to 25 to 28. Greengrass and the edge path stay in 17, 18 and 24. | "I need basically to split the 15 workloads or 5 workloads in AWS." |
+| R3 | Each of 25 to 28 follows one order: what it is and the challenge it meets; its moving parts; a drawn, animated representation of the cluster; one worked case for the arm; the recommended configuration with sourced snippets; what it does poorly; where it hands off. | "I need also to define a bit what is the best configuration, like for example the Spot, and I want a representation of the cluster. Like I want to see the representation that goes on the cluster." |
+| R4 | The four cluster figures share one drawing language (`src/components/Cluster.tsx`): queues with jobs waiting, a scheduler, capacity groups with instances, GPUs inside instances, jobs on GPUs, storage and network, animated through arrival, scale from zero, a Spot notice, checkpoint and requeue, scale down. The figure of where the five shapes land is replaced by the loop running on infrastructure (`src/components/LoopOnAws.tsx`), used in 20 and 24. | "Super cool representations, not just the chart that I see, where the five shapes land. That's a super crappy graph, that's a decision graph." |
+| R5 | Sections 20 and 24 introduce each workload by what it does in the robot's loop first, then its shape, then where it lands on AWS. Top-down and PMU vocabulary stays in 21 and 22; where 20 needs a CPU term it gives the plain meaning at first use. | The owner wants the physical AI process in front of the profiling view; the reader review found CPU terms in section 20 one section before they are built. |
+| R6 | Formulas are typeset (KaTeX, `src/components/Math.tsx`), and the concept sections gain the formulas their mechanisms have. This lifts the first build's rule "no LaTeX, no math dependency". | "I would like to see formulas properly. I would like to see proper formulas." |
+| R7 | Simulation sections carry captures: stills and short clips of the SO-101 in MuJoCo made for this dive (`public/media/`, `PROVENANCE.md`), and dated slots for Isaac Sim captures and camera footage that the owner will record. | "I would like to see not only graphs or charts, I would like to see also some screenshots or captures over the simulation of the arms." |
+| R8 | Research register 10 (three files, `10a` Batch, `10b` PCS and HyperPod, `10c` EKS and EC2 Spot; IDs F10-n) is added, fetched 2026-11-20. PCS enters the dive as a full orchestrator; the first version had one entry on it. | Same as R1. |
+| R9 | Placeholders: the capture slots of R7 join the allowed list (sections 3, 9, 12, 13, 14, 16). | The owner asked for them. |
+
+Old to new section numbers: 1 to 24 unchanged; 25 Choosing is 29; 26 Glossary and Sources is 30; 25 to 28 are new.
+
 ## Sibling dives
 
 - **Learning From Feedback** (`rl-agentic-loops`): owns reinforcement learning basics, policy gradients, reward

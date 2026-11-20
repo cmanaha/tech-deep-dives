@@ -6,6 +6,7 @@ profiling project produces results (inputs, configs, outputs) and they land here
 | Folder | What | Machines | Date | Runs | Status |
 |---|---|---|---|---|---|
 | `E-seed-profiling-2026-11-19/` | 14 CPU microbenchmark kernels and 3 CPU stand-in workloads (MuJoCo humanoid step, 6x1024 MLP inference, MuJoCo offscreen render) under `perf stat`, top-down level 1; one GPU matmul kernel under Nsight Compute per machine | NVIDIA DGX Spark (Cortex-X925 and Cortex-A725 cores, GB10 GPU), NVIDIA Jetson Orin Nano Super (Cortex-A78AE) | 2026-11-18 to 2026-11-20 | One run per kernel per core type in each of two passes (pass 2 changed three kernels) | Copied from the seed research; see provenance |
+| `E-mujoco-captures-2026-11-20/` | Stills and clips of the SO-101 in MuJoCo 4.0.1 for the dive's simulation sections: one scripted pick and place, camera views, contact, render passes, domain randomisation variants, twelve open-loop replays with the block moved | A Mac (Apple silicon), offscreen OpenGL renderer | 2026-11-20 | One run | Made for the dive; provenance in `public/media/PROVENANCE.md` |
 
 ## Provenance of `E-seed-profiling-2026-11-19/`
 
