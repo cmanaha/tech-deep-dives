@@ -3,10 +3,11 @@
 **From a Robot's Demonstrations to a Fleet That Learns.** One arm, one task, every workload in the loop: the models,
 the data, the simulation, the part of the machine each one loads, and how to orchestrate it on AWS.
 
-**Status (2026-11-20):** Gate 1 approved (decisions recorded in `RESEARCH-GUIDE.md` section 7). All 30 sections are planned (round 2 adds one section per AWS orchestrator);
-built in `src/sections/`, with 52 diagrams of which 17 are animated. Sections 22 and 23, and the IoT hook-up blocks in
-sections 17, 18 and 24, carry dated placeholders for measurements and prices that have not been taken. The dive is at a
-side preview for human review (Gate 2); nothing is pushed or deployed.
+**Status (2026-11-20):** published at https://cmanaha.github.io/tech-deep-dives/physical-ai/. Round 2 (the owner's
+first feedback, recorded in `SCOPE.md`) gives each AWS orchestrator its own section, so the dive has 30 sections in
+`src/sections/`: 24 is the AWS overview, 25 AWS Batch, 26 AWS Parallel Computing Service, 27 Amazon SageMaker
+HyperPod, 28 Amazon EKS, each with an animated drawing of its cluster. Sections 22 and 23, and the IoT hook-up blocks
+in sections 17, 18 and 24, carry dated placeholders for measurements and prices that have not been taken.
 
 ## What the dive is
 
@@ -17,7 +18,7 @@ learning, vision-language-action models, world models, JEPA in depth, reinforcem
 then show which part of the machine each workload loads, and the AWS sections end with one table: workload, machine
 part, instance family, orchestrator, capacity market, why.
 
-30 sections are planned in 9 parts. The plan, the reader, the thesis and the numbers each section will print are in
+The 30 sections sit in 9 parts. The plan, the reader, the thesis and the numbers each section will print are in
 `SCOPE.md`.
 
 ## What is here
@@ -27,6 +28,7 @@ part, instance family, orchestrator, capacity market, why.
 | `SCOPE.md` | Reader, thesis, nine questions, the 30-section plan, numbers by section with register IDs, changes to the approved plan |
 | `RESEARCH-GUIDE.md` | Research waves, reading path, evidence bar per claim type, Tier 0 requests, triage of every unknown, the Gate 1 record, the budget record |
 | `research/2026-11/01` to `09` | Nine claim registers, 1,040 entries after the wave 3 and wave 4 additions. Each entry has an ID, the claim, a pinned source, tier, evidence kind, a verbatim quote, a verdict and the section it feeds |
+| `research/2026-11/10a`, `10b`, `10c` | Round 2 registers, 232 entries (IDs F10-n): AWS Batch; AWS Parallel Computing Service and SageMaker HyperPod; Amazon EKS and EC2 Spot. `wave5-refutation.md` is the independent re-check of 103 of their claims |
 | `research/2026-11/wave2-A.md`, `-B.md`, `-C.md` | The refutation and freshness pass: one verdict row per load-bearing claim, by an agent that did not write the register |
 | `research/experiments/` | Tier 0 results on hand (CPU stand-in workloads on a Jetson Orin Nano Super and a DGX Spark), with provenance and limits |
 | `sources.md` | Every source, grouped by tier, then by register |
