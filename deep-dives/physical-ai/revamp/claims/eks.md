@@ -26,7 +26,7 @@ Interruption handling needs --interruption-queue (SQS fed by EventBridge) | F10-
 On a Spot warning Karpenter starts a replacement at once and drains in parallel; no startup number given; a pod grace period over two minutes is cut | F10-418
 Karpenter only records the rebalance recommendation as an event; EKS guide advises against Node Termination Handler beside it | F10-419
 The rebalance recommendation signals elevated risk and can arrive earlier | F10-523
-karpenter.sh/do-not-disrupt blocks voluntary disruption, not expiry, interruption, repair or manual deletion | F10-420
+karpenter.sh/do-not-disrupt blocks voluntary disruption, not expiry, interruption, repair or manual deletion; a pod that carries it is not evicted when its node drains, so it gets no SIGTERM on a Spot warning: use it on On-Demand and reserved pools, not on a Spot pool whose pods checkpoint on SIGTERM (the Spot sweep Job does not carry it) | F10-420
 Kueue objects: ResourceFlavor, ClusterQueue (nominalQuota), LocalQueue, Workload; Kueue v0.20.7 | F10-450
 A Job joins with the queue-name label; on admission Kueue writes the flavor's node labels and tolerations into the pod template | F10-451
 Cohorts share unused quota within borrowingLimit and lendingLimit | F09-55
@@ -50,15 +50,15 @@ Auto Mode: no image choice, no device plugin configuration (no time-slicing, no 
 Auto Mode handles Spot interruptions with no queue; Spot needs a custom NodePool; no GPU Spot NodePool printed | F10-435
 "AWS suggests running either EKS Auto Mode or self-managed Karpenter"; nodeClassRef and label prefix differ | F10-439
 Node monitoring agent sets AcceleratedHardwareReady; acts on double bit, NVLink and critical XID errors; thermal and power only reported | F10-460
-Auto repair acts after 10 minutes on the GPU condition; always on and not configurable in Auto Mode | F10-461
-Repair is forceful; Karpenter v1.15.0 and later adds a 5 or 10 minute grace period; do-not-disrupt does not exclude repair; AWS says to checkpoint and resume | F10-462
+Auto repair acts after a wait: 10 minutes on the GPU condition on Auto Mode; on self-managed Karpenter v1.15.0 and later 10 minutes when the reason matches an XID repair policy and 30 minutes otherwise; always on and not configurable in Auto Mode | F10-461
+Repair is forceful; once repair has started Karpenter v1.15.0 and later gives pods a grace period of 5 or 10 minutes (a separate timer from the wait before repair); do-not-disrupt does not exclude repair; AWS says to checkpoint and resume | F10-462
 Mountpoint for S3 CSI driver v2.9.2 (static provisioning, partial POSIX, named for checkpoints); FSx for Lustre CSI driver v1.12.0 | F10-463
 Instance store data is lost when the instance is stopped or terminated | F10-525
 The Spot interruption warning comes two minutes ahead as an EventBridge event | F10-520
 The warning is best effort and can be missing | F10-522
 Pod terminationGracePeriodSeconds defaults to 30 seconds; handle SIGTERM; checkpoint tiers of 5-30 minutes and hourly | F10-535
 Auto Mode tutorial sample output: g6e.2xlarge On-Demand node Ready at 76s | F10-438
-AWS discourages failing over to On-Demand to handle interruptions | F10-530
+For workloads that cannot wait, AWS discourages failing over to On-Demand to handle interruptions | F10-530
 AWS recommends price-capacity-optimized | F10-528
 Be flexible across at least 10 instance types and all Availability Zones | F10-529
 G instances: diversify across types, sizes and zones; Spot not recommended for production-scale training | F10-534
@@ -73,3 +73,5 @@ OSMO on AWS: EKS backend with PostgreSQL, Redis and S3 | F09-66
 OSMO newest release 6.3.1 | F10-458
 Hybrid Nodes: on-premises or edge machines as nodes; pages read say nothing about GPUs; Mountpoint CSI driver not supported there | F10-466
 Hybrid Nodes need a reliable connection to AWS | F09-119
+The sweep Job sets completionMode: Indexed (each pod gets its own index, used as the seed); the /ckpt volume is left out of the printed block | F10-451
+The gpu-spot ResourceFlavor carries a toleration for the NodePool's nvidia.com/gpu NoSchedule taint, which Kueue writes into the pod template | F10-450 F10-451 F10-410

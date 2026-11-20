@@ -228,7 +228,7 @@ const SPEC: ClusterSpec = {
         <>
           T and task 3 finish. Nothing is pending, so the remaining nodes sit idle while{' '}
           <code>scaleDownIdleTimeInSeconds</code> counts: 600 seconds by default, with an override per compute node
-          group.
+          group (Slurm 25.11 or later).
         </>
       ),
       scheduler: ['all jobs finished', 'idle clocks running'],
@@ -939,6 +939,11 @@ export function AwsPcs() {
           >
             {CREATE_SPOT_GROUP}
           </Snippet>
+          <Box variant="p">
+            A Spot group has one account prerequisite: the <code>AWSServiceRoleForEC2Spot</code> service-linked role must
+            exist in the account before the group is created.{' '}
+            <Cite id="F10-209">AWS PCS User Guide, Spot service-linked role</Cite>
+          </Box>
           <Snippet
             title="Launch template user data that mounts FSx for Lustre"
             mode="copied"

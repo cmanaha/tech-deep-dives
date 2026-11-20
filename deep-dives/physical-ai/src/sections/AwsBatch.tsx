@@ -623,7 +623,7 @@ export function AwsBatch() {
           <Box variant="p">
             One job that spans several instances, for training that needs more GPUs than one machine has. Its{' '}
             <code>nodeProperties</code> give the number of nodes and name a main node, which starts first; the others
-            start once it is <code>RUNNING</code>. Three limits shape its use: up to 1,000 nodes, one instance type for
+            start once it is <code>RUNNING</code>. Three limits shape its use: up to 1,000 nodes by default (the ECS cluster instance limit, which can be raised), one instance type for
             the whole job, and On-Demand only. If a child node dies, Batch takes no action on the other nodes, so your
             launcher has to notice and end the job.{' '}
             <Cite id="F10-49">AWS Batch User Guide, Node groups</Cite>{' '}

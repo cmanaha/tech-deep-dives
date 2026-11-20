@@ -9,7 +9,7 @@ Batch does not preempt container jobs; "Quota management is the only AWS Batch s
 A GPU request is a whole number of physical GPUs reserved for the container; no fractions | F10-44
 Multi-node parallel jobs are not supported on Spot compute environments | F09-8
 Multi-node job: main node starts first, others once it is RUNNING; a dead child node is not acted on | F10-50
-Multi-node job: nodeProperties, up to 1,000 nodes, one instance type for the whole job | F10-49
+Multi-node job: nodeProperties, up to 1,000 nodes by default (the ECS cluster instance limit, which can be raised), one instance type for the whole job | F10-49
 Job definition: retry strategy, timeout, resources and parameters can be overridden at submission; 24 KiB maximum | F10-43
 Default is one attempt with no retry; attempts 1 to 10; no rule matched means retry; AWS_BATCH_JOB_ATTEMPT starts at 1 | F10-52
 No timeout unless attemptDurationSeconds is set (minimum 60 seconds); SIGTERM then SIGKILL after 30 seconds; a timed-out job is not retried | F10-46

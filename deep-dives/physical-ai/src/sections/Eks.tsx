@@ -380,6 +380,10 @@ metadata:
 spec:
   nodeLabels:
     karpenter.sh/capacity-type: spot
+  tolerations:
+  - key: "nvidia.com/gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
 ---
 apiVersion: kueue.x-k8s.io/v1beta2
 kind: ClusterQueue
@@ -411,12 +415,10 @@ metadata:
   labels:
     kueue.x-k8s.io/queue-name: arm-queue
 spec:
+  completionMode: Indexed
   parallelism: 4
   completions: 4
   template:
-    metadata:
-      annotations:
-        karpenter.sh/do-not-disrupt: "true"
     spec:
       terminationGracePeriodSeconds: 110
       containers:
@@ -727,7 +729,9 @@ export function Eks() {
                   </td>
                   <td style={TD}>
                     A pod annotation, <code>&quot;true&quot;</code> or a duration such as <code>&quot;30m&quot;</code>,
-                    that blocks voluntary disruption of the pod&apos;s node.
+                    that blocks voluntary disruption of the pod&apos;s node. A pod that carries it is also not evicted
+                    when its node drains, so on a Spot warning it receives no SIGTERM. Use it on On-Demand and reserved
+                    pools, never on a Spot pool whose pods checkpoint on SIGTERM.
                   </td>
                   <td style={TD}>
                     Stops consolidation under the pod. It does not stop expiry, a Spot interruption, node repair or a
@@ -886,9 +890,10 @@ export function Eks() {
             one for GPUs is <code>AcceleratedHardwareReady</code>. It acts on three GPU faults: a double bit memory
             error, an NVLink error (NVLink is NVIDIA&apos;s direct GPU-to-GPU connection) and a critical XID error,
             XID being the NVIDIA driver&apos;s numbered fault report. Thermal and power problems are only reported.
-            After 10 minutes of an unhealthy GPU condition the node is replaced or rebooted, forcefully: on Auto Mode
-            pods are deleted &quot;with a minimal grace period rather than performing a standard drain&quot;, while
-            self-managed Karpenter v1.15.0 and later allows 5 or 10 minutes.{' '}
+            Repair acts after a wait: 10 minutes for an unhealthy GPU condition on Auto Mode; on self-managed Karpenter
+            v1.15.0 and later, 10 minutes when the reason matches an XID repair policy and 30 minutes otherwise. On
+            Auto Mode pods are then deleted &quot;with a minimal grace period rather than performing a standard
+            drain&quot;; Karpenter v1.15.0 and later gives the pods a grace period of 5 or 10 minutes.{' '}
             <Cite id="F10-460">EKS User Guide, node monitoring agent</Cite>{' '}
             <Cite id="F10-461">EKS User Guide, Automatically repair nodes</Cite>{' '}
             <Cite id="F10-462">EKS User Guide, repair behavior on Karpenter v1.15.0 and later</Cite>
@@ -958,8 +963,8 @@ export function Eks() {
             <Cite id="F10-438">EKS User Guide, Deploy an accelerated workload</Cite>
           </Box>
           <Box variant="p">
-            Third, the fallback of pod 4 has a cost beyond its price. The EC2 guide discourages &quot;attempting to fail
-            over to On-Demand Instances to handle interruptions&quot;, because doing so &quot;can inadvertently drive
+            Third, the fallback of pod 4 has a cost beyond its price. For workloads that cannot wait, the EC2 guide discourages
+            &quot;attempting to fail over to On-Demand Instances to handle interruptions&quot;, because doing so &quot;can inadvertently drive
             interruptions for your other Spot Instances&quot;. The recommended configuration below therefore pins a
             sweep to Spot and lets it wait.{' '}
             <Cite id="F10-530">EC2 User Guide, Best practices for Amazon EC2 Spot</Cite>
@@ -989,7 +994,8 @@ export function Eks() {
             source={<Cite id="F10-450">Kueue v0.20.7, examples/admin/single-clusterqueue-setup.yaml</Cite>}
             ours={
               <>
-                the names, the namespace, the flavor&apos;s node label, and a quota of 4 on{' '}
+                the names, the namespace, the flavor&apos;s node label and its toleration for the NodePool&apos;s{' '}
+                <code>nvidia.com/gpu</code> taint, and a quota of 4 on{' '}
                 <code>nvidia.com/gpu</code> in place of the example&apos;s CPU and memory quotas.
               </>
             }
@@ -1008,8 +1014,8 @@ export function Eks() {
             source={<Cite id="F10-451">Kueue v0.20.7, examples/jobs/sample-job.yaml</Cite>}
             ours={
               <>
-                the names, four pods, the image and command, the GPU limit in place of CPU and memory requests, the{' '}
-                <code>do-not-disrupt</code> annotation and a grace period of 110 seconds.
+                the names, four pods, the image and command, the GPU limit in place of CPU and memory requests,{' '}
+                <code>completionMode: Indexed</code> and a grace period of 110 seconds.
               </>
             }
           >
@@ -1017,8 +1023,8 @@ export function Eks() {
           </Snippet>
           <Box variant="p">
             The Job runs in indexed mode, the standard Kubernetes form that hands each pod its own number, and the
-            program uses that number as its seed. The path <code>/ckpt</code> is a volume backed by S3 through the
-            Mountpoint CSI driver. Then:
+            program uses that number as its seed. The path <code>/ckpt</code> would be a volume backed by S3 through
+            the Mountpoint CSI driver; the volume is left out of the block for length. Then:
           </Box>
           <ol style={LIST}>
             <li>

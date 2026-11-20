@@ -15,9 +15,9 @@ An instance group holds one InstanceType or a flexible list of up to 20 types in
 A group is On-Demand or Spot for life: CapacityRequirements cannot be changed after creation | F10-309
 A training plan attaches per instance group through TrainingPlanArn | F10-325
 Instance type names carry the ml. prefix, in Kubernetes scheduling constraints too | F10-304
-Continuous provisioning is the default on both orchestrators: target count recorded, failed launches retried, jobs start on arrived capacity; billing starts when the lifecycle script begins | F10-306
+Continuous provisioning is the default on the EKS path; for Slurm the pages disagree (the Slurm page calls it both optional and the default, the API Reference says the mode is for EKS-orchestrated clusters only), so set NodeProvisioningMode explicitly: target count recorded, failed launches retried, jobs start on arrived capacity; billing starts when the lifecycle script begins | F10-306
 MinInstanceCount is a start-up gate; not reached within 3 hours means rollback | F10-307
-Deep health checks: InstanceStress (DCGM level 4, about 45 to 90 minutes), InstanceConnectivity, and on EKS MultiNodeTrainingValidation; AWS plans "about a couple of hours" per new instance | F10-318
+Deep health checks: InstanceStress (DCGM level 4, about 45 to 90 minutes, the figure printed for Slurm clusters; the EKS pages give "around 60-90 minutes" for a whole check, F10-312), InstanceConnectivity, and on EKS MultiNodeTrainingValidation; AWS plans "about a couple of hours" per new instance | F10-318
 NodeRecovery is Automatic (default, recommended: reboot or replace) or None (label only) | F10-314
 EKS job auto-resume: two annotations, restartPolicy OnFailure, node selector on the Schedulable health label; Kubeflow Training Operator 1.7.0, 1.8.0 or 1.8.1 | F10-316
 Slurm auto-resume: srun --auto-resume=1; node always replaced, never rebooted; a job without the flag exits; environment set-up belongs in the one srun script | F10-315
@@ -51,3 +51,5 @@ FSx is optional for creation and recommended for production | F10-326
 HyperPod's distinguishing features target P-class nodes; for G-family fleets it is a managed node pool with Karpenter (our reading) | F10-334
 No G-family type is on the training plan list | F09-35
 HyperPod bills per provisioned instance; scale to zero only for Karpenter-scaled groups on EKS | F09-33, F10-312
+After a Spot eviction Kubernetes reschedules the pod on the replacement node (restartPolicy OnFailure recreates it); the auto-resume annotations are documented for node faults, and no page read says whether a Spot eviction counts against their retry count | F10-310 F10-316
+The create-cluster snippet passes ClusterRole (the role HyperPod assumes for autoscaling, required when autoscaling is enabled); ExecutionRole, LifeCycleConfig and VpcConfig are left out for length | F10-301

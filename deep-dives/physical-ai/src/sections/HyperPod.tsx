@@ -223,11 +223,11 @@ const SPEC: ClusterSpec = {
     {
       caption: (
         <>
-          The On-Demand node is Running. Job auto-resume restarts P2, the first of the two retries its annotation allows, and the script
-          loads the checkpoint from FSx for Lustre.
+          The On-Demand node is Running. Kubernetes reschedules P2 on the new node, and the script loads the checkpoint from FSx for
+          Lustre.
         </>
       ),
-      scheduler: ['P2 restarted, retry 1 of 2', 'resumes from its checkpoint'],
+      scheduler: ['P2 rescheduled', 'resumes from its checkpoint'],
       instances: { ...P5_UP, '1.0': 'running', '1.2': 'running', '2.0': 'running' },
       jobs: [...HELD, run('w3', 0, 1, 0), run('p1', 1, 0), run('p2', 2, 0), run('p3', 1, 2)],
       checkpoints: [{ id: 'c2', at: { store: 0, pos: 0 } }],
@@ -404,7 +404,9 @@ export function HyperPod() {
             <Cite id="F10-304">SageMaker API Reference, ClusterInstanceGroupSpecification</Cite>
           </Box>
           <Box variant="p">
-            <strong>Continuous provisioning.</strong> The default way groups are filled, on both orchestrators. HyperPod records the
+            <strong>Continuous provisioning.</strong> The default way groups are filled on the EKS path. For Slurm the pages disagree:
+            the Slurm page calls it both optional and the default, and the API Reference says the mode is for EKS-orchestrated clusters
+            only, so set <code>NodeProvisioningMode</code> explicitly and confirm it on a test cluster. HyperPod records the
             target count of each group, launches instances, retries failed launches in the background, and lets jobs start on the capacity
             that has arrived. Billing for an instance starts when its
             lifecycle script (your set-up script, run once on a new node) begins. For a multi-node group that is useless below a certain size, <code>MinInstanceCount</code> is a start-up gate: if it
@@ -417,10 +419,12 @@ export function HyperPod() {
           <Box variant="p">
             <strong>Deep health checks.</strong> Optional stress tests that run on every new or replaced instance before work lands on
             it. <code>InstanceStress</code> exercises the GPUs with NVIDIA DCGM (Data Center GPU Manager, NVIDIA&apos;s diagnostic tool)
-            at its most thorough level, which takes about 45 to 90 minutes depending on GPU count. <code>InstanceConnectivity</code>{' '}
+            at its most thorough level, which takes about 45 to 90 minutes depending on GPU count (the figure printed for Slurm clusters; the EKS pages give
+            &quot;around 60-90 minutes&quot; for a whole check). <code>InstanceConnectivity</code>{' '}
             tests the network between instances. On EKS a third type, <code>MultiNodeTrainingValidation</code>, runs a short real
             training job. AWS&apos;s planning figure for the whole process is &quot;about a couple of hours&quot; per new instance. That wait suits an eight-GPU node held for weeks and is too long for a node that exists for one job.{' '}
-            <Cite id="F10-318">SageMaker Developer Guide, deep health checks</Cite>
+            <Cite id="F10-318">SageMaker Developer Guide, deep health checks</Cite>{' '}
+            <Cite id="F10-312">SageMaker Developer Guide, HyperpodNodeClass</Cite>
           </Box>
           <Box variant="p">
             <strong>Node recovery.</strong> One cluster-level switch, <code>NodeRecovery</code>. With <code>Automatic</code>, the
@@ -665,8 +669,11 @@ spec:
               <Cite id="F10-310">SageMaker Developer Guide, managing node interruption</Cite>
             </li>
             <li>
-              <strong>Resumed.</strong> Replacement capacity arrives, from the On-Demand group if no Spot group can supply it. Job
-              auto-resume restarts the job, up to the retry count in the annotation, and the script loads the newest checkpoint.{' '}
+              <strong>Resumed.</strong> Replacement capacity arrives, from the On-Demand group if no Spot group can supply it. Kubernetes
+              reschedules the evicted pod onto it (the job&apos;s <code>restartPolicy: OnFailure</code> recreates the pod), and the
+              script loads the newest checkpoint. The auto-resume annotations are documented for node faults; no page read says
+              whether a Spot eviction counts against their retry count.{' '}
+              <Cite id="F10-310">SageMaker Developer Guide, managing node interruption</Cite>{' '}
               <Cite id="F10-316">SageMaker Developer Guide, running jobs with kubectl</Cite>
             </li>
             <li>
@@ -726,9 +733,10 @@ srun --auto-resume=1 {{train_auto_resume.sh}}`}</Snippet>
                 <Cite id="F10-325">SageMaker Developer Guide, training plans in HyperPod</Cite>
               </>
             }
-            ours="group names, instance types and counts are ours; angle-bracket values are yours to fill; ExecutionRole and LifeCycleConfig are left out for length."
+            ours="group names, instance types and counts are ours; angle-bracket values are yours to fill; ExecutionRole, LifeCycleConfig and VpcConfig are left out for length."
           >{`{
   "ClusterName": "arm-shared",
+  "ClusterRole": "<your autoscaling role ARN>",
   "Orchestrator": { "Eks": { "ClusterArn": "<your EKS cluster ARN>" } },
   "NodeProvisioningMode": "Continuous",
   "NodeRecovery": "Automatic",

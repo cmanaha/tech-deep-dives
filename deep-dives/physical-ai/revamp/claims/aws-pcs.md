@@ -21,7 +21,7 @@ PCS has no storage object; nodes mount EFS or FSx for Lustre at boot from launch
 Managed accounting: PCS runs the database, sacct queries it from the login node | F10-226
 Node states in the scaling log: LAUNCHED, REGISTERED, ACTIVE, TERMINATED (SCHEDULER_REQUESTED or EXTERNALLY_TERMINATED) | F10-219
 Job states CF then R; a node that never registers is given about 30 minutes (Slurm's resume timeout); no nominal cold-start time is published | F10-221
-scaleDownIdleTimeInSeconds defaults to 600 and can be overridden per compute node group | F10-218
+scaleDownIdleTimeInSeconds defaults to 600 and can be overridden per compute node group (Slurm 25.11 or later) | F10-218
 ODCRs are targeted by ID (strict) or by a reservation group (extra On-Demand instances allowed) | F10-235
 A Capacity Block takes one group; maximum count no larger than the block; nodes wait in a maintenance state; at expiry instances are terminated and jobs stay pending; warning event 40 minutes before | F10-234
 UltraServers attach as Capacity Block groups; PCS configures the topology plugin; jobs need --exclusive and a user-supplied IMEX script | F10-237
@@ -45,3 +45,4 @@ ParallelCluster hook mapping: OnNodeStart to nodeBootstrapped, OnNodeConfigured 
 Managed Slurm REST API on port 6820, reachable only inside the cluster's VPC | F10-229
 g6e.12xlarge has four GPUs (figure, instance type is this dive's choice) | F09-76
 g6e.xlarge has one GPU (figure, instance type is this dive's choice) | F08-45
+A Spot compute node group needs the AWSServiceRoleForEC2Spot service-linked role in the account | F10-209
