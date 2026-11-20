@@ -4,8 +4,10 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import Table from '@cloudscape-design/components/table';
+import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite } from '../components/Cite';
 import { Figure } from '../components/Figure';
+import { PlacementMap } from '../components/PlacementMap';
 import { ARM, TASK_STORY } from '../lib/task';
 
 /* The thread task, stated once for this section. */
@@ -15,33 +17,19 @@ const TASK = `one ${ARM} arm that must ${TASK_STORY}`;
 const READ_ON = '2026-11-20';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
-const INK = '#16191f';
 const MUTED = '#5f6b7a';
-const EMPHASIS = '#0972d3';
 
-type Tone = 'cpu' | 'tensor' | 'rt' | 'robot' | 'neutral';
-
-const TONES: Record<Tone, { fill: string; ink: string }> = {
-  cpu: { fill: '#e8f1fb', ink: '#1f5fa8' },
-  tensor: { fill: '#e6f6ea', ink: '#1e7b3a' },
-  rt: { fill: '#fdeedd', ink: '#a85a0a' },
-  robot: { fill: '#fff6d6', ink: '#7a5c00' },
-  neutral: { fill: '#ffffff', ink: '#5f6b7a' },
-};
-
-const NARROW: CSSProperties = { maxWidth: 520, margin: '0 auto' };
 const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 
 /* ------------------------------------------------------------------------ */
-/* Diagram 29.1: the decision path                                           */
+/* Diagram 29.1: the six questions behind the placement map                  */
 /* ------------------------------------------------------------------------ */
 
 interface Answer {
-  /** The answer to the question, one or two short lines. */
+  /** The answer to the question, in one or two fragments. */
   a: string[];
-  /** Where that answer leads, one or two lines. */
+  /** Where that answer leads, in one or two fragments. */
   r: string[];
-  tone?: Tone;
 }
 
 interface Question {
@@ -63,16 +51,16 @@ const PATH: Band[] = [
       {
         q: '1. Which part fills first?',
         answers: [
-          { a: ['CPU cores'], r: ['Graviton CPU instances, or the', "robot's own computer"], tone: 'cpu' },
-          { a: ['Ray-tracing cores'], r: ['G family only: P-family GPUs', 'have no RT cores'], tone: 'rt' },
-          { a: ['Tensor cores,', 'one GPU'], r: ['A one-GPU G size, picked by', 'its GPU memory'], tone: 'tensor' },
-          { a: ['Tensor cores,', 'many GPUs'], r: ['P family: eight GPUs per node,', 'EFA between nodes'], tone: 'tensor' },
+          { a: ['CPU cores'], r: ['Graviton CPU instances, or the', "robot's own computer"] },
+          { a: ['Ray-tracing cores'], r: ['G family only: P-family GPUs', 'have no RT cores'] },
+          { a: ['Tensor cores,', 'one GPU'], r: ['A one-GPU G size, picked by', 'its GPU memory'] },
+          { a: ['Tensor cores,', 'many GPUs'], r: ['P family: eight GPUs per node,', 'EFA between nodes'] },
         ],
       },
       {
         q: '2. Is there a deadline per unit?',
         answers: [
-          { a: ["Yes: the robot's", 'clock'], r: ['It runs on the robot. The cloud', 'delivers it and stops here'], tone: 'robot' },
+          { a: ["Yes: the robot's", 'clock'], r: ['It runs on the robot. The cloud', 'delivers it and stops here'] },
           { a: ['No'], r: ['Go on: pick an orchestrator'] },
         ],
       },
@@ -94,7 +82,7 @@ const PATH: Band[] = [
         answers: [
           { a: ['Now and then'], r: ['A job service: Training Jobs or', 'Batch, nothing left running'] },
           { a: ['Now and then,', 'in Slurm'], r: ['AWS PCS: managed Slurm, its', 'node groups scale to zero'] },
-          { a: ['All day, for', 'several teams'], r: ['A held cluster with quotas:', 'HyperPod or EKS'] },
+          { a: ['All day, for', 'several teams'], r: ['A persistent cluster with quotas:', 'HyperPod or EKS'] },
         ],
       },
     ],
@@ -123,115 +111,34 @@ const PATH: Band[] = [
   },
 ];
 
-const D = { w: 400, pad: 10, top: 46, bandHead: 44, q: 30, a: 40, gap: 6, bandGap: 30 };
+const QUESTIONS = PATH.flatMap((band) => band.questions.map((question) => question.q));
 
-function bandHeight(band: Band) {
+/* The six questions as a list, for a reader who wants the path without the map. */
+function Checklist() {
   return (
-    D.bandHead +
-    band.questions.reduce((h, question) => h + D.q + D.gap + question.answers.length * D.a + D.gap, 0) +
-    4
-  );
-}
-
-function lines(text: string[], x: number, yMid: number, props: { fill: string; weight?: number; anchor?: 'start' | 'middle' }) {
-  const first = text.length === 1 ? yMid + 4 : yMid - 3;
-  return text.map((line, i) => (
-    <text
-      key={line}
-      x={x}
-      y={first + i * 14}
-      fontSize="12"
-      fontFamily="sans-serif"
-      fontWeight={props.weight ?? 400}
-      fill={props.fill}
-      textAnchor={props.anchor ?? 'start'}
-    >
-      {line}
-    </text>
-  ));
-}
-
-function DecisionPath() {
-  const total = D.top + PATH.reduce((h, band) => h + bandHeight(band) + D.bandGap, 0) - D.bandGap + D.pad;
-  const nodes: ReactNode[] = [];
-  let y = D.top;
-  PATH.forEach((band, bi) => {
-    const h = bandHeight(band);
-    nodes.push(
-      <g key={band.title}>
-        <rect x={D.pad} y={y} width={D.w - 2 * D.pad} height={h} rx="8" fill="#ffffff" stroke={MUTED} strokeWidth="1" />
-        <text x={D.pad + 12} y={y + 20} fontSize="14" fontFamily="sans-serif" fontWeight="700" fill={INK}>
-          {band.title}
-        </text>
-        <text x={D.pad + 12} y={y + 36} fontSize="12" fontFamily="sans-serif" fill={MUTED}>
-          {band.sub}
-        </text>
-      </g>,
-    );
-    let qy = y + D.bandHead;
-    band.questions.forEach((question) => {
-      nodes.push(
-        <g key={question.q}>
-          <rect x={D.pad + 8} y={qy} width={D.w - 2 * D.pad - 16} height={D.q} rx="5" fill="#f2f8fd" stroke={EMPHASIS} strokeWidth="1.5" />
-          <text x={D.pad + 18} y={qy + 20} fontSize="13" fontFamily="sans-serif" fontWeight="700" fill={INK}>
-            {question.q}
-          </text>
-        </g>,
-      );
-      let ay = qy + D.q + D.gap;
-      question.answers.forEach((answer) => {
-        const tone = TONES[answer.tone ?? 'neutral'];
-        const mid = ay + (D.a - 6) / 2;
-        nodes.push(
-          <g key={`${question.q}-${answer.a.join(' ')}`}>
-            <rect x={D.pad + 8} y={ay} width="126" height={D.a - 6} rx="5" fill={tone.fill} stroke={tone.ink} strokeWidth="1" />
-            {lines(answer.a, D.pad + 71, mid, { fill: tone.ink, weight: 700, anchor: 'middle' })}
-            <line x1={D.pad + 137} y1={mid} x2={D.pad + 149} y2={mid} stroke={MUTED} strokeWidth="1.5" />
-            <polygon points={`${D.pad + 149},${mid - 4} ${D.pad + 156},${mid} ${D.pad + 149},${mid + 4}`} fill={MUTED} />
-            {lines(answer.r, D.pad + 162, mid, { fill: INK })}
-          </g>,
-        );
-        ay += D.a;
-      });
-      qy = ay + D.gap;
-    });
-    y += h;
-    if (bi < PATH.length - 1) {
-      const cx = D.w / 2;
-      nodes.push(
-        <g key={`${band.title}-arrow`}>
-          <line x1={cx} y1={y + 4} x2={cx} y2={y + D.bandGap - 12} stroke={MUTED} strokeWidth="2" />
-          <polygon points={`${cx - 6},${y + D.bandGap - 12} ${cx + 6},${y + D.bandGap - 12} ${cx},${y + D.bandGap - 3}`} fill={MUTED} />
-        </g>,
-      );
-      y += D.bandGap;
-    }
-  });
-  return (
-    <div style={NARROW}>
-      <svg
-        viewBox={`0 0 ${D.w} ${total}`}
-        role="img"
-        aria-labelledby="choosing-path-title"
-        style={{ width: '100%', height: 'auto' }}
-      >
-        <title id="choosing-path-title">The decision path from a workload to a machine family, an orchestrator and a capacity market</title>
-        <desc>
-          Six questions in three groups, read from top to bottom. The part that fills first and a deadline per unit
-          pick the machine family. Coupling, how often the job runs and whether the team runs Slurm pick one of four
-          orchestrators: AWS Batch, AWS PCS, SageMaker HyperPod or Amazon EKS. What a stop costs and
-          fixed dates pick the capacity market.
-        </desc>
-        <rect x="0" y="0" width={D.w} height={total} fill="#fbfbfd" />
-        <text x={D.pad} y="20" fontSize="14" fontFamily="sans-serif" fontWeight="700" fill={INK}>
-          From one workload to three choices
-        </text>
-        <text x={D.pad} y="37" fontSize="12" fontFamily="sans-serif" fill={MUTED}>
-          Answer the six questions in order, top to bottom
-        </text>
-        {nodes}
-      </svg>
-    </div>
+    <SpaceBetween size="s">
+      {PATH.map((band) => (
+        <div key={band.title}>
+          <Box variant="p">
+            <strong>{band.title}</strong>, {band.sub}.
+          </Box>
+          <ul style={LIST}>
+            {band.questions.map((question) => (
+              <li key={question.q}>
+                <strong>{question.q}</strong>
+                <ul style={LIST}>
+                  {question.answers.map((answer) => (
+                    <li key={answer.a.join(' ')}>
+                      <em>{answer.a.join(' ')}.</em> {answer.r.join(' ')}.
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </SpaceBetween>
   );
 }
 
@@ -603,7 +510,7 @@ export function Choosing() {
             You have a workload in hand and a machine to pick. Section 20, Fifteen Workloads, Five Shapes, named the
             part of the machine each workload fills first and the properties that give a job its shape. Section 24,
             Orchestrating Physical AI on AWS, introduced the four orchestrators and the ways an instance is bought, and
-            sections 25 to 28 took the orchestrators apart one at a time. This section joins them into one path and
+            sections 25 to 28 took the orchestrators apart one at a time. This section joins them into one map and
             one table.
           </Box>
           <Box variant="p">Ask the questions in this order, because each answer narrows the next.</Box>
@@ -639,7 +546,7 @@ export function Choosing() {
         header={
           <Header
             variant="h2"
-            description="Follow six questions from a job's part and shape to a family, an orchestrator and a market, and know which steps AWS has published and which are ours"
+            description="See where each of the fifteen workloads lands on six questions: its machine family, its orchestrator and its capacity market, with the steps AWS has published told apart from ours"
           >
             The decision path
           </Header>
@@ -684,17 +591,30 @@ export function Choosing() {
               <Cite id="F09-90">EC2 user guide, Capacity Blocks for ML</Cite>
             </li>
           </ul>
+          <Box variant="p">
+            The map plots the fifteen workloads of section 20 on the six questions, two per panel. A unit is one
+            piece of work that stands alone: an episode, a clip, a seed or a whole training run. A submission is one
+            request to an orchestrator, and a Slurm job array is Slurm&apos;s form of the array job. The reservation
+            lists are the two pages that name the instance types a Capacity Block or a training plan can book. Each
+            dot is one workload, coloured by the part it fills first and marked with its stage of the loop.
+          </Box>
           <Figure
-            cites="F09-11 F09-91 F09-35 F09-81 F06-60 F08-78 F10-200 F10-208"
+            cites="F09-5 F09-11 F09-91 F09-35 F09-81 F06-60 F08-78 F10-200 F10-208"
             caption={
               <>
-                Read from the top. Each blue box is a question, each box under it an answer, and the arrow points at
-                what that answer selects. The path is our reading.
+                The same fifteen dots appear in all three panels. Hover over a dot, tap it, tab to it or pick from the
+                list, and it is ringed in every panel while the sentence under the map gives its three answers. Panel
+                A is a grid of answers. Panels B and C are region maps: the region a dot sits in is its answer, and
+                its position inside the region carries no value, because the sources print a count or a duration for
+                few of these workloads. A hollow dot is placed by its shape alone. The placements are our reading.
               </>
             }
           >
-            <DecisionPath />
+            <PlacementMap workloads={ROWS.map((row) => row.name)} questions={QUESTIONS} initial="Policy fine-tune" />
           </Figure>
+          <ExpandableSection headerText="The six questions, as a checklist">
+            <Checklist />
+          </ExpandableSection>
           <Box variant="p">
             Question 4 rests on two sentences AWS has published. The post on this dive&apos;s own arm: Training Jobs
             for a fully managed service, HyperPod for a team that already runs Kubernetes or Slurm and wants a
