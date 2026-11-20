@@ -41,11 +41,80 @@ Newest first-party version found on 2026-11-20, against what the seed research n
 | Genesis | v1.4.7 | 2026-11-17 | https://github.com/Genesis-Embodied-AI/Genesis/releases/tag/v1.4.7 | "1.0, May 2026 blog" |
 | 3DGRUT | v1.1.0 | 2026-06-10 | https://github.com/nv-tlabs/3dgrut/releases/tag/v1.1.0 | "v2.0.0 June 2026" |
 
-(Rows for Isaac Lab-Arena, papers and docs are added below as they are fetched.)
+| Isaac Lab-Arena | v0.3 (alpha) announced; a `release/0.4.0` branch exists, no announcement found | 2026-09-10 (0.3); branch commit 2026-11-19 | https://github.com/isaac-sim/IsaacLab-Arena/discussions/1245 | v0.3 alpha, 2026-09-10 |
+| Isaac Sim requirements page | 6.2.0 page (same content as "latest") | fetched 2026-11-20 | https://docs.isaacsim.omniverse.nvidia.com/6.2.0/installation/requirements.html | "current, references Isaac Sim 6.0 on DGX Spark" |
+| MuJoCo Warp nightly benchmarks | last data row 2026-09-03 (commit 917a14b) | 2026-09-03 | https://google-deepmind.github.io/mujoco_warp/nightly/ | not used by the seed |
+| Isaac Lab release benchmark export | snapshot of 2026-10-12 (GA 3.0) | 2026-10-12 | Isaac Lab v3.0.0, `docs/source/_static/benchmarks/environment-performance-release.csv` | not used by the seed |
+| Isaac Lab paper | arXiv 2511.04831v1 (no later version) | 2025-11-06 | https://arxiv.org/abs/2511.04831v1 | same |
+| MuJoCo Playground paper | arXiv 2502.08844v1 (no later version) | 2025-02-12 | https://arxiv.org/abs/2502.08844v1 | same |
+| PolaRiS | arXiv 2512.16881v2 | 2025-12-30 | https://arxiv.org/abs/2512.16881v2 | unversioned |
+| RoboArena | arXiv 2506.18123v2 | 2025-11-29 | https://arxiv.org/abs/2506.18123v2 | same revision date |
+| RoboWorld | arXiv 2607.01060v4 | 2026-07-15 | https://arxiv.org/abs/2607.01060v4 | v3 |
+| LIBERO successors | LIBERO-Plus arXiv 2510.13626v3; LIBERO-PRO arXiv 2510.03827v2 | 2025-12-26; 2026-05-25 | arXiv listings | seed called LIBERO "close to saturated" without naming successors |
+| MuJoCo Menagerie | no releases; commit 370c439 | 2026-11-10 | https://github.com/google-deepmind/mujoco_menagerie | not named |
+| TheRobotStudio/SO-ARM100 | no releases; commit 141aea7 | 2026-11-20 | https://github.com/TheRobotStudio/SO-ARM100 | not named in seed 02 section 3 |
+
+Version skew to keep in view: Isaac Lab 3.0.0 pins Newton 1.6.1 and Warp 1.17; Newton's own newest is 1.8.0 on Warp 1.19; the Isaac Sim 6.2.0 release notes quoted by the seed bundle "MuJoCo and MuJoCo Warp 3.12.0" while MuJoCo itself is at 4.0.1.
 
 ## 3. Pinned sources
 
-See the tables at the end of this section; they are completed as the register grows.
+All accessed 2026-11-20.
+
+**Papers (arXiv ID with version; venue as confirmed)**
+
+| arXiv | Paper | Venue | Entries |
+|---|---|---|---|
+| 2502.08844v1 | MuJoCo Playground | preprint (repository labels the code "RSS 2025"; venue not confirmed here) | F06-32 to F06-34, F06-96 |
+| 2511.04831v1 | Isaac Lab: A GPU-Accelerated Simulation Framework for Multi-Modal Robot Learning | preprint, first-party lab | F06-63 to F06-65, F06-67, F06-69, F06-70 |
+| 1703.06907v1 | Domain Randomization (Tobin et al.) | preprint (submitted to IROS 2017 per arXiv comment); history | F06-66 |
+| 2405.05941v1 | SIMPLER: Evaluating Real-World Robot Manipulation Policies in Simulation | preprint; history | F06-71, F06-81 |
+| 2512.16881v2 | PolaRiS | preprint | F06-73, F06-74, F06-82, F06-83, F06-90, F06-96 |
+| 2506.18123v2 | RoboArena | preprint (venue not confirmed here) | F06-88 |
+| 2607.01060v4 | RoboWorld | preprint | F06-89 |
+| 2506.00613v3 | WorldGym | preprint | F06-90 |
+| 2610.13522v1 | Beyond Successful Robot Demonstrations (HF-WM) | preprint | F06-90 |
+| 2606.27375v1 | ABC: Scalable Behavior Cloning with Open Data, Training, and Evaluation | preprint | F06-84, F06-96 |
+| 2609.13679v2 | Lessons Learned From the REAL-I Challenge at ICRA 2026 | preprint | F06-85 |
+| 2510.13626v3, 2510.03827v2 | LIBERO-Plus, LIBERO-PRO (abstracts only) | preprint | F06-87 |
+| 2503.10966v4 | STEP: Policy Comparison with Near-Optimal Stopping (abstract only) | peer-reviewed, RSS 2025 (arXiv comment) | F06-96, F06-98 |
+| 2409.09491v2 | Robot Learning as an Empirical Science (abstract only) | preprint; history | F06-98 |
+| 2608.07555 | promotion gate paper | owned by stream 04; referenced, not read | F06-98 |
+
+**Code and release notes (tag and 40-character SHA)**
+
+| Repository | Tag | SHA | Files read | Entries |
+|---|---|---|---|---|
+| google-deepmind/mujoco | 4.0.1 | 4ed093a9f06b170bd1564942fa37e1bb907d93e3 | release notes 4.0.0 and 4.0.1; `doc/computation/index.rst`, `doc/XMLreference.rst`, `doc/programming/samples.rst`, `doc/programming/rendering.rst`, `doc/mjx.rst`, `doc/mjwarp/index.rst` | F06-1, F06-2, F06-9 to F06-18, F06-23, F06-24, F06-61, F06-78, F06-99, F06-100 |
+| google-deepmind/mujoco | default branch | 23c23e0dc1643e99bb2a0abaf5dc4cf873e0bd77 | `doc/mjwarp/index.rst` (OptiX section) | F06-62 |
+| google-deepmind/mujoco | discussion 3773 | n/a | "MuJoCo 4" announcement, 2026-11-07 | F06-3 to F06-8 |
+| google-deepmind/mujoco_warp | v4.0.1 | 2db59f4d929dab714d85fab946d93427d2aa56e7 | `README.md`, `pyproject.toml` | F06-19 |
+| google-deepmind/mujoco_warp | none (benchmarked commit) | 917a14b77735944140b66345325c8a14f2fe6be7 | `benchmarks/README.md`, `benchmarks/render/README.md`, `benchmarks/*/__init__.py`; nightly data files | F06-20, F06-22, F06-24 |
+| google-deepmind/mujoco_warp | pull requests 1113 (merged 2026-02-06) and 1932 (closed, unmerged) | n/a | descriptions | F06-21, F06-24 |
+| google-deepmind/mujoco_playground | v1.0.1 | 084e7957842792725d70866ee840d8fd79f17bbe | `README.md`, `mujoco_playground/docs/{changelog,sim2real,sysid}.rst`, `tasks/manipulation/pick_cube/so101/{task.py,deploy/README.md}`, `tasks/sysid/so101/README.md`, `robots/so101/sim/constant.py`, `profiling/README.md` | F06-25 to F06-31 |
+| google-deepmind/mujoco_menagerie | none | 370c43965323c0944b433b202aac5058b5f907a9 | `robotstudio_so101/README.md`, directory listing | F06-37 |
+| TheRobotStudio/SO-ARM100 | none | 141aea7bcac2744d92998e30268c413202a56f96 | `Simulation/SO101/README.md`, directory listing | F06-35, F06-36 |
+| newton-physics/newton | v1.8.0 | 425db81f01e402b51f96f560e154d529d645c6de | release notes, `README.md`, `docs/concepts/sensors.rst` | F06-39 to F06-43 |
+| newton-physics/newton | default branch | 9bd0215d9c82508ea8d759c41df1b4577423d6ea | `docs/concepts/sensors.rst` (OptiX sentence) | F06-62 |
+| isaac-sim/IsaacSim | v6.2.0 | 74a9356b20250dd60337d90b4b4d913c9454d32b | release entry | F06-44 |
+| isaac-sim/IsaacLab | v3.0.0 | e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4 | release notes; `docs/source/concepts/{renderers,physics_backends}.rst`, `docs/source/isaaclab/installation.rst`, `docs/source/_static/benchmarks/{README.md,environment-performance-release.csv}`, `source/isaaclab_assets/isaaclab_assets/robots/so101.py`, `docs/source/policy_deployment/06_so101_typing/so101_typing_policy.rst`, `source/isaaclab/isaaclab/envs/mdp/events.py` | F06-45 to F06-51, F06-54, F06-55, F06-68, F06-102 |
+| isaac-sim/IsaacLab-Arena | none (`release/0.4.0` branch head) | 2281e1256bd10bf9b62b67ccccec9c87cd51fc6f | branch list; discussion 1245 | F06-80, F06-92 |
+| huggingface/lerobot | v0.7.0 | 410c095eacc0011d998a73383eb94abed2715af0 | `docs/source/simulation.mdx`, `src/lerobot/utils/eval_stats.py`, `src/lerobot/scripts/lerobot_eval.py`, `src/lerobot/sim/integrations/` listing | F06-38, F06-94, F06-95, F06-97 |
+| nv-tlabs/3dgrut | v1.1.0 | 0a5832248698ab8456b181d6ea17fe02eda58637 | release notes, `README.md` | F06-75, F06-76 |
+| Genesis-Embodied-AI/Genesis | v1.4.7 | 0a9e28ac6af9206baf26285f7b71104d670a5e51 | `README.md` (searched for throughput figures; none found) | comparison table note |
+| LightwheelAI/leisaac | v0.4.0 | 1651c321e9b0c1bb54233211fc7b3cd70d8373d5 | release list only | U6 |
+
+**Documentation and first-party web pages (unversioned unless noted)**
+
+- https://docs.isaacsim.omniverse.nvidia.com/6.2.0/installation/requirements.html (F06-52, F06-53, F06-101)
+- https://docs.isaacsim.omniverse.nvidia.com/6.2.0/assets/usd_assets_nurec.html (F06-77)
+- https://isaac-sim.github.io/IsaacLab-Arena/main/pages/references/performance.html (F06-93)
+- https://google-deepmind.github.io/mujoco_warp/nightly/ (F06-20, F06-22, F06-24)
+- https://developer.nvidia.com/discover/ray-tracing (F06-56, F06-57)
+- https://www.nvidia.com/en-us/data-center/products/a10-gpu/ , https://www.nvidia.com/en-us/data-center/l4/ , https://www.nvidia.com/en-us/data-center/l40s/ , https://www.nvidia.com/en-us/data-center/rtx-pro-6000-blackwell-server-edition/ , https://www.nvidia.com/en-us/data-center/h100/ , https://www.nvidia.com/en-us/data-center/h200/ (F06-58, F06-59)
+- https://aws.amazon.com/blogs/machine-learning/scale-robot-reinforcement-learning-with-nvidia-isaac-lab-on-amazon-sagemaker-ai/ (2026-06-09; F06-60)
+- https://aws.amazon.com/blogs/physical-ai/bringing-a-frontier-world-model-to-the-convenience-store-inside-telexistences-dreamzero-experiment-on-aws/ (2026-09-09; F06-72, F06-86)
+- https://aousd.org/blog/foundations-of-open-3d-development-introducing-aousd-core-specification-1-0/ (F06-79)
+- https://www.1x.tech/discover/1x-world-model (2024-09-17; F06-91)
 
 ## 4. Claim register
 
@@ -197,7 +266,7 @@ See the tables at the end of this section; they are completed as the register gr
 - Location: MuJoCo docs, MuJoCo Warp chapter, "Batch Rendering"; `benchmarks/render/README.md` at commit 917a14b; nightly `primitives.jsonl` last row; pull request 1113 "Limitations".
 - Verdict: NEW
 - Evidence: https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/mjwarp/index.rst | Tier 1, first-party docs at a pinned tag | documentation of support | "MJWarp provides a batch renderer for high-throughput ray tracing built on Warp's accelerated BVHs for rendering worlds with multiple cameras in parallel." Benchmark table (https://github.com/google-deepmind/mujoco_warp/tree/917a14b77735944140b66345325c8a14f2fe6be7/benchmarks/render): "Cameras | 1", "Resolution | 64x64", "Worlds | 8192"; nightly row: "render": 756.09, "total_memory": 44352733184. Pull request 1113 (merged 2026-02-06): "The renderer currently scales linearly with resolution and number of cameras, as it scales with the total number of rays that need to be raycast." (accessed 2026-11-20). [derived]: 1e9 / 756 ns = 1.32M world-frames per second; 44,352,733,184 / 8192 = 5.41 MB per world. The nanosecond unit is inferred from the physics rows, where `step` x `steps_per_second` = 1e9 (171.59 x 5,765,714 = 0.99e9).
-- Use in dive: section 13, a ray tracer that is ordinary GPU compute: it walks a tree in CUDA kernels and does not call the RTX hardware path (see F06 section G for the RT-core question). Also the cost shape: a 64x64 image is 4,096 rays; a 640x480 image is 307,200 rays, 75 times more [derived].
+- Use in dive: section 13, a ray tracer that is ordinary GPU compute: it walks a tree in CUDA kernels and does not call the RTX hardware path (see F06-57 and F06-62 in group H for the RT-core question). Also the cost shape: a 64x64 image is 4,096 rays; a 640x480 image is 307,200 rays, 75 times more [derived].
 
 ### D. MuJoCo Playground: the 2025 paper and the 1.0 rebuild
 
@@ -551,3 +620,377 @@ Quotes from nvidia.com product and developer pages in this section were extracte
 - Evidence: https://github.com/isaac-sim/IsaacLab-Arena/discussions/1245 | Tier 2, first-party announcement | documentation of support | "[NEW] Agentic environment generation (Experimental) - Describe a task in natural language. An agent infers spatial constraints between objects, creates a reviewable specification, finds SimReady USD assets, and builds a family of Arena environments for policy evaluation. Initial examples cover composite pick-and-place." (accessed 2026-11-20)
 - Use in dive: section 14, SimReady in one sentence: a USD asset that carries what simulation needs (collision shape, mass, semantic label), so a tool can drop it into a scene without hand work.
 
+### K. Evaluation: offline loss, closed-loop simulation, world-model scoring, real trials
+
+**F06-81. Peer-level data that offline action error does not rank policies (history, 2024): across the SIMPLER tasks, ranking policies by validation action MSE gave Pearson r of 0.308 with real-world success on average (MMRV 0.375), against 0.924 (MMRV 0.056) for closed-loop simulated evaluation with visual matching. The authors: "validation MSE is not a good proxy for a policy's real-world performance". [author reported]**
+- Location: arXiv 2405.05941v1, Section VI and Table I (rows "Validation MSE", "SIMPLER-VarAgg", "SIMPLER-VisMatch"; columns Pick Coke Can, Move Near, Drawer, Average).
+- Verdict: CARRIED (seed 02 section 6.1 carried the 0.924 and 0.056; re-fetched, and the validation-MSE row added)
+- Evidence: https://arxiv.org/abs/2405.05941v1 | Tier 3, preprint (venue not confirmed here) | benchmark claim (author reported) | "Using validation loss for model selection is common in supervised learning. However, our analysis supports an intuition shared by many robotics practitioners: we show that for imitation learning, validation MSE is not a good proxy for a policy's real-world performance, leading to high MMRV and low Pearson r." Table I: "Validation MSE 0.412 0.408 0.306 0.375" (MMRV), "Validation MSE 0.464 0.230 0.231 0.308" (Pearson r), "SIMPLER-VisMatch (ours) 0.976 0.855 0.942 0.924" (Pearson r), "SIMPLER-VisMatch (ours) 0.031 0.111 0.027 0.056" (MMRV); "over ~1500 evaluation episodes" (accessed 2026-11-20)
+- Use in dive: section 16, the section's strongest number: 0.31 against 0.92. Offline loss ranks policies barely better than chance; running the policy in a matched simulator ranks them well. Labelled 2024, on RT-1, RT-1-X, RT-2-X and Octo.
+
+**F06-82. The same finding on 2025 vision-language-action models: PolaRiS reports that action MSE "is a poor metric for real-world policy performance and shows low correlation", and that LIBERO scores are "poorly correlated with real-world performance, with nearly all tested policies scoring between 90 and 95% success in Libero, but spanning the full spectrum from high-performing to low-performing policies in the real world". [author reported]**
+- Location: arXiv 2512.16881v2, Section 5.2 "Real-to-Sim Correlation in Unseen Environments", Figures 6 and 7.
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2512.16881v2 | Tier 3, preprint | benchmark claim (author reported) | "In line with existing literature, we find that MSE is a poor metric for real-world policy performance and shows low correlation. Libero-score too is poorly correlated with real-world performance, with nearly all tested policies scoring between 90 and 95% success in Libero, but spanning the full spectrum from high-performing to low-performing policies in the real world." (accessed 2026-11-20)
+- Use in dive: section 16, two separate lessons: offline loss misleads, and a saturated simulated benchmark misleads too. Policies: pi0, pi0-FAST, PaliGemma-binning, pi0.5 on DROID. The numeric correlations for the MSE and LIBERO baselines are in Figure 7 and were not extracted from the figure.
+
+**F06-83. PolaRiS's scanned-twin evaluation correlated with real results at "an average Pearson correlation of r = 0.9" across six paired environments (worst single environment r = 0.81), and at r = 0.98 with RoboArena scores. Protocol: 20 real rollouts per policy per environment as ground truth, 50 simulated rollouts per task. [author reported]**
+- Location: arXiv 2512.16881v2, introduction and Sections 5.1 and 5.2.
+- Verdict: CARRIED (seed 02 section 6.1, re-fetched at v2)
+- Evidence: https://arxiv.org/abs/2512.16881v2 | Tier 3, preprint | benchmark claim (author reported) | "with an average Pearson correlation of r = 0.9. PolaRiS evaluations also strongly correlate (r = 0.98) with policy scores in RoboArena" ... "the worst-case correlation across all six tested environments is r = 0.81" ... "For each environment we run 20 real-world evaluation rollouts per policy to establish a ground-truth ranking of policy performance." (accessed 2026-11-20)
+- Use in dive: section 16, closed-loop simulation that tracks reality, with its conditions (four policies; co-training per F06-74; a correlation computed over four policies has little statistical weight of its own).
+
+**F06-84. A 2026 counterweight: the ABC behaviour-cloning study found that training loss and validation action error are "both negatively correlated with real-world performance, with statistically significant Pearson and Spearman correlations", while validation loss "is not significantly correlated". The authors still say offline metrics "cannot reliably predict task success rates or reveal failure modes". [author reported]**
+- Location: arXiv 2606.27375v1, Section 4 (offline metrics versus real-world performance), Figures 7 and 8.
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2606.27375v1 | Tier 3, preprint | benchmark claim (author reported) | "Training loss and validation action error are both negatively correlated with real-world performance, with statistically significant Pearson and Spearman correlations. Validation action error shows the strongest negative correlation. In contrast, validation loss is not significantly correlated with real-world performance. We note that validation action error is only meaningful when the number of diffusion steps is held fixed" ... "meanwhile, validation loss initially goes down but then increases even though performance improves over time. Offline metrics, such as validation action error and training loss, thus give us a cheap, scalar proxy for evaluating the many small design decisions in this section without having to test everything in the real world. While they cannot reliably predict task success rates or reveal failure modes" (accessed 2026-11-20)
+- Use in dive: section 16, the precise form of the claim. Within one model family and one training run, lower action error tends to go with better checkpoints; across different policies, or as a prediction of the success rate itself, it fails. And validation loss can rise while the robot improves. See Contradictions.
+
+**F06-85. Why offline error misses: it "does not fully capture closed-loop effects such as compounding errors, contact dynamics, or recovery ability, and therefore does not always correlate perfectly with real-robot success" (ICRA 2026 REAL-I challenge report).**
+- Location: arXiv 2609.13679v2, discussion section on evaluation.
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2609.13679v2 | Tier 3, preprint | production report | "NUS-CLEAR used held-out open-loop action prediction as a practical proxy for checkpoint selection and found it useful for detecting overfitting during on-site adaptation. Nevertheless, open-loop error does not fully capture closed-loop effects such as compounding errors, contact dynamics, or recovery ability, and therefore does not always correlate perfectly with real-robot success." ... "Developing offline or lightweight evaluation metrics that reliably predict closed-loop deployment performance therefore remains an important research problem for practical robot learning." (accessed 2026-11-20)
+- Use in dive: section 16, the mechanism in three named effects. Open-loop: the policy is shown a recorded observation and its action is compared with the recorded action; its own action never changes the next observation. Closed-loop: its action moves the arm, which changes the next image, so a small error at step 10 becomes a different scene at step 50.
+
+**F06-86. The same lesson in an AWS customer engagement (2026-09-09): "offline MSE does not monotonically predict closed-loop success. A model with low average prediction error can still fail in the loop, while a model with higher MSE can succeed by having learned transferable primitives. Closed-loop evaluation remained the definitive measure." The post also explains the bias: the offline setup feeds ground-truth frames, "so offline rollouts understate the model's true closed-loop influence". [vendor claim]**
+- Location: AWS Physical AI blog, Telexistence DreamZero post, "Fine-Tuning and Evaluating in Simulation" and "What surfaced".
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://aws.amazon.com/blogs/physical-ai/bringing-a-frontier-world-model-to-the-convenience-store-inside-telexistences-dreamzero-experiment-on-aws/ | Tier 2, first-party vendor blog (AWS), dated 09 SEP 2026 | production report | quotes as in the claim, plus "because the offline setup feeds the model ground-truth video frames, generated actions deviate only slightly from ground truth by design" (accessed 2026-11-20)
+- Use in dive: section 16, a production voice for the claim, with the compute consequence stated in the same post: closed-loop rollouts ran in a simulator on G7e (RTX PRO 6000 Blackwell) while fine-tuning ran on P6-B200.
+
+**F06-87. LIBERO's 2025 successors exist because the original saturated. LIBERO-Plus perturbs seven dimensions (object layout, camera viewpoint, robot initial state, language, lighting, background texture, sensor noise) and reports performance "dropping from 95% to below 30% under modest perturbations". LIBERO-PRO reports models above 90% on standard LIBERO whose "performance collapses to 0.0%" under its generalised setting. [author reported]**
+- Location: arXiv 2510.13626v3 (LIBERO-Plus), abstract; arXiv 2510.03827v2 (LIBERO-PRO, revised 25 May 2026), abstract.
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2510.13626v3 | Tier 3, preprint (a CVPR 2026 listing under a different subtitle appeared in search results; not confirmed here) | benchmark claim (author reported) | "models exhibit extreme sensitivity to perturbation factors, including camera viewpoints and robot initial states, with performance dropping from 95% to below 30% under modest perturbations. Surprisingly, models are largely insensitive to language variations, with further experiments revealing that models tend to ignore language instructions completely." And https://arxiv.org/abs/2510.03827v2 | Tier 3, preprint | "although existing models achieve over 90% accuracy under the standard LIBERO evaluation, their performance collapses to 0.0% under our generalized setting." (accessed 2026-11-20)
+- Use in dive: section 16, what a high benchmark score does not say. Practical: LeRobot v0.7.0 ships a `libero_plus` integration next to `libero` (F06-38), so the perturbed suite is one flag away.
+
+**F06-88. RoboArena is the real-world reference that simulators and world models are scored against: evaluators at seven academic institutions run double-blind pairwise comparisons of policies on the DROID platform, on tasks and scenes of their own choosing, and the preferences are aggregated into a ranking. The paper reports "more than 600 pairwise real-robot evaluation episodes across seven generalist policies".**
+- Location: arXiv 2506.18123v2 (revised 29 Nov 2025), abstract.
+- Verdict: CARRIED (seed 02 section 6.1, re-fetched)
+- Evidence: https://arxiv.org/abs/2506.18123v2 | Tier 3, preprint (the HF-WM paper's reference list cites it as "In Proceedings of the Conference on..."; venue not confirmed here) | definition | "evaluators can freely choose the tasks and environments they evaluate on, enabling easy scaling of diversity, but they are required to perform double-blind evaluations over pairs of policies. Then, by aggregating preference feedback from pairwise comparisons across diverse tasks and environments, we can derive a ranking of policies. We instantiate our approach across a network of evaluators at seven academic institutions using the DROID robot platform. Through more than 600 pairwise real-robot evaluation episodes across seven generalist policies" (accessed 2026-11-20)
+- Use in dive: section 16, how real-robot evaluation scales: many labs, A/B pairs, blind. Also the scale of the best public real-world benchmark: hundreds of episodes, not tens of thousands.
+
+**F06-89. RoboWorld (KAIST and Config, arXiv v4 of 15 Jul 2026) scores policies inside a video world model: starting from the first frame of each RoboArena episode, the policy acts, the world model (initialised from Wan2.1-T2V-1.3B) generates what the cameras would see for 30 seconds, and a vision-language model judge (GPT-4o) scores the rollout. Across 8 policies and 4,186 generated rollouts it reports Pearson r = 0.989 and Spearman 0.970 against the RoboArena leaderboard, and "only 100 H100 GPU hours" for the whole benchmark. [author reported]**
+- Location: arXiv 2607.01060v4, abstract, Section 5 and Figure 5.
+- Verdict: CARRIED (seed 02 section 6.1 cited v3; re-fetched at v4, figures unchanged)
+- Evidence: https://arxiv.org/abs/2607.01060v4 | Tier 3, preprint | benchmark claim (author reported) | "produces 4,186 video rollouts, achieving a Pearson correlation of 0.989 and a Spearman correlation of 0.970 with the original real-world leaderboard" ... "We initialize the video world model from Wan2.1-T2V-1.3B" ... "Replicating the RoboArena benchmark in our neural simulator (across 8 different policies) takes only 100 H100 GPU hours, including the computation and communication costs for each policy action generation and world-model rollout" ... "The correlation improves as the number of trials increases" (accessed 2026-11-20)
+- Use in dive: section 16, world-model scoring with a cost: 100 H100 GPU-hours for 8 policies is 12.5 GPU-hours per policy [derived], and about 86 GPU-seconds per rollout [derived: 100 x 3600 / 4186]. Loads GPU tensor compute (video generation), no physics engine, no RT cores. Conditions: 8 policies, same distribution the world model was trained on (DROID), judged by a model.
+
+**F06-90. Other world-model evaluators and their reported agreement with real results: WorldGym, Pearson r = 0.78 between world-model and real success rates, with success rates differing "by an average of only 3.3%" (arXiv v3, 30 Sep 2025); HF-WM, Pearson r = 0.983 and MMRV = 0.002 over six RoboArena policies and 540 policy-session evaluations, with GPT-5 as judge (arXiv 9 Oct 2026). A third-party test in the PolaRiS paper found an open-source video model (Ctrl-World) mis-ranked policies (MMRV 0.22) through "heavy hallucinations during object interaction". [author reported]**
+- Location: arXiv 2506.00613v3, Section 4 and Figure 4; arXiv 2610.13522v1, Section 5; arXiv 2512.16881v2, Section 5.2.
+- Verdict: CARRIED (seed 02 section 6.1 had WorldGym and HF-WM from search summaries, marked not verified; both now read in the PDF)
+- Evidence: https://arxiv.org/abs/2506.00613v3 | Tier 3, preprint | benchmark claim (author reported) | "We find that real-world task performance is strongly correlated with the task performance reported by the world model, achieving a Pearson correlation of r = 0.78." ... "The success rates differ by an average of only 3.3%". https://arxiv.org/abs/2610.13522v1 | Tier 3, preprint | "Pearson r = 0.983" ... "MMRV = 0.002" ... "540 policy-session evaluations in total". https://arxiv.org/abs/2512.16881v2 | "Ctrl-World often produces heavy hallucinations during object interaction, making accurate scoring challenging and ultimately leading to clear policy mis-rankings (MMRV: 0.22)." (accessed 2026-11-20)
+- Use in dive: section 16, the range: 0.78 to 0.99 from authors of the evaluators, and a failure when a third party tried one on new scenes. Teach it as promising and unsettled. The seed's ICLR 2026 venue for WorldGym was not confirmed in the PDF read here.
+
+**F06-91. 1X's world-model post that frames evaluation as the motivating challenge (17 September 2024) publishes no correlation with real-world success, no count of policies compared and no accuracy figure for world-model evaluation. It states the challenge: "Even the same model weights can experience a rapid degradation in performance in a matter of days", and a shirt-folding model "degrades in performance over the course of 50 days" as the environment drifts. (History; quotes extracted by the fetch tool.)**
+- Location: 1X, "1X World Model", 2024-09-17.
+- Verdict: NEW (labelled history, 2024). A 2026 1X publication with quantified world-model evaluation was not located in this research (U12).
+- Evidence: https://www.1x.tech/discover/1x-world-model | Tier 2, first-party vendor blog | production report | "World models solve a very practical and yet often overlooked challenge when building general-purpose robots: evaluation." ... "This makes careful robotic science in the real world frustratingly hard." (accessed 2026-11-20)
+- Use in dive: section 16, the reason real-robot evaluation is not a fixed yardstick: the room changes, so last month's number is not reproducible. Do not attribute a correlation figure to 1X.
+
+**F06-92. Isaac Lab-Arena, NVIDIA's evaluation harness on Isaac Lab, announced v0.3 (alpha) on 2026-09-10 with multi-node evaluation through OSMO, a policy client-server interface and environment variation sweeps. A `release/0.4.0` branch exists with commits as recent as 2026-11-19; no 0.4 announcement was found in the repository's discussions.**
+- Location: isaac-sim/IsaacLab-Arena discussion 1245; repository branch list (`release/0.4.0` at commit 2281e1256bd10bf9b62b67ccccec9c87cd51fc6f, committed 2026-11-19).
+- Verdict: CARRIED (seed 02 section 6.3, re-fetched), with the 0.4.0 branch added. The repository publishes no GitHub releases or tags, so "current version" rests on branch names (U13).
+- Evidence: https://github.com/isaac-sim/IsaacLab-Arena/discussions/1245 | Tier 2, first-party announcement | documentation of support | "We're excited to announce that NVIDIA Isaac Lab-Arena v0.3 is now open source!" ... "V0.3 adds tools to scale policy evaluation beyond one-off success-rate scores into repeatable robustness gates" ... "[NEW] Environment variations - Turn one environment into a controlled perturbation sweep. Vary lighting, backgrounds, camera parameters, object mass, and more across configurable ranges and distributions." (accessed 2026-11-20)
+- Use in dive: section 16, the simulated-evaluation harness in the Isaac stack and its framing: a robustness gate (success across a sweep of variations), which is the simulator-side answer to F06-87.
+
+**F06-93. Isaac Lab-Arena's published scaling numbers, camera-free and with a zero-action policy (so no rendering and no policy inference). One RTX 5880 Ada (49 GB): 1 environment 5.41 environment-steps per second; 256 environments 1,092; 1,024 environments 2,390, with the vectorised step time rising from 185 ms to 428 ms. Across GPUs with OSMO, eight independent runs of 256 environments on L40 GPUs: 1,255.2 s on one GPU, 157.8 s on eight, "a 7.95x speedup". [vendor claim]**
+- Location: Isaac Lab-Arena docs (main), "Performance and scaling", tables "Single-GPU rollout results" and "OSMO distributed-Run results", "Rollout benchmark scope".
+- Verdict: CARRIED (seed 02 section 6.3, re-fetched). One correction: the page says "one NVIDIA L40 GPU" per run; the seed wrote "L40s".
+- Evidence: https://isaac-sim.github.io/IsaacLab-Arena/main/pages/references/performance.html | Tier 1, first-party docs (unversioned "main" build; tested revisions named on the page: Arena b0cd0b38e and 4ee056866) | benchmark claim (vendor reported) | "1 | 185.0 ms | 5.41 environment-steps/s", "256 | 234.4 ms | 1,092.18 environment-steps/s", "1,024 | 428.4 ms | 2,390.22 environment-steps/s"; "Executing all eight Runs at once reduced active Arena execution time from 20 minutes 55 seconds to 2 minutes 38 seconds, a 7.95x speedup."; "The workload did not render cameras or run policy inference. Cameras, policies, scene contents, and physics settings can change both throughput and capacity."; "These are preliminary reference measurements collected for this release" (accessed 2026-11-20)
+- Use in dive: section 16 compute cost. Two readings: evaluation scenes are heavy (2,390 steps per second for 1,024 environments, against hundreds of thousands for training tasks in F06-47), and independent runs scale across GPUs almost perfectly, which is the shape of a batch array job. One environment alone runs at 5.4 steps per second: the fixed cost per step is 185 ms, so batching is what makes it usable.
+
+**F06-94. LeRobot v0.7.0's evaluation tool, `lerobot-eval`, runs a checkpoint closed-loop in a batched simulated environment, locally or against an environment server in its own Docker image, and reports the success rate with a 95% Wilson confidence interval (`pc_success_ci95`).**
+- Location: huggingface/lerobot at v0.7.0: `docs/source/simulation.mdx` ("Evaluate a checkpoint"); `src/lerobot/scripts/lerobot_eval.py` (lines 96, 716, 742); `src/lerobot/utils/eval_stats.py`.
+- Verdict: NEW
+- Evidence: https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/utils/eval_stats.py | Tier 1, code at a pinned tag | code behaviour | "A success rate measured over `n` episodes is a binomial estimate, and at the episode counts robot evaluations typically use (10 to 50 per task) its sampling uncertainty is large: 9 successes out of 10 episodes is compatible with a true rate anywhere between roughly 60% and 98%. The helpers here attach that uncertainty to the numbers `lerobot-eval` reports, so that two success rates can be compared honestly." (accessed 2026-11-20)
+- Use in dive: section 16, the reader's tool for the arm task and first-party guidance on statistics in one place.
+
+**F06-95. LeRobot's stated statistical guidance: use the Wilson score interval, "preferred over the normal-approximation (\"Wald\") interval because it stays inside [0, 1] and keeps its nominal coverage at small n_trials and at rates near 0% or 100%, which is where robot evaluations live"; compare two policies with Fisher's exact test; and remember the interval covers evaluation sampling only, not "variation between training runs (seeds)".**
+- Location: `src/lerobot/utils/eval_stats.py` at v0.7.0, module docstring and docstrings of `wilson_interval` and `fisher_exact`.
+- Verdict: NEW
+- Evidence: https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/utils/eval_stats.py | Tier 1, code at a pinned tag | definition | "Preferred over the normal-approximation (\"Wald\") interval because it stays inside [0, 1] and keeps its nominal coverage at small `n_trials` and at rates near 0% or 100%, which is where robot evaluations live." ... "Answers \"could these two success rates come from the same underlying rate?\" without any normal approximation, which matters at 10 to 50 episodes per task." ... "The intervals describe *evaluation sampling* noise only, i.e. which episodes happened to be drawn. They do not cover variation between training runs (seeds) of the same recipe, which has to be measured by training more than once." (accessed 2026-11-20)
+- Use in dive: section 16, the formula the section should show, and the documented example `wilson_interval(9, 10)` = (0.596, 0.982).
+
+**F06-96. How many real trials published work uses: 12 trials for one task in the Playground paper (12 of 12 successes); 20 real rollouts per policy per environment in PolaRiS; 50 trials per task in ABC. A 2025 statistics paper puts the feasible range at "a small feasible sample size (e.g., 10 or 50) due to significant human effort and limited inference throughput of policies".**
+- Location: arXiv 2502.08844v1 Section IV.C; arXiv 2512.16881v2 Section 5.1; arXiv 2606.27375v1 Section 4; arXiv 2503.10966v4 abstract.
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2503.10966v4 | Tier 3, peer-reviewed (RSS 2025, per the arXiv comment "Accepted to RSS 2025") | definition | "policy comparison is fundamentally constrained by a small feasible sample size (e.g., 10 or 50) due to significant human effort and limited inference throughput of policies." Others: "Our policy achieves a 100% success rate in 12 real-world trials" (2502.08844v1); "we run 20 real-world evaluation rollouts per policy" (2512.16881v2); "Each task is evaluated for 50 trials." (2606.27375v1) (accessed 2026-11-20)
+- Use in dive: section 16, the real-robot trial budget the reader should expect: tens per task and policy.
+
+**F06-97. What 50 trials can and cannot tell [derived]. 40 successes in 50 trials: observed rate 80%, 95% Wilson interval 67.0% to 88.8%. A second policy at 45 of 50 (90%, interval 78.6% to 95.7%) overlaps it, and Fisher's exact test on 45/50 against 40/50 gives p = 0.26: not distinguishable. To detect a true 80% against 90% with 80% power at the 5% level takes about 199 trials per policy.**
+- Location: arithmetic in the teaching material, section 16.
+- Verdict: NEW [derived]
+- Evidence: formulas as implemented in https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/utils/eval_stats.py (Wilson interval; two-sided Fisher exact test) | Tier 1, code at a pinned tag | definition | inputs and steps shown in section 5 of this file. The sample-size figure uses the standard two-proportion normal approximation, which is not in the LeRobot file (accessed 2026-11-20)
+- Use in dive: section 16, the worked example. The practical line: with 50 trials, a 10-point difference between two good policies is inside the noise; only differences near 20 points clear it (45/50 against 35/50 gives p = 0.023).
+
+**F06-98. Sequential testing is the published way to spend fewer real trials: instead of fixing the number of trials in advance, test after each pair and stop when the evidence is sufficient, without the p-hacking that comes from extending a fixed-size test (STEP, RSS 2025). Earlier guidance from Toyota Research Institute asks papers to report the number of runs, initial conditions and success criteria and to add statistical analysis (2024, history).**
+- Location: arXiv 2503.10966v4, abstract; arXiv 2409.09491v2, abstract.
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2503.10966v4 | Tier 3, peer-reviewed (RSS 2025, per the arXiv comment) | definition | "our proposed statistical test is sequential, allowing researchers to decide whether or not to run more trials based on intermediate results. This adaptively tailors the number of trials to the difficulty of the underlying comparison, saving significant time and effort without sacrificing probabilistic correctness." And https://arxiv.org/abs/2409.09491v2 | Tier 3, preprint | "it is common for papers to report this number with little to no information regarding the number of runs, the initial conditions, and the success criteria" (accessed 2026-11-20)
+- Use in dive: section 16, guidance on getting it right, ending on the reader's next action: decide the comparison and the stopping rule before the first trial. The promotion gate in arXiv 2608.07555 belongs to stream 04 and is not restated here.
+
+### L. What each workload loads on the machine
+
+**F06-99. CPU physics (MuJoCo `mj_step`) loads CPU cores, one world per thread; the documented scaling recipe is one rollout thread per logical core, and since 4.0 collision and solve can also be multi-threaded inside one large scene. [our reading of F06-8, F06-14, F06-15]**
+- Location: synthesis of F06-8 (multi-threaded collision), F06-14 (`testspeed --nthread`), F06-15 (650K and 1.8M steps per second on CPUs).
+- Verdict: NEW [our reading]
+- Evidence: https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/programming/samples.rst | Tier 1, first-party docs at a pinned tag | documentation of support | "The optimal nthread usually equals the number of logical cores." and, on the two kinds of threading, "the scenarios for which one would want these different types of multithreading are usually mutually exclusive" (accessed 2026-11-20)
+- Use in dive: section 12 "which part of the machine": CPU cores and cache, no GPU. Evaluating one policy on one arm in MuJoCo is a CPU job; the GPU is busy with the policy network.
+
+**F06-100. GPU physics (MJX-JAX, MuJoCo Warp, Newton, PhysX GPU) loads the GPU's general compute cores and its memory, with a CPU side that still matters: MuJoCo Warp's docs warn that reading data back to the host "requires a device-to-host memory copy and pipeline synchronization", and the Isaac Lab paper reports single-core CPU bottlenecks in PhysX and the training loop.**
+- Location: MuJoCo docs at 4.0.1, MuJoCo Warp chapter, "Performance implications" under overflow handling; arXiv 2511.04831v1 Section 4.1 (F06-65).
+- Verdict: NEW
+- Evidence: https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/mjwarp/index.rst | Tier 1, first-party docs at a pinned tag | code behaviour | "requires a device-to-host memory copy and pipeline synchronization" (accessed 2026-11-20)
+- Use in dive: section 12 "which part of the machine": GPU compute (CUDA kernels, not tensor-core matrix multiplies in the sense of a transformer), GPU memory proportional to worlds times worst-case contacts (F06-22, F06-23), plus one fast CPU core driving the loop.
+
+**F06-101. Rendering splits three ways by hardware. Rasterisation (MuJoCo's OpenGL or Filament renderers) uses the GPU's graphics pipeline through EGL, or the CPU through OSMesa. Compute ray tracing (MuJoCo Warp's and Newton's Warp back end, Madrona's CUDA ray tracer) uses general GPU compute. RTX rendering (Isaac Sim, OVRTX, the OptiX back ends) uses the RT cores and is what excludes A100 and H100. [our reading of F06-34, F06-50 to F06-52, F06-61, F06-62]**
+- Location: synthesis.
+- Verdict: NEW [our reading]. The one link not stated by a first party: that the Warp and Madrona ray tracers run on a GPU with no RT cores at all (U8).
+- Evidence: https://docs.isaacsim.omniverse.nvidia.com/6.2.0/installation/requirements.html | Tier 1, first-party docs | documentation of support | "GPUs without RT Cores (A100, H100) are not supported." (accessed 2026-11-20); with F06-51 "Headless Newton simulation does not require RTX hardware" and F06-62 the OptiX fallback sentence.
+- Use in dive: section 13, the decision table that gives the section its title: which renderer, which silicon, which instance family.
+
+**F06-102. GPU memory per environment, from the entries above: state-only physics 57 KB to 468 KB per world in MuJoCo Warp (F06-22); whole training process 0.1 MB to 1.8 MB per environment in Isaac Lab state tasks (0.93 GB to 14.74 GB at 8,192 environments, F06-47); one small camera per environment 1.7 MB to 7.8 MB (13.6 GB to 63.7 GB at 8,192 environments, F06-48 and F06-49); one full-fidelity USD camera about 2 GB (out of memory beyond 48 on 96 GB, F06-63). [derived]**
+- Location: arithmetic over F06-22, F06-47, F06-48, F06-49, F06-63.
+- Verdict: NEW [derived]
+- Evidence: https://github.com/isaac-sim/IsaacLab/blob/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/_static/benchmarks/environment-performance-release.csv | Tier 1, first-party benchmark data at a pinned tag | benchmark claim (vendor reported) | inputs: 0.93 GB / 8192 = 0.11 MB; 14.74 GB / 8192 = 1.80 MB; 13.61 GB / 8192 = 1.66 MB; 63.73 GB / 8192 = 7.78 MB; 96 GB / 48 = 2 GB (accessed 2026-11-20)
+- Use in dive: sections 12 and 13, one ladder of four rungs spanning four orders of magnitude. It answers "how many environments fit on a 24 GB L4, a 48 GB L40S, a 96 GB RTX PRO 6000".
+
+
+### M. Simulator comparison (summary of the entries above, no new claims)
+
+| Simulator | Version and date | Physics runs on | Camera renderer | Licence | Published throughput, with hardware | Entries |
+|---|---|---|---|---|---|---|
+| MuJoCo | 4.0.1, 2026-11-11 | CPU, one world per thread; `mujoco.batch` for many worlds | OpenGL rasteriser (GLX, EGL, OSMesa) or Filament | Apache-2.0 | humanoid 1.8M steps/s on a 64-core AMD 3995WX; 650K on an Apple M3 Max [vendor claim] | F06-1, F06-15, F06-61 |
+| MJX-JAX | ships with MuJoCo 4.0.1 | GPU or TPU through JAX | none of its own; the 2025 Playground paper paired it with Madrona | Apache-2.0 | humanoid 950K steps/s on one A100 at batch 8192 [vendor claim] | F06-15, F06-18, F06-33 |
+| MuJoCo Warp | v4.0.1, 2026-11-11 | NVIDIA GPU through Warp | software ray tracer on Warp BVH; OptiX back end on the default branch only | Apache-2.0 | humanoid 5.77M steps/s at 8192 worlds; Aloha pot scene 2.51M; one RTX 6000 Ada, data of 2026-09-03 [vendor claim] | F06-19, F06-20, F06-24, F06-62 |
+| MuJoCo Playground | v1.0.1, 2026-11-09 | MuJoCo Warp (PyTorch, RSL-RL) | MuJoCo Warp batch renderer | Apache-2.0 | none for 1.0 (U5); the 2025 JAX code: PandaPickCube 140,386 env-steps/s on one A100 [author reported] | F06-25, F06-32 |
+| Newton | v1.8.0, 2026-11-11 | NVIDIA GPU through Warp; several solvers, MuJoCo Warp primary | Warp tiled camera sensor | Apache-2.0 | relative figures only (49% less time than 1.7.0 on one micro-benchmark) [vendor claim] | F06-39 to F06-43 |
+| Isaac Lab | v3.0.0, 2026-10-20 | Newton, OvPhysX or Isaac Sim PhysX | Newton Warp, OVRTX, or Isaac RTX (legacy) | BSD-3-Clause per the docs header (the GitHub API reports no detected licence) | Cartpole 1,023,698 training FPS on Newton, 557,215 on PhysX; Franka lift 318,651 and 164,777; 8,192 environments, one RTX PRO 6000 Blackwell Server Edition [vendor claim] | F06-45 to F06-50 |
+| Isaac Sim | 6.2.0, 2026-10-14 | PhysX (CPU or GPU), Newton | Omniverse RTX; needs RT cores | not recorded in this pass | none as a standalone figure; see Isaac Lab rows | F06-44, F06-52 |
+| Genesis | v1.4.7, 2026-11-17 | not read | not read | Apache-2.0 | no throughput figure in the README at this tag (U14) | none |
+
+## 5. Teaching material
+
+Four concept sections. Every number carries the entry it comes from; arithmetic is shown so it can be redone.
+
+### 5.1 Section 12, Physics Simulation
+
+**The plain-words idea.** A physics simulator is a function that takes the state of a scene (every joint angle and speed, the position of every loose object) plus the motor commands, and returns the state a short moment later. That moment is the timestep, 2 ms by default in MuJoCo (F06-10). A training run calls this function billions of times, so the question the section answers is what one call costs and how many can run at once.
+
+**Worked example on the arm task.**
+
+- Steps per policy action. With a 2 ms timestep and a 30 Hz policy, one policy action lasts 33.3 ms, which is 33.3 / 2 = 16.7 physics steps. A simulator needs a whole number, so the choice is 16 steps (31.25 Hz) or 17 steps (29.4 Hz). The shipped Playground SO-101 pick-cube task avoids the question by running its policy at 10 Hz (F06-27): 100 ms / 2 ms = 50 physics steps per action if its timestep is the 2 ms default. That timestep was not read (U4), so 50 is an illustration.
+- Steps per episode. A 30 s episode at 2 ms is 30 / 0.002 = 15,000 physics steps, and 900 policy actions at 30 Hz or 300 at 10 Hz.
+- One CPU core. No first-party single-thread figure was located (U1). The nearest published number is 1.8 million steps per second for the humanoid model on a 64-core AMD 3995WX at two threads per core (F06-15). Divided by 128 threads that is about 14,000 steps per second per thread [derived; humanoid, a heavier model than a 6-joint arm]. At that rate 15,000 steps take 15,000 / 14,063 = 1.07 s: one 30 s episode in about one second, roughly 28 times faster than real time. Label this an illustration until stream 08 times the SO-101 model with `testspeed` (F06-14).
+- One GPU. MuJoCo Warp's nightly data gives 2.51 million steps per second for a two-arm manipulation scene with 8,192 worlds on one RTX 6000 Ada (F06-20). All 8,192 worlds advance together, so 8,192 episodes of 15,000 steps are 122.9 million steps and take 122.9M / 2.51M = 49 s [derived]. That is 8,192 x 30 s = 68 hours of robot time in 49 seconds. Each world alone moves at 2.51M / 8,192 = 306 steps per second, slower than real time (500 steps per second at 2 ms) and about 46 times slower than one CPU thread. This is the latency against throughput trade the MuJoCo docs state in words (F06-16).
+- Same model on both. For the humanoid, the 64-core CPU needs 122.9M / 1.8M = 68 s for those 8,192 episodes and the one GPU needs 122.9M / 5.77M = 21 s [derived from F06-15 and F06-20; the two figures come from different MuJoCo versions and dates].
+- Memory. 8,192 worlds of the manipulation scene use 692 MB of GPU memory, about 84 KB per world (F06-22).
+
+**The mechanism.** One `mj_step` runs 26 stages in four groups (F06-9). Position: from the joint angles `qpos`, compute where every body is (forward kinematics), build the inertia matrix `M`, find which shapes touch (collision detection in three phases, broad, mid and near, F06-12) and turn the contacts into constraints. Velocity: compute the forces that depend on speed, such as damping and Coriolis terms. Force: compute the motor torques, then solve for the joint acceleration `qacc` that satisfies the equation of motion and the contact constraints together. In symbols, `M * qacc = tau - c + J^T * f`, where `M` is the inertia matrix, `qacc` the joint accelerations, `tau` the applied torques (motors and passive forces), `c` the Coriolis, centrifugal and gravity terms, `J` the constraint Jacobian (how joint motion moves each contact point) and `f` the contact forces the solver has to find. Integrate: advance `qvel` by `qacc * h` and `qpos` by `qvel * h`, where `h` is the timestep; the integrator choice decides how this is done stably (F06-13). The equation is the standard form; the stage list and names are from F06-9.
+
+The SO-101's servo is one line inside the force stage: `torque = kp * (target - angle) - kd * velocity`, clipped to the motor's limit. The identified values are `kp` 218 to 265, `kd` 17.5 to 34.2 and a limit of 2.94 N m, from the STS3215's 30 kg-cm stall torque (F06-31). With `kp` = 218 the servo saturates at an angle error of 2.94 / 218 = 0.0135 rad, under one degree [derived, assuming SI units and unit gear]. Gains this stiff interacting with contact are the case the `discrete` integrator was added for (F06-13).
+
+Contacts set the cost. A free-moving arm is cheap (25.2 million steps per second for an idle Franka at 32,768 worlds); a cluttered scene with household objects is 342 thousand at 2,048 worlds (F06-20). GPUs handle the branching in collision code poorly (F06-17), and MuJoCo Warp makes the user size the contact and constraint buffers up front (F06-23).
+
+**What it costs in compute.**
+
+- CPU physics loads CPU cores, one world per thread (F06-99). Published: 1.8M steps/s on 64 cores, 650K on an M3 Max, humanoid (F06-15).
+- GPU physics loads general GPU compute and GPU memory, and no RT cores (F06-100, F06-51). Published: 5.77M (humanoid), 2.51M (manipulation), 342K (clutter) steps/s on one RTX 6000 Ada (F06-20); 57 KB to 468 KB of GPU memory per world (F06-22).
+- A full training loop is slower than raw physics because the policy and its update share the GPU: Isaac Lab 3.0 reports 318,651 training frames per second for a Franka lift task at 8,192 environments on Newton and 164,777 on PhysX (F06-47). In the 2025 Playground paper's vision task, physics was 24% of training time and the policy update 57% (F06-33).
+- No throughput has been published for the SO-101 task itself (U3, U5).
+
+### 5.2 Section 13, Rendering and Ray Tracing
+
+**The plain-words idea.** A policy that sees needs a camera image at every action, so the simulator has to draw the scene from the camera's viewpoint. There are two ways to draw. Rasterisation projects each triangle onto the image and fills the pixels it covers. Ray tracing sends a ray out through each pixel and asks what it hits, which gives correct shadows and reflections at a higher cost (F06-56). An RT core is a part of some NVIDIA GPUs built to speed up one step of ray tracing: walking the tree of bounding boxes (the BVH, bounding-volume hierarchy) to find which triangle a ray hits (F06-57).
+
+**Worked example on the arm task.**
+
+- Rays per image. The Playground SO-101 task renders one 64x64 wrist image per action (F06-27): 64 x 64 = 4,096 primary rays. A 640x480 image is 307,200 rays, 75 times more (F06-24).
+- Frames per episode. At 10 Hz for 30 s the policy sees 300 frames; 15,000 physics steps sit between them.
+- Rendering time against physics time. MuJoCo Warp's published render benchmark is about 756 ns per world per 64x64 frame at 8,192 worlds on an RTX 6000 Ada (F06-24). One batch of 8,192 frames therefore takes 8,192 x 756 ns = 6.2 ms, and 300 batches take 1.9 s. The physics for the same 8,192 episodes took 49 s in 5.1. At 64x64 the renderer is a few percent of the simulation time [derived; the render benchmark is a primitives scene, the physics figure a manipulation scene]. At 640x480 the same arithmetic gives 1.9 s x 75 = 139 s, about three times the physics, using the documented linear scaling with resolution (F06-24).
+- Memory is the binding cost. The same render benchmark used 44.4 GB for 8,192 worlds, about 5.4 MB per world, against 84 KB per world for the physics (F06-24, F06-22). In Isaac Lab 3.0, adding one camera to Cartpole cut training throughput from 1,023,698 to 152,124 frames per second (6.7 times) and raised GPU memory from 0.93 GB to 57.3 GB (62 times) (F06-47, F06-48). The benchmark's resolution column is empty (U7).
+
+**The mechanism.** Three hardware paths, and the RT-core question only applies to the third (F06-101):
+
+1. Rasterisation: MuJoCo's OpenGL and Filament renderers. On a headless Linux server the context is EGL (GPU) or OSMesa (CPU software rendering) (F06-61).
+2. Ray tracing as ordinary GPU compute: MuJoCo Warp, the Newton Warp renderer and Madrona build a BVH and walk it in CUDA kernels (F06-24, F06-34, F06-50). Direct lighting only in the Newton Warp renderer (F06-50). MuJoCo Warp's docs say an unavailable OptiX back end falls back to this path, which is the first-party evidence that it runs without RTX hardware (F06-62). No vendor statement names A100, H100 or B200 as supported for it (U8).
+3. RTX ray tracing: Isaac Sim's Omniverse RTX renderer, OVRTX and the OptiX back ends use the RT cores. This is the path behind "GPUs without RT Cores (A100, H100) are not supported" (F06-52) and behind the AWS rule that G families work and P families do not (F06-60).
+
+Many cameras are drawn in one pass by tiling: every environment's camera gets one tile of a single large frame buffer, which is then cut into per-environment images (F06-64).
+
+**What it costs in compute.**
+
+- Which GPUs have RT cores: A10 72, L40S 142, RTX PRO 6000 Blackwell Server Edition 188; the H100 and H200 pages list none (F06-58, F06-59). On AWS that is G5, G6, G6e and G7e against the P families (F06-60).
+- The rule changed in 2026 for training, and the sentence to quote is the Isaac Lab 3.0 install guide: "Headless Newton simulation does not require RTX hardware" (F06-51). The AWS post that excludes the P family was written against Isaac Sim 5.1 (F06-60).
+- Vision throughput, one RTX PRO 6000 Blackwell Server Edition, 8,192 environments, manipulation task with a 64-pixel camera: 115,889 training frames per second with the Newton Warp renderer, 97,307 with OVRTX, 27,962 with Isaac Sim PhysX plus Isaac RTX; 13.6 GB, 18.6 GB and 24.2 GB (F06-49).
+- A full-fidelity USD camera runs out of memory beyond 48 cameras on a 96 GB GPU (F06-63). The memory ladder per environment is in F06-102.
+
+### 5.3 Section 14, Sim-to-Real and Real-to-Sim
+
+**The plain-words idea.** A policy trained in simulation meets a robot whose motors, friction, timing, calibration and camera image all differ a little from the simulated ones. There are two ways to deal with that, used together. System identification measures the real robot and adjusts the simulator's parameters until the simulated arm moves like the real one. Domain randomisation varies the parameters that cannot be measured well, a different value each episode, so the policy learns to work across the whole range and the real robot is one more case inside it (F06-66). Real-to-sim goes the other way: scan a real scene and rebuild it in the simulator, mostly to evaluate policies there.
+
+**Worked example on the arm task.**
+
+- System identification. The shipped SO-101 script fits 24 numbers, four per joint (armature, friction loss, stiffness, damping) times six joints, from one teleoperated episode in which a person moves the arm through its range (F06-30). Results checked into the repository: stiffness 218 to 265, damping 17.5 to 34.2, friction loss near zero on five joints and 0.25 on the gripper (F06-31).
+- Calibration. The deploy guide says manual calibration "can easily be off by 1-2+ cm in end-effector height" (F06-29). For a block a few centimetres across (illustration; the cube size range was read as randomised but not recorded here) that is the difference between closing on the block and closing above it, so the task adds a random joint-reading bias each episode (F06-28).
+- Timing. The task injects a command delay of 0 to 4 ms (F06-27): at a 2 ms timestep that is 0 to 2 physics steps of stale command.
+- What gets randomised per episode, from the code: fingertip friction, PD gains, joint damping, cube size, cube, floor and link colours, base height by plus or minus 2.5 mm, calibration bias, lighting, camera parameters, and per-pixel image noise (F06-28).
+- Outcome. The task is described as deployed "zero-shot onto the real robot" and tested on three setups, with no published success rate (F06-26, U3). The only number of this kind is from the 2025 paper on a Franka arm: 12 of 12 (F06-34), whose 95% Wilson interval is 75.8% to 100% [derived].
+
+**The mechanism.** System identification is a least-squares fit. Record the real joint angles `q_real[t, j]` for each time `t` and joint `j` while replaying known commands. Simulate the same commands with parameter vector `theta` (the 24 numbers) to get `q_sim[t, j](theta)`. Minimise `L(theta) = sum over t and j of (q_real[t, j] - q_sim[t, j](theta))^2`. Gauss-Newton does this by repeated linear steps: `theta <- theta - (J^T J)^-1 J^T r`, where `r` is the vector of all the differences and `J` is how each difference changes when each parameter changes, found by re-simulating with each parameter nudged (F06-30; the update rule is the textbook form of the method the docs name).
+
+Domain randomisation is a reset-time function: before each episode, draw each parameter from its range and write it into that world's model. Under PhysX the physics parameters go through a CPU API (F06-69). Actuator and timing gaps are modelled directly: MuJoCo 4.0 adds `pid` and `dcmotor` actuators and actuator delays (F06-7), Isaac Lab has a delayed PD actuator and learned actuator networks (F06-70).
+
+Real-to-sim: PolaRiS turns a 2 to 5 minute phone-style video into a scene. COLMAP recovers camera poses, 2D Gaussian splatting gives appearance and a mesh, the mesh goes into Isaac Sim for contact (F06-73). The scan alone was not enough; policies are briefly co-trained on simulated demonstrations from other scanned scenes first (F06-74). Splats render natively in Isaac Sim 6.2 as OpenUSD ParticleField geometry (F06-77) and in MuJoCo Warp's batch renderer without RTX (F06-78). The scene format underneath is OpenUSD, whose Core Specification 1.0 is ratified (F06-79).
+
+**What it costs in compute.**
+
+- System identification: a CPU job on one logged episode; no timing published (F06-30).
+- Randomisation: CPU-side parameter writes at reset in PhysX (F06-69).
+- Scene reconstruction: under 30 minutes on one RTX 4090 for PolaRiS (F06-73). 3DGRUT on an RTX 5090: 479 s to 2,869 s for the ray-traced method, 215 s to 686 s for the rasterised one; the ray-traced method wants RT cores (F06-75).
+- What a bad gap costs: a model fine-tuned on real data scored 0% in a simulator where simulation-trained models scored 35% to 45% (F06-72).
+
+### 5.4 Section 16, Evaluation
+
+**The plain-words idea.** There are two ways to score a policy. Open-loop: show it recorded camera frames and compare the action it predicts with the action the human took, as a mean squared error (MSE). Closed-loop: let it drive, in a simulator or on the robot, and count how often the block ends in the cup. Open-loop is cheap and misses what matters, because in a recording the next frame never depends on the policy's own mistake. Closed-loop is the measure that counts, and it is a count of successes out of a small number of trials, so it comes with real uncertainty.
+
+**Worked example on the arm task.**
+
+- 40 successes in 50 real trials. Observed rate `p` = 0.80, `n` = 50, `z` = 1.96 for 95%. Wilson interval: centre = `(p + z^2 / 2n) / (1 + z^2 / n)` = (0.80 + 0.0384) / 1.0768 = 0.7786. Half-width = `z * sqrt(p(1 - p)/n + z^2 / 4n^2) / (1 + z^2 / n)` = 1.96 x sqrt(0.0032 + 0.000384) / 1.0768 = 0.1090. Interval: 67.0% to 88.8% (F06-97). The simpler normal-approximation interval gives 0.80 plus or minus 1.96 x sqrt(0.8 x 0.2 / 50) = 68.9% to 91.1%.
+- Comparing two checkpoints. 45 of 50 against 40 of 50: Fisher's exact test gives p = 0.26, no evidence of a difference. 45 of 50 against 35 of 50 gives p = 0.023. With 50 trials each, a 10-point gap is invisible and a 20-point gap is visible [derived, F06-97].
+- How many trials a 10-point gap needs. About 199 per policy to tell a true 80% from a true 90% with 80% power at the 5% level; about 81 per policy for 60% against 80% [derived, F06-97].
+- More trials narrow the interval slowly: 80 of 100 gives 71.1% to 86.7%, 160 of 200 gives 73.9% to 85.0% [derived].
+- Small counts in papers: 9 of 10 has an interval of 59.6% to 98.2%; 12 of 12 has 75.8% to 100% [derived; trial counts in F06-96].
+
+**The mechanism.**
+
+- Open-loop metric: `MSE = mean over frames of ||a_pred - a_demo||^2`, with `a_pred` the policy's action and `a_demo` the recorded one. Across policies it ranked poorly against real success: Pearson r = 0.308 in SIMPLER, against 0.924 for closed-loop simulation (F06-81); the same finding on 2025 models (F06-82), from the ICRA 2026 challenge (F06-85) and from an AWS engagement (F06-86). Within one training run, one 2026 study found validation action error did track real performance (F06-84); see section 8.
+- Closed-loop in a physics simulator: `lerobot-eval` runs the checkpoint in batched environments and reports the success rate with its Wilson interval (F06-94, F06-95). Benchmarks saturate: nearly all tested policies score 90 to 95% on LIBERO while spanning the range in the real world (F06-82), which is why perturbed successors exist (F06-87).
+- Closed-loop in a scanned twin: PolaRiS, r = 0.9 on average against real results (F06-83).
+- Closed-loop in a video world model: the policy acts, a video model generates what the camera would see, a vision-language model judges success (F06-89, F06-90). Authors report r between 0.78 and 0.99; a third-party test found one open video model mis-ranked policies (F06-90).
+- The real reference: RoboArena's double-blind pairwise comparisons (F06-88).
+- Spending fewer real trials: sequential testing stops when the evidence is sufficient (F06-98).
+
+**What it costs in compute.**
+
+- Simulated evaluation, camera-free: 2,390 environment-steps per second at 1,024 environments on one RTX 5880 Ada in Isaac Lab-Arena; eight GPUs gave 7.95 times the throughput for independent runs (F06-93). With cameras and a real policy in the loop the figure is lower and unpublished there.
+- World-model evaluation: about 100 H100 GPU-hours for 8 policies and 4,186 rollouts (F06-89), so 12.5 GPU-hours per policy and 100 x 3,600 / 4,186 = 86 GPU-seconds per 30 s rollout [derived]. It loads GPU tensor compute (video generation) and a judge model, and no RT cores.
+- Scanned-twin evaluation: 50 simulated rollouts per task in Isaac Sim, which needs RT cores (F06-83, F06-52).
+- Real evaluation: 10 to 50 trials per task is the stated feasible range, limited by people (F06-96).
+
+## 6. Stale or wrong in the seed research
+
+| Seed file | Seed claim | What the source says now | Entry |
+|---|---|---|---|
+| seed 02, section 3 table | MuJoCo Warp humanoid at 8192 worlds: "9.58M non-deterministic" steps/s on RTX PRO 6000 Blackwell (the seed labelled it unofficial) | WRONG as a project figure: it is from the description of pull request 1932 by an external contributor, closed without merging. The project's nightly data: 5.77M steps/s on an RTX 6000 Ada (2026-09-03) | F06-20, F06-21 |
+| seed 02, section 3 | Isaac Sim 6.2.0 "Updated Newton to 1.6.1, with MuJoCo and MuJoCo Warp 3.12.0", read as the current versions | STALE: MuJoCo and MuJoCo Warp are at 4.0.1 (2026-11-11), Newton at 1.8.0 (2026-11-11). Isaac Lab 3.0.0 still pins Newton 1.6.1 | F06-1, F06-19, F06-40 |
+| seed 02, section 3 table | "Newton 1.0 GA (GTC, 2026-03-16)" | The v1.0.0 tag on GitHub was published 2026-04-13; the NVIDIA blog was not re-fetched, so the March date is unverified here. Contradiction, see section 8 | F06-40 |
+| seed 02, section 3 | MuJoCo Playground known only through the February 2025 paper (JAX, MJX, Madrona) | STALE: Playground 1.0.0 (2026-11-06) is a PyTorch and MuJoCo Warp rebuild with a first-party SO-101 pick-cube sim-to-real task and SO-101 system identification | F06-25, F06-26, F06-30 |
+| seed 02, section 3 | "The P family is not [compatible], because it uses data center GPUs without RT Cores" presented as the rule for Isaac workloads, with a 2026 exception inferred | STALE in scope: the AWS post was written against Isaac Sim 5.1. Isaac Lab 3.0's install guide: "Headless Newton simulation does not require RTX hardware". The rule still holds for RTX rendering and Isaac Sim itself | F06-51, F06-52, F06-60 |
+| seed 02, section 5 | "3DGRUT (NVIDIA, v2.0.0 June 2026)" | WRONG: the newest release is v1.1.0, published 2026-06-10 | F06-75 |
+| seed 02, section 5 | 3DGRUT exports custom NuRec USDZ, to be "deprecated and replaced by ParticleField" | Partly STALE: Isaac Sim 6.2.0 docs describe ParticleField rendering as native; the 3DGRUT README at v1.1.0 still describes the Isaac Sim 5.0 beta path | F06-76, F06-77 |
+| seed 02, section 6 table | WorldGym "(ICLR 2026)", r = 0.78, within 3.3%: "numbers from search summary, NOT VERIFIED" | Numbers verified from the paper (arXiv v3). The ICLR venue was not confirmed; cite as preprint | F06-90 |
+| seed 02, section 6 table | HF-WM r = 0.983, MMRV 0.002, 6 policies, 540 evaluations: not fetched | Verified from arXiv 2610.13522v1 | F06-90 |
+| seed 02, section 6 | RoboWorld cited at v3 | v4 of 15 Jul 2026 is the latest; the figures used (r = 0.989, 100 H100 GPU-hours, 4,186 rollouts, 8 policies) are in v4 | F06-89 |
+| seed 02, section 6 | Isaac Lab-Arena multi-GPU runs "on L40s" | The page says L40 GPUs (48 GB), a different card from the L40S. The seed's wording reads as a plural but is easy to misquote | F06-93 |
+| seed 02, section 6 | LIBERO described as close to saturated, with no successor named | LIBERO-Plus and LIBERO-PRO (2025) are the named successors and both report collapses under perturbation | F06-87 |
+| seed 04, section 4 | 1X world-model evaluation presented as current practice | The first-party post located is from 2024-09-17 and publishes no correlation figure; no 2026 quantified publication was located (U12) | F06-91 |
+
+## 7. Mental models worth teaching
+
+1. **A simulator is a step function called billions of times.** State and command in, state 2 ms later out; 15,000 calls per 30 s episode. Everything about cost follows from what one call does and how many run side by side (F06-9, F06-10).
+2. **CPU for one fast world, GPU for thousands of slow ones.** One CPU thread steps a world far faster than real time; one GPU world steps slower than real time, but 8,192 of them advance together. Latency against throughput (F06-15, F06-16, F06-20).
+3. **Contacts are the cost.** An idle arm runs at 25 million steps per second; a cluttered tabletop at 342 thousand. A pick-and-place task lives at the expensive end (F06-11, F06-17, F06-20).
+4. **Physics is cheap in memory, pixels are not.** Tens of kilobytes per world for state, megabytes per world once a camera is added, about 2 GB for one full-fidelity camera. The camera decides how many environments fit on a GPU (F06-22, F06-24, F06-48, F06-102).
+5. **Three renderers, one of which needs RT cores.** Rasterisation, ray tracing written as ordinary GPU compute, and RTX. Only the third excludes A100 and H100, so the G-family rule belongs to the renderer choice, and physics alone runs on any recent NVIDIA GPU (F06-51, F06-52, F06-62, F06-101).
+6. **Measure what can be measured, randomise the rest.** System identification fits 24 servo numbers from one teleoperated episode; domain randomisation covers friction, colours, lighting, calibration error and delay (F06-28, F06-30, F06-66).
+7. **The gap is mostly unglamorous.** On this arm the named sources are a calibration error of 1 to 2 cm, servo gains, and a few milliseconds of command delay (F06-27, F06-29, F06-31, F06-71).
+8. **Low action error is a weak promise.** Across policies, open-loop MSE ranks poorly against real success; only running the policy in a loop tests recovery from its own mistakes (F06-81, F06-82, F06-85, F06-86).
+9. **A success rate is a count, and counts are noisy.** 40 of 50 means somewhere between 67% and 89%. Two policies ten points apart cannot be told apart with 50 trials each; that takes about 200 (F06-95, F06-97).
+10. **Cheap evaluators are calibrated against an expensive one.** Simulators, scanned twins and video world models are all scored by how well they reproduce a real-robot ranking, and each needs that reference to exist (F06-83, F06-88, F06-89, F06-90).
+
+## 8. Contradictions between sources
+
+1. **Does offline action error predict real performance?** SIMPLER (r = 0.308 for MSE), PolaRiS, the REAL-I challenge report and the AWS engagement say it is a poor predictor (F06-81, F06-82, F06-85, F06-86). The ABC study reports statistically significant correlations between validation action error and real performance (F06-84). [our reading] The two are about different comparisons: ABC tracks checkpoints and variants of one policy family on its own data, the others rank different policies. ABC also finds validation loss uncorrelated and warns that offline metrics cannot predict success rates. Teach it as "useful for picking a checkpoint, not for ranking policies".
+2. **Do RT cores gate Isaac workloads?** AWS (2026-06-09) says the P family is not compatible (F06-60); the Isaac Sim 6.2.0 requirements page says A100 and H100 are not supported (F06-52); the Isaac Lab 3.0 install guide says headless Newton simulation does not require RTX hardware (F06-51). All three are true for their scope: Isaac Sim and RTX rendering need RT cores, a Newton-only Isaac Lab install does not. No first-party page names a non-RTX data-centre GPU as tested for the Warp renderers (U8).
+3. **When did Newton reach 1.0?** The seed has "GTC, 2026-03-16" from an NVIDIA blog; the GitHub v1.0.0 release was published 2026-04-13 (F06-40). The blog was not re-fetched. Also, v1.8.0 is dated 2026-11-11 on GitHub and 2026-11-12 in its changelog heading.
+4. **How do splats reach Isaac Sim?** The 3DGRUT README at v1.1.0 describes a beta custom USDZ path tied to Isaac Sim 5.0 (F06-76); the Isaac Sim 6.2.0 docs describe native ParticleField rendering (F06-77). The docs are newer and are the authority for 6.2.
+5. **How well do video world models rank policies?** Their authors report r = 0.78 to 0.989 (F06-89, F06-90). The PolaRiS authors, testing someone else's open video model, found it mis-ranked policies (MMRV 0.22) and hallucinated during object interaction (F06-90). Every strong figure is author reported on the authors' own model.
+6. **Which MuJoCo Warp throughput?** A pull-request description gives 9.58M steps per second (F06-21); the project's nightly page gives 5.77M on different hardware (F06-20). The nightly page is the first-party figure; its newest row is 11 weeks old (U2).
+7. **Isaac Lab's licence.** The docs header states BSD-3-Clause; the GitHub API returns no detected licence for the repository. Not resolved here; the comparison table says so.
+
+## 9. UNKNOWN register
+
+| ID | Unknown | Where it arises | What would close it |
+|---|---|---|---|
+| U1 | No first-party single-thread MuJoCo steps-per-second figure, and none for the SO-101 model | F06-14, F06-15, section 5.1 | A Tier 0 `testspeed` run on the Menagerie `robotstudio_so101` model (stream 08) |
+| U2 | The MuJoCo Warp nightly benchmark page has no row after 2026-09-03; no data at v4.0.1 | F06-20, F06-22, F06-24 | A newer row on the nightly page, or our own run of the benchmark suite |
+| U3 | No published success rate for Playground's `SO101PickCubeVision`, nor for NVIDIA's SO-101 typing project | F06-26, F06-55 | A first-party number, or our own trials with a Wilson interval |
+| U4 | The physics timestep of the Playground SO-101 environment was not read | F06-27, section 5.1 | Read the SO-101 scene XML and environment config at v1.0.1 |
+| U5 | Playground 1.0 publishes no throughput; a profiling suite exists without numbers | F06-25, F06-32 | Run the profiling suite (Tier 0), or a first-party table |
+| U6 | Whether a specific EnvHub or LeIsaac SO-101 environment is current; LeIsaac v0.4.0 (2026-04-15) was not read | F06-38 | Read the LeIsaac repository and the EnvHub listing at pinned refs |
+| U7 | The camera resolution behind the Isaac Lab Cartpole-Camera benchmark rows (the CSV column is empty) | F06-48 | Read the task config at v3.0.0 |
+| U8 | No first-party statement that the Newton Warp, MuJoCo Warp or Madrona ray tracers are supported on GPUs without RT cores (A100, H100, B200) | F06-51, F06-62, F06-101 | A vendor support matrix, or a Tier 0 run on a P-family instance |
+| U9 | The A100 and B200 product pages and an A10G-specific datasheet were not fetched | F06-58, F06-59 | Fetch those pages |
+| U10 | No throughput figure for Gaussian-splat rendering in MuJoCo Warp | F06-78 | A benchmark row, or our own run |
+| U11 | The SimReady Foundation specification pages were not fetched | F06-80 | Fetch the specification |
+| U12 | No 2026 1X publication with a quantified world-model evaluation result was located | F06-91 | A first-party 1X post or paper with a correlation figure |
+| U13 | Isaac Lab-Arena's current version: no tags or releases; a `release/0.4.0` branch exists without an announcement | F06-92 | A release or discussion post |
+| U14 | Genesis v1.4.7: no first-party throughput figure in the README; physics and renderer details not read | comparison table | Read the Genesis docs at the tag |
+| U15 | The NVIDIA Newton 1.0 blog and its "252x" and "475x" speed-up claims were not re-fetched, so they are not carried | section 6, section 8 | Re-fetch the blog |
+| U16 | The MSE and LIBERO correlation values in the PolaRiS comparison figure were not extracted as numbers | F06-82 | Read the figure data in arXiv 2512.16881v2 |
+| U17 | Seed rows for Gazebo, CARLA, ManiSkill3, the NuRec docs archive and the World Labs Marble post were not re-fetched and are not carried | seed 02, sections 3 and 5 | Re-fetch each source |
+| U18 | Venues not confirmed for SIMPLER, RoboArena, WorldGym and the Playground paper; all cited as preprints | section 3 | Check the proceedings |
+| U19 | Units and gear of the SO-101 actuator gains were assumed (SI, unit gear) for the saturation arithmetic | section 5.1 | Read the actuator definitions in the SO-101 XML |
+| U20 | Isaac Sim's licence was not recorded; Isaac Lab's licence is reported differently by its docs and the GitHub API | comparison table | Read the LICENSE files at the pinned tags |
+
+## 10. Reading path for Carlos
+
+1. **MuJoCo 4 announcement** (github.com/google-deepmind/mujoco, discussion 3773), the "Then and Now" table and the sim-to-real paragraph. Ten minutes that update the whole MuJoCo picture to November 2026.
+2. **MuJoCo docs, "Computation" chapter** at tag 4.0.1 (`doc/computation/index.rst`), the simulation pipeline list. The 26 stages of one step; this is section 12's backbone.
+3. **MuJoCo docs, MuJoCo Warp chapter** at tag 4.0.1 (`doc/mjwarp/index.rst`): the performance section (latency against throughput) and "Batch Rendering". Then the nightly benchmark page for the numbers.
+4. **MuJoCo Playground v1.0.1**: `tasks/manipulation/pick_cube/so101/deploy/README.md`, then `task.py` in the same directory, then `docs/sysid.rst`. This is the dive's thread task as shipped code: the randomisation list, the 10 Hz loop, the 64x64 camera, the calibration warning.
+5. **Isaac Lab v3.0.0 release notes**, then `docs/source/isaaclab/installation.rst` (the hardware split) and `docs/source/concepts/renderers.rst`. One page each for "which back end" and "which renderer".
+6. **Isaac Lab release benchmark CSV** (`docs/source/_static/benchmarks/environment-performance-release.csv`). Sort by task; compare the camera rows with the state rows. This is where the cost of a camera is visible.
+7. **Isaac Sim 6.2.0 requirements page**, the GPU table and the RT-core sentence. Then the AWS post of 2026-06-09, the instance compatibility paragraph, with its Isaac Sim 5.1 date in mind.
+8. **PolaRiS** (arXiv 2512.16881v2): the method figure, the correlation results, and the baseline comparison with MSE and LIBERO. Real-to-sim and evaluation in one paper.
+9. **LeRobot v0.7.0, `src/lerobot/utils/eval_stats.py`**: the docstring on the Wilson interval. Twenty lines that carry section 16's statistics.
+10. **RoboWorld** (arXiv 2607.01060v4), abstract and the cost paragraph; then the PolaRiS paragraph on Ctrl-World as the counterweight.
+11. **AWS Physical AI post of 2026-09-09**, the evaluation section: the open-loop against closed-loop lesson from a customer engagement.
+
+## 11. Source list by tier
+
+**Tier 0 (our experiments):** none in this register. U1, U5 and U8 are candidates for stream 08.
+
+**Tier 1 (code at a pinned ref, official docs, first-party benchmark data)**
+- google-deepmind/mujoco at 4.0.1 (4ed093a9f06b170bd1564942fa37e1bb907d93e3) and default branch at 23c23e0dc1643e99bb2a0abaf5dc4cf873e0bd77
+- google-deepmind/mujoco_warp at v4.0.1 (2db59f4d929dab714d85fab946d93427d2aa56e7) and commit 917a14b77735944140b66345325c8a14f2fe6be7; nightly benchmark page
+- google-deepmind/mujoco_playground at v1.0.1 (084e7957842792725d70866ee840d8fd79f17bbe)
+- google-deepmind/mujoco_menagerie at 370c43965323c0944b433b202aac5058b5f907a9
+- TheRobotStudio/SO-ARM100 at 141aea7bcac2744d92998e30268c413202a56f96
+- newton-physics/newton at v1.8.0 (425db81f01e402b51f96f560e154d529d645c6de) and default branch at 9bd0215d9c82508ea8d759c41df1b4577423d6ea
+- isaac-sim/IsaacSim at v6.2.0 (74a9356b20250dd60337d90b4b4d913c9454d32b); Isaac Sim 6.2.0 documentation (requirements, NuRec assets)
+- isaac-sim/IsaacLab at v3.0.0 (e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4), including the release benchmark export
+- isaac-sim/IsaacLab-Arena at 2281e1256bd10bf9b62b67ccccec9c87cd51fc6f; its performance documentation page
+- huggingface/lerobot at v0.7.0 (410c095eacc0011d998a73383eb94abed2715af0)
+- nv-tlabs/3dgrut at v1.1.0 (0a5832248698ab8456b181d6ea17fe02eda58637)
+- Genesis-Embodied-AI/Genesis at v1.4.7 (0a9e28ac6af9206baf26285f7b71104d670a5e51), README only
+- NVIDIA product pages: A10, L4, L40S, RTX PRO 6000 Blackwell Server Edition, H100, H200
+
+**Tier 2 (first-party vendor or lab posts, announcements, pull-request descriptions)**
+- MuJoCo 4 announcement, google-deepmind/mujoco discussion 3773 (2026-11-07)
+- Isaac Lab-Arena v0.3 announcement, discussion 1245 (2026-09-10)
+- mujoco_warp pull requests 1113 (merged) and 1932 (closed, unmerged; external contributor, cited only to trace a seed figure)
+- AWS Machine Learning blog, Isaac Lab on Amazon SageMaker AI (2026-06-09)
+- AWS Physical AI blog, Telexistence DreamZero experiment (2026-09-09)
+- NVIDIA developer page on ray tracing
+- Alliance for OpenUSD, Core Specification 1.0 post
+- 1X, world model post (2024-09-17; history)
+
+**Tier 3 (papers)**
+- Peer-reviewed (venue confirmed from the arXiv comment): STEP, arXiv 2503.10966v4 (RSS 2025)
+- Preprints: 2502.08844v1 (MuJoCo Playground), 2511.04831v1 (Isaac Lab), 2512.16881v2 (PolaRiS), 2506.18123v2 (RoboArena), 2607.01060v4 (RoboWorld), 2506.00613v3 (WorldGym), 2610.13522v1 (HF-WM), 2606.27375v1 (ABC), 2609.13679v2 (REAL-I challenge report), 2510.13626v3 (LIBERO-Plus), 2510.03827v2 (LIBERO-PRO)
+- History, before 2025: 1703.06907v1 (domain randomisation, 2017), 2405.05941v1 (SIMPLER, 2024), 2409.09491v2 (TRI best practices, 2024)
+
+**Tier 4:** none cited. Searches were used only to locate the sources above.
