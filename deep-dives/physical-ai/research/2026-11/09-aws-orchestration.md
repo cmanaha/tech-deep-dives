@@ -11,7 +11,7 @@
 - **Verdicts:** NEW (recorded fresh from the primary source); CARRIED (seed 03, re-fetched); STALE (superseded by a newer version); WRONG (seed said X, source says Y); UNKNOWN (unresolved, see the UNKNOWN register).
 - **Labels:** `[vendor claim]` for performance or savings figures printed by the party that sells the thing; `[derived]` for arithmetic, with inputs shown; `[our reading]` for synthesis. Every orchestration recommendation in this file is `[our reading]`.
 - **Seed:** "the seed research", seed 03 (AWS compute and orchestration, dated 2026-11-17). Every seed claim carried here was re-fetched today.
-- **Reused from the other registers, not re-fetched:** workload compute figures (registers 02 to 07), ray-tracing cores and the Isaac Sim rule (register 06, F06-56 to F06-60), Batch timeouts, fair share and consumable resources as budget controls for agents (register 04, F04-50 to F04-52). Register 08 owns the instance-family hardware table; at the time of writing it held only its counter-method sections, so hardware facts needed for the market table are sourced here and marked for reconciliation with register 08.
+- **Reused from the other registers, not re-fetched:** workload compute figures (registers 02 to 07), ray-tracing cores and the Isaac Sim rule (register 06, F06-56 to F06-60), Batch timeouts, fair share and consumable resources as budget controls for agents (register 04, F04-50 to F04-52). Register 08 owns the instance-family hardware table; its section F (F08-51 to F08-57) lists the G and P families and the Graviton generations as of today and is cited for hardware; this file adds only how each family is bought.
 - **Preview and Region limits:** where a first-party page limits a feature to a preview, to some Regions or to some instance families, the limit is in the entry.
 
 ### Tiers
@@ -27,6 +27,68 @@
 Code over docs over blogs. A What's New post dates a launch; the documentation page states the current behaviour. Vendor savings and performance numbers are claims, not measurements.
 
 **Evidence kinds:** definition, documentation of support, documentation of a limit, launch announcement, benchmark claim (vendor reported), production report, code behaviour.
+
+## 2. Currency table
+
+Newest first-party version or announcement found on 2026-11-20 for every item this register names.
+
+| Item | Newest found | Date | Source | What the seed research named |
+|---|---|---|---|---|
+| Karpenter (AWS provider) | v1.15.2 | 2026-11-12 | https://github.com/aws/karpenter-provider-aws/releases/tag/v1.15.2 | no version |
+| Kueue | v0.20.7 (v0.21.0-rc.0 is a pre-release) | 2026-11-19 | https://github.com/kubernetes-sigs/kueue/releases/tag/v0.20.7 | no version |
+| KAI Scheduler | v0.19.0, now in the `kai-scheduler` organisation (CNCF sandbox) | 2026-11-11 | https://github.com/kai-scheduler/KAI-Scheduler/releases/tag/v0.19.0 | github.com/NVIDIA/KAI-Scheduler, no version |
+| Volcano | v1.16.0 (patch v1.15.4 on 2026-11-12) | 2026-10-14 | https://github.com/volcano-sh/volcano/releases/tag/v1.16.0 | not named |
+| NVIDIA OSMO | 6.3.1; no 6.4 tag, default branch active to 2026-11-17 | 2026-06-22 | https://github.com/NVIDIA/OSMO/releases/tag/6.3.1 | 6.3.1 (matches) |
+| AWS Physical AI Toolchain sample | no releases; commit 84984decc51cc07fb4ceb8f3fc1f85d523924bf5 | 2026-11-11 | https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws | default branch, unpinned |
+| HyperPod task governance add-on | v1.6.1-eksbuild.1, installs Kueue v0.19.2 | date not on page | F09-25 | Kueue-based, no version |
+| AWS Batch, newest dated feature | Spot Instance draining on by default | 2026-10-09 | F09-12, F09-21 | ECS Managed Instances (August 2026) |
+| AWS Batch quota management with preemption | SageMaker Training jobs only | 2026-03-25 | F09-15 | same date (confirmed) |
+| SageMaker HyperPod, newest release note | cluster operations APIs | 2026-11-16 | F09-37 | not named |
+| EKS Nitro Sandboxes (microVM pod isolation) | generally available, Kubernetes 1.36 and later | 2026-11-09 | F09-43 | not in the seed (owner item a) |
+| EKS Auto Mode resource optimization (pod rightsizing) | PREVIEW | 2026-11-17 | F09-46 | not in the seed (owner item b) |
+| EKS Auto Mode, newest release-note items | Nitro Sandboxes and DRA for NVIDIA GPUs and EFA | 2026-11-09 | F09-47 | DRA on Kubernetes 1.36 and later |
+| EKS Kubernetes version referenced by the newest notes | 1.37 (`Balanced` consolidation default for new NodePools) | 2026-10-01 | F09-47 | 1.36 |
+| EC2 Capacity Blocks price list | p5.48xlarge $47.757 per hour; next update January 2027 | page current on 2026-11-20 | F09-93 | no prices |
+| Spot Instance Advisor data file | `Last-Modified` 2026-03-20 (eight months old) | 2026-03-20 | F09-96 | not used |
+| Mountpoint for Amazon S3 | 1.25.0; CSI driver v2.9.2 | 2026-11-12; 2026-10-30 | F09-106 | CSI driver v2 (August 2025) |
+| AWS Deadline Cloud, containers on service-managed fleets | launched | 2026-09-29 | F09-108 | same |
+| AWS PCS, P6e UltraServer support | launched | 2026-06-18 | F09-109 | same |
+| Newest AWS Physical AI Blog post | "Train VLA models with Hugging Face LeRobot on Amazon SageMaker AI" | 2026-11-19 | F09-81 | newest in seed: 12 November 2026 |
+| Newest G family | G7 (2026-06-18), G7e (2026-01-20) | see register 08 | F09-98, F08-52, F08-53 | G7e |
+| Newest Graviton families | Graviton5: M9g, C9g, R9g | see register 08 | F08-56 | C8g, M8g |
+
+Instance-family hardware currency (GPUs, memory, Rubin status) is owned by register 08, section F (F08-51 to F08-57).
+
+## 3. Pinned sources
+
+### Papers
+
+None. This register cites no paper.
+
+### Code and release-pinned documentation
+
+| Repository | Tag | 40-character SHA | Files read |
+|---|---|---|---|
+| aws/karpenter-provider-aws | v1.15.2 | 3a0361dce85777ed725c41c11c0168aaafe2c303 | release notes |
+| kubernetes-sigs/kueue | v0.20.7 | e854ec82e404436b261c81f0341ac9de8508f97c | `site/content/en/docs/overview/_index.md`, `concepts/cluster_queue.md`, `concepts/cohort.md`, `concepts/preemption.md`, `concepts/topology_aware_scheduling.md`, `concepts/multikueue.md` |
+| kai-scheduler/KAI-Scheduler | v0.19.0 | 2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11 | `README.md`, `docs/gpu-sharing/README.md` |
+| volcano-sh/volcano | v1.16.0 | 41f27d567fb5bdaf2cab01e1caaf48f7e266eefb | `README.md` |
+| NVIDIA/OSMO | 6.3.1 | ed59b69715e4ee6fff70bcd9d715106358a7205f | `README.md`, `docs/user_guide/architecture.rst`, `docs/user_guide/workflows/index.rst`, `docs/user_guide/resource_pools/index.rst`, `docs/user_guide/resource_pools/scheduling/index.rst`, `docs/user_guide/how_to/hil.rst`, `docs/deployment_guide/requirements/prereqs.rst`, `docs/deployment_guide/install_backend/create_backend/cloud_setup.rst`, `docs/deployment_guide/introduction/architecture.rst`, `deployments/terraform/aws/example/README.md`, file tree |
+| NVIDIA/OSMO (default branch, unreleased) | none | 0983bbeacaa1d8202559f153add88a9d855edc1d | `docs/user_guide/getting_started/mcp.rst`, file tree |
+| aws-samples/sample-the-physical-ai-toolchain-on-aws | none (no releases) | 84984decc51cc07fb4ceb8f3fc1f85d523924bf5 | `README.md`, `isaac-gr00t-on-aws/README.md`, `isaac-lab-on-aws/README.md`, `isaac-lab-arena-on-aws/README.md`, `isaac-sim-on-aws/README.md`, `osmo-on-aws/README.md`, `cosmos-on-aws/README.md`, file tree |
+| awslabs/mountpoint-s3-csi-driver | v2.9.2 | a7638fe2a5a8aeea482db578bcc4355537ee4272 | release record only |
+| awslabs/mountpoint-s3 | mountpoint-s3-1.25.0 | not fetched | release record only |
+
+### Docs (all accessed 2026-11-20)
+
+- AWS Batch User Guide: Fargate, ECS Managed Instances, allocation strategies, array jobs, service quotas, multi-node parallel jobs, EFA, retries and Spot best practices, job scheduling and fair share, quota management, service environments, launch templates, Batch on EKS, document history.
+- Amazon SageMaker AI Developer Guide: HyperPod overview, prerequisites, deep health checks, node recovery, task governance (concepts, policies, setup), autoscaling with Karpenter, Spot, checkpointless training, tiered checkpointing, elastic training, release notes; training plans and their instance types; managed MLflow. SageMaker pricing page.
+- Amazon EKS User Guide and Best Practices Guide: AI/ML compute, Auto Mode (overview, NodePools, accelerated workloads, instance support, release notes, reference), Nitro Sandboxes, resource optimization, Hybrid Nodes, document history. EKS pricing page.
+- Amazon EC2 User Guide: Nitro Sandboxes, Capacity Blocks for ML, On-Demand Capacity Reservations and their billing, Spot interruption notices, Spot best practices. Capacity Blocks product and pricing pages. Spot Instance Advisor data file.
+- AWS Step Functions Developer Guide: Batch integration, Distributed Map, service quotas.
+- Amazon S3 User Guide: EventBridge, Mountpoint. S3 Express One Zone product page. FSx for Lustre User Guide: throughput capacity. Amazon DCV product page.
+- AWS Decision Guides: "Choosing a generative AI service". AWS solution pages: "Guidance for Physical AI for Robotics on AWS", "Guidance for Physical AI Simulation Platform on AWS".
+- AWS What's New and AWS blogs as listed in section 11.
 
 ## 4. Claim register
 
@@ -88,7 +150,7 @@ AWS Batch is a managed job queue: the user submits a container job to a queue, a
 - Location: AWS Batch User Guide, "Elastic Fabric Adapter"
 - Verdict: CARRIED (seed 03, re-fetched)
 - Evidence: https://docs.aws.amazon.com/batch/latest/userguide/efa.html | Tier 1, first-party docs | documentation of support | "The AMI has the EFA driver loaded. The security group for the EFA must allows all inbound and outbound traffic to and from the security group itself. All instances that use an EFA must be in the same cluster placement group. The job definition must include a devices member with hostPath set to /dev/infiniband/uverbs0 to allow the EFA device to be passed through to the container." (accessed 2026-11-20)
-- Use in dive: section 24. The placement-group requirement collides with Capacity Blocks (F09-18, F09-76, U09-2).
+- Use in dive: section 24. The placement-group requirement collides with Capacity Blocks (F09-18, F09-92, U09-2).
 
 **F09-10. Batch's documented Spot pattern: a retry strategy of up to 10 attempts whose `evaluateOnExit` retries only when the status reason matches `Host EC2*` (the host was reclaimed) and exits on any other failure. A retried job goes to the front of its queue.**
 - Location: AWS Batch User Guide, "Use Amazon EC2 Spot best practices for AWS Batch" and "Automated job retries"
@@ -188,7 +250,7 @@ HyperPod is a managed, long-lived cluster of ML instances that the user schedule
 - Location: Amazon SageMaker Developer Guide, "SageMaker HyperPod task governance" and "Task governance setup", heading "Kueue Settings"
 - Verdict: CARRIED (seed 03, re-fetched; the add-on to Kueue version mapping is new)
 - Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-setup-task-governance.html | Tier 1, first-party docs | documentation of support | "HyperPod task governance EKS add-on installs Kueue for your HyperPod EKS clusters. Kueue is a kubernetes-native system that manages quotas and how jobs consume them." with the table rows "v1.6.1-eksbuild.1 | v0.19.2" and "v1.6.0-eksbuild.1 | v0.19.2" ; https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance.html | "Priority levels for various tasks Compute allocation for each team How each team lends and borrows idle compute If a team preempts their own tasks" (accessed 2026-11-20)
-- Use in dive: section 24. Kueue upstream is at v0.19.x or newer (F09-52), so the managed add-on tracks upstream closely; the reader learns Kueue's concepts once and they apply to both.
+- Use in dive: section 24. Kueue upstream is at v0.19.x or newer (F09-54), so the managed add-on tracks upstream closely; the reader learns Kueue's concepts once and they apply to both.
 
 **F09-26. Task governance policies in detail. Idle compute is lent first-come first-serve or by fair-share weight (0 to 100 per team, higher is served sooner). Tasks are ordered first-come first-serve or by priority class. A task running on borrowed quota can be preempted by a higher-priority task; by default the team that lent the compute preempts the borrowers. A team can borrow up to 10,000% of its allocation. Capacity not allocated to any team can be exposed for borrowing as Kueue ClusterQueues named `hyperpod-ns-idle-resource-sharing-cq-N`.**
 - Location: Amazon SageMaker Developer Guide, "Policies"
@@ -254,7 +316,7 @@ HyperPod is a managed, long-lived cluster of ML instances that the user schedule
 - Location: Amazon SageMaker Developer Guide, "Prerequisites for using SageMaker HyperPod"
 - Verdict: CARRIED (seed 03, re-fetched)
 - Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-prerequisites.html | Tier 1, first-party docs | documentation of a limit | "For Slurm-orchestrated clusters, each P5 instance can create 32 IP addresses (one per network card). For EKS-orchestrated clusters, each P5 instance can create 81 IP addresses (50 from the primary card plus one from each of the remaining 31 cards)." and "Elastic Fabric Adapter (EFA) traffic cannot cross AZs or VPCs." and "HyperPod deploys all cluster instances in a single Availability Zone." (accessed 2026-11-20)
-- Use in dive: section 24, a practical sizing note. `[derived]`: 16 P5 nodes under EKS need 16 x 81 = 1,296 addresses, more than a /22 subnet's 1,019 usable... the writer should recompute against the subnet size chosen.
+- Use in dive: section 24, a practical sizing note. `[derived]`: 16 P5 nodes under EKS need 16 x 81 = 1,296 addresses, more than the 1,019 usable addresses of a /22 subnet (1,024 minus the 5 addresses AWS reserves in every subnet; the count of 5 is from memory and was not fetched today).
 
 **F09-37. HyperPod news dated September to November 2026: the only release note in that window is 16 November 2026, "cluster operations" (each scaling or on-demand deep health check request becomes a trackable operation with new `ListClusterOperations` and `DescribeClusterOperation` APIs). The previous note is 16 April 2026.**
 - Location: Amazon SageMaker HyperPod release notes, top of page
@@ -357,7 +419,7 @@ Amazon EKS (Elastic Kubernetes Service) is AWS's managed Kubernetes control plan
 - Use in dive: section 24, one paragraph: a lab workstation or DGX Spark next to the arm can join the same cluster as cloud GPUs; the Jetson on a robot is a fleet-delivery target (register 07), not a validated Kubernetes node. No first-party page validating Jetson as a hybrid node was located in this research.
 
 **F09-53. EKS supports up to 100,000 worker nodes per cluster (announced 15 July 2025). For a simulation fan-out of hundreds or thousands of GPU pods, cluster size is not the limit.**
-- Location: What's New post "Amazon EKS enables ultra scale AI/ML workloads with support for 100K nodes per cluster" (Posted on: Jul 15, 2025)
+- Location: What's New post "Amazon EKS now supports up to 100,000 worker nodes per cluster" (Posted on: Jul 15, 2025)
 - Verdict: CARRIED (seed 03, re-fetched)
 - Evidence: https://aws.amazon.com/about-aws/whats-new/2025/07/amazon-eks-100000-worker-nodes-per-cluster/ | Tier 2, launch announcement | "Today, Amazon EKS announces support for up to 100,000 worker nodes in a cluster, enabling you to run ultra scale AI/ML training and inference workloads in a single cluster." (accessed 2026-11-20)
 - Use in dive: section 24, one sentence. The seed's figures of 500 pods per second and Karpenter launching 100,000 instances in 50 minutes were not re-fetched and are not carried.
@@ -402,7 +464,7 @@ Plain Kubernetes starts a pod as soon as a node fits it. A batch scheduler adds 
 - Evidence: https://github.com/volcano-sh/volcano/blob/41f27d567fb5bdaf2cab01e1caaf48f7e266eefb/README.md | Tier 1, project README at tag v1.16.0 (commit 41f27d567fb5bdaf2cab01e1caaf48f7e266eefb) | definition | "[Volcano](https://volcano.sh/) is a Kubernetes-native batch scheduling system, extending and enhancing the capabilities of the standard kube-scheduler." and "Volcano is an incubating project of the [Cloud Native Computing Foundation](https://cncf.io/) (CNCF)." and "the scheduler is built based on [kube-batch]" ; `gh api` release list: "v1.16.0 2026-10-14T06:47:34Z" (accessed 2026-11-20)
 - Use in dive: section 24, one line in the scheduler comparison. No AWS first-party page prescribing Volcano for robotics workloads was fetched in this research.
 
-**F09-60. Which of these AWS uses or documents. Kueue: installed by the HyperPod task governance add-on (F09-25). KAI Scheduler: named in the EKS best-practices guide as the way to get fractional GPUs, with a pod example (F09-41), and installed by NVIDIA OSMO's deploy script on EKS (F09-63). Volcano: no AWS documentation page read in this research names it.**
+**F09-60. Which of these AWS uses or documents. Kueue: installed by the HyperPod task governance add-on (F09-25). KAI Scheduler: named in the EKS best-practices guide as the way to get fractional GPUs, with a pod example (F09-41), and installed by NVIDIA OSMO's deploy script on EKS (F09-65). Volcano: no AWS documentation page read in this research names it.**
 - Location: cross-reference of F09-25, F09-41, F09-63
 - Verdict: NEW `[our reading]`
 - Evidence: https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html | Tier 1, first-party docs | documentation of support | "For example, to use KAI Scheduler for fractional GPU allocation, deploy it alongside the NVIDIA GPU Operator and specify fractional GPU resources in the pod spec" (accessed 2026-11-20)
@@ -460,3 +522,591 @@ OSMO is NVIDIA's open-source workflow orchestrator for physical AI: a control pl
 - Evidence: https://github.com/NVIDIA/OSMO/blob/0983bbeacaa1d8202559f153add88a9d855edc1d/docs/user_guide/getting_started/mcp.rst | Tier 1, docs at a pinned default-branch SHA (unreleased) | documentation of support | "MCP lets a compatible client use a bounded set of tools against your OSMO deployment." and "MCP acts on your behalf. Every tool call is authorized with your existing OSMO roles, API actions, and accessible pools; MCP cannot elevate your access." and "MCP must be enabled before you connect." ; https://github.com/NVIDIA/OSMO/releases/tag/6.2.8 | "**AI Agentic Skills** - Agent skills framework with workflow-expert, logs-reader, and language-specific expert sub-agents" ; `gh api` tree of ed59b69715e4ee6fff70bcd9d715106358a7205f: 0 paths matching "mcp"; tree of 0983bbea...: "docs/user_guide/getting_started/mcp.rst", "deployments/charts/service/templates/mcp-service.yaml" (accessed 2026-11-20)
 - Use in dive: section 19 and 24. Say "on OSMO's default branch, not yet in a release" until a 6.4 tag exists.
 
+
+### F. The AWS Physical AI Toolchain sample and AWS's own physical AI content
+
+Toolchain repository: https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws, read at commit `84984decc51cc07fb4ceb8f3fc1f85d523924bf5` (11 November 2026). In the URLs below, `TC@8498` stands for `https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws/blob/84984decc51cc07fb4ceb8f3fc1f85d523924bf5`.
+
+**F09-69. The AWS Physical AI Toolchain is an AWS sample repository (Apache-2.0, created 9 July 2026, no tagged releases) announced on the AWS Physical AI Blog on 7 October 2026. Each component is an independent Terraform module, and the modules share configuration through SSM (AWS Systems Manager) parameters with no hard dependency on each other. With no release tag, the only stable pin is a commit SHA.**
+- Location: repository metadata (`gh api repos/aws-samples/sample-the-physical-ai-toolchain-on-aws`, releases list empty); blog post "Introducing AWS Physical AI Toolchain", section "Design Principles"
+- Verdict: CARRIED (seed 03, re-fetched) with a new pin; the seed pinned an earlier commit
+- Evidence: https://aws.amazon.com/blogs/physical-ai/introducing-aws-physical-ai-toolchain/ | Tier 2, first-party blog (7 October 2026) | definition | "Modular, not monolithic: Each component (Foundation, Isaac Sim, Isaac Lab, GR00T, OSMO) is an independent Terraform module. You can adopt it one stage at a time or deploy the full pipeline. The modules share configuration through SSM parameters but have no hard dependencies on each other." (accessed 2026-11-20)
+- Use in dive: section 24, the opening of the "AWS's own reference" block. State the pin date; a sample without releases changes under the reader.
+
+**F09-70. Component status at the pinned commit. Available: Foundation, Cosmos (Cosmos 3 Predict video-to-video and Cosmos Transfer 2.5), Isaac Lab (reinforcement learning, 4096 parallel environments, on SageMaker and Batch), Isaac GR00T fine-tuning (on SageMaker and Batch), DreamZero LoRA fine-tuning (on SageMaker, in a separate repository), an Isaac Sim workstation, and OSMO 6.3 on EKS. Preview: Isaac Lab Arena evaluation. Planned, not built: edge deployment to Jetson through EKS Hybrid Nodes and Greengrass.**
+- Location: `README.md`, "Components" table, lines 36 to 48
+- Verdict: NEW (the seed described fewer components; DreamZero, Arena evaluation and Strands Agents rows are additions since)
+- Evidence: TC@8498/README.md | Tier 1, code repository at a pinned SHA | documentation of support | "| *Edge Deployment* | Model packaging to [Jetson](https://developer.nvidia.com/embedded-computing) via EKS Hybrid Nodes + Greengrass | Planned | - | Planned |" and "| [**Isaac Lab**](isaac-lab-on-aws/) | [NVIDIA Isaac Lab](https://developer.nvidia.com/isaac/lab) RL training (4096 parallel envs) on SageMaker + Batch |" (accessed 2026-11-20)
+- Use in dive: section 24. The edge leg of AWS's own sample is still "Planned", so the dive's fleet-delivery row cannot point at a working AWS sample; it rests on register 07.
+
+**F09-71. The sample's own map from loop stage to AWS compute: synthetic data generation on EC2 G6e or P5 under EKS; model training on SageMaker or AWS Batch (P5 or P6 with EFA) with S3 and FSx for Lustre; software-in-the-loop simulation on G6e under EKS; hardware-in-the-loop and edge on EKS Hybrid Nodes (Jetson, RTX workstations); OSMO's control plane on EKS with RDS, ElastiCache, S3, Secrets Manager and KMS.**
+- Location: `README.md`, "How It Maps to AWS", lines 65 to 73
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: TC@8498/README.md | Tier 1, code repository at a pinned SHA | documentation of support | "| **Model Training** | Amazon SageMaker, AWS Batch (P5 / P6 with EFA) | Amazon S3, Amazon FSx for Lustre |" and "| **SIL Simulation** | Amazon EC2 (G6e GPUs) on EKS | Amazon S3, Amazon CloudWatch |" (accessed 2026-11-20)
+- Use in dive: section 24 and the workload table. This is the closest thing to an AWS first-party workload-to-service table for robotics. It names G6e for simulation, which agrees with the ray-tracing family rule (F06-60).
+
+**F09-72. The sample prescribes when to use OSMO: for a new pipeline built from nothing, for one control plane across synthetic data, training, simulation and deployment, and for multi-cluster work (cloud plus lab plus edge). A team that already runs Kubeflow, Airflow, Argo Workflows or its own CI system is told to take the individual components and keep its orchestrator.**
+- Location: `README.md`, "When to Use OSMO vs. Individual Tools", lines 77 to 95
+- Verdict: NEW
+- Evidence: TC@8498/README.md | Tier 1, code repository at a pinned SHA | prescriptive guidance | "**Use individual tools standalone** when you already have an established orchestration pipeline (e.g., Kubeflow, Airflow, Argo Workflows, or a custom CI/CD system) and want to integrate a specific NVIDIA capability into your existing infrastructure" and "| Greenfield Physical AI platform | Start with **osmo-on-aws** - it provides orchestration + compute for all stages |" (accessed 2026-11-20)
+- Use in dive: section 25. One of only three first-party prescriptive statements located (with F09-73 and F09-81). Note what it compares: OSMO against other workflow engines. It does not compare Batch, HyperPod and EKS.
+
+**F09-73. For GR00T fine-tuning and for Isaac Lab training, the sample offers SageMaker Training Jobs and AWS Batch as two options and says how to choose: SageMaker for quick experiments and one-off runs with no persistent GPU infrastructure; Batch for repeated back-to-back runs, control of instance types and Availability Zones, and keeping GPU instances warm between runs.**
+- Location: `isaac-gr00t-on-aws/README.md`, "Which Option Should I Use?", lines 48 to 69; `isaac-lab-on-aws/README.md`, lines 46 to 70
+- Verdict: NEW
+- Evidence: TC@8498/isaac-gr00t-on-aws/README.md | Tier 1, code repository at a pinned SHA | prescriptive guidance | "| **Best for** | Quick experiments, workshops, one-off runs | Repeated runs, persistent fleet, cost control |" and "**Choose AWS Batch when:** - You want full control over the compute fleet - You need to keep GPU instances warm between runs - You're iterating rapidly on training configs" (accessed 2026-11-20)
+- Use in dive: section 25, the duty-cycle axis. The sample's reason for Batch is a warm fleet, which is the minimum scale-down delay of F09-13 in practice. At this commit the Isaac Lab SageMaker guide is marked "(Coming soon)", so for Isaac Lab only the Batch path is documented end to end.
+
+**F09-74. The sample's OSMO module deploys OSMO 6.3 on EKS managed node groups (system nodes m6i.xlarge, GPU nodes g5.2xlarge by default) with the NVIDIA GPU Operator and KAI Scheduler. It does not install a node autoscaler: no Cluster Autoscaler and no Karpenter, so scale to zero does not happen unless the reader adds one.**
+- Location: `osmo-on-aws/README.md`, lines 151, 351 to 352, 619 to 621; badge on line 7 reads OSMO 6.3.0
+- Verdict: NEW
+- Evidence: TC@8498/osmo-on-aws/README.md | Tier 1, code repository at a pinned SHA | documentation of support | "**Scalability** - EKS managed node groups with configurable min/max/desired sizing. (Cluster Autoscaler is not installed by the deploy scripts; add it to auto-scale on pending pods.)" and "**Cost optimization** - Spot-capable GPU node group and adjustable node counts. (Scale-to-zero and automatic scale-up require Cluster Autoscaler.)" (accessed 2026-11-20)
+- Use in dive: section 24. The practical consequence: OSMO on AWS as shipped holds its GPU nodes until someone changes the node group size. The default GPU node is G5 (A10G), a family two generations behind G7e; it has RT cores (F06-60) and 24 GB of GPU memory.
+
+**F09-75. The sample publishes its own cost estimates (its figures, not price-list lookups): GR00T full fine-tune about $79 on ml.g5.12xlarge for 11 hours; DreamZero 1000 steps about $93 on ml.g7e.24xlarge for 4 h 11 min; Cosmos 3 Predict about $37 per hour on p5.48xlarge under a Capacity Block; Cosmos Transfer 2.5 about $8 per hour on g6e.12xlarge on Spot; Isaac Lab reinforcement learning about $10 to $30 on ml.g5.xlarge for 2 to 4 hours; full OSMO deployment about $5 per hour.**
+- Location: `README.md`, "Estimated Costs", lines 108 to 120
+- Verdict: NEW
+- Evidence: TC@8498/README.md | Tier 1, code repository at a pinned SHA | cost estimate (author reported, no date or Region given) | "| GR00T training (full) | ~$79 | ml.g5.12xlarge for 11 hrs |" and "| Cosmos 3 Predict | ~$37/hr | p5.48xlarge (Capacity Block) |" and "| Cosmos Transfer 2.5 | ~$8/hr | g6e.12xlarge (Spot) |" and "| OSMO (full deployment) | ~$5/hr | EKS + RDS + ElastiCache |" (accessed 2026-11-20)
+- Use in dive: section 24 and 25, labelled `[author reported]`. The table also shows which capacity market the authors chose per workload: a Capacity Block for the eight-GPU world-model server, Spot for the restartable augmentation job. `[derived]` $79 / 11 h = $7.18 per hour for ml.g5.12xlarge as the authors priced it.
+
+**F09-76. The sample lags the current versions of what it wraps. Its Isaac Lab path uses the `3.0.0-beta2` container; its components table says GR00T N1.6 while a GR00T N1.7 guide exists in the same folder and needs a four-GPU ml.g6e.12xlarge (N1.6 runs on one-GPU ml.g6e.4xlarge); its OSMO badge reads 6.3.0 where the newest release is 6.3.1 (F09-61).**
+- Location: `isaac-lab-on-aws/README.md` line 3; `isaac-gr00t-on-aws/README.md` lines 7, 105, 131; `osmo-on-aws/README.md` line 7
+- Verdict: NEW
+- Evidence: TC@8498/isaac-gr00t-on-aws/README.md | Tier 1, code repository at a pinned SHA | documentation of support | "N1.7 requires a bigger/more expensive instance (`ml.g6e.12xlarge`, 4 GPUs) than N1.6 (`ml.g6e.4xlarge`, 1 GPU)" and "| **Instance** | `ml.g6e.12xlarge` (4 GPUs) | **Required** - single-GPU OOMs regardless of batch size |"; and TC@8498/isaac-lab-on-aws/README.md "The validated G1 path uses the `3.0.0-beta2` container because its Isaac Sim renderer is compatible with the NVIDIA R595 driver" (accessed 2026-11-20)
+- Use in dive: section 24, one sentence of caution. Contradiction C3 (section 8): the sample says GR00T N1.7 needs four L40S GPUs; the 19 November 2026 AWS post trains N1.7 on one 48 GB GPU at batch 16 with the backbone frozen (F09-82). The two differ in which weights are trained.
+
+**F09-77. The sample's Cosmos component serves Cosmos3-Super by default on an eight-GPU p5.48xlarge or p5en.48xlarge through the `vllm/vllm-omni:cosmos3` server, with Cosmos3-Nano as a one-GPU option. Its video-to-video output carries no action labels, so it multiplies video, not demonstrations a policy can train on directly.**
+- Location: `cosmos-on-aws/README.md`, lines 12 and 40
+- Verdict: NEW
+- Evidence: TC@8498/cosmos-on-aws/README.md | Tier 1, code repository at a pinned SHA | documentation of support | "Both paths run the same server (`vllm/vllm-omni:cosmos3`) and default to `nvidia/Cosmos3-Super` on the same hardware (p5.48xlarge / p5en.48xlarge, 8x H100+) - validated end-to-end on both." and "**No action labels** - output is video only (no joint positions/velocities). For action-paired augmentation (restyle existing video while preserving the original actions), use Cosmos Transfer 2.5 instead" (accessed 2026-11-20)
+- Use in dive: section 24 workload row "generative augmentation with a world model". The EKS path in this component uses Cluster Autoscaler, and the validated path runs one replica.
+
+**F09-78. The AWS solution page "Guidance for Physical AI for Robotics on AWS" draws a seven-step loop in which AWS Batch runs the simulation workloads on GPU Auto Scaling groups, SageMaker AI trains and retrains on real data, and AWS IoT Greengrass deploys to the robot and sends sensor data back. The fetched page shows no publication or revision date.**
+- Location: https://docs.aws.amazon.com/solutions/physical-ai-for-robotics-on-aws/ , "How it works", steps 1 to 7
+- Verdict: NEW (undated; treat as an architecture sketch, not as November 2026 guidance)
+- Evidence: https://docs.aws.amazon.com/solutions/physical-ai-for-robotics-on-aws/ | Tier 1, first-party solution page (no date on page) | reference architecture | "Step 2 AWS Batch orchestrates simulation workloads across GPU-powered Amazon EC2 Auto Scaling groups to dynamically scale compute resources based on demand." and "Step 6 Amazon SageMaker AI processes batches of real-world data to train and/or retrain and optimize models" (accessed 2026-11-20)
+- Use in dive: section 24. It is the one AWS architecture page that names Batch for simulation. It names no instance family, no capacity market and no Kubernetes.
+
+**F09-79. The AWS Physical AI Blog published at least fifteen posts between 9 September and 19 November 2026. The ones that bear on orchestration, with one line each: 19 Nov "Train VLA models with Hugging Face LeRobot on Amazon SageMaker AI" (same container on Training Jobs and HyperPod, F09-81); 18 Nov "Physical AI for autonomous fleet operations: multi-robot task planning on AWS" (an agent planner over SO-101 arms and simulated robots); 12 Nov "Scaling Physical AI vision pipelines with Ray on Amazon SageMaker HyperPod" (RobCo, F09-86); 7 Oct "Introducing AWS Physical AI Toolchain" (F09-69); 2 Oct "Isaac Lab on AWS: From Simulation to Registered Policy" (DCV workstations plus SageMaker Training Jobs, F09-85); 28 Sep "NVIDIA Cosmos 3 on AWS: Omnimodal World Models for Physical AI" (Batch for curation, HyperPod for post-training, F09-84); 10 Sep "Fine-Tuning pi0 (Pi-Zero) for robotic manipulation on Amazon SageMaker HyperPod EKS" (F09-83); 9 Sep "Bringing a Frontier World Model to the Convenience Store: Inside Telexistence's DreamZero Experiment on AWS" (F09-88).**
+- Location: blog feed and listing page 2, post titles and publication dates
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/feed/ | Tier 2, first-party blog feed | publication record | "Thu, 19 Nov 2026 | Train VLA models with Hugging Face LeRobot on Amazon SageMaker AI" and "Thu, 12 Nov 2026 | Scaling Physical AI vision pipelines with Ray on Amazon SageMaker HyperPod" and "Wed, 07 Oct 2026 | Introducing AWS Physical AI Toolchain" (feed `pubDate` and `title` fields, accessed 2026-11-20)
+- Use in dive: section 24 sources and the reading path. Other posts in the window, not about orchestration: 18 Nov "Detect Objects in 3D LiDAR Point Clouds at Scale on AWS"; 13 Nov "Built in Europe: What 500 Founders Tell Us About Scaling Physical AI"; 3 Nov "Streaming Physical AI Digital Twins and Immersive Experiences to XR Headsets with NVIDIA CloudXR 6 on AWS"; 28 Oct "Visual Asset Management System 2.6 Release"; 28 Oct "Industrial Sensor Data to Operational Intelligence with Archetype AI on AWS"; 28 Oct "AWS & RLWRLD: Building the Workforce of Tomorrow with Physical AI" (not fetched); 6 Oct "3D Gaussian Splatting in practice: Industry use cases".
+
+**F09-80. The launch post states the toolchain's service map in one sentence: teleoperation recordings land in S3; synthetic world generation runs on EKS and AWS Batch with Cosmos; policy training runs on AWS Batch and SageMaker with Isaac Lab and GR00T; validation runs in Isaac Sim on EC2; deployment goes to Jetson through AWS IoT Greengrass.**
+- Location: "Introducing AWS Physical AI Toolchain", section "Physical AI Toolchain on AWS Components"
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/introducing-aws-physical-ai-toolchain/ | Tier 2, first-party blog (7 October 2026) | reference architecture | "raw teleoperation recordings land in Amazon Simple Storage Service (Amazon S3), synthetic world generation runs on Amazon Elastic Kubernetes Service (Amazon EKS) and AWS Batch with NVIDIA Cosmos, policy training executes on AWS Batch and Amazon SageMaker using NVIDIA Isaac Lab and Isaac GR00T, validation runs in NVIDIA Isaac Sim on Amazon Elastic Compute Cloud (Amazon EC2), and final deployment pushes optimized models to NVIDIA Jetson hardware using AWS IoT Greengrass" (accessed 2026-11-20)
+- Use in dive: section 24. HyperPod is absent from the toolchain's map; it appears in the blog posts of F09-81, F09-83, F09-84 and F09-86. `[our reading]` AWS's physical AI content uses all three orchestrators and SageMaker Training Jobs side by side without ranking them.
+
+**F09-81. The newest AWS post on the subject (19 November 2026) trains ACT, GR00T N1.7 and pi0.5 with LeRobot 0.6.1 on an SO-101 pick-and-place dataset and gives a one-sentence rule: Training Jobs for a fully managed service, HyperPod for a team that already runs Kubernetes or Slurm and wants a persistent cluster. The container image and training script are identical on both.**
+- Location: "Train VLA models with Hugging Face LeRobot on Amazon SageMaker AI", introduction and section "Cost considerations and clean-up"
+- Verdict: NEW (published one day before this register)
+- Evidence: https://aws.amazon.com/blogs/physical-ai/train-vla-models-with-hugging-face-lerobot-on-amazon-sagemaker-ai/ | Tier 2, first-party blog (19 November 2026) | prescriptive guidance | "Choose Training Jobs if you want a fully managed service, and HyperPod if your team already runs Kubernetes or Slurm and wants a persistent cluster. Both use the same container image and training script." and "Amazon SageMaker Training Jobs bill only for the wall-clock duration of each job and shut the instances down automatically when it ends, so there is nothing to clean up and no idle cost between experiments. With --spot, Training Jobs bill at managed Spot prices. Amazon SageMaker HyperPod, by contrast, holds a persistent cluster, and it bills for every running node whether or not a job is using it." (accessed 2026-11-20)
+- Use in dive: section 25, the strongest first-party sentence for the duty-cycle axis, and it is on the dive's own robot (SO-101). Also from the post: Training Jobs default to "up to 20 instances per job and 5 days per job, both adjustable".
+
+**F09-82. Measured run times from the same post, for one 20,000-step post-training run on a 75-episode, two-camera 640x480 SO-101 dataset on SageMaker Training Jobs: GR00T N1.7 on ml.g7e.2xlarge at batch 32 took 3.4 hours; on ml.g6e.2xlarge at batch 16, 4.0 hours; pi0.5 full weights on ml.g6e.xlarge at batch 8 took 10.9 hours. Peak GPU memory: ACT 15 GB at batch 32; GR00T N1.7 (projector and diffusion head, backbone frozen) 41.5 GB at batch 32; pi0.5 all weights 41 GB at batch 16.**
+- Location: same post, the GPU memory table and the 20,000-step timing table
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/train-vla-models-with-hugging-face-lerobot-on-amazon-sagemaker-ai/ | Tier 2, first-party blog (19 November 2026) | benchmark claim (author reported; the post says "It isn't a speed benchmark") | "| GR00T N1.7 | Standard | ml.g7e.2xlarge | 32 | 3.4 h | 640,000 |" and "| GR00T N1.7 | Standard | ml.g6e.2xlarge | 16 | 4.0 h | 320,000 |" and "| ACT | 15 GB @ batch 32 | 15 GB @ batch 32 | 15 GB @ batch 32 |" and "Instead of a single instance type you can pass a comma-separated list in priority order. Amazon SageMaker starts the job on the first type in the list that has capacity." (accessed 2026-11-20)
+- Use in dive: sections 24 and 25, the rows "per-task policy fine-tune" and "VLA post-training on one node". These are single-GPU jobs of 3 to 11 hours: one instance, no reservation, and a priority list of instance types as the capacity tactic. `[derived]` 640,000 samples / (3.4 x 3600 s) = 52 samples per second on the 96 GB GPU.
+
+**F09-83. The 10 September 2026 AWS post fine-tunes pi0 (3 billion parameters) on HyperPod with EKS on one ml.p5.48xlarge (eight H100, FSDP sharding) with a 1.2 TiB FSx for Lustre file system and the Kubeflow Training Operator v1.9.1. Its comparison table gives the reason for HyperPod over Training Jobs: data and checkpoints stay on Lustre between jobs, so a new job starts at once where a Training Job has "~5 min cold start".**
+- Location: "Fine-Tuning pi0 (Pi-Zero) for robotic manipulation on Amazon SageMaker HyperPod EKS", sections "Why Amazon SageMaker HyperPod with Amazon EKS?" and "Solution Architecture"
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/fine-tuning-%CF%800-pi-zero-for-robotic-manipulation-on-amazon-sagemaker-hyperpod-eks/ | Tier 2, first-party blog (10 September 2026) | comparison (author reported) | "| Iteration speed | ~5 min cold start | Instant (data on Amazon FSx for Lustre, image cached)" and "Compute: 1x ml.p5.48xlarge (8x H100 80GB, 32x EFA) Storage: Amazon FSx for Lustre (1.2 TiB) mounted at /fsx via a PVC named fsx-claim Orchestration: Kubeflow Training Operator v1.9.1 (PyTorchJob CRD)" (accessed 2026-11-20)
+- Use in dive: section 25. The "~5 min cold start" is the only first-party cold-start figure located for any of the orchestrators, and it is for SageMaker Training Jobs, not Batch (U09-1 stays open for Batch).
+
+**F09-84. The 28 September 2026 AWS and NVIDIA post on Cosmos 3 assigns one orchestrator per stage: Cosmos Curator on AWS Batch for filtering and de-duplication; post-training on SageMaker HyperPod; real-time serving on EKS with Cosmos NIM or on SageMaker JumpStart. Its sizing table recommends g7e.2xlarge or p5.4xlarge for one-GPU Nano inference, p5.48xlarge for Nano post-training, p5en.48xlarge for multi-node post-training, and p6-b200.48xlarge for Blackwell work.**
+- Location: "NVIDIA Cosmos 3 on AWS: Omnimodal World Models for Physical AI", sections "Reference Architecture: Cosmos 3 on AWS" and "EC2 Instance Recommendation"
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/nvidia-cosmos-3-on-aws-omnimodal-world-models-for-physical-ai/ | Tier 2, first-party blog (28 September 2026) | reference architecture and vendor sizing guidance | "Cosmos Curator runs on AWS Batch to filter, de-duplicate, and quality-score the dataset." and "Step 2 Post-Training: Domain adaptation (SFT) runs on Amazon SageMaker HyperPod to fine-tune Cosmos 3 for custom environments and tasks." and "| Multi-node post-training | p5en.48xlarge | Eight H200 GPUs with EFAv3. Suitable for NCCL collectives, but benchmark against the NVIDIA-tested H100 recipe." (accessed 2026-11-20)
+- Use in dive: section 24 rows "decode and curation", "generative augmentation with a world model", "world-model training". The post's cost paragraph also names the market per pattern: "Spot Instances deliver up to 90% savings for batch synthetic data generation workloads. Capacity Blocks reserve GPU capacity for predictable fine-tuning windows" `[vendor claim]`.
+
+**F09-85. The 2 October 2026 AWS post "Isaac Lab on AWS" pairs interactive GPU workstations reached over Amazon DCV with SageMaker Training Jobs for scale-out and SageMaker managed MLflow for tracking. It bakes Isaac Sim 5.1.0 and Isaac Lab v2.3.2 into the machine image. Multi-GPU or multi-node training is done by submitting a training job with an instance count; the entrypoint starts the script under `torchrun`.**
+- Location: "Isaac Lab on AWS: From Simulation to Registered Policy", introduction and section "An integrated Amazon SageMaker AI training plane"
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/isaac-lab-on-aws-from-simulation-to-registered-policy/ | Tier 2, first-party blog (2 October 2026) | reference architecture | "The solution bakes a golden AMI with NVIDIA Isaac Sim 5.1.0, Isaac Lab v2.3.2, the NVIDIA 580 driver, an Amazon DCV remote desktop, and all host configuration. It provisions a shared VPC, an integrated Amazon SageMaker AI training plane with managed MLflow" and "Training jobs bill only for job runtime, with no idle cost between runs" (accessed 2026-11-20)
+- Use in dive: section 24, rows "state-only RL in simulation" and "camera-rendered simulation". Two AWS artefacts published five days apart pin different Isaac Lab lines (v2.3.2 here, `3.0.0-beta2` in the toolchain, F09-76); see contradiction C4.
+
+**F09-86. Customer evidence, RobCo (12 November 2026): a mixed CPU and GPU vision pipeline moved to Ray on SageMaker HyperPod with EKS and HyperPod-managed Karpenter. The GPU NodePool lists two instance types (ml.g6.12xlarge and ml.g6e.12xlarge) and removes a node 60 seconds after its last pod leaves. Reported result: about 15% lower cost per run and no more multi-hour waits for GPU capacity.**
+- Location: "Scaling Physical AI vision pipelines with Ray on Amazon SageMaker HyperPod", introduction, "Solution overview" and the NodePool excerpt
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/scaling-physical-ai-vision-pipelines-with-ray-on-amazon-sagemaker-hyperpod/ | Tier 2, first-party blog with a named customer (12 November 2026) | production report (author reported) | "Each run now costs approximately 15% less, and the multi-hour waits for Amazon EC2 GPU capacity no longer occur." and "The two instance types are what removed RobCo's capacity waits, because Karpenter launches whichever type has capacity instead of waiting for one. The consolidateAfter: 60s setting removes a node 60 seconds after its last pod is gone." (accessed 2026-11-20)
+- Use in dive: section 25. The mechanism to teach: listing more than one instance family is a capacity tactic available on On-Demand, with no reservation. The same idea appears as the instance-type priority list in F09-82 and as Batch allocation strategies in F09-3.
+
+**F09-87. Customer evidence, RLWRLD (post dated 22 June 2026): robot foundation model training on p5e and p5en instances (eight H200 each) reserved with EC2 Capacity Blocks for ML, orchestrated by AWS ParallelCluster with Slurm because the team already knew Slurm; g6e instances for evaluation in simulation; S3 synchronised with FSx for Lustre.**
+- Location: "Putting dexterous robots to work: How RLWRLD builds physical AI with AWS", sections "Compute", "Distributed training" and the "AWS Services Used" table
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/putting-dexterous-robots-to-work-how-rlwrld-builds-physical-ai-with-aws/ | Tier 2, first-party blog with a named customer (22 June 2026) | production report | "GPU availability for planned training runs is secured through Amazon EC2 Capacity Blocks for ML, which guarantee access to high-performance instances on a defined schedule." and "Training is orchestrated with AWS ParallelCluster. Because the team can keep using the Slurm scheduler it already knows" and "g6e capacity is readily available for evaluation workloads, and high-performance GPUs are reserved in a planned way for training" (accessed 2026-11-20)
+- Use in dive: section 25. A robotics customer whose orchestrator is none of Batch, HyperPod or EKS. It splits the capacity market by workload exactly as the mental model does: reservation for coupled multi-node training, On-Demand G family for evaluation.
+
+**F09-88. Customer evidence, Telexistence (9 September 2026): DreamZero, a 14 billion parameter world action model, fine-tuned on one p6-b200.48xlarge (eight B200) reserved with Capacity Blocks for ML, with g7e instances for simulation and inference serving. The post names no job scheduler. Inference on the B200 instance held about 583 ms per step, about 8 times faster than on g7e.**
+- Location: "Bringing a Frontier World Model to the Convenience Store: Inside Telexistence's DreamZero Experiment on AWS", pipeline overview and section "Making Inference Practical"
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/bringing-a-frontier-world-model-to-the-convenience-store-inside-telexistences-dreamzero-experiment-on-aws/ | Tier 2, first-party blog with a named customer (9 September 2026) | production report (author reported) | "DreamZero is fine-tuned from the DROID-AgiBot checkpoint on a single-node Amazon Elastic Compute Cloud (Amazon EC2) p6-b200.48xlarge instance (8x NVIDIA B200 GPUs), with action-head full-parameter training." and "Capacity Blocks for ML to reserve the B200 capacity across the engagement" and "The Amazon EC2 p6 (B200) instance ran roughly 8x faster than EC2 g7e (RTX PRO 6000 Blackwell), holding a stable ~583 ms per step" (accessed 2026-11-20)
+- Use in dive: section 24 row "world-model training", section 25. A single eight-GPU node on a reservation needs no cluster scheduler at all; that is a legitimate answer in the decision path.
+
+**F09-89. Customer evidence, WIRobotics (10 August 2026): teleoperation data arrives through Kinesis Video Streams and Kinesis Data Streams, Data Firehose delivers it to S3, AWS Glue catalogues it, and AWS Batch runs the GR00T fine-tuning jobs.**
+- Location: "How WIRobotics is teaching humanoid robots to use human tools with AWS and NVIDIA", architecture paragraph before Figure 3
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/how-wirobotics-is-teaching-humanoid-robots-to-use-human-tools-with-aws-and-nvidia/ | Tier 2, first-party blog with a named customer (10 August 2026) | production report | "AWS Glue handles data cataloging and transformation, while AWS Batch manages large-scale training jobs." (accessed 2026-11-20)
+- Use in dive: section 24 row "teleoperation ingest" and section 25. With F09-86 to F09-88 this makes four named robotics customers on four different orchestration choices (Ray on HyperPod with EKS, ParallelCluster with Slurm, a bare reserved node, Batch).
+
+### G. Capacity markets: how the instances are bought
+
+A capacity market is the way an instance is paid for and what AWS promises in return. Five matter here: On-Demand (pay per second, no promise the instance is available when asked for), Spot (spare capacity at a discount, reclaimable on two minutes' notice), the On-Demand Capacity Reservation, ODCR (a held slot in one Availability Zone at the On-Demand price), the Capacity Block for ML (a prepaid GPU reservation with fixed start and end), and the SageMaker training plan (the same kind of block, sold for SageMaker targets, F09-34).
+
+**F09-90. A Capacity Block for ML reserves GPU instances for a fixed window: start time up to eight weeks ahead, offerings that start in as little as 30 minutes, up to 64 instances per block and 256 across blocks, length up to six months. It ends at 11:30 UTC, instance termination begins at 11:00 UTC that day, it cannot be cancelled, moved or split, and the fee is charged up front.**
+- Location: EC2 User Guide, "Capacity Blocks for ML", introduction and "Considerations"; product page; pricing page
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | Tier 1, first-party docs | documentation of limits | "Each Capacity Block can have up to 64 instances, and you can have up to 256 instances across Capacity Blocks. You can describe Capacity Block offerings that can start in as soon as 30 minutes. Capacity Blocks end at 11:30AM Coordinated Universal Time (UTC). The termination process for instances running in a Capacity Block begins at 11:00AM Coordinated Universal Time (UTC) on the final day of the reservation. Capacity Blocks can be reserved with a start time up to 8 weeks in the future. Capacity Block cancellations aren't allowed." and, from https://aws.amazon.com/ec2/capacityblocks/ , "You can reserve accelerated compute instances for up to six months in cluster sizes of one to 64 instances (512 GPUs or 1024 Trainium chips)" (accessed 2026-11-20)
+- Use in dive: sections 24 and 25, the "needs a reservation" axis. The half hour between 11:00 and 11:30 UTC is unusable: a job must checkpoint before 11:00 on the last day.
+
+**F09-91. Capacity Blocks cover P and Trainium types only. The documented instance list today: p4d.24xlarge, p4de.24xlarge, p5.4xlarge, p5.48xlarge, p5e.48xlarge, p5en.48xlarge, p6-b200.48xlarge, p6-b300.48xlarge, trn1.32xlarge, trn2.3xlarge, trn2.48xlarge. UltraServer blocks: Trn2, Trn3 and P6e-GB200, the last only in the US East (Dallas) Local Zone. No G family and no P6e-GB300 appears.**
+- Location: EC2 User Guide, "Capacity Blocks for ML", "Supported instance types and Regions" (both tables)
+- Verdict: NEW in detail (the seed listed fewer types; p6-b300 and the single-GPU p5.4xlarge are on the list now)
+- Evidence: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | Tier 1, first-party docs | documentation of support | instance-type column of the "Instance Capacity Blocks" table as listed in the claim, and from the UltraServer table: "| Instance type | US East (Ohio) us-east-2 | US East (Dallas) us-east-1-dfw-2a | US East (South Bend) us-east-2-sbn-1a | Trn2 | ✓ | | | Trn3 | ✓ | | ✓ | P6e-GB200 | | ✓ |" (accessed 2026-11-20)
+- Use in dive: the family by market table below. The rule a reader can carry: P family has a block market, G family does not (agrees with F09-40 and F09-35).
+
+**F09-92. Capacity Blocks do not support placement groups: none can be named at launch. Instances in a block are placed close together inside an EC2 UltraCluster automatically. A launch must target the reservation ID, and instances in a block do not count against On-Demand limits.**
+- Location: EC2 User Guide, "Capacity Blocks for ML", introduction and "Considerations"
+- Verdict: NEW
+- Evidence: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | Tier 1, first-party docs | documentation of limits | "Capacity Blocks do not support placement groups. You can't specify a placement group when you launch instances into a Capacity Block, whether you target the Capacity Block by its reservation ID or through a Capacity Reservation Resource Group." and "Instances that run inside a Capacity Block are automatically placed close together inside Amazon EC2 UltraClusters" and "To use a Capacity Block, instances must specifically target the reservation ID. Instances in a Capacity Block don't count against your On-Demand Instances limits." (accessed 2026-11-20)
+- Use in dive: section 24. This meets the Batch EFA requirement of F09-9 ("same cluster placement group") head on; how Batch multi-node jobs with EFA run inside a block is U09-2.
+
+**F09-93. Capacity Block prices on the AWS pricing page today, per instance hour: p5.48xlarge $47.757 ($5.970 per GPU), p5e.48xlarge $54.924, p5en.48xlarge $63.158 ($7.895 per GPU), p6-b200.48xlarge $113.666 ($14.208 per GPU), p6-b300.48xlarge $129.168 ($16.146 per GPU); a 72-GPU P6e-GB200 UltraServer $761.904 ($10.582 per GPU) in the Dallas Local Zone. The page says the next price update is scheduled for January 2027.**
+- Location: "Amazon EC2 Capacity Blocks for ML Pricing", pricing tables (US Regions) and the paragraph above them
+- Verdict: NEW (the seed gave no block prices)
+- Evidence: https://aws.amazon.com/ec2/capacityblocks/pricing/ | Tier 2, first-party pricing page | published price | "| p5.48xlarge | US East (N. Virginia) | $47.757 USD ($5.970 USD) | 8 x H100" and "p5en.48xlarge | US East (Ohio) | $63.158 USD ($7.895 USD)" and "| p6-b200.48xlarge | US East (Ohio) | $113.666 USD ($14.208 USD) | 8 x B200" and "Reservation prices are updated regularly based on trends in supply and demand for EC2 Capacity Blocks. The current prices are scheduled to be updated next in January, 2027." (accessed 2026-11-20)
+- Use in dive: sections 23 and 25. Block prices move. The same page's worked example, set in March 2025, uses $31.464 per hour for p5.48xlarge; today's table says $47.757. `[derived]` 47.757 / 31.464 = 1.52, a 52% rise between the example's date and today. The toolchain's "~$37/hr" for the same instance under a block (F09-75) sits between the two (contradiction C5).
+
+**F09-94. An On-Demand Capacity Reservation holds capacity for a named instance type in one Availability Zone for any duration, can be created and cancelled at any time when it is for immediate use, and is charged at the On-Demand rate whether or not an instance runs in it. Savings Plans discounts apply to it.**
+- Location: EC2 User Guide, "Reserve compute capacity with EC2 On-Demand Capacity Reservations" and "Capacity Reservation pricing and billing"
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html | Tier 1, first-party docs | documentation of billing | "Capacity Reservations are charged at the equivalent On-Demand rate whether you run instances in reserved capacity or not" and "Billing discounts for Savings Plans and Regional Reserved Instances apply to Capacity Reservations."; and https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html "If you request a Capacity Reservation for immediate use, the Capacity Reservation becomes available for use immediately and there is no term commitment. You can modify the Capacity Reservation at any time, and you can cancel it at any time" (accessed 2026-11-20)
+- Use in dive: section 25. The ODCR is the only reservation the G family has (F09-40). It promises the slot from the moment AWS grants it; the request itself can fail when the Zone has no capacity.
+
+**F09-95. Spot gives two minutes' warning before reclaiming an instance, on a best-effort basis. The EC2 guide says Spot is "not suitable for workloads that are inflexible, stateful, fault-intolerant, or tightly coupled between instance nodes", and gives a rule of thumb: be flexible across at least 10 instance types per workload.**
+- Location: EC2 User Guide, "Spot Instance interruption notices" and "Best practices for Amazon EC2 Spot"
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html | Tier 1, first-party docs | prescriptive guidance | "Spot Instances are not suitable for workloads that are inflexible, stateful, fault-intolerant, or tightly coupled between instance nodes." and "A good rule of thumb is to be flexible across at least 10 instance types for each workload."; and https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html "A Spot Instance interruption notice is a warning that is issued two minutes before Amazon EC2 stops or terminates your Spot Instance." and "Interruption notices are emitted on a best effort basis." (accessed 2026-11-20)
+- Use in dive: section 25, the interruptibility and coupling axes. The ten-type rule cannot be met by a GPU job that needs one GPU model; `[our reading]` for GPU work the practical form is "every size and family that carries an acceptable GPU", as in F09-86 (two types).
+
+**F09-96. AWS's Spot Instance Advisor data file gives, per Region and instance type, a bucket for how often Spot capacity was interrupted in the trailing month. In the copy fetched today (file last modified 20 March 2026), in US East (N. Virginia): 7 of 8 G5 sizes and 5 of 8 G6e sizes are in the ">20%" bucket; G7e has 3 of 6 sizes above 20%; p5.48xlarge, p5.4xlarge and p5en.48xlarge are in the "<5%" bucket; p6-b200.48xlarge is in "10-15%". In US East (Ohio), 4 of 6 G7e sizes are in "<5%". G7, P5e, P6e-GB200, C9g and M9g have no rows.**
+- Location: data file behind https://aws.amazon.com/ec2/spot/instance-advisor/ : keys `spot_advisor.<region>.Linux.<type>.r` (bucket index) and `.s` (savings percent), with bucket labels in `ranges`
+- Verdict: NEW (with a freshness limit: the file's `Last-Modified` header is 20 March 2026, eight months before today; families launched after it, such as G7 in June 2026, are absent for that reason and not because they lack Spot)
+- Evidence: https://spot-bid-advisor.s3.amazonaws.com/spot-advisor-data.json | Tier 1, first-party data file | vendor data | "ranges": labels "<5%", "5-10%", "10-15%", "15-20%", ">20%" for index 0 to 4; counts per family computed by us from the `r` values: us-east-1 g5 {3: 1, 4: 7}, g6e {1: 1, 2: 1, 3: 1, 4: 5}, g7e {2: 1, 3: 2, 4: 3}, p5 {0: 2}, p5en {0: 1}, p6-b200 {2: 1}; us-east-2 g7e {0: 4, 1: 1, 3: 1} (accessed 2026-11-20)
+- Use in dive: section 25, as `[derived]` from a dated vendor file and with the Region named. The story it supports: in the busiest Region the G sizes that simulation wants are the ones most often reclaimed, and the same family in a second Region can be calm. A low bucket for P5 says little about whether a P5 Spot request is fulfilled at all; the file records interruptions of instances that were running (U09-9).
+
+**F09-97. Graviton general-purpose and compute families are deep Spot markets by the same file: C8g and M8g each have 12 sizes with rows in 25 and 30 Regions; in US West (Oregon) 7 of 12 C8g sizes and 8 of 12 M8g sizes are in the "<5%" bucket, with savings of 53% to 79% against On-Demand.**
+- Location: same data file, `spot_advisor.us-west-2.Linux` for types beginning `c8g.` and `m8g.`
+- Verdict: NEW (same freshness limit as F09-96; the Graviton5 families C9g and M9g of F08-56 are absent from the March 2026 file)
+- Evidence: https://spot-bid-advisor.s3.amazonaws.com/spot-advisor-data.json | Tier 1, first-party data file | vendor data | counts computed by us from the `r` and `s` values: us-west-2 c8g 12 types {0: 7, 1: 4, 2: 1}, s 53 to 79; m8g 12 types {0: 8, 1: 4}, s 58 to 79; number of Regions with at least one row: c8g 25, m8g 30 (accessed 2026-11-20)
+- Use in dive: section 25, rows for CPU-shaped workloads (ingest, decode on CPU, export). With twelve sizes per family and several families of the same core, the ten-type rule of F09-95 is easy to meet on Graviton and hard to meet on GPUs.
+
+**F09-98. The two newest G families are sold as On-Demand, Spot and under Savings Plans. G7e (general availability 20 January 2026) launched in US East (N. Virginia) and US East (Ohio); G7 (18 June 2026) in US East (Ohio) and US West (Oregon).**
+- Location: AWS What's New posts for G7e and G7, last paragraph of each
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-g7e-instances-generally-available/ | Tier 2, first-party announcement | documentation of support | "You can purchase G7e instances as On-Demand Instances, Spot Instances, or as part of Savings Plans."; and https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-ec2-g7-generally-available/ "You can start using Amazon EC2 G7 instances today in two AWS Regions: US East (Ohio) and US West (Oregon). You can purchase G7 instances as On-Demand Instances, as part of Savings Plans, or Spot Instances." (accessed 2026-11-20)
+- Use in dive: the table below. Region lists are those of the launch posts; later Region additions were not searched (the March 2026 advisor file already shows G7e rows in 6 Regions, F09-96). Family specifications are in register 08 (F08-52, F08-53).
+
+**F09-99. The rack-scale systems have one door each. P6e-GB200 UltraServers are bought as UltraServer Capacity Blocks (Dallas Local Zone, F09-91) or through a SageMaker training plan arranged with an account manager (F09-34). P6e-GB300 UltraServers are obtained by contacting an AWS sales representative; no self-service market was located for them.**
+- Location: AWS What's New, "Amazon EC2 P6e-GB300 UltraServers ... generally available" (2 December 2025), last paragraph; Capacity Blocks docs table
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available | Tier 2, first-party announcement | documentation of support | "To get started with P6e-GB300 UltraServers, please contact your AWS sales representative." (accessed 2026-11-20)
+- Use in dive: section 25, one line: the top of the range is a sales conversation, outside any orchestrator's reach. See also F08-54.
+
+#### Family by market table
+
+Each cell: what a first-party source fetched today states, with the entry ID. "not located" means no statement was found in this research; it does not mean unsupported.
+
+| Family (GPU or CPU) | On-Demand | Spot | Capacity Block for ML | SageMaker training plan | ODCR |
+|---|---|---|---|---|---|
+| G5 (A10G, 24 GB) | yes `[our reading]`: Spot savings are quoted against its On-Demand price (F09-96) | yes; N. Virginia 7 of 8 sizes ">20%" interrupted, March 2026 file (F09-96) | no: P and Trainium only (F09-91, F09-40) | not on the list (F09-35) | yes: "ODCRs cover G instances" (F09-40, F09-94) |
+| G6 (L4, 24 GB) | yes `[our reading]` (F09-96) | yes; rows in 17 Regions, March 2026 file (F09-96) | no (F09-91) | not on the docs list; a May 2026 AWS post said otherwise (F09-35, U09-4) | yes (F09-40, F09-94) |
+| G6e (L40S, 48 GB) | yes `[our reading]` (F09-96); a customer calls it "readily available" (F09-87) | yes; N. Virginia 5 of 8 sizes ">20%" (F09-96) | no (F09-91) | not on the list (F09-35) | yes (F09-40, F09-94) |
+| G7 (RTX PRO 4500, 32 GB) | yes (F09-98) | yes per the launch post; no interruption data, family is newer than the file (F09-98, F09-96) | no (F09-91) | not on the list (F09-35) | yes `[our reading]` from the general G statement (F09-40) |
+| G7e (RTX PRO 6000, 96 GB) | yes (F09-98) | yes; N. Virginia 3 of 6 sizes ">20%", Ohio 4 of 6 "<5%" (F09-98, F09-96) | no (F09-91) | not on the list (F09-35) | yes `[our reading]` (F09-40) |
+| P5 (H100) | yes `[our reading]` (F09-96) | rows exist, "<5%" bucket in N. Virginia; fulfilment not measured (F09-96, U09-9) | yes: p5.4xlarge and p5.48xlarge, $47.757 per hour for the large size (F09-91, F09-93) | yes: `ml.p5.4xlarge`, `ml.p5.48xlarge` (F09-34) | not located for P5 specifically; general mechanism F09-94 |
+| P5e (H200) | not located | no rows in the March 2026 file (F09-96) | yes, $54.924 per hour (F09-91, F09-93) | yes (F09-34) | not located |
+| P5en (H200) | yes `[our reading]` (F09-96) | rows exist, "<5%" in N. Virginia (F09-96, U09-9) | yes, $63.158 per hour (F09-91, F09-93) | yes (F09-34) | not located |
+| P6-B200 (B200) | yes `[our reading]` (F09-96) | rows in 3 Regions, "10-15%" in N. Virginia (F09-96) | yes, $113.666 per hour (F09-91, F09-93) | yes (F09-34) | not located |
+| P6-B300 (B300) | yes `[our reading]` (F09-96) | one row, US West (Oregon) (F09-96) | yes, $129.168 per hour (F09-91, F09-93) | yes (F09-34) | not located |
+| P6e-GB200 (72 B200 per UltraServer) | not located | no rows (F09-96) | yes, UltraServer block, Dallas Local Zone only, $761.904 per hour (F09-91, F09-93) | yes, through an account manager (F09-34) | not located |
+| P6e-GB300 | sales representative only (F09-99) | no rows (F09-96) | not on the list (F09-91) | not on the list (F09-34) | not located |
+| Graviton C8g, M8g (CPU) | yes `[our reading]` (F09-97) | yes, deep: 12 sizes each, rows in 25 and 30 Regions (F09-97) | no: accelerated types only (F09-91) | no (F09-34) | yes by the general mechanism (F09-94) |
+| Graviton5 C9g, M9g (CPU, newer, F08-56) | not fetched here; see F08-56 | no rows: family is newer than the March 2026 file (F09-97) | no (F09-91) | no (F09-34) | general mechanism (F09-94) |
+
+### H. Glue: workflow, events, registry, desktops, storage
+
+**F09-100. Step Functions has an optimized AWS Batch integration with a "Run a Job (.sync)" pattern: one Task state submits a Batch job and waits for it to finish. For multi-node parallel jobs, Batch on EKS jobs and multi-container jobs, Step Functions learns of completion only by polling `DescribeJobs`, which counts against the account's quota and can lag when throttled; the docs recommend passing a task token to the job for those.**
+- Location: Step Functions Developer Guide, "Run AWS Batch workloads with Step Functions", sections "Key features" and "Run multi-container, Amazon EKS, and multi-node parallel jobs"
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html | Tier 1, first-party docs | documentation of support | "The Run a Job (.sync) integration pattern is available." and "For these jobs and for multi-node parallel jobs, Step Functions detects completion only by calling DescribeJobs. These calls count toward your account's DescribeJobs quota. If AWS Batch throttles these calls, the Task state might stay in progress after the job finishes, until a later call succeeds. To report completion sooner, pass the task token to the job in Parameters." (accessed 2026-11-20)
+- Use in dive: section 24, the "loop as a state machine" paragraph. The practical note: a multi-node training step should report its own completion with the task token.
+
+**F09-101. A Distributed Map state runs each item as a child workflow execution and, with no concurrency set, runs 10,000 of them in parallel. The docs say to use it when the dataset is over 256 KiB, the history would pass 25,000 events, or more than 40 concurrent iterations are needed. A Standard workflow execution can last up to 1 year; at most 1000 Map Runs can be open at once (hard quota).**
+- Location: Step Functions Developer Guide, "Using Map state in Distributed mode", introduction and `MaxConcurrency`; "Service quotas"
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://docs.aws.amazon.com/step-functions/latest/dg/state-map-distributed.html | Tier 1, first-party docs | documentation of limits | "If you don't specify a concurrency value or set it to zero, Step Functions doesn't limit concurrency and runs 10,000 parallel child workflow executions." and "The size of your dataset exceeds 256 KiB. The workflow's execution event history would exceed 25,000 entries. You need a concurrency of more than 40 concurrent iterations."; and https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html "| Maximum number of open Map Runs | 1000" and "| Maximum execution time | 1 year." (accessed 2026-11-20)
+- Use in dive: section 24. `[our reading]` A Batch array job (2 to 10,000 children, F09-5) and a Distributed Map (10,000 parallel children) solve the same fan-out at two levels; use the array when every child is the same container on the same queue, and the map when children branch, call different services or need per-item retry logic. Always set `MaxConcurrency` so 10,000 children do not each submit a GPU job at once.
+
+**F09-102. S3 can send every object-level event in a bucket to Amazon EventBridge once the bucket's EventBridge setting is on; no event type is selected at the bucket, and rules do the filtering and routing. This is the trigger for "a new episode landed, start the pipeline".**
+- Location: S3 User Guide, "Using EventBridge"
+- Verdict: NEW
+- Evidence: https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html | Tier 1, first-party docs | documentation of support | "Unlike other destinations, you don't need to select which event types you want to deliver. After EventBridge is enabled, all events below are sent to EventBridge. You can use EventBridge rules to route events to additional targets." and "| Object Created | An object was created." (accessed 2026-11-20)
+- Use in dive: section 24, rows "teleoperation ingest" and "agent-launched experiments". Batch job state changes, Spot interruption warnings (F09-95) and Capacity Block events also arrive on EventBridge, so one bus carries the loop's signals.
+
+**F09-103. SageMaker AI offers managed MLflow: a tracking server whose compute and metadata store live in the service account and whose artifacts live in the customer's S3 bucket, with automatic registration from the MLflow Model Registry into the SageMaker Model Registry. The same record works from a Training Job, a HyperPod pod or a Batch job, because the client only needs the tracking server's address.**
+- Location: SageMaker AI Developer Guide, "Accelerate generative AI development using managed MLflow on Amazon SageMaker AI", sections "MLflow integrations" and "How it works"
+- Verdict: NEW (the last sentence of the claim is `[our reading]`; the page lists SageMaker integrations and does not mention Batch)
+- Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow.html | Tier 1, first-party docs | documentation of support | "The compute that hosts the tracking server and the backend metadata storage are securely hosted in the SageMaker AI service account. The artifact storage lives in an Amazon S3 bucket in your own AWS account." and "Manage model versions and catalog models for production by automatically registering models from MLflow Model Registry to SageMaker Model Registry." (accessed 2026-11-20)
+- Use in dive: section 24, the registry line (one entry by design). The Isaac Lab on AWS post uses it as the registry for trained policies and notes that the tracking server bills from deployment onward (F09-85).
+
+**F09-104. Amazon DCV is the remote-desktop protocol for interactive simulation workstations: no extra charge on EC2, port 8443, native clients up to 4K, and on Linux several sessions can share one GPU.**
+- Location: Amazon DCV product page
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://aws.amazon.com/hpc/dcv/ | Tier 2, first-party product page | documentation of support | "There is no additional charge to use Amazon DCV on Amazon EC2. You pay only for the EC2 resources you use to run and store your workloads." and "On Linux systems, Amazon DCV also enables multiple sessions to share a single GPU" and "making sure your security group inbound rules allow traffic on port 8443" (accessed 2026-11-20)
+- Use in dive: section 24. An interactive desktop is the one workload here with no orchestrator: a person holds the instance. The toolchain's workstation is a g6e.4xlarge at about $1.86 per hour, "stop when idle" (F09-75).
+
+**F09-105. FSx for Lustre sells throughput per unit of storage. Persistent 2 SSD file systems: 125, 250, 500 or 1000 MBps per TiB. Persistent 1 SSD: 50, 100 or 200 MBps per TiB. Intelligent-Tiering file systems are sized in absolute throughput, from 1000 MBps up to 2,000,000 MBps. The throughput of an EFA-enabled SSD file system cannot be changed after creation, and a throughput change makes the file system unavailable for up to an hour.**
+- Location: FSx for Lustre User Guide, "Managing provisioned throughput capacity"
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://docs.aws.amazon.com/fsx/latest/LustreGuide/managing-throughput-capacity.html | Tier 1, first-party docs | documentation of limits | "For Persistent 1 SSD-based deployment types, valid values are 50, 100, and 200 MBps/TiB. For Persistent 2 SSD-based deployment types, valid values are 125, 250, 500, and 1000 MBps/TiB. Intelligent-Tiering file systems support throughput capacities of 1000 MBps, 2000 MBps, and increments of 4000 MBps up to a maximum of 2000000 MBps." and "You cannot modify the throughput capacity of EFA-enabled SSD-based file systems." and "Your file system is unavailable for up to an hour during throughput capacity scaling." (accessed 2026-11-20)
+- Use in dive: sections 23 and 24. `[derived]` the 1.2 TiB file system of the pi0 post (F09-83) at 1000 MBps per TiB delivers 1.2 x 1000 = 1,200 MBps, and at 125 MBps per TiB 150 MBps: on a small file system the tier decides whether the data loader starves, and capacity is bought to get throughput.
+
+**F09-106. Mountpoint for Amazon S3 presents a bucket as a local file system for large read-heavy work. It reads files up to 50 TB, creates new files, and cannot modify existing files, delete directories, or lock files; for full POSIX behaviour the S3 guide points to FSx for Lustre. Newest releases: Mountpoint 1.25.0 (12 November 2026) and the Mountpoint CSI driver for Kubernetes v2.9.2 (30 October 2026).**
+- Location: S3 User Guide, "Mount an Amazon S3 bucket as a local file system"; GitHub releases of `awslabs/mountpoint-s3` and `awslabs/mountpoint-s3-csi-driver`
+- Verdict: CARRIED (seed 03, re-fetched) with newer versions; the seed named CSI driver v2 of August 2025
+- Evidence: https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint.html | Tier 1, first-party docs | documentation of support and limits | "Mountpoint supports basic file system operations, and can read files up to 50 TB in size. It can list and read existing files, and it can create new ones. It cannot modify existing files or delete directories, and it does not support symbolic links or file locking." and "For workloads that require full POSIX support, we recommend Amazon FSx for Lustre and its support for linking Amazon S3 buckets."; release tags `mountpoint-s3-1.25.0` (published 2026-11-12) at https://github.com/awslabs/mountpoint-s3/releases/tag/mountpoint-s3-1.25.0 and `v2.9.2` (published 2026-10-30, commit a7638fe2a5a8aeea482db578bcc4355537ee4272) at https://github.com/awslabs/mountpoint-s3-csi-driver/releases/tag/v2.9.2 (accessed 2026-11-20)
+- Use in dive: section 24, the storage rule. Reading a LeRobot dataset (Parquet plus MP4 files, written once) fits Mountpoint; a training run that rewrites or appends to checkpoints in place does not.
+
+**F09-107. S3 Express One Zone is a single-Availability-Zone storage class in a separate bucket type (a directory bucket), which the product page describes as giving "consistent single-digit millisecond data access", "up to 10x faster" access and "request costs up to 80% lower" than S3 Standard, with up to 2 million requests per second per directory bucket, and which can be placed in the same Zone as the compute.**
+- Location: S3 Express One Zone product page, "What is S3 Express One Zone?" and "How it works"
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://aws.amazon.com/s3/storage-classes/express-one-zone/ | Tier 2, first-party product page | benchmark claim (vendor reported) | "S3 Express One Zone delivers data access speed up to 10x faster and request costs up to 80% lower than S3" and "an S3 directory bucket - which can support up to 2 million requests per second" and "Get started by creating an S3 directory bucket in the Availability Zone of your choosing. You can choose to co-locate your storage and Amazon Elastic Compute Cloud (EC2), Amazon Elastic Kubernetes Service (EKS), and Amazon Elastic Container Service (ECS) compute resources" (accessed 2026-11-20)
+- Use in dive: section 24, one sentence, labelled `[vendor claim]`. It matters for workloads made of very many small requests (frame or shard reads from thousands of simulation or augmentation workers); HyperPod and Capacity Blocks already pin compute to one Zone (F09-36), so one-Zone storage adds no new placement limit there.
+
+**F09-108. AWS Deadline Cloud, the managed render farm, has run ECS containers on Linux service-managed fleets since 29 September 2026, and the announcement names "physical AI workloads such as NVIDIA Isaac Sim and MuJoCo" as a use. Jobs are described with Open Job Description templates and need no container commands in the template.**
+- Location: AWS What's New, "AWS Deadline Cloud now supports ECS containers on Linux Service-Managed Fleets" (Posted on: Sep 29, 2026)
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://aws.amazon.com/about-aws/whats-new/2026/08/aws-deadline-cloud-ecs-containers-linux-smf/ | Tier 2, first-party announcement | documentation of support | "This unlocks any container-deployed software use case, from rendering tools like Blender to physical AI workloads such as NVIDIA Isaac Sim and MuJoCo." and "the same job bundles customers run locally with the Open Job Description CLI can be submitted to Deadline Cloud with no additional changes" (accessed 2026-11-20)
+- Use in dive: section 24, one line as an alternative for the camera-rendered simulation row when the work is frames per scene. Which GPU families its service-managed fleets offer was not fetched (U09-10). The URL path says 2026/08 while the page says 29 September 2026; the page date is used.
+
+**F09-109. AWS Parallel Computing Service (PCS), managed Slurm, has supported P6e-GB200 and P6e-GB300 UltraServers since 18 June 2026: the UltraServers are reserved through EC2 Capacity Blocks for ML and attached to a compute node group with a launch template. This is the managed route for a team that schedules with Slurm and does not want HyperPod.**
+- Location: AWS What's New, "AWS Parallel Computing Service supports P6e-GB200 and P6e-GB300 UltraServers" (Posted on: Jun 18, 2026)
+- Verdict: CARRIED (seed 03, re-fetched)
+- Evidence: https://aws.amazon.com/about-aws/whats-new/2026/06/aws-parallel-computing-service/ | Tier 2, first-party announcement | documentation of support | "AWS Parallel Computing Service (PCS) now supports Amazon EC2 P6e-GB200 and P6e-GB300 UltraServer instances, enabling customers to run large-scale GPU workloads using the NVIDIA Blackwell architecture within Slurm-managed clusters. You can reserve UltraServers through EC2 Capacity Blocks for ML, associate them with a PCS compute node group via an EC2 launch template" (accessed 2026-11-20)
+- Use in dive: section 25, one line beside the RLWRLD case (F09-87, ParallelCluster with Slurm). Contradiction C6: this post says P6e-GB300 is reserved through Capacity Blocks; the Capacity Blocks documentation table lists only P6e-GB200 among P6e systems (F09-91) and the GB300 launch post says to contact sales (F09-99).
+
+### I. What AWS itself says about choosing an orchestrator
+
+**F09-110. No AWS first-party page that compares AWS Batch, SageMaker HyperPod and Amazon EKS side by side for training or simulation workloads was located in this research. Searches run on 2026-11-20, restricted to aws.amazon.com and docs.aws.amazon.com: "AWS decision guide choosing AWS Batch vs SageMaker HyperPod vs Amazon EKS for machine learning training workloads" and ""AWS Batch" OR "HyperPod" "when to use" robotics simulation training orchestration prescriptive guidance physical AI 2026". The closest page is the AWS decision guide "Choosing a generative AI service" (F09-111), which mentions Batch once and gives no criteria for it.**
+- Location: search results as described; AWS Decision Guides, "Choosing a generative AI service", section "Infrastructure for training and inference"
+- Verdict: UNKNOWN (not located in this research; that is not a statement that no such page exists)
+- Evidence: https://docs.aws.amazon.com/decision-guides/latest/decision-guides/genai-guide.html | Tier 1, first-party decision guide (no date in the fetched text) | absence in a named page | the only sentence naming Batch: "You can use it through Amazon SageMaker AI, Amazon SageMaker HyperPod, or directly with Amazon EC2, Amazon EKS, Amazon ECS, and AWS Batch." (accessed 2026-11-20)
+- Use in dive: section 25, stated in scope-preserving words: "no AWS page comparing the three for these workloads was located during this research". The workload table's orchestrator column is therefore `[our reading]`, assembled from the partial statements in F09-72, F09-73, F09-81, F09-83, F09-111, F09-112 and F09-113.
+
+**F09-111. AWS's decision guide for generative AI orders the training options by how much the customer operates: SageMaker AI for "the most managed experience"; HyperPod for "Large-scale training, one accelerator pool shared across training and inference", with AWS managing cluster resiliency and node health; self-managed EC2, EKS or ECS for "maximum control, where you manage everything above the instance". Its rule: "Use the most managed option that supports the capabilities your workload needs."**
+- Location: AWS Decision Guides, "Choosing a generative AI service", the options table and the paragraphs after it
+- Verdict: NEW
+- Evidence: https://docs.aws.amazon.com/decision-guides/latest/decision-guides/genai-guide.html | Tier 1, first-party decision guide | prescriptive guidance | "| Amazon SageMaker HyperPod | Large-scale training, one accelerator pool shared across training and inference, and advanced inference optimizations, while AWS manages cluster resiliency and node health. | Self-managed on Amazon EC2, Amazon EKS, or Amazon ECS | Any model format or framework with maximum control, where you manage everything above the instance. Use the most managed option that supports the capabilities your workload needs." (accessed 2026-11-20)
+- Use in dive: section 25, the first fork of the decision path (how much the team wants to operate). The guide is about generative AI models in general; it says nothing about simulation, rendering or ray-tracing GPUs.
+
+**F09-112. An AWS Machine Learning Blog post of 4 September 2026 on a Cosmos 3 pipeline states when HyperPod is worth its persistent cluster: a one-shot small fine-tune is served by an ephemeral SageMaker training job, "because auto-recovery rarely triggers"; HyperPod suits "many concurrent jobs, continuous synthetic generation, reserved capacity, and the tens-of-nodes tail where failures are statistically frequent". Its three workloads run on p5en.48xlarge nodes.**
+- Location: "Build a Physical AI model factory with NVIDIA Cosmos 3 on SageMaker HyperPod", section "When does Amazon SageMaker HyperPod pay off?" and section 3
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/machine-learning/build-a-physical-ai-model-factory-with-nvidia-cosmos-3-on-sagemaker-hyperpod/ | Tier 2, first-party blog (4 September 2026) | prescriptive guidance | "For a one-shot small fine-tune, an ephemeral managed training job, such as an Amazon SageMaker AI training job that provisions per run and tears down on completion, is sufficient because auto-recovery rarely triggers. Amazon SageMaker HyperPod is well-suited for the sustained, at-scale flywheel: many concurrent jobs, continuous synthetic generation, reserved capacity, and the tens-of-nodes tail where failures are statistically frequent." and "Amazon SageMaker HyperPod task governance (built on Kueue) carves the pool into namespace-scoped queues with quotas, priorities, and preemptions." (accessed 2026-11-20)
+- Use in dive: section 25. The clearest first-party statement of the duty-cycle and failure-frequency argument, and a second confirmation that task governance is Kueue (F09-25). It compares HyperPod with training jobs only.
+
+**F09-113. A second AWS solution page, "Guidance for Physical AI Simulation Platform on AWS", assigns simulation by interaction mode in one sentence: EC2 for real-time simulation environments, AWS Batch and AWS Deadline Cloud for offline workloads, EKS for containerized platforms at scale and synthetic data generation, with DCV desktops for development. The fetched page shows no date.**
+- Location: https://docs.aws.amazon.com/solutions/physical-ai-simulation-platform-on-aws/ , "How it works", Step 6
+- Verdict: NEW (undated)
+- Evidence: https://docs.aws.amazon.com/solutions/physical-ai-simulation-platform-on-aws/ | Tier 1, first-party solution page (no date on page) | reference architecture | "Step 6 Simulation workloads Amazon EC2 powers real-time simulation environments, AWS Batch and AWS Deadline Cloud handle offline workloads, and Amazon EKS runs containerized platforms at scale, also supporting synthetic data generation." and "Research and Engineering Studio (RES) delivers NICE DCV virtual desktops for development." (accessed 2026-11-20)
+- Use in dive: section 25. The split by interaction mode (a person watching, a queue draining, a platform serving) is a usable axis that the other sources do not state; it agrees with F09-78 (Batch for simulation) and F09-104 (DCV for desktops).
+
+**F09-114. The first post of AWS's embodied AI series (2 December 2025, updated 6 May 2026) fine-tunes GR00T on AWS Batch with a g6e instance: 6000 steps "usually takes up to 2 hours on a g6e.4xlarge instance". It gives as a reason for Batch that physical AI training commonly involves simulations with a multi-container setup.**
+- Location: "Embodied AI Blog Series, Part 1: Getting Started with Robot Learning on AWS Batch", sections on prerequisites and job submission
+- Verdict: NEW
+- Evidence: https://aws.amazon.com/blogs/physical-ai/embodied-ai-blog-series-part-1/ | Tier 2, first-party blog (2 December 2025; "This blog was updated on May 6, 2026") | production walkthrough (author reported) | "Training physical AI models also commonly involves simulations with a multi-container setup. AWS Batch provides a secure, scalable, structured way to do this." and "By default, the job fine-tunes GR00T for 6000 steps, saving the model checkpoints every 2000 steps. This usually takes up to 2 hours on a g6e.4xlarge instance." (accessed 2026-11-20)
+- Use in dive: section 24 row "per-task policy fine-tune". With F09-73 and F09-89 it gives three first-party sources that put a single-GPU GR00T fine-tune on Batch, and F09-81 and F09-82 put the same job on SageMaker Training Jobs: AWS documents both and ranks neither.
+
+## 5. Decision path notes (for section 25, in place of teaching material)
+
+This stream feeds no concept section, so there is no worked example on the arm. These notes give the section writer the order of questions and the evidence behind each fork. Every recommendation is `[our reading]`; the entry IDs carry the facts.
+
+**Fork 0. Does the job need a scheduler at all?** One person at a simulation desktop is an instance with Amazon DCV and no queue (F09-104, F09-113). One eight-GPU node on a reservation for a fixed engagement was run by a named customer with no scheduler named (F09-88). Say this first, so the reader does not assume a cluster.
+
+**Fork 1. How much does the team want to operate?** AWS's own rule: "Use the most managed option that supports the capabilities your workload needs" (F09-111). In order of rising ownership: SageMaker Training Jobs (nothing persists between runs, F09-81), AWS Batch (a queue and compute environments the team defines, instances come and go, F09-13), SageMaker HyperPod (a persistent cluster that AWS keeps healthy, F09-22 to F09-24), EKS run by the team (Karpenter or Auto Mode, F09-38, F09-48).
+
+**Fork 2. Duty cycle: is the GPU busy most of the day?** Occasional jobs: pay per job (Training Jobs "no idle cost between experiments", F09-81; Batch scales to zero, F09-13). Back-to-back jobs: a warm fleet saves the start-up each time (the sample's reason for Batch, F09-73; "~5 min cold start" for a Training Job against an already-running HyperPod cluster, F09-83). Continuous, many teams: a persistent pool with quotas (HyperPod task governance on Kueue, F09-25, F09-26, F09-112). The cost of being wrong is visible in AWS's own example: four ml.g5.24xlarge held for 30 days is $29,374.40 whether jobs ran or not (F09-33).
+
+**Fork 3. Coupling: do the parts of the job talk to each other while it runs?** Independent units (episodes, scenes, clips, checkpoints to evaluate): an array job of up to 10,000 children (F09-5) or a Distributed Map (F09-101), any instance size, any Zone. One node with several GPUs: still one job, no fabric. Several nodes exchanging gradients: EFA, one placement group or UltraCluster, one Zone (F09-8, F09-9, F09-36, F09-92), and a scheduler that starts all nodes together (Batch multi-node parallel jobs, F09-7; Kueue with the Kubeflow Training Operator on HyperPod, F09-81; Slurm, F09-87).
+
+**Fork 4. Interruptibility: what is lost if the instance is taken away?** If the loss is one unit of at most 30 minutes, Spot with the `Host EC2*` retry is the documented pattern (F09-10, F09-11, F09-12). If the loss is hours of a coupled run, Spot is ruled out by the EC2 guide itself (F09-95) and by Batch (multi-node parallel jobs do not run on Spot, F09-8); the answers are checkpoints and node replacement (F09-24), or peer recovery without a checkpoint restart where the framework supports it (F09-30, with the limit in U09-3).
+
+**Fork 5. Does the job need ray-tracing cores?** If the simulator renders cameras with the RTX renderer, only the G family qualifies (F06-60), and that single fact changes the market: G has no Capacity Block and no training plan (F09-91, F09-35), the newest G7 is not in EKS Auto Mode yet (F09-49), and G Spot in the busiest Region is frequently reclaimed (F09-96). The tactics left are several G types in one request (F09-86, F09-29, F09-3), a second Region, or an ODCR for a fixed window (F09-94).
+
+**Fork 6. Does the job need a reservation?** P-family jobs of fixed length on a date: a Capacity Block (up to 64 instances, up to six months, booked up to eight weeks ahead, F09-90) or a SageMaker training plan for HyperPod and Training Jobs (F09-34). A block pins the design: one Zone, no placement group (F09-92), a hard stop at 11:00 UTC on the last day (F09-90), a Batch compute environment that is single-use (F09-17), a static NodePool in Auto Mode (F09-50). Prices are published and move (F09-93).
+
+**Where Kubernetes-only options enter.** A team already on Kubernetes reads forks 1 to 6 with EKS in place of Batch: Kueue for quotas and admission (F09-54, F09-55), KAI Scheduler for fractional GPUs and gang scheduling (F09-57, F09-58), Karpenter for nodes (F09-38). OSMO adds a workflow layer across cloud, lab and Jetson pools and brings KAI with it (F09-62, F09-65); the sample's advice is OSMO for a new pipeline and the individual components for a team with an orchestrator already (F09-72). The three owner-described EKS features change little for GPU work today: sandboxes cannot use a GPU (F09-45), rightsizing is a preview that sizes CPU and memory of Deployments and StatefulSets (F09-46), and GPU sharing through DRA is not in Auto Mode (F09-47).
+
+**A sentence the section can end on.** For the one-arm task every training job in this dive fits one GPU for 3 to 11 hours (F09-82), so the reader's first orchestrator is a job service with no cluster; the cluster questions begin at multi-node pretraining, which the reader is unlikely to run.
+
+## 6. Stale or wrong in the seed research
+
+| Seed file | Seed claim | What the source says now | Entry ID |
+|---|---|---|---|
+| seed 03 | G6 instances can be reserved with SageMaker training plans | The training plans documentation list today has no G-family type; a May 2026 AWS post is the origin of the seed's claim | F09-35, U09-4 |
+| seed 03 | KAI Scheduler's source is at github.com/NVIDIA/KAI-Scheduler | The project is a CNCF sandbox project in the `kai-scheduler` GitHub organisation; newest release v0.19.0 | F09-57 |
+| seed 03 | OSMO offers an MCP endpoint (no version given) | MCP documentation and templates exist only on OSMO's default branch (17 November 2026) and are absent from the newest tag, 6.3.1 | F09-68 |
+| seed 03 | OSMO's Kubernetes prerequisite quoted as "1.30 or higher" | At tag 6.3.1 the prerequisites page says "1.27 or higher" and the cloud backend page says "v1.30.0 or later"; the two pages of the same release disagree | F09-66 |
+| seed 03 | Toolchain sample cited at the repository's default branch | Pinned here to commit 84984decc51cc07fb4ceb8f3fc1f85d523924bf5 (11 November 2026); the sample has no releases | F09-69 |
+| seed 03 | Toolchain row lists "GR00T N1.6" | The same folder now holds a GR00T N1.7 guide with a larger instance requirement | F09-76 |
+| seed 03 | Mountpoint CSI driver v2 (August 2025) as the current state | Newest are Mountpoint 1.25.0 (12 November 2026) and CSI driver v2.9.2 (30 October 2026) | F09-106 |
+| seed 03 | EKS ultra scale: 500 pods per second, Karpenter launching 100,000 instances in 50 minutes | Not re-fetched; only the 100,000-node limit is carried | F09-53 |
+| seed 03 | Capacity Blocks as a P-family list without p6-b300 or the single-GPU p5.4xlarge | Both are on the documented list today; P6e-GB300 is not | F09-91 |
+| seed 03 | Named no versions for Karpenter, Kueue or Volcano | Karpenter v1.15.2, Kueue v0.20.7, Volcano v1.16.0 (currency table) | F09-38, F09-54, F09-59 |
+
+## 7. Mental models worth teaching
+
+1. **Five questions place a job: duty cycle, coupling, interruptibility, ray-tracing cores, reservation.** Duty cycle picks per-job billing against a held cluster (F09-81, F09-33). Coupling picks array fan-out against a gang-scheduled multi-node job on EFA (F09-5, F09-7, F09-9). Interruptibility picks Spot against On-Demand or reserved (F09-10, F09-95). Ray-tracing cores pick the G family (F06-60). Reservation picks Capacity Blocks or training plans, which exist only for P and Trainium (F09-91, F09-34). The first three are the same three properties register 08 uses to define its five shapes (F08-78).
+2. **The GPU family decides the market before the orchestrator does.** P family: blocks and training plans, published prices, low Spot interruption in the data file. G family: no block, no plan, ODCR or On-Demand, noisy Spot in the busiest Region (F09-91, F09-35, F09-94, F09-96). A simulation fleet and a training fleet are bought differently even inside one cluster.
+3. **An orchestrator is a queue plus a node lifecycle.** Batch owns both and removes nodes when the queue empties (F09-13). HyperPod owns node health and leaves the queue to Slurm or to Kueue (F09-22, F09-25). On EKS the two are separate products: Kueue or KAI for the queue, Karpenter or Auto Mode for nodes (F09-54, F09-57, F09-38, F09-48). OSMO sits above all of them as a workflow layer and still needs one of them underneath (F09-62).
+4. **A persistent cluster is paid for by failures and by sharing.** HyperPod's case is node replacement, deep health checks and quotas across teams (F09-23, F09-24, F09-26); AWS's own posts say a one-shot fine-tune does not need it (F09-112, F09-81).
+5. **Listing more than one instance type is the cheapest capacity tactic.** It works on On-Demand, needs no reservation, and appears in every orchestrator: Batch allocation strategies (F09-3), HyperPod flexible instance groups of up to 20 types (F09-29), Karpenter NodePools (F09-39, F09-86), the Training Jobs priority list (F09-82).
+6. **A reservation fixes the shape of the job.** One Zone, a hard end time, no cancellation, no placement group, a single-use Batch compute environment (F09-90, F09-92, F09-17, F09-50). Plan the checkpoint before 11:00 UTC on the last day.
+7. **Isolation and GPUs do not mix yet.** The new microVM pod sandbox is CPU only (F09-43, F09-45), so it fits the agent's code and tools, and the GPU job the agent launches runs outside it (F04-53).
+8. **AWS publishes patterns, not a ranking.** Its physical AI material uses Training Jobs, Batch, HyperPod, EKS, ParallelCluster and bare reserved nodes for overlapping workloads (F09-80, F09-86 to F09-89), and no page comparing them was located (F09-110).
+
+## 8. Contradictions between sources
+
+- **C1. DRA with Karpenter.** The EKS best-practices guide limits DRA to managed node groups, "not with Karpenter" in its wording (F09-42); the Auto Mode release notes of 9 November 2026 add DRA for NVIDIA GPUs and EFA with dynamic provisioning on Kubernetes 1.36 and later (F09-47). `[our reading]` The best-practices page predates the Auto Mode release and describes self-managed Karpenter; both can be true, and the page should be re-read before the dive ships.
+- **C2. G6 on training plans.** A May 2026 AWS post behind the seed's claim says G6 can be reserved with training plans; the training plans documentation list fetched today has no G type (F09-35, U09-4). The documentation is Tier 1 and is used.
+- **C3. GPU count for GR00T N1.7 fine-tuning.** The toolchain README: `ml.g6e.12xlarge` with four GPUs is "Required - single-GPU OOMs regardless of batch size" (F09-76). The 19 November 2026 AWS post: N1.7 on one 48 GB GPU at batch 16, 39 GB peak, with the backbone frozen (F09-82). The training configurations differ (which weights are trained, and DeepSpeed ZeRO in the sample); neither source states the other's configuration.
+- **C4. Isaac Lab version in AWS artefacts.** The 2 October 2026 post bakes Isaac Lab v2.3.2 with Isaac Sim 5.1.0 (F09-85); the toolchain uses the `3.0.0-beta2` container (F09-76); Isaac Lab 3.0 was released 20 October 2026 (F04-54). Three states of the same dependency within seven weeks.
+- **C5. Price of a p5.48xlarge under a Capacity Block.** Pricing table today: $47.757 per hour. The same page's March 2025 example: $31.464. The toolchain's estimate: "~$37/hr" (F09-93, F09-75). The table is the current price; the other two are dated.
+- **C6. How P6e-GB300 is bought.** The PCS announcement (18 June 2026) says both P6e-GB200 and P6e-GB300 UltraServers are reserved through Capacity Blocks (F09-109); the Capacity Blocks documentation lists only P6e-GB200 (F09-91); the GB300 launch post says to contact a sales representative (F09-99).
+- **C7. Batch EFA needs a placement group; Capacity Blocks refuse one.** F09-9 against F09-92. Unresolved: U09-2.
+- **C8. Spot for GPU synthetic data: "up to 90% savings" against the data file.** The Cosmos 3 post's figure is a general Spot claim (F09-84); the advisor file shows 30% to 85% savings for G and P types in the four Regions summarised, and frequent interruption for G in N. Virginia (F09-96). The post's number is a ceiling across all of EC2, not a GPU figure.
+
+## 9. UNKNOWN register
+
+| ID | Unknown | Where it arises | What would close it |
+|---|---|---|---|
+| U09-1 | Time from Batch job submission to container start on a cold GPU compute environment (instance launch plus image pull for a multi-GB simulator image); no AWS figure located beyond "a few minutes" | F09-1, F09-13, F09-83 | A Tier 0 measurement in our account, or an AWS page with a figure |
+| U09-2 | How a Batch multi-node parallel job with EFA runs inside a Capacity Block, given that Batch asks for a cluster placement group and blocks do not accept one | F09-9, F09-17, F09-92 | The Batch user guide or the HPC blog stating the launch-template setup for this case; or a test |
+| U09-3 | Whether checkpointless training works for a robot policy or world-model training loop; the feature is tied to specific framework support and no robotics example was located | F09-30 | An AWS example on a VLA or world model, or the HyperPod docs' supported-framework list re-read for PyTorch Lightning or plain PyTorch loops |
+| U09-4 | Whether any G-family type can be bought through a SageMaker training plan today | F09-35, C2 | The training plans console or documentation showing a G type; the May 2026 post re-fetched and compared |
+| U09-5 | Whether HyperPod shipped features between September and November 2026 beyond the 16 November release note; What's New was not searched exhaustively | F09-37 | A dated listing of What's New filtered to SageMaker HyperPod |
+| U09-6 | The EKS Auto Mode management fee for G and P instance types; the pricing table is rendered by script and was not readable | F09-51 | The pricing page read in a browser, or the AWS Price List file |
+| U09-7 | Whether HyperPod topology-aware scheduling works with HyperPod-managed Karpenter; not re-fetched | F09-27, F09-56 | The HyperPod topology-aware scheduling page |
+| U09-8 | How a Jetson joins an OSMO backend in the hardware-in-the-loop example (which Kubernetes distribution, which network path), and whether that works with EKS Hybrid Nodes | F09-67, F09-52 | OSMO deployment guide for edge backends; an AWS sample once the toolchain's edge component leaves "Planned" (F09-70) |
+| U09-9 | How often a Spot request for a GPU type is fulfilled at all; the advisor file records interruptions of running instances only, and the copy fetched is dated 20 March 2026 | F09-96, F09-97 | Spot placement scores (an API call, outside this pass) or a Tier 0 log of requests |
+| U09-10 | Which GPU instance families Deadline Cloud service-managed fleets offer, and whether they include G6e or G7e | F09-108 | The Deadline Cloud fleet documentation |
+| U09-11 | Publication or revision dates of the two AWS guidance pages | F09-78, F09-113 | The guidance PDFs' document properties or the solutions library listing |
+| U09-12 | Region list for G7 and G7e today; only the launch Regions were fetched | F09-98 | The EC2 instance types by Region documentation page |
+
+## 10. Reading path for Carlos
+
+1. **The 19 November 2026 AWS post "Train VLA models with Hugging Face LeRobot on Amazon SageMaker AI"**, the instance table, the 20,000-step timing table and "Cost considerations" (F09-81, F09-82). It is the dive's own robot, one day old, and it states the Training Jobs against HyperPod rule in one sentence.
+2. **The toolchain README at the pinned commit**, three parts: "How It Maps to AWS", "When to Use OSMO vs. Individual Tools", "Estimated Costs" (F09-71, F09-72, F09-75). Then `isaac-gr00t-on-aws/README.md`, "Which Option Should I Use?" (F09-73).
+3. **EC2 User Guide, "Capacity Blocks for ML"**, the two support tables and "Considerations" (F09-90 to F09-92), then the pricing page tables (F09-93). Ten minutes; it settles which families can be reserved and what a block forbids.
+4. **AWS Batch User Guide**: "Multi-node parallel jobs", the Spot best-practices page with the `Host EC2*` retry, and the quota management page (F09-7, F09-8, F09-10, F09-11, F09-15). This is the service the dive is most likely to use.
+5. **The three owner items, each in its primary page**: EC2 guide on Nitro Sandboxes, the limits list (F09-43, F09-45); EKS guide on resource optimization, the preview notice and supported workloads (F09-46); the Auto Mode release notes for 2026 (F09-47).
+6. **"Build a Physical AI model factory with NVIDIA Cosmos 3 on SageMaker HyperPod"**, only the section "When does Amazon SageMaker HyperPod pay off?" (F09-112), then the HyperPod task governance concepts page (F09-25, F09-26).
+7. **The RobCo post**, the four-layer figure and the NodePool excerpt (F09-86): the clearest worked case of Ray on HyperPod with Karpenter choosing between two GPU instance types.
+8. **OSMO at tag 6.3.1**: the architecture page and the resource pools page (F09-62, F09-64, F09-65), to judge whether a workflow layer above Kubernetes is worth a section or a paragraph.
+9. **Kueue concepts: ClusterQueue, Cohort, preemption** (F09-55), since HyperPod task governance is these concepts with other names.
+
+## 11. Source list by tier
+
+All accessed 2026-11-20. Each URL is followed by the entries that cite it. Toolchain files are cited in the entries as `TC@8498/<path>`, which stands for the repository at commit 84984decc51cc07fb4ceb8f3fc1f85d523924bf5 (section F).
+
+### Tier 0 (our experiments)
+
+None in this file.
+
+### Tier 1 (official documentation, data files, code and docs at a pinned ref)
+
+**AWS documentation**
+
+- https://docs.aws.amazon.com/batch/latest/userguide/when-to-use-fargate.html (F09-1)
+- https://docs.aws.amazon.com/batch/latest/userguide/when-to-use-ecs-managed-instances.html (F09-2)
+- https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html (F09-3, F09-4)
+- https://docs.aws.amazon.com/batch/latest/userguide/array_jobs.html (F09-5)
+- https://docs.aws.amazon.com/batch/latest/userguide/service_limits.html (F09-6, F09-16)
+- https://docs.aws.amazon.com/batch/latest/userguide/multi-node-parallel-jobs.html (F09-7)
+- https://docs.aws.amazon.com/batch/latest/userguide/mnp-ce.html (F09-8)
+- https://docs.aws.amazon.com/batch/latest/userguide/efa.html (F09-9)
+- https://docs.aws.amazon.com/batch/latest/userguide/bestpractice6.html (F09-10, F09-11, F09-12)
+- https://docs.aws.amazon.com/batch/latest/userguide/job_retries.html (F09-10)
+- https://docs.aws.amazon.com/batch/latest/userguide/eks.html (F09-13, F09-19)
+- https://docs.aws.amazon.com/batch/latest/userguide/job_scheduling.html (F09-14)
+- https://docs.aws.amazon.com/batch/latest/userguide/fair-share-scheduling.html (F09-14)
+- https://docs.aws.amazon.com/batch/latest/userguide/quota-management.html (F09-15)
+- https://docs.aws.amazon.com/batch/latest/userguide/service-environments.html (F09-16)
+- https://docs.aws.amazon.com/batch/latest/userguide/document_history.html (F09-21)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html (F09-22)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-deep-health-checks.html (F09-23)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-node-recovery.html (F09-24)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-setup-task-governance.html (F09-25)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance.html (F09-25)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-policies.html (F09-26)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-autoscaling.html (F09-27)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-spot.html (F09-28)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-release-notes.html (F09-29, F09-37)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-checkpointless.html (F09-30)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/managed-tier-checkpointing.html (F09-31)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-eks-elastic-training.html (F09-32)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html (F09-34, F09-35)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-prerequisites.html (F09-36)
+- https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html (F09-39, F09-40, F09-41, F09-42, F09-49, F09-60)
+- https://docs.aws.amazon.com/eks/latest/userguide/sandboxing.html (F09-43)
+- https://docs.aws.amazon.com/eks/latest/userguide/auto-change.html (F09-44, F09-47)
+- https://docs.aws.amazon.com/eks/latest/userguide/sandboxing-ami-create-update.html (F09-44)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-ec2-nitro-sandboxes.html (F09-45)
+- https://docs.aws.amazon.com/eks/latest/userguide/auto-resource-optimization.html (F09-46)
+- https://docs.aws.amazon.com/eks/latest/userguide/doc-history.html (F09-47, F09-49)
+- https://docs.aws.amazon.com/eks/latest/userguide/auto-accelerated.html (F09-48, F09-49, F09-50)
+- https://docs.aws.amazon.com/eks/latest/userguide/automode.html (F09-48)
+- https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-os.html (F09-52)
+- https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-overview.html (F09-52)
+- https://docs.aws.amazon.com/solutions/physical-ai-for-robotics-on-aws/ (F09-78)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html (F09-90, F09-91, F09-92)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html (F09-94)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html (F09-94)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html (F09-95)
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html (F09-95)
+- https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html (F09-100)
+- https://docs.aws.amazon.com/step-functions/latest/dg/state-map-distributed.html (F09-101)
+- https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html (F09-101)
+- https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html (F09-102)
+- https://docs.aws.amazon.com/sagemaker/latest/dg/mlflow.html (F09-103)
+- https://docs.aws.amazon.com/fsx/latest/LustreGuide/managing-throughput-capacity.html (F09-105)
+- https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint.html (F09-106)
+- https://docs.aws.amazon.com/decision-guides/latest/decision-guides/genai-guide.html (F09-110, F09-111)
+- https://docs.aws.amazon.com/solutions/physical-ai-simulation-platform-on-aws/ (F09-113)
+
+**Source repositories at a pinned tag or SHA**
+
+- https://github.com/aws/karpenter-provider-aws/releases/tag/v1.15.2 (F09-38)
+- https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/overview/_index.md (F09-54)
+- https://github.com/kubernetes-sigs/kueue/releases/tag/v0.20.0 (F09-54)
+- https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/cluster_queue.md (F09-55)
+- https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/cohort.md (F09-55)
+- https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/topology_aware_scheduling.md (F09-56)
+- https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/multikueue.md (F09-56)
+- https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/README.md (F09-57)
+- https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/docs/gpu-sharing/README.md (F09-58)
+- https://github.com/kai-scheduler/KAI-Scheduler/releases/tag/v0.19.0 (F09-58)
+- https://github.com/volcano-sh/volcano/blob/41f27d567fb5bdaf2cab01e1caaf48f7e266eefb/README.md (F09-59)
+- https://github.com/NVIDIA/OSMO/releases/tag/6.3.1 (F09-61)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/README.md (F09-62)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/workflows/index.rst (F09-63)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/resource_pools/scheduling/index.rst (F09-64)
+- https://github.com/NVIDIA/OSMO/releases/tag/6.2.8 (F09-65, F09-68)
+- https://github.com/NVIDIA/OSMO/releases/tag/6.3.0 (F09-65)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/architecture.rst (F09-65)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/deployment_guide/install_backend/create_backend/cloud_setup.rst (F09-66)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/deployments/terraform/aws/example/README.md (F09-66)
+- https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/how_to/hil.rst (F09-67)
+- https://github.com/NVIDIA/OSMO/blob/0983bbeacaa1d8202559f153add88a9d855edc1d/docs/user_guide/getting_started/mcp.rst (F09-68)
+- https://github.com/awslabs/mountpoint-s3/releases/tag/mountpoint-s3-1.25.0 (F09-106)
+- https://github.com/awslabs/mountpoint-s3-csi-driver/releases/tag/v2.9.2 (F09-106)
+
+**Project documentation sites**
+
+- https://cncf.io\ (F09-57)
+- https://volcano.sh/ (F09-59)
+- https://cncf.io/ (F09-59)
+- https://developer.nvidia.com/blog/nvidia-open-sources-runai-scheduler-to-foster-community-collaboration/> (F09-65)
+- https://developer.nvidia.com/embedded-computing (F09-70)
+- https://developer.nvidia.com/isaac/lab (F09-70)
+
+**AWS data files**
+
+- https://spot-bid-advisor.s3.amazonaws.com/spot-advisor-data.json (F09-96, F09-97)
+
+**AWS Physical AI Toolchain sample at commit 84984decc51cc07fb4ceb8f3fc1f85d523924bf5**
+
+- https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws : `README.md`, `isaac-gr00t-on-aws/README.md`, `isaac-lab-on-aws/README.md`, `osmo-on-aws/README.md`, `cosmos-on-aws/README.md` (F09-69 to F09-77)
+
+### Tier 2 (first-party announcements, blogs, product and pricing pages)
+
+**AWS What's New announcements**
+
+- https://aws.amazon.com/about-aws/whats-new/2026/08/aws-batch-on-ecs-managed-instances/ (F09-2)
+- https://aws.amazon.com/about-aws/whats-new/2026/03/aws-batch-configurable-scale-down-delay/ (F09-13)
+- https://aws.amazon.com/about-aws/whats-new/2026/03/aws-batch-quota-management-preemption-sagemaker/ (F09-15)
+- https://aws.amazon.com/about-aws/whats-new/2026/02/aws-batch-on-eks-unmanaged-compute-environments/ (F09-20)
+- https://aws.amazon.com/about-aws/whats-new/2026/11/aws-batch-eks-security-context/ (F09-21)
+- https://aws.amazon.com/about-aws/whats-new/2025/09/sagemaker-hyperpod-autoscaling/ (F09-27)
+- https://aws.amazon.com/about-aws/whats-new/2026/04/sagemaker-hyperpod-flexible-instance-groups/ (F09-29)
+- https://aws.amazon.com/about-aws/whats-new/2026/11/nitro-sandboxes-eks-ecs-ec2/ (F09-43)
+- https://aws.amazon.com/about-aws/whats-new/2026/11/eks-auto-mode-pod-rightsizing-preview/ (F09-46)
+- https://aws.amazon.com/about-aws/whats-new/2025/07/amazon-eks-100000-worker-nodes-per-cluster/ (F09-53)
+- https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-g7e-instances-generally-available/ (F09-98)
+- https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-ec2-g7-generally-available/ (F09-98)
+- https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available (F09-99)
+- https://aws.amazon.com/about-aws/whats-new/2026/08/aws-deadline-cloud-ecs-containers-linux-smf/ (F09-108)
+- https://aws.amazon.com/about-aws/whats-new/2026/06/aws-parallel-computing-service/ (F09-109)
+
+**AWS blogs**
+
+- https://aws.amazon.com/blogs/hpc/how-to-use-capacity-blocks-for-ml-with-aws-batch/ (F09-17, F09-18)
+- https://aws.amazon.com/blogs/aws/introducing-checkpointless-and-elastic-training-on-amazon-sagemaker-hyperpod/ (F09-30)
+- https://aws.amazon.com/blogs/physical-ai/introducing-aws-physical-ai-toolchain/ (F09-69, F09-80)
+- https://aws.amazon.com/blogs/physical-ai/feed/ (F09-79)
+- https://aws.amazon.com/blogs/physical-ai/train-vla-models-with-hugging-face-lerobot-on-amazon-sagemaker-ai/ (F09-81, F09-82)
+- https://aws.amazon.com/blogs/physical-ai/fine-tuning-%CF%800-pi-zero-for-robotic-manipulation-on-amazon-sagemaker-hyperpod-eks/ (F09-83)
+- https://aws.amazon.com/blogs/physical-ai/nvidia-cosmos-3-on-aws-omnimodal-world-models-for-physical-ai/ (F09-84)
+- https://aws.amazon.com/blogs/physical-ai/isaac-lab-on-aws-from-simulation-to-registered-policy/ (F09-85)
+- https://aws.amazon.com/blogs/physical-ai/scaling-physical-ai-vision-pipelines-with-ray-on-amazon-sagemaker-hyperpod/ (F09-86)
+- https://aws.amazon.com/blogs/physical-ai/putting-dexterous-robots-to-work-how-rlwrld-builds-physical-ai-with-aws/ (F09-87)
+- https://aws.amazon.com/blogs/physical-ai/bringing-a-frontier-world-model-to-the-convenience-store-inside-telexistences-dreamzero-experiment-on-aws/ (F09-88)
+- https://aws.amazon.com/blogs/physical-ai/how-wirobotics-is-teaching-humanoid-robots-to-use-human-tools-with-aws-and-nvidia/ (F09-89)
+- https://aws.amazon.com/blogs/machine-learning/build-a-physical-ai-model-factory-with-nvidia-cosmos-3-on-sagemaker-hyperpod/ (F09-112)
+- https://aws.amazon.com/blogs/physical-ai/embodied-ai-blog-series-part-1/ (F09-114)
+
+**AWS product and pricing pages**
+
+- https://aws.amazon.com/sagemaker/ai/pricing/ (F09-33)
+- https://aws.amazon.com/eks/pricing/ (F09-51)
+- https://aws.amazon.com/ec2/capacityblocks/ (F09-90)
+- https://aws.amazon.com/ec2/capacityblocks/pricing/ (F09-93)
+- https://aws.amazon.com/ec2/spot/instance-advisor/ (F09-96)
+- https://aws.amazon.com/hpc/dcv/ (F09-104)
+- https://aws.amazon.com/s3/storage-classes/express-one-zone/ (F09-107)
+
+### Tier 3 (papers, third-party analysis)
+
+None cited in this file.
+
+### Tier 4 (used only to locate primary sources; nothing cited as fact)
+
+- Web searches restricted to aws.amazon.com and docs.aws.amazon.com, queries listed in F09-110.
+
+## 12. Workload to orchestration table
+
+One row per workload of the loop. "Machine part" comes from the registers that measured or sourced it (05, 06, 07, 08). "Instance family", "Orchestrator" and "Capacity market" are recommendations and are `[our reading]`; the entry IDs beside them carry the facts the reading rests on. Register 08's fifteen-row map (F08-76) and its five shapes (F08-78) are the companion to this table: that one says which part saturates, this one says who schedules it and how it is bought. No AWS page ranking the orchestrators for these workloads was located (F09-110).
+
+| # | Workload | Machine part it loads | Instance family `[our reading]` | Orchestrator `[our reading]` | Capacity market `[our reading]` | Why |
+|---|---|---|---|---|---|---|
+| 1 | Teleoperation ingest | CPU cores on the computer next to the robot for encoding; in the cloud only storage and network (F05-105; F08-76 row 1) | No GPU. Graviton C8g or M8g for validation and indexing jobs (F09-97) | S3 landing bucket, S3 events on EventBridge (F09-102), a Step Functions workflow that submits a Batch job per upload (F09-100). A named customer streams through Kinesis to S3 and trains on Batch (F09-89) | On-Demand or Spot Graviton; deep Spot market, 12 sizes per family (F09-97) | Event-driven, small, independent units. Nothing here needs a cluster |
+| 2 | Decode and curation | Decode: CPU cores or the GPU's decode engines. Filtering and embedding: GPU tensor cores, 0.25 of a 48 GB GPU per model in the reference pipeline (F05-106, F05-71; F08-76 rows 2 and 3) | Graviton for CPU decode (F09-97); G6e (48 GB) for the model stages (F05-71) | Batch array job, one child per shard of episodes (F09-5), with the `Host EC2*` retry (F09-10). AWS's Cosmos 3 architecture puts its curator on Batch (F09-84) | Spot, in children of 30 minutes or less (F09-11, F09-95); several G types in the compute environment (F09-3) | Independent units, restartable, loss on interruption is one shard |
+| 3 | Image augmentation | CPU cores in the dataloader workers by default, bounded by 24 vCPUs per GPU on eight-GPU sizes; optionally the training GPU (F05-107, F05-87, F05-65) | The training instance itself; no separate fleet | None of its own: it runs inside the training job of rows 8 to 11 | Same as the training job | It is a step inside training, so its only orchestration decision is the vCPU-to-GPU ratio of the training instance (F08-57) |
+| 4 | Demonstration multiplication in simulation | A simulator: GPU compute and GPU memory per parallel environment; ray-tracing cores when cameras are rendered with the RTX renderer (F05-108, F06-101, F06-60). About 15 minutes per 1,000 state-only demonstrations and about 1 hour with cameras `[vendor claim]` (F05-90) | G6e or G7e (F06-60); the AWS sample uses G6e for synthetic data (F09-71) | Batch array job (F09-5); on Kubernetes, Jobs on a Karpenter NodePool limited to G types (F09-39) with Kueue for quota (F09-55). AWS guidance names Batch for offline simulation (F09-78, F09-113) | Spot with On-Demand fallback, several G types and more than one Region considered: G sizes in N. Virginia are often in the ">20%" interruption bucket (F09-96). No Capacity Block or training plan exists for G (F09-91, F09-35) | Independent, restartable, needs RT cores when cameras are on |
+| 5 | Generative augmentation with a world model | GPU memory in tens of GB, and tensor cores, for minutes per clip (F08-76 row 13; F03-117) | One-GPU model: g7e.2xlarge or p5.4xlarge. Largest model: eight-GPU p5.48xlarge or p5en.48xlarge (F09-84, F09-77) | Batch for offline generation (F09-84); EKS with a serving container when it runs as a service (F09-77, F09-84) | Spot for the restartable one-GPU job (the sample prices it on Spot, F09-75); a Capacity Block for the eight-GPU server, $47.757 per hour for p5.48xlarge today (F09-93) | The sample's output is video with no action labels (F09-77), so this is batch generation, restartable per clip |
+| 6 | State-only reinforcement learning in simulation | GPU general compute plus one CPU core feeding it; 0.93 to 14.74 GB of GPU memory at 8,192 environments (F06-100, F06-102, F04-54) | Any single GPU with enough memory: G6, G6e, G7e; the sample uses ml.g5.xlarge for 2 to 4 hours (F09-75) | SageMaker Training Job for occasional runs (F09-85); Batch when runs come back to back (F09-73) | On-Demand with a list of types (F09-82); Spot only with checkpoints, since a run is hours long (F09-11) | One GPU, one job, hours. No fabric, no RT cores needed |
+| 7 | Camera-rendered simulation | GPU memory first, then the rendering path: ray-tracing cores for RTX renderers; throughput falls by a large factor with one camera per environment (F06-101, F04-55; F08-76 row 7) | G family only: G6e, G7e, also G5 and G6. P-family GPUs have no RT cores (F06-60) | Batch, or EKS with Karpenter; in EKS Auto Mode G7e is supported and G7 is not as of November 2026 (F09-49). Interactive work: a DCV workstation, no scheduler (F09-104) | On-Demand with several G types (F09-86); an ODCR for a fixed window (F09-94, F09-40); Spot for fan-out with retry (F09-10, F09-96) | The RT-core requirement removes the P family and with it every block market |
+| 8 | Per-task policy fine-tune (ACT, SmolVLA) | GPU tensor cores, with GPU memory as the gate: ACT peaks at 15 GB at batch 32 (F09-82); ACT's paper cost is about 5 hours on one 11 GB GPU (F02-9); SmolVLA is 450M parameters (F02-58) | One 24 GB GPU: ml.g6.xlarge or ml.g5.xlarge class (F09-82); g6e.4xlarge in AWS's Batch walkthrough (F09-114) | SageMaker Training Job (F09-81) or a Batch job (F09-73, F09-114); AWS documents both and ranks neither | On-Demand with an instance-type priority list (F09-82); managed Spot with checkpoints for savings (F09-81) | One GPU for hours, run a few times a week: pay per job |
+| 9 | VLA post-training on one node | Tensor cores and GPU memory: GR00T N1.7 peaks at 41.5 GB at batch 32; 3.4 hours for 20,000 steps on a 96 GB GPU, 4.0 hours on 48 GB at batch 16; pi0.5 full weights 10.9 hours (F09-82). pi0 on eight H100 in one node (F09-83) | G7e (96 GB) or G6e (48 GB) for one-GPU recipes (F09-82); p5.48xlarge for the eight-GPU recipe (F09-83) | Training Job unless a persistent cluster already exists; then HyperPod with the same container (F09-81, F09-83, F09-112) | G: On-Demand, priority list (F09-82). P5: Capacity Block or training plan when the date is fixed (F09-91, F09-34) | Still one node. The cluster earns its cost only with many concurrent jobs (F09-112) |
+| 10 | World-model training (JEPA class) | Tensor cores. Small latent models: one GPU for a few hours (F08-76 row 9). Published larger runs: a 32-GPU job, and 16 or 32 H100 GPUs (F03-119, F03-120) | Small: as row 8. Larger: two to four eight-GPU P5 or P5en nodes | Small: as row 8. 16 to 32 GPUs: a gang-scheduled multi-node job with EFA, on HyperPod (F09-22, F09-81) or as a Batch multi-node parallel job (F09-7, F09-9). One eight-GPU node can run with no scheduler (F09-88) | Capacity Block or training plan (F09-90, F09-34). Not Spot: multi-node parallel jobs do not run on Spot in Batch (F09-8) and the EC2 guide excludes tightly coupled work (F09-95) | Coupled across nodes, so it needs the fabric, one Zone and all nodes at once |
+| 11 | Multi-node pretraining | Tensor cores across many nodes, the training network between them, and storage feeding them (F08-76 rows 14 and 15; F03-119) | P5en, P6-B200, P6-B300; P6e UltraServers at the top (F08-51, F09-84, F09-99) | HyperPod: deep health checks, automatic node replacement, quotas (F09-23, F09-24, F09-26). Slurm through ParallelCluster or PCS where the team already uses Slurm (F09-87, F09-109) | Capacity Blocks (up to 64 instances, up to six months) or training plans (F09-90, F09-34); FSx for Lustre sized by throughput per TiB (F09-105) | Long, coupled, failure-prone by node count: the case AWS itself gives for HyperPod (F09-112). Vendor scale; the reader is unlikely to run it |
+| 12 | Closed-loop evaluation in simulation | A mix per shard: physics, simulated cameras, policy inference (F08-76 row 10). Offline action error does not rank policies, so the rollouts cannot be skipped (F06-82, F06-86) | G6e or G7e when cameras are rendered (F06-60); a named customer evaluates on g6e (F09-87) | Batch array job, one child per checkpoint and seed (F09-5), fanned out from Step Functions with `MaxConcurrency` set (F09-100, F09-101). On a shared cluster: low-priority Kueue jobs that borrow idle quota (F09-26, F09-55) | Spot with retry (F09-10); On-Demand G types as fallback (F09-96) | Each episode is independent, so it is the most interruptible GPU job in the loop |
+| 13 | World-model scoring | Tensor cores: sampling-based planning rolls the predictor for hundreds of candidates, 16 seconds per action on one RTX 4090 in the V-JEPA 2-AC paper (F03-24, F03-25) | One GPU per worker, G6e or G7e class | Batch array job over the set of episodes or candidates (F09-5) | Spot (F09-10, F09-11) | Independent units of seconds to minutes; same shape as row 12 without a simulator |
+| 14 | Export and quantise | The target device's own GPU and CPU: engines are compiled per device, on the device (F07-7, F07-8; F08-76 row 11) | No cloud instance for the engine build. The ONNX export step fits a small G instance or a CPU instance | A step in the Step Functions workflow (F09-100) for export and checks; the engine build runs on the Jetson, delivered as a Greengrass component (F07-84) or, with OSMO, as a task on a pool that includes a Jetson (F09-67, U09-8) | On-Demand; minutes | The work belongs to the device, so the cloud side is a short job and a hand-off |
+| 15 | Fleet delivery | No cloud GPU: a deployment service, the network and the device. Artifact limit 2 GB per component, rollback by default, rollout rate and abort controls (F07-87, F07-89, F07-91) | None | AWS IoT Greengrass v2 deployments (F07-84). EKS Hybrid Nodes is the Kubernetes alternative (F09-52); AWS's own sample lists its edge component as "Planned" (F09-70) | None; per-device service charges | A control-plane workload: the questions are rollout safety and artifact size, not compute |
+| 16 | Agent-launched experiments | Whatever rows 4 to 13 load; the new load is on the control plane, which must bound spend (F04-50 to F04-52) | As the launched job requires | A Batch queue with fair share per agent (F09-14, F04-51), a job timeout (F04-50), `maxvCpus` as the hard cap (F09-4) and consumable resources for scarce things (F04-52). The agent's own code runs in a CPU-only sandbox or agent runtime (F09-43, F09-45, F04-53). On OSMO, agent skills are released and the MCP endpoint is not (F09-68) | On-Demand or Spot under the cap; no reservation is handed to an agent | An agent submits jobs faster than a person, so quotas, timeouts and caps do the work a human reviewer did |
