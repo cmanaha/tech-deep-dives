@@ -203,6 +203,11 @@ function collectClaims(page) {
       allCites,
       missing: Array.from(main.querySelectorAll('[data-cite-missing]')).map((c) => c.getAttribute('data-cite-id')),
       stub: Boolean(main.querySelector('[data-stub]')),
+      mathErrors: Array.from(main.querySelectorAll('.katex-error')).map((e) => (e.getAttribute('title') ?? e.textContent ?? '').slice(0, 120)),
+      plainFormulas: Array.from(main.querySelectorAll('code')).map((c) => c.textContent ?? '').filter((t) => /[=≈].*(\\|\^|_\{|\bsum\b|\bE\[)/.test(t) && !c.closest('pre')).map((t) => t.slice(0, 80)),
+      brokenMedia: Array.from(main.querySelectorAll('figure[data-capture] img')).filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.getAttribute('src')),
+      captures: main.querySelectorAll('figure[data-capture]').length,
+      mediaNoProvenance: Array.from(main.querySelectorAll('figure[data-capture]')).filter((f) => !f.querySelector('[data-num="provenance"]')).length,
       placeholders: main.querySelectorAll('[data-placeholder]').length,
       animated: main.querySelectorAll('figure[data-animated]').length,
       words: (main.innerText ?? '').split(/\s+/).length,
@@ -266,6 +271,9 @@ try {
       const claims = await collectClaims(page);
       if (claims.stub) findings.push('[stub] the section is still a stub');
       for (const m of claims.missing) findings.push(`[cite] unresolved register ID ${m}`);
+      for (const m of claims.mathErrors) findings.push(`[math] formula does not parse: ${m}`);
+      for (const m of claims.brokenMedia) findings.push(`[capture] image did not load: ${m}`);
+      if (claims.mediaNoProvenance) findings.push(`[capture] ${claims.mediaNoProvenance} capture(s) without a provenance line`);
       const sectionIds = [...new Set(claims.allCites)];
       for (const c of sectionIds) if (!entries[c]) findings.push(`[cite] ${c} is not a register entry`);
       const sectionAllowed = allowedFor(sectionIds);
