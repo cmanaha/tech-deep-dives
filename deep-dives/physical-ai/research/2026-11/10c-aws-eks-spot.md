@@ -457,6 +457,12 @@ Karpenter supplies nodes for any pod that is pending. It has no queue, no quota 
 - Evidence: https://docs.aws.amazon.com/eks/latest/userguide/s3-csi.html | Tier 1, first-party docs | documentation of a limit | "+ The Mountpoint for Amazon S3 CSI driver isn't presently compatible with Amazon EKS Hybrid Nodes." ; text search of https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-overview.html and https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-add-ons.html for "gpu" and "nvidia": 0 matches (accessed 2026-11-20)
 - Use in dive: section 28, hand-off to the edge; GPU status on hybrid nodes is UNKNOWN from these pages (U10c-5).
 
+**F10-467. On self-managed Karpenter v1.15.0 and later the wait before repair on an unhealthy GPU condition depends on the reason. A reason that matches an XID repair policy waits 10 minutes. A `DCGMError` or `DCGMHealthCode[Code]` reason "is replaced: after 10 minutes on EKS Auto Mode, and after 30 minutes on Karpenter `v1.15.0` and later". The 5 or 10 minutes of F10-462 is a separate timer: the termination grace period once repair has started.**
+- Location: Amazon EKS User Guide, node monitoring agent page and "Automatically repair nodes in EKS clusters"
+- Verdict: NEW (added from the wave 5 refutation, correction E3)
+- Evidence: https://docs.aws.amazon.com/eks/latest/userguide/node-health-nma.html | Tier 1, first-party docs | definition | "is replaced: after 10 minutes on EKS Auto Mode, and after 30 minutes on Karpenter `v1.15.0` and later" ; https://docs.aws.amazon.com/eks/latest/userguide/node-repair.html | Tier 1, first-party docs | definition | "Any other condition or reason, including an `AcceleratedHardwareReady` reason that fell through to the 30-minute wait | 10m" (quotes as read by the refuter, accessed 2026-11-20)
+- Use in dive: section 28, node auto repair: two timers, wait then grace period.
+
 ### B1. EC2 Spot: the interruption notice and the rebalance recommendation
 
 A Spot Instance is spare EC2 capacity sold at a discount; EC2 can take it back. Two signals precede that: the interruption notice (two minutes before) and, sometimes earlier, the rebalance recommendation.

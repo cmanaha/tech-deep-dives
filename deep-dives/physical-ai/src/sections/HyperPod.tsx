@@ -95,7 +95,7 @@ const SPEC: ClusterSpec = {
   desc: 'Pods wait in one LocalQueue per team, Kueue admits them against quota, Karpenter raises Spot and On-Demand instance groups from zero, and a held group on a training plan stays up.',
   submit: { label: 'kubectl apply, team namespace', sub: 'one PyTorchJob per run, two labels' },
   queues: [
-    { label: 'LocalQueue, team policy', sub: 'hyperpod-ns-policy-localqueue' },
+    { label: 'LocalQueue, team arm', sub: 'hyperpod-ns-arm-localqueue' },
     { label: 'LocalQueue, team worldmodel', sub: 'hyperpod-ns-worldmodel-localqueue' },
   ],
   scheduler: { label: 'Kueue admission, then Karpenter', sub: 'quota first, nodes second' },
@@ -136,7 +136,7 @@ const SPEC: ClusterSpec = {
     {
       caption: (
         <>
-          The held group is up and billed: two worldmodel pods run on its first node. Both g7e groups hold zero instances. Team policy has
+          The held group is up and billed: two worldmodel pods run on its first node. Both g7e groups hold zero instances. Team arm has
           three post-training runs to submit, team worldmodel one more pod.
         </>
       ),
@@ -170,8 +170,8 @@ const SPEC: ClusterSpec = {
     {
       caption: (
         <>
-          Kueue admits all four. P1 and P2 fit team policy&apos;s own quota; P3 is admitted by borrowing quota team worldmodel is not using. W3
-          starts at once on an idle GPU of the held group. The three policy pods are Pending, so Karpenter raises the Spot group from 0 to 3.
+          Kueue admits all four. P1 and P2 fit team arm&apos;s own quota; P3 is admitted by borrowing quota team worldmodel is not using. W3
+          starts at once on an idle GPU of the held group. The three arm-team pods are Pending, so Karpenter raises the Spot group from 0 to 3.
         </>
       ),
       scheduler: ['all 4 admitted, 3 pods Pending', 'Karpenter: spot-g7e-az1 0 to 3'],
@@ -474,9 +474,9 @@ export function HyperPod() {
             <strong>Compute allocation.</strong> One per team: the team&apos;s quota. It lists up to 15 resources (an instance type with
             a count, or accelerators, vCPUs and memory), a sharing <code>Strategy</code> (<code>Lend</code>, <code>DontLend</code> or{' '}
             <code>LendAndBorrow</code>), a <code>BorrowLimit</code> in percent of the allocation (default 50, range 0 to 10000), and{' '}
-            <code>PreemptTeamTasks</code> (default <code>LowerPriority</code>). Creating it for a team named policy creates the
-            namespace <code>hyperpod-ns-policy</code> and a LocalQueue, Kueue&apos;s per-namespace queue, named{' '}
-            <code>hyperpod-ns-policy-localqueue</code>. <Cite id="F10-320">SageMaker API Reference, CreateComputeQuota</Cite>{' '}
+            <code>PreemptTeamTasks</code> (default <code>LowerPriority</code>). Creating it for a team named arm creates the
+            namespace <code>hyperpod-ns-arm</code> and a LocalQueue, Kueue&apos;s per-namespace queue, named{' '}
+            <code>hyperpod-ns-arm-localqueue</code>. <Cite id="F10-320">SageMaker API Reference, CreateComputeQuota</Cite>{' '}
             <Cite id="F10-321">SageMaker Developer Guide, task governance CLI examples</Cite>
           </Box>
           <Box variant="p">
@@ -530,7 +530,7 @@ export function HyperPod() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The picture shows one cluster on the EKS path, shared by two teams. Team policy post-trains the arm&apos;s VLA, one GPU per
+            The picture shows one cluster on the EKS path, shared by two teams. Team arm post-trains the arm&apos;s VLA, one GPU per
             run. Team worldmodel runs longer jobs on a held group of two eight-GPU instances on a training plan. Two more groups start at
             zero instances, one Spot and one On-Demand, both listed in one node class. As an illustration, each team&apos;s allocation
             holds <Toy>2</Toy> g7e instances, and with the default borrow limit of 50 percent a team may borrow{' '}
@@ -561,7 +561,7 @@ export function HyperPod() {
             caption={
               <>
                 Left: where jobs are submitted, one LocalQueue per team, the two controllers that act on them. Right: three instance
-                groups, with each GPU drawn as a chip. Tokens P1 to P3 are team policy&apos;s runs, W1 to W3 team worldmodel&apos;s
+                groups, with each GPU drawn as a chip. Tokens P1 to P3 are team arm&apos;s runs, W1 to W3 team worldmodel&apos;s
                 pods; the small marker is a checkpoint. Instance types are painted without their ml. prefix. Quota sizes and the lack
                 of Spot capacity in step 6 are illustrative; the sequence is our assembly of separately documented steps.
               </>
@@ -569,7 +569,7 @@ export function HyperPod() {
           />
           <Box variant="p">
             Two consequences follow. First, held and scaled capacity behave differently at the start: W3 ran at once on an idle GPU,
-            while the policy runs waited for nodes. AWS prints no figure for the time from a pending pod to a running node on the pages
+            while team arm&apos;s runs waited for nodes. AWS prints no figure for the time from a pending pod to a running node on the pages
             read on 2026-11-20, so measure it in your account before promising a start time.{' '}
             <Cite id="F10-312">SageMaker Developer Guide, autoscaling on HyperPod EKS</Cite>
           </Box>
@@ -602,11 +602,11 @@ export function HyperPod() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Follow run P2 from the figure. Team policy applies one <code>PyTorchJob</code> for it. The labels put it in the team&apos;s
+            Follow run P2 from the figure. Team arm applies one <code>PyTorchJob</code> for it. The labels put it in the team&apos;s
             queue, the annotations switch on auto-resume, and the node selector keeps it on healthy nodes.
           </Box>
           <Snippet
-            title="The job team policy applies (EKS path)"
+            title="The job team arm applies (EKS path)"
             mode="adapted"
             source={
               <>
@@ -620,9 +620,9 @@ export function HyperPod() {
 kind: PyTorchJob
 metadata:
   name: vla-posttrain-seed2
-  namespace: hyperpod-ns-policy
+  namespace: hyperpod-ns-arm
   labels:
-    kueue.x-k8s.io/queue-name: hyperpod-ns-policy-localqueue
+    kueue.x-k8s.io/queue-name: hyperpod-ns-arm-localqueue
     kueue.x-k8s.io/priority-class: training-priority
   annotations:
     sagemaker.amazonaws.com/enable-job-auto-resume: "true"
@@ -646,7 +646,7 @@ spec:
                   nvidia.com/gpu: 1`}</Snippet>
           <ol style={LIST}>
             <li>
-              <strong>Held.</strong> Kueue keeps the job in <code>hyperpod-ns-policy-localqueue</code> and creates no pod.{' '}
+              <strong>Held.</strong> Kueue keeps the job in <code>hyperpod-ns-arm-localqueue</code> and creates no pod.{' '}
               <Cite id="F10-321">SageMaker Developer Guide, task governance CLI examples</Cite>
             </li>
             <li>
@@ -805,7 +805,7 @@ spec:
             Governance is two API inputs: one cluster policy, then one compute allocation per team.
           </Box>
           <Snippet
-            title="Task governance: the cluster policy, and team policy's compute allocation"
+            title="Task governance: the cluster policy, and team arm's compute allocation"
             mode="adapted"
             source={
               <>
@@ -828,14 +828,14 @@ spec:
 
 // CreateComputeQuota
 {
-  "Name": "policy-quota",
+  "Name": "arm-quota",
   "ClusterArn": "<your HyperPod cluster ARN>",
   "ComputeQuotaConfig": {
     "ComputeQuotaResources": [ { "InstanceType": "ml.g7e.2xlarge", "Count": 2 } ],
     "PreemptTeamTasks": "LowerPriority",
     "ResourceSharingConfig": { "Strategy": "LendAndBorrow", "BorrowLimit": 50 }
   },
-  "ComputeQuotaTarget": { "TeamName": "policy" }
+  "ComputeQuotaTarget": { "TeamName": "arm" }
 }`}</Snippet>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 720 }}>

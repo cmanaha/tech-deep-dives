@@ -1249,6 +1249,7 @@
 "F10-464":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/device-management.html"},
 "F10-465":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html"},
 "F10-466":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/s3-csi.html"},
+"F10-467":{"t":1,"u":"https://docs.aws.amazon.com/eks/latest/userguide/node-health-nma.html"},
 "F10-520":{"t":1,"u":"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html"},
 "F10-521":{"t":1,"u":"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html"},
 "F10-522":{"t":1,"u":"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/prepare-for-interruptions.html"},

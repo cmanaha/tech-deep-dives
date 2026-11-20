@@ -597,7 +597,7 @@ export function AwsOrchestration() {
             Training splits by size. A fine-tune on one GPU needs no cluster. A run across many nodes for days needs a
             cluster that stays up and repairs itself. AWS&apos;s newest post on training robot policies, which uses
             the {ARM}, gives the rule in one sentence: Training Jobs for a fully managed service, HyperPod for a team
-            that already runs Kubernetes or Slurm and wants a persistent cluster. A <em>SageMaker Training Job</em> is
+            that already runs Kubernetes or Slurm (the job scheduler of classic supercomputing, taken apart in section 26) and wants a persistent cluster. A <em>SageMaker Training Job</em> is
             the one name in that rule that is not an orchestrator: it runs one training container, bills for the
             duration of the job and shuts the instances down. Deployment is a delivery: Greengrass is software on the
             robot&apos;s computer that receives components from the cloud, and the arm runs the policy itself. <Cite id="F09-81">AWS Physical AI Blog, 19 November 2026</Cite>{' '}
@@ -706,8 +706,8 @@ export function AwsOrchestration() {
             <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>
           </Box>
           <Box variant="p">
-            <strong>AWS Parallel Computing Service (PCS)</strong> is managed Slurm. Slurm is the job scheduler of
-            classic supercomputing, driven by commands such as <code>sbatch</code>; AWS runs its controller, and your
+            <strong>AWS Parallel Computing Service (PCS)</strong> is managed Slurm. Slurm is
+            driven by commands such as <code>sbatch</code>; AWS runs its controller, and your
             compute node groups launch EC2 instances for waiting jobs and scale back to zero. Reach for it when the
             team already thinks in Slurm, or needs multi-node jobs without machines held between them. Look elsewhere
             when the work is container-first, since a PCS job is a process on a machine image, or when you need a

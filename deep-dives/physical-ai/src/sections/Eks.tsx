@@ -896,7 +896,8 @@ export function Eks() {
             drain&quot;; Karpenter v1.15.0 and later gives the pods a grace period of 5 or 10 minutes.{' '}
             <Cite id="F10-460">EKS User Guide, node monitoring agent</Cite>{' '}
             <Cite id="F10-461">EKS User Guide, Automatically repair nodes</Cite>{' '}
-            <Cite id="F10-462">EKS User Guide, repair behavior on Karpenter v1.15.0 and later</Cite>
+            <Cite id="F10-462">EKS User Guide, repair behavior on Karpenter v1.15.0 and later</Cite>{' '}
+            <Cite id="F10-467">EKS User Guide, repair wait by condition reason</Cite>
           </Box>
           <Box variant="p">
             <strong>Storage</strong> reaches pods through CSI (Container Storage Interface) drivers, the plug-ins that

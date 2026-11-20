@@ -1819,7 +1819,7 @@
   "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-autoscaling.html",
   "local": null,
   "venue": null,
-  "title": "SageMaker Developer Guide, create a NodePool",
+  "title": "SageMaker Developer Guide, HyperpodNodeClass",
   "sections": [
    24,
    27
