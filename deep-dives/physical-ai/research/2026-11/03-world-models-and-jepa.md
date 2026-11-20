@@ -569,3 +569,217 @@ Source note: the canonical copy is https://openreview.net/pdf?id=BZ5a1r-kVsf, wh
 - Evidence: https://arxiv.org/abs/2603.19312v3 | Tier 3, preprint | definition | "Lucas Maes*1 Quentin Le Lidec*2 Damien Scieur1,3 Yann LeCun2 Randall Balestriero4 / 1 Mila & Universite de Montreal 2 New York University 3 Samsung SAIL 4 Brown University" (accessed 2026-11-20)
 - Use in dive: attribution. Describe LeWM as an academic paper with LeCun as co-author, not as a Meta or AMI release.
 
+### H. What a world model is for
+
+**F03-87. A world model predicts the future state of the world from past observations and actions.**
+- Location: JEPA-WMs paper section 1; LeWM section 1
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2512.24497v4 | Tier 3, peer-reviewed (TMLR) | definition | "Ha & Schmidhuber (2018) proposed the idea of a world model, that is, a model predicting the future state of the world, given a context of past observations and actions." Also https://arxiv.org/abs/2603.19312v3 : "World Models (WMs) are a powerful family of methods that learn to predict the consequences of actions in the environment." (accessed 2026-11-20)
+- Use in dive: section 6 opening definition. For the arm: given what the camera shows now and "move the gripper 5 cm left", predict what the camera will show next.
+
+**F03-88. The uses named in the primary sources: planning by trying action sequences inside the model, improving a policy inside the model ("in imagination"), generating synthetic experience, and evaluating what would have happened under other actions.**
+- Location: LeWM section 1; RoboJEPA related work
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2603.19312v3 | Tier 3, preprint | definition | "When successful, WMs allows agents to plan and to improve themselves solely form their model of the world, i.e., in imagination space. This is particularly valuable in the offline setting, where agents must learn from fixed datasets without environment interaction - leveraging the model to generate synthetic experience and evaluate counterfactual action sequences". RoboJEPA (https://arxiv.org/abs/2610.10515v1): "The same world model can then be used to evaluate or improve any policy, and to plan zero-shot for new goals at test time." (accessed 2026-11-20)
+- Use in dive: section 6, the list of five uses (planning, policy training in imagination, synthetic data, policy evaluation, and the model as the policy: F03-93).
+
+**F03-89. Policy training in imagination, history: DreamerV3 (arXiv 2301.04104, v2 of 2024-04-17) learns a world model and improves its behaviour by imagining future scenarios; its world model predicts future representations and rewards and learns its representations through autoencoding (reconstruction).**
+- Location: abstract; section "World model learning"
+- Verdict: NEW (history)
+- Evidence: https://arxiv.org/abs/2301.04104v2 | Tier 3, preprint (venue not confirmed in this pass) | definition | "Dreamer learns a model of the environment and improves its behavior by imagining future scenarios."; "The world model learns compact representations of sensory inputs through autoencoding and enables planning by predicting future representations and rewards for potential actions." (accessed 2026-11-20)
+- Use in dive: section 6 history. Dreamer also predicts in a latent space, but it keeps a pixel reconstruction loss and needs rewards; a JEPA world model has neither (the JEPA-WMs paper draws this line: "with no reconstruction, reward prediction, or value/policy heads, unlike methods such as MuZero, PlaNet or the Dreamer series").
+
+**F03-90. Dreamer 4 exists (arXiv 2509.24527v1, 29 Sep 2025): a 2B-parameter world model (400M tokenizer, 1.6B dynamics) trained on 256 to 1,024 TPU-v5p chips that runs interactively in real time on a single H100, and an agent trained by reinforcement learning inside it reaches diamonds in Minecraft from offline data only.**
+- Location: abstract; section 4 "Experiments"
+- Verdict: NEW (the seed research does not name Dreamer 4)
+- Evidence: https://arxiv.org/abs/2509.24527v1 | Tier 3, preprint (Google DeepMind) | benchmark claim (author reported) | "We introduce Dreamer 4, a scalable agent that learns to solve control tasks by reinforcement learning inside of a fast and accurate world model. ... The world model achieves real-time interactive inference on a single GPU through a shortcut forcing objective and an efficient transformer architecture."; "We train models with 2B parameters - 400M for the tokenizer and 1.6B for the dynamics model - on 256 to 1024 TPU-v5p"; "We measure the inference speed of each model on a single H100 GPU. Dreamer 4 and Lucid-v1 achieve real-time interactive inference by exceeding the 20 FPS of the Minecraft physics engine" (accessed 2026-11-20)
+- Use in dive: section 6, the current end of the Dreamer line `[author reported]`. Its world model generates pixels through a tokenizer and a flow-style objective; its main result is in a video game, with a robotics dataset shown qualitatively (Figure 6).
+
+**F03-91. Dreamer 4 reports that action conditioning needs far less labelled data than video: with 100 hours of actions out of 2,541 hours of video, it reaches 85% of the PSNR and 100% of the SSIM of a model trained with all actions.**
+- Location: section 4.3 "Action generalization"; Figure 7
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2509.24527v1 | Tier 3, preprint | ablation | "With only 10 hours of actions, Dreamer 4 achieves 53% PSNR and 75% SSIM compared to a model trained with all actions. With 100 hours of actions, the performance increases further to 85% PSNR and 100% SSIM." (accessed 2026-11-20)
+- Use in dive: section 6, the pattern shared with V-JEPA 2 (1M hours of video, 62 hours with actions, F03-1): learn how the world moves from unlabelled video, learn what actions do from a small labelled set.
+
+**F03-92. A world model used as a robot simulator for evaluating policies is a shipped product category: NVIDIA lists Cosmos3-Nano-Sim-Bimanual for "closed-loop interactive robot policy simulation", and the Genie 4 page describes agents learning in generated worlds.**
+- Location: NVIDIA/Cosmos `README.md` "Example checkpoints" table; Genie model page
+- Verdict: CARRIED (seed 02, re-fetched)
+- Evidence: https://github.com/NVIDIA/Cosmos (repo root; README read at SHA `0eab578a8935e26aa41c2b7dc9f5ab00f790a037`) | Tier 1, first-party docs | documentation of support | "Cosmos3-Nano-Sim-Bimanual | Nano | Closed-loop interactive robot policy simulation"; https://deepmind.google/models/genie/ : "generating worlds where agents - like SIMA - can learn new skills." (accessed 2026-11-20)
+- Use in dive: section 6, use number four (evaluation without a robot). Correlation-with-real figures belong to the evaluation stream.
+
+**F03-93. A world-action model (WAM) is one model that predicts future observations and the robot's actions together. The term is defined in the DreamZero paper (arXiv 2602.15922v1, 17 Feb 2026).**
+- Location: DreamZero section 1; section 2
+- Verdict: CARRIED (seed 01, re-fetched)
+- Evidence: https://arxiv.org/abs/2602.15922v1 | Tier 3, preprint (NVIDIA) | definition | "We term this architecture a World Action Model (WAM) - a foundation model designed to predict both actions and visual future states in an aligned manner."; "We use the term World Action Models (WAMs) rather than Video Action Models (VAMs) to reflect that video is just one possible world modeling objective - future WAMs may align actions with other predictive modalities such as tactile sensing, force feedback, or learned latent representations." (accessed 2026-11-20)
+- Use in dive: section 6, use number five (the world model is the policy). Note the last clause: the WAM authors themselves leave room for predicting latent representations instead of video.
+
+### I. World models that generate pixels (current versions, November 2026)
+
+**F03-94. The current Cosmos family is Cosmos 3, released 2026-05-31, in three sizes: Super 64B, Nano 16B and Edge 4B parameters (Edge released July 2026). An "Interactive World Simulation" set of example checkpoints was added in October 2026. The Cosmos-Predict2.5 repository says it is no longer under active development.**
+- Location: NVIDIA/Cosmos `README.md` "What's new" and "Models"; Cosmos3-Nano model card "Release Date"; cosmos-predict2.5 README
+- Verdict: CARRIED (seed 02, re-fetched)
+- Evidence: https://github.com/NVIDIA/Cosmos (README at SHA `0eab578a8935e26aa41c2b7dc9f5ab00f790a037`) | Tier 1, first-party docs | documentation of support | "[Oct 2026] ... Interactive World Simulation with Cosmos for Physical AI - example model checkpoints and training recipes"; "[Jul 2026] Cosmos3-Edge released - the 4B tier for on-device, real-time deployment (Jetson AGX Orin / Thor / RTX Pro 6000)."; "[May 2026] Cosmos 3 released"; table "Cosmos3-Super | 64B | H200 / B200 / GB200", "Cosmos3-Nano | 16B | RTX Pro 6000 / H100 / B200", "Cosmos3-Edge | 4B | Jetson AGX Orin / Thor / RTX Pro 6000". Model card https://huggingface.co/nvidia/Cosmos3-Nano (revision `45666784803b3a7ad577e0def405f9afcc3bddb2`): "Hugging Face 05/31/2026". cosmos-predict2.5 README at SHA `a2c298b0a3df3778b973fe65e9e58877b292d8a7`: "This repository is no longer under active development and will receive only limited maintenance updates." (accessed 2026-11-20)
+- Use in dive: section 6 currency: say "Cosmos 3", not Predict 2.5.
+
+**F03-95. Cosmos 3 architecture: one "Mixture-of-Transformers" with two modes sharing weights, an autoregressive transformer for text (reasoning) and a diffusion transformer over noisy image, video, audio and action tokens (generation), trained with a rectified flow matching objective.**
+- Location: NVIDIA/Cosmos `docs/reference/models.md` "Architecture"; Cosmos 3 paper section 4.1 "Training objective"
+- Verdict: NEW
+- Evidence: https://raw.githubusercontent.com/NVIDIA/Cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference/models.md | Tier 1, first-party docs | definition | "Cosmos 3 is built on a unified Mixture-of-Transformers (MoT) architecture combining an autoregressive transformer (reasoning; causal self-attention, next-token prediction) with a diffusion transformer (generation; full attention over noisy image/video/audio/action tokens)." Paper https://arxiv.org/abs/2606.02800v4 : "The Cosmos 3 generator is optimized under a rectified flow matching objective across all modalities." (accessed 2026-11-20)
+- Use in dive: section 6, answer to "diffusion or autoregressive or flow": both towers, with flow matching for the generating side. In plain words, generation starts from noise and is refined over a number of steps (35 in the model card's examples) until it is a clean clip.
+
+**F03-96. Cosmos 3 does not generate raw pixels directly either: a frozen video VAE (the Wan2.2-TI2V-5B encoder) compresses video 4 times in time and 32 by 32 in space, and the transformer generates in that compressed space; a decoder turns the result back into pixels.**
+- Location: Cosmos 3 paper section 3.1
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2606.02800v4 | Tier 3, preprint (NVIDIA) | definition | "For visual generation, we use the video VAE encoder from Wan2.2-TI2V-5B ... The VAE compresses the input video temporally by 4x and spatially by 32 x 32, implemented as 16 x 16 spatial compression followed by a 2 x 2 patch merge. ... the VAE encoder for generation is kept frozen during training." (accessed 2026-11-20)
+- Use in dive: section 6, a precision the latent argument needs: "pixel world model" in 2026 means "predicts a compressed code built to reconstruct every pixel". The difference from JEPA is the target: a reconstruction code (must keep all detail) versus a learned representation (free to drop detail). [derived] A 1280 x 720, 189-frame clip is about (189 / 4) x (720 / 32) x (1280 / 32) = 47 x 22.5 x 40, on the order of 42,000 latent tokens.
+
+**F03-97. Cosmos 3 pretraining compute: Nano on 31.05 trillion tokens with 1,024 GB200 GPUs, Super on 17.86 trillion tokens with 2,048 GB200 GPUs. Days and GPU-hours are not stated.**
+- Location: Cosmos 3 paper section 4.1 "Tokens trained"
+- Verdict: CARRIED (seed 01, re-fetched at v4)
+- Evidence: https://arxiv.org/abs/2606.02800v4 | Tier 3, preprint | benchmark claim (vendor reported) | "In the pre-training stage, Cosmos3-Nano was trained on 31.05T tokens using 1024 NVIDIA GB200 GPUs, while Cosmos3-Super was trained on 17.86T tokens using 2048 NVIDIA GB200 GPUs." (accessed 2026-11-20)
+- Use in dive: section 6 and compute table `[vendor claim]`.
+
+**F03-98. Published Cosmos3-Nano generation time for a 189-frame, 24 frames-per-second text-to-video clip on one GPU (native PyTorch, BF16): at 720p, 207.78 s on an H100 80GB, 114.85 s on a B200 and 786.37 s on an RTX PRO 6000 Blackwell; at "256p" (320 x 192), 7.61 s on the H100.**
+- Location: NVIDIA/Cosmos `docs/reference/inference_benchmarks/cosmos3-nano-generator.md` "Text-to-Video (t2v)"; `benchmark_methodology.md`
+- Verdict: NEW (seed 02 recorded Cosmos 3 per-clip latency as not verified)
+- Evidence: https://raw.githubusercontent.com/NVIDIA/Cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference/inference_benchmarks/cosmos3-nano-generator.md | Tier 1, first-party docs | benchmark claim (vendor reported) | rows "RTX PRO 6000 Blackwell | PyTorch | 1 | 13.95 | 180.81 | 786.37", "H100 80GB HBM3 | PyTorch | 1 | 7.61 | 59.83 | 207.78", "B200 | PyTorch | 1 | 4.56 | 33.20 | 114.85" (columns GPU, Engine, GPUs, 256p, 480p, 720p; seconds). Methodology: "The 256p tier is 320x192, 480p is 832x480, and 720p is 1280x720 where those dimensions were recorded. Nano and Super primary video workloads use 189 frames at 24 FPS." (accessed 2026-11-20)
+- Use in dive: sections 6 and compute table `[vendor claim]`. [derived] 189 frames / 24 = 7.875 s of video. H100 at 720p: 207.78 / 7.875 = 26.4 s of compute per second of video; at 320 x 192: 7.61 / 7.875 = 0.97 s per second. The same table lists a NIM (FP8) row at 86.16 s for 720p on the H100. NVIDIA's page warns the cells are from several campaigns and "must not be presented as a controlled cross-runtime ranking".
+
+**F03-99. Cosmos3-Nano used as an action-conditioned world model ("Forward Dynamics - Robot": first observation plus an action trajectory in, rollout video out) is listed at about 2.0 s per rollout on an H100 80GB and 3.7 s on an RTX PRO 6000 Blackwell in native PyTorch. The rollout length for that row is not published.**
+- Location: same file, "Forward Dynamics - Robot"; "Workload definitions"; methodology "Reproduction limits"
+- Verdict: NEW
+- Evidence: https://raw.githubusercontent.com/NVIDIA/Cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference/inference_benchmarks/cosmos3-nano-generator.md | Tier 1, first-party docs | benchmark claim (vendor reported) | "Forward dynamics | Initial visual observation and an action trajectory | Future-observation rollout video"; rows "RTX PRO 6000 Blackwell | PyTorch | 1 | 3.74 | 3.73 | 3.72" and "H100 80GB HBM3 | PyTorch | 1 | 2.00 | 2.01 | 1.98"; methodology: "Action rollout lengths, action chunks, and transfer inputs are separate workload dimensions" and "Exact prompts, seeds, action payloads, runtime builds, and warmup/repetition counts were not retained with every historical measurement." (accessed 2026-11-20)
+- Use in dive: compute table `[vendor claim]`: the nearest first-party figure to "one imagined rollout of a pixel world model in 2026". [derived] A CEM plan of 800 candidates x 10 iterations would be 8,000 such rollouts, or about 16,000 GPU-seconds (4.4 GPU-hours) at 2.0 s each if run one at a time; batching behaviour is not published.
+
+**F03-100. Genie 3 (Google DeepMind, 5 Aug 2025): an interactive world generated from a text prompt, navigable in real time at 24 frames per second at 720p, consistent for a few minutes. DeepMind tested it as a training environment for its SIMA agent.**
+- Location: DeepMind blog "Genie 3: A new frontier for world models"
+- Verdict: CARRIED (seed 02, re-fetched)
+- Evidence: https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/ | Tier 2, first-party lab blog | benchmark claim (vendor reported) | "Given a text prompt, Genie 3 can generate dynamic worlds that you can navigate in real time at 24 frames per second, retaining consistency for a few minutes at a resolution of 720p."; "To test the compatibility of Genie 3 created worlds for future agent training, we generated worlds for a recent version of our SIMA agent" (accessed 2026-11-20)
+- Use in dive: section 6 history of interactive world models `[vendor claim]`. No model size, hardware or cost is published.
+
+**F03-101. Genie 4 is the current Genie: the DeepMind model page is titled "Genie 4", adds natively generated audio, states a limit of around a minute of continuous interaction, is offered through Project Genie, the Gemini API and Google AI Studio, and describes early robotics experiments. The page carries no date, frame rate, resolution, model size or hardware.**
+- Location: https://deepmind.google/models/genie/
+- Verdict: STALE (seed 02 treated Genie 3 as current and Genie 4 as unverified; the first-party page now presents Genie 4)
+- Evidence: https://deepmind.google/models/genie/ | Tier 2, first-party lab page | documentation of support | "Genie 4 is our most realistic and interactive world model yet."; "The model currently supports around a minute of continuous interaction, rather than extended sessions."; "Genie 4 is now available in Project Genie, starting with eligible Google AI Ultra subscribers, and the Gemini API and Google AI Studio."; "We're exploring early applications of Genie 4 for robotics. In this example, Gemini 4 Argon creates a detailed multi-step plan to complete a task. The steps are shared as text captions to Genie 4 as the simulation is rendering." (accessed 2026-11-20)
+- Use in dive: section 6 currency. The launch date (press says 27 Oct 2026, Tier 4) is not on the first-party page: UNKNOWN U7.
+
+**F03-102. The 1X World Model (12 Jan 2026) uses a 14B video generation model as the policy backbone: it generates 5 seconds of video of the robot doing the task, and a separate inverse dynamics model extracts the actions. One inference takes 11 seconds on multiple GPUs plus 1 second for the action extraction.**
+- Location: 1X post "World Model: self-learning" (section "The 1XWM training and inference recipe")
+- Verdict: CARRIED (seed 01, re-fetched)
+- Evidence: https://www.1x.tech/discover/world-model-self-learning | Tier 2, first-party company blog | production report (vendor reported) | "The 1XWM backbone is built upon a 14B generative video model."; "We train on 900 hours of egocentric human video ... We then fine-tune on 70 hours of robot data"; "Today, the 1XWM backbone takes 11 seconds to run, using multi-gpu inference ... Each inference generates 5 seconds of real-time video, and the IDM takes 1 second to extract actions from the generated rollout."; chart labels "1 GENERATION 30%" and "8 GENERATIONS 45%" (accessed 2026-11-20)
+- Use in dive: section 6 `[vendor claim]`. [derived] 12 s of compute for 5 s of motion. An inverse dynamics model answers "which actions take the robot from this frame to that one". GPU type and count are not stated.
+
+**F03-103. DreamZero is a 14B autoregressive video diffusion transformer that outputs video and actions together. Unoptimised it needs about 5.7 seconds per action chunk on one GPU; with the authors' optimisations it runs at 7 Hz on 2 GB200 GPUs, and they note that vision-language-action policies run above 20 Hz on consumer GPUs.**
+- Location: abstract; section 3.2; section 6
+- Verdict: CARRIED (seed 01, re-fetched)
+- Evidence: https://arxiv.org/abs/2602.15922v1 | Tier 3, preprint (NVIDIA) | benchmark claim (vendor reported) | "we enable a 14B autoregressive video diffusion model to perform real-time closed-loop control at 7Hz"; "a naive implementation of DreamZero on a single GPU requires approximately 5.7 seconds per action chunk"; "we enable DreamZero to run at 7Hz using 2 GB200s. However, compared to current VLAs which runs up to over 20Hz on consumer GPUs, DreamZero is still computationally expensive due the large parameter size and the iterative denoising nature of video" (accessed 2026-11-20)
+- Use in dive: section 6, world-action model cost `[vendor claim]`. No DreamZero successor paper was located in this pass; the same group's next release is GR00T 2 (F03-104).
+
+**F03-104. GR00T 2 (NVIDIA, November 2026) is a world-action model: a single 2B-parameter transformer, built on Cosmos-Predict2.5-2B, that predicts future multi-view video and robot actions together with flow matching. It predicts an action chunk in a median 153 ms on an RTX 5090; GR00T 2 Turbo does so in 124 ms on a Jetson Thor.**
+- Location: GR00T 2 whitepaper section 2 "Architecture" and "GR00T 2 Turbo"; project page
+- Verdict: WRONG (seed 01 heading says DreamZero is "the WAM that GR00T N2/GR00T 2 builds on"; the whitepaper says GR00T 2 is built on Cosmos-Predict2.5-2B, and names DreamZero only as a compared policy in a figure)
+- Evidence: https://research.nvidia.com/labs/gear/gr00t-2/assets/gr00t2_whitepaper.pdf | Tier 2, first-party lab technical report (not on arXiv as of this pass) | definition and benchmark claim (vendor reported) | "GR00T 2 is built on Cosmos-Predict2.5-2B, a video diffusion transformer pretrained for world simulation. Video, state, and action inputs become tokens in one sequence that a single 2B-parameter transformer processes"; "A frozen Wan 2.1 video VAE compresses each camera stream 4x in time and 8x in each spatial dimension. The latents are split into patches, giving 280 tokens per latent frame and camera at 224 x 320."; "GR00T 2 is trained with flow matching on future video latents and actions together, with one loss for each. At inference, a few denoising steps suffice: one or two for video and two to four for actions"; "a median of 153 ms to predict an action chunk for Dexter from three camera views on a GeForce RTX 5090"; "Turbo predicts in 124 ms on the onboard Jetson Thor of the Unitree G1" (accessed 2026-11-20)
+- Use in dive: section 6, the current world-action model `[vendor claim]`. The contrast with DreamZero is the teaching point: 14B on 2 GB200 at 7 Hz in February 2026, 2B on one workstation GPU in November 2026. Project page: https://research.nvidia.com/labs/gear/gr00t-2/ ("Code Available in December").
+
+**F03-105. GPU memory needed to run Cosmos3-Nano is not printed on the model card or in the benchmark pages read; the card only says a layer-wise offload flag "can help reduce memory usage".**
+- Location: Cosmos3-Nano model card; `cosmos3-nano-generator.md` header
+- Verdict: UNKNOWN (seed 02's 65.4 GB and 56.38 GB figures are for Cosmos-Transfer2.5-2B and Cosmos-Predict2-14B, both superseded)
+- Evidence: https://huggingface.co/nvidia/Cosmos3-Nano (revision `45666784803b3a7ad577e0def405f9afcc3bddb2`) | Tier 1, model card | documentation of support | "Number of trainable model parameters: Cosmos3-Nano: 16B"; "Setting `--enable-layerwise-offload` can help reduce memory usage on GPUs with less available memory."; benchmark page: "Cosmos3-Nano rows use one GPU at 720p." (accessed 2026-11-20)
+- Use in dive: compute table. [derived] 16B parameters at 2 bytes each (BF16) is 32 GB for the weights alone, before activations; the benchmark runs it on single GPUs from 80 GB (H100) upward and on the 96 GB RTX PRO 6000 Blackwell.
+
+### J. The argument for predicting in latent space, and its price
+
+**F03-106. The argument in the V-JEPA paper: a model that must predict pixels spends capacity and compute on low-level detail, and a model that predicts in latent space is free to drop detail that is irrelevant or unpredictable.**
+- Location: V-JEPA section 2 "Feature Prediction versus Pixel Reconstruction"
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2404.08471v1 | Tier 3, preprint | definition | "Approaches that predict in pixel space must dedicate significant model capacity and compute to capture all the low-level detail in the visual input. By contrast, approaches that predict in latent space have the flexibility to eliminate irrelevant or unpredictable pixel-level details from the target representation" (accessed 2026-11-20)
+- Use in dive: section 6, the argument quoted from a primary source. With F03-51 (the position paper) and F03-107 this is the three-source statement the brief asks for.
+
+**F03-107. The same argument in the V-JEPA 2 paper, with its example: the trajectory of a moving object is predictable; the position of each blade of grass or each leaf is not.**
+- Location: V-JEPA 2 section 1
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2506.09985v1 | Tier 3, preprint | definition | "in contrast to approaches based on video generation, the JEPA approach focuses on learning representations for predictable aspects of a scene (e.g., the trajectory of an object in motion) while ignoring unpredictable details that generative objectives emphasize, since they make pixel-level predictions (e.g., the precise location of each blade of grass in a field, or each leaf on a tree)." (accessed 2026-11-20)
+- Use in dive: section 6. On the arm task: where the block will be after the gripper closes is predictable; the exact sensor noise and the reflection on the cup are not.
+
+**F03-108. The V-JEPA 2 authors tie the argument to planning cost: they say video-generation world models are judged on visual quality and seldom on planning, "perhaps due to the computational cost of planning by generating video".**
+- Location: V-JEPA 2 section 1
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2506.09985v1 | Tier 3, preprint | definition | "this line of research often emphasizes the evaluation of the faithfulness of the predictions and visual quality instead of planning capabilities, perhaps due to the computational cost of planning by generating video." (accessed 2026-11-20)
+- Use in dive: section 6, bridge to the 16 s versus 4 min figure (F03-25).
+
+**F03-109. The price of latent prediction, part 1: there are no pixels to look at. To inspect what the model imagines, both V-JEPA 2 and LeWM train a separate decoder afterwards, used only for visualisation.**
+- Location: V-JEPA 2 appendix B.3; LeWM section 5.1 and appendix D
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2506.09985v1 | Tier 3, preprint | definition | "To visualize the model's predictions, we train a frame decoder on the Droid dataset that maps the V-JEPA 2 representations to human-interpretable pixels. ... The decoder is a feedforward network ... parameterized as a ViT-L." LeWM (https://arxiv.org/abs/2603.19312v3): "This decoder is used only as a diagnostic tool to visualize what visual information is retained in the [CLS] representation."; "The imagined rollout suggests that latent representations capture the global scene structure while finer details like end-effector angle are not fully preserved." (accessed 2026-11-20)
+- Use in dive: section 6, the trade stated honestly. The LeWM sentence shows the risk: what the encoder drops may be something the task needs (the gripper angle).
+
+**F03-110. The price, part 2: a predictor trained with an L1 or L2 loss outputs one future, the average of the plausible ones. The JEPA-WMs study names this as a limit of the family when the world is uncertain.**
+- Location: JEPA-WMs section 7
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2512.24497v4 | Tier 3, peer-reviewed (TMLR) | definition | "A limitation of this class of approaches is the deterministic predictor: the MSE loss learns the conditional mean of potentially genuinely multi-modal futures. This is mitigated in our benchmarks by their deterministic dynamics, by the latent abstraction of task-irrelevant variability and closed-loop MPC providing robustness to prediction errors." (accessed 2026-11-20)
+- Use in dive: sections 6 and 7 limits. The position paper's answer is the latent variable z (F03-47, F03-48); none of the released models read here (V-JEPA 2-AC, LeWM, RoboJEPA) uses one [our reading].
+
+**F03-111. The price, part 3: the representation is only as good as the encoder. Both camps say so: V-JEPA 2-AC "fundamentally depend[s] on the information captured in the V-JEPA 2 representation space", and V-JEPA 2.1 was built because V-JEPA 2's per-patch features were weak on depth, which showed up as grasp failures.**
+- Location: V-JEPA 2 section 1; V-JEPA 2.1 Figure 8 caption
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2506.09985v1 | Tier 3, preprint | definition | "Because V-JEPA 2-AC models world dynamics in a learned representation space, its capabilities fundamentally depend on the information captured in the V-JEPA 2 representation space". V-JEPA 2.1 (https://arxiv.org/abs/2603.14482v3): "VJEPA 2.1 features better encode depth information, leading to an improvement in robot manipulation when grasping the cup involves reasoning over actions along the depth axis of the camera." (accessed 2026-11-20)
+- Use in dive: section 7, why the encoder version matters to a robot result (60% to 70% grasp with only the encoder changed, F03-73).
+
+### K. Planning in latent space
+
+**F03-112. Model-predictive control (MPC): plan a sequence of actions through the model, execute only the first part, observe, and plan again. The three JEPA planners differ in how much they execute before replanning: V-JEPA 2-AC executes 1 action of a 1-step plan, RoboJEPA 2 actions of a 5-step plan, LeWM all 5 action blocks of a 5-step plan.**
+- Location: V-JEPA 2 section 3.2; RoboJEPA Table 13; LeWM appendix D
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2506.09985v1 | Tier 3, preprint | definition | "at each time step, we plan an action sequence for a fixed time horizon by minimizing a goal-conditioned energy function. We then execute the first action, observe the new state, and repeat the process." LeWM (https://arxiv.org/abs/2603.19312v3): "only the first K planned actions are executed before replanning from the updated observation"; RoboJEPA (https://arxiv.org/abs/2610.10515v1): "Execution prefix (actions per replan) Lexec 2" (accessed 2026-11-20)
+- Use in dive: section 7 (and 6), MPC defined with the three real settings. Replanning often corrects model error; replanning rarely saves compute.
+
+**F03-113. The cross-entropy method (CEM), step by step, as the LeWM appendix states it: sample a pool of candidate action sequences from a Gaussian (mean 0, standard deviation 1 at the start); roll each through the world model and give it a cost; keep the k lowest-cost candidates (the elites); set the Gaussian's mean and variance to the elites' statistics; repeat; return the final mean.**
+- Location: LeWM appendix A, Algorithm 2
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2603.19312v3 | Tier 3, preprint | definition | "At every iteration, the algorithm samples a pool of candidate plans from a distribution, typically a Gaussian (with initial parameters mu = 0 and sigma = I). Next, each candidate plan is evaluated using the world model, and a cost is associated with it. The algorithm then selects the top k plans with the lowest cost, referred to as elites. These elites are used to compute statistics that update the parameters of the sampling distribution for the next iteration. ... The final action plan is obtained from the mean of the sampling distribution at the last iteration." (accessed 2026-11-20)
+- Use in dive: section 7, CEM in words; F03-30 is the same thing in code. CEM needs no gradient through the model, only forward passes, which is why its cost is counted in predictor passes.
+
+**F03-114. CEM's stated weaknesses: no guarantee of a global optimum, and it degrades as the action space grows.**
+- Location: LeWM appendix A
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2603.19312v3 | Tier 3, preprint | definition | "in non-convex settings, there is no guarantee that the solution to which CEM converges is a global optimum. Furthermore, CEM suffers from the curse of dimensionality and becomes increasingly difficult to apply when the action space is large." (accessed 2026-11-20)
+- Use in dive: section 7 limits. V-JEPA 2-AC's released code keeps the search to 4 numbers per step (x, y, z, gripper; F03-29) and RoboJEPA does the same ("3D-translation + 1D-gripper space with the end-effector orientation held fixed", Table 13 caption): a small action space is part of what makes CEM workable [our reading].
+
+**F03-115. Compute per decision, from each paper's settings [derived: samples x iterations x horizon = predictor steps]: V-JEPA 2-AC 800 x 10 x 1 = 8,000; V-JEPA 2.1 long-horizon setting 300 x 15 x 8 = 36,000; LeWM on Push-T 300 x 30 x 5 = 45,000 (15,000 on other tasks); RoboJEPA 4,096 x 10 x 5 = 204,800 (307,200 on the first plan).**
+- Location: inputs in F03-24, F03-73, F03-40, F03-77
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2506.09985v1 ; https://arxiv.org/abs/2603.14482v3 ; https://arxiv.org/abs/2603.19312v3 ; https://arxiv.org/abs/2610.10515v1 | Tier 3, preprints | [derived] arithmetic on author-reported settings | inputs quoted in the entries named under Location (accessed 2026-11-20)
+- Use in dive: section 7 worked example and a comparison table. The steps are not equal work: a V-JEPA 2-AC step runs a 300M transformer over 258 tokens per frame; a LeWM step runs a 10M transformer over 1 to 3 tokens; a RoboJEPA-8B step runs an 8B transformer with a key-value cache.
+
+**F03-116. Alternatives to CEM appear in the same sources: gradient-based planning (differentiate the cost with respect to the actions through the predictor) and learning a fast policy from the planner's output. LeWM ships an AdamW gradient solver config next to the CEM one.**
+- Location: V-JEPA 2 section 4.2; JEPA-WMs section 7; le-wm `config/eval/solver/adam.yaml`; position paper section 3.1.3
+- Verdict: NEW
+- Evidence: https://arxiv.org/abs/2506.09985v1 | Tier 3, preprint | definition | "We can potentially reduce the planning time for both models in future work by leveraging additional computing resources for planning, reducing the number of samples and refinement steps used at each time step, training a feed-froward policy in the world-models' imagination to initialize the planning problem, or potentially leveraging gradient-based planning"; le-wm@8edf adam.yaml: "_target_: stable_worldmodel.solver.GradientSolver / n_steps: 30 / batch_size: 1 / num_samples: 100" (accessed 2026-11-20)
+- Use in dive: section 7, what reduces the planning bill. JEPA-WMs found gradient planners good on smooth tasks and poor on contact-rich ones (F03-81); the position paper's "From Mode-2 to Mode-1" is the policy-distillation idea (F03-50).
+
+### L. Compute: pixel world model versus latent world model
+
+**F03-117. Parameters, first-party figures: Cosmos3-Nano 16B (Super 64B, Edge 4B); DreamZero 14B; the 1X World Model backbone 14B; GR00T 2 2B; Dreamer 4 2B; V-JEPA 2-AC about 1B frozen encoder plus about 300M predictor; RoboJEPA 22M to 8B predictor on a 2B frozen encoder; LeWorldModel about 15M in total.**
+- Location: F03-94, F03-103, F03-102, F03-104, F03-90, F03-4, F03-14, F03-75, F03-72, F03-31
+- Verdict: NEW
+- Evidence: sources as in the entries named under Location | Tier 1 to 3 as there | `[vendor claim]` and `[author reported]` parameter counts, collected | see those entries for quotes (accessed 2026-11-20)
+- Use in dive: sections 6 and 7 comparison table, parameter column. [derived] Cosmos3-Nano has about 1,070 times the parameters of LeWM (16B / 15M) and about 12 times those of V-JEPA 2-AC encoder plus predictor (16B / 1.3B).
+
+**F03-118. Time to imagine, first-party figures side by side (not like for like: different hardware, resolution, horizon and batch): Cosmos3-Nano robot forward-dynamics rollout about 2.0 s on an H100 `[vendor claim]`; Cosmos 1 7B fine-tuned for planning 300 ms per candidate on an RTX 4090 `[author reported, by the V-JEPA 2 authors]`; V-JEPA 2-AC 2 ms per candidate on an RTX 4090 and 0.375 ms on an A100 `[author reported]`; LeWM about 22 microseconds per candidate step if the 0.98 s figure is for the Push-T settings `[author reported]`.**
+- Location: F03-99, F03-25, F03-74, F03-41, F03-40
+- Verdict: NEW
+- Evidence: sources as in the entries named under Location | Tier 1 and 3 | [derived] from the quoted timings | 240 s / (80 x 10) = 0.3 s; 16 s / 8,000 = 2 ms; 3 s / 8,000 = 0.375 ms; 0.98 s / 45,000 = 21.8 microseconds (the LeWM paper says the timing is "averaged over 50 runs" and points to appendix D for the setup; appendix D gives 30 iterations for Push-T and 10 elsewhere, so the divisor is 45,000 or 15,000, the latter giving 65 microseconds) (accessed 2026-11-20)
+- Use in dive: sections 6 and 7 comparison table, time column, with the caveat printed beside it. The like-for-like comparison that exists in a primary source is F03-25 (same GPU, same planner, 15x per action and 150x per candidate), and its pixel side is a 2025 model fine-tuned by the JEPA authors.
+
+**F03-119. Training compute, first-party figures: Cosmos3-Nano 1,024 GB200 GPUs (duration not stated); V-JEPA 2 ViT-g an author projection of about 7 A100 GPU-years with progressive resolution [derived from 60 GPU-years / 8.4]; V-JEPA 2-AC a 32-GPU job for 94,500 iterations (duration not stated); RoboJEPA-1B 256 H100 GPUs (duration not extracted); I-JEPA ViT-H 16 A100 GPUs for under 72 hours; LeWorldModel "a single GPU in a few hours" (GPU not named).**
+- Location: F03-97, F03-12, F03-21, F03-80, F03-57, F03-31
+- Verdict: NEW
+- Evidence: sources as in the entries named under Location | Tier 1 and 3 | `[vendor claim]` and `[author reported]` training figures, collected | see those entries for quotes (accessed 2026-11-20)
+- Use in dive: sections 6 and 7 comparison table, training column. Only LeWM and the V-JEPA 2-AC predictor are in reach of one machine; a LeWM run on our own hardware would be Tier 0 evidence the dive does not yet have.
+
+**F03-120. Per-epoch training times for JEPA world models on real hardware are published in the JEPA-WMs paper's Table 6: minutes per epoch on 16 or 32 H100 80 GB GPUs, with DROID trained for 315 epochs.**
+- Location: JEPA-WMs appendix, Table 6 caption
+- Verdict: NEW (located; cell values not extracted)
+- Evidence: https://arxiv.org/abs/2512.24497v4 | Tier 3, peer-reviewed (TMLR) | benchmark claim (author reported) | "Table 6: Model-specific training times in minutes per epoch on 16 H100 80 GB GPUs for Maze and Wall, on 32 H100 GPUs for Push-T and Metaworld. ... For DROID, we display the train time for 10 epochs since we train for 315 epochs." (accessed 2026-11-20)
+- Use in dive: pointer for the compute table: the only located source with wall-clock training time for a V-JEPA-2-AC-class predictor (UNKNOWN U4 until the cells are read).
+
