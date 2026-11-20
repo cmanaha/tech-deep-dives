@@ -1,0 +1,23 @@
+[
+  { "term": "Coding agent", "expansion": null, "meaning": "A language model that reads and writes files and runs commands, here used to run a robot policy's improvement loop." },
+  { "term": "Agent-run loop", "expansion": null, "meaning": "A policy improvement loop in which code resets the scene, runs the policy and scores it, and a coding agent studies the failures, edits the training code and trains again." },
+  { "term": "ENPIRE", "expansion": "Environment, Policy Improvement, Rollout, Evolution", "meaning": "A 2026 framework that puts one coding agent on each real robot station to improve the policy against a frozen success check." },
+  { "term": "Station", "expansion": null, "meaning": "One robot with its cameras, one workstation with a GPU and one coding agent; ENPIRE's fleet has eight." },
+  { "term": "Rollout", "expansion": null, "meaning": "One run of the policy on the robot." },
+  { "term": "Grader (verifier, success check)", "expansion": null, "meaning": "A function that returns pass or fail for one trial; in ENPIRE the agent writes it once with a person and it is then frozen." },
+  { "term": "Reset", "expansion": null, "meaning": "The routine that puts the scene back so the next trial can start." },
+  { "term": "Frozen", "expansion": null, "meaning": "Built once before the loop starts and from then on only read by the agent: the grader, the reset, the safety limits and the evaluation seeds." },
+  { "term": "pass@8", "expansion": null, "meaning": "Success if the policy completes the task within up to eight sequential attempts inside one rollout; a measure of recovery, different from a one-shot success rate." },
+  { "term": "Robot utilisation", "expansion": null, "meaning": "The share of research wall-clock time during which the robot is running an experiment." },
+  { "term": "GPU utilisation", "expansion": null, "meaning": "The share of research wall-clock time during which the station's GPU is in use." },
+  { "term": "Cached input", "expansion": null, "meaning": "Context a language-model provider has already processed in an earlier call and reads again on the next one." },
+  { "term": "Behaviour cloning", "expansion": null, "meaning": "Training a policy to imitate recorded demonstrations (section 4)." },
+  { "term": "RL", "expansion": "reinforcement learning", "meaning": "Learning from scored attempts instead of from demonstrations (section 8)." },
+  { "term": "Tenant", "expansion": null, "meaning": "Anything that submits jobs to shared hardware; an agent is one that asks for a GPU in bursts and consumes tokens steadily." },
+  { "term": "AWS Batch", "expansion": null, "meaning": "AWS's managed batch scheduler: a job is submitted to a queue and run in a container on instances Batch starts." },
+  { "term": "attemptDurationSeconds", "expansion": null, "meaning": "The AWS Batch job timeout; a job has none unless this is set." },
+  { "term": "Nitro Sandbox", "expansion": null, "meaning": "An AWS feature that runs a pod, task or workload inside its own lightweight virtual machine with its own kernel; it cannot hold a GPU." },
+  { "term": "microVM", "expansion": null, "meaning": "A lightweight virtual machine; Nitro Sandboxes use the Firecracker microVM." },
+  { "term": "EKS", "expansion": "Elastic Kubernetes Service", "meaning": "AWS's managed Kubernetes." },
+  { "term": "ECS", "expansion": "Elastic Container Service", "meaning": "AWS's own container orchestrator." }
+]
