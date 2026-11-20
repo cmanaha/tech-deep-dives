@@ -400,8 +400,8 @@ const ELITE_MEAN = {
   x: ELITES.reduce((acc, p) => acc + p.x, 0) / ELITES.length,
   y: ELITES.reduce((acc, p) => acc + p.y, 0) / ELITES.length,
 };
-/** The candidate whose distance to the goal is drawn in step 4: a middling one. */
-const SCORED = [...CEM_DOTS].sort((p, q) => p.d - q.d)[9];
+/** The candidate whose distance to the goal is drawn in step 4: one near the top of the cloud. */
+const SCORED = [...CEM_DOTS].sort((p, q) => p.y - q.y)[1];
 
 const CEM_STATUS = [
   '1. Encode the present and the goal',
@@ -639,9 +639,8 @@ export function Jepa() {
             Section 6 ended on a design choice. A world model, the function that predicts the next state from the
             current state and an action, can predict a latent (a learned summary vector of a frame) in place of
             the frame itself. That design is the JEPA (Joint-Embedding Predictive Architecture). This section
-            opens it up on the {ARM} as it learns to {TASK_STORY}: what the encoder emits, what the predictor is
-            asked, the loss, the shortcut that would make the loss worthless, and how a robot plans with the
-            result.
+            opens it up for an {ARM} that must {TASK_STORY}: the encoder, the predictor, the loss, the shortcut
+            that would make the loss worthless, and how a robot plans with the result.
           </Box>
           <Box variant="p">
             The number to carry out is a count. To choose one action, the planner in the V-JEPA 2 paper calls its
@@ -662,15 +661,13 @@ export function Jepa() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Record four seconds of the arm reaching for the block. Now cover one region of the picture with a grey
-            rectangle, in every frame: the region where the gripper meets the block. Someone asks you what is under
-            the rectangle.
+            Record four seconds of the arm reaching for the block. Cover one region of the picture with a grey
+            rectangle, in every frame: the region where the gripper meets the block. What is under the rectangle?
           </Box>
           <Box variant="p">
             Your answer would be a description: the gripper comes down, closes on the block and lifts it. To give
             it you need to know where the block was, how a gripper moves, and that a held block travels with the
-            hand. The grain of the table and the glint on the cup are no part of the answer, and you could not
-            have predicted them anyway.
+            hand. The grain of the table is no part of the answer, and you could not have predicted it anyway.
           </Box>
           <Box variant="p">
             A JEPA is trained on this exercise, with one change: the description is a list of numbers the model
@@ -693,8 +690,8 @@ export function Jepa() {
           <ul style={LIST}>
             <li>
               An <strong>encoder</strong>: a network that turns what the camera saw into vectors. Its output is the
-              latent from section 6. Papers use three words for it (latent, representation, embedding). This
-              section says latent and keeps each paper&apos;s own word inside its formulas.
+              latent from section 6. Papers also call it a representation or an embedding; this section says
+              latent.
             </li>
             <li>
               A <strong>target</strong>: the thing to be predicted (the hidden region, or the next frame) also goes
@@ -714,7 +711,7 @@ export function Jepa() {
             Training needs a loss, a single number that says how wrong the guess was. In a JEPA the loss is the
             distance between the predicted latent and the target latent. Nothing turns either one back into an
             image. The paper that defined the architecture calls this distance the energy: low when the target is
-            a plausible match for what was seen, high when it is not. The word returns when the robot plans.{' '}
+            a plausible match for what was seen, high when it is not.{' '}
             <Cite id="F03-48">LeCun position paper, sections 4.1 and 4.4</Cite>
           </Box>
           <Box variant="p">
@@ -741,8 +738,7 @@ export function Jepa() {
         <SpaceBetween size="m">
           <Box variant="p">
             V-JEPA 2 is Meta&apos;s video JEPA and the model this section follows. Its encoder is a ViT (Vision
-            Transformer), a transformer that treats a picture as a sequence of pieces, the way a language model
-            treats a sentence as a sequence of words. Four terms carry the shapes.
+            Transformer), a transformer that reads a picture as a sequence of pieces. Four terms carry the shapes.
           </Box>
           <ul style={LIST}>
             <li>
@@ -775,7 +771,7 @@ export function Jepa() {
             The largest encoder, ViT-g, has 1B parameters and 40 layers, and emits each token as a vector of 1408
             numbers. Two smaller ones exist, ViT-L at 300M parameters and ViT-H at 600M. The predictor used in
             pretraining is the same for all three and far smaller: 22M parameters, 12 layers, vectors of 384
-            numbers. A large encoder with a small predictor recurs through the whole line of models.{' '}
+            numbers.{' '}
             <Cite id="F03-4">V-JEPA 2 paper, appendix A.3, Table 12</Cite>
           </Box>
           <Figure
@@ -803,7 +799,7 @@ export function Jepa() {
         <SpaceBetween size="m">
           <Box variant="p">
             Pretraining uses video alone: no actions, no labels. Each step takes a clip, hides most of it and asks
-            for the latents of the hidden part. Three networks take part, and the loss changes only two of them.
+            for the latents of the hidden part. Three networks take part, and the loss changes two of them.
           </Box>
 
           <Box variant="h3">Masking, and what the predictor is asked</Box>
@@ -871,9 +867,9 @@ export function Jepa() {
             </li>
           </ul>
           <Box variant="p">
-            With toy latents of four numbers (an illustration): the guess is (1, 3, 0, 2) and the answer is (2, 3,
-            1, 0). The differences without their signs are 1, 0, 1 and 2, which add up to 4. The released code
-            takes the mean in place of the sum, 4 / 4 = 1, which changes the scale of the loss and nothing else.{' '}
+            With toy latents of four numbers (an illustration): guess (1, 3, 0, 2), answer (2, 3, 1, 0). The
+            differences without their signs are 1, 0, 1 and 2, which add up to 4. The released code takes their
+            mean, 4 / 4 = 1.{' '}
             <Cite id="F03-7">vjepa2 app/vjepa/train.py, lines 429 to 450</Cite>
           </Box>
 
@@ -951,16 +947,15 @@ export function Jepa() {
           <Box variant="p">
             Collapse is the loophole from the idea block. Suppose the encoder outputs the same vector for every
             input, all zeros say. The target latents are then all zeros, the predictor learns to output zeros, and
-            the loss is 0 on every clip. By its own measure training has succeeded, and the latents tell a planner
-            nothing: the block in the cup and the block on the table have the same latent. A model that predicts
-            pixels has no such exit, because its targets are fixed by the camera. A JEPA writes its own.{' '}
+            the loss is 0 on every clip. Training has succeeded by its own measure, and the block in the cup has
+            the same latent as the block on the table. A model that predicts pixels has no such exit, because its
+            targets are fixed by the camera. A JEPA writes its own.{' '}
             <Cite id="F03-63">V-JEPA paper, section 3.1, and LeWorldModel paper, section 1</Cite>
           </Box>
           <Box variant="p">
             It comes in two degrees. In complete collapse every input lands on nearly one point. In dimensional
             collapse the latents differ and all lie in a thin slice of the space: of the 1408 numbers in each
-            vector, most carry nothing. The second is harder to notice, because the loss looks healthy and the
-            latents do vary.{' '}
+            vector, most carry nothing. The second is harder to notice, because the latents do vary.{' '}
             <Cite id="F03-64">LeJEPA paper, section 2</Cite>
           </Box>
           <Figure
@@ -973,14 +968,12 @@ export function Jepa() {
           >
             <CollapseDiagram />
           </Figure>
-          <Box variant="p">
-            Five ways to block it are on record. Three of them shape the models in this section.
-          </Box>
+          <Box variant="p">Five ways to block it are on record. Three shape the models in this section.</Box>
 
           <Box variant="h3">1. A slow target behind a stop-gradient</Box>
           <Box variant="p">
-            This is the training step you just followed, used by V-JEPA 2 and the models before it. For the
-            shortcut to work, guess and answer have to drift to the same constant together. The stop-gradient
+            This is the training step you just followed. For the shortcut to work, guess and answer have to
+            drift to the same constant together. The stop-gradient
             takes away the answer&apos;s reason to move: no gradient pulls <code>theta-bar</code> toward the
             guess. The EMA takes away its speed: 0.075% of the way per step.
           </Box>
@@ -989,16 +982,16 @@ export function Jepa() {
             that the predictor evolves faster than the encoder and stays close to optimal, and that prevents
             collapse.{' '}
             <Cite id="F03-65">V-JEPA paper, section 3.1</Cite> The price is a second encoder in memory and an
-            argument that rests on practice. The LeWorldModel authors press the point: the pair does not, in their
-            words, &quot;in general correspond to the minimization of a well-defined objective&quot;.{' '}
+            argument that rests on practice: the LeWorldModel authors object that the pair does not &quot;in
+            general correspond to the minimization of a well-defined objective&quot;.{' '}
             <Cite id="F03-66">LeWorldModel paper, section 2</Cite>
           </Box>
 
           <Box variant="h3">2. Variance and covariance terms</Box>
           <Box variant="p">
-            The second way adds terms to the loss that measure the spread of a batch of latents directly. It
-            comes from VICReg (2022, named after its three terms: variance, invariance, covariance), a method for
-            training image encoders that is history here and the source of the idea.
+            The second way adds loss terms that measure the spread of a batch of latents directly. It comes from
+            VICReg (2022, named after its three terms: variance, invariance, covariance), a method for training
+            image encoders that is history here.
           </Box>
           <Box variant="p">
             Picture a batch of latents as a table, one row per input and one column per dimension. A column that
@@ -1028,13 +1021,12 @@ export function Jepa() {
           <Box variant="p">
             Three toy batches of four latents with two numbers each (an illustration). In (3, 3), (3, 3), (3, 3),
             (3, 3) neither column varies, so <code>v</code> is large. In (1, 1), (2, 2), (3, 3), (4, 4) both
-            columns vary, so <code>v</code> is satisfied, and the second column is a copy of the first, so{' '}
-            <code>c</code> is large. In (1, 2), (2, 4), (3, 1), (4, 3) both columns vary and their covariance works
-            out to 0, so both terms are satisfied.
+            columns vary and the second copies the first, so <code>c</code> is large. In (1, 2), (2, 4), (3, 1),
+            (4, 3) both vary and their covariance works out to 0, so both terms are satisfied.
           </Box>
           <Box variant="p">
-            The price is tuning, since every term has a weight. The LeWorldModel authors count a seven-term loss
-            with six tunable coefficients in PLDM, the end-to-end JEPA world model built this way.{' '}
+            The price is tuning: the LeWorldModel authors count a seven-term loss with six tunable coefficients in
+            PLDM, a JEPA world model that trains its encoder this way.{' '}
             <Cite id="F03-68">LeWorldModel paper, abstract and section 4.1</Cite>
           </Box>
 
@@ -1043,23 +1035,22 @@ export function Jepa() {
             The third way replaces the separate spread terms with one target shape. SIGReg (Sketched Isotropic
             Gaussian Regularization) pushes the batch&apos;s cloud of latents toward an isotropic Gaussian: a round
             bell-shaped cloud with the same spread in every direction and no correlation between dimensions.{' '}
-            <Cite id="F03-69">LeJEPA paper, abstract</Cite> A single point is nothing like that cloud, and neither
-            is a flat slice, so one term answers both degrees of collapse (our reading).
+            <Cite id="F03-69">LeJEPA paper, abstract</Cite> Neither a single point nor a flat slice is that cloud,
+            so one term answers both degrees of collapse (our reading).
           </Box>
           <Box variant="p">
-            The model that uses it here is LeWorldModel (LeWM), a small JEPA world model of about 15M parameters.
-            It has one encoder, trained together with the predictor, and it encodes each frame as a single vector
-            of 192 numbers. It has no target copy and no stop-gradient.{' '}
+            The model that uses it here is LeWorldModel (LeWM), a JEPA world model of about 15M parameters. Its
+            one encoder is trained together with the predictor and turns each frame into a single vector of 192
+            numbers. It has no target copy and no stop-gradient.{' '}
             <Cite id="F03-31">LeWorldModel paper, abstract</Cite>{' '}
             <Cite id="F03-32">LeWorldModel paper, section 3.1</Cite>{' '}
             <Cite id="F03-35">le-wm train.py, lines 27 to 41</Cite>
           </Box>
           <Box variant="p">
             Checking the shape of a cloud in that many dimensions directly is expensive, so SIGReg checks its
-            shadows. It draws random directions and projects every latent in the batch onto each one, which leaves
-            a plain list of numbers per direction. Then it tests whether each list looks like draws from a
-            standard bell curve. If every such shadow is Gaussian, so is the cloud: that is the Cramer-Wold theorem
-            the authors rely on.{' '}
+            shadows. It projects every latent in the batch onto random directions, which leaves a plain list of
+            numbers per direction, and tests whether each list looks like draws from a standard bell curve. If
+            every shadow is Gaussian, so is the cloud (the Cramer-Wold theorem).{' '}
             <Cite id="F03-39">LeWorldModel paper, section 3.1</Cite>
           </Box>
           <Box variant="p">
@@ -1090,10 +1081,9 @@ export function Jepa() {
           </ul>
           <Box variant="p">
             The paper gives lambda = 0.1 with 1,024 random directions. The released training config sets the
-            weight to 0.09, with 1,024 projections each tested at 17 points (the config calls them knots). Use the
-            code&apos;s value if you reproduce the run. The gap is small against the authors&apos; own ablation:
-            on Push-T, a simulated 2D pushing task, they report success above 80% for any lambda between 0.01 and
-            0.2.{' '}
+            weight to 0.09, with 1,024 projections each tested at 17 points (the config calls them knots). The
+            gap matters little by the authors&apos; own test of other values: on Push-T, a simulated 2D pushing task, they
+            report success above 80% for any lambda between 0.01 and 0.2.{' '}
             <Cite id="F03-36">LeWorldModel paper, section 3.1</Cite>{' '}
             <Cite id="F03-37">le-wm config/train/lewm.yaml, lines 17 to 43</Cite>{' '}
             <Cite id="F03-46">LeWorldModel paper, appendix G</Cite> The limit the authors state: the regulariser
@@ -1124,9 +1114,8 @@ export function Jepa() {
           <Box variant="h3">4 and 5. Two more on record</Box>
           <Box variant="p">
             <strong>Contrastive negatives (history).</strong> Older joint-embedding methods add a term that pushes
-            apart the latents of different inputs, called negatives. It blocks collapse directly. The position
-            paper that defined JEPA argues against it, because the number of negatives needed grows with the
-            dimension of the latent.{' '}
+            apart the latents of different inputs, called negatives. The position paper that defined JEPA argues
+            against it, because the number of negatives needed grows with the dimension of the latent.{' '}
             <Cite id="F03-70">I-JEPA paper, section 2, and the position paper, section 4.3</Cite>
           </Box>
           <Box variant="p">
@@ -1156,8 +1145,8 @@ export function Jepa() {
             <Cite id="F03-1">V-JEPA 2 paper, abstract</Cite>
           </Box>
           <Box variant="p">
-            The new predictor is a transformer of about 300M parameters, with 24 layers, 16 heads and vectors of
-            1024 numbers.{' '}
+            The new predictor is a transformer of about 300M parameters, with 24 layers and vectors of 1024
+            numbers.{' '}
             <Cite id="F03-14">V-JEPA 2 paper, section 3.1</Cite> For each time step, which is one frame, it takes
             in three things:
           </Box>
@@ -1181,8 +1170,8 @@ export function Jepa() {
             next frame.{' '}
             <Cite id="F03-15">V-JEPA 2 paper, section 3.1</Cite>{' '}
             <Cite id="F03-16">vjepa2 ac_predictor.py, lines 141 to 153</Cite> Training compares that grid with the
-            frozen encoder&apos;s grid for the frame that really came next, by L1 distance again. A second loss
-            term feeds the predictor its own output for one more step, because planning will ask the same of it.{' '}
+            frozen encoder&apos;s grid for the real next frame, by L1 distance again, and a second loss term
+            feeds the predictor its own output for one more step, as planning will.{' '}
             <Cite id="F03-18">V-JEPA 2 paper, section 3.1, equations 2 to 4</Cite>
           </Box>
           <Box variant="p">
@@ -1207,32 +1196,14 @@ export function Jepa() {
               <Cite id="F03-76">RoboJEPA paper, section 2.1</Cite>
             </li>
             <li>
-              <strong>LeWorldModel.</strong> The small end: about 15M parameters trained end to end with the
-              two-term loss above. The authors state that it trains on a single GPU in a few hours, and name no
+              <strong>LeWorldModel.</strong> The small end: about 15M parameters, encoder and predictor trained
+              together with the two-term loss above. The authors state that it trains on a single GPU in a few hours, and name no
               GPU.{' '}
-              <Cite id="F03-31">LeWorldModel paper, abstract</Cite>
+              <Cite id="F03-31">LeWorldModel paper, abstract</Cite> Its four tasks are all simulated; the paper
+              reports no result on a real robot.{' '}
+              <Cite id="F03-42">LeWorldModel paper, section 4.1</Cite>
             </li>
           </ul>
-          <ExpandableSection headerText="RoboJEPA: results on a real arm">
-            <Box variant="p">
-              On a Franka arm, planning toward a single goal image with no sub-goals, the authors report success
-              for the 8B model of 67% on grasp, 50% on object lift and 27% on pick-and-place. They give the
-              text-conditioned policy pi0.5 as a reference at 5%, 0% and 53%, and call such figures
-              &quot;contextual references rather than directly comparable baselines&quot;.{' '}
-              <Cite id="F03-78">RoboJEPA paper, section 4.3 and Table 3</Cite>
-            </Box>
-          </ExpandableSection>
-          <ExpandableSection headerText="LeWorldModel: the shapes, and where it has been tested">
-            <Box variant="p">
-              The encoder is a ViT-Tiny of about 5M parameters, and the predictor a 6-layer transformer of about
-              10M.{' '}
-              <Cite id="F03-33">LeWorldModel paper, section 3.1</Cite> All four of its tasks are simulated, and the
-              paper reports no result on a real robot. On Push-T the authors report 96.0% success against 92.0% for
-              DINO-WM, a world model built on a frozen pretrained encoder; on a simulated cube pick-and-place
-              DINO-WM is slightly ahead.{' '}
-              <Cite id="F03-42">LeWorldModel paper, section 4.1 and Table 5</Cite>
-            </Box>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
@@ -1245,10 +1216,10 @@ export function Jepa() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A predictor does not act. It answers &quot;if I do this, what will the latent be?&quot;, and something
-            else has to ask the right questions. That something is a planner, and it needs a goal. Here the goal
-            is a picture: {GOAL_PHOTO}. The encoder turns the picture into a goal latent, and planning becomes a
-            search for the actions whose predicted latent lands closest to it.
+            A predictor answers &quot;if I do this, what will the latent be?&quot;. A planner has to ask the
+            questions, and it needs a goal. Here the goal is a picture: {GOAL_PHOTO}. The encoder turns it into a
+            goal latent, and planning becomes a search for the actions whose predicted latent lands closest to
+            it.
           </Box>
           <Box variant="p">
             The symbols: <code>z_k</code> is the latent of the current frame <code>k</code>, and <code>s_k</code>{' '}
@@ -1262,10 +1233,10 @@ export function Jepa() {
             <Cite id="F03-23">V-JEPA 2 paper, section 3.2, equation 5</Cite>
           </Box>
           <Box variant="p">
-            The left term is the imagined future for this candidate. The right term is where you want to be. The
-            L1 distance between them is the measure the model was trained with, reused as a score: a low energy
-            means the candidate is predicted to make the scene look like the goal picture. Two ideas turn the
-            score into motion.
+            The left term is the imagined future for this candidate and the right term is where you want to be.
+            The L1 distance between them is the training measure reused as a score: a low energy means the
+            candidate is predicted to make the scene look like the goal picture. Two ideas turn the score into
+            motion.
           </Box>
           <Box variant="p">
             <strong>MPC (model-predictive control)</strong> is the outer loop. It is the standard way to act with
@@ -1336,11 +1307,21 @@ export function Jepa() {
             {(step, reduced) => <CemPlanning step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
-            What this achieves, as the authors report it: on two Franka arms in labs absent from the training
+            What this achieves, as the authors report it: on two Franka research arms in labs absent from the training
             data, with 10 trials per task, pick-and-place succeeded 80% of the time with a cup and 65% with a box,
             and grasping 65% and 25%.{' '}
             <Cite id="F03-26">V-JEPA 2 paper, section 4.2, Table 2</Cite>
           </Box>
+          <ExpandableSection headerText="RoboJEPA: results on a real arm">
+            <Box variant="p">
+              On a Franka arm, planning toward one goal image where V-JEPA 2 needed three, the authors report success
+              for the 8B model of 67% on grasp, 50% on object lift and 27% on pick-and-place. They give the
+              text-conditioned policy pi0.5 as a reference at 5%, 0% and 53%, and call such figures
+              &quot;contextual references rather than directly comparable baselines&quot;.{' '}
+              <Cite id="F03-78">RoboJEPA paper, section 4.3 and Table 3</Cite>{' '}
+              <Cite id="F03-77">RoboJEPA paper, section 2.2</Cite>
+            </Box>
+          </ExpandableSection>
           <ExpandableSection headerText="If you run the released notebook: its planner defaults differ from the paper">
             <Box variant="p">
               The notebook wrapper in the vjepa2 repository defaults to 400 samples, 10 CEM steps, the top 10 and
@@ -1380,8 +1361,8 @@ export function Jepa() {
             <PassesChart />
           </Figure>
           <Box variant="p">
-            A pass is no fixed amount of work. In V-JEPA 2-AC one pass runs a 300M transformer over 258 tokens per
-            frame; in LeWorldModel it runs a 10M transformer over 1 to 3 tokens.{' '}
+            Passes differ in size. In V-JEPA 2-AC one pass runs a 300M transformer over 258 tokens per frame; in
+            LeWorldModel it runs a 10M transformer over 1 to 3 tokens.{' '}
             <Cite id="F03-115">our arithmetic, predictor passes per decision</Cite> So read the count with the
             seconds, and the seconds with the GPU:
           </Box>
@@ -1408,7 +1389,8 @@ export function Jepa() {
             </li>
             <li>
               <strong>LeWorldModel, 45,000 passes on Push-T</strong> (300 samples, 30 iterations, horizon 5). The
-              authors report 0.98 s for a full plan against 47 s for DINO-WM. The GPU is not named.{' '}
+              authors report 0.98 s for a full plan against 47 s for DINO-WM, a latent world model built on a frozen
+              pretrained encoder. The GPU is not named.{' '}
               <Cite id="F03-40">LeWorldModel paper, appendix D</Cite>{' '}
               <Cite id="F03-41">LeWorldModel paper, Figure 3</Cite>
             </li>
@@ -1418,15 +1400,14 @@ export function Jepa() {
             actions. That is 18 x 8,000 = 144,000 predictor passes and 18 x 16 s = 288 s, 4.8 minutes of GPU time
             spent deciding, at the rate reported for the RTX card.{' '}
             <Cite id="F03-27">V-JEPA 2 paper, section 4.2, and our arithmetic</Cite> On section 3&apos;s rate
-            ladder this is the planner rung, far above a policy that answers many times a second. What the wait
-            buys is a task set by a picture at run time: the predictor was trained with no reward, no task label
-            and no success flag.{' '}
+            ladder this is the planner rung. What the wait buys is a task set by a picture at run time: the
+            predictor was trained with no reward, no task label and no success flag.{' '}
             <Cite id="F03-20">V-JEPA 2 paper, section 3.1</Cite>
           </Box>
           <Box variant="p">
-            Every pass is transformer arithmetic on the GPU&apos;s tensor cores, batched by the hundred. The
-            authors list the ways to shrink the bill: fewer samples and iterations, more GPUs, a planner that
-            follows gradients through the predictor, or a fast policy trained on the planner&apos;s output.{' '}
+            Every pass is transformer arithmetic on the GPU&apos;s tensor cores. The authors list the ways to
+            shrink the bill: fewer samples and iterations, more GPUs, a planner that follows gradients through the
+            predictor, or a fast policy trained on the planner&apos;s output.{' '}
             <Cite id="F03-116">V-JEPA 2 paper, section 4.2</Cite> Training is a separate bill, taken up in section
             15, Training at Three Scales. Pretraining the video encoder is the large item: the authors project
             roughly 60 GPU-years on A100s for ViT-g without their progressive-resolution schedule, which they
