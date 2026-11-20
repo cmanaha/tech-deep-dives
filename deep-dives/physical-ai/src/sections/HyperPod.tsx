@@ -533,8 +533,9 @@ export function HyperPod() {
             The picture shows one cluster on the EKS path, shared by two teams. Team arm post-trains the arm&apos;s VLA, one GPU per
             run. Team worldmodel runs longer jobs on a held group of two eight-GPU instances on a training plan. Two more groups start at
             zero instances, one Spot and one On-Demand, both listed in one node class. As an illustration, each team&apos;s allocation
-            holds <Toy>2</Toy> g7e instances, and with the default borrow limit of 50 percent a team may borrow{' '}
-            <Derived>1</Derived> more (50 percent of 2). <Cite id="F10-320">SageMaker API Reference, ResourceSharingConfig</Cite>
+            holds <Toy>2</Toy> g7e instances, and team worldmodel&apos;s also holds the two held p5 instances that its
+            pods W1 to W3 run on. With the default borrow limit of 50 percent a team may borrow{' '}
+            <Derived>1</Derived> more g7e instance (50 percent of 2). <Cite id="F10-320">SageMaker API Reference, ResourceSharingConfig</Cite>
           </Box>
           <Box variant="p">
             Two things happen to capacity in the sequence. The first is a Spot interruption, which HyperPod handles in five documented
@@ -615,7 +616,7 @@ export function HyperPod() {
                 <Cite id="F10-317">SageMaker Developer Guide, HyperPod training operator usage</Cite>
               </>
             }
-            ours="the job, team and container names, one replica, the instance type, the image placeholder and the 90-second grace period are ours; every field name is AWS's."
+            ours="the job and team names, one replica, the instance type, the image placeholder and the 90-second grace period are ours; every field name is AWS's."
           >{`apiVersion: "kubeflow.org/v1"
 kind: PyTorchJob
 metadata:
@@ -639,11 +640,15 @@ spec:
             sagemaker.amazonaws.com/node-health-status: Schedulable
             beta.kubernetes.io/instance-type: ml.g7e.2xlarge
           containers:
-            - name: posttrain
+            - name: pytorch
               image: <your training image>
               resources:
                 limits:
                   nvidia.com/gpu: 1`}</Snippet>
+          <Box variant="p">
+            The container name is fixed. The Kubeflow Training Operator rejects a PyTorchJob that has no container named{' '}
+            <code>pytorch</code>. <Cite id="F10-340">Kubeflow Training Operator v1.8.1, PyTorchJob validating webhook</Cite>
+          </Box>
           <ol style={LIST}>
             <li>
               <strong>Held.</strong> Kueue keeps the job in <code>hyperpod-ns-arm-localqueue</code> and creates no pod.{' '}
@@ -777,7 +782,7 @@ spec:
     - auto-spot-c5-x-az3
     - auto-ondemand-c5-2x-az1`}</Snippet>
           <Snippet
-            title="NodePool: remove empty nodes, but not instantly"
+            title="NodePool: consolidate nodes, but not instantly"
             mode="adapted"
             source={<Cite id="F10-312">SageMaker Developer Guide, create a NodePool</Cite>}
             ours="the pool name and consolidateAfter of 60s (AWS's printed example shows 0s) are ours."
@@ -801,6 +806,15 @@ spec:
       requirements:
       - key: node.kubernetes.io/instance-type
         operator: Exists`}</Snippet>
+          <Box variant="p">
+            <code>WhenEmptyOrUnderutilized</code> is the value AWS prints. It removes empty nodes, and it also lets Karpenter
+            move a running pod so that an underused node can go. A run on this pool therefore saves checkpoints on a timer for
+            that reason too. Section 28, Amazon EKS, uses <code>WhenEmpty</code>, the value that leaves a running pod alone, for
+            the same kind of job on self-managed Karpenter. The HyperPod autoscaling pages print only{' '}
+            <code>WhenEmptyOrUnderutilized</code> and do not say whether the managed Karpenter accepts <code>WhenEmpty</code>.{' '}
+            <Cite id="F10-344">SageMaker Developer Guide, HyperPod autoscaling with Karpenter</Cite>{' '}
+            <Cite id="F10-412">Karpenter v1.15.3 docs, consolidation policies</Cite>
+          </Box>
           <Box variant="p">
             Governance is two API inputs: one cluster policy, then one compute allocation per team.
           </Box>

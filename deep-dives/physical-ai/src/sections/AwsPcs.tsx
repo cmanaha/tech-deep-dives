@@ -183,7 +183,7 @@ const SPEC: ClusterSpec = {
     {
       caption: (
         <>
-          A requeued job is eligible again after 5 seconds by default. At its next scaling pass PCS launches a
+          On Slurm 25.11 or later a requeued job is eligible again after 5 seconds by default. At its next scaling pass PCS launches a
           replacement instance for the node. Tasks 1 and 2 finish, and the idle clock starts on their two nodes.
         </>
       ),
@@ -640,9 +640,12 @@ export function AwsPcs() {
               <Box variant="p">
                 A Capacity Block for ML, a block of GPU instances booked for a fixed window, takes a group of its own:
                 one group, one block, and a maximum instance count no larger than the block. Until the block starts
-                its nodes sit in a Slurm maintenance state. When it ends, every instance is terminated and queued jobs
-                stay pending; EC2 sends a warning event 40 minutes before.{' '}
-                <Cite id="F10-234">AWS PCS User Guide, Using Capacity Blocks for ML with AWS PCS</Cite>
+                its nodes sit in a Slurm maintenance state. The block ends at 11:30 UTC on its last day, and EC2
+                starts terminating its instances 30 minutes earlier, at 11:00 UTC, so a job saves its last checkpoint
+                before then. EC2 sends a warning event 40 minutes before the end. Once the instances are gone,
+                queued jobs stay pending.{' '}
+                <Cite id="F10-234">AWS PCS User Guide, Using Capacity Blocks for ML with AWS PCS</Cite>{' '}
+                <Cite id="F09-90">EC2 User Guide, Capacity Blocks for ML</Cite>
               </Box>
               <Box variant="p">
                 UltraServers, the P6e-GB200 and P6e-GB300 machines that join many GPUs with NVLink, NVIDIA&apos;s direct
@@ -650,9 +653,11 @@ export function AwsPcs() {
                 identifies the UltraServer type and sets up Slurm&apos;s topology plugin itself, so a job is placed
                 inside one UltraServer. Two tasks stay with you: jobs must use <code>--exclusive</code>, and you
                 supply the script that configures NVIDIA IMEX (Internode Memory Exchange, the service that lets GPUs
-                in different nodes share memory) for each job.{' '}
+                in different nodes share memory) for each job. A P6e-GB200 UltraServer block also ends earlier for
+                you: its instances must be terminated at least 60 minutes before the block&apos;s end time.{' '}
                 <Cite id="F10-237">AWS PCS User Guide, Configure UltraServer instances</Cite>{' '}
-                <Cite id="F09-109">AWS What&apos;s New, 18 June 2026</Cite>
+                <Cite id="F09-109">AWS What&apos;s New, 18 June 2026</Cite>{' '}
+                <Cite id="F10-341">EC2 User Guide, Capacity Blocks for ML, UltraServer considerations</Cite>
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -786,9 +791,9 @@ export function AwsPcs() {
             <code>--requeue</code> tells Slurm that a task which loses its node may go back to the queue. PCS
             documents three things here. An instance terminated from outside is logged TERMINATED with the reason
             EXTERNALLY_TERMINATED, and its node is released to be replaced. When a Capacity Block expires, active jobs
-            are requeued by default, though they &quot;might have errors or fail&quot;. And a requeued job is eligible
-            again after 5 seconds by default; on Slurm 25.11 or later <code>--requeue=expedite</code> puts it back at
-            the highest priority.{' '}
+            are requeued by default, though they &quot;might have errors or fail&quot;. And on Slurm 25.11 or
+            later a requeued job is eligible again after 5 seconds by default (70 seconds on earlier versions), and{' '}
+            <code>--requeue=expedite</code> puts it back at the highest priority.{' '}
             <Cite id="F10-222">AWS PCS User Guide, Capacity Blocks FAQ and Scaling logs</Cite>{' '}
             <Cite id="F10-223">AWS PCS User Guide, Slurm release notes</Cite>
           </Box>
@@ -868,10 +873,15 @@ export function AwsPcs() {
                 </tr>
                 <tr>
                   <td style={TD}>Training group</td>
-                  <td style={TD}>On-Demand or reserved, one subnet, EFA, cluster placement group</td>
                   <td style={TD}>
-                    A group with more than one subnet loses EFA between its nodes.{' '}
-                    <Cite id="F10-232">Creating a compute node group</Cite>
+                    On-Demand or an ODCR: one subnet, EFA, cluster placement group. On a Capacity Block: one subnet,
+                    EFA, no placement group
+                  </td>
+                  <td style={TD}>
+                    A group with more than one subnet loses EFA between its nodes. EC2 does not accept a placement
+                    group on an instance launched into a Capacity Block; the block already places its instances close
+                    together. <Cite id="F10-232">Creating a compute node group</Cite>{' '}
+                    <Cite id="F09-92">EC2 User Guide, Capacity Blocks for ML, considerations</Cite>
                   </td>
                 </tr>
                 <tr>
@@ -940,7 +950,9 @@ export function AwsPcs() {
             {CREATE_SPOT_GROUP}
           </Snippet>
           <Box variant="p">
-            A Spot group has one account prerequisite: the <code>AWSServiceRoleForEC2Spot</code> service-linked role must
+            The command names no AMI and no security group, so the launch template must carry both, or PCS rejects
+            the request. <Cite id="F10-342">AWS PCS User Guide, Creating a compute node group in AWS PCS</Cite>{' '}
+            A Spot group also has one account prerequisite: the <code>AWSServiceRoleForEC2Spot</code> service-linked role must
             exist in the account before the group is created.{' '}
             <Cite id="F10-209">AWS PCS User Guide, Spot service-linked role</Cite>
           </Box>
@@ -952,8 +964,11 @@ export function AwsPcs() {
             {LUSTRE_USER_DATA}
           </Snippet>
           <Box variant="p">
-            The first command installs the Lustre client. The PCS-ready Deep Learning AMI already carries it, so on
-            that image the mount lines are what remains (our reading of the two pages together). PCS also runs
+            The first command installs the Lustre client the Amazon Linux 2 way. On Amazon Linux 2023 the FSx for
+            Lustre guide installs it with <code>dnf install -y lustre-client</code> instead.{' '}
+            <Cite id="F10-345">FSx for Lustre User Guide, Installing the Lustre client</Cite> The PCS-ready Deep
+            Learning AMI already carries the client, so on that image delete the line and keep the two mount lines
+            (our reading of the two pages together). PCS also runs
             scripts for you at two stages of boot, called node lifecycle actions. If you mount with one, use{' '}
             <code>nodeBootstrapped</code>, the stage that runs before <code>slurmd</code> starts. <Cite id="F10-212">Using PCS-ready DLAMI with AWS PCS</Cite>{' '}
             <Cite id="F10-214">Run custom scripts with node lifecycle actions</Cite>
@@ -969,9 +984,13 @@ export function AwsPcs() {
               </Snippet>
               <Box variant="p">
                 Read it as an illustration: the second interface, as the page prints it, lacks a comma after its{' '}
-                <code>SubnetId</code> line. Security groups are set on each interface, and the placement group goes
-                in <code>Placement.GroupId</code>. The{' '}
-                <Link href="../efa/">EFA dive</Link> covers what the adapter does for multi-node training.
+                <code>SubnetId</code> line, and it sits on network card 1, which exists only on instance types with
+                more than one network card. The g6e.12xlarge in the figure has one network card, so for it keep the
+                first interface only. Security groups are set on each interface, and the placement group goes
+                in <code>Placement.GroupId</code>; leave that block out for a Capacity Block group. The{' '}
+                <Link href="../efa/">EFA dive</Link> covers what the adapter does for multi-node training.{' '}
+                <Cite id="F10-343">EC2 instance types, accelerated computing, network specifications</Cite>{' '}
+                <Cite id="F09-92">EC2 User Guide, Capacity Blocks for ML, considerations</Cite>
               </Box>
             </SpaceBetween>
           </ExpandableSection>

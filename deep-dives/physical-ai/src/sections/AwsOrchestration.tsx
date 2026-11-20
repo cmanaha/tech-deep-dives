@@ -773,10 +773,13 @@ export function AwsOrchestration() {
           <Box variant="p">
             Multi-node training on any of the four adds the same two things: a placement group that keeps the nodes
             close together, and EFA (Elastic Fabric Adapter), the EC2 network device that lets the nodes of one job
-            exchange data without going through the operating system&apos;s network stack. The{' '}
-            <Link href="../efa/">EFA dive</Link> covers that network.{' '}
+            exchange data without going through the operating system&apos;s network stack. One kind of reserved
+            capacity takes EFA alone: a Capacity Block for ML, a block of GPU instances booked for a fixed window
+            (next part), cannot be launched into a placement group, and EC2 places its instances close together
+            itself. The <Link href="../efa/">EFA dive</Link> covers that network.{' '}
             <Cite id="F10-233">AWS PCS User Guide, EFA and placement groups</Cite>{' '}
-            <Cite id="F10-426">Karpenter v1.15.3 documentation, EC2NodeClass</Cite>
+            <Cite id="F10-426">Karpenter v1.15.3 documentation, EC2NodeClass</Cite>{' '}
+            <Cite id="F09-92">EC2 User Guide, Capacity Blocks for ML, considerations</Cite>
           </Box>
         </SpaceBetween>
       </Container>
@@ -803,8 +806,8 @@ export function AwsOrchestration() {
             <em>On-Demand Capacity Reservation (ODCR)</em> holds capacity for a named instance type in one
             Availability Zone for any duration, charged at the On-Demand rate whether or not an instance runs in it.
             A <em>Capacity Block for ML</em> reserves GPU instances for a fixed window, booked up to eight weeks ahead
-            and paid up front: up to 64 instances per block, for up to six months, ending at 11:30 UTC, and it cannot
-            be cancelled, moved or split. A <em>SageMaker training plan</em> is the same kind of reservation made
+            and paid up front: up to 64 instances per block, for up to six months, ending at 11:30 UTC with its
+            instances terminated from 11:00 UTC that day, and it cannot be cancelled, moved or split. A <em>SageMaker training plan</em> is the same kind of reservation made
             through SageMaker, for a HyperPod cluster or a training job. Savings Plans sit beside these as a discount
             on the bill. <Cite id="F09-94">EC2 User Guide, On-Demand Capacity Reservations</Cite>{' '}
             <Cite id="F09-90">EC2 User Guide, Capacity Blocks for ML</Cite>{' '}

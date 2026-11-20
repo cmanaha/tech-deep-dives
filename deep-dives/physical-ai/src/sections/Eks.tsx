@@ -51,7 +51,7 @@ const B_WAITS = jobB((k) => ({ q: 0, pos: k }));
 const SPEC: ClusterSpec = {
   title: 'An EKS cluster running an evaluation sweep on Spot GPU nodes that Karpenter launches and removes',
   desc: 'Jobs wait in a Kueue ClusterQueue. Admitted Jobs create pods, Karpenter launches one-GPU instances for pending pods in a Spot NodePool and an On-Demand NodePool, and pods write checkpoints to Amazon S3.',
-  submit: { label: 'kubectl apply: two Jobs', sub: 'label kueue.x-k8s.io/queue-name' },
+  submit: { label: 'kubectl create: two Jobs', sub: 'label kueue.x-k8s.io/queue-name' },
   queues: [{ label: 'Kueue ClusterQueue: 4 GPUs', sub: 'Jobs wait here as Workloads' }],
   scheduler: { label: 'Karpenter + kube-scheduler', sub: 'launch nodes; bind pods to them' },
   done: { label: 'Completed pods' },
@@ -81,7 +81,7 @@ const SPEC: ClusterSpec = {
       caption: (
         <>
           Before any Job, both NodePools hold zero nodes: a NodePool is a set of rules, and Karpenter launches nothing
-          until a pod is pending. Two Jobs are ready to apply. Job A will create pods 1 to 4 and Job B pods 5 and 6,
+          until a pod is pending. Two Jobs are ready to submit. Job A will create pods 1 to 4 and Job B pods 5 and 6,
           each pod asking for one GPU.
         </>
       ),
@@ -117,11 +117,11 @@ const SPEC: ClusterSpec = {
         <>
           Job A fits the quota of 4 GPUs, so Kueue admits it and the Job creates four pods, which are Pending. Job B
           waits. Karpenter&apos;s batch window closes after 1 second with no new pending pod (10 seconds at most); it
-          creates four NodeClaims and passes 60 instance type options to EC2 Fleet. A pending pod is drawn on the
-          outline of the instance requested for it.
+          creates four NodeClaims and passes every one-GPU G type the NodePool allows to EC2 Fleet (at most 60 types
+          per request). A pending pod is drawn on the outline of the instance requested for it.
         </>
       ),
-      scheduler: ['4 pods Pending, batch closed', '60 types sent to EC2 Fleet'],
+      scheduler: ['4 pods Pending, batch closed', 'one-GPU G types sent to EC2 Fleet'],
       instances: {
         '0.0': { state: 'launching', type: 'not chosen' },
         '0.1': { state: 'launching', type: 'not chosen' },
@@ -469,6 +469,9 @@ spec:
         - key: karpenter.k8s.aws/instance-gpu-memory
           operator: Gt
           values: ["20480"]
+        - key: karpenter.k8s.aws/instance-gpu-count
+          operator: In
+          values: ["1"]
         - key: kubernetes.io/arch
           operator: In
           values: ["amd64"]
@@ -621,7 +624,7 @@ export function Eks() {
           <Box variant="p">
             <strong>How Karpenter chooses capacity.</strong> It collects pending pods for a short window (closed after
             1 second without a new pod, 10 seconds at most), packs them by CPU, memory and GPUs onto the smallest
-            instance type that fits the batch, adds 59 larger types, and passes all 60 options to EC2 Fleet, the EC2
+            instance type that fits the batch, adds larger types up to a total of 60, and passes those options to EC2 Fleet, the EC2
             API that fills one request from many instance types. Fleet applies the price-capacity-optimized strategy:
             among the pools with the most spare capacity, take the lowest priced. The more types a NodePool allows,
             the more room EC2 has to keep you running. Each instance is tracked by a <strong>NodeClaim</strong>, which
@@ -977,7 +980,7 @@ export function Eks() {
         header={
           <Header
             variant="h2"
-            description="Follow one evaluation sweep from kubectl apply to results in S3, with the state you would see at each step, then the same cluster running a training job that must not be moved."
+            description="Follow one evaluation sweep from kubectl create to results in S3, with the state you would see at each step, then the same cluster running a training job that must not be moved."
           >
             One worked case for the arm, end to end
           </Header>
@@ -1006,7 +1009,8 @@ export function Eks() {
           <Box variant="p">
             The flavor&apos;s node label is what pins the sweep to Spot: Kueue copies it into each pod&apos;s node
             selector, and Karpenter reads it as a requirement. Using a flavor this way is our reading of the two
-            projects&apos; pages. The user then submits a Job.{' '}
+            projects&apos; pages. The user then submits a Job with <code>kubectl create -f</code>: the Job below
+            sets <code>generateName</code>, and <code>kubectl apply</code> refuses an object that has no fixed name.{' '}
             <Cite id="F10-451">Kueue v0.20.7 docs, ResourceFlavor and admission</Cite>
           </Box>
           <Snippet
@@ -1063,8 +1067,11 @@ export function Eks() {
             one program spread over many pods, so losing one node stops them all. It goes on a second NodePool with the
             capacity types <code>reserved</code> and <code>on-demand</code>, with <code>expireAfter</code> set so that
             no node expires under the run, and its pods carry <code>karpenter.sh/do-not-disrupt</code>. The nodes come
-            from one EC2NodeClass with a cluster placement group and <code>efa-only</code> interfaces. The user submits
-            one object:
+            from one EC2NodeClass with <code>efa-only</code> interfaces, and with a cluster placement group when the
+            capacity is On-Demand or an On-Demand Capacity Reservation. A Capacity Block takes an EC2NodeClass without
+            a placement group, because EC2 does not accept one there.{' '}
+            <Cite id="F09-92">EC2 User Guide, Capacity Blocks for ML, considerations</Cite> The user submits one
+            object:
           </Box>
           <Snippet
             title="A TrainJob, as the Kubeflow Trainer documentation prints it"
@@ -1209,10 +1216,16 @@ export function Eks() {
           <Snippet
             title="A GPU Spot NodePool for sweeps (self-managed Karpenter)"
             mode="adapted"
-            source={<Cite id="F10-428">EKS Best Practices Guide, GPU Spot NodePool</Cite>}
+            source={
+              <>
+                <Cite id="F10-428">EKS Best Practices Guide, GPU Spot NodePool</Cite>{' '}
+                <Cite id="F10-470">Karpenter v1.15.3 docs, well-known labels</Cite>
+              </>
+            }
             ours={
               <>
-                the name, the weight, the G category alone, generation above 4, the EC2NodeClass name, the two-hour{' '}
+                the name, the weight, the G category alone, generation above 4, the limit to sizes with one GPU, the
+                EC2NodeClass name, the two-hour{' '}
                 <code>terminationGracePeriod</code>, the limit of 32 GPUs, <code>WhenEmpty</code> with{' '}
                 <code>consolidateAfter: 10m</code>, and the two budgets. Every field name is from the Karpenter pages;
                 the combination is ours.
@@ -1362,7 +1375,8 @@ export function Eks() {
           <Box variant="p">
             If EKS fits, start with two actions that cost nothing. Request an increase of the G Spot quota, whose
             default is 0, and write the checkpoint code so that a pod stopped with two minutes of warning, or none,
-            loses only minutes. Then apply one Spot NodePool, one ClusterQueue and the four-pod Job above.{' '}
+            loses only minutes. Then apply one Spot NodePool and one ClusterQueue, and submit the four-pod Job above
+            with <code>kubectl create -f</code>, because a Job that uses <code>generateName</code> cannot be applied.{' '}
             <Cite id="F10-533">EC2 User Guide, Spot Instance quotas</Cite>
           </Box>
         </SpaceBetween>

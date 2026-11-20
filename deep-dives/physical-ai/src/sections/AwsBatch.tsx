@@ -752,13 +752,16 @@ export function AwsBatch() {
           <ClusterFigure
             spec={SPEC}
             name="an evaluation sweep on Spot with On-Demand behind"
-            cites="F09-1 F09-5 F09-10 F09-13 F09-130 F09-131 F10-1 F10-3 F10-7 F10-8 F10-21 F10-22 F10-23 F10-24 F10-25 F10-37 F10-38 F10-44 F10-46 F10-52 F10-53 F10-54 F10-55 F10-56 F10-57"
+            cites="F09-1 F09-5 F09-10 F09-13 F09-130 F09-131 F10-1 F10-3 F10-7 F10-8 F10-21 F10-22 F10-23 F10-24 F10-25 F10-37 F10-38 F10-44 F10-46 F10-52 F10-53 F10-54 F10-55 F10-56 F10-57 F10-537"
             caption={
               <>
                 Press Play or Step. A white token is waiting or starting, blue is running, orange has been sent back to
                 the queue, green has finished; the yellow diamond is a checkpoint, here the child&apos;s saved
                 progress. Instance counts and ceilings are sized to fit the picture. The order of events is the
-                documented one, and step 6 is the job&apos;s own code. Illustrative, not measured.
+                documented one, and step 6 is the job&apos;s own code. The retried child&apos;s place at the front
+                of the queue is what the Batch best-practices page for Spot says; the job states page says only that
+                the job returns to <code>RUNNABLE</code>.{' '}
+                <Cite id="F10-537">AWS Batch User Guide, Spot best practices</Cite> Illustrative, not measured.
               </>
             }
           />
@@ -854,6 +857,7 @@ export function AwsBatch() {
               begins <code>Host EC2</code>. The retry rule matches, so child 7 returns to the front of the queue. A
               crash in the script would match the catch-all rule and go to <code>FAILED</code> at once.{' '}
               <Cite id="F10-57">synthesis of the retry, state and scale-down entries</Cite>{' '}
+              <Cite id="F10-537">AWS Batch User Guide, Spot best practices, front of the job queue</Cite>{' '}
               <Cite id="F09-10">AWS Batch User Guide, Spot best practices and automated job retries</Cite>
             </li>
             <li>

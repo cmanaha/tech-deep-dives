@@ -567,6 +567,42 @@ Part A is AWS Parallel Computing Service (F10-200 to F10-289). Part B is Amazon 
 - Evidence: F10-309, F10-312, F10-313, F10-318, F10-319, F10-323, F10-324, F10-325 | synthesis
 - Use in dive: section 27, "what it does poorly", and the hand-offs in section 9 of this file.
 
+**F10-340. A `PyTorchJob` replica spec must contain a container named `pytorch`. The Kubeflow Training Operator's validating webhook (release 1.8.1, one of the releases HyperPod job auto-resume requires, F10-316) rejects the object otherwise with "must have at least one container with name pytorch". The container name is not free to choose.**
+- Location: kubeflow/training-operator at tag v1.8.1, `pkg/webhooks/pytorch/pytorchjob_webhook.go`
+- Verdict: NEW (added from the round 2 AWS accuracy review, finding 1)
+- Evidence: https://raw.githubusercontent.com/kubeflow/training-operator/v1.8.1/pkg/webhooks/pytorch/pytorchjob_webhook.go | Tier 1, project source code at tag v1.8.1 | definition | "// Make sure there has at least one container named \"pytorch\"" and "if !defaultContainerPresent { allErrs = append(allErrs, field.Required(containersPath, fmt.Sprintf(\"must have at least one container with name %s\", trainingoperator.PyTorchJobDefaultContainerName))) }" (accessed 2026-11-20)
+- Use in dive: section 27, the PyTorchJob snippet: the container is named `pytorch`.
+
+**F10-341. For a P6e-GB200 UltraServer Capacity Block the instances must be terminated by the user at least 60 minutes before the block's end time. For other Capacity Blocks EC2 begins terminating instances at 11:00 UTC on the final day, 30 minutes before the 11:30 UTC end (F09-90).**
+- Location: Amazon EC2 User Guide, "Capacity Blocks for ML", UltraServer considerations
+- Verdict: NEW (added from the round 2 AWS accuracy review, finding 6)
+- Evidence: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html | Tier 1, first-party docs | documentation of a limit | "For P6e-GB200 UltraServer Capacity Blocks, you must terminate your instances at least 60 minutes before the Capacity Block end time." (accessed 2026-11-20)
+- Use in dive: section 26, the UltraServer paragraph of the reserved-capacity block.
+
+**F10-342. When a compute node group is created with a custom launch template, each of the AMI and the security groups may come from the command or from the launch template; a value on the command wins. "If neither the command nor the launch template has an AMI or security groups, AWS PCS rejects the request." `--security-group-ids` cannot be given when the launch template defines network interfaces.**
+- Location: AWS PCS User Guide, "Creating a compute node group in AWS PCS"
+- Verdict: NEW (added from the round 2 AWS accuracy review, finding 9)
+- Evidence: https://docs.aws.amazon.com/pcs/latest/userguide/working-with_cng_create.html | Tier 1, first-party docs | definition | "For each option that you omit, AWS PCS uses the value in the launch template." and "If neither the command nor the launch template has an AMI or security groups, AWS PCS rejects the request. You can't specify --security-group-ids if your launch template defines network interfaces." (accessed 2026-11-20)
+- Use in dive: section 26, the sentence under the Spot compute node group command, which names neither.
+
+**F10-343. g6e.12xlarge has 1 network card; p5.48xlarge has 32. A launch template interface with `NetworkCardIndex` 1 therefore fits a type such as p5.48xlarge and does not fit g6e.12xlarge `[our reading of the table against the template in F10-233]`.**
+- Location: Amazon EC2 instance types guide, "Accelerated computing instances", table "Network specifications", column "Network cards"
+- Verdict: NEW (added from the round 2 AWS accuracy review, finding 10)
+- Evidence: https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html | Tier 1, first-party docs | documentation of limits | table header "Instance type, Baseline / Burst bandwidth (Gbps), EFA, ENA, ENA Express, ENA queues per interface (Default/Maximum), Network cards, Max. network interfaces, IP addresses per interface, IPv6"; row "g6e.12xlarge 100 Gigabit, Yes, Yes, Yes, 32, 1, 10, 30, Yes"; row "p5.48xlarge 3200 Gigabit, Yes, Yes, Yes, 32, 32, 64, 50, Yes" (table cells joined with commas by us, accessed 2026-11-20)
+- Use in dive: section 26, the note under the EFA launch template: keep the first interface only for the figure's g6e.12xlarge.
+
+**F10-344. HyperPod describes its managed Karpenter as consolidating nodes that still run pods: "Karpenter regularly evaluates cluster for optimization opportunities, shifting workloads to eliminate underutilized nodes." The NodePool example on the HyperPod NodePool page prints `consolidationPolicy: WhenEmptyOrUnderutilized` with `consolidateAfter: 0s`. The four HyperPod autoscaling pages fetched on 2026-11-20 (overview, NodeClass, NodePool, `ClusterAutoScalingConfig`) contain no other `consolidationPolicy` value and no statement on whether `WhenEmpty` is accepted.**
+- Location: SageMaker Developer Guide, "Autoscaling on SageMaker HyperPod EKS" and "Create a NodePool"
+- Verdict: NEW (added from the round 2 AWS accuracy review, finding 8)
+- Evidence: https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-autoscaling.html | Tier 1, first-party docs | definition | "Automatic node consolidation - Karpenter regularly evaluates cluster for optimization opportunities, shifting workloads to eliminate underutilized nodes." ; https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-autoscaling-nodepool.html | Tier 1, first-party docs | definition | "spec: disruption: budgets: - nodes: 90% consolidateAfter: 0s consolidationPolicy: WhenEmptyOrUnderutilized" (accessed 2026-11-20)
+- Use in dive: section 27, the paragraph under the NodePool snippet: this policy can move a running pod, and section 28 uses `WhenEmpty` (F10-412).
+
+**F10-345. The FSx for Lustre guide installs the Lustre client differently per Amazon Linux release: on Amazon Linux 2 with `sudo amazon-linux-extras install -y lustre`, on Amazon Linux 2023 with `sudo dnf install -y lustre-client`. The user data PCS prints for mounting FSx for Lustre (F10-231) uses the Amazon Linux 2 command.**
+- Location: FSx for Lustre User Guide, "Installing the Lustre client", procedures "To install the Lustre client on Amazon Linux 2023" and "To install the Lustre client on Amazon Linux 2"
+- Verdict: NEW (added from the round 2 AWS accuracy review, finding 11)
+- Evidence: https://docs.aws.amazon.com/fsx/latest/LustreGuide/install-lustre-client.html | Tier 1, first-party docs | definition | under "To install the Lustre client on Amazon Linux 2023": "Download and install the Lustre client with the following command. sudo dnf install -y lustre-client" ; under "To install the Lustre client on Amazon Linux 2": "Download and install the Lustre client with the following command. sudo amazon-linux-extras install -y lustre" (accessed 2026-11-20)
+- Use in dive: section 26, the paragraph under the Lustre user data snippet.
+
 ## 5. Configuration blocks
 
 Every block below is verbatim from the page named above it, as fetched on 2026-11-20 in its markdown form. The same text is quoted, joined to one line, in the Evidence line of the entry it belongs to. `{{...}}`, `<...>` and upper-case names are the pages' own placeholders. Nothing was added, removed or reordered.

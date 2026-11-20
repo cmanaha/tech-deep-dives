@@ -463,6 +463,12 @@ Karpenter supplies nodes for any pod that is pending. It has no queue, no quota 
 - Evidence: https://docs.aws.amazon.com/eks/latest/userguide/node-health-nma.html | Tier 1, first-party docs | definition | "is replaced: after 10 minutes on EKS Auto Mode, and after 30 minutes on Karpenter `v1.15.0` and later" ; https://docs.aws.amazon.com/eks/latest/userguide/node-repair.html | Tier 1, first-party docs | definition | "Any other condition or reason, including an `AcceleratedHardwareReady` reason that fell through to the 30-minute wait | 10m" (quotes as read by the refuter, accessed 2026-11-20)
 - Use in dive: section 28, node auto repair: two timers, wait then grace period.
 
+**F10-470. `karpenter.k8s.aws/instance-gpu-count` is one of Karpenter's well-known node labels: the number of GPUs on the instance. A NodePool requirement on it with operator `In` and value "1" limits the pool to sizes with one GPU. Without it a G-category pool also allows the multi-GPU sizes; the instance type reference lists g6e.12xlarge with a count of 4.**
+- Location: Karpenter docs at tag v1.15.3: concepts/scheduling.md, "Well-Known Labels"; reference/instance-types.md
+- Verdict: NEW (added from the round 2 AWS accuracy review, finding 4)
+- Evidence: https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/concepts/scheduling.md | Tier 1, project docs at tag v1.15.3 | definition | "| karpenter.k8s.aws/instance-gpu-count | 1 | [AWS Specific] Number of GPUs on the instance |" ; https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/reference/instance-types.md | "### `g6e.12xlarge`" with "|karpenter.k8s.aws/instance-gpu-count|4|" (accessed 2026-11-20)
+- Use in dive: section 28, the Spot NodePool snippet: the requirement that keeps four one-GPU pods from being packed onto one four-GPU instance (F10-403).
+
 ### B1. EC2 Spot: the interruption notice and the rebalance recommendation
 
 A Spot Instance is spare EC2 capacity sold at a discount; EC2 can take it back. Two signals precede that: the interruption notice (two minutes before) and, sometimes earlier, the rebalance recommendation.

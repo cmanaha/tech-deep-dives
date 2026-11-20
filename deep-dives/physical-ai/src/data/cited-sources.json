@@ -190,6 +190,8 @@
   "title": "Capacity Blocks list",
   "sections": [
    24,
+   26,
+   28,
    29
   ]
  },
@@ -971,6 +973,16 @@
   "title": "EKS User Guide, built-in NodePools",
   "sections": [
    28
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/install-lustre-client.html",
+  "local": null,
+  "venue": null,
+  "title": "FSx for Lustre User Guide, Installing the Lustre client",
+  "sections": [
+   26
   ]
  },
  {
@@ -2286,6 +2298,7 @@
   "venue": null,
   "title": "Interruption",
   "sections": [
+   27,
    28
   ]
  },
@@ -2326,7 +2339,7 @@
   "url": "https://github.com/aws/karpenter-provider-aws/blob/8c91894e993eda682f0785091b79a93da68f9830/website/content/en/docs/concepts/scheduling.md",
   "local": null,
   "venue": null,
-  "title": "Karpenter v1.15.3 docs, Weighted NodePools",
+  "title": "Karpenter v1.15.3 docs, well-known labels",
   "sections": [
    28
   ]
@@ -3890,6 +3903,16 @@
   "title": "Isaac Lab v3.0.0 docs",
   "sections": [
    11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/kubeflow/training-operator/v1.8.1/pkg/webhooks/pytorch/pytorchjob_webhook.go",
+  "local": null,
+  "venue": null,
+  "title": "Kubeflow Training Operator v1.8.1, PyTorchJob validating webhook",
+  "sections": [
+   27
   ]
  },
  {
