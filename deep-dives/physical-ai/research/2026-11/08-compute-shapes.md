@@ -425,6 +425,7 @@ cores are defined in register 06 (F06-56, F06-57). The entries below add the rem
 **F08-55. No Rubin-based EC2 instance family (a "P7" or any other name) was located on AWS first-party pages today. AWS's statement of 26 August 2026 says NVIDIA Vera CPUs "are coming to AWS" and names no instance family.**
 - Location: About Amazon article "AWS and NVIDIA to deploy 2 million more GPUs for AI in 2027-2028"; `ac.html` (F08-51); an AWS-domain web search for "P7" and "Vera Rubin"
 - Verdict: UNKNOWN (U08-5) for any Rubin instance; NEW for the Vera statement
+- Wave 2 (2026-11-20, SCOPE NARROWER): AWS's press release of 26 August 2026 does name Rubin: "AWS plans to deploy an additional 2 million NVIDIA Blackwell Ultra, Rubin and Rubin Ultra GPUs in 2027-2028 across AWS Global Infrastructure, including AI factories" (https://press.aboutamazon.com/aws/2026/8/aws-and-nvidia-to-deliver-2-million-additional-gpus-and-next-generation-infrastructure-for-agentic-and-physical-ai, accessed 2026-11-20). No Rubin-based EC2 instance family is named or documented as of 20 November 2026; the newest P families on the specification page are P6-B300 and P6e-GB200. Closes U08-5 as far as research can.
 - Evidence: https://www.aboutamazon.com/news/aws/aws-nvidia-2-million-gpus-ai | Tier 2, first-party announcement | documentation of support | "Published: August 26, 2026" ; "NVIDIA Vera CPUs are coming to AWS, providing an additional compute option for agentic AI." ; "Vera is built for the CPU work behind agentic AI and reinforcement learning" (accessed 2026-11-20; the fetch reported that the words "Rubin" and "P7" do not occur in the article body it read, although the search-result summary of the same page mentioned Rubin GPUs; that mismatch is unresolved)
 - Use in dive: section 25, one line: the P family tops out at Blackwell Ultra in the documentation as of 2026-11-20; a Rubin family is "not located in this research".
 
@@ -443,6 +444,7 @@ cores are defined in register 06 (F06-56, F06-57). The entries below add the rem
 **F08-58. [our reading] The instance table for the dive. RT cores: from F06-58, F06-59, F06-60 and F08-43. Video engines: F05-46 to F05-54 and F08-44. vCPU per GPU: F08-57. Dates: only where re-fetched in this register. Prices: not collected (F08-59).**
 - Location: synthesis; see the table below
 - Verdict: NEW
+- Wave 2 (2026-11-20, WRONG (G7 superlative)): G7 does not have the most CPU cores per GPU. p6e-gb200.36xlarge has 144 Grace cores for 4 GPUs, 36 per GPU, and g5g.16xlarge has 64 Graviton2 cores for 2 GPUs, 32 per GPU [derived from the same docs page]. Corrected: G7 has twice the physical cores per GPU of every other eight-GPU x86 size (24 against 12).
 - Evidence: entries named in the table | synthesis over Tier 1 and Tier 2 sources | documentation of support | "GPUs without RT Cores (A100, H100) are not supported." (F06-52, Isaac Sim 6.2.0 requirements, quoted there) (accessed 2026-11-20)
 - Use in dive: sections 20, 23, 25.
 
@@ -455,7 +457,7 @@ cores are defined in register 06 (F06-56, F06-57). The entries below add the rem
 | G6f, Gr6f | fraction of an L4 (1/8 to 1/2) | 2.79 to 11.18 | as L4 | as L4 (sharing not checked) | n/a | not re-fetched | viewers and light inference; below Isaac Sim's 16 GB minimum (F06-52) |
 | Gr6 | L4 (1), 1:8 vCPU to RAM | 22 | as L4 | as L4 | n/a | not re-fetched | L4 jobs that need more host RAM |
 | G6e | L40S (1, 4, 8) | 44 | yes, 142 third-generation (F06-58) | 3 / 3, AV1 both (F05-51) | 24 | not re-fetched | RTX sim with cameras, curation, VLA fine-tune up to about 40 GB |
-| G7 | RTX PRO 4500 Blackwell SE (1, 2, 4, 8) | 32 | yes, "4th Gen RT Cores", no count (F08-43) | 3 / 3, AV1 both (F08-44) | 24 physical cores | 2026-06-18 (F08-52) | sim plus decode plus training on one card; most CPU cores per GPU |
+| G7 | RTX PRO 4500 Blackwell SE (1, 2, 4, 8) | 32 | yes, "4th Gen RT Cores", no count (F08-43) | 3 / 3, AV1 both (F08-44) | 24 physical cores (wave 2: the most among eight-GPU x86 sizes; P6e-GB200 has 36 and G5g 32 per GPU) | 2026-06-18 (F08-52) | sim plus decode plus training on one card; most CPU cores per GPU |
 | G7e | RTX PRO 6000 Blackwell SE (1, 2, 4, 8) | 96 | yes, 188 fourth-generation (F06-58) | 4 / 4, AV1 both (F05-52) | 24 | 2026-01-20 (F08-53) | thousands of camera environments (F06-48), world-model generation, large VLA fine-tune |
 | P4d, P4de | A100 (8) | 40, 80 | no (F06-60) | 0 / 5, no AV1 (F05-46) | 12 | not re-fetched | legacy training |
 | P5 | H100 (1, 8) | 80 | no (F06-59, F06-60) | 0 / 7, no AV1 decode (F05-47) | 24 (16 on p5.4xlarge) | not re-fetched | training; video must be decoded on the CPU or re-encoded |
@@ -561,6 +563,7 @@ flush correction (F08-22); back-end and retiring percentages match Arm's method 
 **F08-73. The limits of this Tier 0 set, in one place: (1) single run, no variance; (2) one core, one thread, so nothing about scaling or shared-memory contention; (3) stand-ins: a humanoid, a dense MLP, an offscreen render of unknown GPU share; (4) generic top-down formula without the flush correction, slot count for the A78AE derived from the same counters; (5) level 1 only; (6) two machines with different software versions (MuJoCo 4.0.1 on the Spark, 3.17.0 on the Jetson, per the seed's status table); (7) no EC2 instance measured; (8) one GPU kernel per machine, not a workload.**
 - Location: `experiments/README.md`, "How to cite these results"; `E-seed/pmu-cards/*.md`, "Gaps before this is a real card"
 - Verdict: NEW
+- Wave 2 (2026-11-20, SCOPE NARROWER): Two passes exist in the experiments folder (`results-pass1`, `results-pass2`), built from different versions of the benchmark. The three workload rows reproduce across them (throughput within 2.5%, every level-1 category within 0.5 points). The front-end against back-end split of the triad and memory-write microbenchmarks does not reproduce at the same throughput (for example Jetson `triad_mem` at 11.66 GB/s with 5.9% front end and 76.9% back end in pass 1, 11.71 GB/s with 78.1% and 7.9% in pass 2). Their throughput may be printed; their stall split may not.
 - Evidence: `deep-dives/physical-ai/research/experiments/README.md` | Tier 0 (method notes) | our measurement (limits) | "The three workloads are CPU stand-ins: a MuJoCo humanoid model (not the SO-101), a 6x1024 MLP (not ACT or a VLA), MuJoCo offscreen rendering at 640x480 (whether the GPU took part was not established)." ; "One follow-up experiment is recorded only in the seed handoff note, without raw files ... Until its raw output lands here it is an UNKNOWN for the dive, not Tier 0." (accessed 2026-11-20; item 6 comes from seed 11's software status table, which is not in the experiments folder)
 - Use in dive: section 22, the limits box; every chart caption says "one run".
 
@@ -668,8 +671,17 @@ flush correction (F08-22); back-end and retiring percentages match Arm's method 
 **F08-85. [our reading] Price-performance has to be computed per part, because the cheapest machine for a workload is the one whose saturated part is the one being paid for. Three consequences the evidence supports: decode and CPU physics belong on CPU instances or on the GPU instance with the most cores per GPU (G7: 24 physical cores per GPU, F08-57); RTX camera rendering can only be priced on G families (F06-60, F08-58); training on P5 with AV1 video pays for CPU decode on a 12-core-per-GPU budget (F05-67, F08-57).**
 - Location: synthesis of F08-57, F08-58, F05-67, F06-60
 - Verdict: NEW
+- Wave 2 (2026-11-20, WRONG (G7 superlative)): Same correction as F08-58: G7's 24 physical cores per GPU is the most among eight-GPU x86 sizes, not among all GPU instances; P6e-GB200 has 36 Grace cores per GPU and G5g has 32 Graviton2 cores per GPU.
 - Evidence: entries listed in Location | Tier 1 and Tier 2 sources pinned there | definition | docs rows: "g7.48xlarge | 768.00 | Intel Xeon Granite Rapids | 192 | 192 | 1 | 8 x NVIDIA RTX PRO 4500 GPU" and "p5.48xlarge | 2048.00 | AMD EPYC 7R13 | 192 | 96 | 2 | 8 x NVIDIA H100 GPU" (accessed 2026-11-20)
 - Use in dive: section 23, the closing guidance: choose the instance by the part the workload saturates, then compute units per dollar on that instance, then check the latency tail if the shape is E.
+
+### Wave 2 addition (2026-11-20)
+
+**F08-86. Since 19 November 2026 EC2 Detailed Monitoring can publish one-minute GPU metrics, with no agent inside the instance. Which GPU fields it publishes was not read.**
+- Location: AWS What's New, 19 November 2026.
+- Verdict: NEW (added in wave 2; source fetched by the refuter, `wave2-C.md` register 08 row 17)
+- Evidence: https://aws.amazon.com/about-aws/whats-new/2026/11/ec2-performance-status-checks/ | Tier 1, first-party announcement | documentation of support | "Amazon EC2 launches performance status checks and new utilization metrics for EC2 Detailed Monitoring ... without setup within the instance ... support for OpenTelemetry metrics, one-minute GPU metrics that help teams tune accelerated workloads, and a new, higher resolution 10-second CPU utilization metric" (accessed 2026-11-20)
+- Use in dive: section 21, the cheapest GPU signal on EC2. Fetch the EC2 User Guide page before naming any metric field.
 
 ## 5. Teaching material
 
@@ -763,7 +775,7 @@ Section 22 uses section G as written; every figure carries "one run". Section 23
 | U08-2 | Which events make up the "reduced set" on smaller EC2 sizes, and whether STALL_SLOT, OP_SPEC and STALL_FRONTEND_FLUSH are in it | F08-26 | `perf list` on, for example, c9g.2xlarge and c9g.12xlarge (a Tier 0 check; not run, by the rules of this pass) |
 | U08-3 | Which G and P instance sizes expose which CPU PMU events | F08-28 | An AWS statement, or `perf list` on g6e.xlarge, g6e.48xlarge, g7.48xlarge, p5.48xlarge |
 | U08-4 | Whether any NVIDIA tool exposes ray-tracing core utilisation | F08-36 | Searched: Nsight Compute profiling guide 2026.4.0 (no "OptiX", "RT Core" only in a unit list), nvidia-smi utilisation fields, DCGM profiling fields, tegrastats. Not searched: Nsight Graphics, OptiX and Omniverse profilers |
-| U08-5 | Whether a Rubin-based EC2 family exists or is announced, and its name | F08-55 | An AWS What's New post or a row in the EC2 specification table |
+| U08-5 (CLOSED by wave 2 as far as pages allow: Rubin GPUs announced for 2027 to 2028, no EC2 family named; see F08-55) | Whether a Rubin-based EC2 family exists or is announced, and its name | F08-55 | An AWS What's New post or a row in the EC2 specification table |
 | U08-6 | Every price: On-Demand, Spot, Capacity Block, for every family in F08-58 | F08-59, F08-82 | A dated first-party price per Region: the EC2 pricing page read in a browser, or the public bulk price list file with its publication date |
 | U08-7 | The `-funroll-loops` follow-up (X925 triad L1 from 39.6% to 1.6% front-end bound, 183 to 246 GB/s) | F08-66; `experiments/README.md` | The raw output of that run landing in the experiments folder |
 | U08-8 | The exact inheritance rule for blank cells in Intel's TMA file, and therefore the pipeline width for Granite Rapids and Emerald Rapids | F08-8 | The file's README section on column inheritance, or the per-platform JSON under `GNR/` and `EMR/` in the same repository |

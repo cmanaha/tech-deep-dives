@@ -565,6 +565,7 @@ Symbols used in this group, as the paper defines them: H is the prediction horiz
 **F07-77. The exact sentence on why an engine is built per device type, from the TensorRT 11.5 docs: "By default, TensorRT engines are only compatible with the type of device where they were built." The escape hatch, hardware compatibility mode, "is not supported on NVIDIA DriveOS or NVIDIA JetPack".**
 - Location: TensorRT docs, "Engine Compatibility" page, section "Hardware Compatibility".
 - Verdict: CARRIED (seed 04 section 1.1 quoted the support matrix from a search summary; re-fetched at the current docs version, with the JetPack exclusion new)
+- Wave 2 (2026-11-20, SCOPE NARROWER): The one-engine-per-device-type rule holds on Jetson (JetPack). TensorRT 11.5.0 adds a hardware compatibility mode on Arm server-class Linux, DGX Spark included (`wave2-C.md`, register 07 row 27), so do not state the rule for the DGX Spark without that qualifier.
 - Evidence: https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/engine-compatibility.html | Tier 1, first-party docs (TensorRT 11.5.0) | documentation of support | "By default, TensorRT engines are only compatible with the type of device where they were built. With build-time configuration, engines that are compatible with other types of devices can be built. Currently, hardware compatibility is not supported on NVIDIA DriveOS or NVIDIA JetPack. Starting in TensorRT 11.5.0, hardware compatibility is supported on Linux ARM SBSA. An engine built there with HardwareCompatibilityLevel::kAMPERE_PLUS can run on supported NVIDIA Ampere and later GPUs on Linux ARM SBSA." (accessed 2026-11-20)
 - Use in dive: section 17, the load-bearing sentence for "an engine built on one device type is rebuilt for another". On a Jetson there is no portable-engine option at all, so a fleet with Orin and Thor robots ships one ONNX file and builds two engines.
 
@@ -589,6 +590,7 @@ Symbols used in this group, as the paper defines them: H is the prediction horiz
 **F07-81. TensorRT 11.5 documents four quantised data types: INT8, INT4 (weights only), FP8 (8-bit floating point: 4 exponent bits, 3 mantissa bits) and FP4 (4-bit floating point: 2 exponent bits, 1 mantissa bit). Its precision list for current data-centre GPUs is "TF32, FP32, FP16, FP8, FP4, BF16, and INT8".**
 - Location: TensorRT docs, "Working with Quantized Types", "Supported Data Types"; 11.5.0 release notes, GB300 item.
 - Verdict: NEW
+- Wave 2 (2026-11-20, SCOPE NARROWER): The quoted precision list is from the TensorRT 11.5.0 release notes, in a paragraph about Windows on ARM: "The supported precisions are the same as for compute capability 10.3 on x86-64: TF32, FP32, FP16, FP8, FP4, BF16, and INT8." Compute capability 10.3 is B300 and GB300. The sentence says nothing about H100, L40S or B200; which of FP8 and FP4 older GPUs accelerate stays U13.
 - Evidence: https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/work-quantized-types.html | Tier 1, first-party docs (TensorRT 11.5.0) | definition | "Supported Data Types : INT8 (signed 8-bit integer) / INT4 (signed 4-bit integer, weight-only quantization) / FP8E4M3 (FP8, 8-bit floating point with 4 exponent and 3 mantissa bits) / FP4E2M1 (FP4, 4-bit floating point with 2 exponent and 1 mantissa bit)" and "TensorRT uses a symmetric quantization scheme, where both activations and weights are mapped to quantized values centered around zero. ... typically involving only a scaling factor."; release notes: "The supported precisions are the same as for compute capability 10.3 on x86-64: TF32, FP32, FP16, FP8, FP4, BF16, and INT8." (accessed 2026-11-20)
 - Use in dive: section 17 precision primer table (format, bits, what it stores, where used). With the sign bit, FP8 is 1 + 4 + 3 and FP4 is 1 + 2 + 1 bits `[derived]`. NVFP4 (F07-58) is this FP4 element type plus a per-block scale factor. Which of these each Jetson GPU accelerates could not be read from the support matrix, whose precision table is loaded interactively (U13).
 
@@ -803,6 +805,7 @@ Symbols used in this group, as the paper defines them: H is the prediction horiz
 **F07-115. AWS near-edge GPU capacity on 2026-11-20: most AWS Local Zones that list a GPU instance list G4dn only. Three list something newer: Los Angeles `us-west-2-lax-1b` (G7e), Atlanta `us-east-1-atl-2a` (P5) and Dallas `us-east-1-dfw-2a` (P6e-GB200 UltraServers); Los Angeles `us-west-2-lax-1a` lists G5.**
 - Location: AWS Local Zones features page, per-zone instance lists.
 - Verdict: CARRIED (seed 04 section 3.7, re-fetched)
+- Wave 2 (2026-11-20, SCOPE NARROWER (two first-party pages disagree)): Per the Local Zones features page on 2026-11-20: G7e in Los Angeles (lax-1b), P5 in Atlanta, P6e-GB200 UltraServers in Dallas, G5 in Los Angeles (lax-1a) and Beijing. The Capacity Blocks price list also sells P5e in the Phoenix Local Zone and P5en and P6-B300 in Atlanta, as blocks. For an off-board policy the only near-edge On-Demand modern G type is G7e in Los Angeles [our reading].
 - Evidence: https://aws.amazon.com/about-aws/global-infrastructure/localzones/features/ | Tier 1, first-party product page | documentation of support | "us-west-2-lax-1b ... T3, C5, C5d, M5, R5, R5d, G4dn, G7e, and I3en instances" and "us-east-1-atl-2a ... C6i, M6i, R6i, C6gn, C7i, and P5 instances" and "us-east-1-dfw-2a ... P6e-GB200 UltraServers" and "us-west-2-lax-1a ... T3, C5, C5d, M5, R5, R5d, G4dn, G5, and I3en instances" (accessed 2026-11-20)
 - Use in dive: section 17, one line on "can the off-board GPU be AWS": only in a few metros with a current GPU; stream 09 owns the rest. The latency a robot would see from a Local Zone was not found as a published measurement (U6).
 
@@ -825,6 +828,14 @@ Symbols used in this group, as the paper defines them: H is the prediction horiz
 - Verdict: UNKNOWN (U11)
 - Evidence: https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/inference.mdx | Tier 1, first-party docs | documentation (sample output only) | "observe mean 3.13 ms · worst 9.00 ms" and "send mean 0.40 ms · worst 0.40 ms" (accessed 2026-11-20)
 - Use in dive: section 17 latency-budget diagram: draw the six links, fill the measured ones, and show the camera and bus links as "not published; measure with the cadence report". A frame grabbed at a 30 fps camera can be up to one frame interval old, 33.3 ms, before any processing starts `[derived: 1 / 30 s]`.
+
+### Wave 2 addition (2026-11-20)
+
+**F07-119. NVIDIA's newer GR00T 2 (November 2026, whitepaper only, no released code or weights) reports 124 ms per action chunk on a Jetson Thor at 120 W for its Turbo variant on the Unitree G1 [vendor claim]. The GR00T N1.7 table (F07-4, F07-5) remains the newest for a model the reader can download.**
+- Location: GR00T 2 whitepaper, Table 27; carried from F03-104 with its wave 2 scope note.
+- Verdict: NEW (added in wave 2: register 07 did not mention GR00T 2; `wave2-C.md` register 07 row 7)
+- Evidence: https://research.nvidia.com/labs/gear/gr00t-2/assets/gr00t2_whitepaper.pdf | Tier 2, first-party whitepaper | benchmark claim (vendor reported) | "GR00T 2 Turbo Jetson Thor (120 W) 720.41 123.97 5.81x" (Table 27 row as recorded in `wave2-A.md` row 72; accessed 2026-11-20)
+- Use in dive: section 17, one sentence after the N1.7 latency table, so the page does not present N1.7 as NVIDIA's newest edge figure.
 
 ## 5. Teaching material
 
@@ -974,8 +985,8 @@ Seed claims confirmed unchanged on re-fetch: Jetson list prices (F07-42); T5000 
 | U5 | SmolVLA and ACT per-chunk latency on an Orin Nano or a laptop GPU | F07-33, F07-117 | A Tier 0 measurement (stream 08) |
 | U6 | A published latency tolerance for LeRobot remote inference, and a measured robot-to-Local-Zone round trip | F07-29, F07-115 | LeRobot states its remote path is not validated beyond a lab network; a Tier 0 test |
 | U7 | Whether and by how much Jetson list prices rose in July 2026 | F07-43 | An archived copy of the NVIDIA FAQ from before July 2026 |
-| U8 | Release date of JetPack 7.2.2 | F07-44 | The Jetson Linux 39.2.2 release notes |
-| U9 | Which TensorRT version JetPack 7.2.2 installs (10.16.2 or 11.4.1) | F07-45 | `dpkg -l` on a flashed device, or the Jetson Linux release notes |
+| U8 (CLOSED by wave 2 to the build date: `nvidia-l4t-core 39.2.2-20261112230500`, packages built 12 November 2026) | Release date of JetPack 7.2.2 | F07-44 | The Jetson Linux 39.2.2 release notes |
+| U9 (CLOSED by wave 2: 11.4.1; apt index `nvidia-tensorrt 7.2.2-b56 => tensorrt-libs (= 11.4.1.31-1+cuda13.4)`; 10.16.2 was JetPack 7.2 and 7.2.1) | Which TensorRT version JetPack 7.2.2 installs (10.16.2 or 11.4.1) | F07-45 | `dpkg -l` on a flashed device, or the Jetson Linux release notes |
 | U10 | DGX Spark current price | F07-48 | NVIDIA marketplace page (did not load) |
 | U11 | Camera exposure and readout, USB transfer and servo bus write times on an SO-101 | F07-118 | Tier 0 timing; the camera's datasheet |
 | U12 | Whether an engine built on a T5000 loads on a T4000 (same compute capability 11.0) | F07-80 | TensorRT docs for Jetson, or a test |
