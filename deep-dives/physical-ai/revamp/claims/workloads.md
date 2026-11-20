@@ -3,8 +3,8 @@
 claim | register ID
 
 The machine is grouped into nine parts on the chip plus storage and network outside it; four CPU and memory parts, five GPU parts (the dive's grouping) | F08-50
-A core has a fixed number of slots per cycle; the front end predicts, fetches and decodes; unused slots with a ready back end are front-end bound | F08-4
-Back-end bound slots split into memory-bound and core-bound; core-bound means busy arithmetic units or dependent operations | F08-6
+The front end is the part of a core that fetches and decodes instructions; it is full when the executing part is ready and no decoded instruction arrives | F08-4
+The back end executes the decoded instructions; it is full, with little waiting on memory, when the arithmetic units are busy or operations depend on each other | F08-6
 Memory bandwidth (rate limit) and memory latency (time per access) are two separate limits | F08-41
 Tensor cores execute matrix multiply-accumulate instructions; DCGM tensor activity is the fraction of cycles the tensor pipeline was active | F08-42, F08-32
 General GPU compute is the integer and floating-point units inside each streaming multiprocessor; SM activity is its counter | F08-36, F08-32
@@ -15,7 +15,7 @@ DRAM activity is the fraction of cycles data moved to or from device memory | F0
 Storage throughput has a per-instance ceiling set by the instance type | F08-46
 ENA is ordinary IP networking; EFA bypasses the operating system so many machines can train as one | F08-48
 Policy stand-in (six 1024x1024 float32 matrix-vector products, one core): 390 inferences/s on the Jetson Orin Nano Super's Cortex-A78AE, 62.3% of cycles stalled on memory; Tier 0, single run | F08-62
-Stand-in weights are 6 x 1024 x 1024 x 4 bytes = 25.2 MB; 390 x 25.2 MB = 9.8 GB/s against a measured streaming limit of 11.71 GB/s | F08-63
+Stand-in weights are 6 x 1024 x 1024 x 4 bytes = 25.2 MB; 390 x 25.2 MB = 9.8 GB/s against 11.71 GB/s streamed by a loop sweeping arrays larger than the caches on the same core | F08-63, F08-66
 Memory bandwidth from one core: 44.38 GB/s on the DGX Spark's Cortex-X925, 3.8 times the Jetson core; Tier 0, single run | F08-66
 Memory latency: 291.58 ns per load on the Jetson core, 123.96 ns on the X925, a gap of 2.4 times; Tier 0, single run | F08-67
 Limits of our measurements: one run, one core, stand-in programs, no EC2 instance; MuJoCo 4.0.1 on the Spark and 3.17.0 on the Jetson | F08-73
@@ -52,3 +52,9 @@ Network spans 2.5 Gbps without EFA (g6.xlarge) to 6,400 Gbps with EFA (p6-b300.4
 EBS throughput spans 125 MB/s baseline (g6.xlarge) to 12,500 MB/s (g7e.48xlarge, p5en.48xlarge); one arm's 55.3 MB/s is under half of the low end | F08-46
 nvidia-smi "GPU utilisation" is the percentage of time one or more kernels was executing; one small kernel back to back reads 100% | F08-30
 DCGM SM activity of 0.8 or more is "necessary, but not sufficient" for effective use | F08-32
+The loop figure: six stages, the machine part each loads (our reading) | F08-76, F08-78
+The loop figure, service row: a Batch array job with one child per shard or seed, retried on Spot reclaim | F09-5, F09-10
+The loop figure, service row: recordings land in S3, simulation on Batch and EKS, training on Batch and SageMaker, deployment through AWS IoT Greengrass | F09-80, F07-84
+The loop figure, service row: SageMaker Training Jobs or HyperPod for training; HyperPod or managed Slurm (PCS) for many nodes | F09-81, F09-84, F09-109
+What each of the fifteen workloads does for the arm, grouped by loop stage (our reading) | F08-75, F08-76
+The DGX Spark and the Jetson Orin Nano Super are the two machines of our measurements; both share one memory between CPU and GPU | F08-60, F08-76

@@ -11,6 +11,7 @@ import Select from '@cloudscape-design/components/select';
 import { Cite } from '../components/Cite';
 import { Figure } from '../components/Figure';
 import { GpuEngines, ENGINES_BY_WORKLOAD, GPU_WORKLOADS } from '../components/GpuEngines';
+import { LoopOnAws } from '../components/LoopOnAws';
 import type { GpuWorkload } from '../components/GpuEngines';
 import { ARM, TASK_STORY } from '../lib/task';
 
@@ -111,9 +112,12 @@ interface Phase {
 
 const MATRIX: Phase[] = [
   {
-    phase: 'Collect and curate',
+    phase: '1. Collect',
+    rows: [{ name: 'Record and encode', where: 'section 9', fills: [{ at: 1, role: 'first', text: 'software video encode' }] }],
+  },
+  {
+    phase: '2. Curate',
     rows: [
-      { name: 'Record and encode', where: 'section 9', fills: [{ at: 1, role: 'first', text: 'software video encode' }] },
       {
         name: 'Decode and filter',
         where: 'section 10',
@@ -138,7 +142,7 @@ const MATRIX: Phase[] = [
     ],
   },
   {
-    phase: 'Simulate',
+    phase: '3. Simulate',
     rows: [
       {
         name: 'CPU physics step',
@@ -168,7 +172,7 @@ const MATRIX: Phase[] = [
     ],
   },
   {
-    phase: 'Train and evaluate',
+    phase: '4. Train',
     rows: [
       {
         name: 'Policy fine-tune',
@@ -179,6 +183,11 @@ const MATRIX: Phase[] = [
         ],
       },
       { name: 'World-model training', where: 'section 7', fills: [{ at: 4, role: 'first', text: 'lightly: a small model' }] },
+    ],
+  },
+  {
+    phase: '5. Evaluate',
+    rows: [
       {
         name: 'Closed-loop evaluation',
         where: 'section 16',
@@ -192,7 +201,7 @@ const MATRIX: Phase[] = [
     ],
   },
   {
-    phase: 'Deploy',
+    phase: '6. Deploy',
     rows: [
       {
         name: 'Engine build',
@@ -213,7 +222,7 @@ const MATRIX: Phase[] = [
     ],
   },
   {
-    phase: 'Vendor scale, known from published numbers only',
+    phase: 'Vendor scale: reaches you as a checkpoint, known from published numbers only',
     rows: [
       {
         name: 'Generative augmentation',
@@ -409,7 +418,7 @@ export function Workloads() {
         header={
           <Header
             variant="h1"
-            description="Find the part of the machine each workload of the loop fills first, and the three properties that decide how it is scheduled (EC2 specifications and vendor documentation read 2026-11-20; our own measurements are single runs)"
+            description="See what each of the loop's fifteen workloads does for the arm, which part of the machine it fills first, and the three properties that decide how it is scheduled (EC2 specifications and vendor documentation read 2026-11-20; our own measurements are single runs)"
           >
             20. Fifteen Workloads, Five Shapes
           </Header>
@@ -417,14 +426,78 @@ export function Workloads() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Sections 3 to 17 each ended on what a stage of the loop costs and which part of the machine it loads.
-            Those threads meet here, for {TASK}. A computer is several machines sharing a box: a workload fills one
-            of them first, and once that part is full the others sit partly idle while the job goes no faster.
+            Sections 3 to 17 each taught one stage of the robot&apos;s loop and ended on what it costs to run. Those
+            threads meet here, for {TASK}: what each piece of work does for the arm, then which part of a computer
+            it fills first, then the shape that decides how it is scheduled on AWS.
           </Box>
+          <LoopOnAws
+            emphasis="part"
+            cites="F08-76 F08-78 F09-5 F09-10 F09-80 F09-81 F09-84 F09-109 F07-84"
+            caption={
+              <>
+                Step through one trip around the loop. Each card says what the stage does for the arm, the part of
+                the machine it loads (in colour; the parts table below explains each name) and the AWS service it
+                runs on (section 24&apos;s subject). The placements are our reading of the cited entries.
+              </>
+            }
+          />
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header variant="h2" description="Know every job the loop asks a computer to do, in the loop's order, before any hardware is named">
+            What the fifteen workloads do for the arm
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
           <Box variant="p">
-            Naming that part tells you which machine to choose. How long a job runs, whether it needs its neighbours
-            and whether it can be stopped decide how the machine is scheduled. The parts come first, then the map,
-            then those shapes.
+            A workload is one kind of job the loop hands to a computer. Fifteen is our reading: split the
+            loop&apos;s eight phases wherever two steps load different parts of the machine. That gives twelve
+            workloads you can run for one arm on a desk machine or one EC2 instance. Three more reach you as
+            finished checkpoints or services, and are known only from published vendor numbers.{' '}
+            <Cite id="F08-75">where the count of fifteen comes from</Cite>
+          </Box>
+          <ul style={LIST}>
+            <li>
+              <strong>Collect.</strong> <em>Record and encode</em>: while a person guides the arm, save its joint
+              angles and compress two camera streams into video.
+            </li>
+            <li>
+              <strong>Curate.</strong> <em>Decode and filter</em>: turn video back into frames and drop bad
+              episodes. <em>Embed and deduplicate</em>: a vision model turns each clip into a vector so
+              near-copies can be dropped. <em>Dataloader decode and augment</em>: for every training sample, pull
+              a few frames from the video and vary them (a crop, a colour shift).
+            </li>
+            <li>
+              <strong>Simulate.</strong> <em>CPU physics step</em>: advance one simulated copy of the arm and its
+              scene by one timestep. <em>GPU-parallel physics</em>: step thousands of copies together.{' '}
+              <em>Simulated cameras</em>: draw what each simulated camera sees.
+            </li>
+            <li>
+              <strong>Train.</strong> <em>Policy fine-tune</em>: train ACT (Action Chunking with Transformers, the
+              small policy of section 4) from scratch, or adapt a VLA (vision-language-action model, section 5)
+              from its checkpoint. <em>World-model training</em>: teach a small model to predict what the scene
+              becomes after an action.
+            </li>
+            <li>
+              <strong>Evaluate.</strong> <em>Closed-loop evaluation</em>: each checkpoint attempts the task many
+              times in simulation, and successes are counted.
+            </li>
+            <li>
+              <strong>Deploy.</strong> <em>Engine build</em>: compile the chosen policy for the robot&apos;s chip.{' '}
+              <em>On-robot inference</em>: run it there, one call per chunk of actions, on the arm&apos;s 30 Hz
+              control clock.
+            </li>
+            <li>
+              <strong>Arriving finished.</strong> <em>Generative augmentation</em>: a large video model re-renders
+              or invents clips. <em>Robot foundation-model pretraining</em> and <em>world-model pretraining</em>:
+              train the base models that the two training workloads start from.
+            </li>
+          </ul>
+          <Box variant="p">
+            <Cite id="F08-76">the fifteen workloads, one row each</Cite>
           </Box>
         </SpaceBetween>
       </Container>
@@ -438,13 +511,12 @@ export function Workloads() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The dive groups the machine into nine parts on the chip, with storage and network outside it.{' '}
-            <Cite id="F08-50">the dive&apos;s grouping of the machine into parts</Cite> Four belong to the processor
-            and its memory, five to the GPU. The CPU rows speak of slots: every clock cycle a core has a fixed number
-            of chances to start a micro-operation (one of the small steps an instruction is broken into), and an
-            unused slot is charged to the part that caused it.{' '}
-            <Cite id="F08-4">Intel perfmon metrics file, Frontend_Bound</Cite> Section 21 teaches how to read those
-            counters.
+            A computer is several machines sharing a box. A workload fills one of them first, and once that part is
+            full the others sit partly idle while the job goes no faster. Naming that part tells you which machine
+            to choose. The dive groups the machine into nine parts on the chip, with storage and network outside
+            it: four belong to the processor and its memory, five to the GPU.{' '}
+            <Cite id="F08-50">the dive&apos;s grouping of the machine into parts</Cite> Section 21 teaches the
+            counters that confirm each sign in the last column.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 640 }}>
@@ -461,11 +533,10 @@ export function Workloads() {
                     <Part tone="cpu">CPU front end</Part>
                   </td>
                   <td style={TD}>
-                    The first half of a core: it predicts the next instruction, fetches it and decodes it into
-                    micro-operations.
+                    The part of a core that fetches instructions and decodes them.
                   </td>
                   <td style={TD}>
-                    Front-end bound slots: the back half was ready and nothing arrived. Large or branchy code does
+                    The executing part sits ready and no decoded instruction arrives. Large or branchy code does
                     this. <Cite id="F08-4">Intel perfmon metrics file, Frontend_Bound</Cite>
                   </td>
                 </tr>
@@ -474,11 +545,11 @@ export function Workloads() {
                     <Part tone="cpu">CPU back end</Part>
                   </td>
                   <td style={TD}>
-                    The second half: it runs micro-operations on the arithmetic units and retires them in order.
+                    The part of a core that executes the decoded instructions on its arithmetic units.
                   </td>
                   <td style={TD}>
-                    Back-end bound slots with little waiting on memory, called core-bound: the arithmetic units are
-                    busy, or each operation waits for the one before.{' '}
+                    Work queues inside the core with little waiting on memory: the arithmetic units are busy, or
+                    each operation waits for the result of the one before.{' '}
                     <Cite id="F08-6">Intel perfmon metrics file, Memory_Bound and Core_Bound</Cite>
                   </td>
                 </tr>
@@ -488,7 +559,7 @@ export function Workloads() {
                   </td>
                   <td style={TD}>The rate at which memory streams bytes to a core, in GB/s.</td>
                   <td style={TD}>
-                    Back-end slots stalled on memory, with bytes per second at the machine&apos;s limit. Sweeping
+                    The executing part stalls waiting for data, with bytes per second at the machine&apos;s limit. Sweeping
                     through data larger than the caches does this.{' '}
                     <Cite id="F08-41">Intel perfmon metrics file, MEM_Bandwidth and MEM_Latency</Cite>
                   </td>
@@ -602,16 +673,19 @@ export function Workloads() {
             a policy: six 1024x1024 <code>float32</code> matrices multiplied by a vector in turn, on one CPU core. It
             stands in for the arm&apos;s real policy, which runs on a GPU. Its weights are 6 x 1024 x 1024 x 4 bytes = 25.2 MB, more than the caches hold, and
             every inference reads all of them. In our measurement, a single run on one Cortex-A78AE core of an{' '}
-            {JETSON}, it ran 390 inferences per second, so it asked for 390 x 25.2 MB = 9.8 GB/s. That core&apos;s
-            measured streaming limit is 11.71 GB/s, and the counters agree from the other side: 62.3% of cycles
-            stalled on memory. That is memory bandwidth, full.{' '}
+            {JETSON} (the small robot computer of section 17), it ran 390 inferences per second, so it asked for
+            390 x 25.2 MB = 9.8 GB/s. The supply side is a second single run on the same core: a loop that sweeps
+            through arrays larger than the caches streamed 11.71 GB/s. The counters agree from the other side:
+            62.3% of cycles stalled on memory. That is memory bandwidth, full.{' '}
+            <Cite id="F08-66">our profiling report, memory streaming row</Cite>{' '}
             <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
             <Cite id="F08-63">our arithmetic on the stand-in&apos;s weights</Cite>
           </Box>
           <Box variant="p">
             The two memory parts differ by machine, which is why they are two parts. In the same set of single runs,
-            one Cortex-X925 core of an {SPARK} streamed 44.38 GB/s, 3.8 times the Jetson core.{' '}
-            <Cite id="F08-66">our profiling report, triad row</Cite> A fetch whose address depends on the previous
+            one Cortex-X925 core of an {SPARK}, a desk-side box whose CPU and GPU share one memory as a
+            Jetson&apos;s do, streamed 44.38 GB/s, 3.8 times the Jetson core.{' '}
+            <Cite id="F08-66">our profiling report, memory streaming row</Cite> A fetch whose address depends on the previous
             fetch took 291.58 ns on the Jetson core and 123.96 ns on the X925, a gap of 2.4 times.{' '}
             <Cite id="F08-67">our profiling report, latency rows</Cite> Every figure of ours here has the same
             limits: one run, one core, stand-in programs, no EC2 instance.{' '}
@@ -634,29 +708,22 @@ export function Workloads() {
 
       <Container
         header={
-          <Header variant="h2" description="Look up a stage of the loop and read off the part that fills first, with the figure an earlier section printed for it">
-            The fifteen workloads
+          <Header variant="h2" description="Look up a workload and read off the part that fills first, with the figure an earlier section printed for it">
+            Which part each workload fills first
           </Header>
         }
       >
         <SpaceBetween size="m">
-          <Box variant="p">
-            Fifteen is our reading of the loop. Take its eight phases, from collecting data to deploying a policy,
-            and split a phase wherever two of its steps load different parts. That gives twelve workloads you can run
-            for one arm on a desk machine or one EC2 instance. Three more reach you as finished checkpoints or
-            services, and are known only from published vendor numbers. <Cite id="F08-75">where the count of fifteen comes from</Cite>
-          </Box>
           <Figure
             cites="F08-50 F08-76"
             minWidth={1100}
             caption={
               <>
                 One row per workload, one column per part. A cell marked &quot;first&quot; and outlined in blue is the
-                part that saturates first by the evidence cited below; &quot;also&quot;, &quot;then&quot;,
+                part that fills first by the evidence cited below; &quot;also&quot;, &quot;then&quot;,
                 &quot;or&quot;, &quot;gate&quot; and &quot;mix&quot; mark the parts that matter next. A cell that
-                spans both CPU columns means the evidence says CPU cores without separating the two halves. No row
-                fills memory latency first by the evidence we hold. The grid is our reading of the cited entries,
-                with no sizes drawn.
+                spans both CPU columns means the evidence says CPU cores without separating the two. No row fills
+                memory latency first by the evidence we hold. The grid is our reading of the cited entries.
               </>
             }
           >
@@ -672,41 +739,34 @@ export function Workloads() {
             in), which is 12 physical cores because each core presents itself as two.{' '}
             <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>
           </Box>
-          <Box variant="p">
-            The details follow by phase: what each workload is, why that part fills first, and one figure from the
-            section that taught it.
-          </Box>
 
           <ExpandableSection headerText="Collect and curate: four workloads, mostly CPU cores">
             <ul style={LIST}>
               <li>
-                <strong>Record and encode</strong> (section 9). The host reads two cameras at 30 Hz and compresses
-                the frames to AV1 video. LeRobot&apos;s default encoder is software, and the Jetson Orin Nano has no
-                hardware encoder. So the CPU cores beside the robot must keep up with 55.3 MB/s of raw pixels, by our
+                <strong>Record and encode</strong> (section 9). The host compresses two cameras at 30 Hz to AV1
+                video. LeRobot&apos;s default encoder is software, and the Jetson Orin Nano has no hardware
+                encoder. So the CPU cores beside the robot must keep up with 55.3 MB/s of raw pixels, by our
                 arithmetic. <Cite id="F05-35">LeRobot configs/video.py</Cite>{' '}
                 <Cite id="F05-57">Jetson Linux guide, software encode in Orin Nano</Cite>{' '}
                 <Cite id="F01-86">our arithmetic on the camera settings</Cite>
               </li>
               <li>
-                <strong>Decode and filter</strong> (section 10). Turn video back into frames and drop bad episodes.
-                Decoding is branchy integer code on a CPU, or a job for the decode engines where the card supports
+                <strong>Decode and filter</strong> (section 10). Decoding is branchy integer code on a CPU, or a job for the decode engines where the card supports
                 the codec. On EC2, hardware AV1 decode is possible on G6, G6e, G7 and G7e and not on P5.{' '}
                 <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
               </li>
               <li>
-                <strong>Embed and deduplicate</strong> (section 10). A vision encoder turns each clip into a vector
-                so near-duplicates can be dropped: matrix arithmetic on tensor cores. The input path can fill first.
-                One captioning run in the same tool&apos;s design notes, cancelled before it completed, left 32 H100s
+                <strong>Embed and deduplicate</strong> (section 10). A vision encoder is matrix arithmetic on tensor
+                cores, and the input path can fill first. One captioning run in the design notes of Cosmos Curator
+                (NVIDIA&apos;s curation toolkit), cancelled before it completed, left 32 H100s
                 at about 17% utilisation because fetching the clips was the slow side.{' '}
                 <Cite id="F05-76">Cosmos Curator curator-next-robot-action-caption.md</Cite>
               </li>
               <li>
-                <strong>Dataloader decode and augment</strong> (sections 10 and 11). For every training sample,
-                decode a few frames and apply image transforms, by default in worker processes on the CPU. LeRobot
+                <strong>Dataloader decode and augment</strong> (sections 10 and 11). Both steps run by default in worker
+                processes on the CPU. LeRobot
                 names the result: &quot;the GPU ends up waiting for data&quot;.{' '}
-                <Cite id="F05-58">LeRobot dataset docs, running transforms on the GPU</Cite> The budget is the 12
-                physical cores per GPU of most eight-GPU sizes.{' '}
-                <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>
+                <Cite id="F05-58">LeRobot dataset docs, running transforms on the GPU</Cite>
               </li>
             </ul>
           </ExpandableSection>
@@ -714,30 +774,28 @@ export function Workloads() {
           <ExpandableSection headerText="Simulate: three workloads on three different parts">
             <ul style={LIST}>
               <li>
-                <strong>CPU physics step</strong> (section 12). One call advances the simulated scene by one
-                timestep, in 26 stages. <Cite id="F06-9">MuJoCo docs, simulation pipeline</Cite> It is scalar
-                arithmetic with data-dependent branches and little memory traffic, so it fills the back end of one
-                core per world. Our measurement, a single run on one core each, with a MuJoCo humanoid standing in
+                <strong>CPU physics step</strong> (section 12). One step is 26 stages. <Cite id="F06-9">MuJoCo docs, simulation pipeline</Cite> It is scalar
+                arithmetic with data-dependent branches and little memory traffic, so it fills the back end of one core per simulated world. Our measurement, a single run on one core each, with a MuJoCo humanoid standing in
                 for the arm: 14,507 steps per second on the Cortex-A78AE of an {JETSON} (MuJoCo 3.17.0), 28,662 on
-                the Cortex-A725 and 57,240 on the Cortex-X925 of an {SPARK} (MuJoCo 4.0.1). On the X925, 36.5% of
-                slots were back-end bound with 0.4% of cycles stalled on memory: the core waits on arithmetic.{' '}
+                the Cortex-A725 and 57,240 on the Cortex-X925 of an {SPARK} (MuJoCo 4.0.1). On the X925, the
+                counters charge 36.5% of the core&apos;s capacity to waiting in the back end, with 0.4% of cycles
+                stalled on memory: the core waits on arithmetic.{' '}
                 <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
                 <Cite id="F08-73">limits of our measurements</Cite>
               </li>
               <li>
-                <strong>GPU-parallel physics</strong> (sections 8 and 12). Thousands of copies of the scene stepped
-                together on one GPU. It is the same arithmetic batched over worlds, so by our reading it loads
+                <strong>GPU-parallel physics</strong> (sections 8 and 12). It is the same arithmetic batched over
+                worlds, so by our reading it loads
                 general GPU compute and leaves the tensor cores idle.{' '}
                 <Cite id="F08-42">NVIDIA Tensor Cores page and Nsight Compute profiling guide</Cite> The MuJoCo Warp
                 project reports 5.77 million steps per second for a humanoid across 8192 worlds on one RTX 6000 Ada.{' '}
                 <Cite id="F06-20">MuJoCo Warp nightly benchmarks, humanoid</Cite>
               </li>
               <li>
-                <strong>Simulated cameras</strong> (section 13). Draw what every simulated camera sees at every step.
-                GPU memory fills first, because a camera costs megabytes per environment where physics costs
+                <strong>Simulated cameras</strong> (section 13). GPU memory fills first, because a camera costs megabytes per environment where physics costs
                 kilobytes; the rendering path comes next. In Isaac Lab&apos;s benchmark file, one small camera per
-                environment took a Cartpole run to 57.3 GB of GPU memory and cut its throughput by a factor of 6.7,
-                by our arithmetic from NVIDIA&apos;s rows.{' '}
+                environment took a run of Cartpole (a small benchmark task: balance a pole on a cart) to 57.3 GB of
+                GPU memory and cut its throughput by a factor of 6.7, by our arithmetic from NVIDIA&apos;s rows.{' '}
                 <Cite id="F06-48">Isaac Lab v3.0.0 benchmark file, Cartpole-Camera rows</Cite>
               </li>
             </ul>
@@ -746,21 +804,17 @@ export function Workloads() {
           <ExpandableSection headerText="Train and evaluate: tensor cores, with GPU memory as the gate">
             <ul style={LIST}>
               <li>
-                <strong>Policy fine-tune</strong> (section 15). Train ACT (Action Chunking with Transformers, the
-                small policy of section 4) from scratch, or adapt a VLA (vision-language-action model, section 5)
-                from its checkpoint. Tensor cores do the work and GPU memory decides which model fits. LeRobot&apos;s
+                <strong>Policy fine-tune</strong> (section 15). Tensor cores do the work and GPU memory decides which model fits. LeRobot&apos;s
                 guide gives, as an indicative figure, ACT in 30 to 60 minutes on one RTX 4090 or 3090.{' '}
                 <Cite id="F01-90">LeRobot hardware guide, memory by policy group and common scenarios</Cite>
               </li>
               <li>
-                <strong>World-model training</strong> (section 7). Learn to predict the next latent (the
-                model&apos;s compact summary of a frame) from frames and actions. At the small end the load is light:
+                <strong>World-model training</strong> (section 7). At the small end the load is light:
                 the authors of LeWorldModel, about 15M parameters, state that it trains on &quot;a single GPU in a few
                 hours&quot; and name no GPU. <Cite id="F03-31">LeWorldModel paper, abstract</Cite>
               </li>
               <li>
-                <strong>Closed-loop evaluation</strong> (section 16). Run each checkpoint in simulation for many
-                episodes and count successes: a mix of the physics, camera and inference rows, in many independent
+                <strong>Closed-loop evaluation</strong> (section 16). A mix of the physics, camera and inference rows, in many independent
                 copies. NVIDIA reports eight independent runs taking 1,255.2 s on one L40 GPU and 157.8 s on eight,
                 &quot;a 7.95x speedup&quot;, for physics alone.{' '}
                 <Cite id="F06-93">Isaac Lab-Arena docs, performance and scaling</Cite>
@@ -771,16 +825,15 @@ export function Workloads() {
           <ExpandableSection headerText="Deploy: two workloads on the robot&apos;s own computer">
             <ul style={LIST}>
               <li>
-                <strong>Engine build</strong> (section 17). Export the model to ONNX (Open Neural Network Exchange, a
-                portable file format for networks), then let TensorRT (NVIDIA&apos;s inference compiler) turn it into
-                an engine tuned for one GPU type. The build runs on the target device and occupies its GPU and CPU
-                for about 2 to 5 minutes, in NVIDIA&apos;s README.{' '}
+                <strong>Engine build</strong> (section 17). The model is exported to ONNX (Open Neural Network
+                Exchange, a portable file format for networks), and TensorRT (NVIDIA&apos;s inference compiler)
+                turns it into an engine tuned for one GPU type. The build occupies the target device&apos;s GPU and
+                CPU for about 2 to 5 minutes, in NVIDIA&apos;s README.{' '}
                 <Cite id="F07-8">Isaac-GR00T deployment README, build notes</Cite>
               </li>
               <li>
-                <strong>On-robot inference</strong> (section 17). One policy call per chunk of actions, against a
-                control clock of 30 Hz, on a machine whose CPU and GPU share one memory. NVIDIA reports 149.0 ms per
-                call for its GR00T N1.7 policy on a Jetson Orin, which is 4.5 control periods.{' '}
+                <strong>On-robot inference</strong> (section 17). The machine&apos;s CPU and GPU share one memory. NVIDIA reports 149.0 ms per
+                call for its GR00T N1.7 policy on a Jetson Orin, which is 4.5 control periods at 30 Hz.{' '}
                 <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>
               </li>
             </ul>
@@ -789,21 +842,20 @@ export function Workloads() {
           <ExpandableSection headerText="Vendor scale: three workloads you consume as checkpoints">
             <ul style={LIST}>
               <li>
-                <strong>Generative augmentation</strong> (section 11). A world model that predicts pixels re-renders
-                or invents video clips, on tensor cores with tens of GB of GPU memory. NVIDIA lists 207.78 s for one
+                <strong>Generative augmentation</strong> (section 11). Tensor cores with tens of GB of GPU
+                memory. NVIDIA lists 207.78 s for one
                 720p clip from Cosmos3-Nano on an H100 80GB.{' '}
                 <Cite id="F05-98">NVIDIA Cosmos inference benchmarks and methodology</Cite>
               </li>
               <li>
-                <strong>Robot foundation-model pretraining</strong> (sections 5 and 15). Train the base VLA that a
-                fine-tune starts from. Every node exchanges gradients (the corrections a training step computes) at
+                <strong>Robot foundation-model pretraining</strong> (sections 5 and 15). Every node exchanges gradients (the corrections a training step computes) at
                 every step, so tensor cores, the fabric between nodes and the storage feeding them matter at once.
                 NVIDIA&apos;s paper puts GR00T N1 at roughly 50,000 H100 GPU-hours on up to 1,024 GPUs.{' '}
                 <Cite id="F02-34">GR00T N1 paper, sections 2 and 3</Cite>
               </li>
               <li>
                 <strong>World-model pretraining</strong> (sections 6, 7 and 15). The same parts at larger scale:
-                NVIDIA names 1,024 GB200 GPUs for Cosmos3-Nano and no duration. <Cite id="F03-97">Cosmos 3 paper, section 4.1</Cite>
+                NVIDIA names 1,024 GPUs of its GB200 rack-scale systems for Cosmos3-Nano and no duration. <Cite id="F03-97">Cosmos 3 paper, section 4.1</Cite>
               </li>
             </ul>
           </ExpandableSection>
@@ -812,15 +864,15 @@ export function Workloads() {
 
       <Container
         header={
-          <Header variant="h2" description="Describe any job by three properties, because they are what a scheduler and a capacity market act on">
+          <Header variant="h2" description="Describe any job by three properties, because they are what a scheduler and a way of buying capacity act on">
             Five shapes
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The part chooses the machine. The shape chooses how the machine is bought and scheduled, a second axis
-            kept separate from the first. A shape is three properties of a job:
+            The part chooses the machine. The shape chooses how the machine is bought and scheduled on AWS, a
+            second axis kept separate from the first. A shape is three properties of a job:
           </Box>
           <ul style={LIST}>
             <li>
@@ -948,7 +1000,7 @@ export function Workloads() {
                     <Part tone="memory">GPU memory</Part> per GPU
                   </td>
                   <td style={TD}>2.79 GiB: one eighth of an L4, on g6f.large</td>
-                  <td style={TD}>268 GiB: one B300, on p6-b300.48xlarge</td>
+                  <td style={TD}>268 GiB: one B300 training GPU, on p6-b300.48xlarge</td>
                   <td style={TD}>
                     Whether the job fits at all, whatever the speed of the card. The span is a factor of almost 100.{' '}
                     <Cite id="F08-45">EC2 accelerated computing specifications, accelerator memory</Cite>
@@ -984,9 +1036,8 @@ export function Workloads() {
                   <td style={TD}>4 vCPUs beside one GPU, on g6.xlarge and g6e.xlarge</td>
                   <td style={TD}>64 vCPUs beside one GPU, on g6.16xlarge and g6e.16xlarge</td>
                   <td style={TD}>
-                    How much decode, augmentation and physics one GPU can be fed. On multi-GPU sizes it is the part
-                    bought by accident: most eight-GPU sizes give 24 vCPUs per GPU, which is 12 physical cores, and
-                    g7.48xlarge, at 1 thread per core, gives 24.{' '}
+                    How much decode, augmentation and physics one GPU can be fed. Most eight-GPU sizes give 24
+                    vCPUs per GPU, which is 12 physical cores; g7.48xlarge, at 1 thread per core, gives 24.{' '}
                     <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>
                   </td>
                 </tr>
@@ -1007,30 +1058,28 @@ export function Workloads() {
 
       <Container
         header={
-          <Header variant="h2" description="Turn the map into a short procedure for the job in front of you, and know which section answers each step">
-            Find your workload
+          <Header variant="h2" description="Take a workload from this map to a running job on AWS, and know which section answers each step">
+            From a workload to AWS
           </Header>
         }
       >
         <SpaceBetween size="m">
           <ol style={LIST}>
             <li>
-              <strong>Find the row.</strong> A job that covers two rows, such as training with decode in the
-              dataloader, is two workloads on one machine: size each.
+              <strong>Find the row, read the part, then check it.</strong> Section 21, Reading a Machine: PMU
+              Cards, confirms it with the counters of the PMU (performance monitoring unit, the event counters
+              built into a processor) and of the GPU. Sections 22 and 23 then measure and compare machines on
+              that part.
             </li>
             <li>
-              <strong>Read the part, then check it.</strong> Section 21, Reading a Machine: PMU Cards, shows how to
-              confirm it with the counters of the PMU (performance monitoring unit, the event counters built into a
-              processor) and of the GPU. Section 22, Our Measurements, reads them on our two machines.
+              <strong>Read the shape, then place it.</strong> Section 24, Orchestrating Physical AI on AWS, places
+              the fifteen workloads: an orchestrator (the service that queues jobs and starts machines for them)
+              and a way of buying capacity for each shape.
             </li>
             <li>
-              <strong>Compare machines on that part.</strong> Section 23, Price-Performance and Latency, computes
-              units of work for the part being paid for, and latency for anything on the robot&apos;s clock.
-            </li>
-            <li>
-              <strong>Read the shape, then schedule it.</strong> Section 24, Orchestrating Physical AI on AWS, turns duration,
-              coupling and interruptibility into a capacity market and an orchestrator. Section 29, Choosing, joins
-              both answers in one table.
+              <strong>Configure the orchestrator.</strong> Each has its own: section 25, AWS Batch; section 26,
+              AWS Parallel Computing Service; section 27, Amazon SageMaker HyperPod; section 28, Amazon EKS.
+              Section 29, Choosing, joins part and shape in one table.
             </li>
           </ol>
         </SpaceBetween>

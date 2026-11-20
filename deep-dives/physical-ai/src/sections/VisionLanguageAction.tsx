@@ -547,8 +547,10 @@ export function VisionLanguageAction() {
           <Box variant="p">
             Start from a vision-language model (VLM): a network pretrained on images and text from the web that
             takes pictures and a prompt and writes text. Inside a robot model it is called the backbone. It turns
-            each camera image and the instruction into tokens, and its job is to understand the scene and the
-            request.
+            each camera image and the instruction into tokens. A token is one vector the network processes: the
+            image is cut into small squares called patches (section 7 draws the grid) and each patch becomes one
+            token, and the words of the sentence become tokens too. The backbone&apos;s job is to understand the
+            scene and the request.
           </Box>
           <Box variant="p">
             A backbone alone writes words, and a servo needs numbers. So a second, smaller network is attached: the
@@ -660,11 +662,19 @@ export function VisionLanguageAction() {
           <Box variant="p">
             The first factor is free: a longer chunk raises the action rate with no extra compute. The second is
             the real speed of the network. The same NVIDIA paper reports 63.9 ms to sample one chunk of 16 actions
-            on an L40. By our arithmetic that is about 15.6 chunks a second, and 15.6 x 16 gives room for 250
-            actions a second. So 120 Hz is a rate of actions; the model as a whole samples a chunk about 15.6 times a
-            second. When an announcement quotes a fast rate, ask which of the two it counts.{' '}
+            on an L40. By our arithmetic that is 1000 / 63.9 = 15.6 chunks a second, and 15.6 x 16 gives room for
+            250 actions a second.{' '}
             <Cite id="F02-34">GR00T N1 paper, sections 2 and 3</Cite>{' '}
             <Cite id="F02-33">GR00T N1 paper, section 1</Cite>
+          </Box>
+          <Box variant="p">
+            That leaves three rates, and each counts a different thing. 10 Hz counts passes of the backbone: how
+            often the scene and the sentence are read again. 15.6 a second counts chunks: how often the action
+            head can sample one. 120 Hz counts single actions leaving the model, and it fits under the 250 that
+            the sampling time leaves room for. The sentence that reports 63.9 ms does not say whether it includes
+            a backbone pass. When an announcement quotes a fast rate, ask which of these it counts.{' '}
+            <Cite id="F02-33">GR00T N1 paper, section 1</Cite>{' '}
+            <Cite id="F02-34">GR00T N1 paper, sections 2 and 3</Cite>
           </Box>
           <Box variant="p">
             On the {ARM} the two clocks are easy to see. The host plays 30 actions a second. SmolVLA returns 50

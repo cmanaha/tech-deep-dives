@@ -972,6 +972,13 @@ export function Jepa() {
 
           <Box variant="h3">1. A slow target behind a stop-gradient</Box>
           <Box variant="p">
+            The intuition is an answer that holds almost still. A model that predicts pixels cannot collapse
+            because the camera fixes its answers. A slow target borrows that property one step at a time: from
+            one step to the next the answers barely move, so the predictor is guessing something close to fixed
+            and can get good at it before the answers shift. Nothing forbids both networks from drifting to a
+            constant slowly, which is why the explanation below is a hypothesis.
+          </Box>
+          <Box variant="p">
             This is the training step you just followed. For the shortcut to work, guess and answer have to
             drift to the same constant together. The stop-gradient
             takes away the answer&apos;s reason to move: no gradient pulls <code>theta-bar</code> toward the
@@ -996,7 +1003,11 @@ export function Jepa() {
           <Box variant="p">
             Picture a batch of latents as a table, one row per input and one column per dimension. A column that
             holds the same value in every row has collapsed. Two columns that always move together are one column
-            stored twice. The symbols: <code>Z</code> and <code>Z&apos;</code> are two batches of latents that
+            stored twice. Two statistics put numbers on those pictures. The variance of a column measures how far
+            its values spread around their average across the batch (the standard deviation is its square root):
+            it is 0 when every row holds the same value. The covariance of two columns measures whether they rise
+            and fall together across the batch: it is far from 0 when one column follows the other, and 0 when
+            high values of one come equally with high and low values of the other. The symbols: <code>Z</code> and <code>Z&apos;</code> are two batches of latents that
             should match row by row. <code>s</code> is the invariance term, the mean squared distance between
             matching rows. <code>v</code> is the variance term: zero while the standard deviation of every column
             stays above a threshold, and growing when one falls below. <code>c</code> is the covariance term,
@@ -1022,7 +1033,9 @@ export function Jepa() {
             Three toy batches of four latents with two numbers each (an illustration). In (3, 3), (3, 3), (3, 3),
             (3, 3) neither column varies, so <code>v</code> is large. In (1, 1), (2, 2), (3, 3), (4, 4) both
             columns vary and the second copies the first, so <code>c</code> is large. In (1, 2), (2, 4), (3, 1),
-            (4, 3) both vary and their covariance works out to 0, so both terms are satisfied.
+            (4, 3) both vary and their covariance is 0, so both terms are satisfied. To redo it, subtract each
+            column&apos;s average (<Toy>2.5</Toy>) from its values, multiply the two leftovers row by row and add:{' '}
+            <Toy>0.75 - 0.75 - 0.75 + 0.75</Toy> = 0.
           </Box>
           <Box variant="p">
             The price is tuning: the LeWorldModel authors count a seven-term loss with six tunable coefficients in
@@ -1035,8 +1048,9 @@ export function Jepa() {
             The third way replaces the separate spread terms with one target shape. SIGReg (Sketched Isotropic
             Gaussian Regularization) pushes the batch&apos;s cloud of latents toward an isotropic Gaussian: a round
             bell-shaped cloud with the same spread in every direction and no correlation between dimensions.{' '}
-            <Cite id="F03-69">LeJEPA paper, abstract</Cite> Neither a single point nor a flat slice is that cloud,
-            so one term answers both degrees of collapse (our reading).
+            <Cite id="F03-69">LeJEPA paper, abstract</Cite> In the table picture, that is every column with the
+            same variance and every pair of columns with covariance 0. A single point fails the first condition
+            and a flat slice fails the second, so one term answers both degrees of collapse (our reading).
           </Box>
           <Box variant="p">
             The model that uses it here is LeWorldModel (LeWM), a JEPA world model of about 15M parameters. Its

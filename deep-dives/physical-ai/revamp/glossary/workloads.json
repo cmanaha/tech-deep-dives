@@ -1,11 +1,8 @@
 [
   { "term": "Machine part", "expansion": null, "meaning": "One of the separate resources inside a computer (a half of a CPU core, a memory limit, a GPU engine, storage, network) that a workload can fill while the others sit partly idle." },
   { "term": "Saturate", "expansion": null, "meaning": "A part saturates when what the work demands per second equals what the part can deliver, so the job goes no faster." },
-  { "term": "Slot", "expansion": null, "meaning": "One chance per clock cycle for a CPU core to start one micro-operation; an unused slot is charged to the part that caused it." },
-  { "term": "Micro-operation", "expansion": null, "meaning": "One of the small internal steps a CPU breaks an instruction into before executing it." },
-  { "term": "CPU front end", "expansion": null, "meaning": "The first half of a core, which predicts the next instruction, fetches it and decodes it into micro-operations." },
-  { "term": "CPU back end", "expansion": null, "meaning": "The second half of a core, which runs micro-operations on the arithmetic units and retires them in order." },
-  { "term": "Core-bound", "expansion": null, "meaning": "Back-end slots lost with little waiting on memory: the arithmetic units are busy or operations wait on each other." },
+  { "term": "CPU front end", "expansion": null, "meaning": "The part of a core that fetches instructions and decodes them." },
+  { "term": "CPU back end", "expansion": null, "meaning": "The part of a core that executes the decoded instructions on its arithmetic units." },
   { "term": "Memory bandwidth", "expansion": null, "meaning": "The rate at which memory can stream bytes to a core, in GB/s." },
   { "term": "Memory latency", "expansion": null, "meaning": "The time one fetch from memory takes, in nanoseconds; the limit when each address depends on the value fetched before." },
   { "term": "Tensor cores", "expansion": null, "meaning": "GPU units that execute matrix multiply-and-accumulate instructions, the arithmetic of neural networks." },
@@ -34,5 +31,13 @@
   { "term": "Duration", "expansion": null, "meaning": "How long one unit of a job's work runs." },
   { "term": "Coupling", "expansion": null, "meaning": "Whether a job's pieces must exchange data while running, so that one needs its neighbours at the same moment." },
   { "term": "Interruptibility", "expansion": null, "meaning": "Whether a job can lose its machine and resume, losing no more than one unit of work." },
-  { "term": "Stand-in workload", "expansion": null, "meaning": "A small program measured in place of the real one (a MuJoCo humanoid for the arm, matrix-vector products for a policy)." }
+  { "term": "Stand-in workload", "expansion": null, "meaning": "A small program measured in place of the real one (a MuJoCo humanoid for the arm, matrix-vector products for a policy)." },
+  { "term": "Workload", "expansion": null, "meaning": "One kind of job the robot's loop hands to a computer, such as decoding video or stepping a simulation." },
+  { "term": "Loop stage", "expansion": null, "meaning": "One of the six steps the arm's data passes through: collect, curate, simulate, train, evaluate, deploy." },
+  { "term": "DGX Spark", "expansion": null, "meaning": "NVIDIA's desk-side computer whose CPU and GPU share one memory; one of the two machines of our measurements." },
+  { "term": "Jetson Orin Nano Super", "expansion": null, "meaning": "NVIDIA's small robot computer; the other machine of our measurements." },
+  { "term": "Cartpole", "expansion": null, "meaning": "A small benchmark task in simulation: balance a pole on a moving cart." },
+  { "term": "Cosmos Curator", "expansion": null, "meaning": "NVIDIA's toolkit for curating physical AI training data." },
+  { "term": "Orchestrator", "expansion": null, "meaning": "The service that queues jobs and starts machines for them: AWS Batch, AWS Parallel Computing Service, Amazon SageMaker HyperPod or Amazon EKS." },
+  { "term": "Augment", "expansion": null, "meaning": "Vary a training image (a crop, a colour shift) so the policy sees more variety." }
 ]
