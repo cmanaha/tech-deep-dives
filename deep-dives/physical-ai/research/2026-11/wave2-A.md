@@ -1,6 +1,6 @@
 # Wave 2 refutation and freshness: registers 01, 02, 03
 
-**Date:** 2026-11-20. **Agent:** W2-A. **Registers:** `01-robot-basics.md`, `02-imitation-and-vla.md`, `03-world-models-and-jepa.md`. **Sources fetched:** (count filled in at the end of the pass; see Summary).
+**Date:** 2026-11-20. **Agent:** W2-A. **Registers:** `01-robot-basics.md`, `02-imitation-and-vla.md`, `03-world-models-and-jepa.md`. **Sources fetched:** about 185 (142 register URLs re-fetched in bulk, plus about 45 further fetches: arXiv listings, GitHub, PyPI and Hugging Face API calls, vendor pages and Wayback Machine copies).
 
 Method note: every URL the three registers name was re-fetched on 2026-11-20 into a fresh directory (arXiv PDFs at the pinned version converted with `pdftotext`; GitHub files at the pinned 40-character SHA; first-party pages as served). Each entry's verbatim quote was searched for in the text of its own pinned source by a script, and every quote the script did not find was then searched for by hand. Rows below say which of the two found it. Work in progress: rows are appended as they are checked.
 
@@ -217,3 +217,106 @@ Sources re-fetched for this register: the SO-ARM100 README, URDF and simulation 
 
 **Skipped in register 01:** F01-14, F01-20, F01-21, F01-26, F01-27, F01-37 (LeRobot behaviours whose quotes the script found, or that cite files the entry does not link; not re-read by hand), F01-51 to F01-55 (definitions of control modes, action spaces and kinematics), F01-62, F01-88. The delay-sum and teaching arithmetic in the register's section 5 was not recomputed beyond the `[derived]` entries above.
 
+## Currency checks
+
+Every row was checked by a fetch on 2026-11-20 (GitHub API, PyPI, Hugging Face API, arXiv listing, vendor page or Wayback Machine copy), not from memory. "Not found" means not located in this pass, not that it does not exist.
+
+| Item | Register says | Newest found 2026-11-20 | Date | URL | Verdict |
+|---|---|---|---|---|---|
+| LeRobot | v0.7.0 | v0.7.0, tag commit `410c095e`; same on PyPI | 2026-11-05 | https://github.com/huggingface/lerobot/releases/tag/v0.7.0 | HOLDS |
+| SO-ARM100 repository | SHA `141aea7b` | same SHA is the default-branch head | 2026-11-20 | https://github.com/TheRobotStudio/SO-ARM100/commit/141aea7bcac2744d92998e30268c413202a56f96 | HOLDS |
+| rustypot (servo library under LeRobot's bus) | table read at v1.13.1; v1.14.0 exists, not diffed | v1.14.0, commit `5060152f`; STS3215 table differs only by one added field | 2026-11-17 | https://github.com/pollen-robotics/rustypot/releases/tag/v1.14.0 | HOLDS; closes register 01 unknown U12 |
+| Feetech STS3215 datasheet | edition A/0, 2020-04-10, reseller copy | no later edition searched for on Feetech's own site | 2020-04-10 | https://core-electronics.com.au/attachments/uploads/sts3215-smart-servo-datasheet-translated.pdf | not checked (register 01 unknown U3 stays) |
+| OpenArm hardware docs | version 2.0 | "Version: 2.0" on the motor page | page undated | https://docs.openarm.dev/hardware/openarm-2.0/motor | HOLDS |
+| Figure Helix | Helix 02 (2026-01-27) is the newest | "Helix 2.5: Zero-Shot 30-Home Generalization". The post states no control rate, parameter count or latency; it says "Helix 2.5 was itself pretrained from random initialization entirely on Index, unlike Helix 02, which started from a pretrained vision-language model" | 2026-09-17 | https://www.figure.ai/news/helix-2-5-zero-shot-30-home-generalization | STALE. Helix 02's 1 kHz and 200 Hz remain the last rates Figure published; name Helix 2.5 as the newest model and say it publishes none |
+| Physical Intelligence model line | pi0.7 (April 2026); "anything newer: not determined" | no model newer than pi0.7 named. Newest post: "Frontier Models for Every Robot" (the Pi API beta): "We are making our latest models available for training and inference through the Pi API beta"; names no model version; waitlist. Read from Wayback copies because the live site returned HTTP 429 | 2026-10-13 (homepage copy of 2026-10-20) | https://web.archive.org/web/20261031104522/https://www.pi.website/blog/api-beta | pi0.7 HOLDS as newest named model as of the 2026-10-20 copy; the "not determined" row is STALE and can be filled in. Not checked for the 30 days after that copy |
+| openpi repository | head `215abfb2` | same | 2026-08-24 | https://github.com/Physical-Intelligence/openpi/commit/215abfb2 | HOLDS |
+| GR00T with released weights | N1.7 (tag `n1.7-release`); repository head `708617f5` | same tag is the newest N-series tag (a later `n1.6.1-release` tag dated 2026-04-23 is a point fix to the older line); head unchanged | 2026-04-18 (tag); 2026-11-17 (head) | https://github.com/NVIDIA/Isaac-GR00T/releases | HOLDS |
+| GR00T 2 | announced November 2026, code in December | project page says "Code Available in December"; whitepaper dated "November 2026" (no day); no tag in Isaac-GR00T, no checkpoint on the hub; no arXiv listing found | 2026-11 | https://research.nvidia.com/labs/gear/gr00t-2/ | HOLDS (announced, unreleased) |
+| GR00T N1.7 checkpoint | `nvidia/GR00T-N1.7-3B` | same; revision `373d34e2` read | hub revision | https://huggingface.co/nvidia/GR00T-N1.7-3B | HOLDS |
+| SmolVLA | arXiv 2506.01844v1; `lerobot/smolvla_base` | v1 is the only version; no successor located on the LeRobot hub organisation. One unopened lead: a `smolvla2` policy type named in the `huggingface/VLAb` repository (Tier 4 pointer, not read) | 2025-06 | https://arxiv.org/abs/2506.01844 | HOLDS; the lead needs one fetch before the page says "no successor" |
+| Gemini Robotics | Gemini Robotics 2.5 (2026-11-10) | same | 2026-11-10 | DeepMind post as linked in register 02 | HOLDS |
+| V-JEPA 2 code | `facebookresearch/vjepa2` head `204698b4` | same on the default branch; the repository's other branches (including `vjepa2_1`) were pushed 2026-10-29 | 2026-03-23 | https://github.com/facebookresearch/vjepa2/commit/204698b4 | HOLDS |
+| V-JEPA encoder line | V-JEPA 2.1 (arXiv 2603.14482v3) is the newest | v3 is the latest version; no V-JEPA 3 found by search or on the repository | 2026-06-11 | https://arxiv.org/abs/2603.14482 | HOLDS |
+| RoboJEPA | arXiv 2610.10515v1; code head `f93106f5` | v1 only; head unchanged | 2026-10-07; 2026-10-09 | https://arxiv.org/abs/2610.10515 | HOLDS |
+| LeWorldModel | arXiv 2603.19312v3; code head `8edfeb33` | v3 is the latest (versions of 13 Mar, 24 Mar and 3 Jun 2026); head unchanged | 2026-06-03 | https://arxiv.org/abs/2603.19312 | HOLDS |
+| JEPA-WMs | arXiv 2512.24497v4; `facebookresearch/jepa-wms` | v4 latest; repository head `13cf1d9c` | 2026-09-02; 2026-04-11 | https://arxiv.org/abs/2512.24497 | HOLDS |
+| LeJEPA (SIGReg) | arXiv 2511.08544v3 | v3 latest | per listing | https://arxiv.org/abs/2511.08544 | HOLDS |
+| NVIDIA Cosmos | Cosmos 3 (arXiv 2606.02800v4), released 2026-05-31 | Cosmos 3 still current: only tag `Cosmos3`; repository head `0eab578a` (2026-11-19); newest hub checkpoints are Cosmos3-H variants (2026-10-19) and `lerobot/Cosmos3-Edge`, `lerobot/Cosmos3-Nano` (2026-10-29); no 3.5 or 4 found | tag 2026-06-01; paper v4 2026-06-23 | https://github.com/NVIDIA/Cosmos/releases/tag/Cosmos3 | HOLDS for the version. Date: the tag and press release are dated 2026-06-01 and the README says "May 2026"; write "end of May 2026" or cite the tag date, not "2026-05-31" |
+| Cosmos-Predict 2.5 | the model GR00T 2 builds on | releases up to v1.5.2; head `a2c298b0` | 2026-05-04 | https://github.com/nvidia-cosmos/cosmos-predict2.5/releases | HOLDS |
+| Genie | Genie 4, date UNKNOWN | model page confirmed, still undated | undated | DeepMind model page as linked in register 03 | HOLDS (date stays unknown) |
+| Dreamer 4 | arXiv 2509.24527v1 | v1 only | 2025-09 | https://arxiv.org/abs/2509.24527 | HOLDS |
+| DreamZero | arXiv 2602.15922v1 | v1 only | 2026-02-17 | https://arxiv.org/abs/2602.15922 | HOLDS |
+| AMI Labs (LeCun's company after Meta) | launched 2026-03-10, nothing released | site unchanged, single update of 2026-03-10; search found only launch-era press | 2026-03-10 | company site as linked in register 03 | HOLDS |
+| pi0 paper | arXiv 2410.24164 | v4 (8 Jan 2026), comment "Published in RSS 2025" | 2026-01-08 | https://arxiv.org/abs/2410.24164 | HOLDS; venue now confirmed |
+| pi0.5, pi0.6, pi0.7 papers | 2504.16054v1, 2511.14759v2, 2604.15483v2 | all latest (pi0.7 v2 of 24 Apr 2026) | per listing | https://arxiv.org/abs/2604.15483 | HOLDS |
+| Real-time chunking (RTC) | arXiv 2506.07339v2 | v2 latest, "published in NeurIPS 2025" | per listing | https://arxiv.org/abs/2506.07339 | HOLDS |
+| SONIC (the whole-body controller under GR00T) | arXiv 2511.07820v4 | v4 latest | 2026-08-13 | https://arxiv.org/abs/2511.07820 | HOLDS |
+| MEM (memory for the pi line) | arXiv 2603.03596, no version | v2 | 2026-03-08 | https://arxiv.org/abs/2603.03596 | HOLDS; pin it as v2 |
+| Other papers | 2506.09985v1, 2512.10942v2, 2511.00062v2, 2611.21607v1, 2501.09747v1, 2502.19645v2, 2510.10274v1, 2503.14734v2, 2503.20020v1, 2303.04137v5, 2304.13705v1, 1011.0686v3 | every listing shows the register's version as the latest | per listing | https://arxiv.org/abs/<id> | HOLDS |
+
+## UNKNOWN triage proposals
+
+| Register and ID | Proposed triage (close-by-research / close-by-experiment / accept-as-hedge / cut) | Evidence or reason | Hedge text the page should carry, if accepted |
+|---|---|---|---|
+| 01-U12 (does rustypot v1.14.0 change the STS3215 table) | close-by-research: CLOSED | Diff of `src/servo/feetech/sts3215.rs` at `7aa85e13` against `5060152f`: one added field, `supports_turn_count_reset: true`; resolution, baud table and modes unchanged | |
+| 01-U13 (anything newer than pi0.7 and Helix 02) | close-by-research: CLOSED | Figure: Helix 2.5, 2026-09-17. Physical Intelligence: no newer named model; the Pi API beta post of 2026-10-13 (Wayback copies) | "As of late October 2026 Physical Intelligence had named no model after pi0.7." |
+| 01-U9 (GR00T 2 paper ID; which figure box each rate belongs to) | close-by-research: half closed | The "paper" is a whitepaper PDF on the project page, dated "November 2026", with no arXiv listing found. The figure-box assignment was not viewed | Cite it as "NVIDIA whitepaper, November 2026", not as an arXiv preprint |
+| 01-U1 (release in which `use_degrees` became True) | cut | Page history; fails the section-shape test. The default at v0.7.0 is what the reader needs | |
+| 01-U6 (where 6 values sit in the 32-wide padded vector) | close-by-research | One file read at v0.7.0; not done in this pass | |
+| 01-U7 (first-party source for wrist force-torque sensors) | cut unless the section teaches force sensing | The SO-101 has none | |
+| 01-U2, 01-U10, 01-U11, 01-U14 (hardware behind the cadence sample; measured gripper speed and 5 V servo speed; webcam latency; bus time per sync read and write) | close-by-experiment | All four are one Tier 0 session with an SO-101 and `lerobot-record` | Until measured: "an example printout from the docs, on unstated hardware"; "under about 1.8 m/s by the datasheet, not measured" |
+| 01-U3, 01-U4, 01-U5, 01-U8, 01-U15 (later datasheet edition; where the sensor reads; servo loop rate; Damiao control law; published payload and reach) | accept-as-hedge | Vendor documents not located | "Feetech's specification does not state the servo's internal loop rate." "Reach of about 0.41 m is our sum of the simulation model's link offsets, not a published figure." |
+| 02-U1 (GR00T N1.7 action head depth, 16 or 32) | close-by-research: CLOSED | `nvidia/GR00T-N1.7-3B` `config.json` at revision `373d34e2`: `diffusion_model_cfg.num_layers: 32`; the dataclass default in the repository is 16 | "32 layers in the released checkpoint (the code's default is 16)." |
+| 02-U2 (GR00T 2 announcement day and parameter count) | close-by-research: half closed | Whitepaper gives the 2B figure; it prints "November 2026" and no day | "Announced November 2026." |
+| 02-U7 (anything from Physical Intelligence after pi0.7) | close-by-research: CLOSED | Same evidence as 01-U13; see register 02 row 36 | "The newer models are offered through a hosted API beta (waitlist), not as open weights." |
+| 02-U11 (venues) | close-by-research: mostly closed | arXiv comments: pi0 "Published in RSS 2025"; OpenVLA-OFT accepted to RSS 2025; RTC NeurIPS 2025; Diffusion Policy v5 is the journal extension of the RSS 2023 paper; DAgger AISTATS 2011. ACT, FAST and pi0.5 venues not confirmed | Keep ACT, FAST and pi0.5 as "preprint" |
+| 02-U8 (the eighteen LeRobot v0.7.0 policies not read) | close-by-research | The release post at https://huggingface.co/blog/lerobot/lerobot-release-v070 is fetchable (HTTP 200) and was not read in this pass. This one matters: it decides whether the "what an SO-101 can fine-tune today" list is complete | Until read: "among the policies we read", not "the policies LeRobot supports" |
+| 02-U9, 02-U10, 02-U12, 02-U13 (Diffusion `drop_n_last_frames`; SmolVLA latency on a named device; MEM content; DreamZero body) | close-by-research | Each is one source read; none done here. DreamZero's body was read under register 03 | |
+| 02-U3 (GR00T 2 weights and licence) | accept-as-hedge | Not knowable before December | "NVIDIA says code arrives in December 2026; the licence is not stated." |
+| 02-U4, 02-U5, 02-U6 (pretraining compute for GR00T N1.5 and N1.6, for the pi line, and sizes for Gemini Robotics 2 and 2.5) | accept-as-hedge | Publishers have not printed these in the sources read | "Not published in the sources we read." |
+| 03-U5 (does vjepa2 at the pinned SHA still have the rollout-loss defect) | close-by-research: CLOSED | Commit `93366fe723bc8980fd6e170f9eef221ec2091e70` (2025-06-20) fixed it; the pinned SHA contains the fix. See register 03 row 58 | |
+| 03-U12 (two sets of GPU counts for Cosmos 3 pretraining) | close-by-research: propose CLOSED, with a check | In v4 I found the same counts in three passages (1,024 and 2,048 GB200 for pre-training, the same for mid-training, the same in the benchmark section) and no conflicting set. The register's author should point to the conflicting passage or drop the unknown | |
+| 03-U13 (AMI Labs releases) | accept-as-hedge | Site unchanged since 2026-03-10 | "As of 20 November 2026 the company lists no model, paper or code." Recheck at publication |
+| 03-U7 (Genie 4 date, frame rate, size) | accept-as-hedge | Model page still has none | "Google DeepMind's page gives no release date or model size." |
+| 03-U1, 03-U2, 03-U6 (LeWM training GPU and time; planning-time GPU; V-JEPA 2-AC planning memory) | close-by-experiment | Code is public at pinned SHAs; each is a Tier 0 run | Until run: "the paper names no GPU for this timing" |
+| 03-U10, 03-U11 (Cosmos 3 memory per size; rollout length behind the Nano timing) | accept-as-hedge, or experiment if the dive runs Cosmos3-Nano | Not published | "NVIDIA does not publish the memory needed." |
+| 03-U3, 03-U9, 03-U17 (actual V-JEPA 2 pretraining run; RoboJEPA planner GPUs and GPU-hours; GR00T 2 training compute) | accept-as-hedge | Authors give a projection or nothing; U9 could still close by reading the RoboJEPA appendix | "The paper gives a projection, not a measured run." |
+| 03-U4, 03-U8, 03-U15, 03-U16 (JEPA-WMs Table 6; `stable-worldmodel` loading; contents of eb_jepa and jepa-wms; any JEPA world model on an SO-100 or SO-101) | close-by-research | Not done in this pass. U16 decides whether the dive can say "nobody has published this on the arm"; it must stay "not located" | |
+| 03-U14 (DreamerV3 venue) | cut | History sentence only | |
+
+## Summary
+
+Rows are verdict rows; many rows group two to four entries that share one source. Registers 02 and 01 have 55 and 54 rows, under the 60 aimed for; the entries not rechecked are listed in each "Skipped" note.
+
+| Register | Rows | HOLDS | SCOPE NARROWER | WRONG | STALE | UNVERIFIABLE |
+|---|---|---|---|---|---|---|
+| 03 world models and JEPA | 77 | 72 | 4 | 0 | 1 | 0 |
+| 02 imitation and VLAs | 55 | 49 | 5 | 0 | 1 (partial) | 0 |
+| 01 robot basics | 54 | 50 | 2 | 1 | 1 (partial) | 0 |
+
+"Partial" means the entry's content holds and one sentence of it is out of date.
+
+**WRONG**
+- F01-32: "Depth is available only through RealSense" is contradicted by the LeRobot v0.7.0 camera docs, which give depth for RealSense and Reachy 2 cameras.
+
+**STALE**
+- Register 01 currency table and F01-72: Helix 02 is not Figure's newest; Helix 2.5 was posted 2026-09-17 and publishes no control rates, so the 1 kHz and 200 Hz figures stay but need the date and the successor named.
+- Registers 01 and 02, "anything newer than pi0.7: not determined" and F02-53: now determined. No newer named model; the Pi API beta (2026-10-13) offers hosted fine-tuning and inference of the "latest models".
+- F03-82: the V-JEPA 2 rollout-loss defect that JEPA-WMs reports was fixed in the repository on 2025-06-20; the pinned SHA has the fix.
+- Minor: Cosmos 3 release written as 2026-05-31; the tag and press release say 2026-06-01. MEM paper cited without its version (v2).
+
+**SCOPE NARROWER**
+- F03-73: the RoboJEPA real-robot figure is for the cup task only, 10 trials; the "20%" belongs to the long-horizon task.
+- F03-77: 4,096 planning samples is the real-robot (DROID, Franka) setting; the RoboCasa simulation uses 1,024.
+- F03-104: GR00T 2's 153 ms is one robot (Dexter, three cameras) after optimisation; 180 ms on YAM, 449 to 551 ms unoptimised.
+- F03-118: LeWM's per-candidate planning cost depends on an unstated divisor; it is a range of 22 to 65 microseconds, not one number.
+- F02-38: GR00T N1.7's released checkpoint has a 32-layer action head; 16 is only the code default.
+- F02-40: the model card's three stage timings sum to 27.3 ms, not 27.9; the Jetson Orin row times the action head alone.
+- F02-46: GR00T 2's five-episode success rate is on 50 tasks selected for reaching at least 80% with five episodes.
+- F02-54: openpi's README also documents multi-node training for the PyTorch path.
+- F02-61: asynchronous inference does not keep "the same success rate": 78.3% synchronous against 73.3% asynchronous.
+- F01-82: the 1.82 and 2.25 m/s ceilings are datasheet speeds at 6 V and 7.4 V; the stock arm runs on 5 V.
+- F01-90: the hardware guide's times assume 30 s episodes and batch sizes 8, 4 and 4; the recorder's default episode is 60 s, which doubles them.
+
+**Not done:** the Feetech site was not searched for a later datasheet edition; the LeRobot v0.7.0 release post and the eighteen unread policies were not read; Physical Intelligence was not checked for the 30 days after the 2026-10-20 archive copy.
