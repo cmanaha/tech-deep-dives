@@ -33,7 +33,7 @@ const NARROW: CSSProperties = { maxWidth: 520, margin: '0 auto' };
 const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 
 /* ------------------------------------------------------------------------ */
-/* Diagram 25.1: the decision path                                           */
+/* Diagram 29.1: the decision path                                           */
 /* ------------------------------------------------------------------------ */
 
 interface Answer {
@@ -80,7 +80,7 @@ const PATH: Band[] = [
   },
   {
     title: 'Orchestrator',
-    sub: 'decided by coupling and by how often the job runs',
+    sub: 'decided by coupling, by how often it runs, and by the team',
     questions: [
       {
         q: '3. Do its pieces exchange data?',
@@ -90,10 +90,11 @@ const PATH: Band[] = [
         ],
       },
       {
-        q: '4. How often does it run?',
+        q: '4. How often, and does the team run Slurm?',
         answers: [
           { a: ['Now and then'], r: ['A job service: Training Jobs or', 'Batch, nothing left running'] },
-          { a: ['All day, for', 'several teams'], r: ['A persistent cluster, with', 'quotas: HyperPod or EKS'] },
+          { a: ['Now and then,', 'in Slurm'], r: ['AWS PCS: managed Slurm, its', 'node groups scale to zero'] },
+          { a: ['All day, for', 'several teams'], r: ['A held cluster with quotas:', 'HyperPod or EKS'] },
         ],
       },
     ],
@@ -217,7 +218,8 @@ function DecisionPath() {
         <title id="choosing-path-title">The decision path from a workload to a machine family, an orchestrator and a capacity market</title>
         <desc>
           Six questions in three groups, read from top to bottom. The part that fills first and a deadline per unit
-          pick the machine family. Coupling and how often the job runs pick the orchestrator. What a stop costs and
+          pick the machine family. Coupling, how often the job runs and whether the team runs Slurm pick one of four
+          orchestrators: AWS Batch, AWS PCS, SageMaker HyperPod or Amazon EKS. What a stop costs and
           fixed dates pick the capacity market.
         </desc>
         <rect x="0" y="0" width={D.w} height={total} fill="#fbfbfd" />
@@ -282,6 +284,8 @@ interface Row {
   part: ReactNode;
   family: ReactNode;
   orchestrator: ReactNode;
+  /** The section that takes this row's orchestrator apart. */
+  see: string;
   market: ReactNode;
   why: ReactNode;
 }
@@ -292,6 +296,7 @@ const ROWS: Row[] = [
     part: 'CPU cores beside the robot',
     family: "None in the cloud: the robot's own computer",
     orchestrator: 'None for recording. Uploads land in S3, and a Step Functions task can submit a Batch job for each',
+    see: 'Section 25, AWS Batch, for the upload jobs',
     market: <MarketCell kind="device">The upload jobs: On-Demand or Spot Graviton.</MarketCell>,
     why: (
       <>
@@ -306,6 +311,7 @@ const ROWS: Row[] = [
     part: "CPU cores, or the GPU's decode engines",
     family: 'Graviton C8g or M8g',
     orchestrator: 'Batch array job, one child per shard of episodes, retried when its host is reclaimed',
+    see: 'Section 25, AWS Batch',
     market: <MarketCell kind="cpu">Spot, in children of 30 minutes or less.</MarketCell>,
     why: (
       <>
@@ -320,6 +326,7 @@ const ROWS: Row[] = [
     part: 'GPU tensor cores',
     family: 'G6e, with a second G type listed',
     orchestrator: "Batch array job. AWS's Cosmos 3 architecture puts its curator on Batch",
+    see: 'Section 25, AWS Batch',
     market: <MarketCell kind="open">Spot first.</MarketCell>,
     why: (
       <>
@@ -332,6 +339,7 @@ const ROWS: Row[] = [
     part: 'CPU cores beside each GPU',
     family: 'The training instance itself, picked for its cores per GPU',
     orchestrator: 'None of its own: it runs inside the training job',
+    see: 'The section of the training job it rides in',
     market: <MarketCell kind="inherit" />,
     why: (
       <>
@@ -343,12 +351,14 @@ const ROWS: Row[] = [
     name: 'CPU physics step',
     part: 'CPU back end, one world per core',
     family: 'Graviton C8g or M8g',
-    orchestrator: 'Batch array job, one child per seed',
+    orchestrator: 'Batch array job, one child per seed; a Slurm job array on AWS PCS for a team that submits with Slurm',
+    see: 'Section 25, AWS Batch, and section 26, AWS Parallel Computing Service',
     market: <MarketCell kind="cpu">Spot.</MarketCell>,
     why: (
       <>
         The part that fills is a CPU core, so pay for cores and no GPU.{' '}
-        <Cite id="F08-85">price-performance computed per part</Cite>
+        <Cite id="F08-85">price-performance computed per part</Cite>{' '}
+        <Cite id="F10-228">AWS PCS User Guide, submitting jobs</Cite>
       </>
     ),
   },
@@ -357,6 +367,7 @@ const ROWS: Row[] = [
     part: 'General GPU compute, with one CPU core feeding it',
     family: 'A one-GPU G size with enough memory. Headless physics needs no RT cores',
     orchestrator: 'SageMaker Training Job for an occasional run; Batch when runs come back to back',
+    see: 'Section 25, AWS Batch',
     market: <MarketCell kind="open">On-Demand with a list of types; Spot when the run checkpoints.</MarketCell>,
     why: (
       <>
@@ -372,13 +383,20 @@ const ROWS: Row[] = [
     part: 'GPU memory, then RT cores for RTX renderers',
     family: 'G family only: G6e, G7e or G7',
     orchestrator: 'Batch array job, or Kubernetes jobs on EKS. G7 is not supported in EKS Auto Mode as of November 2026',
-    market: <MarketCell kind="open">Several G types, a second Region, or an ODCR.</MarketCell>,
+    see: 'Section 25, AWS Batch, and section 28, Amazon EKS',
+    market: (
+      <MarketCell kind="open">
+        Several G types, a second Region, or an ODCR (On-Demand Capacity Reservation), which holds capacity for a
+        named instance type in one Availability Zone.
+      </MarketCell>
+    ),
     why: (
       <>
         The RT-core requirement removes the P family, and with it the window reservation, which the lists read on
         2026-11-20 offer for no G type.{' '}
         <Cite id="F06-60">AWS post on Isaac Lab and SageMaker, instance compatibility</Cite>{' '}
-        <Cite id="F09-49">EKS user guide, Auto Mode GPU limits</Cite>
+        <Cite id="F09-49">EKS user guide, Auto Mode GPU limits</Cite>{' '}
+        <Cite id="F09-94">EC2 user guide, Capacity Reservation pricing and billing</Cite>
       </>
     ),
   },
@@ -387,6 +405,7 @@ const ROWS: Row[] = [
     part: 'GPU tensor cores, with GPU memory as the gate',
     family: "One G-family GPU: G6e or G7e sizes in AWS's runs",
     orchestrator: 'SageMaker Training Job, or a Batch job. AWS documents both and ranks neither',
+    see: 'Section 25, AWS Batch',
     market: <MarketCell kind="open">On-Demand with a priority list of types.</MarketCell>,
     why: (
       <>
@@ -401,6 +420,7 @@ const ROWS: Row[] = [
     part: 'GPU tensor cores, lightly',
     family: 'As policy fine-tune: one G-family GPU',
     orchestrator: 'As policy fine-tune',
+    see: 'Section 25, AWS Batch',
     market: <MarketCell kind="open">On-Demand with a list of types.</MarketCell>,
     why: (
       <>
@@ -415,6 +435,7 @@ const ROWS: Row[] = [
     family: 'G6e or G7e when cameras are rendered',
     orchestrator:
       'Batch array job, one child per checkpoint and seed',
+    see: 'Section 25, AWS Batch',
     market: <MarketCell kind="open">Spot with retry, On-Demand G types behind it.</MarketCell>,
     why: (
       <>
@@ -429,6 +450,7 @@ const ROWS: Row[] = [
     part: "The device's own GPU and CPU, for minutes",
     family: 'None: the build runs on the target device',
     orchestrator: 'AWS IoT Greengrass can deliver the build to the device as a component',
+    see: 'Section 18, The Fleet',
     market: <MarketCell kind="device" />,
     why: (
       <>
@@ -443,6 +465,7 @@ const ROWS: Row[] = [
     part: 'GPU tensor cores, on memory shared with the CPU',
     family: "None: the robot's computer",
     orchestrator: 'AWS IoT Greengrass, the service that sends software components to devices, delivers the policy',
+    see: 'Section 18, The Fleet',
     market: <MarketCell kind="device" />,
     why: (
       <>
@@ -456,17 +479,23 @@ const ROWS: Row[] = [
     part: 'GPU memory in tens of GB, and tensor cores',
     family: "g7e.2xlarge or p5.4xlarge for one-GPU inference with the Nano model, in AWS's sizing table",
     orchestrator: 'Batch array job, one child per clip',
+    see: 'Section 25, AWS Batch',
     market: (
       <>
         <MarketCell kind="open">On the G size: Spot for per-clip jobs.</MarketCell>{' '}
-        <MarketCell kind="window">On the P size.</MarketCell>
+        <MarketCell kind="window">
+          On the P size. Batch&apos;s route to a Capacity Block rests on an AWS post of April 2025 that the current
+          user guide does not confirm.
+        </MarketCell>
       </>
     ),
     why: (
       <>
         Restartable per clip. AWS names Batch for offline simulation work.{' '}
         <Cite id="F09-84">AWS and NVIDIA post on Cosmos 3</Cite>{' '}
-        <Cite id="F09-113">AWS Guidance for Physical AI Simulation Platform</Cite>
+        <Cite id="F09-113">AWS Guidance for Physical AI Simulation Platform</Cite>{' '}
+        <Cite id="F09-17">AWS HPC Blog, Capacity Blocks for ML with AWS Batch</Cite>{' '}
+        <Cite id="F10-65">AWS Batch User Guide, launch templates</Cite>
       </>
     ),
   },
@@ -474,14 +503,18 @@ const ROWS: Row[] = [
     name: 'Robot foundation-model pretraining',
     part: 'Tensor cores across many nodes, the fabric between them, and storage',
     family: "P5en or P6-B200: the sizes AWS's Cosmos 3 table gives for multi-node post-training, taken here as our reading for pretraining",
-    orchestrator: 'HyperPod, which replaces faulty nodes; Slurm where the team already runs it',
+    orchestrator:
+      'HyperPod, which replaces faulty nodes; AWS PCS where the team already runs Slurm and wants no machines held between jobs. Either way the nodes train over EFA',
+    see: 'Section 27, Amazon SageMaker HyperPod, and section 26, AWS Parallel Computing Service',
     market: <MarketCell kind="window">A Capacity Block or a SageMaker training plan. No Spot.</MarketCell>,
     why: (
       <>
         Long, coupled, and failure-prone by node count: the case AWS gives for a persistent cluster. The EC2 guide
         rules Spot out for tightly coupled work. <Cite id="F09-112">AWS post on a Cosmos 3 pipeline on HyperPod</Cite>{' '}
         <Cite id="F09-84">AWS and NVIDIA post on Cosmos 3</Cite>{' '}
-        <Cite id="F09-95">EC2 user guide, Spot best practices</Cite>
+        <Cite id="F09-95">EC2 user guide, Spot best practices</Cite>{' '}
+        <Cite id="F10-234">AWS PCS User Guide, Capacity Blocks</Cite>{' '}
+        <Cite id="F10-233">AWS PCS User Guide, EFA and placement groups</Cite>
       </>
     ),
   },
@@ -489,7 +522,8 @@ const ROWS: Row[] = [
     name: 'World-model pretraining',
     part: 'The same parts, at larger scale',
     family: 'As the row above, with P6e UltraServers (rack-scale systems) at the top',
-    orchestrator: 'As the row above',
+    orchestrator: 'As the row above. PCS attaches an UltraServer as a Capacity Block node group',
+    see: 'Section 27, Amazon SageMaker HyperPod, and section 26, AWS Parallel Computing Service',
     market: (
       <MarketCell kind="window">
         UltraServer blocks for P6e-GB200. P6e-GB300 is obtained through an AWS sales representative.
@@ -499,7 +533,8 @@ const ROWS: Row[] = [
       <>
         Vendor scale: you consume its checkpoint.{' '}
         <Cite id="F09-91">EC2 user guide, Capacity Blocks supported instance types</Cite>{' '}
-        <Cite id="F09-99">AWS announcement of P6e-GB300 UltraServers</Cite>
+        <Cite id="F09-99">AWS announcement of P6e-GB300 UltraServers</Cite>{' '}
+        <Cite id="F10-237">AWS PCS User Guide, UltraServers</Cite>
       </>
     ),
   },
@@ -526,7 +561,18 @@ function ClosingTable() {
           },
           { id: 'part', header: 'Machine part it leans on', minWidth: 140, width: 150, cell: (row) => row.part },
           { id: 'family', header: 'Instance family (our reading)', minWidth: 150, width: 170, cell: (row) => row.family },
-          { id: 'orchestrator', header: 'Orchestrator (our reading)', minWidth: 180, width: 200, cell: (row) => row.orchestrator },
+          {
+            id: 'orchestrator',
+            header: 'Orchestrator (our reading), and the section that takes it apart',
+            minWidth: 190,
+            width: 210,
+            cell: (row) => (
+              <>
+                {row.orchestrator}
+                <div style={{ color: MUTED, marginTop: 4 }}>{row.see}</div>
+              </>
+            ),
+          },
           { id: 'market', header: 'Capacity market (our reading)', minWidth: 180, width: 200, cell: (row) => row.market },
           { id: 'why', header: 'Why, and the evidence', minWidth: 300, cell: (row) => row.why },
         ]}
@@ -556,8 +602,9 @@ export function Choosing() {
           <Box variant="p">
             You have a workload in hand and a machine to pick. Section 20, Fifteen Workloads, Five Shapes, named the
             part of the machine each workload fills first and the properties that give a job its shape. Section 24,
-            Orchestrating Physical AI on AWS, described the services that schedule a job and the ways an instance is bought.
-            This section joins them into one path and one table.
+            Orchestrating Physical AI on AWS, introduced the four orchestrators and the ways an instance is bought, and
+            sections 25 to 28 took the orchestrators apart one at a time. This section joins them into one path and
+            one table.
           </Box>
           <Box variant="p">Ask the questions in this order, because each answer narrows the next.</Box>
           <ol style={LIST}>
@@ -601,7 +648,8 @@ export function Choosing() {
         <SpaceBetween size="m">
           <Box variant="p">
             No AWS page comparing AWS Batch, SageMaker HyperPod and Amazon EKS side by side for these workloads was
-            located during this research, so the path is our reading of the partial rules AWS does publish.{' '}
+            located during this research, so the path, which adds AWS Parallel Computing Service (PCS) as the fourth,
+            is our reading of the partial rules AWS does publish.{' '}
             <Cite id="F09-110">AWS decision guide, Choosing a generative AI service</Cite> It uses three sets of
             names from section 24.
           </Box>
@@ -616,23 +664,28 @@ export function Choosing() {
             <li>
               <strong>Orchestrators.</strong> SageMaker Training Jobs runs one training container and keeps nothing
               running afterwards. AWS Batch is a job queue that holds no instances when it is empty; its array job is
-              one submission that fans out into as many as 10,000 children. SageMaker HyperPod is a persistent
-              cluster whose faulty hardware AWS replaces, scheduled with Slurm (a batch scheduler) or Kubernetes.
-              Amazon EKS (Elastic Kubernetes Service) is Kubernetes with the control plane run by AWS.{' '}
+              one submission that fans out into as many as 10,000 children. AWS PCS is Slurm, the job scheduler of
+              classic supercomputing, with the controller run by AWS: its compute node groups start instances for
+              waiting jobs and can scale back to zero. SageMaker HyperPod is a persistent cluster whose faulty
+              hardware AWS replaces, scheduled with Slurm or Kubernetes. Amazon EKS (Elastic Kubernetes Service) is
+              Kubernetes with the control plane run by AWS.{' '}
+              <Cite id="F10-200">AWS PCS User Guide, what PCS is</Cite>{' '}
+              <Cite id="F10-208">AWS PCS User Guide, scaling configuration</Cite>{' '}
               <Cite id="F09-13">AWS Batch user guide, scaling to zero</Cite>{' '}
               <Cite id="F09-5">AWS Batch user guide, array jobs</Cite>{' '}
               <Cite id="F09-22">SageMaker HyperPod documentation, orchestrators</Cite>
             </li>
             <li>
-              <strong>Markets.</strong> On-Demand is paid as used. Spot is spare capacity that AWS can take back on
-              two minutes&apos; warning. A Capacity Block for ML is a prepaid reservation of GPU instances with a
+              <strong>Markets.</strong> On-Demand is paid as used. Spot is spare capacity that AWS can take back. The
+              warning is two minutes on a best-effort basis, and it can be missing altogether. A Capacity Block for ML is a prepaid reservation of GPU instances with a
               fixed start and end; a SageMaker training plan is the same for SageMaker.{' '}
               <Cite id="F09-95">EC2 user guide, Spot best practices</Cite>{' '}
+              <Cite id="F10-522">EC2 user guide, Prepare for Spot Instance interruptions</Cite>{' '}
               <Cite id="F09-90">EC2 user guide, Capacity Blocks for ML</Cite>
             </li>
           </ul>
           <Figure
-            cites="F09-11 F09-91 F09-35 F09-81 F06-60 F08-78"
+            cites="F09-11 F09-91 F09-35 F09-81 F06-60 F08-78 F10-200 F10-208"
             caption={
               <>
                 Read from the top. Each blue box is a question, each box under it an answer, and the arrow points at
@@ -652,6 +705,14 @@ export function Choosing() {
             <Cite id="F09-112">AWS post on a Cosmos 3 pipeline on HyperPod</Cite>
           </Box>
           <Box variant="p">
+            The Slurm answer is our reading. A team that already submits with <code>sbatch</code> keeps its scripts
+            on PCS and holds no machines between jobs. PCS also fits the coupled branch of question 3: a PCS job
+            starts only after all of its nodes are available, and the launch template of a node group carries EFA
+            and a placement group, which is what multi-node training needs.{' '}
+            <Cite id="F10-217">AWS PCS User Guide, job-level scaling</Cite>{' '}
+            <Cite id="F10-233">AWS PCS User Guide, EFA and placement groups</Cite>
+          </Box>
+          <Box variant="p">
             The path can also end before any orchestrator. One customer, Telexistence, fine-tuned a 14 billion
             parameter model on a single reserved eight-GPU node, and its post names no job scheduler.{' '}
             <Cite id="F09-88">AWS post on Telexistence</Cite>
@@ -661,7 +722,7 @@ export function Choosing() {
 
       <Container
         header={
-          <Header variant="h2" description="Seven rules you can apply without the diagram, each with its source and the date it carries">
+          <Header variant="h2" description="Nine rules you can apply without the diagram, each with its source and the date it carries">
             Rules of thumb with their evidence
           </Header>
         }
@@ -671,8 +732,19 @@ export function Choosing() {
             <strong>Spot is for work that loses one unit.</strong> The EC2 guide rules it out for work that is
             &quot;tightly coupled between instance nodes&quot; and advises flexibility across at least 10 instance
             types per workload.{' '}
-            <Cite id="F09-95">EC2 user guide, Spot best practices</Cite> Batch&apos;s guidance: split or checkpoint
-            into parts of 30 minutes or less. <Cite id="F09-11">AWS Batch user guide, job length on Spot</Cite>
+            <Cite id="F09-95">EC2 user guide, Spot best practices</Cite> Two first-party pages size the unit, and
+            they differ. The Batch guide: split or checkpoint into parts of 30 minutes or less.{' '}
+            <Cite id="F09-11">AWS Batch user guide, job length on Spot</Cite> The EKS best-practices guide:
+            checkpoint a job that runs longer than 1 to 2 hours for a small model.{' '}
+            <Cite id="F10-535">EKS Best Practices Guide, checkpointing</Cite>
+          </li>
+          <li>
+            <strong>Finish on Spot retries before leaning on On-Demand.</strong> The EC2 guide discourages failing
+            over to On-Demand to handle interruptions, while the Batch guide documents a Spot queue first and a
+            resubmission to an On-Demand queue. Where a row below puts On-Demand behind Spot, size the unit so that
+            a retry on Spot finishes it.{' '}
+            <Cite id="F10-530">EC2 user guide, Spot best practices, introduction</Cite>{' '}
+            <Cite id="F10-537">AWS Batch user guide, Spot best practices</Cite>
           </li>
           <li>
             <strong>Spot differs by family and by Region.</strong> By our count from AWS&apos;s Spot Instance Advisor
@@ -690,6 +762,14 @@ export function Choosing() {
             <strong>List two GPU types in one pool.</strong> RobCo lists ml.g6.12xlarge and ml.g6e.12xlarge in one
             GPU node pool and reports no more multi-hour waits for GPU capacity.{' '}
             <Cite id="F09-86">AWS post on RobCo</Cite>
+          </li>
+          <li>
+            <strong>A Slurm team buys per node group.</strong> On PCS each compute node group takes one purchase
+            option (On-Demand, Spot, a Capacity Block or an interruptible reservation), so a cluster mixes markets
+            by having several groups. <Cite id="F10-207">AWS PCS API Reference, purchase options</Cite> The PCS
+            guide read on {READ_ON} has no page that describes a Spot interruption step by step, so by our reading
+            Spot groups on PCS suit array jobs that restart from the beginning.{' '}
+            <Cite id="F10-222">AWS PCS User Guide, losing a node</Cite>
           </li>
           <li>
             <strong>The edge as a node, for desk machines.</strong> A lab machine can join an EKS cluster as a hybrid
@@ -729,7 +809,7 @@ export function Choosing() {
           <Box variant="p">
             <strong>Can be reserved for a window.</strong> A Capacity Block is booked up to eight weeks ahead and can
             last up to six months. <Cite id="F09-90">EC2 user guide, Capacity Blocks for ML</Cite> The list in the
-            EC2 guide, read on {READ_ON}, names P and Trainium types (Trainium is AWS&apos;s own training chip): the
+            EC2 guide, read on {READ_ON}, names P types and types built on Trainium, AWS&apos;s own training chip: the
             P4d, P4de, P5, P5e, P5en, P6-B200 and P6-B300 families, and P6e-GB200 UltraServers in a table of their
             own.{' '}
             <Cite id="F09-91">EC2 user guide, Capacity Blocks supported instance types</Cite> The SageMaker training
@@ -743,8 +823,8 @@ export function Choosing() {
             <Cite id="F09-35">SageMaker documentation, training plans list</Cite> The launch posts for G7e and G7
             name three ways to buy them: On-Demand, Spot, and Savings Plans (a discount applied to the bill).{' '}
             <Cite id="F09-98">AWS announcements of G7e and G7</Cite> Putting the older G families under the same
-            label is our reading. A G fleet can still hold a slot with an ODCR (On-Demand Capacity Reservation), which
-            keeps capacity for a named type in one Availability Zone at the On-Demand rate, used or not. <Cite id="F09-94">EC2 user guide, Capacity Reservation pricing and billing</Cite>{' '}
+            label is our reading. A G fleet can still hold a slot with an ODCR, the reservation from the simulated-cameras row: it
+            is charged at the On-Demand rate, used or not. <Cite id="F09-94">EC2 user guide, Capacity Reservation pricing and billing</Cite>{' '}
             <Cite id="F09-40">EKS best practices guide, reservations</Cite>
           </Box>
           <Box variant="p">
