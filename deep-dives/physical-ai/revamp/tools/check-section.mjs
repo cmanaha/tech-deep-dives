@@ -271,7 +271,7 @@ try {
       const sectionAllowed = allowedFor(sectionIds);
       if (width === widths[0]) {
         for (const b of claims.blocks) {
-          const nums = [...tokens(b.text)].filter((n) => !(Number.isInteger(Number(n)) && Number(n) <= 12));
+          const nums = [...tokens(b.text.replace(/\b[Ss]ections?\s+\d+(?:(?:\s*,\s*|\s+to\s+|\s+and\s+|\s*,\s*and\s+)\d+)*/g, ' '))].filter((n) => !(Number.isInteger(Number(n)) && Number(n) <= 12));
           if (!nums.length) continue;
           const allowed = b.cites.length ? allowedFor(b.cites) : sectionAllowed;
           const miss = nums.filter((n) => !allowed.has(n));
