@@ -43,7 +43,7 @@ export function loadEntries() {
     let venue = null;
     if (tier === 3) {
       const pv = tierPart.match(/peer-reviewed \(([^)]+)\)/);
-      if (pv) venue = pv[1];
+      if (pv && pv[1].length <= 40) venue = pv[1];
       else if (/preprint/.test(tierPart)) venue = 'preprint';
     }
     e.location = (e.lines.find((l) => l.startsWith('- Location:')) ?? '').replace(/^- Location:\s*/, '');
