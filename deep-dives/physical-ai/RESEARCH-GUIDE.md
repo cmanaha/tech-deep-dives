@@ -597,7 +597,7 @@ All five must pass before `src/sections/` exists.
 | 2. Load-bearing claims verified | PASS, with the coverage limit stated below | 639 verdict rows in the three wave 2 files: 600 HOLDS, 25 SCOPE NARROWER, 4 WRONG, 9 STALE, 0 UNVERIFIABLE. All 38 corrections are applied: 36 entries carry a "Wave 2" line, six entries were added (F07-119, F08-86, F09-115 to F09-118), currency tables and UNKNOWN rows were updated. `SCOPE.md` "Numbers by section" holds 353 figures; a script found each of their 2,024 numbers in the text of the entries cited beside it. |
 | 3. UNKNOWNs triaged | PASS | 155 of 155 rows have a triage value (section 6); a script compared the IDs in each register's section 9 with the triage tables and found none missing and none extra. |
 | 4. Freshness and Tier 0 | PASS | Each register opens with a currency table of versions fetched on 2026-11-20, and wave 2 re-checked them against release pages. Spot check: 15 of 15 (below). Tier 0 results are in `research/experiments/` with checksums and limits; sections 22 and 23 carry their condition in `SCOPE.md`. |
-| 5. Human approval | PENDING | Carlos reads `SCOPE.md` and this guide, approves the section list or names cuts, and answers the open decisions below. |
+| 5. Human approval | PASS (2026-11-20, by voice) | Carlos approved the 26-section plan as one dive and answered the open decisions; his answers are recorded under "Gate 1 decisions" below. |
 
 **Coverage limit on check 2.** Not every entry was read by a second agent against its claim sentence. Wave 2 B
 hand-checked about 91 of its 297 rows and matched the quote by script for the rest. Wave 2 C did the same for 37
@@ -628,6 +628,34 @@ multiplication sign where the register writes "8x".
 `[derived]` joins of other entries, method entries, recorded absences, `[our reading]` entries, and entries that cite
 the AWS toolchain sample by a short alias for its pinned commit (84984decc51cc07fb4ceb8f3fc1f85d523924bf5). None is
 an external number without a source.
+
+**Gate 1 decisions (Carlos, 2026-11-20, by voice; quoted words are his).** Gate 1 check 5 is PASS.
+
+1. One dive, no split: "definitely go for all of it in one dive", "including the AWS parts, which are super
+   important to spend time on those as appropriate. Have the right configuration, the right diagrams, spend time
+   also even in animating the diagrams."
+2. GR00T 2 is taught as current: "Yes, absolutely." It keeps its label (whitepaper, code not yet released), and
+   GR00T N1.7 stays the newest downloadable model.
+3. Sections 22 and 23 are built "a bit open": what exists for the Jetson Orin Nano and the DGX Spark as edge
+   devices, with placeholders for what the profiling project will bring (EC2 P, G and Graviton runs, GPU
+   counters). He will run those against his own AWS account later.
+4. A gap he named: "the part that is missing with those is a bit of the IoT aspect, the Greengrass IoT aspect on
+   AWS. We have not hooked yet your configuration to AWS." Sections 17, 18 and 24 teach the Greengrass and IoT Core
+   path from first-party documentation and carry a placeholder for the measured hook-up of his Jetson and Spark.
+5. The four content-changing unknowns are closed before the build: "Go ahead and research that." (Wave 3,
+   `research/2026-11/wave3-unknowns.md`.)
+6. No dollar figures for now: "you can ship things without dollar figures. We will add the dollar figures on a
+   second round if needed." Section 23 keeps its method and a placeholder for prices.
+7. The thread task: NOT decided; he asked for more context. The assistant's default until he decides: the story
+   stays block-in-cup, and MuJoCo Playground's shipped SO-101 pick-cube task is the first-party worked case for the
+   pick half. The wording lives in `src/lib/task.ts` so a switch is a small edit.
+8. The reservation claim: NOT escalated; he asked not to worry about it now. The page states it with its scope and
+   date ("the lists read on 2026-11-20 name no G-family type").
+
+Placeholders are his explicit instruction for sections 22 and 23, the IoT hook-up and prices, and override the
+no-draft-residue rule for those cases only.
+
+The decisions as they were put to him:
 
 **Open decisions for Carlos at Gate 1.**
 
