@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { DeepDiveLayout } from '@tech-deep-dives/shared';
 import Spinner from '@cloudscape-design/components/spinner';
+import { sections } from './lib/sections';
 
 const OneLoop = React.lazy(() => import('./sections/OneLoop').then((m) => ({ default: m.OneLoop })));
 const GettingStarted = React.lazy(() => import('./sections/GettingStarted').then((m) => ({ default: m.GettingStarted })));
@@ -29,34 +30,6 @@ const AwsOrchestration = React.lazy(() => import('./sections/AwsOrchestration').
 const Choosing = React.lazy(() => import('./sections/Choosing').then((m) => ({ default: m.Choosing })));
 const GlossaryAndSources = React.lazy(() => import('./sections/GlossaryAndSources').then((m) => ({ default: m.GlossaryAndSources })));
 
-export const sections = [
-  { id: 'one-loop', title: '1. One Robot, One Loop' },
-  { id: 'getting-started', title: '2. Getting Started' },
-  { id: 'robot-computer', title: '3. The Robot as a Computer' },
-  { id: 'demonstrations', title: '4. Learning From Demonstrations' },
-  { id: 'vla', title: '5. Vision-Language-Action Models' },
-  { id: 'world-models', title: '6. World Models: Predicting What Happens Next' },
-  { id: 'jepa', title: '7. JEPA: Predicting in Latent Space' },
-  { id: 'robot-rl', title: '8. Reinforcement Learning for Robots' },
-  { id: 'collecting', title: '9. Collecting Data' },
-  { id: 'curating', title: '10. Processing and Curating' },
-  { id: 'augmentation', title: '11. Augmentation and Synthetic Data' },
-  { id: 'physics', title: '12. Physics Simulation' },
-  { id: 'rendering', title: '13. Rendering and Ray Tracing' },
-  { id: 'sim-to-real', title: '14. Sim-to-Real and Real-to-Sim' },
-  { id: 'training-scales', title: '15. Training at Three Scales' },
-  { id: 'evaluation', title: '16. Evaluation' },
-  { id: 'on-robot', title: '17. Running on the Robot' },
-  { id: 'fleet', title: '18. The Fleet' },
-  { id: 'agents', title: '19. Agents Running the Loop' },
-  { id: 'workloads', title: '20. Fifteen Workloads, Five Shapes' },
-  { id: 'pmu-cards', title: '21. Reading a Machine: PMU Cards' },
-  { id: 'measurements', title: '22. Our Measurements' },
-  { id: 'price-performance', title: '23. Price-Performance and Latency' },
-  { id: 'aws-orchestration', title: '24. Orchestrating It on AWS' },
-  { id: 'choosing', title: '25. Choosing' },
-  { id: 'sources', title: '26. Glossary and Sources' },
-];
 
 const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   'one-loop': OneLoop,
