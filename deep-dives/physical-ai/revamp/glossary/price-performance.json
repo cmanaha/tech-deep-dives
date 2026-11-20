@@ -1,0 +1,16 @@
+[
+  { "term": "Unit of work", "expansion": null, "meaning": "The thing one stage of the loop hands to the next, such as a decoded frame, a simulation step, a training sample or an action, counted per second to compare machines." },
+  { "term": "Edge machine", "expansion": null, "meaning": "A computer that sits beside the robot, where power is the scarce resource and nothing is billed by the hour." },
+  { "term": "Stand-in", "expansion": null, "meaning": "A small program that loads a machine the way a real workload does without being that workload." },
+  { "term": "Units per joule", "expansion": null, "meaning": "Units of work per second divided by watts drawn: how much work a machine does with a fixed amount of energy." },
+  { "term": "Purchase option", "expansion": null, "meaning": "How an instance hour is bought: on demand, as spare capacity that AWS can take back, or as a reservation; each has its own price." },
+  { "term": "Region", "expansion": null, "meaning": "The AWS location an instance runs in; prices differ between Regions." },
+  { "term": "GPU-hour", "expansion": null, "meaning": "One GPU running for one hour." },
+  { "term": "Control period", "expansion": null, "meaning": "The time between two commands to the motors: 33.3 ms when the arm is driven at 30 Hz." },
+  { "term": "Chunk", "expansion": null, "meaning": "Several future actions returned by one policy call, played while the next call computes." },
+  { "term": "p50", "expansion": "50th percentile (median)", "meaning": "The time within which half of all calls finish; it describes the typical call." },
+  { "term": "p99", "expansion": "99th percentile", "meaning": "The time within which ninety-nine calls in every hundred finish; a robot's deadline is judged against it." },
+  { "term": "tegrastats", "expansion": null, "meaning": "The Jetson's own command-line monitor of power and load." },
+  { "term": "nvidia-smi", "expansion": null, "meaning": "NVIDIA's command-line tool that reports GPU status, including utilisation and power." },
+  { "term": "Graviton", "expansion": null, "meaning": "AWS's own Arm processors, offered as EC2 CPU instances." }
+]

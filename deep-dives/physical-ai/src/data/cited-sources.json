@@ -1,0 +1,4103 @@
+[
+ {
+  "tier": 0,
+  "url": null,
+  "local": "deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/",
+  "venue": null,
+  "title": "the edge formula",
+  "sections": [
+   1,
+   12,
+   13,
+   20,
+   21,
+   22,
+   23,
+   25
+  ]
+ },
+ {
+  "tier": 0,
+  "url": null,
+  "local": "deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/results-pass2/results-spark-x925.csv",
+  "venue": null,
+  "title": "raw row for the physics step",
+  "sections": [
+   21,
+   22
+  ]
+ },
+ {
+  "tier": 0,
+  "url": null,
+  "local": "deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/run.sh",
+  "venue": null,
+  "title": "our comparison of the run script with Arm's formulas",
+  "sections": [
+   21,
+   22
+  ]
+ },
+ {
+  "tier": 0,
+  "url": null,
+  "local": "deep-dives/physical-ai/research/experiments/README.md",
+  "venue": null,
+  "title": "limits of our measurements",
+  "sections": [
+   12,
+   20,
+   21,
+   22,
+   23,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-eks-hybrid-nodes-pricing-change/",
+  "local": null,
+  "venue": null,
+  "title": "AWS announcement, EKS Hybrid Nodes pricing change",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/aws-lambda-gpu-managed-instances/",
+  "local": null,
+  "venue": null,
+  "title": "AWS What's New, 18 November 2026, Lambda GPU functions",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/deadline-cloud-supports-ec2-g7/",
+  "local": null,
+  "venue": null,
+  "title": "AWS announcement, Deadline Cloud supports EC2 G7",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/ec2-performance-status-checks/",
+  "local": null,
+  "venue": null,
+  "title": "AWS What's New, EC2 performance status checks",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/sagemaker-hyperpod-higher-pod-density/",
+  "local": null,
+  "venue": null,
+  "title": "AWS What's New, 18 November 2026",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://core-electronics.com.au/attachments/uploads/sts3215-smart-servo-datasheet-translated.pdf",
+  "local": null,
+  "venue": null,
+  "title": "Feetech STS3215 specification",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://developer.nvidia.com/embedded/jetpack/downloads",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA JetPack downloads page",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://developer.nvidia.com/video-encode-decode-support-matrix",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA support matrix, row Tesla T4",
+  "sections": [
+   1,
+   2,
+   10,
+   13,
+   20,
+   23,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html",
+  "local": null,
+  "venue": null,
+  "title": "S3 User Guide, Amazon EventBridge",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html",
+  "local": null,
+  "venue": null,
+  "title": "Amazon S3 user guide, multipart upload limits",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-ec2-nitro-sandboxes.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 User Guide, Nitro Sandboxes, considerations and limitations",
+  "sections": [
+   19,
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 User Guide, On-Demand Capacity Reservations",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html",
+  "local": null,
+  "venue": null,
+  "title": "Capacity Blocks list",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 User Guide, Elastic Fabric Adapter",
+  "sections": [
+   1,
+   2,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 User Guide, Spot best practices",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch API Reference, SubmitJob",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, allocation strategies",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/array_jobs.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Array jobs",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/bestpractice6.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch user guide, job length on Spot",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/compute-environment-template.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Compute environment template",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/eks.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch user guide, scaling to zero",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/example-test-gpu.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch API Reference, RegisterJobDefinition",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/gpu-jobs.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Run GPU jobs",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_scheduling.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, job scheduling",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_timeouts.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, job timeouts",
+  "sections": [
+   19,
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/mnp-ce.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, compute environment considerations for multi-node jobs",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/multi-node-parallel-jobs.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Multi-node parallel jobs",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/batch/latest/userguide/when-to-use-fargate.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, When to use Fargate",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/decision-guides/latest/decision-guides/genai-guide.html",
+  "local": null,
+  "venue": null,
+  "title": "searches of AWS documentation run on 2026-11-20",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html",
+  "local": null,
+  "venue": null,
+  "title": "EC2 accelerated computing specifications",
+  "sections": [
+   1,
+   2,
+   10,
+   13,
+   20,
+   21,
+   23,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/best-practices/aiml-compute.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS user guide, Auto Mode GPU limits",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/best-practices/hybrid-nodes-kubernetes-pod-failover.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS best practices, hybrid nodes and disconnections",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/auto-accelerated.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, Auto Mode",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-add-ons.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS user guide, Hybrid Nodes pages",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-os.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, Hybrid Nodes operating systems",
+  "sections": [
+   18,
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-overview.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, Hybrid Nodes overview",
+  "sections": [
+   18,
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-prereqs.html",
+  "local": null,
+  "venue": null,
+  "title": "EKS User Guide, Hybrid Nodes prerequisites",
+  "sections": [
+   18,
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html",
+  "local": null,
+  "venue": null,
+  "title": "docs.aws.amazon.com/fsx/latest/LustreGuide/performance.html",
+  "sections": [
+   1,
+   2,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/general/latest/gr/full_shutdown_services.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS General Reference, Services in Full Shutdown",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/general/latest/gr/greengrassv2.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS General Reference, Greengrass V2 quotas",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/general/latest/gr/iot-core.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS General Reference, AWS IoT Core quotas",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/general/latest/gr/maintenance_services.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS General Reference, Services in Maintenance",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/APIReference/API_DeploymentComponentUpdatePolicy.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass V2 API reference, DeploymentComponentUpdatePolicy",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/allow-device-traffic.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Allow device traffic",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/cancel-deployments.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Cancel deployments",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/component-recipe-reference.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass component recipe reference",
+  "sections": [
+   17,
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/create-deployments.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Create deployments",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/create-subdeployments.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Create subdeployments",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/device-service-role.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Authorize core devices",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/device-status.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Check core device status",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/docker-application-manager-component.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Docker application manager",
+  "sections": [
+   17,
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/fleet-provisioning.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Fleet provisioning",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/gg-cli-deployment.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Greengrass CLI deployment",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/greengrass-nucleus-component.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT Greengrass v2 documentation",
+  "sections": [
+   17,
+   18,
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/greengrass-nucleus-lite-component.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Greengrass nucleus lite",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/how-it-works.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, How it works",
+  "sections": [
+   17,
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/interact-with-aws-services.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Interact with AWS services",
+  "sections": [
+   17,
+   18,
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/manage-data-streams.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Manage data streams",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/manage-deployments.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Manage deployments",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/manual-installation.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Install with manual provisioning",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/operating-system-feature-support-matrix.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, feature compatibility",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/quick-installation.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, quick installation",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/run-docker-container.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Run a Docker container",
+  "sections": [
+   17,
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/stream-export-configurations.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Export configurations",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/stream-manager-component.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Stream manager",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/update-greengrass-core-v2.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, Update the Core software",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/greengrass/v2/developerguide/what-is-iot-greengrass.html",
+  "local": null,
+  "venue": null,
+  "title": "Greengrass developer guide, What is AWS IoT Greengrass",
+  "sections": [
+   17,
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/apireference/API_AbortCriteria.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT API reference, AbortCriteria",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/apireference/API_ExponentialRolloutRate.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT API reference, ExponentialRolloutRate and JobExecutionsRolloutConfig",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/developerguide/device-defender.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT developer guide, Device Defender",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT developer guide, Basic Ingest and the S3 rule action",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT developer guide, Device Shadow service",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/developerguide/iot-indexing.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT developer guide, Fleet indexing",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/developerguide/jobs-configurations-details.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT developer guide, Job rollout rates",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/developerguide/key-concepts-jobs.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT developer guide, Jobs key concepts",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT developer guide, Device communication protocols",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/iot/latest/developerguide/secure-tunneling.html",
+  "local": null,
+  "venue": null,
+  "title": "AWS IoT developer guide, Secure tunneling",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/robomaker/latest/dg/chapter-welcome.html",
+  "local": null,
+  "venue": null,
+  "title": "RoboMaker developer guide (page removed)",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/reserve-capacity-with-training-plans.html",
+  "local": null,
+  "venue": null,
+  "title": "training plans list",
+  "sections": [
+   15,
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-policies.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, task governance policies",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-operate-console-ui-governance-setup-task-governance.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, task governance setup",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-deep-health-checks.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, Deep health checks",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-eks-resiliency-node-recovery.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, automatic node recovery",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-prerequisites.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, HyperPod prerequisites",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod-release-notes.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker HyperPod release notes, 16 April 2026",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-hyperpod.html",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker HyperPod documentation, orchestrators",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/solutions/physical-ai-simulation-platform-on-aws/",
+  "local": null,
+  "venue": null,
+  "title": "AWS Guidance for Physical AI Simulation Platform",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html",
+  "local": null,
+  "venue": null,
+  "title": "Step Functions Developer Guide, AWS Batch integration",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.aws.amazon.com/step-functions/latest/dg/state-map-distributed.html",
+  "local": null,
+  "venue": null,
+  "title": "Step Functions Developer Guide, Distributed Map",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.isaacsim.omniverse.nvidia.com/6.2.0/installation/requirements.html",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Sim 6.2.0 requirements",
+  "sections": [
+   13,
+   23,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/feature-overview.html",
+  "local": null,
+  "venue": null,
+  "title": "DCGM User Guide, profiling metrics",
+  "sections": [
+   1,
+   2,
+   20,
+   21,
+   22
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/engine-compatibility.html",
+  "local": null,
+  "venue": null,
+  "title": "TensorRT documentation, Engine Compatibility",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/deploy/nvidia-smi/index.html",
+  "local": null,
+  "venue": null,
+  "title": "nvidia-smi documentation, Utilization",
+  "sections": [
+   1,
+   2,
+   10,
+   20,
+   21,
+   22,
+   23
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/dgx/dgx-spark/hardware.html",
+  "local": null,
+  "venue": null,
+  "title": "DGX Spark User Guide, hardware overview",
+  "sections": [
+   17,
+   23
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/jetson/archives/r36.5/DeveloperGuide/SD/Multimedia/SoftwareEncodeInOrinNano.html",
+  "local": null,
+  "venue": null,
+  "title": "Jetson Linux guide, software encode in Orin Nano",
+  "sections": [
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/jetson/archives/r39.2.2/DeveloperGuide/AT/JetsonLinuxDevelopmentTools/TegrastatsUtility.html",
+  "local": null,
+  "venue": null,
+  "title": "docs.nvidia.com/jetson/archives/r39.2.2/DeveloperGuide/AT/JetsonLinuxDevelopmentTools/TegrastatsUtility.html",
+  "sections": [
+   22
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/jetson/archives/r39.2.2/DeveloperGuide/SD/SoftwarePackagesAndTheUpdateMechanism.html",
+  "local": null,
+  "venue": null,
+  "title": "Jetson Linux developer guide, update mechanism",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/nim/cosmos/latest/support-matrix.html",
+  "local": null,
+  "venue": null,
+  "title": "NIM support matrix",
+  "sections": [
+   6,
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html",
+  "local": null,
+  "venue": null,
+  "title": "Nsight Compute Profiling Guide",
+  "sections": [
+   1,
+   2,
+   13,
+   20,
+   21,
+   22
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://docs.nvidia.com/nsight-systems/ReleaseNotes/index.html",
+  "local": null,
+  "venue": null,
+  "title": "Nsight Systems release notes",
+  "sections": [
+   21,
+   22
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws-greengrass/aws-greengrass-lite/blob/v2.7.0/docs/RESOURCE_LIMITS.md",
+  "local": null,
+  "venue": null,
+  "title": "aws-greengrass-lite v2.7.0, RESOURCE_LIMITS.md",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws-greengrass/aws-greengrass-lite/blob/v2.7.0/README.md",
+  "local": null,
+  "venue": null,
+  "title": "aws-greengrass-lite v2.7.0, README",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws-greengrass/aws-greengrass-lite/releases/download/v2.7.0/aws-greengrass-lite-deb-arm64.zip",
+  "local": null,
+  "venue": null,
+  "title": "aws-greengrass-lite v2.7.0, package readme",
+  "sections": [
+   17,
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws-greengrass/aws-greengrass-nucleus/blob/v2.18.4/src/main/java/com/aws/greengrass/componentmanager/builtins/ArtifactDownloader.java",
+  "local": null,
+  "venue": null,
+  "title": "aws-greengrass-nucleus v2.18.4, ArtifactDownloader.java and S3Downloader.java",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws-greengrass/aws-greengrass-nucleus/blob/v2.18.4/src/main/java/com/aws/greengrass/componentmanager/ComponentManager.java",
+  "local": null,
+  "venue": null,
+  "title": "aws-greengrass-nucleus v2.18.4, ComponentManager.java",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws-greengrass/aws-greengrass-stream-manager-sdk-python/blob/v1.1.2/samples/stream_manager_s3.py",
+  "local": null,
+  "venue": null,
+  "title": "Stream manager Python SDK v1.1.2, stream_manager_s3.py",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws-samples/sample-rfm-simulation-on-aws",
+  "local": null,
+  "venue": null,
+  "title": "AWS sample, docs/results.md",
+  "sections": [
+   8,
+   15
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws/blob/84984decc51cc07fb4ceb8f3fc1f85d523924bf5/isaac-gr00t-on-aws/README.md",
+  "local": null,
+  "venue": null,
+  "title": "AWS Physical AI Toolchain sample, training options",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws/blob/84984decc51cc07fb4ceb8f3fc1f85d523924bf5/osmo-on-aws/README.md",
+  "local": null,
+  "venue": null,
+  "title": "AWS Physical AI Toolchain sample, OSMO on AWS README",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws-samples/sample-the-physical-ai-toolchain-on-aws/blob/84984decc51cc07fb4ceb8f3fc1f85d523924bf5/README.md",
+  "local": null,
+  "venue": null,
+  "title": "AWS Physical AI Toolchain sample, OSMO guidance",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws/aws-graviton-getting-started/blob/541d1ad524bb1630e16b8e66aef36dcd01a3bbc1/perfrunbook/debug_hw_perf.md",
+  "local": null,
+  "venue": null,
+  "title": "AWS Graviton guide, PMU support table",
+  "sections": [
+   21,
+   22
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws/aws-graviton-getting-started/blob/541d1ad524bb1630e16b8e66aef36dcd01a3bbc1/README.md",
+  "local": null,
+  "venue": null,
+  "title": "AWS Graviton guide, README processor table",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/aws/karpenter-provider-aws/releases/tag/v1.15.2",
+  "local": null,
+  "venue": null,
+  "title": "Karpenter provider for AWS, release v1.15.2",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo docs, MuJoCo Warp chapter, default branch",
+  "sections": [
+   13
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco_menagerie/tree/370c43965323c0944b433b202aac5058b5f907a9/robotstudio_so101",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo Menagerie, robotstudio_so101 README",
+  "sections": [
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco_playground/blob/084e7957842792725d70866ee840d8fd79f17bbe/mujoco_playground/_src/objects/assets/primitive/plane.xml",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo Playground plane.xml",
+  "sections": [
+   8,
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco_playground/blob/084e7957842792725d70866ee840d8fd79f17bbe/mujoco_playground/robots/so101/sim/constant.py",
+  "local": null,
+  "venue": null,
+  "title": "SO-101 constant.py",
+  "sections": [
+   14
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco_playground/blob/084e7957842792725d70866ee840d8fd79f17bbe/mujoco_playground/tasks/manipulation/pick_cube/so101/deploy/README.md",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo Playground, SO-101 deploy README",
+  "sections": [
+   14
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco_playground/blob/084e7957842792725d70866ee840d8fd79f17bbe/mujoco_playground/tasks/manipulation/pick_cube/so101/task.py",
+  "local": null,
+  "venue": null,
+  "title": "SO-101 task.py, resetters",
+  "sections": [
+   13,
+   14
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco_playground/blob/084e7957842792725d70866ee840d8fd79f17bbe/mujoco_playground/tasks/sysid/so101/README.md",
+  "local": null,
+  "venue": null,
+  "title": "SO-101 sysid README",
+  "sections": [
+   14
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco_playground/blob/084e7957842792725d70866ee840d8fd79f17bbe/third_party/reaf_sim/reaf/simulation/torch/_src/builders/config.py",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo Playground, pick-cube task.py",
+  "sections": [
+   8,
+   12,
+   14
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco_playground/tree/084e7957842792725d70866ee840d8fd79f17bbe",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo Playground changelog, version 1.0.0",
+  "sections": [
+   12,
+   14
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco_playground/tree/v1.0.1",
+  "local": null,
+  "venue": null,
+  "title": "synthesis of the Playground and LeRobot entries",
+  "sections": [
+   8
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco_warp/tree/2db59f4d929dab714d85fab946d93427d2aa56e7",
+  "local": null,
+  "venue": null,
+  "title": "mujoco_warp README at v4.0.1",
+  "sections": [
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/computation/index.rst",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo docs, simulation pipeline",
+  "sections": [
+   12,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/mjwarp/index.rst",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo Warp render benchmark",
+  "sections": [
+   12,
+   13,
+   14
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/mjx.rst",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo docs, MJX chapter",
+  "sections": [
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/programming/rendering.rst",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo docs, rendering",
+  "sections": [
+   13,
+   22
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/programming/samples.rst",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo docs, testspeed",
+  "sections": [
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco/blob/4ed093a9f06b170bd1564942fa37e1bb907d93e3/doc/XMLreference.rst",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo XML reference, option/timestep",
+  "sections": [
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/google-deepmind/mujoco/releases/tag/4.0.1",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo 4.0.1 release",
+  "sections": [
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/act.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot ACT guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/cosmos3.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot cosmos3 guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/eo1.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot eo1 guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/fastwam.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot fastwam guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/flux3.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot flux3 guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/g05.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot g05 guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/groot.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot groot guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/lawam.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot lawam guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/lingbot_va.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot lingbot_va guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/lingbot_vla_v2.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot lingbot_vla_v2 guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/longwam.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot longwam guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/molmoact2.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot molmoact2 guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/multi_task_dit.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot multi_task_dit guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/pi0.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot pi0 guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/pi05.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot pi05 guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/policy_fineart_vla_README.md",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot fineart_vla README",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/simulation.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot v0.7.0, simulation integrations",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/smolvla.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot SmolVLA guide",
+  "sections": [
+   5,
+   15
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/vla_jepa.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot vla_jepa guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/docs/source/wall_oss_05.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot wall_oss_05 guide",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/act/configuration_act.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot configuration_act.py",
+  "sections": [
+   4
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/act/modeling_act.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot modeling_act.py",
+  "sections": [
+   4
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/diffusion/configuration_diffusion.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot diffusion config",
+  "sections": [
+   4,
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/dm05/configuration_dm05.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot dm05 config",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/evo1/configuration_evo1.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot evo1 config",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/gaussian_actor/configuration_gaussian_actor.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot gaussian_actor config",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/groot/configuration_groot.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot configuration_groot.py",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/pi0_fast/configuration_pi0_fast.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot pi0_fast config",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/pi05/configuration_pi05.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot pi05 guide and config",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/smolvla/configuration_smolvla.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot configuration_smolvla.py",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/wall_x/configuration_wall_x.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot wall_x config",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies/xvla/configuration_xvla.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot xvla config",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/robots/so_follower/so_follower.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot so_follower.py and imitation learning tutorial",
+  "sections": [
+   4,
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/blob/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/utils/eval_stats.py",
+  "local": null,
+  "venue": null,
+  "title": "our arithmetic",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/huggingface/lerobot/tree/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/policies",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot vqbet config",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/intel/perfmon/blob/c6875bae4fe4322e88c6b265962901672bfa97c9/README.md",
+  "local": null,
+  "venue": null,
+  "title": "Intel perfmon README, TMA reference",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/intel/perfmon/blob/c6875bae4fe4322e88c6b265962901672bfa97c9/TMA_Metrics-full.csv",
+  "local": null,
+  "venue": null,
+  "title": "Intel TMA metrics file, level-1 rows",
+  "sections": [
+   1,
+   2,
+   20,
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacLab/blob/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/_static/benchmarks/environment-performance-release.csv",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 benchmark file",
+  "sections": [
+   12,
+   13,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacLab/blob/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/concepts/physics_backends.rst",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab docs, physics back ends",
+  "sections": [
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacLab/blob/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/concepts/renderers.rst",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 docs, renderers",
+  "sections": [
+   13
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacLab/blob/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/isaaclab/installation.rst",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab 3.0 installation guide",
+  "sections": [
+   12,
+   13,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacLab/blob/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/source/isaaclab_tasks/isaaclab_tasks/core/cartpole/cartpole_common.py",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 cartpole_common.py and benchmark export",
+  "sections": [
+   13
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacLab/blob/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/source/isaaclab_tasks/isaaclab_tasks/core/lift/config/kuka_allegro/camera_cfg.py",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 camera_cfg.py",
+  "sections": [
+   8,
+   13
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 release",
+  "sections": [
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacLab/tree/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/source/isaaclab_tasks/isaaclab_tasks/contrib/stack/config/so101",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 repository tree, SO-101 stack task",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/isaac-sim/IsaacSim/releases/tag/v6.2.0",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Sim v6.2.0 release",
+  "sections": [
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/docs/gpu-sharing/README.md",
+  "local": null,
+  "venue": null,
+  "title": "KAI Scheduler v0.19.0, GPU sharing documentation",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/kai-scheduler/KAI-Scheduler/blob/2305acfc348c9bd9cd1ab813d3feb8dfc4ab9d11/README.md",
+  "local": null,
+  "venue": null,
+  "title": "KAI Scheduler v0.19.0, README",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/concepts/cluster_queue.md",
+  "local": null,
+  "venue": null,
+  "title": "Kueue v0.20.7 documentation, ClusterQueue and Cohort",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/kubernetes-sigs/kueue/blob/e854ec82e404436b261c81f0341ac9de8508f97c/site/content/en/docs/overview/_index.md",
+  "local": null,
+  "venue": null,
+  "title": "Kueue v0.20.7 documentation, overview",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/newton-physics/newton/releases/tag/v1.8.0",
+  "local": null,
+  "venue": null,
+  "title": "Newton v1.8.0 release",
+  "sections": [
+   12
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/nv-tlabs/3dgrut/tree/0a5832248698ab8456b181d6ea17fe02eda58637",
+  "local": null,
+  "venue": null,
+  "title": "3DGRUT README at v1.1.0, benchmark tables",
+  "sections": [
+   14
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/Cosmos",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Cosmos README, models",
+  "sections": [
+   6
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/cosmos-framework/blob/82d6f4e7c08b04f4cfa7c6de103d9be2e30af213/.agents/skills/cosmos3-inference-generate-media/references/skill-notes.md",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA cosmos-framework, agent skill notes",
+  "sections": [
+   6,
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/cosmos-framework/blob/82d6f4e7c08b04f4cfa7c6de103d9be2e30af213/docs/faq.md",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA cosmos-framework FAQ, inference",
+  "sections": [
+   6,
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/cosmos-framework/blob/82d6f4e7c08b04f4cfa7c6de103d9be2e30af213/packages/diffusers-cpu-offloading/README.md",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA cosmos-framework, CPU offloading README",
+  "sections": [
+   6,
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/Isaac-GR00T/blob/708617f5716c63fc0a327391492ea2b91977ae90/getting_started/hardware_recommendation.md",
+  "local": null,
+  "venue": null,
+  "title": "Isaac-GR00T hardware recommendation",
+  "sections": [
+   5,
+   15
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/Isaac-GR00T/blob/708617f5716c63fc0a327391492ea2b91977ae90/gr00t/configs/model/gr00t_n1d7.py",
+  "local": null,
+  "venue": null,
+  "title": "Isaac-GR00T gr00t_n1d7.py and the released checkpoint config",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/resource_pools/scheduling/index.rst",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA OSMO 6.3.1, resource pools and scheduling",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/docs/user_guide/workflows/index.rst",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA OSMO at tag 6.3.1, README",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/OSMO/blob/ed59b69715e4ee6fff70bcd9d715106358a7205f/README.md",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA OSMO 6.3.1, README",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/OSMO/releases/tag/6.2.8",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA OSMO, release notes 6.2.8 and 6.3.0",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/OSMO/releases/tag/6.3.1",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA OSMO, release 6.3.1",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVIDIA/TensorRT/releases/tag/v11.5",
+  "local": null,
+  "venue": null,
+  "title": "TensorRT 11.5 release notes",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/NVlabs/ENPIRE",
+  "local": null,
+  "venue": null,
+  "title": "ENPIRE repository at its pinned commit",
+  "sections": [
+   19
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/README.md",
+  "local": null,
+  "venue": null,
+  "title": "openpi README",
+  "sections": [
+   5,
+   15
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/torvalds/linux/blob/c03c1a14507dfaf8b856c2608f9ac216021fc222/tools/perf/Documentation/perf-stat.txt",
+  "local": null,
+  "venue": null,
+  "title": "Linux v7.3, perf stat documentation",
+  "sections": [
+   21,
+   22
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/torvalds/linux/blob/c03c1a14507dfaf8b856c2608f9ac216021fc222/tools/perf/pmu-events/arch/arm64/sbsa.json",
+  "local": null,
+  "venue": null,
+  "title": "Linux v7.3, perf metric file sbsa.json",
+  "sections": [
+   21,
+   22
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/torvalds/linux/blob/c03c1a14507dfaf8b856c2608f9ac216021fc222/tools/perf/pmu-events/arch/x86/amdzen4/pipeline.json",
+  "local": null,
+  "venue": null,
+  "title": "Linux v7.3, amdzen4 pipeline.json",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/torvalds/linux/blob/c03c1a14507dfaf8b856c2608f9ac216021fc222/tools/perf/pmu-events/arch/x86/amdzen5/pipeline.json",
+  "local": null,
+  "venue": null,
+  "title": "Linux v7.3, amdzen5 and amdzen6 pipeline.json",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/torvalds/linux/tree/c03c1a14507dfaf8b856c2608f9ac216021fc222/tools/perf/pmu-events/arch/arm64/arm",
+  "local": null,
+  "venue": null,
+  "title": "Linux v7.3, perf arm64 per-core directories",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://github.com/volcano-sh/volcano/blob/41f27d567fb5bdaf2cab01e1caaf48f7e266eefb/README.md",
+  "local": null,
+  "venue": null,
+  "title": "Volcano v1.16.0, README",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://gitlab.arm.com/telemetry-solution/telemetry-solution/-/blob/ea533b733b9bad52223d16e768b7dab03cabb830/data/pmu/cpu/specifications/cortex/cortex_x925_r0p0_pmu.json",
+  "local": null,
+  "venue": null,
+  "title": "Arm telemetry file for the Cortex-X925",
+  "sections": [
+   21,
+   22
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://gitlab.arm.com/telemetry-solution/telemetry-solution/-/blob/ea533b733b9bad52223d16e768b7dab03cabb830/data/pmu/cpu/specifications/neoverse/neoverse_v1_r1p2_pmu.json",
+  "local": null,
+  "venue": null,
+  "title": "Arm Telemetry Solution, neoverse_v1 metrics",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://gitlab.arm.com/telemetry-solution/telemetry-solution/-/blob/ea533b733b9bad52223d16e768b7dab03cabb830/data/pmu/cpu/specifications/neoverse/neoverse_v2_r0p0_pmu.json",
+  "local": null,
+  "venue": null,
+  "title": "Arm Telemetry Solution, neoverse_v2 metrics",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://gitlab.arm.com/telemetry-solution/telemetry-solution/-/blob/ea533b733b9bad52223d16e768b7dab03cabb830/RELEASE_NOTES.md",
+  "local": null,
+  "venue": null,
+  "title": "Arm Telemetry Solution release notes, 2026.09",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://gitlab.arm.com/telemetry-solution/telemetry-solution/-/tree/ea533b733b9bad52223d16e768b7dab03cabb830/data/pmu/cpu/specifications",
+  "local": null,
+  "venue": null,
+  "title": "Arm telemetry files, slots per core",
+  "sections": [
+   21,
+   22
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://google-deepmind.github.io/mujoco_warp/nightly/",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo Warp nightly benchmarks, humanoid",
+  "sections": [
+   12,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://huggingface.co/api/datasets/lerobot/svla_so101_pickplace/tree/f641879e22172be7e8161d5e6c1503c2d2feb657?recursive=true",
+  "local": null,
+  "venue": null,
+  "title": "Hugging Face hub file listing of the example dataset",
+  "sections": [
+   9,
+   18
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://huggingface.co/api/models?author=lerobot&search=smolvla&sort=createdAt&direction=-1",
+  "local": null,
+  "venue": null,
+  "title": "Hugging Face model list, lerobot/smolvla",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://huggingface.co/datasets/lerobot/svla_so101_pickplace/resolve/f641879e22172be7e8161d5e6c1503c2d2feb657/meta/info.json",
+  "local": null,
+  "venue": null,
+  "title": "info.json of the example dataset",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://huggingface.co/nvidia/Cosmos3-Nano",
+  "local": null,
+  "venue": null,
+  "title": "Cosmos3-Nano model card",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://huggingface.co/nvidia/GR00T-N1.7-3B/blob/373d34e2723d928870157d07dc216a19a624b5bb/README.md",
+  "local": null,
+  "venue": null,
+  "title": "GR00T N1.7 model card, computational load",
+  "sections": [
+   5,
+   15
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://isaac-sim.github.io/IsaacLab-Arena/main/pages/references/performance.html",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab-Arena docs, performance and scaling",
+  "sections": [
+   16,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/aws-samples/sample-rfm-simulation-on-aws/66e0fbef60d4d345d72c38505d3911d6a4cfff89/docs/results.md",
+  "local": null,
+  "venue": null,
+  "title": "AWS sample, docs/results.md, earlier run",
+  "sections": [
+   8
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/facebookresearch/vjepa2/204698b45b3712590f06245fbfba32d3be539812/app/vjepa/train.py",
+  "local": null,
+  "venue": null,
+  "title": "vjepa2 app/vjepa/train.py, lines 429 to 450",
+  "sections": [
+   7
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/facebookresearch/vjepa2/204698b45b3712590f06245fbfba32d3be539812/configs/train/vitl16/pretrain-256px-16f.yaml",
+  "local": null,
+  "venue": null,
+  "title": "vjepa2 pretrain-256px-16f.yaml, mask block",
+  "sections": [
+   7
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/facebookresearch/vjepa2/204698b45b3712590f06245fbfba32d3be539812/notebooks/utils/world_model_wrapper.py",
+  "local": null,
+  "venue": null,
+  "title": "vjepa2 notebooks/utils/world_model_wrapper.py, lines 20 to 29",
+  "sections": [
+   7
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/facebookresearch/vjepa2/204698b45b3712590f06245fbfba32d3be539812/README.md",
+  "local": null,
+  "venue": null,
+  "title": "V-JEPA 2.1 paper, encoders",
+  "sections": [
+   6,
+   7
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/facebookresearch/vjepa2/204698b45b3712590f06245fbfba32d3be539812/src/models/ac_predictor.py",
+  "local": null,
+  "venue": null,
+  "title": "vjepa2 ac_predictor.py, lines 141 to 153",
+  "sections": [
+   7
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/facebookresearch/vjepa2/204698b45b3712590f06245fbfba32d3be539812/src/models/predictor.py",
+  "local": null,
+  "venue": null,
+  "title": "vjepa2 predictor.py, lines 189 to 252",
+  "sections": [
+   7
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/google-deepmind/mujoco_playground/084e7957842792725d70866ee840d8fd79f17bbe/mujoco_playground/_src/rl/rsl_rl/env_rl_config.py",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo Playground env_rl_config.py",
+  "sections": [
+   8
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/action_representations.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot action representations guide, joint and end-effector space",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/cameras.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot cameras guide and camera configs",
+  "sections": [
+   1,
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/hardware_guide.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot hardware guide, memory by policy group and common scenarios",
+  "sections": [
+   15,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/hilserl.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot v0.7.0 hilserl.mdx",
+  "sections": [
+   8
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/il_robots.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot imitation learning tutorial, cameras",
+  "sections": [
+   3,
+   9
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/inference.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot inference guide",
+  "sections": [
+   3,
+   17,
+   18,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/lerobot-dataset-v3.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot v0.7.0 lerobot-dataset-v3.mdx",
+  "sections": [
+   9,
+   10,
+   11,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/remote_inference.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot remote inference guide, tuning",
+  "sections": [
+   17,
+   23
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/rtc.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot real-time chunking guide",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/so101.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot SO-101 guide, USB ports",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/streaming_video_encoding.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot streaming video encoding docs, section 3",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/training_dataset_streaming.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot v0.7.0 training_dataset_streaming.mdx",
+  "sections": [
+   10
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/using_dataset_tools.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot v0.7.0 using_dataset_tools.mdx",
+  "sections": [
+   10
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/video_encoding_parameters.mdx",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot video encoding parameters, tuning table",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/configs/dataset.py",
+  "local": null,
+  "venue": null,
+  "title": "speed times delay",
+  "sections": [
+   2,
+   3,
+   9,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/configs/train.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot v0.7.0 configs/train.py",
+  "sections": [
+   10
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/configs/video.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot configs/video.py",
+  "sections": [
+   9,
+   10,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/datasets/dataset_metadata.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot dataset_metadata.py, line 64",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/datasets/dataset_writer.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot dataset_writer.py, lines 547 to 569",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/datasets/utils.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot datasets/utils.py, size defaults",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/datasets/video_utils.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot v0.7.0 video_utils.py",
+  "sections": [
+   9,
+   10,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/motors/motors_bus.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot motors_bus.py, normalisation",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/robots/so_follower/so_follower.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot so_follower.py, motor list",
+  "sections": [
+   1,
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/scripts/lerobot_record.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot lerobot_record.py, record_loop()",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/teleoperators/so_leader/so_leader.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot so_leader.py, get_action()",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/transforms/transforms.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot transforms.py",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/utils/constants.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot constants.py, default features",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/utils/cycle_timer.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot cycle_timer.py, wait()",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/src/lerobot/utils/feature_utils.py",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot feature_utils.py",
+  "sections": [
+   1,
+   2,
+   3,
+   6,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/huggingface/lerobot/f25ac02e6c8fa9c467ab8462289e5f4aed3a2e85/benchmarks/video/README.md",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot video benchmark README at v0.4.0",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/isaac-sim/IsaacLab/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/_static/benchmarks/environment-performance-release.csv",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab 3.0 benchmark file",
+  "sections": [
+   8
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/isaac-sim/IsaacLab/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/features/imitation-learning/augmented_imitation.rst",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 docs, augmented imitation",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/isaac-sim/IsaacLab/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/features/imitation-learning/humanoids_imitation.rst",
+  "local": null,
+  "venue": null,
+  "title": "humanoid figures",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/isaac-sim/IsaacLab/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/features/imitation-learning/skillgen.rst",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 docs, SkillGen",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/isaac-sim/IsaacLab/e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4/docs/source/features/imitation-learning/teleop_imitation.rst",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab v3.0.0 docs",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/lucas-maes/le-wm/8edfeb336732b5f3ce7b8b210d0ba370a09e2cac/config/train/lewm.yaml",
+  "local": null,
+  "venue": null,
+  "title": "le-wm config/train/lewm.yaml, lines 17 to 43",
+  "sections": [
+   7
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/lucas-maes/le-wm/8edfeb336732b5f3ce7b8b210d0ba370a09e2cac/module.py",
+  "local": null,
+  "venue": null,
+  "title": "le-wm module.py, lines 10 to 36",
+  "sections": [
+   7
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/lucas-maes/le-wm/8edfeb336732b5f3ce7b8b210d0ba370a09e2cac/train.py",
+  "local": null,
+  "venue": null,
+  "title": "le-wm train.py, lines 27 to 41",
+  "sections": [
+   7
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/nvidia-cosmos/cosmos-transfer2.5/2ff49d0717af02057ae79bc75c00fbff9da1b4e7/docs/inference.md",
+  "local": null,
+  "venue": null,
+  "title": "Cosmos-Transfer2.5 inference docs",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA-Omniverse-blueprints/synthetic-manipulation-motion-generation/be78013710543995b40a3a122294e6ab21699e67/README.md",
+  "local": null,
+  "venue": null,
+  "title": "GR00T-Mimic blueprint README",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/cosmos-curator/95675431e309fd86c1c559a39fcb694ddedaa2a9/docs/curator/design/curator-next-robot-action-caption.md",
+  "local": null,
+  "venue": null,
+  "title": "Cosmos Curator curator-next-robot-action-caption.md",
+  "sections": [
+   10,
+   20,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/cosmos-curator/95675431e309fd86c1c559a39fcb694ddedaa2a9/docs/curator/design/slim-image.md",
+  "local": null,
+  "venue": null,
+  "title": "Cosmos Curator slim-image.md",
+  "sections": [
+   10
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/cosmos-curator/95675431e309fd86c1c559a39fcb694ddedaa2a9/docs/curator/reference/video-pipelines.md",
+  "local": null,
+  "venue": null,
+  "title": "Cosmos Curator video-pipelines.md, stage list",
+  "sections": [
+   10
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/cosmos-curator/95675431e309fd86c1c559a39fcb694ddedaa2a9/README.md",
+  "local": null,
+  "venue": null,
+  "title": "Cosmos Curator v2.10.0 README",
+  "sections": [
+   10
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference/inference_benchmarks/cosmos3-nano-generator.md",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Cosmos inference benchmarks and methodology",
+  "sections": [
+   11,
+   20
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/Cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference/inference_benchmarks/cosmos3-nano-generator.md",
+  "local": null,
+  "venue": null,
+  "title": "Cosmos3-Nano benchmarks",
+  "sections": [
+   6,
+   7,
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/Cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference/inference_benchmarks/cosmos3-super-generator.md",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Cosmos inference benchmarks, opening notes",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference/models.md",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Cosmos models reference, workflows",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/Cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/docs/reference/models.md",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Cosmos models reference, architecture",
+  "sections": [
+   6
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/cosmos/0eab578a8935e26aa41c2b7dc9f5ab00f790a037/README.md",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Cosmos README, models",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/Isaac-GR00T/708617f5716c63fc0a327391492ea2b91977ae90/README.md",
+  "local": null,
+  "venue": null,
+  "title": "Isaac-GR00T README, What's new",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVIDIA/Isaac-GR00T/708617f5716c63fc0a327391492ea2b91977ae90/scripts/deployment/README.md",
+  "local": null,
+  "venue": null,
+  "title": "Isaac-GR00T deployment README, build notes",
+  "sections": [
+   2,
+   3,
+   17,
+   20,
+   23,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/NVlabs/ENPIRE/99ee90acf65b5b18957c8382ad580db999528be3/enpire/policy/autoresearch_instruction.md",
+  "local": null,
+  "venue": null,
+  "title": "ENPIRE repository, autoresearch_instruction.md",
+  "sections": [
+   19
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/pollen-robotics/rustypot/7aa85e13143594ea4fd4ed9f29e3e29d39b5de85/src/servo/feetech/sts3215.rs",
+  "local": null,
+  "venue": null,
+  "title": "rustypot sts3215.rs, resolution",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/TheRobotStudio/SO-ARM100/141aea7bcac2744d92998e30268c413202a56f96/CHANGELOG.md",
+  "local": null,
+  "venue": null,
+  "title": "SO-ARM100 changelog",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://raw.githubusercontent.com/TheRobotStudio/SO-ARM100/141aea7bcac2744d92998e30268c413202a56f96/README.md",
+  "local": null,
+  "venue": null,
+  "title": "SO-ARM100 README, Sourcing Parts",
+  "sections": [
+   1,
+   3
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://spot-bid-advisor.s3.amazonaws.com/spot-advisor-data.json",
+  "local": null,
+  "venue": null,
+  "title": "Spot Instance Advisor data file",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://www.intel.com/content/www/us/en/docs/vtune-profiler/cookbook/current/top-down-microarchitecture-analysis-method.html",
+  "local": null,
+  "venue": null,
+  "title": "Intel VTune cookbook, the classification paragraphs",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/nano-super-developer-kit/",
+  "local": null,
+  "venue": null,
+  "title": "Jetson Orin Nano Super Developer Kit page",
+  "sections": [
+   17,
+   23
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-thor/",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Jetson Thor page, specifications",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://www.nvidia.com/en-us/data-center/h100/",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA H100 and H200 product pages",
+  "sections": [
+   13
+  ]
+ },
+ {
+  "tier": 1,
+  "url": "https://www.nvidia.com/en-us/data-center/products/a10-gpu/",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA product pages: A10, L4, L40S, RTX PRO 6000 Blackwell Server Edition",
+  "sections": [
+   13
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://armkeil.blob.core.windows.net/developer/Files/pdf/white-paper/neoverse-v1-core-performance-analysis.pdf",
+  "local": null,
+  "venue": null,
+  "title": "Arm Neoverse V1 performance analysis white paper, section 3.2",
+  "sections": [
+   21
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2025/09/sagemaker-hyperpod-autoscaling/",
+  "local": null,
+  "venue": null,
+  "title": "SageMaker Developer Guide, autoscaling on HyperPod",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available",
+  "local": null,
+  "venue": null,
+  "title": "AWS announcement of P6e-GB300 UltraServers",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/01/amazon-g7e-instances-generally-available/",
+  "local": null,
+  "venue": null,
+  "title": "G7 and G7e launch posts",
+  "sections": [
+   13,
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/03/aws-batch-quota-management-preemption-sagemaker/",
+  "local": null,
+  "venue": null,
+  "title": "AWS Batch User Guide, Quota management",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-ec2-g7-generally-available/",
+  "local": null,
+  "venue": null,
+  "title": "AWS What's New, EC2 G7",
+  "sections": [
+   13
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/eks-auto-mode-pod-rightsizing-preview/",
+  "local": null,
+  "venue": null,
+  "title": "AWS What's New, 17 November 2026, and EKS User Guide, resource optimization",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/about-aws/whats-new/2026/11/nitro-sandboxes-eks-ecs-ec2/",
+  "local": null,
+  "venue": null,
+  "title": "AWS What's New and EKS User Guide, Nitro Sandboxes",
+  "sections": [
+   19,
+   24
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/aws/introducing-checkpointless-and-elastic-training-on-amazon-sagemaker-hyperpod/",
+  "local": null,
+  "venue": null,
+  "title": "AWS News Blog, 3 December 2025, and SageMaker Developer Guide",
+  "sections": [
+   15,
+   24
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/machine-learning/build-a-physical-ai-model-factory-with-nvidia-cosmos-3-on-sagemaker-hyperpod/",
+  "local": null,
+  "venue": null,
+  "title": "AWS Machine Learning Blog, 4 September 2026",
+  "sections": [
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/machine-learning/scale-robot-reinforcement-learning-with-nvidia-isaac-lab-on-amazon-sagemaker-ai/",
+  "local": null,
+  "venue": null,
+  "title": "AWS Machine Learning Blog",
+  "sections": [
+   13,
+   23,
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/physical-ai/bringing-a-frontier-world-model-to-the-convenience-store-inside-telexistences-dreamzero-experiment-on-aws/",
+  "local": null,
+  "venue": null,
+  "title": "AWS Telexistence post",
+  "sections": [
+   14,
+   15,
+   16,
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/physical-ai/embodied-ai-blog-series-part-1/",
+  "local": null,
+  "venue": null,
+  "title": "AWS embodied AI series, part 1",
+  "sections": [
+   15,
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/physical-ai/fine-tuning-%CF%800-pi-zero-for-robotic-manipulation-on-amazon-sagemaker-hyperpod-eks/",
+  "local": null,
+  "venue": null,
+  "title": "AWS pi0 post",
+  "sections": [
+   15
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/physical-ai/introducing-aws-physical-ai-toolchain/",
+  "local": null,
+  "venue": null,
+  "title": "AWS Physical AI Toolchain sample, README",
+  "sections": [
+   24
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/physical-ai/nvidia-cosmos-3-on-aws-omnimodal-world-models-for-physical-ai/",
+  "local": null,
+  "venue": null,
+  "title": "AWS and NVIDIA post on Cosmos 3",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/physical-ai/putting-dexterous-robots-to-work-how-rlwrld-builds-physical-ai-with-aws/",
+  "local": null,
+  "venue": null,
+  "title": "AWS post on RLWRLD",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/physical-ai/scaling-physical-ai-vision-pipelines-with-ray-on-amazon-sagemaker-hyperpod/",
+  "local": null,
+  "venue": null,
+  "title": "AWS post on RobCo",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/blogs/physical-ai/train-vla-models-with-hugging-face-lerobot-on-amazon-sagemaker-ai/",
+  "local": null,
+  "venue": null,
+  "title": "AWS post, timing table",
+  "sections": [
+   15,
+   24,
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://aws.amazon.com/ec2/instance-types/g7/",
+  "local": null,
+  "venue": null,
+  "title": "AWS, EC2 G7 product page",
+  "sections": [
+   1,
+   2,
+   13,
+   20
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://deepmind.google/blog/gemini-robotics-15-brings-ai-agents-into-the-physical-world/",
+  "local": null,
+  "venue": null,
+  "title": "deepmind.google/blog/gemini-robotics-15-brings-ai-agents-into-the-physical-world/",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/",
+  "local": null,
+  "venue": null,
+  "title": "Google DeepMind, Gemini Robotics 2.5 post",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://deepmind.google/blog/gemini-robotics-2-brings-whole-body-intelligence-to-robots/",
+  "local": null,
+  "venue": null,
+  "title": "Google DeepMind, Gemini Robotics 2 post",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://deepmind.google/blog/gemini-robotics-on-device-brings-ai-to-local-robotic-devices/",
+  "local": null,
+  "venue": null,
+  "title": "deepmind.google/blog/gemini-robotics-on-device-brings-ai-to-local-robotic-devices/",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/",
+  "local": null,
+  "venue": null,
+  "title": "Google DeepMind blog, Genie 3",
+  "sections": [
+   6
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://deepmind.google/models/genie/",
+  "local": null,
+  "venue": null,
+  "title": "Google DeepMind, Genie model page",
+  "sections": [
+   6
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://developer.nvidia.com/blog/petabyte-scale-video-processing-with-nvidia-nemo-curator-on-nvidia-dgx-cloud/",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Technical Blog, NeMo Video Curator on DGX Cloud (2025-03-18)",
+  "sections": [
+   10
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://developer.nvidia.com/discover/ray-tracing",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Developer, ray tracing page",
+  "sections": [
+   13,
+   20
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://github.com/aws-samples/genai-at-edge",
+  "local": null,
+  "venue": null,
+  "title": "AWS sample repositories searched",
+  "sections": [
+   17,
+   18
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://github.com/aws-samples/genai-at-edge/blob/50df60a828a2ae274e959fce1504a18c61189b8b/greengrass/components/com.aws.jetson.docker/recipe.json",
+  "local": null,
+  "venue": null,
+  "title": "AWS samples: genai-at-edge and the Physical AI Toolchain edge stack",
+  "sections": [
+   17,
+   18
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://github.com/google-deepmind/mujoco/discussions/3773",
+  "local": null,
+  "venue": null,
+  "title": "MuJoCo 4.0 announcement, actuators row",
+  "sections": [
+   14
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://github.com/huggingface/lerobot/pull/4549",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot pull request 4549",
+  "sections": [
+   10
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://github.com/isaac-sim/IsaacLab-Arena/discussions/1245",
+  "local": null,
+  "venue": null,
+  "title": "Isaac Lab-Arena, v0.3 announcement",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://huggingface.co/blog/lerobot/lerobot-release-v070",
+  "local": null,
+  "venue": null,
+  "title": "LeRobot v0.7.0 release post",
+  "sections": [
+   10,
+   11
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://huggingface.co/blog/nvidia/gr00t-n1-7",
+  "local": null,
+  "venue": null,
+  "title": "Isaac-GR00T N1.7 release",
+  "sections": [
+   5,
+   6
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://huggingface.co/datasets/simple-world-lab/HiFi-UMI-2K/blob/a53b7b5784afdd50b2fda9195c9f724ef75ffdaf/README.md",
+  "local": null,
+  "venue": null,
+  "title": "HiFi-UMI-2K dataset card and LeRobot v0.7.0 release post",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://research.nvidia.com/labs/gear/enpire/_next/static/chunks/11dgx9quo0zhy.js",
+  "local": null,
+  "venue": null,
+  "title": "ENPIRE project page, chart data",
+  "sections": [
+   19
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://research.nvidia.com/labs/gear/gr00t-2",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA GR00T 2 research page",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://research.nvidia.com/labs/gear/gr00t-2/",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA GR00T 2 page",
+  "sections": [
+   5,
+   8,
+   15
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://research.nvidia.com/labs/gear/gr00t-2/assets/gr00t2_whitepaper.pdf",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA GR00T 2 whitepaper, table 27",
+  "sections": [
+   6,
+   17
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://research.nvidia.com/labs/gear/gr00t-n1_5/",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA GR00T N1.5 page",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://research.nvidia.com/labs/gear/gr00t-n1_6/",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA GR00T N1.6 page",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://www.1x.tech/discover/1x-world-model",
+  "local": null,
+  "venue": null,
+  "title": "1X, world model post of 2024-09-17",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://www.1x.tech/discover/world-model-self-learning",
+  "local": null,
+  "venue": null,
+  "title": "1X post, World Model: self-learning",
+  "sections": [
+   6
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://www.aboutamazon.com/news/aws/aws-nvidia-2-million-gpus-ai",
+  "local": null,
+  "venue": null,
+  "title": "AWS press release of 26 August 2026",
+  "sections": [
+   25
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://www.figure.ai/news/helix-02",
+  "local": null,
+  "venue": null,
+  "title": "Figure, Helix 02 post",
+  "sections": [
+   3
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://www.jetson-ai-lab.com/tutorials/groot_n17_on_thor/",
+  "local": null,
+  "venue": null,
+  "title": "Jetson AI Lab, GR00T N1.7 on Thor tutorial",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://www.jetson-ai-lab.com/tutorials/openpi_on_thor/",
+  "local": null,
+  "venue": null,
+  "title": "Jetson AI Lab tutorial, OpenPi on Thor",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 2,
+  "url": "https://www.nvidia.com/en-us/data-center/tensor-cores/",
+  "local": null,
+  "venue": null,
+  "title": "NVIDIA Tensor Cores page; Nsight Compute pipeline glossary",
+  "sections": [
+   1,
+   2,
+   13,
+   20,
+   21
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/1011.0686v3",
+  "local": null,
+  "venue": null,
+  "title": "Ross, Gordon and Bagnell, section 1",
+  "sections": [
+   4
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/1703.06907v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "Tobin et al., domain randomization paper, abstract",
+  "sections": [
+   14
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2105.04906v3",
+  "local": null,
+  "venue": null,
+  "title": "VICReg paper, abstract and equation 6",
+  "sections": [
+   7
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2301.08243v3",
+  "local": null,
+  "venue": null,
+  "title": "I-JEPA paper, section 3",
+  "sections": [
+   7,
+   15
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2303.04137v5",
+  "local": null,
+  "venue": "preprint",
+  "title": "Diffusion Policy paper, section 1",
+  "sections": [
+   4
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2304.13705v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "ACT paper, section IV-A",
+  "sections": [
+   4,
+   15
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2310.12931v2",
+  "local": null,
+  "venue": "ICLR 2024, per the arXiv comment",
+  "title": "Eureka paper, section 3.2 and appendix D.4",
+  "sections": [
+   19
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2310.17596v1",
+  "local": null,
+  "venue": null,
+  "title": "MimicGen paper, abstract",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2402.10329v3",
+  "local": null,
+  "venue": "preprint",
+  "title": "UMI paper, section III",
+  "sections": [
+   9
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2404.08471v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "V-JEPA paper, section 2",
+  "sections": [
+   6,
+   7
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2405.05941v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "SIMPLER paper, Table I",
+  "sections": [
+   14,
+   16
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2410.21845v3",
+  "local": null,
+  "venue": "preprint",
+  "title": "HIL-SERL paper, abstract and section 4",
+  "sections": [
+   8
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2410.24164v4",
+  "local": null,
+  "venue": "preprint",
+  "title": "pi0 paper, section IV",
+  "sections": [
+   4,
+   5
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2501.09747v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "FAST paper, sections V and VI",
+  "sections": [
+   4,
+   15
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2502.08844v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "MuJoCo Playground paper, vision time breakdown",
+  "sections": [
+   13
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2502.19645v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "OpenVLA-OFT paper, abstract",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2503.10966v4",
+  "local": null,
+  "venue": null,
+  "title": "STEP paper, abstract",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2503.14734v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "GR00T N1 paper, section 1",
+  "sections": [
+   5,
+   15,
+   20
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2503.20020v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "Gemini Robotics tech report, section 3.1",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2504.16054v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "pi0.5 paper, section I",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2505.12705v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "DreamGen paper, section 1",
+  "sections": [
+   11
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2506.00613v3",
+  "local": null,
+  "venue": "preprint",
+  "title": "WorldGym, HF-WM and PolaRiS papers",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2506.01844v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "SmolVLA paper, table 4",
+  "sections": [
+   5,
+   17
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2506.07339v2",
+  "local": null,
+  "venue": "NeurIPS 2025",
+  "title": "Real-time chunking paper, section 2",
+  "sections": [
+   17
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2506.09985v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "V-JEPA 2 paper, abstract",
+  "sections": [
+   6,
+   7,
+   15
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2506.18123v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "RoboArena paper, abstract",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2509.24527v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "Dreamer 4 paper, section 4",
+  "sections": [
+   6
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2510.10274v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "X-VLA paper, appendix G",
+  "sections": [
+   15
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2510.13626v3",
+  "local": null,
+  "venue": "preprint",
+  "title": "LIBERO-Plus paper, abstract",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2510.25889v3",
+  "local": null,
+  "venue": "preprint",
+  "title": "piRL paper, section 5 and appendix J",
+  "sections": [
+   8
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2511.04831v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "Isaac Lab paper, section 2.3",
+  "sections": [
+   13,
+   14,
+   20,
+   25
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2511.08544v3",
+  "local": null,
+  "venue": "preprint",
+  "title": "LeJEPA paper, abstract",
+  "sections": [
+   7
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2511.14759v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "Recap paper, section VII",
+  "sections": [
+   5,
+   8
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2512.16881v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "PolaRiS paper, section 5.2",
+  "sections": [
+   14,
+   16
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2512.24497v4",
+  "local": null,
+  "venue": "TMLR",
+  "title": "JEPA-WMs paper, section 1",
+  "sections": [
+   6
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2602.15922v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "DreamZero paper, abstract",
+  "sections": [
+   6
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2603.14482v3",
+  "local": null,
+  "venue": "preprint",
+  "title": "V-JEPA 2.1 paper, Table 6",
+  "sections": [
+   6,
+   7
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2603.19312v3",
+  "local": null,
+  "venue": "preprint",
+  "title": "LeWorldModel paper, encoder",
+  "sections": [
+   6,
+   7,
+   15,
+   20,
+   25
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2604.15483v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "pi0.7 paper, section IV",
+  "sections": [
+   5
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2605.00416v4",
+  "local": null,
+  "venue": "preprint",
+  "title": "Learning While Deploying, Table VI",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2606.02800v4",
+  "local": null,
+  "venue": "preprint",
+  "title": "Cosmos 3 paper, section 3.1",
+  "sections": [
+   6,
+   11,
+   15,
+   20
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2606.19980v2",
+  "local": null,
+  "venue": "CoRL 2026",
+  "title": "ENPIRE paper, abstract",
+  "sections": [
+   19
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2606.27375v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "ABC paper, section 4",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2607.00272v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "ASPIRE paper v2, overview",
+  "sections": [
+   19
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2607.01060v4",
+  "local": null,
+  "venue": "preprint",
+  "title": "RoboWorld paper, abstract",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2608.07555v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "AgenticRobotics paper v2, section 5",
+  "sections": [
+   19
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2609.13679v2",
+  "local": null,
+  "venue": "preprint",
+  "title": "REAL-I challenge report, discussion of evaluation",
+  "sections": [
+   16
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2609.16705v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "The Robot Data Factory, appendix B.3",
+  "sections": [
+   18
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2609.29394v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "RACaP paper, abstract",
+  "sections": [
+   19
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://arxiv.org/abs/2610.10515v1",
+  "local": null,
+  "venue": "preprint",
+  "title": "RoboJEPA paper",
+  "sections": [
+   6,
+   7,
+   15
+  ]
+ },
+ {
+  "tier": 3,
+  "url": "https://web.archive.org/web/20240101103457/https://openreview.net/pdf?id=BZ5a1r-kVsf",
+  "local": null,
+  "venue": null,
+  "title": "LeCun position paper, section 4.4",
+  "sections": [
+   7
+  ]
+ }
+]

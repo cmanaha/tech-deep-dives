@@ -1,0 +1,19 @@
+[
+  { "term": "Open-loop evaluation", "expansion": null, "meaning": "Scoring a policy on recorded frames by comparing the action it predicts with the recorded action; the policy's own actions never change what it sees next." },
+  { "term": "Closed-loop evaluation", "expansion": null, "meaning": "Letting the policy drive, on the bench, in a simulator or in a world model, so that each of its actions decides what it sees next, and counting successes." },
+  { "term": "MSE", "expansion": "mean squared error", "meaning": "The average squared distance between the policy's predicted action and the recorded action over the frames of a recording." },
+  { "term": "Rollout", "expansion": null, "meaning": "One complete run of a policy from the starting pose until the task succeeds, fails or runs out of time; also called a trial or an episode." },
+  { "term": "Success rate", "expansion": null, "meaning": "The number of rollouts that ended with the task done, divided by the number of rollouts." },
+  { "term": "Pearson correlation (r)", "expansion": null, "meaning": "A number between -1 and 1 that says how closely two lists of numbers rise and fall together; 1 means one predicts the other exactly, 0 means no relation." },
+  { "term": "Rank agreement", "expansion": null, "meaning": "Whether two ways of scoring put a set of policies in the same order; the Spearman correlation measures it by applying the Pearson calculation to rank positions." },
+  { "term": "Benchmark", "expansion": null, "meaning": "A fixed set of simulated tasks that everyone scores on, so results can be compared." },
+  { "term": "Benchmark saturation", "expansion": null, "meaning": "The state of a benchmark on which nearly every policy scores near the top, so the score no longer separates good policies from poor ones." },
+  { "term": "Confidence interval", "expansion": null, "meaning": "The range of true success rates that would plausibly give the count that was observed." },
+  { "term": "Wilson interval", "expansion": null, "meaning": "One recipe for a confidence interval on a success rate, which stays between 0% and 100% and holds at small trial counts; LeRobot's evaluation tool reports it." },
+  { "term": "Fisher's exact test", "expansion": null, "meaning": "A test that says how often two policies with the same true success rate would show a gap at least as large as the one observed." },
+  { "term": "World-model evaluation", "expansion": null, "meaning": "Closed-loop scoring in which a video world model generates what the cameras would show after each action and a vision-language model judges the generated video." },
+  { "term": "Vision-language model", "expansion": null, "meaning": "A model that takes images and text as input; used here as the judge of a generated rollout." },
+  { "term": "RoboArena", "expansion": null, "meaning": "A real-robot ranking of policies built from blind pairwise comparisons run at seven academic institutions; the reference that simulators and world models are compared with." },
+  { "term": "LIBERO", "expansion": null, "meaning": "A suite of simulated manipulation tasks used as a benchmark, now saturated; LIBERO-Plus is a successor that varies the scene." },
+  { "term": "ICRA", "expansion": "International Conference on Robotics and Automation", "meaning": "A robotics research conference; its 2026 REAL-I challenge report is cited for what open-loop error misses." }
+]

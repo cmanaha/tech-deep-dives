@@ -1,0 +1,23 @@
+[
+  { "term": "Rendering", "expansion": null, "meaning": "Computing the image a camera would see of a scene that exists only as numbers." },
+  { "term": "Mesh", "expansion": null, "meaning": "A surface stored as a set of triangles; how a simulator holds every shape it draws." },
+  { "term": "Rasterisation", "expansion": null, "meaning": "Making an image by projecting each triangle onto it and filling the pixels the triangle covers." },
+  { "term": "Ray tracing", "expansion": null, "meaning": "Making an image by following a ray from the camera through each pixel to the surface it lands on, then more rays from that point." },
+  { "term": "Shadow ray", "expansion": null, "meaning": "A ray sent from a point on a surface toward a light; if something blocks it, the point is in shadow." },
+  { "term": "BVH", "expansion": "bounding-volume hierarchy", "meaning": "A tree of nested boxes around the triangles of a scene that a ray tracer walks to find which triangle a ray lands on." },
+  { "term": "RT cores", "expansion": "ray-tracing cores", "meaning": "Hardware on some NVIDIA GPUs built to speed up the BVH search; data-centre training GPUs such as the H100 lack it." },
+  { "term": "Tensor cores", "expansion": null, "meaning": "The units of an NVIDIA GPU that multiply matrices, the arithmetic of training and running a neural network." },
+  { "term": "General compute cores", "expansion": null, "meaning": "The units of a GPU that run ordinary GPU code, such as batched physics or a ray tracer written as code." },
+  { "term": "NVENC", "expansion": "NVIDIA Encoder", "meaning": "The fixed-function engine on a GPU that compresses frames into video." },
+  { "term": "NVDEC", "expansion": "NVIDIA Decoder", "meaning": "The fixed-function engine on a GPU that turns video back into frames." },
+  { "term": "AV1", "expansion": "AOMedia Video 1", "meaning": "The video codec LeRobot writes by default; some data-centre GPUs cannot decode it in hardware." },
+  { "term": "RTX rendering", "expansion": null, "meaning": "NVIDIA's name for rendering that hands the ray search to the RT cores; the renderer of Isaac Sim works this way." },
+  { "term": "Headless", "expansion": null, "meaning": "Running a simulator with no window and no camera images." },
+  { "term": "Environment", "expansion": null, "meaning": "One simulated copy of the scene plus its task; training runs thousands side by side on a GPU." },
+  { "term": "Cartpole", "expansion": null, "meaning": "A small standard control task, a cart balancing a pole, used in Isaac Lab's benchmark." },
+  { "term": "Tiled rendering", "expansion": null, "meaning": "Drawing every environment's camera into one tile of a single large GPU image in one pass, then cutting it apart." },
+  { "term": "Isaac Sim", "expansion": null, "meaning": "NVIDIA's simulator application; it renders with RTX and requires a GPU with RT cores." },
+  { "term": "Isaac Lab", "expansion": null, "meaning": "NVIDIA's robot-learning framework; since version 3.0 it runs without Isaac Sim." },
+  { "term": "G and P families", "expansion": null, "meaning": "EC2 GPU instance families: G carries GPUs with RT cores, P carries data-centre training GPUs." },
+  { "term": "aarch64", "expansion": null, "meaning": "The 64-bit Arm processor architecture, used by AWS Graviton and the NVIDIA DGX Spark." }
+]
