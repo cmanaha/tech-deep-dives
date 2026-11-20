@@ -134,9 +134,9 @@ const SLOT = 28;
 
 function instanceSize(gpus: number): { w: number; h: number; cols: number } {
   const cols = Math.max(1, Math.min(gpus, 4));
-  const rows = gpus === 0 ? 0 : Math.ceil(gpus / 4);
+  const rows = Math.max(1, Math.ceil(gpus / 4));
   const w = Math.max(84, 14 + cols * (CHIP_W + CHIP_GAP) - CHIP_GAP);
-  const h = 38 + (rows === 0 ? 6 : rows * (CHIP_H + CHIP_GAP) + 4);
+  const h = 38 + rows * (CHIP_H + CHIP_GAP) + 4;
   return { w, h, cols };
 }
 
@@ -230,7 +230,7 @@ function layout(spec: ClusterSpec, narrow: boolean): Layout {
 
 function chipRect(place: Rect, gpus: number, gpu: number): Rect {
   const { cols } = instanceSize(gpus);
-  if (gpus === 0) return { x: place.x + place.w / 2 - CHIP_W / 2, y: place.y + place.h - CHIP_H + 4, w: CHIP_W, h: CHIP_H };
+  if (gpus === 0) return { x: place.x + place.w / 2 - CHIP_W / 2, y: place.y + 36, w: CHIP_W, h: CHIP_H };
   const rowW = cols * (CHIP_W + CHIP_GAP) - CHIP_GAP;
   const x0 = place.x + (place.w - rowW) / 2;
   return { x: x0 + (gpu % cols) * (CHIP_W + CHIP_GAP), y: place.y + 36 + Math.floor(gpu / cols) * (CHIP_H + CHIP_GAP), w: CHIP_W, h: CHIP_H };
