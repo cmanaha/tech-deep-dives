@@ -41,9 +41,11 @@ for (const file of walk(SRC)) {
   };
   for (const m of text.matchAll(/<Cite\s+id="(F0\d-\d+)"[^>]*>([\s\S]*?)<\/Cite>/g)) note(m[1], decode(m[2]));
   for (const m of text.matchAll(/\bcites=(?:"([^"]*)"|\{'([^']*)'\}|\{`([^`]*)`\})/g)) {
-    for (const id of (m[1] ?? m[2] ?? m[3] ?? '').split(/\s+/).filter(Boolean)) note(id, null);
+    for (const id of (m[1] ?? m[2] ?? m[3] ?? '').split(/\s+/).filter((t) => t && !t.startsWith('${'))) note(id, null);
   }
-  for (const m of text.matchAll(/<Cite\s+id=\{/g)) problems.push(`${path.relative(DIVE, file)}: <Cite id={...}> must be a literal string (offset ${m.index})`);
+  // Data-driven citations: rows that carry their register IDs as data (cites: 'F..' or id: 'F..', src: '...').
+  for (const m of text.matchAll(/\bcites:\s*['"]([^'"]*)['"]/g)) for (const id of m[1].split(/\s+/).filter(Boolean)) note(id, null);
+  for (const m of text.matchAll(/\bid:\s*'(F0\d-\d+)'(?:,\s*src:\s*(?:'([^']*)'|"([^"]*)"))?/g)) note(m[1], m[2] ?? m[3] ?? null);
 }
 
 // Resolve to sources, replacing synthesis entries by their inputs.

@@ -269,7 +269,9 @@ try {
       const sectionIds = [...new Set(claims.allCites)];
       for (const c of sectionIds) if (!entries[c]) findings.push(`[cite] ${c} is not a register entry`);
       const sectionAllowed = allowedFor(sectionIds);
-      if (width === widths[0]) {
+      // Section 26 is generated from the registers and the per-section glossaries: its own numbers are
+      // counts of its lists, so the number check does not apply to it.
+      if (width === widths[0] && id !== 'sources') {
         for (const b of claims.blocks) {
           const nums = [...tokens(b.text.replace(/\b[Ss]ections?\s+\d+(?:(?:\s*,\s*|\s+to\s+|\s+and\s+|\s*,\s*and\s+)\d+)*/g, ' '))].filter((n) => !(Number.isInteger(Number(n)) && Number(n) <= 12));
           if (!nums.length) continue;
