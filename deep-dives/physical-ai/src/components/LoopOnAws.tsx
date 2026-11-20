@@ -84,7 +84,7 @@ const STAGES: Stage[] = [
     does: ['A policy learns to map', 'what the cameras see to', 'the next arm motions.'],
     loads: ['GPU tensor cores, with', 'GPU memory as the gate'],
     tone: 'tensor',
-    runs: ['One GPU: Batch or SageMaker.', 'Many nodes: HyperPod, PCS'],
+    runs: ['One GPU: Batch, SageMaker.', 'Many nodes: HyperPod, PCS'],
     hands: 'a checkpoint (weights)',
   },
   {
