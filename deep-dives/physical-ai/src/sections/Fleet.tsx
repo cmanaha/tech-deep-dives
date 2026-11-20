@@ -1039,8 +1039,7 @@ export function Fleet() {
             whatever subscribed to that topic receives it. It suits small things. A message can be at most 128 KB, a
             connection can make 100 publish requests per second, and its data is processed at 512 KB per second.
             One raw 640x480 camera frame is 921,600 bytes, seven times the message limit.{' '}
-            <Cite id="F07-97">AWS General Reference, AWS IoT Core quotas</Cite> An episode is files: in section
-            9&apos;s example dataset, 86.1 MB for 50 episodes, about <Derived>1.7</Derived> MB each (86.1 / 50).{' '}
+            <Cite id="F07-97">AWS General Reference, AWS IoT Core quotas</Cite> An episode is files: in section 9&apos;s example dataset, 86.1 MB for 50 episodes, about <Derived>1.7</Derived> MB each (86.1 / 50).{' '}
             <Cite id="F05-29">Hugging Face hub file listing of the example dataset</Cite>
           </Box>
           <Box variant="p">
@@ -1121,7 +1120,7 @@ export function Fleet() {
             Our reading of those rows: a Jetson on or beside a robot is a Greengrass core device. A DGX Spark is a
             hybrid node only when the lab already runs its training and evaluation on EKS, the machine sits on a
             wired network with a private link to the cluster, and somebody is willing to run a pod network on it.
-            Section 25, Choosing, returns to this decision.{' '}
+            Section 29, Choosing, returns to this decision.{' '}
             <Cite id="F09-127">EKS user guide, Hybrid Nodes overview</Cite>
           </Box>
         </SpaceBetween>

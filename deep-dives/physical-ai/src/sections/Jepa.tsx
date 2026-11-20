@@ -1408,8 +1408,7 @@ export function Jepa() {
             Every pass is transformer arithmetic on the GPU&apos;s tensor cores. The authors list the ways to
             shrink the bill: fewer samples and iterations, more GPUs, a planner that follows gradients through the
             predictor, or a fast policy trained on the planner&apos;s output.{' '}
-            <Cite id="F03-116">V-JEPA 2 paper, section 4.2</Cite> Training is a separate bill, taken up in section
-            15, Training at Three Scales. Pretraining the video encoder is the large item: the authors project
+            <Cite id="F03-116">V-JEPA 2 paper, section 4.2</Cite> Training is a separate bill, taken up in section 15, Training at Three Scales. Pretraining the video encoder is the large item: the authors project
             roughly 60 GPU-years on A100s for ViT-g without their progressive-resolution schedule, which they
             report cuts GPU time 8.4x.{' '}
             <Cite id="F03-12">V-JEPA 2 paper, section 2.2 and Figure 5</Cite>

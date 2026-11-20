@@ -788,8 +788,7 @@ export function WorldModels() {
             median of 153 ms to predict an action chunk for one robot, Dexter, from three camera views on an RTX 5090
             after its inference optimisations (449 ms before them), and 180 ms on the YAM arms.{' '}
             <Cite id="F03-104">NVIDIA GR00T 2 whitepaper, section 2</Cite> None of this can be reproduced until the
-            code ships. The newest GR00T model with released weights and code is GR00T N1.7, a VLA covered in section
-            5.{' '}
+            code ships. The newest GR00T model with released weights and code is GR00T N1.7, a VLA covered in section 5.{' '}
             <Cite id="F02-37">Isaac-GR00T N1.7 release</Cite>
           </Box>
           <Box variant="p">

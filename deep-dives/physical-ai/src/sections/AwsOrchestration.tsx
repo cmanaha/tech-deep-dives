@@ -574,7 +574,7 @@ export function AwsOrchestration() {
             variant="h1"
             description="Know what each scheduler is good at and which capacity market each instance family can use, with configuration to adapt (AWS documentation, Karpenter v1.15.2, Kueue v0.20.7 and OSMO 6.3.1, read 2026-11-20)."
           >
-            24. Orchestrating It on AWS
+            24. Orchestrating Physical AI on AWS
           </Header>
         }
       >
@@ -681,7 +681,7 @@ export function AwsOrchestration() {
           <Box variant="p">
             The table states the same mapping with the reason for each row. It is our reading: no AWS page that compares
             Batch, HyperPod and EKS side by side for training or simulation was located in this research.{' '}
-            <Cite id="F09-110">searches of AWS documentation run on 2026-11-20</Cite> Section 25, Choosing, gives
+            <Cite id="F09-110">searches of AWS documentation run on 2026-11-20</Cite> Section 29, Choosing, gives
             the full table with one row per workload.
           </Box>
           <div style={{ overflowX: 'auto' }}>
@@ -1381,7 +1381,7 @@ export function AwsOrchestration() {
             compute environment, keep <code>minvCpus</code> at 0, and submit one array of 2 to 10,000 children. If it is
             a one-GPU fine-tune, submit it as a single job to the same queue. Reach for HyperPod or a queueing layer on
             EKS when you can name the second team that will share the machines. Then take the family, the orchestrator
-            and the market to section 25, Choosing. <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>
+            and the market to section 29, Choosing. <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>
           </Box>
         </SpaceBetween>
       </Container>

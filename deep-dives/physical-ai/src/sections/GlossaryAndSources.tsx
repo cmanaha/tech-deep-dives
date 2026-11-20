@@ -50,7 +50,7 @@ export function GlossaryAndSources() {
             variant="h1"
             description={`Every acronym and term the dive uses, in plain words, and every source it cites, grouped by how much weight it can carry (sources read ${ACCESSED}).`}
           >
-            26. Glossary and Sources
+            30. Glossary and Sources
           </Header>
         }
       >

@@ -14,7 +14,7 @@ import {
  * gate-routes: every section in the nav can be selected and mounts real
  * content.
  *
- * This is the load-bearing gate for this app. All 26 sections are React.lazy
+ * This is the load-bearing gate for this app. All 30 sections are React.lazy
  * behind one Suspense boundary and there is no error boundary, so a broken
  * import does not fail the build, does not fail typecheck, and does not fail a
  * unit test. It shows up only at runtime, as a spinner that never resolves.

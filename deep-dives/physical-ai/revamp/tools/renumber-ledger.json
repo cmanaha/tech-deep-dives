@@ -1,0 +1,62 @@
+[
+ {
+  "file": "GettingStarted.tsx",
+  "kind": "ref",
+  "line": 24,
+  "old": "section 26",
+  "new": "section 30"
+ },
+ {
+  "file": "TrainingScales.tsx",
+  "kind": "ref",
+  "line": 591,
+  "old": "section 25",
+  "new": "section 29"
+ },
+ {
+  "file": "Fleet.tsx",
+  "kind": "ref",
+  "line": 1124,
+  "old": "Section 25",
+  "new": "Section 29"
+ },
+ {
+  "file": "Workloads.tsx",
+  "kind": "ref",
+  "line": 1032,
+  "old": "Section 25",
+  "new": "Section 29"
+ },
+ {
+  "file": "AwsOrchestration.tsx",
+  "kind": "h1",
+  "old": "24. Orchestrating It on AWS",
+  "new": "24. Orchestrating Physical AI on AWS"
+ },
+ {
+  "file": "AwsOrchestration.tsx",
+  "kind": "ref",
+  "line": 684,
+  "old": "Section 25",
+  "new": "Section 29"
+ },
+ {
+  "file": "AwsOrchestration.tsx",
+  "kind": "ref",
+  "line": 1384,
+  "old": "section 25",
+  "new": "section 29"
+ },
+ {
+  "file": "Choosing.tsx",
+  "kind": "h1",
+  "old": "25. Choosing",
+  "new": "29. Choosing"
+ },
+ {
+  "file": "GlossaryAndSources.tsx",
+  "kind": "h1",
+  "old": "26. Glossary and Sources",
+  "new": "30. Glossary and Sources"
+ }
+]

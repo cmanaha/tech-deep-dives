@@ -1028,8 +1028,8 @@ export function Workloads() {
               units of work for the part being paid for, and latency for anything on the robot&apos;s clock.
             </li>
             <li>
-              <strong>Read the shape, then schedule it.</strong> Section 24, Orchestrating It on AWS, turns duration,
-              coupling and interruptibility into a capacity market and an orchestrator. Section 25, Choosing, joins
+              <strong>Read the shape, then schedule it.</strong> Section 24, Orchestrating Physical AI on AWS, turns duration,
+              coupling and interruptibility into a capacity market and an orchestrator. Section 29, Choosing, joins
               both answers in one table.
             </li>
           </ol>

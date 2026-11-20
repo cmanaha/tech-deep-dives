@@ -9,7 +9,7 @@ export const REG_DIR = path.join(DIVE, 'research/2026-11');
 
 export function loadEntries() {
   const entries = {};
-  const files = fs.readdirSync(REG_DIR).filter((f) => /^0\d-.*\.md$/.test(f)).sort();
+  const files = fs.readdirSync(REG_DIR).filter((f) => /^\d\d[a-z]?-.*\.md$/.test(f)).sort();
   for (const f of files) {
     const raw = fs.readFileSync(path.join(REG_DIR, f), 'utf8');
     // Shorthand such as `TC@8498` "stands for" a pinned URL prefix, defined once in the register.
@@ -17,7 +17,7 @@ export function loadEntries() {
     const lines = raw.split('\n');
     let cur = null;
     for (const line of lines) {
-      const m = line.match(/^\*\*(F0\d-\d+)\.\s*(.*)$/);
+      const m = line.match(/^\*\*(F\d\d-\d+)\.\s*(.*)$/);
       if (m) {
         cur = { id: m[1], register: f, claim: m[2].replace(/\*\*\s*$/, ''), lines: [line] };
         entries[cur.id] = cur;
@@ -59,7 +59,7 @@ export function loadEntries() {
     if (!url && tier !== 0) {
       kind = /\[derived/.test(e.claim) || /\[derived\]/.test(body) ? 'derived' : 'our-reading';
       const src = e.location + ' ' + body;
-      for (const m of (e.lines.find((l) => l.startsWith('- Location:')) + ' ' + body).matchAll(/(F0\d)-(\d+)(?: to (?:F0\d-)?(\d+))?/g)) {
+      for (const m of (e.lines.find((l) => l.startsWith('- Location:')) + ' ' + body).matchAll(/(F\d\d)-(\d+)(?: to (?:F\d\d-)?(\d+))?/g)) {
         const a = Number(m[2]); const b = m[3] ? Number(m[3]) : a;
         for (let i = a; i <= b && i - a < 60; i += 1) e.inputs.push(`${m[1]}-${i}`);
       }

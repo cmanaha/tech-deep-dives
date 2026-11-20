@@ -1,5 +1,5 @@
 /**
- * The 26 sections of the Physical AI deep dive, in nav order.
+ * The 30 sections of the Physical AI deep dive, in nav order.
  *
  * This list is duplicated from src/App.tsx on purpose. Playwright generates
  * one report row per section before the page is open, so it needs the list at
@@ -36,7 +36,11 @@ export const SECTIONS: SectionRef[] = [
   { id: 'pmu-cards', title: '21. Reading a Machine: PMU Cards' },
   { id: 'measurements', title: '22. Our Measurements' },
   { id: 'price-performance', title: '23. Price-Performance and Latency' },
-  { id: 'aws-orchestration', title: '24. Orchestrating It on AWS' },
-  { id: 'choosing', title: '25. Choosing' },
-  { id: 'sources', title: '26. Glossary and Sources' },
+  { id: 'aws-orchestration', title: '24. Orchestrating Physical AI on AWS' },
+  { id: 'aws-batch', title: '25. AWS Batch' },
+  { id: 'aws-pcs', title: '26. AWS Parallel Computing Service' },
+  { id: 'hyperpod', title: '27. Amazon SageMaker HyperPod' },
+  { id: 'eks', title: '28. Amazon EKS' },
+  { id: 'choosing', title: '29. Choosing' },
+  { id: 'sources', title: '30. Glossary and Sources' },
 ];

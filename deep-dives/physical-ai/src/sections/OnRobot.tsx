@@ -532,8 +532,7 @@ export function OnRobot() {
         <SpaceBetween size="m">
           <Box variant="p">
             A trained policy has to run on a computer bolted beside the arm, and that computer has a clock to keep.
-            Section 3, The Robot as a Computer, set the clock for the {ARM}: 30 ticks a second, 33.3 ms each. Section
-            5, Vision-Language-Action Models, showed that the large models answer far more slowly than that. This
+            Section 3, The Robot as a Computer, set the clock for the {ARM}: 30 ticks a second, 33.3 ms each. Section 5, Vision-Language-Action Models, showed that the large models answer far more slowly than that. This
             section puts the two together on named devices as the arm learns to {TASK_STORY}.
           </Box>
           <Box variant="p">

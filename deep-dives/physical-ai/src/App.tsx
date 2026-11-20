@@ -27,9 +27,12 @@ const PmuCards = React.lazy(() => import('./sections/PmuCards').then((m) => ({ d
 const Measurements = React.lazy(() => import('./sections/Measurements').then((m) => ({ default: m.Measurements })));
 const PricePerformance = React.lazy(() => import('./sections/PricePerformance').then((m) => ({ default: m.PricePerformance })));
 const AwsOrchestration = React.lazy(() => import('./sections/AwsOrchestration').then((m) => ({ default: m.AwsOrchestration })));
+const AwsBatch = React.lazy(() => import('./sections/AwsBatch').then((m) => ({ default: m.AwsBatch })));
+const AwsPcs = React.lazy(() => import('./sections/AwsPcs').then((m) => ({ default: m.AwsPcs })));
+const HyperPod = React.lazy(() => import('./sections/HyperPod').then((m) => ({ default: m.HyperPod })));
+const Eks = React.lazy(() => import('./sections/Eks').then((m) => ({ default: m.Eks })));
 const Choosing = React.lazy(() => import('./sections/Choosing').then((m) => ({ default: m.Choosing })));
 const GlossaryAndSources = React.lazy(() => import('./sections/GlossaryAndSources').then((m) => ({ default: m.GlossaryAndSources })));
-
 
 const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   'one-loop': OneLoop,
@@ -56,6 +59,10 @@ const sectionComponents: Record<string, React.LazyExoticComponent<React.FC>> = {
   'measurements': Measurements,
   'price-performance': PricePerformance,
   'aws-orchestration': AwsOrchestration,
+  'aws-batch': AwsBatch,
+  'aws-pcs': AwsPcs,
+  'hyperpod': HyperPod,
+  'eks': Eks,
   'choosing': Choosing,
   'sources': GlossaryAndSources,
 };

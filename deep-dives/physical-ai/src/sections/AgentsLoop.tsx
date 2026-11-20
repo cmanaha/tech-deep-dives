@@ -675,7 +675,7 @@ export function AgentsLoop() {
             ordinary GPU job with a timeout.
           </Box>
           <Box variant="p">
-            Before you hand a loop to an agent, do four things. Section 24, Orchestrating It on AWS, sets up the
+            Before you hand a loop to an agent, do four things. Section 24, Orchestrating Physical AI on AWS, sets up the
             queues and the sandbox they rely on.
           </Box>
           <ol style={LIST}>

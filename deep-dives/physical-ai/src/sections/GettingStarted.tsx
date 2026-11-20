@@ -21,7 +21,7 @@ const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbd
 
 /**
  * A section number of this dive, or a count of its sections. It is navigation, with no source
- * behind it, so the citation check skips it (the same marker section 26 uses for its lists).
+ * behind it, so the citation check skips it (the same marker section 30 uses for its lists).
  */
 function Nav({ children }: { children: ReactNode }) {
   return <span data-num="nav">{children}</span>;
@@ -36,7 +36,7 @@ type RouteId = 'world' | 'pipeline' | 'compute';
 const ROUTES: { id: RouteId; tag: string; text: string; sections: number[] }[] = [
   { id: 'world', tag: 'W', text: 'World models', sections: [1, 2, 3, 4, 6, 7, 16, 22] },
   { id: 'pipeline', tag: 'P', text: 'Pipeline', sections: [1, 2, 3, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] },
-  { id: 'compute', tag: 'C', text: 'Compute', sections: [1, 2, 20, 21, 22, 23, 24, 25] },
+  { id: 'compute', tag: 'C', text: 'Compute', sections: [1, 2, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29] },
 ];
 
 /** Short labels for the grid; the full titles are in the table under the figure. */
@@ -65,8 +65,12 @@ const SHORT: Record<number, string> = {
   22: 'Our Measurements',
   23: 'Price-Performance',
   24: 'Orchestrating on AWS',
-  25: 'Choosing',
-  26: 'Glossary and Sources',
+  25: 'AWS Batch',
+  26: 'Parallel Computing Service',
+  27: 'SageMaker HyperPod',
+  28: 'Amazon EKS',
+  29: 'Choosing',
+  30: 'Glossary and Sources',
 };
 
 const PARTS: { name: string; sections: number[] }[] = [
@@ -77,8 +81,8 @@ const PARTS: { name: string; sections: number[] }[] = [
   { name: 'Training and evaluation', sections: [15, 16] },
   { name: 'The edge', sections: [17, 18, 19] },
   { name: 'The compute', sections: [20, 21, 22, 23] },
-  { name: 'AWS', sections: [24, 25] },
-  { name: 'Reference', sections: [26] },
+  { name: 'AWS', sections: [24, 25, 26, 27, 28, 29] },
+  { name: 'Reference', sections: [30] },
 ];
 
 const CELL_W = 184;
@@ -95,7 +99,7 @@ interface Placed {
   y: number;
 }
 
-/** Two cells per row, parts stacked top to bottom. Ends at y = 754 for the nine parts above. */
+/** Two cells per row, parts stacked top to bottom. Ends at y = 814 for the nine parts above. */
 function layout(): { heads: { name: string; y: number }[]; cells: Placed[] } {
   const heads: { name: string; y: number }[] = [];
   const cells: Placed[] = [];
@@ -117,7 +121,7 @@ function RouteGrid({ selected }: { selected: RouteId }) {
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
       <svg
-        viewBox="0 0 400 756"
+        viewBox="0 0 400 816"
         role="img"
         aria-labelledby="getting-started-routes-title"
         style={{ width: '100%', height: 'auto' }}
@@ -129,7 +133,7 @@ function RouteGrid({ selected }: { selected: RouteId }) {
           when it is on the world models route, P for the pipeline route and C for the compute route. The cells of
           the selected route, {route.text}, are outlined: sections {route.sections.join(', ')}.
         </desc>
-        <rect x="0" y="0" width="400" height="756" fill="#fbfbfd" />
+        <rect x="0" y="0" width="400" height="816" fill="#fbfbfd" />
 
         {/* legend */}
         {ROUTES.map((r, i) => {
@@ -251,7 +255,7 @@ export function GettingStarted() {
           <Box variant="p">
             Section 1 showed the whole loop on one arm. This section is the map for everything after it. It gives
             you the four ideas every later section assumes, says where each one is built properly, and offers three
-            routes through the <Nav>26</Nav> sections, so you read what your question needs and skip the rest
+            routes through the <Nav>30</Nav> sections, so you read what your question needs and skip the rest
             without getting lost.
           </Box>
         </SpaceBetween>
@@ -505,12 +509,18 @@ export function GettingStarted() {
                 </tr>
                 <tr>
                   <td style={TD}>AWS</td>
-                  <td style={TD}>24 Orchestrating It on AWS. 25 Choosing.</td>
-                  <td style={TD}>A scheduler and a way to get capacity for each workload.</td>
+                  <td style={TD}>
+                    24 Orchestrating Physical AI on AWS. 25 AWS Batch. 26 AWS Parallel Computing Service. 27 Amazon
+                    SageMaker HyperPod. 28 Amazon EKS. 29 Choosing.
+                  </td>
+                  <td style={TD}>
+                    The workloads placed on AWS, each of the four schedulers taken apart with its cluster drawn, and
+                    a way to get capacity for each workload.
+                  </td>
                 </tr>
                 <tr>
                   <td style={TD}>Reference</td>
-                  <td style={TD}>26 Glossary and Sources.</td>
+                  <td style={TD}>30 Glossary and Sources.</td>
                   <td style={TD}>Every term and every source the page cites.</td>
                 </tr>
               </tbody>

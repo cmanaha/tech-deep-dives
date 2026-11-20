@@ -996,8 +996,7 @@ export function VisionLanguageAction() {
             The practical list is set by one library. LeRobot v0.7.0, released 2026-11-05, ships 28 policy packages
             behind one command, <code>lerobot-train --policy.type=...</code>. By our count from that list, 19 are
             VLAs or other policies trained from demonstrations, 7 are world action models or are trained with an
-            added loss for predicting what happens next, and 2 are components for reinforcement learning (section
-            8, Reinforcement Learning for Robots).{' '}
+            added loss for predicting what happens next, and 2 are components for reinforcement learning (section 8, Reinforcement Learning for Robots).{' '}
             <Cite id="F02-102">LeRobot v0.7.0 policies directory, all 28 packages</Cite>
           </Box>
           <Box variant="p">For the {ARM}, start here and move down only when you have a reason.</Box>

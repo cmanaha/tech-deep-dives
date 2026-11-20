@@ -1,4 +1,4 @@
-/** The 26 sections in reading order. App.tsx and section 26 both read this list. */
+/** The 30 sections in reading order. App.tsx and the last section both read this list. */
 export const sections = [
   { id: 'one-loop', title: '1. One Robot, One Loop' },
   { id: 'getting-started', title: '2. Getting Started' },
@@ -23,7 +23,11 @@ export const sections = [
   { id: 'pmu-cards', title: '21. Reading a Machine: PMU Cards' },
   { id: 'measurements', title: '22. Our Measurements' },
   { id: 'price-performance', title: '23. Price-Performance and Latency' },
-  { id: 'aws-orchestration', title: '24. Orchestrating It on AWS' },
-  { id: 'choosing', title: '25. Choosing' },
-  { id: 'sources', title: '26. Glossary and Sources' },
+  { id: 'aws-orchestration', title: '24. Orchestrating Physical AI on AWS' },
+  { id: 'aws-batch', title: '25. AWS Batch' },
+  { id: 'aws-pcs', title: '26. AWS Parallel Computing Service' },
+  { id: 'hyperpod', title: '27. Amazon SageMaker HyperPod' },
+  { id: 'eks', title: '28. Amazon EKS' },
+  { id: 'choosing', title: '29. Choosing' },
+  { id: 'sources', title: '30. Glossary and Sources' },
 ];

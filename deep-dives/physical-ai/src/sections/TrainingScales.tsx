@@ -587,8 +587,7 @@ export function TrainingScales() {
             one GPU with more memory than your model&apos;s fine-tuning line, expect hours (3.4 of them for 20,000
             steps of GR00T N1.7 in AWS&apos;s run), and reserve nothing.{' '}
             <Cite id="F09-82">AWS post, timing table</Cite> Move to the second row only when a measured limit sends
-            you there: the weights you need to train do not fit one GPU, or the run on one GPU takes days. Section
-            24, Orchestrating It on AWS, takes each row to a scheduler and a way of buying capacity, and section 25,
+            you there: the weights you need to train do not fit one GPU, or the run on one GPU takes days. Section 24, Orchestrating Physical AI on AWS, takes each row to a scheduler and a way of buying capacity, and section 29,
             Choosing, turns the whole path into one decision.
           </Box>
         </SpaceBetween>

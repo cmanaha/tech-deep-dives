@@ -344,7 +344,7 @@ export function PricePerformance() {
             of the hour leaves units of work per unit of currency.{' '}
             <Cite id="F08-82">the cloud formula</Cite> The price has to be a first-party figure with a date, for a
             named Region (the AWS location the instance runs in) and a named purchase option (how the hour is bought:
-            on demand, as spare capacity that AWS can take back, or as a reservation; section 24, Orchestrating It on
+            on demand, as spare capacity that AWS can take back, or as a reservation; section 24, Orchestrating Physical AI on
             AWS, covers them). The same instance type has a different price under each.
           </Box>
           <Box variant="p">
