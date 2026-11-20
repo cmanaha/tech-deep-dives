@@ -34,7 +34,7 @@ The 26-section plan is in the seed file `12-deep-dive-split.md`. Your task names
 1. `CLAUDE.md` at the repo root: "Fact-Checking & Sources Standard", "Quality Rules", "Explaining Concepts".
 2. One finished register as the format to copy: `deep-dives/rl-agentic-loops/research/2026-10/05-rl-systems.md`
    (header, pinned-source tables, entries, mental models, UNKNOWN register, reading path, tiered source list).
-3. The seed research, READ-ONLY, at `/Users/carlos/workspace/research/reinvent-cmp407-physical-ai/` (the files your
+3. The seed research, READ-ONLY, in the seed research folder, outside this repository (the files your
    task names). Seed labels: [AUTH] first-party, [SEC] secondary, [SPEC] inference, [MEM] from memory.
 
 ## Freshness rule (non-negotiable)
