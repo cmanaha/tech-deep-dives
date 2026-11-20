@@ -55,8 +55,8 @@ function ClipToLatents() {
         <title id="jepa-shapes-title">A 16-frame clip becomes tubelets, then tokens, then one latent vector per token</title>
         <desc>
           Five stages from top to bottom. A clip of 16 frames at 256 by 256 pixels. The clip cut into tubelets of 2
-          frames by 16 by 16 pixels. One token per tubelet, 2,048 in all. The ViT-g encoder. 2,048 latent vectors of
-          1408 numbers each.
+          frames by 16 by 16 pixels. One token per tubelet. The ViT-g encoder. One latent vector of 1408 numbers per
+          token.
         </desc>
         <rect x="0" y="0" width="400" height="480" fill="#fbfbfd" />
 
@@ -564,7 +564,7 @@ function PassesChart() {
       <svg viewBox="0 0 400 320" role="img" aria-labelledby="jepa-passes-title" style={{ width: '100%', height: 'auto' }}>
         <title id="jepa-passes-title">Predictor passes per decision for four planners, on a log axis</title>
         <desc>
-          Four points on a logarithmic axis from 1,000 to 1,000,000 predictor passes per decision: V-JEPA 2-AC at
+          Four points on a logarithmic axis of predictor passes per decision, three decades wide: V-JEPA 2-AC at
           8,000, V-JEPA 2.1 with a long horizon at 36,000, LeWorldModel on Push-T at 45,000 and RoboJEPA on a real
           arm at 204,800.
         </desc>
@@ -676,10 +676,7 @@ export function Jepa() {
             A JEPA is trained on this exercise, with one change: the description is a list of numbers the model
             learns for itself. The V-JEPA 2 authors draw the same line between what can be predicted (the
             trajectory of a moving object) and what cannot (the place of each leaf on a tree).{' '}
-            <Cite id="F03-107">V-JEPA 2 paper, section 1</Cite> The size of the rectangle matters too. A small hole
-            can be filled by copying its neighbours. A block that covers the whole gripper can only be filled by a
-            model that knows what a gripper does.{' '}
-            <Cite id="F03-55">I-JEPA paper, section 3</Cite>
+            <Cite id="F03-107">V-JEPA 2 paper, section 1</Cite>
           </Box>
         </SpaceBetween>
       </Container>
@@ -711,26 +708,25 @@ export function Jepa() {
           <Box variant="p">
             The name says the same thing. Joint-embedding: both sides are embedded by an encoder. Predictive: one
             latent is predicted from the other.{' '}
-            <Cite id="F03-47">LeCun, A Path Towards Autonomous Machine Intelligence, section 4.4</Cite>
+            <Cite id="F03-47">LeCun position paper, section 4.4</Cite>
           </Box>
           <Box variant="p">
             Training needs a loss, a single number that says how wrong the guess was. In a JEPA the loss is the
             distance between the predicted latent and the target latent. Nothing turns either one back into an
             image. The paper that defined the architecture calls this distance the energy: low when the target is
             a plausible match for what was seen, high when it is not. The word returns when the robot plans.{' '}
-            <Cite id="F03-48">LeCun, A Path Towards Autonomous Machine Intelligence, sections 4.1 and 4.4</Cite>
+            <Cite id="F03-48">LeCun position paper, sections 4.1 and 4.4</Cite>
           </Box>
           <Box variant="p">
             Comparing latents is the point of the design. A loss on pixels charges the model for every leaf and
             reflection it gets wrong. A loss on latents lets the encoder leave those out, so the model&apos;s
             capacity goes to what can be predicted.{' '}
-            <Cite id="F03-51">LeCun, A Path Towards Autonomous Machine Intelligence, section 4.4</Cite> Section 6
+            <Cite id="F03-51">LeCun position paper, section 4.4</Cite> Section 6
             listed what this gives up: there is no picture to inspect, and whatever the encoder dropped is gone.
           </Box>
           <Box variant="p">
-            It also opens a loophole. The model produces both the guess and the answer, so it is marking its own
-            homework. Most of what separates one JEPA from another is how it closes that loophole, and the block on
-            collapse below is about exactly that.
+            It also opens a loophole: the model produces both the guess and the answer, so it is marking its own
+            homework. The block on collapse below is about closing it.
           </Box>
         </SpaceBetween>
       </Container>
@@ -754,7 +750,8 @@ export function Jepa() {
             </li>
             <li>
               A <strong>tubelet</strong> is a patch extended through time: the same square in 2 consecutive
-              frames, so 2 x 16 x 16 pixels.
+              frames, so 2 x 16 x 16 pixels.{' '}
+              <Cite id="F03-3">V-JEPA 2 paper, section 2.1</Cite>
             </li>
             <li>
               A <strong>token</strong> is one element of the sequence a transformer processes. Each tubelet becomes
@@ -765,9 +762,6 @@ export function Jepa() {
               grid of vectors, one per tubelet.
             </li>
           </ul>
-          <Box variant="p">
-            <Cite id="F03-3">V-JEPA 2 paper, section 2.1</Cite>
-          </Box>
           <Box variant="p">
             Now count, for one pretraining clip of the arm: 16 frames at 256 by 256 pixels, sampled at 4 frames per
             second. In time, 16 frames / 2 = 8 tubelets deep. In space, 256 / 16 = 16 tubelets per side. In total 8
@@ -885,14 +879,13 @@ export function Jepa() {
 
           <Box variant="h3">The stop-gradient: which weights change</Box>
           <Box variant="p">
-            Training works by gradient. For every weight, the trainer computes how the loss would change if that
-            weight were nudged, then nudges each weight in the direction that lowers the loss. The loss above
-            depends on two encoders, so left alone both would be nudged. The stop-gradient says: treat this value
-            as a constant. Inside <code>sg(...)</code> no nudge is computed, so the gradient reaches{' '}
-            <code>phi</code> and <code>theta</code> through the left-hand term and never reaches{' '}
-            <code>theta-bar</code>. That is the whole meaning of &quot;the gradient does not flow through the
-            target&quot;: the optimiser changes the predictor and the context encoder, and leaves the target
-            encoder alone. In the released code the target encoder runs under <code>torch.no_grad()</code> and its
+            Training works by gradient: for every weight, the trainer computes how the loss would change if that
+            weight were nudged, then nudges it the way that lowers the loss. The loss above depends on two
+            encoders, so left alone both would be nudged. The stop-gradient says: treat this value as a constant.
+            Inside <code>sg(...)</code> no nudge is computed, so the gradient reaches <code>phi</code> and{' '}
+            <code>theta</code> through the left-hand term and never reaches <code>theta-bar</code>. That is what
+            &quot;the gradient does not flow through the target&quot; means: the optimiser changes the predictor
+            and the context encoder, and leaves the target encoder alone. In the released code the target encoder runs under <code>torch.no_grad()</code> and its
             weights are marked <code>requires_grad = False</code>.{' '}
             <Cite id="F03-7">vjepa2 app/vjepa/train.py, lines 429 to 450</Cite>{' '}
             <Cite id="F03-8">vjepa2 app/vjepa/train.py, lines 222 to 480</Cite>
@@ -907,9 +900,6 @@ export function Jepa() {
             weight becomes:
           </Box>
           <Formula>{'theta-bar <- m * theta-bar + (1 - m) * theta'}</Formula>
-          <Box variant="p">
-            <Cite id="F03-8">vjepa2 app/vjepa/train.py, lines 471 to 480, and the config&apos;s ema setting</Cite>
-          </Box>
           <ul style={LIST}>
             <li>
               <code>m * theta-bar</code> keeps almost all of the old target weight.
@@ -925,13 +915,12 @@ export function Jepa() {
             <Toy>0.9000</Toy> = <Toy>0.499625</Toy> + <Toy>0.000675</Toy> = <Toy>0.5003</Toy>. The gap was{' '}
             <Toy>0.4</Toy> and the target closed <Toy>0.0003</Toy> of it, which is 0.075%. At that pace the target
             is an average over roughly 1 / 0.00075 = 1,333 recent steps, and it needs about <Derived>924</Derived>{' '}
-            steps to close half of any gap (our arithmetic: ln 0.5 / ln 0.99925).{' '}
-            <Cite id="F03-8">vjepa2 app/vjepa/train.py, lines 471 to 480</Cite>
+            steps to close half of any gap (our arithmetic: <Derived>ln 0.5 / ln 0.99925</Derived>).{' '}
+            <Cite id="F03-8">vjepa2 app/vjepa/train.py, lines 471 to 480, and the config&apos;s ema setting</Cite>
           </Box>
           <Box variant="p">
-            So one clip passes through three networks and causes two kinds of update. The loss changes{' '}
-            <code>theta</code> and <code>phi</code> by gradient, and <code>theta-bar</code> trails{' '}
-            <code>theta</code> by averaging. The figure plays the step.
+            One clip, two kinds of update: the loss changes <code>theta</code> and <code>phi</code> by gradient,
+            and <code>theta-bar</code> trails <code>theta</code> by averaging. The figure plays the step.
           </Box>
           <AnimatedFigure
             name="one JEPA training step"
@@ -993,8 +982,7 @@ export function Jepa() {
             This is the training step you just followed, used by V-JEPA 2 and the models before it. For the
             shortcut to work, guess and answer have to drift to the same constant together. The stop-gradient
             takes away the answer&apos;s reason to move: no gradient pulls <code>theta-bar</code> toward the
-            guess. The EMA takes away its speed: 0.075% of the way per step.{' '}
-            <Cite id="F03-8">vjepa2 app/vjepa/train.py, lines 471 to 480</Cite>
+            guess. The EMA takes away its speed: 0.075% of the way per step.
           </Box>
           <Box variant="p">
             Why that is enough is a hypothesis, and the V-JEPA authors state it as one: the slow target ensures
@@ -1115,12 +1103,12 @@ export function Jepa() {
           <ExpandableSection headerText="How SIGReg tests one direction, from the released code">
             <SpaceBetween size="s">
               <Box variant="p">
-                Take one random direction and a batch of latents, and let <code>p_n</code> be the shadow of the{' '}
-                <code>n</code>-th latent on that direction. Every distribution has a fingerprint called its
-                characteristic function. For a batch it is estimated by two averages over the batch,{' '}
-                <code>mean_n cos(t p_n)</code> and <code>mean_n sin(t p_n)</code>, at a chosen value{' '}
-                <code>t</code>. For a standard Gaussian the fingerprint is <code>exp(-t^2 / 2)</code> for the
-                cosine part and 0 for the sine part. The error at one <code>t</code> is:
+                Take one random direction, and let <code>p_n</code> be the shadow of the <code>n</code>-th latent
+                of the batch on it. A distribution has a fingerprint, its characteristic function. For a batch it
+                is estimated by two averages, <code>mean_n cos(t p_n)</code> and <code>mean_n sin(t p_n)</code>,
+                at a chosen value <code>t</code>. For a standard Gaussian the fingerprint is{' '}
+                <code>exp(-t^2 / 2)</code> for the cosine part and 0 for the sine part. The error at one{' '}
+                <code>t</code> is:
               </Box>
               <Formula>{'(mean_n cos(t p_n) - exp(-t^2 / 2))^2 + (mean_n sin(t p_n))^2'}</Formula>
               <Box variant="p">
@@ -1197,17 +1185,13 @@ export function Jepa() {
             term feeds the predictor its own output for one more step, because planning will ask the same of it.{' '}
             <Cite id="F03-18">V-JEPA 2 paper, section 3.1, equations 2 to 4</Cite>
           </Box>
-          <Box variant="p">The line, compactly:</Box>
+          <Box variant="p">
+            Before V-JEPA 2 came the position paper that defined the JEPA, then I-JEPA (2023) on images and V-JEPA
+            (2024) on video; all three are history here.{' '}
+            <Cite id="F03-54">I-JEPA paper, section 3</Cite> <Cite id="F03-59">V-JEPA paper, section 3.2</Cite>{' '}
+            After it, three models complete the line:
+          </Box>
           <ul style={LIST}>
-            <li>
-              <strong>History.</strong> A position paper by Yann LeCun defined the JEPA; I-JEPA (2023) applied it to
-              images and V-JEPA (2024) to video.{' '}
-              <Cite id="F03-47">LeCun, A Path Towards Autonomous Machine Intelligence, section 4.4</Cite>{' '}
-              <Cite id="F03-54">I-JEPA paper, section 3</Cite> <Cite id="F03-59">V-JEPA paper, section 3.2</Cite>
-            </li>
-            <li>
-              <strong>V-JEPA 2.</strong> The two stages above. Its robot results are in the planning block.
-            </li>
             <li>
               <strong>V-JEPA 2.1</strong> (released 2026-03-16). A new training recipe and a larger ViT-G encoder of
               2B parameters. With the same 300M predictor recipe and unchanged planning settings, the authors
@@ -1229,34 +1213,19 @@ export function Jepa() {
               <Cite id="F03-31">LeWorldModel paper, abstract</Cite>
             </li>
           </ul>
-          <ExpandableSection headerText="V-JEPA 2.1: what changed in the recipe">
-            <Box variant="p">
-              Two changes to pretraining: the visible tokens now contribute to the loss alongside the masked ones,
-              and the loss is applied at several depths of the encoder as well as at its output. The release adds
-              smaller distilled encoders (ViT-B at 80M parameters, ViT-L at 300M) beside the 2B one.{' '}
-              <Cite id="F03-72">vjepa2 README, V-JEPA 2.1 release notes</Cite> The authors tie the robot gain to
-              depth: the new per-patch latents encode it better, which helps when the grasp needs motion along
-              the camera&apos;s line of sight.{' '}
-              <Cite id="F03-111">V-JEPA 2.1 paper, Figure 8 caption</Cite>
-            </Box>
-          </ExpandableSection>
-          <ExpandableSection headerText="RoboJEPA: results on a real arm, and the limits its authors state">
+          <ExpandableSection headerText="RoboJEPA: results on a real arm">
             <Box variant="p">
               On a Franka arm, planning toward a single goal image with no sub-goals, the authors report success
               for the 8B model of 67% on grasp, 50% on object lift and 27% on pick-and-place. They give the
               text-conditioned policy pi0.5 as a reference at 5%, 0% and 53%, and call such figures
               &quot;contextual references rather than directly comparable baselines&quot;.{' '}
-              <Cite id="F03-78">RoboJEPA paper, section 4.3 and Table 3</Cite> The limits they list: the encoder
-              stays frozen, the fits are close to data saturation, there is no language input, and actions are
-              sampled without a learned proposal.{' '}
-              <Cite id="F03-79">RoboJEPA paper, section 6</Cite>
+              <Cite id="F03-78">RoboJEPA paper, section 4.3 and Table 3</Cite>
             </Box>
           </ExpandableSection>
           <ExpandableSection headerText="LeWorldModel: the shapes, and where it has been tested">
             <Box variant="p">
-              The encoder is a ViT-Tiny of about 5M parameters with 12 layers, and the predictor a 6-layer
-              transformer of about 10M parameters that reads a short history of frame latents.{' '}
-              <Cite id="F03-32">LeWorldModel paper, section 3.1</Cite>{' '}
+              The encoder is a ViT-Tiny of about 5M parameters, and the predictor a 6-layer transformer of about
+              10M.{' '}
               <Cite id="F03-33">LeWorldModel paper, section 3.1</Cite> All four of its tasks are simulated, and the
               paper reports no result on a real robot. On Push-T the authors report 96.0% success against 92.0% for
               DINO-WM, a world model built on a frozen pretrained encoder; on a simulated cube pick-and-place
@@ -1354,13 +1323,13 @@ export function Jepa() {
             name="planning with the cross-entropy method"
             steps={CEM_STEPS}
             intervalMs={3200}
-            cites="F03-23 F03-113"
+            cites="F03-23 F03-113 F03-24"
             caption={
               <>
                 Follow the dots: each is the predicted end of one candidate, and nothing moves on the table until
                 step 8. Illustrative, not measured: the positions are drawn by hand, a real latent has far more
                 than two dimensions, and the real planner samples 800 candidates where this one draws a few
-                dozen. <Cite id="F03-24">V-JEPA 2 paper, appendix B.2</Cite>
+                dozen.
               </>
             }
           >
@@ -1377,10 +1346,7 @@ export function Jepa() {
               The notebook wrapper in the vjepa2 repository defaults to 400 samples, 10 CEM steps, the top 10 and
               a rollout of 2, and it samples only the x, y, z move and the gripper, leaving rotation at zero. The
               count of predictor passes is the same as the paper&apos;s: 400 x 10 x 2 = 8,000.{' '}
-              <Cite id="F03-29">vjepa2 notebooks/utils/world_model_wrapper.py, lines 20 to 29</Cite> Its loop also
-              blends the new mean and spread with the old ones in place of replacing them, a detail the
-              paper&apos;s text leaves out.{' '}
-              <Cite id="F03-30">vjepa2 notebooks/utils/mpc_utils.py, lines 53 to 163</Cite>
+              <Cite id="F03-29">vjepa2 notebooks/utils/world_model_wrapper.py, lines 20 to 29</Cite>
             </Box>
           </ExpandableSection>
         </SpaceBetween>
@@ -1407,7 +1373,7 @@ export function Jepa() {
               <>
                 Each point is samples x iterations x horizon for one published planner, on a log axis: one gridline
                 to the right is ten times the passes. The counts are our arithmetic from each paper&apos;s
-                settings. <Cite id="F03-115">our arithmetic, predictor passes per decision</Cite>
+                settings.
               </>
             }
           >
@@ -1442,24 +1408,19 @@ export function Jepa() {
             </li>
             <li>
               <strong>LeWorldModel, 45,000 passes on Push-T</strong> (300 samples, 30 iterations, horizon 5). The
-              authors report 0.98 s for a full plan against 47 s for DINO-WM. The GPU is not named, and the paper
-              does not say which task&apos;s settings were timed.{' '}
+              authors report 0.98 s for a full plan against 47 s for DINO-WM. The GPU is not named.{' '}
               <Cite id="F03-40">LeWorldModel paper, appendix D</Cite>{' '}
-              <Cite id="F03-41">LeWorldModel paper, Figure 3</Cite>{' '}
-              <Cite id="F03-118">our arithmetic, time per candidate</Cite>
+              <Cite id="F03-41">LeWorldModel paper, Figure 3</Cite>
             </li>
           </ul>
           <Box variant="p">
             Put the first row on the thread task. The published pick-and-place took 4 + 10 + 4 = 18 planned
             actions. That is 18 x 8,000 = 144,000 predictor passes and 18 x 16 s = 288 s, 4.8 minutes of GPU time
-            spent deciding, at the RTX 4090 rate.{' '}
-            <Cite id="F03-27">V-JEPA 2 paper, section 4.2, and our arithmetic</Cite>
-          </Box>
-          <Box variant="p">
-            Section 3&apos;s policy answers many times a second; this planner answers once in several seconds. On
-            section 3&apos;s rate ladder it sits on the planner rung, above a faster controller. What the wait
-            buys is that the task is set by a picture at run time: the predictor was trained with no reward, no
-            task label and no success flag.{' '}
+            spent deciding, at the rate reported for the RTX card.{' '}
+            <Cite id="F03-27">V-JEPA 2 paper, section 4.2, and our arithmetic</Cite> On section 3&apos;s rate
+            ladder this is the planner rung, far above a policy that answers many times a second. What the wait
+            buys is a task set by a picture at run time: the predictor was trained with no reward, no task label
+            and no success flag.{' '}
             <Cite id="F03-20">V-JEPA 2 paper, section 3.1</Cite>
           </Box>
           <Box variant="p">
@@ -1467,9 +1428,9 @@ export function Jepa() {
             authors list the ways to shrink the bill: fewer samples and iterations, more GPUs, a planner that
             follows gradients through the predictor, or a fast policy trained on the planner&apos;s output.{' '}
             <Cite id="F03-116">V-JEPA 2 paper, section 4.2</Cite> Training is a separate bill, taken up in section
-            15, Training at Three Scales. Pretraining the video encoder is a many-GPU job: the authors&apos; own
-            projection for ViT-g without their progressive-resolution schedule is roughly 60 GPU-years on A100s,
-            and they report the schedule cuts GPU time 8.4x.{' '}
+            15, Training at Three Scales. Pretraining the video encoder is the large item: the authors project
+            roughly 60 GPU-years on A100s for ViT-g without their progressive-resolution schedule, which they
+            report cuts GPU time 8.4x.{' '}
             <Cite id="F03-12">V-JEPA 2 paper, section 2.2 and Figure 5</Cite>
           </Box>
 
@@ -1481,9 +1442,7 @@ export function Jepa() {
             live in the loss, in the update rule or in a frozen encoder? And for the planner: multiply samples by
             iterations by horizon, then look for the seconds and the GPU printed beside them. For V-JEPA 2-AC the
             answers end at 8,000 predictor passes and 16 seconds on one RTX 4090. Cost the next planner the same
-            way.{' '}
-            <Cite id="F03-24">V-JEPA 2 paper, appendix B.2</Cite>{' '}
-            <Cite id="F03-25">V-JEPA 2 paper, section 4.2 and Table 3</Cite>
+            way.
           </Box>
         </SpaceBetween>
       </Container>

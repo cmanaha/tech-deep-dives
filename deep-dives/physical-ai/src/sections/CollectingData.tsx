@@ -656,8 +656,8 @@ export function CollectingData() {
             <Cite id="F05-45">LeRobot streaming video encoding docs, section 3</Cite>
           </Box>
           <Box variant="p">
-            <strong>When to change it.</strong> If the host cannot keep up, the alternatives are H.264 and HEVC,
-            two other video standards. LeRobot&apos;s docs state that software <code>h264</code> gives files
+            <strong>When to change it.</strong> If the host cannot keep up, the alternatives are H.264 and HEVC
+            (High Efficiency Video Coding, also called H.265), two other video compression standards. LeRobot&apos;s docs state that software <code>h264</code> gives files
             &quot;~30-50% larger&quot; than <code>libsvtav1</code> at medium CPU use, and that hardware encoders
             (fixed circuits in a GPU or processor that compress video without loading the CPU cores) give the
             largest files at very low CPU use.{' '}
