@@ -34,15 +34,15 @@ Newest first-party version found on 2026-11-20 for every item this register name
 | ASPIRE code | No tagged release; default branch at SHA fa00f0ef | last commit 2026-10-16 | https://github.com/NVlabs/ASPIRE | repo cited at its default branch, no pin |
 | "You Don't Need To Stay in The Loop" (AgenticRobotics) | arXiv 2608.07555v2 | v2 8 Nov 2026 | https://arxiv.org/abs/2608.07555 | v2 (same) |
 | SimEX | arXiv 2609.38982v1 | 30 Sep 2026 | https://arxiv.org/abs/2609.38982 | v1 (same) |
-| CaP-X paper and code | arXiv 2603.22435v2; capgym/cap-x v0.0.1 | v2 2 Jul 2026; tag 2026-04-01 | https://arxiv.org/abs/2603.22435 | paper named; no code tag |
+| CaP-X paper and code | arXiv 2603.22435v2; capgym/cap-x v0.0.1 | v2 2 Jul 2026; tag 2026-04-01 | https://arxiv.org/abs/2603.22435 | named |
 | SEAR, AdaRSI, Physical RSI survey, RE-0 | 2610.18792v1; 2610.20474v2; 2610.18842v1; 2609.32416v1 | 13 Oct; 17 Nov; 13 Oct; 26 Sep 2026 | arXiv listings | not in the seed |
 | pi*0.6 / Recap | arXiv 2511.14759v2 | 19 Nov 2025 | https://arxiv.org/abs/2511.14759 | named; no newer Physical Intelligence RL paper was located in this pass (U23) |
 | GR00T 2 real-robot RL | First-party page (no paper located for the RL stage) | page read 2026-11-20; publication date not re-confirmed | https://research.nvidia.com/labs/gear/gr00t-2/ | same page |
 | piRL paper | arXiv 2510.25889v3 | 29 Jan 2026 | https://arxiv.org/abs/2510.25889 | named |
-| RLinf (framework behind piRL and the AWS GRPO recipe) | v0.4, SHA 2348ece3 | 2026-10-20 | https://github.com/RLinf/RLinf/releases/tag/v0.4 | named without a tag |
+| RLinf (framework behind piRL and the AWS GRPO recipe) | v0.4, SHA 2348ece3 | 2026-10-20 | https://github.com/RLinf/RLinf/releases/tag/v0.4 | named |
 | AWS sample `sample-rfm-simulation-on-aws` | v1.0.0 (SHA 1baf622d); default branch at SHA 66e0fbef carries the RL target | tag 2026-10-22; head 2026-11-19 | https://github.com/aws-samples/sample-rfm-simulation-on-aws | GRPO figures cited without a pin; they are not in v1.0.0 |
 | HIL-SERL paper (history) | arXiv 2410.21845v3 | v1 Oct 2024; v3 20 Mar 2025 | https://arxiv.org/abs/2410.21845 | named |
-| HIL-SERL reference code | No release; SHA c32939bc | last commit 2025-10-27 | https://github.com/rail-berkeley/hil-serl | not pinned |
+| HIL-SERL reference code | No release; SHA c32939bc | last commit 2025-10-27 | https://github.com/rail-berkeley/hil-serl | paper named |
 | LeRobot | v0.7.0, SHA 410c095e (previous: v0.6.1, 2026-08-03) | 2026-11-05 | https://github.com/huggingface/lerobot/releases/tag/v0.7.0 | LeRobot's RL implementation was not covered |
 | LWD (fleet RL) | arXiv 2605.00416v4 | 16 Sep 2026 | https://arxiv.org/abs/2605.00416 | named by ID |
 | Isaac Lab | v3.0.0, SHA e3f7d9ff (targets Isaac Sim 6.2) | 2026-10-20 | https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0 | no Isaac Lab throughput figure |
@@ -51,8 +51,8 @@ Newest first-party version found on 2026-11-20 for every item this register name
 | Eureka, DrEureka (history) | 2310.12931v2 (ICLR 2024); 2406.01967v1 (RSS 2024) | 2023; 2024 | arXiv listings | named |
 | VLM judges: FailBench, D&A, VLMeg, ARS | 2609.03611v1; 2611.03622v1; 2610.15401v1; 2609.34484v1 | Sep to Nov 2026 | arXiv listings | named |
 | RACaP | arXiv 2609.29394v1 | Sep 2026 | https://arxiv.org/abs/2609.29394 | named |
-| AWS Batch user guide (timeouts, fair share, consumable resources) | living docs | accessed 2026-11-20 | https://docs.aws.amazon.com/batch/latest/userguide/ | named |
-| Amazon Bedrock AgentCore limits page | living docs | accessed 2026-11-20 | https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/bedrock-agentcore-limits.html | named |
+| AWS Batch user guide (timeouts, fair share, consumable resources) | living docs | accessed 2026-11-20 | https://docs.aws.amazon.com/batch/latest/userguide/ | named (seed 05 section 10.2) |
+| Amazon Bedrock AgentCore limits page | living docs | accessed 2026-11-20 | https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/bedrock-agentcore-limits.html | named (seed 05 section 8.4); values unchanged |
 
 ## 3. Pinned sources
 
@@ -659,3 +659,198 @@ Located by two web searches on 2026-11-20, then read from the arXiv listing and 
 - Evidence: https://arxiv.org/abs/2609.32416v1 | Tier 3, preprint | definition | "RE-0 requests local corrections from the teacher on the student's own failure histories and checks in the environment whether each correction is genuinely beneficial; verified corrections yield immediate improvement." (accessed 2026-11-20)
 - Use in dive: section 19, optional one-line mention under "verify before you keep it", the same idea as the promotion gate (F04-35). Do not cite results from it without reading the body.
 
+## 5. Teaching material
+
+### 5.1 Section 8: Reinforcement Learning for Robots
+
+**The plain-words idea.** Imitation gives a robot a policy that copies what people showed it. Reinforcement learning (RL) lets the policy get better than its demonstrations by trying the task, having each attempt scored, and shifting toward what scored well (link to the Learning From Feedback dive for reward, advantage and PPO). For a robot the whole question is where the attempts come from, because a real arm makes about a hundred an hour and a simulator makes millions. That gives three settings: in simulation with thousands of copies of the arm (F04-54, F04-57), on top of a pretrained policy using its own deployment episodes (F04-60), and directly on one real arm with a person helping (F04-72, F04-76).
+
+**Worked example on the arm task (real figures, arithmetic marked [derived]).**
+
+1. Attempts per hour on the real arm. LeRobot's RL defaults give an episode at most 20 s and a reset wait of 5 s, at 10 control steps per second (F04-77). [derived] 20 s + 5 s = 25 s per attempt, so at most 3,600 / 25 = 144 attempts per hour, each at most 200 control steps: at most 28,800 control steps per hour. For a task finished in 10 s (the docs recommend 5 to 10 s tasks) it is 3,600 / 15 = 240 attempts per hour.
+2. Attempts per hour in simulation. Isaac Lab 3.0 trains a Franka cube-lift task at 164,777 control steps per second with 8,192 copies on one GPU (F04-54; a different arm and no camera). [derived] At 200 steps per attempt that is 164,777 / 200 = 824 attempts per second, about 2.97 million per hour: roughly 20,000 times the real arm's 144.
+3. What one published SO-101 recipe consumes. MuJoCo Playground's SO-101 pick-cube recipe uses 4,096 simulated arms x 16 steps x 3,000 iterations = 196,608,000 control steps at 10 Hz (F04-57, F04-58). [derived] 196,608,000 / 200 = 983,040 attempts of 20 s. On the real arm at 144 per hour that would be 983,040 / 144 = 6,827 hours, about 284 days without a break.
+4. What the camera does to it. With one 64 x 64 camera per copy, the Isaac Lab benchmark's camera task trains at 27,962 steps per second on PhysX with RTX rendering and 115,889 on Newton (F04-55; a Kuka-Allegro hand, not the SO-101). Illustration only, because robot and task differ: 196,608,000 steps at those two rates would take 7,031 s (about 2 hours) and 1,697 s (about 28 minutes). The measured wall-clock for the SO-101 recipe itself is not published in the files read (U12).
+5. The real-arm alternative. HIL-SERL-style training reaches a working policy in 1 to 2.5 hours on tasks of this size (F04-72), that is a few hundred attempts by step 1, which works only because it starts from 15 to 30 demonstrations and a person corrects it (F04-74, F04-79, F04-80).
+
+Arm figures owned by other streams: joint count and native camera resolution of the SO-101 (stream 01). Fetched here: 10 Hz control and a 64 x 64 wrist image in the Playground task (F04-57); 10 frames per second and 128 x 128 crops in LeRobot RL (F04-77).
+
+**Mechanism 1: advantage conditioning (Recap, RL on a pretrained policy).** Entries F04-60 to F04-63.
+
+- Intuition: do not push the policy with a gradient that says "more reward". Label every recorded action as better or worse than expected, train the policy to imitate all of them with that label as an input, then at run time ask for "better than expected".
+- Tensors: a value model V takes (camera images and joint state o_t, instruction l) and outputs a distribution over 201 bins of "steps remaining until success", normalised to the range -1 to 0 (F04-61). It is a 670M-parameter VLM, separate from the policy.
+- Formula, in words then symbols. Advantage A_t = (what actually happened from step t) - (what V predicted at step t). Flag I_t = true if A_t > epsilon_l, where epsilon_l is a per-task threshold; I_t = true is forced for human correction actions (F04-62, F04-63). The policy pi(a_t | o_t, l, I_t) is trained by the same supervised loss as before on every episode, with I_t as one more conditioning input, and I_t is randomly dropped during training so the model can also run without it. At run time I_t = true; the optional guidance weight beta > 1 sharpens the effect.
+- Toy numbers (illustration, simplified to a whole-episode return): the task's longest allowed episode is 200 steps. At step 40 the value model predicts -0.40 (80 more steps). The arm in fact finishes 60 steps later, a return of -0.30. A = -0.30 - (-0.40) = +0.10. With a threshold of +0.05 the flag for that step is true, so that grasp is filed under "better than expected". Had the block slipped and the episode run 120 more steps (-0.60), A = -0.20 and the flag is false; the data is still used.
+- Which term carries what: V carries "how well is this going", A carries "was this action a pleasant or unpleasant surprise", the flag carries that surprise into the policy in a form a flow-matching action head can consume.
+
+**Mechanism 2: the actor-learner split (RL on the real robot).** Entries F04-73, F04-76, F04-78, F04-75.
+
+- Intuition: the arm must be commanded on a fixed clock (10 Hz here), and gradient steps take as long as they take. So two programs: the actor runs the current policy on the arm and records; the learner trains and periodically sends new weights.
+- What flows where: actor to learner, transitions (observation, action, reward, next observation, and whether a human was intervening) over gRPC; learner to actor, policy weights every 4 s by default (F04-78). The learner keeps two replay buffers of 100,000 transitions (robot experience and demonstrations) and, in the original paper, draws each batch half from each (F04-73).
+- Reward: a small image classifier trained on success and failure frames, or a human key press (F04-74, F04-77).
+- Scaling it: LWD keeps the same shape with 16 robots as actors and one central learner (F04-75).
+
+**What it costs in compute, and what it loads.**
+
+| Setting | Published figure | Entry | Part of the machine loaded |
+|---|---|---|---|
+| RL in simulation, state observations | 164,777 steps/s (PhysX) or 318,651 (Newton MJWarp), 8,192 copies, one RTX PRO 6000 Blackwell; 14.7 GB or 5.4 GB GPU memory; GPU utilisation 41 to 50% | F04-54 | GPU tensor cores (physics and the small policy); CPU for orchestration |
+| RL in simulation, with a camera | 27,962 steps/s with RTX rendering (24.2 GB), 115,889 with the Newton renderer (13.6 GB) | F04-55 | adds the GPU's ray-tracing or rasterisation path and memory |
+| Pick-cube from pixels, sim to real (Franka) | ten minutes on one RTX 4090 [author reported] | F04-56 | one consumer GPU |
+| SO-101 pick-cube recipe | 4,096 copies, 196.6M steps; wall-clock unpublished | F04-58, U12 | one GPU; a CPU fallback at 64 copies exists |
+| RL on a VLA in simulation (piRL) | 8 H100 80 GB, 64 to 320 parallel environments | F04-69 | 8 GPUs: each simulated step needs a large-model forward pass |
+| RL on a VLA in simulation (GRPO on OpenVLA-OFT, AWS sample) | one p5en.48xlarge (8 H200), 31.6 h training, about 25 min per step, about US$1,100 Spot, 57 GB per checkpoint | F04-70 | 8 GPUs, plus storage and network for 57 GB checkpoints |
+| RL on a pretrained policy from real episodes (Recap) | 670M value model plus a VLA with a 4B backbone and 860M action expert; 300 to 960 episodes per iteration on 3 or 4 robots; learner hardware unpublished | F04-61, F04-64, F04-65, U15 | robot time and people first; then a fine-tuning job |
+| RL on one real arm (HIL-SERL) | one RTX 4090, 1 to 2.5 h | F04-72 | one GPU for the learner; CPU and cameras for the actor |
+| Fleet RL (LWD) | 16 robots, 4 h wall-clock, about 60 robot-hours; learner hardware not located | F04-75, U18 | robots, network (episode uploads, weight pushes), one learner |
+
+### 5.2 Section 19: Agents Running the Loop
+
+**The plain-words idea.** Improving a robot policy is a loop a research engineer runs by hand: put the scene back, run the policy, decide whether it worked, look at the failures, change the training code, train again. In 2026 several groups handed that loop to a coding agent (a language model that reads and writes files and runs commands). The agent does not move the motors and does not grade itself: people first build and freeze the things that define the task (safety limits, the reset, the success check), and the agent then spends hours changing training code and running trials against that frozen check (F04-1, F04-2, F04-8).
+
+**ENPIRE walk-through, on the arm task.** ENPIRE's published tasks use a two-arm YAM station, and its repository has no SO-101 adapter (U5); the mapping below is [our reading] with ENPIRE's real numbers.
+
+1. Stage one, with a person (F04-2, F04-12, F04-13, F04-14). Record a few minutes of the block landing in the cup and of misses. The agent writes a binary success check from those recordings and a reset routine (take the block out of the cup, put it back at the start). The person states the precision, recall and latency required. Then safety limits, reset and check are frozen.
+2. Stage two, alone (F04-3, F04-4, F04-9). The agent gets a nine-line prompt with the goal (100% over every window of 50 consecutive episodes) and a training codebase it may edit. It picks the method (behaviour cloning, real-world RL, a scripted policy, or a mix), states one hypothesis, makes the smallest change, tests offline, runs the approved number of real trials through a three-endpoint local server (F04-6), and keeps the change only if it passes.
+3. What comes back (F04-18 to F04-23). On pin insertion one agent on one station reached 100% in 2.5 h; eight stations did it in 0.67 h. In the eight-station run 86 ideas were tried and 28 helped. The robot was executing an experiment 30 to 49% of the time and the station's GPU was busy 29 to 49% of the time. The fleet's token rate went from 9,269 to 140,310 tokens per minute for 8x the agents. [derived] token rate x time to success reproduces the paper's tokens-to-success: 9,269 x 60 x 4.5 h = 2.50M; 40,029 x 60 x 3.2 h = 7.69M; 140,310 x 60 x 2.0 h = 16.84M.
+4. The headline number and how to read it (F04-16): 99% is "pass@8", success within up to eight sequential retries in one rollout.
+
+**What the agent may touch, and who grades.**
+
+| System | Agent may change | Frozen or out of reach | Who grades | Entries |
+|---|---|---|---|---|
+| ENPIRE | training code, method, hyperparameters, policy-side code | environment, reset, verifier, safety limits, evaluation seeds, artifact schema | a reward function the agent wrote in stage one, then frozen, checked against a held-out set | F04-8, F04-12, F04-13 |
+| ASPIRE | robot control programs and text skills (no weights) | the robot API | a second, fresh agent must reproduce the fix; the coordinator checks allowed APIs | F04-27, F04-28 |
+| AgenticRobotics | analysis and training runs (worker agents) | the objective: metric, direction, threshold, evaluation command | an LLM controller that owns measurement, with a statistical promotion gate | F04-34, F04-35, F04-38 |
+| SEAR | anything inside its container | held-out start states and grading logic | a sealed judge that "ignores any success the policy claims" | F04-83 |
+
+Physical safety is outside all of this: hard motion limits, torque-limited grippers and an emergency stop do not depend on the agent (F04-10).
+
+**The limits to teach with it.** Self-built practice flatters the agent: on real robots success in practice overstated success on operator-set tests (F04-84). General VLM judges top out near 0.77 balanced accuracy and lean toward declaring success (F04-45). Evaluation noise can exceed the gains being chased: 22 of 100 outcomes flipped on a re-run with the same seeds (F04-37). A survey of the field puts none of these systems at its top level (F04-86).
+
+**What it costs in compute.**
+
+| Cost | Published figure | Entry |
+|---|---|---|
+| Station hardware | one RTX 5090 (32 GB), 24-core CPU, 128 GB RAM per station; no shared cluster | F04-5 |
+| GPU and robot idle time | GPU busy 29 to 49%, robot busy 30 to 49% of research wall-clock | F04-19 |
+| Tokens | 80M tokens for one agent on simplified Push-T, 96% of them cache reads; 2.5M to 16.8M (as plotted) to reach success on the scaling study | F04-20, F04-22, U4 |
+| Dollars, simulation-only skill learning | US$0.83 to US$35.37 per task by model; about US$650 for a 60-task campaign | F04-30, F04-31 |
+| Dollars, real robot | about US$3.7 to US$18 of API spend per scored success | F04-84 |
+| GPU-hours, selection loop | 121.6 GPU-hours on one Quadro RTX 8000 over 5,475 evaluation episodes | F04-36 |
+| GPU-minutes, agent-directed fine-tuning | 2,106 GPU-minutes against 6,113 for fine-tuning everything | F04-85 |
+| What a scheduler can enforce | job timeout (none by default), per-agent fair share, countable tokens for scarce things such as a robot or an API quota | F04-50, F04-51, F04-52 |
+
+Which part of the machine: the agent itself is a remote inference workload (tokens, almost all cache reads); locally it loads CPU and disk (logs, rollouts, Git); the GPU is used in bursts when a training run or the verifier's vision models execute, which is why it sits idle most of the time (F04-19, F04-21).
+
+## 6. Stale or wrong in the seed research
+
+| Seed file | Seed claim | What the source says now | Entry |
+|---|---|---|---|
+| seed 01, sections 3.4 and 16 | Recap data was "spread over 33 robots"; robots per task "4-33" | The PDF reads "spread over 3 robots", and the sentence is about one ablation. The "33" is an artefact of the arXiv HTML math rendering. Robots per experiment are 3 or 4. | F04-65 |
+| seed 05, ASPIRE section | Read at v1 | v2 (20 Oct 2026) adds dollar cost per task by model, the 60-task campaign cost and the online Rubik's Cube study | F04-30, F04-31, F04-33 |
+| seed 05, ENPIRE scaling and utilisation | Values read off charts as approximate ranges (for example time to success about 4.4, 3.3, 2.0 h) | Exact values are in the project page's chart data: 4.5, 3.2, 2.0 h; robot utilisation 49.14, 30.87, 29.78%; GPU 29.41, 32.52, 48.96%; token rate 9,269, 40,029, 140,310 per minute | F04-18, F04-19, F04-20 |
+| seed 05, repositories | ENPIRE and ASPIRE repositories cited at the default branch | Pinned here to SHAs 99ee90ac and fa00f0ef; neither has a tagged release | F04-26 |
+| seed 03 and the seed synthesis file | AWS sample GRPO figures (48.6% to 85.0%, about US$1,100) cited against the sample without a pin | The figures are real but exist only on the default branch (SHA 66e0fbef, 2026-11-19); release v1.0.0 does not contain the RL target | F04-70 |
+| seed 01, section 16 (gap, not an error) | Carried no Isaac Lab throughput and no MuJoCo Playground figures | Isaac Lab is at 3.0.0 with a Newton backend and published throughput tables; MuJoCo Playground is at 1.0.1, rewritten in PyTorch on MuJoCo Warp, with an SO-101 sim-to-real task | F04-54, F04-57 |
+| seed 01, section 16 (gap, not an error) | Did not cover LeRobot's RL implementation | LeRobot v0.7.0 ships it as `lerobot.rl` with SO-100 and SO-101 instructions; fleet RL (LWD) is at v4 | F04-76, F04-80, F04-75 |
+| seed 05, siblings (gap, not an error) | Covers ENPIRE, ASPIRE, AgenticRobotics, SimEX, RACaP | Four newer papers exist: SEAR, AdaRSI (tests on an SO-ARM101), a Physical RSI survey, RE-0 | F04-82 to F04-87 |
+
+## 7. Mental models worth teaching
+
+1. **RL for robots is a question about where attempts come from.** A real arm gives about 144 attempts an hour; a simulator on one GPU gives about 3 million. Every method in section 8 is a way of living with one of those two numbers (F04-54, F04-77, section 5.1).
+2. **In simulation, the camera is the expensive part.** Turning on one small camera per copy halves training throughput or worse, and adds a rendering workload to a GPU that was only doing physics and a small network (F04-55).
+3. **Putting a large model in the loop changes the scale by orders of magnitude.** A small policy trains with 8,192 copies on one GPU in minutes; RL on a VLA uses 64 to 320 copies on 8 GPUs and takes more than a day (F04-54, F04-69, F04-70).
+4. **Advantage conditioning is RL done as labelled imitation.** Score every recorded action as better or worse than expected, train on all of it with the score as an input, ask for "better" at run time (F04-62).
+5. **Actor and learner are separate because the robot has a clock and the GPU does not.** The same split serves one desk arm, an agent-run station and a 16-robot fleet (F04-73, F04-76, F04-15, F04-75).
+6. **On a real robot the scarce inputs are resets, rewards and a person's attention, not GPUs.** Recap, HIL-SERL and LeRobot all say so in their own words (F04-67, F04-74, F04-79).
+7. **An agent-run loop is two stages: people freeze the task, then the agent edits the training.** What makes it trustworthy is what the agent cannot change (F04-2, F04-8, F04-83).
+8. **More robots buy time at a steep price in tokens and idle hardware.** Eight stations gave 2.4x to 3.7x, for 15x the tokens, with GPUs busy under half the time (F04-18, F04-19, F04-20).
+9. **The grader is the weak point.** General VLM judges err toward "success", self-built practice overstates test performance, and re-running an evaluation can flip a fifth of the outcomes (F04-45, F04-84, F04-37).
+
+## 8. Contradictions between sources
+
+| Topic | Source A | Source B | Reading |
+|---|---|---|---|
+| ENPIRE Fig. 7 task | The text says the utilisation and token study was run on pin insertion (F04-19) | Its time-to-success values (4.5, 3.2, 2.0 h) match the Push-T scaling curve (4.7, 3.1, 2.0 h), not pin insertion (2.5, 0.89, 0.67 h) (F04-18, F04-20) | Either a different run or a mislabelled task; quote the figures with "as plotted" and do not combine them with the pin-insertion times |
+| Recap robot count | arXiv HTML renders "33 robots" | The PDF reads "3 robots" (F04-65) | PDF is right; HTML duplicates the inline number |
+| Recap box-assembly data | Main text: "600 autonomous trials and 360 trials with interventions in each iteration" | Appendix: "600 demonstrations and 360 correction episodes in each iteration" (F04-65) | Unresolved wording difference inside one paper; quote the main text and note the appendix |
+| HIL-SERL headline | Abstract: "near-perfect success rates" | Results: "a success rate of 100% ... on nearly all the tasks" (F04-72) | Consistent once "nearly all" is kept; do not shorten to "100%" |
+| GRPO on OpenVLA-OFT, LIBERO-Goal | RLinf's published figure: 49.40% to 93.96% | AWS sample's measured run: 48.6% to 85.0% after 75 of the recipe's steps (F04-70) | Different step counts and one run; the sample's own text states the gap |
+| Agent loops under a small real-trial budget | ENPIRE and ASPIRE report high success in their own protocols (F04-16, F04-29) | SimEX reports its re-implementations of both at 3 of 30 or fewer under a five-trial budget (F04-43) | The comparison is SimEX's re-implementation under SimEX's budget, not the original authors' runs |
+| Measurement-driven selection | AgenticRobotics argues for a statistical promotion gate (F04-35) | Its own data: taking the final checkpoint beat every selector by 5.6 to 10.0 points (F04-37) | The author reports both; present the gate as a design, not a proven gain |
+| Newton version | Isaac Lab 3.0 targets Newton 1.6.1 (F04-59) | Newton's newest release is 1.8.0 (currency table) | Not a conflict: the Isaac Lab benchmark numbers belong to 1.6.1 |
+| "Cut by a quarter" | LeRobot docs: steps to maximum reward "cut by a quarter" with interventions (F04-79) | No number in the text | Ambiguous (by or to a quarter); quote, do not convert |
+
+## 9. UNKNOWN register
+
+| ID | Unknown | Where it arises | What would close it |
+|---|---|---|---|
+| U1 | How often ENPIRE's agents chose each learning method on each task | F04-3 | Per-task method counts from the authors or the run logs |
+| U2 | Whether ENPIRE's "immutable" verifier and reset are technically enforced (file permissions, separate process) or only instructed | F04-8, F04-13 | Reading the harness code path that loads the verifier, or an author statement |
+| U3 | Precision and recall achieved by ENPIRE's verifiers, and reset reliability and time per reset | F04-12, F04-14 | Numbers from the paper's authors; none in v2 |
+| U4 | Whether ENPIRE Fig. 7 token counts include cached input | F04-20, F04-22 | Author clarification; compare with the 80M total in the cost breakdown |
+| U5 | No SO-101 adapter in the ENPIRE repository at SHA 99ee90ac | F04-26 | A later commit or a community port |
+| U6 | GPU type and hours behind ASPIRE's simulator rollouts | F04-31 | Author statement |
+| U7 | GPU type used for DrEureka's 3-hour figure | F04-40 | Re-read of the DrEureka appendix |
+| U8 | RACaP campaign cost table (the seed's $62.55 for 15 rounds, 2,474 API calls) not re-located | F04-42 | Reading the table from the PDF page images |
+| U9 | Queue wait, interruption rate and dollar cost of GPU jobs launched by agents | F04-48 | Our own experiment (stream 08) or a production report |
+| U11 | Time to a working policy for the Isaac Lab Lift-Franka task | F04-54 | A training run (Tier 0) or Isaac Lab's training-curve data |
+| U12 | Wall-clock and measured real-world success rate of the Playground SO-101 pick-cube recipe | F04-57, F04-58 | A run on one GPU (Tier 0), or figures from the Playground authors |
+| U13 | Contents of Isaac Lab's SO-101 stacking task (observations, reward, training time) | F04-59 | Reading the task files at tag v3.0.0 |
+| U14 | A standalone Newton RL throughput figure outside Isaac Lab | F04-59 | Newton docs or benchmarks at v1.8.0 (stream 06) |
+| U15 | GPU count and hours for one Recap iteration (value model and VLA fine-tune) | F04-64 | Not in the paper; a Physical Intelligence statement |
+| U16 | Robot count, episodes, training time and learner hardware for GR00T 2's real-robot RL; the definition of "GRPO-induced self-imitation"; the page's publication date | F04-68 | A GR00T 2 paper or technical report |
+| U17 | Wall-clock per piRL training run | F04-69 | A table in the appendix not found by text search, or the RLinf docs |
+| U18 | Learner GPU type and count for LWD | F04-75 | Re-read of the LWD appendix |
+| U19 | Measured training time and success rate of LeRobot HIL-SERL on an SO-101 | F04-80 | A run on the arm (Tier 0) or a LeRobot benchmark table |
+| U20 | A first-party recipe for RL on top of a pretrained policy on the SO-101 | F04-81 | LeRobot docs at a later tag; `docs/source/hilserl_sim.mdx` was not read |
+| U21 | GPU model behind AdaRSI's GPU-minute figures | F04-85 | The paper's supplementary material |
+| U22 | The level the Physical RSI survey assigns to each system | F04-86 | Reading the survey's level table from the PDF pages |
+| U23 | Whether Physical Intelligence has published a successor to Recap after Nov 2025 | Currency table | Their publications page |
+| U24 | Peer-review venue of HIL-SERL | Pinned sources | The arXiv comment field or the project page |
+
+U10 (SimEX Table 2) was closed during this pass; see F04-49.
+
+## 10. Reading path for Carlos
+
+1. ENPIRE project page, https://research.nvidia.com/labs/gear/enpire/ : the videos and the scaling charts. Ten minutes to see what "an agent runs the loop" looks like physically.
+2. ENPIRE paper, arXiv 2606.19980v2: Sec 3 (the two stages), Fig. 7 (utilisation and tokens), Sec 6 (limitations, two paragraphs), Appendix on the prompt. This is section 19's spine.
+3. ENPIRE repository at SHA 99ee90ac, file `enpire/policy/autoresearch_instruction.md`: one page, the actual contract that says what the agent may not touch.
+4. SEAR, arXiv 2610.18792v1: Abstract, Sec 2.4 "Protocol" (the sealed judge) and the Sec 4 finding on real robots. The sober counterweight to ENPIRE, and newer than the seed.
+5. Recap, arXiv 2511.14759v2: Fig. 3 and Sec IV-B (advantage conditioning, one page), then Sec VII (limitations). The mechanism section 8 needs for "RL on a pretrained policy".
+6. AWS sample at SHA 66e0fbef, `docs/results.md` section "RL post-training": one measured run with hours, dollars and a failed earlier attempt. The cost story for the same setting.
+7. LeRobot v0.7.0 `docs/source/hilserl.mdx`: the sections "Training with Actor-Learner" and "Guide to Human Interventions". What RL on the SO-101 on a desk involves.
+8. MuJoCo Playground v1.0.1 `README.md` and `mujoco_playground/tasks/manipulation/pick_cube/so101/deploy/README.md`: the SO-101 pick-cube sim-to-real path, newest item in this file (6 Nov 2026).
+9. Isaac Lab v3.0.0 `docs/source/_static/benchmarks/README.md` and the CSV next to it: where the steps-per-second figures come from and their caveats.
+10. LWD, arXiv 2605.00416v4: Abstract and the experimental-setup section. The fleet version of the actor-learner split.
+11. AdaRSI, arXiv 2610.20474v2: Sec 5.4 and Fig. 4b. An agent-run loop tested on the same arm family as the dive's thread task.
+
+## 11. Source list by tier
+
+**Tier 0 (our experiments):** none.
+
+**Tier 1 (source code at a pinned ref, official docs):**
+- huggingface/lerobot at v0.7.0 (SHA 410c095eacc0011d998a73383eb94abed2715af0): https://github.com/huggingface/lerobot/releases/tag/v0.7.0
+- isaac-sim/IsaacLab at v3.0.0 (SHA e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4): https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0
+- google-deepmind/mujoco_playground at v1.0.1 (SHA 084e7957842792725d70866ee840d8fd79f17bbe): https://github.com/google-deepmind/mujoco_playground/tree/v1.0.1
+- newton-physics/newton at v1.8.0 (SHA 425db81f01e402b51f96f560e154d529d645c6de): https://github.com/newton-physics/newton/releases/tag/v1.8.0
+- NVlabs/ENPIRE at SHA 99ee90acf65b5b18957c8382ad580db999528be3: https://github.com/NVlabs/ENPIRE
+- NVlabs/ASPIRE at SHA fa00f0ef2bc1d91d594b9aa502c22133c9f538f7: https://github.com/NVlabs/ASPIRE
+- aws-samples/sample-rfm-simulation-on-aws at SHA 66e0fbef60d4d345d72c38505d3911d6a4cfff89 (and tag v1.0.0, SHA 1baf622dc6c7ebfd91035d803149d58bbed4fddb): https://github.com/aws-samples/sample-rfm-simulation-on-aws
+- RLinf/RLinf at v0.4 (SHA 2348ece3df113874671478be1360ae3115b346e3): https://github.com/RLinf/RLinf
+- rail-berkeley/hil-serl at SHA c32939bccb65f3b8c43a9f9add3d322d4ab0264a: https://github.com/rail-berkeley/hil-serl
+- AWS Batch user guide: https://docs.aws.amazon.com/batch/latest/userguide/job_timeouts.html ; https://docs.aws.amazon.com/batch/latest/userguide/fair-share-scheduling.html ; https://docs.aws.amazon.com/batch/latest/userguide/resource-aware-scheduling.html
+- Amazon Bedrock AgentCore limits: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/bedrock-agentcore-limits.html
+
+**Tier 2 (first-party lab and vendor pages):**
+- ENPIRE project page and chart data: https://research.nvidia.com/labs/gear/enpire/
+- GR00T 2 page: https://research.nvidia.com/labs/gear/gr00t-2/
+
+**Tier 3 (papers; peer-reviewed where the venue was confirmed):**
+- Peer-reviewed: ENPIRE, https://arxiv.org/abs/2606.19980v2 (CoRL 2026); Eureka, https://arxiv.org/abs/2310.12931v2 (ICLR 2024, history); DrEureka, https://arxiv.org/abs/2406.01967v1 (RSS 2024, history); MuJoCo Playground, https://arxiv.org/abs/2502.08844v1 (RSS 2025).
+- Preprints, RL: Recap, https://arxiv.org/abs/2511.14759v2 ; piRL, https://arxiv.org/abs/2510.25889v3 ; HIL-SERL, https://arxiv.org/abs/2410.21845v3 (history) ; LWD, https://arxiv.org/abs/2605.00416v4
+- Preprints, agent loops: ASPIRE, https://arxiv.org/abs/2607.00272v2 ; AgenticRobotics, https://arxiv.org/abs/2608.07555v2 ; CaP-X, https://arxiv.org/abs/2603.22435v2 ; RACaP, https://arxiv.org/abs/2609.29394v1 ; SimEX, https://arxiv.org/abs/2609.38982v1 ; SEAR, https://arxiv.org/abs/2610.18792v1 ; AdaRSI, https://arxiv.org/abs/2610.20474v2 ; Physical RSI survey, https://arxiv.org/abs/2610.18842v1 ; RE-0, https://arxiv.org/abs/2609.32416v1 (abstract only)
+- Preprints, judges: FailBench, https://arxiv.org/abs/2609.03611v1 ; D&A, https://arxiv.org/abs/2611.03622v1 ; VLMeg, https://arxiv.org/abs/2610.15401v1 ; ARS, https://arxiv.org/abs/2609.34484v1
+
+**Tier 4 (used only to locate sources, never cited as fact):** web search result pages for the item-11 search on 2026-11-20.
