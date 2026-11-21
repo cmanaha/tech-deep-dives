@@ -9,6 +9,7 @@ import { Figure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
 import { linear, ticks } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
+import { Capture, MUJOCO_SO101, Seen } from '../components/Capture';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
@@ -445,6 +446,22 @@ export function Evaluation() {
             camera parameters and object mass in its v0.3 alpha.{' '}
             <Cite id="F06-92">Isaac Lab-Arena, v0.3 announcement</Cite>
           </Box>
+          <Capture
+            file="so101-eval-grid.jpg"
+            kind="still"
+            width={1280}
+            height={720}
+            alt="A grid of twelve final frames from twelve simulated trials, eight with a green border where the block is in the cup and four with a red border where it is not."
+            caption={
+              <>
+                Closed-loop trials as a picture: <Seen>12</Seen> runs, each starting with the block moved by up to{' '}
+                <Seen>12</Seen> mm on each axis, each scored by where the block ends. Green means in the cup:{' '}
+                <Seen>8</Seen> of <Seen>12</Seen>. The motion is a fixed script that does not look at the block, which
+                is why a small shift is enough to make it miss. A policy is scored the same way.
+              </>
+            }
+            provenance={MUJOCO_SO101}
+          />
         </SpaceBetween>
       </Container>
 

@@ -8,6 +8,7 @@ import { Cite } from '../components/Cite';
 import { Figure } from '../components/Figure';
 import { M } from '../components/Math';
 import { ARM, TASK_STORY } from '../lib/task';
+import { Capture, MUJOCO_SO101 } from '../components/Capture';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
@@ -443,6 +444,34 @@ export function CollectingData() {
             with: the example below records a video file target of 500 MB.{' '}
             <Cite id="F05-20">LeRobot datasets/utils.py, size defaults</Cite>
           </Box>
+          <Capture
+            file="so101-episode-strip.jpg"
+            kind="still"
+            width={1800}
+            height={300}
+            alt="Six frames from one episode, left to right: the arm above the block, the gripper around it, the block lifted, carried over the cup and released."
+            caption={
+              <>
+                One episode as the video file holds it: frames in time order. Six moments are shown; the file holds
+                every frame between them. The rows of the table file line up with these frames one to one.
+              </>
+            }
+            provenance={MUJOCO_SO101}
+          />
+          <Capture
+            file="so101-policy-views"
+            kind="clip"
+            width={960}
+            height={360}
+            alt="The same episode from two cameras side by side: an overhead view of the table and a view from the gripper."
+            caption={
+              <>
+                The same episode from an overhead camera and a camera on the gripper. Each camera becomes its own video
+                file in the dataset, and these two streams are what a policy receives as its images.
+              </>
+            }
+            provenance={MUJOCO_SO101}
+          />
         </SpaceBetween>
       </Container>
 

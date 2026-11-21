@@ -9,6 +9,7 @@ import { Figure, AnimatedFigure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
 import { linear } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
+import { Capture, CaptureSlot, MUJOCO_SO101, Seen } from '../components/Capture';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
@@ -468,6 +469,25 @@ export function RobotAsComputer() {
             host. The leader is how a person shows it what to do, and the recordings of those sessions are the
             demonstrations that section 4, Learning From Demonstrations, trains on.
           </Box>
+          <Capture
+            file="so101-pick-place"
+            kind="clip"
+            width={720}
+            height={480}
+            alt="A simulated SO-101 arm lowers its gripper over a small block, closes on it, lifts it and drops it into a cup."
+            caption={
+              <>
+                The follower arm doing the task this dive follows, in simulation: reach, close, lift, carry, release.
+                The clip runs <Seen>8.2</Seen> s. A script moves the arm here, so the motion is cleaner than a person
+                or a policy would make it. Press play to watch it.
+              </>
+            }
+            provenance={MUJOCO_SO101}
+          />
+          <CaptureSlot
+            what="Camera footage from the real arms: the leader in the hand and the follower copying it at the bench."
+            meanwhile="The clip above shows the same arm model and the same task in simulation."
+          />
         </SpaceBetween>
       </Container>
 

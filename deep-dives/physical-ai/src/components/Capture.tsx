@@ -111,3 +111,16 @@ export function CaptureSlot({ what, meanwhile }: { what: ReactNode; meanwhile?: 
     </div>
   );
 }
+
+/** Provenance shared by every SO-101 capture made for this dive (see public/media/PROVENANCE.md). */
+export const MUJOCO_SO101: Provenance = {
+  software: 'MuJoCo 4.0.1, offscreen renderer',
+  date: '2026-11-20',
+  by: 'made for this dive on a Mac; scripted motion, no learned policy',
+  asset: 'SO-101 model from TheRobotStudio/SO-ARM100 at commit 141aea7 (Apache-2.0)',
+};
+
+/** A number read off one of our own captures; the capture's provenance line is its source. */
+export function Seen({ children }: { children: ReactNode }) {
+  return <span data-num="capture">{children}</span>;
+}

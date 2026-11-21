@@ -15,6 +15,7 @@ import { GpuEngines, ENGINES_BY_WORKLOAD, GPU_WORKLOADS } from '../components/Gp
 import type { GpuWorkload } from '../components/GpuEngines';
 import { linear } from '../lib/scale';
 import { ARM, TASK_STORY, SIM_TASK, SIM_TASK_PLAIN, SIM_TASK_GAP } from '../lib/task';
+import { Capture, CaptureSlot, MUJOCO_SO101 } from '../components/Capture';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
@@ -411,6 +412,25 @@ export function Rendering() {
             environments at once (an environment is one copy of the scene plus its task, section 12), and every one
             of them needs its own image at every step.
           </Box>
+          <Capture
+            file="so101-render-passes.jpg"
+            kind="still"
+            width={1800}
+            height={400}
+            alt="One overhead frame of the arm, block and cup shown three ways: in colour, as a depth image and with each body filled in one flat colour."
+            caption={
+              <>
+                One frame from the overhead camera, drawn three ways by the same renderer: colour, depth (brightness is
+                distance from the camera) and segmentation (one flat colour per body). A policy trained on camera images
+                receives the first; the other two come from the same pass over the scene.
+              </>
+            }
+            provenance={MUJOCO_SO101}
+          />
+          <CaptureSlot
+            what="Isaac Sim capture of the SO-101 scene, to be recorded on our own machines: the same scene drawn by a ray-traced renderer, with shadows and reflections."
+            meanwhile="The frame above comes from MuJoCo's own renderer, which rasterises."
+          />
         </SpaceBetween>
       </Container>
 

@@ -9,6 +9,7 @@ import { Figure, AnimatedFigure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
 import { log10Scale } from '../lib/scale';
 import { ARM, SIM_TASK, SIM_TASK_PLAIN, SIM_TASK_GAP } from '../lib/task';
+import { Capture, MUJOCO_SO101 } from '../components/Capture';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
@@ -451,6 +452,22 @@ export function PhysicsSimulation() {
             The shipped task makes the arm {SIM_TASK_PLAIN}; {SIM_TASK_GAP} is this dive&apos;s extension. The worked
             example below takes its numbers from that task&apos;s code.
           </Box>
+          <Capture
+            file="so101-contact.jpg"
+            kind="still"
+            width={1200}
+            height={800}
+            maxWidth={760}
+            alt="Close view of the gripper holding the block, bodies drawn transparent, with small discs at the contact points and arrows for the contact forces."
+            caption={
+              <>
+                The grasp as the simulator sees it. The bodies are drawn transparent so the contacts show: each disc is
+                a point where two shapes touch, and each arrow is the force the solver computed there to keep them from
+                passing through each other. The sections below build up to how that force is found.
+              </>
+            }
+            provenance={MUJOCO_SO101}
+          />
         </SpaceBetween>
       </Container>
 

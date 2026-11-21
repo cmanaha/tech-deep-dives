@@ -8,6 +8,7 @@ import { Cite, Toy, Derived } from '../components/Cite';
 import { AnimatedFigure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
 import { ARM, TASK_STORY, SIM_TASK, SIM_TASK_PLAIN, SIM_TASK_GAP } from '../lib/task';
+import { Capture, MUJOCO_SO101 } from '../components/Capture';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
@@ -391,6 +392,21 @@ export function SimToReal() {
               </tbody>
             </table>
           </div>
+          <Capture
+            file="so101-domain-randomisation.jpg"
+            kind="still"
+            width={1200}
+            height={600}
+            alt="Six overhead views of the same arm, block and cup scene, each with a different floor colour, lighting, object colours and positions, and a slightly moved camera."
+            caption={
+              <>
+                Six draws of one scene. Floor colour, light position and strength, object colours and positions, the
+                camera offset and the arm&apos;s tint change between them; the task does not. A policy trained across
+                such draws has to find the block in all of them.
+              </>
+            }
+            provenance={MUJOCO_SO101}
+          />
         </SpaceBetween>
       </Container>
 
