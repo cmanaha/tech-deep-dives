@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties } from 'react';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
@@ -7,17 +7,13 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import { Cite, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
+import { WmFamilies, WM_FAMILY_STEPS } from '../components/figures/WmFamilies';
 import { log10Scale } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
-const ROBOT_FILL = '#fff6d6';
-const ROBOT_INK = '#7a5c00';
-const GPU_FILL = '#e6f6ea';
-const GPU_INK = '#1e7b3a';
 const NEUTRAL_INK = '#5f6b7a';
-const EMPHASIS = '#0972d3';
 const PIXEL_BAR = '#5f6b7a';
 const LATENT_BAR = '#0972d3';
 
@@ -31,226 +27,6 @@ const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbd
 /** The honest label GR00T 2 carries wherever it brings a figure. */
 const GROOT2_LABEL =
   'NVIDIA whitepaper and project page dated November 2026; the code is announced for December and nothing could be downloaded on 2026-11-20';
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 6.1 (animated): one frame and one action through two families    */
-/* ------------------------------------------------------------------------ */
-
-const FAMILY_STEPS: ReactNode[] = [
-  'One camera frame and one action enter both models. The question is the same for each: what does the scene look like after this action?',
-  'The pixel generator first compresses. A VAE encoder turns the frame into a much smaller grid of numbers, built so that a decoder can redraw every pixel from it.',
-  'A large transformer starts the next grid as random noise and cleans it up over many passes, steered by the current grid and the action.',
-  'The VAE decoder turns the finished grid back into a full frame: the block, the cup, the shadows and the texture of the table.',
-  'The latent predictor starts the same way, with an encoder. Its output is a short vector that is never asked to redraw the frame, so it is free to keep only what helps prediction.',
-  'A predictor network outputs the next vector in one pass. No image is made at any point.',
-  'Side by side: one family ends in an image a person can inspect, the other in a vector a planner can score against a goal.',
-];
-
-/** Deterministic grey level for a noise cell, so every render paints the same picture. */
-function noiseFill(i: number, level: number): string {
-  const v = (i * 37 + 11) % 17;
-  const clean = i === 7 || i === 8 ? '#1e7b3a' : '#cdebd5';
-  if (level === 0) return clean;
-  const grey = 110 + v * 8;
-  if (level === 1 && v % 2 === 0) return clean;
-  return `rgb(${grey},${grey},${grey})`;
-}
-
-function MiniGrid({ x, y, cols, rows, level }: { x: number; y: number; cols: number; rows: number; level: number }) {
-  const cells = [];
-  for (let r = 0; r < rows; r += 1) {
-    for (let c = 0; c < cols; c += 1) {
-      const i = r * cols + c;
-      cells.push(<path key={i} d={`M${x + c * 8} ${y + r * 8} h8 v8 h-8 Z`} fill={noiseFill(i, level)} stroke="#ffffff" strokeWidth="1" />);
-    }
-  }
-  return <g>{cells}</g>;
-}
-
-function VectorRow({ x, y, shift }: { x: number; y: number; shift: number }) {
-  const shades = ['#cfe3f7', '#7fb2e5', '#e8f1fb', '#1f5fa8', '#a9cbee', '#e8f1fb', '#4d8fd1', '#cfe3f7'];
-  return (
-    <g>
-      {shades.map((_, i) => (
-        <path key={i} d={`M${x + i * 12} ${y} h12 v12 h-12 Z`} fill={shades[(i + shift) % shades.length]} stroke="#ffffff" strokeWidth="1" />
-      ))}
-    </g>
-  );
-}
-
-/** A small picture of the bench: table, block, cup and the gripper beside the block. */
-function SceneThumb({ x, y, moved, lit }: { x: number; y: number; moved: boolean; lit?: boolean }) {
-  const dx = moved ? 26 : 0;
-  return (
-    <g>
-      <path d={`M${x} ${y} h120 v76 h-120 Z`} fill="#ffffff" stroke={lit ? EMPHASIS : NEUTRAL_INK} strokeWidth={lit ? 2.5 : 1.5} />
-      <line x1={x + 6} y1={y + 62} x2={x + 114} y2={y + 62} stroke={NEUTRAL_INK} strokeWidth="1.5" />
-      <path d={`M${x + 92} ${y + 40} h18 l-3 22 h-12 Z`} fill="#ffffff" stroke={NEUTRAL_INK} strokeWidth="1.5" />
-      <path d={`M${x + 42 + dx} ${y + 50} h12 v12 h-12 Z`} fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1.5" />
-      <path d={`M${x + 20 + dx} ${y + 6} L${x + 34 + dx} ${y + 40} L${x + 38 + dx} ${y + 60}`} stroke={ROBOT_INK} strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-    </g>
-  );
-}
-
-function TwoFamilies({ step, reduced }: { step: number; reduced: boolean }) {
-  const fade = (on: boolean): CSSProperties => ({ opacity: on ? 1 : 0, transition: reduced ? 'none' : 'opacity 500ms ease' });
-  const stage = (k: number) => ({
-    stroke: step === k ? EMPHASIS : NEUTRAL_INK,
-    strokeWidth: step === k ? 2.5 : 1.5,
-  });
-  const t = { fontFamily: 'sans-serif', fontSize: 12, fill: INK } as const;
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 604" role="img" aria-labelledby="world-models-families-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="world-models-families-title">The same frame and action through a pixel generator and a latent predictor</title>
-        <desc>
-          A camera frame and an action feed two models. The pixel generator encodes the frame to a grid, denoises a new
-          grid over many passes and decodes it to a full next frame. The latent predictor encodes the frame to a short
-          vector and predicts the next vector in one pass, with no image.
-        </desc>
-        <defs>
-          <marker id="world-models-families-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-            <path d="M0 0 L8 4 L0 8 Z" fill={NEUTRAL_INK} />
-          </marker>
-        </defs>
-        <rect x="0" y="0" width="400" height="604" fill="#fbfbfd" />
-
-        {/* inputs */}
-        <text x="102" y="20" textAnchor="middle" {...t}>
-          camera frame now
-        </text>
-        <SceneThumb x={42} y={28} moved={false} lit={step === 0} />
-        <rect x="226" y="42" width="144" height="50" rx="4" fill={ROBOT_FILL} stroke={step === 0 ? EMPHASIS : ROBOT_INK} strokeWidth={step === 0 ? 2.5 : 1.5} />
-        <text x="298" y="63" textAnchor="middle" {...t} fontWeight="bold">
-          action
-        </text>
-        <text x="298" y="81" textAnchor="middle" {...t}>
-          6 joint targets
-        </text>
-        <path d="M102 104 V120 M298 92 V120 M102 120 H298" stroke={NEUTRAL_INK} strokeWidth="1.5" fill="none" />
-        <line x1="102" y1="120" x2="102" y2="137" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#world-models-families-arrow)" />
-        <line x1="298" y1="120" x2="298" y2="137" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#world-models-families-arrow)" />
-
-        {/* lanes */}
-        <path d="M8 140 h188 v390 h-188 Z" fill="#ffffff" stroke="#d5dbdb" strokeWidth="1.5" />
-        <path d="M204 140 h188 v390 h-188 Z" fill="#ffffff" stroke="#d5dbdb" strokeWidth="1.5" />
-        <text x="102" y="160" textAnchor="middle" {...t} fontSize={13} fontWeight="bold">
-          Pixel generator
-        </text>
-        <text x="298" y="160" textAnchor="middle" {...t} fontSize={13} fontWeight="bold">
-          Latent predictor
-        </text>
-
-        {/* pixel lane, stage 1: encode */}
-        <g style={fade(step >= 1)}>
-          <rect x="20" y="170" width="164" height="44" rx="4" fill="#ffffff" {...stage(1)} />
-          <text x="102" y="188" textAnchor="middle" {...t} fontWeight="bold">
-            VAE encoder
-          </text>
-          <text x="102" y="204" textAnchor="middle" {...t}>
-            compress the frame
-          </text>
-          <MiniGrid x={28} y={222} cols={6} rows={3} level={0} />
-          <text x="86" y="238" {...t}>
-            grid of numbers
-          </text>
-        </g>
-
-        {/* pixel lane, stage 2: denoise */}
-        <g style={fade(step >= 2)}>
-          <rect x="20" y="256" width="164" height="44" rx="4" fill={GPU_FILL} {...stage(2)} stroke={step === 2 ? EMPHASIS : GPU_INK} />
-          <text x="102" y="274" textAnchor="middle" {...t} fontWeight="bold">
-            Transformer
-          </text>
-          <text x="102" y="290" textAnchor="middle" {...t}>
-            denoise, many passes
-          </text>
-          <MiniGrid x={26} y={310} cols={5} rows={3} level={2} />
-          <MiniGrid x={82} y={310} cols={5} rows={3} level={1} />
-          <MiniGrid x={138} y={310} cols={5} rows={3} level={0} />
-          <line x1="68" y1="322" x2="79" y2="322" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#world-models-families-arrow)" />
-          <line x1="124" y1="322" x2="135" y2="322" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#world-models-families-arrow)" />
-          <text x="102" y="352" textAnchor="middle" {...t}>
-            noise becomes the next grid
-          </text>
-        </g>
-
-        {/* pixel lane, stage 3: decode */}
-        <g style={fade(step >= 3)}>
-          <rect x="20" y="362" width="164" height="44" rx="4" fill="#ffffff" {...stage(3)} />
-          <text x="102" y="380" textAnchor="middle" {...t} fontWeight="bold">
-            VAE decoder
-          </text>
-          <text x="102" y="396" textAnchor="middle" {...t}>
-            grid back to pixels
-          </text>
-          <SceneThumb x={42} y={416} moved lit={step === 3} />
-          <text x="102" y="512" textAnchor="middle" {...t}>
-            next frame: every pixel
-          </text>
-        </g>
-
-        {/* latent lane, stage 1: encode */}
-        <g style={fade(step >= 4)}>
-          <rect x="216" y="170" width="164" height="44" rx="4" fill="#ffffff" {...stage(4)} />
-          <text x="298" y="188" textAnchor="middle" {...t} fontWeight="bold">
-            Encoder
-          </text>
-          <text x="298" y="204" textAnchor="middle" {...t}>
-            summarise the frame
-          </text>
-          <VectorRow x={250} y={224} shift={0} />
-          <text x="298" y="254" textAnchor="middle" {...t}>
-            latent: a short vector
-          </text>
-        </g>
-
-        {/* latent lane, stage 2: predict */}
-        <g style={fade(step >= 5)}>
-          <rect x="216" y="268" width="164" height="44" rx="4" fill={GPU_FILL} {...stage(5)} stroke={step === 5 ? EMPHASIS : GPU_INK} />
-          <text x="298" y="286" textAnchor="middle" {...t} fontWeight="bold">
-            Predictor
-          </text>
-          <text x="298" y="302" textAnchor="middle" {...t}>
-            one pass
-          </text>
-          <VectorRow x={250} y={322} shift={3} />
-          <text x="298" y="352" textAnchor="middle" {...t}>
-            predicted next latent
-          </text>
-          <path d="M238 416 h120 v76 h-120 Z" fill="none" stroke={NEUTRAL_INK} strokeWidth="1.5" strokeDasharray="5 4" />
-          <text x="298" y="450" textAnchor="middle" {...t}>
-            no decoder,
-          </text>
-          <text x="298" y="466" textAnchor="middle" {...t}>
-            no image
-          </text>
-          <text x="298" y="512" textAnchor="middle" {...t}>
-            nothing to watch
-          </text>
-        </g>
-
-        {/* what each family hands back */}
-        <g style={fade(step >= 6)}>
-          <rect x="8" y="540" width="188" height="54" rx="4" fill="#ffffff" stroke={EMPHASIS} strokeWidth="2.5" />
-          <text x="102" y="562" textAnchor="middle" {...t} fontWeight="bold">
-            Out: an image
-          </text>
-          <text x="102" y="580" textAnchor="middle" {...t}>
-            a person can inspect it
-          </text>
-          <rect x="204" y="540" width="188" height="54" rx="4" fill="#ffffff" stroke={EMPHASIS} strokeWidth="2.5" />
-          <text x="298" y="562" textAnchor="middle" {...t} fontWeight="bold">
-            Out: a vector
-          </text>
-          <text x="298" y="580" textAnchor="middle" {...t}>
-            a planner can score it
-          </text>
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------------ */
 /* Diagram 6.3 (chart): time per imagined candidate, log axis               */
@@ -699,18 +475,20 @@ export function WorldModels() {
           </Box>
           <AnimatedFigure
             name="two families of world model"
-            steps={FAMILY_STEPS}
-            intervalMs={2800}
-            cites="F03-96 F03-106 F03-109"
+            steps={WM_FAMILY_STEPS}
+            intervalMs={3200}
+            cites="F03-96 F03-95 F03-106 F03-109 F03-25"
             caption={
               <>
-                Step through the left lane, then the right. Both start with an encoder; the difference is what the
-                encoder&apos;s output must be good for, and how many passes follow. Illustrative, not measured: the
-                grids, the vector and the pictures are schematic.
+                Both families start from the same frame and the same action. Follow the pixel family first, then the
+                latent family, then the two time bars. The frames are stills of a scripted MuJoCo episode of the{' '}
+                {ARM}. Illustrative, not measured: the noise is a filter laid over the real next still (no generated
+                image is shown), the latents are invented values, and the picture with only the arm, the block and
+                the cup is an illustration of what a latent may keep, not a decoded latent.
               </>
             }
           >
-            {(step, reduced) => <TwoFamilies step={step} reduced={reduced} />}
+            {(step, reduced) => <WmFamilies step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
             The size of the latent is less of a difference than the picture suggests. In V-JEPA 2-AC, the version
@@ -758,7 +536,7 @@ export function WorldModels() {
               nothing unless the encoder chose to keep it.
             </li>
             <li>
-              The sum and the <M>{String.raw`1/T`}</M> average the miss over every frame of the clip.
+              The sum and the <M>{String.raw`1/T`}</M> average the miss over the 15 guesses, one for each frame after the first.
             </li>
             <li>
               <M>{String.raw`(\phi)`}</M> says which weights this loss trains: the predictor&apos;s alone. The

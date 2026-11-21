@@ -7,16 +7,15 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
-import { log10Scale } from '../lib/scale';
+import { JepaClip } from '../components/figures/JepaClip';
+import { JepaTrain, JEPA_TRAIN_STEPS } from '../components/figures/JepaTrain';
+import { JepaCem, JEPA_CEM_STEPS } from '../components/figures/JepaCem';
+import { JepaPasses } from '../components/figures/JepaPasses';
 import { ARM, TASK_STORY } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
-const ROBOT_FILL = '#fff6d6';
-const ROBOT_INK = '#7a5c00';
-const GPU_FILL = '#e6f6ea';
 const GPU_INK = '#1e7b3a';
-const NEUTRAL_FILL = '#eef0f2';
 const NEUTRAL_INK = '#5f6b7a';
 const EMPHASIS = '#0972d3';
 
@@ -34,291 +33,6 @@ const GOAL_PHOTO = 'a photo of the block sitting in the cup';
 function rnd(i: number, salt: number): number {
   const r = Math.sin((i + 1) * 12.9898 + salt * 78.233) * 43758.5453;
   return r - Math.floor(r);
-}
-
-function DownArrow({ x, y0, y1, color = NEUTRAL_INK }: { x: number; y0: number; y1: number; color?: string }) {
-  return (
-    <g>
-      <line x1={x} y1={y0} x2={x} y2={y1 - 6} stroke={color} strokeWidth="1.5" />
-      <path d={`M${x - 5} ${y1 - 7} L${x} ${y1} L${x + 5} ${y1 - 7} Z`} fill={color} />
-    </g>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 7.1: frames to tubelets to tokens to latents                     */
-/* ------------------------------------------------------------------------ */
-
-function ClipToLatents() {
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 480" role="img" aria-labelledby="jepa-shapes-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="jepa-shapes-title">A 16-frame clip becomes tubelets, then tokens, then one latent vector per token</title>
-        <desc>
-          Five stages from top to bottom. A clip of 16 frames at 256 by 256 pixels. The clip cut into tubelets of 2
-          frames by 16 by 16 pixels. One token per tubelet. The ViT-g encoder. One latent vector of 1408 numbers per
-          token.
-        </desc>
-        <rect x="0" y="0" width="400" height="480" fill="#fbfbfd" />
-
-        {/* the clip */}
-        {[0, 1, 2, 3, 4].map((i) => (
-          <rect key={i} x={36 + i * 8} y={14 + i * 5} width="52" height="52" fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1" />
-        ))}
-        <text x="150" y="36" {...BOLD}>
-          the clip
-        </text>
-        <text x="150" y="54" {...LABEL}>
-          16 frames, 256 x 256 pixels,
-        </text>
-        <text x="150" y="72" {...LABEL}>
-          4 frames per second
-        </text>
-        <DownArrow x={78} y0={92} y1={116} />
-
-        {/* tubelets */}
-        <rect x="46" y="122" width="60" height="60" fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1" />
-        <rect x="36" y="130" width="60" height="60" fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1" />
-        {[1, 2, 3].map((i) => (
-          <g key={i}>
-            <line x1={36 + i * 15} y1="130" x2={36 + i * 15} y2="190" stroke={ROBOT_INK} strokeWidth="0.6" />
-            <line x1="36" y1={130 + i * 15} x2="96" y2={130 + i * 15} stroke={ROBOT_INK} strokeWidth="0.6" />
-          </g>
-        ))}
-        <rect x="66" y="145" width="15" height="15" fill="none" stroke={EMPHASIS} strokeWidth="2.5" />
-        <path d="M81 145 L91 137 M81 160 L91 152 M66 145 L76 137" stroke={EMPHASIS} strokeWidth="1.5" fill="none" />
-        <text x="150" y="144" {...BOLD}>
-          cut into tubelets
-        </text>
-        <text x="150" y="162" {...LABEL}>
-          each: 2 frames x 16 x 16 pixels
-        </text>
-        <text x="150" y="180" {...LABEL}>
-          8 deep, 16 by 16 per frame
-        </text>
-        <DownArrow x={78} y0={198} y1={222} />
-
-        {/* tokens */}
-        {Array.from({ length: 14 }, (_, i) => (
-          <rect key={i} x={36 + (i % 7) * 13} y={230 + Math.floor(i / 7) * 13} width="10" height="10" fill="#ffffff" stroke={NEUTRAL_INK} strokeWidth="1" />
-        ))}
-        <text x="150" y="238" {...BOLD}>
-          one token per tubelet
-        </text>
-        <text x="150" y="256" {...LABEL} data-num="derived">
-          8 x 16 x 16 = 2,048 tokens
-        </text>
-        <DownArrow x={78} y0={264} y1={288} />
-
-        {/* encoder */}
-        <rect x="30" y="292" width="340" height="52" rx="4" fill={GPU_FILL} stroke={GPU_INK} strokeWidth="1.5" />
-        <text x="200" y="314" textAnchor="middle" {...BOLD}>
-          encoder: ViT-g
-        </text>
-        <text x="200" y="332" textAnchor="middle" {...LABEL}>
-          1B parameters, 40 layers
-        </text>
-        <DownArrow x={78} y0={348} y1={372} />
-
-        {/* latents */}
-        {Array.from({ length: 7 }, (_, i) => (
-          <rect key={i} x={36 + i * 13} y="380" width="9" height="56" fill={GPU_FILL} stroke={GPU_INK} strokeWidth="1" />
-        ))}
-        <text x="150" y="398" {...BOLD} data-num="derived">
-          2,048 latents
-        </text>
-        <text x="150" y="416" {...LABEL}>
-          one vector per token,
-        </text>
-        <text x="150" y="434" {...LABEL}>
-          1408 numbers each
-        </text>
-        <text x="36" y="464" {...LABEL}>
-          Yellow: camera pixels. Green: computed on the GPU.
-        </text>
-      </svg>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 7.2 (animated): one JEPA training step                           */
-/* ------------------------------------------------------------------------ */
-
-const TRAIN_STATUS = [
-  '1. Cut the clip into tokens, hide most',
-  '2. Context encoder: visible tokens only',
-  '3. Target encoder: the whole clip',
-  '4. Predictor guesses the hidden latents',
-  '5. Loss: distance between latents',
-  '6. Gradient: predictor, context encoder',
-  '7. EMA: the target follows slowly',
-];
-
-const TRAIN_STEPS = [
-  'A clip is cut into tokens and most of them are masked. The grey cells are hidden; the hidden block runs through the whole clip in time.',
-  'The context encoder (weights theta) receives only the visible tokens and outputs one latent for each.',
-  'The target encoder (weights theta-bar), a slowly moving copy of the context encoder, receives the whole clip, hidden tokens included.',
-  'The predictor (weights phi) takes the context latents plus one mask token per hidden position, and outputs a guess at the latent for each hidden position.',
-  'The loss is the L1 distance between the predicted latents and the target latents at the hidden positions. No pixel is drawn anywhere.',
-  'Gradients flow back from the loss through the predictor and the context encoder, and the optimiser changes phi and theta. The stop-gradient blocks the path into the target encoder.',
-  'After the optimiser step, every target weight moves 0.075% of the way toward the matching context-encoder weight. That is the EMA update, and it is the only way theta-bar changes.',
-];
-
-const TOKEN_COLS = 10;
-
-function TrainStep({ step, reduced }: { step: number; reduced: boolean }) {
-  const s = step + 1;
-  const t = reduced ? 'none' : 'opacity 350ms ease';
-  const seen = (from: number): CSSProperties => ({ opacity: s >= from ? 1 : 0.22, transition: t });
-  const show = (on: boolean): CSSProperties => ({ opacity: on ? 1 : 0, transition: t });
-  const edge = (at: number, base: string) => (s === at ? { stroke: EMPHASIS, strokeWidth: 2.5 } : { stroke: base, strokeWidth: 1.5 });
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 480" role="img" aria-labelledby="jepa-train-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="jepa-train-title">One JEPA training step: two encoders, a predictor, a loss between latents, and which weights change</title>
-        <desc>
-          A grid of clip tokens with most hidden feeds two branches. On the left the context encoder sees the visible
-          tokens and the predictor guesses latents for the hidden positions. On the right the target encoder sees
-          the whole clip and gives the target latents. A loss box compares the two sets of latents. A gradient path
-          runs from the loss back into the predictor and the context encoder; a stop-gradient bar blocks the path
-          into the target encoder. An arrow from the context encoder to the target encoder marks the EMA update.
-        </desc>
-        <rect x="0" y="0" width="400" height="480" fill="#fbfbfd" />
-
-        {TRAIN_STATUS.map((label, i) => (
-          <text key={label} x="14" y="22" fontFamily="sans-serif" fontSize="13" fontWeight="bold" fill={INK} style={show(step === i)}>
-            {label}
-          </text>
-        ))}
-
-        {/* clip tokens */}
-        {Array.from({ length: TOKEN_COLS * 3 }, (_, i) => {
-          const col = i % TOKEN_COLS;
-          const hidden = col >= 1 && col <= 8;
-          return (
-            <rect
-              key={i}
-              x={136 + col * 13}
-              y={38 + Math.floor(i / TOKEN_COLS) * 13}
-              width="11"
-              height="11"
-              fill={hidden ? NEUTRAL_INK : ROBOT_FILL}
-              stroke={hidden ? NEUTRAL_INK : ROBOT_INK}
-              strokeWidth="1"
-            />
-          );
-        })}
-        <text x="128" y="60" textAnchor="end" {...LABEL}>
-          clip tokens
-        </text>
-        <text x="274" y="60" {...LABEL}>
-          grey: hidden
-        </text>
-
-        {/* context branch */}
-        <g style={seen(2)}>
-          <path d="M150 78 V98 H115 V122" fill="none" stroke={NEUTRAL_INK} strokeWidth="1.5" />
-          <path d="M110 121 L115 129 L120 121 Z" fill={NEUTRAL_INK} />
-          <text x="107" y="116" textAnchor="end" {...LABEL}>
-            visible only
-          </text>
-          <rect x="40" y="130" width="150" height="50" rx="4" fill={GPU_FILL} {...edge(2, GPU_INK)} />
-          <text x="115" y="151" textAnchor="middle" {...BOLD}>
-            context encoder
-          </text>
-          <text x="115" y="169" textAnchor="middle" {...LABEL}>
-            weights theta
-          </text>
-        </g>
-
-        {/* target branch */}
-        <g style={seen(3)}>
-          <path d="M250 78 V98 H300 V122" fill="none" stroke={NEUTRAL_INK} strokeWidth="1.5" />
-          <path d="M295 121 L300 129 L305 121 Z" fill={NEUTRAL_INK} />
-          <text x="308" y="116" {...LABEL}>
-            whole clip
-          </text>
-          <rect x="225" y="130" width="150" height="50" rx="4" fill={NEUTRAL_FILL} {...edge(3, NEUTRAL_INK)} />
-          <text x="300" y="151" textAnchor="middle" {...BOLD}>
-            target encoder
-          </text>
-          <text x="300" y="169" textAnchor="middle" {...LABEL}>
-            weights theta-bar
-          </text>
-        </g>
-
-        {/* predictor and its guess */}
-        <g style={seen(4)}>
-          <DownArrow x={115} y0={180} y1={235} />
-          <rect x="40" y="236" width="150" height="50" rx="4" fill={GPU_FILL} {...edge(4, GPU_INK)} />
-          <text x="115" y="257" textAnchor="middle" {...BOLD}>
-            predictor
-          </text>
-          <text x="115" y="275" textAnchor="middle" {...LABEL}>
-            weights phi
-          </text>
-          <DownArrow x={115} y0={286} y1={318} />
-          {[0, 1, 2, 3].map((i) => (
-            <rect key={i} x={88 + i * 15} y="320" width="10" height="22" fill={GPU_FILL} stroke={GPU_INK} strokeWidth="1" />
-          ))}
-          <text x="115" y="360" textAnchor="middle" {...LABEL}>
-            predicted latents
-          </text>
-        </g>
-
-        {/* target latents and the loss */}
-        <g style={seen(5)}>
-          <DownArrow x={300} y0={180} y1={318} />
-          {[0, 1, 2, 3].map((i) => (
-            <rect key={i} x={273 + i * 15} y="320" width="10" height="22" fill={NEUTRAL_FILL} stroke={NEUTRAL_INK} strokeWidth="1" />
-          ))}
-          <text x="300" y="360" textAnchor="middle" {...LABEL}>
-            target latents
-          </text>
-          <line x1="130" y1="366" x2="166" y2="384" stroke={NEUTRAL_INK} strokeWidth="1.5" />
-          <line x1="285" y1="366" x2="249" y2="384" stroke={NEUTRAL_INK} strokeWidth="1.5" />
-          <rect x="130" y="384" width="155" height="44" rx="4" fill="#ffffff" {...edge(5, NEUTRAL_INK)} />
-          <text x="207" y="403" textAnchor="middle" {...BOLD}>
-            loss: L1 distance
-          </text>
-          <text x="207" y="420" textAnchor="middle" {...LABEL}>
-            between the two
-          </text>
-        </g>
-
-        {/* gradient path and stop-gradient */}
-        <g style={show(s >= 6)}>
-          <path d="M130 406 H22 V155 H32" fill="none" stroke={EMPHASIS} strokeWidth="3" />
-          <path d="M31 149 L40 155 L31 161 Z" fill={EMPHASIS} />
-          <path d="M22 261 H32" fill="none" stroke={EMPHASIS} strokeWidth="3" />
-          <path d="M31 255 L40 261 L31 267 Z" fill={EMPHASIS} />
-          <rect x="284" y="258" width="32" height="7" fill={INK} />
-          <text x="278" y="266" textAnchor="end" {...BOLD}>
-            stop-gradient
-          </text>
-          <text x="14" y="450" fontFamily="sans-serif" fontSize="12" fill={EMPHASIS}>
-            blue: the gradient changes phi and theta
-          </text>
-          <text x="14" y="468" {...LABEL}>
-            no gradient reaches theta-bar
-          </text>
-        </g>
-
-        {/* EMA update */}
-        <g style={show(s >= 7)}>
-          <line x1="190" y1="155" x2="216" y2="155" stroke={EMPHASIS} strokeWidth="3" />
-          <path d="M215 149 L224 155 L215 161 Z" fill={EMPHASIS} />
-          <text x="207" y="200" textAnchor="middle" {...BOLD}>
-            EMA update each step:
-          </text>
-          <text x="207" y="216" textAnchor="middle" {...LABEL}>
-            0.075% of the way to theta
-          </text>
-        </g>
-      </svg>
-    </div>
-  );
 }
 
 /* ------------------------------------------------------------------------ */
@@ -374,237 +88,6 @@ function CollapseDiagram() {
         {LINE_DOTS.map((p) => (
           <circle key={`${p.x}-${p.y}`} cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="3" fill={NEUTRAL_INK} />
         ))}
-      </svg>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 7.4 (animated): planning with the cross-entropy method           */
-/* ------------------------------------------------------------------------ */
-
-const NOW = { x: 130, y: 236 };
-const GOAL = { x: 304, y: 104 };
-const CEM_N = 24;
-const CEM_DOTS = Array.from({ length: CEM_N }, (_, i) => {
-  const a = 2 * Math.PI * rnd(i, 5);
-  const r = 92 * Math.sqrt(rnd(i, 6));
-  const a2 = 2 * Math.PI * rnd(i, 7);
-  const r2 = 15 * Math.sqrt(rnd(i, 8));
-  const x = NOW.x + r * Math.cos(a);
-  const y = NOW.y + r * Math.sin(a);
-  return { x, y, fx: GOAL.x + r2 * Math.cos(a2), fy: GOAL.y + r2 * Math.sin(a2), d: Math.hypot(x - GOAL.x, y - GOAL.y) };
-});
-const ELITE_CUT = [...CEM_DOTS].sort((p, q) => p.d - q.d)[3].d;
-const ELITES = CEM_DOTS.filter((p) => p.d <= ELITE_CUT);
-const ELITE_MEAN = {
-  x: ELITES.reduce((acc, p) => acc + p.x, 0) / ELITES.length,
-  y: ELITES.reduce((acc, p) => acc + p.y, 0) / ELITES.length,
-};
-/** The candidate whose distance to the goal is drawn in step 4: one near the top of the cloud. */
-const SCORED = [...CEM_DOTS].sort((p, q) => p.y - q.y)[1];
-
-const CEM_STATUS = [
-  '1. Encode the present and the goal',
-  '2. Sample candidate actions, widely',
-  '3. Imagine where each one ends',
-  '4. Score each: distance to the goal',
-  '5. Keep the best few',
-  '6. Refit the distribution: it narrows',
-  '7. Repeat: the cloud closes on the goal',
-  '8. Execute one action, then plan again',
-];
-
-const CEM_STEPS = [
-  'The current camera frame and the goal photo go through the encoder. Each becomes a point in latent space: now, and goal.',
-  'Sample many candidate actions from a wide distribution. Each short line is one candidate leaving the present.',
-  'The predictor imagines where each candidate ends, in latent space. Each dot is one imagined future. No image is produced and the arm has not moved.',
-  'Score each dot by its distance to the goal latent. That distance is the energy; one is drawn as a dashed line.',
-  'Keep the few candidates with the lowest energy, the elites, ringed in blue. The rest are discarded.',
-  'Refit the sampling distribution to the elites: the dashed circle moves toward the goal and narrows.',
-  'Repeat sampling, imagining, scoring and refitting. With each iteration the cloud of imagined futures tightens on the goal.',
-  'Execute only the first action of the best plan on the arm. Then take a new camera frame and plan again from it.',
-];
-
-function CemPlanning({ step, reduced }: { step: number; reduced: boolean }) {
-  const s = step + 1;
-  const t = reduced ? 'none' : 'opacity 350ms ease';
-  const show = (on: boolean, level = 1): CSSProperties => ({ opacity: on ? level : 0, transition: t });
-  const moved = s >= 7;
-  const halo = { stroke: '#ffffff', strokeWidth: 4, paintOrder: 'stroke' as const };
-  const ux = (GOAL.x - NOW.x) / Math.hypot(GOAL.x - NOW.x, GOAL.y - NOW.y);
-  const uy = (GOAL.y - NOW.y) / Math.hypot(GOAL.x - NOW.x, GOAL.y - NOW.y);
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 424" role="img" aria-labelledby="jepa-cem-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="jepa-cem-title">Planning with the cross-entropy method: sampled futures narrow onto the goal latent</title>
-        <desc>
-          A panel stands for latent space. A point marked now and a point marked goal are fixed. Candidate actions
-          leave the present as short lines, the predictor places a dot where each one ends, the dots nearest the goal
-          are kept, the sampling circle shrinks and moves toward the goal, and after repeated rounds all dots sit
-          around the goal. A final arrow shows the one action that is executed.
-        </desc>
-        <rect x="0" y="0" width="400" height="424" fill="#fbfbfd" />
-        {CEM_STATUS.map((label, i) => (
-          <text key={label} x="14" y="22" fontFamily="sans-serif" fontSize="13" fontWeight="bold" fill={INK} style={show(step === i)}>
-            {label}
-          </text>
-        ))}
-        <rect x="14" y="34" width="372" height="310" fill="#ffffff" stroke={NEUTRAL_INK} strokeWidth="1" />
-        <text x="24" y="54" {...LABEL}>
-          latent space, drawn in two dimensions
-        </text>
-
-        {/* sampling distributions */}
-        <circle cx={NOW.x} cy={NOW.y} r="100" fill="none" stroke={NEUTRAL_INK} strokeWidth="1.5" strokeDasharray="6 5" style={show(s >= 2 && s <= 6, s === 6 ? 0.3 : 1)} />
-        <circle cx={ELITE_MEAN.x.toFixed(1)} cy={ELITE_MEAN.y.toFixed(1)} r="46" fill="none" stroke={EMPHASIS} strokeWidth="2" strokeDasharray="6 5" style={show(s === 6)} />
-        <circle cx={GOAL.x} cy={GOAL.y} r="24" fill="none" stroke={EMPHASIS} strokeWidth="2" strokeDasharray="6 5" style={show(moved)} />
-
-        {/* candidates leaving the present */}
-        {CEM_DOTS.map((p) => (
-          <g key={`${p.x}`}>
-            <line
-              x1={NOW.x}
-              y1={NOW.y}
-              x2={(NOW.x + 0.35 * (p.x - NOW.x)).toFixed(1)}
-              y2={(NOW.y + 0.35 * (p.y - NOW.y)).toFixed(1)}
-              stroke={NEUTRAL_INK}
-              strokeWidth="1.5"
-              style={show(s === 2)}
-            />
-            <line x1={NOW.x} y1={NOW.y} x2={p.x.toFixed(1)} y2={p.y.toFixed(1)} stroke={NEUTRAL_INK} strokeWidth="1" style={show(s >= 3 && s <= 6, 0.35)} />
-          </g>
-        ))}
-
-        {/* the energy of one candidate */}
-        <line x1={SCORED.x.toFixed(1)} y1={SCORED.y.toFixed(1)} x2={GOAL.x} y2={GOAL.y} stroke={EMPHASIS} strokeWidth="2" strokeDasharray="4 4" style={show(s === 4)} />
-        <text x="376" y="330" textAnchor="end" fontFamily="sans-serif" fontSize="12" fill={EMPHASIS} style={show(s === 4)}>
-          dashed: one energy
-        </text>
-
-        {/* imagined futures */}
-        {CEM_DOTS.map((p) => {
-          const elite = p.d <= ELITE_CUT;
-          const level = s >= 5 && s <= 6 && !elite ? 0.25 : 1;
-          return (
-            <g
-              key={`${p.x}`}
-              style={{
-                transform: moved ? `translate(${(p.fx - p.x).toFixed(1)}px, ${(p.fy - p.y).toFixed(1)}px)` : 'translate(0px, 0px)',
-                transition: reduced ? 'none' : 'transform 900ms ease',
-              }}
-            >
-              <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="4" fill={NEUTRAL_INK} style={show(s >= 3, level)} />
-              {elite && <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="7.5" fill="none" stroke={EMPHASIS} strokeWidth="2.5" style={show(s === 5 || s === 6)} />}
-            </g>
-          );
-        })}
-
-        {/* the action that is executed */}
-        <g style={show(s === 8)}>
-          <line x1={NOW.x} y1={NOW.y} x2={(NOW.x + 58 * ux).toFixed(1)} y2={(NOW.y + 58 * uy).toFixed(1)} stroke={EMPHASIS} strokeWidth="4" />
-          <circle cx={(NOW.x + 64 * ux).toFixed(1)} cy={(NOW.y + 64 * uy).toFixed(1)} r="6" fill={EMPHASIS} />
-          <text x="24" y="330" fontFamily="sans-serif" fontSize="12" fill={EMPHASIS}>
-            blue: the one action executed
-          </text>
-        </g>
-
-        {/* now and goal */}
-        <circle cx={NOW.x} cy={NOW.y} r="6" fill={ROBOT_INK} stroke="#ffffff" strokeWidth="1.5" />
-        <text x={NOW.x} y={NOW.y + 24} textAnchor="middle" {...BOLD} {...halo}>
-          now
-        </text>
-        <path d={`M${GOAL.x - 8} ${GOAL.y} H${GOAL.x + 8} M${GOAL.x} ${GOAL.y - 8} V${GOAL.y + 8}`} stroke={INK} strokeWidth="2.5" />
-        <text x={GOAL.x} y={GOAL.y - 34} textAnchor="middle" {...BOLD} {...halo}>
-          goal
-        </text>
-
-        {/* legend */}
-        <circle cx="24" cy="362" r="4" fill={NEUTRAL_INK} />
-        <text x="36" y="366" {...LABEL}>
-          imagined end of one candidate
-        </text>
-        <circle cx="24" cy="382" r="4" fill={NEUTRAL_INK} />
-        <circle cx="24" cy="382" r="7.5" fill="none" stroke={EMPHASIS} strokeWidth="2.5" />
-        <text x="36" y="386" {...LABEL}>
-          kept: lowest energy (an elite)
-        </text>
-        <line x1="14" y1="404" x2="32" y2="404" stroke={NEUTRAL_INK} strokeWidth="1.5" strokeDasharray="6 5" />
-        <text x="36" y="408" {...LABEL}>
-          dashed circle: where the planner samples
-        </text>
-      </svg>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 7.5: predictor passes per decision                               */
-/* ------------------------------------------------------------------------ */
-
-const PLANNERS = [
-  { name: 'V-JEPA 2-AC', detail: '800 samples x 10 iterations x horizon 1', passes: 8000, label: '8,000' },
-  { name: 'V-JEPA 2.1, long horizon', detail: '300 x 15 x horizon 8', passes: 36000, label: '36,000' },
-  { name: 'LeWorldModel on Push-T', detail: '300 x 30 x horizon 5', passes: 45000, label: '45,000' },
-  { name: 'RoboJEPA on a real arm', detail: '4,096 x 10 x horizon 5; first plan 307,200', passes: 204800, label: '204,800' },
-];
-const PASS_TICKS = [
-  { v: 1000, label: '1,000' },
-  { v: 10000, label: '10,000' },
-  { v: 100000, label: '100,000' },
-  { v: 1000000, label: '1,000,000' },
-];
-
-function PassesChart() {
-  const x = log10Scale(1000, 1000000, 28, 330);
-  const rowH = 62;
-  const top = 14;
-  const axisY = top + PLANNERS.length * rowH + 2;
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 320" role="img" aria-labelledby="jepa-passes-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="jepa-passes-title">Predictor passes per decision for four planners, on a log axis</title>
-        <desc>
-          Four points on a logarithmic axis of predictor passes per decision, three decades wide: V-JEPA 2-AC at
-          8,000, V-JEPA 2.1 with a long horizon at 36,000, LeWorldModel on Push-T at 45,000 and RoboJEPA on a real
-          arm at 204,800.
-        </desc>
-        <rect x="0" y="0" width="400" height="320" fill="#fbfbfd" />
-        {PASS_TICKS.map((k) => (
-          <line key={k.v} x1={x(k.v)} y1={top} x2={x(k.v)} y2={axisY} stroke="#e3e6ea" strokeWidth="1" />
-        ))}
-        {PLANNERS.map((p, i) => {
-          const y0 = top + i * rowH;
-          return (
-            <g key={p.name}>
-              <text x="28" y={y0 + 12} {...BOLD}>
-                {p.name}
-              </text>
-              <line x1={x(1000)} y1={y0 + 27} x2={x(p.passes)} y2={y0 + 27} stroke={GPU_INK} strokeWidth="3" />
-              <circle cx={x(p.passes)} cy={y0 + 27} r="6" fill={GPU_INK} />
-              <text x={x(p.passes) + 12} y={y0 + 31} {...BOLD}>
-                {p.label}
-              </text>
-              <text x="28" y={y0 + 50} {...LABEL}>
-                {p.detail}
-              </text>
-            </g>
-          );
-        })}
-        <line x1="28" y1={axisY} x2="330" y2={axisY} stroke={NEUTRAL_INK} strokeWidth="1.5" />
-        <g aria-hidden="true">
-          {PASS_TICKS.map((k) => (
-            <g key={k.v}>
-              <line x1={x(k.v)} y1={axisY} x2={x(k.v)} y2={axisY + 5} stroke={NEUTRAL_INK} strokeWidth="1.5" />
-              <text x={x(k.v)} y={axisY + 20} textAnchor="middle" {...LABEL}>
-                {k.label}
-              </text>
-            </g>
-          ))}
-        </g>
-        <text x="180" y={axisY + 42} textAnchor="middle" {...LABEL}>
-          predictor passes per decision (log scale)
-        </text>
       </svg>
     </div>
   );
@@ -771,13 +254,15 @@ export function Jepa() {
             cites="F03-3 F03-4 F03-11"
             caption={
               <>
-                Read top to bottom: the same four seconds of video at each stage. The patch grid is drawn 4 by 4
-                so it stays legible; the real grid is 16 by 16 per frame. The token count is our arithmetic from
-                the clip and tubelet sizes.
+                Follow the blue outline: one tubelet from the stack of frames, to its place in the lattice, to one
+                token, to one latent. The faces are six stills of a scripted MuJoCo episode of the {ARM}, repeated
+                to fill sixteen frames. The latent shades are invented values. The bars at the bottom are our
+                arithmetic: the encoder hands back about as many numbers as the clip held in pixels, so it
+                re-describes the clip more than it shrinks it.
               </>
             }
           >
-            <ClipToLatents />
+            <JepaClip />
           </Figure>
         </SpaceBetween>
       </Container>
@@ -918,18 +403,19 @@ export function Jepa() {
           </Box>
           <AnimatedFigure
             name="one JEPA training step"
-            steps={TRAIN_STEPS}
+            steps={JEPA_TRAIN_STEPS}
             intervalMs={3400}
             cites="F03-2 F03-8"
             caption={
               <>
-                Green boxes are trained by the loss; the grey box is the target encoder, which only follows.
-                Illustrative layout: the token grid is drawn small, and a real clip hides a larger share of its
-                tokens.
+                Green boxes are trained by the loss; the grey box is the target encoder, which only follows. The
+                predicted latents sit exactly where the hole was. Illustrative layout: the lattice is drawn 8 by 8,
+                coarser than the real one, a real clip hides a larger share of its tokens, the
+                latent shades are invented, and the EMA step is drawn far larger than 0.075% of the gap.
               </>
             }
           >
-            {(step, reduced) => <TrainStep step={step} reduced={reduced} />}
+            {(step, reduced) => <JepaTrain step={step} reduced={reduced} />}
           </AnimatedFigure>
         </SpaceBetween>
       </Container>
@@ -1076,7 +562,7 @@ export function Jepa() {
           <Formula
             name="LeWorldModel training objective"
             tex={String.raw`\begin{aligned} \hat{z}_{t+1} &= \mathrm{pred}_\phi(z_t, a_t) \\ \mathcal{L}_{\mathrm{pred}} &\triangleq \lVert \hat{z}_{t+1} - z_{t+1} \rVert_2^2 \\ \mathcal{L}_{\mathrm{LeWM}} &\triangleq \mathcal{L}_{\mathrm{pred}} + \lambda\,\mathrm{SIGReg}(Z) \end{aligned}`}
-            source={<Cite id="F03-36">LeWorldModel paper, section 3.1, equations 1 to 3</Cite>}
+            source={<Cite id="F03-36">LeWorldModel paper, section 3.1, equations 1 and 3</Cite>}
           />
           <ul style={LIST}>
             <li>
@@ -1196,6 +682,8 @@ export function Jepa() {
             output, so a second loss term trains exactly that. The symbols: <M>{String.raw`z_1`}</M> is the latent of a
             clip&apos;s first frame and <M>{String.raw`s_1`}</M> the gripper&apos;s pose there. <M>{String.raw`a_{1:T}`}</M> is
             the <M>{String.raw`T`}</M> recorded actions that followed, with <M>{String.raw`T = 2`}</M> in practice.{' '}
+            This <M>T</M> is the length of the rollout. It is a different number from the <M>{String.raw`T = 15`}</M> inside the
+            teacher-forcing loss of section 6, which counts the guesses per clip; the paper uses the same letter for both.{' '}
             <M>{String.raw`P_\phi(a_{1:T}, s_1, z_1)`}</M> is the predictor run <M>{String.raw`T`}</M> times from that start,
             each run after the first taking its own previous output as input. <M>{String.raw`z_{T+1}`}</M> is the
             encoder&apos;s latent of the frame the robot really reached.{' '}
@@ -1346,19 +834,20 @@ export function Jepa() {
           </Box>
           <AnimatedFigure
             name="planning with the cross-entropy method"
-            steps={CEM_STEPS}
+            steps={JEPA_CEM_STEPS}
             intervalMs={3200}
             cites="F03-23 F03-113 F03-24"
             caption={
               <>
-                Follow the dots: each is the predicted end of one candidate, and nothing moves on the table until
-                step 8. Illustrative, not measured: the positions are drawn by hand, a real latent has far more
-                than two dimensions, and the real planner samples 800 candidates where this one draws a few
-                dozen.
+                Two views of the same search. In latent space, follow the dots: each is the predicted end of one
+                candidate, and nothing moves on the table until step 8. The action panel draws the toy iteration
+                worked above. Illustrative, not measured: the positions are drawn by hand, a real latent has far
+                more than two dimensions, a real action has more than one number, and the real planner samples 800
+                candidates where this one draws a few dozen.
               </>
             }
           >
-            {(step, reduced) => <CemPlanning step={step} reduced={reduced} />}
+            {(step, reduced) => <JepaCem step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
             What this achieves, as the authors report it: on two Franka research arms in labs absent from the training
@@ -1403,16 +892,17 @@ export function Jepa() {
             planners in the line.
           </Box>
           <Figure
-            cites="F03-115"
+            cites="F03-115 F03-25 F03-74 F03-73 F03-41"
             caption={
               <>
-                Each point is samples x iterations x horizon for one published planner, on a log axis: one gridline
-                to the right is ten times the passes. The counts are our arithmetic from each paper&apos;s
-                settings.
+                Each bar is samples x iterations x horizon for one published planner. The axis is logarithmic, so
+                the length of a segment is the size of its factor and the three end at the total. The counts are
+                our arithmetic from each paper&apos;s settings. The times are the authors&apos; own, each on its own
+                GPU, so they do not compare like for like.
               </>
             }
           >
-            <PassesChart />
+            <JepaPasses />
           </Figure>
           <Box variant="p">
             Passes differ in size. In V-JEPA 2-AC one pass runs a 300M transformer over 258 tokens per frame; in
