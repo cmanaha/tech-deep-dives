@@ -7,23 +7,18 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
+import { PhysStep, PHYS_STEP_STEPS } from '../components/figures/PhysStep';
 import { log10Scale } from '../lib/scale';
 import { ARM, SIM_TASK, SIM_TASK_PLAIN, SIM_TASK_GAP } from '../lib/task';
 import { Capture, MUJOCO_SO101 } from '../components/Capture';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
-const ROBOT_FILL = '#fff6d6';
-const ROBOT_INK = '#7a5c00';
 const CPU_FILL = '#e8f1fb';
 const CPU_INK = '#1f5fa8';
 const GPU_FILL = '#e6f6ea';
 const GPU_INK = '#1e7b3a';
 const NEUTRAL_INK = '#5f6b7a';
-const EMPHASIS = '#0972d3';
-
-/** Keeps a narrow, phone-first drawing from growing oversized on a wide screen. */
-const NARROW: CSSProperties = { maxWidth: 560, margin: '0 auto' };
 
 const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
@@ -31,221 +26,6 @@ const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbd
 
 /** The shipped state-only sibling of the vision task. */
 const SIM_TASK_STATE = 'SO101PickCube';
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 12.1: one physics step                                           */
-/* ------------------------------------------------------------------------ */
-
-const STEP_CAPTIONS = [
-  <>
-    The state before the step: every joint angle and every joint speed, plus where the cube is and how it is moving.
-    The card shows one joint, the elbow, with illustrative values.
-  </>,
-  <>
-    Position group. From the angles, the simulator works out where every link and the cube are in space, then checks
-    which shapes touch. In this picture it finds two contacts, one per finger.
-  </>,
-  <>Velocity group. It computes the forces that depend on speed, such as the damping in each joint.</>,
-  <>
-    Force and acceleration group. The servo model turns each goal angle into a motor torque. The constraint solve then
-    finds the finger forces that hold the cube without the fingers sinking into it, and the acceleration of every
-    joint that results: for the elbow, <Toy>2.0</Toy> rad/s² in this illustration.
-  </>,
-  <>
-    Integrate. The timestep is 5 ms, or 0.005 s. New speed: <Toy>1.000 + 2.0 x 0.005 = 1.010</Toy> rad/s. New angle:{' '}
-    <Toy>0.50000 + 1.010 x 0.005 = 0.50505</Toy> rad. The arithmetic shown is the semi-implicit Euler form. The
-    drawing exaggerates the movement.
-  </>,
-  <>
-    The new state, 5 ms later. The next step starts from it. The pick-cube task runs 200 of these steps for each
-    simulated second.
-  </>,
-];
-
-const STAGE_BOXES = [
-  {
-    at: 2,
-    y: 226,
-    title: '1  Position',
-    lines: ['From the joint angles: where every body is,', 'and which pairs of shapes touch (the contacts).'],
-  },
-  {
-    at: 3,
-    y: 312,
-    title: '2  Velocity',
-    lines: ['Forces that depend on speed, such as', 'the damping in each joint.'],
-  },
-  {
-    at: 4,
-    y: 398,
-    title: '3  Force and acceleration',
-    lines: ['Motor torques, then the constraint solve:', 'contact forces and every joint acceleration.'],
-  },
-  {
-    at: 5,
-    y: 484,
-    title: '4  Integrate',
-    lines: ['new speed = speed + acceleration x timestep', 'new angle = angle + new speed x timestep'],
-  },
-];
-
-function StepDiagram({ step, reduced }: { step: number; reduced: boolean }) {
-  const s = step + 1;
-  const label = { fontFamily: 'sans-serif', fontSize: 12, fill: INK } as const;
-  const title = { fontFamily: 'sans-serif', fontSize: 13, fontWeight: 'bold', fill: INK } as const;
-  const fade = (on: boolean): CSSProperties => ({ opacity: on ? 1 : 0, transition: reduced ? 'none' : 'opacity 400ms ease' });
-  const moved = s >= 5;
-  const stateOn = s === 1 || s === 6;
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 590" role="img" aria-labelledby="physics-step-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="physics-step-title">One physics step, from the old state to the new state</title>
-        <desc>
-          At the top, a side view of the arm holding a cube between two fingers, beside a card with the angle and speed
-          of the elbow joint and the simulated time. Below, four boxes in order: position, velocity, force and
-          acceleration, integrate. Each lights up in turn. After the last one the arm has moved slightly and the card
-          shows a new angle, a new speed and a time 5 ms later.
-        </desc>
-        <defs>
-          <marker id="physics-step-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0 0 L10 5 L0 10 z" fill={NEUTRAL_INK} />
-          </marker>
-          <marker id="physics-step-force" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M0 0 L10 5 L0 10 z" fill={EMPHASIS} />
-          </marker>
-        </defs>
-        <rect x="0" y="0" width="400" height="590" fill="#fbfbfd" />
-
-        {/* the scene */}
-        <rect x="10" y="10" width="240" height="196" rx="4" fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1.5" />
-        <text x="22" y="30" {...title}>
-          The scene
-        </text>
-        <line x1="22" y1="186" x2="238" y2="186" stroke={ROBOT_INK} strokeWidth="2" />
-        <rect x="40" y="164" width="36" height="22" fill="#ffffff" stroke={ROBOT_INK} strokeWidth="2" />
-        <line x1="58" y1="164" x2="58" y2="150" stroke={ROBOT_INK} strokeWidth="6" strokeLinecap="round" />
-        <line x1="58" y1="150" x2="120" y2="74" stroke={ROBOT_INK} strokeWidth="6" strokeLinecap="round" />
-        <circle cx="58" cy="150" r="6" fill="#ffffff" stroke={ROBOT_INK} strokeWidth="2" />
-        <g
-          style={{
-            transform: moved ? 'rotate(-7deg)' : 'rotate(0deg)',
-            transformOrigin: '120px 74px',
-            transition: reduced ? 'none' : 'transform 700ms ease',
-          }}
-        >
-          <line x1="120" y1="74" x2="206" y2="96" stroke={ROBOT_INK} strokeWidth="6" strokeLinecap="round" />
-          <line x1="190" y1="102" x2="222" y2="102" stroke={ROBOT_INK} strokeWidth="5" strokeLinecap="round" />
-          <line x1="192" y1="102" x2="192" y2="142" stroke={ROBOT_INK} strokeWidth="4" strokeLinecap="round" />
-          <line x1="220" y1="102" x2="220" y2="142" stroke={ROBOT_INK} strokeWidth="4" strokeLinecap="round" />
-          <rect x="194" y="114" width="24" height="24" fill="#ffffff" stroke={INK} strokeWidth="1.5" />
-          <g style={fade(s >= 2)}>
-            <circle cx="194" cy="126" r="4" fill={EMPHASIS} />
-            <circle cx="218" cy="126" r="4" fill={EMPHASIS} />
-          </g>
-        </g>
-        <circle cx="120" cy="74" r="6" fill="#ffffff" stroke={stateOn ? EMPHASIS : ROBOT_INK} strokeWidth={stateOn ? 3 : 2} />
-        <text x="112" y="56" textAnchor="middle" {...label}>
-          elbow
-        </text>
-        <text x="130" y="201" textAnchor="middle" {...label} style={fade(s === 2 || s === 3)}>
-          blue dots: contacts
-        </text>
-        <g style={fade(s === 4)}>
-          <line x1="168" y1="126" x2="187" y2="126" stroke={EMPHASIS} strokeWidth="2" markerEnd="url(#physics-step-force)" />
-          <line x1="244" y1="126" x2="225" y2="126" stroke={EMPHASIS} strokeWidth="2" markerEnd="url(#physics-step-force)" />
-          <line x1="206" y1="142" x2="206" y2="160" stroke={NEUTRAL_INK} strokeWidth="2" markerEnd="url(#physics-step-arrow)" />
-          <text x="130" y="201" textAnchor="middle" {...label}>
-            finger forces hold the cube
-          </text>
-          <text x="197" y="160" textAnchor="end" {...label}>
-            gravity
-          </text>
-        </g>
-        <text x="130" y="201" textAnchor="middle" {...label} style={fade(s >= 5)}>
-          movement exaggerated
-        </text>
-
-        {/* the state card */}
-        <rect x="260" y="10" width="130" height="196" rx="4" fill="#ffffff" stroke={stateOn ? EMPHASIS : NEUTRAL_INK} strokeWidth={stateOn ? 2.5 : 1.5} />
-        <text x="272" y="30" {...title}>
-          State
-        </text>
-        <text x="272" y="54" {...label}>
-          elbow angle
-        </text>
-        <text x="272" y="96" {...label}>
-          elbow speed
-        </text>
-        <text x="272" y="138" {...label}>
-          simulated time
-        </text>
-        <g data-num="toy" style={fade(!moved)}>
-          <text x="272" y="72" {...title}>
-            0.50000 rad
-          </text>
-          <text x="272" y="114" {...title}>
-            1.000 rad/s
-          </text>
-          <text x="272" y="156" {...title}>
-            0 ms
-          </text>
-        </g>
-        <g data-num="toy" style={fade(moved)}>
-          <text x="272" y="72" {...title} fill={EMPHASIS}>
-            0.50505 rad
-          </text>
-          <text x="272" y="114" {...title} fill={EMPHASIS}>
-            1.010 rad/s
-          </text>
-          <text x="272" y="156" {...title} fill={EMPHASIS}>
-            5 ms
-          </text>
-        </g>
-        <text x="272" y="182" {...label} fill={NEUTRAL_INK}>
-          illustrative values,
-        </text>
-        <text x="272" y="197" {...label} fill={NEUTRAL_INK}>
-          one joint of many
-        </text>
-
-        {/* the four stage groups */}
-        <line x1="200" y1="208" x2="200" y2="223" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#physics-step-arrow)" />
-        {STAGE_BOXES.map((b, i) => {
-          const on = s === b.at;
-          return (
-            <g key={b.title}>
-              <rect
-                x="10"
-                y={b.y}
-                width="380"
-                height="70"
-                rx="4"
-                fill={on ? CPU_FILL : '#ffffff'}
-                stroke={on ? EMPHASIS : NEUTRAL_INK}
-                strokeWidth={on ? 2.5 : 1.5}
-              />
-              <text x="24" y={b.y + 22} {...title}>
-                {b.title}
-              </text>
-              <text x="24" y={b.y + 42} {...label}>
-                {b.lines[0]}
-              </text>
-              <text x="24" y={b.y + 59} {...label}>
-                {b.lines[1]}
-              </text>
-              {i < STAGE_BOXES.length - 1 && (
-                <line x1="200" y1={b.y + 72} x2="200" y2={b.y + 83} stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#physics-step-arrow)" />
-              )}
-            </g>
-          );
-        })}
-        <text x="200" y="576" textAnchor="middle" {...title} style={fade(s === 6)}>
-          one step done: 5 ms of simulated time
-        </text>
-      </svg>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------------ */
 /* Diagram 12.2: steps per second, one CPU core against a GPU batch         */
@@ -566,22 +346,24 @@ export function PhysicsSimulation() {
             MuJoCo&apos;s step function is <code>mj_step</code>. Its documentation lists what one call does as 26
             stages in four groups: position, velocity, force and acceleration, and the integrator.{' '}
             <Cite id="F06-9">MuJoCo docs, Computation chapter, simulation pipeline</Cite> Step through one call
-            below.
+            below. The drawing is a grasp like the one in the capture above, flattened to two dimensions.
           </Box>
           <AnimatedFigure
             name="one physics step"
-            steps={STEP_CAPTIONS}
-            intervalMs={3200}
+            steps={PHYS_STEP_STEPS}
+            intervalMs={3600}
             cites="F06-9 F06-105"
             caption={
               <>
-                Read from the top down: the state enters, the four groups run in order, and the new state replaces the
-                old one. The angle, speed and acceleration values and the two contacts are illustrative, not measured;
-                the 5 ms timestep and the 200 steps per second are the pick-cube task&apos;s.
+                The stage lit at the top says which group is running, and the scene shows what that group adds:
+                contacts, speeds, known forces, then the constraint forces the solve finds. The panel beside it
+                follows the elbow as a point that the last group moves, up by the speed line and across by the angle
+                line. The joint values, the three contacts and the size of the overlap are illustrative, not
+                measured; the 5 ms timestep and the 200 steps per second are the pick-cube task&apos;s.
               </>
             }
           >
-            {(step, reduced) => <StepDiagram step={step} reduced={reduced} />}
+            {(step, reduced) => <PhysStep step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
             The third group carries the weight. It finds the joint accelerations that agree with every force on the

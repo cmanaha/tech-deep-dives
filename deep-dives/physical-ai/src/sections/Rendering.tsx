@@ -8,9 +8,10 @@ import Link from '@cloudscape-design/components/link';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import FormField from '@cloudscape-design/components/form-field';
 import Select from '@cloudscape-design/components/select';
-import { Cite } from '../components/Cite';
+import { Cite, Toy } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
+import { RenderForm, RENDER_FORM_STEPS } from '../components/figures/RenderForm';
 import { GpuEngines, ENGINES_BY_WORKLOAD, GPU_WORKLOADS } from '../components/GpuEngines';
 import type { GpuWorkload } from '../components/GpuEngines';
 import { linear } from '../lib/scale';
@@ -20,11 +21,8 @@ import { Capture, CaptureSlot, MUJOCO_SO101 } from '../components/Capture';
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
 const NEUTRAL_INK = '#5f6b7a';
-const EMPHASIS = '#0972d3';
 const RT_FILL = '#fdeedd';
 const RT_INK = '#a85a0a';
-const WORLD_FILL = '#fff6d6';
-const WORLD_INK = '#7a5c00';
 
 /** Keeps a narrow, phone-first drawing from growing oversized on a wide screen. */
 const NARROW: CSSProperties = { maxWidth: 560, margin: '0 auto' };
@@ -32,197 +30,6 @@ const NARROW: CSSProperties = { maxWidth: 560, margin: '0 auto' };
 const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
 const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbdb', verticalAlign: 'top' };
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 13.1 (animated): rasterising a triangle against tracing a ray    */
-/* ------------------------------------------------------------------------ */
-
-/* Side view. The camera's eye, the image (one column of ten pixels) and the scene. */
-const EYE = { x: 40, y: 150 };
-const PLANE_X = 86;
-const PLANE_W = 10;
-const PIXEL_H = 10;
-const PLANE_TOP = 120;
-const TABLE_Y = 290;
-const BLOCK = { x: 150, y: 250, s: 40 };
-const CUP = { x: 235, y: 200, w: 50 };
-const LIGHT = { x: 360, y: 170 };
-
-/* The traced pixel is number 6 from the top; its ray lands on the top of the block. */
-const TRACED = 6;
-const pixelMid = (i: number) => PLANE_TOP + i * PIXEL_H + PIXEL_H / 2;
-const raySlope = (i: number) => (pixelMid(i) - EYE.y) / (PLANE_X + PLANE_W / 2 - EYE.x);
-const HIT = { x: EYE.x + (BLOCK.y - EYE.y) / raySlope(TRACED), y: BLOCK.y };
-const SHADOW_SLOPE = (LIGHT.y - HIT.y) / (LIGHT.x - HIT.x);
-const STOP = { x: CUP.x, y: HIT.y + SHADOW_SLOPE * (CUP.x - HIT.x) };
-
-const SKY = '#eef0f2';
-const CUP_TONE = '#c6ccd2';
-const BLOCK_LIT = '#f2d675';
-const BLOCK_DARK = '#8a6d1a';
-const BLOCK_SIDE = '#c9a93c';
-const TABLE_TONE = '#b9c0c7';
-
-/* What each of the ten rays ends on, top pixel first (illustrative geometry). */
-const TRACED_TONES = [SKY, SKY, SKY, SKY, CUP_TONE, CUP_TONE, BLOCK_DARK, BLOCK_DARK, BLOCK_SIDE, TABLE_TONE];
-/* Pixels covered by the upper-left triangle of the block when its corners are projected. */
-const RASTER_PIXELS = [6, 7, 8];
-const TRIANGLE: [number, number][] = [
-  [BLOCK.x, BLOCK.y],
-  [BLOCK.x + BLOCK.s, BLOCK.y],
-  [BLOCK.x, BLOCK.y + BLOCK.s],
-];
-
-const RASTER_TITLES = [
-  'The scene',
-  'Rasterising: from a triangle to pixels',
-  'Ray tracing: from a pixel into the scene',
-  'A shadow ray decides light or shadow',
-  'Every pixel, camera and environment',
-];
-const RASTER_NOTES = [
-  'shapes stored as triangles, a camera and a light',
-  'project the corners, fill the pixels between them',
-  'one ray from the camera through one pixel',
-  'the cup blocks the way to the light: shadow',
-  'repeat: every pixel, every camera, every environment',
-];
-
-function RasterVsRay({ step, reduced }: { step: number; reduced: boolean }) {
-  const show = (on: boolean): CSSProperties => ({ opacity: on ? 1 : 0, transition: reduced ? 'none' : 'opacity 400ms ease' });
-  const raster = step === 1;
-  const oneRay = step === 2 || step === 3;
-  const shadow = step === 3;
-  const all = step === 4;
-  const label = { fontFamily: 'sans-serif', fontSize: 12, fill: INK } as const;
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 334" role="img" aria-labelledby="rendering-raster-ray-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="rendering-raster-ray-title">Two ways to make an image: rasterising a triangle and tracing a ray through a pixel</title>
-        <desc>
-          A side view of a camera, a column of ten pixels standing for its image, a block, a taller cup and a light.
-          Rasterising projects the corners of one triangle of the block onto the image and fills the pixels between
-          them. Ray tracing sends a ray from the camera through one pixel until it lands on the block, then a second
-          ray from that point toward the light. The cup is in the way, so the point is in shadow. The last step
-          repeats the rays for every pixel.
-        </desc>
-        <rect x="0" y="0" width="400" height="334" fill="#fbfbfd" />
-        <text x="12" y="24" fontFamily="sans-serif" fontSize="13" fontWeight="bold" fill={INK}>
-          {step + 1}. {RASTER_TITLES[step]}
-        </text>
-        <g transform="translate(0 -46)">
-
-        {/* the scene, present in every step */}
-        <line x1="110" y1={TABLE_Y} x2="392" y2={TABLE_Y} stroke={NEUTRAL_INK} strokeWidth="2" />
-        <rect x={BLOCK.x} y={BLOCK.y} width={BLOCK.s} height={BLOCK.s} fill={WORLD_FILL} stroke={WORLD_INK} strokeWidth="1.5" />
-        <line x1={BLOCK.x + BLOCK.s} y1={BLOCK.y} x2={BLOCK.x} y2={BLOCK.y + BLOCK.s} stroke={WORLD_INK} strokeWidth="1" />
-        <path
-          d={`M${CUP.x} ${CUP.y} V${TABLE_Y} H${CUP.x + CUP.w} V${CUP.y}`}
-          fill="#ffffff"
-          stroke={NEUTRAL_INK}
-          strokeWidth="2.5"
-        />
-        <circle cx={LIGHT.x} cy={LIGHT.y} r="9" fill="#ffd24a" stroke={WORLD_INK} strokeWidth="1.5" />
-        <path d={`M${EYE.x - 24} ${EYE.y - 10} H${EYE.x - 6} L${EYE.x} ${EYE.y} L${EYE.x - 6} ${EYE.y + 10} H${EYE.x - 24} Z`} fill="#ffffff" stroke={INK} strokeWidth="1.5" />
-        <text x="14" y="132" {...label}>
-          camera
-        </text>
-        <text x={PLANE_X + PLANE_W / 2} y="108" textAnchor="middle" {...label}>
-          image
-        </text>
-        <text x="352" y="150" textAnchor="middle" {...label}>
-          light
-        </text>
-        <text x={BLOCK.x + BLOCK.s / 2} y="308" textAnchor="middle" {...label}>
-          block
-        </text>
-        <text x={CUP.x + CUP.w / 2} y="308" textAnchor="middle" {...label}>
-          cup
-        </text>
-        <text x="350" y="308" textAnchor="middle" {...label}>
-          table
-        </text>
-
-        {/* rasterising: one triangle, its corners projected onto the image */}
-        <g style={show(raster)}>
-          <path d={`M${TRIANGLE.map((p) => p.join(' ')).join(' L')} Z`} fill={BLOCK_LIT} stroke={EMPHASIS} strokeWidth="2.5" />
-          {TRIANGLE.map(([px, py]) => (
-            <line key={`${px}-${py}`} x1={px} y1={py} x2={EYE.x} y2={EYE.y} stroke={NEUTRAL_INK} strokeWidth="1.2" strokeDasharray="4 3" />
-          ))}
-        </g>
-
-        {/* ray tracing: every ray, faint (last step) */}
-        <g style={show(all)}>
-          {TRACED_TONES.map((_, i) => (
-            <line key={i} x1={EYE.x} y1={EYE.y} x2={EYE.x + 100} y2={EYE.y + 100 * raySlope(i)} stroke={RT_INK} strokeWidth="1" opacity="0.55" />
-          ))}
-        </g>
-
-        {/* ray tracing: the one ray through pixel 6 */}
-        <g style={show(oneRay || all)}>
-          <line x1={EYE.x} y1={EYE.y} x2={HIT.x} y2={HIT.y} stroke={RT_INK} strokeWidth="2.2" />
-        </g>
-        <g style={show(oneRay)}>
-          <text x="126" y="194" {...label} fill={RT_INK}>
-            ray
-          </text>
-        </g>
-
-        {/* the shadow ray */}
-        <g style={show(shadow || all)}>
-          <circle cx={HIT.x} cy={HIT.y} r="4" fill={EMPHASIS} />
-          <line x1={HIT.x} y1={HIT.y} x2={STOP.x} y2={STOP.y} stroke={EMPHASIS} strokeWidth="2.2" />
-          <line x1={STOP.x} y1={STOP.y} x2={LIGHT.x - 10} y2={LIGHT.y + 4} stroke={NEUTRAL_INK} strokeWidth="1.2" strokeDasharray="4 4" />
-          <path d={`M${STOP.x - 5} ${STOP.y - 5} l10 10 m0 -10 l-10 10`} stroke={EMPHASIS} strokeWidth="2.2" fill="none" />
-        </g>
-        <g style={show(shadow)}>
-          <text x="226" y="210" textAnchor="end" {...label} fill={EMPHASIS}>
-            shadow ray
-          </text>
-          <text x="296" y="252" {...label}>
-            blocked
-          </text>
-        </g>
-
-        {/* the image: ten pixels */}
-        {TRACED_TONES.map((tone, i) => {
-          const y = PLANE_TOP + i * PIXEL_H;
-          const rasterOn = raster && RASTER_PIXELS.includes(i);
-          const tracedOn = (shadow && i === TRACED) || all;
-          return (
-            <g key={i}>
-              <rect x={PLANE_X} y={y} width={PLANE_W} height={PIXEL_H} fill="#ffffff" stroke={NEUTRAL_INK} strokeWidth="1" />
-              <rect x={PLANE_X} y={y} width={PLANE_W} height={PIXEL_H} fill={BLOCK_LIT} stroke={NEUTRAL_INK} strokeWidth="1" style={show(rasterOn)} />
-              <rect x={PLANE_X} y={y} width={PLANE_W} height={PIXEL_H} fill={tone} stroke={NEUTRAL_INK} strokeWidth="1" style={show(tracedOn)} />
-            </g>
-          );
-        })}
-        <rect
-          x={PLANE_X - 2}
-          y={PLANE_TOP + TRACED * PIXEL_H - 2}
-          width={PLANE_W + 4}
-          height={PIXEL_H + 4}
-          fill="none"
-          stroke={EMPHASIS}
-          strokeWidth="2.5"
-          style={show(oneRay)}
-        />
-
-        {/* many environments (last step) */}
-        <g style={show(all)}>
-          {Array.from({ length: 16 }, (_, i) => (
-            <rect key={i} x={24 + i * 22.4} y="346" width="16" height="16" rx="2" fill={RT_FILL} stroke={RT_INK} strokeWidth="1" />
-          ))}
-        </g>
-
-        <text x="200" y="334" textAnchor="middle" {...label}>
-          {RASTER_NOTES[step]}
-        </text>
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------------ */
 /* Diagram 13.3 (chart): what one camera per environment costs              */
@@ -458,24 +265,25 @@ export function Rendering() {
             physically right at a higher cost per image.{' '}
             <Cite id="F06-56">NVIDIA Developer, ray tracing explainer</Cite>
           </Box>
+          <Box variant="p">
+            The figure forms one small image both ways. Step through it and watch where the shadow comes from.
+          </Box>
           <AnimatedFigure
-            name="rasterising a triangle against tracing a ray"
-            steps={[
-              <>The scene from the side: a block and a cup on a table, a light, a camera, and the camera&apos;s image drawn as one column of pixels.</>,
-              <>Rasterising takes one triangle of the block, projects its three corners toward the camera, and fills the pixels between the projected corners.</>,
-              <>Ray tracing goes the other way. It picks one pixel and follows a ray from the camera through it until the ray lands on a surface: here, the top of the block.</>,
-              <>From that point a shadow ray heads for the light. The cup is in the way, so this point of the block is in shadow and the pixel is painted dark.</>,
-              <>The same two questions are asked for every pixel of the image, for every camera, in every environment. The number of rays is what the GPU pays for.</>,
-            ]}
+            name="one image formed by rasterising and by ray tracing"
+            steps={RENDER_FORM_STEPS}
+            intervalMs={3600}
+            cites="F06-27"
             caption={
               <>
-                Step through it: rasterising runs from a shape to the pixels it covers, ray tracing from a pixel to
-                the shape it sees and on to the light. Illustrative, not measured: the geometry and the ten pixels
-                are invented for the picture.
+                Left, the scene the renderer holds. Right, the camera&apos;s image, formed twice from the same
+                triangles: the blue outline marks the pixels where a shadow ray was blocked, the only pixels where
+                the two images differ. Illustrative, not measured: the geometry is invented and the image is drawn
+                at <Toy>16 x 12</Toy> pixels, where the shipped task renders 64 x 64. The rasteriser
+                drawn here does only the two steps described above.
               </>
             }
           >
-            {(step, reduced) => <RasterVsRay step={step} reduced={reduced} />}
+            {(step, reduced) => <RenderForm step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
             The expensive part of ray tracing is the search: which triangle does this ray land on? A ray tracer
