@@ -7,11 +7,12 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
+import { DemoDrift, DEMO_DRIFT_STEPS } from '../components/figures/DemoDrift';
+import { DemoFlow, DEMO_FLOW_STEPS } from '../components/figures/DemoFlow';
 import { ARM, TASK_STORY } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
-const ROBOT_FILL = '#fff6d6';
 const ROBOT_INK = '#7a5c00';
 const NEUTRAL_FILL = '#eef0f2';
 const NEUTRAL_INK = '#5f6b7a';
@@ -25,148 +26,6 @@ const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom
 const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbdb', verticalAlign: 'top' };
 
 const LABEL = { fontFamily: 'sans-serif', fontSize: 12, fill: INK } as const;
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 4.1 (animated): compounding error, then chunks                   */
-/* ------------------------------------------------------------------------ */
-
-const BAND_X0 = 40;
-const BAND_X1 = 350;
-const BAND_HALF = 22;
-
-/** Centre of the demonstrated band at horizontal position x (an invented, smooth reach). */
-function bandCentre(x: number): number {
-  const u = Math.min(1, Math.max(0, (x - BAND_X0) / (BAND_X1 - BAND_X0)));
-  return 200 - 110 * u * u * (3 - 2 * u);
-}
-
-function bandOutline(): string {
-  const xs: number[] = [];
-  for (let x = BAND_X0 - 14; x <= BAND_X1 + 14; x += 8) xs.push(x);
-  const upper = xs.map((x, i) => `${i === 0 ? 'M' : 'L'}${x} ${(bandCentre(x) - BAND_HALF).toFixed(1)}`);
-  const lower = [...xs].reverse().map((x) => `L${x} ${(bandCentre(x) + BAND_HALF).toFixed(1)}`);
-  return `${upper.join(' ')} ${lower.join(' ')} Z`;
-}
-
-/** How far each single-step decision lands from the band centre: small at first, then growing. */
-const DRIFT = [0, 0, 0, 0, 6, 14, 26, 40, 54, 68, 84, 100];
-const DRIFT_POINTS = DRIFT.map((d, i) => {
-  const x = BAND_X0 + i * 26;
-  return { x, y: bandCentre(x) + d, from: i === 0 ? 1 : i <= 4 ? 2 : i <= 7 ? 3 : 4 };
-});
-
-/** Chunked policy: four decisions, each slightly off, each followed by a committed run. */
-const CHUNK_X = [40, 118, 196, 274, 350];
-const CHUNK_OFF = [0, 6, -5, 4, 0];
-const CHUNK_FROM = [5, 6, 6, 7];
-const CHUNKS = CHUNK_FROM.map((from, j) => {
-  const pts = Array.from({ length: 7 }, (_, n) => {
-    const f = n / 6;
-    const x = CHUNK_X[j] + f * (CHUNK_X[j + 1] - CHUNK_X[j]);
-    return { x, y: bandCentre(x) + CHUNK_OFF[j] + f * (CHUNK_OFF[j + 1] - CHUNK_OFF[j]) };
-  });
-  return { from, pts, d: pts.map((p, n) => `${n === 0 ? 'M' : 'L'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ') };
-});
-
-const DRIFT_STEPS = [
-  'The shaded band is where the gripper went in the fifty demonstrations. The policy starts inside it, on the left.',
-  'The policy decides once per tick. Four decisions land near the centre of the band and the fifth is slightly off: a small error, still inside the band.',
-  'From the off-centre position the camera view is less familiar, so the next actions are worse. Three decisions later the gripper is outside the band, in a place the data never showed.',
-  'Outside the band nothing the policy learned applies, and the drift grows. After 12 decisions the gripper closes well short of the block.',
-  'Start again with a chunked policy. It looks once, decides once, and commits to a whole run of actions (the small dots).',
-  'Each large dot is a decision. Each is still slightly off, but far fewer of them cover the same motion, so there are far fewer chances to drift.',
-  'Four decisions in place of 12. The path stays inside the band and reaches the block. The faded path is the single-step policy from step 4.',
-];
-
-function DriftAndChunks({ step, reduced }: { step: number; reduced: boolean }) {
-  const s = step + 1;
-  const fade = (on: boolean, level = 1): CSSProperties => ({
-    opacity: on ? level : 0,
-    transition: reduced ? 'none' : 'opacity 350ms ease',
-  });
-  const driftLevel = s >= 5 ? 0.3 : 1;
-  const blockY = bandCentre(BAND_X1);
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 300" role="img" aria-labelledby="demonstrations-drift-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="demonstrations-drift-title">A single-step policy drifts out of the demonstrated band; a chunked policy stays inside it</title>
-        <desc>
-          A shaded band runs from a start point on the left up to a block on the right. A path of twelve single
-          decisions follows the band, slips off centre, leaves the band and ends well below the block. A second path
-          made of four decisions, each followed by a run of actions, stays inside the band and reaches the block.
-        </desc>
-        <rect x="0" y="0" width="400" height="300" fill="#fbfbfd" />
-
-        {/* the demonstrated band */}
-        <path d={bandOutline()} fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1" />
-        <rect x="16" y="14" width="18" height="12" fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1" />
-        <text x="42" y="24" {...LABEL}>
-          demonstrated band: where the 50 episodes went
-        </text>
-
-        {/* start and block */}
-        <text x={BAND_X0} y="240" textAnchor="middle" {...LABEL}>
-          start
-        </text>
-        <rect x={BAND_X1 - 8} y={blockY - 8} width="16" height="16" fill="#ffffff" stroke={ROBOT_INK} strokeWidth="1.5" />
-        <text x={BAND_X1} y="58" textAnchor="middle" {...LABEL}>
-          block
-        </text>
-
-        {/* single-step policy: one dot per decision */}
-        {DRIFT_POINTS.map((p, i) => (
-          <g key={p.x} style={fade(s >= p.from, driftLevel)}>
-            {i > 0 && (
-              <line x1={DRIFT_POINTS[i - 1].x} y1={DRIFT_POINTS[i - 1].y} x2={p.x} y2={p.y} stroke={NEUTRAL_INK} strokeWidth="1.5" />
-            )}
-            <circle cx={p.x} cy={p.y} r="4" fill={NEUTRAL_INK} />
-          </g>
-        ))}
-        <circle cx={DRIFT_POINTS[4].x} cy={DRIFT_POINTS[4].y} r="8" fill="none" stroke={EMPHASIS} strokeWidth="2.5" style={fade(s === 2)} />
-        <text x={DRIFT_POINTS[4].x} y="218" textAnchor="middle" {...LABEL} style={fade(s === 2)}>
-          a small error
-        </text>
-        <text x="215" y="214" textAnchor="middle" {...LABEL} style={fade(s === 3)}>
-          outside what the data showed
-        </text>
-        <text x="372" y="222" textAnchor="end" {...LABEL} style={fade(s === 4)}>
-          misses the block
-        </text>
-
-        {/* chunked policy: a decision, then a committed run of actions */}
-        {CHUNKS.map((c) => (
-          <g key={c.d} style={fade(s >= c.from)}>
-            <path d={c.d} fill="none" stroke={EMPHASIS} strokeWidth="3" strokeLinecap="round" />
-            {c.pts.slice(1, 6).map((p) => (
-              <circle key={p.x} cx={p.x} cy={p.y} r="2.2" fill="#ffffff" stroke={EMPHASIS} strokeWidth="1" />
-            ))}
-            <circle cx={c.pts[0].x} cy={c.pts[0].y} r="5.5" fill={EMPHASIS} stroke="#ffffff" strokeWidth="1.5" />
-          </g>
-        ))}
-
-        {/* legend */}
-        <g style={fade(s >= 2)}>
-          <circle cx="24" cy="262" r="4" fill={NEUTRAL_INK} />
-          <text x="36" y="266" {...LABEL} style={fade(s >= 2 && s < 4)}>
-            one action per decision
-          </text>
-          <text x="36" y="266" {...LABEL} style={fade(s >= 4)}>
-            one action per decision: 12 decisions
-          </text>
-        </g>
-        <g style={fade(s >= 5)}>
-          <circle cx="24" cy="282" r="5.5" fill={EMPHASIS} />
-          <text x="36" y="286" {...LABEL} style={fade(s >= 5 && s < 7)}>
-            one chunk of actions per decision
-          </text>
-          <text x="36" y="286" {...LABEL} style={fade(s >= 7)}>
-            one chunk of actions per decision: 4 decisions
-          </text>
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------------ */
 /* Diagram 4.2: two valid ways and their average                            */
@@ -221,94 +80,6 @@ function TwoWaysDiagram() {
         <text x="52" y="280" {...LABEL}>
           their average: straight into the obstacle
         </text>
-      </svg>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 4.3 (animated): flow matching, noise to an action chunk          */
-/* ------------------------------------------------------------------------ */
-
-const FLOW_N = 50;
-const FLOW_DOTS = Array.from({ length: FLOW_N }, (_, i) => {
-  const u = i / (FLOW_N - 1);
-  const r = Math.sin((i + 1) * 12.9898) * 43758.5453;
-  const rand = (r - Math.floor(r)) * 2 - 1;
-  return { x: 54 + i * 6.6, noise: 140 + 82 * rand, target: 205 - 120 * Math.sin(Math.PI * u * 0.85) };
-});
-const FLOW_CURVE = FLOW_DOTS.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)} ${p.target.toFixed(1)}`).join(' ');
-
-const FLOW_STATUS = [
-  'pure noise',
-  'after 2 of 10 steps',
-  'after 4 of 10 steps',
-  'after 6 of 10 steps',
-  'after 8 of 10 steps',
-  'after 10 of 10 steps: one smooth chunk',
-];
-
-const FLOW_STEPS = [
-  'One chunk of pure noise: 50 random values where the 50 target angles for one joint should be.',
-  'After 2 of 10 steps. Each step moves every dot a short way along the velocity the network predicts for it.',
-  'After 4 of 10 steps. The dots are still scattered, and a shape is starting to show.',
-  'After 6 of 10 steps. The camera images were read once, before the first step; each step re-runs only the action part of the network.',
-  'After 8 of 10 steps. Neighbouring actions now nearly agree.',
-  'After 10 of 10 steps: a smooth run of 50 target angles, ready for the host to play one per tick.',
-];
-
-function FlowToChunk({ step, reduced }: { step: number; reduced: boolean }) {
-  const f = step / (FLOW_STEPS.length - 1);
-  const last = step === FLOW_STEPS.length - 1;
-  const fade = (on: boolean, level = 1): CSSProperties => ({
-    opacity: on ? level : 0,
-    transition: reduced ? 'none' : 'opacity 350ms ease',
-  });
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 280" role="img" aria-labelledby="demonstrations-flow-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="demonstrations-flow-title">Flow matching turns a chunk of noise into a smooth action chunk</title>
-        <desc>
-          Fifty dots, one per action of a chunk, plotted as the target angle of one joint against robot time. They
-          start scattered at random heights. At each sampling step every dot moves toward its place, and after the
-          last step the dots lie on one smooth curve.
-        </desc>
-        <rect x="0" y="0" width="400" height="280" fill="#fbfbfd" />
-
-        {/* axes */}
-        <line x1="44" y1="244" x2="388" y2="244" stroke={NEUTRAL_INK} strokeWidth="1.5" />
-        <line x1="44" y1="44" x2="44" y2="244" stroke={NEUTRAL_INK} strokeWidth="1.5" />
-        <text x="216" y="266" textAnchor="middle" {...LABEL}>
-          robot time: the 50 actions of one chunk
-        </text>
-        <text x="20" y="144" textAnchor="middle" transform="rotate(-90 20 144)" {...LABEL}>
-          target angle of one joint
-        </text>
-
-        {/* status, one line per step */}
-        {FLOW_STATUS.map((t, i) => (
-          <text key={t} x="54" y="26" fontFamily="sans-serif" fontSize="13" fontWeight="bold" fill={INK} style={fade(step === i)}>
-            {t}
-          </text>
-        ))}
-
-        {/* the finished chunk as a line, shown at the last step */}
-        <path d={FLOW_CURVE} fill="none" stroke={EMPHASIS} strokeWidth="1.5" style={fade(last, 0.45)} />
-
-        {/* one dot per action */}
-        {FLOW_DOTS.map((p) => (
-          <circle
-            key={p.x}
-            cx={p.x}
-            cy={p.noise}
-            r="2.8"
-            fill={EMPHASIS}
-            style={{
-              transform: `translate(0px, ${(f * (p.target - p.noise)).toFixed(1)}px)`,
-              transition: reduced ? 'none' : 'transform 600ms ease',
-            }}
-          />
-        ))}
       </svg>
     </div>
   );
@@ -497,21 +268,6 @@ export function LearningFromDemonstrations() {
             about reaching the block. The square is the part to act on: halve <M>T</M> and the ceiling drops
             to a quarter.
           </Box>
-          <AnimatedFigure
-            name="compounding error, then chunks"
-            steps={DRIFT_STEPS}
-            intervalMs={3200}
-            cites="F02-67"
-            caption={
-              <>
-                Steps 1 to 4 show the drift this block describes. Steps 5 to 7 show the fix the next block
-                explains: the same motion covered by fewer decisions. Illustrative, not measured: the band, both
-                paths and the counts of decisions are drawn by hand.
-              </>
-            }
-          >
-            {(step, reduced) => <DriftAndChunks step={step} reduced={reduced} />}
-          </AnimatedFigure>
         </SpaceBetween>
       </Container>
 
@@ -552,6 +308,26 @@ export function LearningFromDemonstrations() {
             <Cite id="F02-11">LeRobot configuration_act.py</Cite>{' '}
             <Cite id="F02-6">ACT paper, chunking ablation</Cite>
           </Box>
+          <Box variant="p">
+            The figure plays both runs of the toy episode over the same ticks: the table from above, and under it
+            the ceiling each run carries.
+          </Box>
+          <AnimatedFigure
+            name="compounding error, then chunks"
+            steps={DEMO_DRIFT_STEPS}
+            intervalMs={3200}
+            cites="F02-67 F02-11"
+            caption={
+              <>
+                Both panels share the horizontal axis, the ticks of the toy episode, so a dot on the table sits
+                above its ceiling in the chart. Steps 1 to 5 are the drift, steps 6 and 7 the chunks. Illustrative,
+                not measured: the band, both paths and the cones are drawn by hand, and the curves are the toy
+                arithmetic of the text.
+              </>
+            }
+          >
+            {(step, reduced) => <DemoDrift step={step} reduced={reduced} />}
+          </AnimatedFigure>
           <Box variant="p">
             On the arm a chunk looks like commitment. The gripper carries out a whole reach without re-deciding on
             every tick. The price is reaction time: during a chunk the arm is not looking, so if someone nudges the
@@ -778,18 +554,20 @@ export function LearningFromDemonstrations() {
           </Box>
           <AnimatedFigure
             name="flow matching, from noise to an action chunk"
-            steps={FLOW_STEPS}
-            intervalMs={2200}
-            cites="F02-18 F02-20"
+            steps={DEMO_FLOW_STEPS}
+            intervalMs={2400}
+            cites="F02-18 F02-20 F02-16"
             caption={
               <>
-                Each dot is one of the 50 actions in a chunk, for a single joint. The figure shows every second
-                one of pi0&apos;s 10 steps. Illustrative, not measured: the noise and the final curve are drawn by
-                hand. A different draw of noise can end on a different, equally valid chunk.
+                Three views of the same 10 steps, every second one shown. First, one joint of one chunk: each dot
+                is one of the 50 actions and its arrow is the velocity the network gives it. Second, two noise draws
+                that settle on the two ways round the obstacle. Third, the whole chunk as numbers. Illustrative, not
+                measured: the noise and the curves are drawn by hand, and the readout under the clock repeats the toy
+                values of the text.
               </>
             }
           >
-            {(step, reduced) => <FlowToChunk step={step} reduced={reduced} />}
+            {(step, reduced) => <DemoFlow step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
             Flow matching is diffusion with a straight path and few steps. In our reading, 10 steps where

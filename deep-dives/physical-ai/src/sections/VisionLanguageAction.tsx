@@ -7,14 +7,12 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import { Cite, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
+import { VlaTokenFlow } from '../components/figures/VlaTokenFlow';
+import { VlaTwoClocks, VLA_CLOCK_STEPS } from '../components/figures/VlaTwoClocks';
 import { ARM, TASK_STORY } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
-const ROBOT_FILL = '#fff6d6';
-const ROBOT_INK = '#7a5c00';
-const GPU_FILL = '#e6f6ea';
-const GPU_INK = '#1e7b3a';
 const NEUTRAL_INK = '#5f6b7a';
 const EMPHASIS = '#0972d3';
 
@@ -34,264 +32,6 @@ const GROOT2_LABEL =
 
 const LABEL = { fontFamily: 'sans-serif', fontSize: 12, fill: INK } as const;
 const TITLE = { fontFamily: 'sans-serif', fontSize: 13, fontWeight: 'bold', fill: INK } as const;
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 5.1: one VLA as blocks, with shapes on the arrows                */
-/* ------------------------------------------------------------------------ */
-
-function VlaBlocks() {
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 558" role="img" aria-labelledby="vla-blocks-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="vla-blocks-title">One vision-language-action model as blocks: pi0 with the SO-101&apos;s shapes</title>
-        <desc>
-          Two camera images and one sentence enter the backbone, a vision-language model. Its tokens, the prefix, pass
-          to the action head. Six joint angles, zero-padded to 32, also enter the action head. The action head starts
-          from noise shaped 50 by 32 and refines it in 10 steps into a chunk of 50 actions, of which the first six
-          columns are the arm&apos;s joint targets.
-        </desc>
-        <defs>
-          <marker id="vla-blocks-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-            <path d="M0 0 L8 4 L0 8 Z" fill={NEUTRAL_INK} />
-          </marker>
-        </defs>
-        <rect x="0" y="0" width="400" height="558" fill="#fbfbfd" />
-
-        {/* inputs */}
-        <rect x="10" y="12" width="120" height="54" rx="4" fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1.5" />
-        <text x="70" y="34" textAnchor="middle" {...TITLE}>
-          2 cameras
-        </text>
-        <text x="70" y="52" textAnchor="middle" {...LABEL}>
-          640 x 480 pixels
-        </text>
-        <rect x="140" y="12" width="120" height="54" rx="4" fill="#ffffff" stroke={NEUTRAL_INK} strokeWidth="1.5" />
-        <text x="200" y="34" textAnchor="middle" {...TITLE}>
-          Instruction
-        </text>
-        <text x="200" y="52" textAnchor="middle" {...LABEL}>
-          one sentence
-        </text>
-        <rect x="270" y="12" width="120" height="54" rx="4" fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1.5" />
-        <text x="330" y="34" textAnchor="middle" {...TITLE}>
-          6 joint angles
-        </text>
-        <text x="330" y="52" textAnchor="middle" {...LABEL}>
-          the arm&apos;s state
-        </text>
-
-        {/* cameras and instruction into the backbone */}
-        <line x1="70" y1="68" x2="70" y2="118" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#vla-blocks-arrow)" />
-        <text x="79" y="98" {...LABEL}>
-          image tokens
-        </text>
-        <line x1="200" y1="68" x2="200" y2="118" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#vla-blocks-arrow)" />
-        <text x="209" y="98" {...LABEL}>
-          text tokens
-        </text>
-
-        {/* backbone */}
-        <rect x="10" y="122" width="252" height="92" rx="4" fill={GPU_FILL} stroke={GPU_INK} strokeWidth="1.5" />
-        <text x="22" y="144" {...TITLE}>
-          Backbone
-        </text>
-        <text x="22" y="162" {...LABEL}>
-          a vision-language model (PaliGemma)
-        </text>
-        <text x="22" y="180" {...LABEL}>
-          3B parameters, pretrained on the web
-        </text>
-        <text x="22" y="198" {...LABEL}>
-          reads images and text once per call
-        </text>
-
-        {/* state straight to the action head */}
-        <line x1="372" y1="68" x2="372" y2="296" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#vla-blocks-arrow)" />
-        <text x="364" y="170" textAnchor="end" {...LABEL}>
-          zero-padded
-        </text>
-        <text x="364" y="186" textAnchor="end" {...LABEL}>
-          from 6 to 32
-        </text>
-
-        {/* backbone to action head */}
-        <line x1="70" y1="216" x2="70" y2="296" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#vla-blocks-arrow)" />
-        <text x="80" y="248" {...LABEL}>
-          prefix: the image and text tokens,
-        </text>
-        <text x="80" y="264" {...LABEL}>
-          computed once, then cached
-        </text>
-
-        {/* action head */}
-        <rect x="10" y="300" width="380" height="96" rx="4" fill={GPU_FILL} stroke={EMPHASIS} strokeWidth="2.5" />
-        <text x="22" y="322" {...TITLE}>
-          Action head (the action expert)
-        </text>
-        <text x="22" y="340" {...LABEL}>
-          300M parameters, initialised from scratch
-        </text>
-        <text x="22" y="358" {...LABEL}>
-          starts from random noise shaped 50 x 32
-        </text>
-        <text x="22" y="376" {...LABEL}>
-          refines it in 10 steps, reading the prefix at each step
-        </text>
-
-        {/* out */}
-        <line x1="200" y1="398" x2="200" y2="446" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#vla-blocks-arrow)" />
-        <text x="210" y="427" {...LABEL}>
-          action chunk, 50 x 32
-        </text>
-        <rect x="10" y="450" width="380" height="96" rx="4" fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1.5" />
-        <text x="22" y="472" {...TITLE}>
-          50 future actions
-        </text>
-        <text x="22" y="490" {...LABEL}>
-          columns 1 to 6: the SO-101&apos;s six joint targets
-        </text>
-        <text x="22" y="508" {...LABEL}>
-          columns 7 to 32: padding, dropped
-        </text>
-        <text x="22" y="526" {...LABEL}>
-          the host plays them at 30 per second
-        </text>
-      </svg>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 5.2 (animated): two clocks                                       */
-/* ------------------------------------------------------------------------ */
-
-const CLOCK_STEPS = [
-  'Camera frames and the instruction enter the slow system, the vision-language model.',
-  'It reads them and emits plan A: a set of output tokens that tells the action head what to do. Producing one plan takes one slow tick.',
-  'The fast system starts emitting actions from plan A. The slow system is already reading newer frames.',
-  'More actions leave on the same plan. The slow system has not answered again yet.',
-  'Twelve actions have gone out on one plan. That is the ratio of the two rates: 120 actions a second against 10 plans a second.',
-  'The slow system delivers plan B. The fast system picks it up on its next action and never stops.',
-];
-
-const FAST_CELLS = Array.from({ length: 24 }, (_, i) => i);
-const CELL_PITCH = 340 / 24;
-
-function TwoClocks({ step, reduced }: { step: number; reduced: boolean }) {
-  const s = step + 1;
-  const fade = (on: boolean): CSSProperties => ({ opacity: on ? 1 : 0, transition: reduced ? 'none' : 'opacity 300ms ease' });
-  const filled = s >= 6 ? 16 : s === 5 ? 12 : s === 4 ? 8 : s === 3 ? 4 : 0;
-  const hot = (on: boolean, ink: string) => ({ stroke: on ? EMPHASIS : ink, strokeWidth: on ? 2.5 : 1 });
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 408" role="img" aria-labelledby="vla-clocks-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="vla-clocks-title">Two clocks: a slow system that updates a plan and a fast system that emits actions</title>
-        <desc>
-          Two stacked lanes. The slow system at the top, a vision-language model, produces 10 plans a second. The fast
-          system below, the action head, emits 120 actions a second, so twelve actions leave on each plan. When a new
-          plan arrives the fast system switches to it without pausing.
-        </desc>
-        <defs>
-          <marker id="vla-clocks-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-            <path d="M0 0 L8 4 L0 8 Z" fill={NEUTRAL_INK} />
-          </marker>
-        </defs>
-        <rect x="0" y="0" width="400" height="408" fill="#fbfbfd" />
-
-        {/* inputs */}
-        <rect x="60" y="10" width="280" height="38" rx="4" fill={ROBOT_FILL} {...hot(s === 1, ROBOT_INK)} />
-        <text x="200" y="34" textAnchor="middle" {...LABEL}>
-          camera frames + the instruction
-        </text>
-        <line x1="200" y1="50" x2="200" y2="72" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#vla-clocks-arrow)" />
-
-        {/* slow lane */}
-        <rect x="10" y="76" width="380" height="110" rx="4" fill={GPU_FILL} {...hot(s === 1 || s === 2 || s === 6, GPU_INK)} />
-        <text x="24" y="98" {...TITLE}>
-          Slow system (System 2)
-        </text>
-        <text x="24" y="116" {...LABEL}>
-          vision-language model: 10 plans a second
-        </text>
-        <rect x="30" y="130" width="170" height="40" fill="none" stroke={GPU_INK} strokeWidth="1" strokeDasharray="3 3" />
-        <rect x="200" y="130" width="170" height="40" fill="none" stroke={GPU_INK} strokeWidth="1" strokeDasharray="3 3" />
-        <text x="115" y="155" textAnchor="middle" {...LABEL} style={fade(s === 1)}>
-          slow tick 1: reading
-        </text>
-        <text x="285" y="155" textAnchor="middle" {...LABEL} style={fade(s <= 5)}>
-          slow tick 2
-        </text>
-        <g style={fade(s >= 2)}>
-          <rect x="30" y="130" width="170" height="40" fill={GPU_INK} />
-          <text x="115" y="155" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fontWeight="bold" fill="#ffffff">
-            plan A
-          </text>
-        </g>
-        <g style={fade(s >= 6)}>
-          <rect x="200" y="130" width="170" height="40" fill={EMPHASIS} />
-          <text x="285" y="155" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fontWeight="bold" fill="#ffffff">
-            plan B
-          </text>
-        </g>
-
-        {/* plans handed down */}
-        <g style={fade(s >= 2)}>
-          <line x1="50" y1="188" x2="50" y2="208" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#vla-clocks-arrow)" />
-          <text x="60" y="203" {...LABEL}>
-            output tokens
-          </text>
-        </g>
-        <g style={fade(s >= 6)}>
-          <line x1="220" y1="188" x2="220" y2="208" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#vla-clocks-arrow)" />
-          <text x="230" y="203" {...LABEL}>
-            output tokens
-          </text>
-        </g>
-
-        {/* fast lane */}
-        <rect x="10" y="212" width="380" height="110" rx="4" fill={GPU_FILL} {...hot(s >= 3, GPU_INK)} />
-        <text x="24" y="234" {...TITLE}>
-          Fast system (System 1)
-        </text>
-        <text x="24" y="252" {...LABEL}>
-          action head: 120 actions a second
-        </text>
-        {FAST_CELLS.map((i) => {
-          const on = i < filled;
-          const ink = i < 12 ? GPU_INK : EMPHASIS;
-          return (
-            <rect
-              key={i}
-              x={30 + i * CELL_PITCH}
-              y="264"
-              width="12"
-              height="24"
-              fill={on ? ink : '#ffffff'}
-              stroke={on ? ink : NEUTRAL_INK}
-              strokeWidth="1"
-            />
-          );
-        })}
-        <text x="30" y="308" {...LABEL} style={fade(s <= 2)}>
-          one cell is one action; none emitted yet
-        </text>
-        <text x="115" y="308" textAnchor="middle" {...LABEL} style={fade(s >= 3)}>
-          from plan A
-        </text>
-        <text x="285" y="308" textAnchor="middle" {...LABEL} style={fade(s >= 6)}>
-          from plan B
-        </text>
-
-        {/* out */}
-        <line x1="200" y1="324" x2="200" y2="346" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#vla-clocks-arrow)" />
-        <rect x="60" y="350" width="280" height="38" rx="4" fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1" />
-        <text x="200" y="374" textAnchor="middle" {...LABEL}>
-          to the motors, one action at a time
-        </text>
-      </svg>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------------ */
 /* Diagram 5.3: release timeline, 2025 to November 2026                     */
@@ -566,19 +306,24 @@ export function VisionLanguageAction() {
           </Box>
           <Box variant="p">
             The figure draws pi0 with the {ARM}&apos;s shapes, as LeRobot v0.7.0 runs it. Read it as the worked
-            example for this section: every number on it is a real shape.
+            example for this section: every number on it is a real shape. The row of tokens that enters the
+            backbone is called the prefix, and <M>{String.raw`\tau`}</M> is the flow time of section 4, from 0 (pure
+            noise) to 1 (the finished chunk).
           </Box>
           <Figure
             cites="F02-18 F02-20 F02-23 F02-29 F02-32 F02-67"
             caption={
               <>
-                Read it top to bottom. Green boxes are the model, yellow boxes are the robot. Sizes are from the pi0
-                paper; the padding to 32 and the 50-action chunk are the defaults of the LeRobot v0.7.0 port; the
-                camera size and the rate of 30 per second are LeRobot&apos;s recording examples for the arm.
+                Follow one call from the inputs to the motors. Green is the model, and its two areas are drawn to
+                scale by parameter count. Yellow is the robot. The grid is the action chunk as the tensor it is, 50
+                rows by 32 columns, drawn at flow time 0, halfway and 1. Sizes are from the pi0 paper; the padding to
+                32 and the 50-action chunk are the defaults of the LeRobot v0.7.0 port; the camera size and the rate
+                of 30 per second are LeRobot&apos;s recording examples for the arm. Schematic: the camera views, the
+                number of token cells and the values in the grid are drawn by hand.
               </>
             }
           >
-            <VlaBlocks />
+            <VlaTokenFlow instruction={INSTRUCTION} />
           </Figure>
           <Box variant="p">Follow one call through it.</Box>
           <ul style={LIST}>
@@ -686,17 +431,19 @@ export function VisionLanguageAction() {
           </Box>
           <AnimatedFigure
             name="two clocks"
-            steps={CLOCK_STEPS}
+            steps={VLA_CLOCK_STEPS}
             intervalMs={2600}
             cites="F02-33"
             caption={
               <>
-                Step through to watch one plan feed many actions. A schematic drawn from the two rates NVIDIA&apos;s
-                paper names, not a measurement: in the released model the actions leave in chunks of 16.
+                Both systems on one time axis. A plan block spans the time it takes to compute, and the actions
+                that use it sit under the next block. A schematic drawn from the two rates NVIDIA&apos;s paper
+                names, not a measurement: the millisecond marks are our arithmetic from those rates, and in the
+                released model the actions leave in chunks of 16.
               </>
             }
           >
-            {(step, reduced) => <TwoClocks step={step} reduced={reduced} />}
+            {(step, reduced) => <VlaTwoClocks step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
             The two rates count different things. The slow rate counts passes of the backbone. The fast rate counts

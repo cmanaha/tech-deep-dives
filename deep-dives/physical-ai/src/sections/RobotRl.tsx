@@ -8,150 +8,12 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
+import { RlLanes } from '../components/figures/RlLanes';
 import { ARM, TASK_STORY, SIM_TASK, SIM_TASK_PLAIN, SIM_TASK_GAP } from '../lib/task';
-
-/* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
-const INK = '#16191f';
-const NEUTRAL_FILL = '#eef0f2';
-const NEUTRAL_INK = '#5f6b7a';
-const EMPHASIS = '#0972d3';
-
-/** Keeps a narrow, phone-first drawing from growing oversized on a wide screen. */
-const NARROW: CSSProperties = { maxWidth: 560, margin: '0 auto' };
 
 const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
 const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbdb', verticalAlign: 'top' };
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 8.1 (static): three lanes, what is plentiful and scarce in each  */
-/* ------------------------------------------------------------------------ */
-
-interface Lane {
-  title: string;
-  sub: string;
-  fill: string;
-  ink: string;
-  plentiful: string;
-  scarce: string;
-  waits: string;
-}
-
-const LANES: Lane[] = [
-  {
-    title: '1. In a simulator',
-    sub: '4,096 simulated copies of the arm on one GPU',
-    fill: '#fdeedd',
-    ink: '#a85a0a',
-    plentiful: 'attempts: 197 million control steps',
-    scarce: 'realism: the result must transfer',
-    waits: 'simulator steps per second',
-  },
-  {
-    title: '2. On a pretrained policy',
-    sub: 'a VLA practises, in simulation or on real robots',
-    fill: '#e6f6ea',
-    ink: '#1e7b3a',
-    plentiful: 'skill the model already has',
-    scarce: 'attempts: each step runs a big model',
-    waits: 'rollouts: 64 to 320 copies on 8 GPUs',
-  },
-  {
-    title: '3. On the real arm',
-    sub: 'one arm, one person nearby, one GPU for the learner',
-    fill: '#fff6d6',
-    ink: '#7a5c00',
-    plentiful: 'realism: it is the real arm',
-    scarce: 'attempts: 20 s each, then a 5 s reset',
-    waits: 'the arm, the reset and a person',
-  },
-];
-
-const LOOP_PILLS = ['try the task', 'score it', 'update policy'];
-
-function ThreeLanesDiagram() {
-  const laneTop = (i: number) => 82 + i * 158;
-  const rows: { label: string; key: 'plentiful' | 'scarce' | 'waits' }[] = [
-    { label: 'Plentiful', key: 'plentiful' },
-    { label: 'Scarce', key: 'scarce' },
-    { label: 'Waits on', key: 'waits' },
-  ];
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 556" role="img" aria-labelledby="robot-rl-lanes-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="robot-rl-lanes-title">Three places reinforcement learning runs for a robot, and what each one waits on</title>
-        <desc>
-          One loop, try the task, score it, update the policy, sits above three lanes. In a simulator attempts are
-          plentiful and realism is scarce, and training waits on the simulator. On a pretrained policy the existing
-          skill is plentiful and attempts are scarce, and training waits on rollouts of a large model. On the real
-          arm realism is plentiful and attempts are scarce, and training waits on the arm, the reset and a person.
-        </desc>
-        <defs>
-          <marker id="robot-rl-lanes-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-            <path d="M0 0 L8 4 L0 8 Z" fill={NEUTRAL_INK} />
-          </marker>
-        </defs>
-        <rect x="0" y="0" width="400" height="556" fill="#fbfbfd" />
-
-        {/* the shared loop */}
-        <text x="200" y="26" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fontWeight="bold" fill={INK}>
-          The same loop in every lane
-        </text>
-        {LOOP_PILLS.map((p, i) => (
-          <g key={p}>
-            <rect x={30 + i * 120} y="38" width="100" height="26" rx="13" fill="#ffffff" stroke={NEUTRAL_INK} strokeWidth="1.2" />
-            <text x={80 + i * 120} y="55" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill={INK}>
-              {p}
-            </text>
-          </g>
-        ))}
-        <line x1="131" y1="51" x2="147" y2="51" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#robot-rl-lanes-arrow)" />
-        <line x1="251" y1="51" x2="267" y2="51" stroke={NEUTRAL_INK} strokeWidth="1.5" markerEnd="url(#robot-rl-lanes-arrow)" />
-
-        {LANES.map((lane, i) => {
-          const y0 = laneTop(i);
-          return (
-            <g key={lane.title}>
-              <rect x="12" y={y0} width="376" height="148" rx="6" fill="#ffffff" stroke={lane.ink} strokeWidth="1.5" />
-              <path d={`M12 ${y0 + 44} V${y0 + 6} a6 6 0 0 1 6 -6 H382 a6 6 0 0 1 6 6 V${y0 + 44} Z`} fill={lane.fill} stroke={lane.ink} strokeWidth="1.5" />
-              <text x="24" y={y0 + 19} fontFamily="sans-serif" fontSize="14" fontWeight="bold" fill={lane.ink}>
-                {lane.title}
-              </text>
-              <text x="24" y={y0 + 36} fontFamily="sans-serif" fontSize="12" fill={INK}>
-                {lane.sub}
-              </text>
-              {rows.map((r, k) => {
-                const y = y0 + 52 + k * 31;
-                const waits = r.key === 'waits';
-                return (
-                  <g key={r.key}>
-                    <rect x="20" y={y} width="84" height="25" rx="4" fill={NEUTRAL_FILL} stroke="none" />
-                    <text x="28" y={y + 17} fontFamily="sans-serif" fontSize="12" fontWeight="bold" fill={INK}>
-                      {r.label}
-                    </text>
-                    <rect
-                      x="110"
-                      y={y}
-                      width="270"
-                      height="25"
-                      rx="4"
-                      fill="#ffffff"
-                      stroke={waits ? EMPHASIS : '#c6ccd2'}
-                      strokeWidth={waits ? 2.5 : 1}
-                    />
-                    <text x="120" y={y + 17} fontFamily="sans-serif" fontSize="12" fill={INK}>
-                      {lane[r.key]}
-                    </text>
-                  </g>
-                );
-              })}
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------------ */
 /* Section                                                                  */
@@ -237,14 +99,15 @@ export function RobotRl() {
             cites="F04-58 F04-69 F04-77 F04-76"
             caption={
               <>
-                Read each lane top to bottom: what it has plenty of, what it is short of, and the thing its training
-                loop spends its time waiting for (outlined in blue). The figures are from the recipes worked through
-                below: the simulated {ARM} recipe, the authors&apos; setup for RL on a VLA in simulation, and
-                LeRobot&apos;s real-arm example.
+                Each lane shows two things. On the left, the arms attempting the task at one moment, one dot per
+                arm, at the same dot size in all three lanes. On the right, one turn of its loop, where the part
+                that takes the width is what the lane waits on. Only the real-arm strip is to scale in time. The
+                figures are from the recipes worked through below: the simulated {ARM} recipe, the authors&apos;
+                setup for RL on a VLA in simulation, and LeRobot&apos;s real-arm example.
               </>
             }
           >
-            <ThreeLanesDiagram />
+            <RlLanes />
           </Figure>
           <Box variant="p">
             The algorithms are close relatives. The bottleneck is what changes: the simulator&apos;s throughput,
