@@ -543,7 +543,8 @@ export function PricePerformance() {
             is 2.56 ms on the Jetson core; the same arithmetic gives 0.51 ms on the Cortex-X925. That is our
             arithmetic from a single run of a stand-in.{' '}
             <Cite id="F08-84">our profiling report, throughputs inverted</Cite> A mean hides the slow calls: if
-            ninety-nine calls in a hundred are quick and one takes ten times as long, the mean barely moves. Two
+            ninety-nine calls in a hundred are quick and one takes ten times as long, the mean rises by 9% and the median does not move at all, while that one
+            call is ten times over. Two
             other figures show what the mean hides:
           </Box>
           <ul style={LIST}>

@@ -861,7 +861,7 @@ export function RobotAsComputer() {
             The line has a ceiling. Feetech&apos;s datasheet lists a no-load speed of 42 RPM at 6 V for the
             follower&apos;s servo.{' '}
             <Cite id="F01-42">Feetech STS3215 specification, section 5</Cite> By our arithmetic, one joint swinging
-            the fully stretched arm, 0.413 m long, at that speed moves the gripper at under about 1.8 m/s. The
+            the fully stretched arm, 0.413 m long, at that speed moves the gripper at about 1.82 m/s at most. The
             arm&apos;s own weight and the kit&apos;s stock 5 V supply both lower that, and it has not been
             measured. At that ceiling 100 ms would be 182 mm.{' '}
             <Cite id="F01-82" kind="derived">

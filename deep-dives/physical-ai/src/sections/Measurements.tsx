@@ -617,7 +617,8 @@ export function Measurements() {
               <strong>The size of that bias, as an illustration.</strong> Borrowing the fixed cost of 4 cycles per
               mispredicted branch that Arm uses for two other cores, the physics step on the X925 would move 1.6
               points from front end (12.2% to about 10.6%) to bad speculation (5.6% to about 7.2%). The branch
-              microbenchmark would move 13.2 points, and the policy and memory programs under 0.5 points. The constant is borrowed, so this shows which cards are sensitive (code full of branches) and does not
+              microbenchmark would move 13.2 points, and the policy and memory programs under 0.5 points. The constant is borrowed, and the count used is retired mispredicted branches where Arm&apos;s formula counts all
+              mispredicted branches, so this shows which cards are sensitive (code full of branches) and does not
               replace the missing event.{' '}
               <Cite id="F08-23">our arithmetic on the missing flush correction</Cite>
             </li>

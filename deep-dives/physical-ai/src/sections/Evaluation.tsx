@@ -335,13 +335,14 @@ export function Evaluation() {
             targets. The double bars measure the distance between two such lists.
           </Box>
           <Formula
-            name="Open-loop score: mean squared error against the recording"
+            name="Open-loop score: mean squared error against the recording (this page's definition)"
             tex={String.raw`\mathrm{MSE} = \frac{1}{T} \sum_{t=1}^{T} \bigl\lVert a^{\text{pred}}_t - a^{\text{demo}}_t \bigr\rVert^2`}
           />
           <Box variant="p">
             The difference inside the bars is how far the policy&apos;s answer is from the person&apos;s at one frame.
             Squaring makes large misses count most, and dividing the sum by <M>T</M> averages over the
-            recording. The formula has no term for what happens next: frame <M>t + 1</M> comes from the recording
+            recording. Many codebases also divide by the number of action dimensions, six here, which rescales the
+            value and changes no ranking. The formula has no term for what happens next: frame <M>t + 1</M> comes from the recording
             whatever the policy answered at frame <M>t</M>. The policy is never asked what it would do after a mistake of its own, which is the compounding error
             of section 4, Learning From Demonstrations.
           </Box>

@@ -53,7 +53,8 @@ const STEP_CAPTIONS = [
   </>,
   <>
     Integrate. The timestep is 5 ms, or 0.005 s. New speed: <Toy>1.000 + 2.0 x 0.005 = 1.010</Toy> rad/s. New angle:{' '}
-    <Toy>0.50000 + 1.010 x 0.005 = 0.50505</Toy> rad. The drawing exaggerates the movement.
+    <Toy>0.50000 + 1.010 x 0.005 = 0.50505</Toy> rad. The arithmetic shown is the semi-implicit Euler form. The
+    drawing exaggerates the movement.
   </>,
   <>
     The new state, 5 ms later. The next step starts from it. The pick-cube task runs 200 of these steps for each
@@ -607,9 +608,12 @@ export function PhysicsSimulation() {
               forearm tugging on the shoulder.
             </li>
             <li>
-              <M>f</M> and <M>J</M>: <M>f</M> is the contact forces, also unknown. <M>J</M>, the constraint
-              Jacobian, is a table that says how far each joint&apos;s motion moves each contact point; transposed
-              (<M>{String.raw`J^T`}</M>), it converts a force at a contact point into forces at the joints.
+              <M>f</M> and <M>J</M>: <M>f</M> is the constraint forces, also unknown. Contacts are the main source
+              on this task. Joint limits and the dry friction inside a joint are constraints too.{' '}
+              <Cite id="F11-211">MuJoCo docs, Computation chapter, constraint model</Cite> <M>J</M>, the constraint
+              Jacobian, is a table that says how far each joint&apos;s motion moves each constraint, for example
+              each contact point; transposed (<M>{String.raw`J^T`}</M>), it converts a constraint force into forces
+              at the joints.
             </li>
           </ul>
           <Formula
@@ -620,8 +624,9 @@ export function PhysicsSimulation() {
           <Box variant="p">
             On the left, <M>{String.raw`M \dot{v}`}</M> is mass times acceleration and <M>c</M> is what gravity and
             motion demand before anything else is applied. On the right, <M>{String.raw`\tau`}</M> is what the
-            motors and damping contribute; with nothing touching, that settles the equation and{' '}
-            <M>{String.raw`\dot{v}`}</M> follows directly. <M>{String.raw`J^T f`}</M> is where the contacts enter.
+            motors and damping contribute; with no active constraint, that settles the equation and{' '}
+            <M>{String.raw`\dot{v}`}</M> follows directly. <M>{String.raw`J^T f`}</M> is where the constraints
+            enter, and on this task most of them are contacts.
             The forces <M>f</M> are not known in advance, so the constraint solve searches for the <M>f</M> whose
             resulting <M>{String.raw`\dot{v}`}</M> breaks no rule. That search is the small solve at the centre of
             every step, and it grows with the number of contacts.
@@ -643,11 +648,15 @@ export function PhysicsSimulation() {
             the new speed <M>{String.raw`v_{t+h}`}</M>, where the plain version would use the old one; that single
             change is the &quot;semi-implicit&quot; part. In the figure&apos;s illustration the elbow goes from{' '}
             <Toy>1.000</Toy> to <Toy>1.000 + 0.005 x 2.0 = 1.010</Toy> rad/s, then from <Toy>0.50000</Toy> to{' '}
-            <Toy>0.50000 + 0.005 x 1.010 = 0.50505</Toy> rad. Variants of that arithmetic differ in how large a
-            timestep they tolerate. MuJoCo recommends its <code>implicitfast</code> integrator for the best
-            trade-off of stability and performance.{' '}
+            <Toy>0.50000 + 0.005 x 1.010 = 0.50505</Toy> rad. That is the basic form. MuJoCo recommends its{' '}
+            <code>implicitfast</code> integrator for the best trade-off of stability and performance.{' '}
             <Cite id="F06-13">MuJoCo docs, choosing timestep and integrator</Cite> The base scene the pick-cube task
-            builds on selects it. <Cite id="F06-106">MuJoCo Playground, plane.xml option element</Cite>
+            builds on selects it. <Cite id="F06-106">MuJoCo Playground, plane.xml option element</Cite>{' '}
+            <code>implicitfast</code> keeps the position line and changes the velocity line: before it is added to
+            the speed, the acceleration is rescaled by a matrix that accounts for forces that depend on speed, such
+            as the servo&apos;s damping, so a large timestep stays stable.{' '}
+            <Cite id="F11-210">MuJoCo docs, Computation chapter, implicit velocity update</Cite> The worked numbers
+            are therefore the Euler illustration and not the task&apos;s exact values.
           </Box>
           <ExpandableSection headerText="The 26 stages, by group">
             <ul style={LIST}>

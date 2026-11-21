@@ -760,8 +760,8 @@ export function OnRobot() {
             prediction, only about 0.67 seconds remain. Another 1-second request cannot fit; no refill value fixes
             that.&quot;{' '}
             <Cite id="F07-22">LeRobot remote inference guide, tuning</Cite> In our arithmetic from that rule, the
-            turnaround has to stay under half the chunk&apos;s duration. A 1.67 s chunk allows about{' '}
-            <Derived>0.83</Derived> s (1.67 / 2), and the 149.0 ms of the worked example is well inside.{' '}
+            turnaround has to stay under about half the chunk&apos;s duration, less the one-tick margin of the
+            floor. A 1.67 s chunk allows about <Derived>0.8</Derived> s, and the 149.0 ms of the worked example is well inside.{' '}
             <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite> When the check fails, the
             guide&apos;s remedies are a shorter turnaround, a longer chunk, or a different action rate.
           </Box>

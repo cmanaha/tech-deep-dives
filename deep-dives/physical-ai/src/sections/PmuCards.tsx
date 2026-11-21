@@ -770,9 +770,10 @@ export function PmuCards() {
           </Box>
           <Box variant="h3">Arm&apos;s correction for flushed work</Box>
           <Box variant="p">
-            After a wrong branch guess the core flushes, and for a few cycles the front end has nothing to hand over
-            while it fetches again from the right place. Those slots are empty with the front end not ready, so the
-            generic formula counts them as front-end bound. Their cause is the wrong guess. Arm&apos;s method moves
+            After a flush the front end has nothing to hand over for a few cycles while it fetches again from the
+            right place. A wrong branch guess is the usual cause; exceptions and other machine flushes count too.
+            Those slots are empty with the front end not ready, so the generic formula counts them as front-end
+            bound. Their cause is the flush. Arm&apos;s method moves
             them: it subtracts the recovery time from front-end bound and adds it to bad speculation. How the
             recovery time is obtained depends on the core.
           </Box>
@@ -787,7 +788,8 @@ export function PmuCards() {
             </li>
             <li>
               Neoverse V3 (Graviton5), Cortex-X925 and Cortex-A725: a measured event,{' '}
-              <code>STALL_FRONTEND_FLUSH</code>, the cycles the front end spent recovering.{' '}
+              <code>STALL_FRONTEND_FLUSH</code>, the cycles the front end spent recovering from any flush or
+              resteer.{' '}
               <Cite id="F08-19">Arm Telemetry Solution, cortex_x925 metrics</Cite>
             </li>
           </ul>

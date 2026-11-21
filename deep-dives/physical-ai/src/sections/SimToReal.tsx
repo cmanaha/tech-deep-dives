@@ -489,18 +489,25 @@ export function SimToReal() {
             brake pulling the joint toward its commanded angle. Write <M>{String.raw`q_{\text{target}}`}</M> for the commanded
             angle, <M>q</M> for the joint&apos;s current angle and <M>{String.raw`\dot{q}`}</M> for how fast it is
             turning. <M>k_p</M> is the position gain, which the model file calls stiffness, and{' '}
-            <M>k_d</M> is the damping. They are the P and D gains of section 3: PD (proportional-derivative) control pushes in
-            proportion to the error and brakes in proportion to the speed.
+            <M>k_d</M> is the damping. They play the roles of the P and D gains of section 3: PD (proportional-derivative) control pushes in
+            proportion to the error and brakes in proportion to the speed. Their values are in the model&apos;s
+            units and are not the 16 and 32 written into the real servo.{' '}
+            <Cite id="F01-16">LeRobot so_follower.py, configure()</Cite>
           </Box>
           <Formula
             name="PD servo model"
             tex={String.raw`\mathrm{torque} = k_p\,(q_{\text{target}} - q) - k_d\,\dot{q}`}
-            source={<Cite id="F06-31">MuJoCo Playground, SO-101 constant.py</Cite>}
+            source={
+              <>
+                <Cite id="F11-212">MuJoCo Playground, SO-101 scene.py (actuator setup)</Cite>{' '}
+                <Cite id="F06-31">constant.py (values)</Cite>
+              </>
+            }
           />
           <Box variant="p">
             The first term is the spring: the further the joint is from its goal, the harder the motor turns it. The
             second is the brake: the faster the joint moves, the more torque is taken away. The result is capped at what the motor can deliver.{' '}
-            <Cite id="F06-31">MuJoCo Playground, SO-101 constant.py</Cite> Two more numbers per joint complete the
+            <Cite id="F11-212">MuJoCo Playground, SO-101 scene.py, actuator setup</Cite> Two more numbers per joint complete the
             model, and the fit finds all four.
           </Box>
           <div style={{ overflowX: 'auto' }}>
@@ -569,14 +576,20 @@ export function SimToReal() {
             moment when it runs with <M>{String.raw`\theta`}</M>.
           </Box>
           <Formula
-            name="System identification: squared tracking mismatch"
+            name="System identification: squared tracking mismatch (this page's rendering of the least-squares fit)"
             tex={String.raw`L(\theta) = \sum_{t,\,j} \bigl( q^{\text{real}}_{t,j} - q^{\text{sim}}_{t,j}(\theta) \bigr)^2`}
-            source={<Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>}
+            source={
+              <>
+                our rendering of what the code minimises; the README describes the fit in words, and the script
+                compares joint-position readings. <Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>
+              </>
+            }
           />
           <Box variant="p">
             The bracket is how far apart the real and the simulated joint are at one moment. Squaring makes large
             misses count most. The sum runs over the whole episode and all 6 joints, so <M>L</M> is one number
-            for how badly the simulated arm tracks the real one. The script finds the <M>{String.raw`\theta`}</M> that makes
+            for how badly the simulated arm tracks the real one. The library may scale each term before summing;
+            this research did not read that part. The script finds the <M>{String.raw`\theta`}</M> that makes
             it smallest with Gauss-Newton least squares, a method that repeats one move: nudge each parameter,
             simulate again, see how the mismatch changes, and step all 24 toward a smaller <M>L</M>. From the
             same log it also estimates the transport delay of the serial link, the timing part of the gap.{' '}
