@@ -5,6 +5,7 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import Link from '@cloudscape-design/components/link';
+import { Formula, M } from '../components/Math';
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
 
@@ -27,7 +28,6 @@ const NARROW: CSSProperties = { maxWidth: 560, margin: '0 auto' };
 const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
 const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbdb', verticalAlign: 'top' };
-const PRE: CSSProperties = { margin: 0, whiteSpace: 'pre', overflowX: 'auto' };
 
 /* ------------------------------------------------------------------------ */
 /* Diagram 21.1: where slots go (animated)                                  */
@@ -596,7 +596,7 @@ export function PmuCards() {
               <code>CPU_CYCLES</code>: clock cycles counted during the run.
             </li>
             <li>
-              <code>S</code>: slots per cycle, a constant of the core.
+              <M>S</M>: slots per cycle, a constant of the core.
             </li>
             <li>
               <code>STALL_SLOT_FRONTEND</code>: slots that stayed empty because the front end had nothing to send.
@@ -612,24 +612,33 @@ export function PmuCards() {
             </li>
           </ul>
           <Box variant="p">
-            <Cite id="F08-15">Arm Cortex-X925 specification file, events</Cite> The first level of the method, in the
-            generic form Linux perf ships for Arm cores:
+            <Cite id="F08-15">Arm Cortex-X925 specification file, events</Cite> Three quantities are built from
+            the events first: the number of slots, the share of slots that received a micro-operation (written{' '}
+            <M>{String.raw`\mathrm{filled}`}</M> here) and the share of started micro-operations that retired (written{' '}
+            <M>{String.raw`\mathrm{kept}`}</M> here).
           </Box>
-          <pre style={PRE}>
-            <code>{`slots           = S x CPU_CYCLES
-front-end bound = STALL_SLOT_FRONTEND / slots
-back-end bound  = STALL_SLOT_BACKEND / slots
-retiring        = (1 - STALL_SLOT / slots) x (OP_RETIRED / OP_SPEC)
-bad speculation = (1 - STALL_SLOT / slots) x (1 - OP_RETIRED / OP_SPEC)`}</code>
-          </pre>
+          <Formula
+            name="Slots, and the two shares the buckets are built from"
+            tex={String.raw`\begin{aligned} \mathrm{slots} &= S \times \texttt{CPU\_CYCLES} \\ \mathrm{filled} &= 1 - \frac{\texttt{STALL\_SLOT}}{\mathrm{slots}} \\ \mathrm{kept} &= \frac{\texttt{OP\_RETIRED}}{\texttt{OP\_SPEC}} \end{aligned}`}
+            source={<Cite id="F08-20">Linux v7.3, perf metric file sbsa.json</Cite>}
+          />
           <Box variant="p">
-            <Cite id="F08-20">Linux v7.3, perf metric file sbsa.json</Cite> Read it against the two questions. The
-            front-end and back-end lines are the &quot;no&quot; branch of question 1: empty slots, by which side was
-            not ready, over all slots. <code>1 - STALL_SLOT / slots</code> is the &quot;yes&quot; branch, the share
-            of slots that received a micro-operation: <Toy>1 - 160 / 400 = 0.6</Toy> in the example.{' '}
-            <code>OP_RETIRED / OP_SPEC</code> is question 2, the share of started micro-operations that finished:{' '}
-            <Toy>216 / 240 = 0.9</Toy>. Retiring is one times the other, <Toy>0.6 x 0.9 = 0.54</Toy>, and bad
-            speculation takes what is left of the filled slots, <Toy>0.6 x 0.1 = 0.06</Toy>.
+            The first level of the method, in the generic form Linux perf ships for Arm cores, is then four
+            fractions of the slots:
+          </Box>
+          <Formula
+            name="Top-down level 1, generic Arm form"
+            tex={String.raw`\begin{aligned} &\text{front-end bound} = \\ &\qquad \frac{\texttt{STALL\_SLOT\_FRONTEND}}{\mathrm{slots}} \\[6pt] &\text{back-end bound} = \\ &\qquad \frac{\texttt{STALL\_SLOT\_BACKEND}}{\mathrm{slots}} \\[6pt] &\text{retiring} = \mathrm{filled} \times \mathrm{kept} \\[6pt] &\text{bad speculation} = \\ &\qquad \mathrm{filled} \times (1 - \mathrm{kept}) \end{aligned}`}
+            source={<Cite id="F08-20">Linux v7.3, perf metric file sbsa.json</Cite>}
+          />
+          <Box variant="p">
+            Read it against the two questions. The front-end and back-end lines are the &quot;no&quot; branch of
+            question 1: empty slots, by which side was not ready, over all slots.{' '}
+            <M>{String.raw`\mathrm{filled}`}</M> is the &quot;yes&quot; branch, the share of slots that received a
+            micro-operation: <Toy>1 - 160 / 400 = 0.6</Toy> in the example. <M>{String.raw`\mathrm{kept}`}</M> is
+            question 2, the share of started micro-operations that finished: <Toy>216 / 240 = 0.9</Toy>. Retiring is
+            one times the other, <Toy>0.6 x 0.9 = 0.54</Toy>, and bad speculation takes what is left of the filled
+            slots, <Toy>0.6 x 0.1 = 0.06</Toy>.
           </Box>
           <Box variant="p">
             The four shares add to 100% because the formula makes them. The sum is arithmetic and says nothing about
@@ -688,7 +697,7 @@ bad speculation = (1 - STALL_SLOT / slots) x (1 - OP_RETIRED / OP_SPEC)`}</code>
         <SpaceBetween size="m">
           <Box variant="p">
             The number of slots per cycle, also called the width of the core, differs by vendor and by generation.
-            It is the <code>S</code> of the formula, so every percentage on a card is a share of that core&apos;s
+            It is the <M>S</M> of the formula, so every percentage on a card is a share of that core&apos;s
             own width.
           </Box>
           <div style={{ overflowX: 'auto' }}>
@@ -782,6 +791,23 @@ bad speculation = (1 - STALL_SLOT / slots) x (1 - OP_RETIRED / OP_SPEC)`}</code>
               <Cite id="F08-19">Arm Telemetry Solution, cortex_x925 metrics</Cite>
             </li>
           </ul>
+          <Box variant="p">
+            Write <M>c</M> for the recovery time as a share of all cycles. Every cycle has the same <M>S</M> slots,
+            so a share of cycles is also a share of slots and can be moved between buckets directly. On the Neoverse
+            V3, Cortex-X925 and Cortex-A725, with <M>{String.raw`\mathrm{slots}`}</M>,{' '}
+            <M>{String.raw`\mathrm{filled}`}</M> and <M>{String.raw`\mathrm{kept}`}</M> as in the worked example:
+          </Box>
+          <Formula
+            name="Arm's flush correction, measured form"
+            tex={String.raw`\begin{aligned} &c = \frac{\texttt{STALL\_FRONTEND\_FLUSH}}{\texttt{CPU\_CYCLES}} \\[6pt] &\text{front-end bound} = \\ &\qquad \frac{\texttt{STALL\_SLOT\_FRONTEND}}{\mathrm{slots}} - c \\[6pt] &\text{bad speculation} = \\ &\qquad \mathrm{filled} \times (1 - \mathrm{kept}) + c \end{aligned}`}
+            source={<Cite id="F08-19">Arm Telemetry Solution, cortex_x925 metrics</Cite>}
+          />
+          <Box variant="p">
+            The same <M>c</M> leaves one bucket and enters the other, so the four shares still add to 100%. Back-end
+            bound and retiring keep the generic lines. On the Neoverse V1 the only change is how <M>c</M> is
+            obtained: 4 cycles times the count of mispredicted branches, over the cycle count.{' '}
+            <Cite id="F08-17">Arm Telemetry Solution, neoverse_v1 metrics</Cite>
+          </Box>
           <Box variant="p">
             For a card this means the label &quot;front-end bound&quot; covers several formulas, and a tool that
             does not know the core applies the generic one. Linux v7.3 carries per-core files for the Neoverse

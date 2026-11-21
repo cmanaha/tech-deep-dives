@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
+import { Formula, M } from '../components/Math';
 import { linear } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
 
@@ -527,15 +528,18 @@ export function RobotAsComputer() {
               </Box>
               <Box variant="p">
                 After calibration LeRobot reports the five arm joints in degrees from the middle of each
-                joint&apos;s range, and the gripper on a scale of 0 to 100 across its range. With <code>raw</code>{' '}
-                the encoder reading in steps and <code>mid</code> the midpoint of the calibrated range in steps:
+                joint&apos;s range, and the gripper on a scale of 0 to 100 across its range. With{' '}
+                <M>{String.raw`\mathrm{raw}`}</M> the encoder reading in steps and <M>{String.raw`\mathrm{mid}`}</M>{' '}
+                the midpoint of the calibrated range in steps:
               </Box>
+              <Formula
+                name="Encoder steps to degrees"
+                tex={String.raw`\mathrm{degrees} = (\mathrm{raw} - \mathrm{mid}) \times \frac{360}{4095}`}
+                source={<Cite id="F01-18">LeRobot motors_bus.py, _normalize()</Cite>}
+              />
               <Box variant="p">
-                <code>degrees = (raw - mid) x 360 / 4095</code>
-              </Box>
-              <Box variant="p">
-                The difference <code>raw - mid</code> is how many steps the joint is from its centre, and the
-                factor 360 / 4095 turns steps into degrees. As an illustration, a reading of <Toy>3072</Toy> with
+                The difference <M>{String.raw`\mathrm{raw} - \mathrm{mid}`}</M> is how many steps the joint is from
+                its centre, and the factor 360 / 4095 turns steps into degrees. As an illustration, a reading of <Toy>3072</Toy> with
                 a midpoint of <Toy>2048</Toy> is <Toy>1024</Toy> steps from centre, and <Toy>1024</Toy> x 360 /
                 4095 = <Toy>90.02</Toy> degrees.{' '}
                 <Cite id="F01-18">LeRobot motors_bus.py, normalisation</Cite>
@@ -578,16 +582,20 @@ export function RobotAsComputer() {
           <Box variant="p">
             The controller is tuned by numbers called gains. The servo uses the PID (proportional-integral-derivative)
             design, a controller that sets the motor drive from three views of the error: its size now, its sum
-            over time, and how fast it is changing. With <code>e</code> the goal angle minus the measured angle,
-            the textbook form is:
+            over time, and how fast it is changing. Write <M>e_t</M> for the error on pass{' '}
+            <M>t</M> of the controller, the goal angle minus the measured angle, and <M>P</M>, <M>I</M> and{' '}
+            <M>D</M> for the three gains. The textbook form is:
           </Box>
+          <Formula
+            name="PID position controller, textbook form"
+            tex={String.raw`\begin{aligned} \mathrm{drive}_t = {} & P\,e_t + I \sum_{k \le t} e_k \\ & + D\,(e_t - e_{t-1}) \end{aligned}`}
+            source={<>the standard form; the gains this arm writes are in <Cite id="F01-16">LeRobot so_follower.py, configure()</Cite></>}
+          />
           <Box variant="p">
-            <code>drive = P x e + I x (sum of e so far) + D x (change in e since the last pass)</code>
-          </Box>
-          <Box variant="p">
-            The P gain sets how hard the motor pushes for each step of error, so the joint pushes harder the
-            further it is from its goal. The D gain acts on the change in error, so it brakes the joint when the
-            error is shrinking fast. The I gain adds a push that builds up while an error persists. LeRobot writes
+            The first term is the error now: the P gain sets how hard the motor pushes for each step of error, so
+            the joint pushes harder the further it is from its goal. The last term is the change in error since the
+            previous pass: the D gain brakes the joint when the error is shrinking fast. The middle term is the sum
+            of every error so far: the I gain adds a push that builds up while an error persists. LeRobot writes
             P = 16, I = 0 and D = 32 into each follower servo when it connects, which switches the integral term off:
             the joints run as PD (proportional-derivative) controllers, and a joint holding a load can sit
             slightly short of its goal.{' '}
@@ -784,12 +792,19 @@ export function RobotAsComputer() {
           <Box variant="p">
             The arm does not pause while the computer works. Between the moment a camera captures the scene and the
             moment the servos receive the action computed from it, the gripper keeps moving on its previous orders.
-            How far it moves in that time is the error the delay causes. With <code>speed</code> the gripper&apos;s
-            speed in metres per second and <code>delay</code> the time from capture to command in seconds:
+            How far it moves in that time is the error the delay causes. With <M>v</M> the gripper&apos;s speed in metres
+            per second, <M>{String.raw`\tau`}</M> the delay from capture to command in seconds and <M>d</M> the
+            distance in metres:
           </Box>
-          <Box variant="p">
-            <code>distance = speed x delay</code>
-          </Box>
+          <Formula
+            name="Distance travelled during the delay"
+            tex={String.raw`d = v \, \tau`}
+            source={
+              <Cite id="F01-83" kind="derived">
+                speed times delay
+              </Cite>
+            }
+          />
           <Box variant="p">
             The task sets the speed and the computer sets the delay. Their product is a length on the table, which
             is why latency on a robot is a physical quantity: 100 ms is a distance.
@@ -855,8 +870,55 @@ export function RobotAsComputer() {
             speed, and the result is the delay the whole chain from camera to servo may take. If the block must
             arrive within 10 mm of the centre of the cup (an illustration), then at 0.25 m/s the budget is{' '}
             <Toy>0.010</Toy> m / 0.25 m/s = <Derived>0.040</Derived> s, or <Derived>40</Derived> ms: barely more
-            than one tick. A chain slower than its budget leaves two choices, move the arm more slowly or shorten
-            the chain.
+            than one tick.
+          </Box>
+          <Box variant="p">
+            The chain that has to fit in that budget is a sum of four waits, and this page&apos;s own accounting of
+            them follows. The camera frame is already some age when the host reads it,{' '}
+            <M>{String.raw`\tau_{\text{sense}}`}</M>. The policy takes <M>{String.raw`\tau_{\text{infer}}`}</M> to
+            answer. If the policy runs on another machine, the request and the answer cross a network,{' '}
+            <M>{String.raw`\tau_{\text{comm}}`}</M>, which is zero when the policy runs on the host. The finished
+            action then waits for the next tick before it is written to the servos,{' '}
+            <M>{String.raw`\tau_{\text{act}}`}</M>. With <M>T</M> the control period (one tick) and{' '}
+            <M>{String.raw`d_{\max}`}</M> the error the task can absorb:
+          </Box>
+          <Formula
+            name="Control-latency budget (this page's accounting)"
+            tex={String.raw`\begin{aligned} \tau &= \tau_{\text{sense}} + \tau_{\text{infer}} \\ &\quad + \tau_{\text{comm}} + \tau_{\text{act}} \\ v\,\tau &\le d_{\max}, \qquad n = \tau / T \end{aligned}`}
+            source={
+              <>
+                our accounting, built on{' '}
+                <Cite id="F01-83" kind="derived">
+                  speed times delay
+                </Cite>
+              </>
+            }
+          />
+          <Box variant="p">
+            The sum adds the waits into one delay. The last line turns that delay into a distance and
+            holds it against the tolerance, and <M>n</M> counts the same delay in ticks. Each term has a cited size
+            on this arm. The frame age is between 0 and 33.3 ms, because the camera and the loop both run at 30 Hz
+            and are not synchronised.{' '}
+            <Cite id="F01-85">LeRobot cameras guide, frame access modes</Cite> One call to GR00T N1.7 has a median
+            of 76.8 ms on Jetson AGX Thor, as NVIDIA reports it.{' '}
+            <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite> A local network adds 10 to 20
+            ms, as the authors of the real-time chunking paper report.{' '}
+            <Cite id="F01-80">Real-time chunking paper, experimental setup</Cite> The wait for the next write is up
+            to one tick, 33.3 ms.{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
+          </Box>
+          <Box variant="p">
+            Take the worst case with the model on a Thor beside the arm, so no network: 33.3 + 76.8 + 0 + 33.3 ={' '}
+            <Derived>143.4</Derived> ms, which is <Derived>4.3</Derived> ticks, and at 0.25 m/s the gripper travels{' '}
+            <Derived>35.9</Derived> mm on old information. Against the <Derived>40</Derived> ms budget above that is more than three
+            times over, and inference is the largest term. The time on the serial bus and the servo&apos;s own
+            response were not sourced in this research and are left out, so the real delay is longer.{' '}
+            <Cite id="F01-83" kind="derived">
+              speed times delay
+            </Cite>{' '}
+            <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
+            <Cite id="F01-85">LeRobot cameras guide, frame access modes</Cite> A chain slower than its budget
+            leaves two choices, move the arm more slowly or shorten the chain.
           </Box>
         </SpaceBetween>
       </Container>

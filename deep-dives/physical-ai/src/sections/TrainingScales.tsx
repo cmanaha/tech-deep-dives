@@ -7,6 +7,7 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import Link from '@cloudscape-design/components/link';
 import { Cite, Derived } from '../components/Cite';
 import { Figure } from '../components/Figure';
+import { Formula } from '../components/Math';
 import { log10Scale } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
 
@@ -246,9 +247,10 @@ export function TrainingScales() {
           <Box variant="p">
             To place jobs this different on one axis, count the GPU time each one occupies:
           </Box>
-          <Box variant="p">
-            <code>GPU-hours = number of GPUs x hours of wall-clock time</code>
-          </Box>
+          <Formula
+            name="GPU-hours"
+            tex={String.raw`\begin{aligned} &\text{GPU-hours} = \text{number of GPUs} \\ &\quad \times\ \text{hours of wall-clock time} \end{aligned}`}
+          />
           <Box variant="p">
             The first factor is the width of the job, how many GPUs it holds at once. The second is how long it holds
             them. A run on 8 H100 GPUs for about 4 days is 8 x 96 hours, which is <Derived>768</Derived> GPU-hours.{' '}

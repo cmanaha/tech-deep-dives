@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Toy } from '../components/Cite';
 import { Figure } from '../components/Figure';
+import { Formula } from '../components/Math';
 import { Placeholder } from '../components/Blocks';
 import { linear, ticks, fmt } from '../lib/scale';
 import { ARM } from '../lib/task';
@@ -23,7 +24,6 @@ const CPU_INK = '#1f5fa8';
 const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
 const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbdb', verticalAlign: 'top' };
-const FORMULA: CSSProperties = { display: 'block', padding: '8px 12px', background: '#f4f4f6', borderRadius: 4, overflowX: 'auto' };
 
 /* ------------------------------------------------------------------------ */
 /* Block 1: one unit of work per workload (register entry F08-81)            */
@@ -338,7 +338,11 @@ export function PricePerformance() {
           <Box variant="p">
             <strong>Cloud.</strong> Work done in an hour, divided by the price of that hour:
           </Box>
-          <code style={FORMULA}>units per currency unit = units per second x 3,600 / price per hour</code>
+          <Formula
+            name="Cloud: work per unit of currency"
+            tex={String.raw`\begin{aligned} &\text{units per currency unit} \\ &= \frac{\text{units per second} \times 3{,}600}{\text{price per hour}} \end{aligned}`}
+            source={<Cite id="F08-82">the cloud formula</Cite>}
+          />
           <Box variant="p">
             The 3,600 turns seconds into an hour, so the top of the fraction is units per hour. Dividing by the price
             of the hour leaves units of work per unit of currency.{' '}
@@ -350,7 +354,11 @@ export function PricePerformance() {
           <Box variant="p">
             <strong>Edge.</strong> Work done in a second, divided by the power drawn during that second:
           </Box>
-          <code style={FORMULA}>units per joule = units per second / watts</code>
+          <Formula
+            name="Edge: work per joule"
+            tex={String.raw`\begin{aligned} &\text{units per joule} \\ &= \frac{\text{units per second}}{\text{watts}} \end{aligned}`}
+            source={<Cite id="F08-83">the edge formula</Cite>}
+          />
           <Box variant="p">
             A watt is one joule of energy per second. Dividing a rate by watts therefore leaves units per joule: how
             much work the machine does with a fixed amount of energy, which is the question for anything that runs

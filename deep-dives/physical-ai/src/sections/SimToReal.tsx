@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Toy, Derived } from '../components/Cite';
 import { AnimatedFigure } from '../components/Figure';
+import { Formula, M } from '../components/Math';
 import { ARM, TASK_STORY, SIM_TASK, SIM_TASK_PLAIN, SIM_TASK_GAP } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
@@ -318,6 +319,33 @@ export function SimToReal() {
             policy outside the range it trained on is back in the opening scene.
           </Box>
           <Box variant="p">
+            Randomisation also changes what training maximises. In one fixed simulator, reinforcement learning
+            looks for the policy that collects the most reward in that one world (section 8). With randomisation the
+            score is that reward averaged over every world the simulator can draw. Write{' '}
+            <M>{String.raw`\mu`}</M> for the list of randomised parameters drawn for one episode and{' '}
+            <M>{String.raw`\rho_\mu`}</M> for the distribution they are drawn from, which is the set of ranges.{' '}
+            <M>{String.raw`\pi`}</M> is the policy. <M>{String.raw`\tau`}</M> is one episode&apos;s trajectory: the
+            states <M>s_t</M> and actions <M>a_t</M> over <M>T</M> steps, whose likelihood{' '}
+            <M>{String.raw`p(\tau \mid \pi, \mu)`}</M> depends on both the policy and the drawn world.{' '}
+            <M>{String.raw`r(s_t, a_t)`}</M> is the reward at step <M>t</M>, and{' '}
+            <M>{String.raw`\mathbb{E}`}</M> is an average over whatever is written beneath it. Training looks for
+            the policy that makes this largest:
+          </Box>
+          <Formula
+            name="Domain randomisation objective: expected return over sampled simulator parameters"
+            tex={String.raw`\small \mathop{\mathbb{E}}_{\mu \sim \rho_\mu} \left[ \mathop{\mathbb{E}}_{\tau \sim p(\tau \mid \pi, \mu)} \left[ \sum_{t=0}^{T-1} r(s_t, a_t) \right] \right]`}
+            source={<Cite id="F11-202">Peng et al., dynamics randomization paper v3, section IV</Cite>}
+          />
+          <Box variant="p">
+            The sum is the reward one episode collects. The inner average is the expected reward in one world{' '}
+            <M>{String.raw`\mu`}</M>, which is all that plain reinforcement learning maximises. The outer average
+            runs over worlds, weighted by <M>{String.raw`\rho_\mu`}</M>. A policy that scores highly at one
+            friction value and poorly elsewhere now loses to one that scores well across the range, and the range
+            is the designer&apos;s choice. In practice the outer average is taken by sampling: one draw of{' '}
+            <M>{String.raw`\mu`}</M> at the start of each episode, held fixed until it ends.{' '}
+            <Cite id="F11-202">Peng et al., dynamics randomization paper v3, sections IV and IV-C</Cite>
+          </Box>
+          <Box variant="p">
             The simulated task this dive follows is <code>{SIM_TASK}</code>, the reinforcement-learning recipe of
             section 8. Its code randomises three groups of things at the start of every episode, one group for each
             part of the gap.
@@ -442,15 +470,17 @@ export function SimToReal() {
           </Box>
           <Box variant="p">
             First, what is being adjusted. The simulator models each of the {ARM}&apos;s servos as a spring and a
-            brake pulling the joint toward its commanded angle. Write <code>target</code> for the commanded angle,{' '}
-            <code>angle</code> for the joint&apos;s current angle and <code>speed</code> for how fast it is turning.{' '}
-            <code>kp</code> is the position gain, which the model file calls stiffness, and <code>kd</code> is the
-            damping. They are the P and D gains of section 3: PD (proportional-derivative) control pushes in
+            brake pulling the joint toward its commanded angle. Write <M>{String.raw`q_{\text{target}}`}</M> for the commanded
+            angle, <M>q</M> for the joint&apos;s current angle and <M>{String.raw`\dot{q}`}</M> for how fast it is
+            turning. <M>k_p</M> is the position gain, which the model file calls stiffness, and{' '}
+            <M>k_d</M> is the damping. They are the P and D gains of section 3: PD (proportional-derivative) control pushes in
             proportion to the error and brakes in proportion to the speed.
           </Box>
-          <Box variant="p">
-            <code>torque = kp x (target - angle) - kd x speed</code>
-          </Box>
+          <Formula
+            name="PD servo model"
+            tex={String.raw`\mathrm{torque} = k_p\,(q_{\text{target}} - q) - k_d\,\dot{q}`}
+            source={<Cite id="F06-31">MuJoCo Playground, SO-101 constant.py</Cite>}
+          />
           <Box variant="p">
             The first term is the spring: the further the joint is from its goal, the harder the motor turns it. The
             second is the brake: the faster the joint moves, the more torque is taken away. The result is capped at what the motor can deliver.{' '}
@@ -517,20 +547,22 @@ export function SimToReal() {
             Now the fit. A person drives the real arm through its range with the leader arm for one episode, a
             teleoperated excitation episode: motion chosen so that every parameter leaves a mark in the data. The
             script logs the commands and the measured joint angles. It then replays the commands in the simulator
-            and scores the mismatch. Write <code>theta</code> for the list of 24 parameters,{' '}
-            <code>q_real[t, j]</code> for the measured angle of joint <code>j</code> at time <code>t</code>, and{' '}
-            <code>q_sim[t, j](theta)</code> for the angle the simulator produces at the same moment when it runs
-            with <code>theta</code>.
+            and scores the mismatch. Write <M>{String.raw`\theta`}</M> for the list of 24 parameters,{' '}
+            <M>{String.raw`q^{\text{real}}_{t,j}`}</M> for the measured angle of joint <M>j</M> at time <M>t</M>,
+            and <M>{String.raw`q^{\text{sim}}_{t,j}(\theta)`}</M> for the angle the simulator produces at the same
+            moment when it runs with <M>{String.raw`\theta`}</M>.
           </Box>
-          <Box variant="p">
-            <code>L(theta) = sum over t and j of (q_real[t, j] - q_sim[t, j](theta))^2</code>
-          </Box>
+          <Formula
+            name="System identification: squared tracking mismatch"
+            tex={String.raw`L(\theta) = \sum_{t,\,j} \bigl( q^{\text{real}}_{t,j} - q^{\text{sim}}_{t,j}(\theta) \bigr)^2`}
+            source={<Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>}
+          />
           <Box variant="p">
             The bracket is how far apart the real and the simulated joint are at one moment. Squaring makes large
-            misses count most. The sum runs over the whole episode and all 6 joints, so <code>L</code> is one number
-            for how badly the simulated arm tracks the real one. The script finds the <code>theta</code> that makes
+            misses count most. The sum runs over the whole episode and all 6 joints, so <M>L</M> is one number
+            for how badly the simulated arm tracks the real one. The script finds the <M>{String.raw`\theta`}</M> that makes
             it smallest with Gauss-Newton least squares, a method that repeats one move: nudge each parameter,
-            simulate again, see how the mismatch changes, and step all 24 toward a smaller <code>L</code>. From the
+            simulate again, see how the mismatch changes, and step all 24 toward a smaller <M>L</M>. From the
             same log it also estimates the transport delay of the serial link, the timing part of the gap.{' '}
             <Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>
           </Box>

@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
+import { Formula } from '../components/Math';
 import { Placeholder, Snippet } from '../components/Blocks';
 import { linear } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
@@ -742,9 +743,11 @@ export function OnRobot() {
             round trip from encoding through network and inference to decoding; and <code>fps</code>, the action
             rate.
           </Box>
-          <Box variant="p">
-            <code>effective refill = max(refill_seconds, recent maximum turnaround + 1 / fps)</code>
-          </Box>
+          <Formula
+            name="When the client asks for the next chunk"
+            tex={String.raw`\small \begin{aligned} &\text{effective refill} = \max(\text{set},\ \text{floor}) \\ &\text{set} = \texttt{refill\_seconds} \\ &\text{floor} = \text{recent maximum turnaround} \\ &\qquad\quad + 1 / \texttt{fps} \end{aligned}`}
+            source={<Cite id="F07-26">LeRobot remote inference guide, parameters</Cite>}
+          />
           <Box variant="p">
             The first term is your preference. The second is a floor taken from measurement: the slowest recent round
             trip plus one tick of margin. At 30 Hz with a 149 ms turnaround the floor is 0.149 + 0.033 = 0.182 s,

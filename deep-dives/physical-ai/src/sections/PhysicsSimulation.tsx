@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
+import { Formula, M } from '../components/Math';
 import { log10Scale } from '../lib/scale';
 import { ARM, SIM_TASK, SIM_TASK_PLAIN, SIM_TASK_GAP } from '../lib/task';
 
@@ -567,46 +568,67 @@ export function PhysicsSimulation() {
           <Box variant="p">
             The third group carries the weight. It finds the joint accelerations that agree with every force on the
             arm and every contact rule at once. Underneath is the school formula, force equals mass times
-            acceleration, written for a machine made of joints. Its symbols:
+            acceleration, written for a machine made of joints. Its symbols, in the notation of MuJoCo&apos;s
+            documentation:
           </Box>
           <ul style={LIST}>
             <li>
-              <code>qacc</code>: the acceleration of every joint, the unknown the step is after.
+              <M>{String.raw`\dot{v}`}</M>: the acceleration of every joint, the unknown the step is after. The dot
+              means &quot;rate of change of&quot;, and <M>v</M> is the joint velocities. MuJoCo stores the result as{' '}
+              <code>qacc</code>.
             </li>
             <li>
-              <code>M</code>: the inertia matrix, the &quot;mass&quot; of a jointed body. It is a table and not a
-              single number because the links carry each other: accelerating the shoulder also has to move the
-              forearm.
+              <M>M</M>: the inertia matrix, the &quot;mass&quot; of a jointed body. It is a table and not a single
+              number because the links carry each other: accelerating the shoulder also has to move the forearm.
             </li>
             <li>
-              <code>tau</code>: the torques applied at the joints, from the motors and from passive effects such as
-              damping.
+              <M>{String.raw`\tau`}</M>: the forces applied at the joints, from the motors and from passive effects
+              such as damping.
             </li>
             <li>
-              <code>c</code>: the pull of gravity and of the arm&apos;s own motion, such as a swinging forearm tugging
-              on the shoulder.
+              <M>c</M>: the bias force, the pull of gravity and of the arm&apos;s own motion, such as a swinging
+              forearm tugging on the shoulder.
             </li>
             <li>
-              <code>f</code> and <code>J</code>: <code>f</code> is the contact forces, also unknown. <code>J</code>,
-              the constraint Jacobian, is a table that says how far each joint&apos;s motion moves each contact
-              point; flipped (<code>J^T</code>), it converts a force at a contact point into torques at the joints.
+              <M>f</M> and <M>J</M>: <M>f</M> is the contact forces, also unknown. <M>J</M>, the constraint
+              Jacobian, is a table that says how far each joint&apos;s motion moves each contact point; transposed
+              (<M>{String.raw`J^T`}</M>), it converts a force at a contact point into forces at the joints.
             </li>
           </ul>
+          <Formula
+            name="Equations of motion in continuous time"
+            tex={String.raw`M \dot{v} + c = \tau + J^T f`}
+            source={<Cite id="F11-200">MuJoCo docs, Computation chapter, equation of motion</Cite>}
+          />
           <Box variant="p">
-            <code>M x qacc = tau - c + J^T x f</code>
+            On the left, <M>{String.raw`M \dot{v}`}</M> is mass times acceleration and <M>c</M> is what gravity and
+            motion demand before anything else is applied. On the right, <M>{String.raw`\tau`}</M> is what the
+            motors and damping contribute; with nothing touching, that settles the equation and{' '}
+            <M>{String.raw`\dot{v}`}</M> follows directly. <M>{String.raw`J^T f`}</M> is where the contacts enter.
+            The forces <M>f</M> are not known in advance, so the constraint solve searches for the <M>f</M> whose
+            resulting <M>{String.raw`\dot{v}`}</M> breaks no rule. That search is the small solve at the centre of
+            every step, and it grows with the number of contacts.
           </Box>
           <Box variant="p">
-            The left side is mass times acceleration. On the right, <code>tau - c</code> is everything the motors,
-            damping, gravity and motion contribute; with nothing touching, that is the whole right side and{' '}
-            <code>qacc</code> follows directly. <code>J^T x f</code> is where the contacts enter. The forces{' '}
-            <code>f</code> are not known in advance, so the constraint solve searches for the <code>f</code> whose
-            resulting <code>qacc</code> breaks no rule. That search is the small solve at the centre of every step,
-            and it grows with the number of contacts. The equation is the standard textbook form.
+            The integrator then turns that acceleration into the next state, the two lines in the figure&apos;s
+            last box. Write <M>q_t</M> for the joint positions and <M>v_t</M> for the joint velocities at time{' '}
+            <M>t</M>, <M>{String.raw`a_t = \dot{v}`}</M> for the acceleration just found, and <M>h</M> for the
+            timestep. The form MuJoCo&apos;s documentation calls standard in physics simulation is semi-implicit
+            Euler:
           </Box>
+          <Formula
+            name="Semi-implicit Euler integration"
+            tex={String.raw`\begin{aligned} v_{t+h} &= v_t + h\,a_t \\ q_{t+h} &= q_t + h\,v_{t+h} \end{aligned}`}
+            source={<Cite id="F11-201">MuJoCo docs, Computation chapter, numerical integration</Cite>}
+          />
           <Box variant="p">
-            The integrator then applies the two lines in the figure&apos;s last box. Variants of that arithmetic
-            differ in how large a timestep they tolerate. MuJoCo recommends its <code>implicitfast</code> integrator
-            for the best trade-off of stability and performance.{' '}
+            The first line moves the speed by the acceleration times the timestep. The second moves the position by
+            the new speed <M>{String.raw`v_{t+h}`}</M>, where the plain version would use the old one; that single
+            change is the &quot;semi-implicit&quot; part. In the figure&apos;s illustration the elbow goes from{' '}
+            <Toy>1.000</Toy> to <Toy>1.000 + 0.005 x 2.0 = 1.010</Toy> rad/s, then from <Toy>0.50000</Toy> to{' '}
+            <Toy>0.50000 + 0.005 x 1.010 = 0.50505</Toy> rad. Variants of that arithmetic differ in how large a
+            timestep they tolerate. MuJoCo recommends its <code>implicitfast</code> integrator for the best
+            trade-off of stability and performance.{' '}
             <Cite id="F06-13">MuJoCo docs, choosing timestep and integrator</Cite> The base scene the pick-cube task
             builds on selects it. <Cite id="F06-106">MuJoCo Playground, plane.xml option element</Cite>
           </Box>

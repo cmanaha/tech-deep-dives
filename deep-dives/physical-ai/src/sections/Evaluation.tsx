@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Toy, Derived } from '../components/Cite';
 import { Figure } from '../components/Figure';
+import { Formula, M } from '../components/Math';
 import { linear, ticks } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
 
@@ -327,18 +328,20 @@ export function Evaluation() {
             The validation loss is an open-loop score. Take a recorded demonstration the policy was not trained on.
             For each frame, show the policy the recorded camera image and joint angles, and compare the action it
             predicts with the action the person took at that moment. The usual summary is the MSE (mean squared
-            error), the average squared distance between the two. Write <code>T</code> for the number of frames,{' '}
-            <code>a_pred[t]</code> for the policy&apos;s action at frame <code>t</code> and <code>a_demo[t]</code> for
-            the recorded one; on this arm each is a list of six joint targets.
+            error), the average squared distance between the two. Write <M>T</M> for the number of frames,{' '}
+            <M>{String.raw`a^{\text{pred}}_t`}</M> for the policy&apos;s action at frame <M>t</M> and{' '}
+            <M>{String.raw`a^{\text{demo}}_t`}</M> for the recorded one; on this arm each is a list of six joint
+            targets. The double bars measure the distance between two such lists.
           </Box>
-          <Box variant="p">
-            <code>MSE = (1 / T) x sum over t of |a_pred[t] - a_demo[t]|^2</code>
-          </Box>
+          <Formula
+            name="Open-loop score: mean squared error against the recording"
+            tex={String.raw`\mathrm{MSE} = \frac{1}{T} \sum_{t=1}^{T} \bigl\lVert a^{\text{pred}}_t - a^{\text{demo}}_t \bigr\rVert^2`}
+          />
           <Box variant="p">
             The difference inside the bars is how far the policy&apos;s answer is from the person&apos;s at one frame.
-            Squaring makes large misses count most, and dividing the sum by <code>T</code> averages over the
-            recording. The formula has no term for what happens next: frame <code>t + 1</code> comes from the recording
-            whatever the policy answered at frame <code>t</code>. The policy is never asked what it would do after a mistake of its own, which is the compounding error
+            Squaring makes large misses count most, and dividing the sum by <M>T</M> averages over the
+            recording. The formula has no term for what happens next: frame <M>t + 1</M> comes from the recording
+            whatever the policy answered at frame <M>t</M>. The policy is never asked what it would do after a mistake of its own, which is the compounding error
             of section 4, Learning From Demonstrations.
           </Box>
           <Box variant="p">
@@ -360,14 +363,14 @@ export function Evaluation() {
           <Box variant="p">
             To judge a cheap score, measure several policies on real robots and with the cheap score, and ask
             whether the two lists agree. The usual yardstick is the Pearson correlation{' '}
-            <code>r</code>, a number between -1 and 1 that says how closely two lists rise and fall together. At 1
+            <M>r</M>, a number between -1 and 1 that says how closely two lists rise and fall together. At 1
             the cheap score predicts the real one exactly and at 0 it says nothing.
           </Box>
           <Box variant="p">
             The paper that established the point is SIMPLER, from 2024, cited here as history. Its authors scored a
             set of policies on real robots, by validation action MSE, and in closed loop in a simulator built to
             match the real camera view. They report that ranking the policies by MSE gave a
-            Pearson <code>r</code> of 0.308 with real-world success on average, against 0.924 for the closed-loop
+            Pearson <M>r</M> of 0.308 with real-world success on average, against 0.924 for the closed-loop
             simulated score. In their words, &quot;validation MSE is not a good proxy for a policy&apos;s real-world
             performance&quot;. <Cite id="F06-81">SIMPLER paper, section VI and Table I</Cite>
           </Box>
@@ -421,8 +424,8 @@ export function Evaluation() {
           <Box variant="p">
             <strong>What it can tell you.</strong> Which of several policies is better, when the simulator is close
             to the bench. That is the SIMPLER authors&apos; 0.924. <Cite id="F06-81">SIMPLER paper, Table I</Cite> The PolaRiS authors, who rebuild a real scene
-            from a scan, report an average Pearson correlation of <code>r</code> = 0.9 with real results across six
-            paired environments, and <code>r</code> = 0.81 in the worst one. The figure rests on four policies, each first fine-tuned briefly on simulated demonstrations.{' '}
+            from a scan, report an average Pearson correlation of <M>r</M> = 0.9 with real results across six
+            paired environments, and <M>r</M> = 0.81 in the worst one. The figure rests on four policies, each first fine-tuned briefly on simulated demonstrations.{' '}
             <Cite id="F06-83">PolaRiS paper, introduction and sections 5.1 and 5.2</Cite>
           </Box>
           <Box variant="p">
@@ -476,7 +479,7 @@ export function Evaluation() {
           </Box>
           <Box variant="p">
             <strong>What it can and cannot tell you.</strong> Reported agreement with real results runs from{' '}
-            <code>r</code> = 0.78 for WorldGym to 0.983 for HF-WM (two more evaluators of this kind) and 0.989 for RoboWorld, and each figure comes from
+            <M>r</M> = 0.78 for WorldGym to 0.983 for HF-WM (two more evaluators of this kind) and 0.989 for RoboWorld, and each figure comes from
             the authors of the tool it describes. When the PolaRiS authors tried someone else&apos;s open-source
             video model, they found it &quot;often produces heavy hallucinations during object interaction&quot; and
             mis-ranked the policies.{' '}
@@ -536,15 +539,16 @@ export function Evaluation() {
           <ExpandableSection headerText="Redo the interval for 40 of 50 by hand">
             <SpaceBetween size="s">
               <Box variant="p">
-                Write <code>p</code> for the observed rate, here <Derived>0.80</Derived>, <code>n</code> for the
-                number of trials, here 50, and <code>z</code> for the width of the net: <Derived>1.96</Derived> for a
-                95% interval. The Wilson interval is a centre plus or minus a half-width.
+                Write <M>k</M> for the number of successes, here 40, <M>n</M> for the number of trials, here 50,
+                and <M>p</M> for the observed rate, here <Derived>0.80</Derived>. <M>z</M> is the width of the net:{' '}
+                <Derived>1.96</Derived> for a 95% interval. The Wilson score interval is a centre plus or minus a
+                half-width.
               </Box>
-              <Box variant="p">
-                <code>centre = (p + z^2 / 2n) / (1 + z^2 / n)</code>
-                <br />
-                <code>half-width = z x sqrt(p x (1 - p) / n + z^2 / 4n^2) / (1 + z^2 / n)</code>
-              </Box>
+              <Formula
+                name="Success rate and its Wilson score interval"
+                tex={String.raw`\begin{aligned} p &= \frac{k}{n} \\[4pt] \text{centre} &= \frac{p + \dfrac{z^2}{2n}}{1 + \dfrac{z^2}{n}} \\[4pt] \text{half-width} &= \frac{z \sqrt{\dfrac{p(1-p)}{n} + \dfrac{z^2}{4n^2}}}{1 + \dfrac{z^2}{n}} \end{aligned}`}
+                source={<Cite id="F11-203">LeRobot v0.7.0, eval_stats.py, wilson_interval()</Cite>}
+              />
               <Box variant="p">
                 <code>
                   <Derived>centre = (0.80 + 0.0384) / 1.0768 = 0.7786</Derived>
@@ -560,8 +564,8 @@ export function Evaluation() {
               </Box>
               <Box variant="p">
                 That is 67.0% to 88.8%. <Cite id="F06-97">our arithmetic</Cite> The centre is the observed rate pulled slightly toward one half. The{' '}
-                <code>p x (1 - p) / n</code> term is the spread of a coin-toss count, and it carries the lesson:
-                the half-width shrinks with the square root of <code>n</code>, so halving it takes four times the
+                <M>{String.raw`p(1-p)/n`}</M> term is the spread of a coin-toss count, and it carries the lesson:
+                the half-width shrinks with the square root of <M>n</M>, so halving it takes four times the
                 trials. LeRobot&apos;s code prefers this interval
                 because it &quot;keeps its nominal coverage at small <code>n_trials</code> and at rates near 0% or
                 100%, which is where robot evaluations live&quot;.{' '}
@@ -609,7 +613,7 @@ export function Evaluation() {
           </Figure>
           <Box variant="p">
             The ground is where the section began: by the SIMPLER authors&apos; 2024 figures, ranking policies by
-            open-loop error gave <code>r</code> = 0.308 with real success, against 0.924 once the loop was closed in
+            open-loop error gave <M>r</M> = 0.308 with real success, against 0.924 once the loop was closed in
             a matched simulator. <Cite id="F06-81">SIMPLER paper, Table I</Cite> Each rung above the ground loads a
             different part of the machine.
           </Box>

@@ -10,6 +10,7 @@ import FormField from '@cloudscape-design/components/form-field';
 import Select from '@cloudscape-design/components/select';
 import { Cite } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
+import { Formula, M } from '../components/Math';
 import { GpuEngines, ENGINES_BY_WORKLOAD, GPU_WORKLOADS } from '../components/GpuEngines';
 import type { GpuWorkload } from '../components/GpuEngines';
 import { linear } from '../lib/scale';
@@ -519,15 +520,16 @@ export function Rendering() {
             <Cite id="F06-24">MuJoCo Warp docs and render benchmark</Cite>
           </Box>
           <Box variant="p">
-            Training multiplies that. With <code>E</code> environments, <code>C</code> cameras in each, and images{' '}
-            <code>W</code> pixels wide and <code>H</code> pixels high, one step sends at least
+            Training multiplies that. With <M>E</M> environments, <M>C</M> cameras in each, and images <M>W</M>{' '}
+            pixels wide and <M>H</M> pixels high, one step sends at least <M>{String.raw`N_{\text{rays}}`}</M> rays:
           </Box>
+          <Formula
+            name="Camera rays per simulation step (this page's count, one ray per pixel)"
+            tex={String.raw`N_{\text{rays}} = E \times C \times W \times H`}
+          />
           <Box variant="p">
-            <code>rays per step = E x C x W x H</code>
-          </Box>
-          <Box variant="p">
-            <code>E</code> carries the parallel copies that reinforcement learning wants, <code>C</code> the
-            cameras the policy reads, and <code>W x H</code> the image size. For 8,192 environments with one 64 x
+            <M>E</M> carries the parallel copies that reinforcement learning wants, <M>C</M> the cameras the policy
+            reads, and <M>{String.raw`W \times H`}</M> the image size. For 8,192 environments with one 64 x
             64 camera each, that is 8,192 x 64 x 64 = 33.6 million rays per step, one per pixel.{' '}
             <Cite id="F06-103">Isaac Lab v3.0.0 camera_cfg.py and benchmark README</Cite> Every term multiplies:
             the MuJoCo Warp project says its renderer &quot;scales linearly with resolution and number of

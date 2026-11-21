@@ -8,6 +8,7 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import Link from '@cloudscape-design/components/link';
 import { Cite, Derived } from '../components/Cite';
 import { Figure } from '../components/Figure';
+import { Formula } from '../components/Math';
 import { Placeholder } from '../components/Blocks';
 import { ARM, TASK_STORY } from '../lib/task';
 
@@ -461,9 +462,11 @@ export function Measurements() {
             is demand against supply: the bytes one unit of work must pull from memory, times the units per second
             achieved, compared with what the memory can deliver to that core.
           </Box>
-          <Box variant="p">
-            <code>demand (bytes per second) = bytes read per unit of work x units of work per second</code>
-          </Box>
+          <Formula
+            name="Memory demand, in bytes per second"
+            tex={String.raw`\small \begin{aligned} &\text{demand} = \\ &\quad \text{bytes read per unit of work} \\ &\quad \times\ \text{units of work per second} \end{aligned}`}
+            source={<Cite id="F08-63">our arithmetic on the policy stand-in</Cite>}
+          />
           <ul style={LIST}>
             <li>
               Bytes per unit. The stand-in holds six weight matrices of 1024 by 1024 float32 values at 4 bytes each:

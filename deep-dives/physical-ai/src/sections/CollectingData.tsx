@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite } from '../components/Cite';
 import { Figure } from '../components/Figure';
+import { M } from '../components/Math';
 import { ARM, TASK_STORY } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
@@ -580,7 +581,7 @@ export function CollectingData() {
             <Cite id="F05-37">LeRobot video_utils.py, decoder docstrings</Cite>
           </Box>
           <Box variant="p">
-            GOP (group of pictures) size is the spacing of the keyframes: a keyframe every <code>g</code> frames.{' '}
+            GOP (group of pictures) size is the spacing of the keyframes: a keyframe every <M>g</M> frames.{' '}
             <Cite id="F05-36">LeRobot video encoding parameters, tuning table</Cite> A film is watched in order, so
             keyframes can be far apart and each frame is decoded once on the way through. A trainer reads video the
             other way round: a policy asks for a few frames at random places in the dataset.{' '}
