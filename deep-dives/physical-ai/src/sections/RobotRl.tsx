@@ -422,7 +422,7 @@ export function RobotRl() {
           <Formula
             name="Recap advantage and its better-than-expected label"
             tex={String.raw`\begin{aligned} A_t &= R_t - V(o_t, \ell) \\ I_t &= \big( A_t > \epsilon_\ell \big) \end{aligned}`}
-            source={<Cite id="F04-62">Recap paper, section IV-B, in this page&apos;s symbols</Cite>}
+            source={<><Cite id="F04-62">Recap paper, section IV-B, in this page&apos;s symbols</Cite> <Cite id="F11-6">Recap paper, appendix A-F</Cite></>}
           />
           <Box variant="p">
             <M>V</M> carries &quot;how well is this going&quot;. <M>{String.raw`A_t`}</M>, the advantage, carries

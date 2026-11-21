@@ -623,7 +623,9 @@ export function VisionLanguageAction() {
             <M>{String.raw`\mathbb{E}`}</M> is an average over the two pools named under it:{' '}
             <M>{String.raw`p(\mathbf{A}_t \mid \mathbf{o}_t)`}</M>, the demonstrated chunks that go with an
             observation, and <M>{String.raw`q(\mathbf{A}_t^\tau \mid \mathbf{A}_t)`}</M>, the noisy blends of
-            one chunk. Training minimises:
+            one chunk. The superscript on <M>L</M> says this is the loss at one flow time; training draws a new{' '}
+            <M>{String.raw`\tau`}</M> for every example, more often near the noisy end.{' '}
+            <Cite id="F11-5">pi0 paper, section IV</Cite> Training minimises:
           </Box>
           <Formula
             name="pi0 training loss (conditional flow matching)"

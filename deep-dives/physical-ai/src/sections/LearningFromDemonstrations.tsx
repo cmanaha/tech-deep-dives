@@ -455,8 +455,9 @@ export function LearningFromDemonstrations() {
             takes in one task and call that <M>T</M>, the horizon. Let <M>{String.raw`\epsilon`}</M> be the
             probability that the policy disagrees with the expert on one decision, measured on situations the
             expert visited: the average loss of the formula above, with a loss of 1 for a disagreement and 0
-            otherwise. Write <M>{String.raw`J(\pi)`}</M> for the mistakes the policy is expected to make over the
-            whole task and <M>{String.raw`J(\pi^*)`}</M> for the expert&apos;s own. Then:
+            otherwise. Write <M>{String.raw`J(\pi)`}</M> for the total cost the policy is expected to run up over
+            the whole task, where each step costs between 0 and 1 (count 1 for a step that goes wrong), and{' '}
+            <M>{String.raw`J(\pi^*)`}</M> for the expert&apos;s total. Then:
           </Box>
           <Formula
             name="Compounding-error bound for behaviour cloning"
@@ -468,8 +469,8 @@ export function LearningFromDemonstrations() {
             <M>T</M> counts the chances to make a first mistake: with <M>T</M> decisions and no feedback between
             them, <M>{String.raw`T \epsilon`}</M> mistakes are expected. The second factor of <M>T</M> is what
             one mistake can cost: once off the demonstrated path the policy may be wrong at every step that
-            remains, and up to <M>T</M> remain. The bound is a worst case. The paper shows
-            that problems exist where it is reached, and it is a ceiling, with no claim about what a given arm will
+            remains, and up to <M>T</M> remain. The bound is a worst case. The paper notes
+            that problems exist where it is reached, citing earlier work, and it is a ceiling, with no claim about what a given arm will
             do.{' '}
             <Cite id="F02-2">Ross, Gordon and Bagnell, section 1</Cite>{' '}
             <Cite id="F02-3">Ross, Gordon and Bagnell, theorem 2.1</Cite>
@@ -543,8 +544,9 @@ export function LearningFromDemonstrations() {
             Back to the toy episode. LeRobot&apos;s ACT also defaults to chunks of 100 actions, which at the{' '}
             {ARM}&apos;s 30 Hz is 3.33 s of motion per decision. The <Derived>600</Derived>-tick episode becomes{' '}
             <Derived>600</Derived> / 100 = 6 decisions. With the same <M>{String.raw`\epsilon`}</M> the ceiling is 6 x 6 x{' '}
-            <Toy>0.001</Toy> = <Derived>0.036</Derived>, which is 100 x 100 = <Derived>10,000</Derived> times
-            lower. Keeping <M>{String.raw`\epsilon`}</M> the same is generous, since choosing a whole chunk is harder than
+            <Toy>0.001</Toy> = <Derived>0.036</Derived> wrong decisions. A wrong decision now spoils up to 100 ticks,
+            so in ticks the ceiling is <Derived>3.6</Derived>, which is <Derived>100</Derived> times lower than{' '}
+            <Derived>360</Derived>. Keeping <M>{String.raw`\epsilon`}</M> the same is generous, since choosing a whole chunk is harder than
             choosing one action, and the bound is still only a ceiling. The measured evidence is the ablation: 1%
             to 44%.{' '}
             <Cite id="F02-11">LeRobot configuration_act.py</Cite>{' '}
@@ -653,7 +655,8 @@ export function LearningFromDemonstrations() {
             centred on zero. <M>{String.raw`D_{\mathrm{KL}}`}</M> is the KL (Kullback-Leibler) divergence, a
             number for how far one probability distribution is from another, zero when they match.{' '}
             <M>{String.raw`\lVert \cdot \rVert_1`}</M> is the L1 distance from the previous block, and{' '}
-            <M>{String.raw`\beta`}</M> is a weight you set.
+            <M>{String.raw`\beta`}</M> is a weight you set. The bars add the absolute differences up; LeRobot&apos;s
+            code takes their mean, and its default <M>{String.raw`\beta`}</M> is set against that mean.
           </Box>
           <Formula
             name="ACT training loss"
@@ -680,7 +683,7 @@ export function LearningFromDemonstrations() {
             the same game with the answer known: take a demonstrated chunk, add a known amount of noise, and ask
             the network what was added. Every run starts from different noise, so different runs settle on
             different modes, and each result is one whole way of doing the task.{' '}
-            <Cite id="F02-14">Diffusion Policy paper, sections 3.1 and 3.2</Cite>
+            <Cite id="F02-14">Diffusion Policy paper, sections 2.1 to 2.3</Cite>
           </Box>
           <Box variant="p">
             The training loss says the same in symbols. <M>{String.raw`O_t`}</M> is the observation at tick{' '}
