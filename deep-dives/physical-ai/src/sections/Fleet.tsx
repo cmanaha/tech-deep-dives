@@ -6,6 +6,7 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Derived } from '../components/Cite';
 import { AnimatedFigure } from '../components/Figure';
+import { FLEET_LOOP_STEPS, FleetLoop } from '../components/figures/FleetLoop';
 import { Placeholder, Snippet } from '../components/Blocks';
 import { ARM, TASK_STORY } from '../lib/task';
 
@@ -234,91 +235,6 @@ function RolloutDiagram({ step, reduced }: { step: number; reduced: boolean }) {
 
           {/* The travelling dot: the new policy version. */}
           <circle cx={0} cy={0} r={7} fill={EMPHASIS} style={moved(366, RO_DOT_Y[step], reduced)} />
-        </g>
-      </svg>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 18.2 (animated): episodes travelling back, and the loop closing   */
-/* ------------------------------------------------------------------------ */
-
-const BACK_STEPS = [
-  'The arm finishes an episode. Its rows and video sit as files on the disk beside the arm.',
-  'At the episode boundary an upload component sends the files to Amazon S3 in parts.',
-  'In the bucket they join the episodes from every other arm: the fleet writes one dataset.',
-  'Curation and training run on it. In the one published fleet loop cited here, an episode reached the learner in 41 s at the median.',
-  'Training publishes a new policy version. In that same loop a new model reached a robot in 38 s at the median.',
-  'The new version returns through the staged rollout of the previous figure, and the next episodes are recorded under it. The loop has closed.',
-];
-
-const BK_X = 12;
-const BK_W = 330;
-const BK_BOXES: FlowBox[] = [
-  { y: 10, h: 58, title: 'Device disk beside the arm', fill: ROBOT_FILL, ink: ROBOT_INK },
-  { y: 90, h: 58, title: 'Upload component', fill: STORE_FILL, ink: STORE_INK },
-  { y: 170, h: 58, title: 'Amazon S3: the dataset', fill: STORE_FILL, ink: STORE_INK },
-  { y: 250, h: 58, title: 'Curation and training', fill: TENSOR_FILL, ink: TENSOR_INK },
-  { y: 330, h: 58, title: 'New policy version published', fill: '#ffffff', ink: NEUTRAL_INK },
-];
-const BK_SUBS = [
-  'one episode: Parquet rows + MP4 video',
-  'sends the files at the episode boundary',
-  'episodes from every arm in the fleet',
-  'one fleet, median: 41 s arm to learner',
-  'one fleet, median: 38 s back to a robot',
-];
-const BK_DOT_Y = [39, 119, 199, 279, 359, 39];
-const BK_ACTIVE = [0, 1, 2, 3, 4, 0];
-
-function EpisodesBackDiagram({ step, reduced }: { step: number; reduced: boolean }) {
-  const closed = step === 5;
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 440" role="img" aria-labelledby="fleet-back-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="fleet-back-title">Episodes travelling from the device disk to Amazon S3 and training, and a new policy returning</title>
-        <desc>
-          Five boxes from top to bottom: the device disk, an upload component, the dataset in Amazon S3, curation and training,
-          and a new policy version. A dot moves down one box per step. In the last step a line runs up the right side from the
-          new policy version back to the device.
-        </desc>
-        <rect x={0} y={0} width={400} height={440} fill="#fbfbfd" />
-        <g fontFamily="sans-serif">
-          {BK_BOXES.map((box, i) => (
-            <g key={box.title}>
-              <BoxFrame box={box} x={BK_X} w={BK_W} active={BK_ACTIVE[step] === i} />
-              <text x={BK_X + 12} y={box.y + 40} fontSize={12} fill={INK}>
-                {BK_SUBS[i]}
-              </text>
-            </g>
-          ))}
-          <DownArrow x={177} y0={68} y1={90} />
-          <DownArrow x={177} y0={148} y1={170} />
-          <DownArrow x={177} y0={228} y1={250} />
-          <DownArrow x={177} y0={308} y1={330} />
-
-          {/* The return path up the right side: drawn faint, then emphasised when the loop closes. */}
-          <path
-            d="M342 359 H372 V39 H352"
-            fill="none"
-            stroke={closed ? EMPHASIS : NEUTRAL_INK}
-            strokeWidth={closed ? 2.5 : 1.2}
-            strokeDasharray={closed ? undefined : '5 4'}
-          />
-          <path d="M352 33 L352 45 L342 39 Z" fill={closed ? EMPHASIS : NEUTRAL_INK} />
-
-          <text x={200} y={412} fontSize={12} textAnchor="middle" fill={INK} style={shown(!closed, reduced)}>
-            dashed line: the way back to the arm
-          </text>
-          <text x={200} y={412} fontSize={12} fontWeight={700} textAnchor="middle" fill={EMPHASIS} style={shown(closed, reduced)}>
-            back to the arm through the staged rollout
-          </text>
-          <text x={200} y={428} fontSize={12} textAnchor="middle" fill={INK} style={shown(closed, reduced)}>
-            the next episodes are recorded under the new policy
-          </text>
-
-          <circle cx={0} cy={0} r={7} fill={EMPHASIS} style={moved(318, BK_DOT_Y[step], reduced)} />
         </g>
       </svg>
     </div>
@@ -1067,18 +983,19 @@ export function Fleet() {
           </Box>
           <AnimatedFigure
             name="episodes back to S3 and the loop closing"
-            steps={BACK_STEPS}
+            steps={FLEET_LOOP_STEPS}
             intervalMs={2800}
             cites="F07-102 F07-108 F07-109 F07-172"
             caption={
               <>
-                Read from the top; the blue dot is one episode, then the policy trained on it. The two latencies are
-                author reported, from one 16-robot run of the authors&apos; own system on one site. The boxes are a
-                schematic, not measured.
+                Follow the episode files up from three arms into the bucket, across to training, and the new policy
+                version back down to the canary group. The two blue spans are drawn to one scale and are author
+                reported, from one 16-robot run of the authors&apos; own system on one site. The rest is a schematic,
+                not measured: the number of arms and the version numbers are invented.
               </>
             }
           >
-            {(step, reduced) => <EpisodesBackDiagram step={step} reduced={reduced} />}
+            {(step, reduced) => <FleetLoop step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
             <strong>How fast can the loop close?</strong> One published system gives a measured answer.

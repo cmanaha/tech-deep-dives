@@ -6,24 +6,8 @@ import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Toy } from '../components/Cite';
 import { Figure } from '../components/Figure';
-import { ARM, TASK_NAME, TASK_STORY } from '../lib/task';
-
-/* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
-const INK = '#16191f';
-const NEUTRAL_INK = '#5f6b7a';
-const ROBOT_FILL = '#fff6d6';
-const ROBOT_INK = '#7a5c00';
-const CPU_FILL = '#e8f1fb';
-const CPU_INK = '#1f5fa8';
-const TENSOR_FILL = '#e6f6ea';
-const TENSOR_INK = '#1e7b3a';
-const RENDER_FILL = '#fdeedd';
-const RENDER_INK = '#a85a0a';
-const MEMORY_FILL = '#efe9fb';
-const MEMORY_INK = '#5b3fa8';
-
-/** Keeps a narrow, phone-first drawing from growing oversized on a wide screen. */
-const NARROW: CSSProperties = { maxWidth: 520, margin: '0 auto' };
+import { AugThreeWays } from '../components/figures/AugThreeWays';
+import { ARM, TASK_STORY } from '../lib/task';
 
 const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
@@ -31,126 +15,6 @@ const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbd
 
 /** The thread task, stated once for this section. */
 const TASK_SENTENCE = `the ${ARM} has been driven through the task (${TASK_STORY}) a few dozen times`;
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 11.1 (static): one recorded episode fanning out three ways        */
-/* ------------------------------------------------------------------------ */
-
-interface Chip {
-  label: string;
-  width: number;
-  fill: string;
-  ink: string;
-}
-
-interface Lane {
-  title: string;
-  changes: string;
-  checked: string;
-  chips: Chip[];
-  cost: [string, string];
-}
-
-const LANES: Lane[] = [
-  {
-    title: '1. Image transforms in the dataloader',
-    changes: 'changes: the pixels, slightly',
-    checked: 'checked by: nothing needed, motion untouched',
-    chips: [
-      { label: 'CPU cores', width: 92, fill: CPU_FILL, ink: CPU_INK },
-      { label: 'or the training GPU', width: 150, fill: TENSOR_FILL, ink: TENSOR_INK },
-    ],
-    cost: ['Milliseconds per image. On the GPU:', 'a peak of 2.4 GB at a batch of 160'],
-  },
-  {
-    title: '2. Replay in a simulator',
-    changes: 'changes: block position and arm motion',
-    checked: 'checked by: physics, successes are kept',
-    chips: [
-      { label: 'GPU physics', width: 104, fill: TENSOR_FILL, ink: TENSOR_INK },
-      { label: 'plus GPU rendering', width: 146, fill: RENDER_FILL, ink: RENDER_INK },
-    ],
-    cost: ['NVIDIA: 1,000 demonstrations take about', '15 minutes without cameras, 1 hour with'],
-  },
-  {
-    title: '3. Generate with a world model',
-    changes: 'changes: the look, or invents the episode',
-    checked: 'checked by: nothing, inspect the clips',
-    chips: [
-      { label: 'GPU tensor cores', width: 132, fill: TENSOR_FILL, ink: TENSOR_INK },
-      { label: 'large GPU memory', width: 140, fill: MEMORY_FILL, ink: MEMORY_INK },
-    ],
-    cost: ['NVIDIA: 207.78 s for one 720p clip', 'of under 8 seconds, on one H100'],
-  },
-];
-
-function FanOut() {
-  const laneTop = 96;
-  const pitch = 152;
-  const laneH = 140;
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 556" role="img" aria-labelledby="augmentation-fanout-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="augmentation-fanout-title">One recorded episode fanning out into three kinds of extra training data, each on a different machine part</title>
-        <desc>
-          One recorded episode at the top feeds three lanes. Image transforms change the pixels slightly and run on
-          CPU cores or the training GPU. Replay in a simulator changes the block position and the arm motion, is
-          checked by physics, and loads GPU physics plus rendering. Generation with a world model changes the look
-          or invents the episode, is checked by nothing, and loads GPU tensor cores and large GPU memory.
-        </desc>
-        <rect x="0" y="0" width="400" height="556" fill="#fbfbfd" />
-        <rect x="20" y="12" width="360" height="62" rx="4" fill={ROBOT_FILL} stroke={ROBOT_INK} strokeWidth="1.5" />
-        <text x="32" y="32" fontFamily="sans-serif" fontSize="13" fontWeight="bold" fill={INK}>
-          One recorded episode
-        </text>
-        <text x="32" y="49" fontFamily="sans-serif" fontSize="12" fill={INK}>
-          {TASK_NAME} on the {ARM}: camera frames,
-        </text>
-        <text x="32" y="65" fontFamily="sans-serif" fontSize="12" fill={INK}>
-          joint angles and actions
-        </text>
-        <path d={`M32 74 V${laneTop + 2 * pitch + 70}`} stroke={NEUTRAL_INK} strokeWidth="1.5" fill="none" />
-        {LANES.map((lane, i) => {
-          const y = laneTop + i * pitch;
-          let chipX = 60;
-          return (
-            <g key={lane.title}>
-              <path d={`M32 ${y + 70} H41 M40 ${y + 65} L47 ${y + 70} L40 ${y + 75} Z`} stroke={NEUTRAL_INK} strokeWidth="1.5" fill={NEUTRAL_INK} />
-              <rect x="48" y={y} width="332" height={laneH} rx="4" fill="#ffffff" stroke={NEUTRAL_INK} strokeWidth="1.5" />
-              <text x="60" y={y + 21} fontFamily="sans-serif" fontSize="13" fontWeight="bold" fill={INK}>
-                {lane.title}
-              </text>
-              <text x="60" y={y + 41} fontFamily="sans-serif" fontSize="12" fill={INK}>
-                {lane.changes}
-              </text>
-              <text x="60" y={y + 58} fontFamily="sans-serif" fontSize="12" fill={INK}>
-                {lane.checked}
-              </text>
-              {lane.chips.map((chip) => {
-                const x = chipX;
-                chipX += chip.width + 8;
-                return (
-                  <g key={chip.label}>
-                    <rect x={x} y={y + 68} width={chip.width} height="24" rx="4" fill={chip.fill} stroke={chip.ink} strokeWidth="1.5" />
-                    <text x={x + chip.width / 2} y={y + 84} textAnchor="middle" fontFamily="sans-serif" fontSize="12" fontWeight="bold" fill={INK}>
-                      {chip.label}
-                    </text>
-                  </g>
-                );
-              })}
-              <text x="60" y={y + 112} fontFamily="sans-serif" fontSize="12" fill={INK}>
-                {lane.cost[0]}
-              </text>
-              <text x="60" y={y + 129} fontFamily="sans-serif" fontSize="12" fill={INK}>
-                {lane.cost[1]}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
 
 export function Augmentation() {
   return (
@@ -200,14 +64,18 @@ export function Augmentation() {
             cites="F05-87 F05-90 F03-98 F05-108"
             caption={
               <>
-                Read top to bottom: the same recorded episode feeds three kinds of extra data. Each lane says what
-                changes, what checks the result, the machine part it loads (coloured as elsewhere in this dive) and
-                one published cost. The costs are the publishers&apos; own figures for their own tasks, so compare
-                their size, not their decimals.
+                One recorded frame, three kinds of extra data. The top row is that frame under three image
+                transforms. The middle row is three scenes with the block in a new place each time. The bottom row
+                is empty on purpose: this dive has no generated clip of its own. On the right, the time each kind
+                takes per new sample, on one log axis; the costs are the publishers&apos; own figures for their own
+                tasks, so compare their size, not their decimals. The frames are MuJoCo 4.0.1 captures made for
+                this dive with scripted motion and no learned policy. The middle row uses this dive&apos;s
+                randomised scenes, which also change colours and light, to stand in for simulator replays; the
+                transforms are filters applied in the page, with illustrative strengths.
               </>
             }
           >
-            <FanOut />
+            <AugThreeWays />
           </Figure>
           <Box variant="p">
             Each kind changes something the one above it cannot reach: pixels, then positions and motion, then the

@@ -7,6 +7,7 @@ import Link from '@cloudscape-design/components/link';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import { Cite, Derived } from '../components/Cite';
 import { Figure, AnimatedFigure } from '../components/Figure';
+import { CurFunnel } from '../components/figures/CurFunnel';
 import { ARM, TASK_STORY } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
@@ -31,108 +32,6 @@ const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbd
 
 /** The thread task, stated once for this section. */
 const TASK_SENTENCE = `the ${ARM} has been driven through the task (${TASK_STORY}) a few dozen times`;
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 10.1 (static): the curation graph, stages coloured by machine part */
-/* ------------------------------------------------------------------------ */
-
-interface Stage {
-  title: string;
-  sub: string;
-  fill: string;
-  ink: string;
-  dashed?: boolean;
-}
-
-const STORE = { fill: STORE_FILL, ink: STORE_INK };
-const CPU = { fill: CPU_FILL, ink: CPU_INK };
-const TENSOR = { fill: TENSOR_FILL, ink: TENSOR_INK };
-const VIDEO = { fill: VIDEO_FILL, ink: VIDEO_INK };
-
-/** Each row is one stage, or two boxes side by side when a stage uses two machine parts. */
-const CURATION_ROWS: Stage[][] = [
-  [{ title: '1. Download', sub: 'storage and network: fetch the MP4 files', ...STORE }],
-  [
-    { title: '2. Decode frames', sub: 'CPU: 3 per worker', ...CPU },
-    { title: '2. Find shot changes', sub: 'GPU: 0.25 per worker', ...TENSOR },
-  ],
-  [
-    { title: '3. Transcode to H.264', sub: 'CPU: 5 per worker', ...CPU },
-    { title: 'or GPU video engines', sub: 'for 2 and 3, where fitted', ...VIDEO, dashed: true },
-  ],
-  [
-    { title: '4. Motion filter', sub: 'GPU: 0.5 per worker', ...TENSOR },
-    { title: '4. Aesthetic filter', sub: 'GPU: 0.25 per worker', ...TENSOR },
-  ],
-  [{ title: '5. Embed each clip', sub: 'GPU: 0.25 per worker, one vector per clip', ...TENSOR }],
-  [
-    { title: '6. Prepare inputs', sub: 'CPU: 3 per worker', ...CPU },
-    { title: '6. Write a caption', sub: 'GPU: captioning model', ...TENSOR },
-  ],
-  [{ title: '7. Write clips and metadata', sub: 'storage and network', ...STORE }],
-  [{ title: 'Then: deduplicate', sub: 'clusters the embeddings, drops near copies', fill: '#ffffff', ink: NEUTRAL_INK }],
-];
-
-const LEGEND: { label: string; fill: string; ink: string }[] = [
-  { label: 'CPU cores', ...CPU },
-  { label: 'GPU tensor cores', ...TENSOR },
-  { label: 'GPU video engines', ...VIDEO },
-  { label: 'storage and network', ...STORE },
-];
-
-function CurationGraph() {
-  const rowH = 44;
-  const pitch = 58;
-  const top = 12;
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 400 524" role="img" aria-labelledby="curating-graph-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="curating-graph-title">The stages of a video curation pipeline, each coloured by the machine part it loads</title>
-        <desc>
-          Seven stages run top to bottom: download, decode and split, transcode, filter, embed, caption, write. A
-          deduplication pass follows. Decode, transcode and input preparation load CPU cores; the models load GPU
-          tensor cores; the GPU video engines can take decode and transcode on cards that have them.
-        </desc>
-        <rect x="0" y="0" width="400" height="524" fill="#fbfbfd" />
-        {CURATION_ROWS.map((row, r) => {
-          const y = top + r * pitch;
-          const w = row.length === 1 ? 360 : 174;
-          return (
-            <g key={row[0].title}>
-              {r > 0 && <path d={`M200 ${y - 13} V${y - 6} M195 ${y - 7} L200 ${y - 1} L205 ${y - 7} Z`} stroke={NEUTRAL_INK} strokeWidth="1.5" fill={NEUTRAL_INK} />}
-              {row.map((s, c) => {
-                const x = 20 + c * 186;
-                return (
-                  <g key={s.title}>
-                    <rect x={x} y={y} width={w} height={rowH} rx="4" fill={s.fill} stroke={s.ink} strokeWidth="1.5" strokeDasharray={s.dashed ? '5 3' : undefined} />
-                    <text x={x + 10} y={y + 18} fontFamily="sans-serif" fontSize="12" fontWeight="bold" fill={INK}>
-                      {s.title}
-                    </text>
-                    <text x={x + 10} y={y + 35} fontFamily="sans-serif" fontSize="12" fill={INK}>
-                      {s.sub}
-                    </text>
-                  </g>
-                );
-              })}
-            </g>
-          );
-        })}
-        {LEGEND.map((l, i) => {
-          const x = 20 + (i % 2) * 186;
-          const y = 478 + Math.floor(i / 2) * 22;
-          return (
-            <g key={l.label}>
-              <rect x={x} y={y} width="16" height="14" rx="2" fill={l.fill} stroke={l.ink} strokeWidth="1.5" />
-              <text x={x + 24} y={y + 11} fontFamily="sans-serif" fontSize="12" fill={INK}>
-                {l.label}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------------ */
 /* Diagram 10.2 (animated): decode bounds the trainer                        */
@@ -501,14 +400,17 @@ export function ProcessingCurating() {
             cites="F05-69 F05-70 F05-71 F05-73 F05-77"
             caption={
               <>
-                Read top to bottom. Each box is a stage of Cosmos Curator&apos;s reference pipeline, coloured by the
-                machine part it loads, with its default share per worker. Two boxes side by side are one stage using
-                two parts. The dashed box is an alternative path. Deduplication is a second pipeline that reads the
-                stored embeddings.
+                Read the panels in order. The same clips appear in every panel, each drawn as its first and last
+                frame, and change as Cosmos Curator&apos;s reference pipeline works on them: cut, re-encoded,
+                dropped, given an embedding and a caption, stored, and compared for near copies. Under each panel is
+                the machine part the stage loads, with its default share per worker. Deduplication is a second
+                pipeline that reads the stored embeddings. The clip counts and which clips drop are an illustration,
+                not a measured pass rate. The frames are MuJoCo 4.0.1 captures made for this dive with scripted
+                motion and no learned policy.
               </>
             }
           >
-            <CurationGraph />
+            <CurFunnel />
           </Figure>
           <Box variant="p">
             Cosmos Curator v2.10.0 publishes no throughput figure that this research located. Size a curation job

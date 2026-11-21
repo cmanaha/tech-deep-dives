@@ -10,116 +10,18 @@ import { Formula, M } from '../components/Math';
 import { linear, ticks } from '../lib/scale';
 import { ARM, TASK_STORY } from '../lib/task';
 import { Capture, MUJOCO_SO101, Seen } from '../components/Capture';
+import { EvalLadder } from '../components/figures/EvalLadder';
+import { EvalLoops } from '../components/figures/EvalLoops';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
 const INK = '#16191f';
-const ROBOT_FILL = '#fff6d6';
-const ROBOT_INK = '#7a5c00';
-const GPU_FILL = '#e6f6ea';
-const GPU_INK = '#1e7b3a';
-const CPU_FILL = '#e8f1fb';
 const CPU_INK = '#1f5fa8';
-const STORE_FILL = '#eef0f2';
-const STORE_INK = '#44505c';
 const NEUTRAL_INK = '#5f6b7a';
-const EMPHASIS = '#0972d3';
 
 /** Keeps a narrow, phone-first drawing from growing oversized on a wide screen. */
 const NARROW: CSSProperties = { maxWidth: 560, margin: '0 auto' };
 const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 const LABEL = { fontFamily: 'sans-serif', fontSize: 13, fill: INK } as const;
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 16.1: open loop against closed loop                              */
-/* ------------------------------------------------------------------------ */
-
-function FlowBox({ x, y, w, h = 40, fill, stroke, lines }: { x: number; y: number; w: number; h?: number; fill: string; stroke: string; lines: string[] }) {
-  const first = y + h / 2 + 5 - (lines.length - 1) * 8;
-  return (
-    <g>
-      <rect x={x} y={y} width={w} height={h} rx="6" fill={fill} stroke={stroke} strokeWidth="1.5" />
-      {lines.map((line, i) => (
-        <text key={line} x={x + w / 2} y={first + i * 16} textAnchor="middle" {...LABEL}>
-          {line}
-        </text>
-      ))}
-    </g>
-  );
-}
-
-function LoopDiagram() {
-  const arrow = { stroke: INK, strokeWidth: 1.5, markerEnd: 'url(#evaluation-loops-arrow)' } as const;
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 420 470" role="img" aria-labelledby="evaluation-loops-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="evaluation-loops-title">Open-loop scoring against closed-loop scoring of a policy</title>
-        <desc>
-          Top: in open loop the policy is shown a recorded frame, its predicted action is compared with the recorded
-          action, and the next frame comes from the recording. Bottom: in closed loop the policy&apos;s action moves
-          the arm, and the arm and world produce the next observation.
-        </desc>
-        <defs>
-          <marker id="evaluation-loops-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 Z" fill={INK} />
-          </marker>
-        </defs>
-        <rect x="0" y="0" width="420" height="470" fill="#fbfbfd" />
-
-        {/* open loop */}
-        <text x="12" y="26" {...LABEL} fontSize={14} fontWeight="bold">
-          Open loop: score on recorded frames
-        </text>
-        <FlowBox x={12} y={44} w={136} fill={STORE_FILL} stroke={STORE_INK} lines={['recorded frame t']} />
-        <FlowBox x={176} y={44} w={68} fill={GPU_FILL} stroke={GPU_INK} lines={['policy']} />
-        <FlowBox x={272} y={44} w={136} fill="#ffffff" stroke={NEUTRAL_INK} lines={['predicted action']} />
-        <line x1="148" y1="64" x2="174" y2="64" {...arrow} />
-        <line x1="244" y1="64" x2="270" y2="64" {...arrow} />
-        <FlowBox x={12} y={128} w={136} fill={STORE_FILL} stroke={STORE_INK} lines={['recorded frame t+1']} />
-        <FlowBox x={272} y={128} w={136} h={48} fill="#ffffff" stroke={NEUTRAL_INK} lines={['compare with the', 'recorded action']} />
-        <line x1="60" y1="84" x2="60" y2="126" {...arrow} strokeDasharray="5 4" />
-        <text x="72" y="110" {...LABEL} fill={STORE_INK}>
-          from the recording
-        </text>
-        <line x1="340" y1="84" x2="340" y2="126" {...arrow} />
-        <text x="210" y="204" textAnchor="middle" {...LABEL} fill={NEUTRAL_INK}>
-          The policy&apos;s action never reaches the next frame.
-        </text>
-
-        <line x1="12" y1="226" x2="408" y2="226" stroke="#d5dbdb" strokeWidth="1" />
-
-        {/* closed loop */}
-        <text x="12" y="256" {...LABEL} fontSize={14} fontWeight="bold">
-          Closed loop: let the policy drive
-        </text>
-        <FlowBox x={12} y={274} w={136} fill="#ffffff" stroke={NEUTRAL_INK} lines={['observation']} />
-        <FlowBox x={176} y={274} w={68} fill={GPU_FILL} stroke={GPU_INK} lines={['policy']} />
-        <FlowBox x={272} y={274} w={136} fill="#ffffff" stroke={NEUTRAL_INK} lines={['action']} />
-        <line x1="148" y1="294" x2="174" y2="294" {...arrow} />
-        <line x1="244" y1="294" x2="270" y2="294" {...arrow} />
-        <line x1="340" y1="314" x2="340" y2="360" {...arrow} stroke={EMPHASIS} strokeWidth={2.5} />
-        <line x1="60" y1="362" x2="60" y2="316" {...arrow} stroke={EMPHASIS} strokeWidth={2.5} />
-        <text x="72" y="343" {...LABEL}>
-          next view
-        </text>
-        <text x="328" y="343" textAnchor="end" {...LABEL}>
-          moves the arm
-        </text>
-        <FlowBox
-          x={12}
-          y={362}
-          w={396}
-          h={52}
-          fill={ROBOT_FILL}
-          stroke={ROBOT_INK}
-          lines={['the arm and its world:', 'the bench, a simulator, or a world model']}
-        />
-        <text x="210" y="446" textAnchor="middle" {...LABEL} fill={NEUTRAL_INK}>
-          At the end: is the block in the cup? Yes or no.
-        </text>
-      </svg>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------------ */
 /* Diagram 16.3: two Wilson intervals from 50 trials each                   */
@@ -178,89 +80,6 @@ function IntervalChart() {
         ))}
         <text x={(CI_X(78.6) + CI_X(88.8)) / 2} y="196" textAnchor="middle" {...LABEL} fill="#5b3fa8">
           overlap
-        </text>
-      </svg>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* Diagram 16.2: the evaluation ladder                                      */
-/* ------------------------------------------------------------------------ */
-
-const RUNGS = [
-  {
-    title: 'Rung three: trials on the real arm',
-    number: 'The reference the others are measured against',
-    limit: 'Limit: wide intervals, a room that drifts',
-    fill: ROBOT_FILL,
-    stroke: ROBOT_INK,
-    dashed: false,
-  },
-  {
-    title: 'Rung two: scoring with a world model',
-    number: 'r = 0.78 to 0.989, as reported by each tool author',
-    limit: 'Limit: contact can be imagined wrongly',
-    fill: GPU_FILL,
-    stroke: GPU_INK,
-    dashed: false,
-  },
-  {
-    title: 'Rung one: closed loop in simulation',
-    number: 'r = 0.924 matched view (2024), r = 0.9 scanned twin',
-    limit: 'Limit: saturated benchmarks, the sim-to-real gap',
-    fill: CPU_FILL,
-    stroke: CPU_INK,
-    dashed: false,
-  },
-  {
-    title: 'On the ground: open-loop action error',
-    number: 'r = 0.308 with real success (2024)',
-    limit: 'Limit: never meets its own mistakes',
-    fill: STORE_FILL,
-    stroke: STORE_INK,
-    dashed: true,
-  },
-];
-
-function LadderDiagram() {
-  const top = 40;
-  const h = 78;
-  const gap = 18;
-  return (
-    <div style={NARROW}>
-      <svg viewBox="0 0 420 444" role="img" aria-labelledby="evaluation-ladder-title" style={{ width: '100%', height: 'auto' }}>
-        <title id="evaluation-ladder-title">The evaluation ladder, from open-loop error on the ground to trials on the real arm</title>
-        <desc>
-          Four stacked levels. On the ground, open-loop action error, r = 0.308 with real success. Rung one, closed
-          loop in simulation, r = 0.924 with a matched view and 0.9 in a scanned twin. Rung two, scoring with a world
-          model, r = 0.78 to 0.989 as reported by each tool&apos;s authors. Rung three, trials on the real arm, the
-          reference.
-        </desc>
-        <rect x="0" y="0" width="420" height="444" fill="#fbfbfd" />
-        <text x="210" y="24" textAnchor="middle" {...LABEL} fill={NEUTRAL_INK}>
-          trusted most, slowest to run
-        </text>
-        {RUNGS.map((r, i) => {
-          const y = top + i * (h + gap);
-          return (
-            <g key={r.title}>
-              <rect x="12" y={y} width="396" height={h} rx="6" fill={r.fill} stroke={r.stroke} strokeWidth="1.5" strokeDasharray={r.dashed ? '6 4' : undefined} />
-              <text x="26" y={y + 24} {...LABEL} fontSize={14} fontWeight="bold">
-                {r.title}
-              </text>
-              <text x="26" y={y + 45} {...LABEL}>
-                {r.number}
-              </text>
-              <text x="26" y={y + 65} {...LABEL} fill={NEUTRAL_INK}>
-                {r.limit}
-              </text>
-              {i < RUNGS.length - 1 && <path d={`M210,${y + h + gap - 3} L210,${y + h + 7} M204,${y + h + 12} L210,${y + h + 4} L216,${y + h + 12}`} fill="none" stroke={INK} strokeWidth="1.5" />}
-            </g>
-          );
-        })}
-        <text x="210" y="432" textAnchor="middle" {...LABEL} fill={NEUTRAL_INK}>
-          cheapest, fastest to run
         </text>
       </svg>
     </div>
@@ -355,12 +174,14 @@ export function Evaluation() {
           <Figure
             caption={
               <>
-                In the top half the dashed arrow brings the next frame from the recording. In the bottom half the
-                two blue arrows close the loop. Illustrative, not measured.
+                The same policy and the same list of small errors in both plots. In open loop each blue stub
+                starts on the recorded line, so no error meets the next one. In closed loop each step starts where
+                the last one ended, the errors add up, and the joint ends away from the cup. An illustration: the
+                curve and the errors are invented, not measured.
               </>
             }
           >
-            <LoopDiagram />
+            <EvalLoops />
           </Figure>
           <Box variant="p">
             To judge a cheap score, measure several policies on real robots and with the cheap score, and ask
@@ -622,12 +443,15 @@ export function Evaluation() {
             cites="F06-81 F06-83 F06-89 F06-90"
             caption={
               <>
-                Read from the bottom up. Each level shows the correlation with real-robot results that its authors
-                report, and what it cannot see. The figures come from different papers, policies and tasks.
+                Each row is one way of scoring a policy, placed by the correlation with real-robot results that
+                its authors report. The dashed line at 1 is the real arm. The figures come from different papers,
+                policies and tasks, so compare where the rows sit and not their decimals. The picture of twelve
+                trials is a set of MuJoCo 4.0.1 captures made for this dive with scripted motion and no learned
+                policy; the same capture appears at full size under rung one.
               </>
             }
           >
-            <LadderDiagram />
+            <EvalLadder />
           </Figure>
           <Box variant="p">
             The ground is where the section began: by the SIMPLER authors&apos; 2024 figures, ranking policies by
