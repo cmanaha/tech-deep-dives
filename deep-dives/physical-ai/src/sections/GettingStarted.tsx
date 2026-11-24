@@ -6,7 +6,7 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import Link from '@cloudscape-design/components/link';
 import SegmentedControl from '@cloudscape-design/components/segmented-control';
-import { Cite } from '../components/Cite';
+import { Cite, Derived } from '../components/Cite';
 import { Figure } from '../components/Figure';
 import { ARM, TASK_STORY } from '../lib/task';
 
@@ -41,7 +41,7 @@ const ROUTES: { id: RouteId; tag: string; text: string; sections: number[] }[] =
 
 /** Short labels for the grid; the full titles are in the table under the figure. */
 const SHORT: Record<number, string> = {
-  1: 'One Loop',
+  1: 'One Arm',
   2: 'Getting Started',
   3: 'Robot as a Computer',
   4: 'Demonstrations',
@@ -218,8 +218,8 @@ function RouteMap() {
         caption={
           <>
             Read top to bottom: every route runs in section order. The outlined cells are the selected route, and the
-            letters on a cell say which routes pass through it, so you can see where two routes share a section.
-            Cells with no letter are side trips.
+            letters on a cell say which routes pass through it, which shows where two routes share a section. A
+            cell with no letter is on no route.
           </>
         }
       >
@@ -245,7 +245,7 @@ export function GettingStarted() {
         header={
           <Header
             variant="h1"
-            description="Four ideas to hold, and the shortest route for the reason you are reading (LeRobot v0.7.0 and the Isaac-GR00T repository, read 2026-11-20)"
+            description="Hold four ideas and any section opens out of order; then take the route of eight, thirteen or twelve sections that matches why you came (LeRobot v0.7.0 and the Isaac-GR00T repository, read 2026-11-20)"
           >
             2. Getting Started: Four Ideas and Three Routes
           </Header>
@@ -253,107 +253,132 @@ export function GettingStarted() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Section 1 showed the whole loop on one arm. This section is the map for everything after it. It gives
-            you the four ideas every later section assumes, says where each one is built properly, and offers three
-            routes through the <Nav>30</Nav> sections, so you read what your question needs and skip the rest
-            without getting lost.
+            Four ideas are enough to open any of the <Nav>30</Nav> sections out of order: a policy is a function
+            called on a clock, an episode is the unit the data is counted in, a model is trained on one machine and
+            runs on another, and a machine fills one part at a time. Each one changes a decision. The first turns a
+            model&apos;s speed into a deadline of 33.3 ms, the second makes robot data a video problem, the third
+            means a policy is sized twice, and the fourth replaces &quot;how big a machine&quot; with &quot;which
+            part fills first&quot;. <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
+          </Box>
+          <Box variant="p">
+            Most readers come for one of three reasons: to understand world models, to follow the pipeline from a
+            recorded attempt to a fleet of robots, or to choose machines and a scheduler. Each reason has a route,
+            and the longest is <Nav>13</Nav> sections.
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Check that the dive starts where you are, and know which neighbouring dive owns what this one skips">
-            Who this is for
+          <Header variant="h2" description="Check that the starting point is yours, and know which sibling dive holds what is left out">
+            What you bring, and what other dives hold
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            You work in IT or software. You know what a model, training, weights, fine-tuning, a GPU, a container,
-            Kubernetes and S3 are, and you have heard of vision-language models. The dive assumes no robotics: no
-            control theory, no kinematics, and no reinforcement learning beyond the name. Every robotics term is
-            built on the page before it is used, and always on the same example: an {ARM}, a small desktop robot
-            arm, learning to {TASK_STORY}.
+            The starting point is someone who builds or runs software. A model, training, weights, fine-tuning, a
+            GPU, a container, Kubernetes and S3 are familiar, and vision-language models are at least a name. No
+            robotics is assumed: no control theory, no kinematics, and of reinforcement learning (training by trial
+            and reward) only the name. Each robotics term is built in the sentence that first needs it, on one
+            example: an {ARM}, a small desktop robot arm, learning to {TASK_STORY}.
           </Box>
           <Box variant="p">
-            What the dive skips, its sibling dives own. Distributed training, data loading and checkpointing are in
-            the <Link href="../llm-training-systems/">Training at Scale dive</Link>. The basics and the algorithms
-            of reinforcement learning, where a model improves by trial and reward, are in the{' '}
-            <Link href="../rl-agentic-loops/">Learning From Feedback dive</Link>. How a GPU and the memory
+            Four neighbouring subjects are left to their own dives. The algorithms of reinforcement learning are in
+            the <Link href="../rl-agentic-loops/">Learning From Feedback dive</Link>, and how a GPU and the memory
             hierarchy execute a model is in the{' '}
-            <Link href="../silicon-memory-inference/">Silicon, Memory &amp; Inference dive</Link>. The network
-            fabric that joins the nodes of a multi-node training job is in the{' '}
-            <Link href="../efa/">EFA (Elastic Fabric Adapter) dive</Link>. Sections here link to them at the point
-            of need.
+            <Link href="../silicon-memory-inference/">Silicon, Memory &amp; Inference dive</Link>. Distributed
+            training, data loading and checkpointing are in the Training at Scale dive, and the network fabric that
+            joins the nodes of a multi-node training job is in the dive on EFA (Elastic Fabric Adapter, the EC2
+            network device that lets many machines train as one).
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="The foundation every later section stands on, each idea on its smallest real example">
-            Four ideas to hold
+          <Header variant="h2" description="Know the four facts the later sections use without restating, each with the decision it changes">
+            Four ideas, and what each one decides
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>1. A policy is a function from what the robot senses to what it does next.</strong> It is the
-            trained model in the driving seat. On the {ARM} the input is six joint angles and one image per camera,
-            and the output is six target joint angles.{' '}
-            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite> The robot runs on a clock, 30 times
-            a second at the defaults of LeRobot, the open-source robot-learning library this dive follows, and the
-            policy must keep that clock supplied with outputs.{' '}
-            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> Robotics calls the input an observation
-            and the output an action. Section 3 builds both.
+            <strong>1. A policy is a function called on a clock, so its speed is a deadline.</strong> The policy is
+            the trained model in control of the arm. On the {ARM} its input, called the observation, is six joint
+            angles and one image per camera, and its output, called the action, is six target joint angles.{' '}
+            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite> The arm consumes one action per
+            tick of its clock: 30 ticks a second at the defaults of LeRobot, the open-source robot-learning library
+            the arm is recorded, trained and run with, which makes one tick 33.3 ms.{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> A model that serves requests is judged by
+            its throughput, or by a latency someone chose. A policy is judged against a period the arm sets, and an
+            action that arrives after its tick is an action for a scene that has already changed. Every question
+            about the computer beside the arm starts from that period.
           </Box>
           <Box variant="p">
-            <strong>2. An episode is one recorded attempt at the task.</strong> On disk it is a table with one row
-            per tick of that clock, plus video. Each row holds what the arm sensed and what it was told at that
-            instant: <code>observation.state</code>, six <code>float32</code> joint angles, and{' '}
-            <code>action</code>, six <code>float32</code> targets. Each camera adds one image per row, and those
-            images are the video.{' '}
+            <strong>2. An episode is the unit the data is counted in, and nearly all of it is video.</strong> An
+            episode is one attempt at the task. Recorded, it is a table with one row per tick plus one video per
+            camera. A row holds what the arm sensed and what it was told at that instant:{' '}
+            <code>observation.state</code>, six <code>float32</code> joint angles, and <code>action</code>, six{' '}
+            <code>float32</code> targets, 24 bytes each.{' '}
             <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite> At LeRobot&apos;s defaults an
-            episode runs for 60 s at 30 frames per second, so a full-length attempt is 1,800 rows.{' '}
-            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> A dataset is a collection of episodes, and
-            training a policy means fitting it to those rows.
+            episode lasts 60 s at 30 frames per second, 1,800 rows, a recording session is 50 episodes, and 60 s
+            is allowed for resetting the scene between them.{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> Two things follow. A dataset for one arm is
+            small and expensive in a person&apos;s time: 50 x 1,800 = <Derived>90,000</Derived> rows cost up to 50
+            minutes of steering and as many again of resetting (our arithmetic on those defaults). And since the rows are a
+            few bytes and the frames are not, storing, decoding and feeding episodes to a trainer is video work,
+            which is where the CPU cores go in sections 9 to 11.
           </Box>
           <Box variant="p">
-            <strong>3. Training happens in one place and acting in another.</strong> A policy is trained where the
-            GPUs are, on a workstation or in the cloud, with no deadline on any single step. It acts on the robot,
-            on the computer beside the arm, against the clock of 30 ticks a second. The model must cross that gap:
-            the same weights have to answer in time on a much smaller machine. NVIDIA&apos;s benchmark of one call
-            to its GR00T N1.7 policy reports a median of 22.9 ms on an H100 data-centre GPU and 149.0 ms on a
-            Jetson Orin, one of its onboard computers for robots.{' '}
-            <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>
+            <strong>3. A policy is trained on one machine and runs on another, so it is sized twice.</strong>{' '}
+            Training happens where the GPUs are, with no deadline on any single step. Acting happens on the computer
+            beside the arm, against the 33.3 ms tick, and the same weights have to answer there. NVIDIA&apos;s
+            benchmark of one call to its GR00T N1.7 policy reports a median of 22.9 ms on an H100, a data-centre
+            GPU, and 149.0 ms on a Jetson Orin, one of its onboard computers for robots.{' '}
+            <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> The first figure fits inside a tick and
+            the second is several ticks long. So a model that trains without trouble can still be too slow to
+            drive the arm one action at a time, and the choice of model has to be checked against the robot&apos;s
+            computer as well as the trainer&apos;s memory. Each benchmarked call returns 40 actions: the
+            arm plays them while the next call computes, which is how a slow model keeps a fast clock supplied
+            (section <Nav>17</Nav>, Running on the Robot).
           </Box>
           <Box variant="p">
-            <strong>4. The machine has parts that saturate separately.</strong> A workload fills one part first
-            and leaves the others idle, so &quot;how big a machine&quot; is the wrong unit. The parts this dive
-            tracks are the CPU cores, memory, three engines inside the GPU, and storage and network outside the
-            chip. The three GPU engines are the tensor cores, which do the matrix arithmetic of training and
-            inference; the ray-tracing cores, which draw the images a simulated camera sees; and the video engines,
-            which compress and decompress video. Training, rendering and video encoding can share one GPU and each
-            load a different part of it. The grouping is this dive&apos;s own, and section 20 refines it into nine
-            parts.{' '}
-            <Cite id="F08-50">the parts of the machine and the counter that shows each</Cite> The question to
-            carry into every section: which part does this workload fill first?
+            <strong>
+              4. A machine fills one part at a time, so the question is which part, and the answer can be
+              checked.
+            </strong>{' '}
+            A workload fills one part first; once that part is full the job goes no faster and the rest of the
+            machine sits partly idle. Section 1 worked one case: a stand-in policy asked one Jetson core for 9.8 GB/s
+            of memory traffic where that core streams 11.71 GB/s (our single runs).{' '}
+            <Cite id="F08-63">our arithmetic on the stand-in&apos;s weights</Cite>{' '}
+            <Cite id="F08-66">our profiling report, memory streaming row</Cite> Nine parts on the chip are tracked from section <Nav>20</Nav> on. Two belong
+            to the CPU: the front end, which fetches and decodes instructions, and the back end, which executes
+            them. Two belong to memory: its bandwidth, the rate at which it streams data, and its latency, the delay
+            to fetch one item. Five belong to the GPU: tensor cores for matrix arithmetic, general compute,
+            ray-tracing cores that draw what a simulated camera sees, video engines that compress and decompress
+            video, and the GPU&apos;s own memory. Storage and network are parts outside the chip. (The grouping is
+            ours.) <Cite id="F08-50">the parts of the machine and the counter that shows each</Cite> Nearly every
+            part has a counter that shows when it is the full one, so a choice of instance can be tested on a
+            running job. The exception is the ray-tracing cores: the NVIDIA profiling guide read on 2026-11-20
+            lists them as a unit, and no metric for them was found in its text.{' '}
+            <Cite id="F08-36">Nsight Compute Profiling Guide, Streaming Multiprocessor</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Go straight to the section that owns the idea you are missing">
-            Where each idea is built
+          <Header variant="h2" description="Go straight to the section that builds the idea you are missing, with its mechanism and its numbers">
+            The section that builds each idea
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The four paragraphs above are enough to start any route. Each idea has a section that builds it in
-            full, with the mechanism and the numbers.
+            Each idea is stated here in a paragraph and built in full elsewhere. A route that skips the building
+            section still reads, because the paragraph is all a later section assumes.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 520 }} data-num="nav">
@@ -361,39 +386,40 @@ export function GettingStarted() {
                 <tr>
                   <th style={TH}>Idea</th>
                   <th style={TH}>Built in</th>
-                  <th style={TH}>What that section adds</th>
+                  <th style={TH}>What you get there</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style={TD}>Policy, observation, action</td>
+                  <td style={TD}>A policy on a clock</td>
                   <td style={TD}>3, The Robot as a Computer; then 4, Learning From Demonstrations</td>
                   <td style={TD}>
-                    Section 3: what the arm senses, what it can be told, and the clock. Section 4: how a policy is
-                    trained from recorded attempts.
+                    Section 3 turns a delay into a distance the arm travels. Section 4 shows how a policy is
+                    trained from recorded attempts and why plain copying drifts.
                   </td>
                 </tr>
                 <tr>
-                  <td style={TD}>Episode</td>
+                  <td style={TD}>The episode</td>
                   <td style={TD}>9, Collecting Data</td>
-                  <td style={TD}>What an episode is on disk and what it costs to make one.</td>
+                  <td style={TD}>What an episode weighs on disk, and what the compression chosen at the bench costs every later reader of the data.</td>
                 </tr>
                 <tr>
-                  <td style={TD}>Training there, acting here</td>
+                  <td style={TD}>Trained on one machine, run on another</td>
                   <td style={TD}>15, Training at Three Scales; 17, Running on the Robot</td>
                   <td style={TD}>
-                    Section 15: what a training job asks of a cluster. Section 17: fitting a policy inside a
-                    latency budget on a named device.
+                    Section 15 sizes the training job by its scale. Section 17 fits a policy inside the control
+                    period on a named device.
                   </td>
                 </tr>
                 <tr>
-                  <td style={TD}>The machine&apos;s parts</td>
+                  <td style={TD}>One part fills first</td>
                   <td style={TD}>
-                    20, Fifteen Workloads, Five Shapes; 21, Reading a Machine: PMU Cards. The PMU (performance
-                    monitoring unit) is the set of counters built into a processor.
+                    20, Fifteen Workloads, Five Shapes; 21, Reading a Machine. The cards of section 21 are read from
+                    the PMU (performance monitoring unit), the set of event counters built into a processor.
                   </td>
                   <td style={TD}>
-                    Section 20: which part each workload loads. Section 21: how to read that from the counters.
+                    Section 20 works out which part each workload fills from demand and supply. Section 21 reads the
+                    same answer from the counters.
                   </td>
                 </tr>
               </tbody>
@@ -404,45 +430,48 @@ export function GettingStarted() {
 
       <Container
         header={
-          <Header variant="h2" description="Pick the route for your reason and read eight or thirteen sections in place of all of them">
-            Three routes
+          <Header variant="h2" description="Pick the route for your reason and read eight, thirteen or twelve sections in place of all thirty">
+            Three routes, by the reason you came
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The dive has eight parts and a reference section. Read front to back, it follows the loop. Most readers
-            arrive with one of three reasons, and each has a shorter route. All three start with sections 1 and 2.
+            Read front to back, the <Nav>30</Nav> sections follow an episode round the loop and then size what it
+            met. A reader with one question needs fewer. All three routes start with sections 1 and 2 and run in
+            section order.
           </Box>
           <ul style={{ margin: 0, paddingLeft: 22 }}>
             <li>
-              <strong>World models.</strong> A world model predicts what happens next if the robot takes a given
-              action. JEPA (Joint-Embedding Predictive Architecture) is the family that makes that prediction in a
-              compact internal representation of the scene. Read 3, 4, 6, 7, then <Nav>16</Nav> and <Nav>22</Nav>.
-              Sections 3 and 4 are on the route because section 7 plans actions, and it uses action, chunk and
-              control rate as known terms.
+              <strong>World models.</strong> You want to know what a world model is for and how the family called
+              JEPA (Joint-Embedding Predictive Architecture, a design that predicts a compact internal
+              representation of the scene in place of its pixels) trains and plans. Read 3, 4, 6 and 7, then{' '}
+              <Nav>16</Nav>, Evaluation, and <Nav>22</Nav>, Our Measurements. Sections 3 and 4 come first because
+              section 7 plans actions and uses action, chunk and control rate as known terms.
             </li>
             <li>
-              <strong>The pipeline.</strong> You want every phase from a recorded attempt to a model running on a
-              fleet. Read 3, then 9 to <Nav>18</Nav> in order: data, simulation, training, evaluation, the robot
+              <strong>The pipeline.</strong> You want every step from a recorded attempt to a model running on many
+              robots. Read 3, then 9 to <Nav>18</Nav> in order: data, simulation, training, evaluation, the robot
               and the fleet.
             </li>
             <li>
-              <strong>The compute answer.</strong> You have to choose machines and a scheduler. Read{' '}
-              <Nav>20 to 25</Nav>: the workloads, how to read a machine, the measurements, how to compare, and the
-              choices on AWS.
+              <strong>The compute answer.</strong> You have to choose machines, a scheduler and a way of buying
+              capacity. Read <Nav>20 to 29</Nav>: which part each workload fills, how to read that from a machine,
+              what has been measured, how to compare two machines, and the four AWS schedulers with the choice
+              among them.
             </li>
           </ul>
           <RouteMap />
           <Box variant="p">
-            Three sections sit on no route. Section 5 covers vision-language-action models, policies built on a
-            network that also takes a text instruction; read it when you meet one in an announcement. Section 8
-            covers reinforcement learning for robots, and section <Nav>19</Nav> covers software agents that launch
-            the experiments.
+            Three sections are on no route because each answers a question of its own. Section 5,
+            Vision-Language-Action Models, covers policies built on a network that also reads a text instruction;
+            go there when an announcement names one. Section 8, Reinforcement Learning for Robots, is for a reader
+            whose policy must improve by its own attempts, and section <Nav>19</Nav>, Agents Running the Loop,
+            builds on it.
           </Box>
           <Box variant="p">
-            The parts feed each other in one direction, which is why a route can skip ahead. The table gives each
-            section its full title and says what its part hands on.
+            A route can skip ahead because the parts feed each other in one direction. Where a section needs an
+            earlier one, the last column says so.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560 }} data-num="nav">
@@ -450,22 +479,22 @@ export function GettingStarted() {
                 <tr>
                   <th style={TH}>Part</th>
                   <th style={TH}>Sections</th>
-                  <th style={TH}>What it hands on</th>
+                  <th style={TH}>What it hands on, and what it needs</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td style={TD}>Framing</td>
                   <td style={TD}>1 One Arm, Fifteen Workloads. 2 Getting Started. 3 The Robot as a Computer.</td>
-                  <td style={TD}>The vocabulary: observation, action, tick. Every later section uses it.</td>
+                  <td style={TD}>The two questions asked of every workload, and the vocabulary of observation, action and tick.</td>
                 </tr>
                 <tr>
                   <td style={TD}>The models</td>
                   <td style={TD}>
-                    4 Learning From Demonstrations. 5 Vision-Language-Action Models. 6 World Models: Predicting
-                    What Happens Next. 7 JEPA: Predicting in Latent Space. 8 Reinforcement Learning for Robots.
+                    4 Learning From Demonstrations. 5 Vision-Language-Action Models. 6 World Models. 7 JEPA. 8
+                    Reinforcement Learning for Robots.
                   </td>
-                  <td style={TD}>What gets trained. Sections 4 to 7 are what section 15 sizes training jobs for.</td>
+                  <td style={TD}>What gets trained. Sections 4 to 7 are the models section 15 sizes training jobs for.</td>
                 </tr>
                 <tr>
                   <td style={TD}>The data</td>
@@ -486,7 +515,7 @@ export function GettingStarted() {
                 <tr>
                   <td style={TD}>Training and evaluation</td>
                   <td style={TD}>15 Training at Three Scales. 16 Evaluation.</td>
-                  <td style={TD}>A trained policy, and a measure of whether it works on the task.</td>
+                  <td style={TD}>A trained policy, and a count of successes that says whether it is better than the last one.</td>
                 </tr>
                 <tr>
                   <td style={TD}>The edge</td>
@@ -499,12 +528,12 @@ export function GettingStarted() {
                 <tr>
                   <td style={TD}>The compute</td>
                   <td style={TD}>
-                    20 Fifteen Workloads, Five Shapes. 21 Reading a Machine: PMU Cards. 22 Our Measurements. 23
+                    20 Fifteen Workloads, Five Shapes. 21 Reading a Machine. 22 Our Measurements. 23
                     Price-Performance and Latency.
                   </td>
                   <td style={TD}>
-                    Which part of the machine each workload from the earlier parts loads, and how to measure and
-                    compare machines.
+                    The part each workload fills and the shape it has, how to check both on a machine, and how to
+                    compare two machines on one unit of work.
                   </td>
                 </tr>
                 <tr>
@@ -514,22 +543,23 @@ export function GettingStarted() {
                     SageMaker HyperPod. 28 Amazon EKS. 29 Choosing.
                   </td>
                   <td style={TD}>
-                    The workloads placed on AWS, each of the four schedulers taken apart with its cluster drawn, and
-                    a way to get capacity for each workload.
+                    Each workload placed on one of four schedulers and one way of buying capacity, ending in a
+                    table of all fifteen.
                   </td>
                 </tr>
                 <tr>
                   <td style={TD}>Reference</td>
                   <td style={TD}>30 Glossary and Sources.</td>
-                  <td style={TD}>Every term and every source the page cites.</td>
+                  <td style={TD}>Every term defined and every source cited, grouped by authority.</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <Box variant="p">
-            Whichever route you picked, the next stop is the same idea in more depth. For world models and the
-            pipeline, go to section 3 and learn what the arm takes in and puts out 30 times a second. For the
-            compute answer, go to section <Nav>20</Nav> and start asking which part fills first.
+            On the world models and pipeline routes, continue at section 3, The Robot as a Computer, which turns the
+            33.3 ms tick into a distance. On the compute route, go to section <Nav>20</Nav>, Fifteen Workloads, Five
+            Shapes, and ask of the first workload you own which part it fills first.{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
         </SpaceBetween>
       </Container>
