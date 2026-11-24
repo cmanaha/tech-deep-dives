@@ -69,6 +69,6 @@ pi0 at 2 calls per second of 73 ms is busy 146 ms per second, about 15% (our ari
 OpenVLA-OFT: a 7B token model given a parallel, L1-regression chunk head went from 76.5% to 97.1% average success across the four LIBERO task suites (author reported); sampling is a tendency, not a law (our reading) | F02-68
 One pi0-FAST training run: about 4 days on 8 H100 GPUs for a 3B-parameter model (author reported) | F02-28
 Bench symptoms for each failure (drift, stale chunk, chunk seams, averaged route, slow diffusion call) are our reading; causes and settings as cited | F02-2, F02-6, F02-15, F02-7, F02-13, F02-8, F02-11, F02-16, F02-17
-The time of one call must stay under half the duration of the actions played (derived from the guide's rule) | F07-22
+The time of one call must stay under about half the duration of the predicted chunk (our arithmetic from the guide's rule) | F07-22
 An Euler step follows a straight path exactly at any step size (geometric reasoning, no source) | F02-19, F02-20
-The ACT authors give no cause for the taper at larger k; the Diffusion Policy authors name slow reaction time for the same trade | F02-6, F02-15
+The ablation passage gives no cause for the taper at larger k; the Diffusion Policy authors name slow reaction time for the same trade | F02-6, F02-15

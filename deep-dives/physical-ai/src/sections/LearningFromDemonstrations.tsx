@@ -153,7 +153,7 @@ export function LearningFromDemonstrations() {
             <Cite id="F02-67">LeRobot so_follower.py and the imitation learning tutorial</Cite>
           </Box>
           <Box variant="p">
-            Fifty is enough to train on. ACT was trained on 50 demonstrations per task, about 10 minutes of
+            Fifty was enough for ACT&apos;s authors. ACT was trained on 50 demonstrations per task, about 10 minutes of
             teleoperation (a person driving the robot), and its authors report 80 to 90% success on six real tasks
             with a two-armed robot of their own. At <Toy>20</Toy> seconds an episode, fifty episodes at 30 ticks a
             second are 50 x <Toy>20</Toy> x 30 = <Derived>30,000</Derived> rows, each one observation and one
@@ -332,8 +332,7 @@ export function LearningFromDemonstrations() {
             robot controlled at 50 Hz (50 actions a second), so one pass plans 2 seconds of motion. In the
             authors&apos; ablation, an experiment that changes one setting and holds the rest, success averaged
             over four settings went from 1% with no chunking (<M>k</M> = 1) to 44% at <M>k</M> = 100, and then,
-            in their words, &quot;slightly tapers down with higher k&quot;. The ACT authors give no reason for
-            the taper; the Diffusion Policy authors, who measured the same trade, name slow reaction time.{' '}
+            in their words, &quot;slightly tapers down with higher k&quot;. The ablation passage gives no reason for the taper; the Diffusion Policy authors, who measured the same trade, name slow reaction time.{' '}
             <Cite id="F02-5">ACT paper, section IV-A</Cite>{' '}
             <Cite id="F02-6">ACT paper, table III and the chunking ablation</Cite>{' '}
             <Cite id="F02-15">Diffusion Policy paper, key findings</Cite>
@@ -461,7 +460,7 @@ export function LearningFromDemonstrations() {
                   </td>
                   <td style={TD}>
                     <Cite id="F02-18">pi0 paper, section IV</Cite>{' '}
-                    <Cite id="F02-23">openpi pi0_config.py</Cite>{' '}
+                    <Cite id="F02-23">pi0 paper, section V-A, and openpi pi0_config.py</Cite>{' '}
                     <Cite id="F02-29">LeRobot configuration_pi0_fast.py</Cite>{' '}
                     <Cite id="F02-22">pi0 paper, appendix D</Cite>
                   </td>
@@ -753,12 +752,12 @@ export function LearningFromDemonstrations() {
             {(step, reduced) => <DemoFlow step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
-            Flow matching is diffusion with a straight path and few steps: 10 in pi0, where Diffusion Policy trains
-            with 100 iterations. Each step is also cheaper
+            Flow matching is diffusion with a straight path and few steps: 10 in pi0, against the 100 that LeRobot&apos;s
+            Diffusion Policy runs when <code>num_inference_steps</code> is unset. Each step is also cheaper
             than a full pass: pi0 encodes the observation once and caches the result, so a step re-runs only the
             action part of the network.{' '}
             <Cite id="F02-20">pi0 paper, section IV</Cite>{' '}
-            <Cite id="F02-16">Diffusion Policy paper, section 3.4</Cite>
+            <Cite id="F02-17">LeRobot configuration_diffusion.py</Cite>
           </Box>
           <Box variant="p">
             Configuration files call flow steps denoising steps too: LeRobot&apos;s pi0 setting is <code>num_inference_steps</code>, 10 by default.
@@ -1008,9 +1007,9 @@ export function LearningFromDemonstrations() {
           <Box variant="p">
             Before you choose a policy for your arm, write down three numbers for it: the actions it predicts per
             call, the actions it plays before it looks again, and the network passes in one call. Your control
-            rate divided by the actions played is calls per second. The time of one call, measured on your GPU, has to stay under half the duration of the actions it
-            plays, or the next call cannot finish before the arm runs out (section 17, Running on the Robot,
-            works the rule). Multiply that same time by the speed of your gripper and you have the distance it
+            rate divided by the actions played is calls per second. By our arithmetic from LeRobot&apos;s tuning rule, the time of one call, measured on your GPU, has to
+            stay under about half the duration of the chunk it predicts (section 17, Running on the Robot, works
+            it). Multiply that same time by the speed of your gripper and you have the distance it
             travels on an old observation. The first two numbers exist because of chunking, the change behind the
             move from 1% to 44% in ACT&apos;s ablation. The third is the price of the head: 1, 10 or 100.{' '}
             <Cite id="F07-22">LeRobot remote inference guide, tuning</Cite>{' '}
