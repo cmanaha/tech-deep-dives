@@ -17,7 +17,7 @@ import { EMPHASIS, INK, MUTED, LINE, PAPER, ROBOT_FILL, ROBOT_INK, T, box, fade,
  */
 
 export const DEMO_DRIFT_STEPS: ReactNode[] = [
-  'The table from above. Fifty demonstrations run from the start to the block. Together they cover a band, and the hatched area is everywhere they never went.',
+  'The table top, seen from overhead. Fifty demonstrations run from the start to the block. Together they cover a band, and the hatched area is everywhere they never went.',
   'A policy that decides on every tick starts down the band. The faint cone ahead of each dot is the spread of where its next step may land. Inside the band the view is familiar and the cone is narrow.',
   'One decision is slightly off (ringed). Two more carry the gripper to the edge of the band. Below, the marker moves along the ceiling of the bound for the ticks played so far.',
   'The gripper is outside the band. The camera view matches no demonstration, so each next step is less certain than the last: the cone widens at every dot, and the ceiling climbs with the square of the ticks.',
