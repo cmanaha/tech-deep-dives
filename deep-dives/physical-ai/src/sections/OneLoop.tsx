@@ -1,11 +1,10 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties } from 'react';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
-import { Cite } from '../components/Cite';
+import { Cite, Derived } from '../components/Cite';
 import { AnimatedFigure } from '../components/Figure';
-import { sections } from '../lib/sections';
 import { ARM, TASK_STORY } from '../lib/task';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
@@ -337,225 +336,139 @@ function LoopRing({ step, reduced }: { step: number; reduced: boolean }) {
 }
 
 /* ------------------------------------------------------------------------ */
-/* The eight stages: what each hands on and which part fills first          */
+/* The fifteen workloads: what each does, the part it fills, its shape      */
 /* ------------------------------------------------------------------------ */
 
-function StageTable() {
+const FAN_OUT = 'Fan-out';
+const ONE_NODE = 'One node for hours';
+const ON_CLOCK = "On the arm's clock";
+
+const WORKLOADS: { n: string; name: string; does: string; part: string; shape: string }[] = [
+  {
+    n: '1',
+    name: 'Record and encode',
+    does: 'While a person steers the arm, save its joint angles and compress the two camera streams into video.',
+    part: 'CPU cores on the computer beside the robot: the default video encoder is software.',
+    shape: ON_CLOCK,
+  },
+  {
+    n: '2',
+    name: 'Decode and filter',
+    does: 'Turn the video back into frames and drop the bad episodes.',
+    part: 'CPU cores, or the GPU video engines where the card decodes that format.',
+    shape: FAN_OUT,
+  },
+  {
+    n: '3',
+    name: 'Embed and deduplicate',
+    does: 'A vision model turns each clip into a vector so that near-copies can be dropped.',
+    part: 'GPU tensor cores. The models are small enough to share a card.',
+    shape: FAN_OUT,
+  },
+  {
+    n: '4',
+    name: 'Dataloader decode and augment',
+    does: 'For every training sample, pull a few frames out of the video and vary them (a crop, a colour shift).',
+    part: 'CPU cores per GPU: the work runs in the worker processes that feed the trainer.',
+    shape: 'Inside the training job it feeds; always on when run as a tier of its own',
+  },
+  {
+    n: '5',
+    name: 'CPU physics step',
+    does: 'Advance one simulated copy of the arm, the block and the cup by one timestep.',
+    part: 'One CPU core per scene: small sequential arithmetic with branches that depend on the data.',
+    shape: FAN_OUT,
+  },
+  {
+    n: '6',
+    name: 'GPU-parallel physics',
+    does: 'Step thousands of simulated copies of the arm together.',
+    part: 'The general arithmetic units of a GPU, with one CPU core feeding it.',
+    shape: FAN_OUT,
+  },
+  {
+    n: '7',
+    name: 'Simulated cameras',
+    does: 'Draw what each simulated camera sees, at every step.',
+    part: 'GPU memory first, then the ray-tracing cores when an RTX renderer draws them.',
+    shape: FAN_OUT,
+  },
+  {
+    n: '8',
+    name: 'Policy fine-tune',
+    does: "Train the arm's policy on its episodes, from scratch or from a pretrained model.",
+    part: 'GPU tensor cores, with GPU memory deciding which models fit on the card, unless workload 4 starves the trainer of samples.',
+    shape: ONE_NODE,
+  },
+  {
+    n: '9',
+    name: 'World-model training',
+    does: 'Teach a small model to predict what the scene becomes after an action.',
+    part: 'GPU tensor cores, lightly: one GPU for a few hours.',
+    shape: ONE_NODE,
+  },
+  {
+    n: '10',
+    name: 'Closed-loop evaluation',
+    does: 'Each saved version of the policy attempts the task many times in simulation, and the successes are counted.',
+    part: 'A mix inside every episode: physics, simulated cameras and policy inference.',
+    shape: FAN_OUT,
+  },
+  {
+    n: '11',
+    name: 'Engine build',
+    does: 'Compile the chosen policy for the chip of the computer beside the arm.',
+    part: "That computer's own GPU and CPU, for minutes.",
+    shape: FAN_OUT,
+  },
+  {
+    n: '12',
+    name: 'On-robot inference',
+    does: 'Run the policy beside the arm, inside the 33.3 ms period.',
+    part: 'GPU tensor cores on a machine whose CPU and GPU share one memory, which makes memory bandwidth the part they share.',
+    shape: ON_CLOCK,
+  },
+  {
+    n: '13',
+    name: 'Generative augmentation',
+    does: 'A large video model redraws recorded clips or invents new ones.',
+    part: 'GPU memory, tens of GB of it, and tensor cores, for minutes per clip.',
+    shape: FAN_OUT,
+  },
+  {
+    n: '14, 15',
+    name: 'Pretraining a robot model; pretraining a world model',
+    does: 'Train the large models that the two training workloads and generative augmentation start from.',
+    part: 'Tensor cores across many machines, the network between them and the storage that feeds them.',
+    shape: 'Many nodes as one',
+  },
+];
+
+function WorkloadTable() {
   return (
     <div style={{ overflowX: 'auto' }}>
-      <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 520 }}>
+      <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 640 }}>
         <thead>
           <tr>
-            <th style={{ ...TH, width: '46%' }}>Stage, and what it hands on</th>
-            <th style={TH}>The part that fills first, and why</th>
+            <th style={TH}>Workload</th>
+            <th style={TH}>What it does for the arm</th>
+            <th style={TH}>The part it fills first</th>
+            <th style={TH}>Its shape</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td style={TD}>
-              <strong>1. Collect.</strong> A person steers the arm through the task. Each attempt is recorded as an
-              episode: a table of joint readings and motor commands over time, plus one video per camera.{' '}
-              <Cite id="F01-26">LeRobot feature_utils.py</Cite>
-            </td>
-            <td style={TD}>
-              CPU cores beside the robot. LeRobot, the open-source robot-learning library whose defaults the arm
-              follows, compresses the video with a software encoder for AV1 (AOMedia Video 1, a video compression
-              format), so the encoding is CPU work. <Cite id="F08-76">the workload table, row 1</Cite>
-            </td>
-          </tr>
-          <tr>
-            <td style={TD}>
-              <strong>2. Process and curate.</strong> The video is decoded back into frames, bad episodes are
-              dropped and near-duplicates are removed. What leaves is a dataset: the episodes worth training on.
-            </td>
-            <td style={TD}>
-              CPU cores, or the GPU&apos;s video engines where the card decodes that format. Decoding is integer
-              code full of branches; on a GPU it runs in fixed circuits that are separate from the units that do the
-              training arithmetic. <Cite id="F08-76">the workload table, row 2</Cite>
-            </td>
-          </tr>
-          <tr>
-            <td style={TD}>
-              <strong>3. Augment.</strong> More training samples are made from the recorded ones, from simple image
-              changes applied as each sample is loaded to whole generated video clips.
-            </td>
-            <td style={TD}>
-              CPU cores per GPU for the image changes, which run in the worker processes that feed the trainer, on a
-              budget the instance fixes: 24 vCPUs per GPU on most eight-GPU sizes. GPU memory for generated video.{' '}
-              <Cite id="F08-76">the workload table, rows 4 and 13</Cite>{' '}
-              <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>
-            </td>
-          </tr>
-          <tr>
-            <td style={TD}>
-              <strong>4. Simulate.</strong> A simulator is a program that steps a virtual copy of the arm, the block
-              and the cup through physics and draws what virtual cameras would see. It supplies attempts no person
-              had to perform.
-            </td>
-            <td style={TD}>
-              One CPU core per scene for the physics, which is small sequential arithmetic with branches that depend
-              on the data. The cameras are a second workload: GPU memory first, then the GPU&apos;s ray-tracing
-              cores when the renderer traces rays. <Cite id="F08-76">the workload table, rows 5 and 7</Cite>
-            </td>
-          </tr>
-          <tr>
-            <td style={TD}>
-              <strong>5. Train a policy.</strong> The policy learns from the episodes to produce the motor commands
-              the person produced.
-            </td>
-            <td style={TD}>
-              GPU tensor cores, with GPU memory deciding which models fit on the card at all, unless stage 3 starves
-              the trainer of samples. <Cite id="F08-76">the workload table, row 8</Cite>
-            </td>
-          </tr>
-          <tr>
-            <td style={TD}>
-              <strong>6. Train a world model.</strong> A world model predicts what happens next, given what the
-              robot sees and an action it might take.
-            </td>
-            <td style={TD}>
-              GPU tensor cores, lightly for the small model one arm trains.{' '}
-              <Cite id="F08-76">the workload table, row 9</Cite>
-            </td>
-          </tr>
-          <tr>
-            <td style={TD}>
-              <strong>7. Evaluate.</strong> Each saved version of the policy runs many simulated attempts and the
-              successes are counted. The count decides which version goes to the arm.
-            </td>
-            <td style={TD}>
-              A mix inside every attempt: physics, simulated cameras and policy inference. The attempts are
-              independent, so the job is many small copies.{' '}
-              <Cite id="F08-76">the workload table, row 10</Cite>
-            </td>
-          </tr>
-          <tr>
-            <td style={TD}>
-              <strong>8. Export and deploy.</strong> The chosen policy is compiled for the computer beside the arm
-              and runs there, and what the arm then does is recorded as the next episodes.
-            </td>
-            <td style={TD}>
-              GPU tensor cores on a machine whose CPU and GPU share one memory, which makes memory bandwidth the part
-              they share. <Cite id="F08-76">the workload table, rows 11 and 12</Cite>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* Nine questions, each with its short answer                               */
-/* ------------------------------------------------------------------------ */
-
-function QuestionRow({ q, read, children }: { q: string; read: number[]; children: ReactNode }) {
-  return (
-    <tr>
-      <td style={TD}>
-        <strong>{q}</strong>
-        <div style={{ marginTop: 4 }}>{children}</div>
-      </td>
-      <td style={TD}>
-        {read.map((n) => (
-          <div key={n} data-num="nav">
-            {sections[n - 1].title}
-          </div>
-        ))}
-      </td>
-    </tr>
-  );
-}
-
-function QuestionTable() {
-  return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 520 }}>
-        <thead>
-          <tr>
-            <th style={TH}>The question, and the short answer</th>
-            <th style={{ ...TH, width: '36%' }}>Where it is argued</th>
-          </tr>
-        </thead>
-        <tbody>
-          <QuestionRow q="What is the arm to the software that runs it?" read={[3]}>
-            Six joint angles in, six target angles out, and one image per camera, 30 times a second. An answer that
-            arrives late is executed late, so a delay is a distance the arm travels on old orders.{' '}
-            <Cite id="F01-26">LeRobot feature_utils.py</Cite>{' '}
-            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
-          </QuestionRow>
-          <QuestionRow q="How does a policy learn from recorded demonstrations, and what does a written instruction add?" read={[4, 5]}>
-            By copying, with a correction for drift: one mistake moves a copied policy to states the demonstrations
-            never covered, and predicting a chunk of the next k actions from one observation divides the number of
-            decisions by k. A VLA (vision-language-action model) is a vision-language model given the robot&apos;s
-            state as a further input and an action chunk as its output, so the task can be named in words.{' '}
-            <Cite id="F02-2">Ross, Gordon and Bagnell, section 1</Cite>{' '}
-            <Cite id="F02-5">ACT paper, section IV-A</Cite> <Cite id="F02-32">pi0 paper, section IV, model size</Cite>
-          </QuestionRow>
-          <QuestionRow q="What is a world model for, and why are there two kinds?" read={[6, 7]}>
-            It lets a robot try actions in prediction before the motors move. One kind predicts the next video
-            frames; the other predicts a latent, a compact learned summary of the scene, and the summary is far
-            cheaper per imagined future: the V-JEPA 2 authors report 16 seconds to plan one action with their latent
-            model against 4 minutes with a video model given one tenth as many samples, on one RTX 4090. JEPA
-            (Joint-Embedding Predictive Architecture) is the design that trains such a model by predicting one
-            encoding from another. <Cite id="F03-25">V-JEPA 2 paper, section 4.2 and Table 3</Cite>{' '}
-            <Cite id="F03-47">LeCun position paper, section 4.4</Cite>
-          </QuestionRow>
-          <QuestionRow q="Where does reinforcement learning fit, and what changes when an agent runs the experiments?" read={[8, 19]}>
-            RL (reinforcement learning) trains by trial and reward, and for a robot the question is where the trials
-            come from. A simulator supplies them in bulk: the default recipe for a simulated SO-101 task steps 4,096
-            arms side by side and collects about 197 million control steps. The real arm supplies them at the pace of
-            a robot, a reset and a person. A coding agent can run the same experiments unattended once people have
-            built and frozen the reset, the success check and the safety limits; in the ENPIRE system those
-            are written rules, and the repository files read show no mechanism that prevents the edit.{' '}
-            <Cite id="F04-58">MuJoCo Playground env_rl_config.py</Cite>{' '}
-            <Cite id="F04-2">ENPIRE paper, sections 1, 2.1 and 2.2</Cite>{' '}
-            <Cite id="F04-8">ENPIRE repository, autoresearch_instruction.md and AGENTS.md</Cite>
-          </QuestionRow>
-          <QuestionRow q="What happens to the data between the robot and the trainer, and why can a GPU sit idle during training?" read={[9, 10, 11]}>
-            An episode is table rows plus video, and the video is nearly all of the bytes. LeRobot&apos;s default
-            video is AV1 written and read by CPU code, and the H100 cannot hardware-decode it, so the cores beside
-            the GPU do the decoding: 24 vCPUs per GPU on most eight-GPU EC2 sizes. When they fall behind, the GPU
-            waits. <Cite id="F08-77">the CPU beside the GPU</Cite>{' '}
-            <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>
-          </QuestionRow>
-          <QuestionRow q="What does simulation cost, which GPU does it need, and how far can it be trusted?" read={[12, 13, 14, 16]}>
-            One scene&apos;s physics belongs on one CPU core, and a GPU pays when thousands of scenes step together.
-            Cameras drawn by RTX ray tracing need a GPU with RT (ray-tracing) cores, which the training-class cards
-            lack: the Isaac Sim 6.2.0 requirements page says &quot;GPUs without RT Cores (A100, H100) are not
-            supported.&quot; A policy trained there survives the move to the bench when training varied the
-            simulator&apos;s parameters widely or someone measured the arm and corrected them (sim-to-real).{' '}
-            <Cite id="F08-76">the workload table, rows 5 to 7</Cite>{' '}
-            <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>{' '}
-            <Cite id="F06-66">Tobin et al., domain randomization paper, abstract</Cite>{' '}
-            <Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>
-          </QuestionRow>
-          <QuestionRow q="Can the model drive the arm in time, and how does it reach many robots?" read={[17, 18]}>
-            A large policy misses the control period several times over: NVIDIA reports 149.0 ms per call of GR00T
-            N1.7 on a Jetson Orin, 4.5 periods at 30 Hz. It drives the arm anyway because each call returns a chunk
-            of actions that the arm plays while the next call computes. Many robots managed together are a fleet,
-            and on AWS IoT Greengrass one component may carry at most 2 GB of artifacts, so a large policy travels
-            as a container image or an object in Amazon S3.{' '}
-            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>{' '}
-            <Cite id="F07-87">AWS IoT Greengrass quotas</Cite>
-          </QuestionRow>
-          <QuestionRow q="How would I check which part of a machine is full?" read={[20, 21, 22, 23]}>
-            Compare demand with supply, then read the counters. A core&apos;s PMU (performance monitoring unit) is
-            its built-in set of event counters, and it says where the cycles went: 62.3% of the stand-in
-            policy&apos;s cycles stalled on memory. Every measurement of ours is a single run of a stand-in program on
-            one core of an edge machine, which shows the method and is too little to size an EC2 instance.{' '}
-            <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
-            <Cite id="F08-73">limits of our measurements</Cite>
-          </QuestionRow>
-          <QuestionRow q="Which AWS scheduler and which way of buying capacity fit each workload?" read={[24, 25, 26, 27, 28, 29]}>
-            The shape picks among four schedulers: AWS Batch (a managed queue), AWS Parallel Computing Service
-            (managed Slurm, the scheduler of high-performance computing clusters), Amazon SageMaker HyperPod (a
-            cluster that stays up) and Amazon EKS (Elastic Kubernetes Service). Independent units such as the 500
-            episodes are one Batch array job on Spot. A job whose nodes exchange data while they run belongs on
-            another market: the EC2 guide lists workloads &quot;tightly coupled between instance nodes&quot; among
-            those Spot is not suitable for. <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite>{' '}
-            <Cite id="F09-95">EC2 User Guide, Spot best practices</Cite>
-          </QuestionRow>
+          {WORKLOADS.map((w) => (
+            <tr key={w.n}>
+              <td style={TD}>
+                <strong>
+                  <span data-num="nav">{w.n}</span>. {w.name}
+                </strong>
+              </td>
+              <td style={TD}>{w.does}</td>
+              <td style={TD}>{w.part}</td>
+              <td style={TD}>{w.shape}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -573,7 +486,7 @@ export function OneLoop() {
         header={
           <Header
             variant="h1"
-            description="Place any job in a robot's learning loop on an instance, a scheduler and a way of buying capacity before you benchmark it, by asking which part of the machine it fills first and what shape it has (sources read 2026-11-20)."
+            description="Ask two questions of any job in a robot's learning loop, which part of the machine it fills first and what it loses when its machine is taken away, and read off the kind of instance, the scheduler and the way to buy the capacity (sources read 2026-11-20)."
           >
             1. One Arm, Fifteen Workloads: What Each One Runs On
           </Header>
@@ -582,37 +495,42 @@ export function OneLoop() {
         <SpaceBetween size="s">
           <Box variant="p">
             Teaching one small robot arm one task takes about fifteen computing jobs, and they share the arm and
-            almost nothing else. One compresses video on CPU cores, one traces rays on a GPU, one multiplies matrices
-            for hours, and one has to answer inside a tick of the arm&apos;s clock. Size the loop as &quot;GPU
-            training&quot; and the part that fills first is often a CPU core, on a machine bought for its GPU. Each job can be placed before it is benchmarked by asking
-            two things of it. Which part of the machine does it fill first? That picks the instance. What is its
-            shape: how long one unit of work runs, whether its pieces must exchange data while they run, whether it
-            survives losing its machine? That picks the scheduler and the way the capacity is bought. (The split
-            into fifteen is ours; section 20, Fifteen Workloads, Five Shapes, shows it.){' '}
+            almost nothing else. The arm is an {ARM}, a desktop arm with six motors, a camera on its wrist and
+            another overhead, and the task is to {TASK_STORY} with no person steering. Around it, one job compresses
+            video on CPU cores, one traces rays on a GPU, one multiplies matrices for hours, and one has to answer
+            inside a tick of the arm&apos;s clock. A computer is several parts that run out separately (its CPU
+            cores, its memory, the different units inside a GPU), and a job runs as fast as the first part to run
+            out. That part is full, and the rest of the machine sits partly idle behind it. Size the loop as
+            &quot;GPU training&quot; and the part that fills first is often a CPU core, on a machine bought for its
+            GPU. Two questions place each job before it is benchmarked. Which part does it fill first? That picks
+            the instance. What is its shape: how long one unit of work runs, whether its pieces must exchange data
+            while they run, and what it loses when its machine is taken away? That picks the scheduler and the way
+            the capacity is bought.{' '}
+            <Cite id="F01-8">LeRobot so_follower.py, lines 68-80</Cite>{' '}
+            <Cite id="F01-30">LeRobot cameras.mdx and the record examples</Cite>{' '}
+            <Cite id="F08-50">the machine parts and the counter that shows each</Cite>{' '}
             <Cite id="F08-77">the CPU beside the GPU</Cite>
           </Box>
           <Box variant="p">
-            <strong>The first question, worked.</strong> The arm is an {ARM}, a six-motor desktop arm, and its task
-            is to {TASK_STORY} with no person steering. What steers it is a policy, the trained model that reads the
+            The first question is answered by counting: what one unit of work needs from a part, times units per
+            second, against what the part delivers. The arm is steered by a policy, the trained model that reads the
             cameras and the joint angles and decides what the motors do next, and one decision reads every weight of
-            the model once. Our stand-in for a policy is six 1024x1024 <code>float32</code> matrices, 25.2 MB of
-            weights, more than the processor&apos;s caches hold. On one Cortex-A78AE core of an NVIDIA Jetson Orin
-            Nano Super, a small computer of the kind that sits beside a robot, it ran 390 inferences per second
-            (NumPy, single run), so it asked memory for 390 x 25.2 MB = 9.8 GB/s. A loop that streams through arrays
-            larger than the caches reached 11.71 GB/s on the same core (single run), and the core&apos;s counters
-            put 62.3% of the stand-in&apos;s cycles in stalls on memory. That core is out of memory bandwidth, the
-            rate at which memory delivers data to the processor. Faster arithmetic on the same memory would spend
-            most of its gain waiting; the figure to read on a machine for this job is GB/s.{' '}
+            the model once. A program small enough to count by hand shows the method. It is six 1024x1024{' '}
+            <code>float32</code> matrices multiplied in turn, 25.2 MB of weights, more than the processor&apos;s
+            caches hold; it stands in for a policy, and the arm&apos;s own runs on a GPU. We ran it once, in NumPy,
+            on one Cortex-A78AE core of an NVIDIA Jetson Orin Nano Super, a small computer of the kind that sits
+            beside a robot. It made 390 passes per second, so it asked memory for 390 x 25.2 MB = 9.8 GB/s. On the
+            same core, loops that do nothing but move arrays larger than the caches reached 9.25 GB/s reading and
+            11.71 GB/s in a STREAM-style streaming test, and those two figures are that core&apos;s measured memory
+            limits. The program&apos;s demand sits between them, at 9.8 / 11.71 = <Derived>84</Derived>% of the higher one
+            while also doing its arithmetic, and the core&apos;s counters put 62.3% of its cycles in stalls on
+            memory. That is what a full part looks like: demand at the measured limit, and the processor waiting on
+            the part for most of its cycles. The part is memory bandwidth, the rate at which memory delivers data.
+            Faster arithmetic would leave the 62.3% of cycles that wait on memory where they are (our reading), so
+            the figure to read on a machine for this job is GB/s.{' '}
             <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
-            <Cite id="F08-63">our arithmetic on the stand-in&apos;s weights</Cite>{' '}
+            <Cite id="F08-63">the stand-in&apos;s weights against the core&apos;s memory limits</Cite>{' '}
             <Cite id="F08-66">our profiling report, memory streaming row</Cite>
-          </Box>
-          <Box variant="p">
-            The stand-in is a stack of dense layers on a CPU core. The arm&apos;s real policy runs convolutions and
-            attention on the GPU of such a machine, where CPU and GPU share one memory. The method carries over to
-            it: count the bytes one unit of work reads, multiply by units per second, and compare with what the part
-            delivers. The figures stay with the stand-in.{' '}
-            <Cite id="F08-73">limits of our measurements</Cite>
           </Box>
         </SpaceBetween>
       </Container>
@@ -623,67 +541,40 @@ export function OneLoop() {
             variant="h2"
             description="Tell from three properties of a job whether it can run on capacity that may be taken back, and what a lost machine costs it"
           >
-            The second question: a deadline for one job, 500 independent episodes for another
+            A deadline on one job, 500 independent episodes in another
           </Header>
         }
       >
         <SpaceBetween size="s">
           <Box variant="p">
-            Running the policy has a shape as well as a full part. The arm takes a new target 30 times a second, one
-            every 33.3 ms, and it does not wait for a slow answer. NVIDIA reports 149.0 ms for one call of its GR00T
-            N1.7 policy on a Jetson Orin, which is 4.5 of those periods.{' '}
-            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite> A job with a deadline on every
-            unit of work cannot be stopped and resumed, so no capacity that can be taken back will do: it runs on
-            the computer beside the arm, and its measure is the time per call where every other job&apos;s is
-            throughput. <Cite id="F08-79">how each property maps to a part</Cite>
+            The policy on the arm also has a deadline. The arm takes a new target 30 times a second, one every 33.3
+            ms, and it does not wait for a slow answer. NVIDIA reports a median of 149.0 ms for one call of its
+            GR00T N1.7 policy on a Jetson Orin with TensorRT, the fastest runtime in its table for that device, which
+            is 4.5 of those periods.{' '}
+            <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite> So this job is measured in
+            milliseconds per call where every other job in the loop is measured in throughput, and the computer
+            beside the arm is sized for the deadline. <Cite id="F08-79">how each property maps to a part</Cite>
           </Box>
           <Box variant="p">
-            Now a second job for the same arm: scoring a new policy before it is trusted with the motors. The policy
-            drives a simulated arm through the task 500 times, each attempt (an episode) from its own random seed,
-            and the successes are counted. No episode needs data from another and none has a deadline, so the job is
-            500 short units that can run anywhere, in any order. On AWS that is one array job in AWS Batch, a single
-            submission that spawns 500 children, each reading its index to pick its seed.{' '}
-            <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite> It can run on Spot, EC2 capacity that AWS
-            takes back after a notice issued two minutes before, on a best-effort basis.{' '}
+            A second job for the same arm scores a new policy before it is trusted with the motors. The policy
+            drives a simulated arm through the task 500 times, each attempt from its own random seed, and the
+            successes are counted. One attempt at the task, recorded or simulated, is an episode. No episode needs
+            data from another and none has a deadline, so the job is 500 short units that can run anywhere, in any
+            order. On AWS that is one array job in AWS Batch, a single submission that spawns 500 children, each
+            reading its index to pick its seed. <Cite id="F09-5">AWS Batch User Guide, Array jobs</Cite> Such a job
+            can run on Spot, which is EC2 capacity that AWS may take back. AWS issues a notice two minutes before it
+            does, and sends that notice on a best-effort basis.{' '}
             <Cite id="F10-520">EC2 User Guide, Spot Instance interruption notices</Cite> A machine taken back costs
             the episodes it was running, and a retry rule on the job sends those back to the front of the queue.{' '}
             <Cite id="F09-10">AWS Batch User Guide, automated job retries</Cite>
           </Box>
           <Box variant="p">
             One arm, two jobs: the first wants memory bandwidth on a machine it never loses, the second wants many
-            small machines it can afford to lose. The three properties that separated them are the whole of a
-            job&apos;s shape. <strong>Duration</strong> is how long one unit of work runs.{' '}
-            <strong>Coupling</strong> is whether the pieces must exchange data while they run.{' '}
-            <strong>Interruptibility</strong> is whether the job can lose its machine and resume having lost no more
-            than one unit. <Cite id="F08-78">the five shapes, defined by three properties</Cite>
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Picture the hardware every later figure refers to: six motors, two cameras and a clock of 30 ticks a second">
-            The bench: two arms, two cameras and a laptop
-          </Header>
-        }
-      >
-        <SpaceBetween size="s">
-          <Box variant="p">
-            Everything the fifteen workloads compute starts or ends in a few signals on one bench. The {ARM} that
-            does the work is called the follower. To teach it, a person holds a second, matching arm called the
-            leader and moves it by hand, and the follower copies the motion.{' '}
-            <Cite id="F01-2">SO-ARM100 README, Sourcing Parts</Cite> The follower has six motors: five position the
-            arm and the sixth opens and closes the gripper.{' '}
-            <Cite id="F01-8">LeRobot so_follower.py, lines 68-80</Cite> So the arm&apos;s whole state is six joint
-            angles, and an order to it is six target angles.
-          </Box>
-          <Box variant="p">
-            Two cameras watch, one on the wrist and one looking down from above, each at 640x480 and 30 frames per
-            second in the SO-101 examples. <Cite id="F01-30">LeRobot cameras.mdx and the record examples</Cite> A
-            laptop reads the joints and the cameras and sends the motors their targets on the same 30-per-second
-            clock. The joints come to 1,440 bytes per second and the two cameras to 55.3 MB/s of raw pixels, 38,400
-            times as much, which is why video keeps turning up as the work that fills a machine.{' '}
-            <Cite id="F01-86">our arithmetic on the camera settings</Cite>
+            small machines it can afford to lose. Three properties separated them, and together they are a
+            job&apos;s shape. Duration is how long one unit of work runs. Coupling is whether the pieces must
+            exchange data while they run. Interruptibility is whether the job can lose its machine and resume
+            having lost no more than one unit.{' '}
+            <Cite id="F08-78">the five shapes, defined by three properties</Cite>
           </Box>
         </SpaceBetween>
       </Container>
@@ -692,22 +583,24 @@ export function OneLoop() {
         header={
           <Header
             variant="h2"
-            description="See which part of the machine each of the eight stages fills first, and why no single instance type suits the loop"
+            description="Find the part each job fills first and what a lost machine costs it, and see where an instance bought for training is the wrong purchase"
           >
-            One episode round the loop: the full part changes at each hand-off
+            The loop, workload by workload
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A recorded attempt passes through eight stages before the arm can repeat it unaided, and the full part
-            changes at nearly every hand-off. &quot;Full&quot; has one meaning throughout: the part that sets the
-            job&apos;s speed while the others sit partly idle. A GPU counts as several parts. Its tensor cores are
-            the units for matrix arithmetic, its ray-tracing cores are separate units that follow light rays to draw
-            an image, and its video engines are fixed circuits that only compress and decompress video; a card can
-            have one and lack another. <Cite id="F08-50">the machine parts and the counter that shows each</Cite>
+            A recorded episode is a table of joint readings and motor commands over time, plus one video per
+            camera. <Cite id="F01-26">LeRobot feature_utils.py</Cite> Before the arm can repeat the task unaided,
+            the episode is recorded, cleaned, multiplied into more samples, joined by simulated attempts and used
+            to train a policy; the policy is scored and sent to the arm, and what the arm does next is recorded as
+            new episodes. The full part changes at nearly every hand-off, and a GPU supplies several of the parts.
+            Its tensor cores are the units for matrix arithmetic, its ray-tracing cores are separate units that
+            follow light rays to draw an image, and its video engines are fixed circuits that only compress and
+            decompress video. A card can have one and lack another.{' '}
+            <Cite id="F08-50">the machine parts and the counter that shows each</Cite>
           </Box>
-          <StageTable />
           <AnimatedFigure
             name="one episode through the loop"
             steps={LOOP_STEPS}
@@ -715,107 +608,112 @@ export function OneLoop() {
             cites="F08-50 F08-75 F08-76 F01-26"
             caption={
               <>
-                Read clockwise from stage 1. The blue dot is one episode and the blue line is how far it has
-                travelled. Each tag is the machine part that fills first in that stage&apos;s commonest workloads,
-                in our reading of the sources behind the table in section 20, Fifteen Workloads, Five Shapes. The
-                drawing of the arm is illustrative, not measured.
+                Read clockwise from stage 1; the blue dot is one episode. Each tag is the part that fills first in
+                that stage&apos;s commonest workloads. Illustrative, not measured.
               </>
             }
           >
             {(step, reduced) => <LoopRing step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
-            Four of the eight boxes carry a CPU tag, and a GPU instance sells its CPU cores in a fixed ratio to its
-            GPUs: 24 vCPUs per GPU, which is 12 physical cores, on most eight-GPU sizes. Those cores are the part
-            bought by accident, and the first thing to check on a training run whose GPU sits idle.{' '}
-            <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>
+            A stage of the loop is a step in the arm&apos;s story. A workload is narrower: a job with one part that
+            fills first. Simulation is one stage and three workloads, because one scene&apos;s physics, thousands of
+            scenes stepped together and the simulated cameras fill three different parts. Split every stage that
+            way and the loop is the fifteen rows of the table.
+          </Box>
+          <WorkloadTable />
+          <Box variant="p">
+            The shape column says what a lost machine costs. A fan-out job is short independent units and loses the
+            unit that was running. One node for hours loses the work since the last checkpoint, the copy of the
+            model saved to storage during the run. Many nodes as one exchange gradients at every step for days, and
+            losing one node loses the step on all of them. An always-on tier handles a steady stream and loses one
+            item. A job on the arm&apos;s clock has a deadline on every unit and cannot be interrupted at all.
+            Workloads 1 to 12 are the ones the owner of one arm can run, on a desk machine or a single EC2 instance;
+            the last three reach that owner as finished models and are run at the scale of the vendors that publish
+            them. The split into fifteen and the sorting by shape are ours, and section{' '}
+            <span data-num="nav">20</span>, Fifteen Workloads, Five Shapes, argues both row by row. <Cite id="F08-75">how the fifteen are chosen</Cite>{' '}
+            <Cite id="F08-76">our workload table</Cite>{' '}
+            <Cite id="F08-78">the five shapes, defined by three properties</Cite>
+          </Box>
+          <Box variant="p">
+            Three rows have one cause. Workloads 1, 2 and 4 all handle video, and the video is in AV1 (AOMedia Video
+            1, the compression format that LeRobot, the open-source library this arm is recorded and trained with,
+            writes by default). CPU code writes it and CPU code reads it back, and the H100, the GPU of EC2&apos;s
+            P5 training instances, cannot hardware-decode it. So the cores beside the GPU do the decoding, and an
+            instance sells those cores in a fixed ratio to its GPUs: 24 vCPUs per GPU, which is 12 physical cores,
+            on most eight-GPU sizes. Those cores are the part bought by accident, and the first thing to check on a
+            training run whose GPU sits idle. <Cite id="F08-77">the CPU beside the GPU</Cite>{' '}
+            <Cite id="F08-57">vCPUs and physical cores per GPU, from the EC2 specifications</Cite>{' '}
+            <Cite id="F05-47">NVIDIA video encode and decode support matrix, H100 rows</Cite>
+          </Box>
+          <Box variant="p">
+            Workload 7 can send the simulator to a different GPU from the trainer. Cameras drawn by an RTX renderer,
+            NVIDIA&apos;s ray-tracing renderer, need a GPU that has RT (ray-tracing) cores, and the A100 and the
+            H100 lack them: the requirements page of Isaac Sim 6.2.0, NVIDIA&apos;s robot simulator, says
+            &quot;GPUs without RT Cores (A100, H100) are not supported.&quot; A trainer built on H100s cannot draw
+            those cameras. <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>
+          </Box>
+          <Box variant="p">
+            Shape decides the market as much as the scheduler. What a job loses when it stops is what
+            it has not yet written to storage, so the checkpoint interval of a training run is the setting that
+            says whether it can run on Spot: the AWS Batch guide advises splitting or checkpointing Spot work into
+            parts of 30 minutes or less. <Cite id="F08-79">how each property maps to a part</Cite>{' '}
+            <Cite id="F09-11">AWS Batch User Guide, Spot best practices</Cite> And part and shape are separate
+            axes. Decoding one arm&apos;s 50 episodes is a few minutes on a laptop; the same code at a company that
+            ingests video all day is a standing tier of CPU machines. The full part is CPU cores in both, and only
+            the way the capacity is bought has changed. <Cite id="F08-80">one workload, two shapes</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header
-            variant="h2"
-            description="Count the jobs the way a buyer has to: split a stage wherever the full part changes, then sort the result by what a lost machine costs"
-          >
-            Eight stages make fifteen workloads, and three properties sort them into five shapes
+          <Header variant="h2" description="Start from demand against supply and from what a lost machine costs, then check the answer on the machine">
+            Placing a job of your own
           </Header>
         }
       >
         <SpaceBetween size="s">
-          <Box variant="p">
-            A stage is a step in the arm&apos;s story; a workload is a job with one part that fills first. Split
-            each stage wherever two of its steps fill different parts and the eight stages give twelve workloads that
-            one arm&apos;s owner can run on a desk machine or a single EC2 instance. Simulation alone is three: one
-            scene&apos;s physics on a CPU core, thousands of scenes stepped together on a GPU, and the simulated
-            cameras. Three more reach the owner as finished models and are run only at the scale of the vendors that
-            publish them: generating video with a world model, and pretraining the two large models that the small
-            ones start from. <Cite id="F08-75">how the fifteen are chosen</Cite>
-          </Box>
-          <Box variant="p">
-            Sorted by duration, coupling and interruptibility, the fifteen fall into five shapes, and the shape says
-            what a lost machine costs. <Cite id="F08-78">the five shapes, defined by three properties</Cite>
-          </Box>
+          <Box variant="p">The questions that come first when this work is sized each turn on a row of the table.</Box>
           <ul style={LIST}>
             <li>
-              <strong>Fan-out.</strong> Short independent units, such as decoding, physics, simulated cameras and
-              the 500 evaluation episodes. A lost machine costs one unit.
+              <strong>Can the model I trained drive the arm in time?</strong> A call several periods long can,
+              because each call returns many actions and the arm plays them while the next call computes:
+              NVIDIA&apos;s benchmarked call returns 40 (section <span data-num="nav">17</span>, Running on the
+              Robot). <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>
             </li>
             <li>
-              <strong>One node for hours.</strong> Training the arm&apos;s policy or its world model. A lost machine
-              costs the work since the last checkpoint, the copy of the model saved to storage during the run.
+              <strong>Why is my GPU idle during training?</strong> The cores that decode the video are full before
+              the GPU is (section 10, Processing and Curating).
             </li>
             <li>
-              <strong>Many nodes as one.</strong> The two pretraining workloads, whose nodes exchange gradients at
-              every step for days. Losing one node loses the step on all of them.
+              <strong>Which GPU does simulation need?</strong> None for one scene&apos;s physics, which belongs on a
+              CPU core, and one with ray-tracing cores once an RTX renderer draws the cameras (section 12, Physics
+              Simulation, and section <span data-num="nav">13</span>, Rendering and Ray Tracing).
             </li>
             <li>
-              <strong>Always on.</strong> A steady stream handled item by item, such as decoding video that arrives
-              all day. A lost machine costs one item.
+              <strong>How many evaluation episodes are enough?</strong> More than a few dozen: 40 successes in 50
+              and 45 in 50 cannot be told apart, and telling a true 80% from 90% takes about 199 trials per policy
+              (section <span data-num="nav">16</span>, Evaluation).{' '}
+              <Cite id="F06-97">our arithmetic, with the formulas of LeRobot eval_stats.py</Cite>
             </li>
             <li>
-              <strong>On the robot&apos;s clock.</strong> Recording an episode and running the policy. Nothing may
-              be lost, because the arm is moving.
+              <strong>Which AWS scheduler, and which way of buying capacity?</strong> The shape decides.
+              Independent units go to a queue on Spot, as the evaluation episodes did, and work whose machines exchange
+              data while they run does not: the EC2 guide lists workloads &quot;tightly coupled between instance
+              nodes&quot; among those Spot is not suitable for (sections{' '}
+              <span data-num="nav">24 to 29</span>, starting at Orchestrating Physical AI on AWS).{' '}
+              <Cite id="F09-95">EC2 User Guide, Spot best practices</Cite>
             </li>
           </ul>
           <Box variant="p">
-            What a job loses when it stops is
-            what it has not yet written to storage, so the checkpoint interval is a setting that decides the market:
-            for jobs on Spot, the AWS Batch guide advises splitting or checkpointing the work into parts of 30
-            minutes or less. <Cite id="F08-79">how each property maps to a part</Cite>{' '}
-            <Cite id="F09-11">AWS Batch User Guide, Spot best practices</Cite>
-          </Box>
-          <Box variant="p">
-            Part and shape are separate axes. Decoding one arm&apos;s 50 episodes is a few minutes on a laptop;
-            the same code at a company that ingests video all day is a standing tier of CPU machines. The full part
-            is CPU cores in both, and only the way the capacity is bought has changed.{' '}
-            <Cite id="F08-80">one workload, two shapes</Cite>
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Start from the question you came with: each has a short answer, and the sections that argue it">
-            What each job computes: nine questions, with short answers
-          </Header>
-        }
-      >
-        <SpaceBetween size="s">
-          <Box variant="p">
-            Placing a workload means knowing what it computes, so the questions people bring are about the models,
-            the data and the simulator before they are about instances. Each has a short answer.
-          </Box>
-          <QuestionTable />
-          <Box variant="p">
-            To place a job of your own, do what the first screen did. Write down what one unit of work reads or
-            computes, multiply by units per second, and compare with what the part supplies, as 9.8 GB/s asked
-            against 11.71 GB/s supplied did for the stand-in policy on one Jetson core (our single runs). Then ask
-            its duration, its coupling and what a lost machine would cost it. Section 20, Fifteen Workloads, Five
-            Shapes, does both for all fifteen; section 2, Getting Started, has the four ideas and three routes that
-            get you there.{' '}
-            <Cite id="F08-63">our arithmetic on the stand-in&apos;s weights</Cite>{' '}
+            For a job that is not in the table, count as the stand-in was counted. Write down what one unit of work
+            reads or computes, multiply by units per second, and compare with what the part supplies: 9.8 GB/s asked
+            of a core that streamed 11.71 GB/s, in our run on the Jetson core, is a full part. Then ask how long one unit runs, whether its pieces
+            exchange data, and what a lost machine would cost. Section <span data-num="nav">20</span>, Fifteen
+            Workloads, Five Shapes, does the count for every row, and section <span data-num="nav">21</span>,
+            Reading a Machine, confirms it on the processor&apos;s counters.{' '}
+            <Cite id="F08-63">the stand-in&apos;s weights against the core&apos;s memory limits</Cite>{' '}
             <Cite id="F08-66">our profiling report, memory streaming row</Cite>
           </Box>
         </SpaceBetween>

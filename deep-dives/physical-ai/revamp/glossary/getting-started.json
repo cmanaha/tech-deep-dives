@@ -1,21 +1,77 @@
 [
-  { "term": "Policy", "expansion": null, "meaning": "The trained model in control of the arm, called once per decision on the arm's clock." },
-  { "term": "Observation", "expansion": null, "meaning": "The input to a policy at one instant: on the SO-101, six joint angles and one image per camera." },
-  { "term": "Action", "expansion": null, "meaning": "The output of a policy at one instant: on the SO-101, six target joint angles." },
-  { "term": "Tick", "expansion": null, "meaning": "One period of the arm's clock: 33.3 ms at LeRobot's default of 30 per second." },
-  { "term": "Episode", "expansion": null, "meaning": "One attempt at the task: a table with one row of observation and action per tick, plus one video per camera." },
-  { "term": "LeRobot", "expansion": null, "meaning": "The open-source robot-learning library the arm is recorded, trained and run with." },
-  { "term": "Front end (CPU)", "expansion": null, "meaning": "The part of a processor core that fetches and decodes instructions." },
-  { "term": "Back end (CPU)", "expansion": null, "meaning": "The part of a processor core that executes instructions." },
-  { "term": "Memory bandwidth", "expansion": null, "meaning": "The rate at which memory streams data to the processor." },
-  { "term": "Memory latency", "expansion": null, "meaning": "The delay to fetch one item from memory." },
-  { "term": "Tensor cores", "expansion": null, "meaning": "The part of a GPU that does the matrix arithmetic of training and inference." },
-  { "term": "Ray-tracing cores", "expansion": null, "meaning": "The part of a GPU that draws images by tracing light, used to render what a simulated camera sees." },
-  { "term": "Video engines", "expansion": null, "meaning": "The parts of a GPU that compress and decompress video." },
-  { "term": "World model", "expansion": null, "meaning": "A model that predicts what happens next if the robot takes a given action." },
-  { "term": "JEPA", "expansion": "Joint-Embedding Predictive Architecture", "meaning": "A design that predicts a compact internal representation of the scene in place of its pixels." },
-  { "term": "Vision-language-action model", "expansion": null, "meaning": "A policy built on a network that also reads a text instruction." },
-  { "term": "Reinforcement learning", "expansion": null, "meaning": "Training by trial and reward." },
-  { "term": "PMU", "expansion": "performance monitoring unit", "meaning": "The set of event counters built into a processor." },
-  { "term": "EFA", "expansion": "Elastic Fabric Adapter", "meaning": "The EC2 network device that lets many machines train as one, covered in its own dive." }
+  {
+    "term": "Policy",
+    "expansion": null,
+    "meaning": "The trained model in control of the arm, called on every tick of the arm's clock."
+  },
+  {
+    "term": "Observation",
+    "expansion": null,
+    "meaning": "The input to a policy at one instant: on the SO-101, six joint angles and one image per camera."
+  },
+  {
+    "term": "Action",
+    "expansion": null,
+    "meaning": "The output of a policy at one instant: on the SO-101, six target joint angles."
+  },
+  {
+    "term": "Tick",
+    "expansion": null,
+    "meaning": "One period of the arm's clock: 33.3 ms at LeRobot's default of 30 per second."
+  },
+  {
+    "term": "Episode",
+    "expansion": null,
+    "meaning": "One attempt at the task: a table with one row of observation and action per tick, plus one video per camera."
+  },
+  {
+    "term": "LeRobot",
+    "expansion": null,
+    "meaning": "The open-source robot-learning library the arm is recorded, trained and run with."
+  },
+  {
+    "term": "AV1",
+    "expansion": "AOMedia Video 1",
+    "meaning": "The video compression format LeRobot writes by default."
+  },
+  {
+    "term": "GR00T N1.7",
+    "expansion": null,
+    "meaning": "NVIDIA's robot model, used here as the example of a large policy."
+  },
+  {
+    "term": "TensorRT",
+    "expansion": null,
+    "meaning": "NVIDIA's inference compiler; its output is built on the target device and rebuilt for a different GPU."
+  },
+  {
+    "term": "Synchronous rollout",
+    "expansion": null,
+    "meaning": "LeRobot's default way of running a policy, in which the robot stops while the policy computes its next chunk of actions."
+  },
+  {
+    "term": "Full part",
+    "expansion": null,
+    "meaning": "The part of a machine that runs out first and sets a job's speed while the others sit partly idle."
+  },
+  {
+    "term": "GPU utilisation (nvidia-smi)",
+    "expansion": null,
+    "meaning": "The share of time in which at least one kernel was executing on the GPU; it does not say how much of the GPU was used."
+  },
+  {
+    "term": "World model",
+    "expansion": null,
+    "meaning": "A model that predicts what happens next if the robot takes a given action."
+  },
+  {
+    "term": "JEPA",
+    "expansion": "Joint-Embedding Predictive Architecture",
+    "meaning": "A design that predicts a compact summary of the scene in place of its pixels."
+  },
+  {
+    "term": "Reinforcement learning",
+    "expansion": null,
+    "meaning": "Training by trial and reward."
+  }
 ]

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
@@ -15,9 +15,6 @@ const INK = '#16191f';
 const NEUTRAL_INK = '#5f6b7a';
 const EMPHASIS = '#0972d3';
 const ON_ROUTE_FILL = '#f2f8fd';
-
-const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
-const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbdb', verticalAlign: 'top' };
 
 /**
  * A section number of this dive, or a count of its sections. It is navigation, with no source
@@ -205,7 +202,6 @@ function RouteGrid({ selected }: { selected: RouteId }) {
 
 function RouteMap() {
   const [selected, setSelected] = useState<RouteId>('world');
-  const route = ROUTES.find((r) => r.id === selected) ?? ROUTES[0];
   return (
     <SpaceBetween size="s">
       <SegmentedControl
@@ -214,22 +210,9 @@ function RouteMap() {
         label="Reading route to highlight"
         options={ROUTES.map((r) => ({ id: r.id, text: r.text }))}
       />
-      <Figure
-        caption={
-          <>
-            Read top to bottom: every route runs in section order. The outlined cells are the selected route, and the
-            letters on a cell say which routes pass through it, which shows where two routes share a section. A
-            cell with no letter is on no route.
-          </>
-        }
-      >
+      <Figure caption={<>The outlined cells are the selected route. A letter on a cell marks each route that passes through it.</>}>
         <RouteGrid selected={selected} />
       </Figure>
-      <Box variant="p">
-        <span aria-live="polite" data-num="nav">
-          <strong>{route.text} route:</strong> sections {route.sections.join(', ')}.
-        </span>
-      </Box>
     </SpaceBetween>
   );
 }
@@ -245,320 +228,230 @@ export function GettingStarted() {
         header={
           <Header
             variant="h1"
-            description="Hold four ideas and any section opens out of order; then take the route of eight, thirteen or twelve sections that matches why you came (LeRobot v0.7.0 and the Isaac-GR00T repository, read 2026-11-20)"
+            description="Size a robot job, or read a robot-model result, from four facts: the model answers to a 33.3 ms period, its data is video, it is sized once to train and again to run, and a machine fills one part at a time (LeRobot v0.7.0 and the Isaac-GR00T repository, read 2026-11-20)"
           >
-            2. Getting Started: Four Ideas and Three Routes
+            2. Getting Started: What Changes When the Model Drives a Robot
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Four ideas are enough to open any of the <Nav>30</Nav> sections out of order: a policy is a function
-            called on a clock, an episode is the unit the data is counted in, a model is trained on one machine and
-            runs on another, and a machine fills one part at a time. Each one changes a decision. The first turns a
-            model&apos;s speed into a deadline of 33.3 ms, the second makes robot data a video problem, the third
-            means a policy is sized twice, and the fourth replaces &quot;how big a machine&quot; with &quot;which
-            part fills first&quot;. <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
+            Four facts about a robot arm change what you buy for it, and experience with language models points the
+            wrong way on each. The model that drives the arm has a deadline the arm sets, 33.3 ms on this one, so it
+            is sized in milliseconds per call and its throughput settles nothing. Its training data is almost all
+            video, so the data pipeline is a video pipeline and its cost lands on CPU cores. The model is sized
+            twice, for the GPU that trains it and for the small computer that runs it, and the second check is the
+            one that fails late. And a machine fills one part at a time, so the size of an instance says little
+            until you know which part the job fills first.{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
           <Box variant="p">
-            Most readers come for one of three reasons: to understand world models, to follow the pipeline from a
-            recorded attempt to a fleet of robots, or to choose machines and a scheduler. Each reason has a route,
-            and the longest is <Nav>13</Nav> sections.
+            The arm is an {ARM}, a small desktop arm with six motors and two cameras, learning to {TASK_STORY}.
+            LeRobot is the open-source robot-learning library it is recorded, trained and run with, and several of
+            the numbers that follow are its defaults.
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Check that the starting point is yours, and know which sibling dive holds what is left out">
-            What you bring, and what other dives hold
+          <Header variant="h2" description="Size the computer beside the arm in milliseconds per call, and ask for the slowest call as well as the median">
+            A policy is called on a clock, so its speed is a deadline
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The starting point is someone who builds or runs software. A model, training, weights, fine-tuning, a
-            GPU, a container, Kubernetes and S3 are familiar, and vision-language models are at least a name. No
-            robotics is assumed: no control theory, no kinematics, and of reinforcement learning (training by trial
-            and reward) only the name. Each robotics term is built in the sentence that first needs it, on one
-            example: an {ARM}, a small desktop robot arm, learning to {TASK_STORY}.
+            The policy is the trained model in control of the arm. On every tick of the arm&apos;s clock the
+            computer beside it reads the cameras and the six joint angles, which together are the observation, the
+            policy returns six target joint angles, which are the action, and the targets go to the motors.{' '}
+            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite> LeRobot runs that clock at 30
+            ticks a second by default, so the whole chain has 33.3 ms.{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
           <Box variant="p">
-            Four neighbouring subjects are left to their own dives. The algorithms of reinforcement learning are in
-            the <Link href="../rl-agentic-loops/">Learning From Feedback dive</Link>, and how a GPU and the memory
-            hierarchy execute a model is in the{' '}
-            <Link href="../silicon-memory-inference/">Silicon, Memory &amp; Inference dive</Link>. Distributed
-            training, data loading and checkpointing are in the Training at Scale dive, and the network fabric that
-            joins the nodes of a multi-node training job is in the dive on EFA (Elastic Fabric Adapter, the EC2
-            network device that lets many machines train as one).
+            A model that serves requests is judged by its throughput, or by a latency someone chose. A policy is
+            judged against a period the arm sets, call by call, and an average hides the calls that matter.
+            LeRobot&apos;s inference guide prints a sample of its own timing report at 30 Hz, with no hardware
+            named. The mean tick took 18.7 ms of the 33.3 ms budget, and the mean policy call 5.18 ms. The same
+            report prints &quot;cycles over the 33.3 ms work budget: 12/1197 (1.0%)&quot;, with a worst cycle of 48.1
+            ms and a worst policy call of 40.00 ms. A machine that fits the mean with room to spare still missed the period on 1.0% of its
+            ticks. <Cite id="F07-23">LeRobot inference guide, rollout timing example</Cite>
+          </Box>
+          <Box variant="p">
+            So the computer beside the arm is chosen by the time of its slowest calls for your model. Published
+            figures rarely give that: NVIDIA&apos;s benchmark of its robot model reports medians, and neither it nor our own runs
+            hold a figure for the slowest calls.{' '}
+            <Cite id="F08-84">the latency method, with the control period</Cite> What a missed period does depends
+            on a setting. With LeRobot&apos;s default synchronous rollout, &quot;the robot stops moving every time
+            the policy computes its next chunk of actions&quot;; with the asynchronous ones the arm keeps moving on
+            actions it already holds, and an action that arrives late is an action for a scene that has already
+            changed (section 3, The Robot as a Computer, turns that delay into a distance).{' '}
+            <Cite id="F01-87">LeRobot remote inference guide and inference guide</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Know the four facts the later sections use without restating, each with the decision it changes">
-            Four ideas, and what each one decides
+          <Header variant="h2" description="Budget robot data in a person's minutes at the bench and in CPU cores for video">
+            An episode is rows plus video, and the video is nearly all of it
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>1. A policy is a function called on a clock, so its speed is a deadline.</strong> The policy is
-            the trained model in control of the arm. On the {ARM} its input, called the observation, is six joint
-            angles and one image per camera, and its output, called the action, is six target joint angles.{' '}
-            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite> The arm consumes one action per
-            tick of its clock: 30 ticks a second at the defaults of LeRobot, the open-source robot-learning library
-            the arm is recorded, trained and run with, which makes one tick 33.3 ms.{' '}
-            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> A model that serves requests is judged by
-            its throughput, or by a latency someone chose. A policy is judged against a period the arm sets, and an
-            action that arrives after its tick is an action for a scene that has already changed. Every question
-            about the computer beside the arm starts from that period.
+            An episode is one attempt at the task, and robot data is counted in episodes. Recorded, an episode is a
+            table with one row per tick plus one video per camera. A row holds what the arm sensed and what it was
+            told at that instant: <code>observation.state</code>, six <code>float32</code> joint angles, and{' '}
+            <code>action</code>, six <code>float32</code> targets.{' '}
+            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite> The rows are almost nothing. At 30
+            ticks a second the readings and targets come to 1,440 bytes per second, and two cameras at 640x480 come
+            to 55.3 MB/s of raw pixels, 38,400 times as much.{' '}
+            <Cite id="F01-86">the raw data rate, from the camera settings</Cite>
           </Box>
           <Box variant="p">
-            <strong>2. An episode is the unit the data is counted in, and nearly all of it is video.</strong> An
-            episode is one attempt at the task. Recorded, it is a table with one row per tick plus one video per
-            camera. A row holds what the arm sensed and what it was told at that instant:{' '}
-            <code>observation.state</code>, six <code>float32</code> joint angles, and <code>action</code>, six{' '}
-            <code>float32</code> targets, 24 bytes each.{' '}
-            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite> At LeRobot&apos;s defaults an
-            episode lasts 60 s at 30 frames per second, 1,800 rows, a recording session is 50 episodes, and 60 s
-            is allowed for resetting the scene between them.{' '}
-            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> Two things follow. A dataset for one arm is
-            small and expensive in a person&apos;s time: 50 x 1,800 = <Derived>90,000</Derived> rows cost up to 50
-            minutes of steering and as many again of resetting (our arithmetic on those defaults). And since the rows are a
-            few bytes and the frames are not, storing, decoding and feeding episodes to a trainer is video work,
-            which is where the CPU cores go in sections 9 to 11.
+            The ratio survives compression. A public 50-episode pick-and-place dataset named for the SO-101 is 86.1
+            MB in all: 11,939 frames from two cameras in two video files of 45.5 MB and 40.1 MB, and one 0.37 MB
+            file that holds every row. The video is stored as AV1 (AOMedia Video 1), the compression format LeRobot
+            writes by default. <Cite id="F05-29">Hugging Face hub file listing of the example dataset</Cite> Two
+            decisions follow. The first is that a dataset is small and costs a person&apos;s time: LeRobot&apos;s
+            recorder defaults to 50 episodes of up to 60 s with 60 s allowed to reset the scene after each, which
+            is up to 50 x (60 + 60) s = <Derived>100</Derived> minutes at the bench.{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> The second is that every later reader of
+            the data, from the filter that drops bad episodes to the trainer, has to decode video before it can do
+            anything else. Decoding is CPU work unless the GPU has a circuit for the format, so a team that budgets
+            only GPUs for training can find those GPUs waiting on CPU cores (sections 9 and 10, Collecting Data and
+            Processing and Curating).
           </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header variant="h2" description="Check a model against the robot's computer, with the runtime you will ship, before you spend GPU hours training it">
+            A policy is sized twice: once to train, once to run
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
           <Box variant="p">
-            <strong>3. A policy is trained on one machine and runs on another, so it is sized twice.</strong>{' '}
-            Training happens where the GPUs are, with no deadline on any single step. Acting happens on the computer
-            beside the arm, against the 33.3 ms tick, and the same weights have to answer there. NVIDIA&apos;s
-            benchmark of one call to its GR00T N1.7 policy reports a median of 22.9 ms on an H100, a data-centre
-            GPU, and 149.0 ms on a Jetson Orin, one of its onboard computers for robots.{' '}
+            A policy is trained where the GPUs are, with no deadline on any single step, and it runs on the computer
+            beside the arm against the 33.3 ms tick. The same weights have to pass both, and the two sizes are in
+            different units. Take GR00T N1.7, NVIDIA&apos;s robot model. To train: an AWS post reports 3.4 hours on
+            one GPU and a peak of 41.5 GB of GPU memory for one run that adapted it to 75 SO-101 episodes over
+            20,000 steps at batch 32, with the model&apos;s backbone frozen.{' '}
+            <Cite id="F09-82">AWS post, timing table</Cite> To run: NVIDIA&apos;s benchmark of one policy call
+            reports, with TensorRT, its inference compiler, a median of 22.9 ms on an H100, a data-centre GPU, and
+            149.0 ms on a Jetson Orin, one of its onboard computers for robots.{' '}
             <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
             <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> The first figure fits inside a tick and
-            the second is several ticks long. So a model that trains without trouble can still be too slow to
-            drive the arm one action at a time, and the choice of model has to be checked against the robot&apos;s
-            computer as well as the trainer&apos;s memory. Each benchmarked call returns 40 actions: the
-            arm plays them while the next call computes, which is how a slow model keeps a fast clock supplied
-            (section <Nav>17</Nav>, Running on the Robot).
+            the second is several ticks long.
           </Box>
           <Box variant="p">
-            <strong>
-              4. A machine fills one part at a time, so the question is which part, and the answer can be
-              checked.
-            </strong>{' '}
-            A workload fills one part first; once that part is full the job goes no faster and the rest of the
-            machine sits partly idle. Section 1 worked one case: a stand-in policy asked one Jetson core for 9.8 GB/s
-            of memory traffic where that core streams 11.71 GB/s (our single runs).{' '}
-            <Cite id="F08-63">our arithmetic on the stand-in&apos;s weights</Cite>{' '}
-            <Cite id="F08-66">our profiling report, memory streaming row</Cite> Nine parts on the chip are tracked from section <Nav>20</Nav> on. Two belong
-            to the CPU: the front end, which fetches and decodes instructions, and the back end, which executes
-            them. Two belong to memory: its bandwidth, the rate at which it streams data, and its latency, the delay
-            to fetch one item. Five belong to the GPU: tensor cores for matrix arithmetic, general compute,
-            ray-tracing cores that draw what a simulated camera sees, video engines that compress and decompress
-            video, and the GPU&apos;s own memory. Storage and network are parts outside the chip. (The grouping is
-            ours.) <Cite id="F08-50">the parts of the machine and the counter that shows each</Cite> Nearly every
-            part has a counter that shows when it is the full one, so a choice of instance can be tested on a
-            running job. The exception is the ray-tracing cores: the NVIDIA profiling guide read on 2026-11-20
-            lists them as a unit, and no metric for them was found in its text.{' '}
-            <Cite id="F08-36">Nsight Compute Profiling Guide, Streaming Multiprocessor</Cite>
+            Nothing in the training run reports the second size. A model can train without trouble
+            and still be unable to drive the arm one action per tick, and the software on the robot moves the
+            answer as much as the chip does: on the same Jetson Orin, NVIDIA&apos;s table gives 357.9 ms for the
+            model run directly in PyTorch against the 149.0 ms of the compiled one.{' '}
+            <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite> The compiled form is built on
+            the robot&apos;s own computer, in about 2 to 5 minutes, and has to be rebuilt for a different GPU.{' '}
+            <Cite id="F07-8">Isaac-GR00T deployment README, build notes</Cite>
+          </Box>
+          <Box variant="p">
+            What lets a 149.0 ms call serve a 33.3 ms clock is that each benchmarked call returns 40 actions: the
+            arm plays them while the next call computes. That works only while, in the words of LeRobot&apos;s
+            guide, there is &quot;enough usable action playback to cover inference latency and its variation&quot;.
+            So before training a model, time one call of it on the robot&apos;s computer in the runtime you will
+            ship, and compare the result with the actions each call returns (section <Nav>17</Nav>, Running on the
+            Robot). <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
+            <Cite id="F01-87">LeRobot remote inference guide and inference guide</Cite>{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Go straight to the section that builds the idea you are missing, with its mechanism and its numbers">
-            The section that builds each idea
+          <Header variant="h2" description="Find the part a job fills first by arithmetic, and stop reading a GPU utilisation figure as proof that the GPU is the limit">
+            A machine fills one part at a time
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Each idea is stated here in a paragraph and built in full elsewhere. A route that skips the building
-            section still reads, because the paragraph is all a later section assumes.
+            A computer is several parts with separate rates: CPU cores, memory, the units inside a GPU that do
+            arithmetic, the circuits inside it that decode video, storage, the network. A job runs as fast as the
+            first of them to run out. That part is full, the others sit partly idle, and a larger instance helps
+            only if it has more of that part.{' '}
+            <Cite id="F08-50">the parts of the machine and the counter that shows each</Cite>
           </Box>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 520 }} data-num="nav">
-              <thead>
-                <tr>
-                  <th style={TH}>Idea</th>
-                  <th style={TH}>Built in</th>
-                  <th style={TH}>What you get there</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={TD}>A policy on a clock</td>
-                  <td style={TD}>3, The Robot as a Computer; then 4, Learning From Demonstrations</td>
-                  <td style={TD}>
-                    Section 3 turns a delay into a distance the arm travels. Section 4 shows how a policy is
-                    trained from recorded attempts and why plain copying drifts.
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>The episode</td>
-                  <td style={TD}>9, Collecting Data</td>
-                  <td style={TD}>What an episode weighs on disk, and what the compression chosen at the bench costs every later reader of the data.</td>
-                </tr>
-                <tr>
-                  <td style={TD}>Trained on one machine, run on another</td>
-                  <td style={TD}>15, Training at Three Scales; 17, Running on the Robot</td>
-                  <td style={TD}>
-                    Section 15 sizes the training job by its scale. Section 17 fits a policy inside the control
-                    period on a named device.
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>One part fills first</td>
-                  <td style={TD}>
-                    20, Fifteen Workloads, Five Shapes; 21, Reading a Machine. The cards of section 21 are read from
-                    the PMU (performance monitoring unit), the set of event counters built into a processor.
-                  </td>
-                  <td style={TD}>
-                    Section 20 works out which part each workload fills from demand and supply. Section 21 reads the
-                    same answer from the counters.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <Box variant="p">
+            Which part is full can be worked out before a benchmark, by setting what the job asks against what the
+            part supplies. Take training on the arm&apos;s episodes. LeRobot&apos;s hardware guide times one of its
+            policies, Diffusion Policy, at 0.167 s per update at batch 32 on 4 H100 GPUs, which is 32 / 0.167 ={' '}
+            <Derived>192</Derived> samples a second. <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>{' '}
+            A LeRobot pull request measured about 5 ms to fetch and decode one sample in one process, on hardware it
+            does not state. <Cite id="F05-62">LeRobot pull request 4549</Cite> Then the trainer asks for{' '}
+            <Derived>192</Derived> x 5 ms = <Derived>0.96</Derived> seconds of decoding every second: about one
+            CPU core keeps four GPUs fed, and the GPUs are the full part (our arithmetic from the two sources).
+            Change one setting and the answer moves. With image transforms applied per sample, LeRobot&apos;s
+            documentation says, &quot;the GPU ends up waiting for data&quot;: the full part is now the CPU cores,
+            and a faster GPU would train no faster. <Cite id="F05-58">LeRobot v0.7.0 lerobot-dataset-v3.mdx</Cite>
+          </Box>
+          <Box variant="p">
+            The usual check misleads here. The GPU utilisation that <code>nvidia-smi</code> prints is the share of
+            time in which at least one program was running on the GPU, and it says nothing about how much of the GPU
+            that program used. <Cite id="F08-30">nvidia-smi documentation, Utilization</Cite> A GPU that
+            spends part of every step waiting for data can still read as busy, and the team buys a larger one. The remedy is to pay for the instance
+            whose full part is the part being bought: decoding belongs on CPU instances, or on the GPU instance
+            with the most cores per GPU. <Cite id="F08-85">price-performance per part</Cite> Section 1 counts one
+            case by hand, section <Nav>20</Nav>, Fifteen Workloads, Five Shapes, does it for every job in the loop,
+            and the{' '}
+            <Link href="../silicon-memory-inference/">Silicon, Memory &amp; Inference dive</Link> covers how a GPU
+            and the memory hierarchy execute a model.
+          </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Pick the route for your reason and read eight, thirteen or twelve sections in place of all thirty">
-            Three routes, by the reason you came
+          <Header variant="h2" description="Go straight to the sections your question needs, and know what you can leave for later">
+            Where to go next, by the question you have
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Read front to back, the <Nav>30</Nav> sections follow an episode round the loop and then size what it
-            met. A reader with one question needs fewer. All three routes start with sections 1 and 2 and run in
-            section order.
+            None of the three common reasons for reading needs all <Nav>30</Nav> sections.
           </Box>
           <ul style={{ margin: 0, paddingLeft: 22 }}>
             <li>
-              <strong>World models.</strong> You want to know what a world model is for and how the family called
-              JEPA (Joint-Embedding Predictive Architecture, a design that predicts a compact internal
-              representation of the scene in place of its pixels) trains and plans. Read 3, 4, 6 and 7, then{' '}
-              <Nav>16</Nav>, Evaluation, and <Nav>22</Nav>, Our Measurements. Sections 3 and 4 come first because
-              section 7 plans actions and uses action, chunk and control rate as known terms.
+              <strong>World models.</strong> To learn what a world model is for, and how JEPA (Joint-Embedding
+              Predictive Architecture, a design that predicts a compact summary of the scene in place of its
+              pixels) trains and plans, read sections 3, 4, 6 and 7, then <Nav>16</Nav> and <Nav>22</Nav>. The
+              data, simulation and AWS sections can wait.
             </li>
             <li>
-              <strong>The pipeline.</strong> You want every step from a recorded attempt to a model running on many
-              robots. Read 3, then 9 to <Nav>18</Nav> in order: data, simulation, training, evaluation, the robot
-              and the fleet.
+              <strong>The pipeline.</strong> To follow an episode from the bench to a model running on many robots,
+              read section 3 and then 9 to <Nav>18</Nav> in order. The model sections, 4 to 8, are background you
+              can return to.
             </li>
             <li>
-              <strong>The compute answer.</strong> You have to choose machines, a scheduler and a way of buying
-              capacity. Read <Nav>20 to 29</Nav>: which part each workload fills, how to read that from a machine,
-              what has been measured, how to compare two machines, and the four AWS schedulers with the choice
-              among them.
+              <strong>The compute answer.</strong> To choose machines, a scheduler and a way of buying capacity,
+              read sections <Nav>20 to 29</Nav>. They assume the four ideas and section 1, and nothing else.
             </li>
           </ul>
           <RouteMap />
           <Box variant="p">
-            Three sections are on no route because each answers a question of its own. Section 5,
-            Vision-Language-Action Models, covers policies built on a network that also reads a text instruction;
-            go there when an announcement names one. Section 8, Reinforcement Learning for Robots, is for a reader
-            whose policy must improve by its own attempts, and section <Nav>19</Nav>, Agents Running the Loop,
-            builds on it.
+            Sections 5, 8 and <Nav>19</Nav> are on no route: models that also read a written instruction,
+            reinforcement learning (training by trial and reward) on a robot, and software agents that run the
+            experiments. The algorithms of reinforcement learning are in the{' '}
+            <Link href="../rl-agentic-loops/">Learning From Feedback dive</Link>.
           </Box>
           <Box variant="p">
-            A route can skip ahead because the parts feed each other in one direction. Where a section needs an
-            earlier one, the last column says so.
-          </Box>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560 }} data-num="nav">
-              <thead>
-                <tr>
-                  <th style={TH}>Part</th>
-                  <th style={TH}>Sections</th>
-                  <th style={TH}>What it hands on, and what it needs</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={TD}>Framing</td>
-                  <td style={TD}>1 One Arm, Fifteen Workloads. 2 Getting Started. 3 The Robot as a Computer.</td>
-                  <td style={TD}>The two questions asked of every workload, and the vocabulary of observation, action and tick.</td>
-                </tr>
-                <tr>
-                  <td style={TD}>The models</td>
-                  <td style={TD}>
-                    4 Learning From Demonstrations. 5 Vision-Language-Action Models. 6 World Models. 7 JEPA. 8
-                    Reinforcement Learning for Robots.
-                  </td>
-                  <td style={TD}>What gets trained. Sections 4 to 7 are the models section 15 sizes training jobs for.</td>
-                </tr>
-                <tr>
-                  <td style={TD}>The data</td>
-                  <td style={TD}>9 Collecting Data. 10 Processing and Curating. 11 Augmentation and Synthetic Data.</td>
-                  <td style={TD}>
-                    The episodes the models train on. Section 9 needs 3, section 10 needs 9, and section 11 needs
-                    6 and 12.
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>Simulation</td>
-                  <td style={TD}>12 Physics Simulation. 13 Rendering and Ray Tracing. 14 Sim-to-Real and Real-to-Sim.</td>
-                  <td style={TD}>
-                    A computed copy of the arm and its cameras, and what it takes for a policy trained there to
-                    work on the real bench.
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>Training and evaluation</td>
-                  <td style={TD}>15 Training at Three Scales. 16 Evaluation.</td>
-                  <td style={TD}>A trained policy, and a count of successes that says whether it is better than the last one.</td>
-                </tr>
-                <tr>
-                  <td style={TD}>The edge</td>
-                  <td style={TD}>17 Running on the Robot. 18 The Fleet. 19 Agents Running the Loop.</td>
-                  <td style={TD}>
-                    The policy on the robot&apos;s own computer and on many robots. Section 17 needs 3 and 5, and
-                    section 19 needs 8.
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>The compute</td>
-                  <td style={TD}>
-                    20 Fifteen Workloads, Five Shapes. 21 Reading a Machine. 22 Our Measurements. 23
-                    Price-Performance and Latency.
-                  </td>
-                  <td style={TD}>
-                    The part each workload fills and the shape it has, how to check both on a machine, and how to
-                    compare two machines on one unit of work.
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>AWS</td>
-                  <td style={TD}>
-                    24 Orchestrating Physical AI on AWS. 25 AWS Batch. 26 AWS Parallel Computing Service. 27 Amazon
-                    SageMaker HyperPod. 28 Amazon EKS. 29 Choosing.
-                  </td>
-                  <td style={TD}>
-                    Each workload placed on one of four schedulers and one way of buying capacity, ending in a
-                    table of all fifteen.
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>Reference</td>
-                  <td style={TD}>30 Glossary and Sources.</td>
-                  <td style={TD}>Every term defined and every source cited, grouped by authority.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <Box variant="p">
-            On the world models and pipeline routes, continue at section 3, The Robot as a Computer, which turns the
-            33.3 ms tick into a distance. On the compute route, go to section <Nav>20</Nav>, Fifteen Workloads, Five
-            Shapes, and ask of the first workload you own which part it fills first.{' '}
+            On the first two routes, continue at section 3, The Robot as a Computer, which turns the 33.3 ms tick
+            into a distance. On the third, go to section <Nav>20</Nav>, Fifteen Workloads, Five Shapes, and ask of
+            the first job you own which part it fills first.{' '}
             <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
         </SpaceBetween>
