@@ -1,8 +1,8 @@
 [
- {"n":1,"id":"one-loop","comp":"OneLoop","title":"One Robot, One Loop"},
- {"n":2,"id":"getting-started","comp":"GettingStarted","title":"Getting Started"},
- {"n":3,"id":"robot-computer","comp":"RobotAsComputer","title":"The Robot as a Computer"},
- {"n":4,"id":"demonstrations","comp":"LearningFromDemonstrations","title":"Learning From Demonstrations"},
+ {"n":1,"id":"one-loop","comp":"OneLoop","title":"One Arm, Fifteen Workloads: What Each One Runs On"},
+ {"n":2,"id":"getting-started","comp":"GettingStarted","title":"Getting Started: Four Ideas and Three Routes"},
+ {"n":3,"id":"robot-computer","comp":"RobotAsComputer","title":"The Robot as a Computer: Inputs, Outputs and a Deadline"},
+ {"n":4,"id":"demonstrations","comp":"LearningFromDemonstrations","title":"Learning From Demonstrations: Why Copying Drifts and What Fixed It"},
  {"n":5,"id":"vla","comp":"VisionLanguageAction","title":"Vision-Language-Action Models"},
  {"n":6,"id":"world-models","comp":"WorldModels","title":"World Models: Predicting What Happens Next"},
  {"n":7,"id":"jepa","comp":"Jepa","title":"JEPA: Predicting in Latent Space"},

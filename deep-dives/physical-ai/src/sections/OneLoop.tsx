@@ -422,7 +422,7 @@ export function OneLoop() {
             variant="h1"
             description="See the whole loop on one arm before any part is explained, and find the section that answers your question (sources read 2026-11-20)."
           >
-            1. One Robot, One Loop
+            1. One Arm, Fifteen Workloads: What Each One Runs On
           </Header>
         }
       >

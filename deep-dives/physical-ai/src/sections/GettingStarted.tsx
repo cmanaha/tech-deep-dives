@@ -247,7 +247,7 @@ export function GettingStarted() {
             variant="h1"
             description="Four ideas to hold, and the shortest route for the reason you are reading (LeRobot v0.7.0 and the Isaac-GR00T repository, read 2026-11-20)"
           >
-            2. Getting Started
+            2. Getting Started: Four Ideas and Three Routes
           </Header>
         }
       >
@@ -456,7 +456,7 @@ export function GettingStarted() {
               <tbody>
                 <tr>
                   <td style={TD}>Framing</td>
-                  <td style={TD}>1 One Robot, One Loop. 2 Getting Started. 3 The Robot as a Computer.</td>
+                  <td style={TD}>1 One Arm, Fifteen Workloads. 2 Getting Started. 3 The Robot as a Computer.</td>
                   <td style={TD}>The vocabulary: observation, action, tick. Every later section uses it.</td>
                 </tr>
                 <tr>

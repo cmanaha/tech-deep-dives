@@ -98,7 +98,7 @@ export function LearningFromDemonstrations() {
             variant="h1"
             description="Understand why copying a demonstrator fails in a specific way, and the two ideas that fixed it: decide less often, and pick one way of doing the task (the ACT, Diffusion Policy, pi0 and FAST papers, LeRobot v0.7.0 and the openpi code, read 2026-11-20)"
           >
-            4. Learning From Demonstrations
+            4. Learning From Demonstrations: Why Copying Drifts and What Fixed It
           </Header>
         }
       >

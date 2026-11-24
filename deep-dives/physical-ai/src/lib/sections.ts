@@ -1,9 +1,9 @@
 /** The 30 sections in reading order. App.tsx and the last section both read this list. */
 export const sections = [
-  { id: 'one-loop', title: '1. One Robot, One Loop' },
-  { id: 'getting-started', title: '2. Getting Started' },
-  { id: 'robot-computer', title: '3. The Robot as a Computer' },
-  { id: 'demonstrations', title: '4. Learning From Demonstrations' },
+  { id: 'one-loop', title: '1. One Arm, Fifteen Workloads: What Each One Runs On' },
+  { id: 'getting-started', title: '2. Getting Started: Four Ideas and Three Routes' },
+  { id: 'robot-computer', title: '3. The Robot as a Computer: Inputs, Outputs and a Deadline' },
+  { id: 'demonstrations', title: '4. Learning From Demonstrations: Why Copying Drifts and What Fixed It' },
   { id: 'vla', title: '5. Vision-Language-Action Models' },
   { id: 'world-models', title: '6. World Models: Predicting What Happens Next' },
   { id: 'jepa', title: '7. JEPA: Predicting in Latent Space' },

@@ -43,9 +43,11 @@ for (const s of secs) {
       const after = flat.slice(m.index + m[0].length, m.index + m[0].length + 90);
       const t = after.match(/^, ([A-Z][^.;:()<{]*)/);
       if (t) {
-        const target = secs[nums[0] - 1]?.title ?? '';
+        // A cross-reference names a section by its short name, the part of the title before the colon.
+        const shortName = (x) => (x?.title ?? '').split(':')[0];
+        const target = shortName(secs[nums[0] - 1]);
         const said = t[1].trim();
-        const other = secs.find((x) => x.n !== nums[0] && said.startsWith(x.title));
+        const other = secs.find((x) => x.n !== nums[0] && said.startsWith(shortName(x)));
         if (other && !said.startsWith(target)) bad.push(`${file}: "section ${nums[0]}, ${said.slice(0, 40)}" names section ${other.n}'s title`);
       }
     }

@@ -422,7 +422,7 @@ export function RobotAsComputer() {
             variant="h1"
             description="Know what the arm senses, what it can be told to do and how often, and why 100 milliseconds is a distance (LeRobot v0.7.0, the SO-ARM100 hardware repository and the Feetech STS3215 datasheet, read 2026-11-20)"
           >
-            3. The Robot as a Computer
+            3. The Robot as a Computer: Inputs, Outputs and a Deadline
           </Header>
         }
       >
