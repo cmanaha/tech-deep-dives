@@ -254,3 +254,54 @@ reservation claim keeps its scope and date.
 7. Read once as the level 100 reader (is any term used before it is built?) and once as an expert (is anything
    padded, soft or wrong?).
 8. The mechanical checks in `revamp/authoring-brief.md` section 9 and the check tool, at 1440 and 390.
+
+## 12. What the pilot taught (sections 1 to 4, three review rounds, 2026-11-24)
+
+Each rule below was learned from a blind adversarial review that quoted the offending sentences. The reviews are
+in `revamp/reviews/rewrite/`. Section 4 passed in round 1 and was named the best file in a batch that included
+the reference dives; its source is the bar for every later section.
+
+1. **The provenance tic.** The first drafts hedged about once every fifteen sentences. Before (section 3): "in
+   our reading of general kinematics a five-joint arm cannot reach every position at every angle"; "In our reading
+   of the defaults, played to its end at 30 Hz it lasts 1.67 s". After: the fact, stated. Rule: "in our reading",
+   "is ours", "our arithmetic" at most once per section each, and only on a claim that really is this dive's own
+   inference. Never on a textbook fact, never on arithmetic the reader can see. An inference that no entry
+   supports and that is not obvious from the cited text is cut, not labelled.
+2. **Do not disown your evidence.** Before (section 1): "The figures stay with the stand-in" and, later, "too
+   little to size an EC2 instance", under a description that promised to place any job. After: the measurement is
+   introduced once as what it is ("A program small enough to count by hand shows the method"), and the
+   description promises what the section delivers. One honest clause; no second apology.
+3. **A worked number must close.** Before: "demand sits between" a 9.25 GB/s and an 11.71 GB/s limit, which left
+   the reader asking how demand can exceed a limit. Rule: use the figures the argument needs and no others; if two
+   figures bound something, say which one binds and why, in a sentence.
+4. **Counts are not structure.** Before: "Eight stages make fifteen workloads, and three properties sort them
+   into five shapes"; "the route of eight, thirteen or twelve sections". After: the reader sees the fifteen in one
+   table and the prose argues from the rows where the answer is surprising. A title, a description or a heading
+   never rests on a count.
+5. **Coined words are terms too.** "Part", "fills first", "full", "shape", "market" were used for a thousand
+   words before they were built. Each gets one plain sentence at first use, before any table whose cells use it.
+6. **Paragraph length.** Paragraphs of 200 to 300 words cost a point of clarity on their own. Keep a paragraph
+   under about 110 words; one job per paragraph; the thesis by the third sentence of the page.
+7. **Rank inside a block.** Before (section 3): the fact that decides whether a reader's recordings fit a model
+   (the action space and its units) arrived in the eighth paragraph, after firmware cut-outs. After: it leads, and
+   the cut-outs sit in one expandable block for lookup.
+8. **Land a number twice, not five times.** "100 ms is 25 mm" appeared five times and one byte count was derived
+   three times. Twice: the opening, and where it is used. A closing block that restates the opening at three
+   times the length is cut to what is new.
+9. **Research gaps are not content.** "Neither of the two documents read states how often the servo runs it" is
+   kept only where the reader would otherwise assume a number exists and act on it; then once, with scope and
+   date.
+10. **Navigation is a figure, not prose.** A getting-started section lost on argument and depth while 60% of it
+    was the section list in four shapes. One map; the body is ideas argued to a number, a configuration choice
+    and a failure. A section never ends on a list of pointers.
+11. **Label fragments and signposts.** "The first question, worked.", "Put toy numbers in.", "The usual check
+    misleads here.", "What a missed period does depends on a setting." Replace each with the sentence that carries
+    the content.
+12. **Do not overclaim in the opening.** "every current policy is built from both" was contradicted by the same
+    section's closing evidence, and the accuracy review found it unsupported. Scope the opening to what the
+    section proves.
+13. **Captions are for readers.** "made for this dive on a Mac" and four sentences on how to operate a widget are
+    build notes. A caption says how to read the figure, in one or two sentences.
+14. **Accuracy beats style.** Where a style instruction and an accuracy finding conflict, accuracy wins: a vendor
+    figure keeps its conditions ("a median of 149.0 ms with TensorRT"), a symptom with no entry is cut, our
+    arithmetic is kept apart from an author's report.
