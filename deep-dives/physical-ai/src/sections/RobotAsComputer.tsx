@@ -420,7 +420,7 @@ export function RobotAsComputer() {
         header={
           <Header
             variant="h1"
-            description="Know what the arm senses, what it can be told to do and how often, and why 100 milliseconds is a distance (LeRobot v0.7.0, the SO-ARM100 hardware repository and the Feetech STS3215 datasheet, read 2026-11-20)"
+            description="Read a robot's inputs and outputs as six numbers with units and two video streams, place every loop on the rate ladder, and turn a delay into millimetres on the table (LeRobot v0.7.0, the SO-ARM100 hardware repository and the Feetech STS3215 datasheet, read 2026-11-20)"
           >
             3. The Robot as a Computer: Inputs, Outputs and a Deadline
           </Header>
@@ -428,46 +428,67 @@ export function RobotAsComputer() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            To the software that runs it, a robot arm is a device with inputs, outputs and a clock. A few numbers and
-            images come in, a few numbers go out, and the exchange repeats many times a second. This section builds
-            that picture on the {ARM}, the arm this dive follows as it learns to {TASK_STORY}: what comes in, what
-            goes out, how often, and what it costs when the answer arrives late.
+            To the software that runs it, the {ARM} is twelve numbers and two video streams on a clock. Six measured
+            joint angles and two camera frames come in, six target angles go out, and the exchange repeats 30 times
+            a second, once every 33.3 ms.{' '}
+            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite>{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> The arm keeps moving between exchanges, so
+            a late answer is an answer about a place the gripper has already left. Lateness on a robot is a
+            distance: at an illustrative 0.25 m/s, 100 ms of delay is 25 mm of travel on stale orders, most of the
+            width of a cup&apos;s mouth.{' '}
+            <Cite id="F01-83" kind="derived">
+              speed times delay
+            </Cite>
           </Box>
           <Box variant="p">
-            Every later section reuses these terms. The models in the next sections are trained on the inputs and
-            outputs defined here, and the machines sized at the end of the dive are sized against the deadline
-            defined here.
+            Those figures size everything around the arm before a model is chosen. The joints cost bytes: 1,440
+            bytes per second of measured and target angles. The cameras cost megabytes: 55.3 MB/s of raw frames,
+            38,400 times the joint data, so storage, video decoding and GPU time follow the pixels.{' '}
+            <Cite id="F01-86" kind="derived">
+              raw data rate from the LeRobot feature shapes
+            </Cite>{' '}
+            The deadline sizes the computer beside the arm. NVIDIA reports a median of 76.8 ms for one call of its
+            GR00T N1.7 robot model on a Jetson AGX Thor, one of its onboard computers for robots: 76.8 / 33.3 ={' '}
+            <Derived>2.3</Derived> periods of the clock gone before the age of the camera frame is counted.{' '}
+            <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="What teleoperation looks like at the bench, and where the computer is">
-            A leader arm in the hand
+          <Header
+            variant="h2"
+            description="See where the computer sits at the bench, and why a recorded demonstration is already in the units a trained model outputs"
+          >
+            Teleoperation: six numbers copied from a leader arm to a follower
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Two small arms are clamped to a table. You hold one by its handle and move it. The other, a hand&apos;s
-            width away, makes the same move a moment later: it reaches over a block, closes its gripper, lifts, and
-            lets go above a cup. Driving a robot by hand like this is teleoperation. The arm you hold is the leader
-            and the arm that copies it is the follower.{' '}
+            An arm learns to {TASK_STORY} from recordings of a person doing it through the robot, and on this kit
+            the person&apos;s tool is a second arm. Two arms are clamped to one table. You move one, the leader, by
+            its handle. The other, the follower, makes the same move a moment later, so it is the follower that
+            reaches over the block, closes its gripper, lifts, and lets go over the cup. Driving a robot by hand
+            like this is teleoperation.{' '}
             <Cite id="F01-2">SO-ARM100 README, Sourcing Parts</Cite>
           </Box>
           <Box variant="p">
-            The leader&apos;s motors are switched off. It is only measured: the software reads the angle of each of
-            its six joints and hands those six numbers to the follower as targets. In our reading of the code,
+            The leader&apos;s motors are switched off and it is only measured. The software reads the angle of each
+            of its six joints and hands those six numbers to the follower as targets: in our reading of the code,
             teleoperation on this kit is copying six numbers from one arm to the other, many times a second.{' '}
-            <Cite id="F01-24">LeRobot so_leader.py, get_action()</Cite>
+            <Cite id="F01-24">LeRobot so_leader.py, get_action()</Cite> A recording made this way is a
+            demonstration, and it needs no conversion before training. What the person&apos;s hand asked for is
+            stored as six target angles, the same six numbers a trained model will later have to produce (section
+            4, Learning From Demonstrations).
           </Box>
           <Box variant="p">
             Neither arm contains a computer. Each plugs into a laptop or a small board through a USB cable, the
             cameras plug into the same machine, and that machine, the host, runs everything.{' '}
-            <Cite id="F01-88">LeRobot SO-101 guide, USB ports</Cite> From here on, the robot is the follower plus the
-            host. The leader is how a person shows it what to do, and the recordings of those sessions are the
-            demonstrations that section 4, Learning From Demonstrations, trains on.
+            <Cite id="F01-88">LeRobot SO-101 guide, USB ports</Cite> The arm is a peripheral. The robot is the
+            follower plus the host, and sizing the robot means sizing the host and whatever the host calls.
           </Box>
           <Capture
             file="so101-pick-place"
@@ -477,9 +498,9 @@ export function RobotAsComputer() {
             alt="A simulated SO-101 arm lowers its gripper over a small block, closes on it, lifts it and drops it into a cup."
             caption={
               <>
-                The follower arm doing the task this dive follows, in simulation: reach, close, lift, carry, release.
-                The clip runs <Seen>8.2</Seen> s. A script moves the arm here, so the motion is cleaner than a person
-                or a policy would make it. Press play to watch it.
+                The follower arm picking up the block and placing it in the cup, in simulation: reach, close, lift,
+                carry, release. The clip runs <Seen>8.2</Seen> s. A script moves the arm here, so the motion is
+                cleaner than a person or a trained model would make it. Press play to watch it.
               </>
             }
             provenance={MUJOCO_SO101}
@@ -493,62 +514,91 @@ export function RobotAsComputer() {
 
       <Container
         header={
-          <Header variant="h2" description="Two kinds of input, and what each one can and cannot tell the robot">
-            What goes in: sensors
+          <Header
+            variant="h2"
+            description="Know the units of every input a trained model receives, and that nothing on this arm measures force"
+          >
+            The observation: six joint angles and two camera frames
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Everything the robot knows at one instant is called an observation. On the {ARM} it has two parts: where
-            the arm&apos;s own joints are, and what the cameras see.
+            Everything the robot knows at one instant is called an observation. On the {ARM} it has two halves that
+            answer different questions: the joints say where the arm is, and the cameras say where the block and
+            the cup are.
           </Box>
           <Box variant="p">
-            Joint angles come from encoders. An encoder is a sensor on a joint that reports its angle as a whole
-            number of steps; the {ARM}&apos;s encoders count 4096 steps per full turn. Reading all six gives the
-            arm&apos;s pose. A robot&apos;s sense of its own body is called proprioception, and on this arm
-            proprioception is those six angles and nothing else.{' '}
-            <Cite id="F01-11">rustypot sts3215.rs, resolution</Cite> The servos hold speed, load and current
-            readings too, but in our reading of the driver it reads position only, so the arm knows where it is and
-            has no measure of how hard it is pushing.{' '}
-            <Cite id="F01-23">LeRobot so_follower.py, observation features</Cite>
+            Each of the six joints is a servo: a motor, a gearbox, an angle sensor and a small microcontroller in
+            one box. The six share one serial bus, a single data line to the host on which each servo answers by
+            its ID.{' '}
+            <Cite id="F01-8">LeRobot so_follower.py, motor list</Cite> The angle sensor is an encoder: it reports
+            the joint&apos;s angle as a whole number of steps, 4096 per full turn on this arm.{' '}
+            <Cite id="F01-11">rustypot sts3215.rs, resolution</Cite> Reading all six gives the arm&apos;s pose. A
+            robot&apos;s sense of its own body is called proprioception, and on this arm proprioception is those
+            six angles.
           </Box>
           <Box variant="p">
-            The encoders say nothing about the block or the cup. That comes from two ordinary colour cameras. The
-            tutorial names them <code>wrist</code> and <code>top</code>: the first rides on the arm and sees what is
-            between the fingers, the second is fixed and sees the whole scene.{' '}
+            The steps are converted before anything is stored. With LeRobot&apos;s default setting the five arm
+            joints are in degrees, measured from the middle of each joint&apos;s calibrated range, and the gripper
+            is on a scale of 0 to 100 across its range. Switch <code>use_degrees</code> off and the arm joints are
+            on a scale of -100 to 100 instead.{' '}
+            <Cite id="F01-18">LeRobot motors_bus.py, normalisation</Cite> The recording uses the same key name
+            either way, so in our reading one name can carry two units. Check which scale a downloaded {ARM}{' '}
+            dataset or checkpoint uses before mixing it with your own recordings.{' '}
+            <Cite id="F01-19">LeRobot config_so_follower.py, use_degrees</Cite>
+          </Box>
+          <Box variant="p">
+            Position is all the arm reports. The servos hold speed, load and current readings too, but in our
+            reading of the driver it reads position only, so a model driving this arm gets positions and pixels and
+            no measure of how hard the arm is pushing.{' '}
+            <Cite id="F01-23">LeRobot so_follower.py, observation features</Cite> Reading the other registers would
+            not supply one. The servo&apos;s load figure is the duty cycle of its motor drive and its current
+            figure counts in units of 6.5 mA. In our reading neither is a torque at the joint, because the friction
+            of a 1/345 gearbox sits between the motor and the output.{' '}
+            <Cite id="F01-46">Feetech STS3215 evaluation document, feedback</Cite>
+          </Box>
+          <Box variant="p">
+            The encoders say nothing about the block or the cup. That half comes from two ordinary colour cameras,
+            which the tutorial names <code>wrist</code> and <code>top</code>. In our reading of the names and the
+            mounts, the first rides on the arm and sees what is between the fingers, and the second is fixed over
+            the scene and sees all of it.{' '}
             <Cite id="F01-31">LeRobot imitation learning tutorial, cameras</Cite> The code sets no default
             resolution; the documentation and every {ARM} example use 640x480 pixels at 30 frames per second.{' '}
             <Cite id="F01-30">LeRobot cameras guide and camera configs</Cite>
           </Box>
           <Box variant="p">
-            In a recording, the joint half of one observation is stored as <code>observation.state</code>, a vector
-            of six <code>float32</code> values, next to one image per camera.{' '}
-            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite>
+            A recording stores the joint half of each observation as <code>observation.state</code>, a vector of
+            six <code>float32</code> values that carries the six joint names, and the camera half as one image per
+            camera under <code>observation.images.wrist</code> and <code>observation.images.top</code>.{' '}
+            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite> These are the tensors a model is
+            trained on, and they are lopsided: 24 bytes of joints beside two frames of 921,600 bytes each.{' '}
+            <Cite id="F01-86" kind="derived">
+              raw data rate from the LeRobot feature shapes
+            </Cite>
           </Box>
           <Figure
             cites="F01-8 F01-26 F01-28 F01-30 F01-31"
             caption={
               <>
-                Read it top to bottom: the arm and its cameras sense, the host decides, six targets go back. The
-                numbered circles are the six servos. Illustrative layout, not to scale.
+                The arm and its cameras sense, the host decides, six targets go back. The numbered circles are the
+                six servos. Illustrative layout, not to scale.
               </>
             }
           >
             <ArmIoDiagram />
           </Figure>
-          <ExpandableSection headerText="From encoder steps to degrees: what the six numbers are measured in">
+          <ExpandableSection headerText="From encoder steps to degrees: calibration and the conversion">
             <SpaceBetween size="s">
               <Box variant="p">
                 A raw step count depends on how each servo was screwed onto the arm, so two arms in the same pose
                 report different counts. Calibration removes that: you move each joint through its range once and
                 the software records the minimum and maximum, so that a leader and a follower in the same pose
-                report the same values.{' '}
+                report the same values. The same step is what lets a model trained on one arm drive another.{' '}
                 <Cite id="F01-20">LeRobot motors_bus.py, record_calibration()</Cite>
               </Box>
               <Box variant="p">
-                After calibration LeRobot reports the five arm joints in degrees from the middle of each
-                joint&apos;s range, and the gripper on a scale of 0 to 100 across its range. With{' '}
+                The conversion to degrees measures each reading from the centre of that calibrated range. With{' '}
                 <M>{String.raw`\mathrm{raw}`}</M> the encoder reading in steps and <M>{String.raw`\mathrm{mid}`}</M>{' '}
                 the midpoint of the calibrated range in steps:
               </Box>
@@ -573,30 +623,31 @@ export function RobotAsComputer() {
         header={
           <Header
             variant="h2"
-            description="What the arm can be told, and the two choices every robot model makes about how to say it"
+            description="Know what a model's output means to the motor that receives it, and the two choices that fix its units"
           >
-            What comes out: actions
+            The action: six target angles for six position servos
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
             An action is what the robot is told to do at one instant. On the {ARM} it is six target angles, one per
-            servo, under the same names and in the same units as the six measured angles. Observation and action
+            servo, under the same names and in the same units as the six measured angles: observation and action
             are the same six numbers, one measured and one asked for.{' '}
             <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite> During teleoperation a person picks
-            the action: the recorded <code>action</code> is the leader&apos;s pose at that instant, and{' '}
-            <code>observation.state</code> is the follower&apos;s measured pose just before, so the follower is
-            always chasing.{' '}
-            <Cite id="F01-27">LeRobot lerobot_record.py, record_loop()</Cite> Later a trained model picks the
-            action instead. That model is called a policy.
+            the action. The recorded <code>action</code> is the leader&apos;s pose at that instant and{' '}
+            <code>observation.state</code> is the follower&apos;s measured pose just before, so the action leads
+            and the state lags.{' '}
+            <Cite id="F01-27">LeRobot lerobot_record.py, record_loop()</Cite> The gap between the two is the error
+            the servos are working to close. Later a trained model picks the action from the observation. That
+            model is called a policy.
           </Box>
           <Box variant="p">
-            The part that does the chasing is the servo: a motor, a gearbox, an encoder and a small microcontroller
-            in one box, whose job is to hold whatever angle it was last told. The program inside it is a position
-            controller. Over and over, it subtracts the measured angle from the goal angle to get an error and
-            drives the motor to shrink that error. The host never drives a motor directly: it writes a goal angle
-            into the servo and reads the measured angle back.{' '}
+            A servo&apos;s job is to hold whatever angle it was last told. The program inside it is a position
+            controller: over and over, it subtracts the measured angle from the goal angle to get an error and
+            drives the motor to shrink that error. The host never drives a motor. It writes a goal angle into one
+            register of the servo and reads the measured angle back from another, and that register table is the
+            arm&apos;s whole hardware interface.{' '}
             <Cite id="F01-14">rustypot sts3215.rs, register table</Cite>
           </Box>
           <Box variant="p">
@@ -616,17 +667,31 @@ export function RobotAsComputer() {
             the joint pushes harder the further it is from its goal. The last term is the change in error since the
             previous pass: the D gain brakes the joint when the error is shrinking fast. The middle term is the sum
             of every error so far: the I gain adds a push that builds up while an error persists. LeRobot writes
-            P = 16, I = 0 and D = 32 into each follower servo when it connects, which switches the integral term off:
-            the joints run as PD (proportional-derivative) controllers, and a joint holding a load can sit
-            slightly short of its goal.{' '}
+            P = 16, I = 0 and D = 32 into each follower servo when it connects and never tunes that loop again.
+            I = 0 switches the integral term off, so the joints run as PD (proportional-derivative) controllers,
+            and a joint holding a load can sit slightly short of its goal with nothing building up to close the
+            gap.{' '}
             <Cite id="F01-16">LeRobot so_follower.py, configure()</Cite> The formula is the standard one. Neither
-            Feetech document read for this dive states how often the servo runs it.{' '}
+            of the two Feetech documents read states how often the servo runs it.{' '}
             <Cite id="F01-45">Feetech STS3215 specification</Cite>
           </Box>
           <Box variant="p">
             A position controller takes one kind of order: go to this angle. The servo has no mode that holds a
             chosen force, so the {ARM} can be told where to go and cannot be told how hard to push.{' '}
-            <Cite id="F01-15">rustypot sts3215.rs, operating modes</Cite>
+            <Cite id="F01-15">rustypot sts3215.rs, operating modes</Cite> The gripper shows what that costs. Closed
+            on a block, it is chasing an angle the block will never let it reach, and in our reading a position
+            controller answers a standing error with a standing push. LeRobot caps the gripper servo when it
+            connects: torque limit at 50%, protection current at 50%, and 25% torque once overloaded, in the
+            code&apos;s own words &quot;to avoid burnout&quot;.{' '}
+            <Cite id="F01-17">LeRobot so_follower.py, gripper limits</Cite>
+          </Box>
+          <Box variant="p">
+            One more layer sits under the host and knows nothing of the policy. The servo&apos;s firmware switches
+            its output off after 2 s blocked at more than 80% of its stall torque, after 2 s drawing more than 2 A,
+            or at a temperature over 70 degrees C, as the datasheet lists it.{' '}
+            <Cite id="F01-47">Feetech STS3215 specification, electronic protection</Cite> At the bench that is a
+            joint that stops holding its angle, and the cause to check is at that servo: a stall, an over-current
+            or heat.
           </Box>
           <Box variant="p">
             Each joint that moves independently is one degree of freedom (DoF): one number needed to say where the
@@ -635,18 +700,19 @@ export function RobotAsComputer() {
             five degrees of freedom plus a gripper, and six numbers per action.{' '}
             <Cite id="F01-8">LeRobot so_follower.py, motor list</Cite> A loose object has six degrees of freedom,
             three of position and three of orientation, so in our reading of general kinematics a five-joint arm
-            cannot reach every position at every angle. For a block approached from above, the missing one does not
-            get in the way.{' '}
+            cannot reach every position at every angle. A block gripped from overhead never asks for the missing
+            one.{' '}
             <Cite id="F01-52">SO-ARM100 changelog</Cite>
           </Box>
           <Box variant="p">
-            There are two ways to say where the arm should go. A joint-space action gives one target angle per
-            motor, which is what the servos take directly. An end-effector action gives the position and
-            orientation of the end effector, the tool at the end of the arm (here the gripper), in x, y, z
-            coordinates. Software then converts that pose into joint angles, a step called inverse kinematics, and
-            for that it needs a kinematic model: a file that describes the arm&apos;s link lengths and joint axes.
-            Joint space is LeRobot&apos;s default and needs no model of the arm. End-effector space says where the
-            gripper should go, which the documentation calls more intuitive for pick-and-place.{' '}
+            Two choices fix what the numbers of an action mean, and every robot model makes both. The first is
+            what the numbers describe. A joint-space action gives one target angle per motor, which is what the
+            servos take directly. An end-effector action gives the position and orientation of the end effector,
+            the tool at the end of the arm (here the gripper), in x, y, z coordinates. Software then converts that
+            pose into joint angles, a step called inverse kinematics, and for that it needs a kinematic model: a
+            file that describes the arm&apos;s link lengths and joint axes. Joint space is LeRobot&apos;s default
+            and needs no model of the arm. End-effector space says where the gripper should go, which the
+            documentation calls more intuitive for pick-and-place.{' '}
             <Cite id="F01-53">LeRobot action representations guide, joint and end-effector space</Cite>
           </Box>
           <Box variant="p">
@@ -655,58 +721,80 @@ export function RobotAsComputer() {
             made its prediction: elbow 5 degrees further than now. (Both angles are illustrations.) A third form,
             delta, measures each action from the previous one, so errors add up along the sequence. Absolute is
             LeRobot&apos;s default.{' '}
-            <Cite id="F01-55">LeRobot action representations guide, absolute, relative and delta</Cite>
+            <Cite id="F01-55">LeRobot action representations guide, absolute, relative and delta</Cite> The words
+            are not shared between projects: NVIDIA&apos;s README describes its offsets from the current pose as
+            deltas, which is the form LeRobot calls relative.{' '}
+            <Cite id="F01-60">Isaac-GR00T README, What&apos;s new</Cite>
           </Box>
           <Box variant="p">
             For one arm and one task, stay with the defaults, absolute joint targets: nothing needs converting and
             the recorded numbers are the ones the servos receive. The opposite corner, relative end-effector
             actions, describes a motion without naming any robot&apos;s joints. NVIDIA adopted it for its GR00T
             N1.7 model and credits it for transfer between different robot bodies.{' '}
-            <Cite id="F01-60">Isaac-GR00T README, What&apos;s new</Cite>
+            <Cite id="F01-60">Isaac-GR00T README, What&apos;s new</Cite> The authors of Physical
+            Intelligence&apos;s pi0.7 model report the other choice: their experiments use joint-space control,
+            and they found no noticeable gain from end-effector control with their earlier models.{' '}
+            <Cite id="F01-59">pi0.7 paper, control mode</Cite> Read the action space off a model&apos;s
+            documentation before you fine-tune it. It decides whether your joint-angle recordings can be used as
+            they are or must first pass through a kinematic model of your arm.
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Three loops at three rates on one arm, and how a slow model drives a fast one">
-            How often: the rate ladder
+          <Header
+            variant="h2"
+            description="Place any model or controller by its rate, and know what each rung has to keep supplied"
+          >
+            The rate ladder: a policy over a 30 Hz loop over a servo
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The robot runs on a clock. The host repeats one short cycle: read the six angles and the latest camera
-            frames, decide on an action, write six goals to the servos, then sleep until the next cycle is due.{' '}
-            <Cite id="F01-33">LeRobot lerobot_record.py, record_loop()</Cite> One cycle is a tick, and the number
-            of ticks per second is the control rate, given in hertz (Hz, times per second). LeRobot records at 30
-            Hz by default, so one tick is 33.3 ms.{' '}
-            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
+            The host repeats one short cycle on a clock. It reads the six angles in one bus read and takes the
+            latest frame from each camera, decides on an action, writes six goals in one bus write, appends the
+            frame to the recording, then sleeps until the cycle&apos;s deadline.{' '}
+            <Cite id="F01-33">LeRobot lerobot_record.py, record_loop()</Cite>{' '}
+            <Cite id="F01-22">LeRobot so_follower.py, get_observation() and send_action()</Cite> One cycle is a
+            tick. The number of ticks per second is the control rate, given in hertz (Hz, times per second), and
+            the length of one tick is the control period. LeRobot records at 30 Hz by default, so the control
+            period is 33.3 ms.{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> The rate is a software setting: plain
+            teleoperation with nothing recorded defaults to 60 Hz.{' '}
+            <Cite id="F01-29">LeRobot lerobot_teleoperate.py, defaults</Cite>
           </Box>
           <Box variant="p">
-            The end of each tick is a deadline, and it is a soft one. The loop is ordinary Python on a desktop
-            operating system. When a tick overruns, LeRobot logs a warning and the arm acts late.{' '}
-            <Cite id="F01-36">LeRobot cycle_timer.py, wait()</Cite>
+            Most of a tick goes to reading sensors. LeRobot&apos;s documentation prints a sample timing report for
+            a 30 Hz recording, an example on hardware the page does not state. In it, reading the joints and the
+            cameras takes a mean of 13.65 ms, 74.4% of the loop&apos;s work; reading the leader takes 1.80 ms,
+            sending the action 0.90 ms and writing the frame 1.70 ms. The work has a mean of 18.4 ms and the loop
+            sleeps 15.1 ms per tick on average. That sleep is all the room a decision has if it must fit inside the
+            tick, and the same report&apos;s worst tick, 45.1 ms of work, overran the control period with no model
+            in the loop.{' '}
+            <Cite id="F01-38">LeRobot imitation learning tutorial, cadence reporting</Cite>
           </Box>
-          <Box variant="p">The host loop is the middle one of three, each feeding the one below it.</Box>
-          <ul style={LIST}>
-            <li>
-              <strong>Servo loop.</strong> Inside each servo, the position controller chases the last goal it was
-              given. It runs on the servo&apos;s own microcontroller and costs the host nothing.
-            </li>
-            <li>
-              <strong>Host loop.</strong> At 30 Hz it reads the sensors and writes six new goals.
-            </li>
-            <li>
-              <strong>Policy.</strong> A model too slow to answer inside one tick is called less often and answers
-              with an action chunk, the next several actions at once (section 4 explains why this works). In our
-              reading of the defaults, a policy with a 50-action chunk at 30 Hz is called once every 1.67 s, and
-              the host plays one action per tick in between.{' '}
-              <Cite id="F01-81" kind="our-reading">
-                LeRobot inference guide
-              </Cite>
-            </li>
-          </ul>
+          <Box variant="p">
+            The host loop is the middle one of three, and each only has to keep the one beneath it supplied.
+            Underneath, the position controller inside each servo chases the last goal it was given, on the
+            servo&apos;s own microcontroller and at no cost to the host. On top sits the policy. A model too slow
+            to answer inside one tick is called less often and answers with an action chunk, the next several
+            actions at once, which the host plays one per tick (section 4, Learning From Demonstrations, shows why
+            this works). Take a 50-action chunk, the default length for the SmolVLA and pi0.5 policies in LeRobot.{' '}
+            <Cite id="F01-57">LeRobot policy configurations, chunk sizes</Cite> In our reading of the defaults,
+            played to its end at 30 Hz it lasts 1.67 s, so the policy is called once every 1.67 s and the host
+            writes 50 sets of goals in between.{' '}
+            <Cite id="F01-81" kind="our-reading">
+              LeRobot inference guide
+            </Cite>
+          </Box>
+          <Box variant="p">
+            The rate of commands and the rate of the policy are separate settings. With{' '}
+            <code>--interpolation_multiplier N</code> LeRobot sends commands to the servos at 30 x N Hz while
+            policy inference and recording still advance at 30 Hz. The default N is 1.{' '}
+            <Cite id="F01-39">LeRobot cycle_timer.py and inference guide, interpolation</Cite>
+          </Box>
           <AnimatedFigure
             name="the rate ladder"
             steps={LADDER_STEPS}
@@ -714,20 +802,18 @@ export function RobotAsComputer() {
             cites="F01-28 F01-81"
             caption={
               <>
-                Step through from the bottom lane up. Each loop only has to keep the one below it supplied: the
-                servo with a goal, the host with a chunk. The curves in the bottom lane are illustrative, not
-                measured.
+                Step through from the bottom lane up. Each loop keeps the one beneath it supplied: the servo with a
+                goal, the host with a chunk. The curves in the bottom lane are illustrative, not measured.
               </>
             }
           >
             {(step, reduced) => <RateLadder step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
-            The pattern is general. A slower loop on top plans and a faster, simpler loop underneath tracks;
-            robotics calls the first a planner and the second a controller, and larger robots stack more of them.
-            NVIDIA&apos;s research page for its GR00T 2 model describes four layers on a Unitree G1, a humanoid
-            (a robot with two legs and two arms). The table sets NVIDIA&apos;s reported figures beside the{' '}
-            {ARM}&apos;s.
+            The pattern is general: a slower loop on top plans and a faster, simpler loop underneath tracks.
+            Robotics calls the first a planner and the second a controller, and larger robots stack more of them.
+            NVIDIA&apos;s research page for its GR00T 2 model describes four on a Unitree G1, a humanoid (a robot
+            with two legs and two arms), and each has a counterpart on the {ARM}.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560 }}>
@@ -785,8 +871,9 @@ export function RobotAsComputer() {
           </div>
           <Box variant="p">
             Read down either column and each rung is slower and does more thinking than the one beneath it. The
-            bottom rung is the one the {ARM} leaves unstated and the humanoid puts at 1 kHz, a thousand passes a
-            second.{' '}
+            rate also decides where a rung&apos;s computer can sit: on the humanoid, as NVIDIA describes it,
+            everything but the reasoning model runs on the robot. The bottom rung is the one the {ARM}&apos;s
+            documents leave unstated and the humanoid puts at 1 kHz, a thousand passes a second.{' '}
             <Cite id="F01-73">NVIDIA GR00T 2 research page</Cite>
           </Box>
           <ExpandableSection headerText="A second published ladder: Figure's Helix 02">
@@ -804,17 +891,17 @@ export function RobotAsComputer() {
       <Container
         header={
           <Header variant="h2" description="Turn milliseconds into millimetres, and find how much delay your task can absorb">
-            Worked example: delay is distance
+            Delay is distance
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
             The arm does not pause while the computer works. Between the moment a camera captures the scene and the
-            moment the servos receive the action computed from it, the gripper keeps moving on its previous orders.
-            How far it moves in that time is the error the delay causes. With <M>v</M> the gripper&apos;s speed in metres
-            per second, <M>{String.raw`\tau`}</M> the delay from capture to command in seconds and <M>d</M> the
-            distance in metres:
+            moment the servos receive the action computed from it, the gripper keeps moving on its previous orders,
+            and how far it moves in that time is the error the delay causes. With <M>v</M> the gripper&apos;s speed
+            in metres per second, <M>{String.raw`\tau`}</M> the delay from capture to command in seconds and{' '}
+            <M>d</M> the distance in metres:
           </Box>
           <Formula
             name="Distance travelled during the delay"
@@ -826,8 +913,8 @@ export function RobotAsComputer() {
             }
           />
           <Box variant="p">
-            The task sets the speed and the computer sets the delay. Their product is a length on the table, which
-            is why latency on a robot is a physical quantity: 100 ms is a distance.
+            The task sets the speed and the computer sets the delay. Their product is a length on the table, so a
+            latency figure for a robot is half a number until a speed stands beside it.
           </Box>
           <Box variant="p">
             Take the {ARM} carrying the block toward the cup at 0.25 m/s. That speed is an illustration, a modest
@@ -849,9 +936,9 @@ export function RobotAsComputer() {
             cites="F01-83 F01-84"
             caption={
               <>
-                Read along the line: every point is a delay on the horizontal axis and the distance the gripper
-                covers in that time on the vertical axis, at an illustrative 0.25 m/s. The dashed line is the slack
-                in the gears, below which the arm cannot tell where its gripper is.
+                Every point on the line is a delay and the distance the gripper covers in that time, at an
+                illustrative 0.25 m/s. The dashed line is the slack in the gears: the arm cannot tell where its
+                gripper is more finely than that.
               </>
             }
           >
@@ -893,17 +980,17 @@ export function RobotAsComputer() {
             than one tick.
           </Box>
           <Box variant="p">
-            The chain that has to fit in that budget is a sum of four waits, and this page&apos;s own accounting of
-            them follows. The camera frame is already some age when the host reads it,{' '}
+            The chain that has to fit in that budget is a sum of four waits (the split into four is ours). The
+            camera frame is already some age when the host reads it,{' '}
             <M>{String.raw`\tau_{\text{sense}}`}</M>. The policy takes <M>{String.raw`\tau_{\text{infer}}`}</M> to
             answer. If the policy runs on another machine, the request and the answer cross a network,{' '}
             <M>{String.raw`\tau_{\text{comm}}`}</M>, which is zero when the policy runs on the host. The finished
             action then waits for the next tick before it is written to the servos,{' '}
-            <M>{String.raw`\tau_{\text{act}}`}</M>. With <M>T</M> the control period (one tick) and{' '}
+            <M>{String.raw`\tau_{\text{act}}`}</M>. With <M>T</M> the control period and{' '}
             <M>{String.raw`d_{\max}`}</M> the error the task can absorb:
           </Box>
           <Formula
-            name="Control-latency budget (this page's accounting)"
+            name="Control-latency budget (our accounting)"
             tex={String.raw`\begin{aligned} \tau &= \tau_{\text{sense}} + \tau_{\text{infer}} \\ &\quad + \tau_{\text{comm}} + \tau_{\text{act}} \\ v\,\tau &\le d_{\max}, \qquad n = \tau / T \end{aligned}`}
             source={
               <>
@@ -917,8 +1004,9 @@ export function RobotAsComputer() {
           <Box variant="p">
             The sum adds the waits into one delay. The last line turns that delay into a distance and
             holds it against the tolerance, and <M>n</M> counts the same delay in ticks. Each term has a cited size
-            on this arm. The frame age is between 0 and 33.3 ms, because the camera and the loop both run at 30 Hz
-            and are not synchronised.{' '}
+            on this arm. The frame age is between 0 and 33.3 ms: the camera and the loop both run at 30 Hz, they
+            are not synchronised, and the loop takes the most recent frame in the buffer without waiting for a
+            fresh one.{' '}
             <Cite id="F01-85">LeRobot cameras guide, frame access modes</Cite> One call to GR00T N1.7 has a median
             of 76.8 ms on Jetson AGX Thor, as NVIDIA reports it.{' '}
             <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite> A local network adds 10 to 20
@@ -930,58 +1018,156 @@ export function RobotAsComputer() {
           <Box variant="p">
             Take the worst case with the model on a Thor beside the arm, so no network: 33.3 + 76.8 + 0 + 33.3 ={' '}
             <Derived>143.4</Derived> ms, which is <Derived>4.3</Derived> ticks, and at 0.25 m/s the gripper travels{' '}
-            <Derived>35.9</Derived> mm on old information. Against the <Derived>40</Derived> ms budget above that is more than three
-            times over, and inference is the largest term. The time on the serial bus and the servo&apos;s own
-            response were not sourced in this research and are left out, so the real delay is longer.{' '}
+            <Derived>35.9</Derived> mm on old information. Against the <Derived>40</Derived> ms budget that is more
+            than three times over, and inference is the largest term. It is also the term a runtime choice moves:
+            the 76.8 ms is with the model compiled by TensorRT, NVIDIA&apos;s inference runtime, and the same table
+            gives 106.8 ms for the same call in plain PyTorch on the same Thor (section 17, Running on the Robot).{' '}
             <Cite id="F01-83" kind="derived">
               speed times delay
             </Cite>{' '}
             <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
-            <Cite id="F01-85">LeRobot cameras guide, frame access modes</Cite> A chain slower than its budget
-            leaves two choices, move the arm more slowly or shorten the chain.
+            <Cite id="F01-85">LeRobot cameras guide, frame access modes</Cite>
+          </Box>
+          <Box variant="p">
+            The real delay is longer than the sum. The time on the serial bus and the servo&apos;s own response
+            were not sourced in this research and are left out. The bus code gives a sense of scale for the first:
+            it waits 50 ms per attempt for a servo&apos;s reply, a timeout its comment calls &quot;longer than the
+            16 ms latency timer of a USB adapter&quot;.{' '}
+            <Cite id="F01-25">LeRobot motors_bus.py, timeout and sync_read</Cite> A chain slower than its budget
+            leaves two moves: slow the arm, or shorten the chain.
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Which part of the machine each half of the robot loads, before any model is chosen">
-            What it costs: tiny state, heavy video, and a deadline
+          <Header
+            variant="h2"
+            description="Recognise each failure by what the log and the arm do, and know which setting moves it"
+          >
+            A missed deadline: a log line, a halted arm or a miss on the table
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The two kinds of input differ in size by four orders of magnitude. State and action together are
-            twelve <code>float32</code> values per tick: (6 + 6) x 4 bytes x 30 ticks = 1,440 bytes per second. One
-            640x480 colour frame is 640 x 480 x 3 = 921,600 bytes, so two cameras at 30 frames per second produce 2
-            x 30 x 921,600 = 55,296,000 bytes per second, which is 55.3 MB/s before compression. The images are
-            38,400 times the joint data.{' '}
+            Nothing enforces the clock. The loop is ordinary Python on a desktop operating system, and it keeps
+            its rate by sleeping until an absolute deadline: a start time plus the ticks done times the tick
+            interval. A tick that overruns borrows time from the ticks after it and the schedule stays where
+            it was.{' '}
+            <Cite id="F01-34">LeRobot cycle_timer.py, pacing</Cite> When the work no longer fits at all, LeRobot
+            logs a warning and the arm acts late. The warning names the usual causes: a camera that cannot keep up,
+            policy inference that takes too long, and CPU starvation.{' '}
+            <Cite id="F01-36">LeRobot cycle_timer.py, wait()</Cite>
+          </Box>
+          <Box variant="p">
+            While recording, the damage goes into the data. A frame&apos;s timestamp is derived from its index and
+            the nominal rate, so in the documentation&apos;s example a session that ran at 25 Hz still produces a
+            dataset that claims 30, and the recorded motion is faster than what happened.{' '}
+            <Cite id="F01-37">LeRobot imitation learning tutorial, cadence reporting</Cite> A policy trained on
+            those episodes learns a speed the arm never moved at. LeRobot reports the cadence a session really
+            held; read that report before you train on the session.
+          </Box>
+          <Box variant="p">
+            When a trained policy drives the arm, a run called a rollout, the default is synchronous inference: the
+            loop blocks until the action is computed.{' '}
+            <Cite id="F01-40">LeRobot inference guide, inference backends</Cite> The documentation says what that
+            looks like at the bench: &quot;with a synchronous rollout the robot stops moving every time the policy
+            computes its next chunk of actions&quot;.{' '}
+            <Cite id="F01-87">LeRobot remote inference guide and inference guide</Cite> The arm moves, halts for the
+            length of one call, and moves again.
+          </Box>
+          <Box variant="p">
+            The two other backends keep the arm moving through the call. RTC (real-time chunking), the technique
+            for a model too slow for the tick, computes the following chunk in a background thread on the host
+            while the loop plays the current one. Remote inference sends observations to a policy server on
+            another machine, so the host needs no GPU and keeps only the cameras and the motors.{' '}
+            <Cite id="F01-40">LeRobot inference guide, inference backends</Cite>{' '}
+            <Cite id="F01-41">LeRobot remote inference guide</Cite> Both rest on one condition, in the
+            documentation&apos;s words &quot;enough usable action playback to cover inference latency and its
+            variation&quot;.{' '}
+            <Cite id="F01-87">LeRobot inference guide, real-time chunking</Cite>
+          </Box>
+          <Box variant="p">
+            On this arm the buffer is rarely what runs out. By our arithmetic a 50-action chunk at 30 Hz lasts
+            1,667 ms, and a 149 ms call, NVIDIA&apos;s Jetson Orin figure for GR00T N1.7, uses 4.5 ticks of it.{' '}
+            <Cite id="F01-87" kind="derived">
+              chunk duration against call latency
+            </Cite>{' '}
+            What remains is the distance. The first actions of each new chunk were computed from an observation
+            several ticks old, and at 0.25 m/s every 100 ms of that age is 25 mm: the gripper closes where the
+            block was when the frame was taken.{' '}
+            <Cite id="F01-83" kind="derived">
+              speed times delay
+            </Cite>{' '}
+            Section 17, Running on the Robot, covers how a new chunk is joined to the one being played.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Size the host, the storage and the policy's computer from three numbers, before a model is chosen"
+          >
+            What the arm asks of a machine: bytes, megabytes and a deadline
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            The two halves of the observation differ in size by four orders of magnitude. State and action together
+            are twelve <code>float32</code> values per tick: (6 + 6) x 4 bytes x 30 ticks = 1,440 bytes per second.
+            One 640x480 colour frame is 640 x 480 x 3 = 921,600 bytes, so two cameras at 30 frames per second
+            produce 2 x 30 x 921,600 = 55,296,000 bytes per second, which is 55.3 MB/s of raw frames in memory. The
+            images are 38,400 times the joint data, and one default 60 s episode is 3.32 GB before video encoding.{' '}
             <Cite id="F01-86" kind="derived">
               raw data rate from the LeRobot feature shapes
             </Cite>
           </Box>
           <Box variant="p">
-            That ratio decides where the work lands in the rest of the dive. The servo loop runs on the servos. The
-            host loop runs on a CPU core and a USB port. The video is the load: it is compressed to be stored,
-            decompressed to be trained on, and pushed through a vision network every time the policy is called.
-            Storage, video encoding and decoding, and GPU time in the later sections all follow the 55.3 MB/s.
-            Almost nothing follows the 1,440 bytes.
+            The joints ask almost nothing. The servo loop runs on the servos, and the host loop needs a CPU core and
+            USB ports. Its one hidden cost is timing: on Linux the loop sleeps between ticks, and on macOS and
+            Windows it busy-waits the last 10 ms of each sleep to land on the deadline, which keeps one core
+            spinning for up to 10 ms of every 33.3 ms tick.{' '}
+            <Cite id="F01-35">LeRobot robot_utils.py, precise_sleep()</Cite>
           </Box>
           <Box variant="p">
-            The other cost is time against the tick, and the policy is the largest term in it. As a preview: GR00T
-            N1.7 is a vision-language-action model (VLA), a policy built on a network that takes camera images and
-            a text instruction, which section 5 covers. NVIDIA&apos;s benchmark of one complete call to it,
-            returning 40 actions, reports a median of 22.9 ms on an H100 data-centre GPU, 76.8 ms on Jetson AGX
-            Thor and 149.0 ms on Jetson Orin, the last two being NVIDIA&apos;s onboard computers for robots. At 30
-            Hz that is 1 to 5 control ticks per call.{' '}
-            <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>
+            The video is the load. It is compressed to be stored (section 9, Collecting Data), decompressed to be
+            trained on (section 10, Processing and Curating), and pushed through a vision network every time the
+            policy is called. Storage, video encoding and decoding, and GPU time all follow the 55.3 MB/s, and
+            almost nothing follows the 1,440 bytes.{' '}
+            <Cite id="F01-86" kind="derived">
+              raw data rate from the LeRobot feature shapes
+            </Cite>{' '}
+            The host feels it first. LeRobot supports a Jetson board as the host with a caveat: video decoding runs
+            on the CPU by default there, and the build with GPU support is community-maintained.{' '}
+            <Cite id="F01-89">LeRobot installation guide, platform note</Cite>
           </Box>
           <Box variant="p">
-            The robot has set these terms before any model is chosen. For each model in the sections that follow,
-            ask what it takes in (which cameras, which state), what it puts out (which action space, how long a
-            chunk) and how long one call takes. Then multiply that delay by the speed of your gripper: 100 ms is 25
-            mm at 0.25 m/s, and whether that is acceptable depends on the width of your cup.
+            The deadline is the third number, and the policy is the largest term in it. GR00T N1.7 is a
+            vision-language-action model (VLA), a policy built on a network that takes camera images and a text
+            instruction (section 5, Vision-Language-Action Models). NVIDIA&apos;s benchmark of one complete call
+            to it, returning 40 actions, reports a median of 22.9 ms on an H100 data-centre GPU, 76.8 ms on Jetson
+            AGX Thor and 149.0 ms on Jetson Orin. At 30 Hz that is 1 to 5 control ticks per call.{' '}
+            <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite> Every hop between the arm
+            and that GPU adds to the delay, so this is the one workload of the loop with a deadline per unit of
+            work where the others have a throughput: a job on the robot&apos;s clock (section 20, Fifteen
+            Workloads, Five Shapes).
+          </Box>
+          <Box variant="p">
+            The first check costs nothing. LeRobot&apos;s timing report has a pacing headroom line, the time the
+            loop slept per tick, and the documentation&apos;s sample annotates it &quot;near zero means the loop is
+            saturated&quot;.{' '}
+            <Cite id="F01-38">LeRobot imitation learning tutorial, cadence reporting</Cite> Read it on your own
+            host before any model is in the loop.
+          </Box>
+          <Box variant="p">
+            Then, for each model you consider, read off three things: what it takes in (which cameras, which
+            state), what it puts out (which action space, how long a chunk) and how long one call takes on the
+            computer you can put beside the arm. Multiply that delay by the speed of your gripper: 100 ms is 25 mm
+            at 0.25 m/s, and whether that is acceptable depends on the width of your cup.
           </Box>
         </SpaceBetween>
       </Container>

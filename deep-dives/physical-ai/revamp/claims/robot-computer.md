@@ -34,5 +34,32 @@ Gripper speed ceiling under about 1.8 m/s, no load, 6 V, 0.413 m arm; lower on t
 One encoder step, 0.088 degrees, is 0.63 mm at the gripper; backlash up to 0.5 degrees is 3.6 mm (derived) | F01-84
 One 640x480 RGB frame is 921,600 bytes; two cameras at 30 fps are 55,296,000 bytes/s (55.3 MB/s) against 1,440 bytes/s of state and action; 38,400 to 1 (derived) | F01-86
 GR00T N1.7 policy call, 40 actions: median 22.9 ms on H100, 76.8 ms on Jetson AGX Thor, 149.0 ms on Jetson Orin; 1 to 5 control ticks at 30 Hz (vendor claim) | F01-74
+A 76.8 ms policy call on Jetson AGX Thor is 2.3 control periods of 33.3 ms (our arithmetic, shown inline) | F01-74, F01-28
+The six servos share one serial bus and answer by ID (IDs 1 to 6) | F01-8
+With use_degrees off the arm joints are on a -100 to 100 scale; the gripper is always 0 to 100 | F01-18
+The same key name can carry two units; check the scale of a downloaded dataset or checkpoint (our reading) | F01-19
+The servo's load figure is a duty cycle and its current figure counts in 6.5 mA units; neither is a joint torque behind a 1/345 gearbox (our reading) | F01-46
+What each camera looks at is our reading of the names and mounts | F01-31
+LeRobot caps the gripper servo: torque limit 50%, protection current 50%, overload torque 25%, "to avoid burnout" | F01-17
+The servo firmware switches its output off after 2 s blocked above 80% of stall, after 2 s above 2 A, or above 70 degrees C | F01-47
+NVIDIA's README calls offsets from the current pose "deltas", the form LeRobot calls relative | F01-60
+pi0.7 experiments use joint-space control; no noticeable gain from end-effector control with earlier models (author reported) | F01-59
+One tick is one sync read of six positions plus the latest camera frames, and one sync write of six goals | F01-22
+Plain teleoperation defaults to 60 Hz | F01-29
+Docs' sample cadence report, hardware unstated: observe 13.65 ms (74.4% of work), teleop 1.80 ms, send 0.90 ms, record 1.70 ms, work mean 18.4 ms, 15.1 ms slept, worst work 45.1 ms | F01-38
+SmolVLA and pi0.5 default to a 50-action chunk; 50 actions at 30 Hz last 1.67 s | F01-57
+With --interpolation_multiplier N commands go out at fps x N Hz while policy and recording stay at fps; default 1 | F01-39
+The loop takes the most recent camera frame without waiting for a fresh one | F01-85
+GR00T N1.7 on Jetson AGX Thor: 76.8 ms with TensorRT, 106.8 ms in PyTorch (vendor claim) | F01-74
+The bus code waits 50 ms per attempt for a status packet, "longer than the 16 ms latency timer of a USB adapter" | F01-25
+Pacing sleeps to an absolute deadline; a slow tick borrows time from the following ticks | F01-34
+The overrun warning names camera FPS, policy inference and CPU starvation | F01-36
+Timestamps derive from frame index and nominal fps: a 25 Hz session yields a dataset that claims 30 | F01-37
+Default inference backend is synchronous and blocks the loop; RTC computes chunks in a background thread; remote uses a policy server | F01-40
+Remote inference: the robot computer keeps cameras and motors, a GPU machine runs the policy | F01-41
+A synchronous rollout stops the robot while the policy computes; asynchronous playback must cover inference latency and its variation; a 50-action chunk at 30 Hz lasts 1,667 ms and a 149 ms call uses 4.5 ticks (derived) | F01-87
+One default 60 s episode is 3.32 GB raw before video encoding (derived) | F01-86
+On Linux the loop uses time.sleep; on macOS and Windows it busy-waits the last 10 ms of each sleep | F01-35
+On Jetson, video decoding runs on the CPU by default and the CUDA build is community-maintained | F01-89
 
-Not register claims (marked in the page): the 40-degree and 5-degree action examples, the encoder example (3072, 2048, 1024, 90.02) and the 10 mm tolerance are illustrations (Toy); the 40 ms budget is our arithmetic shown inline (Derived).
+Not register claims (marked in the page): the 40-degree and 5-degree action examples, the encoder example (3072, 2048, 1024, 90.02) and the 10 mm tolerance are illustrations (Toy); the 40 ms budget, the 2.3 periods and the 143.4 ms, 4.3 tick, 35.9 mm worst case are our arithmetic shown inline (Derived).
