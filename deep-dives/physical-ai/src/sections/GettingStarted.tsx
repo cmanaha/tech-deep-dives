@@ -4,7 +4,6 @@ import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
-import Link from '@cloudscape-design/components/link';
 import SegmentedControl from '@cloudscape-design/components/segmented-control';
 import { Cite, Derived } from '../components/Cite';
 import { Figure } from '../components/Figure';
@@ -228,7 +227,7 @@ export function GettingStarted() {
         header={
           <Header
             variant="h1"
-            description="Size a robot job, or read a robot-model result, from four facts: the model answers to a 33.3 ms period, its data is video, it is sized once to train and again to run, and a machine fills one part at a time (LeRobot v0.7.0 and the Isaac-GR00T repository, read 2026-11-20)"
+            description="Know the four ways a robot job differs from serving a language model, each with the number that shows it and the setting it forces (LeRobot v0.7.0 and the Isaac-GR00T repository, read 2026-11-20)"
           >
             2. Getting Started: What Changes When the Model Drives a Robot
           </Header>
@@ -239,17 +238,36 @@ export function GettingStarted() {
             Four facts about a robot arm change what you buy for it, and experience with language models points the
             wrong way on each. The model that drives the arm has a deadline the arm sets, 33.3 ms on this one, so it
             is sized in milliseconds per call and its throughput settles nothing. Its training data is almost all
-            video, so the data pipeline is a video pipeline and its cost lands on CPU cores. The model is sized
-            twice, for the GPU that trains it and for the small computer that runs it, and the second check is the
-            one that fails late. And a machine fills one part at a time, so the size of an instance says little
-            until you know which part the job fills first.{' '}
+            video, so the data pipeline is a video pipeline and its cost lands on CPU cores.{' '}
             <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
           <Box variant="p">
-            The arm is an {ARM}, a small desktop arm with six motors and two cameras, learning to {TASK_STORY}.
-            LeRobot is the open-source robot-learning library it is recorded, trained and run with, and several of
-            the numbers that follow are its defaults.
+            The model is sized twice, for the GPU that trains it and for the small computer that runs it, and the
+            second check is the one that fails late. And a job runs as fast as the first part of the machine to run
+            out, while the other parts sit partly idle, so the size of an instance says little until you know which
+            part that is.
           </Box>
+          <Box variant="p">
+            The arm is an {ARM}, a small desktop arm with six motors and two cameras, learning to {TASK_STORY}.
+            LeRobot is the open-source robot-learning library it is recorded, trained and run with.
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header variant="h2" description="Read only the sections your question needs">
+            Three shorter paths, one per reason for coming
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            One path is for models that predict what the arm&apos;s actions will do before the motors move (world
+            models), one follows the pipeline from a recorded attempt to many robots, and one is for choosing
+            machines and a scheduler. Each is a subset of the <Nav>30</Nav> sections.
+          </Box>
+          <RouteMap />
         </SpaceBetween>
       </Container>
 
@@ -275,18 +293,25 @@ export function GettingStarted() {
             LeRobot&apos;s inference guide prints a sample of its own timing report at 30 Hz, with no hardware
             named. The mean tick took 18.7 ms of the 33.3 ms budget, and the mean policy call 5.18 ms. The same
             report prints &quot;cycles over the 33.3 ms work budget: 12/1197 (1.0%)&quot;, with a worst cycle of 48.1
-            ms and a worst policy call of 40.00 ms. A machine that fits the mean with room to spare still missed the period on 1.0% of its
-            ticks. <Cite id="F07-23">LeRobot inference guide, rollout timing example</Cite>
+            ms and a worst policy call of 40.00 ms.{' '}
+            <Cite id="F07-23">LeRobot inference guide, rollout timing example</Cite>
           </Box>
           <Box variant="p">
-            So the computer beside the arm is chosen by the time of its slowest calls for your model. Published
-            figures rarely give that: NVIDIA&apos;s benchmark of its robot model reports medians, and neither it nor our own runs
-            hold a figure for the slowest calls.{' '}
-            <Cite id="F08-84">the latency method, with the control period</Cite> What a missed period does depends
-            on a setting. With LeRobot&apos;s default synchronous rollout, &quot;the robot stops moving every time
-            the policy computes its next chunk of actions&quot;; with the asynchronous ones the arm keeps moving on
-            actions it already holds, and an action that arrives late is an action for a scene that has already
-            changed (section 3, The Robot as a Computer, turns that delay into a distance).{' '}
+            So the computer beside the arm is chosen by its slowest calls for your model, and published figures
+            rarely give them: each figure in NVIDIA&apos;s benchmark of its robot model is the median of 60 timed
+            calls. <Cite id="F07-3">Isaac-GR00T deployment README, measurement details</Cite> The timing report says
+            where to look before buying a larger computer. In the guide&apos;s words, a high share for the policy
+            &quot;points at the policy or the device&quot; and a high share for reading the observation
+            &quot;points at the cameras&quot;. The largest outlier in the sample is neither: writing the recording
+            took 620.00 ms at its worst. <Cite id="F07-24">LeRobot inference guide, reading the timing report</Cite>{' '}
+            <Cite id="F07-23">LeRobot inference guide, rollout timing example</Cite>
+          </Box>
+          <Box variant="p">
+            A setting decides what a slow call does to the arm. With LeRobot&apos;s default synchronous rollout,
+            &quot;the robot stops moving every time the policy computes its next chunk of actions&quot;. The
+            asynchronous rollouts keep the arm moving on actions it already holds, which trades the pause for
+            motion planned from an older observation, and they need &quot;enough usable action playback to cover
+            inference latency and its variation&quot;.{' '}
             <Cite id="F01-87">LeRobot remote inference guide and inference guide</Cite>
           </Box>
         </SpaceBetween>
@@ -305,31 +330,36 @@ export function GettingStarted() {
             table with one row per tick plus one video per camera. A row holds what the arm sensed and what it was
             told at that instant: <code>observation.state</code>, six <code>float32</code> joint angles, and{' '}
             <code>action</code>, six <code>float32</code> targets.{' '}
-            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite> The rows are almost nothing. At 30
-            ticks a second the readings and targets come to 1,440 bytes per second, and two cameras at 640x480 come
-            to 55.3 MB/s of raw pixels, 38,400 times as much.{' '}
-            <Cite id="F01-86">the raw data rate, from the camera settings</Cite>
+            <Cite id="F01-26">LeRobot feature_utils.py, dataset features</Cite>
           </Box>
           <Box variant="p">
-            The ratio survives compression. A public 50-episode pick-and-place dataset named for the SO-101 is 86.1
-            MB in all: 11,939 frames from two cameras in two video files of 45.5 MB and 40.1 MB, and one 0.37 MB
-            file that holds every row. The video is stored as AV1 (AOMedia Video 1), the compression format LeRobot
-            writes by default. <Cite id="F05-29">Hugging Face hub file listing of the example dataset</Cite> Two
-            decisions follow. The first is that a dataset is small and costs a person&apos;s time: LeRobot&apos;s
-            recorder defaults to 50 episodes of up to 60 s with 60 s allowed to reset the scene after each, which
-            is up to 50 x (60 + 60) s = <Derived>100</Derived> minutes at the bench.{' '}
-            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> The second is that every later reader of
-            the data, from the filter that drops bad episodes to the trainer, has to decode video before it can do
-            anything else. Decoding is CPU work unless the GPU has a circuit for the format, so a team that budgets
-            only GPUs for training can find those GPUs waiting on CPU cores (sections 9 and 10, Collecting Data and
-            Processing and Curating).
+            The rows are almost nothing. At 30 ticks a second the readings and targets come to 1,440 bytes per
+            second, and two cameras at 640x480 come to 55.3 MB/s of raw pixels, 38,400 times as much.{' '}
+            <Cite id="F01-86">the raw data rate, from the camera settings</Cite> The ratio survives compression. A
+            public 50-episode pick-and-place dataset named for the SO-101 is 86.1 MB in all: 11,939 frames from two
+            cameras in two video files of 45.5 MB and 40.1 MB, and one 0.37 MB file that holds every row.{' '}
+            <Cite id="F05-29">Hugging Face hub file listing of the example dataset</Cite>
+          </Box>
+          <Box variant="p">
+            So a dataset is small, and what it costs is a person&apos;s time. LeRobot&apos;s recorder defaults to 50
+            episodes of up to 60 s, with 60 s allowed to reset the scene after each: up to 50 x (60 + 60) s ={' '}
+            <Derived>100</Derived> minutes at the bench. <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
+          </Box>
+          <Box variant="p">
+            The compute cost comes later and falls on whoever reads the data. Every reader, from the filter that
+            drops bad episodes to the trainer, decodes video before it does anything else, and the format chosen at
+            the bench decides who can do that. The video in that dataset is AV1 (AOMedia Video 1), the compression
+            format LeRobot writes by default, and the H100, a GPU widely used for training, cannot
+            hardware-decode it. On that card every frame is decoded by the CPU cores beside the GPU, so the cores are part of
+            the training budget.{' '}
+            <Cite id="F05-47">NVIDIA video encode and decode support matrix, H100 rows</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Check a model against the robot's computer, with the runtime you will ship, before you spend GPU hours training it">
+          <Header variant="h2" description="Check a model against the robot's computer, in the runtime you will ship, before you spend GPU hours training it">
             A policy is sized twice: once to train, once to run
           </Header>
         }
@@ -341,30 +371,38 @@ export function GettingStarted() {
             different units. Take GR00T N1.7, NVIDIA&apos;s robot model. To train: an AWS post reports 3.4 hours on
             one GPU and a peak of 41.5 GB of GPU memory for one run that adapted it to 75 SO-101 episodes over
             20,000 steps at batch 32, with the model&apos;s backbone frozen.{' '}
-            <Cite id="F09-82">AWS post, timing table</Cite> To run: NVIDIA&apos;s benchmark of one policy call
-            reports, with TensorRT, its inference compiler, a median of 22.9 ms on an H100, a data-centre GPU, and
-            149.0 ms on a Jetson Orin, one of its onboard computers for robots.{' '}
+            <Cite id="F09-82">AWS post, timing table</Cite>{' '}
+            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
+          </Box>
+          <Box variant="p">
+            To run: NVIDIA&apos;s benchmark of one policy call reports, with TensorRT, its inference compiler, a
+            median of 22.9 ms on an H100, a data-centre GPU, and 149.0 ms on a Jetson Orin, one of its onboard
+            computers for robots. The first figure fits inside a tick and the second is several ticks long. Nothing
+            in the training run reports that second size.{' '}
+            <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>
+          </Box>
+          <Box variant="p">
+            The software on the robot moves the answer as much as the chip does. On the same Jetson Orin,
+            NVIDIA&apos;s table gives 357.9 ms for the model run directly in PyTorch against the 149.0 ms of the
+            compiled one. On a Jetson AGX Thor, NVIDIA reports that quantising the model to a format it calls mixed
+            NVFP4 cuts the call from 76.8 ms to 35.6 ms. <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
+            <Cite id="F07-4">Isaac-GR00T deployment README, Thor quantisation</Cite>
+          </Box>
+          <Box variant="p">
+            Each of those choices makes a different artifact from the one that was trained. The compiled model is
+            built on the robot&apos;s own computer, in about 2 to 5 minutes, has to be rebuilt for a different GPU,
+            and is checked against the original before use: the expected cosine similarity of the outputs is 0.999
+            or higher. What the benchmark leaves open is whether the faster model still does the task: its figures
+            &quot;do not measure closed-loop task success&quot;.{' '}
+            <Cite id="F07-8">Isaac-GR00T deployment README, build notes</Cite>{' '}
+            <Cite id="F07-3">Isaac-GR00T deployment README, measurement details</Cite>
+          </Box>
+          <Box variant="p">
+            A 149.0 ms call can still serve a 33.3 ms clock, because each benchmarked call returns 40 actions and
+            the arm plays them while the next call computes. So before training a model, time one call of it on the
+            robot&apos;s computer in the runtime you will ship, and compare the result with the actions each call
+            returns (section <Nav>17</Nav>, Running on the Robot).{' '}
             <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
-            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite> The first figure fits inside a tick and
-            the second is several ticks long.
-          </Box>
-          <Box variant="p">
-            Nothing in the training run reports the second size. A model can train without trouble
-            and still be unable to drive the arm one action per tick, and the software on the robot moves the
-            answer as much as the chip does: on the same Jetson Orin, NVIDIA&apos;s table gives 357.9 ms for the
-            model run directly in PyTorch against the 149.0 ms of the compiled one.{' '}
-            <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite> The compiled form is built on
-            the robot&apos;s own computer, in about 2 to 5 minutes, and has to be rebuilt for a different GPU.{' '}
-            <Cite id="F07-8">Isaac-GR00T deployment README, build notes</Cite>
-          </Box>
-          <Box variant="p">
-            What lets a 149.0 ms call serve a 33.3 ms clock is that each benchmarked call returns 40 actions: the
-            arm plays them while the next call computes. That works only while, in the words of LeRobot&apos;s
-            guide, there is &quot;enough usable action playback to cover inference latency and its variation&quot;.
-            So before training a model, time one call of it on the robot&apos;s computer in the runtime you will
-            ship, and compare the result with the actions each call returns (section <Nav>17</Nav>, Running on the
-            Robot). <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
-            <Cite id="F01-87">LeRobot remote inference guide and inference guide</Cite>{' '}
             <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
         </SpaceBetween>
@@ -372,87 +410,46 @@ export function GettingStarted() {
 
       <Container
         header={
-          <Header variant="h2" description="Find the part a job fills first by arithmetic, and stop reading a GPU utilisation figure as proof that the GPU is the limit">
-            A machine fills one part at a time
+          <Header variant="h2" description="Find the part that sets a job's speed by arithmetic, and stop reading a GPU utilisation figure as proof that the GPU is the limit">
+            A job runs as fast as the first part of the machine to run out
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A computer is several parts with separate rates: CPU cores, memory, the units inside a GPU that do
-            arithmetic, the circuits inside it that decode video, storage, the network. A job runs as fast as the
-            first of them to run out. That part is full, the others sit partly idle, and a larger instance helps
+            An instance is CPU cores, memory, storage, a network link and, inside each GPU, separate units for
+            matrix arithmetic and for decoding video. A job uses them in some proportion, and it runs as fast as
+            the first one to run out. That part is full, the others sit partly idle, and a larger instance helps
             only if it has more of that part.{' '}
             <Cite id="F08-50">the parts of the machine and the counter that shows each</Cite>
           </Box>
           <Box variant="p">
-            Which part is full can be worked out before a benchmark, by setting what the job asks against what the
-            part supplies. Take training on the arm&apos;s episodes. LeRobot&apos;s hardware guide times one of its
-            policies, Diffusion Policy, at 0.167 s per update at batch 32 on 4 H100 GPUs, which is 32 / 0.167 ={' '}
-            <Derived>192</Derived> samples a second. <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>{' '}
-            A LeRobot pull request measured about 5 ms to fetch and decode one sample in one process, on hardware it
-            does not state. <Cite id="F05-62">LeRobot pull request 4549</Cite> Then the trainer asks for{' '}
-            <Derived>192</Derived> x 5 ms = <Derived>0.96</Derived> seconds of decoding every second: about one
-            CPU core keeps four GPUs fed, and the GPUs are the full part (our arithmetic from the two sources).
-            Change one setting and the answer moves. With image transforms applied per sample, LeRobot&apos;s
-            documentation says, &quot;the GPU ends up waiting for data&quot;: the full part is now the CPU cores,
-            and a faster GPU would train no faster. <Cite id="F05-58">LeRobot v0.7.0 lerobot-dataset-v3.mdx</Cite>
+            Which part is full shows in how a job&apos;s time divides. LeRobot&apos;s hardware guide times training
+            on 4 H100 GPUs at batch 32: for Diffusion Policy, one of its policies, an update takes 0.167 s, of which
+            loading the data is 0.015 s. The GPUs are the full part, and the input side has room to spare.{' '}
+            <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>
           </Box>
           <Box variant="p">
-            The usual check misleads here. The GPU utilisation that <code>nvidia-smi</code> prints is the share of
-            time in which at least one program was running on the GPU, and it says nothing about how much of the GPU
-            that program used. <Cite id="F08-30">nvidia-smi documentation, Utilization</Cite> A GPU that
-            spends part of every step waiting for data can still read as busy, and the team buys a larger one. The remedy is to pay for the instance
-            whose full part is the part being bought: decoding belongs on CPU instances, or on the GPU instance
-            with the most cores per GPU. <Cite id="F08-85">price-performance per part</Cite> Section 1 counts one
-            case by hand, section <Nav>20</Nav>, Fifteen Workloads, Five Shapes, does it for every job in the loop,
-            and the{' '}
-            <Link href="../silicon-memory-inference/">Silicon, Memory &amp; Inference dive</Link> covers how a GPU
-            and the memory hierarchy execute a model.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Go straight to the sections your question needs, and know what you can leave for later">
-            Where to go next, by the question you have
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            None of the three common reasons for reading needs all <Nav>30</Nav> sections.
-          </Box>
-          <ul style={{ margin: 0, paddingLeft: 22 }}>
-            <li>
-              <strong>World models.</strong> To learn what a world model is for, and how JEPA (Joint-Embedding
-              Predictive Architecture, a design that predicts a compact summary of the scene in place of its
-              pixels) trains and plans, read sections 3, 4, 6 and 7, then <Nav>16</Nav> and <Nav>22</Nav>. The
-              data, simulation and AWS sections can wait.
-            </li>
-            <li>
-              <strong>The pipeline.</strong> To follow an episode from the bench to a model running on many robots,
-              read section 3 and then 9 to <Nav>18</Nav> in order. The model sections, 4 to 8, are background you
-              can return to.
-            </li>
-            <li>
-              <strong>The compute answer.</strong> To choose machines, a scheduler and a way of buying capacity,
-              read sections <Nav>20 to 29</Nav>. They assume the four ideas and section 1, and nothing else.
-            </li>
-          </ul>
-          <RouteMap />
-          <Box variant="p">
-            Sections 5, 8 and <Nav>19</Nav> are on no route: models that also read a written instruction,
-            reinforcement learning (training by trial and reward) on a robot, and software agents that run the
-            experiments. The algorithms of reinforcement learning are in the{' '}
-            <Link href="../rl-agentic-loops/">Learning From Feedback dive</Link>.
+            One setting moves the answer. By default LeRobot applies its image transforms to each sample in the
+            worker processes that load the data, on CPU cores, and its documentation names the result: &quot;the
+            GPU ends up waiting for data&quot;. Setting <code>backend=gpu</code> leaves the workers to decode only
+            and applies the same transforms to each batch on the device that runs the policy. The work has moved from the part that was
+            full to the part that had room. <Cite id="F05-58">LeRobot v0.7.0 lerobot-dataset-v3.mdx</Cite>
           </Box>
           <Box variant="p">
-            On the first two routes, continue at section 3, The Robot as a Computer, which turns the 33.3 ms tick
-            into a distance. On the third, go to section <Nav>20</Nav>, Fifteen Workloads, Five Shapes, and ask of
-            the first job you own which part it fills first.{' '}
-            <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
+            The utilisation figure that <code>nvidia-smi</code> prints counts time, not capacity: it is the share
+            of the sample period in which at least one program was running on the GPU.{' '}
+            <Cite id="F08-30">nvidia-smi documentation, Utilization</Cite> A GPU that spends part of every step
+            waiting for data can still read as busy, and the team buys a larger one. Decoding belongs on CPU
+            instances, or on the GPU instance with the most cores per GPU.{' '}
+            <Cite id="F08-85">price-performance per part</Cite>
+          </Box>
+          <Box variant="p">
+            Before you size anything for a robot, get four numbers: the control period (33.3 ms on this arm), the
+            time of one call of your model on the robot&apos;s computer, the format of your recorded video, and the
+            CPU cores per GPU of the instance you mean to train on. Then go to section 3, The Robot as a Computer,
+            if the first two are your question, or to section <Nav>20</Nav>, Fifteen Workloads, Five Shapes, if the
+            last two are. <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>
           </Box>
         </SpaceBetween>
       </Container>

@@ -73,5 +73,10 @@
     "term": "Reinforcement learning",
     "expansion": null,
     "meaning": "Training by trial and reward."
+  },
+  {
+    "term": "Quantising",
+    "expansion": null,
+    "meaning": "Storing a model's numbers in a smaller format to make each call faster; NVIDIA's mixed NVFP4 is the example."
   }
 ]

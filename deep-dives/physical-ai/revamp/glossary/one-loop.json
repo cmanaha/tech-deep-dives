@@ -105,11 +105,6 @@
     "meaning": "A step in the arm's loop; one stage can hold several workloads."
   },
   {
-    "term": "Fan-out",
-    "expansion": null,
-    "meaning": "A job of short independent units; a lost machine costs the unit it was running."
-  },
-  {
     "term": "TensorRT",
     "expansion": null,
     "meaning": "NVIDIA's runtime for compiled models; the fastest in its benchmark table for the Jetson Orin."
@@ -118,5 +113,20 @@
     "term": "RTX renderer",
     "expansion": null,
     "meaning": "NVIDIA's ray-tracing renderer, which needs a GPU with RT cores."
+  },
+  {
+    "term": "Market",
+    "expansion": null,
+    "meaning": "The way capacity is bought: on demand, reserved ahead, or as spare capacity that can be taken back."
+  },
+  {
+    "term": "Independent units",
+    "expansion": null,
+    "meaning": "A job shape: short pieces that need nothing from each other; a lost machine costs the unit it was running."
+  },
+  {
+    "term": "Nodes that talk",
+    "expansion": null,
+    "meaning": "A job shape: machines that exchange data at every step; losing one loses the step on all."
   }
 ]

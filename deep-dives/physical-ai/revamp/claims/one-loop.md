@@ -7,10 +7,10 @@ The SO-101 examples use two cameras, wrist and top | F01-30
 A machine has parts that fill separately (CPU cores, memory, the units inside a GPU); the first to fill sets the speed (our reading) | F08-50
 On this arm's pipeline the first part to fill is often a CPU core, on a machine bought for its GPU (our reading) | F08-77
 The stand-in is six 1024x1024 float32 matrices, NumPy on one core, one run; 390 passes per second on one Cortex-A78AE core of a Jetson Orin Nano Super; 62.3% of cycles stalled on memory; it is not the arm's policy, which runs on a GPU | F08-62
-The stand-in's weights are 25.2 MB, larger than the caches, read once per pass; 390 x 25.2 MB = 9.8 GB/s; the figure sits at that core's measured memory limits, 9.25 GB/s read and 11.71 GB/s triad | F08-63
-The same core streamed 11.71 GB/s in a STREAM-style triad (one run) | F08-66
+The stand-in's weights are 25.2 MB, larger than the caches, read once per pass; 390 x 25.2 MB = 9.8 GB/s; the figure sits at that core's measured memory limits (the text prints the 11.71 GB/s streaming figure only) | F08-63
+The same core streamed 11.71 GB/s in a loop over arrays larger than the caches (one run) | F08-66
 9.8 / 11.71 = 84% (our arithmetic, marked Derived) | F08-63, F08-66
-Faster arithmetic would leave the 62.3% of memory-stalled cycles where they are (our reading, labelled) | F08-62
+62.3% of cycles wait on memory whatever the speed of the arithmetic (stated from the stall figure) | F08-62
 The arm takes a target 30 times a second, one every 33.3 ms; NVIDIA reports a median of 149.0 ms per call of GR00T N1.7 on a Jetson Orin with TensorRT, 4.5 periods (vendor claim) | F07-5
 A job on the robot's clock has a deadline per unit where every other shape has a throughput (our reading) | F08-79
 Evaluating one policy is 500 simulated episodes, one seed each, as one AWS Batch array job of 500 children that each read their index (the worked example is our reading) | F09-5
