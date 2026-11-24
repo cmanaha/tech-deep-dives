@@ -96,7 +96,7 @@ export function LearningFromDemonstrations() {
         header={
           <Header
             variant="h1"
-            description="Work out how often a policy must be called and how many network passes each call costs, from its chunk length and its action head, and see why a policy that copies one action per tick drifts off the task (the ACT, Diffusion Policy, pi0 and FAST papers, LeRobot v0.7.0 and the openpi code, read 2026-11-20)"
+            description="Work out how often a policy runs and what each run costs from two of its settings, and see why copying one action at a time drifts off the task (the ACT, Diffusion Policy, pi0 and FAST papers, LeRobot v0.7.0 and the openpi code, read 2026-11-20)"
           >
             4. Learning From Demonstrations: Why Copying Drifts and What Fixed It
           </Header>
@@ -107,11 +107,11 @@ export function LearningFromDemonstrations() {
             A network trained to copy a person&apos;s demonstrations fails for a reason its training loss never
             sees. Each small error moves the arm to a camera view that none of the demonstrations contains, the next
             action is worse there, and the error feeds itself. The worst case grows with the square of the number
-            of decisions the policy takes. Two changes contained it, and every current policy is built from both.
+            of decisions the policy takes. Two changes contained it. Every policy described here is built on the first, and most of them on the second.
           </Box>
           <Box variant="p">
-            The first is to decide less often. A <Toy>20</Toy>-second episode at 30 ticks a second is{' '}
-            <Derived>600</Derived> decisions (the episode length is an illustration), and a policy that predicts a
+            The first is to decide less often. An illustrative <Toy>20</Toy>-second episode at 30 ticks a second is{' '}
+            <Derived>600</Derived> decisions, and a policy that predicts a
             chunk of 100 actions per look makes it 6. ACT (Action Chunking with Transformers) is the 2023 policy
             that made chunks standard in robot imitation, and in its authors&apos; own test of the idea success
             went from 1% with no chunks to 44% with chunks of 100, averaged over four settings. The second change
@@ -153,7 +153,7 @@ export function LearningFromDemonstrations() {
             <Cite id="F02-67">LeRobot so_follower.py and the imitation learning tutorial</Cite>
           </Box>
           <Box variant="p">
-            Fifty is a working number. ACT was trained on 50 demonstrations per task, about 10 minutes of
+            Fifty is enough to train on. ACT was trained on 50 demonstrations per task, about 10 minutes of
             teleoperation (a person driving the robot), and its authors report 80 to 90% success on six real tasks
             with a two-armed robot of their own. At <Toy>20</Toy> seconds an episode, fifty episodes at 30 ticks a
             second are 50 x <Toy>20</Toy> x 30 = <Derived>30,000</Derived> rows, each one observation and one
@@ -185,8 +185,7 @@ export function LearningFromDemonstrations() {
             <Cite id="F02-1">Ross, Gordon and Bagnell, section 1</Cite>
           </Box>
           <Box variant="p">
-            Training searches for the weights whose answers sit closest to the expert&apos;s, on average. The
-            distance is routine. What decides everything after it is which situations the average runs over, and
+            Training searches for the weights whose answers sit closest to the expert&apos;s, on average. How the gap between two actions is measured is routine. What decides everything after it is which situations the average runs over, and
             the formula states that in a subscript. Write <M>{String.raw`\pi`}</M> for a candidate policy and{' '}
             <M>{String.raw`\Pi`}</M> for all the policies the network can represent, one per setting of its
             weights. <M>s</M> is a situation the robot is in (the paper calls it a state; the observation is the
@@ -244,9 +243,10 @@ export function LearningFromDemonstrations() {
             expert would do. Then one is slightly off, and the gripper ends up a little to one side. The wrist
             camera now shows a view that appears in none of the fifty episodes, because the expert never went
             there. On an unfamiliar input the next action is worse, which moves the arm further from anything it
-            was trained on. This is compounding error. At the bench it looks like a smooth, confident reach that
-            closes the gripper beside the block.{' '}
-            <Cite id="F02-2">Ross, Gordon and Bagnell, section 1</Cite>
+            was trained on. This is compounding error.{' '}
+            <Cite id="F02-2">Ross, Gordon and Bagnell, section 1</Cite> How each failure looks at the bench is
+            our reading of its mechanism, here and in the closing table: this one is a smooth, confident reach
+            that closes the gripper beside the block.
           </Box>
           <Box variant="p">
             How bad it can get is two counts multiplied. The policy has one chance per decision to make a first
@@ -275,10 +275,9 @@ export function LearningFromDemonstrations() {
             <Cite id="F02-3">Ross, Gordon and Bagnell, theorem 2.1</Cite>
           </Box>
           <Box variant="p">
-            Put toy numbers in. The <Toy>20</Toy>-second episode is <M>T</M> = <Derived>600</Derived> decisions.
+            With toy numbers, the <Toy>20</Toy>-second episode is <M>T</M> = <Derived>600</Derived> decisions.
             Suppose the policy makes a mistake that matters once in <Toy>1,000</Toy> decisions on familiar
-            situations, so <M>{String.raw`\epsilon`}</M> = <Toy>0.001</Toy>. That rate is an illustration; nobody
-            measured it.
+            situations, so <M>{String.raw`\epsilon`}</M> = <Toy>0.001</Toy>, an illustrative rate.
           </Box>
           <ul style={LIST}>
             <li>
@@ -302,10 +301,10 @@ export function LearningFromDemonstrations() {
             method, DAgger (Dataset Aggregation), runs the learned policy, has the expert label the situations the
             policy really reaches, adds them to the dataset and retrains, and it brings the guarantee back to
             linear in <M>T</M>. It needs an expert who can be asked for the right action in situations the learner
-            got itself into, and a recording session with a leader arm does not supply one. In our reading, robot
-            imitation mostly took the other road and shortened <M>T</M>; correcting a policy while it runs comes
+            got itself into, and a recording session with a leader arm does not supply one for free. ACT took the other road and shortened <M>T</M>; correcting a policy while it runs comes
             back as human interventions in section 8, Reinforcement Learning for Robots.{' '}
-            <Cite id="F02-4">Ross, Gordon and Bagnell, abstract and section 3</Cite>
+            <Cite id="F02-4">Ross, Gordon and Bagnell, abstract and section 3</Cite>{' '}
+            <Cite id="F02-5">ACT paper, section IV-A</Cite>
           </Box>
         </SpaceBetween>
       </Container>
@@ -314,7 +313,7 @@ export function LearningFromDemonstrations() {
         header={
           <Header
             variant="h2"
-            description="Decide once per chunk: the change that moved one paper's success from 1% to 44%, and why a longer chunk stops helping"
+            description="Decide once per chunk: the change that moved one paper's success from 1% to 44%, and where a longer chunk stops helping"
           >
             Action chunking divides the horizon by the chunk length
           </Header>
@@ -333,14 +332,15 @@ export function LearningFromDemonstrations() {
             robot controlled at 50 Hz (50 actions a second), so one pass plans 2 seconds of motion. In the
             authors&apos; ablation, an experiment that changes one setting and holds the rest, success averaged
             over four settings went from 1% with no chunking (<M>k</M> = 1) to 44% at <M>k</M> = 100, and then,
-            in their words, &quot;slightly tapers down with higher k&quot;. A longer chunk helps up to a point;
-            what pushes back is reaction time.{' '}
+            in their words, &quot;slightly tapers down with higher k&quot;. The ACT authors give no reason for
+            the taper; the Diffusion Policy authors, who measured the same trade, name slow reaction time.{' '}
             <Cite id="F02-5">ACT paper, section IV-A</Cite>{' '}
-            <Cite id="F02-6">ACT paper, table III and the chunking ablation</Cite>
+            <Cite id="F02-6">ACT paper, table III and the chunking ablation</Cite>{' '}
+            <Cite id="F02-15">Diffusion Policy paper, key findings</Cite>
           </Box>
           <Box variant="p">
-            Back to the toy episode. LeRobot&apos;s ACT also defaults to chunks of 100 actions, which at the{' '}
-            {ARM}&apos;s 30 Hz is 3.33 s of motion per decision. The <Derived>600</Derived>-tick episode becomes{' '}
+            LeRobot&apos;s ACT also defaults to chunks of 100 actions, which at the{' '}
+            {ARM}&apos;s 30 Hz is 3.33 s of motion per decision. The toy episode of <Derived>600</Derived> ticks becomes{' '}
             <Derived>600</Derived> / 100 = 6 decisions. With the same <M>{String.raw`\epsilon`}</M> the ceiling is
             6 x 6 x <Toy>0.001</Toy> = <Derived>0.036</Derived> wrong decisions. A wrong decision now spoils up to
             100 ticks, so in ticks the ceiling is <Derived>3.6</Derived>, which is <Derived>100</Derived> times
@@ -357,8 +357,7 @@ export function LearningFromDemonstrations() {
             cites="F02-67 F02-11"
             caption={
               <>
-                Both panels share the horizontal axis, the ticks of the toy episode, so a dot on the table sits
-                over its ceiling in the chart. Steps 1 to 5 are the drift, steps 6 and 7 the chunks. Illustrative,
+                Both panels share the horizontal axis, the ticks of the toy episode, so a dot on the table top sits over its ceiling in the chart. Steps 1 to 5 are the drift, steps 6 and 7 the chunks. Illustrative,
                 not measured: the band, both paths and the cones are drawn by hand, and the curves are the toy
                 arithmetic of the text.
               </>
@@ -389,8 +388,7 @@ export function LearningFromDemonstrations() {
           </Box>
           <Box variant="p">
             Every chunked policy therefore carries two numbers: how many actions it predicts, and how many of
-            those it plays before it looks again. Predicting long keeps the motion coherent. Playing only the
-            first part gives reaction time back and costs more calls. The Diffusion Policy authors measured the
+            those it plays before it looks again. Playing only the first part of what was predicted gives reaction time back and costs more calls. The Diffusion Policy authors measured the
             trade: playing more than one action per look helps the policy stay consistent, too many
             &quot;reduces performance due to slow reaction time&quot;, and 8 was best for most of the tasks they
             tested. pi0 predicts 50 actions and, as its authors report, plays 25 of them on 50 Hz robots before
@@ -462,6 +460,7 @@ export function LearningFromDemonstrations() {
                     report
                   </td>
                   <td style={TD}>
+                    <Cite id="F02-18">pi0 paper, section IV</Cite>{' '}
                     <Cite id="F02-23">openpi pi0_config.py</Cite>{' '}
                     <Cite id="F02-29">LeRobot configuration_pi0_fast.py</Cite>{' '}
                     <Cite id="F02-22">pi0 paper, appendix D</Cite>
@@ -472,10 +471,11 @@ export function LearningFromDemonstrations() {
           </div>
           <Box variant="p">
             ACT&apos;s own answer to the blind interval is temporal ensembling. The policy is called on every
-            tick, so chunks overlap, and the action sent to the arm is a weighted average of every prediction
-            made for the current tick. The weights are <M>{String.raw`w_i = \exp(-m \, i)`}</M>, where{' '}
-            <M>{String.raw`w_0`}</M> belongs to the oldest prediction and <M>m</M> sets how fast a new observation
-            takes over (a smaller <M>m</M> is faster). The authors introduced it &quot;to improve smoothness and
+            tick, so chunks overlap and each tick has many predictions made at different moments. The arm is sent
+            their weighted average. The oldest prediction weighs most, which keeps the arm on the motion it is
+            already making while newer looks bend it gradually: <M>{String.raw`w_i = \exp(-m \, i)`}</M>, with{' '}
+            <M>i</M> = 0 for the oldest. The smaller <M>m</M> is, the flatter the weights and the sooner a new
+            observation counts. The authors introduced it &quot;to improve smoothness and
             avoid discrete switching between executing and observing&quot;. It spends the whole saving in calls:
             at <M>k</M> = 100 and 50 Hz, plain chunking needs 0.5 forward passes per second and ensembling needs
             50.{' '}
@@ -483,8 +483,7 @@ export function LearningFromDemonstrations() {
           </Box>
           <Box variant="p">
             Whether a policy can afford that is one division. ACT&apos;s authors report about 0.01 s per
-            inference, about 100 forward passes per second on their card, so 50 fit. For pi0 its authors report
-            73 ms per call on an RTX 4090, which is 1 / <Derived>0.073</Derived> = <Derived>13.7</Derived> calls
+            inference, about 100 forward passes per second on their card, so 50 fit. For pi0 its authors report 73 ms per call on an RTX 4090 with 3 cameras, which is 1 / <Derived>0.073</Derived> = <Derived>13.7</Derived> calls
             per second, under half of this arm&apos;s 30 ticks. They also report that ensembling &quot;hurt
             policy performance&quot; when they tried it, and pi0 plays its chunks without it. Chunking survived
             from ACT into the pi0 line and ensembling did not. LeRobot leaves it off by default; turning it on
@@ -500,12 +499,10 @@ export function LearningFromDemonstrations() {
           <ExpandableSection headerText="ACT in LeRobot v0.7.0: the tensors, the defaults you will type, and where the code overrides the paper">
             <SpaceBetween size="s">
               <Box variant="p">
-                The tensors are small. Each camera image goes through ResNet-18, a standard image network, and
-                comes out as a grid of feature vectors. The six joint angles go through one linear layer. A
-                transformer of width 512 reads both and emits <code>chunk_size</code> rows of six target
-                angles.{' '}
-                <Cite id="F02-11">LeRobot configuration_act.py</Cite>{' '}
-                <Cite id="F02-13">LeRobot modeling_act.py</Cite>
+                The tensors are small. Each camera image goes through ResNet-18, a standard image network.
+                A transformer of width 512 reads its output with the joint angles and emits{' '}
+                <code>chunk_size</code> rows of target angles.{' '}
+                <Cite id="F02-11">LeRobot configuration_act.py</Cite>
               </Box>
               <Box variant="p">
                 <code>chunk_size = 100</code> and <code>n_action_steps = 100</code>: predict 100 actions and play
@@ -546,7 +543,7 @@ export function LearningFromDemonstrations() {
             cites="F02-14"
             caption={
               <>
-                The table from above. Both groups of solid paths are good demonstrations; the dashed line is what
+                The table top seen from overhead. Both groups of solid paths are good demonstrations; the dashed line is what
                 averaging them produces. Illustrative, not measured: the obstacle is our example.
               </>
             }
@@ -556,8 +553,7 @@ export function LearningFromDemonstrations() {
           <Box variant="p">
             Each cluster of valid answers is called a mode, and a set of demonstrations with several of them is
             multimodal. The word has a second use, for models that take both images and text; here it means only
-            that the good answers form separate groups. The obstacle is our illustration and the property is
-            general: people grasp from different angles, at different speeds, by different routes. The Diffusion
+            that the good answers form separate groups. The property is general: people grasp from different angles, at different speeds, by different routes. The Diffusion
             Policy authors call multimodal action distributions &quot;a well-known challenge for policy
             learning&quot;.{' '}
             <Cite id="F02-14">Diffusion Policy paper, section 1</Cite>
@@ -566,21 +562,20 @@ export function LearningFromDemonstrations() {
             The repair is to stop asking the network for the single best answer and let it draw one answer from
             the set of good ones. The last part of a network, the part that produces its output, is called a head;
             on a policy it is the action head, and a head that draws a sample is a generative head, as in an image
-            generator. Four designs are in use, and what separates them is the price of one sample: one pass, up
-            to a hundred passes, ten short passes, or a few dozen tokens.
+            generator. Four designs are in use, and what separates them is the price of one sample: ACT&apos;s style variable (one
+            pass), diffusion (up to a hundred passes), flow matching (ten short passes) and tokens (a few dozen,
+            one at a time).
           </Box>
           <Box variant="p">
-            <strong>A style variable (ACT).</strong> ACT keeps its single pass and adds one input. It is trained
-            as a CVAE (conditional variational autoencoder), a model trained to rebuild its input through a small
-            random vector. During training a second network looks at the demonstrated chunk and squeezes
+            ACT keeps its single pass and adds one input, a style variable. It is trained as a CVAE (conditional
+            variational autoencoder): during training a second network looks at the demonstrated chunk and squeezes
             &quot;which way the person did it&quot; into a vector <M>z</M>, which the policy receives as one more
             input, so it is never asked to average two ways. On the robot that second network is thrown away and{' '}
             <M>z</M> is set to zero, which gives one consistent way.{' '}
             <Cite id="F02-8">ACT paper, section IV and figure 4</Cite>
           </Box>
           <Box variant="p">
-            ACT&apos;s loss has one term for each of those two jobs: copy the chunk, and keep <M>z</M> small
-            enough to drop. <M>{String.raw`a_{t:t+k}`}</M> is the demonstrated chunk, the <M>k</M> actions from
+            ACT&apos;s loss has one term for each of those two jobs: copy the chunk, and keep <M>z</M> carrying so little that it can be dropped. <M>{String.raw`a_{t:t+k}`}</M> is the demonstrated chunk, the <M>k</M> actions from
             tick <M>t</M> on, and <M>{String.raw`\hat{a}_{t:t+k}`}</M> is the chunk the policy predicts from the
             observation and <M>z</M>. The second network does not output one <M>z</M>. It outputs a bell curve
             of likely values, a mean and a spread, written{' '}
@@ -634,7 +629,7 @@ export function LearningFromDemonstrations() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            <strong>Denoising (diffusion policy).</strong> A diffusion policy starts from a chunk of random
+            A diffusion policy starts from a chunk of random
             numbers: noise in the shape of an action chunk. A network looks at the observation and at the noisy
             chunk and predicts the noise in it. Subtracting part of that prediction leaves a slightly cleaner
             chunk. Repeat, each round being one denoising iteration, and a smooth trajectory appears. Training is
@@ -669,7 +664,8 @@ export function LearningFromDemonstrations() {
             <Cite id="F11-3">Diffusion Policy paper, sections 2.2 and 2.3</Cite>
           </Box>
           <Box variant="p">
-            How much repetition is a setting, and the default can be ten times the paper&apos;s. The Diffusion
+            How much repetition is a setting, and the default can be ten times what the paper ran for its 0.1 s
+            real-robot figure. The Diffusion
             Policy paper trains with 100 iterations. On real robots it uses DDIM (Denoising Diffusion Implicit
             Models), a sampling method that skips iterations, and runs 16 or 10; the authors report 0.1 s per
             inference at 10 iterations on an NVIDIA 3080 GPU.{' '}
@@ -678,15 +674,16 @@ export function LearningFromDemonstrations() {
             <Cite id="F02-17">LeRobot configuration_diffusion.py</Cite>
           </Box>
           <Box variant="p">
-            <strong>A velocity field (flow matching).</strong> Flow matching keeps the plan, noise in and a chunk
+            Flow matching keeps the plan, noise in and a chunk
             out, and straightens the route so that far fewer steps are needed. Picture every number in the noisy
             chunk as a point that has to travel to its place in a good chunk. The network&apos;s job is to say,
             for each point, which way to move and how fast: a velocity. A velocity for every possible position is
-            a velocity field. Sampling starts at the noise, asks for the velocity, takes a short step, and asks
-            again.
+            a velocity field. Sampling starts at the noise, asks for the velocity, takes a step, and asks again. The straightness is
+            what saves steps: a step is a straight move, so it follows a straight route exactly however long it
+            is, and leaves a curved one unless the steps are short.
           </Box>
           <Box variant="p">
-            Four symbols. <M>x</M> is the chunk being built. <M>{String.raw`\tau`}</M> is flow time, which runs
+            <M>x</M> is the chunk being built. <M>{String.raw`\tau`}</M> is flow time, which runs
             from 0 (pure noise) to 1 (finished chunk); it measures progress through the sampling, and all of it
             passes inside one policy call, so it is a different clock from the robot&apos;s tick <M>t</M>.{' '}
             <M>{String.raw`\delta`}</M> is the size of one step in flow time.{' '}
@@ -702,9 +699,8 @@ export function LearningFromDemonstrations() {
             The <M>x</M> on the right is where the chunk is now. <M>{String.raw`v(x, \tau)`}</M> is the
             direction from here toward a valid chunk, and it carries everything the network learned from the
             demonstrations. <M>{String.raw`\delta`}</M> is how far to trust that direction before asking again.
-            Taking a short straight step along a velocity and re-asking is called an Euler step. pi0, a robot
-            model from Physical Intelligence that section 5, Vision-Language-Action Models, takes apart, builds a
-            chunk of 50 actions this way in 10 Euler steps of size 0.1.{' '}
+            Taking a short straight step along a velocity and re-asking is called an Euler step. pi0 builds a chunk of 50 actions this way in 10 Euler steps of size 0.1 (section 5,
+            Vision-Language-Action Models, takes the model apart).{' '}
             <Cite id="F02-18">pi0 paper, section IV</Cite>{' '}
             <Cite id="F02-20">pi0 paper, section IV and appendix D</Cite>
           </Box>
@@ -757,16 +753,15 @@ export function LearningFromDemonstrations() {
             {(step, reduced) => <DemoFlow step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
-            Flow matching is diffusion with a straight path and few steps. In our reading, 10 steps where
-            Diffusion Policy trains with 100 iterations is the practical case for it. Each step is also cheaper
+            Flow matching is diffusion with a straight path and few steps: 10 in pi0, where Diffusion Policy trains
+            with 100 iterations. Each step is also cheaper
             than a full pass: pi0 encodes the observation once and caches the result, so a step re-runs only the
             action part of the network.{' '}
             <Cite id="F02-20">pi0 paper, section IV</Cite>{' '}
             <Cite id="F02-16">Diffusion Policy paper, section 3.4</Cite>
           </Box>
           <Box variant="p">
-            Two things to know before you open the code. Announcements and configuration files call flow steps
-            denoising steps too: LeRobot&apos;s pi0 setting is <code>num_inference_steps</code>, 10 by default.
+            Configuration files call flow steps denoising steps too: LeRobot&apos;s pi0 setting is <code>num_inference_steps</code>, 10 by default.
             And the openpi code runs the time axis the opposite way to the paper, with noise at 1 and the
             finished chunk at 0, by its own comment, so say which convention a formula uses before you compare it
             with the source.{' '}
@@ -789,11 +784,9 @@ export function LearningFromDemonstrations() {
         <SpaceBetween size="m">
           <Box variant="p">
             A language model produces tokens, so the fourth design writes the chunk as tokens and lets the
-            language model inside a robot model predict them one at a time. In our reading that is also how tokens
-            avoid the average: each token is one pick from a list of alternatives, where regression blends. The
-            plain scheme rounds every joint value at every
+            language model inside a robot model predict them one at a time. The plain scheme rounds every joint value at every
             tick into one of 256 bins and spends one token on each: for this arm&apos;s 6 numbers over a chunk of
-            50 actions, 300 tokens. Neighbouring tokens barely differ when the motion is smooth, each one carries
+            50 actions, 6 x 50 = 300 tokens by our count. Neighbouring tokens barely differ when the motion is smooth, each one carries
             almost no new information, and the authors of FAST (Frequency-space Action Sequence Tokenization, the
             tokeniser built to fix this) report that it makes training hard at high control rates.{' '}
             <Cite id="F02-25">FAST paper, sections III and IV</Cite>
@@ -803,8 +796,10 @@ export function LearningFromDemonstrations() {
             (discrete cosine transform), which rewrites a signal as a sum of cosine waves so that a smooth motion
             needs only a few numbers. It rounds those numbers and packs them with BPE (byte-pair encoding), the
             compressor text tokenisers use, which merges pairs that occur often. The authors report about 30
-            tokens per chunk per arm, a tenth of the plain count.{' '}
-            <Cite id="F02-26">FAST paper, sections V and VI</Cite>
+            tokens per chunk per arm. Against our count of 300 for this arm that is 300 / 30 ={' '}
+            <Derived>10</Derived> times fewer.{' '}
+            <Cite id="F02-26">FAST paper, sections V and VI</Cite>{' '}
+            <Cite id="F02-25">FAST paper, sections III and IV</Cite>
           </Box>
           <Box variant="p">
             The trade is training time against run time. The authors report about 5x fewer training GPU-hours than
@@ -815,7 +810,7 @@ export function LearningFromDemonstrations() {
           </Box>
           <Box variant="p">
             pi0.5, a later model in the same line, takes both sides of the trade: it is pretrained with FAST tokens and then
-            given a flow-matching action head for inference (section 5, Vision-Language-Action Models).{' '}
+            given a flow-matching action head for inference.{' '}
             <Cite id="F02-49">pi0.5 paper, figure 3 and section IV-D</Cite>
           </Box>
         </SpaceBetween>
@@ -836,8 +831,7 @@ export function LearningFromDemonstrations() {
             One arm&apos;s inference load is a product. The control rate divided by the actions played per call
             gives calls per second, and the head gives the network passes inside each call: one for ACT, 10 to 100
             for a diffusion policy, one reading of the images and ten small action passes for pi0, 30 to 60 token
-            steps for FAST. The table gives each paper&apos;s own figures, on its own GPU, so read across a row
-            and compare rows with care.
+            steps for FAST. The table gives each paper&apos;s own figures. Each row was timed on a different GPU, so compare within a row.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 600 }}>
@@ -845,7 +839,7 @@ export function LearningFromDemonstrations() {
                 <tr>
                   <th style={TH}>Policy</th>
                   <th style={TH}>One call computes</th>
-                  <th style={TH}>Time per call, as the authors report it</th>
+                  <th style={TH}>Authors&apos; reported time per call</th>
                   <th style={TH}>Source</th>
                 </tr>
               </thead>
@@ -901,13 +895,12 @@ export function LearningFromDemonstrations() {
             <Cite id="F02-21">pi0 paper, appendix D, table I</Cite>
           </Box>
           <Box variant="p">
-            Now the product. On 50 Hz robots pi0 calls every 0.5 s, after 25 actions: 2 calls per second, each 73
+            On 50 Hz robots pi0 calls every 0.5 s, after 25 actions: 2 calls per second, each 73
             ms, so the model is busy <Derived>146</Derived> ms of every second (2 x 73), about{' '}
-            <Derived>15</Derived>% of the time. The token model, if its chunks are the one-second chunks the same passage describes for pi0, spends
-            750 ms of each second, <Derived>75</Derived>%. Delay also counts as distance, as section 3, The
+            <Derived>15</Derived>% of the time. Delay also counts as distance, as section 3, The
             Robot as a Computer, showed. At the illustrative <Toy>0.25</Toy> m/s used there, 73 ms is{' '}
             <Toy>0.25</Toy> x <Derived>0.073</Derived> = <Derived>0.018</Derived> m, about <Derived>18</Derived>{' '}
-            mm of travel on old information, and 750 ms is <Derived>188</Derived> mm (<Toy>0.25</Toy> x{' '}
+            mm of travel on old information, and the token model&apos;s 750 ms is <Derived>188</Derived> mm (<Toy>0.25</Toy> x{' '}
             <Derived>0.75</Derived>). Chunks make a slow call possible, and the call still costs distance.{' '}
             <Cite id="F02-22">pi0 paper, appendix D</Cite>{' '}
             <Cite id="F02-21">pi0 paper, appendix D, table I</Cite>{' '}
@@ -917,21 +910,19 @@ export function LearningFromDemonstrations() {
             Chunking is the fix none of these policies goes without. How far the generative head is needed is
             less settled. The authors of OpenVLA-OFT took a 7B model that wrote actions as tokens, changed its
             head to predict the whole chunk in one parallel pass with a plain L1 regression loss, and report
-            success on LIBERO, a suite of simulated manipulation tasks, rising from 76.5% to 97.1%. In our
-            reading, sampling one mode is a strong tendency on human demonstrations and falls short of a law
-            (section 5, Vision-Language-Action Models).{' '}
+            average success across the four task suites of LIBERO, a simulated manipulation benchmark, rising
+            from 76.5% to 97.1%. In our reading, sampling one mode is a strong tendency on human demonstrations
+            and falls short of a law.{' '}
             <Cite id="F02-68">OpenVLA-OFT paper, abstract</Cite>
           </Box>
           <Box variant="p">
             Each mechanism fails in its own way at the bench, and the remedy is usually one configuration value.
-            The symptoms in the first column are our reading of the mechanisms; the causes and the settings are the
-            cited ones.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 600 }}>
               <thead>
                 <tr>
-                  <th style={TH}>What you see</th>
+                  <th style={TH}>What you would see</th>
                   <th style={TH}>What causes it</th>
                   <th style={TH}>What to change</th>
                   <th style={TH}>Source</th>
@@ -939,7 +930,7 @@ export function LearningFromDemonstrations() {
               </thead>
               <tbody>
                 <tr>
-                  <td style={TD}>A smooth reach that closes beside the block, more often late in the episode</td>
+                  <td style={TD}>A smooth reach that closes beside the block</td>
                   <td style={TD}>Compounding error: too many decisions per task</td>
                   <td style={TD}>
                     Play more actions per decision. In ACT&apos;s ablation the gain ran from <M>k</M> = 1 up to{' '}
@@ -1002,12 +993,12 @@ export function LearningFromDemonstrations() {
             </table>
           </div>
           <Box variant="p">
-            For the machine, a policy is two jobs of different shape (section 20, Fifteen Workloads, Five Shapes),
-            and both are matrix arithmetic on a GPU&apos;s tensor cores. Training a policy from scratch is the
-            small one: ACT&apos;s authors report about 5 hours on one 11 GB RTX 2080 Ti for about 80M parameters.
-            That is one GPU for an afternoon with no second machine to talk to, and the cores that decode the
-            episode video can fill before the GPU does (section 10, Processing and Curating). The same heads
-            inside a large pretrained model are another size of job: the FAST authors report about 4 days on 8
+            A policy gives the machine two jobs of different shape, training and the call on the arm (section 20,
+            Fifteen Workloads, Five Shapes), and both are matrix arithmetic on a GPU&apos;s tensor cores. Training
+            from scratch is small: ACT&apos;s authors report about 5 hours on one 11 GB RTX 2080 Ti for about 80M
+            parameters. That is a single-node job, and the cores that decode the episode video can fill before
+            the GPU does (section 10, Processing and Curating). With the same heads inside a large pretrained
+            model, training is far larger: the FAST authors report about 4 days on 8
             H100 GPUs for one run of a 3B-parameter token model, and section 15, Training at Three Scales, sorts
             the sizes. The call on the arm is the same arithmetic against a deadline. It has to return before the
             chunk in play runs out, every time, for as long as the arm runs.{' '}
@@ -1017,11 +1008,12 @@ export function LearningFromDemonstrations() {
           <Box variant="p">
             Before you choose a policy for your arm, write down three numbers for it: the actions it predicts per
             call, the actions it plays before it looks again, and the network passes in one call. Your control
-            rate divided by the actions played is calls per second. Multiply by the time of one call measured on
-            your GPU and the result has to stay well under 1 (section 17, Running on the Robot, gives the rule
-            for how far under). Multiply that same time by the speed of your gripper and you have the distance it
+            rate divided by the actions played is calls per second. The time of one call, measured on your GPU, has to stay under half the duration of the actions it
+            plays, or the next call cannot finish before the arm runs out (section 17, Running on the Robot,
+            works the rule). Multiply that same time by the speed of your gripper and you have the distance it
             travels on an old observation. The first two numbers exist because of chunking, the change behind the
             move from 1% to 44% in ACT&apos;s ablation. The third is the price of the head: 1, 10 or 100.{' '}
+            <Cite id="F07-22">LeRobot remote inference guide, tuning</Cite>{' '}
             <Cite id="F02-6">ACT paper, chunking ablation</Cite>{' '}
             <Cite id="F02-17">LeRobot configuration_diffusion.py</Cite>
           </Box>

@@ -18,7 +18,7 @@ ACT ablation: success from 1% at k = 1 to 44% at k = 100, averaged over four set
 LeRobot ACT defaults to chunk_size = 100; at 30 Hz that is 3.33 s | F02-11
 Toy with chunks: 600 / 100 = 6 decisions, ceiling 0.036 wrong decisions, 3.6 wrong ticks, 100 times lower than 360 (illustration, our arithmetic) | F02-11
 LeRobot ACT names the two chunk numbers chunk_size and n_action_steps (both 100 by default) | F02-11
-ACT in LeRobot uses a ResNet-18 vision backbone | F02-11
+ACT in LeRobot uses a ResNet-18 vision backbone and a transformer of width 512 | F02-11
 ACT's training loss is L1 on the chunk plus a weighted KL term; the algorithm box prints MSE, the text and LeRobot's code use L1 | F11-2, F02-13
 LeRobot ACT defaults target bimanual ALOHA tasks; an SO-101 user may shorten the chunk | F02-11
 LeRobot sets n_decoder_layers = 1 where the paper's table says 7; the original code used only the first layer | F02-12
@@ -44,7 +44,7 @@ The behaviour cloning objective averages the loss over the states the expert vis
 Network passes per chunk: 1 for ACT, 10 for pi0, 100 by default in LeRobot's diffusion policy | F02-16, F02-20, F02-17
 ACT's ablation tapers slightly at chunk sizes above 100 (author reported) | F02-6
 DAgger (2011): run the policy, have the expert label the states it reaches, retrain; the guarantee returns to linear in T; it needs an expert who can be queried on the learner's states | F02-4
-Robot imitation mostly shortened the horizon instead of querying the expert again (our reading) | F02-4
+ACT shortened the horizon instead of querying the expert again | F02-4, F02-5
 Diffusion Policy: predict T_p actions, execute T_a; an execution horizon above 1 helps consistency, too long reduces performance through slow reaction time; 8 was best for most tasks tested; the paper's values are 16 and 8 (author reported) | F02-15, F02-17
 LeRobot Diffusion Policy defaults: horizon 64, n_action_steps 32, one call every 1.07 s at 30 Hz, four times the paper's lengths | F02-17
 openpi names the chunk length action_horizon (50); LeRobot names it chunk_size | F02-23, F02-29
@@ -62,11 +62,13 @@ LeRobot's pi0 names its flow steps num_inference_steps, 10 by default | F02-29
 openpi's code runs the flow time axis opposite to the paper (noise at 1) | F02-24
 Naive binning of a 6-number action over a 50-action chunk is 300 tokens; FAST's about 30 is a tenth | F02-25, F02-26
 FAST decodes through the full 2B language model where flow pi0 runs 10 steps of a 300M action expert (author reported) | F02-27
-Tokens avoid averaging because each token is one pick among alternatives (our reading) | F02-25
 pi0.5 pretrains with FAST tokens, then adds a flow-matching action expert for inference | F02-49
 pi0: 46 of 73 ms (63%) is image encoders plus the observation pass; ten action passes are 27 ms, 2.7 ms each; 86 ms with 13 ms of network latency off-board (author reported) | F02-21
-pi0 at 2 calls per second of 73 ms is busy 146 ms per second, about 15%; a 750 ms token call per one-second chunk is 75% (our arithmetic) | F02-22, F02-21, F02-27
+pi0 at 2 calls per second of 73 ms is busy 146 ms per second, about 15% (our arithmetic) | F02-22, F02-21
 750 ms at an illustrative 0.25 m/s is 188 mm (toy speed, our arithmetic) | F02-27
-OpenVLA-OFT: a 7B token model given a parallel, L1-regression chunk head went from 76.5% to 97.1% on LIBERO (author reported); sampling is a tendency, not a law (our reading) | F02-68
+OpenVLA-OFT: a 7B token model given a parallel, L1-regression chunk head went from 76.5% to 97.1% average success across the four LIBERO task suites (author reported); sampling is a tendency, not a law (our reading) | F02-68
 One pi0-FAST training run: about 4 days on 8 H100 GPUs for a 3B-parameter model (author reported) | F02-28
 Bench symptoms for each failure (drift, stale chunk, chunk seams, averaged route, slow diffusion call) are our reading; causes and settings as cited | F02-2, F02-6, F02-15, F02-7, F02-13, F02-8, F02-11, F02-16, F02-17
+The time of one call must stay under half the duration of the actions played (derived from the guide's rule) | F07-22
+An Euler step follows a straight path exactly at any step size (geometric reasoning, no source) | F02-19, F02-20
+The ACT authors give no cause for the taper at larger k; the Diffusion Policy authors name slow reaction time for the same trade | F02-6, F02-15
