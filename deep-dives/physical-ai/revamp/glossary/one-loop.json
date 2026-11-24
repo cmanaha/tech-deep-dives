@@ -2,7 +2,7 @@
   {
     "term": "Workload",
     "expansion": null,
-    "meaning": "One job in the loop with one part of the machine that fills first; the loop around one arm has about fifteen."
+    "meaning": "One job behind the arm with one part of the machine that it exhausts first; the dive counts fifteen."
   },
   {
     "term": "Machine part",
@@ -10,9 +10,9 @@
     "meaning": "A piece of a computer that fills separately from the others, such as CPU cores, memory bandwidth or a GPU's tensor cores."
   },
   {
-    "term": "Full (part)",
+    "term": "Bottleneck",
     "expansion": null,
-    "meaning": "The part that sets a job's speed while the others sit partly idle."
+    "meaning": "The part of the machine a job exhausts first: the resource that is full while the rest of the machine sits partly idle."
   },
   {
     "term": "Shape (of a workload)",
@@ -97,17 +97,17 @@
   {
     "term": "Stand-in policy",
     "expansion": null,
-    "meaning": "A program of six 1024x1024 float32 matrices multiplied in turn on one CPU core, small enough to count by hand; it is not the arm's policy."
+    "meaning": "A program of six 1024x1024 float32 matrices, each multiplying a vector in turn, run on one CPU core: small enough to count by hand, and not the arm's policy."
   },
   {
     "term": "Stage",
     "expansion": null,
-    "meaning": "A step in the arm's loop; one stage can hold several workloads."
+    "meaning": "One of the eight steps an episode passes through in the loop; one stage can hold several workloads."
   },
   {
     "term": "TensorRT",
     "expansion": null,
-    "meaning": "NVIDIA's runtime for compiled models; the fastest in its benchmark table for the Jetson Orin."
+    "meaning": "NVIDIA's inference compiler; the fastest runtime in its benchmark table for the Jetson Orin."
   },
   {
     "term": "RTX renderer",
@@ -128,5 +128,40 @@
     "term": "Nodes that talk",
     "expansion": null,
     "meaning": "A job shape: machines that exchange data at every step; losing one loses the step on all."
+  },
+  {
+    "term": "Chunk",
+    "expansion": null,
+    "meaning": "The run of future actions one policy call returns (40 in NVIDIA's GR00T N1.7 benchmark); the arm plays them while the next call computes."
+  },
+  {
+    "term": "General compute (GPU)",
+    "expansion": null,
+    "meaning": "The units of a GPU that run any arithmetic in parallel, as distinct from its tensor cores, ray-tracing cores and video engines."
+  },
+  {
+    "term": "One long run",
+    "expansion": null,
+    "meaning": "A job shape: one machine for hours; a stop costs the work since the last checkpoint."
+  },
+  {
+    "term": "Always on",
+    "expansion": null,
+    "meaning": "A job shape: a stream with no end, handled item by item on machines kept running; a taken machine costs one item."
+  },
+  {
+    "term": "On the robot's clock",
+    "expansion": null,
+    "meaning": "A job shape: work on the computer beside the arm that cannot be interrupted and has no cloud scheduler."
+  },
+  {
+    "term": "AWS IoT Greengrass",
+    "expansion": null,
+    "meaning": "Software on a device that receives deployments from the cloud; it delivers the model to the computer beside the arm."
+  },
+  {
+    "term": "Augmentation",
+    "expansion": null,
+    "meaning": "Multiplying a recorded episode into variants to get more training samples."
   }
 ]

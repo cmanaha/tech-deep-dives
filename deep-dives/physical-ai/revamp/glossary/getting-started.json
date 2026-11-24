@@ -42,17 +42,17 @@
   {
     "term": "TensorRT",
     "expansion": null,
-    "meaning": "NVIDIA's inference compiler; its output is built on the target device and rebuilt for a different GPU."
+    "meaning": "NVIDIA's inference compiler, the runtime of its benchmark figures."
   },
   {
-    "term": "Synchronous rollout",
+    "term": "Synchronous mode",
     "expansion": null,
-    "meaning": "LeRobot's default way of running a policy, in which the robot stops while the policy computes its next chunk of actions."
+    "meaning": "LeRobot's default mode: the arm stands still each time the policy computes its next chunk."
   },
   {
     "term": "Full part",
     "expansion": null,
-    "meaning": "The part of a machine that runs out first and sets a job's speed while the others sit partly idle."
+    "meaning": "The part of a machine a job fills first, which sets its speed while the others sit partly idle."
   },
   {
     "term": "GPU utilisation (nvidia-smi)",
@@ -77,6 +77,26 @@
   {
     "term": "Quantising",
     "expansion": null,
-    "meaning": "Storing a model's numbers in a smaller format to make each call faster; NVIDIA's mixed NVFP4 is the example."
+    "meaning": "Storing a model's numbers in fewer bits; NVIDIA's format on the Jetson AGX Thor is called mixed NVFP4."
+  },
+  {
+    "term": "Chunk",
+    "expansion": null,
+    "meaning": "The next several actions returned by one policy call and played tick by tick; the next chunk has to be ready before the actions in hand run out."
+  },
+  {
+    "term": "Asynchronous mode",
+    "expansion": null,
+    "meaning": "A LeRobot mode that starts the next policy call while the arm plays the chunk it holds; it works only while the actions in hand outlast the call."
+  },
+  {
+    "term": "Backbone (frozen)",
+    "expansion": null,
+    "meaning": "The large pretrained body of a model; frozen means it is left unchanged while only the smaller parts built on it are trained."
+  },
+  {
+    "term": "Cosine similarity",
+    "expansion": null,
+    "meaning": "A comparison of two output vectors that is 1 when they point the same way; the compiled model is expected to reach 0.999 or higher against the original."
   }
 ]
