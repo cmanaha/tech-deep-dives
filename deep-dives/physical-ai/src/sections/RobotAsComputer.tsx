@@ -555,8 +555,8 @@ export function RobotAsComputer() {
             <Cite id="F01-19">LeRobot config_so_follower.py, use_degrees</Cite>
           </Box>
           <Box variant="p">
-            Position is all the arm reports. The servos also hold speed, load and current registers, but the driver
-            reads position only, so a model driving this arm gets positions and pixels and no measure of how hard
+            Position is all the arm reports. The servos also hold speed, load and current registers, but the driver&apos;s
+            observation reads the position register only, so a model driving this arm gets positions and pixels and no measure of how hard
             the arm is pushing.{' '}
             <Cite id="F01-23">LeRobot so_follower.py, observation features</Cite> The other registers would be a
             crude stand-in for force at best: the load figure is the duty cycle of the motor drive, on the far side
@@ -565,9 +565,11 @@ export function RobotAsComputer() {
           </Box>
           <Box variant="p">
             The encoders say nothing about the block or the cup. That half comes from two ordinary colour cameras,
-            which the tutorial names <code>wrist</code> and <code>top</code>: one rides on the arm and sees what is
-            between the fingers, the other is fixed over the scene.{' '}
-            <Cite id="F01-31">LeRobot imitation learning tutorial, cameras</Cite> The code sets no default
+            which the tutorial names <code>wrist</code> and <code>top</code>. By their names and the mounts the
+            hardware repository ships, one rides on the arm and sees what is between the fingers, and the other is
+            fixed over the scene.{' '}
+            <Cite id="F01-31">LeRobot imitation learning tutorial, cameras</Cite>{' '}
+            <Cite id="F01-7">SO-ARM100 README, camera mounts</Cite> The code sets no default
             resolution; the documentation&apos;s advice and the {ARM} tutorial use 640x480 pixels at 30 frames per
             second.{' '}
             <Cite id="F01-30">LeRobot cameras guide and camera configs</Cite>
@@ -1015,9 +1017,10 @@ export function RobotAsComputer() {
             <Cite id="F01-85">LeRobot cameras guide, frame access modes</Cite>
           </Box>
           <Box variant="p">
-            Treat the sum as a floor. It leaves out camera exposure, transfer and decoding, the time on the serial
-            bus and the servo&apos;s own response, and the sources read on 2026-11-20 give a figure for none of
-            them. A chain slower than its budget leaves two moves: slow the arm, or shorten the chain.
+            The sum is not the whole chain. It takes the longest value of the two waits, which overstates a typical
+            tick, and NVIDIA&apos;s median call, which understates a slow one. It also leaves out camera exposure,
+            transfer and decoding, the time on the serial bus and the servo&apos;s own response. Each of those
+            adds delay, and the sources read on 2026-11-20 give a figure for none of them. A chain slower than its budget leaves two moves: slow the arm, or shorten the chain.
           </Box>
         </SpaceBetween>
       </Container>
@@ -1120,8 +1123,8 @@ export function RobotAsComputer() {
             actions, spans a median of 22.9 ms on an H100 data-centre GPU to 149.0 ms on a Jetson Orin, which at 30
             Hz is 1 to 5 control ticks per call.{' '}
             <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite> Every hop between the arm
-            and that GPU adds to the delay. The policy is the one job around the arm that is sized by a deadline;
-            the others are sized by throughput.
+            and that GPU adds to the delay. The policy is the model-serving job that is sized by a deadline; the
+            training-side jobs are sized by throughput.
           </Box>
           <Box variant="p">
             Check your own loop first. LeRobot&apos;s timing report has a pacing headroom line, the time the loop
