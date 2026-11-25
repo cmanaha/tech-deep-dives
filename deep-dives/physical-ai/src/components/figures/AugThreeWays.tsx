@@ -181,7 +181,7 @@ function Wide() {
       </T>
       <Pic id="aug-rec" src={GRID} {...REC} x={20} y={258} w={232} h={174} />
       <T x={20} y={452} fill={MUTED}>
-        a MuJoCo still made for this dive
+        a MuJoCo still, scripted motion
       </T>
       <path d={`M252 345H274M274 ${tops[0] + 100}V${tops[2] + 100}`} fill="none" stroke={MUTED} strokeWidth="1.6" />
       {tops.map((y) => (
@@ -241,7 +241,7 @@ function Wide() {
 
       <Slots x={314} y={tops[2] + 58} w={fw} h={fh} gap={8} />
       <T x={314} y={tops[2] + 189}>
-        Empty on purpose: no generated clip was made for this dive.
+        No generated clip is shown: none was produced for this page.
       </T>
       <T x={1190} y={tops[2] + 96} anchor="end">
         207.78 s for one generated clip
@@ -340,10 +340,10 @@ function Narrow() {
 
       <Slots x={18} y={tops[2] + fy[2]} w={fw} h={fh} gap={8} />
       <T x={18} y={tops[2] + fy[2] + fh + 18}>
-        Empty on purpose: no generated clip was
+        No generated clip is shown: none
       </T>
       <T x={18} y={tops[2] + fy[2] + fh + 35}>
-        made for this dive.
+        was produced for this page.
       </T>
       <T x={18} y={tops[2] + fy[2] + fh + 66}>
         time per new sample: 207.78 s for one clip

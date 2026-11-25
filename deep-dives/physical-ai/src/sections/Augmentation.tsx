@@ -25,7 +25,7 @@ export function Augmentation() {
             variant="h1"
             description="Match the variety a failing policy lacks to image transforms, simulated replay or video generation, and know which hardware each one needs (LeRobot v0.7.0, Isaac Lab v3.0.0 and NVIDIA's Cosmos 3 pages, read 2026-11-20)"
           >
-            11. Augmentation and Synthetic Data: Three Ways to More Episodes
+            11. Augmentation and Synthetic Data: What Each Method Adds and the Machine It Needs
           </Header>
         }
       >

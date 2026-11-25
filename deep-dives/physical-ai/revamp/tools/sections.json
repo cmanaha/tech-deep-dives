@@ -9,7 +9,7 @@
  {"n":8,"id":"robot-rl","comp":"RobotRl","title":"Reinforcement Learning for Robots: Where the Attempts Come From"},
  {"n":9,"id":"collecting","comp":"CollectingData","title":"Collecting Data: What an Episode Weighs and What It Costs to Record"},
  {"n":10,"id":"curating","comp":"ProcessingCurating","title":"Processing and Curating: When Video Decode Sets the Training Speed"},
- {"n":11,"id":"augmentation","comp":"Augmentation","title":"Augmentation and Synthetic Data: Three Ways to More Episodes"},
+ {"n":11,"id":"augmentation","comp":"Augmentation","title":"Augmentation and Synthetic Data: What Each Method Adds and the Machine It Needs"},
  {"n":12,"id":"physics","comp":"PhysicsSimulation","title":"Physics Simulation: One Scene on a Core, Thousands on a GPU"},
  {"n":13,"id":"rendering","comp":"Rendering","title":"Rendering and Ray Tracing: Why Simulated Cameras Pick the GPU"},
  {"n":14,"id":"sim-to-real","comp":"SimToReal","title":"Sim-to-Real and Real-to-Sim: Widen the Simulator or Measure the Arm"},
