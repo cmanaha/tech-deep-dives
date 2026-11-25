@@ -1,26 +1,142 @@
 [
-  { "term": "Episode", "expansion": null, "meaning": "One recorded attempt at the task; on disk, rows in a shared Parquet file plus frames in shared MP4 files." },
-  { "term": "Reset", "expansion": null, "meaning": "Putting the scene back (the block and the cup) between two recorded episodes." },
-  { "term": "Hand-held data collection rig", "expansion": null, "meaning": "A gripper with a camera on it that a person holds to do the task without a robot; software reconstructs the gripper's path afterwards." },
-  { "term": "UMI", "expansion": "Universal Manipulation Interface", "meaning": "The 2024 project that introduced the hand-held gripper with a camera as a way to record demonstrations without a robot." },
-  { "term": "Fleet", "expansion": null, "meaning": "Many collection rigs and many people run as one data operation." },
-  { "term": "LeRobot dataset format v3.0", "expansion": null, "meaning": "The on-disk layout LeRobot v0.7.0 writes: Parquet files of rows, MP4 files of camera frames, and metadata, with many episodes per file." },
-  { "term": "Parquet", "expansion": null, "meaning": "A column file format: a table stored column by column, compressed, with its schema inside the file." },
-  { "term": "MP4", "expansion": null, "meaning": "The common container file for compressed video." },
-  { "term": "Metadata", "expansion": null, "meaning": "The files that describe a dataset's schema and say where each episode sits inside the shared data and video files." },
-  { "term": "Bookkeeping columns", "expansion": null, "meaning": "The five columns the recorder fills in on every row: timestamp, frame_index, episode_index, index and task_index." },
-  { "term": "Chunk directory", "expansion": null, "meaning": "A numbered folder (chunk-000) that holds up to 1,000 data or video files by default." },
-  { "term": "Hugging Face hub", "expansion": null, "meaning": "The site where LeRobot datasets and models are published." },
-  { "term": "Codec", "expansion": null, "meaning": "A method for compressing video into a file (the encoder half) and turning it back into frames (the decoder half)." },
-  { "term": "Encoder (video)", "expansion": null, "meaning": "The program or circuit that compresses video at recording time; a different thing from the joint-angle encoder of section 3." },
-  { "term": "Decoder", "expansion": null, "meaning": "The program or circuit that turns compressed video back into frames each time the data is read." },
-  { "term": "Keyframe", "expansion": null, "meaning": "A video frame stored whole, which can be decoded on its own; other frames are stored as differences." },
-  { "term": "GOP", "expansion": "group of pictures", "meaning": "The spacing of keyframes in a video; a GOP of 2 means a keyframe every second frame, which makes reading a random frame cheap." },
-  { "term": "CRF", "expansion": "constant rate factor", "meaning": "The encoder's quality dial: one number for how much detail it may discard; lower means better quality and larger files." },
-  { "term": "AV1", "expansion": "AOMedia Video 1", "meaning": "A video compression standard; the codec LeRobot v0.7.0 writes by default." },
-  { "term": "SVT-AV1", "expansion": null, "meaning": "A software encoder for AV1 that runs on CPU cores; libsvtav1 is its name in LeRobot's settings." },
-  { "term": "H.264", "expansion": null, "meaning": "Another video compression standard; the alternative LeRobot offers in software and through hardware encoders." },
-  { "term": "HEVC", "expansion": "High Efficiency Video Coding", "meaning": "Another video compression standard, also called H.265, available through LeRobot's hardware encoders." },
-  { "term": "Hardware encoder", "expansion": null, "meaning": "A fixed circuit in a GPU or processor that compresses video without loading the CPU cores." },
-  { "term": "Streaming encoding", "expansion": null, "meaning": "A recorder option that encodes frames during capture, in place of writing PNG images and encoding after the episode." }
+  {
+    "term": "Episode",
+    "expansion": null,
+    "meaning": "One recorded attempt at the task; on disk, rows in a shared Parquet file plus frames in shared MP4 files."
+  },
+  {
+    "term": "Reset",
+    "expansion": null,
+    "meaning": "Putting the scene back (the block and the cup) between two recorded episodes."
+  },
+  {
+    "term": "Hand-held data collection rig",
+    "expansion": null,
+    "meaning": "A gripper with a camera on it that a person holds to do the task without a robot; software reconstructs the gripper's path afterwards."
+  },
+  {
+    "term": "UMI",
+    "expansion": "Universal Manipulation Interface",
+    "meaning": "The 2024 project that introduced the hand-held gripper with a camera as a way to record demonstrations without a robot."
+  },
+  {
+    "term": "LeRobot dataset format v3.0",
+    "expansion": null,
+    "meaning": "The on-disk layout LeRobot v0.7.0 writes: Parquet files of rows, MP4 files of camera frames, and metadata, with many episodes per file."
+  },
+  {
+    "term": "Parquet",
+    "expansion": null,
+    "meaning": "A compressed, column-by-column table file format; LeRobot stores the per-tick rows in it."
+  },
+  {
+    "term": "Metadata",
+    "expansion": null,
+    "meaning": "The files that describe a dataset's schema and say where each episode sits inside the shared data and video files."
+  },
+  {
+    "term": "Bookkeeping columns",
+    "expansion": null,
+    "meaning": "The five columns the recorder fills in on every row: timestamp, frame_index, episode_index, index and task_index."
+  },
+  {
+    "term": "Chunk directory",
+    "expansion": null,
+    "meaning": "A numbered folder (chunk-000) that holds up to 1,000 data or video files by default."
+  },
+  {
+    "term": "Hugging Face hub",
+    "expansion": null,
+    "meaning": "The site where LeRobot datasets and models are published."
+  },
+  {
+    "term": "Codec",
+    "expansion": null,
+    "meaning": "A method for compressing video into a file (the encoder half) and turning it back into frames (the decoder half)."
+  },
+  {
+    "term": "Encoder (video)",
+    "expansion": null,
+    "meaning": "The program or circuit that compresses video at recording time; a different thing from the joint-angle encoder of section 3."
+  },
+  {
+    "term": "Decoder",
+    "expansion": null,
+    "meaning": "The program or circuit that turns compressed video back into frames each time the data is read."
+  },
+  {
+    "term": "Keyframe",
+    "expansion": null,
+    "meaning": "A video frame stored whole, which can be decoded on its own; other frames are stored as differences."
+  },
+  {
+    "term": "GOP",
+    "expansion": "group of pictures",
+    "meaning": "The spacing of keyframes in a video; a GOP of 2 means a keyframe every second frame, which makes reading a random frame cheap."
+  },
+  {
+    "term": "CRF",
+    "expansion": "constant rate factor",
+    "meaning": "The encoder's quality dial: one number for how much detail it may discard; lower means better quality and larger files."
+  },
+  {
+    "term": "AV1",
+    "expansion": "AOMedia Video 1",
+    "meaning": "A video compression standard; the codec LeRobot v0.7.0 writes by default."
+  },
+  {
+    "term": "SVT-AV1",
+    "expansion": null,
+    "meaning": "A software encoder for AV1 that runs on CPU cores; libsvtav1 is its name in LeRobot's settings."
+  },
+  {
+    "term": "H.264",
+    "expansion": null,
+    "meaning": "Another video compression standard; the alternative LeRobot offers in software and through hardware encoders."
+  },
+  {
+    "term": "HEVC",
+    "expansion": "High Efficiency Video Coding",
+    "meaning": "Another video compression standard, also called H.265, available through LeRobot's hardware encoders."
+  },
+  {
+    "term": "Hardware encoder",
+    "expansion": null,
+    "meaning": "A fixed circuit in a GPU or processor that compresses video without loading the CPU cores."
+  },
+  {
+    "term": "Streaming encoding",
+    "expansion": null,
+    "meaning": "A recorder option that encodes frames during capture, in place of writing PNG images and encoding after the episode."
+  },
+  {
+    "term": "from_timestamp",
+    "expansion": null,
+    "meaning": "The time at which an episode begins inside a camera's shared MP4 file; added to a row's timestamp to find its frame."
+  },
+  {
+    "term": "Nominal frame rate",
+    "expansion": null,
+    "meaning": "The rate the recorder was asked to run at (30 fps by default); timestamps are computed from it, whatever rate the loop achieved."
+  },
+  {
+    "term": "Correction collection",
+    "expansion": null,
+    "meaning": "Recording in which a trained policy drives the arm and a person takes over before a failure, so the recovery becomes training data."
+  },
+  {
+    "term": "End-effector action",
+    "expansion": null,
+    "meaning": "An action that gives the pose of the gripper, which must be converted into joint angles before an arm can follow it (built in section 3)."
+  },
+  {
+    "term": "vcodec=auto",
+    "expansion": null,
+    "meaning": "A LeRobot encoder setting that picks the first hardware encoder the host offers and falls back to SVT-AV1 when there is none."
+  },
+  {
+    "term": "finalize()",
+    "expansion": null,
+    "meaning": "The dataset call that closes the Parquet writers; without it the Parquet files are corrupt."
+  }
 ]
