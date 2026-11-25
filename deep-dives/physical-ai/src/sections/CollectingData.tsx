@@ -505,9 +505,9 @@ export function CollectingData() {
             <Cite id="F05-24">LeRobot dataset_writer.py, episode metadata</Cite>
           </Box>
           <Box variant="p">
-            The file count therefore follows the bytes and ignores the episodes. At this dataset&apos;s rate one
-            camera-hour is about 387 MB, two video files at the 200 MB target of v0.7.0, whether that hour holds a
-            few long episodes or hundreds of short ones. Version 2 of the format wrote one file per episode, so at
+            The file count therefore follows the bytes far more than the episodes. At this dataset&apos;s rate one
+            camera-hour is about 387 MB: about two video files at the 200 MB target of v0.7.0 when the hour is
+            many short episodes. The writer never splits an episode, so a few long ones make one to three files. Version 2 of the format wrote one file per episode, so at
             the millions of episodes LeRobot&apos;s docs design for it meant millions of files; version 3 keeps the
             count at the bytes over the size target.{' '}
             <Cite id="F05-19">LeRobot dataset v3 docs, lines 19 to 22 and 64</Cite>{' '}
@@ -536,8 +536,8 @@ export function CollectingData() {
             The division in that example is how every timestamp is made: the frame&apos;s index over the nominal
             frame rate, with no clock read. A recording loop that really ran at 25 Hz therefore still produces a
             dataset that claims 30, and the motion it holds is 30 / 25 = <Derived>1.2</Derived> times faster than the one the person
-            made. That faster motion is what a policy, the network that drives the arm, learns to copy when it is
-            trained on the data.{' '}
+            made. A policy, the network that drives the arm, trained on that data and run at the nominal 30 Hz moves{' '}
+            <Derived>1.2</Derived> times faster than the person did, by our reading.{' '}
             <Cite id="F05-4">LeRobot imitation learning guide, Cadence reporting</Cite>
           </Box>
           <Capture
@@ -548,8 +548,8 @@ export function CollectingData() {
             alt="Six frames from one episode, left to right: the arm above the block, the gripper around it, the block lifted, carried over the cup and released."
             caption={
               <>
-                Six frames of one episode in time order. Each shares its timestamp with one row of the table, and
-                that timestamp is what finds it in the video. The frames are rendered from a simulated SO-101 in MuJoCo,
+                Six frames of one episode in time order. In a recorded episode, each frame shares its timestamp with
+                one row of the table, and that timestamp is what finds it in the video. The frames are rendered from a simulated SO-101 in MuJoCo,
                 the physics simulator of section 12, Physics Simulation, and are not taken from the public dataset.
               </>
             }
@@ -628,11 +628,11 @@ export function CollectingData() {
             With a GOP of 2, a requested frame costs at most 2 decoded frames. With a GOP of 250, a common setting
             for streamed video and used here as an illustration, the worst case is 250 decoded frames and the average
             about 250 / 2 = 125. Set against the at most 2 of a GOP of 2, the worst case is 250 / 2 = 125 times the
-            decoding per random read. More keyframes buy that cheaper read with a larger file. To put a number on the size side for
-            your own scene, record one episode at <code>g</code> = 2 and one at a long GOP and compare the two
-            files.{' '}
+            decoding per random read. More keyframes buy that cheaper read with a larger file. The example dataset does not
+            record its GOP, so to put a number on the size side for your own scene, record one episode at{' '}
+            <code>g</code> = 2 and one at a long GOP and compare the two files.{' '}
             <Cite id="F05-37">LeRobot video_utils.py, decoder docstrings</Cite>{' '}
-            <Cite id="F05-30">from the file sizes of the example dataset</Cite>
+            <Cite id="F05-29">Hugging Face hub file listing of the example dataset</Cite>
           </Box>
           <Figure
             cites="F05-36 F05-37"
@@ -872,7 +872,7 @@ export function CollectingData() {
                   </td>
                   <td style={TD}>
                     Read the achieved rate, which the recorder reports in one line for every episode you keep, and
-                    discard a session whose rate is off before a policy learns its speed
+                    discard a session whose rate is off before you train on it
                   </td>
                   <td style={TD}>
                     <Cite id="F05-4">LeRobot imitation learning guide, Cadence reporting</Cite>
@@ -959,8 +959,8 @@ export function CollectingData() {
           </Box>
           <Box variant="p">
             UMI&apos;s authors report that 3 people recorded 1,400 demonstrations of a cup-arrangement task in 12
-            person-hours across 30 locations, which is 1,400 / 12 = 117 per person-hour, gathered in places no
-            robot was carried to. On that task the authors put the hand-held gripper at more than 3 times faster
+            person-hours across 30 locations, which is 1,400 / 12 = 117 per person-hour, gathered with no
+            robot present. On that task the authors put the hand-held gripper at more than 3 times faster
             than teleoperation. <Cite id="F05-8">UMI paper, sections V and VI</Cite>
           </Box>
           <Box variant="p">
@@ -1000,15 +1000,15 @@ export function CollectingData() {
             every episode. Before the first episode, settle the codec, the camera resolution and the GOP on the record command.
             Choose the codec
             for the machine that will train on the data and name it rather than setting <code>auto</code>, which
-            lets the recording host choose. Set the camera resolution knowing that two 1920x1080 cameras carry 124 /
-            18.4 = <Derived>6.75</Derived> times the pixels of two 640x480 ones, and the encode load on the cores
+            lets the recording host choose. Set the camera resolution knowing that two 1920x1080 cameras carry{' '}
+            <Derived>(1920 x 1080) / (640 x 480) = 6.75</Derived> times the pixels of two 640x480 ones, and the encode load on the cores
             beside the arm follows the pixels. Leave <code>g</code> at 2 unless whatever reads the data plays each episode
             in order.
           </Box>
           <Box variant="p">
             Then record one episode and check it before you record the rest of the session. Read the achieved rate in the
             recorder&apos;s one-line digest, look for missing frames, and weigh the episode&apos;s video: its bytes
-            over its frames, set against the 921,600 bytes of a raw frame, give your own ratio in place of this
+            over its frames, set against a raw frame at your resolution (width x height x 3 bytes; 921,600 at 640x480), give your own ratio in place of this
             dataset&apos;s 257 to 1.{' '}
             <Cite id="F05-4">LeRobot imitation learning guide, Cadence reporting</Cite>{' '}
             <Cite id="F05-30">from the file sizes of the example dataset</Cite> Before you pick a machine to train

@@ -473,6 +473,7 @@ All rows in this group are from one page, NVIDIA's "Video Encode and Decode Supp
 - Verdict: CARRIED (seed 02 section 2.1 for the 2.1 to 2.5x figure, re-fetched; the two-core statement is new)
 - Evidence: https://raw.githubusercontent.com/huggingface/lerobot/410c095eacc0011d998a73383eb94abed2715af0/docs/source/training_dataset_streaming.mdx | Tier 1, first-party docs | documentation of support | "With one worker, the decode threads of a rank wait for each other, so the rank uses only about 2 CPU cores. Each worker is a separate process, so N workers assemble and decode samples in parallel." Blog (Tier 2, https://huggingface.co/blog/lerobot/lerobot-release-v070): "The reader supports DataLoader workers, with 2.1-2.5x more samples per second when using four workers." (accessed 2026-11-20)
 - Use in dive: section 10, why "number of dataloader workers" is the knob and why vCPUs per GPU is the ceiling.
+- Rewrite check (2026-11-25): the 2.1 to 2.5x figure is the release blog's (Tier 2), not the docs page's; it now has its own entry, F05-109. Cite F05-60 for the two-core statement only.
 
 **F05-61. LeRobot's training defaults at v0.7.0 are batch size 8, 4 dataloader workers, prefetch factor 4 and 100,000 steps.**
 - Location: `src/lerobot/configs/train.py` lines 150-160, tag v0.7.0
@@ -780,6 +781,12 @@ Each entry here is [our reading]: a join of entries above, with no new source.
 - Verdict: NEW
 - Evidence: entries listed | Tier 1 and Tier 3 inputs, synthesis ours | [our reading] | Order-of-magnitude ladder per added episode [derived from the entries]: image transform, milliseconds of CPU; simulated replay, about 1 to 36 GPU-seconds (3,160 down to 100 demonstrations per GPU-hour, F05-91); generated video, about 20 GPU-minutes (F05-103).
 - Use in dive: section 11, the closing comparison table: three kinds, three parts of the machine, three orders of magnitude in cost.
+
+**F05-109. Hugging Face's LeRobot v0.7.0 release post reports that the streaming reader gives 2.1 to 2.5 times more samples per second with four DataLoader workers [vendor claim].**
+- Location: release blog "LeRobot v0.7.0", section "Disk-less streaming"
+- Verdict: SPLIT (2026-11-25) from F05-60, which held this blog quote under its Tier 1 docs URL; the quote is the one recorded there on 2026-11-20
+- Evidence: https://huggingface.co/blog/lerobot/lerobot-release-v070 | Tier 2, first-party blog | benchmark claim (vendor reported) | "The reader supports DataLoader workers, with 2.1-2.5x more samples per second when using four workers." (accessed 2026-11-20)
+- Use in dive: section 10, the gain from more dataloader workers in the streaming reader. Cite this entry, not F05-60, for the 2.1 to 2.5 figure.
 
 ## 5. Teaching material
 

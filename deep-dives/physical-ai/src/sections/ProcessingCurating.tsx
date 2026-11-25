@@ -327,7 +327,7 @@ export function ProcessingCurating() {
             <Cite id="F05-65">EC2 accelerated computing specifications</Cite>
           </Box>
           <Box variant="p">
-            Hugging Face reports a run where the cores did set the pace. ACT (Action Chunking with Transformers, the
+            Hugging Face reports a run that, by the arithmetic below, the cores paced. ACT (Action Chunking with Transformers, the
             small imitation policy of section 4) trained 2.8x faster on an H100 once its image augmentation, random
             changes applied to each training image, moved from the CPU workers to the GPU; the report gives no dataset, camera count, batch
             size or CPU. A step that shrinks 2.8x when work leaves the CPU was mostly waiting on the CPU: the GPU was busy
@@ -475,8 +475,7 @@ export function ProcessingCurating() {
             downloading the dataset first, Hugging Face&apos;s release post reports 2.1 to 2.5 times more samples per
             second from four workers. Neither the pull request nor the release post names the machine behind its figure, so time one worker and
             four on the instance you will rent, and check that four return at least <code>B / (r x u)</code> times
-            what one does. <Cite id="F05-60">LeRobot v0.7.0 training_dataset_streaming.mdx</Cite>{' '}
-            <Cite id="F05-59">LeRobot v0.7.0 release blog, Disk-less streaming</Cite>{' '}
+            what one does. <Cite id="F05-109">LeRobot v0.7.0 release blog, Disk-less streaming</Cite>{' '}
             <Cite id="F05-62">LeRobot pull request 4549</Cite>
           </Box>
           <Box variant="p">
@@ -524,7 +523,8 @@ export function ProcessingCurating() {
             NVDEC has an encoding partner, NVENC (NVIDIA Encoder). Both sit apart from the tensor cores, so a card
             can train at full load while its decoder sits unused. A card carries a
             set number of engines, each engine handles a fixed list of codecs, and NVIDIA publishes both in one
-            support matrix. <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
+            support matrix (the EC2 family named beside each card here is our pairing of that matrix with the EC2
+            tables). <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
           </Box>
           <Box variant="p">
             For AV1 the matrix says no on the H100 of P5, the A100 of P4d and the T4 of G4dn. The H100 has 7 NVDEC
@@ -566,7 +566,7 @@ export function ProcessingCurating() {
                 <thead>
                   <tr>
                     <th style={TH}>Card</th>
-                    <th style={TH}>EC2 family</th>
+                    <th style={TH}>EC2 family (our pairing)</th>
                     <th style={TH}>NVENC engines</th>
                     <th style={TH}>NVDEC engines</th>
                     <th style={TH}>AV1 hardware decode</th>
@@ -634,9 +634,9 @@ export function ProcessingCurating() {
             <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
           </Box>
           <Box variant="p">
-            For the GPU side, the nearest published rate we located is NVIDIA&apos;s, from March 2025, for a
-            predecessor it called NeMo Video Curator, version unnamed, on its DGX Cloud service: about 195 seconds per hour of
-            video per GPU in streaming mode, or 3,600 / 195 = 18.5 hours of video per GPU-hour. At that rate an
+            For sizing the GPUs, the nearest published end-to-end rate we located is NVIDIA&apos;s, from March 2025,
+            for a predecessor it called NeMo Video Curator, version unnamed, on its DGX Cloud service, for 720p
+            video: about 195 seconds per hour of video per GPU in streaming mode, for the whole pipeline, or 3,600 / 195 = 18.5 hours of video per GPU-hour. At that rate an
             illustrative <Toy>1,000</Toy> hours of video take about <Derived>54</Derived> GPU-hours, a dated order of
             magnitude to check against a short run of your own.{' '}
             <Cite id="F05-78">NVIDIA Technical Blog, NeMo Video Curator on DGX Cloud (2025-03-18)</Cite>
@@ -661,7 +661,7 @@ export function ProcessingCurating() {
             <Cite id="F05-71">Cosmos Curator video-pipelines.md, Options for Performance</Cite>
           </Box>
           <Box variant="p">
-            Two runs on 32 GPUs show how far apart a fed and a starved pipeline sit. The same March 2025 post
+            Two runs on 32 GPUs, measured differently, show a fed and a starved pipeline. The same March 2025 post
             describes a controller that measures each stage&apos;s throughput and
             resizes its pool of workers every three minutes, over-provisioning the CPU-only stages, and NVIDIA reports
             the GPU-stage workers busy over 99.5% of the time after a warm-up, on 32 GPUs across four nodes.{' '}
@@ -680,7 +680,7 @@ export function ProcessingCurating() {
             pipeline clusters those lists with K-Means, which groups vectors around a chosen number of centres,
             orders each cluster by cosine similarity to its centre (1 when two vectors point the same way) and, by
             our reading of its options, drops the clips that sit too close to another. For robot episodes the newer
-            recipes need no video model: a clip is embedded by its instruction text, its first frame and its wrist
+            recipes deduplicate with no video model: a clip is embedded by its instruction text, its first frame and its wrist
             motion, and the three are fused and clustered.{' '}
             <Cite id="F05-73">Cosmos Curator video-pipelines.md, Dedup Pipeline</Cite>{' '}
             <Cite id="F05-75">Cosmos Curator curator-next-embeddings.md and curator-next-curation.md</Cite>
