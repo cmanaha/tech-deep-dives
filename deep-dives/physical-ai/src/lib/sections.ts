@@ -21,7 +21,7 @@ export const sections = [
   { id: 'agents', title: '19. Agents Running the Loop: What the Agent May Touch and Who Grades It' },
   { id: 'workloads', title: '20. Fifteen Workloads, Five Shapes' },
   { id: 'pmu-cards', title: '21. Reading a Machine: The Counters That Say Which Part Is Full' },
-  { id: 'measurements', title: '22. Our Measurements: Three Stand-Ins on Two Edge Machines' },
+  { id: 'measurements', title: '22. Our Measurements: The Speed-Up Depends on the Part That Runs Out First' },
   { id: 'price-performance', title: '23. Price-Performance and Latency: One Unit of Work per Workload' },
   { id: 'aws-orchestration', title: '24. Orchestrating Physical AI on AWS' },
   { id: 'aws-batch', title: '25. AWS Batch' },
