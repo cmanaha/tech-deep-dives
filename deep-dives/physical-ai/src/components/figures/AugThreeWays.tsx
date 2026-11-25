@@ -363,7 +363,8 @@ export function AugThreeWays() {
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="augmentation-fanout-title" style={{ width: '100%', height: 'auto' }}>
       <title id="augmentation-fanout-title">One scripted episode beside three kinds of extra training data, with the time each takes per new sample</title>
       <desc>
-        One overhead frame of a demonstration feeds three rows. Image transforms show the same frame brighter and
+        One overhead frame of a scripted episode sits beside three rows; row 2's scenes come from a different capture
+        and stand in for simulated replays. Image transforms show the same frame brighter and
         rotated, darker and shifted, and with its hue shifted; an estimate puts them at milliseconds per image. Replay
         in a simulator shows three scenes with the block in a new place each time; 1,000 demonstrations take about 15
         minutes, or about 1 hour with cameras, which comes to under a second each, or a few seconds with cameras. Generation with a world model

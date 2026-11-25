@@ -32,8 +32,8 @@ export function Augmentation() {
             fails picks the method, and the method picks the part of the machine that runs out first. Recordings of
             the {ARM} driven to {TASK_STORY} at one bench show one table, one lamp and a few block positions, and
             the policy learns the lamp with the task. A policy that misses the block in a new place needs new
-            positions, and replay makes them: a recorded demonstration re-run in a simulator with the block moved,
-            kept only if the simulated physics says it succeeded. It runs on a GPU that renders, drawing what each
+            positions, and replay makes them: a few demonstrations recorded in a simulator are fitted to new block
+            positions and re-run there, each kept only if a success check on the simulated result passes. It runs on a GPU that renders, drawing what each
             simulated camera sees. A policy that fails under a new lamp needs a new look: image transforms give a little of it
             on the CPU cores already feeding training, and a video model repaints whole episodes on GPU memory and
             tensor cores, the units that do a network&apos;s matrix arithmetic.{' '}
@@ -511,8 +511,8 @@ export function Augmentation() {
             Sharing is paid in generation time. On NVIDIA&apos;s PyTorch rows the RTX PRO 6000 takes{' '}
             <Derived>3.0</Derived> times the H100&apos;s time for a 480p text-to-video clip (180.81 s against 59.83
             s) and <Derived>3.8</Derived> times at 720p (786.37 s against 207.78 s).{' '}
-            <Cite id="F05-98">NVIDIA Cosmos inference benchmarks and methodology</Cite> Repainting an existing 480p clip
-            takes the RTX PRO 6000 489.90 s against the H100&apos;s 148.65 s, so the illustrative{' '}
+            <Cite id="F05-98">NVIDIA Cosmos inference benchmarks and methodology</Cite> On NVIDIA&apos;s PyTorch transfer
+            rows, repainting an existing 480p clip takes the RTX PRO 6000 489.90 s against the H100&apos;s 148.65 s, so the illustrative{' '}
             <Toy>50</Toy> clips take 50 x 489.90 s = <Derived>6.8</Derived> GPU-hours on it against{' '}
             <Derived>2.1</Derived> on the H100: <Derived>4.7</Derived> GPU-hours more on every 50 clips.{' '}
             <Cite id="F05-97">NVIDIA Cosmos inference benchmarks, transfer generation</Cite>
