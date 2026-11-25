@@ -63,7 +63,7 @@ Simulated cameras fill GPU memory first, then the rendering path (our reading) |
 Cartpole at 8,192 environments (57.3 GB) fits the 96 GB GPU of G7e and not the 32 GB GPU of G7 | F06-48, F08-53, F08-43
 G7's GPU, sold as 32 GB, holds about 4,600 environments at 7.0 MB and 19,000 at 1.7 MB (derived); the divisions treat all memory as growing with the count and the rows do not separate the fixed part, so Cartpole (scaled down) is a ceiling and Kuka (scaled up) a floor | F06-48, F06-102, F06-47, F08-43
 Sizing method: measure at two counts of environments, divide the memory difference by the count difference, divide the memory left free by that cost (arithmetic, our reading) | F06-47
-EC2 docs print usable GiB: 48 GB shows as 44 GiB | F08-45
+EC2 docs list memory in GiB: an L40S sold as 48 GB shows as 44 GiB (not "usable"; register correction 2026-11-25) | F08-45
 RT cores per card: A10 72, 24 GB; L4 third-generation, no count, 24 GB; L40S 142, 48 GB; RTX PRO 6000 Blackwell Server Edition 188, 96 GB | F06-58
 NVIDIA's H100 and H200 product pages do not mention RT cores; memory 80 or 94 GB and 141 GB | F06-59
 Isaac Sim 6.2.0 tiers: RTX 4080 16 GB minimum, RTX PRO 6000 Blackwell 48 GB ideal | F06-52

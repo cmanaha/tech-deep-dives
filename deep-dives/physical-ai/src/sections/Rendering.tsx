@@ -835,8 +835,9 @@ export function Rendering() {
             <Cite id="F06-102">arithmetic over the Isaac Lab figures</Cite> Run the task at two counts of
             environments and divide the difference in memory by the difference in count: that is the cost of one
             more environment, with the fixed part of the process left out. The card&apos;s memory left free at
-            the smaller run, divided by that cost, is how many more environments it holds. Read that memory in the
-            usable GiB the EC2 documentation prints, where a GPU sold as 48 GB shows as 44 GiB.{' '}
+            the smaller run, divided by that cost, is how many more environments it holds. Keep the units apart while
+            you do it: the EC2 documentation lists memory in GiB, and an L40S sold as 48 GB appears there as 44
+            GiB.{' '}
             <Cite id="F08-45">EC2 accelerated computing specifications, accelerator memory</Cite>
           </Box>
         </SpaceBetween>
