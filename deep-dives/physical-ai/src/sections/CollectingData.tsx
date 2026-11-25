@@ -316,7 +316,7 @@ export function CollectingData() {
             variant="h1"
             description="Know what an episode is on disk and what it costs to make one: 86.1 MB for 50 episodes in a public example, about 257 to 1 against the raw frames (LeRobot v0.7.0 and one public dataset, read 2026-11-20)"
           >
-            9. Collecting Data
+            9. Collecting Data: What an Episode Weighs and What It Costs to Record
           </Header>
         }
       >

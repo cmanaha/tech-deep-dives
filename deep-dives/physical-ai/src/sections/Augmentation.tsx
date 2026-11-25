@@ -25,7 +25,7 @@ export function Augmentation() {
             variant="h1"
             description="Three ways to get more training data than you recorded, the part of the machine each one loads, and what each one costs (LeRobot v0.7.0, Isaac Lab v3.0.0 and NVIDIA's Cosmos 3 pages, read 2026-11-20)"
           >
-            11. Augmentation and Synthetic Data
+            11. Augmentation and Synthetic Data: Three Ways to More Episodes
           </Header>
         }
       >

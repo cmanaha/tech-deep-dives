@@ -190,7 +190,7 @@ export function SimToReal() {
             variant="h1"
             description="Know why a policy that works in simulation fails on the bench, and the two ways to close the gap (MuJoCo Playground v1.0.1 and MuJoCo 4.0, sources read 2026-11-20)"
           >
-            14. Sim-to-Real and Real-to-Sim
+            14. Sim-to-Real and Real-to-Sim: Widen the Simulator or Measure the Arm
           </Header>
         }
       >

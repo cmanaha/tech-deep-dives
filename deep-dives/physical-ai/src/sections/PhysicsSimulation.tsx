@@ -181,7 +181,7 @@ export function PhysicsSimulation() {
             variant="h1"
             description="Know what a physics step is, what it costs, and when it moves from one CPU core to a GPU batch (MuJoCo 4.0.1, MuJoCo Playground 1.0 and our own single-run measurements, read 2026-11-20)"
           >
-            12. Physics Simulation
+            12. Physics Simulation: One Scene on a Core, Thousands on a GPU
           </Header>
         }
       >

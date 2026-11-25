@@ -182,7 +182,7 @@ export function Rendering() {
             variant="h1"
             description="Understand why a simulator with cameras needs a different GPU than a trainer, and which software the ray-tracing rule applies to (Isaac Sim 6.2.0, Isaac Lab 3.0 and MuJoCo 4.0.1, sources read 2026-11-20)"
           >
-            13. Rendering and Ray Tracing
+            13. Rendering and Ray Tracing: Why Simulated Cameras Pick the GPU
           </Header>
         }
       >

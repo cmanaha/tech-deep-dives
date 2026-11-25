@@ -228,7 +228,7 @@ export function VisionLanguageAction() {
             variant="h1"
             description="Split a robot-model announcement into a backbone, an action head and two rates, and work out from them how fast the model can act and what GPU a fine-tune needs (papers, model cards and LeRobot v0.7.0, read 2026-11-20)"
           >
-            5. Vision-Language-Action Models: A Backbone, an Action Head and Two Clocks
+            5. Vision-Language-Action Models: Reading the Parameter Count and the Hertz Figure
           </Header>
         }
       >

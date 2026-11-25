@@ -313,7 +313,7 @@ export function ProcessingCurating() {
             variant="h1"
             description="See why the first bottleneck in training is often a CPU decoding video, and how the codec you recorded with decides which instances can read it (LeRobot v0.7.0, Cosmos Curator v2.10.0, NVIDIA's support matrix and the EC2 instance tables, read 2026-11-20)"
           >
-            10. Processing and Curating
+            10. Processing and Curating: When Video Decode Sets the Training Speed
           </Header>
         }
       >
