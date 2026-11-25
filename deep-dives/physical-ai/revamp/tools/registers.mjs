@@ -73,6 +73,7 @@ export function loadEntries() {
     e.tier = tier;
     e.venue = venue;
     e.kind = kind;
+    e.accessed = [...body.matchAll(/\(accessed (\d{4}-\d{2}-\d{2})\)/g)].pop()?.[1] ?? null;
   }
   return entries;
 }

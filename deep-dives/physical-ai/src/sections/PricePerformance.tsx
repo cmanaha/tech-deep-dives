@@ -453,7 +453,7 @@ export function PricePerformance() {
           </Box>
           <Box variant="p">
             The first correction also picks the instance: price a workload on the instance built around the part it
-            exhausts first (section 20 names that part for each workload), since every other part is paid for and
+            exhausts first (section 20 names that part for each workload, and for closed-loop evaluation the mix it draws on), since every other part is paid for and
             left idle. Video decoded in software and CPU physics exhaust CPU cores first, so they belong on CPU
             instances or on a GPU instance with many cores per GPU. Count physical cores, since EC2 lists vCPUs and
             two vCPUs can be two threads of one core.{' '}

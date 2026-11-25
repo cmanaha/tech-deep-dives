@@ -32,6 +32,8 @@ interface RegistryRecord {
   v?: string;
   k?: string;
   i?: string[];
+  /** Access date when it differs from ACCESSED. */
+  a?: string;
 }
 
 const REG = registry as Record<string, RegistryRecord>;
@@ -109,7 +111,7 @@ export function Cite({ id, children, kind }: CiteProps) {
         </Box>
       )}{' '}
       <Box variant="small" display="inline" color="text-body-secondary">
-        (accessed {ACCESSED})
+        (accessed {rec.a ?? ACCESSED})
       </Box>
     </span>
   );

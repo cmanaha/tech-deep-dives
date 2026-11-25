@@ -25,6 +25,7 @@ interface Source {
   venue: string | null;
   title: string;
   sections: number[];
+  accessed?: string;
 }
 
 const TERMS = glossaryData as Term[];
@@ -130,7 +131,7 @@ export function GlossaryAndSources() {
                     </span>
                   )}{' '}
                   <Box variant="small" display="inline" color="text-body-secondary">
-                    (accessed {ACCESSED}; cited in {s.sections.map((n) => sectionTitle(n).split('.')[0]).join(', ')})
+                    (accessed {s.accessed ?? ACCESSED}; cited in {s.sections.map((n) => sectionTitle(n).split('.')[0]).join(', ')})
                   </Box>
                 </li>
               ))}

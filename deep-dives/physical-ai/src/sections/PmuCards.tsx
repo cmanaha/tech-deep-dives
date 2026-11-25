@@ -843,8 +843,9 @@ export function PmuCards() {
           />
           <Box variant="p">
             The term <M>c</M> leaves front-end bound and enters bad speculation, so the four shares still sum to
-            100%, and back-end bound and retiring keep their generic lines. A card computed without <M>c</M>{' '}
-            therefore reads front-end bound too high and bad speculation too low, each by <M>c</M>.{' '}
+            100%, and back-end bound and retiring keep their generic lines. On these three cores and the Neoverse V1, a card computed
+            without <M>c</M> reads front-end bound too high and bad speculation too low, each by <M>c</M>; the
+            Neoverse V2 splits it between front end and back end (below).{' '}
             <Cite id="F08-22">our comparison of the run script with Arm&apos;s formulas</Cite>
           </Box>
           <Box variant="p">
@@ -1024,7 +1025,7 @@ export function PmuCards() {
                   to be told apart. A refill is
                   a cache miss that fetches a line from further out, and on this step the A725 refilled its level-2
                   data cache 0.38 times per thousand instructions against the X925&apos;s 0.12, so part of the gap may
-                  come from the X925&apos;s caches. A level-2 count would settle it: Arm&apos;s level-2 metrics for
+                  come from the X925&apos;s caches. A level-2 count would narrow it: Arm&apos;s level-2 metrics for
                   the X925, A725 and Neoverse V3 split back-end stalls into core-bound and memory-bound, with
                   data-cache stalls on the memory side, and this run counted level 1 only.{' '}
                   <Cite id="F08-6">Intel TMA metrics file, rows Memory_Bound and Core_Bound</Cite>{' '}
@@ -1167,7 +1168,8 @@ export function PmuCards() {
           <Box variant="p">
             Where the core&apos;s file defines them, count <code>STALL_FRONTEND_FLUSH</code> and the level-2 events
             the same way, so that the card&apos;s front-end share carries Arm&apos;s own correction and its verdict
-            on memory against core rests on a measurement rather than a count of whole cycles. Run the program more than once and record the spread: a
+            on memory against core comes from Arm&apos;s level-2 split of back-end stalls rather than from one memory
+            event. Run the program more than once and record the spread: a
             single run has none, so it cannot show whether a small difference between two cards is above the
             noise.{' '}
             <Cite id="F08-19">Arm Telemetry Solution, cortex_x925 metrics</Cite>{' '}
@@ -1324,8 +1326,8 @@ export function PmuCards() {
           </Box>
           <Box variant="p">
             The kernel&apos;s name, <code>cutlass_80_simt_sgemm_128x128_8x4_nn_align1</code>, carries{' '}
-            <code>simt</code> (single instruction, multiple threads, the ordinary CUDA-core path), the general
-            floating-point path: the float32 multiply did not go through the tensor
+            <code>simt</code>, which in CUTLASS&apos;s kernel names marks the ordinary CUDA-core path rather than
+            the tensor cores (SIMT: single instruction, multiple threads), the general floating-point path: the float32 multiply did not go through the tensor
             pipeline, so this busy kernel says nothing about the tensor cores. To see that pipeline, read DCGM&apos;s
             tensor activity across a fleet, or Nsight Compute&apos;s per-pipeline figures for one kernel.{' '}
             <Cite id="F08-71">our Nsight Compute pass on the Spark; the simt reading is ours</Cite>{' '}
@@ -1337,7 +1339,8 @@ export function PmuCards() {
             <code>torch.set_float32_matmul_precision</code>. Its default, <code>&quot;highest&quot;</code>, computes
             in float32. <code>&quot;high&quot;</code> permits TensorFloat32, a format that stores 10 mantissa bits
             (the bits that hold a number&apos;s significant digits) where float32 stores 23, when a fast kernel for
-            it is available. The output stays float32 either way, so nothing in the result shows which path ran.
+            it is available. The output stays float32 either way, so the result&apos;s type does not show which path ran. Our run
+            recorded neither the PyTorch version nor this setting.
             Record the setting on the card beside the kernel name, and after changing it, read the name again: a
             name that still carries <code>simt</code> still ran on the general path.{' '}
             <Cite id="F08-88">PyTorch v2.15.0, set_float32_matmul_precision docstring</Cite>{' '}

@@ -16,6 +16,7 @@ for (const e of Object.values(entries)) {
   if (synth) rec.i = [...new Set(e.inputs)].filter((x) => entries[x] && x !== e.id);
   if (e.venue) rec.v = e.venue;
   if (e.kind) rec.k = e.kind;
+  if (e.accessed && e.accessed !== '2026-11-20') rec.a = e.accessed; // the default date is ACCESSED in Cite.tsx
   out[e.id] = rec;
 }
 const sorted = Object.fromEntries(Object.keys(out).sort((a, b) => a.localeCompare(b, 'en', { numeric: true })).map((k) => [k, out[k]]));

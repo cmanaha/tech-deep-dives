@@ -385,8 +385,9 @@ export function GettingStarted() {
           </Box>
           <Box variant="p">
             A 149.0 ms call can still drive a 33.3 ms clock, because each benchmarked call returns a chunk of 40
-            actions. Played one per tick they last 40 x 33.3 ms = <Derived>1.33</Derived> s. In an asynchronous mode the
-            actions left when a chunk lands must cover the next call, so a call may take up to half the chunk,{' '}
+            actions. Played one per tick they last 40 x 33.3 ms = <Derived>1.33</Derived> s. In LeRobot&apos;s default asynchronous
+            mode, which drops the actions a late chunk has already missed (and in RTC), the actions left when a chunk
+            lands must cover the next call, so a call may take up to half the chunk,{' '}
             <Derived>667</Derived> ms, about <Derived>667 / 149.0 = 4.5</Derived> times the 149.0 ms median. In
             LeRobot&apos;s default synchronous mode the arm would stand still for every one of those calls.{' '}
             <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}

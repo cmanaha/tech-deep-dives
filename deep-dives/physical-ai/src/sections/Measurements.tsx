@@ -217,8 +217,8 @@ export function Measurements() {
             How much faster a desktop machine runs a program than a robot computer depends on its bottleneck, the
             part of the machine it runs out of first. One Cortex-X925 core of an NVIDIA DGX Spark, a desktop machine,
             does scalar multiply-adds 6.5 times as fast as one Cortex-A78AE core of an NVIDIA Jetson Orin Nano Super,
-            a small robot computer. Scalar means one number per instruction, with the vector units, which work on
-            several numbers at once, left idle. The X925 core streams data from memory 3.8 times as fast, and a
+            a small robot computer. Scalar means one number per instruction, so the vector instructions, which
+            work on several numbers at once, are not used. The X925 core streams data from memory 3.8 times as fast, and a
             single read comes back 2.4 times sooner. Each ratio carries over only to a program that the same part limits on both machines. A
             program limited by the core as a whole gains its own ratio, found only by measuring that program, and the
             multiply-add ratio can overstate it, because the loop behind that ratio loads one unit of the core.{' '}
@@ -272,8 +272,8 @@ export function Measurements() {
           <Box variant="p">
             Top-down analysis counts slots. A slot is one chance, in one clock cycle, for the core to start a
             micro-operation, one of the small steps an instruction is split into. A core&apos;s width is its slots
-            per cycle: 6 on the Jetson&apos;s Cortex-A78AE (derived from its own counters, since no document gives
-            it), and on the Spark, which carries two kinds of core, 10 on
+            per cycle: 6 on the Jetson&apos;s Cortex-A78AE (derived from its own counters, since neither the Jetson&apos;s
+            kernel nor Arm&apos;s files give it), and on the Spark, which carries two kinds of core, 10 on
             the wide Cortex-X925 and 5 on the narrow Cortex-A725.{' '}
             <Cite id="F08-14">Arm Neoverse V1 performance analysis white paper, section 3.2</Cite>{' '}
             <Cite id="F08-68">our profiling report, slots self check</Cite>{' '}

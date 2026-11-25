@@ -587,10 +587,12 @@ export function TrainingScales() {
             one GPU, up to eight is one node, and anything wider is the size of the labs&apos; pretraining.
           </Box>
           <Box variant="p">
-            The width then sets the save interval and the market, which together make the job&apos;s shape (section
-            20, Fifteen Workloads, Five Shapes): saves every 30 minutes or less and Spot for one GPU, durable saves and
+            The width then sets the job&apos;s shape (section 20, Fifteen Workloads, Five Shapes: how long it runs,
+            whether its parts exchange data, whether it survives an interruption), and with it the save interval and
+            the market: saves every 30 minutes or less and Spot for one GPU, durable saves and
             a reservation or accepted hours of loss for a node, and as a rule a reservation for many nodes. Section 24,
-            Orchestrating Physical AI on AWS, picks the scheduler for each. Run the short job first: its samples per
+            Orchestrating Physical AI on AWS, picks the scheduler for one GPU and for many nodes, and quotes AWS&apos;s one-sentence rule for
+            training jobs. Run the short job first: its samples per
             second turn a recipe into hours, and the hours into a size.
           </Box>
         </SpaceBetween>
