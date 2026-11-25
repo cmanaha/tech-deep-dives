@@ -4,7 +4,7 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Box from '@cloudscape-design/components/box';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
-import { Cite, Derived } from '../components/Cite';
+import { Cite, Derived, Toy } from '../components/Cite';
 import { AnimatedFigure } from '../components/Figure';
 import { FLEET_LOOP_STEPS, FleetLoop } from '../components/figures/FleetLoop';
 import { Placeholder, Snippet } from '../components/Blocks';
@@ -30,8 +30,6 @@ const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
 const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbdb', verticalAlign: 'top' };
 
-/** The thread task, stated once for this section. */
-const TASK_SENTENCE = `Each station is an ${ARM} arm that must ${TASK_STORY}, with a small computer beside it running the policy.`;
 
 function shown(show: boolean, reduced: boolean): CSSProperties {
   return { opacity: show ? 1 : 0, transition: reduced ? 'none' : 'opacity 400ms ease' };
@@ -320,128 +318,104 @@ const DEPLOYMENT_DOC = String.raw`{
 /* Tables                                                                    */
 /* ------------------------------------------------------------------------ */
 
-interface VocabRow {
-  term: string;
-  vendor: ReactNode;
-  arm: ReactNode;
-  cite: ReactNode;
+interface FourCol {
+  a: ReactNode;
+  b: ReactNode;
+  c: ReactNode;
+  d: ReactNode;
 }
 
-const VOCAB: VocabRow[] = [
+/** The three routes around the 2 GB artifact limit. */
+const ROUTES: FourCol[] = [
   {
-    term: 'Thing',
-    vendor: <>&quot;An AWS IoT thing is a representation of a specific device or logical entity.&quot;</>,
-    arm: 'The cloud record of the computer beside one arm.',
-    cite: <Cite id="F07-121">Greengrass developer guide, How it works</Cite>,
-  },
-  {
-    term: 'Core device',
-    vendor: <>&quot;A Greengrass core device is an AWS IoT thing.&quot;</>,
-    arm: 'A thing that runs the Greengrass software: the Jetson beside the arm, or a DGX Spark on the desk.',
-    cite: <Cite id="F07-121">Greengrass developer guide, How it works</Cite>,
-  },
-  {
-    term: 'Nucleus',
-    vendor: (
+    a: 'Container image with the weights inside',
+    b: (
       <>
-        &quot;a mandatory component and the minimum requirement to run the AWS IoT Greengrass Core software on a
-        device&quot;
+        A <code>docker:</code> reference to the image, pinned by digest. The Docker application manager, the
+        Greengrass component that runs Docker for you, pulls it from the registry.
       </>
     ),
-    arm: (
+    c: (
       <>
-        The agent program on the device (section 17): a Java program that needs at least 96 MB of RAM, or nucleus
-        lite, small C daemons documented at less than 15 MB of memory (section 17 gives the measured figures).
+        Docker pulls the image. Since nucleus 2.18.4 an image download interrupted by a network error is
+        retried; before it, the deployment failed. The changelog does not say whether a retried pull resumes a
+        layer or starts it again.
       </>
     ),
-    cite: (
+    d: (
       <>
-        <Cite id="F07-84">Greengrass developer guide, Greengrass nucleus</Cite>{' '}
-        <Cite id="F07-85">Greengrass developer guide, Greengrass nucleus lite</Cite>
+        Whether the 2 GB quota counts a <code>docker:</code> image is not documented, and AWS publishes no maximum
+        image size through Greengrass.{' '}
+        <Cite id="F07-153">Greengrass developer guide, Run a Docker container</Cite>{' '}
+        <Cite id="F07-84">Greengrass nucleus changelog, 2.18.4</Cite>{' '}
+        <Cite id="F07-168">AWS General Reference quotas and Greengrass developer guide</Cite>
       </>
     ),
   },
   {
-    term: 'Component',
-    vendor: (
+    a: 'Weights in S3, fetched by the component',
+    b: (
       <>
-        &quot;All software that is developed and deployed with AWS IoT Greengrass is modeled as a component.&quot; It
-        is a recipe, &quot;A JSON or YAML file that describes the software module by defining component details,
-        configuration, and parameters&quot;, plus artifacts, &quot;The source code, binaries, or scripts that define
-        the software that will run on your device&quot;.
+        The S3 key, passed in the component&apos;s configuration. The <code>install</code> step downloads the
+        object with temporary credentials from the token exchange service, the Greengrass component that hands a
+        device short-lived AWS credentials.
       </>
     ),
-    arm: 'The policy is one versioned component whose recipe names the container image and how to start it. An episode uploader is a second one.',
-    cite: <Cite id="F07-122">Greengrass developer guide, How it works</Cite>,
+    c: 'Your script: it checks the bytes and resumes a broken download, or nothing does.',
+    d: (
+      <>
+        <code>install</code> runs again at every Greengrass start and times out after 120 s by default, a quarter
+        of the 480 s that 6 GB takes at 100 Mbit/s. Skip a file already present and raise the timeout.{' '}
+        <Cite id="F07-128">Greengrass component recipe reference, lifecycle</Cite>{' '}
+        <Cite id="F07-160">Greengrass developer guide, Create deployments, configuration update</Cite>{' '}
+        <Cite id="F07-148">Greengrass developer guide, Interact with AWS services</Cite>{' '}
+        <Cite id="F07-162">Greengrass developer guide, Create deployments</Cite>
+      </>
+    ),
   },
   {
-    term: 'Deployment',
-    vendor: (
+    a: 'Weights split into artifacts of under 2 GB each',
+    b: 'The bytes themselves, across several components tied together by dependencies.',
+    c: (
       <>
-        &quot;the process to send components and apply the desired component configuration to a destination target
-        device, which can be a single Greengrass core device or a group of Greengrass core devices&quot;
+        The nucleus. It checks every piece against a digest and, in its v2.18.4 code, resumes a broken S3 download
+        with an HTTP <code>Range</code> request, retried once a minute with no attempt limit.
       </>
     ),
-    arm: (
+    d: (
       <>
-        The full list of components a target should run. It stands: an arm that was switched off &quot;receives the
-        deployment the next time it connects&quot;.
+        The component store, the nucleus&apos;s disk area for artifacts, 10 GB by default and counting what is
+        already stored: a second 6 GB version needs 6 + 6
+        = 12 GB.{' '}
+        <Cite id="F07-152">Greengrass component recipe reference, artifacts</Cite>{' '}
+        <Cite id="F07-169">aws-greengrass-nucleus v2.18.4, ArtifactDownloader.java and S3Downloader.java</Cite>{' '}
+        <Cite id="F07-170">aws-greengrass-nucleus v2.18.4, ComponentManager.java</Cite>
       </>
     ),
-    cite: <Cite id="F07-123">Greengrass developer guide, How it works and Manage deployments</Cite>,
-  },
-  {
-    term: 'Thing group',
-    vendor: <>&quot;To deploy to multiple core devices, specify a thing group that includes those devices.&quot;</>,
-    arm: 'A named set of things. A replacement Jetson joins the fleet by being added to the group.',
-    cite: <Cite id="F07-125">Greengrass developer guide, Create deployments</Cite>,
-  },
-  {
-    term: 'Shadow',
-    vendor: (
-      <>
-        A JSON document per thing, kept in the cloud, with a <code>desired</code> part (what an application asks
-        for), a <code>reported</code> part (what the device says it is) and a <code>delta</code> (the difference,
-        sent to the device).
-      </>
-    ),
-    arm: (
-      <>
-        The answer to &quot;which policy version is this arm running&quot;, readable while the arm is offline. At
-        most 8 KB per document. Nucleus lite does not support the component that syncs it.
-      </>
-    ),
-    cite: <Cite id="F07-177">AWS IoT developer guide, Device Shadow service</Cite>,
-  },
-  {
-    term: 'Job',
-    vendor: <>&quot;a remote operation that is sent to and run on one or more devices&quot;</>,
-    arm: 'The carrier under a group deployment: how fast an update spreads and when it stops.',
-    cite: <Cite id="F07-178">AWS IoT developer guide, Jobs key concepts</Cite>,
   },
 ];
 
-function VocabTable() {
+function FourColTable({ head, rows, minWidth }: { head: [string, string, string, string]; rows: FourCol[]; minWidth: number }) {
   return (
     <div style={{ overflowX: 'auto' }}>
-      <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 680 }}>
+      <table style={{ borderCollapse: 'collapse', width: '100%', minWidth }}>
         <thead>
           <tr>
-            <th style={TH}>Term</th>
-            <th style={{ ...TH, width: '40%' }}>In AWS&apos;s words</th>
-            <th style={{ ...TH, width: '44%' }}>On the bench</th>
+            <th style={{ ...TH, width: '17%' }}>{head[0]}</th>
+            <th style={{ ...TH, width: '25%' }}>{head[1]}</th>
+            <th style={{ ...TH, width: '25%' }}>{head[2]}</th>
+            <th style={{ ...TH, width: '33%' }}>{head[3]}</th>
           </tr>
         </thead>
         <tbody>
-          {VOCAB.map((row) => (
-            <tr key={row.term}>
+          {rows.map((row, i) => (
+            <tr key={i}>
               <td style={TD}>
-                <strong>{row.term}</strong>
+                <strong>{row.a}</strong>
               </td>
-              <td style={TD}>{row.vendor}</td>
-              <td style={TD}>
-                {row.arm} {row.cite}
-              </td>
+              <td style={TD}>{row.b}</td>
+              <td style={TD}>{row.c}</td>
+              <td style={TD}>{row.d}</td>
             </tr>
           ))}
         </tbody>
@@ -456,57 +430,20 @@ interface ThreeCol {
   c: ReactNode;
 }
 
-const ROUTES: ThreeCol[] = [
-  {
-    a: 'Container image',
-    b: (
-      <>
-        Bake the weights into the image. The recipe lists its address with a <code>docker:</code> prefix and a
-        helper component pulls it from the registry.
-      </>
-    ),
-    c: (
-      <>
-        The documentation read does not say whether the 2 GB quota counts a <code>docker:</code> image, and AWS
-        publishes no maximum image size through Greengrass.
-      </>
-    ),
-  },
-  {
-    a: 'S3 object fetched by the component',
-    b: (
-      <>
-        Keep the weights in S3. The component&apos;s <code>install</code> step downloads them with the device&apos;s
-        temporary credentials.
-      </>
-    ),
-    c: (
-      <>
-        The script must check and skip a file already present: <code>install</code> runs again at every Greengrass
-        start, and its default timeout is 120 s.{' '}
-        <Cite id="F07-128">Greengrass component recipe reference, lifecycle</Cite>
-      </>
-    ),
-  },
-  {
-    a: 'Split artifacts',
-    b: 'Cut the weights across several components of under 2 GB each, tied together by dependencies.',
-    c: 'Every piece is one more component version to publish and pin.',
-  },
-];
-
 const UPLOAD_ROWS: ThreeCol[] = [
   {
-    a: 'What it is',
+    a: 'What your code does',
     b: (
       <>
-        A Greengrass component that queues and exports in the background. Your code appends one export task per
-        file: its local address, the bucket and the key. <Cite id="F07-172">Greengrass developer guide, Export configurations</Cite>
+        Appends one export task per file: its local address, the bucket and the key. Stream manager runs the tasks
+        in the order they were appended and reports <code>Success</code>, after which your code deletes the file.{' '}
+        <Cite id="F07-172">Greengrass developer guide, Export configurations, Amazon S3</Cite>
       </>
     ),
     c: (
       <>
-        Your own component calls S3 with an AWS SDK, which picks up the device&apos;s temporary credentials.{' '}
+        Calls S3 itself with an AWS SDK, which picks up the device&apos;s temporary credentials from the token
+        exchange service.{' '}
         <Cite id="F07-175">Greengrass developer guide, Interact with AWS services</Cite>
       </>
     ),
@@ -516,32 +453,31 @@ const UPLOAD_ROWS: ThreeCol[] = [
     b: (
       <>
         Multipart upload above a threshold whose minimum is 5 MB, a device-wide bandwidth cap, 5 export threads by
-        default and a priority per stream. <Cite id="F07-173">Greengrass developer guide, Export configurations</Cite>
+        default and a priority from 1 to 10 per stream. One stream uploads one file at a time; parallel uploads take several streams. A stream buffers 256 MB on
+        the device by default.{' '}
+        <Cite id="F07-173">Greengrass developer guide, stream manager configuration and Export configurations</Cite>
       </>
     ),
-    c: (
-      <>
-        Nothing: the component owns queueing, retry, bandwidth and ordering. AWS&apos;s example only lists buckets;
-        multipart transfer through the SDK is our reading.
-      </>
-    ),
+    c: 'Nothing: your component owns queueing, retry, bandwidth and ordering.',
   },
   {
-    a: 'What it costs on the device',
+    a: 'Memory on the device',
     b: (
       <>
         A Java program that &quot;requires a minimum of 70 MB RAM in addition to the AWS IoT Greengrass Core
-        software&quot;. <Cite id="F07-171">Greengrass developer guide, Manage data streams</Cite>
+        software&quot;.{' '}
+        <Cite id="F07-171">Greengrass developer guide, Manage data streams</Cite>
       </>
     ),
-    c: 'No extra process beyond the uploader itself.',
+    c: 'No process beyond the uploader itself.',
   },
   {
     a: 'On nucleus lite',
     b: (
       <>
-        Supported since stream manager 2.2.0, which brings Java back onto a device whose nucleus avoided it (our
-        reading). <Cite id="F07-139">Greengrass developer guide, Stream manager</Cite>
+        Supported since stream manager 2.2.0, which puts a Java program back on a device whose nucleus was chosen
+        to avoid one.{' '}
+        <Cite id="F07-139">Greengrass developer guide, Stream manager</Cite>
       </>
     ),
     c: 'Works with no Java on the device.',
@@ -549,36 +485,6 @@ const UPLOAD_ROWS: ThreeCol[] = [
 ];
 
 const EDGE_ROWS: ThreeCol[] = [
-  {
-    a: 'When the link drops',
-    b: (
-      <>
-        Offline is a normal state: the device takes the current deployment when it next connects.{' '}
-        <Cite id="F07-123">Greengrass developer guide, Manage deployments</Cite>
-      </>
-    ),
-    c: (
-      <>
-        &quot;is not a fit for disconnected, disrupted, intermittent or limited (DDIL) environments&quot;. Running
-        pods keep running, nothing can be changed, and a node that authenticates through Systems Manager can take up to 30 minutes to rejoin once its credentials have lapsed. <Cite id="F09-119">EKS user guide, Hybrid Nodes overview</Cite>{' '}
-        <Cite id="F09-125">EKS best practices, hybrid nodes and disconnections</Cite>
-      </>
-    ),
-  },
-  {
-    a: 'Network',
-    b: (
-      <>
-        Outbound only, on port 8883 or 443. No VPN, and nothing listens on the robot. <Cite id="F07-189">AWS IoT developer guide, Device communication protocols</Cite>
-      </>
-    ),
-    c: (
-      <>
-        A private link in both directions: the control plane opens connections to the node. Guidance, &quot;not a
-        strict requirement&quot;: at least 100 Mbps and at most 200 ms round trip. <Cite id="F09-120">EKS user guide, Hybrid Nodes prerequisites</Cite>
-      </>
-    ),
-  },
   {
     a: 'Platforms the pages name',
     b: (
@@ -598,13 +504,14 @@ const EDGE_ROWS: ThreeCol[] = [
     a: 'GPU access',
     b: (
       <>
-        None of the four documented container recipes passes a GPU flag; two AWS samples add one. <Cite id="F07-156">Greengrass developer guide, Run a Docker container</Cite>{' '}
+        None of the four documented container recipes passes a GPU flag; two AWS samples add one.{' '}
+        <Cite id="F07-156">Greengrass developer guide, Run a Docker container</Cite>{' '}
         <Cite id="F07-157">AWS samples: genai-at-edge and the Physical AI Toolchain edge stack</Cite>
       </>
     ),
     c: (
       <>
-        The hybrid node pages read in this research say nothing about GPUs.{' '}
+        The hybrid node pages say nothing about GPUs.{' '}
         <Cite id="F09-122">EKS user guide, Hybrid Nodes pages</Cite>
       </>
     ),
@@ -614,7 +521,8 @@ const EDGE_ROWS: ThreeCol[] = [
     b: 'The nucleus and your components.',
     c: (
       <>
-        A Kubernetes node and a pod network you install yourself (Cilium or Calico).{' '}
+        A Kubernetes node and a pod network you install yourself, Cilium or Calico. The Amazon VPC CNI (Container
+        Network Interface), the pod network EKS uses in the cloud, is not compatible.{' '}
         <Cite id="F09-123">EKS user guide, Hybrid Nodes add-ons</Cite>
       </>
     ),
@@ -648,6 +556,65 @@ function ThreeColTable({ head, rows, minWidth }: { head: [string, string, string
   );
 }
 
+/** Limits and defaults that rarely decide a design, kept for lookup. */
+const LIMIT_ROWS: ThreeCol[] = [
+  {
+    a: 'Recipe and deployment document',
+    b: 'Recipe at most 16 KB; deployment document at most 7 KB for one thing, 31 KB for a thing group, 6 MB with large configuration support.',
+    c: <Cite id="F07-87">AWS General Reference, Greengrass V2 quotas</Cite>,
+  },
+  {
+    a: 'Publishing components',
+    b: 'CreateComponentVersion: 1 request per second per Region. Other control-plane calls: 30 per second per Region. 5,000 components per Region, and 5,000 versions of each.',
+    c: (
+      <>
+        <Cite id="F07-87">AWS General Reference, Greengrass V2 quotas</Cite>{' '}
+        <Cite id="F07-167">AWS General Reference, Greengrass V2 quotas</Cite>
+      </>
+    ),
+  },
+  {
+    a: 'Deployment polling',
+    b: 'A core device polls for deployment notifications every 15 seconds by default.',
+    c: <Cite id="F07-167">Greengrass nucleus, deploymentPollingFrequencySeconds</Cite>,
+  },
+  {
+    a: 'Lifecycle timeouts',
+    b: 'install 120 s, startup 120 s, shutdown 15 s, recover 60 s; run has none.',
+    c: <Cite id="F07-128">Greengrass component recipe reference, lifecycle</Cite>,
+  },
+  {
+    a: 'Disk checks before a download',
+    b: 'Refused below 20 MB of free disk; a checksum mismatch deletes the file and retries up to 10 times.',
+    c: (
+      <>
+        <Cite id="F07-170">aws-greengrass-nucleus v2.18.4, ComponentManager.java</Cite>{' '}
+        <Cite id="F07-169">aws-greengrass-nucleus v2.18.4, ArtifactDownloader.java</Cite>
+      </>
+    ),
+  },
+  {
+    a: 'Rollout rate',
+    b: 'Constant: maximumPerMinute of at least 1. Exponential: baseRatePerMinute from 1 to 1000, incrementFactor from 1.1 to 5.',
+    c: <Cite id="F07-92">AWS IoT API reference, ExponentialRolloutRate and JobExecutionsRolloutConfig</Cite>,
+  },
+  {
+    a: 'Abort rule',
+    b: 'failureType FAILED, REJECTED, TIMED_OUT or ALL; minNumberOfExecutedThings at least 1; thresholdPercentage up to 100, two decimals; action CANCEL only.',
+    c: <Cite id="F07-94">AWS IoT API reference, AbortCriteria</Cite>,
+  },
+  {
+    a: 'Credentials and policies',
+    b: 'Token exchange credentials expire after an hour by default. A change to the AWS IoT policy on a device certificate takes 6 to 8 minutes to become effective.',
+    c: (
+      <>
+        <Cite id="F07-148">Greengrass developer guide, Interact with AWS services</Cite>{' '}
+        <Cite id="F07-188">AWS IoT developer guide, AWS IoT Core policies</Cite>
+      </>
+    ),
+  },
+];
+
 /* ------------------------------------------------------------------------ */
 /* Section                                                                   */
 /* ------------------------------------------------------------------------ */
@@ -659,143 +626,123 @@ export function Fleet() {
         header={
           <Header
             variant="h1"
-            description="Know how a new policy reaches a hundred robots safely and how their episodes come back: one component may carry 2 GB of artifacts, a policy weighs about 6 GB, and a rollout has a brake and no reverse gear (AWS IoT Greengrass nucleus v2.18.4 and AWS documentation, read 2026-11-20)"
+            description="A 6 GB policy will not fit the 2 GB package AWS's device software accepts, and an update can be stopped but not undone: choose the route, the settings and the way back before the first arm updates (read from Greengrass nucleus v2.18.4 and AWS documentation on 2026-11-20, not run on a device)"
           >
-            18. The Fleet: Policies Out, Episodes Back
+            18. The Fleet: A 6 GB Policy, a 2 GB Package and No Reverse Gear
           </Header>
         }
       >
         <SpaceBetween size="s">
           <Box variant="p">
-            A fleet is many copies of one station. {TASK_SENTENCE} Section 17, Running on the Robot, put one policy
-            on one such computer. This section covers what changes when there are many: how a new policy version
-            reaches all of them without stopping the ones that work, and how the episodes they record (section 9,
-            Collecting Data) travel back to become training data.
+            Updating a fleet of arms on AWS runs into three fixed facts before anyone judges the new policy. The
+            policy is too big for the package: about 6 GB of weights for pi0.5, three times the 2 GB that AWS&apos;s
+            device software accepts in one package. The episodes coming back are too big for a message: one LeRobot
+            video file grows to 200 MB, more than a thousand times the 128 KB a device message may hold. And a
+            rollout, the staged spread of a new version across the arms, has a brake and no reverse gear. It can be
+            stopped when the new policy runs badly, the arms that already took it keep it, and going back is a second
+            deployment. Earlier sections used rollout for one run of the policy on one arm; from here it means the staged spread
+            of a new version across the arms.{' '}
+            <Cite id="F07-54">Jetson AI Lab tutorial, OpenPi on Thor</Cite>{' '}
+            <Cite id="F07-87">AWS General Reference, Greengrass V2 quotas</Cite>{' '}
+            <Cite id="F05-20">LeRobot v0.7.0 datasets/utils.py, file size defaults</Cite>{' '}
+            <Cite id="F07-97">AWS General Reference, AWS IoT Core quotas</Cite>{' '}
+            <Cite id="F07-95">AWS IoT developer guide, Job configurations</Cite>{' '}
+            <Cite id="F07-164">Greengrass developer guide, Cancel deployments</Cite>
           </Box>
           <Box variant="p">
-            The path taught here is AWS IoT (Internet of Things) Core and AWS IoT Greengrass, read from AWS&apos;s
-            own documentation. &quot;A hundred robots&quot; is an illustration: AWS&apos;s rollout example steps at
-            1,000 devices, and the one published fleet loop cited below has 16 robots.{' '}
-            <Cite id="F07-93">AWS IoT developer guide, Job rollout rates</Cite>{' '}
-            <Cite id="F07-108">Learning While Deploying, section V</Cite>
+            AWS&apos;s example deployment shows what those facts do to a small fleet. On an illustrative twenty {ARM} arms
+            behind one 100 Mbit/s site link, its rule that cancels a failing rollout can never fire, and its pace
+            reaches every arm within 3 minutes. One arm alone needs 8 minutes to download the policy (6 x 8,000 / 100
+            = <Derived>480</Derived> s), past the example&apos;s 5-minute limit per arm, and twenty downloading at
+            once share the link for <Derived>160</Derived> minutes (<Toy>20</Toy> x 8).{' '}
+            <Cite id="F07-162">Greengrass developer guide, Create deployments</Cite>{' '}
+            <Cite id="F07-94">AWS IoT API reference, AbortCriteria</Cite>
+          </Box>
+          <Box variant="p">
+            On AWS the delivery runs through AWS IoT (Internet of Things) Greengrass. Its software on each device is
+            the nucleus, and a device running it is a core device; section 17, Running on the Robot, set one up beside
+            one arm. The cloud side sends deployments, each a list of components at fixed versions for one core device
+            or a group. A component is what carries the policy. It has a recipe, the short file that says what to
+            fetch and how to start it, and artifacts, the files it fetches. The artifacts of one component may total
+            at most 2 GB, and the limit cannot be raised.{' '}
+            <Cite id="F07-120">Greengrass developer guide, What is AWS IoT Greengrass</Cite>{' '}
+            <Cite id="F07-121">Greengrass developer guide, How it works</Cite>{' '}
+            <Cite id="F07-123">Greengrass developer guide, Manage deployments</Cite>{' '}
+            <Cite id="F07-122">Greengrass developer guide, How it works</Cite>{' '}
+            <Cite id="F07-151">Greengrass component recipe reference</Cite>{' '}
+            <Cite id="F07-87">AWS General Reference, Greengrass V2 quotas</Cite>
+          </Box>
+          <Box variant="p">
+            NVIDIA&apos;s Jetson AI Lab tutorial for pi0.5, Physical Intelligence&apos;s vision-language-action
+            policy (section 5, Vision-Language-Action Models), on a Jetson Thor gives its weights as &quot;~6
+            GB+&quot;. So the component either points at the policy or carries it in pieces, and that choice decides
+            who checks the bytes and who resumes a broken download.{' '}
+            <Cite id="F07-54">Jetson AI Lab tutorial, OpenPi on Thor</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Three things have to move once there is more than one arm, and you know which AWS services carry them today">
-            From one arm to a fleet
+          <Header
+            variant="h2"
+            description="Pick what the component carries and what it fetches, knowing which route leaves the byte check and the resume to you"
+          >
+            Getting 6 GB through a 2 GB package
           </Header>
         }
       >
         <SpaceBetween size="s">
           <Box variant="p">
-            With one arm you carry the policy over on a cable and read the episodes off the disk. With many, three
-            things have to move by themselves: a new policy out to every robot without breaking the ones that work,
-            evidence of how it behaves back, and both fast enough that a failure seen today is fixed this week.
-          </Box>
-          <Box variant="p">
-            AWS defines Greengrass as &quot;an open source Internet of Things (IoT) edge runtime and cloud service
-            that helps you build, deploy and manage IoT applications on your devices&quot;. Read that as two halves:
-            a program on each device that keeps an outbound connection to your account, and a cloud service that
-            tells it what to run. <Cite id="F07-120">Greengrass developer guide, What is AWS IoT Greengrass</Cite>{' '}
-            Under it sit AWS IoT Core (the device registry and the message broker) and AWS IoT Device Management
-            (jobs). On 2026-11-20 none of the three appears in AWS&apos;s lists of services in maintenance, in
-            sunset or shut down.{' '}
-            <Cite id="F07-191">AWS General Reference, service lifecycle tables</Cite>
-          </Box>
-          <Box variant="p">
-            The robot-specific service is gone: AWS RoboMaker&apos;s end-of-support date is September 10, 2025.{' '}
-            <Cite id="F07-98">AWS General Reference, Services in Full Shutdown</Cite> No first-party statement of
-            what replaces it was located in this research; its documentation returned HTTP 404 on the day it was
-            read. <Cite id="F07-100">RoboMaker developer guide (page removed)</Cite> AWS IoT Greengrass V1 ended on
-            October 7, 2026, so everything below is Greengrass V2.{' '}
-            <Cite id="F07-99">AWS General Reference, Services in Full Shutdown</Cite>
-          </Box>
-          <ExpandableSection headerText="What sits beside this path: neighbouring IoT services and their status in November 2026">
-            <ul style={LIST}>
-              <li>
-                <strong>Secure tunneling</strong> gives an operator a session such as SSH to a device behind a
-                firewall, with no inbound port, on both nuclei.{' '}
-                <Cite id="F07-183">AWS IoT developer guide, Secure tunneling</Cite>
-              </li>
-              <li>
-                <strong>Fleet indexing</strong> makes the registry, shadows and connectivity searchable, so
-                &quot;arms on the new policy that report a low success rate&quot; becomes one query.{' '}
-                <Cite id="F07-182">AWS IoT developer guide, Fleet indexing</Cite>
-              </li>
-              <li>
-                <strong>Device Defender</strong> audits device configuration and watches behaviour. Its page says
-                the detect feature &quot;will no longer be available to new customers starting August 31,
-                2026&quot;; audit remains available.{' '}
-                <Cite id="F07-184">AWS IoT developer guide, Device Defender</Cite>
-              </li>
-              <li>
-                <strong>AWS IoT FleetWise</strong>, the vehicle-fleet data collector, is in maintenance (announced
-                March 31, 2026): no new customers.{' '}
-                <Cite id="F07-191">AWS General Reference, Services in Maintenance</Cite>
-              </li>
-              <li>
-                <strong>The operating system is a separate layer.</strong> No AWS page describing a managed update
-                of a Linux device&apos;s operating system was located in this research; NVIDIA documents the update
-                tools for Jetson Linux and ships no fleet service.{' '}
-                <Cite id="F07-185">Greengrass developer guide, Update the Core software</Cite>{' '}
-                <Cite id="F07-186">Jetson Linux developer guide, update mechanism</Cite>
-              </li>
-            </ul>
-          </ExpandableSection>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Eight words that let you read any Greengrass page, each one placed on the bench">
-            The vocabulary, in the vendor&apos;s words
-          </Header>
-        }
-      >
-        <SpaceBetween size="s">
-          <Box variant="p">
-            AWS IoT has its own nouns, and its documentation assumes them. The first six describe what runs where.
-            The last two answer fleet questions: what state is each arm in, and how does a change spread.
-          </Box>
-          <VocabTable />
-          <Box variant="p">
-            Two rules follow. A deployment is the whole list for its target: &quot;A new deployment to the same
-            target overwrites the previous deployment to the target&quot;, and a component left out of the new
-            revision is uninstalled. Start each revision from the current one.{' '}
-            <Cite id="F07-124">Greengrass developer guide, Manage deployments</Cite> And a device runs the union of
-            the deployments that target it, its own thing plus each of its groups; if two pin different versions of
-            one component, the deployment fails on the device. Pin the policy in exactly one deployment per arm.{' '}
-            <Cite id="F07-126">Greengrass developer guide, Manage deployments</Cite>
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="2 GB per component against a policy of about 6 GB: three routes around the limit, and the recipe that carries the reference">
-            Delivering a policy
-          </Header>
-        }
-      >
-        <SpaceBetween size="s">
-          <Box variant="p">
-            The plain way to ship software with Greengrass is as artifacts: files in S3 that the nucleus downloads
-            and checks against a digest. That way stops at a hard limit. One component&apos;s artifacts may total at
-            most 2 GB, and the limit cannot be raised.{' '}
-            <Cite id="F07-87">AWS General Reference, Greengrass V2 quotas</Cite> A large policy does not fit.
-            NVIDIA&apos;s Jetson Thor tutorial for a VLA (vision-language-action) policy, the kind of model from
-            section 5 that reads camera images and an instruction and outputs motor commands, gives its weights as
-            &quot;~6 GB+&quot;. <Cite id="F07-54">Jetson AI Lab tutorial, OpenPi on Thor</Cite>
-          </Box>
-          <Box variant="p">
-            So the component carries a reference and the bytes travel another way. AWS documents the mechanisms;
-            using them for multi-gigabyte weights is our reading, and none of the three was tested in this research.{' '}
+            Two routes leave the weights somewhere the component can point at, and the third cuts them into pieces
+            the component can carry. Each route hands two jobs to a different owner: checking the bytes and resuming a
+            broken download. A check compares the
+            bytes with a digest, a hash of the content fixed in advance, so a reference by digest names exactly one
+            set of bytes. The recipe&apos;s lifecycle lists the commands the nucleus runs, among them an{' '}
+            <code>install</code> step and a step that starts the software. AWS documents the mechanisms, and none of the three routes is a documented pattern for weights.{' '}
+            <Cite id="F07-152">Greengrass component recipe reference, artifacts</Cite>{' '}
+            <Cite id="F07-128">Greengrass component recipe reference, lifecycle</Cite>{' '}
             <Cite id="F07-168">AWS General Reference quotas and Greengrass developer guide</Cite>
           </Box>
-          <ThreeColTable head={['Route', 'How the bytes travel', 'Scope']} rows={ROUTES} minWidth={640} />
+          <FourColTable
+            head={['Route', 'The component carries', 'Who checks and resumes the bytes', 'The limit that bites']}
+            rows={ROUTES}
+            minWidth={760}
+          />
+          <Box variant="p">
+            Which route to take turns on the question the quota page leaves open. If a multi-gigabyte{' '}
+            <code>docker:</code> image deploys, take the image on a steady link: one component version per release, a
+            pull the Docker application manager handles, and the pattern of both AWS samples that start a GPU program
+            on a Jetson from a recipe. Split if the image is refused or the link drops often. The nucleus then owns
+            both jobs, the digest check by its documentation and the resume in its code, so a dropped link costs time
+            and only the deployment&apos;s per-arm time limit ends a slow download. The price is a raised store limit
+            (<code>componentStoreMaxSizeBytes</code> in the nucleus configuration) and one version per piece per
+            release. Fetching from S3 in your own install step comes last, since it leaves both jobs to your script.
+            The first test on a device is whether a multi-gigabyte image deploys.{' '}
+            <Cite id="F07-168">AWS General Reference quotas and Greengrass developer guide</Cite>{' '}
+            <Cite id="F07-84">Greengrass nucleus changelog, 2.18.4</Cite>{' '}
+            <Cite id="F07-157">AWS samples: genai-at-edge and the Physical AI Toolchain edge stack</Cite>{' '}
+            <Cite id="F07-169">aws-greengrass-nucleus v2.18.4, ArtifactDownloader.java and S3Downloader.java</Cite>{' '}
+            <Cite id="F07-170">Greengrass nucleus, componentStoreMaxSizeBytes</Cite>
+          </Box>
+          <Box variant="p">
+            A component version names fixed bytes, and the nucleus holds it to them. It checks each artifact against
+            a digest computed when the version was created, and &quot;If the hash doesn&apos;t match the
+            digest, the deployment fails.&quot; AWS&apos;s Physical AI Toolchain sample, a skeleton that creates no
+            deployment, points its inference component at an artifact under the key <code>latest/policy.trt</code>.
+            Once that object is replaced, every later install of that component version fails the check. Give new weights a new key or a new version, never a reused name. An install script on the S3 route gets
+            no such check unless it computes one.{' '}
+            <Cite id="F07-152">Greengrass component recipe reference, artifacts</Cite>{' '}
+            <Cite id="F07-196">AWS Physical AI Toolchain sample, edge-stack.ts</Cite>
+          </Box>
+          <Box variant="p">
+            New versions are not free either. AWS allows 5,000 versions of one component in a Region, so a loop that
+            publishes every hourly checkpoint as a new version runs out in about 208 days (5,000 / 24). A new S3 key
+            passed in the deployment&apos;s configuration spends no version at all.{' '}
+            <Cite id="F07-167">AWS General Reference, Greengrass V2 quotas</Cite>{' '}
+            <Cite id="F07-160">Greengrass developer guide, Create deployments, configuration update</Cite>
+          </Box>
+          <Box variant="p">The image route&apos;s recipe, as AWS documents it, shows how little the component itself holds.</Box>
           <Snippet
             title="A container component recipe, as AWS documents it for a private registry image"
             mode="copied"
@@ -804,51 +751,112 @@ export function Fleet() {
             {RECIPE}
           </Snippet>
           <Box variant="p">
-            Read it from the top. The first line fixes the recipe format, and the next four name and version the
-            component. <Cite id="F07-151">Greengrass component recipe reference</Cite> The two dependencies are
-            helper components the nucleus installs first: the Docker application manager pulls images, and the token
-            exchange service lends it the device&apos;s temporary credentials for a private repository in Amazon ECR
-            (Elastic Container Registry, AWS&apos;s image store). Under <code>Manifests</code>, the artifact is the
-            image address with a <code>docker:</code> prefix, a reference and no bytes, and the lifecycle is one
-            shell line, a plain <code>docker run</code>.
+            The artifact is the image&apos;s address behind a <code>docker:</code> prefix: a reference, with no bytes
+            in it. The square brackets take a tag or a digest, and only the digest fixes the image, since a tag can
+            be moved to another one. An address with neither pulls &quot;the latest available version of that
+            image&quot; on the day each device deploys, so two arms in one rollout can run different policies. The
+            lifecycle line starts the container under <code>Run</code>, which lets a deployment report success
+            before the policy has loaded.{' '}
+            <Cite id="F07-154">Greengrass developer guide, Docker application manager</Cite>{' '}
+            <Cite id="F07-129">Greengrass component recipe reference, run and startup</Cite>
           </Box>
-          <Box variant="p">
-            The square brackets mean &quot;put a tag or a digest here&quot;. AWS recommends one of the two, &quot;To
-            ensure that all of your core devices run the same version of an image&quot;; a tag can be moved to a new
-            image and a digest cannot.{' '}
-            <Cite id="F07-154">Greengrass developer guide, Docker application manager</Cite> The recipe passes no
-            GPU flag (section 17 covers GPU access), and it starts the container with <code>Run</code>, the weaker
-            choice for a rollout, as the next block shows.{' '}
-            <Cite id="F07-156">Greengrass developer guide, Run a Docker container</Cite>
-          </Box>
-          <ExpandableSection headerText="What happens to a multi-gigabyte download on a poor link (read from the nucleus source, not run)">
-            <Box variant="p">
-              At v2.18.4 the Java nucleus keeps a partial S3 artifact, asks for the rest with an HTTP{' '}
-              <code>Range</code> request, and retries network errors once a minute with no attempt limit. What ends
-              a slow download is the job timeout of the next block. Nucleus lite&apos;s downloader was not read.{' '}
-              <Cite id="F07-169">aws-greengrass-nucleus v2.18.4, ArtifactDownloader.java and S3Downloader.java</Cite>{' '}
-              The nucleus also refuses a download that would push its component store past 10 GB by default.{' '}
-              <Cite id="F07-170">aws-greengrass-nucleus v2.18.4, ComponentManager.java</Cite>
-            </Box>
-          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Send the new policy to a few arms, read what they report, widen only on success, and know that an abort is a brake with no reverse gear">
-            Staged rollout
+          <Header
+            variant="h2"
+            description="Let the policy finish its episode before it is replaced, and make a policy that fails to load roll its arm back by itself"
+          >
+            When an update lands in the middle of an episode
           </Header>
         }
       >
         <SpaceBetween size="s">
           <Box variant="p">
-            A staged rollout updates a few devices first, widens in steps and stops when too many
-            fail. Use it for every change to robots that move; for one arm on the bench a deployment to that one
-            thing is enough. The mechanism is borrowed. &quot;AWS IoT Greengrass uses AWS IoT Core jobs to send deployments to core
-            devices, so these options are identical to the configuration options for AWS IoT Core jobs.&quot;
-            Greengrass says what to install; the job underneath says how fast it spreads, when to stop and how long
-            each device gets. <Cite id="F07-162">Greengrass developer guide, Create deployments</Cite>
+            A deployment reaches an arm while the arm is working. The control loop runs inside the policy container
+            (section 17, Running on the Robot), so while one version stops and the next starts, nothing sends the arm
+            new goals, and the swap belongs at a moment when the arm can stand still safely, with the gripper empty.
+            The nucleus comes in two builds, and they meet that
+            moment differently. The Java nucleus, which needs at least 96 MB of RAM, asks first by default: it
+            notifies each running component before it stops and replaces it. A component that has
+            subscribed to these notifications can answer with a deferral and a delay of its own choosing, and the
+            nucleus asks again when the delay is up. One that does not answer within 60 seconds, the default, is
+            replaced anyway: &quot;the deployment proceeds on the device&quot;. A policy component can therefore
+            hold the update until the episode ends and the gripper is empty, then acknowledge.{' '}
+            <Cite id="F07-84">Greengrass nucleus v2.18.4 requirements</Cite>{' '}
+            <Cite id="F07-90">Greengrass V2 API reference, DeploymentComponentUpdatePolicy</Cite>
+          </Box>
+          <Box variant="p">
+            Answering takes plumbing that AWS&apos;s container recipe lacks. A component talks to the nucleus over a
+            local socket, through IPC (interprocess communication), and only for the operations an{' '}
+            <code>accessControl</code> policy in its configuration grants it. A container also needs that socket mounted and two environment variables passed in:{' '}
+            <code>SVCUID</code> and <code>AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT</code>. The documented recipe has none of the three, so copied as
+            printed it cannot defer, and the nucleus replaces it after 60 seconds whatever the arm is doing.{' '}
+            <Cite id="F07-155">Greengrass developer guide, authorize components for IPC; IPC in Docker components</Cite>{' '}
+            <Cite id="F07-90">Greengrass V2 API reference, DeploymentComponentUpdatePolicy</Cite>
+          </Box>
+          <Box variant="p">
+            Nucleus lite, written for constrained devices, uses less than 15 MB and has no deferral to plumb: its
+            README at v2.7.0 lists 12 IPC operations, and <code>SubscribeToComponentUpdates</code> and{' '}
+            <code>DeferComponentUpdate</code> are not among them. Nor can a Greengrass deployment carry a maintenance window: the AWS IoT jobs service that carries
+            deployments can schedule work into one, but a deployment exposes only its pace, abort rule and time
+            limit. On lite, the only way to keep an update away from a moving arm is to create the deployment when
+            the arm is idle.{' '}
+                        <Cite id="F07-85">aws-greengrass-lite v2.7.0 and Greengrass developer guide</Cite>{' '}
+            <Cite id="F07-137">aws-greengrass-lite v2.7.0, README</Cite>{' '}
+            <Cite id="F07-179">AWS IoT developer guide, Jobs scheduling; Greengrass DeploymentIoTJobConfiguration</Cite>
+          </Box>
+          <Box variant="p">
+            When the new version starts, the recipe&apos;s start step decides what counts as success. With <code>run</code>, &quot;the deployment can be complete and
+            successful even if the run lifecycle script fails soon after running&quot;. With <code>startup</code>,
+            the deployment stays <code>IN_PROGRESS</code> until the start script exits or the component reports its
+            own state, <code>RUNNING</code> or <code>ERRORED</code>.{' '}
+            <Cite id="F07-129">Greengrass component recipe reference, run and startup</Cite>
+          </Box>
+          <Box variant="p">
+            A policy component written with <code>startup</code> can load its weights, run one warm-up inference
+            and only then report <code>RUNNING</code>. If the weights fail to load it reports <code>ERRORED</code>,
+            the deployment fails on that arm, and by default &quot;the AWS IoT Greengrass Core software rolls back
+            that core device to its previous configuration&quot;. A component that errors three times without
+            recovering becomes <code>BROKEN</code> and stays so until it is deployed again. All four container recipes on AWS&apos;s Docker page start the container under <code>Run</code>, so this
+            gate is yours to write.{' '}
+            <Cite id="F07-163">Greengrass developer guide, Create deployments, failure handling</Cite>{' '}
+            <Cite id="F07-130">Greengrass component recipe reference, recover</Cite>{' '}
+            <Cite id="F07-156">Greengrass developer guide, Run a Docker container, all recipes</Cite>
+          </Box>
+          <Box variant="p">
+            The gate proves only that the software runs. The cloud sees each core device as <code>HEALTHY</code> or{' '}
+            <code>UNHEALTHY</code>, and unhealthy means a process is in an error state. Whether the arm managed to {TASK_STORY} has to come back as data, in a per-episode record sent with the
+            episodes.{' '}
+            <Cite id="F07-131">Greengrass developer guide, Check core device status</Cite>
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Size the per-device timeout to your download and the abort rule to your fleet, then stage the update through a few arms first, which the rate cannot do for twenty"
+          >
+            Rollout settings for tens of arms, ranked by what they break
+          </Header>
+        }
+      >
+        <SpaceBetween size="s">
+          <Box variant="p">
+            A deployment to many arms targets a thing group. A thing is AWS IoT&apos;s record of one device, here
+            the computer beside one arm, and a thing group is a named set of things; adding a replacement computer to
+            the group is how it joins the fleet. Greengrass sends a group deployment as an AWS IoT job, a remote
+            operation run on many devices, and &quot;these options are identical to the configuration options for
+            AWS IoT Core jobs&quot;: a rate at which arms are notified, a rule that cancels the job, and a time limit
+            per arm.{' '}
+            <Cite id="F07-121">Greengrass developer guide, How it works</Cite>{' '}
+            <Cite id="F07-123">Greengrass developer guide, Manage deployments</Cite>{' '}
+            <Cite id="F07-178">AWS IoT developer guide, Jobs key concepts</Cite>{' '}
+            <Cite id="F07-162">Greengrass developer guide, Create deployments</Cite>
           </Box>
           <AnimatedFigure
             name="a staged rollout with the abort case"
@@ -857,129 +865,281 @@ export function Fleet() {
             cites="F07-90 F07-93 F07-95 F07-129 F07-162 F07-164 F07-165"
             caption={
               <>
-                Read from the top; the blue dot is the new policy version. Illustrative, not measured: the device
-                counts, the version numbers and the point where the failures arrive are invented. The 60 seconds
-                is the documented default for a component that does not answer.
+                The blue dot is the new policy version on its way from storage to the fleet. In the last step the
+                abort cancels the eleven arms still queued and leaves the seven updated ones on the new version.
+                The abort assumes a minimum the fleet group can reach and a pace slow enough to leave arms queued when
+                failures arrive; the example&apos;s settings give neither. Illustrative, not
+                measured: the counts, the versions and the point where failures arrive are invented; the 60 s is the
+                documented default wait for a component that does not answer.
               </>
             }
           >
             {(step, reduced) => <RolloutDiagram step={step} reduced={reduced} />}
           </AnimatedFigure>
-          <Box variant="p">
-            <strong>The rate.</strong> Either constant, a <code>maximumPerMinute</code> of at least 1 device per
-            minute, or exponential, with a <code>baseRatePerMinute</code> from 1 to 1000 and an{' '}
-            <code>incrementFactor</code> from 1.1 to 5.{' '}
-            <Cite id="F07-92">AWS IoT API reference, ExponentialRolloutRate and JobExecutionsRolloutConfig</Cite>{' '}
-            AWS&apos;s own example starts at 50 per minute with a factor of 2 and doubles each time another 1,000
-            devices have been notified or have succeeded: 50, 100, 200, 400 per minute. The rate rises on
-            notifications as well as on successes; to widen only on evidence of success, set{' '}
-            <code>numberOfSucceededThings</code> and leave <code>numberOfNotifiedThings</code> out. A hundred arms want the same shape with smaller thresholds. <Cite id="F07-93">AWS IoT developer guide, Job rollout rates</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>The abort rule.</strong> It names a failure type, a minimum number of devices before it can
-            fire and a threshold percentage of failures. Its only action is <code>CANCEL</code>.{' '}
-            <Cite id="F07-94">AWS IoT API reference, AbortCriteria</Cite> A cancel is narrow: &quot;only QUEUED job
-            executions are canceled&quot;, and executions in progress &quot;will not be canceled&quot;. Arms that
-            took the new policy keep it. <Cite id="F07-95">AWS IoT developer guide, Job configurations</Cite> A
-            rollout has a brake and no reverse gear. Going back is a second action: a new deployment revision that
-            pins the previous version. <Cite id="F07-164">Greengrass developer guide, Cancel deployments</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>On each device.</strong> First the nucleus asks. By default it notifies every running component
-            before replacing it. A component that subscribes can acknowledge at once, or answer that now is a bad
-            moment with a delay of its own choosing, after which the nucleus asks again. A component that does
-            not answer within 60 seconds, the default timeout, is replaced anyway: &quot;the deployment proceeds on
-            the device&quot;. An episode lasts tens of seconds, so our reading is that the policy component defers
-            in short repeated intervals until the gripper is empty.{' '}
-            <Cite id="F07-90">Greengrass V2 API reference, DeploymentComponentUpdatePolicy</Cite> The two calls
-            that let a component defer are absent from the operations listed in nucleus lite&apos;s README at
-            v2.7.0. <Cite id="F07-137">aws-greengrass-lite v2.7.0, README</Cite> Then the new version starts. If
-            that fails, by default &quot;the AWS IoT Greengrass Core software rolls back that core device to its
-            previous configuration&quot;. <Cite id="F07-163">Greengrass developer guide, Create deployments</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>Why the lifecycle step decides whether rollback ever fires.</strong> A recipe starts its program
-            with <code>run</code> or <code>startup</code>. With <code>run</code>, &quot;the deployment can be
-            complete and successful even if the run lifecycle script fails soon after running&quot;. With{' '}
-            <code>startup</code>, the deployment waits until the component reports a state itself. So a policy
-            component written with <code>startup</code> can load its weights, run one warm-up inference and only
-            then report <code>RUNNING</code>. If the model fails to load it reports <code>ERRORED</code>, the
-            deployment fails on that arm, the arm rolls back and the failure counts toward the abort threshold.
-            That health gate is our reading of the documented mechanism; every container example AWS documents uses{' '}
-            <code>Run</code>. <Cite id="F07-129">Greengrass component recipe reference, lifecycle</Cite> The gate
-            has a ceiling: the cloud sees a core device as <code>HEALTHY</code> or <code>UNHEALTHY</code>, which
-            says the software started. Whether the block lands in the cup has to come back as data.{' '}
-            <Cite id="F07-131">Greengrass developer guide, Check core device status</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>Where the canaries live.</strong> The documented way to update a few devices first is a
-            subdeployment, &quot;a deployment that targets a smaller subset of devices within a parent
-            deployment&quot;. The documentation read does not say whether a subdeployment can pin a component
-            version different from its parent&apos;s without the version conflict described earlier; a separate
-            canary thing group avoids the question.{' '}
-            <Cite id="F07-165">Greengrass developer guide, Create subdeployments</Cite>
-          </Box>
           <Snippet
-            title="A create-deployment document with rollout, abort and timeout, as AWS documents it"
+            title="A create-deployment document with a rollout rate, an abort rule and a timeout, as AWS documents it"
             mode="copied"
             source={<Cite id="F07-162">Greengrass developer guide, Create deployments</Cite>}
           >
             {DEPLOYMENT_DOC}
           </Snippet>
           <Box variant="p">
-            Read it in three parts. <code>components</code> is the list for the target. <code>deploymentPolicies</code>{' '}
-            is the per-device behaviour: ask components first (this example shortens the wait to 30 seconds), let
-            them validate new configuration, roll back on failure. <code>iotJobConfiguration</code> is the spread:
-            start at 5 devices per minute, double once 10 devices were notified or 5 succeeded, whichever comes first, never exceed 50 per minute,
-            cancel when 5% of executions fail, once at least 100 devices have been notified, and give each device 5 minutes.
-            Two of those numbers need changing for robots, in our reading. A 5-minute timeout is shorter than the
-            download: at 100 Mbit/s, 6 GB takes 8 minutes, so a healthy arm would time out and count as a failure.
-            And a minimum of 100 notified devices never fires in a fleet of 20 arms.{' '}
+            AWS&apos;s example deploys an industrial dashboard, and only its policies and job settings carry over to
+            a fleet of arms. <code>components</code> is the list the target should run.{' '}
+            <code>deploymentPolicies</code> is what happens on each arm: ask components before replacing them (this
+            example waits 30 seconds for an answer), give them time to validate new configuration, and roll back on
+            failure. <code>iotJobConfiguration</code> is the spread: notify 5 arms a minute, double the rate once 10
+            have been notified or 5 have succeeded, never exceed 50 a minute, cancel once 5% of executions have
+            failed after at least 100 arms were notified, and give each arm 5 minutes. Copied onto twenty arms, four of those settings go wrong. In order of what each one breaks, from a bad
+            policy that reaches every arm to a good one that is cancelled:{' '}
             <Cite id="F07-161">Greengrass developer guide, deployment policies</Cite>{' '}
             <Cite id="F07-162">Greengrass developer guide, Create deployments</Cite>
+          </Box>
+          <Box variant="p">
+            <strong>1. The abort rule needs a minimum the fleet can reach.</strong> Without one the fleet has no brake.
+            The rule cannot fire until{' '}
+            <code>minNumberOfExecutedThings</code> arms have been notified. A group of twenty never reaches the
+            example&apos;s 100, so the rollout runs to its end however many arms fail. With a minimum of 5 and a
+            threshold of <Toy>20</Toy>% (toy numbers), one failure among the first five arms stops the spread.{' '}
+            <Cite id="F07-94">AWS IoT API reference, AbortCriteria</Cite>
+          </Box>
+          <Box variant="p">
+            <strong>2. A success has to mean the policy loaded.</strong> The abort rule and the rate both count what
+            each arm&apos;s deployment reports. Under <code>run</code>, an arm whose policy crashes a second after
+            launch reports success, so a broken policy speeds the rollout up where it should stop it. Under{' '}
+            <code>startup</code> with a warm-up inference, the same crash is a failure the abort counts.{' '}
+            <Cite id="F07-129">Greengrass component recipe reference, run and startup</Cite>{' '}
+            <Cite id="F07-93">AWS IoT developer guide, Job rollout rates</Cite>
+          </Box>
+          <Box variant="p">
+            <strong>3. For tens of arms, the stages are groups, not the rate.</strong> The rate notifies arms at a base rate per minute and multiplies it whenever a count of notified or of
+            succeeded arms is reached, whichever comes first. AWS&apos;s own rate example steps every 1,000 devices. The notified count is produced by the rate itself. In the example the first doubling comes
+            after 10 / 5 = 2 minutes whatever the arms report, and a group of twenty is fully notified within 3
+            minutes (10 at 5 a minute, then 10 at 10): every arm is downloading within 3 minutes, so twenty downloads share the link and none finishes in 8. Stage with a canary group that takes the update first, and create the fleet group&apos;s
+            deployment only once the canaries&apos; records read well.{' '}
+            <Cite id="F07-93">AWS IoT developer guide, Job rollout rates</Cite>{' '}
+            <Cite id="F07-162">Greengrass developer guide, Create deployments</Cite>
+          </Box>
+          <Box variant="p">
+            <strong>4. The per-device timeout has to cover the download.</strong> Once the abort can fire, a timeout
+            shorter than the download turns healthy arms into failures. The clock starts when an arm&apos;s
+            job turns <code>IN_PROGRESS</code>, and an arm that has not finished when it runs out is marked{' '}
+            <code>TIMED_OUT</code>, which the failure type <code>ALL</code> counts. On the illustrative link the 6 GB policy needs 8 minutes for one arm alone and up to <Derived>160</Derived> minutes when twenty download together, so under the example&apos;s 5 every arm is marked <code>TIMED_OUT</code>, and
+            with a reachable minimum enough of them cancel a good rollout. Set the timeout from a download measured
+            with as many arms downloading at once as the rate allows, with install and start-up added; it may be anything from 1 minute to 7 days.{' '}
+            <Cite id="F07-162">Greengrass V2 API reference, IoTJobTimeoutConfig</Cite>{' '}
+            <Cite id="F07-94">AWS IoT API reference, AbortCriteria</Cite>
+          </Box>
+          <Box variant="p">
+            <strong>The abort rule sees only what arms report, so make the report carry behaviour.</strong> The job
+            service judges no task: a device &quot;must be programmed to report the FAILURE status&quot;. A policy
+            component can run the trial itself. It holds its <code>startup</code> step open through a set of trial
+            episodes and reports <code>RUNNING</code> only if enough succeed, with the startup timeout raised from its
+            120 s default to cover them and the per-device timeout above that. A policy that loads and drops blocks
+            then fails its deployment, rolls its arm back and counts toward the abort. The design is ours, built from documented parts.{' '}
+            <Cite id="F07-96">AWS IoT developer guide, Job configurations, abort cases</Cite>{' '}
+            <Cite id="F07-128">Greengrass component recipe reference, lifecycle</Cite>{' '}
+            <Cite id="F07-129">Greengrass component recipe reference, run and startup</Cite>
+          </Box>
+          <Box variant="p">
+            The canaries need a group of their own. A device runs the union of every deployment that targets it, its
+            own thing plus each group it belongs to, and a thing deployment and a group deployment that pin different
+            versions of one component fail on the device (AWS&apos;s log line: &quot;No local or cloud component
+            version satisfies the requirements&quot;). A canary left in the fleet group cannot be handed the new
+            version directly. Put the canaries in a separate thing group, or use a subdeployment, &quot;a deployment
+            that targets a smaller subset of devices within a parent deployment&quot;; whether a subdeployment may pin
+            a version different from its parent&apos;s is not documented.{' '}
+            <Cite id="F07-125">Greengrass developer guide, Create deployments</Cite>{' '}
+            <Cite id="F07-126">Greengrass developer guide, Manage deployments, dependency resolution failures</Cite>{' '}
+            <Cite id="F07-165">Greengrass developer guide, Create subdeployments</Cite>
+          </Box>
+          <ExpandableSection headerText="Deployment limits and defaults, for lookup">
+            <ThreeColTable head={['Limit', 'Value', 'Source']} rows={LIMIT_ROWS} minWidth={640} />
+          </ExpandableSection>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Know what an abort leaves running on the arms, and put a bad policy's arms back with a revision built from the current one"
+          >
+            A brake and no reverse gear
+          </Header>
+        }
+      >
+        <SpaceBetween size="s">
+          <Box variant="p">
+            The abort&apos;s only action is <code>CANCEL</code>, and a cancel is narrow: &quot;only QUEUED job
+            executions are canceled&quot;, while executions in progress &quot;will not be canceled&quot;. Cancelling
+            the whole deployment by hand reaches no further: &quot;If a core device already runs the deployment, you
+            won&apos;t change the components on that device when you cancel the deployment.&quot; So the abort saves only the arms still queued when failures start. At the example&apos;s pace all twenty are notified within 3 minutes, before any arm can have downloaded
+            the policy and failed to start it, so an abort set off by failed starts would find no arm left to
+            cancel. For tens of arms the canary group is the brake, and the abort rule guards the fleet group&apos;s
+            deployment at a pace slow enough to leave arms queued; a constant rate may go as low as 1 arm a minute.
+            In the figure&apos;s last step that leaves seven arms on the new policy, two failed and eleven never
+            started.{' '}
+                        <Cite id="F07-94">AWS IoT API reference, AbortCriteria</Cite>{' '}
+            <Cite id="F07-95">AWS IoT developer guide, Job configurations</Cite>{' '}
+            <Cite id="F07-164">Greengrass developer guide, Cancel deployments</Cite>{' '}
+            <Cite id="F07-92">AWS IoT API reference, ExponentialRolloutRate and JobExecutionsRolloutConfig</Cite>
+          </Box>
+          <Box variant="p">
+            The one automatic undo covers one arm: a start that fails rolls that arm back, the default failure
+            handling. Across the fleet there is no undo. A policy that starts cleanly and then drops blocks is a
+            healthy deployment as far as Greengrass knows, and putting those arms back takes a new revision for the
+            same target that pins the previous version. Creating it also cancels the job of the revision before.{' '}
+            <Cite id="F07-89">Greengrass V2 API reference, DeploymentPolicies</Cite>{' '}
+            <Cite id="F07-164">Greengrass developer guide, Cancel deployments and Check deployment status</Cite>
+          </Box>
+          <Box variant="p">
+            Build every revision, the revert included, from the current one. A deployment is the whole list of
+            components its target should run: &quot;A new deployment to the same target overwrites the previous
+            deployment to the target&quot;, and a component missing from the new revision is uninstalled. A revert
+            that lists only the old policy would remove the episode uploader with it. Fetch the current revision,
+            change the policy&apos;s version and nothing else, and create the deployment from that.{' '}
+            <Cite id="F07-124">Greengrass developer guide, Manage deployments</Cite>
+          </Box>
+          <Box variant="p">
+            Pin everything else in the same document. A deployment installs the latest supported versions of a
+            component&apos;s dependencies, so a revision can bring in new patch versions of AWS&apos;s own
+            components, and &quot;Some automatic updates, such as a nucleus update, can cause your devices to restart
+            unexpectedly.&quot; List the nucleus, the Docker application manager and the token exchange service with
+            explicit versions beside the policy, so that a new policy version is the only thing a rollout changes.{' '}
+            <Cite id="F07-166">Greengrass developer guide, Manage deployments, deployment options</Cite>
+          </Box>
+          <Box variant="p">
+            The operating system sits outside all of this. No AWS page describing a managed update of a Linux
+            device&apos;s operating system was located, and NVIDIA documents the update tools for Jetson Linux,
+            including image-based updates written partition by partition, with no fleet service. A JetPack upgrade
+            across the arms is a rollout you plan and run yourself.{' '}
+            <Cite id="F07-185">Greengrass developer guide, Update the Core software</Cite>{' '}
+            <Cite id="F07-186">Jetson Linux developer guide, update mechanism</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Small signals travel as messages, episodes travel as files, and one published fleet closed the loop in under a minute each way">
-            Episodes back to S3
+          <Header
+            variant="h2"
+            description="Budget the uplink from the arm's own recorded bytes, ship closed files to S3 and a per-episode verdict as a message, and see how fast one published fleet closed the loop"
+          >
+            Episodes back: files to S3, a verdict over MQTT
           </Header>
         }
       >
         <SpaceBetween size="s">
           <Box variant="p">
-            The connection every device already holds to AWS IoT Core speaks MQTT (Message Queuing Telemetry
-            Transport), a lightweight protocol in which a device publishes a small message to a named topic and
-            whatever subscribed to that topic receives it. It suits small things. A message can be at most 128 KB, a
-            connection can make 100 publish requests per second, and its data is processed at 512 KB per second.
-            One raw 640x480 camera frame is 921,600 bytes, seven times the message limit.{' '}
-            <Cite id="F07-97">AWS General Reference, AWS IoT Core quotas</Cite> An episode is files: in section 9&apos;s example dataset, 86.1 MB for 50 episodes, about <Derived>1.7</Derived> MB each (86.1 / 50).{' '}
-            <Cite id="F05-29">Hugging Face hub file listing of the example dataset</Cite>
+            The return traffic is small per arm and never stops. In the example dataset of section 9, Collecting
+            Data, two 640x480 cameras cost about 775 MB of video per robot-hour, 0.86 Mbit/s per camera. An arm that
+            records all hour sends about <Derived>1.72</Derived> Mbit/s (2 x 0.86), or <Derived>0.215</Derived> MB
+            a second (775 MB / 3,600 s). The encoding chosen at the bench is what makes that possible: the same
+            frames raw would be 199 GB an hour per arm, about 257 times as much.{' '}
+            <Cite id="F05-29">Hugging Face hub file listing of the example dataset</Cite>{' '}
+            <Cite id="F05-30">from the file sizes of the example dataset</Cite>
           </Box>
           <Box variant="p">
-            So split the traffic. Over MQTT goes a record per episode of a few hundred bytes (which arm, which
-            policy version, success or failure), which a rule in AWS IoT Core can write to S3. That record is the
-            task-level evidence the rollout gate lacks. The files go to S3 directly. &quot;Messages for signals, S3
-            for files&quot; is our reading of the limits; no AWS page read in this research states when to keep
-            data off MQTT. <Cite id="F07-176">AWS IoT developer guide, Basic Ingest and the S3 rule action</Cite>
+            Fleet size turns that trickle into a link budget. Twenty arms send about <Derived>34</Derived> Mbit/s (<Toy>20</Toy> x{' '}
+            <Derived>1.72</Derived>). An illustrative hundred send <Derived>172</Derived> Mbit/s, more than a symmetric <Toy>100</Toy> Mbit/s
+            site link carries upstream, so at that size the uploads, rather than the policy download, set the size
+            of the link.{' '}
+            <Cite id="F05-30">from the file sizes of the example dataset</Cite>{' '}
+            <Cite id="F07-54">Jetson AI Lab tutorial, OpenPi on Thor</Cite>
           </Box>
           <Box variant="p">
-            For the files, AWS documents two routes. Both can use S3 multipart upload, which sends an object as up
-            to 10,000 parts of 5 MiB to 5 GiB each, so a dropped link costs one part.{' '}
-            <Cite id="F07-102">Amazon S3 user guide, multipart upload limits</Cite> Both are code you write:
-            LeRobot&apos;s built-in uploader targets the Hugging Face Hub.{' '}
+            Per event, delivery is the heavy direction. One rollout to twenty arms moves <Derived>120</Derived> GB
+            (<Toy>20</Toy> x 6), as much as those arms record in <Derived>7.7</Derived> hours at{' '}
+            <Derived>15.5</Derived> GB an hour (<Toy>20</Toy> x 775 MB).{' '}
+            <Cite id="F05-30">from the file sizes of the example dataset</Cite>{' '}
+            <Cite id="F07-54">Jetson AI Lab tutorial, OpenPi on Thor</Cite>
+          </Box>
+          <Box variant="p">
+            A sensor-rich robot breaks that budget. &quot;The Robot Data Factory&quot; models a reference robot with
+            seven 1920x1080 video streams at 30 fps, a LiDAR (a laser range scanner) and scalar sensors recording
+            around the clock, and its authors compute 38.41 MB/s, 3.32 TB per robot per day, as a model with no
+            measurement behind it. That is about <Derived>179</Derived> times the arm&apos;s{' '}
+            <Derived>0.215</Derived> MB/s (<Derived>38.41 / 0.215</Derived>), and <Derived>307</Derived> Mbit/s
+            (38.41 x 8) for one robot: three times the illustrative link. A fleet of such robots chooses what to
+            upload before it chooses how.{' '}
+            <Cite id="F07-106">The Robot Data Factory, appendix B.3</Cite>{' '}
+            <Cite id="F05-30">from the file sizes of the example dataset</Cite>
+          </Box>
+          <Box variant="p">
+            The connection each arm already holds is the wrong pipe for the files, and size is the reason. It runs to
+            AWS IoT Core, the service that holds the device registry and the message broker, and speaks MQTT (Message
+            Queuing Telemetry Transport), a protocol in which a device publishes small messages to named topics. Its
+            rate would do: a connection moves 512 KB a second against one arm&apos;s <Derived>0.215</Derived> MB. Its message size would
+            not: a message may be at most 128 KB, and a 200 MB video file would have to travel as about{' '}
+            <Derived>1,600</Derived> messages (<Derived>200 x 1,024 / 128</Derived>) and be reassembled in the cloud. So the files go to
+            Amazon S3, and MQTT carries a short per-episode record: which arm, which policy version, success or
+            failure.{' '}
+            <Cite id="F07-97">AWS General Reference, AWS IoT Core quotas</Cite>{' '}
+            <Cite id="F05-20">LeRobot v0.7.0 datasets/utils.py, file size defaults</Cite>{' '}
+            <Cite id="F05-30">from the file sizes of the example dataset</Cite>
+          </Box>
+          <Box variant="p">
+            That record can reach S3 without the broker. AWS IoT Core runs rules, each a query over incoming messages
+            with actions that send the matches to other services. With Basic Ingest a device publishes to a reserved
+            topic that starts with <code>$aws/rules/</code> plus a rule&apos;s name, and that rule&apos;s actions run
+            &quot;without incurring messaging costs&quot;; the S3 rule action writes each message to a bucket as its own object when the key
+            carries a timestamp. The record is the task-level evidence the health check lacks, and it is what an
+            operator reads before creating the fleet group&apos;s deployment.{' '}
+            <Cite id="F07-176">AWS IoT developer guide, Basic Ingest and the S3 rule action</Cite>
+          </Box>
+          <Box variant="p">
+            For the current state of each arm, use the device shadow: a small JSON document per thing, kept in the
+            cloud and readable while the arm is offline. Report the running policy version and a success count there,
+            and fleet indexing can find &quot;arms on the new policy whose success rate fell&quot; in one query. Nucleus lite cannot use shadows.{' '}
+            <Cite id="F07-177">AWS IoT developer guide, Device Shadow service</Cite>{' '}
+            <Cite id="F07-182">AWS IoT developer guide, Fleet indexing</Cite>{' '}
+            <Cite id="F07-135">Greengrass developer guide, feature compatibility</Cite>
+          </Box>
+          <Box variant="p">
+            What an uploader can ship is a closed file, and LeRobot&apos;s writer does not close one per episode. It
+            appends each episode&apos;s video to the current MP4 until the file would pass 200 MB, then starts the
+            next; at the example&apos;s 387 MB per camera-hour a file closes about every <Derived>31</Derived>{' '}
+            minutes (<Derived>200 / 387 x 60</Derived>). Its Parquet files are valid only after <code>finalize()</code>, which{' '}
+            <code>lerobot-record</code> calls after the last episode. LeRobot&apos;s own uploader targets the Hugging
+            Face Hub, so the S3 path is code you write. LeRobot&apos;s continuous recording mode, the sentry
+            strategy, shows the fix: it sets episode boundaries so that &quot;each saved episode produces a complete
+            video file&quot;, which an uploader can ship as soon as it closes.{' '}
+            <Cite id="F05-19">LeRobot v0.7.0 dataset_writer.py</Cite>{' '}
+            <Cite id="F05-30">from the file sizes of the example dataset</Cite>{' '}
+            <Cite id="F05-3">LeRobot v0.7.0 lerobot_record.py and dataset docs</Cite>{' '}
             <Cite id="F07-112">LeRobot v0.7.0, inference.mdx</Cite>
+          </Box>
+          <Box variant="p">
+            Two kinds of component move the closed files to S3. Stream manager is a Greengrass component that
+            queues data on the device and exports it in the background. The other is a component you write that
+            calls S3 directly.{' '}
+            <Cite id="F07-171">Greengrass developer guide, Manage data streams</Cite>{' '}
+            <Cite id="F07-175">Greengrass developer guide, Interact with AWS services</Cite>
           </Box>
           <ThreeColTable head={['', 'Stream manager', 'A component that calls S3 itself']} rows={UPLOAD_ROWS} minWidth={680} />
           <Box variant="p">
-            Choose stream manager when the link is poor or shared and you want a queue and a bandwidth cap without
-            writing them; the documentation read does not say whether it resumes a multipart upload after the device
-            reboots. Choose the direct call when memory is the scarce thing or the device runs nucleus lite. On
-            arm64 the pages read cover the nucleus only: the Java one lists Armv8, and nucleus lite ships an arm64
-            package. <Cite id="F07-140">Greengrass developer guide, Greengrass nucleus requirements</Cite>{' '}
-            <Cite id="F07-142">aws-greengrass-lite v2.7.0, package readme</Cite>
+            On the Java nucleus, take stream manager. The documented minimums of the nucleus and stream manager add to 96 + 70 = <Derived>166</Derived> MB, taken from the same 8 GB that holds the policy on an Orin
+            Nano, and buy a queue, a bandwidth cap on the uplink, and priorities that let a short episode with a human correction
+            go ahead of bulk video. On nucleus lite, write the direct component instead. With multipart upload at the 5 MB minimum part size, a 200 MB video file goes up in 40 parts and a
+            dropped link costs one part; stream manager does this for you, and a direct component has to do it
+            itself. Whether stream manager resumes an upload after the device
+            reboots is not documented. Section 24, Orchestrating Physical
+            AI on AWS, prints the recipe for a component that calls S3 with the token exchange credentials.{' '}
+            <Cite id="F07-84">Greengrass nucleus v2.18.4 requirements</Cite>{' '}
+            <Cite id="F07-171">Greengrass developer guide, Manage data streams</Cite>{' '}
+            <Cite id="F07-36">NVIDIA Jetson Orin Nano Super Developer Kit page</Cite>{' '}
+            <Cite id="F07-173">Greengrass developer guide, stream manager configuration</Cite>{' '}
+            <Cite id="F07-102">Amazon S3 user guide, multipart upload limits</Cite>
+          </Box>
+          <Box variant="p">
+            How fast can the loop close? &quot;Learning While Deploying&quot; ran 16 two-armed robots that upload
+            complete episodes to object storage at episode boundaries, while a central learner broadcasts an updated
+            shared policy every 50 training steps. On an 8-hour run the authors report that an episode reached the
+            learner 41 s after it was produced at the median (148 s at the 99th percentile), and a published model
+            reached a robot in 38 s (55 s), figures they note depend on network configuration and contention.{' '}
+            <Cite id="F07-108">Learning While Deploying, section V</Cite>{' '}
+            <Cite id="F07-109">Learning While Deploying, Table VI</Cite>
           </Box>
           <AnimatedFigure
             name="episodes back to S3 and the loop closing"
@@ -988,75 +1148,183 @@ export function Fleet() {
             cites="F07-102 F07-108 F07-109 F07-172"
             caption={
               <>
-                Follow the episode files up from three arms into the bucket, across to training, and the new policy
-                version back down to the canary group. The two blue spans are drawn to one scale and are author
-                reported, from one 16-robot run of the authors&apos; own system on one site. The rest is a schematic,
-                not measured: the number of arms and the version numbers are invented.
+                Episode files go up from the twenty arms into one bucket and across to training, and the next policy
+                version comes back down to the three canary arms. The two blue spans are drawn to one scale: they are
+                the medians the Learning While Deploying authors report for one 8-hour, 16-robot run of their own
+                system. The rest is a schematic, with the arm count and version numbers invented.
               </>
             }
           >
             {(step, reduced) => <FleetLoop step={step} reduced={reduced} />}
           </AnimatedFigure>
           <Box variant="p">
-            <strong>How fast can the loop close?</strong> One published system gives a measured answer.
-            &quot;Learning While Deploying&quot; ran 16 two-armed robots that upload complete episodes to object
-            storage at episode boundaries, while a central learner broadcasts an updated shared policy every 50
-            training steps. <Cite id="F07-108">Learning While Deploying, section V</Cite> On an 8-hour run with
-            those 16 robots the authors report that an episode became available to the learner 41 s after it was
-            produced at the median (148 s at the 99th percentile), and that a published model reached a robot in 38
-            s at the median (55 s at the 99th percentile).{' '}
-            <Cite id="F07-109">Learning While Deploying, Table VI</Cite> Under a minute each way, on the
-            authors&apos; own plumbing, where a staged deployment waits up to 60 seconds by default for a component that never answers the update notification.
-          </Box>
-          <Box variant="p">
-            <strong>How much data is that?</strong> For this arm, megabytes per episode. For an upper bound, a
-            sizing model in &quot;The Robot Data Factory&quot; computes 38.41 MB/s for a reference robot with seven
-            1920x1080, 30 fps video streams recording around the clock: 3.32 TB per robot per day, and for 120
-            robots 4.61 GB/s and 11.95 PB per 30 days. It is the authors&apos; model, with no measurement behind
-            it.{' '}
-            <Cite id="F07-106">The Robot Data Factory, appendix B.3</Cite>
+            Those are the speeds of a learner that broadcasts weights to every robot at once, on the authors&apos;
+            own network and model. A staged rollout adds the canary wait to whatever the download costs: the canaries
+            take the update, run their trial episodes and report, and only then does the fleet group&apos;s
+            deployment start. On the illustrative link, three canaries downloading the 6 GB policy together need
+            about <Derived>24</Derived> minutes (3 x 8) before the first trial episode. Choose the broadcast
+            where a fresh policy every few minutes is worth more than a brake, and the staged rollout where an arm
+            that runs a bad policy costs more than the wait. Section 19,
+            Agents Running the Loop, hands a loop like this to a coding agent and asks what it may touch.{' '}
+            <Cite id="F07-109">Learning While Deploying, Table VI</Cite>{' '}
+            <Cite id="F07-162">Greengrass developer guide, Create deployments</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Pick the agent for a machine beside a robot by asking whether its link drops and whether anything may connect in">
+          <Header
+            variant="h2"
+            description="Place each machine by asking whether its link drops, whether anything may connect in to it, and whether one scheduler must reach it and the cloud GPUs"
+          >
             Greengrass core device or Kubernetes hybrid node
           </Header>
         }
       >
         <SpaceBetween size="s">
           <Box variant="p">
-            There is a second way to attach a machine on your premises to AWS. Amazon EKS (Elastic Kubernetes
-            Service) Hybrid Nodes joins it to a cloud Kubernetes cluster as a worker node, so the scheduler that
-            places training jobs on cloud GPUs can also place a pod on it.
+            A second way to attach a machine outside AWS is Amazon EKS (Elastic Kubernetes Service) Hybrid Nodes. It
+            joins the machine to a cloud Kubernetes cluster as a worker node, so the scheduler that places training
+            pods on cloud GPUs can place a pod on it too. Greengrass and Hybrid Nodes assume opposite networks. Three questions, asked in order, place two machines:
+            a Jetson beside an arm, and a DGX Spark on a lab desk. The Spark is the NVIDIA desk machine whose inference
+            section 17, Running on the Robot, timed.{' '}
+            <Cite id="F09-119">EKS user guide, Hybrid Nodes overview</Cite>
+          </Box>
+          <Box variant="p">
+            <strong>Does the link drop?</strong> A Greengrass device treats offline as a normal state and takes the
+            current deployment when it next connects. Hybrid Nodes &quot;is not a fit for disconnected, disrupted,
+            intermittent or limited (DDIL) environments&quot;: during a cut its pods keep running and nothing can be
+            changed, and a node on Systems Manager credentials can take up to 30 minutes to rejoin once they have
+            lapsed. A link that drops settles it for Greengrass.{' '}
+            <Cite id="F07-123">Greengrass developer guide, Manage deployments</Cite>{' '}
+            <Cite id="F09-119">EKS user guide, Hybrid Nodes overview</Cite>{' '}
+            <Cite id="F09-125">EKS best practices, hybrid nodes and disconnections</Cite>
+          </Box>
+          <Box variant="p">
+            <strong>May anything connect in?</strong> A Greengrass device only dials out, on port 8883 or 443, so it
+            works behind a lab router with no VPN. A hybrid node needs private connectivity in both directions,
+            because the EKS control plane opens connections to the node. The
+            stated guidance, &quot;not a strict requirement&quot;, is at least 100 Mbps and at most 200 ms round trip.{' '}
+            <Cite id="F07-189">AWS IoT developer guide, Device communication protocols</Cite>{' '}
+            <Cite id="F09-120">EKS user guide, Hybrid Nodes prerequisites</Cite>
+          </Box>
+          <Box variant="p">
+            <strong>Must one scheduler reach both?</strong> Only then is a hybrid node worth what it costs to run.
+            Every Kubernetes node needs a pod network, the plugin that gives each pod an address, and on a hybrid
+            node you install and run it yourself. The hybrid node pages do not mention GPU scheduling, and their
+            operating system table has no row for Jetson Linux or DGX OS.{' '}
+            <Cite id="F09-123">EKS user guide, Hybrid Nodes add-ons</Cite>{' '}
+            <Cite id="F09-122">EKS user guide, Hybrid Nodes pages</Cite>{' '}
+            <Cite id="F09-121">EKS user guide, Hybrid Nodes operating systems</Cite>
+          </Box>
+          <Box variant="p">
+            Read together, the answers place the two machines. A Jetson on or beside a robot is a Greengrass core device. A DGX Spark is a hybrid node only when the lab
+            already runs its training and evaluation on EKS, the machine sits on a wired network with a VPN or Direct
+            Connect to the cluster&apos;s VPC (Virtual Private Cloud, the private network the cluster lives in), and
+            somebody will run a pod network on it.{' '}
+            <Cite id="F09-127">EKS Hybrid Nodes overview, read for a Jetson and a DGX Spark</Cite>
+          </Box>
+          <Box variant="p">
+            Beyond the network, the two differ in the platforms their pages name, in GPU access and in what you
+            operate:
           </Box>
           <ThreeColTable head={['', 'Greengrass core device', 'EKS hybrid node']} rows={EDGE_ROWS} minWidth={680} />
-          <Box variant="p">
-            Our reading of those rows: a Jetson on or beside a robot is a Greengrass core device. A DGX Spark is a
-            hybrid node only when the lab already runs its training and evaluation on EKS, the machine sits on a
-            wired network with a private link to the cluster, and somebody is willing to run a pod network on it.
-            Section 29, Choosing, returns to this decision.{' '}
-            <Cite id="F09-127">EKS user guide, Hybrid Nodes overview</Cite>
-          </Box>
+          <ExpandableSection headerText="Retired and neighbouring AWS services, as listed on 2026-11-20">
+            <ul style={LIST}>
+              <li>
+                <strong>AWS RoboMaker</strong>, the robot-specific service, reached end of support on September 10,
+                2025, and full shutdown means it is &quot;no longer available or supported in any capacity&quot;.
+                AWS names no replacement in the pages cited, and its documentation pages return HTTP 404.{' '}
+                <Cite id="F07-98">AWS General Reference, Services in Full Shutdown</Cite>{' '}
+                <Cite id="F07-100">RoboMaker developer guide (page removed)</Cite>
+              </li>
+              <li>
+                <strong>AWS IoT Greengrass V1</strong> ended on October 7, 2026, so a tutorial built on V1 groups no
+                longer applies; the components, deployments and jobs described here are Greengrass V2.{' '}
+                <Cite id="F07-99">AWS General Reference, Services in Full Shutdown</Cite>
+              </li>
+              <li>
+                <strong>AWS IoT Core, Greengrass V2 and AWS IoT Device Management</strong> appear in none of
+                AWS&apos;s lists of services in maintenance, in sunset or shut down on 2026-11-20.{' '}
+                <Cite id="F07-191">AWS General Reference, service lifecycle tables</Cite>
+              </li>
+              <li>
+                <strong>Secure tunneling</strong> gives an operator a session such as SSH to a device behind a
+                firewall, with no inbound port, on both nuclei.{' '}
+                <Cite id="F07-183">AWS IoT developer guide, Secure tunneling</Cite>
+              </li>
+            </ul>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="What has not been measured yet, and the seven steps that take one device from the bench into the fleet">
+          <Header
+            variant="h2"
+            description="Bring one arm's computer into the fleet in the order the documentation sets, and time the first deployment before a second arm joins"
+          >
             The hook-up of one Jetson and one Spark
           </Header>
         }
       >
         <SpaceBetween size="s">
           <Box variant="p">
-            Everything above is read from documentation and source code; nothing was run on a device. No
-            first-party AWS post or sample from 2025 or 2026 showing working Greengrass V2 code for a GPU policy
-            container on a Jetson together with episode upload to S3 was located in this research.{' '}
+            AWS has published no post or sample from 2025 or 2026, among those searched, that runs a GPU policy
+            container on a Jetson with Greengrass V2 and uploads its episodes to S3. The documentation sets the order of work for one arm&apos;s computer, and a DGX Spark that joins as a
+            core device takes the same steps.{' '}
             <Cite id="F07-199">AWS sample repositories searched</Cite>
           </Box>
+          <ol style={LIST}>
+            <li>
+              <strong>Create the account side.</strong> Five objects: a thing, a thing group, an AWS IoT policy, an
+              IAM (Identity and Access Management) role called the token exchange role, and a role alias, the name through which the device&apos;s certificate reaches that role. The installer can create them with AWS credentials it does not store, or you create them from a
+              workstation and no AWS credentials ever sit on the device.{' '}
+              <Cite id="F07-144">Greengrass developer guide, Install with automatic provisioning</Cite>{' '}
+              <Cite id="F07-145">Greengrass developer guide, Install with manual provisioning</Cite>
+            </li>
+            <li>
+              <strong>Open the network, outbound only.</strong> The device dials out to four endpoints: the Greengrass data plane, the
+              account&apos;s AWS IoT data endpoint, its credentials endpoint and S3. They take port 8883 or 443 for
+              MQTT and 8443 or 443 for HTTPS.{' '}
+              <Cite id="F07-190">Greengrass developer guide, Allow device traffic</Cite>
+            </li>
+            <li>
+              <strong>Install a nucleus.</strong> The Java nucleus needs a Java runtime of version 8 or later. Nucleus lite installs from a package whose readme names Ubuntu
+              24.04, and gives up the deferral that keeps an update off a moving arm.{' '}
+              <Cite id="F07-143">Greengrass developer guide, quick installation</Cite>{' '}
+              <Cite id="F07-142">aws-greengrass-lite v2.7.0, package readme</Cite>{' '}
+              <Cite id="F07-137">aws-greengrass-lite v2.7.0, README</Cite>
+            </li>
+            <li>
+              <strong>Extend the token exchange role before the first deployment.</strong> The default policy
+              &quot;doesn&apos;t include access to files in S3 buckets&quot;. Add <code>s3:GetObject</code> for artifacts; <code>ecr:GetAuthorizationToken</code>,{' '}
+              <code>ecr:BatchGetImage</code> and <code>ecr:GetDownloadUrlForLayer</code> for a private image; and{' '}
+              <code>s3:PutObject</code> with the multipart actions for the episodes bucket.{' '}
+              <Cite id="F07-149">Greengrass developer guide, Authorize core devices</Cite>{' '}
+              <Cite id="F07-175">Greengrass developer guide, Interact with AWS services</Cite>
+            </li>
+            <li>
+              <strong>Package the policy as a component</strong>, image pinned by digest and started under{' '}
+              <code>startup</code> with a warm-up inference, and try it on the bench device with a local deployment,
+              made on the device itself with no cloud round trip.{' '}
+              <Cite id="F07-127">Greengrass developer guide, Greengrass CLI deployment</Cite>
+            </li>
+            <li>
+              <strong>Deploy from the cloud</strong>, first to the one thing, then to a canary group, then to the
+              fleet group, with a per-device timeout above your measured download and an abort minimum the group
+              reaches.{' '}
+              <Cite id="F07-125">Greengrass developer guide, Create deployments</Cite>
+            </li>
+            <li>
+              <strong>Add the uploader and watch one episode&apos;s files arrive</strong> in the bucket. After that
+              the second arm is one more thing in the group, and beyond a handful, fleet provisioning lets every
+              device ship with one shared claim certificate that it trades for its own on first connection.{' '}
+              <Cite id="F07-174">Stream manager Python SDK v1.1.2, stream_manager_s3.py</Cite>{' '}
+              <Cite id="F07-146">Greengrass developer guide, Fleet provisioning</Cite>
+            </li>
+          </ol>
           <Placeholder
             what={
               <>
@@ -1075,51 +1343,12 @@ export function Fleet() {
               </>
             }
           />
-          <Box variant="p">Until then, this is the order in which the documentation has you work.</Box>
-          <ol style={LIST}>
-            <li>
-              <strong>Create the account side.</strong> Five objects: a thing, a thing group, an AWS IoT policy, an
-              IAM (Identity and Access Management) role called the token exchange role, and a role alias pointing at
-              it. The installer can create them, or you create them from a workstation and no AWS credentials ever
-              sit on the device. <Cite id="F07-144">Greengrass developer guide, Install with automatic provisioning</Cite>{' '}
-              <Cite id="F07-145">Greengrass developer guide, Install with manual provisioning</Cite>
-            </li>
-            <li>
-              <strong>Open the network, outbound only.</strong> The device dials out to four kinds of endpoint, on
-              port 8883 or 443 for MQTT and 8443 or 443 for HTTPS.{' '}
-              <Cite id="F07-190">Greengrass developer guide, Allow device traffic</Cite>
-            </li>
-            <li>
-              <strong>Install a nucleus.</strong> The Java nucleus needs a Java runtime of version 8 or later and
-              installs with one documented command. Nucleus lite installs from a package whose readme names Ubuntu
-              24.04. <Cite id="F07-143">Greengrass developer guide, quick installation</Cite>{' '}
-              <Cite id="F07-142">aws-greengrass-lite v2.7.0, package readme</Cite>
-            </li>
-            <li>
-              <strong>Extend the device&apos;s role.</strong> The default policy &quot;doesn&apos;t include access
-              to files in S3 buckets&quot;. Add <code>s3:GetObject</code> for artifacts, three registry actions for
-              private images, and <code>s3:PutObject</code> with the multipart actions for the episodes bucket.{' '}
-              <Cite id="F07-149">Greengrass developer guide, Authorize core devices</Cite>{' '}
-              <Cite id="F07-175">Greengrass developer guide, Interact with AWS services</Cite>
-            </li>
-            <li>
-              <strong>Package the policy as a component</strong>, image pinned by digest, and try it on the bench
-              device with a local deployment, made on the device itself with no cloud round trip.{' '}
-              <Cite id="F07-127">Greengrass developer guide, Greengrass CLI deployment</Cite>
-            </li>
-            <li>
-              <strong>Deploy from the cloud</strong>, first to the one thing, then to a thing group with a rate, an
-              abort rule and a timeout sized for your fleet and your download.{' '}
-              <Cite id="F07-125">Greengrass developer guide, Create deployments</Cite>
-            </li>
-            <li>
-              <strong>Add the uploader and watch one episode arrive</strong> in the bucket. After that the second
-              arm is one more thing in the group, and beyond a handful, fleet provisioning lets every device ship
-              with one shared claim certificate that it trades for its own on first connection.{' '}
-              <Cite id="F07-174">Stream manager Python SDK v1.1.2, stream_manager_s3.py</Cite>{' '}
-              <Cite id="F07-146">Greengrass developer guide, Fleet provisioning</Cite>
-            </li>
-          </ol>
+          <Box variant="p">
+            Time the first cloud deployment end to end over your own link, then the canary group&apos;s with its
+            arms downloading together, before the fleet group joins. The per-device timeout is set from the slowest
+            arm, and with a 6 GB policy against a 2 GB component limit it also tells
+            you what the route you chose costs in minutes on every arm.
+          </Box>
         </SpaceBetween>
       </Container>
     </SpaceBetween>

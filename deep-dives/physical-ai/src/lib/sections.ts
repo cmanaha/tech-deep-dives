@@ -17,7 +17,7 @@ export const sections = [
   { id: 'training-scales', title: '15. Training at Three Scales: One GPU, One Node, Many Nodes' },
   { id: 'evaluation', title: '16. Evaluation: Counting Successes, and How Many Trials It Takes' },
   { id: 'on-robot', title: '17. Running on the Robot: Driving the Arm With a Policy Slower Than Its Clock' },
-  { id: 'fleet', title: '18. The Fleet: Policies Out, Episodes Back' },
+  { id: 'fleet', title: '18. The Fleet: A 6 GB Policy, a 2 GB Package and No Reverse Gear' },
   { id: 'agents', title: '19. Agents Running the Loop: What the Agent May Touch and Who Grades It' },
   { id: 'workloads', title: '20. Fifteen Workloads, Five Shapes' },
   { id: 'pmu-cards', title: '21. Reading a Machine: PMU Cards' },
