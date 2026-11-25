@@ -514,6 +514,7 @@
 "F05-106":{"t":-1,"i":["F05-67","F05-69","F05-70","F05-71","F05-76","F05-77","F05-78","F05-79","F05-29"],"k":"our-reading"},
 "F05-107":{"t":-1,"i":["F05-37","F05-39","F05-41","F05-58","F05-59","F05-60","F05-61","F05-62","F05-65","F05-66","F05-87"],"k":"our-reading"},
 "F05-108":{"t":-1,"i":["F05-87","F05-90","F05-91","F05-92","F05-97","F05-98","F05-99","F05-103"],"k":"our-reading"},
+"F05-109":{"t":2,"u":"https://huggingface.co/blog/lerobot/lerobot-release-v070","k":"vendor-claim"},
 "F06-1":{"t":1,"u":"https://github.com/google-deepmind/mujoco/releases/tag/4.0.1"},
 "F06-2":{"t":1,"u":"https://github.com/google-deepmind/mujoco/releases/tag/4.0.1"},
 "F06-3":{"t":2,"u":"https://github.com/google-deepmind/mujoco/discussions/3773"},
