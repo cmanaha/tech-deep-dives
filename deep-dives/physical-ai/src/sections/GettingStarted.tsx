@@ -385,12 +385,14 @@ export function GettingStarted() {
           </Box>
           <Box variant="p">
             A 149.0 ms call can still drive a 33.3 ms clock, because each benchmarked call returns a chunk of 40
-            actions. Played one per tick they last 40 x 33.3 ms = <Derived>1.33</Derived> s, about{' '}
-            <Derived>nine</Derived> times the call that produced them. That holds in an asynchronous mode; in
+            actions. Played one per tick they last 40 x 33.3 ms = <Derived>1.33</Derived> s. In an asynchronous mode the
+            actions left when a chunk lands must cover the next call, so a call may take up to half the chunk,{' '}
+            <Derived>667</Derived> ms, about <Derived>667 / 149.0 = 4.5</Derived> times the 149.0 ms median. In
             LeRobot&apos;s default synchronous mode the arm would stand still for every one of those calls.{' '}
             <Cite id="F01-74">Isaac-GR00T deployment README, benchmark results</Cite>{' '}
             <Cite id="F01-28">LeRobot dataset.py, record defaults</Cite>{' '}
-            <Cite id="F01-87">LeRobot remote inference guide and inference guide</Cite>
+            <Cite id="F01-87">LeRobot remote inference guide and inference guide</Cite>{' '}
+            <Cite id="F07-22">LeRobot remote inference guide, &quot;Tuning&quot;</Cite>
           </Box>
           <Box variant="p">
             The software on the robot moves the answer as much as the chip does. On the same Jetson Orin,
@@ -412,7 +414,7 @@ export function GettingStarted() {
           </Box>
           <Box variant="p">
             So before training a model, time one call of it on the robot&apos;s computer in the runtime you will
-            ship, and check that the chunk it returns outlasts the call with room for the slowest ones (section{' '}
+            ship, and check that the chunk it returns lasts at least twice your slowest call (section{' '}
             <Nav>17</Nav>, Running on the Robot).
           </Box>
         </SpaceBetween>

@@ -238,7 +238,7 @@ export function PricePerformance() {
         header={
           <Header
             variant="h1"
-            description="Decide whether a faster machine is the better buy for a workload: count a unit of work both machines produce, divide each rate by price or by watts, and hold the slowest policy calls against the robot's deadline (our measurements on two edge machines; vendor documentation read 2026-11-20)"
+            description="Decide whether a faster machine is the better buy for a workload: count a unit of work both machines produce, divide each rate by price or by watts, and hold the slowest policy calls against the robot's deadline (our measurements: single runs on two edge machines; vendor documentation read 2026-11-20)"
           >
             23. Price-Performance and Latency: When the Faster Machine Is the Better Buy
           </Header>
@@ -257,7 +257,7 @@ export function PricePerformance() {
           </Box>
           <Box variant="p">
             Our measurements give one such ratio. A policy stand-in, six dense layers (each multiplies its input by a
-            weight matrix) run in place of a real policy, did 390 inferences per second on one core of an {JETSON}
+            weight matrix) run in place of a real policy, did 390 inferences per second on one core of an {JETSON}{' '}
             and 1,968 on one of the larger Cortex-X925 cores of an {SPARK} (single runs): a per-core speed ratio of 1,968 / 390 = <Derived>5.0</Derived>. The job keeps one core busy, so each
             machine&apos;s rate is that core&apos;s, and the Spark is the better buy for it only if the whole Spark
             costs less than <Derived>5.0</Derived> times as much as the Jetson, or draws less than{' '}
@@ -280,11 +280,11 @@ export function PricePerformance() {
           <Box variant="p">
             The Spark core is not held the same way. At 1,968 inferences per second the X925 asks for 49.5 GB/s, more
             than the 44.38 GB/s its own memory test reached, so one run of that test is not its ceiling, and only
-            22.4% of its cycles stalled on memory. The two cores&apos; test figures differ 3.8 times, and since the
-            X925&apos;s figure is not its ceiling, 3.8 is a floor on what memory allows. The rest of the{' '}
-            <Derived>5.0</Derived> may come from memory the test did not reach, from the core or from software, and
-            with the NumPy release on each machine unrecorded nothing splits them: measure the Spark with the
-            software you will run before pricing it on this ratio.{' '}
+            22.4% of its cycles stalled on memory. The two cores&apos; test figures differ 3.8 times, but neither single
+            run is shown to be its core&apos;s ceiling, and the X925&apos;s demand already exceeds its own, so 3.8
+            neither caps nor explains the <Derived>5.0</Derived>. Memory the test did not reach, the core and the
+            software may each contribute, and with the NumPy release on each machine unrecorded nothing splits them:
+            measure the Spark with the software you will run before pricing it on this ratio.{' '}
             <Cite id="F08-63">the stand-in&apos;s weights against the core&apos;s memory limits</Cite>{' '}
             <Cite id="F08-66">our profiling report, triad row</Cite>{' '}
             <Cite id="F08-62">our profiling report, policy inference table</Cite>
@@ -377,9 +377,9 @@ export function PricePerformance() {
             cites="F08-61 F08-62 F08-64 F08-73"
             caption={
               <>
-                Our measurements of the three stand-ins, each panel in its own unit. Only the two Spark bars of the
-                physics panel pass every like-for-like check; the bar labels carry the MuJoCo version that fails the
-                check across machines. The render panel, drawn through EGL (a route to hardware-accelerated drawing
+                Our measurements of the three stand-ins, each panel in its own unit. The two Spark bars of the physics and
+                policy panels pass every like-for-like check (one machine, one software install); across machines the
+                bar labels carry the MuJoCo version that fails the software check. The render panel, drawn through EGL (a route to hardware-accelerated drawing
                 without a display), ranks no processor.
               </>
             }
@@ -400,7 +400,8 @@ export function PricePerformance() {
             <Cite id="F07-47">DGX Spark user guide, hardware</Cite>
           </Box>
           <Box variant="p">
-            The policy pair meets the first two checks and leaves the third open: no NumPy release was recorded. The
+            Across machines the policy pair meets the first two checks and leaves the third open: no NumPy release
+            was recorded. The
             render panel ranks neither CPU cores nor GPUs, because how much of each frame the GPU drew was not
             established.{' '}
             <Cite id="F08-62">our profiling report, policy inference table</Cite>{' '}
@@ -471,7 +472,7 @@ export function PricePerformance() {
             The arm&apos;s recordings put the rule to a real choice. LeRobot records video in AV1 (AOMedia
             Video 1), a compression format, by default (section 9, Collecting Data), and the video decoders of the
             H100 GPUs in a P5, an EC2 training instance, do not handle AV1. A P5 training run on those recordings
-            therefore decodes them on its 12 physical cores per GPU, or re-encodes them first, and the price per
+            therefore decodes them on the 12 physical cores per GPU of its eight-GPU size, or re-encodes them first, and the price per
             training sample includes that CPU work.{' '}
             <Cite id="F05-43">LeRobot streaming video encoding docs, Choosing a Codec</Cite>{' '}
             <Cite id="F08-58">the instance table, video engines</Cite>{' '}
@@ -480,9 +481,9 @@ export function PricePerformance() {
           <Box variant="p">
             The other side of the choice is a GPU that decodes AV1 itself. G7&apos;s RTX PRO 4500 has three hardware
             video decoders that handle it, and the B200 GPUs of P6-B200 decode it too (section 10, Processing and
-            Curating, lists the other GPUs). Between CPU decode on a P5, one re-encode, and a GPU that decodes AV1, two
-            measured rates decide: the frames one CPU core decodes per second, and the frames a training run
-            consumes per second, which the P5&apos;s cores must keep pace with. With those and dated prices, the
+            Curating, lists the other GPUs). Between CPU decode on a P5, one re-encode, and a GPU that decodes AV1, the rates to
+            measure are the frames one CPU core decodes per second, the training samples per second on each
+            instance, and, for the re-encode, its one-off cost. With those and dated prices, the
             cloud formula says which costs least per training sample.{' '}
             <Cite id="F08-58">the instance table, video engines</Cite>{' '}
             <Cite id="F08-44">NVIDIA video support matrix, RTX PRO 4500</Cite>{' '}
@@ -558,8 +559,9 @@ export function PricePerformance() {
           <Box variant="p">
             The same figures bound the test for the Spark. On this one-core job the Spark is ahead per joule only if
             it draws less than <Derived>5.0</Derived> times the Jetson board&apos;s watts. A board under load draws at
-            least what it draws idle, about 4.8 W for this Jetson, so that line sits between{' '}
-            <Derived>5.0 x 4.8 = 24</Derived> W and <Derived>5.0 x 25 = 125</Derived> W. The Spark&apos;s GPU alone
+            least what it draws idle, about 4.8 W for this Jetson, so that line sits above{' '}
+            <Derived>5.0 x 4.8 = 24</Derived> W, and at or below <Derived>5.0 x 25 = 125</Derived> W only if the
+            Jetson board stays within its 25 W under load, which no reading shows. The Spark&apos;s GPU alone
             idles at 10 W before its CPU cores are counted, and NVIDIA gives its chip a 140 W power budget and the
             machine a 240 W supply: the specifications allow a draw on either side of the line, and only readings
             under load on both machines place it.{' '}
