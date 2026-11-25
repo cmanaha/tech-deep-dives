@@ -30,11 +30,6 @@
   "meaning": "Independent copies of one simulated scene that a single GPU steps at the same time."
  },
  {
-  "term": "Demonstration multiplication",
-  "expansion": null,
-  "meaning": "Replaying a few human demonstrations in a simulator from new object positions and keeping the runs that still succeed."
- },
- {
   "term": "Isaac Lab",
   "expansion": null,
   "meaning": "NVIDIA's robot-learning framework built on its simulator."
@@ -47,7 +42,7 @@
  {
   "term": "MimicGen",
   "expansion": null,
-  "meaning": "The 2023 system that introduced demonstration multiplication in simulation."
+  "meaning": "The 2023 system that introduced replaying a few human demonstrations in simulation from new object positions."
  },
  {
   "term": "SkillGen",
@@ -107,7 +102,7 @@
  {
   "term": "Simulated replay",
   "expansion": null,
-  "meaning": "Another name used here for demonstration multiplication: demonstrations replayed in a simulator from new object positions."
+  "meaning": "Replaying a few demonstrations recorded in a simulator from new object positions, and keeping the candidates that physics says succeed."
  },
  {
   "term": "Policy",
@@ -133,5 +128,65 @@
   "term": "vCPU",
   "expansion": "virtual CPU",
   "meaning": "The unit in which EC2 counts an instance's processor capacity."
+ },
+ {
+  "term": "RT cores",
+  "expansion": "ray-tracing cores",
+  "meaning": "A unit some NVIDIA GPUs carry that speeds up the costliest step of ray tracing, finding which triangle a ray hits; the H100 and A100 lack it."
+ },
+ {
+  "term": "Isaac Sim",
+  "expansion": null,
+  "meaning": "NVIDIA's simulator application; it draws simulated cameras with a ray tracer that needs RT cores."
+ },
+ {
+  "term": "Ray tracer",
+  "expansion": null,
+  "meaning": "A renderer that follows a ray from each pixel into the scene to find what it hits."
+ },
+ {
+  "term": "Denoising pass",
+  "expansion": null,
+  "meaning": "One run of a generator's network over the whole compressed clip, removing part of the noise; a clip takes many."
+ },
+ {
+  "term": "FP8",
+  "expansion": "8-bit floating point",
+  "meaning": "A number format that stores each weight in 8 bits, halving the memory of 16-bit weights."
+ },
+ {
+  "term": "Latent-action model",
+  "expansion": null,
+  "meaning": "The second kind of model the DreamGen paper names for recovering actions from generated video."
+ },
+ {
+  "term": "Episode",
+  "expansion": null,
+  "meaning": "One attempt at the task from start to finish, recorded as camera frames, joint angles and actions."
+ },
+ {
+  "term": "MuJoCo",
+  "expansion": null,
+  "meaning": "An open-source physics simulator; the figure's stills come from it."
+ },
+ {
+  "term": "Diffusers",
+  "expansion": null,
+  "meaning": "A second inference library for generative models, benchmarked by NVIDIA beside its PyTorch path."
+ },
+ {
+  "term": "Visual domain gap",
+  "expansion": null,
+  "meaning": "The difference between how simulated images and real camera images look."
+ },
+ {
+  "term": "Full attention",
+  "expansion": null,
+  "meaning": "A transformer layer in which every position on the grid is compared with every other, so its work grows faster than the number of positions."
+ },
+ {
+  "term": "GPU utilisation",
+  "expansion": null,
+  "meaning": "The nvidia-smi figure for the share of time in which at least one kernel was running on the GPU."
  }
 ]
