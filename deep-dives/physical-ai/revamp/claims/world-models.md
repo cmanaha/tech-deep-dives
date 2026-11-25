@@ -67,5 +67,5 @@ Parameter counts side by side; RoboJEPA predictor up to 8B on a 2B encoder; two 
 No first-party memory figure found for the latent planners or GR00T 2 (scope: this research) | none (hedge; register 03 unknown U6)
 Dropped in the rewrite: the four-uses list as a list (F03-88), F03-108 (the 'perhaps' quote), the 1,070 times ratio, Cosmos 3's flow-matching objective, the tensor-core and ray-tracing reading | none
 Both kinds encode the frame into vectors called a latent; for V-JEPA 2-AC the latent is not smaller than the frame | F03-15, F03-96, F03-32
-In the Cosmos 3 examples the pixel family runs a transformer of billions of parameters 35 times | F03-95
+In the Cosmos 3 examples the pixel family runs a transformer of billions of parameters tens of times (35 is printed only where the page hedges it) | F03-95
 In DreamZero and GR00T 2 each world-action call still denoises video; FastWAM and Long-WAM skip video at inference | F03-103, F03-104, F02-88, F02-96

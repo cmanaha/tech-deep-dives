@@ -874,8 +874,8 @@ export function WorldModels() {
             <li>
               <strong>An action several times a second.</strong> Neither search fits inside a control period. Use
               a model that outputs actions directly. Today that is a VLA such as GR00T N1.7, the newest GR00T with
-              released weights and code, or one of the world-action models LeRobot v0.7.0 packages, for none of which this research found a
-              published inference time (section 5, Vision-Language-Action Models, lists both): of the two priced above, DreamZero&apos;s 7 Hz took two
+              released weights and code, or one of the world-action models LeRobot v0.7.0 packages, if it proves fast enough when you
+              time it on your own computer (section 5, Vision-Language-Action Models, lists both): of the two priced above, DreamZero&apos;s 7 Hz took two
               GB200 GPUs, and GR00T 2 has no code yet.{' '}
               <Cite id="F02-37">Isaac-GR00T N1.7 release</Cite>{' '}
               <Cite id="F02-102">LeRobot v0.7.0 policies directory</Cite>{' '}
