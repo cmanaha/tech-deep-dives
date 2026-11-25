@@ -8,7 +8,7 @@
  {"n":7,"id":"jepa","comp":"Jepa","title":"JEPA: Predicting in Latent Space"},
  {"n":8,"id":"robot-rl","comp":"RobotRl","title":"Reinforcement Learning for Robots: Where the Attempts Come From"},
  {"n":9,"id":"collecting","comp":"CollectingData","title":"Collecting Data: What an Episode Weighs and What It Costs to Record"},
- {"n":10,"id":"curating","comp":"ProcessingCurating","title":"Processing and Curating: When the Cores That Decode the Video Starve the GPU"},
+ {"n":10,"id":"curating","comp":"ProcessingCurating","title":"Processing and Curating: How Many CPU Cores Keep a Training GPU Fed"},
  {"n":11,"id":"augmentation","comp":"Augmentation","title":"Augmentation and Synthetic Data: What Each Method Adds and the Machine It Needs"},
  {"n":12,"id":"physics","comp":"PhysicsSimulation","title":"Physics Simulation: One Scene on a Core, Thousands on a GPU"},
  {"n":13,"id":"rendering","comp":"Rendering","title":"Rendering and Ray Tracing: Why Simulated Cameras Pick the GPU"},

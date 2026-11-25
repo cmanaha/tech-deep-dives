@@ -352,10 +352,10 @@ export function CollectingData() {
             <WeightDiagram />
           </Figure>
           <Box variant="p">
-            The first payment sets the size of the second. Whoever types the record command at the bench, where a
-            person drives the arm through each episode by teleoperation (section 3), picks the codec, the method that
-            compresses the video and turns it back into frames, and how often the video stores a whole frame, and
-            every later reader of the data inherits both. The codec decides which machines can decode the video. The spacing decides how many frames a trainer
+            The first payment sets the size of the second. Two settings are chosen at the bench, where a person drives
+            the arm through each episode by teleoperation (section 3), and every later reader of the data inherits
+            them. One is the codec, the method that compresses the video and turns it back into frames. The other
+            is how often the video stores a whole frame. The codec decides which machines can decode the video. The spacing decides how many frames a trainer
             decodes to get the one it asked for. LeRobot v0.7.0, the library that drives this arm, defaults to the settings that make reading fast: a
             whole frame every second frame, compressed by the software its docs rate as the most CPU-intensive.{' '}
             <Cite id="F05-35">LeRobot configs/video.py, encoder defaults</Cite>{' '}
@@ -371,10 +371,8 @@ export function CollectingData() {
               <Box variant="p">
                 The dataset is <code>{EXAMPLE_DATASET}</code> on the Hugging Face hub, the site where LeRobot
                 datasets are published: 11,939 frames at 30 fps from two 640x480 cameras, 6.6 minutes of robot
-                time. Its name says SO-101 while its metadata records the robot type as{' '}
-                <code>so100_follower</code>, a value LeRobot uses for both the SO-100 and the SO-101 arm, so
-                the files do not prove which of the two recorded it. Seven of the repository&apos;s
-                nine files hold the data.{' '}
+                time. Its metadata records the robot type as <code>so100_follower</code>, which LeRobot uses for both
+                the SO-100 and the SO-101, so the files do not prove an SO-101 recorded it.{' '}
                 <Cite id="F05-29">Hugging Face hub file listing of the example dataset</Cite>{' '}
                 <Cite id="F05-30">from the file sizes of the example dataset</Cite>{' '}
                 <Cite id="F05-23">info.json of the example dataset</Cite>
@@ -507,7 +505,8 @@ export function CollectingData() {
           <Box variant="p">
             The file count therefore follows the bytes far more than the episodes. At this dataset&apos;s rate one
             camera-hour is about 387 MB: about two video files at the 200 MB target of v0.7.0 when the hour is
-            many short episodes. The writer never splits an episode, so a few long ones make one to three files. Version 2 of the format wrote one file per episode, so at
+            many short episodes. The writer never splits an episode, so a single hour-long episode is one 387 MB file, and, for
+            illustration, three <Toy>20</Toy>-minute episodes of <Derived>129</Derived> MB each make three. Version 2 of the format wrote one file per episode, so at
             the millions of episodes LeRobot&apos;s docs design for it meant millions of files; version 3 keeps the
             count at the bytes over the size target.{' '}
             <Cite id="F05-19">LeRobot dataset v3 docs, lines 19 to 22 and 64</Cite>{' '}
@@ -536,8 +535,7 @@ export function CollectingData() {
             The division in that example is how every timestamp is made: the frame&apos;s index over the nominal
             frame rate, with no clock read. A recording loop that really ran at 25 Hz therefore still produces a
             dataset that claims 30, and the motion it holds is 30 / 25 = <Derived>1.2</Derived> times faster than the one the person
-            made. A policy, the network that drives the arm, trained on that data and run at the nominal 30 Hz moves{' '}
-            <Derived>1.2</Derived> times faster than the person did, by our reading.{' '}
+            made.{' '}
             <Cite id="F05-4">LeRobot imitation learning guide, Cadence reporting</Cite>
           </Box>
           <Capture
@@ -606,8 +604,7 @@ export function CollectingData() {
             The 257 to 1 is the codec&apos;s work, and its two halves run at different times on different
             machines. The encoder compresses, once,
             on the host beside the robot. The decoder decompresses, every time anyone reads a frame, wherever
-            training runs. (In section 3 an encoder was the angle sensor on a joint; from here to the end of section
-            11 the word means the video compressor.)
+            training runs. (From here on, encoder means the video compressor, not the angle sensor on a joint of section 3.)
           </Box>
           <Box variant="p">
             Video compresses that far because consecutive frames are nearly the same picture. The encoder stores
@@ -626,9 +623,8 @@ export function CollectingData() {
           </Box>
           <Box variant="p">
             With a GOP of 2, a requested frame costs at most 2 decoded frames. With a GOP of 250, a common setting
-            for streamed video and used here as an illustration, the worst case is 250 decoded frames and the average
-            about 250 / 2 = 125. Set against the at most 2 of a GOP of 2, the worst case is 250 / 2 = 125 times the
-            decoding per random read. More keyframes buy that cheaper read with a larger file. The example dataset does not
+            for streamed video and used here as an illustration, a random read decodes up to 250 frames. Against
+            the at most 2 of a GOP of 2, that worst case is 250 / 2 = 125 times the decoding per random read. More keyframes buy that cheaper read with a larger file. The example dataset does not
             record its GOP, so to put a number on the size side for your own scene, record one episode at{' '}
             <code>g</code> = 2 and one at a long GOP and compare the two files.{' '}
             <Cite id="F05-37">LeRobot video_utils.py, decoder docstrings</Cite>{' '}
@@ -648,8 +644,8 @@ export function CollectingData() {
           </Figure>
           <Box variant="p">
             LeRobot decodes on CPU cores by default, and one random read there already takes milliseconds: an
-            open LeRobot pull request timed one random sample from a two-camera, 50-episode dataset at about 5 ms,
-            a median from one process with a warm file cache, on hardware it does not state. Section 10,
+            open LeRobot pull request times one random sample from a two-camera, 50-episode dataset at about 5 ms
+            (a median, one process, warm file cache, hardware not stated). Section 10,
             Processing and Curating, turns that time into the data loader workers a GPU needs, and every extra
             decode per frame raises the count.{' '}
             <Cite id="F05-39">LeRobot video_utils.py, decode backends</Cite>{' '}
@@ -774,11 +770,10 @@ export function CollectingData() {
             <Cite id="F05-63">LeRobot video benchmark README at v0.4.0</Cite>
           </Box>
           <Box variant="p">
-            The current docs still rate <code>libsvtav1</code> &quot;Smallest&quot;. A CRF of 30 is a different
-            quality in each codec, so both sources can hold, and both point to the read: the docs give the reason
-            as &quot;the best training performance&quot;. The benchmark&apos;s percentages are against its own
-            original images, on another dataset, in 2024, and its directory is gone from the repository at
-            v0.7.0, so they rank the codecs and do not size a disk.{' '}
+            The current docs rate <code>libsvtav1</code> &quot;Smallest&quot; and give the reason for AV1 as
+            &quot;the best training performance&quot;. Both can hold, because a CRF of 30 is a different quality in
+            each codec, and either way the default was chosen for the read. The benchmark&apos;s percentages, taken
+            against its own images on another dataset, rank the codecs; they do not size a disk.{' '}
             <Cite id="F05-43">LeRobot streaming video encoding docs, Choosing a Codec</Cite>{' '}
             <Cite id="F05-63">LeRobot video benchmark README at v0.4.0</Cite>
           </Box>

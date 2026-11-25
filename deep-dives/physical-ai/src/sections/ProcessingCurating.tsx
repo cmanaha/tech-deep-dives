@@ -310,7 +310,7 @@ export function ProcessingCurating() {
             variant="h1"
             description="Tell before you rent, and confirm from one short run, whether the CPU cores decoding your video or the GPU will set your training speed (LeRobot v0.7.0, Cosmos Curator v2.10.0, NVIDIA's support matrix and the EC2 instance tables, read 2026-11-20)"
           >
-            10. Processing and Curating: When the Cores That Decode the Video Starve the GPU
+            10. Processing and Curating: How Many CPU Cores Keep a Training GPU Fed
           </Header>
         }
       >
@@ -327,8 +327,8 @@ export function ProcessingCurating() {
             <Cite id="F05-65">EC2 accelerated computing specifications</Cite>
           </Box>
           <Box variant="p">
-            Hugging Face reports a run that, by the arithmetic below, the cores paced. ACT (Action Chunking with Transformers, the
-            small imitation policy of section 4) trained 2.8x faster on an H100 once its image augmentation, random
+            ACT (Action Chunking with Transformers, the small imitation policy of section 4) trained 2.8x faster
+            on an H100, Hugging Face reports, once its image augmentation, random
             changes applied to each training image, moved from the CPU workers to the GPU; the report gives no dataset, camera count, batch
             size or CPU. A step that shrinks 2.8x when work leaves the CPU was mostly waiting on the CPU: the GPU was busy
             for at most 1 / 2.8 = <Derived>36</Derived>% of it.{' '}
@@ -461,8 +461,8 @@ export function ProcessingCurating() {
             random, each reading a five-frame history window, several recent frames instead of one: 16.98 ms per
             row on main, <Derived>59</Derived> rows per second from one worker, so one worker needs 32 /{' '}
             <Derived>59</Derived> = <Derived>0.54</Derived> s per batch. That is one worker building one batch of
-            heavier rows; the guide&apos;s 0.015 s is the loading time its own training loop recorded per step, on
-            its own dataset, so the two figures measure different things. Pair those rows, for illustration, with an
+            heavier rows, a different measurement from the guide&apos;s 0.015 s of loading per training step on its
+            own dataset. Pair those rows, for illustration, with an
             update as long as the guide&apos;s Diffusion Policy step, 0.167 s, and the GPU needs 32 / (
             <Derived>59</Derived> x 0.167) = <Derived>3.2</Derived> workers&apos; worth of rows. The default four
             cover that only if together they return at least <Derived>3.2</Derived> times the rows of one. The pull request&apos;s own change, still open on
@@ -520,17 +520,14 @@ export function ProcessingCurating() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            NVDEC has an encoding partner, NVENC (NVIDIA Encoder). Both sit apart from the tensor cores, so a card
-            can train at full load while its decoder sits unused. A card carries a
-            set number of engines, each engine handles a fixed list of codecs, and NVIDIA publishes both in one
-            support matrix (the EC2 family named beside each card here is our pairing of that matrix with the EC2
-            tables). <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
-          </Box>
-          <Box variant="p">
-            For AV1 the matrix says no on the H100 of P5, the A100 of P4d and the T4 of G4dn. The H100 has 7 NVDEC
-            engines and none of them decodes AV1. The matrix had
-            no row for the H200 of P5e and P5en when read on 2026-11-20, so run a decode test before you commit a
-            GPU-decoding pipeline to either family.{' '}
+            The H100 of P5 carries 7 NVDEC engines, and none of them decodes AV1. NVIDIA&apos;s support matrix,
+            which lists for each card how many engines it carries and which codecs each one handles, gives the same
+            no for the A100 of P4d and the T4 of G4dn (the EC2 family beside each card is our pairing of the matrix
+            with the EC2 tables). The matrix had no row for the H200 of P5e and P5en when read on 2026-11-20, so run
+            a decode test before you commit a GPU-decoding pipeline to either family. The encoding partner, NVENC
+            (NVIDIA Encoder), also sits apart from the tensor cores, so a card can train at full load while both
+            engines sit unused.{' '}
+            <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>{' '}
             <Cite id="F05-47">NVIDIA support matrix, rows NVIDIA H100</Cite>{' '}
             <Cite id="F05-46">NVIDIA support matrix, row NVIDIA A100</Cite>{' '}
             <Cite id="F05-53">NVIDIA support matrix, row Tesla T4</Cite>{' '}
@@ -555,8 +552,8 @@ export function ProcessingCurating() {
             <Cite id="F05-43">LeRobot streaming video encoding docs, Choosing a Codec</Cite>
           </Box>
           <Box variant="p">
-            When the row says yes, test the software path as well as the card. Cosmos Curator removed its FFmpeg
-            GPU decode mode because its benchmarks showed it performing the same as FFmpeg on the CPU, and it now
+            When the row says yes, test the software path as well as the card. Cosmos Curator, NVIDIA&apos;s video
+            curation pipeline, removed its FFmpeg GPU decode mode because its benchmarks showed it performing the same as FFmpeg on the CPU, and it now
             decodes on the GPU through NVIDIA&apos;s PyNvVideoCodec library instead.{' '}
             <Cite id="F05-77">Cosmos Curator slim-image.md</Cite>
           </Box>
@@ -634,9 +631,10 @@ export function ProcessingCurating() {
             <Cite id="F05-67">join of the NVIDIA matrix and the EC2 specifications</Cite>
           </Box>
           <Box variant="p">
-            For sizing the GPUs, the nearest published end-to-end rate we located is NVIDIA&apos;s, from March 2025,
-            for a predecessor it called NeMo Video Curator, version unnamed, on its DGX Cloud service, for 720p
-            video: about 195 seconds per hour of video per GPU in streaming mode, for the whole pipeline, or 3,600 / 195 = 18.5 hours of video per GPU-hour. At that rate an
+            For sizing the GPUs, NVIDIA published in March 2025 an end-to-end rate for 720p video: about 195 seconds
+            per hour of video per GPU in streaming mode, for the whole pipeline, or 3,600 / 195 = 18.5 hours of
+            video per GPU-hour. It was measured on a predecessor, NeMo Video Curator (version unnamed), on
+            NVIDIA&apos;s DGX Cloud service, and it is the nearest published rate we located. At that rate an
             illustrative <Toy>1,000</Toy> hours of video take about <Derived>54</Derived> GPU-hours, a dated order of
             magnitude to check against a short run of your own.{' '}
             <Cite id="F05-78">NVIDIA Technical Blog, NeMo Video Curator on DGX Cloud (2025-03-18)</Cite>
@@ -645,7 +643,7 @@ export function ProcessingCurating() {
             cites="F05-69 F05-70 F05-71 F05-73 F05-77"
             caption={
               <>
-                Read down the panels: the decode, transcode and caption-preparation stages are counted in CPUs per
+                The decode, transcode and caption-preparation stages are counted in CPUs per
                 worker and the model stages in fractions of a GPU, so one instance&apos;s vCPUs and its GPUs both
                 bound the pipeline. Clip counts and which clips drop are illustrative, and the frames are simulated.
               </>
@@ -679,11 +677,8 @@ export function ProcessingCurating() {
             an embedding, a list of numbers placed so that similar clips get lists that sit close together. A second
             pipeline clusters those lists with K-Means, which groups vectors around a chosen number of centres,
             orders each cluster by cosine similarity to its centre (1 when two vectors point the same way) and, by
-            our reading of its options, drops the clips that sit too close to another. For robot episodes the newer
-            recipes deduplicate with no video model: a clip is embedded by its instruction text, its first frame and its wrist
-            motion, and the three are fused and clustered.{' '}
-            <Cite id="F05-73">Cosmos Curator video-pipelines.md, Dedup Pipeline</Cite>{' '}
-            <Cite id="F05-75">Cosmos Curator curator-next-embeddings.md and curator-next-curation.md</Cite>
+            our reading of its options, drops the clips that sit too close to another.{' '}
+            <Cite id="F05-73">Cosmos Curator video-pipelines.md, Dedup Pipeline</Cite>
           </Box>
           <Box variant="p">
             A curation pass splits into short independent units of work, so a machine lost in the middle costs only
@@ -711,8 +706,8 @@ export function ProcessingCurating() {
             reports the pair as <code>dataloading_s</code> and <code>update_s</code>, counting preprocessing in the
             first, and across its three policies data loading is 0.011 to 0.015 s against updates of 0.167 to 2.548
             s, under a tenth of the update in every run, and in all three the GPUs set the pace. The firmer test is to change <code>W</code>. If
-            steps per second rise when you add workers, the workers were setting the pace; if they stay flat, the GPU
-            was. <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>
+            steps per second rise when you add workers, the workers were setting the pace; if they stay flat, the limit is
+            elsewhere: set the loading time beside the update time to tell the GPU from a slow read. <Cite id="F01-91">LeRobot hardware guide, benchmark table</Cite>
           </Box>
           <Box variant="p">
             GPU utilisation in <code>nvidia-smi</code> shows the same wait from the other side. It is the
@@ -731,7 +726,7 @@ export function ProcessingCurating() {
             queried. <Cite id="F08-31">nvidia-smi documentation, Utilization</Cite>
           </Box>
           <Box variant="p">
-            When the workers bind, change settings before you change machines. Raise the worker count from its
+            When the workers set the pace, change settings before you change machines. Raise the worker count from its
             default of 4 toward <code>B / (r x u)</code>, within the physical cores beside the GPU, and measure what
             each added worker returns. Move
             augmentation to the GPU, which leaves the workers decoding only. Keep the recording at a short GOP. If
