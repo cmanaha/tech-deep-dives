@@ -37,19 +37,23 @@ export interface WorkloadEngines {
 /**
  * Which engines each workload uses. Sources: register 08 (the workload table, F08-76; the unit
  * list, F08-36; tensor cores, F08-42; video engines, F08-31 and F08-44) and register 06 (GPU
- * physics, F06-100; the three rendering paths, F06-101; the RTX requirement, F06-52).
+ * physics, F06-100; the three rendering paths, F06-101; the RTX requirement, F06-52). Tensor cores
+ * execute only matrix-multiply instructions (F08-42), so every network workload also marks the
+ * general compute cores; every engine works out of GPU memory, so every workload marks it.
  */
 export const ENGINES_BY_WORKLOAD: Record<GpuWorkload, WorkloadEngines> = {
   'policy-training': {
     label: 'policy training',
-    engines: ['tensor', 'memory'],
-    reason: 'Forward and backward passes of a network are matrix multiplies, and GPU memory decides which model fits.',
+    engines: ['tensor', 'general', 'memory'],
+    reason:
+      'The matrix multiplies of the forward and backward passes run on the tensor cores, which execute only those instructions; the rest of the code runs on the general compute cores. GPU memory decides which model fits.',
     cites: 'F08-42 F08-76',
   },
   'policy-inference': {
     label: 'policy inference',
-    engines: ['tensor', 'memory'],
-    reason: 'One forward pass per call: the same matrix multiplies as training, with the weights held in GPU memory.',
+    engines: ['tensor', 'general', 'memory'],
+    reason:
+      'One forward pass per call: the same matrix multiplies as training on the tensor cores, the rest on the general compute cores, with the weights held in GPU memory.',
     cites: 'F08-42 F08-76',
   },
   'physics-batch': {
@@ -61,10 +65,10 @@ export const ENGINES_BY_WORKLOAD: Record<GpuWorkload, WorkloadEngines> = {
   },
   'rtx-rendering': {
     label: 'RTX rendering',
-    engines: ['rt', 'memory'],
+    engines: ['rt', 'general', 'memory'],
     reason:
-      'The RTX renderer hands the search for what each ray hits to the RT cores, so the card must have them. The images of every camera are held in GPU memory.',
-    cites: 'F06-52 F06-57 F06-101',
+      'The RTX renderer hands the search for what each ray hits, its costliest step, to the RT cores, so the card must have them. The lighting and shading of what the rays hit run on the general compute cores, and the images of every camera are held in GPU memory.',
+    cites: 'F06-52 F06-57 F06-101 F08-36',
   },
   'compute-ray-tracing': {
     label: 'ray tracing as GPU code',
@@ -75,24 +79,24 @@ export const ENGINES_BY_WORKLOAD: Record<GpuWorkload, WorkloadEngines> = {
   },
   'video-decode': {
     label: 'video decode',
-    engines: ['nvdec'],
+    engines: ['nvdec', 'memory'],
     reason:
       'Decoding is fixed-function work on the decode engines, separate from the compute cores. The engine must support the codec of the file: some data-centre cards cannot decode AV1 (AOMedia Video 1, the codec LeRobot writes by default).',
     cites: 'F08-31 F08-76 F05-47 F05-35',
   },
   'video-encode': {
     label: 'video encode',
-    engines: ['nvenc'],
+    engines: ['nvenc', 'memory'],
     reason:
       'Encoding is fixed-function work on the encode engines. Some data-centre training cards have no encode engine at all, and the work falls to CPU cores.',
     cites: 'F08-31 F08-44 F05-47',
   },
   'world-model-generation': {
     label: 'world-model generation',
-    engines: ['tensor', 'memory'],
+    engines: ['tensor', 'general', 'memory'],
     reason:
-      'A generative world model is a large network run many times per clip: tensor cores for the arithmetic and tens of gigabytes of GPU memory to hold it.',
-    cites: 'F05-108 F08-76',
+      'A generative world model is a large network run many times per clip: tensor cores for its matrix multiplies, the general compute cores for the rest of its code, and tens of gigabytes of GPU memory to hold it.',
+    cites: 'F05-108 F08-42 F08-76',
   },
 };
 
