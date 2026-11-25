@@ -906,6 +906,8 @@
 "F08-84":{"t":0,"l":"deep-dives/physical-ai/research/experiments/E-seed-profiling-2026-11-19/","k":"our-run"},
 "F08-85":{"t":-1,"i":["F08-57","F08-58","F05-67","F06-60"],"k":"our-reading"},
 "F08-86":{"t":1,"u":"https://aws.amazon.com/about-aws/whats-new/2026/11/ec2-performance-status-checks/"},
+"F08-87":{"t":1,"u":"https://github.com/torvalds/linux/blob/c03c1a14507dfaf8b856c2608f9ac216021fc222/tools/perf/Documentation/perf-stat.txt"},
+"F08-88":{"t":1,"u":"https://github.com/pytorch/pytorch/blob/31a77fc9c0a7c6fff15a1ff58c743f53b1a9d457/torch/__init__.py"},
 "F09-1":{"t":1,"u":"https://docs.aws.amazon.com/batch/latest/userguide/when-to-use-fargate.html"},
 "F09-2":{"t":2,"u":"https://aws.amazon.com/about-aws/whats-new/2026/08/aws-batch-on-ecs-managed-instances/"},
 "F09-3":{"t":1,"u":"https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html"},
