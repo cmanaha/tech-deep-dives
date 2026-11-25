@@ -234,9 +234,9 @@ export function VisionLanguageAction() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The parameter count on a robot-model announcement is the sum of two networks, and the rate in hertz
-            printed beside it can be the speed of neither. The larger network, the backbone, is a model that
-            already reads images and text. The smaller, the action head, turns what the backbone read into motion.
+            In the models covered here, the parameter count on an announcement is, or is nearly, the sum of two
+            networks, and the rate in hertz printed beside it can be the speed of neither. The larger of the two,
+            the backbone, is a model that already reads images and text. The smaller, the action head, turns what the backbone read into motion.
             Together they are a vision-language-action model (VLA). It is a policy, the trained model that decides
             what the motors do next, and one of its inputs is an instruction in words. In pi0, the October 2024
             model from Physical Intelligence, the backbone has 3B parameters and the head 300M, 3.3B in total.{' '}
@@ -246,10 +246,12 @@ export function VisionLanguageAction() {
           <Box variant="p">
             NVIDIA&apos;s paper on GR00T N1, its March 2025 robot model, reports the backbone running at 10 Hz
             (hertz, times per second) on an L40 GPU and motor actions leaving the head at 120 Hz. Neither
-            figure is how often the head produces an answer. The same paper reports 63.9 ms to sample one chunk,
-            the run of future actions a policy returns in one answer (section 4, Learning From Demonstrations),
-            and a chunk holds 16 actions. That is 1000 / 63.9 = 15.6 chunks a second at most, with room for 15.6 x
-            16 = 250 actions a second. The fast rate counts actions, and a longer chunk raises it with no extra compute.{' '}
+            figure is how often the head produces an answer. The same paper reports 63.9 ms on that L40 to sample one
+            chunk, the run of future actions a policy returns in one answer (section 4, Learning From
+            Demonstrations), and a chunk holds 16 actions. By our arithmetic that is 1000 / 63.9 ={' '}
+            <Derived>15.6</Derived> chunks a second at most, with room for <Derived>15.6</Derived> x 16 ={' '}
+            <Derived>250</Derived> actions a second. The fast rate counts actions, and a longer chunk raises it
+            without one more call to the model.{' '}
             <Cite id="F02-33">GR00T N1 paper, section 1</Cite>{' '}
             <Cite id="F02-34">GR00T N1 paper, sections 2 and 3</Cite>
           </Box>
@@ -304,10 +306,11 @@ export function VisionLanguageAction() {
           <Box variant="p">
             A VLM alone writes words, and a servo needs numbers. The action head, which Physical Intelligence calls
             the action expert, is a second network that reads the backbone&apos;s work on the prefix and the
-            robot&apos;s state (the six joint angles) and outputs an action chunk. What crosses from backbone to
-            head is vectors, never text, and it crosses by attention, the transformer operation in which one token
-            reads from others. pi0&apos;s action tokens attend to the keys and values the backbone&apos;s attention
-            computed for the prefix. GR00T&apos;s head attends to the output vectors of its VLM.{' '}
+            robot&apos;s state (the six joint angles) and outputs an action chunk. In pi0 and in GR00T N1,
+            what crosses from backbone to head is vectors, and it crosses by attention, the transformer operation
+            in which one token reads from others. pi0&apos;s action tokens attend to the keys and values the
+            backbone&apos;s attention computed for the prefix. GR00T N1&apos;s head attends to the output vectors
+            of its VLM.{' '}
             <Cite id="F02-20">pi0 paper, section IV and appendix D</Cite>{' '}
             <Cite id="F02-33">GR00T N1 paper, section 1</Cite>
           </Box>
@@ -349,9 +352,9 @@ export function VisionLanguageAction() {
             its numbers go into the first slots. GR00T gives each embodiment its own
             small encoder and decoder around a shared head, so its fine-tune for this arm declares a new
             embodiment (<code>--embodiment-tag NEW_EMBODIMENT</code>). X-VLA, a 0.9B model in LeRobot, feeds the
-            model 32 learned vectors per robot type, called soft prompts, and a fine-tune trains them: its authors
-            report 93% success on LIBERO, a suite of simulated manipulation tasks, from tuning 9M parameters, 1% of
-            the model.{' '}
+            model 32 learned vectors per robot type, called soft prompts, and LeRobot&apos;s fine-tuning example
+            keeps them trainable. Its authors report 93% success on LIBERO, a suite of simulated manipulation
+            tasks, from tuning 9M parameters, 1% of the model.{' '}
             <Cite id="F02-33">GR00T N1 paper, section 1</Cite>{' '}
             <Cite id="F02-43">Isaac-GR00T SO100 and SO101 fine-tuning guide</Cite>{' '}
             <Cite id="F02-70">X-VLA paper, abstract</Cite>{' '}
@@ -545,13 +548,14 @@ export function VisionLanguageAction() {
             tex={String.raw`\frac{\text{actions}}{\text{second}} = \frac{\text{actions}}{\text{chunk}} \times \frac{\text{chunks}}{\text{second}}`}
           />
           <Box variant="p">
-            The first factor is free: a longer chunk raises the action rate with no extra compute. The second is
-            the real speed of the network, and the paper&apos;s 63.9 ms bounds it (the paper does not say whether
-            that time includes a backbone pass). For GR00T N1, 120 actions a second in chunks of 16 need 120 / 16 ={' '}
-            <Derived>7.5</Derived> chunks a second, and the timing allows 15.6. So the two
+            The first factor is the cheap one: a longer chunk raises the action rate without one more call to the
+            model. The second is the real speed of the network, and the paper&apos;s 63.9 ms on an L40 bounds it (the
+            paper does not say whether that time includes a backbone pass). For GR00T N1, 120 actions a second in chunks
+            of 16 need 120 / 16 = <Derived>7.5</Derived> chunks a second if every action of every chunk is played,
+            and the timing allows <Derived>15.6</Derived>. So the two
             clocks of the announcement rest on a number it leaves out. The scene is read 10 times a second, 120
             actions a second leave, and in between the head has to sample <Derived>7.5</Derived> chunks a second
-            and can sample 15.6.{' '}
+            and can sample <Derived>15.6</Derived>.{' '}
             <Cite id="F02-33">GR00T N1 paper, section 1</Cite>{' '}
             <Cite id="F02-34">GR00T N1 paper, sections 2 and 3</Cite>
           </Box>
@@ -574,14 +578,14 @@ export function VisionLanguageAction() {
           </Box>
           <Box variant="p">
             Where a design cuts between slow and fast decides which machine each side runs on. Four cuts are in
-            use, each further from the motors. The last two put the slow side on another machine, and the chunk
-            is what covers the delay the distance adds.
+            use, each further from the motors. The last two put the slow side on another machine; for Gemini
+            Robotics, in our reading, the chunk is what covers the delay the link adds.
           </Box>
           <ul style={LIST}>
             <li>
               <strong>Inside one network.</strong> pi0.5 (April 2025) first writes a short text subtask such as
               &quot;pick up the cutting board&quot;, then produces the action chunk conditioned on it. One set of
-              weights on one GPU does both.{' '}
+              weights does both.{' '}
               <Cite id="F02-48">pi0.5 paper, section I</Cite>
             </li>
             <li>
@@ -604,16 +608,16 @@ export function VisionLanguageAction() {
             </li>
           </ul>
           <Box variant="p">
-            GR00T 2 is NVIDIA&apos;s current design, and under the agent it changes the action model too. It is a
+            GR00T 2 is the current form of the idea, and under the agent it changes the action model too. It is a
             world action model: one diffusion transformer refines future video and the action chunk together, so
             the model predicts what the camera will see as well as what the robot should do (section 6, World
             Models).{' '}
             <Cite id="F02-44">NVIDIA GR00T 2 research page, Model Architecture</Cite>
           </Box>
           <Box variant="p">
-            Its on-robot variant, GR00T 2 Turbo, splits the fast side again. NVIDIA reports one prediction in 38
-            ms on an RTX 5090 desktop GPU and 124 ms on a Jetson Thor, an NVIDIA onboard computer for robots,
-            where the model plans 1.6 s chunks about once per second and a separate controller executes them at
+            Its on-robot variant, GR00T 2 Turbo, splits the fast side again. NVIDIA reports, for the Unitree G1 and
+            after its inference optimisations, one prediction in 38 ms on an RTX 5090 desktop GPU and 124 ms on the
+            robot&apos;s Jetson Thor, an NVIDIA onboard computer for robots, where the model plans 1.6 s chunks about once per second and a separate controller executes them at
             50 Hz. {GROOT2_LABEL}{' '}
             <Cite id="F02-45">NVIDIA GR00T 2 research page, GR00T 2 Turbo</Cite>
           </Box>
@@ -666,9 +670,9 @@ export function VisionLanguageAction() {
             <Cite id="F02-40">GR00T N1.7 model card, inference timing table</Cite>
           </Box>
           <Box variant="p">
-            A latency without its build, its checkpoint and its camera count cannot be set beside another. NVIDIA
-            alone publishes three for GR00T N1.7 on one Jetson AGX Thor, and the slowest is 93.8 / 35.6 ={' '}
-            <Derived>2.6</Derived> times the fastest.{' '}
+            A latency without its build, its checkpoint and its camera count cannot be set beside another. NVIDIA&apos;s
+            own pages print several for GR00T N1.7 on one Jetson AGX Thor, and among the three TensorRT figures
+            below the slowest is 93.8 / 35.6 = <Derived>2.6</Derived> times the fastest.{' '}
             <Cite id="F02-40">GR00T N1.7 model card, inference timing table</Cite>{' '}
             <Cite id="F02-41">Isaac-GR00T deployment README, benchmark results</Cite>
           </Box>
@@ -700,7 +704,8 @@ export function VisionLanguageAction() {
           </Box>
           <Box variant="p">
             Every term of the call is tensor arithmetic on a GPU, and the GPU also has to hold the weights: the
-            requirement is more than 8 GB of memory to run pi0 and 16 GB to run GR00T N1.7.{' '}
+            requirement is more than 8 GB of memory to run pi0 by openpi&apos;s table, and 16 GB to run GR00T N1.7
+            by NVIDIA&apos;s guide.{' '}
             <Cite id="F02-54">openpi README, requirements</Cite>{' '}
             <Cite id="F02-42">Isaac-GR00T hardware recommendation</Cite> In our reading, capturing and decoding the
             camera frames is separate work for the CPU or the GPU&apos;s video engine, and a published latency
@@ -723,8 +728,9 @@ export function VisionLanguageAction() {
           <Box variant="p">
             Pretraining is out of a reader&apos;s reach, which is why the fine-tune is the job to size.
             NVIDIA&apos;s paper puts GR00T N1 at roughly 50,000 H100 GPU-hours on up to 1,024 GPUs.{' '}
-            <Cite id="F02-34">GR00T N1 paper, sections 2 and 3</Cite> Even SmolVLA, at 450M parameters, took
-            about 30k GPU-hours across its authors&apos; whole project, as they report.{' '}
+            <Cite id="F02-34">GR00T N1 paper, sections 2 and 3</Cite> Even for SmolVLA, at 450M parameters and
+            pretrained on 4 GPUs, the authors report about 30k GPU-hours across their whole project, a total that
+            covers every experiment and not one pretraining run.{' '}
             <Cite id="F02-58">SmolVLA paper, section 4</Cite>{' '}
             <Cite id="F02-59">SmolVLA paper, section 4 and table 1</Cite>
           </Box>
@@ -751,7 +757,7 @@ export function VisionLanguageAction() {
             for a LoRA fine-tune and more than 70 GB for a full one.{' '}
             <Cite id="F02-54">openpi README, requirements</Cite> LeRobot&apos;s pi0.5 example is sized for a
             single 80 GB GPU.{' '}
-            <Cite id="F02-57">LeRobot pi05 guide</Cite> A 7B backbone trained in full leaves the one-GPU size: the
+            <Cite id="F02-57">LeRobot pi05 guide</Cite> A 7B backbone leaves the one-GPU size: the
             OpenVLA-OFT authors fine-tuned across 8 A100 or H100 GPUs.{' '}
             <Cite id="F02-69">OpenVLA-OFT paper, section V</Cite>
           </Box>
@@ -777,7 +783,8 @@ export function VisionLanguageAction() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The model in the news and the model you can fine-tune are usually different models. The newest pi
+            In our reading of the lines below, the model in the news and the model you can fine-tune are usually
+            different models. The newest pi
             model with a paper is pi0.7, and the newest with weights is pi0.5. GR00T 2 is a research page and a
             whitepaper, and the newest GR00T with weights is N1.7: GR00T 2 is the current GR00T to learn from, and
             N1.7 the current GR00T to run. The Gemini Robotics VLA models of July 2026 went to early-access
@@ -825,9 +832,11 @@ export function VisionLanguageAction() {
               <strong>
                 <code>act</code>, the baseline to beat.
               </strong>{' '}
-              It is LeRobot&apos;s own recommendation for a first policy: small, trained from scratch on your
-              recordings, with no pretrained model to download. Train it on the same episodes, so that a VLA&apos;s
-              success rate has something to be compared with.{' '}
+              It is LeRobot&apos;s own recommendation for a first policy: small and trained on your recordings
+              alone, with no pretrained robot model to download (its ResNet-18 image backbone starts from weights
+              trained on ImageNet, a public set of labelled photos).{' '}
+              <Cite id="F02-11">LeRobot configuration_act.py</Cite> Train it on the same episodes, so that a
+              VLA&apos;s success rate has something to be compared with.{' '}
               <Cite id="F02-66">LeRobot ACT guide</Cite>
             </li>
             <li>
@@ -845,7 +854,8 @@ export function VisionLanguageAction() {
             </li>
             <li>
               <strong>
-                <code>pi05</code>, with an 80 GB GPU.
+                <code>pi05</code>, whose LeRobot example (a LIBERO fine-tune at batch 64) is sized for an 80 GB
+                GPU.
               </strong>{' '}
               pi0.5 through LeRobot is the practical pi model for this arm, and LeRobot has added optional memory
               of recent frames and joint readings to it.{' '}
@@ -936,8 +946,9 @@ export function VisionLanguageAction() {
           <ExpandableSection headerText="For lookup: all 28 policy packages in LeRobot v0.7.0, sorted by how sure the fit to the arm is">
             <SpaceBetween size="s">
               <Box variant="p">
-                Packages with a documented path to the {ARM} come first, then fits &quot;by shape&quot;, then the three
-                with no path. By shape means the package&apos;s padding or dataset code admits six state numbers,
+                Packages marked Yes come first: those with a recipe or checkpoint for the {ARM}, and those whose
+                documentation spells out the padding, slot mapping or re-initialisation that admits it. Then come
+                fits &quot;by shape&quot;, then the three with no path. By shape means the package&apos;s padding or dataset code admits six state numbers,
                 six action numbers and one or two cameras, and no recipe for the arm was found. The column is read from code and documentation; none of the 28 was run on
                 the arm for it. The chunk column gives actions predicted and played per call at the package&apos;s
                 defaults.{' '}
@@ -982,16 +993,17 @@ export function VisionLanguageAction() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A VLA gives a GPU two jobs. The fine-tune is a single-GPU run of hours, and GPU memory is what it
-            exhausts first, set by how much of the backbone trains (section 15, Training at Three Scales, sets it
+            A VLA gives a GPU two jobs. The fine-tune is a single-GPU run of hours, and the published requirement
+            that gates it is GPU memory, set by how much of the backbone trains (section 15, Training at Three Scales, sets it
             beside the multi-GPU and multi-node sizes). The call on the arm is the same arithmetic against a
             deadline that the chunk sets: it has to return before the actions already handed over run out
             (section 17, Running on the Robot).
           </Box>
           <Box variant="p">
             On an {ARM}, fine-tune <code>smolvla</code> first, from <code>lerobot/smolvla_base</code>, on the same
-            50 episodes you recorded for ACT: the published result on this arm is 90% against ACT&apos;s 70%, as
-            the SmolVLA authors report. Move to <code>groot</code> when you have a 40 GB GPU.{' '}
+            50 episodes you recorded for ACT: the published result on this arm is 90% against ACT&apos;s 70% when
+            the object starts where the demonstrations started, and 50% against 40% when it does not, as the
+            SmolVLA authors report. Move to <code>groot</code> when you have a 40 GB GPU.{' '}
             <Cite id="F02-60">SmolVLA paper, table 4</Cite>{' '}
             <Cite id="F02-42">Isaac-GR00T hardware recommendation</Cite>
           </Box>
@@ -999,8 +1011,9 @@ export function VisionLanguageAction() {
             For any other announcement, find four numbers before you size anything: the parameters in the backbone
             and in the head, the actions per chunk, and the time to sample one chunk on a named device and build.
             The time gives chunks per second, and chunks per second times the chunk length is the most actions per
-            second the head can supply. GR00T N1&apos;s 120 Hz rests on a head that samples 15.6 chunks a second,
-            each of 16 actions.{' '}
+            second the head can supply. GR00T N1&apos;s 120 Hz needs 120 / 16 = <Derived>7.5</Derived> chunks a
+            second from a head that, by our arithmetic from NVIDIA&apos;s 63.9 ms per chunk on an L40, can sample
+            at most <Derived>15.6</Derived>, each of 16 actions.{' '}
             <Cite id="F02-33">GR00T N1 paper, section 1</Cite>{' '}
             <Cite id="F02-34">GR00T N1 paper, sections 2 and 3</Cite>
           </Box>

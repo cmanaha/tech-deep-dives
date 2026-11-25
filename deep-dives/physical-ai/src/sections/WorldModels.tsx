@@ -138,16 +138,18 @@ export function WorldModels() {
         <SpaceBetween size="m">
           <Box variant="p">
             A world model predicts what a robot&apos;s cameras will show after it acts, and what it is asked to
-            predict sets the price of every prediction. Both kinds first compress the frame into a smaller set of
-            numbers, called a latent. The pixel family predicts a latent that must still be able to redraw every
-            pixel, and produces it by running a transformer of billions of parameters tens of times. The latent
+            predict sets the price of every prediction. Both kinds first encode the frame into vectors, called a
+            latent. The pixel family predicts a latent that must still be able to redraw every pixel, and in
+            NVIDIA&apos;s Cosmos 3 examples produces it by running a transformer of billions of parameters 35
+            times. The latent
             family predicts a latent that is never redrawn, a summary of the frame, in one pass of a predictor.
           </Box>
           <Box variant="p">
             That price sorts the work. In 2026 pixel models generate training video and drive robots directly,
             and latent models plan by search, in our reading of the models cited here. The sorting is firm at
             those ends, because generation needs few predicted futures and search needs thousands for one
-            decision. It is loose in between, where both families are used to train and to score policies.
+            decision. It is loose in between: pixel models are used to train and to score policies, and the authors of one
+            latent model write that theirs can be.
           </Box>
           <Box variant="p">
             One published comparison prices the difference on equal hardware. The authors of V-JEPA 2-AC, a latent
@@ -234,8 +236,8 @@ export function WorldModels() {
             <Cite id="F03-28">V-JEPA 2 paper, limitations</Cite>
           </Box>
           <Box variant="p">
-            Every use of a world model is this function called many times, so every use has the same bill: the
-            number of rollout steps it needs, times the price of one step. The use sets the first factor. What the
+            Every use of a world model but the last one below is this function called many times, so each has the
+            same bill: the number of rollout steps it needs, times the price of one step. The use sets the first factor. What the
             model is asked to predict sets the second.
           </Box>
         </SpaceBetween>
@@ -278,8 +280,8 @@ export function WorldModels() {
           <Box variant="p">
             The last thing that can come back is the action itself. A world-action model outputs the action
             together with its prediction, so the world model is the policy and nothing is searched. The DreamZero
-            paper, from NVIDIA, gave the design its name in February 2026. The two examples so far are video
-            models, and the DreamZero authors list &quot;learned latent representations&quot; among the things such
+            paper, from NVIDIA, gave the design its name in February 2026. The two examples met below, DreamZero
+            and GR00T 2, are video models, and the DreamZero authors list &quot;learned latent representations&quot; among the things such
             a model could predict.{' '}
             <Cite id="F03-93">DreamZero paper, sections 1 and 2</Cite> The latent models named here do not act
             this way: V-JEPA 2-AC, RoboJEPA and LeWorldModel, a small latent model of about 15M parameters, all
@@ -305,8 +307,8 @@ export function WorldModels() {
           <Box variant="p">
             One 640x480 colour frame from the arm&apos;s camera is 640 x 480 x 3 = 921,600 numbers, and the camera
             delivers 30 of them every second.{' '}
-            <Cite id="F01-86">our arithmetic on the camera settings</Cite> No generator predicts those numbers one
-            by one. It works in three stages, and the second is the one that repeats.
+            <Cite id="F01-86">our arithmetic on the camera settings</Cite> The generators cited here do not predict
+            those numbers one by one. It works in three stages, and the second is the one that repeats.
           </Box>
           <ul style={LIST}>
             <li>
@@ -322,8 +324,8 @@ export function WorldModels() {
               in the grid is one token, one vector the transformer processes. The future tokens start as random
               noise, and the transformer cleans them over a number of passes, steered by the tokens of the frames
               seen so far, by the action sequence and by any text instruction. It is the denoising that section 4,
-              Learning From Demonstrations, applies to a run of actions, applied here to video. The Cosmos 3 model
-              card&apos;s examples use 35 passes.{' '}
+              Learning From Demonstrations, applies to a run of actions, applied here to video. The examples NVIDIA
+              gives for Cosmos 3 use 35 passes, a figure this research records without the verbatim line.{' '}
               <Cite id="F03-95">NVIDIA Cosmos models reference, architecture</Cite>
             </li>
             <li>
@@ -336,7 +338,7 @@ export function WorldModels() {
             <Derived>20</Derived> by <Derived>15</Derived>, <Derived>300</Derived> tokens per compressed frame, and
             30 frames / 4 is about 8 compressed frames: roughly <Derived>300 x 8</Derived> ={' '}
             <Derived>2,400</Derived> tokens where the raw second was 30 x 921,600 = <Derived>27.6</Derived> million
-            numbers. At the model card&apos;s 35 passes the transformer makes <Derived>35 x 2,400</Derived> ={' '}
+            numbers. At those 35 passes the transformer makes <Derived>35 x 2,400</Derived> ={' '}
             <Derived>84,000</Derived> token updates for that one imagined second, each one a trip through every
             layer of the generator. The bill is that product, passes times tokens.{' '}
             <Cite id="F03-96">Cosmos 3 paper, section 3.1</Cite>{' '}
@@ -346,8 +348,9 @@ export function WorldModels() {
           <Box variant="p">
             Tokens follow pixels, so resolution is the setting that moves the bill. NVIDIA lists Cosmos3-Nano, the
             16B-parameter middle size of Cosmos 3, at 207.78 s on one H100 80GB to generate a 189-frame clip at 720p
-            (1280 x 720 pixels) and 24 frames per second. That is 7.875 s of video, or 26.4 seconds of compute for
-            each second of it. The same clip at 320 x 192 pixels takes 7.61 s.{' '}
+            (1280 x 720 pixels) and 24 frames per second. By our arithmetic that is 189 / 24 = <Derived>7.875</Derived> s
+            of video, or 207.78 / <Derived>7.875</Derived> = <Derived>26.4</Derived> seconds of compute for each
+            second of it. The same clip at 320 x 192 pixels takes 7.61 s.{' '}
             <Cite id="F03-98">NVIDIA Cosmos inference benchmarks, Cosmos3-Nano</Cite>{' '}
             <Cite id="F03-94">NVIDIA Cosmos README, models</Cite>
           </Box>
@@ -582,8 +585,8 @@ export function WorldModels() {
             Against the arm&apos;s clock even this search is long: 16 s is <Derived>16 x 30</Derived> ={' '}
             <Derived>480</Derived> control periods spent choosing one action.{' '}
             <Cite id="F03-25">V-JEPA 2 paper, section 4.2 and Table 3</Cite> Search is for decisions the arm can
-            wait for. Beyond smaller settings and more hardware, the authors name two changes of method that would
-            shorten it: gradient-based planning, which
+            wait for. Beyond smaller settings and more hardware, the authors name two changes of method that could
+            shorten it in future work: gradient-based planning, which
             computes through the predictor which way to change the actions where the search only samples them, and
             a policy that answers in a single pass, trained inside the world model to start the search near a good
             answer.{' '}
@@ -591,15 +594,17 @@ export function WorldModels() {
           </Box>
           <Box variant="p">
             The other published times come from different hardware, resolution, horizon and batch size, so the
-            chart is for orders of magnitude and no finer. On that scale the families do not overlap: every
-            pixel-family time is 300 ms or more per candidate, and every latent-family time is 2 ms or less.
+            chart is for orders of magnitude and no finer. Among the five times charted the families do not
+            overlap: each pixel-family time is 300 ms or more per candidate, and each latent-family time is 2 ms
+            or less.
           </Box>
           <Figure
             cites="F03-118 F03-99 F03-25 F03-74 F03-41"
             caption={
               <>
-                Each bar is one published time to imagine one candidate, with its GPU; the faint end of the last bar
-                is a range. The axis is logarithmic, so each gridline is ten times the one to its left (µs is a
+                Each bar is one time to imagine one candidate, with its GPU: the top bar as NVIDIA lists it, the
+                others our division of a planning time its authors published by the number of candidates; the
+                faint end of the last bar is a range. The axis is logarithmic, so each gridline is ten times the one to its left (µs is a
                 microsecond, a millionth of a second). Only the bracketed pair shares a GPU and a planner.
               </>
             }
@@ -633,7 +638,7 @@ export function WorldModels() {
       <Container
         header={
           <Header variant="h2" description="How a video model reaches the arm: output the action with the prediction, then cut the parameters and the passes">
-            A world-action model answers in one call, and the call still denoises video
+            A world-action model answers in one call, and in DreamZero and GR00T 2 the call still denoises video
           </Header>
         }
       >
@@ -646,13 +651,13 @@ export function WorldModels() {
           </Box>
           <Box variant="p">
             From outside, that is the job of a VLA (vision-language-action model), the policy type of section 5
-            that maps camera images and an instruction to actions. Inside, each call still denoises video, so its
-            price is the pixel family&apos;s product again, with the parameter count behind every pass. Two
+            that maps camera images and an instruction to actions. Inside, in the two models priced below, each call
+            still denoises video, so its price is the pixel family&apos;s product again, with the parameter count behind every pass. Two
             published models show that product being cut.
           </Box>
           <Box variant="p">
             <strong>DreamZero</strong> is a 14B model. Its authors report about 5.7 seconds per action chunk on one
-            GPU before optimisation and, with their optimisations, 7 Hz (seven chunks per second) on 2 GB200 GPUs.
+            GPU before optimisation and, with their optimisations, closed-loop control at 7 Hz on 2 GB200 GPUs.
             They give two reasons it remains expensive beside a VLA: the parameter count and &quot;the iterative
             denoising nature of video&quot;.{' '}
             <Cite id="F03-103">DreamZero paper, abstract and sections 3.2 and 6</Cite>
@@ -666,8 +671,8 @@ export function WorldModels() {
             from the generation before Cosmos 3. A frozen VAE compresses each camera stream 4 times in time and 8
             times in each spatial direction, and the result is split into patches, small blocks of neighbouring
             grid positions that become one token each: 280 tokens per compressed frame and camera at 224 x 320
-            pixels, so <Derived>3 x 280</Derived> = <Derived>840</Derived> per compressed frame for the three camera
-            views of the robot it was timed on.{' '}
+            pixels, so <Derived>3 x 280</Derived> = <Derived>840</Derived> per compressed frame if each of the three
+            camera views of the robot it was timed on is fed at that size.{' '}
             <Cite id="F03-104">NVIDIA GR00T 2 whitepaper, section 2</Cite>
           </Box>
           <Box variant="p">
@@ -699,8 +704,8 @@ export function WorldModels() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A pixel generator and a latent planner ask different first questions of a GPU. A pixel generator runs a transformer of billions of parameters
-            tens of times per clip, so its question is whether the model fits in GPU memory. A latent planner runs
+            A pixel generator and a latent planner ask different first questions of a GPU. A pixel generator such as Cosmos 3 runs a transformer of billions
+            of parameters tens of times per clip, so its question is whether the model fits in GPU memory. A latent planner runs
             its predictor in rounds, ten batches of 800 per action at the V-JEPA 2 settings, so its question is
             how long one round takes.{' '}
             <Cite id="F03-24">V-JEPA 2 paper, section 4.2</Cite>
@@ -737,8 +742,9 @@ export function WorldModels() {
               <Box variant="p">
                 <strong>One measured peak.</strong> Notes written for coding agents in the same NVIDIA repository
                 record Cosmos3-Nano peaking at 33.8 GiB allocated on one H100 80 GB while generating a single 1280 x
-                720 image. That is one frame; the notes give no peak for a full 189-frame video or for an
-                action-conditioned rollout.{' '}
+                720 image. That is one frame; the notes give no PyTorch peak for a full 189-frame video
+                (served through TensorRT-LLM they record 50,623-52,147 MiB after a 189-frame warm-up) and none
+                for an action-conditioned rollout.{' '}
                 <Cite id="F03-124">NVIDIA cosmos-framework, agent skill notes</Cite>
               </Box>
               <Box variant="p">
@@ -801,7 +807,7 @@ export function WorldModels() {
                       </td>
                     </tr>
                     <tr>
-                      <td style={TD}>GR00T 2 (whitepaper)</td>
+                      <td style={TD}>GR00T 2 (whitepaper, code not yet released)</td>
                       <td style={TD}>Video and actions</td>
                       <td style={TD}>2B</td>
                       <td style={TD}>
@@ -849,9 +855,10 @@ export function WorldModels() {
           <Box variant="p">Choose by what has to come back.</Box>
           <ul style={LIST}>
             <li>
-              <strong>Frames, to watch or to train on.</strong> Use the pixel family. On NVIDIA&apos;s figures for
-              Cosmos3-Nano, budget 26.4 seconds of H100 compute per second of 720p video and a GPU that clears the 58
-              GiB floor, or the 31 GiB floor with a large host. Lower the resolution before anything else: the same
+              <strong>Frames, to watch or to train on.</strong> Use the pixel family. From NVIDIA&apos;s figures for
+              Cosmos3-Nano, by our arithmetic, budget <Derived>26.4</Derived> seconds of H100 compute per second of
+              720p video and a GPU that clears the 58 GiB floor, or the 31 GiB floor with a large host (the time is
+              NVIDIA&apos;s native PyTorch row, the floors are those of its NIM container). Lower the resolution before anything else: the same
               clip at 320 x 192 took 7.61 s.{' '}
               <Cite id="F03-98">NVIDIA Cosmos inference benchmarks, Cosmos3-Nano</Cite>{' '}
               <Cite id="F03-121">NVIDIA NIM for Cosmos, support matrix</Cite>
@@ -868,15 +875,17 @@ export function WorldModels() {
             <li>
               <strong>An action several times a second.</strong> Neither search fits inside a control period. Use
               a model that outputs actions directly. Today that is a VLA such as GR00T N1.7, the newest GR00T with
-              released weights and code (section 5, Vision-Language-Action Models): DreamZero&apos;s 7 Hz took two
+              released weights and code, or one of the world-action models LeRobot v0.7.0 packages (section 5,
+              Vision-Language-Action Models, lists both): of the two priced above, DreamZero&apos;s 7 Hz took two
               GB200 GPUs, and GR00T 2 has no code yet.{' '}
               <Cite id="F02-37">Isaac-GR00T N1.7 release</Cite>{' '}
+              <Cite id="F02-102">LeRobot v0.7.0 policies directory</Cite>{' '}
               <Cite id="F03-103">DreamZero paper, abstract and section 3.2</Cite>{' '}
               <Cite id="F03-104">NVIDIA GR00T 2 whitepaper, section 2</Cite>
             </li>
           </ul>
           <Box variant="p">
-            For the {ARM} on your bench, the family you can train and take apart on one GPU is the latent one
+            For the {ARM} on your bench, the family you can train from scratch and take apart on one GPU is the latent one
             (section 7, JEPA). The first thing to measure there is your own time per imagined future, 2 ms on the
             V-JEPA 2 authors&apos; RTX 4090, because the candidates, rounds and horizon you can afford all follow
             from it.{' '}

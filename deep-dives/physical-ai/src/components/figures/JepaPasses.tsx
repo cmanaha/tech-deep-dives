@@ -21,7 +21,7 @@ interface Planner {
 const PLANNERS: Planner[] = [
   { name: 'V-JEPA 2-AC', where: '', samples: 800, samplesLabel: '800', iterations: 10, horizon: 1, total: '8,000', time: ['16 s on one RTX 4090', '3 s on one A100'] },
   { name: 'V-JEPA 2.1', where: 'long horizon', samples: 300, samplesLabel: '300', iterations: 15, horizon: 8, total: '36,000', time: ['14 s on one A100'] },
-  { name: 'LeWorldModel', where: 'on Push-T', samples: 300, samplesLabel: '300', iterations: 30, horizon: 5, total: '45,000', time: ['0.98 s for a full plan', 'GPU not named'] },
+  { name: 'LeWorldModel', where: 'on Push-T', samples: 300, samplesLabel: '300', iterations: 30, horizon: 5, total: '45,000', time: ['0.98 s for a full plan', 'GPU and timed setting not named'] },
   { name: 'RoboJEPA', where: 'on a real arm', samples: 4096, samplesLabel: '4,096', iterations: 10, horizon: 5, total: '204,800', time: ['no published time', 'first plan: 307,200 passes'] },
 ];
 
@@ -200,7 +200,7 @@ export function JepaPasses() {
         iterations and horizon, whose lengths add up to the total. V-JEPA 2-AC: 800 samples, 10 iterations, horizon
         1, 8,000 passes, published at 16 seconds on one RTX 4090 and 3 seconds on one A100. V-JEPA 2.1 with a long
         horizon: 300, 15 and 8, 36,000 passes, 14 seconds on one A100. LeWorldModel on Push-T: 300, 30 and 5, 45,000
-        passes, 0.98 seconds for a full plan on a GPU that is not named. RoboJEPA on a real arm: 4,096, 10 and 5,
+        passes, 0.98 seconds for a full plan, with the GPU and the timed setting not named. RoboJEPA on a real arm: 4,096, 10 and 5,
         204,800 passes, no published time.
       </desc>
       <rect x="0" y="0" width={W} height={H} fill={PAPER} />

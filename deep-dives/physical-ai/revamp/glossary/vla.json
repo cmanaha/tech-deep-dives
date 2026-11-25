@@ -34,5 +34,6 @@
   {"term": "Quantised", "expansion": null, "meaning": "Said of a model whose numbers are stored at lower precision to make it smaller and faster."},
   {"term": "NVFP4", "expansion": null, "meaning": "The name NVIDIA gives the number format of its quantised GR00T N1.7 build."},
   {"term": "In distribution, out of distribution", "expansion": null, "meaning": "A test where the object starts in positions the demonstrations covered, against one where it starts somewhere new."},
-  {"term": "Host", "expansion": null, "meaning": "The computer the arm and its cameras plug into, which plays one action per tick."}
+  {"term": "Host", "expansion": null, "meaning": "The computer the arm and its cameras plug into, which plays one action per tick."},
+  {"term": "ImageNet", "expansion": null, "meaning": "A public set of labelled photos; ACT's ResNet-18 image backbone starts from weights trained on it."}
 ]

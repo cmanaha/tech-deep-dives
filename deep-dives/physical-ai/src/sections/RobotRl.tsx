@@ -74,9 +74,9 @@ export function RobotRl() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The policy of section 4, Learning From Demonstrations, copies what a person showed it. Asked to{' '}
-            {TASK_STORY}, it closes on the block most of the time, and now and then the gripper closes a little
-            early and the block skids away. More demonstrations give it more of what it has already seen. What it
+            The policy of section 4, Learning From Demonstrations, copies what a person showed it. Suppose that, asked
+            to {TASK_STORY}, it closes on the block most of the time, and now and then the gripper closes a little
+            early and the block skids away (an illustration). More demonstrations give it more of what it has already seen. What it
             lacks is its own attempts, the failed ones included, and a signal that says which was which.
           </Box>
           <Box variant="p">
@@ -122,7 +122,7 @@ export function RobotRl() {
 
       <Container
         header={
-          <Header variant="h2" description="Size a simulator run from three numbers in one file, and expect a camera to take about half of the throughput">
+          <Header variant="h2" description="Size a simulator run from three numbers in one file, and see what a camera cost in NVIDIA's benchmark: about half of the throughput on a manipulation task">
             A simulator turns one GPU into 4,096 arms
           </Header>
         }
@@ -243,8 +243,9 @@ export function RobotRl() {
           <Box variant="p">
             At about 28,000 steps a second the {ARM} recipe&apos;s 196,608,000 steps would take about{' '}
             <Derived>7,000</Derived> s, close to two hours; at about 116,000 a second, about{' '}
-            <Derived>1,700</Derived> s, under half an hour. The robot, the task and the simulator all differ from
-            the recipe&apos;s, so take the pair as an order of magnitude.{' '}
+            <Derived>1,700</Derived> s, under half an hour. The robot, the task, the simulator, the environment
+            count and the GPU all differ from the recipe&apos;s, so the pair illustrates the arithmetic and is no
+            estimate for this recipe.{' '}
             <Cite id="F04-58">MuJoCo Playground env_rl_config.py</Cite>{' '}
             <Cite id="F04-55">Isaac Lab 3.0 benchmark file, Kuka-Allegro rows</Cite>
           </Box>
@@ -258,13 +259,16 @@ export function RobotRl() {
           <Box variant="p">
             NVIDIA&apos;s figures are training throughput for other robots, from a benchmark its own notes flag as
             &quot;dirty working tree reported&quot;, and its file holds no time to a working policy. Use them for
-            the ratio a camera costs, and measure the rate of your own task.{' '}
-            <Cite id="F04-54">Isaac Lab 3.0 benchmark file and README</Cite>
+            what a camera cost on a manipulation task, about half, knowing that the same file&apos;s Cartpole rows
+            lose a factor of 6.7 to the camera, and measure the rate of your own task.{' '}
+            <Cite id="F04-54">Isaac Lab 3.0 benchmark file and README</Cite>{' '}
+            <Cite id="F06-48">Isaac Lab 3.0 benchmark file, Cartpole rows</Cite>
           </Box>
           <Box variant="p">
-            On the machine, this lane is one GPU. Stepping thousands of environments together is general GPU
-            compute, the card&apos;s ordinary arithmetic as opposed to the tensor cores that matrix-heavy training
-            uses, with one CPU core feeding it. Cameras add GPU memory first: NVIDIA&apos;s camera figures used
+            On the machine, this lane is one GPU. Stepping thousands of environments together is, on our
+            reading of what those kernels compute and with no measurement behind it yet, general GPU compute: the
+            card&apos;s ordinary arithmetic as opposed to the tensor cores that matrix-heavy training uses, with one
+            CPU core feeding it. Cameras add GPU memory first: NVIDIA&apos;s camera figures used
             24.22 GB with RTX rendering and 13.61 GB with the Newton renderer. Then they add a rendering path, and
             AWS states, in a post of June 2026, that the Omniverse RTX Renderer &quot;requires GPUs with hardware RT
             Cores&quot;, ray-tracing units its P-family training instances lack (section 13, Rendering and Ray
@@ -305,11 +309,11 @@ export function RobotRl() {
             <Cite id="F04-54">Isaac Lab 3.0 benchmark file</Cite>
           </Box>
           <Box variant="p">
-            One run on AWS puts a duration on such a job. An AWS sample repository runs a recipe from the piRL
-            team on OpenVLA-OFT, a 7B-parameter VLA, in LIBERO&apos;s Goal suite. Its algorithm is GRPO (Group
-            Relative Policy Optimization), which scores each attempt against the others collected with it, and its
-            unit of progress is the training step: one round of collecting attempts and updating the model, a far
-            larger thing than a control step. On one p5en.48xlarge Spot instance with 8 H200 GPUs the
+            One run on AWS puts a duration on such a job. An AWS sample repository runs a recipe of RLinf v0.4,
+            the project of the piRL authors, on OpenVLA-OFT, a 7B-parameter VLA, in LIBERO&apos;s Goal suite. Its
+            algorithm is GRPO (Group Relative Policy Optimization), which scores each attempt against the others
+            collected with it, and its results file counts progress in GRPO steps, each about 25 minutes long in
+            this run and so a far larger thing than a control step. On one p5en.48xlarge Spot instance with 8 H200 GPUs the
             sample&apos;s authors report a single run: 75 GRPO steps in 31.6 hours of training, about 25 minutes
             per training step, with success rising from 48.6% (243/500) to 85.0% (425/500).{' '}
             <Cite id="F04-70">AWS sample, docs/results.md</Cite>
@@ -385,9 +389,9 @@ export function RobotRl() {
             <Cite id="F04-64">Recap paper, sections V-A and V-B</Cite> With that on-robot data added the authors
             report throughput, counted as successful tasks per hour, more than doubling on their laundry-folding
             and espresso tasks.{' '}
-            <Cite id="F04-66">Recap paper, section VI-B and figure 7</Cite> NVIDIA reports a gain of the same kind
-            for GR00T 2 on three contact-rich insertion tasks: from 40 to 76% success after supervised training
-            to 88 to 96% with RL on the real robot.{' '}
+            <Cite id="F04-66">Recap paper, section VI-B and figure 7</Cite> NVIDIA reports a gain for GR00T 2 on
+            three contact-rich insertion tasks: from 40 to 76% success after supervised training to 88 to 96% with
+            RL on the real robot. Its page gives no robot count, episode count or training time for that stage.{' '}
             <Cite id="F04-68">NVIDIA GR00T 2 page</Cite>
           </Box>
           <Box variant="p">
@@ -429,7 +433,7 @@ export function RobotRl() {
           </Box>
           <Box variant="p">
             So few steps go that far because each one is reused. At <Derived>144</Derived> attempts an hour nothing
-            can be thrown away, and every real step is trained on many times. The algorithm is SAC (Soft Actor-Critic), an RL method that trains from a replay buffer, a
+            can be thrown away, and every real step is trained on many times. LeRobot&apos;s implementation uses SAC (Soft Actor-Critic), an RL method that trains from a replay buffer, a
             store of past steps that training samples from again and again, where PPO discards a batch after a
             few passes.{' '}
             <Cite id="F04-76">LeRobot v0.7.0 hilserl.mdx, actor and learner</Cite> A person also steers what is collected. In the HIL-SERL paper the learner keeps two buffers, one of human demonstrations and one of the
@@ -473,9 +477,9 @@ export function RobotRl() {
             before a good one. Its test of a healthy run: &quot;A successful experiment is one where the
             human has to intervene at the start but then reduces the amount of interventions as the policy
             improves.&quot;{' '}
-            <Cite id="F04-79">LeRobot v0.7.0 hilserl.mdx, human interventions</Cite> For the {ARM} the
-            documentation promises a trained policy &quot;in just a few hours&quot; and the guide at v0.7.0 has no
-            table of results, so the hours and the success rate on this arm are yours to measure.{' '}
+            <Cite id="F04-79">LeRobot v0.7.0 hilserl.mdx, human interventions</Cite> The guide opens with
+            the promise that you will train a policy on a real robot &quot;in just a few hours&quot;, and at v0.7.0
+            it has no table of results, so the hours and the success rate on this arm are yours to measure.{' '}
             <Cite id="F04-80">LeRobot v0.7.0 hilserl.mdx, SO-101 sections</Cite>
           </Box>
         </SpaceBetween>
@@ -528,8 +532,8 @@ export function RobotRl() {
           <Box variant="p">
             What the randomisation leaves is stated in the same README: the policy was &quot;tested on 3 different
             robot setups under various lighting conditions&quot;, and &quot;there may still be visual domain gap
-            with darker shadows&quot;. No success rate is published for it, so the first figure for this policy on
-            a real arm will be your own count at your own bench. Section 14, Sim-to-Real and Real-to-Sim, covers
+            with darker shadows&quot;. The README and task files at 1.0.1 give no success rate for it, so the first
+            figure for this policy on a real arm will be your own count at your own bench. Section 14, Sim-to-Real and Real-to-Sim, covers
             the two remedies: widen what the simulator varies, or measure the arm and correct the simulator.{' '}
             <Cite id="F06-26">MuJoCo Playground SO-101 deploy README</Cite>
           </Box>
@@ -567,7 +571,7 @@ export function RobotRl() {
                 <tr>
                   <td style={TD}>In a simulator</td>
                   <td style={TD}>About 197 million control steps in one recipe, with no person involved</td>
-                  <td style={TD}>Simulator and renderer throughput; a camera takes about half of it</td>
+                  <td style={TD}>Simulator and renderer throughput; in NVIDIA&apos;s manipulation rows a camera takes about half of it</td>
                   <td style={TD}>
                     General GPU compute for the physics, with one CPU core feeding it. With cameras, GPU memory
                     first and then the rendering path

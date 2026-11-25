@@ -26,7 +26,7 @@ Target weights are marked requires_grad = False; after each optimiser step targe
 1 - 0.99925 = 0.00075, 0.075% per step, an average over roughly 1,333 recent steps | F03-8
 About 924 steps to close half of a gap (our arithmetic, ln 0.5 / ln 0.99925) | F03-8
 The V-JEPA authors: the plain regression "would admit a trivial solution"; the LeWorldModel authors: preventing collapse is "one of the central challenges" | F03-63
-Collapse is complete (one point) or dimensional (a low-dimensional subspace); the loss shows neither | F03-64, F03-63
+Collapse is complete (one point) or dimensional (a low-dimensional subspace), both defined by the spread of a batch's latents; a low loss shows neither | F03-64, F03-63
 EMA target plus stop-gradient prevents collapse by a hypothesis: the predictor evolves faster than the encoder and stays close to optimal | F03-65
 The LeWorldModel authors say EMA and stop-gradient do not in general correspond to minimising a well-defined objective | F03-66
 A frozen pretrained encoder cannot collapse; the world model is "inherently limited by the state information encoded in the learned representation space" | F03-71
@@ -43,16 +43,16 @@ Push-T success stays above 80% for lambda between 0.01 and 0.2; performance drop
 Push-T over three seeds: LeWM 96.0%, DINO-WM 92.0%, PLDM 78.0%; all four tasks simulated; DINO-WM slightly ahead on the cube pick-and-place task; no real-robot result (author reported) | F03-42
 SIGReg weakens in very simple, low-diversity environments | F03-45
 SIGReg in code: empirical characteristic function (mean cos, mean sin) against exp(-t^2/2) at 17 points t in [0, 3], weighted, scaled by batch size, averaged over 1,024 directions | F03-38
-V-JEPA 2: encoder pretrained on over 1 million hours of internet video, then V-JEPA 2-AC trained on under 62 hours of robot video with the encoder frozen | F03-1
+V-JEPA 2: encoder pretrained on video and images (over 1 million hours of internet video), with no actions or labels, then V-JEPA 2-AC trained on under 62 hours of robot video with the encoder frozen | F03-1
 The V-JEPA 2-AC predictor is about 300M parameters, 24 layers, width 1024 | F03-14
 Per time step: one 7-number action token (change in end-effector pose), one 7-number state token (3 position, 3 orientation, 1 gripper), and a 16 x 16 grid of 1408-wide features | F03-15
 1 + 1 + 256 = 258 tokens per time step | F03-16
 Teacher-forcing loss: L1 against the frozen encoder's features of the real next frame, each guess from true latents | F11-100
 Autoregressive prediction accumulates error; the number of action sequences grows exponentially with the horizon | F03-28
 V-JEPA 2-AC loss: teacher forcing plus a rollout term with T = 2, minimised over the predictor weights only | F03-18, F11-102
-A deterministic predictor trained on a distance learns the conditional mean of multi-modal futures; closed-loop MPC mitigates it in the JEPA-WMs benchmarks | F03-110
+A deterministic predictor trained with the MSE loss learns the conditional mean of multi-modal futures; deterministic dynamics, the latent's abstraction and closed-loop MPC soften it in the JEPA-WMs benchmarks | F03-110
 Planning energy: L1 distance between the predictor's imagined representation after T actions and the goal image's representation; the plan is its argmin, found by CEM | F03-23, F11-101
-MPC: plan a sequence, execute the first part, observe, plan again; V-JEPA 2-AC executes 1 of 1, RoboJEPA 2 of 5, LeWM all 5 of 5 | F03-112
+MPC: plan a sequence, execute the first part, observe, plan again; V-JEPA 2-AC executes 1 of 1, RoboJEPA on a real arm 2 of 5, LeWM all 5 of 5 | F03-112, F03-77
 CEM: sample from a Gaussian, score through the world model, keep the lowest-cost elites, refit mean and spread, repeat, return the mean | F03-113
 16 s / 8,000 = 2 ms and 3 s / 8,000 = 0.375 ms per pass (our arithmetic) | F03-118
 Pick-and-place uses three goal images on a schedule of 4, 10 and 4 time steps; 18 planned actions, 144,000 passes, 288 s (4.8 minutes) at the RTX 4090 rate (our arithmetic) | F03-27, F03-25
@@ -73,10 +73,11 @@ LeWM full plan 0.98 s against 47 s for DINO-WM; GPU not named; the timed setting
 The same 800 x 10 x 1 plan is listed at 3 seconds per action on a single A100 in the V-JEPA 2.1 paper; neither paper explains the gap (author reported) | F03-74
 RoboJEPA real-robot planner: 4,096 samples, 15 iterations first and 10 after, horizon 5; no seconds printed; "several seconds", "not real-time", several GPUs | F03-77
 CEM has no guarantee of a global optimum and becomes hard to apply when the action space is large | F03-114
+The planners read keep the action space small (our reading): V-JEPA 2-AC's notebook and RoboJEPA's real-arm planner search x, y, z and gripper with rotation held fixed | F03-114, F03-29
 Sampled actions are limited to about 13 cm of gripper travel; the authors tried camera positions by hand | F03-28
 The released notebook defaults to 400 samples, 10 CEM steps, top 10, rollout 2, translation and gripper only; 400 x 10 x 2 = 8,000 | F03-29
 ViT-g pretraining projection: roughly 60 GPU-years on A100s without progressive resolution, which cuts GPU time 8.4x; the actual run's GPU count and duration are not stated (author reported) | F03-12
 The released V-JEPA 2-AC config asks for 4 nodes of 8 GPUs | F03-21
 RoboJEPA's 1B predictor run used 32 nodes of 8 H100 GPUs; profiling on one H200 found inference "bound by host-side dispatch, not by matrix multiplication", GEMMs about 26% of GPU time (author reported) | F03-80
-Ways to cut planning time named by the authors: more compute, fewer samples and refinement steps, a feed-forward policy, gradient-based planning | F03-116
+Ways to cut planning time named by the authors, more compute listed first: more compute, fewer samples and refinement steps, a feed-forward policy, gradient-based planning | F03-116
 Gradient planners do well on smooth cost landscapes and fail on contact-rich manipulation; CEM with an L2 cost plans best overall (JEPA-WMs, peer reviewed) | F03-81

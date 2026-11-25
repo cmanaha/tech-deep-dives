@@ -255,7 +255,7 @@ export function Jepa() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Pretraining uses video alone, with no actions and no labels. Each step takes one clip, hides most of
+            Pretraining uses video and images with no actions and no labels. Each step takes one clip, hides most of
             it and asks for the latents of the hidden part. The context encoder, with weights{' '}
             <M>{String.raw`\theta`}</M>, sees only the visible tokens. The target encoder, with weights{' '}
             <M>{String.raw`\overline{\theta}`}</M>, is a copy of the encoder that sees the whole clip and supplies
@@ -378,9 +378,9 @@ export function Jepa() {
             collapse the latents differ and all lie in a thin slice of the space: of the 1408 numbers in each
             vector, most carry nothing.{' '}
             <Cite id="F03-64">LeJEPA paper, section 2</Cite> The training loss reports neither. It measures
-            agreement between guess and target, and collapsed latents agree perfectly, so a falling loss is what
-            both a working run and a collapsing one show. What tells them apart is the spread of the latents
-            across a batch, and every measure against collapse is a way of protecting that spread.
+            agreement between guess and target, and collapsed latents agree perfectly, so a low loss does not
+            show that the latents are of any use. Both degrees are defined by how the latents of a batch spread,
+            and the measures that follow either protect that spread or fix the targets.
           </Box>
           <Figure
             cites="F03-63 F03-64"
@@ -508,7 +508,7 @@ export function Jepa() {
             <Cite id="F03-69">LeJEPA paper, abstract</Cite> In the table picture, that is every column with
             variance 1 and every pair of columns with covariance 0. A single point has variance 0 and a flat
             slice has columns that move together, so by those two definitions one term answers both degrees of
-            collapse.
+            collapse (our reading).
           </Box>
           <Box variant="p">
             LeWorldModel (LeWM) is the world model built on it, at about 15M parameters. Its one encoder is
@@ -667,11 +667,13 @@ export function Jepa() {
             <Cite id="F11-102">V-JEPA 2 paper, section 3.1, text around equations 3 and 4</Cite>
           </Box>
           <Box variant="p">
-            One limit comes with any predictor trained on a distance. It gives one output per input, so where two
-            futures are plausible it learns their average, the fault section 4 found in regression on actions. A
-            peer-reviewed study of the family names it: the loss &quot;learns the conditional mean of potentially
-            genuinely multi-modal futures&quot;. Its authors add that replanning from the real frame softens the
-            effect in their benchmarks.{' '}
+            One limit comes with a predictor trained on a distance. It gives one output per input, so where two
+            futures are plausible it settles between them, the fault section 4 found in regression on actions. A
+            peer-reviewed study of the family names it for the squared-error loss its models use: &quot;the MSE
+            loss learns the conditional mean of potentially genuinely multi-modal futures&quot;. Its authors add
+            that three things soften the effect in their benchmarks: the dynamics there are deterministic, the
+            latent leaves out variation the task does not need, and replanning from the real frame corrects
+            prediction errors.{' '}
             <Cite id="F03-110">JEPA-WMs paper, section 7</Cite>
           </Box>
         </SpaceBetween>
@@ -719,7 +721,8 @@ export function Jepa() {
             The outer loop is MPC (model-predictive control), the standard way to act with a model whose
             predictions hold only a short way ahead: plan a sequence of actions through the model, execute the
             first part, read the camera again, and plan afresh from the real frame. How much to execute is a
-            setting. V-JEPA 2-AC executes 1 action of a 1-step plan, RoboJEPA 2 actions of a 5-step plan, and
+            setting. V-JEPA 2-AC executes 1 action of a 1-step plan, RoboJEPA on a real arm 2 actions of a 5-step
+            plan, and
             LeWorldModel all 5 action blocks of a 5-step plan. Replanning sooner corrects the model&apos;s errors
             sooner and pays for the search again.{' '}
             <Cite id="F03-112">V-JEPA 2 paper, section 3.2, RoboJEPA paper, Table 13, and LeWorldModel paper, appendix D</Cite>
@@ -930,7 +933,8 @@ export function Jepa() {
                 Each bar is samples x iterations x horizon for one published planner. The axis is logarithmic, so
                 the length of a segment is the size of its factor and the three end at the total. The counts are
                 our arithmetic from each paper&apos;s settings; the times are the authors&apos; own, each on its
-                own GPU, so compare them within a row.
+                own GPU and from its own paper, so they do not compare like for like, across rows or between the
+                two times in the first row.
               </>
             }
           >
@@ -947,9 +951,12 @@ export function Jepa() {
           <Box variant="p">
             CEM has two stated limits. The LeWorldModel authors note that it has no guarantee of a global
             optimum and &quot;becomes increasingly difficult to apply when the action space is large&quot;.{' '}
-            <Cite id="F03-114">LeWorldModel paper, appendix A</Cite> The published planners keep that space
-            small. V-JEPA 2-AC limits each sampled action to about 13 cm of gripper travel, and its authors
-            report trying camera positions by hand before settling on one that worked.{' '}
+            <Cite id="F03-114">LeWorldModel paper, appendix A</Cite> The planners read here keep that space
+            small (our reading): V-JEPA 2-AC limits each sampled action to about 13 cm of gripper travel, and its
+            released notebook and RoboJEPA&apos;s real-arm planner search only the x, y, z move and the gripper,
+            with rotation held fixed.{' '}
+            <Cite id="F03-29">vjepa2 notebooks/utils/mpc_utils.py, lines 98 to 104</Cite> The V-JEPA 2 authors
+            also report trying camera positions by hand before settling on one that worked.{' '}
             <Cite id="F03-28">V-JEPA 2 paper, section 4.2</Cite>
           </Box>
           <ExpandableSection headerText="If you run the released notebook: its planner defaults differ from the paper">
@@ -992,8 +999,8 @@ export function Jepa() {
           <Box variant="p">
             One planned action is 10 batches of 800 passes. Each batch waits for the one before it, because CEM
             refits its distribution between rounds, and the candidates inside a batch never exchange data. That is why RoboJEPA&apos;s authors can spread a
-            round over several GPUs, and why the V-JEPA 2 authors&apos; list of ways to cut the time starts with
-            more compute. The rest of their list: fewer samples and refinement steps, a fast policy trained in the
+            round over several GPUs, and more compute is also the first item on the V-JEPA 2 authors&apos; list
+            of ways to cut the time. The rest of their list: fewer samples and refinement steps, a fast policy trained in the
             world model&apos;s imagination to start the search, or a planner that follows gradients through the
             predictor.{' '}
             <Cite id="F03-24">V-JEPA 2 paper, appendix B.2</Cite>{' '}
