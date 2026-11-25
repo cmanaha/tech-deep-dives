@@ -35,27 +35,27 @@ const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbd
 
 const SLOT_CAPTIONS = [
   <>
-    A core&apos;s pipeline: the front end fetches and decodes, the back end executes, retirement makes results final.
-    Between front end and back end there is a fixed number of slots per cycle, 4 on this illustrative core.
+    The pipeline: the front end fetches and decodes, the back end executes, retirement makes results final. Between
+    the front end and the back end sit a fixed number of slots per cycle, 4 on this illustrative core.
   </>,
   <>
-    Retiring. The front end hands a micro-operation to the slot, the back end executes it, and it retires. The slot
-    did useful work.
+    Retiring. The front end hands a micro-operation to the slot, the back end executes it, and it retires: the slot
+    did work the program kept.
   </>,
   <>
-    Bad speculation. The slot receives a micro-operation, but it sits after a branch the core guessed wrong, so it is
+    Bad speculation. The slot receives a micro-operation, but it follows a branch the core guessed wrong, so it is
     thrown away and never retires.
   </>,
   <>
-    Front-end bound. The back end could take a micro-operation, but the front end has none ready. The slot stays
+    Front-end bound. The back end could take a micro-operation, but the front end has none ready, and the slot stays
     empty.
   </>,
   <>
-    Back-end bound. The front end has a micro-operation ready, but the back end cannot accept it. The slot stays
+    Back-end bound. The front end has a micro-operation ready, but the back end cannot accept it, and the slot stays
     empty.
   </>,
   <>
-    The top-down breakdown: every slot of a run, sorted. In this illustration <Toy>400</Toy> slots split into{' '}
+    Every slot of the run lands in one bucket. The <Toy>400</Toy> slots of the example split{' '}
     <Toy>54%</Toy> retiring, <Toy>6%</Toy> bad speculation, <Toy>15%</Toy> front-end bound and <Toy>25%</Toy>{' '}
     back-end bound.
   </>,
@@ -418,97 +418,105 @@ export function PmuCards() {
         header={
           <Header
             variant="h1"
-            description="Read a top-down breakdown and a GPU profile and say which part of the machine is saturated: four percentages for a CPU core, three tools for a GPU, four questions for a card (vendor method files and docs read 2026-11-20; the sample card is our single run on a DGX Spark)"
+            description="Read where a machine's capacity went, from four shares of a CPU core's slots and from GPU counters that see past the utilisation figure, and tell which part to buy more of (vendor files and docs read 2026-11-20; the sample card is our single run on a DGX Spark)"
           >
-            21. Reading a Machine: PMU Cards
+            21. Reading a Machine: The Counters That Say Which Part Is Full
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Section 20, Fifteen Workloads, Five Shapes, says which part of the machine each workload loads. This
-            section teaches the instrument that shows it. A processor counts what happens inside it, and a method
-            called top-down analysis turns those counts into four percentages that say where a core&apos;s capacity
-            went. The GPU has tools of its own, and each answers a different question.
+            A job&apos;s bottleneck, the part of the machine it exhausts first, can be read off counters the
+            hardware keeps while the job runs: a CPU core&apos;s performance monitoring unit (PMU), and the GPU&apos;s
+            own counters. A core splits each instruction
+            into micro-operations, smaller internal steps, and in every clock cycle it has a fixed number of chances
+            to start one. Its counters record what became of every chance. Sorted four ways, they show where the
+            core&apos;s capacity went: into work that finished, into work thrown away, or into chances left empty
+            because the front of the core had nothing ready or the back could not take more. The four percentages
+            say whether a faster core, more memory bandwidth or different code would help, before you pay for any
+            of them. <Cite id="F08-50">the machine parts and the counter that shows each</Cite>
           </Box>
           <Box variant="p">
-            A PMU card is one page that holds those readings for one workload on one machine: how much work it did
-            per second, where the CPU&apos;s capacity went, what the GPU tools showed, and how all of it was counted.
-            Section 22, Our Measurements, is a set of such cards. This section gets you to the point where you can
-            read one.
+            Each chance is a slot: one place, in one cycle, to pass one micro-operation from the front end, which
+            fetches and decodes instructions, to the back end, which executes them. Take an illustrative core with{' '}
+            <Toy>4</Toy> slots per cycle, watched for <Toy>100</Toy> cycles: <Toy>400</Toy> slots. Say{' '}
+            <Toy>60</Toy> stayed empty because the front end had nothing ready and <Toy>100</Toy> because the back end
+            could take no more. The other <Toy>240</Toy> each carried a micro-operation: <Toy>216</Toy> finished and
+            were kept, which is called retiring, and <Toy>24</Toy> were thrown away because the core had guessed
+            wrong which way a branch in the code would go. Each count over <Toy>400</Toy> is one share: retiring <Toy>54%</Toy>, bad
+            speculation <Toy>6%</Toy>, front-end bound <Toy>15%</Toy> and back-end bound <Toy>25%</Toy>.{' '}
+            <Cite id="F08-3">Intel VTune cookbook, the classification paragraphs</Cite>
+          </Box>
+          <Box variant="p">
+            As a diagnosis, <Toy>54%</Toy> of that core&apos;s capacity did work the program kept, and the back end
+            cost the most. The method is called top-down analysis, and its second level splits a back-end loss in
+            two: waiting on memory, where more bandwidth helps and a faster core does not, or waiting on the
+            core&apos;s own execution units, where the reverse holds. In one run of ours, MuJoCo, a physics
+            simulator, stepping a humanoid model on one Cortex-X925 core of an NVIDIA DGX Spark desktop machine,
+            gave 45.7% retiring, 5.6% bad speculation, 12.2% front-end bound and 36.5% back-end bound, while a
+            memory-stall counter found 0.4% of cycles stalled on memory. That points at the execution units rather
+            than memory, though one counter cannot settle it.{' '}
+            <Cite id="F08-6">Intel TMA metrics file, rows Memory_Bound and Core_Bound</Cite>{' '}
+            <Cite id="F08-61">our profiling report, physics step table</Cite>
+          </Box>
+          <Box variant="p">
+            A GPU has no four-way sort, and its best-known figure misleads. The GPU utilisation that NVIDIA&apos;s
+            nvidia-smi tool prints is the share of time any kernel, a function launched on the GPU, was running, so
+            one small kernel run back to back reads 100% however little of the chip it uses. A PMU card puts both
+            sides on one page for one workload on one machine, and four questions read it, each catching one
+            misreading: what ran and how it was counted, since two cards compare only under the same formula; how
+            much work per second, since a share is not a speed; where the slots went; and what lies behind the
+            largest loss, which decides the part to buy.{' '}
+            <Cite id="F08-30">nvidia-smi documentation, Utilization</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Know what is being counted before any percentage appears: cycles, micro-operations, and the three stages they pass through">
-            Counters in the processor
+          <Header
+            variant="h2"
+            description="Sort every slot by two questions into one of four buckets, and know what a high share of each points at"
+          >
+            A slot gives every lost chance a cause
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The PMU (performance monitoring unit) is a set of hardware counters inside every processor core. Each
-            counter is pointed at one kind of event, such as a clock cycle passing, an instruction finishing or a
-            branch guessed wrong, and adds one each time the event happens. The hardware does the counting while the
-            program runs unchanged. On Linux the tool that reads the counters is <code>perf</code>:{' '}
-            <code>perf stat</code> runs a program and prints the totals.
-          </Box>
-          <Box variant="p">Four ideas are enough to read those totals.</Box>
-          <ul style={LIST}>
-            <li>
-              <strong>Clock cycle.</strong> A core works in beats, billions per second. Everything below is counted
-              per cycle.
-            </li>
-            <li>
-              <strong>Micro-operation.</strong> A core does not execute a program&apos;s instructions as written. It
-              first breaks each one into one or more smaller internal steps, the micro-operations. Intel&apos;s
-              documents shorten the word to uOp.
-            </li>
-            <li>
-              <strong>Pipeline.</strong> A micro-operation passes through three stages. The front end predicts which
-              instructions come next, fetches them from memory and decodes them into micro-operations. The back end
-              executes them in its arithmetic and memory units, out of program order where that is faster.
-              Retirement makes the results final, in program order.{' '}
-              <Cite id="F08-4">Intel TMA metrics file, row Frontend_Bound</Cite>{' '}
-              <Cite id="F08-5">Intel TMA metrics file, row Backend_Bound</Cite>
-            </li>
-            <li>
-              <strong>Speculation.</strong> The front end does not wait to learn which way a branch (an{' '}
-              <code>if</code>, the end of a loop) will go. It guesses and keeps fetching. When the guess is wrong,
-              every micro-operation started after it is thrown away, which is called a flush, and the core restarts
-              from the right place. Work that is thrown away never retires.
-            </li>
-          </ul>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Every slot of every cycle ends in exactly one of four places, and two questions decide which">
-            Top-down in one picture
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            Between the front end and the back end is a hand-over point with a fixed number of places per clock
-            cycle. Each place is a slot: one chance, in one cycle, to pass one micro-operation to the back end.
-            Intel&apos;s definition reads: &quot;A pipeline slot represents the hardware resources needed to process
-            one uOp.&quot; <Cite id="F08-2">Intel VTune cookbook, Top-down Microarchitecture Analysis Method</Cite>{' '}
-            Arm counts slots at the same point and treats the number per cycle as a fixed property of each core.{' '}
-            <Cite id="F08-14">Arm Neoverse V1 performance analysis white paper, section 3.2</Cite> The Cortex-X925,
-            the fast core of the DGX Spark desktop machine measured in section 22, has 10 slots per cycle.{' '}
-            <Cite id="F08-16">Arm Telemetry Solution, per-core specification files</Cite>
+            Each counter in the PMU is set to one kind of event, such as a clock cycle passing, a micro-operation
+            retiring or a branch guessed wrong, and adds one every time the event happens, while the program runs
+            unchanged. On Linux, <code>perf stat</code> runs a program and prints the totals. A one-number summary
+            of those totals is instructions per cycle: finished instructions divided by clock cycles. It says how much got done and nothing about why the rest did not.
           </Box>
           <Box variant="p">
-            The slots are the core&apos;s whole capacity. Top-down analysis, a method Intel published in 2014, asks
-            one thing of every slot in every cycle: where did it go?{' '}
-            <Cite id="F08-1">Intel perfmon README, TMA reference</Cite> Two questions sort every slot into one of
-            four buckets. Was a micro-operation delivered to the slot? If it was, did it retire?{' '}
-            <Cite id="F08-3">Intel VTune cookbook, the classification paragraphs</Cite> Step through the four
-            outcomes.
+            Slots say why. A core&apos;s slots per cycle are fixed by its design, so a run holds a known number of
+            them, the slots per cycle times the cycles, and every slot that did not carry kept work is a loss with a
+            cause. In hardware terms a slot is the resources needed to process one micro-operation (Intel writes
+            uOp). Arm counts slots at the rename unit, the stage that divides the front end from the back end, and
+            their number sets the core&apos;s execution bandwidth for top-down accounting. Counting whole
+            stalled cycles instead loses detail: a cycle that moved 2 of its 8 slots counts as not stalled, and its 6
+            empty slots go unrecorded.{' '}
+            <Cite id="F08-8">Intel TMA metrics file, row SLOTS</Cite>{' '}
+            <Cite id="F08-2">Intel VTune cookbook, Top-down Microarchitecture Analysis Method</Cite>{' '}
+            <Cite id="F08-14">Arm Neoverse V1 performance analysis white paper, section 3.2</Cite>{' '}
+            <Cite id="F08-29">AWS Graviton guide, Top-down method to debug hardware performance</Cite>
+          </Box>
+          <Box variant="p">
+            Where a slot can go follows from how the pipeline works. The front end predicts which instructions come
+            next, fetches them and decodes them into micro-operations. The back end executes those out of program
+            order where that is faster, and retirement makes their results final in program order. The front end
+            also does not wait to learn which way a branch (an <code>if</code>, the end of a loop) will go: it guesses
+            and keeps fetching. A wrong guess throws away every micro-operation started after it, which is called a
+            flush, and the core restarts from the right place. Thrown-away work used slots and never retires.{' '}
+            <Cite id="F08-4">Intel TMA metrics file, row Frontend_Bound</Cite>{' '}
+            <Cite id="F08-5">Intel TMA metrics file, row Backend_Bound</Cite>
+          </Box>
+          <Box variant="p">
+            Two questions therefore sort every slot of every cycle into exactly one bucket. Was a micro-operation
+            delivered to the slot? If it was, did it retire? The sort comes from a 2014 Intel paper.{' '}
+            <Cite id="F08-3">Intel VTune cookbook, the classification paragraphs</Cite>{' '}
+            <Cite id="F08-1">Intel perfmon README, TMA reference</Cite>
           </Box>
           <AnimatedFigure
             name="where slots go"
@@ -517,105 +525,62 @@ export function PmuCards() {
             cites="F08-2 F08-3"
             caption={
               <>
-                Read the top row as the core and the tree below it as the sorting rule. Each step follows one slot to
-                its bucket. Illustrative, not measured: the core is drawn with 4 slots per cycle and the shares in
-                the last step are invented.
+                The top row is the core and the tree beneath it is the sorting rule; each step follows one slot to its
+                bucket. Illustrative, not measured: the core is drawn with 4 slots per cycle, and the last step uses
+                the toy counts of the <Toy>400</Toy>-slot example.
               </>
             }
           >
             {(step, reduced) => <SlotsDiagram step={step} reduced={reduced} />}
           </AnimatedFigure>
-          <Box variant="p">Each bucket says something different about a workload.</Box>
+          <Box variant="p">Each bucket points at a different cause.</Box>
           <ul style={LIST}>
             <li>
-              <strong>Retiring.</strong> The slot carried work that finished. This is the useful share. A value of
-              100% would mean the core ran at its full width. A high value still leaves room to gain: the program
-              may be doing more work than it needs.{' '}
+              <strong>Retiring</strong> is kept work. A value of 100% would mean the core ran at its full width, and a
+              high value still leaves room, because the program may be doing more work than it needs.{' '}
               <Cite id="F08-7">Intel TMA metrics file, rows Retiring and Bad_Speculation</Cite>
             </li>
             <li>
-              <strong>Bad speculation.</strong> The slot carried work that was thrown away. A high share points at
-              branches the core cannot predict, such as decisions that depend on the data.
+              <strong>Bad speculation</strong> points at branches the core cannot predict, such as decisions that
+              depend on the data.
             </li>
             <li>
-              <strong>Front-end bound.</strong> The slot stayed empty because the front end had nothing ready. A
-              high share points at the code itself: a large or jumpy body of instructions that the core cannot fetch
-              and decode fast enough.
+              <strong>Front-end bound</strong> points at the code itself: a body of instructions too large, or
+              jumping too often, for the core to fetch and decode fast enough. Misses in the instruction cache land
+              here.{' '}
+              <Cite id="F08-4">Intel TMA metrics file, row Frontend_Bound</Cite>
             </li>
             <li>
-              <strong>Back-end bound.</strong> The slot stayed empty because the back end could not take more. There
-              are two causes, and a second level of the method splits them. Memory bound: the back end is waiting
-              for data to be loaded or stored. Core bound: its execution units are busy, or each operation is
-              waiting for the result of the one before it.{' '}
+              <strong>Back-end bound</strong> splits at the second level. Memory bound means the back end is waiting
+              for data to be loaded or stored. Core bound means its execution units are busy, or each operation
+              waits for the result of the one before, as in a chain of long floating-point operations.{' '}
               <Cite id="F08-6">Intel TMA metrics file, rows Memory_Bound and Core_Bound</Cite>
             </li>
           </ul>
-          <Box variant="p">
-            The split matters because the remedies differ. Back-end bound with a high memory share means the core
-            is waiting on memory, and a faster core will not help. With a low memory share the arithmetic is the
-            limit, and a wider or faster core helps directly.
-          </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Sort a small run by hand, then see the same arithmetic as the formula a profiler applies to the counters">
-            Worked example: sorting a small run by hand
+          <Header
+            variant="h2"
+            description="Recompute any card's four shares from its raw counts, and know which check of the result proves something"
+          >
+            The formula perf applies to the counters
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            An invented core, as an illustration: <Toy>4</Toy> slots per cycle, watched for <Toy>100</Toy> cycles.
-            That is <Toy>4 x 100 = 400</Toy> slots. Suppose the counters report this:
-          </Box>
-          <ul style={LIST}>
-            <li>
-              <Toy>60</Toy> slots stayed empty because the front end had nothing ready.
-            </li>
-            <li>
-              <Toy>100</Toy> slots stayed empty because the back end could not accept.
-            </li>
-            <li>
-              The other <Toy>400 - 160 = 240</Toy> slots each received a micro-operation. Of those{' '}
-              <Toy>240</Toy> micro-operations, <Toy>216</Toy> retired and <Toy>24</Toy> were thrown away.
-            </li>
-          </ul>
-          <Box variant="p">
-            Each bucket is its count over all slots. Retiring: <Toy>216 / 400 = 54%</Toy>. Bad speculation:{' '}
-            <Toy>24 / 400 = 6%</Toy>. Front-end bound: <Toy>60 / 400 = 15%</Toy>. Back-end bound:{' '}
-            <Toy>100 / 400 = 25%</Toy>. These are the shares in the last step of the figure above.
-          </Box>
-          <Box variant="p">
-            A real core reports events, and a formula turns them into the four shares. The symbols, using the event
-            names of Arm cores:
-          </Box>
-          <ul style={LIST}>
-            <li>
-              <code>CPU_CYCLES</code>: clock cycles counted during the run.
-            </li>
-            <li>
-              <M>S</M>: slots per cycle, a constant of the core.
-            </li>
-            <li>
-              <code>STALL_SLOT_FRONTEND</code>: slots that stayed empty because the front end had nothing to send.
-            </li>
-            <li>
-              <code>STALL_SLOT_BACKEND</code>: slots that stayed empty because the back end could not accept.
-            </li>
-            <li>
-              <code>STALL_SLOT</code>: all empty slots, the sum of the two above.
-            </li>
-            <li>
-              <code>OP_SPEC</code>: micro-operations started. <code>OP_RETIRED</code>: micro-operations that retired.
-            </li>
-          </ul>
-          <Box variant="p">
-            <Cite id="F08-15">Arm Cortex-X925 specification file, events</Cite> Three quantities are built from
-            the events first: the number of slots, the share of slots that received a micro-operation (written{' '}
-            <M>{String.raw`\mathrm{filled}`}</M> here) and the share of started micro-operations that retired (written{' '}
-            <M>{String.raw`\mathrm{kept}`}</M> here).
+            In Arm&apos;s event names, <code>CPU_CYCLES</code> counts the clock cycles of
+            the run, and <M>S</M> is the core&apos;s slots per cycle, a constant of its design.{' '}
+            <code>STALL_SLOT_FRONTEND</code> and <code>STALL_SLOT_BACKEND</code> count empty slots by the side that
+            was not ready, and <code>STALL_SLOT</code> is their sum. <code>OP_SPEC</code> counts micro-operations
+            dispatched through a slot, including those later thrown away, and <code>OP_RETIRED</code> the ones that retired. Three
+            quantities come first: <M>{String.raw`\mathrm{slots}`}</M>, the total in the run;{' '}
+            <M>{String.raw`\mathrm{filled}`}</M>, the share of slots that received a micro-operation; and{' '}
+            <M>{String.raw`\mathrm{kept}`}</M>, the share of dispatched micro-operations that retired.{' '}
+            <Cite id="F08-15">Arm Cortex-X925 specification file, events</Cite>
           </Box>
           <Formula
             name="Slots, and the two shares the buckets are built from"
@@ -623,8 +588,8 @@ export function PmuCards() {
             source={<Cite id="F08-20">Linux v7.3, perf metric file sbsa.json</Cite>}
           />
           <Box variant="p">
-            The first level of the method, in the generic form Linux perf ships for Arm cores, is then four
-            fractions of the slots:
+            The first level of the method, in the generic form Linux perf ships for Arm cores, is four fractions of
+            those slots:
           </Box>
           <Formula
             name="Top-down level 1, generic Arm form"
@@ -632,26 +597,39 @@ export function PmuCards() {
             source={<Cite id="F08-20">Linux v7.3, perf metric file sbsa.json</Cite>}
           />
           <Box variant="p">
-            Read it against the two questions. The front-end and back-end lines are the &quot;no&quot; branch of
-            question 1: empty slots, by which side was not ready, over all slots.{' '}
-            <M>{String.raw`\mathrm{filled}`}</M> is the &quot;yes&quot; branch, the share of slots that received a
-            micro-operation: <Toy>1 - 160 / 400 = 0.6</Toy> in the example. <M>{String.raw`\mathrm{kept}`}</M> is
-            question 2, the share of started micro-operations that finished: <Toy>216 / 240 = 0.9</Toy>. Retiring is
-            one times the other, <Toy>0.6 x 0.9 = 0.54</Toy>, and bad speculation takes what is left of the filled
-            slots, <Toy>0.6 x 0.1 = 0.06</Toy>.
+            Each line is one branch of the two questions. Front-end and back-end bound are the &quot;no&quot; branch
+            of the first: empty slots, by the side that was not ready, over all slots.{' '}
+            <M>{String.raw`\mathrm{filled}`}</M> is the &quot;yes&quot; branch, and in the <Toy>400</Toy>-slot example it is{' '}
+            <Toy>1 - 160 / 400 = 0.6</Toy>. <M>{String.raw`\mathrm{kept}`}</M> answers the second question:{' '}
+            <Toy>216 / 240 = 0.9</Toy>. Retiring is the filled slots whose work was kept,{' '}
+            <Toy>0.6 x 0.9 = 0.54</Toy>, and bad speculation the filled slots whose work was thrown away,{' '}
+            <Toy>0.6 x 0.1 = 0.06</Toy>: the <Toy>54%</Toy> and <Toy>6%</Toy> of the example.
           </Box>
           <Box variant="p">
-            The four shares add to 100% because the formula makes them. The sum is arithmetic and says nothing about
-            whether the counters were read correctly.{' '}
-            <Cite id="F08-69">our check of the raw counter rows</Cite> Intel and AMD count the same four buckets
-            under other event names; on Intel cores from Ice Lake on, the processor holds the four ratios in a
-            register of their own. <Cite id="F08-8">Intel TMA metrics file, level-1 rows</Cite>
+            The four shares sum to 100% because the formula makes them: the two stall counts add to{' '}
+            <code>STALL_SLOT</code>, and retiring plus bad speculation is <M>{String.raw`\mathrm{filled}`}</M>, which
+            is everything else. A card whose shares sum to 100% has passed no test. A program with a known answer is
+            a test. A chain of loads, each waiting for the one before, over more memory than the caches hold, should
+            land almost entirely in back-end bound. We ran it once on each of three core types, the Spark&apos;s
+            X925, the Spark&apos;s smaller Cortex-A725 and the Cortex-A78AE of NVIDIA&apos;s Jetson robot computer,
+            and it measured 97.6% to 99.0% back-end bound on each.{' '}
+            <Cite id="F08-69">our check of the raw counter rows</Cite>{' '}
+            <Cite id="F08-67">our profiling report, latency rows</Cite>
           </Box>
-          <ExpandableSection headerText="The same arithmetic on real counters: the sample card's physics step">
+          <Box variant="p">
+            Intel and AMD sort slots the same four ways under other event names. From Ice Lake on, Intel cores count
+            slots in a fixed counter and hold the four ratios in a register of their own, so the split takes none of
+            the general-purpose counters and leaves them for other events. AMD counts dispatch slots and, on Zen 4, adds a fifth bucket for SMT
+            (simultaneous multithreading, two hardware threads sharing one core): slots left unused because the other
+            thread was given the turn.{' '}
+            <Cite id="F08-10">Linux v7.3, perf topdown documentation, Ice Lake</Cite>{' '}
+            <Cite id="F08-11">Linux v7.3, amdzen4 pipeline.json, smt_contention</Cite>
+          </Box>
+          <ExpandableSection headerText="The physics-step card, recomputed from its raw counts">
             <SpaceBetween size="s">
               <Box variant="p">
-                These are the raw counts behind the sample card at the end of this section: one Cortex-X925 core of a
-                DGX Spark stepping a MuJoCo humanoid model, our measurement, single run.{' '}
+                One Cortex-X925 core of a DGX Spark stepping a MuJoCo humanoid model, at the core&apos;s 10 slots
+                per cycle.{' '}
                 <Cite id="F08-70">our recomputation from the raw counter file</Cite>{' '}
                 <Cite id="F08-69">raw row for the physics step</Cite>
               </Box>
@@ -666,21 +644,24 @@ export function PmuCards() {
                   Back-end bound: <Derived>72,922,813,391 / 199,582,563,580 = 36.54%</Derived>.
                 </li>
                 <li>
-                  Share of slots that received a micro-operation:{' '}
-                  <Derived>1 - 97,275,014,000 / 199,582,563,580 = 0.5126</Derived>.
+                  Filled: <Derived>1 - 97,275,014,000 / 199,582,563,580 = 0.5126</Derived>.
                 </li>
                 <li>
-                  Share of started micro-operations that retired:{' '}
-                  <Derived>91,123,888,968 / 102,307,494,220 = 0.8907</Derived>.
+                  Kept: <Derived>91,123,888,968 / 102,307,494,220 = 0.8907</Derived>.
                 </li>
                 <li>
                   Retiring: <Derived>0.5126 x 0.8907 = 45.66%</Derived>. Bad speculation:{' '}
                   <Derived>0.5126 x (1 - 0.8907) = 5.60%</Derived>.
                 </li>
+                <li>
+                  Width check, since every slot either stalls or carries a dispatched micro-operation:{' '}
+                  <Derived>(97,275,014,000 + 102,307,494,220) / 19,958,256,358 = 10.000</Derived> slots per cycle.
+                </li>
               </ul>
               <Box variant="p">
                 The card prints these to one decimal: 12.2%, 36.5%, 45.7% and 5.6%.{' '}
-                <Cite id="F08-61">our profiling report, physics step table</Cite>
+                <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
+                <Cite id="F08-68">our profiling report, slots per cycle</Cite>
               </Box>
             </SpaceBetween>
           </ExpandableSection>
@@ -689,16 +670,19 @@ export function PmuCards() {
 
       <Container
         header={
-          <Header variant="h2" description="Look up the width of the core you rent before comparing two cards, and know which version of the formula its numbers carry">
-            Slots per cycle by core
+          <Header
+            variant="h2"
+            description="Look up the slots per cycle of the core you rent, and compare cores of different width by throughput"
+          >
+            A share is a share of that core&apos;s width
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The number of slots per cycle, also called the width of the core, differs by vendor and by generation.
-            It is the <M>S</M> of the formula, so every percentage on a card is a share of that core&apos;s
-            own width.
+            A core&apos;s slots per cycle are its width, the <M>S</M> of the formula, so every share on a card is a
+            share of that core&apos;s own width. Width differs by vendor and by generation, and each vendor&apos;s
+            own files give it.
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 620 }}>
@@ -706,7 +690,7 @@ export function PmuCards() {
                 <tr>
                   <th style={TH}>Vendor</th>
                   <th style={TH}>Slots per cycle, by core</th>
-                  <th style={TH}>Where the number lives</th>
+                  <th style={TH}>Source</th>
                 </tr>
               </thead>
               <tbody>
@@ -742,40 +726,63 @@ export function PmuCards() {
             </table>
           </div>
           <Box variant="p">
-            One Arm row needs a caution. The file for the Neoverse N1, the core of Graviton2, lists a width but no
-            slot-stall events, so the slot formula of this section does not run on it; Arm&apos;s method for that core
-            counts stalled cycles instead.
+            <strong>Width changes what a percentage means.</strong> On the MuJoCo humanoid step, the Spark&apos;s
+            Cortex-A725 retired 61.0% of its 5 slots and the Cortex-X925 retired 45.7% of its 10. The X925 has the
+            lower share and does more: <Derived>0.457 x 10 = 4.57</Derived> slots of kept work per cycle against{' '}
+            <Derived>0.610 x 5 = 3.05</Derived>, and 57,240 steps per second against 28,662. Kept slots per cycle
+            differ by <Derived>4.57 / 3.05 = 1.5</Derived> times and steps per second by{' '}
+            <Derived>57,240 / 28,662 = 2.0</Derived>. The remaining factor of about{' '}
+            <Derived>2.0 / 1.5 = 1.33</Derived> is what a per-cycle figure leaves out: each core&apos;s clock, and
+            the micro-operations each needs per step, which these counters do not separate. Compare
+            shares only between cores of the same width; compare throughput between any two.{' '}
+            <Cite id="F08-61">our profiling report, physics step table</Cite>
           </Box>
           <Box variant="p">
-            Intel&apos;s cookbook page says a core has four slots per cycle; that is the width of the oldest cores
-            in Intel&apos;s own metrics file, so take the width from the file. <Cite id="F08-2">Intel VTune cookbook, Top-down Microarchitecture Analysis Method</Cite> AMD
-            cores report a fifth bucket for SMT (simultaneous multithreading, two hardware threads sharing one
-            core): slots left unused because the other thread was given the turn. <Cite id="F08-11">Linux v7.3, amdzen4 pipeline.json, smt_contention</Cite> Arm publishes no file for
-            the Cortex-A78AE, the core of the Jetson Orin Nano Super, so section 22 derives that core&apos;s width
-            from its counters. <Cite id="F08-16">Arm Telemetry Solution, cortex folder listing</Cite>
+            Two Arm cores need care. The Neoverse N1, the core of Graviton2, has a width of 5 in Arm&apos;s file and
+            no slot-stall events, so the slot formula cannot run on it; Arm&apos;s method for that core counts stalled
+            cycles instead. The Cortex-A78AE, the core of the Jetson Orin Nano Super, has no Arm file, and its Linux kernel reports a width of 0. The events recover it: every slot in every cycle
+            either stalls or carries one dispatched micro-operation, so{' '}
+            <code>(STALL_SLOT + OP_SPEC) / CPU_CYCLES</code> is the width. On the Spark&apos;s two cores that came
+            out at 10.000 and 5.000, as Arm&apos;s files give them, and on the A78AE at 6.000, a value with no Arm
+            file to check it against.{' '}
+            <Cite id="F08-16">Arm Telemetry Solution, cortex folder listing</Cite>{' '}
+            <Cite id="F08-15">Arm Cortex-X925 specification file, STALL_SLOT and OP_SPEC</Cite>{' '}
+            <Cite id="F08-68">our profiling report, slots per cycle</Cite>
           </Box>
           <Box variant="p">
-            On EC2 the Arm rows map to Graviton, the Arm processors AWS designs: Graviton3 is the Neoverse V1,
-            Graviton4 the Neoverse V2 and Graviton5 the Neoverse V3.{' '}
-            <Cite id="F08-56">AWS Graviton guide, README processor table</Cite> A Graviton5 core and the DGX
-            Spark&apos;s Cortex-X925 share the widest figure in the table, 10 slots per cycle.
+            On EC2 the Arm rows are Graviton, the Arm processors AWS designs: Graviton3 is the Neoverse V1, Graviton4
+            the Neoverse V2 and Graviton5 the Neoverse V3. A Graviton5 core and the Spark&apos;s X925 share the
+            widest figure in the table, 10 slots per cycle, and Arm gives both the same formula, so the same
+            arithmetic reads a card from either chip. Intel&apos;s VTune cookbook still
+            says four slots per cycle, the width of the oldest cores in Intel&apos;s own metrics file: take the
+            width from the file.{' '}
+            <Cite id="F08-56">AWS Graviton guide, README processor table</Cite>{' '}
+            <Cite id="F08-19">Arm Telemetry Solution, neoverse_v3 and cortex_x925 metrics</Cite>{' '}
+            <Cite id="F08-2">Intel VTune cookbook 2025.4, the current edition, Top-down Microarchitecture Analysis Method</Cite>
           </Box>
-          <Box variant="p">
-            <strong>Width changes what a percentage means.</strong> In our single run of a MuJoCo humanoid physics
-            step on a DGX Spark, the Cortex-A725 core retired 61.0% of its 5 slots and the Cortex-X925 retired 45.7%
-            of its 10. The X925 has the lower percentage and does more: <Derived>0.457 x 10 = 4.57</Derived> useful
-            slots per cycle against <Derived>0.610 x 5 = 3.05</Derived>, and 57,240 steps per second against 28,662.{' '}
-            <Cite id="F08-61">our profiling report, physics step table</Cite> Compare percentages only between cores
-            of the same width, and compare throughput everywhere.
-          </Box>
-          <Box variant="h3">Arm&apos;s correction for flushed work</Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Know which way an uncorrected card leans, and by how much, before you compare its front-end share with another card's"
+          >
+            The generic Arm formula books flush recovery as front-end bound
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
           <Box variant="p">
             After a flush the front end has nothing to hand over for a few cycles while it fetches again from the
-            right place. A wrong branch guess is the usual cause; exceptions and other machine flushes count too.
-            Those slots are empty with the front end not ready, so the generic formula counts them as front-end
-            bound. Their cause is the flush. Arm&apos;s method moves
-            them: it subtracts the recovery time from front-end bound and adds it to bad speculation. How the
-            recovery time is obtained depends on the core.
+            right place. A mispredicted branch is the usual cause; exceptions and other machine flushes count too.
+            Those slots are empty with the front end not ready, so the generic formula books them as front-end
+            bound, although the wrong guess caused them. Intel&apos;s definition of bad speculation includes them,
+            and Arm&apos;s per-core method moves them there: it subtracts the recovery time from front-end bound and
+            adds it to bad speculation. The cores differ in how they obtain the recovery time.{' '}
+            <Cite id="F08-7">Intel TMA metrics file, row Bad_Speculation</Cite>{' '}
+            <Cite id="F08-19">Arm Telemetry Solution, STALL_FRONTEND_FLUSH</Cite>
           </Box>
           <ul style={LIST}>
             <li>
@@ -783,62 +790,86 @@ export function PmuCards() {
               <Cite id="F08-17">Arm Telemetry Solution, neoverse_v1 metrics</Cite>
             </li>
             <li>
-              Neoverse V2 (Graviton4): the same 4-cycle term, taken 1 cycle from the front end and 3 cycles from the
-              back end. <Cite id="F08-18">Arm Telemetry Solution, neoverse_v2 metrics</Cite>
+              Neoverse V2 (Graviton4): the same 4 cycles, taken 1 from the front end and 3 from the back end, so on
+              Graviton4 the back end is corrected as well.{' '}
+              <Cite id="F08-18">Arm Telemetry Solution, neoverse_v2 metrics</Cite>
             </li>
             <li>
               Neoverse V3 (Graviton5), Cortex-X925 and Cortex-A725: a measured event,{' '}
-              <code>STALL_FRONTEND_FLUSH</code>, the cycles the front end spent recovering from any flush or
-              resteer.{' '}
+              <code>STALL_FRONTEND_FLUSH</code>, the cycles the front end spent recovering from a flush.{' '}
               <Cite id="F08-19">Arm Telemetry Solution, cortex_x925 metrics</Cite>
             </li>
           </ul>
           <Box variant="p">
-            Write <M>c</M> for the recovery time as a share of all cycles. Every cycle has the same <M>S</M> slots,
-            so a share of cycles is also a share of slots and can be moved between buckets directly. On the Neoverse
-            V3, Cortex-X925 and Cortex-A725, with <M>{String.raw`\mathrm{slots}`}</M>,{' '}
-            <M>{String.raw`\mathrm{filled}`}</M> and <M>{String.raw`\mathrm{kept}`}</M> as in the worked example:
+            An uncorrected card on the Neoverse V1 or V3, the Cortex-X925 or the Cortex-A725 therefore reads
+            front-end bound too high and bad speculation too low, by the same amount, and its back-end and retiring
+            shares match Arm&apos;s. On the V2 the back-end share leans high as well, by 3 of the 4 cycles per
+            mispredicted branch. How much depends on the code. The physics-step run did not record{' '}
+            <code>STALL_FRONTEND_FLUSH</code>, so its card cannot be corrected exactly. A second execution of the
+            same program, which counted detail events, did record mispredicted branches, and the V1&apos;s 4 cycles
+            per mispredicted branch give an estimate: <Derived>79,584,976 x 4 / 19,922,115,591 = 1.6</Derived>{' '}
+            points, which would take front-end bound from 12.2% to about 10.6% and bad speculation from 5.6% to about
+            7.2%. The back end stays the largest loss either way. On our branch microbenchmark, a small program that
+            mispredicts far more often per cycle, the same estimate moves 13.2 points: front-end bound from 37.6% to
+            about 24.5% and bad speculation from 11.9% to about 25.1%, so the correction changes which of the two
+            looks larger. The estimate borrows another core&apos;s constant, so it sizes the error without
+            correcting it.{' '}
+            <Cite id="F08-22">our comparison of the run script with Arm&apos;s formulas</Cite>{' '}
+            <Cite id="F08-18">Arm Telemetry Solution, neoverse_v2 metrics; the uncorrected V2 error is our arithmetic</Cite>{' '}
+            <Cite id="F08-23">our estimate of the missing correction</Cite>{' '}
+            <Cite id="F08-60">our run script, two executions per program</Cite>
           </Box>
-          <Formula
-            name="Arm's flush correction, measured form"
-            tex={String.raw`\begin{aligned} &c = \frac{\texttt{STALL\_FRONTEND\_FLUSH}}{\texttt{CPU\_CYCLES}} \\[6pt] &\text{front-end bound} = \\ &\qquad \frac{\texttt{STALL\_SLOT\_FRONTEND}}{\mathrm{slots}} - c \\[6pt] &\text{bad speculation} = \\ &\qquad \mathrm{filled} \times (1 - \mathrm{kept}) + c \end{aligned}`}
-            source={<Cite id="F08-19">Arm Telemetry Solution, cortex_x925 metrics</Cite>}
-          />
+          <ExpandableSection headerText="Arm's corrected formula, term by term">
+            <SpaceBetween size="s">
+              <Box variant="p">
+                Write <M>c</M> for the recovery time as a share of all cycles. Every cycle has the same <M>S</M>{' '}
+                slots, so a share of cycles is also a share of slots and moves between buckets directly. On the
+                Neoverse V3, Cortex-X925 and Cortex-A725, with <M>{String.raw`\mathrm{slots}`}</M>,{' '}
+                <M>{String.raw`\mathrm{filled}`}</M> and <M>{String.raw`\mathrm{kept}`}</M> as before:
+              </Box>
+              <Formula
+                name="Arm's flush correction, measured form"
+                tex={String.raw`\begin{aligned} &c = \frac{\texttt{STALL\_FRONTEND\_FLUSH}}{\texttt{CPU\_CYCLES}} \\[6pt] &\text{front-end bound} = \\ &\qquad \frac{\texttt{STALL\_SLOT\_FRONTEND}}{\mathrm{slots}} - c \\[6pt] &\text{bad speculation} = \\ &\qquad \mathrm{filled} \times (1 - \mathrm{kept}) + c \end{aligned}`}
+                source={<Cite id="F08-19">Arm Telemetry Solution, cortex_x925 metrics</Cite>}
+              />
+              <Box variant="p">
+                The term <M>c</M> leaves front-end bound and enters bad speculation, so the four shares still sum to
+                100%, and back-end bound and retiring keep their generic lines. The Neoverse V1 has the same shape,
+                with <M>c</M> taken as 4 cycles times the mispredicted branches, over the cycle count.{' '}
+                <Cite id="F08-17">Arm Telemetry Solution, neoverse_v1 metrics</Cite>
+              </Box>
+            </SpaceBetween>
+          </ExpandableSection>
           <Box variant="p">
-            The same <M>c</M> leaves one bucket and enters the other, so the four shares still add to 100%. Back-end
-            bound and retiring keep the generic lines. On the Neoverse V1 the only change is how <M>c</M> is
-            obtained: 4 cycles times the count of mispredicted branches, over the cycle count.{' '}
-            <Cite id="F08-17">Arm Telemetry Solution, neoverse_v1 metrics</Cite>
-          </Box>
-          <Box variant="p">
-            For a card this means the label &quot;front-end bound&quot; covers several formulas, and a tool that
-            does not know the core applies the generic one. Linux v7.3 carries per-core files for the Neoverse
-            cores and none for the Cortex-X925 or Cortex-A725, so our reading is that{' '}
-            <code>perf stat --topdown</code> on a DGX Spark prints the uncorrected split.{' '}
-            <Cite id="F08-21">Linux v7.3, perf arm64 per-core directories</Cite> Uncorrected, front-end bound reads
-            too high and bad speculation too low by the same amount, while back-end bound and retiring are the same
-            under both formulas on the V1, V3, X925 and A725.{' '}
-            <Cite id="F08-22">our comparison of the run script with Arm&apos;s formulas</Cite> A card therefore names its formula and
-            its tool version, and two cards are compared on front-end bound only when those match.
+            Which formula a tool applies depends on whether it knows the core. Linux v7.3 (October 2026) carries
+            Arm&apos;s corrected files for the Neoverse cores and none for the Cortex-X925 or Cortex-A725, so{' '}
+            <code>perf stat --topdown</code> on a DGX Spark at that version would print the generic split. The one
+            label, front-end bound, covers at least three formulas on Arm alone. A card names its formula and its
+            tool version, and two cards are compared on front-end bound only when both match.{' '}
+            <Cite id="F08-9">Linux v7.3, perf-stat documentation, --topdown</Cite>{' '}
+            <Cite id="F08-21">Linux v7.3 perf directories; the fallback is our reading</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Pick an instance size that exposes the events before you plan a profiling run">
-            Where you can read counters on EC2
+          <Header
+            variant="h2"
+            description="Rent a size that exposes every event before you plan a profiling run, and know that on most GPU instances a CPU card comes from inside a virtual machine"
+          >
+            On EC2 the instance size decides which counters you get
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
             A counter helps only if the instance lets you read it, and on EC2 that depends on the size. Sizes that
-            hold an entire dedicated processor socket get every PMU event. Smaller sizes of newer generations get a
-            reduced set. Smaller sizes of older generations may get none.{' '}
-            <Cite id="F08-25">AWS Graviton guide, How to Collect PMU counters</Cite> The table gives the sizes with
-            full support. A pattern such as <code>*9g</code> stands for every family of that generation: C9g, M9g
-            and R9g.
+            hold an entire dedicated processor socket get every PMU event; smaller sizes of newer generations get a
+            reduced set; smaller sizes of older generations may get none. The sizes with full support, for Graviton
+            and x86 alike, are in the table, where a pattern such as <code>*9g</code> stands for every family of that
+            generation: C9g, M9g and R9g.{' '}
+            <Cite id="F08-25">AWS Graviton guide, How to Collect PMU counters</Cite>
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 520 }}>
@@ -898,56 +929,68 @@ export function PmuCards() {
             </table>
           </div>
           <Box variant="p">
-            <Cite id="F08-26">AWS Graviton guide, PMU support table</Cite> The page does not list which events the
-            reduced set contains, so plan a top-down run on a size from the middle column. Where the slot events are
-            missing, the same guide falls back to instructions per cycle and to stalled cycles per thousand cycles.
-            That recipe counts whole cycles, so a cycle that moved 2 of 8 slots counts as not stalled, and its
-            figures do not line up with a slot-based card.{' '}
+            <Cite id="F08-26">AWS Graviton guide, PMU support table</Cite> The AWS page does not list which events the
+            reduced set contains, so plan a top-down run on a size with full support. Where the slot events are
+            missing, the same guide&apos;s method falls back to instructions per cycle and to stalled cycles per
+            thousand cycles, a whole-cycle count whose figures do not line up with a slot-based card.{' '}
             <Cite id="F08-29">AWS Graviton guide, Top-down method to debug hardware performance</Cite>
           </Box>
           <Box variant="p">
-            GPU instances add a limit. A metal instance is one with no virtual machine layer between your operating
-            system and the hardware. In the EC2 accelerated-computing table, &quot;Metal instances available&quot;
-            is yes only for G4dn and G5g, so a PMU card for any other GPU instance is the card of a virtual machine.{' '}
-            <Cite id="F08-28">EC2 accelerated computing specifications, instance family summary</Cite> The PMU
-            support table above names no G or P family. Which GPU instance sizes expose which CPU events was not
-            established in this research.
+            A metal instance, one with no virtual machine layer between your operating system and the hardware,
+            exposes every hardware PMU its operating system has drivers for. On Graviton metal that includes two
+            that virtualised sizes do not get: per-instruction sampling, and the counters of the mesh interconnect,
+            which measure the whole machine&apos;s memory bandwidth (and only with certain operating systems and
+            kernels). The
+            bandwidth of the whole machine is therefore a metal-only measurement on Graviton.{' '}
+            <Cite id="F08-27">AWS Graviton guide, Additional PMUs and PMU events</Cite>
+          </Box>
+          <Box variant="p">
+            GPU instances have almost no metal option. In the EC2 accelerated-computing table, &quot;Metal instances
+            available&quot; is yes only for G4dn and G5g, so a CPU card from any other GPU instance comes from a
+            virtual machine, with the event set its size allows and without the metal-only counters. The
+            guide&apos;s PMU table names no G or P family either: read the event list on the GPU size itself before
+            you plan a CPU card there.{' '}
+            <Cite id="F08-28">EC2 accelerated computing specifications, instance family summary</Cite>{' '}
+            <Cite id="F08-26">AWS Graviton guide, PMU support table</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Three tools at three grains: know which one answers 'is the GPU full' and why the utilisation figure does not">
-            The GPU side
+          <Header
+            variant="h2"
+            description="Ask each NVIDIA tool the question it can answer, and see on one measured kernel how a GPU kept busy can still leave its tensor cores idle"
+          >
+            GPU utilisation counts time, not work
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            The four buckets describe one CPU thread. The perf documentation states the limit: &quot;The bottleneck
-            is only the real bottleneck if the workload is actually bound by the CPU and not by something
-            else.&quot; <Cite id="F08-9">Linux v7.3, perf-stat documentation, --topdown</Cite> A training job that
-            waits on its GPU shows a CPU split that says nothing about the GPU. The GPU has no four-bucket method.
-            It has tools at three grains.
+            The four shares describe the CPU thread that was measured, and they name the job&apos;s bottleneck only
+            when the job is bound by that CPU. A training job
+            that waits on its GPU shows a CPU split that says nothing about the GPU. Which side waits for which is a
+            question for a timeline: Nsight Systems, NVIDIA&apos;s whole-application profiler, puts CPU samples, GPU
+            calls and GPU work on one time axis.{' '}
+            <Cite id="F08-9">Linux v7.3, perf-stat documentation, --topdown</Cite>{' '}
+            <Cite id="F08-39">Nsight Systems 2026.6 release notes; its use for this question is our reading</Cite>
           </Box>
           <Box variant="p">
-            Three terms first. A kernel, in GPU work, is one function launched on the GPU, such as a matrix
-            multiply; it has nothing to do with the operating system&apos;s kernel. The SM (streaming
-            multiprocessor) is the GPU&apos;s processing unit, repeated many times across the chip.{' '}
-            <Cite id="F08-36">Nsight Compute Profiling Guide, Streaming Multiprocessor</Cite> Tensor cores are the
-            units inside each SM that do the matrix arithmetic of training and inference.{' '}
-            <Cite id="F08-42">NVIDIA Tensor Cores page; Nsight Compute pipeline glossary</Cite> How a GPU and its
-            memory execute a model is covered in the{' '}
-            <Link href="../silicon-memory-inference/">Silicon, Memory &amp; Inference dive</Link>.
+            A kernel such as a matrix multiply runs on SMs (streaming multiprocessors), the GPU&apos;s processing
+            units, repeated many times across the chip. Tensor cores are units inside each SM with a pipeline of their own for matrix multiply-accumulate
+            instructions, the arithmetic of training and inference.{' '}
+            <Cite id="F08-36">Nsight Compute Profiling Guide, Streaming Multiprocessor</Cite>{' '}
+            <Cite id="F08-42">NVIDIA Tensor Cores page; Nsight Compute pipeline glossary</Cite>
           </Box>
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 680 }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 720 }}>
               <thead>
                 <tr>
                   <th style={TH}>Tool</th>
                   <th style={TH}>Grain</th>
-                  <th style={TH}>What it shows</th>
+                  <th style={TH}>The question it answers</th>
+                  <th style={TH}>What it cannot tell you</th>
                   <th style={TH}>Source</th>
                 </tr>
               </thead>
@@ -956,108 +999,135 @@ export function PmuCards() {
                   <td style={TD}>
                     <code>nvidia-smi</code>
                   </td>
-                  <td style={TD}>The whole GPU, always on</td>
+                  <td style={TD}>The whole GPU, over a sample period of 1/6 s to 1 s</td>
+                  <td style={TD}>Was any kernel running? Were the video encoder and decoder in use?</td>
+                  <td style={TD}>How much of the GPU the kernel used</td>
                   <td style={TD}>
-                    Share of time any kernel was running; separate figures for the video encoder and decoder
-                  </td>
-                  <td style={TD}>
-                    <Cite id="F08-30">nvidia-smi documentation, Utilization</Cite>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>DCGM (Data Center GPU Manager), NVIDIA&apos;s fleet monitoring service; newest tag v4.7.0</td>
-                  <td style={TD}>The whole GPU, sampled across a fleet</td>
-                  <td style={TD}>SM activity, tensor activity, memory activity</td>
-                  <td style={TD}>
-                    <Cite id="F08-32">DCGM User Guide, profiling metrics</Cite>
+                    <Cite id="F08-30">nvidia-smi documentation, Utilization</Cite>{' '}
+                    <Cite id="F08-31">nvidia-smi documentation, Encoder and Decoder</Cite>
                   </td>
                 </tr>
                 <tr>
-                  <td style={TD}>Nsight Systems 2026.6</td>
-                  <td style={TD}>One application on a timeline</td>
                   <td style={TD}>
-                    CPU samples, GPU calls and kernels on one time axis; our reading is that this is the tool that
-                    shows a GPU waiting for the CPU
+                    DCGM (Data Center GPU Manager), NVIDIA&apos;s fleet monitoring service
                   </td>
+                  <td style={TD}>The whole GPU, unit by unit, sampled across a fleet once a second by default</td>
+                  <td style={TD}>Were the SMs active, the tensor pipeline busy, data moving to and from memory?</td>
+                  <td style={TD}>Whether active SMs were computing: threads waiting on memory count as active</td>
                   <td style={TD}>
+                    <Cite id="F08-32">DCGM User Guide, profiling metrics; newest tag v4.7.0</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>Nsight Compute</td>
+                  <td style={TD}>One kernel, replayed to collect more metrics</td>
+                  <td style={TD}>
+                    Which limit holds this kernel, compute or memory bandwidth, and which pipeline inside the SM is
+                    busy?
+                  </td>
+                  <td style={TD}>Whether the GPU is waiting on the CPU</td>
+                  <td style={TD}>
+                    <Cite id="F08-33">Nsight Compute 2026.4.0 Profiling Guide and release notes</Cite>{' '}
+                    <Cite id="F08-34">Nsight Compute Profiling Guide, table of sections</Cite>{' '}
                     <Cite id="F08-39">Nsight Systems release notes</Cite>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>Nsight Compute 2026.4.0</td>
-                  <td style={TD}>One kernel</td>
-                  <td style={TD}>
-                    Compute and memory throughput as a share of the GPU&apos;s maximum; which pipeline inside the SM
-                    is busy
-                  </td>
-                  <td style={TD}>
-                    <Cite id="F08-33">Nsight Compute Profiling Guide and release notes</Cite>{' '}
-                    <Cite id="F08-34">Nsight Compute Profiling Guide, table of sections</Cite>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <Box variant="p">
-            <strong>What nvidia-smi utilisation means.</strong> The GPU figure is the &quot;percent of time over the
-            past sample period during which one or more kernels was executing on the GPU&quot;. It measures time
-            occupied, and one small kernel running back to back reads 100%.{' '}
-            <Cite id="F08-30">nvidia-smi documentation, Utilization</Cite> The same tool reports the video encoder
-            and the video decoder as separate figures.{' '}
-            <Cite id="F08-31">nvidia-smi documentation, Encoder and Decoder</Cite>
+            DCGM splits the GPU by unit. SM activity is the fraction of time at least one group of threads was
+            active on an SM, averaged over all SMs. Threads waiting on memory count as active, which is why NVIDIA
+            calls a value of 0.8 or more &quot;necessary, but not sufficient&quot; for effective use, and says a value
+            under 0.5 &quot;likely indicates ineffective GPU usage&quot;. Tensor activity is the fraction of cycles
+            the tensor pipeline was busy, the direct sign that a job uses its tensor cores. Memory activity is the
+            fraction of cycles in which data moved to or from the GPU&apos;s memory.{' '}
+            <Cite id="F08-32">DCGM User Guide, Device Level GPU Metrics</Cite>
           </Box>
           <Box variant="p">
-            <strong>What DCGM adds.</strong> SM activity is the fraction of time at least one group of threads was
-            active on an SM. Threads waiting on memory count as active, which is why NVIDIA calls a value of 0.8 or
-            greater &quot;necessary, but not sufficient&quot; for effective use. Tensor activity is the fraction of
-            cycles the tensor pipeline was active, the direct sign that tensor cores are in use. Memory activity is
-            the fraction of cycles in which data moved to or from the GPU&apos;s memory.{' '}
-            <Cite id="F08-32">DCGM User Guide, Device Level GPU Metrics</Cite> On EC2 there is a cheaper first
-            signal: since 19 November 2026 Detailed Monitoring can publish one-minute GPU metrics with no agent
-            inside the instance. Which fields it publishes was not read in this research.{' '}
+            Set the two tools side by side on an illustrative GPU with <Toy>100</Toy> SMs, running one small kernel
+            back to back that keeps <Toy>5</Toy> of them busy. nvidia-smi counts the &quot;percent of time over the
+            past sample period during which one or more kernels was executing on the GPU&quot;, and a kernel is always
+            running, so it reads <Toy>100%</Toy>. Five SMs active all the time and the other <Toy>95</Toy> never,
+            averaged over all <Toy>100</Toy>, give an SM activity of <Toy>5 / 100 = 0.05</Toy>, a tenth of the 0.5
+            below which NVIDIA reads the GPU as used ineffectively. Both readings are correct: one counts time, the
+            other the share of the chip at work, and only the second shows that most of the GPU sat idle.{' '}
+            <Cite id="F08-30">nvidia-smi documentation, Utilization</Cite>{' '}
+            <Cite id="F08-32">DCGM User Guide, Device Level GPU Metrics</Cite>
+          </Box>
+          <Box variant="p">
+            On a Jetson, tegrastats prints the time-based kind of figure, &quot;Proportion of GPU activation time in a
+            period&quot;, and adds the memory controller&apos;s bandwidth in use, the reading that shows the CPU and
+            the GPU competing for the one memory they share. Since 19 November 2026, EC2 Detailed Monitoring can
+            also publish one-minute GPU metrics with no agent inside the instance; until you have confirmed that it
+            carries SM activity, take that figure from DCGM.{' '}
+            <Cite id="F08-40">Jetson Linux r39.2.2, Tegrastats Utility</Cite>{' '}
             <Cite id="F08-86">AWS What&apos;s New, EC2 performance status checks</Cite>
           </Box>
           <Box variant="p">
-            <strong>What Nsight Compute adds.</strong> It profiles one kernel and replays it to collect more
-            metrics, so a deep profile costs run time.{' '}
-            <Cite id="F08-33">Nsight Compute Profiling Guide, Sets and Sections</Cite> Its roofline chart plots a kernel&apos;s
-            achieved speed against how much arithmetic it does per byte of memory moved. It is the GPU counterpart
-            of core bound against memory bound: the flat part of the roof is the peak compute limit,
-            the sloped part is the memory bandwidth limit, and where a kernel sits under the roof says which one
-            holds it back. <Cite id="F08-35">Nsight Compute Profiling Guide, Roofline Charts</Cite>
+            Nsight Compute profiles one kernel at a time and replays it to collect more metrics than one pass can
+            hold, so a full profile costs run time, and on a Jetson it must run as root. Its roofline chart plots the
+            kernel&apos;s achieved speed against its arithmetic per byte of memory moved. The sloped part of the roof
+            is the memory bandwidth limit and the flat part the peak compute limit, so where the kernel sits under
+            the roof says which one holds it back: the GPU&apos;s version of memory bound against core bound. The{' '}
+            <Link href="../silicon-memory-inference/">Silicon, Memory &amp; Inference dive</Link> builds the roofline
+            in full.{' '}
+            <Cite id="F08-33">Nsight Compute Profiling Guide, Sets and Sections</Cite>{' '}
+            <Cite id="F08-37">Nsight Compute Profiling Guide, ERR_NVGPUCTRPERM</Cite>{' '}
+            <Cite id="F08-35">Nsight Compute Profiling Guide, Roofline Charts</Cite>
           </Box>
           <Box variant="p">
-            <strong>What has no counter here.</strong> RT (ray-tracing) cores are the GPU units that find what each
-            camera ray hits when a simulator renders an image. NVIDIA&apos;s profiling guide lists &quot;RT Cores,
-            if available&quot; among the units of the GPU, and that list is the only mention: no counter for
-            ray-tracing-core use was located in this research.{' '}
-            <Cite id="F08-36">Nsight Compute Profiling Guide, Streaming Multiprocessor unit list</Cite> A card for
-            a rendering workload carries its frame rate and leaves the ray-tracing row empty.
+            Our one profiled pass on the DGX Spark&apos;s GPU shows what the kernel grain adds. A 4096 x 4096 float32
+            matrix multiply ran as one kernel in 8.35 ms, which is{' '}
+            <Derived>2 x 4096 x 4096 x 4096 / 8.35 ms = about 16,460 GFLOP/s</Derived> (billion floating-point
+            operations per second), at 70.49% of the GPU&apos;s compute throughput and 50.47% of its memory
+            throughput; the profile needed root on the Spark too. The kernel&apos;s name,{' '}
+            <code>cutlass_80_simt_sgemm_128x128_8x4_nn_align1</code>, carries <code>simt</code>, the general
+            floating-point path: the float32 multiply did not go through the tensor pipeline, so this busy kernel
+            says nothing about the tensor cores. Across a fleet, DCGM&apos;s tensor activity is the reading that
+            shows whether a job&apos;s tensor cores are working at all.{' '}
+            <Cite id="F08-71">our Nsight Compute pass on the Spark; the simt reading is ours</Cite>{' '}
+            <Cite id="F08-34">Nsight Compute Profiling Guide, SpeedOfLight</Cite>{' '}
+            <Cite id="F08-32">DCGM User Guide, Tensor Activity</Cite>
+          </Box>
+          <Box variant="p">
+            Two limits apply to the GPU readings. Other engines blur the memory side: the video decoder and the
+            GPU&apos;s other engines share its L2 cache and memory with the SMs, so a small profiled kernel can show
+            memory traffic that is not its own. And RT (ray-tracing) cores, the units that find what each camera ray
+            hits when a simulator renders an image, have no counter in these tools: Nsight Compute&apos;s guide lists
+            &quot;RT Cores, if available&quot; among the SM&apos;s units and gives them no metric, and none of the
+            utilisation or profiling fields of nvidia-smi, DCGM or tegrastats covers them. A card for a rendering workload carries
+            its frame rate and leaves the ray-tracing row empty.{' '}
+            <Cite id="F08-38">Nsight Compute Profiling Guide, shared resources</Cite>{' '}
+            <Cite id="F08-36">Nsight Compute Profiling Guide, Streaming Multiprocessor unit list</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Four questions that turn a card into a statement about which part is saturated, tried on a real one">
-            How to read a card
+          <Header
+            variant="h2"
+            description="Ask four questions in order, each of which stops one way of misreading a card, and finish with the part to buy more of"
+          >
+            Reading the physics-step card
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Here is one real card, drawn the way section 22 draws its cards. It is our measurement, a single run: one
-            Cortex-X925 core of an NVIDIA DGX Spark stepping a MuJoCo humanoid model, the CPU physics workload of
-            section 12, Physics Simulation, with a humanoid standing in for the arm. The numbered markers match the
-            four questions below.
+            The sample card is the CPU physics workload of section 12, Physics Simulation, on one Cortex-X925 core
+            of a DGX Spark, with a MuJoCo humanoid model standing in for the SO-101 arm.{' '}
+            <Cite id="F08-73">limits of our measurements</Cite>
           </Box>
           <Figure
             cites="F08-61 F08-68 F08-73 F08-20 F08-22"
             caption={
               <>
-                Read from the top: what ran and where (1), how fast (2), where the slots went (3), what is behind
-                the largest loss (4), and how the counters were turned into percentages (1 again). Our measurement,
-                single run, on a DGX Spark with MuJoCo 4.0.1; the model was a MuJoCo humanoid.
+                Read the card from the top: what ran and where (1), how fast (2), where the slots went (3) and what
+                lies behind the largest loss (4). The bottom block, also marked 1, finishes the first question with
+                how the counters became percentages. Our measurement, single run: one Cortex-X925 core of a DGX
+                Spark, MuJoCo 4.0.1, a humanoid model.
               </>
             }
           >
@@ -1065,37 +1135,70 @@ export function PmuCards() {
           </Figure>
           <ol style={LIST}>
             <li>
-              <strong>What ran, on which machine, counted how?</strong> The unit of work, the core, the software
-              version, the number of runs, and the formula. This card: one core, one run, and the generic Arm
-              formula, so its front-end figure is on the high side and its bad-speculation figure on the low side.{' '}
-              <Cite id="F08-22">our comparison of the run script with Arm&apos;s formulas</Cite>
+              <strong>What ran, on which machine, and how was it counted?</strong> Two cards compare only when the
+              unit of work, the core, the software version, the number of runs and the formula match, so these come
+              first. This card is one run of MuJoCo 4.0.1 on one X925 core under the generic Arm formula, so its
+              front-end share leans high and its bad-speculation share low, by about 1.6 points if the Neoverse
+              V1&apos;s constant is borrowed. Its memory-stall and instructions-per-cycle figures come from the second execution of the
+              program, and a ratio that mixes them with the slot shares compares two executions.{' '}
+              <Cite id="F08-22">our comparison of the run script with Arm&apos;s formulas</Cite>{' '}
+              <Cite id="F08-23">our estimate of the missing correction</Cite>{' '}
+              <Cite id="F08-60">our run script, two executions per program</Cite>
             </li>
             <li>
-              <strong>How much work per second?</strong> Throughput in the workload&apos;s own unit is the only
-              figure that compares across machines. This card: 57,240 physics steps per second.{' '}
+              <strong>How much work per second?</strong> Throughput in the workload&apos;s own unit is the figure
+              that compares across machines: 57,240 physics steps per second here. It keeps a share from being read
+              as a speed: the Spark&apos;s A725 core retires the larger share, 61.0%, and manages half as many steps,
+              28,662. Section 23, Price-Performance and Latency, turns
+              such a rate into work per price, per watt and per deadline.{' '}
               <Cite id="F08-61">our profiling report, physics step table</Cite>
             </li>
             <li>
-              <strong>Where did the slots go?</strong> Read retiring first, then the largest of the other three.
-              This card: 45.7% of the 10 slots per cycle retire, and the largest loss is the back end at 36.5%.
-              Instructions per cycle, 4.37 here, is the older one-number summary: finished instructions divided by
-              clock cycles.{' '}
+              <strong>Where did the slots go?</strong> Read retiring first, then the largest of the other three. Here
+              45.7% of 10 slots retire, <Derived>4.57</Derived> slots of kept work per cycle, and the back end is the
+              largest loss at 36.5%.{' '}
               <Cite id="F08-61">our profiling report, physics step table</Cite>
             </li>
             <li>
-              <strong>What is behind the largest loss?</strong> For the back end, memory or computation. Memory
-              stall is the share of clock cycles in which a separate counter saw the back end waiting on memory.
-              This card: 0.4% of cycles, so our reading is that the back end is waiting on arithmetic. A faster
-              or wider core would help this workload; more memory bandwidth would not.{' '}
-              <Cite id="F08-61">our profiling report, physics step table</Cite> When a GPU does the work, this
-              question moves to the GPU rows: tensor activity, memory activity, or the roofline.
+              <strong>What is behind the largest loss?</strong> For the back end, memory or the execution units,
+              and the answer decides the purchase: more bandwidth for the first, a faster or wider core for the
+              second. This is the question that keeps a core-bound job off a machine bought for its bandwidth. This
+              card has one figure for it: the event <code>stall_backend_mem</code> counted back-end memory stalls in
+              0.4% of cycles. The two executions ran almost the same number of cycles,{' '}
+              <Derived>19,922,115,591 against 19,958,256,358</Derived>, so even if every cycle it counted lost all 10
+              of its slots, those cycles would hold <Derived>0.4</Derived> of the 36.5 points. What a count of cycles can miss is memory waiting in cycles
+              that still moved some slots. Arm&apos;s level-2 metrics for the X925, A725 and Neoverse V3 split
+              back-end stalls into core-bound and memory-bound directly, and this run counted level 1 only. On the
+              evidence it has, the loss is the execution units: in our reading a faster or wider core would help this
+              workload and more memory bandwidth would not. Instructions per cycle, 4.37, printed beside the stall
+              figure from the same execution, says how much finished, not where the rest went. When a GPU does the
+              work, the question moves to the GPU readings: tensor activity, memory activity, or the kernel&apos;s
+              place on the roofline.{' '}
+              <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
+              <Cite id="F08-60">our run script, the eight detail events</Cite>{' '}
+              <Cite id="F08-23">our estimate of the missing correction, cycles of the detail run</Cite>{' '}
+              <Cite id="F08-70">our recomputation, cycles of the slot run</Cite>{' '}
+              <Cite id="F08-29">AWS Graviton guide, Top-down method to debug hardware performance</Cite>{' '}
+              <Cite id="F08-73">limits of our measurements, level 1 only</Cite>{' '}
+              <Cite id="F08-24">Arm Telemetry Solution, cortex_x925 level-2 metrics</Cite>
             </li>
           </ol>
           <Box variant="p">
-            Put together: on this core, physics stepping is limited by computation in the back end. That is one run
-            of one stand-in model. <Cite id="F08-73">limits of our measurements</Cite> Take the four questions to
-            section 22, Our Measurements, next: its cards cover three workloads on three core types, and each one
-            reads the same way.
+            To read a machine for your own workload, as section 22, Our Measurements, does for three stand-in
+            workloads on three core types, pick one that exposes the slot events (on EC2, a size with full
+            support) and run the workload under <code>perf stat</code> with the six slot events:{' '}
+            <code>cpu_cycles</code>, <code>stall_slot</code>, <code>stall_slot_frontend</code>,{' '}
+            <code>stall_slot_backend</code>, <code>op_spec</code> and <code>op_retired</code>. Add{' '}
+            <code>STALL_FRONTEND_FLUSH</code> where the core&apos;s formula uses it, and the level-2 events where the
+            core&apos;s file defines them, so that the fourth question ends on a measurement. Run it more than once
+            and record the spread, since a single run cannot show whether a difference of 1.6 points is above the
+            noise. Then sort the slots into the four buckets and ask
+            the four questions in order.{' '}
+            <Cite id="F08-60">our run script, the six top-down events</Cite>{' '}
+            <Cite id="F08-23">our estimate of the missing correction</Cite>{' '}
+            <Cite id="F08-73">limits of our measurements, single run, no variance</Cite>{' '}
+            <Cite id="F08-19">Arm Telemetry Solution, cortex_x925 metrics</Cite>{' '}
+            <Cite id="F08-24">Arm Telemetry Solution, cortex_x925 level-2 metrics</Cite>
           </Box>
         </SpaceBetween>
       </Container>
