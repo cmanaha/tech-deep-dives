@@ -22,7 +22,7 @@ export const sections = [
   { id: 'workloads', title: '20. Fifteen Workloads, Five Shapes' },
   { id: 'pmu-cards', title: '21. Reading a Machine: The Counters That Say Which Part Is Full' },
   { id: 'measurements', title: '22. Our Measurements: The Speed-Up Depends on the Part That Runs Out First' },
-  { id: 'price-performance', title: '23. Price-Performance and Latency: One Unit of Work per Workload' },
+  { id: 'price-performance', title: '23. Price-Performance and Latency: When the Faster Machine Is the Better Buy' },
   { id: 'aws-orchestration', title: '24. Orchestrating Physical AI on AWS' },
   { id: 'aws-batch', title: '25. AWS Batch' },
   { id: 'aws-pcs', title: '26. AWS Parallel Computing Service' },

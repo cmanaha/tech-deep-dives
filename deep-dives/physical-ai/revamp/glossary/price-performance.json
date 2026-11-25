@@ -72,7 +72,7 @@
  {
   "term": "Part a workload exhausts first",
   "expansion": null,
-  "meaning": "The resource that fills while the rest of the machine sits partly idle; a workload is priced on the instance built around that part. For the policy stand-in it is memory bandwidth."
+  "meaning": "The resource that fills while the rest of the machine sits partly idle; a workload is priced on the instance built around that part. For the policy stand-in on the Jetson core it is memory bandwidth."
  },
  {
   "term": "G family",
@@ -102,12 +102,12 @@
  {
   "term": "TensorRT",
   "expansion": null,
-  "meaning": "NVIDIA's inference compiler, the runtime behind its 149.0 ms Jetson Orin median for GR00T N1.7."
+  "meaning": "NVIDIA's inference compiler; NVIDIA's GR00T N1.7 median on a Jetson Orin is 149.0 ms with it and 357.9 ms in plain PyTorch."
  },
  {
   "term": "tegrastats",
   "expansion": null,
-  "meaning": "The Jetson's own command-line monitor of power and load; its VDD_IN rail covers the whole board."
+  "meaning": "The Jetson's built-in monitor, which prints the power drawn on each supply line (rail) of the board; its VDD_IN rail feeds the whole board."
  },
  {
   "term": "nvidia-smi",
@@ -137,6 +137,46 @@
  {
   "term": "Like-for-like checks",
   "expansion": null,
-  "meaning": "The three conditions under which a ratio of two rates belongs to the two machines: the same unit, the same model and the same software release."
+  "meaning": "The three conditions under which a ratio of two rates belongs to the two machines: the same unit, the same model and the same software release (and, for a vendor's figure, the same runtime and power mode)."
+ },
+ {
+  "term": "Per-core speed ratio",
+  "expansion": null,
+  "meaning": "The ratio of two rates each measured on one core; it stands for the ratio of the machines only for a job that keeps one core busy."
+ },
+ {
+  "term": "Rail (power)",
+  "expansion": null,
+  "meaning": "One supply line on a board; tegrastats reports power per rail, and on a Jetson the VDD_IN rail feeds the whole board."
+ },
+ {
+  "term": "VDD_IN",
+  "expansion": null,
+  "meaning": "The tegrastats rail that feeds the whole Jetson board; the one to read for whole-board watts."
+ },
+ {
+  "term": "Power mode",
+  "expansion": null,
+  "meaning": "The setting a Jetson runs in; NVIDIA's GR00T N1.7 figures were taken in MAXN, our Jetson ran in MAXN_SUPER, and a figure is recorded with its mode."
+ },
+ {
+  "term": "vCPU",
+  "expansion": "virtual CPU",
+  "meaning": "The CPU unit EC2 lists; on most eight-GPU sizes two vCPUs are two threads of one physical core, on G7 one vCPU is one core."
+ },
+ {
+  "term": "torch.compile",
+  "expansion": null,
+  "meaning": "PyTorch's own compiler, one of the runtimes in NVIDIA's GR00T N1.7 latency table."
+ },
+ {
+  "term": "Dense layer",
+  "expansion": null,
+  "meaning": "A neural-network layer that multiplies its input by a weight matrix, so every output depends on every input; the policy stand-in is six of them run on one CPU core."
+ },
+ {
+  "term": "Local real-time chunking",
+  "expansion": null,
+  "meaning": "A LeRobot mode that runs the policy in a background thread of the process driving the arm; if the arm runs out of actions, a supported robot holds its last commanded position for up to one second by default, then the run stops with a fault."
  }
 ]
