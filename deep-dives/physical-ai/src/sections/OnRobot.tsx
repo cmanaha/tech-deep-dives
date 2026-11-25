@@ -643,7 +643,7 @@ export function OnRobot() {
             A large robot policy can answer four or five control periods late and still keep the {ARM} supplied
             with an action on every tick as it works to {TASK_STORY}. Take GR00T N1.7, NVIDIA&apos;s robot policy, on a Jetson Orin, a small computer
             built to ride on a robot. Compiled with TensorRT, NVIDIA&apos;s inference compiler, one call takes a
-            median of 149.0 ms in NVIDIA&apos;s benchmark. The arm&apos;s loop plays one
+            median of 149.0 ms in NVIDIA&apos;s benchmark, which does not name the Orin module. The arm&apos;s loop plays one
             action every 33.3 ms, its control period (section 3, The Robot as a Computer), so one call spans 149.0 /
             33.3 = 4.5 periods.{' '}
             <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>
@@ -820,9 +820,10 @@ export function OnRobot() {
             Do this arithmetic again with your own call, timed on the software you will run, because the Orin
             figure and LeRobot&apos;s settings come from different stacks. NVIDIA timed GR00T N1.7 on its own
             TensorRT path, which on an Orin needs JetPack 7.2 (JetPack is NVIDIA&apos;s bundle of Linux, GPU drivers
-            and libraries for Jetsons), while LeRobot&apos;s Jetson container targets JetPack 6.2; and LeRobot,
-            though it wraps GR00T N1.7, gives its RTC settings for three other vision-language-action policies of
-            section 5, SmolVLA, pi0 and pi0.5.{' '}
+            and libraries for Jetsons), while LeRobot&apos;s Jetson container targets JetPack 6.2; and LeRobot
+            v0.7.0, though it wraps GR00T N1.7, attaches its RTC configuration to pi0, pi0.5, pi0-FAST and SmolVLA,
+            so the RTC values worked below are the arithmetic for any policy with GR00T&apos;s call time, not a GR00T
+            setup LeRobot documents.{' '}
             <Cite id="F07-5">Isaac-GR00T deployment README, benchmark table</Cite>{' '}
             <Cite id="F07-9">Isaac-GR00T deployment README, platform setup</Cite>{' '}
             <Cite id="F07-34">LeRobot installation guide, Jetson note</Cite>{' '}
@@ -1030,7 +1031,7 @@ export function OnRobot() {
             Two more settings shape the pull. <code>max_guidance_weight</code> caps how hard it holds the new chunk
             to the old one, 10.0 by default, the value LeRobot gives for the 10-step flow matching of SmolVLA, pi0
             and pi0.5. The GR00T call in NVIDIA&apos;s benchmark takes four denoising steps, and LeRobot&apos;s guide
-            gives no value for a four-step head, so treat 10.0 as a starting point and sweep it on your arm. The
+            gives no value for a four-step head, so on such a policy treat 10.0 as a starting point and sweep it. The
             shape of the decay is{' '}
             <code>prefix_attention_schedule</code>, and the code and the documentation disagree on it. The code
             defaults to <code>LINEAR</code>, with a to-do comment to change it; the documentation recommends{' '}
@@ -1112,7 +1113,7 @@ export function OnRobot() {
             patterns, so an FP4 number can take a handful of values, and a layer quantised to it needs those few
             values placed where its numbers lie. NVFP4 is that FP4 with a scale factor per block of numbers, which
             fits the handful to each block&apos;s own range, and the Blackwell-generation GPU in Thor runs it natively.
-            NVIDIA credits the per-block scaling with 4-bit quantisation &quot;without the accuracy collapse you would
+            NVIDIA credits NVFP4, floating point with a scale per block, with 4-bit quantisation &quot;without the accuracy collapse you would
             get from 4-bit integer formats&quot;.{' '}
             <Cite id="F07-81">TensorRT documentation, quantized types</Cite>{' '}
             <Cite id="F07-58">Jetson AI Lab, GR00T N1.7 on Thor tutorial</Cite>
@@ -1207,12 +1208,15 @@ export function OnRobot() {
             On a Jetson the CPU and the GPU share one pool of memory, and that pool holds everything: the operating
             system, the control loop, the camera frames and the policy&apos;s weights. The smallest board, the Jetson
             Orin Nano Super Developer Kit, has 8 GB in that pool, at 102 GB/s. pi0.5, the policy of NVIDIA&apos;s
-            Thor tutorial, needs about 6 GB or more for its weights alone, so a policy of that size leaves little of
-            the board for anything else. Bandwidth sets a lower bound too: a call reads every weight at least once,
-            so at that size and 102 GB/s it takes at least 6 / 102 = <Derived>59</Derived> ms, almost two control periods, before any
-            arithmetic.{' '}
+            Thor tutorial, lists about 6 GB or more of weights among its storage prerequisites, at a precision the
+            tutorial does not state, and GR00T N1.7 is about 3 billion parameters in BF16, about{' '}
+            <Derived>6</Derived> GB at two bytes each. Loaded at that size, a policy leaves little of the board for
+            anything else. Bandwidth sets a lower bound too: a call reads every weight at least once, so at 6 GB and
+            102 GB/s it takes at least 6 / 102 = <Derived>59</Derived> ms, almost two control periods, before any
+            arithmetic; an engine quantised to fewer bits reads fewer bytes and lowers the bound.{' '}
             <Cite id="F07-36">NVIDIA Jetson Orin Nano Super Developer Kit page</Cite>{' '}
-            <Cite id="F07-54">Jetson AI Lab, OpenPi on Thor tutorial, prerequisites</Cite>
+            <Cite id="F07-54">Jetson AI Lab, OpenPi on Thor tutorial, prerequisites</Cite>{' '}
+            <Cite id="F02-42">Isaac-GR00T hardware recommendation</Cite>
           </Box>
           <Box variant="p">
             That bound is a minimum, and the figure to plan with is a timed call. For the smallest board there is
@@ -1227,7 +1231,7 @@ export function OnRobot() {
             the performance of the AGX Orin, and the Thor&apos;s memory bandwidth is 273 / 204.8 ={' '}
             <Derived>1.33</Derived> times the AGX Orin 64GB&apos;s. A third-party paper measured GR00T N1.7 at 209.9
             ms on an AGX Orin and 101.1 ms on an AGX Thor, <Derived>2.08</Derived> times, with an older software
-            stack and only the action head compiled, and NVIDIA&apos;s own table gives 1.94 times for its Orin: far below the peak claim, and above the bandwidth ratio.{' '}
+            stack and only the action head compiled, and NVIDIA&apos;s own table gives 1.94 times for its unnamed Orin: if that is an AGX Orin, as is likely but not stated, far below the peak claim and above the bandwidth ratio.{' '}
             <Cite id="F07-39">NVIDIA Jetson Thor page, specifications</Cite>{' '}
             <Cite id="F07-35">NVIDIA Jetson Orin page, specifications</Cite>{' '}
             <Cite id="F07-73">Perturbation Informed Execution paper, table 6</Cite>{' '}
@@ -1236,8 +1240,8 @@ export function OnRobot() {
           </Box>
           <Box variant="p">
             The DGX Spark has the Thor&apos;s 128 GB at 273 GB/s and is still slower on this policy, 116.6 ms against
-            76.8 ms compiled in the same table, so budget on a board&apos;s timed call, not on its memory. NVIDIA
-            gives no reason for the gap. One difference the guide does state is software: the Spark runs a
+            76.8 ms compiled in the same table, so budget on a board&apos;s timed call, not on its memory. NVIDIA&apos;s
+            README gives no reason for the gap. One difference the guide does state is software: the Spark runs a
             separate dependency stack, on the older TensorRT pinned for it. Served from the desk, it also pays the
             network, 6.89 ms to 21.20 ms in the measured chain.{' '}
             <Cite id="F07-47">DGX Spark User Guide, hardware overview</Cite>{' '}
@@ -1353,17 +1357,17 @@ export function OnRobot() {
             the four recipes on AWS&apos;s &quot;Run a Docker container&quot; page passes a GPU or device flag. Two AWS
             sample repositories pass <code>--runtime nvidia</code> for the GPU on a Jetson, and NVIDIA&apos;s command
             for its GR00T container on Jetson and DGX Spark passes <code>--runtime nvidia --gpus all</code>; the
-            samples give no flags for a DGX Spark. The camera and the servo bus can be passed with Docker&apos;s{' '}
+            samples give no flags for a DGX Spark. Each camera and the servo bus can be passed with its own Docker{' '}
             <code>--device</code> flag, which no AWS page read shows.{' '}
             <Cite id="F07-156">Greengrass developer guide, Run a Docker container, all recipes</Cite>{' '}
             <Cite id="F07-157">AWS samples: genai-at-edge recipe and the Physical AI Toolchain edge stack</Cite>{' '}
             <Cite id="F07-11">Isaac-GR00T deployment README, shared Docker workflow</Cite>
           </Box>
           <Snippet
-            title="The policy's docker run line: the AWS samples' Jetson flags, plus the camera and the servo bus"
+            title="The policy's docker run line: the AWS samples' Jetson flags, plus one camera and the servo bus"
             mode="adapted"
             source={<Cite id="F07-157">AWS samples: genai-at-edge recipe and the Physical AI Toolchain edge stack</Cite>}
-            ours={<>the two <code>--device</code> paths; the line has not been run on a device</>}
+            ours={<>the two <code>--device</code> paths, for one camera and the servo bus; a second camera, as on the two-camera arm of LeRobot&apos;s RTC example, takes another <code>--device</code> flag; the line has not been run on a device</>}
           >
             {RUN_LINE}
           </Snippet>

@@ -430,8 +430,8 @@ export function AgentsLoop() {
           </Box>
           <Box variant="p">
             Every idea follows one order, set in the repository&apos;s instruction file, and the order spends robot
-            time last, because on hardware the budget of real attempts, not compute, is the loop&apos;s scarcest
-            input. The agent records one hypothesis that real attempts could prove wrong, makes the smallest
+            time last. On hardware, the authors write, the binding resource is &quot;the agent&apos;s robot-access
+            budget, not its compute&quot;. The agent records one hypothesis that real attempts could prove wrong, makes the smallest
             change to the policy side that tests it, and runs the unit tests and an offline evaluation. Only then does
             it run the approved number of real attempts. It reads the result file, the metrics and the video, and
             keeps the change only if it passes the configured gates: enough successes, and no regression on what
@@ -779,7 +779,7 @@ export function AgentsLoop() {
             variant="h2"
             description="Find what an eight-robot fleet waited on, and budget tokens, the cost the authors found growing faster than the fleet"
           >
-            Eight robots bought less than four times the speed, because the agents set the pace
+            Eight robots bought less than four times the speed, and the robots waited on the agents
           </Header>
         }
       >
@@ -795,9 +795,9 @@ export function AgentsLoop() {
             <Cite id="F04-4">ENPIRE paper, appendix B.1, figure 10</Cite>
           </Box>
           <Box variant="p">
-            The prompt&apos;s objective gives the smaller figure. On pin insertion, the authors report the time to
-            complete it as 4.5 hours with one agent and 2.0 with eight,{' '}
-            <Derived>4.5 / 2.0 = 2.25</Derived> times faster.{' '}
+            The prompt&apos;s objective gives a smaller speed-up still. On pin insertion, the authors report the time
+            to complete it as 4.5 hours with one agent and 2.0 with eight,{' '}
+            <Derived>4.5 / 2.0 = 2.25</Derived> times faster, against 3.7 to the first target.{' '}
             <Cite id="F04-20">ENPIRE project page, chart data</Cite>
           </Box>
           <Box variant="p">
@@ -810,14 +810,13 @@ export function AgentsLoop() {
             <Cite id="F04-19">ENPIRE project page, utilisation chart data, and paper section 2.2</Cite>
           </Box>
           <Box variant="p">
-            The cause is the agent&apos;s pace. A robot waits while its agent reads logs, writes code, debugs or waits
+            The robots waited on the agents. A robot waits while its agent reads logs, writes code, debugs or waits
             for its language model, and as the fleet grows, agents spend more of their time summarising each
             other&apos;s branches and less operating the robot. They &quot;may also fail to launch parallel training
-            sessions to exhaust GPU resources&quot;. So the robots did not set the fleet&apos;s pace; the agents did,
-            and left the robots idle more than half the time at every fleet size. What stays scarce on hardware, in
-            the authors&apos; words &quot;the agent&apos;s robot-access budget, not its compute&quot;, is the number of
-            real attempts each idea may spend, a number the operator approves in advance. That cap binds even while
-            robot hours go unused.{' '}
+            sessions to exhaust GPU resources&quot;. So the robots stood idle more than half the time at
+            every fleet size. The robot-access budget the authors call binding is a count: the real attempts each
+            idea may spend, which the operator approves in advance, and a count set in advance limits each idea
+            however long the robot sits idle.{' '}
             <Cite id="F04-21">ENPIRE paper, sections 4 and 5.2</Cite>{' '}
             <Cite id="F04-9">ENPIRE repository, autoresearch_instruction.md</Cite>{' '}
             <Cite id="F04-19">ENPIRE project page, utilisation chart data</Cite>
@@ -871,7 +870,7 @@ export function AgentsLoop() {
             <Cite id="F04-22">ENPIRE paper, appendix C.2, figure 13</Cite>
           </Box>
           <Box variant="p">
-            If the agents set the pace, so does the choice of agent program and language model. On the same
+            With the robots waiting on the agents, the choice of agent program and language model moves the pace too. On the same
             simplified task, the ENPIRE authors timed three pairings of agent program and model, one run each: first success came after 54.41 minutes with
             Codex driving GPT-5.5, 62.01 with Claude Code driving Opus 4.7, and 105.00 with Codex driving Opus 4.7.
             The slowest pairing took <Derived>105.00 / 54.41 = 1.9</Derived> times as long as the fastest.{' '}
