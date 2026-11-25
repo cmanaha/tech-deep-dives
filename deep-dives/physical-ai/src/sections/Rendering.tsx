@@ -448,9 +448,9 @@ export function Rendering() {
             <Cite id="F06-50">Isaac Lab v3.0.0 docs, renderers</Cite>
           </Box>
           <Box variant="p">
-            Newton Warp pairs with Newton or with PhysX, the physics engine inside Isaac Sim, and only the pairing
-            with Newton, with no Isaac Sim underneath, leaves the job with no documented RT-core requirement.
-            Either pairing gives up reflections and indirect light.{' '}
+            Newton Warp pairs with Newton, with OvPhysX (PhysX as a standalone library) or with Isaac Sim&apos;s
+            PhysX. Paired with Newton, with no Isaac Sim underneath, it leaves the job with no documented RT-core
+            requirement. Every pairing gives up reflections and indirect light.{' '}
             <Cite id="F06-50">Isaac Lab v3.0.0 docs, renderers</Cite>{' '}
             <Cite id="F06-52">Isaac Sim 6.2.0 requirements</Cite>
           </Box>
@@ -617,7 +617,7 @@ export function Rendering() {
             <Cite id="F06-103">Isaac Lab v3.0.0 benchmark README</Cite>
           </Box>
           <Box variant="p">
-            Per environment, memory spans more than four orders of magnitude, from the physics state alone to one
+            Per environment, memory spans about four orders of magnitude, from the physics state alone to one
             full-fidelity camera:
           </Box>
           <ul style={LIST}>

@@ -756,7 +756,8 @@ export function SimToReal() {
             <Cite id="F06-77">Isaac Sim 6.2.0 docs, neural volume rendering</Cite> It does not support GPUs without
             RT cores, the ray-tracing units, and names the A100 and H100 among them, so on those GPUs the documented
             route left for a scanned scene is MuJoCo Warp&apos;s renderer, which asks for no RT cores, though no
-            vendor sentence names the A100 or H100 as supported for it (section 13, Rendering and Ray Tracing).{' '}
+            vendor sentence naming the A100 or H100 as supported for it was located in this research (section 13,
+            Rendering and Ray Tracing).{' '}
             <Cite id="F06-52">Isaac Sim 6.2.0 docs, requirements</Cite>
           </Box>
         </SpaceBetween>
