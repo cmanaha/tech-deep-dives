@@ -33,7 +33,7 @@ export const SECTIONS: SectionRef[] = [
   { id: 'fleet', title: '18. The Fleet: A 6 GB Policy, a 2 GB Package and No Reverse Gear' },
   { id: 'agents', title: '19. Agents Running the Loop: What the Agent May Touch and Who Grades It' },
   { id: 'workloads', title: '20. Fifteen Workloads, Five Shapes' },
-  { id: 'pmu-cards', title: '21. Reading a Machine: Counters Tell a Core Limit From a Memory Limit' },
+  { id: 'pmu-cards', title: '21. Reading a Machine: Count Where the Cycles Go Before Buying a Faster Part' },
   { id: 'measurements', title: '22. Our Measurements: The Speed-Up Depends on the Part That Runs Out First' },
   { id: 'price-performance', title: '23. Price-Performance and Latency: When the Faster Machine Is the Better Buy' },
   { id: 'aws-orchestration', title: '24. Orchestrating Physical AI on AWS' },

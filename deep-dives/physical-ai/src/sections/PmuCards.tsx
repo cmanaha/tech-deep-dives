@@ -424,7 +424,7 @@ export function PmuCards() {
             variant="h1"
             description="Find the part of a machine a job is waiting on, from four percentages a core's counters give and from the GPU's unit counters, before you pay for more of the wrong part (sources read 2026-11-20)"
           >
-            21. Reading a Machine: Counters Tell a Core Limit From a Memory Limit
+            21. Reading a Machine: Count Where the Cycles Go Before Buying a Faster Part
           </Header>
         }
       >
@@ -575,8 +575,7 @@ export function PmuCards() {
               <Cite id="F08-24">Arm Telemetry Solution, cortex_x925 level-2 metrics</Cite>
             </li>
             <li>
-              <strong>Back-end bound</strong> splits at the second level into the memory bound and core bound of the
-              opening. Core bound covers two cases: execution units that are busy, and operations that each wait for
+              <strong>Back-end bound</strong> splits at the second level into memory bound and core bound. Core bound covers two cases: execution units that are busy, and operations that each wait for
               the result of the one before, as in a chain of long floating-point operations. The question is which
               of the two, and for a memory-bound job, whether its loads wait on the core&apos;s data caches
               or on main memory.{' '}
@@ -771,8 +770,8 @@ export function PmuCards() {
           <Box variant="p">
             Kept slots per cycle still do not close the gap. They differ by <Derived>4.57 / 3.05 = 1.5</Derived>{' '}
             times and steps per second by <Derived>57,240 / 28,662 = 2.0</Derived>. The remaining factor, about{' '}
-            <Derived>2.0 / 1.5 = 1.33</Derived>, is what a per-cycle share leaves out: each core&apos;s clock, and
-            the micro-operations each needs per step. To split the two, record the run&apos;s duration and step count
+            <Derived>2.0 / 1.5 = 1.33</Derived>, is what a per-cycle share leaves out: each core&apos;s clock, which
+            the cards do not record, and the micro-operations each needs per step. To split the two, record the run&apos;s duration and step count
             beside its cycle and micro-operation counts.{' '}
             <Cite id="F08-61">our profiling report, physics step table</Cite>
           </Box>
@@ -995,9 +994,9 @@ export function PmuCards() {
                   counted level 1 only. Its one memory figure is the event <code>stall_backend_mem</code>, which
                   counted back-end memory stalls in 0.4% of cycles. The two executions ran almost the same number of
                   cycles (<Derived>19,922,115,591 and 19,958,256,358</Derived>), so even if every cycle it counted
-                  lost all 10 of its slots, those cycles would hold <Derived>0.4</Derived> of the 36.5 points. That
-                  rules out the stalls it counts as a real part of the loss, and leaves open memory waits in
-                  cycles that still moved some slots, which the event does not count.{' '}
+                  lost all 10 of its slots, those cycles would hold <Derived>0.4</Derived> of the 36.5 points. So
+                  whole-cycle memory stalls are too few to matter. Memory waits in cycles that still moved some slots
+                  are not counted by this event, so they stay open.{' '}
                   <Cite id="F08-61">our profiling report, physics step table</Cite>{' '}
                   <Cite id="F08-60">our run script, the eight detail events</Cite>{' '}
                   <Cite id="F08-23">our estimate of the missing correction, cycles of the detail run</Cite>{' '}
@@ -1018,8 +1017,8 @@ export function PmuCards() {
                   <Cite id="F08-67">our profiling report, latency rows</Cite>
                 </Box>
                 <Box variant="p">
-                  The bound and the comparison both point at the core rather than at main memory, and a faster core is the purchase this card
-                  supports. Whether a wider core, one with more slots per cycle, would help as well stays open: core
+                  The comparison points at the core; the level-1 counters are consistent with it and cannot decide it
+                  alone, and a faster core is the purchase this card supports. Whether a wider core, one with more slots per cycle, would help as well stays open: core
                   bound covers execution units that are busy and operations that wait on each other&apos;s results,
                   and a level-1 count sees neither. Inside the core, the execution units and the caches also remain
                   to be told apart. A refill is
@@ -1325,7 +1324,8 @@ export function PmuCards() {
           </Box>
           <Box variant="p">
             The kernel&apos;s name, <code>cutlass_80_simt_sgemm_128x128_8x4_nn_align1</code>, carries{' '}
-            <code>simt</code>, the general floating-point path: the float32 multiply did not go through the tensor
+            <code>simt</code> (single instruction, multiple threads, the ordinary CUDA-core path), the general
+            floating-point path: the float32 multiply did not go through the tensor
             pipeline, so this busy kernel says nothing about the tensor cores. To see that pipeline, read DCGM&apos;s
             tensor activity across a fleet, or Nsight Compute&apos;s per-pipeline figures for one kernel.{' '}
             <Cite id="F08-71">our Nsight Compute pass on the Spark; the simt reading is ours</Cite>{' '}
