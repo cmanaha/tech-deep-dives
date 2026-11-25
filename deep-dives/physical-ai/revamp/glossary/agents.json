@@ -25,19 +25,19 @@
   "meaning": "In ENPIRE, two robot arms, three cameras, one workstation with one GPU and one coding agent; the fleet has eight."
  },
  {
-  "term": "Trial",
+  "term": "Attempt",
   "expansion": null,
-  "meaning": "One attempt at the task, from a reset until the policy succeeds, fails or runs out of time; section 16 also calls it an episode or a rollout."
+  "meaning": "One try at the task, ending when the policy succeeds, fails or runs out of time; section 16's success rate is the share of single attempts that succeed."
  },
  {
   "term": "Rollout (in pass@8)",
   "expansion": null,
-  "meaning": "In ENPIRE's headline score, one reset followed by up to eight attempts, each made after seeing the previous failure."
+  "meaning": "In ENPIRE's headline score, a run of up to eight attempts at the task, each made after seeing the previous failure."
  },
  {
   "term": "pass@k",
   "expansion": null,
-  "meaning": "The share of rollouts with a success within k attempts; pass@1 is the first-try rate and pass@8 a measure of recovery."
+  "meaning": "The share of rollouts with a success within k attempts. pass@1 is the first-try rate; pass@8 counts first tries and retries together and cannot be split into the two without the first-try rate."
  },
  {
   "term": "Best-of-N sampling",
@@ -47,12 +47,12 @@
  {
   "term": "Verifier (success check, grader)",
   "expansion": null,
-  "meaning": "Code that returns pass or fail for one trial; its verdict is the grade the agent works to raise. In ENPIRE the agent writes it once with a person and it is then frozen."
+  "meaning": "Code that returns pass or fail for one attempt; its verdict is the grade the agent works to raise. In ENPIRE the agent writes it once with a person and it is then frozen."
  },
  {
   "term": "Reset",
   "expansion": null,
-  "meaning": "The routine that puts the scene back so the next trial can start; whoever controls it chooses the test."
+  "meaning": "The routine that sets the scene for the next attempt; whoever controls it chooses the test, and in an agent's hands it is a free retry."
  },
  {
   "term": "Frozen",
@@ -62,12 +62,17 @@
  {
   "term": "Precision",
   "expansion": null,
-  "meaning": "Of the trials a check passes, the share that truly succeeded; the bar that keeps false passes, which an optimising agent can chase, out of the grade."
+  "meaning": "Of the attempts a check passes, the share that truly succeeded; the bar that keeps false passes, which an optimising agent can chase, out of the grade. It moves with the policy's true success rate; the share of failures the check passes belongs to the check."
  },
  {
   "term": "Recall",
   "expansion": null,
-  "meaning": "Of the trials that truly succeeded, the share a check passes."
+  "meaning": "Of the attempts that truly succeeded, the share a check passes."
+ },
+ {
+  "term": "Vision-language model",
+  "expansion": null,
+  "meaning": "A language model that also reads images; used as a general success judge it leans toward declaring success."
  },
  {
   "term": "Balanced accuracy",
@@ -93,11 +98,6 @@
   "term": "AgenticRobotics",
   "expansion": null,
   "meaning": "A 2026 single-author preview preprint in which a language-model controller owns measurement and the keep-or-discard decision, with a statistical gate on promotion."
- },
- {
-  "term": "SimEX",
-  "expansion": null,
-  "meaning": "A 2026 loop that does the agent's trial and error in simulation before spending a few real-robot trials."
  },
  {
   "term": "AdaRSI",
