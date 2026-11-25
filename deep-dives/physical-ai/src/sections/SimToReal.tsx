@@ -7,7 +7,7 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import { Cite, Toy, Derived } from '../components/Cite';
 import { AnimatedFigure } from '../components/Figure';
 import { Formula, M } from '../components/Math';
-import { ARM, TASK_STORY, SIM_TASK, SIM_TASK_PLAIN, SIM_TASK_GAP } from '../lib/task';
+import { ARM, SIM_TASK, SIM_TASK_PLAIN, SIM_TASK_GAP } from '../lib/task';
 import { Capture, MUJOCO_SO101 } from '../components/Capture';
 
 /* Palette shared across the dive (revamp/diagram-plan.md, section 1). */
@@ -21,7 +21,6 @@ const NEUTRAL_INK = '#5f6b7a';
 /** Keeps a narrow, phone-first drawing from growing oversized on a wide screen. */
 const NARROW: CSSProperties = { maxWidth: 560, margin: '0 auto' };
 
-const LIST: CSSProperties = { margin: 0, paddingLeft: 22 };
 const TH: CSSProperties = { textAlign: 'left', padding: '6px 10px', borderBottom: '2px solid #5f6b7a', verticalAlign: 'bottom' };
 const TD: CSSProperties = { padding: '6px 10px', borderBottom: '1px solid #d5dbdb', verticalAlign: 'top' };
 
@@ -188,7 +187,7 @@ export function SimToReal() {
         header={
           <Header
             variant="h1"
-            description="Know why a policy that works in simulation fails on the bench, and the two ways to close the gap (MuJoCo Playground v1.0.1 and MuJoCo 4.0, sources read 2026-11-20)"
+            description={`Tell which simulator settings a policy has to be trained across and which ones you can measure on the arm, and fit the ${ARM}'s 24 servo parameters from one teleoperated episode (MuJoCo Playground v1.0.1 and MuJoCo 4.0, sources read 2026-11-20)`}
           >
             14. Sim-to-Real and Real-to-Sim: Widen the Simulator or Measure the Arm
           </Header>
@@ -196,87 +195,23 @@ export function SimToReal() {
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            A simulator is a guess about the world. The physics step of section 12 and the camera image of section 13
-            both run on parameters someone typed in: how hard a servo pushes, how slippery a fingertip is, where the
-            light stands. Sim-to-real is the work of making a policy trained on that guess hold up on the real arm.
-            There are two ways to do it, and they are used together. Vary the guess until the real arm falls inside
-            it, or measure the real arm and correct the guess. For the {ARM} the second way is a shipped script that
-            fits 24 servo parameters from one teleoperated episode.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="What the gap looks like at the bench, before it has a name">
-            It worked in simulation
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            The story of this dive is an {ARM} that has to {TASK_STORY}. Section 8 trained a policy for the first
-            half of it on thousands of simulated arms, and on the screen it lifts the cube almost every time. You
-            copy the weights to the laptop that drives the real arm, put a block on the table and start it. The arm
-            reaches out, lowers, and the gripper closes a finger&apos;s width beside the block. It lifts nothing,
-            goes back, and does the same thing again.
+            A simulator is a set of typed-in numbers, and a policy trained in one learns those numbers along with
+            the task. The stiffness of each servo, the friction of each fingertip, the delay on each command and the
+            colour of the light all sit in the scene&apos;s model file or the task&apos;s code (section 12, Physics
+            Simulation), and the real {ARM} differs a little from every one. A policy
+            survives the move to the real arm in one of two ways. Training varied the values until the real arm
+            fell inside their range, which is domain randomisation. Or someone measured the arm and corrected the
+            values, which for the motors is system identification.
           </Box>
           <Box variant="p">
-            Nothing is broken. The weights are the ones that worked. What changed is the world the policy acts in:
-            this arm, this table and this lamp differ a little from the simulated ones.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Name the three places a simulator differs from the bench, so a failed transfer becomes a short list of suspects">
-            The gap
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            The difference between what the simulator produces and what the bench produces is called the sim-to-real
-            gap. It has three parts.
-          </Box>
-          <ul style={LIST}>
-            <li>
-              <strong>Physics.</strong> A simulated servo is a formula with a few parameters, the gains of section 3
-              among them. A simulated fingertip has a friction number. Where those numbers are off, the same command
-              produces a different motion.
-            </li>
-            <li>
-              <strong>Appearance.</strong> The simulated camera image is rendered, which means computed from the
-              shapes, colours and lights of the scene (section 13). The real camera sees real light, real shadows and
-              its own sensor noise.
-            </li>
-            <li>
-              <strong>Timing.</strong> In the simulator a command takes effect at the instant the program says. On
-              the bench it travels down a serial cable to the servos and arrives a few milliseconds later.
-            </li>
-          </ul>
-          <Box variant="p">
-            One source inside the physics part has its own name: calibration, the step in section 3 that teaches
-            the software what each joint&apos;s encoder reading means as an angle. The simulated arm knows exactly
-            where its gripper is. The real arm knows it as well as the calibration was done, by hand. The deploy guide for the task below says manual calibration &quot;can easily be off
-            by 1-2+ cm in end-effector height&quot;. The end effector is the tool at the end of the arm, here the
-            gripper. <Cite id="F06-29">MuJoCo Playground, SO-101 deploy README</Cite>
-          </Box>
-          <Box variant="p">
-            The gap runs both ways. Sim-to-real carries a policy trained in simulation to the real arm. Real-to-sim
-            carries something real into the simulator: a policy trained on real demonstrations, or the scene itself,
-            usually so that policies can be tested there cheaply (section 16, Evaluation). The same differences bite
-            on that trip. AWS reports from one engagement that a model fine-tuned on real demonstrations scored 0%
-            success in simulation, where models trained on clean simulation data reached 35% to 45%. The post gives
-            no trial counts.{' '}
-            <Cite id="F06-72">AWS Physical AI blog, Telexistence and DreamZero, post of 2026-09-09</Cite>
-          </Box>
-          <Box variant="p">
-            There are two ways to close it. Make the real world one more sample from training, or make training a
-            copy of the real world. The first is domain randomisation: vary the simulator. The second is real-to-sim:
-            measure the bench and rebuild the simulator from the measurements, by fitting the servo parameters
-            (system identification) and by scanning the scene. Step through both below.
+            The two are paid for in different places. Randomisation is paid in training, by a policy that has to
+            do well in every world the ranges allow. Measuring is paid in a person&apos;s time at the bench and a
+            small fit on a computer, and on this arm the fit is already written. A script that ships with MuJoCo
+            Playground, Google DeepMind&apos;s suite of robot tasks, fits 24 servo parameters, four for each of the
+            six joints, from one teleoperated episode: a single recording of a person moving the leader arm while
+            the real arm follows (section 3, The Robot as a Computer).{' '}
+            <Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>{' '}
+            <Cite id="F06-25">MuJoCo Playground changelog, version 1.0.0</Cite>
           </Box>
           <AnimatedFigure
             name="closing the gap"
@@ -284,46 +219,214 @@ export function SimToReal() {
             intervalMs={3000}
             caption={
               <>
-                Read along the axis: each shape is the spread of values one property takes, green for the simulator
-                and yellow for the bench. The dashed outline marks where the simulator started. Illustrative, not
-                measured.
+                Each shape is the spread of values one property of the scene takes, green for the simulator and
+                yellow for the bench; the dashed outline is where the simulator started. Widening moves the green
+                edges out, measuring moves the green band. Illustrative, not measured.
               </>
             }
           >
             {(step, reduced) => <GapDiagram step={step} reduced={reduced} />}
           </AnimatedFigure>
+          <Box variant="p">
+            The task Playground ships for this arm, <code>{SIM_TASK}</code>, uses both. Its policy is trained on
+            images from a simulated wrist camera and deployed &quot;zero-shot onto the real robot&quot;, with no
+            further training on real data. Its cube stands in for the bench task&apos;s block. It learns to{' '}
+            {SIM_TASK_PLAIN}; {SIM_TASK_GAP} is this dive&apos;s extension. <Cite id="F06-26">MuJoCo Playground, SO-101 deploy README</Cite> Its servo gains were
+            identified from real teleoperation data, and each episode still scales those gains and the joints&apos;
+            damping by a random factor and redraws friction, calibration, command delay, colours and light: a
+            measured centre with a randomised spread.{' '}
+            <Cite id="F06-31">SO-101 constant.py</Cite>{' '}
+            <Cite id="F06-28">SO-101 task.py, resetters</Cite>{' '}
+            <Cite id="F06-27">SO-101 task.py, control delay</Cite>
+          </Box>
+          <Box variant="p">
+            Calibration shows where a range stops working. On this arm it is done by hand: you hold each joint at
+            the middle of its range, then sweep it through its full range while the software records the extremes
+            (section 3). The task&apos;s deploy guide warns that this &quot;can easily be off by 1-2+ cm in
+            end-effector height&quot;, the height of the gripper: 10 to <Derived>20</Derived> mm or more. Each episode moves the simulated
+            arm&apos;s base up or down by up to 2.5 mm, for mounting offsets, and the gripper moves with it. The rest
+            of a hand calibration&apos;s error has to fall inside a second range.{' '}
+            <Cite id="F01-20">LeRobot motors_bus.py, record_calibration()</Cite>{' '}
+            <Cite id="F06-29">SO-101 deploy README, hardware behaviour</Cite>{' '}
+            <Cite id="F06-28">SO-101 task.py, resetters</Cite>
+          </Box>
+          <Box variant="p">
+            That range, meant for calibration error, is a bias the task adds to the joint readings each episode,
+            plus noise at every step. The guide sizes it only in words: it is there &quot;to tolerate moderate
+            calibration error, but larger offsets will eventually degrade grasp success or cause the robot to slam
+            the table&quot;. Past the edge of its ranges the policy has never trained, and the remedy there is to
+            measure.{' '}
+            <Cite id="F06-29">SO-101 deploy README, hardware behaviour</Cite>
+          </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Vary the simulator so the real arm looks like one more variation, and know which unknowns this is the right tool for">
-            Domain randomisation
+          <Header
+            variant="h2"
+            description="The servos, joints, fingertips, calibration, timing, camera and cube each meet a measured constant, a randomised range or both, and the command delay is the one range you can check against your own arm"
+          >
+            What the shipped task measures and what it redraws every episode
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Domain randomisation changes what an episode starts from. Before each one, the simulator draws every
-            uncertain parameter from a range, where a plain simulator would use one fixed value. The policy never
-            meets the same world twice, so it cannot lean on one exact friction or one exact shade of red. If the
-            bench falls inside the range, the bench is nothing new. The 2017 paper that introduced the idea for robot vision put it this way: with enough variability in the
-            simulator, &quot;the real world may appear to the model as just another variation&quot;. Its authors
-            report an object detector accurate to 1.5 cm in the real world, trained on simulated images alone.{' '}
+            Where a row gives no number, the scale factor is set
+            in the task&apos;s <code>task.py</code>, the file to read before you widen any of them.
+          </Box>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 600 }}>
+              <thead>
+                <tr>
+                  <th style={TH}>Source of the gap</th>
+                  <th style={TH}>What the simulator holds</th>
+                  <th style={TH}>What the task does about it</th>
+                  <th style={TH}>Source</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style={TD}>The servos</td>
+                  <td style={TD}>
+                    A spring-and-brake formula per joint, plus the joint&apos;s armature (the motor&apos;s inertia
+                    felt at the joint) and friction loss (its dry friction): four constants per joint, torque
+                    capped at 2.94 N m
+                  </td>
+                  <td style={TD}>
+                    Measured: the gains were identified from real teleoperation data. Randomised: the gains are
+                    scaled each episode.
+                  </td>
+                  <td style={TD}>
+                    <Cite id="F06-31">SO-101 constant.py</Cite> <Cite id="F06-28">SO-101 task.py, resetters</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>The joints</td>
+                  <td style={TD}>Passive damping on every joint</td>
+                  <td style={TD}>Randomised: scaled each episode.</td>
+                  <td style={TD}>
+                    <Cite id="F06-28">SO-101 task.py, resetters</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>The fingertips</td>
+                  <td style={TD}>Sliding, torsional and rolling friction coefficients</td>
+                  <td style={TD}>Randomised each episode.</td>
+                  <td style={TD}>
+                    <Cite id="F06-28">SO-101 task.py, resetters</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>Calibration</td>
+                  <td style={TD}>An arm that knows exactly where its gripper is</td>
+                  <td style={TD}>
+                    Randomised: a bias on the joint readings for each episode plus noise redrawn at every step, and
+                    the base height by plus or minus 2.5 mm.
+                  </td>
+                  <td style={TD}>
+                    <Cite id="F06-28">SO-101 task.py, resetters</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>Command timing</td>
+                  <td style={TD}>Physics steps every 5 ms; the policy acts every 100 ms</td>
+                  <td style={TD}>Randomised: a delay of 0 to 4 ms on every command.</td>
+                  <td style={TD}>
+                    <Cite id="F06-27">SO-101 task.py, control delay</Cite>{' '}
+                    <Cite id="F06-105">simulation config and SO-101 task.py</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>The camera image</td>
+                  <td style={TD}>One rendered 64 x 64 wrist-camera image per decision</td>
+                  <td style={TD}>
+                    Randomised: cube and floor colours (kept in high contrast), the colours of the arm&apos;s
+                    links, the lighting, the camera&apos;s parameters, and noise on every pixel (
+                    <code>pixel_noise_std=0.02</code>).
+                  </td>
+                  <td style={TD}>
+                    <Cite id="F06-27">SO-101 task.py, camera settings</Cite>{' '}
+                    <Cite id="F06-28">SO-101 task.py, resetters</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>The cube</td>
+                  <td style={TD}>Its size</td>
+                  <td style={TD}>Randomised: the cube&apos;s half-extents.</td>
+                  <td style={TD}>
+                    <Cite id="F06-28">SO-101 task.py, resetters</Cite>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <Box variant="p">
+            The model file the arm&apos;s maker publishes borrows its servo constants from another robot: they
+            &quot;are adapted from the Open Duck Mini project&quot;. The real servo&apos;s own numbers do not
+            carry over either. LeRobot writes P = 16, I = 0 and D = 32, the gains of the control loop inside each
+            servo, when it connects (section 3). Those are in the servo firmware&apos;s units and the simulated gain,
+            218 to 265, is in the model&apos;s, so neither copies into the other.{' '}
+            <Cite id="F06-36">SO-ARM100 simulation README, motor parameters</Cite>{' '}
+            <Cite id="F01-16">LeRobot so_follower.py, configure()</Cite>{' '}
+            <Cite id="F06-31">SO-101 constant.py</Cite>
+          </Box>
+          <Box variant="p">
+            SIMPLER, a 2024 suite for scoring real-robot policies in simulation, measured what copying a real
+            controller&apos;s gains into a simulator does. Its authors replayed a recorded demonstration with those
+            gains, and the simulated arm tracked the motion poorly and ended in &quot;a missed grasp on the coke
+            can&quot;. After system identification the same recorded actions grasped it.{' '}
+            <Cite id="F06-71">SIMPLER paper, section IV.A</Cite>
+          </Box>
+          <Box variant="p">
+            The command delay is the range you can check. A real command crosses the serial bus to the servos
+            before it acts (section 3), so the task delays each simulated command by a random 0 to 4 ms. At section 3&apos;s illustrative gripper speed of <Toy>0.25</Toy> m/s, the
+            longest of those delays is <Toy>0.25</Toy> m/s x 4 ms = 1 mm of travel. The system-identification
+            script estimates the real transport delay from its log, so compare the two: a real delay longer than 4
+            ms puts the policy in a world it never trained in.{' '}
+            <Cite id="F06-27">SO-101 task.py, control delay</Cite>{' '}
+            <Cite id="F06-105">simulation config and SO-101 task.py</Cite>{' '}
+            <Cite id="F06-30">SO-101 sysid README</Cite>
+          </Box>
+          <Box variant="p">
+            The camera image is the part the shipped task only randomises. It draws the cube and floor colours &quot;with high visual contrast&quot;, so the policy is
+            never shown a cube it cannot tell from the floor. <Cite id="F06-28">SO-101 task.py, resetters</Cite> The
+            deploy guide states what the ranges leave uncovered. The task was &quot;tested on 3 different robot
+            setups under various lighting conditions&quot;, and &quot;there may still be visual domain gap with
+            darker shadows&quot;. Its two remedies work from opposite ends: move
+            the bench into the range (&quot;make sure the lighting conditions prevent darker shadows&quot;), or
+            widen the range with a new &quot;domain randomization recipe for the pixels inputs&quot;.{' '}
+            <Cite id="F06-26">SO-101 deploy README, hardware behaviour</Cite>
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="The policy is trained for the average over every world the ranges allow, so a range buys tolerance of the bench and spends training on every world the bench never produces"
+          >
+            Domain randomisation trains for the average over a range of worlds
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Domain randomisation was introduced for robot vision in 2017 on one bet: with enough
+            variability in the simulator, &quot;the real world may appear to the model as just another
+            variation&quot;. Its authors report an object detector accurate to 1.5 cm in the real world, trained
+            only on simulated images with non-realistic random textures. The textures never had to look real. They
+            had to vary enough that the real scene was one more draw.{' '}
             <Cite id="F06-66">Tobin et al., domain randomization paper, abstract</Cite>
           </Box>
           <Box variant="p">
-            Use it for what you cannot measure well or what will not hold still: the lighting, the wear on a
-            fingertip, the last millimetres of how the arm is mounted. In the Isaac Lab authors&apos; words, such
-            parameters &quot;may be difficult to estimate accurately or may vary over time in the real world&quot;.{' '}
-            <Cite id="F06-67">Isaac Lab paper, section 5.3</Cite> Its limit: the range has to contain the bench. A
-            policy outside the range it trained on is back in the opening scene.
-          </Box>
-          <Box variant="p">
-            Randomisation also changes what training maximises. In one fixed simulator, reinforcement learning
-            looks for the policy that collects the most reward in that one world (section 8). With randomisation the
-            score is that reward averaged over every world the simulator can draw. Write{' '}
-            <M>{String.raw`\mu`}</M> for the list of randomised parameters drawn for one episode and{' '}
+            Randomising changes what training maximises. Reinforcement learning, which improves a policy from its
+            own scored attempts (section 8, Reinforcement Learning for Robots), looks in one fixed simulator for the
+            policy that collects the most reward, the score each attempt earns, in that one world. With
+            randomisation the target is that reward averaged over every world the ranges can produce. Write{' '}
+            <M>{String.raw`\mu`}</M> for the list of randomised values drawn for one episode and{' '}
             <M>{String.raw`\rho_\mu`}</M> for the distribution they are drawn from, which is the set of ranges.{' '}
             <M>{String.raw`\pi`}</M> is the policy. <M>{String.raw`\tau`}</M> is one episode&apos;s trajectory: the
             states <M>s_t</M> and actions <M>a_t</M> over <M>T</M> steps, whose likelihood{' '}
@@ -341,57 +444,31 @@ export function SimToReal() {
             The sum is the reward one episode collects. The inner average is the expected reward in one world{' '}
             <M>{String.raw`\mu`}</M>, which is all that plain reinforcement learning maximises. The outer average
             runs over worlds, weighted by <M>{String.raw`\rho_\mu`}</M>. A policy that scores highly at one
-            friction value and poorly elsewhere now loses to one that scores well across the range, and the range
-            is the designer&apos;s choice. In practice the outer average is taken by sampling: one draw of{' '}
-            <M>{String.raw`\mu`}</M> at the start of each episode, held fixed until it ends.{' '}
-            <Cite id="F11-202">Peng et al., dynamics randomization paper v3, sections IV and IV-C</Cite>
+            friction value and poorly elsewhere now loses to one that scores well across the range. The outer
+            average is taken by sampling: one draw of <M>{String.raw`\mu`}</M> at the start of each episode, held
+            fixed until it ends. The shipped task works that way for most of its values; its joint-reading noise is
+            redrawn at every step.{' '}
+            <Cite id="F11-202">Peng et al., dynamics randomization paper v3, sections IV and IV-C</Cite>{' '}
+            <Cite id="F06-28">SO-101 task.py, resetters</Cite>
           </Box>
           <Box variant="p">
-            The simulated task this dive follows is <code>{SIM_TASK}</code>, the reinforcement-learning recipe of
-            section 8. Its code randomises three groups of things at the start of every episode, one group for each
-            part of the gap.
+            The same average sets the price of a wide range. The bench is one narrow band of <M>{String.raw`\mu`}</M>,
+            and the outer average gives it only its share of the weight. Every world the range adds that the bench
+            never produces also takes a share of training, so a policy that wins a wider average can give up reward
+            at the bench&apos;s own value to do it. That follows from the objective, and no figure for it on this arm was found. A wider range also has to be learned inside the same budget, the training run of
+            section 8 at about 197 million control steps across 4,096 simulated arms, or the budget grows.{' '}
+            <Cite id="F11-202">Peng et al., dynamics randomization paper v3, section IV</Cite>{' '}
+            <Cite id="F04-58">MuJoCo Playground env_rl_config.py</Cite>
           </Box>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560 }}>
-              <thead>
-                <tr>
-                  <th style={TH}>Part of the gap</th>
-                  <th style={TH}>What the task draws afresh each episode</th>
-                  <th style={TH}>Source</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={TD}>Physics</td>
-                  <td style={TD}>Fingertip friction, the servo gains, joint damping (how strongly a joint resists motion), the size of the cube.</td>
-                  <td style={TD}>
-                    <Cite id="F06-28">MuJoCo Playground, SO-101 task.py, resetters</Cite>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>Appearance</td>
-                  <td style={TD}>
-                    Colours of the cube and the floor (kept in high contrast), colours of the arm&apos;s links, the
-                    lighting, the camera&apos;s parameters, and noise added to every pixel.
-                  </td>
-                  <td style={TD}>
-                    <Cite id="F06-28">MuJoCo Playground, SO-101 task.py, resetters</Cite>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={TD}>Calibration and timing</td>
-                  <td style={TD}>
-                    A bias on the joint readings that imitates a badly calibrated arm, the height of the arm&apos;s
-                    base by plus or minus 2.5 mm, and a delay of 0 to 4 ms on every command.
-                  </td>
-                  <td style={TD}>
-                    <Cite id="F06-28">SO-101 task.py, resetters</Cite>{' '}
-                    <Cite id="F06-27">SO-101 task.py, control delay</Cite>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <Box variant="p">
+            A range is the right tool for what cannot be measured well or will not stay put. The paper behind Isaac
+            Lab, NVIDIA&apos;s robot-learning framework, lists friction, armature, gravity and mass as the physics
+            parameters randomised in practice, and texture, material and lighting on the rendering side, because
+            such parameters &quot;may be difficult to estimate accurately or may vary over time in the real
+            world&quot;. <Cite id="F06-67">Isaac Lab paper, section 5.3</Cite> Measure what can be measured and randomise around the result, as the shipped task does for its gains. For one that
+            cannot, the range has to reach every bench the policy will meet, and only trials on the real arm show
+            whether it does.
+          </Box>
           <Capture
             file="so101-domain-randomisation.jpg"
             kind="still"
@@ -400,98 +477,63 @@ export function SimToReal() {
             alt="Six overhead views of the same arm, block and cup scene, each with a different floor colour, lighting, object colours and positions, and a slightly moved camera."
             caption={
               <>
-                Six draws of one scene. Floor colour, light position and strength, object colours and positions, the
-                camera offset and the arm&apos;s tint change between them; the task does not. A policy trained across
-                such draws has to find the block in all of them.
+                Six draws of one scene: floor colour, light position and strength, object colours and positions,
+                the camera offset and the arm&apos;s tint change between them; the task stays the same. A policy
+                trained across such draws has to find the object in all of them.
               </>
             }
             provenance={MUJOCO_SO101}
           />
+          <ExpandableSection headerText={`What Isaac Lab 3.0.0 can randomise beyond the ${ARM} task`}>
+            <Box variant="p">
+              Isaac Lab&apos;s event functions at 3.0.0 cover rigid-body scale, material (friction and restitution),
+              mass, inertia, centre of mass and collider offsets; the scene&apos;s gravity; actuator gains; joint
+              parameters; fixed-tendon parameters; visual texture materials and colours; external pushes; and
+              randomised reset states. Set beside the {ARM} task&apos;s list, it adds mass, inertia, centre of mass,
+              gravity and pushes. The ranges are set per task.{' '}
+              <Cite id="F06-68">Isaac Lab v3.0.0, envs/mdp/events.py</Cite>
+            </Box>
+            <Box variant="p">
+              On Isaac Sim&apos;s PhysX engine, as the November 2025 Isaac Lab paper describes it, physics
+              parameters such as mass, friction and armature &quot;must be modified through the CPU API&quot;, so
+              randomising them is CPU work inside an otherwise GPU training run. The MuJoCo task shipped for this
+              arm does not take that path.{' '}
+              <Cite id="F06-69">Isaac Lab paper, section 5.3</Cite>
+            </Box>
+          </ExpandableSection>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description={`Check the shipped ${ARM} task's ranges against the bench by hand, and see what its authors do and do not publish`}>
-            Worked case: the shipped {ARM} task
+          <Header
+            variant="h2"
+            description="Four constants per joint, fitted by least squares to one recording, turn a borrowed servo model into this arm's"
+          >
+            System identification fits 24 servo constants to one teleoperated episode
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            MuJoCo Playground 1.0.0, released by Google DeepMind on 2026-11-06, ships paired packages for the
-            simulated and the real {ARM}. <Cite id="F06-25">MuJoCo Playground changelog, version 1.0.0</Cite> In{' '}
-            <code>{SIM_TASK}</code> the same task code runs in both: a policy is trained in simulation and then
-            deployed &quot;zero-shot onto the real robot&quot;, zero-shot meaning with no further training on real
-            data. The shipped task covers the first half of the story: the policy learns to {SIM_TASK_PLAIN};{' '}
-            {SIM_TASK_GAP} is this dive&apos;s extension.{' '}
-            <Cite id="F06-26">MuJoCo Playground, SO-101 deploy README</Cite>
+            System identification makes the simulated servo move like the real one. A person drives the real arm
+            for one episode while the script logs the commands sent and the joint angles measured. The script then
+            plays the same commands into the simulator and adjusts the servo constants until the simulated angles
+            follow the real ones. The tool underneath is <code>mujoco.sysid</code>, part of MuJoCo 4.0 and installed
+            with <code>{'pip install -U "mujoco[sysid]"'}</code>; the {ARM} script built on it ships in
+            Playground&apos;s <code>tasks/sysid/so101</code> directory.{' '}
+            <Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>{' '}
+            <Cite id="F06-6">MuJoCo 4.0 announcement, sim-to-real row</Cite>
           </Box>
           <Box variant="p">
-            <strong>Timing.</strong> The policy decides 10 times a second, once every 100 ms, and the physics
-            advances every 5 ms, so 20 physics steps pass per decision. The random command delay of 0 to 4 ms is
-            under one physics step. At section 3&apos;s illustrative gripper speed of <Toy>0.25</Toy> m/s, the
-            longest delay is worth:
-          </Box>
-          <Box variant="p">
-            <code>
-              <Toy>0.25</Toy> m/s x 4 ms = 1 mm
-            </code>
-          </Box>
-          <Box variant="p">
-            A millimetre is small, and the task still trains for it.{' '}
-            <Cite id="F06-27">SO-101 task.py, control timestep and delay</Cite>{' '}
-            <Cite id="F06-105">MuJoCo Playground, simulation config and SO-101 task.py</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>Calibration.</strong> The base height varies by plus or minus 2.5 mm, a range 2 x 2.5 = 5 mm
-            wide. A hand calibration can leave the gripper 1 to 2 cm from where the software believes it is, which is
-            10 to <Derived>20</Derived> mm: two to four times the whole width of that range. Mounting height alone
-            cannot absorb it. That is the job of the separate bias on the joint readings, and the guide states its
-            limit: the policy tolerates moderate calibration error, &quot;but larger offsets will eventually degrade
-            grasp success or cause the robot to slam the table&quot;. The width of the bias range was not recorded
-            in this research.{' '}
-            <Cite id="F06-28">SO-101 task.py, resetters</Cite>{' '}
-            <Cite id="F06-29">SO-101 deploy README, hardware behaviour</Cite>
-          </Box>
-          <Box variant="p">
-            <strong>Appearance.</strong> The policy sees one image from the wrist camera per decision, at 64 x 64
-            pixels: 64 x 64 = <Derived>4,096</Derived> pixels. An image that small shows the cube as a patch of
-            colour against the floor, so the task keeps those two colours in high contrast while it randomises
-            them.{' '}
-            <Cite id="F06-27">SO-101 task.py, camera settings</Cite>
-          </Box>
-          <Box variant="p">
-            What the authors publish about the result is short. The guide says the task was &quot;tested on 3
-            different robot setups under various lighting conditions&quot; and warns that a visual gap may remain
-            under darker shadows. No success rate is published for it.{' '}
-            <Cite id="F06-26">SO-101 deploy README, hardware behaviour</Cite> The success rate is a number you
-            would measure yourself; section 16 covers how many trials that takes.
-          </Box>
-        </SpaceBetween>
-      </Container>
-
-      <Container
-        header={
-          <Header variant="h2" description="Measure the bench and rebuild the simulator from it: 24 servo parameters from one episode, and a scene from a few minutes of video">
-            Real-to-sim: system identification and scanned scenes
-          </Header>
-        }
-      >
-        <SpaceBetween size="m">
-          <Box variant="p">
-            Randomisation covers what is unknown. The other way is to make less of it unknown. System identification
-            does that for the motors: move the real arm, replay the same commands in the simulator, and adjust the
-            simulated servo&apos;s parameters until the two motions agree.
-          </Box>
-          <Box variant="p">
-            First, what is being adjusted. The simulator models each of the {ARM}&apos;s servos as a spring and a
-            brake pulling the joint toward its commanded angle. Write <M>{String.raw`q_{\text{target}}`}</M> for the commanded
+            The constants belong to a simple servo model, a spring pulling each joint toward its commanded angle
+            and a brake on its speed. The real servo&apos;s loop has the same structure: with I = 0, each real joint runs as
+            a PD (proportional-derivative) controller, which pushes in proportion to the error and brakes in
+            proportion to the speed (section 3). Write <M>{String.raw`q_{\text{target}}`}</M> for the commanded
             angle, <M>q</M> for the joint&apos;s current angle and <M>{String.raw`\dot{q}`}</M> for how fast it is
-            turning. <M>k_p</M> is the position gain, which the model file calls stiffness, and{' '}
-            <M>k_d</M> is the damping. They play the roles of the P and D gains of section 3: PD (proportional-derivative) control pushes in
-            proportion to the error and brakes in proportion to the speed. Their values are in the model&apos;s
-            units and are not the 16 and 32 written into the real servo.{' '}
+            turning. <M>k_p</M> is the position gain, which the model file calls stiffness, and <M>k_d</M> is the
+            damping.{' '}
+            <Cite id="F11-212">MuJoCo Playground, SO-101 scene.py, actuator setup</Cite>{' '}
             <Cite id="F01-16">LeRobot so_follower.py, configure()</Cite>
           </Box>
           <Formula
@@ -505,25 +547,46 @@ export function SimToReal() {
             }
           />
           <Box variant="p">
-            The first term is the spring: the further the joint is from its goal, the harder the motor turns it. The
-            second is the brake: the faster the joint moves, the more torque is taken away. The result is capped at what the motor can deliver.{' '}
-            <Cite id="F11-212">MuJoCo Playground, SO-101 scene.py, actuator setup</Cite> Two more numbers per joint complete the
-            model, and the fit finds all four.
+            The first term is the spring: the further the joint is from its goal, the harder the motor turns it.
+            The second is the brake: the faster the joint moves, the more torque it takes away. The result is capped at plus or minus 2.94 N m, which the code computes from the stall torque on the servo&apos;s datasheet, 30 kg-cm at 12 V, so the cap is not fitted.{' '}
+            <Cite id="F11-212">MuJoCo Playground, SO-101 scene.py, actuator setup</Cite>{' '}
+            <Cite id="F06-31">SO-101 constant.py, FORCERANGE</Cite>
+          </Box>
+          <Box variant="p">
+            Read in newton-metres per radian, a unit the files do not
+            state, the spring term alone at the lowest gain reaches the cap at an error of 2.94 / 218 ={' '}
+            <Derived>0.0135</Derived> rad, under one degree. Any larger error asks for more torque than the cap
+            allows, so the cap sets how hard every larger move starts.{' '}
+            <Cite id="F11-212">MuJoCo Playground, SO-101 scene.py, actuator setup</Cite>{' '}
+            <Cite id="F06-31">SO-101 constant.py, FORCERANGE</Cite>
+          </Box>
+          <Box variant="p">
+            That cap is the 12 V servo&apos;s. The arm&apos;s bill of materials builds the follower from the 7.4 V
+            version, which its maker rates at 16.5 kg-cm (<Derived>1.62</Derived> N m) at 6 V. On that build the simulated
+            servo can push about 2.94 / 1.62 = <Derived>1.8</Derived> times harder than the real one, and the fit leaves the cap
+            alone, so check which servo your follower has and set <code>FORCERANGE</code> in <code>constant.py</code> to match. Two more constants act on the
+            joint itself, armature and friction loss, and the fit finds all four.{' '}
+            <Cite id="F06-31">SO-101 constant.py, FORCERANGE</Cite>{' '}
+            <Cite id="F01-4">SO-ARM100 README, parts for two arms</Cite>{' '}
+            <Cite id="F01-5">SO-ARM100 README, servo variants</Cite>
           </Box>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 600 }}>
               <thead>
                 <tr>
-                  <th style={TH}>Fitted parameter</th>
-                  <th style={TH}>In plain words</th>
-                  <th style={TH}>Values in the repository, across the 6 joints</th>
+                  <th style={TH}>Fitted constant</th>
+                  <th style={TH}>What it does to the motion</th>
+                  <th style={TH}>Checked-in values across the 6 joints, in the model&apos;s units</th>
                   <th style={TH}>Source</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td style={TD}>Gain (stiffness, kp)</td>
-                  <td style={TD}>How hard the servo pushes per unit of error. Set too high, the simulated arm snaps to its goal faster than the real one.</td>
+                  <td style={TD}>
+                    How hard the servo pushes per unit of error. It acts whenever the joint is away from its goal;
+                    set too high, the simulated joint closes small errors faster than the real one.
+                  </td>
                   <td style={TD}>218 to 265</td>
                   <td style={TD}>
                     <Cite id="F06-31">SO-101 constant.py</Cite>
@@ -531,7 +594,10 @@ export function SimToReal() {
                 </tr>
                 <tr>
                   <td style={TD}>Damping (kd)</td>
-                  <td style={TD}>How hard it brakes per unit of speed. Set too low, the simulated joint overshoots where the real one settles.</td>
+                  <td style={TD}>
+                    How hard the servo brakes per unit of speed. It acts most when the joint moves fast; set too
+                    low, the simulated joint overshoots where the real one settles.
+                  </td>
                   <td style={TD}>17.5 to 34.2</td>
                   <td style={TD}>
                     <Cite id="F06-31">SO-101 constant.py</Cite>
@@ -540,8 +606,8 @@ export function SimToReal() {
                 <tr>
                   <td style={TD}>Armature</td>
                   <td style={TD}>
-                    Extra inertia at the joint from the spinning motor and its gears, which makes the joint slower
-                    to start and to stop than the links alone would.
+                    Extra inertia at the joint from the spinning motor and its gears. It acts when the joint
+                    speeds up or slows down, making it slower to start and to stop than the links alone would be.
                   </td>
                   <td style={TD}>0.109 to 0.199</td>
                   <td style={TD}>
@@ -550,130 +616,237 @@ export function SimToReal() {
                 </tr>
                 <tr>
                   <td style={TD}>Friction loss</td>
-                  <td style={TD}>A constant resistance inside the joint that the motor has to overcome before anything moves.</td>
+                  <td style={TD}>
+                    A constant resistance inside the joint that the motor has to overcome before anything moves. It
+                    acts when the joint starts from rest.
+                  </td>
                   <td style={TD}>Near zero on five joints, 0.25 on the gripper</td>
                   <td style={TD}>
-                    <Cite id="F06-31">SO-101 constant.py</Cite>
+                    <Cite id="F06-31">SO-101 constant.py</Cite> <Cite id="F11-211">MuJoCo docs, friction loss</Cite>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <Box variant="p">
-            Four parameters for each of 6 joints is 24. The values are in the model&apos;s own units, which this
-            research did not check. The torque cap is not fitted: the file computes it from the stall torque on the
-            servo&apos;s datasheet, 30 kg-cm at 12 V, which is 2.94 N m.{' '}
-            <Cite id="F06-31">SO-101 constant.py, FORCERANGE</Cite>{' '}
+            Each of the 24 constants has to act somewhere in the one recording, because a constant that never acts
+            in the data cannot be fitted from it. A recording driven for that purpose is called an excitation
+            episode. The README sets no length or pattern for it, so the constants&apos; roles set what it
+            must hold: small corrections near the target for the gain, fast motion for damping, starts and stops for armature, and moves from rest for friction loss, on every joint.{' '}
             <Cite id="F06-30">SO-101 sysid README</Cite>
           </Box>
           <Box variant="p">
-            Now the fit. A person drives the real arm through its range with the leader arm for one episode, a
-            teleoperated excitation episode: motion chosen so that every parameter leaves a mark in the data. The
-            script logs the commands and the measured joint angles. It then replays the commands in the simulator
-            and scores the mismatch. Write <M>{String.raw`\theta`}</M> for the list of 24 parameters,{' '}
+            The checked-in values came from teleoperation data on someone else&apos;s arm, and no spread between arms was found. A fit to a log from your own arm, set beside the table, shows how far
+            yours sits from them.{' '}
+            <Cite id="F06-31">SO-101 constant.py</Cite>
+          </Box>
+          <Box variant="p">
+            The script scores a candidate set of constants by how badly the simulated arm tracks the real one.
+            Write <M>{String.raw`\theta`}</M> for the list of 24 constants,{' '}
             <M>{String.raw`q^{\text{real}}_{t,j}`}</M> for the measured angle of joint <M>j</M> at time <M>t</M>,
             and <M>{String.raw`q^{\text{sim}}_{t,j}(\theta)`}</M> for the angle the simulator produces at the same
-            moment when it runs with <M>{String.raw`\theta`}</M>.
+            moment when it plays the logged commands with <M>{String.raw`\theta`}</M>.
           </Box>
           <Formula
-            name="System identification: squared tracking mismatch (this page's rendering of the least-squares fit)"
+            name="System identification: squared tracking mismatch over the episode"
             tex={String.raw`L(\theta) = \sum_{t,\,j} \bigl( q^{\text{real}}_{t,j} - q^{\text{sim}}_{t,j}(\theta) \bigr)^2`}
             source={
               <>
-                our rendering of what the code minimises; the README describes the fit in words, and the script
-                compares joint-position readings. <Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>
+                the README&apos;s description of the fit, &quot;minimizing rollout tracking error&quot;, written as
+                a sum over moments and joints.{' '}
+                <Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>
               </>
             }
           />
           <Box variant="p">
-            The bracket is how far apart the real and the simulated joint are at one moment. Squaring makes large
-            misses count most. The sum runs over the whole episode and all 6 joints, so <M>L</M> is one number
-            for how badly the simulated arm tracks the real one. The library may scale each term before summing;
-            this research did not read that part. The script finds the <M>{String.raw`\theta`}</M> that makes
-            it smallest with Gauss-Newton least squares, a method that repeats one move: nudge each parameter,
-            simulate again, see how the mismatch changes, and step all 24 toward a smaller <M>L</M>. From the
-            same log it also estimates the transport delay of the serial link, the timing part of the gap.{' '}
+            The bracket is the miss on one joint at one moment. Squaring counts a miss the same in either direction
+            and makes large misses count most. The sum runs over every moment of the episode and all 6 joints, so{' '}
+            <M>{String.raw`L(\theta)`}</M> is one number for the whole recording, and the fit looks for the{' '}
+            <M>{String.raw`\theta`}</M> that makes it smallest.
+          </Box>
+          <Box variant="p">
+            The script minimises it with Gauss-Newton least squares, a method for sums of squared misses that
+            repeats one move: work out how each miss changes when each constant changes, then step all 24
+            constants at once to where the squared misses would be smallest if those changes held exactly. If the
+            changes are found by re-simulating with each constant nudged in turn, one step costs 24 + 1 ={' '}
+            <Derived>25</Derived> replays of the episode, and those replays do not depend on each other.{' '}
+            <Cite id="F06-30">SO-101 sysid README</Cite>
+          </Box>
+          <Box variant="p">
+            Before the fit, the script estimates and logs the transport delay of the serial link, the time a command spends on
+            its way to the servo, and aligns the command times with the measured rollout, so each measurement is compared with the command behind it.{' '}
             <Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>
           </Box>
           <Box variant="p">
-            That is the practical news here: 24 parameters from one teleoperated episode, with a script that ships
-            beside the task. This dive read the script and the checked-in values and did not run the fit.{' '}
-            <Cite id="F06-30">SO-101 sysid README</Cite> The tool
-            underneath, <code>mujoco.sysid</code>, is part of MuJoCo 4.0, which also adds a <code>pid</code>{' '}
-            actuator, a <code>dcmotor</code> actuator built from datasheet values, and actuator delays, so the
-            simulated servo can be shaped like a real one.{' '}
-            <Cite id="F06-6">MuJoCo 4.0 announcement, sim-to-real row</Cite>{' '}
-            <Cite id="F06-7">MuJoCo 4.0 announcement, actuators row</Cite>
-          </Box>
-          <ExpandableSection headerText="Evidence that wrong gains alone can lose a grasp (history, 2024)">
-            <Box variant="p">
-              The authors of SIMPLER, a simulated evaluation suite, copied a real controller&apos;s PD gains
-              straight into their simulator and replayed a recorded demonstration. The simulated arm tracked the
-              motion poorly, which ended in &quot;a missed grasp on the coke can&quot;. After system identification
-              the same recorded actions grasped the can.{' '}
-              <Cite id="F06-71">SIMPLER paper, section IV.A</Cite>
-            </Box>
-          </ExpandableSection>
-          <Box variant="p">
-            The scene can be measured too. Gaussian splatting turns a video of a real place into something a
-            renderer can show from any viewpoint. It represents the place as a cloud of small, soft, coloured blobs
-            (the Gaussians) and adjusts their positions, sizes and colours until pictures drawn from the cloud match
-            the frames of the video. PolaRiS, a research pipeline for testing policies in scanned scenes, starts
-            from a 2 to 5 minute video of the table. The splats give the look of the scene and a mesh of its
-            surfaces, and the mesh goes into the simulator so that objects have something to collide with. Its
-            authors report that reconstruction
-            &quot;typically completes within 30 minutes on an NVIDIA RTX 4090&quot;, with less than 20 minutes of a
-            person&apos;s effort. <Cite id="F06-73">PolaRiS paper, section 4.1</Cite>
+            A fit chooses constants for the formula it is given and cannot add behaviour the formula lacks. MuJoCo
+            4.0 widens the choice of formula with a <code>pid</code> actuator, a <code>dcmotor</code> actuator built
+            from datasheet values, and actuator delays. <Cite id="F06-7">MuJoCo 4.0 announcement, actuators row</Cite>{' '}
+            Isaac Lab goes further, with actuators that are neural networks trained on hardware data in place of the
+            PD loop of its ideal actuator, &quot;to better emulate the dynamic response of the actuator in the real
+            world&quot;. <Cite id="F06-70">Isaac Lab paper, section 3.2</Cite>
           </Box>
           <Box variant="p">
-            A scan narrows the appearance gap; it did not close it. Before scoring a policy in a scanned scene,
-            PolaRiS first fine-tunes it briefly (1k steps) on about 350 simulated demonstrations from 15 other
-            scanned scenes, so that the policy is used to how the simulator looks.{' '}
-            <Cite id="F06-74">PolaRiS paper, sections 4.2 and 5.1</Cite> Inside the MuJoCo family, MuJoCo
-            Warp&apos;s batch renderer can draw a splat scene behind simulated objects.{' '}
-            <Cite id="F06-78">MuJoCo docs, MuJoCo Warp chapter, 3D Gaussian Splatting</Cite>
+            Calibration can be measured too. NVIDIA&apos;s {ARM} typing project on Isaac Lab 3.0, a policy that
+            presses keys on a fixed keyboard, ships tools that fit the simulated keyboard&apos;s pose and the
+            joint-angle calibration from recorded real key presses. Calibration then becomes a fit to recorded data,
+            in place of a pose held by hand.{' '}
+            <Cite id="F06-55">Isaac Lab v3.0.0 docs, SO-101 typing policy</Cite>
           </Box>
         </SpaceBetween>
       </Container>
 
       <Container
         header={
-          <Header variant="h2" description="Three small jobs beside the training run, which part of the machine each loads, and the order to do them in at the bench">
-            What it costs
+          <Header
+            variant="h2"
+            description="A few minutes of video and under an hour of GPU time give the look and the shape of the bench, while friction and mass stay at their defaults"
+          >
+            A scanned scene measures what the camera sees
           </Header>
         }
       >
         <SpaceBetween size="m">
           <Box variant="p">
-            Next to the training run of section 8 these are small jobs. Each loads a different part of the machine.
+            Real-to-sim carries something real into the simulator, usually so that policies can be tested there at
+            the price of simulation instead of real-arm time (section 16, Evaluation). On that trip the gap runs in
+            reverse. In a post of 2026-09-09 on one engagement, AWS reports that a model fine-tuned on real
+            demonstrations scored 0% success in simulation, where models trained on clean simulation data reached
+            35% to 45% in the same simulator; the post gives no trial counts.{' '}
+            <Cite id="F06-72">AWS Physical AI blog, Telexistence and DreamZero, post of 2026-09-09</Cite>
           </Box>
-          <ul style={LIST}>
-            <li>
-              <strong>Randomisation</strong> is a function that runs when an episode resets: draw the values, write
-              them into that copy of the scene. Under PhysX, the physics
-              engine of Isaac Sim, parameters such as mass and friction &quot;must be modified through the CPU
-              API&quot;, so randomisation is CPU work inside a GPU pipeline.{' '}
-              <Cite id="F06-69">Isaac Lab paper, section 5.3</Cite>
-            </li>
-            <li>
-              <strong>System identification</strong> replays one logged episode in the simulator many times over.
-              It is a job for CPU cores, and the README publishes no timing for it.{' '}
-              <Cite id="F06-30">MuJoCo Playground, SO-101 sysid README</Cite>
-            </li>
-            <li>
-              <strong>A scan</strong> is minutes on one GPU. Beside the PolaRiS figure above, NVIDIA&apos;s 3DGRUT
-              reconstruction code (v1.1.0) reports average training times on one RTX 5090 across two public sets of
-              scenes: 479 s and 2,869 s for its ray-traced method, 215 s and 686 s for its rasterised one. The
-              ray-traced method wants a GPU with RT (ray tracing) cores, the hardware section 13 is about.{' '}
-              <Cite id="F06-75">3DGRUT README at v1.1.0, benchmark tables</Cite>
-            </li>
-          </ul>
           <Box variant="p">
-            At the bench the order follows from the costs. Calibrate with care, because a hand calibration can be off
-            by 1 to 2 cm and large offsets lose the grasp. Record one teleoperated episode and fit the 24 parameters, so the
-            simulated servos are yours. Train with the shipped randomisation for what is left. Light the table so it
-            casts no dark shadows. Then count successes on the real arm, the slow part, which section 16, Evaluation,
-            covers.
+            A scene is measured with a camera. Gaussian splatting represents a filmed place as a cloud of small,
+            soft, coloured blobs (the Gaussians) and adjusts their positions, sizes and colours until pictures drawn
+            from the cloud match the frames of the video, after which the cloud can be drawn from any viewpoint.
+          </Box>
+          <Box variant="p">
+            PolaRiS, a research pipeline for testing policies in scanned scenes, starts from a 2 to 5 minute video
+            of the table. It recovers where the camera stood for each frame, fits splats that give both the look of
+            the scene and a mesh of its surfaces, imports the meshes into Isaac Sim so objects have something to
+            collide with, and attaches splats to the robot&apos;s links so they move with it. The PolaRiS authors
+            report that reconstruction &quot;typically completes within 30 minutes on an NVIDIA RTX 4090&quot;, with
+            &quot;typically less than 20 minutes&quot; of a person&apos;s effort and under one hour of wall time in
+            all. <Cite id="F06-73">PolaRiS paper, section 4.1</Cite>
+          </Box>
+          <Box variant="p">
+            A scan measures the look of a scene and the shape of its surfaces, and nothing of how they push back.
+            In PolaRiS the objects&apos; physics are Isaac Sim&apos;s defaults and the arm&apos;s are its
+            manufacturer&apos;s, so the motors stay a job for system identification. The gap in the look is not fully closed either. Before scoring a policy in a scanned scene, PolaRiS fine-tunes it for 1k steps on about 350
+            simulated demonstrations from 15 other scanned scenes, so that the policy is used to how the simulator renders. That is the reverse gap of the AWS result, met with a little simulated data. <Cite id="F06-74">PolaRiS paper, sections 4.2 and 5.1</Cite>
+          </Box>
+          <Box variant="p">
+            With that adaptation, the same authors report that scores in scanned scenes followed real trials at an
+            average Pearson correlation of r = 0.9 across six paired environments, and 0.81 in the worst. Pearson&apos;s
+            r runs from -1 to 1 and measures how closely two sets of scores rise and fall together. The real side
+            is 20 rollouts per policy in each environment, and the correlation runs over four policies, a small
+            sample. A scanned scene can order candidate policies before real trials; the leader still earns its
+            count on the arm, and section 16 weighs the statistics.{' '}
+            <Cite id="F06-83">PolaRiS paper, introduction and sections 5.1 and 5.2</Cite>
+          </Box>
+          <Box variant="p">
+            Which GPU draws the scanned scene depends on the renderer, as in section 13, Rendering and Ray Tracing.
+            MuJoCo Warp, the GPU version of MuJoCo (section 12), ray traces standard splat files in its batch
+            renderer and composites them with the simulated objects, so an object in front hides the splats behind
+            it, with no RTX hardware involved.{' '}
+            <Cite id="F06-78">MuJoCo docs, MuJoCo Warp chapter, 3D Gaussian Splatting</Cite> Isaac Sim 6.2.0 renders
+            splats natively through its RTX renderer, stored in its scene files as OpenUSD ParticleField geometry.{' '}
+            <Cite id="F06-77">Isaac Sim 6.2.0 docs, neural volume rendering</Cite> It does not support GPUs without
+            RT cores, the ray-tracing units, and names the A100 and H100 among them, so on those GPUs a scanned
+            scene goes through MuJoCo Warp.{' '}
+            <Cite id="F06-52">Isaac Sim 6.2.0 docs, requirements</Cite>
+          </Box>
+        </SpaceBetween>
+      </Container>
+
+      <Container
+        header={
+          <Header
+            variant="h2"
+            description="Each approach loads a different part of the machine, and a person's bench time goes first to the largest error"
+          >
+            What each fix costs, and where the bench time goes first
+          </Header>
+        }
+      >
+        <SpaceBetween size="m">
+          <Box variant="p">
+            Beside the training run of section 8, about 197 million control steps across 4,096 simulated arms, the
+            two measurements are small jobs, and randomisation has no job of its own until someone searches its
+            ranges.{' '}
+            <Cite id="F04-58">MuJoCo Playground env_rl_config.py</Cite>
+          </Box>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 640 }}>
+              <thead>
+                <tr>
+                  <th style={TH}>Approach</th>
+                  <th style={TH}>A person&apos;s time</th>
+                  <th style={TH}>Compute</th>
+                  <th style={TH}>The part it fills, and the job&apos;s shape</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style={TD}>Domain randomisation</td>
+                  <td style={TD}>None at the bench; choosing the ranges is design work.</td>
+                  <td style={TD}>
+                    No job of its own: values drawn at every reset, inside the training run. Searching the ranges multiplies the run: DrEureka, a 2024 method in which a language model proposes the ranges, trained 16 configurations for a quadruped in parallel, in 3 hours of
+                    wall-clock against 10 and 20 hours for two methods that try one configuration after another.
+                  </td>
+                  <td style={TD}>
+                    The training job&apos;s GPU; a wider range, or a search over ranges, is paid in that job.{' '}
+                    <Cite id="F04-40">DrEureka paper, abstract and section V</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>System identification</td>
+                  <td style={TD}>One teleoperated excitation episode, after a careful hand calibration.</td>
+                  <td style={TD}>
+                    Replays of that one episode in MuJoCo, repeated at every step of the fit. The README publishes
+                    no timing.
+                  </td>
+                  <td style={TD}>
+                    CPU cores: each replay steps one simulated arm, the kind of job section 12 puts on a core. One
+                    machine; a lost run restarts from the same log. <Cite id="F06-30">SO-101 sysid README</Cite>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={TD}>A scanned scene</td>
+                  <td style={TD}>Under 20 minutes, and under an hour of wall time in all, for PolaRiS.</td>
+                  <td style={TD}>
+                    Under 30 minutes on one RTX 4090 for PolaRiS. NVIDIA&apos;s 3DGRUT (v1.1.0), the reconstruction
+                    code Isaac Sim&apos;s docs point to for splats, reports averages on one RTX 5090 on the NeRF
+                    Synthetic and MipNeRF360 scene sets: 479 s and 2,869 s for its ray-traced method, 215 s and 686
+                    s for its rasterised one. Ray tracing took <Derived>2.2</Derived> to <Derived>4.2</Derived> times
+                    as long (479 / 215 and 2,869 / 686).
+                  </td>
+                  <td style={TD}>
+                    One GPU for under an hour; the ray-traced method wants RT cores (section 13).{' '}
+                    <Cite id="F06-73">PolaRiS paper, section 4.1</Cite>{' '}
+                    <Cite id="F06-75">3DGRUT README at v1.1.0, benchmark tables</Cite>{' '}
+                    <Cite id="F06-77">Isaac Sim 6.2.0 docs, neural volume rendering</Cite>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <Box variant="p">
+            At the bench a symptom points first to one source. A grasp that succeeds less often, or an arm that
+            hits the table, points to a calibration offset larger than the bias the task trained on. Failures in
+            darker shadows point to the appearance gap the deploy guide warns of. A simulated arm that tracks a
+            replayed real recording poorly points to wrong servo constants, which is what the fit corrects.{' '}
+            <Cite id="F06-29">SO-101 deploy README, hardware behaviour</Cite>{' '}
+            <Cite id="F06-26">SO-101 deploy README, hardware behaviour</Cite>{' '}
+            <Cite id="F06-71">SIMPLER paper, section IV.A</Cite>
+          </Box>
+          <Box variant="p">
+            So start where the known error is largest. Run the hand calibration (<code>lerobot-calibrate</code>) with care, since it can leave the gripper 10 to <Derived>20</Derived> mm or more out. Check which servo your follower has against the simulated cap of 2.94
+            N m. Record one excitation episode, let the script fit the 24 servo parameters, and check the transport delay it logs against the task&apos;s 4 ms. Train with the shipped randomisation around the fitted values, light the table so it
+            casts no dark shadows, and count successes on the real arm, a rate the deploy guide does not publish.
+            Section 16, Evaluation, says how many trials it takes to trust your count.{' '}
+            <Cite id="F01-21">LeRobot SO-101 docs, calibrate</Cite>{' '}
+            <Cite id="F06-31">SO-101 constant.py, FORCERANGE</Cite>{' '}
+            <Cite id="F06-30">SO-101 sysid README</Cite>
           </Box>
         </SpaceBetween>
       </Container>
