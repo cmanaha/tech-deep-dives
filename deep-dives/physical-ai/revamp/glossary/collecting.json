@@ -57,7 +57,7 @@
   {
     "term": "Encoder (video)",
     "expansion": null,
-    "meaning": "The program or circuit that compresses video at recording time; a different thing from the joint-angle encoder of section 3."
+    "meaning": "The program or circuit that compresses video at recording time; the word's meaning from section 9 to the end of section 11, where section 3 used \"encoder\" for a joint's angle sensor."
   },
   {
     "term": "Decoder",
@@ -127,7 +127,7 @@
   {
     "term": "End-effector action",
     "expansion": null,
-    "meaning": "An action that gives the pose of the gripper, which must be converted into joint angles before an arm can follow it (built in section 3)."
+    "meaning": "An action that gives the pose of the gripper, which must pass through inverse kinematics into joint angles before an arm can follow it (built in section 3)."
   },
   {
     "term": "vcodec=auto",
@@ -138,5 +138,15 @@
     "term": "finalize()",
     "expansion": null,
     "meaning": "The dataset call that closes the Parquet writers; without it the Parquet files are corrupt."
+  },
+  {
+    "term": "Inverse kinematics",
+    "expansion": null,
+    "meaning": "The conversion of a gripper pose into joint angles, done with a kinematic model of the arm (built in section 3); leader-arm recordings skip it, hand-held rig recordings need it."
+  },
+  {
+    "term": "MuJoCo",
+    "expansion": null,
+    "meaning": "The physics simulator of section 12; the episode stills and clip in this section are rendered from a simulated SO-101 in it."
   }
 ]
