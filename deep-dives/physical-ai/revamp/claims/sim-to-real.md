@@ -45,7 +45,7 @@ SO-101 typing project on Isaac Lab 3.0 ships tools that fit the keyboard pose an
 AWS (post of 2026-09-09, one engagement): fine-tuned on real demonstrations scored 0% in simulation; clean-simulation models 35% to 45%; no trial counts (vendor claim) | F06-72
 PolaRiS: 2 to 5 minute video, camera poses, splats with mesh, meshes in Isaac Sim, splats on robot links; "typically completes within 30 minutes on an NVIDIA RTX 4090"; under 20 minutes of human effort; under one hour wall time (author reported) | F06-73
 PolaRiS: object physics are Isaac Sim defaults, arm physics manufacturer defaults; 1k fine-tuning steps on about 350 demonstrations from 15 other scenes | F06-74
-PolaRiS: average Pearson r = 0.9 over six environments, worst 0.81; 20 real rollouts per policy per environment; four policies (author reported) | F06-83
+PolaRiS: average Pearson r = 0.9 over six environments, worst 0.81; 20 real rollouts per policy per environment; "a handful of policies" (the count of four sits only in the entry's use note, so the page does not print it) | F06-83
 MuJoCo Warp batch renderer ray traces splat files and composites them with simulated objects, no RTX hardware | F06-78
 Isaac Sim 6.2.0 renders OpenUSD ParticleField splats natively through RTX; docs point to 3DGRUT for training splats | F06-77
 Isaac Sim does not support GPUs without RT cores (A100, H100) | F06-52

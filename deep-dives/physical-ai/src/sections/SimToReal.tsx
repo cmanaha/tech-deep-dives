@@ -241,7 +241,8 @@ export function SimToReal() {
           </Box>
           <Box variant="p">
             Calibration shows where a range stops working. On this arm it is done by hand: you hold each joint at
-            the middle of its range, then sweep it through its full range while the software records the extremes
+            the middle of its range, then sweep each joint except the wrist roll through its full range while the software records the
+            extremes
             (section 3). The task&apos;s deploy guide warns that this &quot;can easily be off by 1-2+ cm in
             end-effector height&quot;, the height of the gripper: 10 to <Derived>20</Derived> mm or more. Each episode moves the simulated
             arm&apos;s base up or down by up to 2.5 mm, for mounting offsets, and the gripper moves with it. The rest
@@ -489,8 +490,8 @@ export function SimToReal() {
               Isaac Lab&apos;s event functions at 3.0.0 cover rigid-body scale, material (friction and restitution),
               mass, inertia, centre of mass and collider offsets; the scene&apos;s gravity; actuator gains; joint
               parameters; fixed-tendon parameters; visual texture materials and colours; external pushes; and
-              randomised reset states. Set beside the {ARM} task&apos;s list, it adds mass, inertia, centre of mass,
-              gravity and pushes. The ranges are set per task.{' '}
+              randomised reset states. Set beside the {ARM} task&apos;s list, it adds, among others, mass, inertia,
+              centre of mass, gravity and pushes. The ranges are set per task.{' '}
               <Cite id="F06-68">Isaac Lab v3.0.0, envs/mdp/events.py</Cite>
             </Box>
             <Box variant="p">
@@ -563,8 +564,8 @@ export function SimToReal() {
           <Box variant="p">
             That cap is the 12 V servo&apos;s. The arm&apos;s bill of materials builds the follower from the 7.4 V
             version, which its maker rates at 16.5 kg-cm (<Derived>1.62</Derived> N m) at 6 V. On that build the simulated
-            servo can push about 2.94 / 1.62 = <Derived>1.8</Derived> times harder than the real one, and the fit leaves the cap
-            alone, so check which servo your follower has and set <code>FORCERANGE</code> in <code>constant.py</code> to match. Two more constants act on the
+            servo can push about 2.94 / 1.62 = <Derived>1.8</Derived> times harder than the real one at 6 V, and more on
+            a 5 V supply, from which the maker expects slightly less torque. The fit leaves the cap alone, so check which servo your follower has and set <code>FORCERANGE</code> in <code>constant.py</code> to match. Two more constants act on the
             joint itself, armature and friction loss, and the fit finds all four.{' '}
             <Cite id="F06-31">SO-101 constant.py, FORCERANGE</Cite>{' '}
             <Cite id="F01-4">SO-ARM100 README, parts for two arms</Cite>{' '}
@@ -618,7 +619,8 @@ export function SimToReal() {
                   <td style={TD}>Friction loss</td>
                   <td style={TD}>
                     A constant resistance inside the joint that the motor has to overcome before anything moves. It
-                    acts when the joint starts from rest.
+                    resists every motion of the joint by the same amount, and shows most when the joint starts from
+                    rest.
                   </td>
                   <td style={TD}>Near zero on five joints, 0.25 on the gripper</td>
                   <td style={TD}>
@@ -632,7 +634,7 @@ export function SimToReal() {
             Each of the 24 constants has to act somewhere in the one recording, because a constant that never acts
             in the data cannot be fitted from it. A recording driven for that purpose is called an excitation
             episode. The README sets no length or pattern for it, so the constants&apos; roles set what it
-            must hold: small corrections near the target for the gain, fast motion for damping, starts and stops for armature, and moves from rest for friction loss, on every joint.{' '}
+            must hold: small corrections near the target for the gain, fast motion for damping, starts and stops for armature, and starts from rest, where friction loss shows most, on every joint.{' '}
             <Cite id="F06-30">SO-101 sysid README</Cite>
           </Box>
           <Box variant="p">
@@ -662,7 +664,8 @@ export function SimToReal() {
             The bracket is the miss on one joint at one moment. Squaring counts a miss the same in either direction
             and makes large misses count most. The sum runs over every moment of the episode and all 6 joints, so{' '}
             <M>{String.raw`L(\theta)`}</M> is one number for the whole recording, and the fit looks for the{' '}
-            <M>{String.raw`\theta`}</M> that makes it smallest.
+            <M>{String.raw`\theta`}</M> that makes it smallest. The library may weight each term; that part
+            was not read.
           </Box>
           <Box variant="p">
             The script minimises it with Gauss-Newton least squares, a method for sums of squared misses that
@@ -688,8 +691,8 @@ export function SimToReal() {
           <Box variant="p">
             Calibration can be measured too. NVIDIA&apos;s {ARM} typing project on Isaac Lab 3.0, a policy that
             presses keys on a fixed keyboard, ships tools that fit the simulated keyboard&apos;s pose and the
-            joint-angle calibration from recorded real key presses. Calibration then becomes a fit to recorded data,
-            in place of a pose held by hand.{' '}
+            joint-angle calibration from recorded real key presses. The simulator&apos;s joint-angle calibration then becomes a fit
+            to recorded data.{' '}
             <Cite id="F06-55">Isaac Lab v3.0.0 docs, SO-101 typing policy</Cite>
           </Box>
         </SpaceBetween>
@@ -725,8 +728,8 @@ export function SimToReal() {
             the scene and a mesh of its surfaces, imports the meshes into Isaac Sim so objects have something to
             collide with, and attaches splats to the robot&apos;s links so they move with it. The PolaRiS authors
             report that reconstruction &quot;typically completes within 30 minutes on an NVIDIA RTX 4090&quot;, with
-            &quot;typically less than 20 minutes&quot; of a person&apos;s effort and under one hour of wall time in
-            all. <Cite id="F06-73">PolaRiS paper, section 4.1</Cite>
+            &quot;typically less than 20 minutes&quot; of a person&apos;s effort and typically under one hour of
+            wall time in all. <Cite id="F06-73">PolaRiS paper, section 4.1</Cite>
           </Box>
           <Box variant="p">
             A scan measures the look of a scene and the shape of its surfaces, and nothing of how they push back.
@@ -738,8 +741,8 @@ export function SimToReal() {
             With that adaptation, the same authors report that scores in scanned scenes followed real trials at an
             average Pearson correlation of r = 0.9 across six paired environments, and 0.81 in the worst. Pearson&apos;s
             r runs from -1 to 1 and measures how closely two sets of scores rise and fall together. The real side
-            is 20 rollouts per policy in each environment, and the correlation runs over four policies, a small
-            sample. A scanned scene can order candidate policies before real trials; the leader still earns its
+            is 20 rollouts per policy in each environment, and the correlation runs over a handful of policies, a
+            small sample. A scanned scene can order candidate policies before real trials; the leader still earns its
             count on the arm, and section 16 weighs the statistics.{' '}
             <Cite id="F06-83">PolaRiS paper, introduction and sections 5.1 and 5.2</Cite>
           </Box>
@@ -751,8 +754,9 @@ export function SimToReal() {
             <Cite id="F06-78">MuJoCo docs, MuJoCo Warp chapter, 3D Gaussian Splatting</Cite> Isaac Sim 6.2.0 renders
             splats natively through its RTX renderer, stored in its scene files as OpenUSD ParticleField geometry.{' '}
             <Cite id="F06-77">Isaac Sim 6.2.0 docs, neural volume rendering</Cite> It does not support GPUs without
-            RT cores, the ray-tracing units, and names the A100 and H100 among them, so on those GPUs a scanned
-            scene goes through MuJoCo Warp.{' '}
+            RT cores, the ray-tracing units, and names the A100 and H100 among them, so on those GPUs the documented
+            route left for a scanned scene is MuJoCo Warp&apos;s renderer, which asks for no RT cores, though no
+            vendor sentence names the A100 or H100 as supported for it (section 13, Rendering and Ray Tracing).{' '}
             <Cite id="F06-52">Isaac Sim 6.2.0 docs, requirements</Cite>
           </Box>
         </SpaceBetween>
@@ -790,7 +794,7 @@ export function SimToReal() {
                   <td style={TD}>Domain randomisation</td>
                   <td style={TD}>None at the bench; choosing the ranges is design work.</td>
                   <td style={TD}>
-                    No job of its own: values drawn at every reset, inside the training run. Searching the ranges multiplies the run: DrEureka, a 2024 method in which a language model proposes the ranges, trained 16 configurations for a quadruped in parallel, in 3 hours of
+                    No job of its own: values drawn at every reset, inside the training run. Searching the ranges multiplies the run: DrEureka, a 2024 method in which a language model proposes the ranges, whose authors report 16 configurations for a quadruped trained in parallel in 3 hours of
                     wall-clock against 10 and 20 hours for two methods that try one configuration after another.
                   </td>
                   <td style={TD}>
@@ -812,9 +816,9 @@ export function SimToReal() {
                 </tr>
                 <tr>
                   <td style={TD}>A scanned scene</td>
-                  <td style={TD}>Under 20 minutes, and under an hour of wall time in all, for PolaRiS.</td>
+                  <td style={TD}>Typically under 20 minutes, and typically under an hour of wall time in all, for PolaRiS.</td>
                   <td style={TD}>
-                    Under 30 minutes on one RTX 4090 for PolaRiS. NVIDIA&apos;s 3DGRUT (v1.1.0), the reconstruction
+                    Typically under 30 minutes on one RTX 4090 for PolaRiS. NVIDIA&apos;s 3DGRUT (v1.1.0), the reconstruction
                     code Isaac Sim&apos;s docs point to for splats, reports averages on one RTX 5090 on the NeRF
                     Synthetic and MipNeRF360 scene sets: 479 s and 2,869 s for its ray-traced method, 215 s and 686
                     s for its rasterised one. Ray tracing took <Derived>2.2</Derived> to <Derived>4.2</Derived> times

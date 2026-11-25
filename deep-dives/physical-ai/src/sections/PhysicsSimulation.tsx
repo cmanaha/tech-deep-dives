@@ -537,17 +537,19 @@ export function PhysicsSimulation() {
             servos or strong damping interact with contacts&quot;. <Cite id="F06-13">MuJoCo docs, choosing timestep and integrator</Cite> Each {ARM} joint
             is a position servo in the model, with a gain between 218 and 265 identified from the real arm, and the
             task is a grasp: that case exactly. Both the Menagerie model and the pick-cube scene
-            select <code>implicitfast</code>, the general choice, so <code>discrete</code> is the documented next
-            step when a grasp goes unstable. <Cite id="F06-31">MuJoCo Playground, SO-101 servo constants</Cite>{' '}
+            select <code>implicitfast</code>, the general choice, so <code>discrete</code> is the integrator the
+            documentation names for this case, and the one to try when a grasp goes unstable. <Cite id="F06-31">MuJoCo Playground, SO-101 servo constants</Cite>{' '}
             <Cite id="F06-37">MuJoCo Menagerie, robotstudio_so101 README</Cite>{' '}
             <Cite id="F06-106">MuJoCo Playground, plane.xml option element</Cite>
           </Box>
           <Box variant="p">
-            A simulation of this arm that goes unstable at 0.005 s has two documented changes to make on
-            that <code>option</code> element: a smaller <code>timestep</code>, paid for in calls per simulated
-            second, or <code>integrator=&quot;discrete&quot;</code>. Rule out the simulator itself first: MuJoCo
-            4.0.0 shipped a fault in a matrix factorisation that one of its constraint solvers relies on,
-            &quot;causing slow convergence, wrong accelerations and divergence&quot;, and 4.0.1 fixed it. Pin 4.0.1. <Cite id="F06-105">MuJoCo Playground, reaf_sim config.py</Cite>{' '}
+            A simulation of this arm that goes unstable at 0.005 s has two documented changes to make, and both
+            go through Playground&apos;s <code>Sim</code> config, which writes its own timestep over the one in
+            that <code>option</code> element: a smaller <code>simulation_timestep</code>, paid for in calls per
+            simulated second, or the <code>discrete</code> integrator, set in its <code>integrator</code> field. Rule out the simulator itself first: MuJoCo
+            4.0.0 shipped a fault in a matrix factorisation that one of its constraint solvers relies on when the
+            constraint Jacobian <M>J</M> is sparse, &quot;causing slow convergence, wrong accelerations and divergence&quot;, and 4.0.1 fixed it. Pin 4.0.1. <Cite id="F06-105">MuJoCo Playground, reaf_sim config.py</Cite>{' '}
+            <Cite id="F06-106">MuJoCo Playground, Sim config</Cite>{' '}
             <Cite id="F06-1">MuJoCo 4.0.1 release</Cite> <Cite id="F06-2">4.0.1 release notes, bug fixes</Cite>
           </Box>
         </SpaceBetween>
@@ -606,7 +608,9 @@ export function PhysicsSimulation() {
               <>
                 One core steps a humanoid tens of thousands of times a second; a whole CPU or a GPU batch steps it
                 650 thousand to 5.77 million times, and the JAX engine on an A100 falls below the 64-core CPU. The
-                top three bars are our single runs, the rest vendor figures from other machines and MuJoCo versions.
+                top three bars are our single runs, the rest vendor figures from other machines and MuJoCo versions,
+                and the humanoid model files were not checked to be identical, so compare lengths by order of
+                magnitude only.
               </>
             }
           >
@@ -629,7 +633,8 @@ export function PhysicsSimulation() {
             worlds, about 57 KB per world, on a card with 48 GB. The two-arm robot needs about 84 KB per world with
             the pot and 468 KB at the cluttered table, <Derived>468 / 84 = 5.6</Derived> times more, and even at
             468 KB a 48 GB card holds about <Derived>48,000,000 / 468 = 100,000</Derived> worlds if memory grows in
-            proportion, far past the recipe&apos;s 4,096. Capacity does not bind at these counts. MuJoCo
+            proportion, far past the recipe&apos;s 4,096. Physics memory does not bind at these counts; the vision
+            recipe&apos;s camera memory is section 13&apos;s to price. MuJoCo
             Warp&apos;s documentation warns that &quot;simulation throughput is often limited by memory requirements
             for large numbers of worlds&quot;, and computation scales with the per-world limits too, so tight limits
             pay in steps per second.{' '}
@@ -679,10 +684,11 @@ export function PhysicsSimulation() {
             <Cite id="F06-45">Isaac Lab v3.0.0 release</Cite>
           </Box>
           <Box variant="p">
-            Inside Isaac Lab that choice is worth a factor of about two in speed and nearly three in memory. Its
-            release benchmark reports 318,651 training frames per second on Newton&apos;s MuJoCo Warp solver
-            against 164,777 on PhysX, and 5.41 GB of GPU memory for the whole training process against 14.74 GB,
-            for a Franka arm lifting a cube in 8,192 environments on one RTX PRO 6000 Blackwell Server Edition. The
+            On a Franka arm lifting a cube in Isaac Lab, that choice is worth a factor of about two in speed and
+            nearly three in memory. Isaac Lab&apos;s release benchmark reports 318,651 training frames per second
+            on Newton&apos;s MuJoCo Warp solver against 164,777 on PhysX, and 5.41 GB of GPU memory for the whole
+            training process against 14.74 GB, for that task in 8,192 environments on one RTX PRO 6000 Blackwell
+            Server Edition. The
             unit is the benchmark&apos;s own training frame, counted with the policy&apos;s updates included: it
             compares the two engines with each other and cannot be set beside a physics benchmark&apos;s steps per
             second. <Cite id="F06-47">Isaac Lab v3.0.0 benchmark file</Cite>
@@ -821,7 +827,7 @@ export function PhysicsSimulation() {
           </Box>
           <Box variant="p">
             Physics alone needs ordinary GPU compute and memory, and none of the ray-tracing hardware a simulated
-            camera can call for. The Isaac Lab install guide says so in one line, &quot;Headless Newton simulation
+            camera can call for. For Newton the Isaac Lab install guide says so in one line, &quot;Headless Newton simulation
             does not require RTX hardware&quot;, headless meaning no window and no camera images, and its default
             CUDA 13 stack needs an NVIDIA GPU of the Turing generation (compute capability 7.5) or newer. The vision task&apos;s camera is a
             separate cost, and section 13, Rendering and Ray Tracing, prices it. <Cite id="F06-100">GPU physics, what it loads</Cite>{' '}
